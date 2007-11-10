@@ -1,0 +1,22 @@
+<% for column in Purchasemethod.content_columns %>
+<p>
+  <% if column.name != 'included_vouchers' %>
+  <b><%= column.human_name %>:</b> <%=h @purchasemethod.send(column.name) %>
+</p>
+  <% end %>
+<% end %>
+
+  <b>Included Vouchers: </b>
+  <table border="0">
+  <% @purchasemethod.included_vouchers.each_pair do |v,qty| %>
+     <% if qty.to_i != 0 %>
+      <tr <%= stripe -%>> 
+        <td align="right"> <%=h Vouchertype.find(v).name %> </td>
+        <td> <%=h qty %> </td>
+      </tr>
+    <% end %>
+  <% end %>
+  </table>
+
+<%= link_to "Edit This Purchasemethod", {:action => 'edit', :id => @purchasemethod}, {:class => 'genButton'} %> 
+<%= link_to "Back to List", { :action => 'list'}, {:class => 'genButton' } %>

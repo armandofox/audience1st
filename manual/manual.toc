@@ -1,0 +1,77 @@
+\contentsline {section}{\numberline {1}System Overview}{5}
+\contentsline {subsection}{\numberline {1.1}Patrons, Vouchers, Reservations, Bundles, and Tickets}{5}
+\contentsline {subsection}{\numberline {1.2}Patron's View}{5}
+\contentsline {subsection}{\numberline {1.3}Backoffice View}{6}
+\contentsline {subsubsection}{\numberline {1.3.1}Walkup Sales/Box Office Associate's View}{7}
+\contentsline {subsubsection}{\numberline {1.3.2}Box Office Manager's View}{7}
+\contentsline {subsubsection}{\numberline {1.3.3}Administrators' View}{7}
+\contentsline {subsection}{\numberline {1.4}Basic Navigation: Yellow Means Privilege}{8}
+\contentsline {subsection}{\numberline {1.5}Logging In}{8}
+\contentsline {subsection}{\numberline {1.6}Test System}{8}
+\contentsline {subsection}{\numberline {1.7}Incorporating Into External Web Site}{9}
+\contentsline {section}{\numberline {2}Box Office Associate's Guide}{10}
+\contentsline {subsection}{\numberline {2.1}The Patron Database Is Golden}{10}
+\contentsline {subsection}{\numberline {2.2}Finding, Adding, or Changing Patron Account Info}{10}
+\contentsline {subsubsection}{\numberline {2.2.1}Looking Up a Patron or Determining Whether a Patron is a Subscriber}{10}
+\contentsline {subsubsection}{\numberline {2.2.2}Adding a New Patron}{11}
+\contentsline {subsubsection}{\numberline {2.2.3}Changing Patron Information or Password}{11}
+\contentsline {subsubsection}{\numberline {2.2.4}``Blacklisting'' a Patron From Mailings}{11}
+\contentsline {subsubsection}{\numberline {2.2.5}Merging Duplicate Accounts}{12}
+\contentsline {subsubsection}{\numberline {2.2.6}Managing Patron's Email Preferences}{12}
+\contentsline {subsection}{\numberline {2.3}Reservations}{13}
+\contentsline {subsubsection}{\numberline {2.3.1}Making a Reservation}{13}
+\contentsline {subsubsection}{\numberline {2.3.2}Cancelling a Reservation}{14}
+\contentsline {subsubsection}{\numberline {2.3.3}Changing a Reservation}{14}
+\contentsline {subsubsection}{\numberline {2.3.4}Adding Vouchers to Patron Account}{14}
+\contentsline {subsubsection}{\numberline {2.3.5}Removing Vouchers from a Patron Account}{15}
+\contentsline {subsubsection}{\numberline {2.3.6}Recording a Donation}{15}
+\contentsline {subsubsection}{\numberline {2.3.7}Transaction Search}{15}
+\contentsline {subsection}{\numberline {2.4}Day of Show Procedures}{15}
+\contentsline {subsubsection}{\numberline {2.4.1}Integration With External Ticketing (GoldStar, etc.)}{15}
+\contentsline {subsubsection}{\numberline {2.4.2}Generating the Box Office Report (Will-Call List)}{16}
+\contentsline {subsubsection}{\numberline {2.4.3}Walkup Sales---Cash, Check, Credit Card}{16}
+\contentsline {subsubsection}{\numberline {2.4.4}Walkup Sales---Subscriber Without Reservation}{16}
+\contentsline {subsubsection}{\numberline {2.4.5}Closing the Box Office}{17}
+\contentsline {section}{\numberline {3}Staff Guide}{18}
+\contentsline {subsection}{\numberline {3.1}Viewing Subscription Statistics}{18}
+\contentsline {subsection}{\numberline {3.2}Viewing Attendance Statistics}{18}
+\contentsline {subsection}{\numberline {3.3}Generating Mailing Lists}{18}
+\contentsline {subsection}{\numberline {3.4}Show Orders Needing Fulfillment}{19}
+\contentsline {section}{\numberline {4}Box Office Manager's Guide}{20}
+\contentsline {subsection}{\numberline {4.1}Vouchers and Bundles}{20}
+\contentsline {subsubsection}{\numberline {4.1.1}Creating a New Regular Voucher}{21}
+\contentsline {subsubsection}{\numberline {4.1.2}Adding a New Bundle Voucher Type}{21}
+\contentsline {subsection}{\numberline {4.2}Shows and Show Dates}{21}
+\contentsline {subsubsection}{\numberline {4.2.1}Creating Shows}{22}
+\contentsline {subsubsection}{\numberline {4.2.2}Changing Show Details}{22}
+\contentsline {subsubsection}{\numberline {4.2.3}Adding Show Dates}{22}
+\contentsline {subsection}{\numberline {4.3}Managing Voucher Validity For Show Dates}{22}
+\contentsline {subsection}{\numberline {4.4}Setting What Tickets Can Be Redeemed for a Performance}{22}
+\contentsline {subsubsection}{\numberline {4.4.1}Adding Valid Vouchers to a Performance}{22}
+\contentsline {subsubsection}{\numberline {4.4.2}Changing Existing Valid Vouchers}{22}
+\contentsline {section}{\numberline {5}Administrator's Guide}{23}
+\contentsline {subsection}{\numberline {5.1}Privilege Levels of Other Users}{23}
+\contentsline {subsection}{\numberline {5.2}Referential Integrity}{23}
+\contentsline {section}{\numberline {6}Troubleshooting}{24}
+\contentsline {subsection}{\numberline {6.1}Recovering From Common Mistakes}{24}
+\contentsline {subsection}{\numberline {6.2}Technical Troubleshooting}{24}
+\contentsline {subsection}{\numberline {6.3}Day-of-Show Problems}{25}
+\contentsline {subsubsection}{\numberline {6.3.1}Manually Check GoldStar Sales}{25}
+\contentsline {subsubsection}{\numberline {6.3.2}Can't Login to Audience1st}{25}
+\contentsline {subsection}{\numberline {6.4}Process Only a Credit Card Charge When No Card Present}{25}
+\contentsline {subsection}{\numberline {6.5}Common Customer Questions}{26}
+\contentsline {subsubsection}{\numberline {6.5.1}How much are tickets? Is there a student discount? A senior citizen discount?}{26}
+\contentsline {subsubsection}{\numberline {6.5.2}Is there a group discount?}{26}
+\contentsline {subsubsection}{\numberline {6.5.3}Can my group sit together?}{26}
+\contentsline {subsubsection}{\numberline {6.5.4}Are your shows family-friendly? Are they lighthearted or serious?}{26}
+\contentsline {subsubsection}{\numberline {6.5.5}I want to pay by check. You used to allow this.}{27}
+\contentsline {subsubsection}{\numberline {6.5.6}I paid for tickets but I want to change the date}{27}
+\contentsline {subsubsection}{\numberline {6.5.7}I want a refund}{28}
+\contentsline {subsection}{\numberline {6.6}Phone/Voicemail System Operations}{28}
+\contentsline {subsubsection}{\numberline {6.6.1}Retrieving Voicemail}{28}
+\contentsline {subsubsection}{\numberline {6.6.2}Changing Answering Rules}{28}
+\contentsline {subsection}{\numberline {6.7}Listing Tickets on Gold Star Events}{29}
+\contentsline {subsubsection}{\numberline {6.7.1}Listing Tickets With GoldStar}{30}
+\contentsline {subsubsection}{\numberline {6.7.2}Entering GoldStar Allowance in AudienceFirst}{30}
+\contentsline {subsection}{\numberline {6.8}Email Aliases (you@altarena.org)}{30}
+\contentsline {subsection}{\numberline {6.9}Marketing Collateral}{31}

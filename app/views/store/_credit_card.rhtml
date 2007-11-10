@@ -1,0 +1,60 @@
+
+<!--[form:credit_card]-->
+
+<table border="0">
+  <% if defined?(name_needed) && name_needed %>
+  <tr>
+    <td colspan="2">
+      <label for="credit_card_first_name">First name</label><br/>
+        <%= text_field 'credit_card', 'first_name', :size => 30,
+            :id => 'credit_card_first_name'  %>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <label for="credit_card_last_name">Last name</label><br/>
+        <%= text_field 'credit_card', 'last_name', :size => 30,
+        :id => 'credit_card_last_name' %>
+    </td>
+  </tr>
+  <% end %>
+  <tr>
+    <td>
+      <label for="credit_card_type">Type</label><br/>
+      <%= select 'credit_card', 'type',
+          [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover'],
+           ['AmEx','american_express'],['Diners Club','diners_club']],
+               {:id => 'credit_card_type'} %>
+    </td>
+    <td>
+      <label for="credit_card_number">Number (no spaces)</label><br/>
+      <%= text_field 'credit_card', 'number', :size => 16, :max_length => 16,
+               :id => 'credit_card_number' %>
+    </td>
+  </tr>
+</table>
+<table border="0">
+  <tr>
+    <% if @credit_card && @credit_card.year.to_i > 0
+         dt = Date.civil(@credit_card.year, @credit_card.month)
+       else
+         dt = Date.civil(2007, 1)
+       end %>
+        
+    <td>
+      <label for="credit_card_month">Exp. month</label><br/>
+      <%= select_month dt, :add_month_numbers => true,:prefix => 'credit_card', :id => 'credit_card_month' %>
+    </td>
+    <td>
+      <label for="credit_card_year">Year</label><br/>
+      <%= select_year dt, :start_year => Date.today.year, :end_year => Date.today.year + 6, :prefix => 'credit_card' %>
+    </td>
+    <td>
+      <label for="credit_card_verification_value">Security code</label><br/>
+      <%= text_field 'credit_card', 'verification_value', :size => 4,
+               :max_length => 4, :id => 'credit_card_verification_value' %>
+    </td>
+  </tr>
+</table>
+
+<!--[eoform:credit_card]-->

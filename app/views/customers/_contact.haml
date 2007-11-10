@@ -1,0 +1,75 @@
+%table
+  %tr
+    %td{:colspan=>2}
+      %label{:for=>:referred_by_id} Referred by (Altarena ID)
+      %br/
+      =text_field 'customer', 'referred_by_id', :size=>10, :id => 'referred_by_id'
+      %span#referred_by_name{:width=>"40ex"}= @customer.referred_by_name
+    %td{:colspan=>2}
+      %label{:for=>:referred_by_other} Referred by (other)
+      %br/
+      =text_field 'customer', 'referred_by_other', :id => 'referred_by_other'
+  %tr
+    %td{:colspan=>4}
+      %label{:for=>:customer_formal_relationship} Board Relationship?
+      =input 'customer', 'formal_relationship'
+      %label{:for=>:customer_member_type} Member of the Corporation?
+      =input 'customer', 'member_type'
+  %tr
+    %td{:colspan=>3}
+      %label{:for=>:customer_company} Company
+      %br/
+      =text_field 'customer', 'company'
+    %td
+      %label{:for=>:customer_work_phone} Work phone
+      %br/
+      =text_field 'customer', 'work_phone', :size => 16, :max_length => 16  
+  %tr
+    %td{:colspan=>3}
+      %label{:for=>:customer_title} Position/Title
+      %br/
+      =text_field 'customer', 'title'
+    %td
+      %label{:for=>:customer_cell_phone} Cell phone
+      %br/
+      =text_field 'customer', 'work_fax', :size => 16, :max_length => 16  
+  %tr
+    %td{:colspan=>3}
+      %label{:for=>:customer_company_address_line_1} Company Address Line 1
+      %br/
+      =text_field 'customer', 'company_address_line_1'
+    %td
+      %label{:for=>:customer_work_fax} Work fax
+      %br/
+      =text_field 'customer', 'work_fax', :size => 16, :max_length => 16  
+  %tr
+    %td{:colspan=>3}
+      %label{:for=>:customer_street} Company Address Line 2
+      %br/
+      =text_field 'customer', 'company_address_line_2'
+    %td
+      %label{:for=>:customer_company_url} Website/URL
+      %br/
+      =text_field 'customer', 'company_url', :width => "100%"
+  %tr
+    %td{:colspan=>2}
+      %label{:for=>:customer_company_city} Company City
+      %br/
+      =text_field 'customer', 'company_city', :size => 16, :max_length => 32
+    %td 
+      %label{:for=>:customer_company_state} Company State
+      %br/
+      =text_field 'customer', 'company_state', {:size => 2, :max_length => 2}
+    %td 
+      %label{:for=>:customer_company_zip} Company Zip
+      %br/
+      =text_field 'customer', 'company_zip', {:size => 10, :max_length => 10}
+  %tr 
+    %td{:colspan=>4}
+      %label{:for=>:customer_best_way_to_contact} Best Way to Contact
+      %br/
+      =text_area 'customer', 'best_way_to_contact', {:cols => 50, :rows => 2}
+
+= observe_field('referred_by_id',:update => 'referred_by_name', :with => 'id', :url => {:controller => 'customers', :action => 'lookup'})
+
+/[eoform:customer]

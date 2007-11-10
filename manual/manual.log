@@ -1,0 +1,190 @@
+This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdflatex 2006.4.10)  20 SEP 2007 00:36
+**manual
+(./manual.tex{/sw/share/texmf/pdftex/config/pdftex.cfg}
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/sw/share/texmf/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/sw/share/texmf/tex/latex/base/size10.clo
+File: size10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/sw/share/texmf-local/tex/latex/html/url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+) (./draft.tex)
+\@indexfile=\write3
+\openout3 = `manual.idx'.
+
+
+Writing index file manual.idx
+(./manual.aux (./overview.aux) (./boa.aux) (./staff.aux) (./bom.aux)
+(./admin.aux) (./trouble.aux) (./venue.aux))
+\openout1 = `manual.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 28.
+
+(/sw/share/texmf/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 28.
+ [1
+
+{/sw/share/texmf/dvips/config/pdftex.map}]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 30.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 30.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 30.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 33.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 33.
+ (./manual.toc [2] [3])
+\tf@toc=\write4
+\openout4 = `manual.toc'.
+
+ [4]
+\openout2 = `overview.aux'.
+
+ (./overview.tex [5
+
+]
+Overfull \hbox (2.55614pt too wide) in paragraph at lines 97--100
+[]/cmr10/Can also make and can-cel ad-vance reser-va-tions, search the pa-tron 
+database,
+ []
+
+[6] [7]
+Overfull \hbox (1.7666pt too wide) in paragraph at lines 188--196
+[]/cmr10/The most ob-vi-ous yel-low nav-i-ga-tional aid is the /cmti10/main nav
+-i-ga-tion bar[] /cmr10/(navbar),
+ []
+
+[8]) [9]
+\openout2 = `boa.aux'.
+
+ (./boa.tex [10
+
+
+] [11] [12] [13] [14] [15]
+
+LaTeX Warning: Reference `sec:walkup' on page 16 undefined on input line 394.
+
+[16]) [17]
+\openout2 = `staff.aux'.
+
+ (./staff.tex [18
+
+
+]) [19]
+\openout2 = `bom.aux'.
+
+ (./bom.tex [20
+
+
+] [21]) [22]
+\openout2 = `admin.aux'.
+
+ (./admin.tex)
+[23
+
+
+]
+\openout2 = `trouble.aux'.
+
+ (./trouble.tex) [24
+
+
+]
+\openout2 = `venue.aux'.
+
+ (./venue.tex
+Overfull \hbox (12.13954pt too wide) in paragraph at lines 19--21
+[]/cmr10/Go to the Gold-Star sup-plier page at http://www.goldstarevents.com/su
+pplier 
+ []
+
+
+Overfull \hbox (1.25061pt too wide) in paragraph at lines 54--57
+[]/cmr10/Required: cus-tomer name, billing ad-dress (in-clud-ing coun-try ``USA
+''),
+ []
+
+[25
+
+
+] [26] [27] [28] [29]
+Overfull \hbox (21.54022pt too wide) in paragraph at lines 290--292
+[]/cmr10/Login to Gold-Star as a sup-plier: $/cmtt10/http : / / www . goldstare
+vents . com / supplier$/cmr10/. 
+ []
+
+
+Overfull \hbox (191.18164pt too wide) in paragraph at lines 293--303
+[]/cmr10/Verify the con-tact in-for-ma-tion: [] 
+ []
+
+
+Overfull \hbox (90.89963pt too wide) in paragraph at lines 339--342
+[]/cmr10/Individual staff mem-bers should have a for-ward that looks like /cmti
+10/first-name.lastname@altarena.org/cmr10/,
+ []
+
+[30]
+Missing character: There is no ^^a0 in font cmr10!
+) [31] (./manual.aux (./overview.aux) (./boa.aux) (./staff.aux) (./bom.aux) (./
+admin.aux) (./trouble.aux) (./venue.aux))
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 419 strings out of 95437
+ 4718 string characters out of 1190295
+ 53706 words of memory out of 1000001
+ 3426 multiletter control sequences out of 10000+50000
+ 8409 words of font info for 30 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 23i,6n,19p,199b,337s stack positions out of 1500i,500n,5000p,200000b,5000s
+ 123 PDF objects out of 300000
+ 0 named destinations out of 131072
+ 0 words of extra memory for PDF output out of 65536
+{/sw/share/texmf/dvips/tetex/74afc74c.enc}</sw/share/texmf/fonts/type1/bluesk
+y/cm/cmti10.pfb>{/sw/share/texmf/dvips/tetex/f7b6d320.enc}</sw/share/texmf/font
+s/type1/bluesky/cm/cmbx10.pfb></sw/share/texmf/fonts/type1/bluesky/cm/cmbx12.pf
+b>{/sw/share/texmf/dvips/tetex/09fbbfac.enc}</sw/share/texmf/fonts/type1/bluesk
+y/cm/cmtt10.pfb></sw/share/texmf/fonts/type1/bluesky/cm/cmr12.pfb></sw/share/te
+xmf/fonts/type1/bluesky/cm/cmr17.pfb>{/sw/share/texmf/dvips/tetex/bbad153f.enc}
+</sw/share/texmf/fonts/type1/bluesky/cm/cmsy10.pfb></sw/share/texmf/fonts/type1
+/bluesky/cm/cmr10.pfb>
+Output written on manual.pdf (31 pages, 166453 bytes).

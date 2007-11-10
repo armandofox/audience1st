@@ -1,0 +1,19 @@
+%table{:width=>'100%'}
+  %tr
+    %td.l#welcome
+      Welcome,
+      - if c.is_staff
+        %span{:class=>:adminField} Administrator
+      = link_to c.full_name,:controller=>'customers',:action=>'welcome',:id=>c
+      = h "<#{c.login}>"  
+      = link_to 'Log Out', {:controller=>'customers', :action=>'logout'}, {:class => 'genButton'} 
+      - if Customer.can_ignore_cutoff?(c.id) 
+        %br/
+        %span{:class=>:adminField} Sales cutoff times will be ignored
+    %td.r
+      - if c.is_staff 
+        = link_to 'Help', APP_CONFIG[:help_manual], {:class=>:adminButton, :target=>:_blank}
+      = Time.now.to_formatted_s(:short)
+      - if c.is_admin 
+        %br/
+        = "#{h Session.num_active} users logged in"

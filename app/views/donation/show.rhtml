@@ -1,0 +1,8 @@
+<% for column in Donation.content_columns %>
+<p>
+  <b><%= column.human_name %>:</b> <%=h @donation.send(column.name) %>
+</p>
+<% end %>
+
+<%= link_to 'Edit', :action => 'edit', :id => @donation %> |
+<%= link_to 'Back', :action => 'list' %>

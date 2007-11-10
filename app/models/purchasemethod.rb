@@ -1,0 +1,8 @@
+class Purchasemethod < ActiveRecord::Base
+
+  def self.get_type_by_name(str)
+    (Purchasemethod.find_by_shortdesc(str) || Purchasemethod.find_first).id rescue 0
+  end
+
+end
+

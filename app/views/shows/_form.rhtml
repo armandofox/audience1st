@@ -1,0 +1,34 @@
+<%= error_messages_for 'show' %>
+
+<!--[form:show]-->
+
+<table border="1">
+<tr>
+<td colspan="3">
+<label for="show_name">Show Name</label><br/>
+<%= text_field 'show', 'name'  %></p>
+</td>
+
+<td>
+<label for="show_house_capacity">House cap.</label><br/>
+<%= text_field 'show', 'house_capacity', :size => 5 %>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<label for="show_opening_date">Opens</label><br/>
+<%= date_select 'show', 'opening_date'  %>
+</td>
+
+<td colspan="2">
+<label for="show_closing_date">Closes</label><br/>
+<%= date_select 'show', 'closing_date'  %></p>
+</td>
+
+</tr>
+</table>
+
+
+
+<!--[eoform:show]-->
+

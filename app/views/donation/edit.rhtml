@@ -1,0 +1,9 @@
+<h1>Editing donation ID <%=h @donation.id %> for <%=h @donation.customer.full_name %></h1>
+
+<%= start_form_tag :action => 'update', :id => @donation %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Edit' %>
+<%= end_form_tag %>
+
+<%= gen_button  'Show', {:action => 'show', :id => @donation}  %>
+<%= gen_button  'Back', {:action => 'list'} %>

@@ -1,0 +1,6 @@
+- @shows.each do |s|
+  %div.pageDiv[s]
+    %h1= "#{s.name_with_run_dates} - #{s.showdates.size} performances (Click on a show date for details)"
+    = render :partial => "showdate", :locals => {:showdate => s,:hdr=>"<b>Total all performances</b>"} 
+    = render :partial => "showdate", :collection => s.showdates.sort_by { |sd| sd.thedate }
+

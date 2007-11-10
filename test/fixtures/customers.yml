@@ -1,0 +1,104 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+tom:
+  id: 77
+  first_name: Tom
+  last_name: Foolery
+  street: 123 Fake St
+  city: Oakland
+  state: CA
+  zip: 94601
+  role: 0
+  day_phone: 510-555-5555
+  eve_phone: 510-555-5555
+  login: tom@foolery.com
+  last_login: 2006-01-01 00:00:00
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+tom2:
+  id: 78
+  first_name: Tom Duplicate
+  last_name: Foolery
+  street: 123 Duplicate St
+  city: Oakland
+  state: CA
+  zip: 94601
+  role: 0
+  day_phone: 510-999-9999
+  eve_phone: 510-888-8888
+  login: tom2@foolery.com
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+tom3:
+  id: 79
+  first_name: Another Tom
+  last_name: Foolery
+  login: tom3@foolery.com
+
+cust_with_real_address:
+  id: 222
+  first_name: Armando 
+  last_name: Fox
+  street: 251 Surrey St
+  city: San Francisco
+  state: ca
+  role: 0
+  login: armando-test@nowhere.com
+
+admin:
+  id: 1
+  first_name: Super
+  last_name:  Admin
+  login: admin
+  role: 100
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+staff_user:
+  id: 2
+  first_name: Staff
+  last_name: User
+  login: staff
+  role: 11
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+boxoffice_user:
+  id: 3
+  first_name: Boxoffice
+  last_name: User
+  login: boxoffice
+  role: 21
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+boxoffice_manager:
+  id: 4
+  first_name: Boxoffice
+  last_name: Manager
+  login: boxofficemanager
+  role: 31
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+walkup_sales_user:
+  id: 5
+  first_name: Walkup
+  last_name: Clerk
+  login: walkupsales
+  role: 15
+  salt: abcdefghij
+  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+
+customer_with_empty_login:
+  id: 6
+  first_name: Nobody
+  last_name: NoLogin
+
+generic_customer:
+  id: 1111
+  first_name: Generic
+  last_name: Customer
+  role: -1

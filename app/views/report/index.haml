@@ -1,0 +1,16 @@
+= render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
+
+= render :partial => 'mailinglists'
+
+= render :partial => 'unfulfilled_orders'
+
+.pageDiv
+  %h1 
+    Quick Subscriber Stats for
+    - y = Time.now.year
+    = select_tag('year', options_for_select((y-2..y+1).to_a, y))
+    %span#wait{:style=>'display: none'} Refreshing...
+  = observe_field('year', :with=>'year', :update=>'subscriber_stats', :url => {:action => 'subscriber_details'}, :before => "Element.show('wait')", :complete => "Element.hide('wait')")
+    
+  #subscriber_stats= render :partial => 'subscriptions', :object => @subscriptions, :locals => {:year => y}
+

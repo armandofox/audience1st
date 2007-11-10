@@ -1,0 +1,10 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+fund1:
+  id: 1
+  name: fund1
+
+fund2:
+  id: 2
+  name: fund2
+

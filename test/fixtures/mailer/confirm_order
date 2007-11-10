@@ -1,0 +1,3 @@
+Mailer#confirm_order
+
+Find me in app/views/mailer/confirm_order.rhtml

@@ -1,0 +1,22 @@
+/ Extra params settable only by admin
+
+#adminForm
+  - if @superadmin
+  %p.adminField
+    %label{:for=>:customer_role} Role
+    =select('customer', 'role',Customer.roles,{:selected => @customer.role_name }) 
+  - end
+
+  %p.adminField
+    =check_box 'customer', 'blacklist'
+    %label{:for=>:customer_blacklist} Blacklist: don't include in mailings
+
+  %p.adminField
+    %label{:for=>:customer_comments} Comments (not seen by customer):
+    %br/
+    =text_area :customer, :comments, :cols => 60, :rows => 5
+
+  %p=button_to_function "Extra Contact Info...", visual_effect(:toggle_slide, :contact)
+
+  #contact{:style => "display: none;"}
+    = render :partial => 'contact', :locals => {:customer => @customer}

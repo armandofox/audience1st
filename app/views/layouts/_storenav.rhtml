@@ -1,0 +1,34 @@
+<ul id="storeNav">
+  <%= nav_tabs(['Buy~Tickets', :store, :index, customer], 
+               ['My~Tickets', :customers, :welcome, customer], 
+               ['Contact~Info', :customers, :edit, customer] ) %>
+  <% if c.is_staff %>
+  <%= nav_tabs(['Walkup~Sales', :store, :walkup],
+               ['Customers', :customers, :list],
+               ['Shows', :shows, :list],
+               ['Voucher~Types', :vouchertypes, :list],
+               ['Reports', :report, :index],
+               ['Donations', :donation, :list]) %>
+  <% end %>
+</ul>
+
+<% if is_admin && customer %>
+
+<p class="adminField">
+  <%= h("#{customer.full_name}'s Account:") %>
+  <%  buttons = [['Contact History', :visits, :list, {:id => @customer}],
+                 ['Prospecting Activities', :visits, :list_by_prospector, {:id => @customer}],
+                 ['Database Transactions',:txn, :list,{:params => {:txns_filter => @customer.id}}],
+                 ['Record donation',:donation,:new,{:customer => @customer}]] %>
+  <%  if c.is_boxoffice_manager %>
+  <%    buttons.push(['Add Vouchers',:vouchers, :addvoucher,{:customer => @customer}],
+                 ['Donation & Purchase History', :donation, :list,
+                  {:use_cid => 1, :commit => 'Go', :cid => @customer,
+                    :show_vouchers => true}]) %>
+  <% end %>
+  <%= button_bar(buttons) %>
+</p>
+
+<% end %>
+<p class="clearboth"/>
+

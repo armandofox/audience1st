@@ -1,0 +1,34 @@
+- if @checkout_in_progress 
+
+.pageDiv
+  %h1 Please sign in or create account to complete checkout
+  = render :partial => 'store/cart', :locals => {:editable => false}
+
+- else
+
+%h1.banner Welcome to Altarena's Online Box Office
+%p 
+  Sign in or create your account, or
+  = gen_button "Click Here to Buy Tickets Now", {:controller => 'store', :action => 'index' }
+  and create your account later.
+
+- end
+
+#loginDiv.pageDiv
+  %h1 Sign In or Create Account
+  %table{:width=>"75%"}
+    %tbody
+      %tr
+        %td= render :partial => 'account_login'
+        %td
+          .explain
+            %p
+              %strong Subscriber? Already on our email list?
+              %br/
+              Enter the  email address you provided for our email
+              list or subscription purchase, and  click 
+              %strong Forgot My Password 
+              to have your password emailed to you
+              %br/
+              If you don't see the email in a few minutes, 
+              check your Spam or Junk mail folder.

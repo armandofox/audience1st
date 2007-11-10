@@ -1,0 +1,23 @@
+
+Dear <%= @greeting %>,
+
+This is an automatic confirmation from the online box office 
+at <%= APP_CONFIG[:venue] -%>.
+
+Please check this information carefully:
+
+We're confirming your reservation for the following performance --
+
+  <%= @performance %>
+
+All tickets and reservations can be picked up at will-call beginning one
+hour before showtime.
+
+<% if @subscriber %>
+Remember that as a valued Subscriber, you can enter the theater ahead
+of non-subscribers (starting 30 minutes before showtime), and we will
+also hold the best seating sections for Subscribers until 5 minutes 
+before the show. 
+<% end %>
+
+<%= @how_to_contact_us %>

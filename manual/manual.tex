@@ -1,0 +1,52 @@
+
+%\documentclass[11pt]{book}
+%\documentclass[crown,titlepage]{octavo}
+\documentclass{article}
+\usepackage{url}
+
+\newcommand{\venue}{Altarena}
+
+\title{AudienceFirst Customer Management System \\ 
+Reference Guide for \venue}
+\author{AudienceFirst LLC}
+\date{January 2007}
+
+\newcommand{\tip}[1]{\vspace{\baselineskip}\fbox{\textbf{Tip.} \parbox[t]{0.75\textwidth}{#1}}\vspace{\baselineskip}}
+\newcommand{\af}{{\em AudienceFirst~}}
+\newcommand{\T}[1]{{\em #1}\index{#1}}
+
+
+\input{draft}   % PS commands for showing ``Licensed to'' background
+
+\makeindex
+\begin{document}
+
+%% preamble for Book class
+%! Copyright (C) 1993 Herb Weiner. All Rights Reserved.
+% Set the font (Times-Roman) and message (Confidential) here
+
+\copyright{2007 AudienceFirst, all rights reserved.} 
+
+\maketitle
+
+NOTE: For a printable version of this manual, click here:
+\url{manual.pdf}
+
+\tableofcontents
+%\newpage
+%%
+
+%% preamble for Octavo class
+% \tableofcontents
+%%
+
+\include{overview}
+\include{boa}
+\include{staff}
+\include{bom}
+\include{admin}
+\include{trouble}
+\include{venue}
+
+\end{document}
+

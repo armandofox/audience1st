@@ -1,0 +1,32 @@
+<h1>Details for '<%= @show.name %>'</h1>
+
+<%= start_form_tag :action => 'update', :id => @show %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Save Changes' %>
+<%= end_form_tag %>
+
+
+<h2>Performances: 
+<% if @is_boxoffice_manager %>
+<%= gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show } %> 
+<% end %>
+</h2>
+
+<table border="1">
+<tbody>
+<tr>
+  <th>Date/time</th> 
+  <th>Adv sales stop</th> 
+  <th>Max Cap</th> 
+  <th>Cur Sales</th>
+  <th>Redeemable Ticket Types (click name to edit)</th> 
+</tr> 
+
+<%= render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager} %>
+
+</table>
+
+<%= link_to 'Back to List of Shows', :action => 'list' %>
+
+</body>
+</html>

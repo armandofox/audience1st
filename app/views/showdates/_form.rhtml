@@ -1,0 +1,26 @@
+<%= error_messages_for 'showdate' %>
+
+
+<table>
+<tr>
+
+<td> Date and time<br/>
+<%= parent_datetime_select 'showdate', 'thedate', 'end_advance_sales', {:start_year => Time.now.year, :end_year => Time.now.year + 3, :minute_step => 15, :date => @default_date} %>
+
+<td width="30"></td>
+
+<td> Advance sales stop<br/>
+  <%= child_datetime_select 'showdate', 'end_advance_sales', {:start_year => Time.now.year, :end_year => Time.now.year + 3, :minute_step => 15, :date => @default_cutoff_date }  %> </td>
+
+<td> Max sales<br/>
+<%= text_field 'showdate', 'max_sales', 'size' => 5 %> </td>
+<input type="hidden" name="showdate[show_id]" value="<%= @showdate.show.id %>">
+
+</tr>
+</table>
+
+<br/>
+<%= gen_button  "Don't Save Changes", {:controller => 'shows', :action => 'edit', :id => @showdate.show.id } %>
+
+<!--[eoform:showdate]-->
+

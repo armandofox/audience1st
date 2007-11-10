@@ -1,0 +1,61 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+upcoming_musical_hasmax_2_single_generic_1_offerpublic:
+  id: 2101
+  showdate_id: 2002
+  vouchertype_id: 1
+  end_sales: 2012-01-09 20:00:00
+  start_sales: 2005-01-01 20:00:00
+  max_sales_for_type: 1
+
+upcoming_musical_hasmax_2_simple:
+  id: 2102
+  showdate_id: 2002
+  vouchertype_id: 4
+  end_sales: 2012-01-09 20:00:00
+  start_sales: 2005-01-01 20:00:00
+  max_sales_for_type: 0
+
+upcoming_musical_subscriber_only:
+  id: 2104
+  showdate_id: 2002
+  vouchertype_id: 5
+  end_sales: 2012-01-09 20:00:00
+  start_sales: 2005-01-01 20:00:00
+  max_sales_for_type: 1
+
+
+past_musical_hasmax_1_simple:
+  id: 2103
+  showdate_id: 2003
+  vouchertype_id: 4
+  end_sales: 2006-01-10 20:00:00
+  start_sales: 2006-01-01 00:00:00
+  max_sales_for_type: 1
+
+upcoming_musical_promo_1:
+  id: 2110
+  showdate_id: 2002
+  vouchertype_id: 6
+  end_sales: 2012-01-09 20:00:00
+  start_sales: 2005-01-01 20:00:00
+  max_sales_for_type: 20
+  password: pRoMo
+
+upcoming_musical_free_2002:
+  id: 2201
+  showdate_id: 2002
+  vouchertype_id: 7
+  end_sales: 2012-01-10 19:00:00
+  start_sales: 2007-01-01 00:00:00
+  max_sales_for_type: 20
+
+upcoming_musical_promo_2:
+  id: 2111
+  showdate_id: 2001
+  vouchertype_id: 6
+  end_sales: 2012-01-09 20:00:00
+  start_sales: 2005-01-01 20:00:00
+  max_sales_for_type: 1
+  password: OTHERpromo,promo3
+

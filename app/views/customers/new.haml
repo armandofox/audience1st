@@ -1,0 +1,50 @@
+- if @checkout_in_progress
+.pageDiv
+  %h1 Your Shopping Cart
+  = render :partial => 'store/cart', :passive => true
+
+- end
+
+#customerNew.pageDiv
+  %h1 Create Your Account
+
+  %dl
+    %dt Why do you need my email address?
+    %dd To communicate with you about your order.
+    %dt Why do you need my name and billing address?
+    %dd 
+      For credit card ticket purchase.  
+      %strong= link_to( "We never share  this information with anyone and we do not store credit card information.","http://www.altarena.org/privacypolicy.html",:target => "_blank")
+      Choosing a password protects access to your account. 
+    %dt I'm a Subscriber, but I couldn't retrieve my password.
+    %dd 
+      All Subscribers already have accounts containing your subscription
+      information and vouchers.  It may be under a different email address.
+      If you need help, email
+      %a{:href=>"mailto:help@audience1st.com"} help@audience1st.com
+      with your full name and billing address and we will email you your
+      password. 
+
+  %p
+    %strong Under 18?  
+    Patrons under 18 are required to get the
+    permission of a parent or adult guardian before providing any contact
+    information on this site.
+
+  %p 
+    %strong Under 13? 
+    Sorry, but in accordance with 
+    %a{:target=>:blank,:href=>"http://www.ftc.gov/ogc/coppa1.htm"} COPPA
+    you may not use this site. 
+
+  = start_form_tag :action => (@is_admin ? 'create' : 'user_create')
+  = render :partial => 'form'
+  - if @is_admin
+    = render :partial => 'form_admin' 
+  = render :partial => 'password' 
+  = submit_tag "Create My Account"
+  = gen_button  'Cancel', {:action => (@is_admin ? 'list' : 'login') } 
+  = end_form_tag
+
+
+  

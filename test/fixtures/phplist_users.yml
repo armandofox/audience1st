@@ -1,0 +1,16 @@
+tom:
+  email: tom@foolery.com
+  confirmed: 1
+  htmlemail: 1
+
+tom2:
+  email: u2@u2.com
+  confirmed: 1
+  htmlemail: 1
+
+<% (1..10).each do |x| %>
+u<%= x %>:
+  email: <%= "u#{x}@u#{x}.com" %>
+  confirmed: 1
+  html_email: 1
+<% end %>

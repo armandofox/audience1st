@@ -1,0 +1,9 @@
+<h1>Editing purchasemethod</h1>
+
+<%= start_form_tag :action => 'update', :id => @purchasemethod %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Save Changes' %>
+<%= end_form_tag %>
+
+<br/>
+<%= link_to "Don't Save Changes", { :action => 'list'}, {:class => 'genButton' } %>

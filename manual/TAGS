@@ -1,0 +1,178 @@
+
+admin.tex,179
+\section{Administrator's Guide}1,1
+\label{chap:admin}2,33
+\subsection{Privilege Levels of Other Users}4,53
+\subsection{Referential Integrity}8,101
+\label{sec:integrity}9,136
+
+boa.tex,3197
+\section{Box Office Associate's Guide}1,1
+\label{chap:boa}2,40
+\subsection{The Patron Database Is Golden}10,354
+\label{sec:patrondb}11,397
+section~\ref{sec:recovering} for common procedures to recover from mistakes.42,2028
+\subsection{Finding,  Adding, or Changing Patron Account Info}44,2098
+\label{sec:boa-admin}45,2161
+\subsubsection{Looking Up a Patron or Determining Whether a Patron is a Subscriber}47,2184
+\label{sec:lookup}48,2268
+  section~\ref{sec:addpatron} below to add them.63,3042
+\subsubsection{Adding a New Patron}71,3327
+\label{sec:addpatron}72,3363
+PHPlist.  See section~\ref{sec:phplist} to understand how it is87,3974
+\subsubsection{Changing Patron Information or Password}90,4035
+\label{sec:changeinfo}91,4091
+\label{sec:changepassword}92,4114
+Look up the patron (section~\ref{sec:lookup}) and at the bottom of the97,4271
+steps; see section~\ref{sec:phplist}.110,4987
+\subsubsection{``Blacklisting'' a Patron From Mailings}113,5008
+\label{sec:blacklisting}114,5064
+patron's contact info (section~\ref{sec:changeinfo}) and check the117,5193
+\subsubsection{Merging Duplicate Accounts}120,5277
+\label{sec:merging}121,5320
+  (section~\ref{sec:changepassword}). 147,6635
+\subsubsection{Managing Patron's Email Preferences}151,6681
+\label{sec:phplist}152,6733
+\subsection{Reservations}192,8872
+\subsubsection{Making a Reservation}194,8899
+\label{sec:reservation-details}195,8936
+  (section~\ref{sec:boa-admin}). 225,10300
+\subsubsection{Cancelling a Reservation}245,11425
+\label{sec:cancelling}246,11466
+  (section~\ref{sec:boa-admin}). 254,11714
+\subsubsection{Changing a Reservation}264,12078
+just cancel the original one (section~\ref{sec:cancelling}) and make a267,12226
+new one (section~\ref{sec:reservation-details}).268,12276
+\subsubsection{Adding Vouchers to Patron Account}270,12309
+  (section~\ref{sec:boa-admin}). 274,12451
+  show up on the Unfulfilled Orders report (section~\ref{sec:report_unfulfilled}).284,13084
+\subsubsection{Removing Vouchers from a Patron Account}290,13289
+(section~\ref{sec:reservation-details}, but instead of clicking293,13401
+\subsubsection{Recording a Donation}298,13631
+  (section~\ref{sec:boa-admin}). 302,13760
+\subsubsection{Transaction Search}315,14275
+\label{sec:txnsearch}316,14310
+\item Look up the patron record (section~\ref{sec:lookup})322,14498
+\subsection{Day of Show Procedures}328,14697
+\label{sec:dayofshow}329,14733
+\subsubsection{Integration With External Ticketing (GoldStar, etc.)}331,14756
+\label{sec:externalticketing}332,14825
+the box office list, see section~\ref{sec:checkgoldstarsales} for how to341,15249
+\subsubsection{Generating the Box Office Report (Will-Call List)}344,15331
+  navigation bar (see section~\ref{sec:navigation}.353,15672
+\subsubsection{Walkup Sales---Cash, Check, Credit Card}359,15908
+\label{sec:walkupsales}360,15964
+  section~\ref{sec:lookup}.)375,16718
+\subsubsection{Walkup Sales---Subscriber Without Reservation}385,17119
+\label{sec:walkupsubscriber}386,17181
+the show, use the procedure of section~\ref{sec:reservation-details} to 389,17321
+(section~\ref{sec:walkup}). 394,17577
+\subsubsection{Closing the Box Office}397,17599
+
+bom.tex,1491
+\section{Box Office Manager's Guide}2,2
+\label{chap:bom}3,39
+entering show information (section~\ref{sec:addingshows}), adding43,1985
+performance dates for a show (section~\ref{sec:addingshowdates}), and44,2054
+(section~\ref{sec:validvouchers}).  46,2149
+\subsection{Vouchers and Bundles}48,2178
+\label{sec:vouchertypes-details}49,2212
+\subsubsection{Creating a New Regular Voucher}59,2699
+\label{sec:addingregularvouchertypes}60,2746
+\subsubsection{Adding a New Bundle Voucher Type}85,3799
+\label{sec:addingbundlevouchertypes}86,3848
+\subsection{Shows and Show Dates}103,4589
+\subsubsection{Creating Shows}110,4894
+\label{sec:addingshows}111,4925
+\subsubsection{Changing Show Details}114,4951
+\label{sec:changingshowdetails}115,4989
+\subsubsection{Adding Show Dates}117,5022
+\label{sec:addingshowdates}118,5056
+\subsection{Managing Voucher Validity For Show Dates}120,5085
+\subsection{Setting What Tickets Can Be Redeemed for a Performance}131,5554
+\label{sec:validvouchers}132,5622
+\subsubsection{Adding Valid Vouchers to a Performance}140,5965
+\label{sec:addingvalidvouchers}141,6020
+exists (see section~\ref{sec:addingregularvouchertypes}) and the show148,6340
+section~\ref{sec:addingshowdates}).  Navigate to the list of show dates150,6454
+for the show in question (section~\ref{sec:addingshowdates}.151,6552
+section~\ref{sec:changingvalidvoucher}.) 159,6994
+\subsubsection{Changing Existing Valid Vouchers}162,7030
+\label{sec:changingvalidvoucher}163,7079
+
+draft.tex,0
+
+manual.tex,46
+\newcommand{\T}[1]{{\em #1}\index{#1}}16,455
+
+overview.tex,1003
+\section{System Overview}1,1
+\subsection{Patrons, Vouchers,  Reservations, Bundles, and Tickets}3,28
+\label{sec:overview-vouchers}4,96
+\subsection{Patron's View}53,2645
+\subsection{Backoffice View}77,3835
+\subsubsection{Walkup Sales/Box Office Associate's View}113,5762
+\subsubsection{Box Office Manager's View}132,6439
+\subsubsection{Administrators' View}162,7738
+\subsection{Basic Navigation: Yellow Means Privilege}171,8140
+\label{sec:navigation}172,8194
+Customers, Reservations and Donations (chapter~\ref{chap:boa}), Shows and Show Dates192,9156
+(chapter~\ref{chap:bom}), Transaction Search (chapter~\ref{chap:boa}),193,9203
+Tickets and Subscription Types (chapter~\ref{chap:bom}), Reports194,9305
+(chapter~\ref{chap:staff}), and a button to Log Out of the system.195,9339
+\subsection{Logging In}198,9399
+\label{sec:login}199,9423
+\subsection{Test System}209,9900
+\label{sec:test}210,9925
+\subsection{Incorporating Into External Web Site}233,10844
+\label{sec:external}234,10894
+
+staff.tex,421
+\section{Staff Guide}1,1
+\label{chap:staff}2,23
+\subsection{Viewing Subscription Statistics}9,284
+\label{sec:subscriptionstats}10,329
+\subsection{Viewing Attendance Statistics}20,660
+\subsection{Generating Mailing Lists}40,1670
+\label{sec:report_mailinglist}41,1708
+  (see section~\ref{sec:vouchertypes-details}).49,2062
+\subsection{Show Orders Needing Fulfillment}76,3558
+\label{sec:report_unfulfilled}77,3603
+
+trouble.tex,153
+\section{Troubleshooting}1,1
+\subsection{Recovering From Common Mistakes}3,28
+\label{sec:recovering}4,73
+\subsection{Technical Troubleshooting}8,102
+
+venue.tex,1577
+\section*{Appendix: Additional Procedures For \venue}2,2
+\subsection{Day-of-Show Problems}8,206
+\subsubsection{Manually Check GoldStar Sales}10,241
+\label{sec:checkgoldstarsales}11,287
+\subsubsection{Can't Login to Audience1st}29,966
+\subsection{Process Only a Credit Card Charge When No Card Present}38,1312
+\label{sec:processcreditcard}39,1380
+\subsection{Common Customer Questions}66,2371
+\label{sec:commonquestions}67,2410
+\subsubsection{How much are tickets? Is there a student discount? A79,2981
+\subsubsection{Is there a group discount?}89,3427
+\subsubsection{Can my group sit together?}95,3623
+\subsubsection{Are your  shows family-friendly? Are they lighthearted or serious?}105,4106
+\subsubsection{I want to pay by check. You used to allow this.}133,5324
+\subsubsection{I paid for tickets but I want to change the date}145,5867
+\subsubsection{I want a refund}168,6739
+\subsection{Phone/Voicemail System Operations}178,7069
+\label{sec:ringcentral}179,7116
+\subsubsection{Retrieving Voicemail}185,7339
+\subsubsection{Changing Answering Rules}205,8223
+\label{sec:answeringrules}206,8264
+\subsection{Listing Tickets on Gold Star Events}251,10459
+\label{sec:goldstar}252,10508
+will-call list, see section~\ref{sec:checkgoldstarsales} for how to277,11678
+\subsubsection{Listing Tickets With GoldStar}285,12039
+\subsubsection{Entering GoldStar Allowance in AudienceFirst}327,13508
+\subsection{Email Aliases (you@altarena.org)}331,13585
+\label{sec:emailaliases}332,13631
+\subsection{Marketing Collateral}369,15088
+\label{sec:marketing}370,15122

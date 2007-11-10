@@ -1,0 +1,51 @@
+
+<h2>Make Reservation for <%=h @customer.full_name %></h2>
+
+<%= start_form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher %>
+
+<table><tbody>
+<tr>
+<td>
+<p>Select a show and performance date: </p>
+</td>
+<td>
+<select id='showdate_id' name='showdate_id'>
+<% @available_seats.sort_by { |av| av.showdate.thedate }.each do |d|  %>
+  <option <%= "disabled='disabled'" unless d.available? %> value='<%= d.showdate_id %>'>
+    <%=h d.showdate_name_with_explanation %>
+  </OPTION>
+  <% end %>
+</select>
+</td>
+</tr>
+
+<tr>
+<td>Special seating needs or requests:</td>
+<td>
+<%= select_menu_or_freeform 'comments', APP_CONFIG[:voucher_comments] %>
+</td>
+</tr>
+
+</tbody></table>
+<br/>
+
+<% if @available_seats.detect { |d| d.available? } %>
+  <%= submit_tag 'Confirm Reservation' %> 
+  <% back_label = "Don't Make Reservation" %>
+<% else %>
+  <% back_label = "Back to My Account" %>
+  <p>Sorry, but there are no shows for which this ticket can be redeemed
+    at this time.  This could be because:</p>
+
+  <ul>
+  <li>All shows for which it's valid may be sold out
+  <li>All seats allocated for this type of ticket may be sold out 
+  <li>Seats allocated for this type of ticket may not be available for
+    reservation until a future date
+  </ul>
+<% end %>
+
+<%= gen_button  back_label, {:controller => 'customers', :action => 'welcome', :id => @customer} %>
+
+<%= end_form_tag %>
+

@@ -1,0 +1,57 @@
+<!--[form:cart]-->
+
+<!-- cart display -->
+
+<div id="cart">
+<% if @cart.items.empty? %>
+  <p class="cart">
+ Shopping cart is empty. 
+</p>
+<% else %>
+
+  <table class="cart">
+    <% @cart.items.each_with_index do |i,index| %>
+      <tr>
+        <% if i.kind_of?(Voucher) %>
+        <% price = i.vouchertype.price %>
+        <% if i.showdate_id.to_i > 0 %>
+        <td id="voucher_show_name"><%=h i.showdate.show.name %> </td>
+        <td id="voucher_show_date"><%=h fmt_date(i.showdate.thedate) %> </td>
+        <% else %>
+        <td colspan="2"></td>
+        <% end %>
+        <td id="vouchertype_name">
+          <%=h i.vouchertype.name %>
+          <% if i.promo_code %>
+          (Promo <%=h i.promo_code %>)
+          <% end %>
+        </td>
+        <% elsif i.kind_of?(Donation) %>
+        <% price = i.amount %>
+        <td id="donation_fund_name" colspan ="3">
+        Donation to <%=h i.donation_fund.name %>
+        </td>
+        <% end %>
+        <td id="price" align="right">
+          <%= sprintf("$ %3.2f", price) %>
+        </td>
+        <% if defined?(editable) && editable %>
+        <td>
+          <%= gen_button('Remove', {:action => 'remove_from_cart',
+                                    :item => index,
+                                     :redirect_to => (defined?(redirect_to) ? redirect_to : nil), :id => id}) %>
+        </td>
+        <% end %>
+      </tr>
+    <% end %>
+    <tr> 
+      <td align="right" colspan="3"> <b>Total</b> </td>
+      <td align="right" id="total"> 
+        <%= sprintf("$ %3.2f", @cart.total_price) %> 
+      </td>
+    </tr>
+  </table>
+<% end %>
+</div>
+
+      

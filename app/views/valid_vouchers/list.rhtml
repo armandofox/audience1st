@@ -1,0 +1,27 @@
+<h1>Listing valid vouchers</h1>
+
+<table>
+  <tr>
+  <% for column in ValidVoucher.content_columns %>
+    <th><%= column.human_name %></th>
+  <% end %>
+  </tr>
+  
+<% for valid_voucher in @valid_vouchers %>
+  <tr>
+  <% for column in ValidVoucher.content_columns %>
+    <td><%=h valid_voucher.send(column.name) %></td>
+  <% end %>
+    <td><%= link_to 'Show', :action => 'show', :id => valid_voucher %></td>
+    <td><%= link_to 'Edit', :action => 'edit', :id => valid_voucher %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => valid_voucher }, :confirm => MESSAGES[:areyousure_0], :post => true %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Previous page', { :page => @valid_voucher_pages.current.previous } if @valid_voucher_pages.current.previous %>
+<%= link_to 'Next page', { :page => @valid_voucher_pages.current.next } if @valid_voucher_pages.current.next %> 
+
+<br />
+
+<%= link_to 'New valid_voucher', :action => 'new' %>

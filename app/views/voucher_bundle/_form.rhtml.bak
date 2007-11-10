@@ -1,0 +1,36 @@
+<!--[form:voucher_bundle]-->
+<p><label for="voucher_bundle_description">Description</label><br/>
+<%= text_field 'voucher_bundle', 'description'  %></p>
+
+<% v = Vouchertype.find(:all).map {|e| e.id} %>
+
+<p><label for="voucher_bundle_included_vouchers">Included vouchers</label><br/>
+<table border="0">
+<% Vouchertype.find(:all).each do |v| %>
+<tr><td align="right"> <%=h v.name %> </td>
+<td align="left">
+<input type='text' id='voucher_bundle_included_vouchers[<%= v.id %>]'
+       name='voucher_bundle[included_vouchers][<%= v.id %>]' size='4' 
+    value='<%= @voucher_bundle.included_vouchers[v.id.to_s] || 0 %>'>
+</td>
+</tr>
+<% end %>
+</table>   
+
+
+<table border="0"><tbody><tr>
+<td><label for="voucher_bundle_offer_public?">Offer to public?</label><br/>
+<select id="voucher_bundle_offer_public?" name="voucher_bundle[offer_public?]">
+<option value="false" <%= 'selected' unless @voucher_bundle.offer_public? %>>False</option>
+<option value="true" <%= 'selected' if @voucher_bundle.offer_public? %>>True</option>
+</select>
+</td>
+<td>Is subscription product?<br/>
+<select id="voucher_bundle_is_subscription?" name="voucher_bundle[is_subscription?]">
+<option value="false" <%= 'selected' unless @voucher_bundle.is_subscription? %>>False</option>
+<option value="true" <%= 'selected' if @voucher_bundle.is_subscription? %>>True</option>
+</select>
+</td>
+</tr>
+</tbody></table>
+<!--[eoform:voucher_bundle]-->

@@ -1,0 +1,73 @@
+%table.ticketSelect{:width=>'100%'}
+  %tbody
+
+    - if subscriber
+      %tr
+        %td{:colspan=>2}
+          %strong SUBSCRIBERS: 
+          This page is for <em>purchasing</em> additional tickets. 
+          To make reservations using your subscription, 
+          = link_to 'click here.', {:controller => 'customers', :action => 'welcome', :id => id }
+
+    %tr
+      %td{:align=>:right,:width=>'30%'} Select show
+      %td#selectShow{:align=>:left}
+        - if show_id
+        %span.showInfo
+          = h(Show.find(show_id).name) rescue "---"  
+          = link_to_remote( "Change", { :update => 'ticket_menus',:url => {:action => 'reset_ticket_menus'}},{:class => 'genButton'} )
+          = hidden_field_tag "show_id", show_id
+        - elsif shows.empty?
+        %span.showInfo No shows available for sale at this time
+        - else
+        %select#show_id{:name=>:show_id}
+          %option{:selected=>'selected'} Select show...
+          = options_from_collection_for_select(shows, :id, :name)
+        - end
+    %tr
+      %td{:align=>:right} Select performance
+      %td{:align=>:left}
+        - if showdate_id
+        %span.showInfo= h Showdate.find(showdate_id).printable_date
+        = hidden_field_tag "showdate_id", showdate_id
+        = link_to_remote( "Change", { :update => 'ticket_menus',:url => {:action => 'reset_ticket_menus'}},{:class => 'genButton'} )
+        - elsif showdates.nil?
+        %span.showInfo (Select show first)
+        = image_tag 'wait18trans.gif',:style=>"display: none",:id=>'showdate_wait'
+        - elsif showdates.empty?
+        %span.showInfo No performances on sale yet
+        - else
+        %select#showdate_id{:name=>:showdate_id}
+          %option{:selected=>'selected'} Select show date...
+          = options_from_collection_for_select(showdates,:id,:printable_date)
+        - end
+
+    %tr#vouchertypes_menu
+      %td{:align=>:right} Select ticket type
+      %td#selectTicket
+        - if vouchertypes.nil?
+        %span.showInfo (Select show date first)
+        = image_tag 'wait18trans.gif',:style=>'display: none',:id=>'vouchertype_wait'
+        - elsif vouchertypes.empty?
+        %span.showInfo= h(msg ||= "(No tickets available at this time)")
+        - else
+        %select#vouchertype_id{:name=>:vouchertype_id}
+          = options_from_collection_for_select(vouchertypes.select { |v| v.howmany > 0 }, :vouchertype_id, :name_with_howmany_left)
+        - end
+
+    %tr
+      %td{:align=>:right} Disability or special seating needs:
+      %td{:align=>:left}= text_field_tag('comments', '', :maxlength => 100, :size => 60)
+
+    %tr
+      %td{:align=>:right} 
+        Quantity
+        %label{:for=>:qty}= select_tag('qty',options_for_select((1..10).to_a,"1"))
+      %td{:align=>:left}
+        = submit_tag 'Add Tickets to Cart', :class => 'genButton'
+        - unless flash[:ticket_error].blank?
+          %span.infoMsg= flash[:ticket_error]
+
+= observe_field('show_id', :update => :ticket_menus,:with => 'show_id',:before => "Element.show('showdate_wait')",:url => {:controller => 'store', :action => :show_changed})
+
+= observe_field('showdate_id',:update => :ticket_menus,:with => 'showdate_id',:before => "Element.show('vouchertype_wait')",:url => {:controller => 'store', :action => :showdate_changed} )

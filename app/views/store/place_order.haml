@@ -1,0 +1,26 @@
+%h1.customerInfo Thank You For Your Purchase!
+
+%p.customerInfo
+  Your credit card ending in 
+  %strong= h(@cc_number[-4..-1])
+  has been charged 
+  %strong= h(sprintf("%0.2f",@amount.to_f))
+
+%p 
+  %strong If you purchased show tickets,
+  they'll be available at the box office 1 hour before show time.
+
+%p
+  %strong If you purchased one or more subcriptions,
+  you'll receive a  brochure, show calendar, and other materials 
+  by mail in about 4 weeks, and you'll be able to 
+  make reservations for 2008 shows starting November 11, 2007.
+
+%center
+  - if @is_admin
+  = admin_button('Back to Customer List', {:controller => 'customers', :action => 'list'})
+  = admin_button('Back to This Customer', {:controller => 'customers', :action => 'welcome', :id => @customer })
+  - else
+  = gen_button('Back to My Tickets and Reservations', {:controller => 'customers', :action => 'welcome', :id => @customer })
+  = gen_button('Make Another Purchase', {:controller => 'store', :action => 'index', :id => @customer})
+  - end

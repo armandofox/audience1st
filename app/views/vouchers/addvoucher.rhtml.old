@@ -1,0 +1,43 @@
+<h2>Add vouchers for <%=h @customer.full_name %></h2>
+
+<%= start_form_tag :action => 'addvoucher', :customer => @customer %>
+
+<table>
+<tbody>
+<tr><td>How many:</td>
+<td>  <%= text_field 'howmany', 'howmany', :size => 3, :maxlength => 2 %> </td>
+</tr>
+<tr><td>What type:</td>
+<td> 
+  <select id='vouchertype_id' name='vouchertype_id'>
+  <option disabled='true' value=''>--Regular Vouchers--</option>
+  <%= options_from_collection_for_select Vouchertype.find(:all, :conditions => 'is_bundle = 0'),'id', 'name' %>
+  <option disabled='true' value=''>--Bundles--</option>
+  <%= options_from_collection_for_select Vouchertype.find(:all, :conditions => 'is_bundle = 1'),'id', 'name' %>
+  </select>
+</td>
+
+<tr><td>How acquired:</td>
+<td>
+  <select id='purchasemethod_id' name='purchasemethod_id'>
+  <%= options_from_collection_for_select Purchasemethod.find(:all), 'id', 'description' %>
+  </select>
+</td>
+</tr>
+
+<tr><td>Fulfillment needed?</td>
+<td>
+  <%= check_box_tag 'fulfillment_needed' %>
+</td>
+</tr>
+
+<tr><td>Optional comments:</td>
+<td> <%= text_field_tag 'comments', '', {:size => 30, :maxlength => 30} %> </td>
+</tbody>
+</table>
+
+<%= submit_tag "Add Vouchers" -%>
+
+<%= gen_button  "Cancel", {:controller => 'customers', :action => 'welcome', :id => @customer} %>
+
+<%= end_form_tag %>

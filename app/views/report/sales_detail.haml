@@ -1,0 +1,34 @@
+%table
+  %thead
+    %tr
+      %th Purch date
+      %th Customer
+      %th Show name and date
+      %th Ticket type
+      %th Price
+      %th Qty
+      %th Paid
+      %th How purchased
+      %th By whom
+  %tbody
+    - nsold = total = 0
+    - @daily_sales.keys.sort.each do |k|
+      - v = @daily_sales[k].first
+      %tr{:class=>cycle(:oddRow,:evenRow)}
+        %td= v.updated_on.strftime("%d %b %H:%M")
+        %td= v.customer.full_name
+        %td= v.showdate.printable_name if v.showdate.kind_of?(Showdate)
+        %td= v.vouchertype.name
+        %td.r= number_to_currency(v.vouchertype.price)
+        %td.c= @daily_sales[k].size
+        - nsold += @daily_sales[k].size
+        %td.r= number_to_currency(t = v.vouchertype.price * @daily_sales[k].size)
+        - total += t
+        %td= v.purchasemethod.description
+        %td= v.processed_by_name if (v.processed_by != v.customer.id)
+    %tr.totalsRow
+      %td TOTALS
+      %td.r{:colspan=>3} # Unique customers: 
+      %td= @nunique
+      %td= nsold
+      %td= number_to_currency(total)

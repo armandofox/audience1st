@@ -1,0 +1,21 @@
+upcoming_musical_nomax:
+  id: 2001
+  show_id: 200
+  thedate: 2012-01-10 20:00:00
+  end_advance_sales: 2012-01-09 17:00:00
+  max_sales: 0
+
+upcoming_musical_hasmax_2:
+  id: 2002
+  show_id: 200
+  thedate: 2012-01-11 20:00:00
+  end_advance_sales: 2012-01-10 17:00:00
+  max_sales: 2
+
+past_musical_hasmax_1:
+  id: 2003
+  show_id: 100
+  thedate:           2006-01-10 20:00:00
+  end_advance_sales: 2006-01-10 17:00:00
+  max_sales: 1
+

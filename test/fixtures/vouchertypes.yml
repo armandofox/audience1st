@@ -1,0 +1,52 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+single_generic_1_offerpublic:
+  id:     1
+  name:   generic1
+  price:   5.00
+  offer_public:  2
+  is_bundle: nil
+  is_subscription: nil
+
+single_generic_2_no_offerpublic:
+  id:            2
+  name:          generic2
+  price:         10.00
+  offer_public:  0
+  is_bundle:     nil
+  is_subscription: nil
+
+bundle_1oftype1_3oftype2:
+  id:           3
+  name:         bundle1
+  price:        20.00
+  offer_public: 2
+  is_bundle:    true
+  is_subscription: true
+  included_vouchers:  { 1: 1, 2: 3 }
+
+simple:
+  id:           4
+  name:         simple
+  price:        20.00
+  offer_public: 2
+  is_bundle:    false
+  is_subscription: false
+
+subscriber_only_simple:
+  id:  5
+  name:  subscriber_only
+  price: 18.00
+  offer_public: 1
+  
+discount:
+  id:  6
+  name: Goldstar 1/2 Price
+  price: 10.00
+  offer_public: 2
+
+free:
+  id: 7
+  name: Goldstar Comp
+  price: 0.00
+  offer_public: 2

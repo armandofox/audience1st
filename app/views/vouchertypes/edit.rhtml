@@ -1,0 +1,9 @@
+<h1>Edit properties of '<%=h @vouchertype.name %>' Ticket Type</h1>
+
+<%= start_form_tag :action => 'update', :id => @vouchertype %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Save Changes' %>
+<%= end_form_tag %>
+
+<%= link_to 'Show', :action => 'show', :id => @vouchertype %> |
+<%= link_to 'Back', :action => 'list' %>

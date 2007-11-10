@@ -1,0 +1,18 @@
+xml.instruct!
+
+xml.vxml "version" => "2.0", "xmlns" => "http://www.w3.org/2001/vxml", "xml:lang" => "en-US" do
+  xml.form do
+    xml.block do
+      xml.audio "There are no performances at #{@venue} this weekend."
+      if @next_perf
+        xml.break "time" => 500
+        xml.audio "The next scheduled performance is #{@next_perf.speak}."
+        xml.audio "Please call back after"
+        xml.audio (@next_perf.thedate - 1.week).speak(:omit_time => true)
+        xml.break "time" => 500
+        xml.audio "for ticket availability."
+      end
+      xml.audio "Thank you for calling #{@venue}."
+    end
+  end
+end

@@ -1,0 +1,91 @@
+<%= javascript_include_tag 'utils' %>
+
+<h1>Walk-up Sale (from <%=h @ip %>)</h1>
+
+<%= error_messages_for 'store' %>
+                  
+<%= search_panel('customers', 'list', {
+                   :label => "Walk-up subscriber search:",
+                   :newpage => true,
+                   :submit => "Search in new window"}) %>
+
+<%= start_form_tag :action => 'do_walkup_sale' %>
+<%= hidden_field_tag 'otp', @otp %>
+<% js,showmenu,showdatemenu =
+   dependent_js_selects(@shows, 'show', 'name', 'showdate', 'printable_date',
+   :selected_parent => @show_id, :selected_child => @showdate_id) %>
+<%= js %>
+<% js_fields = to_js_array(@vouchertypes.map { |v| v.id }) %>
+<% onChg = "javascript:recalculate('total',#{js_fields})" %>
+
+<table border="1">
+  <tr>
+    <td class="help" valign="top">
+      <p> 1. Select show, date, tickets &amp; donation</p>
+    </td>
+    <td class="help" valign="top">
+      <p> 2. Collect payment or process credit card, record sale</P>
+    </td>
+  </tr>
+
+  </tr>
+  <tr>
+    <td valign="top">
+      <table border=0>
+        <tr>
+          <td  align='right'><label for="show_name">Show:</label></td>
+          <td><%= showmenu %></td>
+        </tr>
+        <tr>
+          <td align='right'><label for="showdate_thedate">Date:</label></td>
+          <td><%= showdatemenu %></td>
+        </tr>
+      </table>
+      <table border=0>
+        <tr>
+          <td colspan='2' align="center"><b>TOTAL TO COLLECT</b></td>
+          <td>
+            <%= text_field_tag 'total', 0, :id => 'total', :size => 6,
+            :disabled => true, :style => "font-weight: bold;" %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan='2' align='right'>
+            <label for="donation">Additional donation:</label>
+          </td>
+          <td>
+            <%= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,
+            :id => 'donation', :onChange => onChg %>
+          </td>
+        </tr>
+
+        <% @vouchertypes.each do |v| %>
+        <tr>
+          <td align="right"><%=h v.name %></td>
+          <td align="center">$
+            <%= text_field_tag "price#{v.id}", sprintf("%.02f", v.price),
+                :disabled => true, :size => 6, :id => "price#{v.id}" %> 
+          </td>
+          <td>
+            <%= select_tag "qty[#{v.id}]", options_for_select((0..12),0),
+                {:id => "select#{v.id}", :onChange => onChg} %>
+          </td>
+        </tr>
+        <% end %>    
+      </table>
+
+    </td>
+
+    <td align="center" valign="top">
+
+      <p>Click here once payment has been collected:</p>
+      <%= submit_tag 'Cash Purchase' %>
+      <%= submit_tag APP_CONFIG[:cc_purch] %>
+      <br/>
+      <%= submit_tag 'Generate Report' %>
+    </td>
+  </tr>
+</table>
+<%= end_form_tag %>
+
+</div>

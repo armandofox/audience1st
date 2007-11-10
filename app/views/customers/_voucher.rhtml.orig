@@ -1,0 +1,78 @@
+    <tr >
+      <td> <%=h voucher.vouchertype.name %> </td> 
+      <td> <%=h voucher.purchasemethod.description if voucher.purchasemethod %> </td>
+      <% if voucher.vouchertype.is_bundle? %> 
+        <!-- voucher bundle - not reservable -->
+        <td colspan='2'></td>
+        <% if is_admin %>
+        <!-- admin actions on bundle: remove -->
+        <td>
+          <%= admin_button 'Remove Voucher',
+                           {:controller => 'vouchers', :action => 'remove_voucher', :id => voucher.id },
+                           {:confirm => MESSAGES[:remove_bundle_0]} %>
+        </td>
+        <% end %> 
+      <% elsif voucher.showdate.nil? or voucher.showdate.id.zero? %> 
+        <!-- regular voucher, unreserved -->
+        <td align="center">Available</td>
+
+        <!-- customer actions on unreserved voucher: make reservation -->
+
+        <td align="center">
+          <%= gen_button('Make reservation',
+                      { :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer } )%>
+        </td>
+        <% if is_admin %>
+
+        <!-- admin actions on unreserved voucher: remove -->
+
+        <td align="center">
+          <%= admin_button 'Remove', {:controller => 'vouchers', :action => 'remove_voucher', :id => voucher.id, :customer => customer}, {:confirm => MESSAGES[:remove_voucher_0] } %> 
+        </td>
+        <% end %>
+      <% else %>
+
+        <!-- regular voucher, reserved -->
+
+        <td align="center">
+          <span class="showName"><%=h voucher.showdate.show.name %> </span>
+          <br/>
+          <span class="showDate"><%=h voucher.showdate.thedate.strftime('%a, %b %e, %I:%M %p') %></span>
+        </td>
+
+        <!-- customer actions on reserved voucher: -->
+
+        <td align='center'>
+          <% if is_subscriber && voucher.can_be_changed? %>
+          <%= gen_button( 'Cancel Reservation',
+                          {:controller => 'vouchers',
+                            :action => :cancel_reservation,
+                            :id => voucher.id,
+                            :customer => customer},
+                          {:confirm => MESSAGES[:release_reservation_0]} ) %>
+          <% end %>
+        </td>
+
+        <!-- admin actions on reserved voucher: -->
+
+        <% if is_admin %>
+        <td align="center">
+          <%   if (!voucher.changeable) %>
+          <%= admin_button('Cancel Prepaid',
+                           { :controller => 'vouchers',
+                             :action => 'cancel_prepaid',
+                             :id => voucher.id,
+                             :customer => customer },
+                           {:confirm => MESSAGES[:cancel_prepaid_0] }) %>
+          <%   elsif is_subscriber  %>
+          <%= admin_button('Cancel Reservation',
+                           { :controller => 'vouchers',
+                             :action => :cancel_reservation,
+                             :id => voucher.id,
+                             :customer => customer},
+                           { :confirm => MESSAGES[:release_reservation_0]} ) %>
+          <%  end %>
+        </td>
+        <% end %>
+      <% end %>
+    </tr>

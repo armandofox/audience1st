@@ -1,0 +1,37 @@
+!!! Strict
+%html
+  %head
+    = stylesheet_link_tag 'vbo'
+    = stylesheet_link_tag 'boxoffice_report'
+    %title= h @showdate.printable_name
+  %body{:class => (RAILS_ENV != 'production' ? :testing : nil)}
+    %h1
+      = h @showdate.printable_name
+    %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
+    #doorList
+      %table
+        %thead
+          %tr
+            %th{:colspan=>2} Last
+            %th First
+            %th Type
+            %th Qty
+            %th Notes
+        %tbody
+          - cur_ltr = ''
+          - @vouchers.keys.sort_by(&:downcase).each do |k|
+            - v = @vouchers[k].first
+            - c = v.customer
+            - c_lnk = {:controller => 'customers', :action =>'welcome', :id => c.id }
+            %tr{:class=>(c.is_subscriber? ? 'subscriber' : nil)}
+              - ln,fn=c.last_name.name_capitalize, c.first_name.name_capitalize
+              %td.maincolumn= (ln[0,1].upcase==cur_ltr ? '' : cur_ltr=ln[0,1].upcase)
+              %td= link_to_unless c.is_walkup_customer?, ln, c_lnk
+              %td= link_to_unless c.is_walkup_customer?, fn, c_lnk
+              %td= h v.vouchertype.name
+              %td.c= h @vouchers[k].size
+              / concatenate all nonempty comments
+              %td= h(@vouchers[k].map { |v| v.comments unless v.comments.blank? }.compact.uniq.join(";"))
+
+      %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
+      %p= "Box office report generated #{Time.now.to_formatted_s(:short)}"

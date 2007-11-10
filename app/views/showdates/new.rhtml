@@ -1,0 +1,6 @@
+<h1>Add a date for '<%= @showdate.show.name %>'</h1>
+
+<%= start_form_tag :action => 'create', :method => 'post' %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Add Date' %>
+<%= end_form_tag %>

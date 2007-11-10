@@ -1,0 +1,22 @@
+\section{Administrator's Guide}
+\label{chap:admin}
+
+\subsection{Privilege Levels of Other Users}
+
+
+
+\subsection{Referential Integrity}
+\label{sec:integrity}
+
+In order to maintain referential integrity of the database, deletion
+actions tend to be destructive and should be used with great care:
+
+\begin{itemize}
+\item Deleting a customer record deletes \emph{all} vouchers associated
+  with that customer, whether holding a reservation or not.
+\item Deleting a voucher type or bundle type silently removes
+  \emph{all} vouchers of that type from the accounts of patrons who hold
+  them. 
+\item Deleting a performance removes \emph{all} reservations to that
+  performance.
+\end{itemize}

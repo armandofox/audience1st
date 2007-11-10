@@ -1,0 +1,60 @@
+<%= start_form_tag :action => 'place_order' %>
+
+<div class="pageDiv">
+  <h1>Your Order</h1>
+  <%= render :partial => 'cart' %>
+
+  <%= link_to 'Make Changes', {:action => 'index', :id=>@cust}, :class => 'genButton' %>
+</div>
+
+<table border="0">
+  <tr><td valign="top">
+      <h2>Please Verify Billing Info</h2>
+
+      <div  class="infoMsg">
+        <center><%= gen_button "Click here if this isn't you", :action => 'not_me' %><br/></center>
+      
+      <%= render :partial => 'customers/form', :locals => {:customer => @cust, :passive => true } %>
+
+      </div>
+      
+    </td>
+    <td valign="top">
+      <h2>Credit Card Information</h2>
+      <ul>
+        <li> For your security we do not store your credit card number after
+          completing your purchase.</li>
+        <li> Our transactions are securely processed through Authorize.net.</li>
+      </ul>
+
+      <%= render :partial => 'credit_card' %>
+
+  </td></tr>
+  <%= hidden_field_tag 'id', @cust.id %>
+
+  <% if @is_admin %>
+  <%= hidden_field_tag 'sales_final', 1 %>
+  <% else %>
+  <tr><td colspan="2" align="center">
+      <%= check_box_tag 'sales_final',1,@sales_final_acknowledged %> 
+      <strong>I understand and agree to the
+        <a href="javascript:alert('<%= escape_javascript(MESSAGES[:terms_of_sale_0]) %>');">Terms of Use and Sales Final Policy</a>
+      </strong>
+  </td></tr>
+  <% end %>
+
+  <tr><td colspan="2" align="center">
+      <%= submit_tag APP_CONFIG[:cc_purch], {:onClick => "this.disabled=true;this.value='Processing, Please Wait';document.getElementById('cancel').style.display='none';this.form.submit();"} %>
+      <%= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} %>
+  </td></tr>
+
+  <tr><td align="center" colspan="2">
+      It may take up to 30 seconds to
+      process your transaction.<br/> 
+      Please click the Purchase button only once to avoid
+      a double charge.
+  </td></tr>
+
+</table>
+</form>
+

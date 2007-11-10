@@ -1,0 +1,32 @@
+%table 
+  %tbody 
+    %tr 
+      %td= check_box_tag 'use_cid', 1, @params[:use_cid], {:onClick => "if (!(this.checked)) {$$('show_vouchers').checked=false;}"} 
+      %td Only for this customer ID:
+      %td
+        = text_field_tag 'cid', @params[:cid], :size => 14 
+        = gen_button('Search for customer...', {:controller => 'customers', :action => 'list'})
+    %tr 
+      %td 
+      %td{:colspan=>2} 
+        = check_box_tag 'show_vouchers', 1, @params[:show_vouchers]
+        Show ticket purchases as well as donations 
+    %tr 
+      %td= check_box_tag 'use_date', 1, @params[:use_date] 
+      %td Date is in the range:
+      %td
+        = select_date((@params[:from] || Date.today),:prefix => 'from')
+        to 
+        = select_date((@params[:to] || Date.today),:prefix => 'to') 
+    %tr 
+      %td= check_box_tag 'use_amount', 1, @params[:use_amount]
+      %td  Donation amount between:
+      %td
+        $
+        = text_field_tag 'donation_min', @params[:donation_min], :size => 4
+        \.00 and
+        = text_field_tag 'donation_max', @params[:donation_max], :size => 4 
+        \.00
+    %tr
+      %td= check_box_tag 'use_ltr_sent', 1, @params[:use_ltr_sent]
+      %td  Only if letter not yet sent

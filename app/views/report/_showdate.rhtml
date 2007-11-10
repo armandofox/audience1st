@@ -1,0 +1,20 @@
+<table width="100%">
+  <tr>
+    <td width="70%">
+      <%= link_to_remote(hdr ||= showdate.printable_date,:update=>"showdate_#{showdate.id}",:url=>{:action=>"showdate_sales",:id=>showdate,:klass=>showdate.class}, :complete=>visual_effect(:toggle_slide,"showdate_#{showdate.id}",:duration=>0.5)) %>
+    </td>
+    <td width="10%" align="right">
+      <strong><%=showdate.vouchers.size %></strong>
+    </td>
+    <td width="10%" align="center">
+     <%= number_to_percentage(showdate.percent_sold,:precision=>0) %>
+   </td>
+   <td width="10%" align="right">
+     <strong> <%= number_to_currency(showdate.revenue) %> </strong>
+   </td>
+</tr>
+</table>
+<div style="display:none;" id="showdate_<%= showdate.id -%>">
+
+</div>
+

@@ -1,0 +1,15 @@
+.pageDiv
+  %h1 Unfulfilled Orders
+
+  %p Show all orders still in need of fulfillment (usually means mailing something to customer).
+
+  = start_form_tag({:action => 'unfulfilled_orders'},:method => :get)
+  /
+    %p Include in report:
+    = check_box_tag 'include', 'dollar_amount'
+    %label{:for=>:include} Dollar amount
+    %br/
+    = check_box_tag 'include', 'customer_info', :checked 
+    %label{:for=>:include}Customer mailing address
+  = submit_tag 'Generate Listing'
+  = end_form_tag

@@ -1,0 +1,27 @@
+xml.instruct!
+
+xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1" do
+  xml.channel do
+
+    xml.title       "#{@venue} Ticket Availability"
+    xml.link        url_for :only_path => false, :controller => 'store'
+    xml.description "Ticket Availability for #{@venue}"
+
+    unless (@showdate_avail.nil? || @showdate_avail.empty?)
+      @showdate_avail.each do |avail|
+        xml.item do
+          sd,desc,link = avail
+          xml.title       "#{sd.printable_name} - #{desc}"
+          if link
+            xml.link url_for :only_path => false, :controller => 'store', :action => 'index'
+          end
+        end
+      end
+    else                        # no upcoming shows
+      xml.item do
+        xml.title         "No performances this weekend"
+        xml.description   "No performances this weekend"
+      end
+    end
+  end
+end

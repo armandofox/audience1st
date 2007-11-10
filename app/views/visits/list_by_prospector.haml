@@ -1,0 +1,14 @@
+.pageDiv
+  %h1= "Customers Visited by #{@customer.full_name}"
+  %table
+    %thead
+      %tr
+        %th Customer name
+        %th Last visited by
+        %th Next followup by
+    %tbody
+      - @prospects.sort_by(&:most_recent_visit).each do |p|
+        %tr{:class=>cycle(:oddRow,:evenRow)}
+          %td= link_to(p.full_name, :action => 'list', :id => p)
+          %td= p.most_recent_visit.summarize
+          %td= p.next_followup.summarize(:followup_date)

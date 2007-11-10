@@ -1,0 +1,287 @@
+\section{System Overview}
+
+\subsection{Patrons, Vouchers,  Reservations, Bundles, and Tickets}
+\label{sec:overview-vouchers}
+
+The \emph{patron} is the unit to which most operations are indexed.
+Ticket vouchers (see below) are linked to
+patrons; donations are linked to patrons.
+
+The \af operates on the basis of ticket \T{vouchers}. A
+voucher is the equivalent of a ticket that can be used to make a
+reservation, but the voucher is not itself a reservation. The voucher is
+instead the unit of fulfillment.  
+
+A patron who holds a voucher can use it to make a \emph{reservation}.
+The reservation ``ties'' the voucher to a specific show date.
+If the reservation is cancelled, this ``tie'' is broken but the voucher
+itself remains, and can be used for a different reservation later.
+
+Each voucher is of a particular \T{voucher type}, as defined by the \T{Box
+Office Manager} (BOM).  The BOM indicates
+which voucher types are valid for a particular performance.  Even after
+a performance is set up and available for reservations, new voucher
+types can be created and made valid for that performance.  If a voucher
+is able to be redeemed for a particular performance, we say that it is a
+\T{valid voucher} for that performance.
+
+A \T{bundle} is a collection of vouchers sold as a single unit.
+A simple example is a subscription, which might contain three vouchers
+valid for any musical and two vouchers valid for any play.  But bundles
+can also be used for offering multi-ticket promotions that are not
+subscriptions.  For example,  a ``family pack''
+bundle could include 1 adult ticket and 1 child ticket, purchased
+together for a discount price.  Adding a bundle product to a patron's
+account causes the corresponding individual vouchers to be
+added to the patron's account, after which point they behave just like
+regular vouchers.  
+
+A \T{ticket} is a special kind of voucher that is ``tied'' to a
+particular performance \emph{at the time of purchase}.  Generally these
+are cash purchases  by nonsubscribers to attend a  particular
+performance.  Single tickets can be purchased ``anonymously'', \emph{without} 
+creating a login account; but to purchase any kind of bundle, including
+a subscription or promo, the patron must have a login.
+
+Vouchers, bundles and tickets are the \emph{products} offered for sale.
+However, each voucher type, bundle, and ticket type is marked to
+indicate whether it is offered for sale to the general public, to
+subscribers only, or to box office/administrators only.  For example,
+courtesy tickets could be offered for customer service purposes, but
+only the box office can add that type of ticket to an account.
+
+\subsection{Patron's View}
+
+We distinguish a \emph{patron}, who has an account established in our
+system, from a \emph{guest}, who does not.  An account is necessary in
+order to purchase subscriptions or bundle promos, but not all patrons
+have vouchers in their accounts.  In other words, our patron list is our ``known
+customer list'', but not all patrons are active.
+
+A patron logs in to the \af using any Web browser.  (The first time they
+do this, their password will have to be setup by a Box Office
+Associate; the patron can change it herself later.)
+
+Once logged in, the patron sees a list of all their vouchers.  Some
+vouchers may be marked as ``available'', meaning they have not yet been
+``tied'' to a performance via a reservation.  Clicking on one of these
+will allow the patron to make a reservation against that voucher.
+A patron can also cancel a reservation, which makes the voucher
+available for a different reservation.
+
+Guests without accounts are directed to a \T{storefront} where specific
+products are offered for credit card sale.  If the patron attempts to
+purchase a subscription or bundle product, part of the purchase process
+requires them to create an account.
+
+\subsection{Backoffice View}
+
+The various administrative users of the system are just patrons who have
+special privileges.  They login and see the same screens that patrons
+see, but they also have access to certain screens and operations that
+patrons do not.  The levels in order of increasing privilege are:
+
+\begin{enumerate}
+\item[Patron] The default level: can log into her own account, manage
+  her own reservations, and edit her own contact information.
+\item[Staff] Can also generate reports, including mailing lists, box
+  office statistics, etc.  Can record
+  donations, search and update patron contact information, and manage
+  the ``Resources'' database (patrons who are also professional service
+  providers, professional connections to other organizations, etc.) This
+  is the appropriate category for any 
+  staff member who does not deal directly with reservation processing.
+\item[Walkup Sales] can also do day-of-show box office procedures, such
+  as generating the will-call list and processing walkup sales
+  transactions.
+\item[Box Office Associate] Can also make and cancel advance
+  reservations, search the patron database, update patron information,
+  add and remove vouchers from patron accounts, and generate attendance lists for performances.
+\item[Box Office Manager] Can add/edit shows, add/edit performance dates,
+  add/edit voucher types and bundle types, determine which voucher types
+  can be redeemed for which performances.
+\item[Administrator] Can grant/revoke any of the above privileges to
+  other users and perform additional direct manipulation of database tables.
+\end{enumerate}
+
+All backoffice actions are \T{audited}, with
+permanent records being written of who performed a particular action and
+when.  Thus, it is possible to distinguish (e.g.)  whether a patron
+logged in and changed their own contact information or whether it was
+changed by a Box Office Agent, and if so, who.
+
+\subsubsection{Walkup Sales/Box Office Associate's View}
+
+A Box Office worker who handles walkup sales has access to the necessary
+functions for processing walkups.
+
+A Box Office Associate (BOA) who also works with advance reservations
+has additional capabilities:
+
+\begin{itemize}
+\item[Switch User] The BOA can search for a patron by name
+  and then bring up that patron's record.  From that point on, the BOA
+  can do anything the patron could do if the patron had logged in
+  themselves.
+\item[Edit User] The BOA can edit a patron's contact information or
+  password, edit the private ``comments'' field (invisible to the
+  patron) in the patron record, or record additional information about
+  conversations or visits with the patron.  The BOA can \T{reset a
+    patron's password}, but neither the BOA nor anyone else can see the
+  current value of a patron's password.
+\item[View Transactions] The BOA can view previous reservation/purchase
+  transactions made by or on behalf of that patron.
+\item[Record Donations] The BOA can record donations made by the
+  patron. 
+\end{itemize}
+
+\subsubsection{Box Office Manager's View}
+
+The Box Office Manager (BOM) can do everything the BOA can do, and can
+additionally:
+
+\begin{itemize}
+\item view a patron's complete donation and purchase history
+\item Add vouchers to a patron account without collecting payment
+\item Remove/cancel prepaid vouchers from a patron account
+\end{itemize}
+
+The BOM can also add new shows and show dates.  Logically, a \T{show} is
+a single production that has a run start date, a run end date, and some
+other properties.  Each show is associated with one or more \T{show
+  dates}, each of which represents a single performance.  In particular,
+when a reservation is made against a voucher, the reservation ties the
+voucher to a particular show date.
+
+A show record includes information about the overall production,
+including:
+\begin{itemize}
+\item Start and end dats
+\item House capacity
+\end{itemize}
+
+A show date record includes various kinds of information such as:
+\begin{itemize}
+\item Date and time of the performance
+\item Capacity of the house for the performance (if different from the
+  default house capacity specified in the Show record)
+\item When to start and stop advance sales for that performance
+\item Which voucher types are valid for that performance, including the
+  following information for each valid voucher type:
+  \begin{itemize} 
+    \item limits (if
+      any) on how many vouchers of each types can be redeemed for that
+      performance. For example, you may offer discount seats but allow at
+      most 10 seats per show to be released as discount.
+    \item Starting and ending date when reservations can be made for a
+      particular show using this voucher type.
+    \item Whether a promo code or password is needed to redeem this
+      voucher type. 
+    \item When to start and stop advance sales for this voucher type, if
+      different from the default in the Show Date record.  For example,
+      you may wish to allow time-limited access to a discount ticket
+      type, or define a ticket type that is available early to certain
+      groups of customers.
+    \item Who may purchase this type of voucher: anyone may
+      self-purchase, Subscribers 
+      only may self-purchase, Box Office agent must handle the purchase,
+      third-party vendor handles the purchase. The last choice is used
+      for automatic integration of tickets offered through third-party
+      outlets such as GoldStar Events or Tix Bay Area.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Administrators' View}
+
+An Administrator (admin) can do anything, including assign any of the
+above privilege levels to other users.  Admins can also do
+operations that are
+potentially dangerous to the database.  For example, permanently
+deleting a patron is ``dangerous'' because past donations made by that
+patron would no longer be linkable to an individual.  The administrator
+is also the only privilege level that can add or remove privilege for
+other users.
+
+\subsection{Basic Navigation: Yellow Means Privilege}
+\label{sec:navigation}
+
+The basic navigational aid in \af is the use of color.
+
+Elements in \emph{yellow} on the screen are ones
+that you are seeing because of your administrative
+privilege, but that a patron would not see.
+
+For example, when a patron views her own account, she has the ability to
+make or cancel reservations, but \emph{not} the ability to add or remove
+vouchers from her own account (except by purchasing through the
+Storefront).  Howver, when a Box Office Agent is viewing that same
+patron's account, a yellow button labeled ``Add Vouchers''
+will be displayed.  The yellow means that the patron would not see this
+element but the box office associate does see it.
+
+The most obvious yellow navigational aid is the \T{main navigation bar}
+(navbar), 
+which appears at the top of every screen for backoffice staff but is never
+seen by patrons.  The navbar gives access to the  main functions of \af:
+Customers, Reservations and Donations (chapter~\ref{chap:boa}), Shows and Show Dates
+(chapter~\ref{chap:bom}), Transaction Search (chapter~\ref{chap:boa}),
+Tickets and Subscription Types (chapter~\ref{chap:bom}), Reports
+(chapter~\ref{chap:staff}), and a button to Log Out of the system.
+
+
+\subsection{Logging In}
+\label{sec:login}
+
+All users---patrons or otherwise---see the same interface for logging
+in.  To \T{login}, go to \url{http://www.audience1st.com/\venue} and enter your
+login (email address) and password.  Note that since ``back office''
+users are just patrons with extra privilege, backoffice staff wishing to
+make reservations on behalf of a patron should just login as
+themselves---not as the patron.  Once logged in, they will be able to
+access accounts of other patrons.
+
+\subsection{Test System}
+\label{sec:test}
+
+There is a \T{test system} available for backoffice users
+that allows you to safely do operations on a ``sandbox'' database that
+is completely separate from the real database.  You need to have a
+separate login to use the test system (though you can choose to make it
+the same as your login for the real system).
+
+The test system is for
+training and testing purposes and is always accessible at
+\url{http://www.audience1st.com/\venue-test}. It is protected by a master
+username and password (which you'll have to enter \emph{before} you see
+the login screen).  Ask your system administrator what the master
+username and password is.
+
+You can tell when you are using the test system because there will be a
+bright red border around every page. This border is absent when using
+the production system.
+
+TBD: how to distinguish build number of development system from build
+number of production system.
+
+
+\subsection{Incorporating Into External Web Site}
+\label{sec:external}
+
+AudienceFirst automatically provides an RSS~2.0-compliant feed of ticket
+information for upcoming shows at
+\url{http://www.audience1st.com/\venue/store/ticket_rss}.  Your patrons
+can subscribe to this feed directly, or you can display the feed info on
+your site using (e.g.) the WordPress content management system or any
+other CMS that has an RSS widget.  Each feed item reports on one
+performance and reports whether it is sold out, nearly sold out (more
+than 90 percent), or available, as well as whether tickets are available
+in advance or only at the box office (advance sales have ended).
+
+AudienceFirst also provides a VoiceXML call-in application that speaks
+this same information to a caller and then hangs up.  The information is
+limited to ticket info for shows between the time of the call and the
+end of the coming weekend.  To connect this feature, users should call
+((@@@phone number TBD@@@)), or be forwarded to that number via your
+call-in switchboard.
+
+\end{verbatim}

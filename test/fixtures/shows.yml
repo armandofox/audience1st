@@ -1,0 +1,14 @@
+past_musical:
+  id: 100
+  name: Past Great Musical
+  opening_date: 2006-01-01 00:00:00
+  closing_date: 2006-01-30 00:00:00
+  house_capacity: 150
+  
+upcoming_musical:
+  id: 200
+  name: Upcoming Great Musical
+  opening_date: 2012-01-01 00:00:00
+  closing_date: 2012-02-01 00:00:00
+  house_capacity: 180
+

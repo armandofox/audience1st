@@ -1,0 +1,2 @@
+module Valid_VouchersHelper
+end

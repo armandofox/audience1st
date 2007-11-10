@@ -1,0 +1,165 @@
+
+\section{Box Office Manager's Guide}
+\label{chap:bom}
+
+Whereas Box Office Agents can handle ticket sales and reservations for
+performances, the Box Office Manager is the one who \emph{causes tickets
+  and reservations to become available} for shows.  The general process
+of entering a show into the system, associating performance dates with
+it, and indicating what tickets are redeemable for each performance is
+collectively called \emph{listing the show}.
+
+It's important to realize that, in general, listing a show can involve
+up to four steps:
+
+\begin{enumerate}
+\item[Add the show] Enter the overall information for the show---start
+  and end dates, default seating capacity, etc.  This step can be
+  skipped if just adding or removing performance dates from an existing
+  show. 
+\item[Add show dates] Associate performance dates with the show (or
+  remove performance dates).  Information such as the deadline for
+  advance sales cutoff and the specific house capacity can be overridden
+  for each show date.
+\item[Indicate valid vouchers] Associate particular ticket types
+  (General Admission, Subscriber, etc.) with the performance.
+  \emph{Without this step, the performances are listed but no vouchers
+    can be redeemed for them.}
+\end{enumerate}
+
+In addition, the Box Office Manager can define new types of vouchers
+(tickets) such as discount tickets, promotions, limited-capacity
+tickets, etc.  In addition to \emph{regular} vouchers, the Box Office
+Manager can set up \emph{bundle} vouchers; a bundle is a collection of
+single tickets that is offered to the customer as a unit, for example, a
+subscription or series package.
+
+The next section covers how to set up both regular and bundle vouchers.
+In general, you would set up most basic voucher types once only, and
+only occasionally add new voucher types when you want to add a new
+promotion or ticket type.
+
+The subsequent three sections cover the three steps in listing a show:
+entering show information (section~\ref{sec:addingshows}), adding
+performance dates for a show (section~\ref{sec:addingshowdates}), and
+indicating voucher validity for each performance date
+(section~\ref{sec:validvouchers}).  
+
+\subsection{Vouchers and Bundles}
+\label{sec:vouchertypes-details}
+
+There are two types of vouchers.  A \emph{regular} voucher is a single
+seat or ticket to a single performance.  A \emph{bundle} is a package
+that includes several regular vouchers.  For example, we may
+offer a special 2-for-1 promo or kid-free-with-adult promo that is
+limited to specific performances; to implement this you would create a
+new voucher type representing this promo and then mark the voucher type
+as valid only for certain performances.
+
+\subsubsection{Creating a New Regular Voucher}
+\label{sec:addingregularvouchertypes}
+
+
+When a new voucher type is set up, whether or not it is a bundle,
+additional properties can be specified for it:
+
+\begin{itemize}
+\item[Expiration] A date after which the voucher expires and can no
+  longer be used.  Useful for time-limited promotions.
+\item[Is subscriber] Does the purchase of this voucher qualify the
+  purchaser as a ``subscriber''?  Useful for distinguishing bundles
+  corresponding to subscriptions from bundles corresponding to promos;
+  however, a non-bundle voucher can also be designated as
+  subscriber-qualifying. 
+\item[Changeable] Specifies whether the voucher is tied to a particular
+  show date or can be used to reserve for a variety of dates. This
+  attribute is not directly settable by the BOM; it's set by the system
+  when the voucher is created.  Specifically, vouchers that are
+  pre-purchased as part of subscriptions or promos are generally
+  changeable; vouchers corresponding to tickets purchased for a
+  particular performance are generally not.
+\item
+\end{itemize}
+
+
+\subsubsection{Adding a New Bundle Voucher Type}
+\label{sec:addingbundlevouchertypes}
+
+
+A bundle is itself a voucher that cannot be ``redeemed'' for anything
+but serves as a placeholder.  For example, if a patron buys a
+subscription containing 3 vouchers good for any performance, they would
+actually see 4 vouchers in their account.  The first is a nonredeemable
+``voucher'' that records the type of bundle purchase.  The remaining 3
+are the actual vouchers that can be redeemed for seats.  This makes it
+easy to figure out how many people took advantage of a particular
+bundle promotion even if the promotion includes ``regular'' tickets.
+
+In general, to define a bundle voucher, you \emph{first} have to define the
+regular vouchers that the bundle is going to include.
+
+(To be written)
+
+\subsection{Shows and Show Dates}
+
+A \emph{show} is a series of 1 or more performances of the same piece.
+In general, to list a show you must first enter the general information
+about the production (opening and closing dates, house capacity, etc.),
+then enter specific information about each show date.
+
+\subsubsection{Creating Shows}
+\label{sec:addingshows}
+
+
+\subsubsection{Changing Show Details}
+\label{sec:changingshowdetails}
+
+\subsubsection{Adding Show Dates}
+\label{sec:addingshowdates}
+
+\subsection{Managing Voucher Validity For Show Dates}
+
+To allow a particular type of voucher (e.g. ``General Admission'') to be
+redeemed for a particular performance, you must indicate that it is a
+\emph{valid voucher} for that performance.
+
+\textbf{Important.} When a voucher type is first created, it is
+\emph{not} automatically redeemable for any particular show.  Its
+validity for specific performances must be explicitly established as
+described in this section.
+
+\subsection{Setting What Tickets Can Be Redeemed for a Performance}
+\label{sec:validvouchers}
+
+Note that a bundle voucher cannot be made redeemable, but the regular
+vouchers included in the bundle can be.  For example, if a ``Family
+Promo'' bundle voucher includes 2 ``Adult'' and 2 ``Child'' tickets, the
+ticket types ``Adult'' and ``Child'' can be made redeemable, but the
+bundle ``Family Promo'' cannot be.
+
+\subsubsection{Adding Valid Vouchers to a Performance}
+\label{sec:addingvalidvouchers}
+
+Adding valid voucher types for a performance makes those voucher types
+available for purchase or reservation for that performance.
+
+To make a particular regular (nonbundle) voucher type valid for
+redemption to a given performance, first be sure that the voucher type
+exists (see section~\ref{sec:addingregularvouchertypes}) and the show
+date for which you want to allow redemption exists (see
+section~\ref{sec:addingshowdates}).  Navigate to the list of show dates
+for the show in question (section~\ref{sec:addingshowdates}.
+
+Next to each show date is the list of voucher types currently redeemable
+for that performance.  (See figure XXX.)  If the voucher type you want
+to make valid for the performance isn't listed there, click \emph{Add
+  New}.  (If you \emph{do} see the voucher type listed, but you want to
+change any validity properties such as redemption limits or sales
+cutoff, click on the name of the voucher type and see
+section~\ref{sec:changingvalidvoucher}.) 
+
+
+\subsubsection{Changing Existing Valid Vouchers}
+\label{sec:changingvalidvoucher}
+
+To be written

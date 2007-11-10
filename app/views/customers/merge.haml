@@ -1,0 +1,31 @@
+%p.adminField Merge Customer Records
+
+%p
+  Select which value will be retained from each record. 
+  Unselected values will be discarded.
+
+= start_form_tag :action=>'merge'
+= hidden_field_tag 'cust0', @cust[0].id
+= hidden_field_tag 'cust1', @cust[1].id
+%table
+  %tr{:class=>cycle(:oddRow,:evenRow)}
+    %td Last login
+    %td= @cust[0].last_login.to_formatted_s(:long)
+    %td= @cust[1].last_login.to_formatted_s(:long)
+  %tr{:class=>cycle(:oddRow,:evenRow)}
+    %td Last activity
+    %td= @cust[0].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
+    %td= @cust[1].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
+  - Customer.content_columns.each do |c|
+    %tr{:class=>cycle(:oddRow,:evenRow)}
+      %td= h c.human_name
+      %td
+        = radio_button_tag c.name, 0, :selected=>true
+        = h @cust[0].send(c.name)
+      %td
+        = radio_button_tag c.name, 1
+        = h @cust[1].send(c.name)
+
+= submit_tag 'Merge Records'
+= end_form_tag
+= button_to 'Cancel', {:action => 'list',:method => 'get'}

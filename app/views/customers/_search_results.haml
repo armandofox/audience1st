@@ -1,0 +1,21 @@
+%p 
+  Click Customer Name to Select, or 
+  %a.lbAction{:rel => :deactivate} Cancel
+
+%table
+  %thead
+    %tr
+      - %w[first_name last_name street city login].each do |f|
+      %th= Inflector.humanize(f)
+      - end
+  %tbody
+    - @customers.each do |c|
+    %tr
+      %td= c.first_name
+      %td= c.last_name
+      - %w[street city login].each do |f|
+      %td= c.send(f)
+      - end
+    - end
+
+    

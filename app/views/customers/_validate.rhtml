@@ -1,0 +1,7 @@
+<%= submit_to_remote("validate", "Validate Mailing Address",
+    :update => 'customerContact',
+    :before => "Element.show('validating')",
+    :complete => "Element.hide('validating')",
+        :url => {:controller => 'customers',:action => 'validate_address', :id => @customer} ) -%>
+<img id="validating" style="display:none;" src="/images/wait18trans.gif"/>
+

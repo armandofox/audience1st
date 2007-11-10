@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# This type MUST be present for bundle processing to happen.
+bundle:
+  id: 99
+  description: Bundle-Test
+  offer_public: true
+  shortdesc: Bundle-Test
+
+simple_purch:
+  id: 1
+  description: Generic
+  offer_public: true
+  shortdesc: Generic
+  

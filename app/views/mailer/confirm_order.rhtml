@@ -1,0 +1,21 @@
+
+Dear <%= @greeting %>,
+
+This email confirms your recent order from <%= @venue %>.
+
+Please check this information carefully:
+
+------------------------------------------------------------
+ORDER SUMMARY:
+
+<%= @description %>
+------------------------------------------------------------
+PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
+
+PAYMENT METHOD: <%= @payment_desc %>
+------------------------------------------------------------
+
+All tickets and reservations can be picked up at will-call beginning one
+hour before showtime.
+
+<%= @how_to_contact_us %>

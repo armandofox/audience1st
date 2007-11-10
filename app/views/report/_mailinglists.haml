@@ -1,0 +1,27 @@
+.pageDiv
+  %h1 Generate Mailing Labels or Email List
+  %p (Advanced reports coming soon)
+  = start_form_tag :action => "customer_list" 
+  %p
+    = check_box_tag 'subscribers_only', '1', true
+    Limit to subscribers only
+  
+  %p
+    = check_box_tag 'filter_invalid_addresses', '1', true
+    Only entries with validated US Mail addresses
+
+  %p
+    = check_box_tag 'remove_dups', '1', true
+    Remove duplicate addresses
+  
+  %p
+    Sort by: 
+    = radio_button_tag 'sort_by_zip', 1, true
+    Zip, then last name
+    = radio_button_tag 'sort_by_zip', 0, false
+    Last name, then zip
+  
+  = submit_tag 'Download Report in Excel format', {:disable_with => 'Processing, Please Wait'}
+
+  = end_form_tag 
+

@@ -1,0 +1,57 @@
+- if @customer.is_2008_subscriber?
+
+%h1.bannerHead Thanks for being a 2008 Season Subscriber!
+
+- elsif @subscriber 
+
+%h1.bannerHead= link_to 'Click here to renew your subscription by Sept. 30, and save 10%!', :controller => 'store', :action =>'subscribe_2008',:id => @customer
+
+- else
+
+%h1.bannerHead= link_to 'Click here to get exclusive Subscriber benefits for our 2008 season!', :controller => 'store', :action => 'subscribe_2008', :id => @customer
+
+- end
+
+- if @subscriber
+  #subscriberMsg.pageDiv
+    %h1= "#{h(@customer.first_name)}'s Subscriber Benefits"
+    %ul
+      %li 
+        Use the <strong>Make Reservations</strong> buttons below to use
+        your Subscriber tickets for upcoming shows.
+      %li 
+        Use the <strong>Cancel Reservation</strong> button to cancel
+        existing reservations, with no penalty, up to
+        =APP_CONFIG[:cancel_grace_period] 
+        minutes before showtime.
+      %li 
+        To buy <em>additional</em> tickets for special events, or
+        discount tickets for your guests accompanying you to the show, click 
+        the <strong>Buy Tickets</strong> tab above, and have a credit card ready.
+
+
+= error_messages_for :customer
+
+%a{:name => :yourTickets}/
+
+#yourTickets.pageDiv
+  %h1= "#{h @customer.first_name}'s Tickets and Reservations"
+  - if @vouchers.empty?
+  %p There are no tickets in your account.
+  - else
+  %table#customerVoucherList
+    %thead
+      %tr.tableHeading
+        - if @is_boxoffice
+          %th.adminField{:style => 'color: #555'} Tkt #
+        %th Ticket Type
+        %th How Acquired
+        %th Redeemed For
+        %th Actions
+        - if @is_boxoffice
+          %th.adminField{:style => 'color: #555'} Admin
+          %th.adminField{:style => 'color: #555'} Comment
+    %tbody
+      = render :partial => "voucher", :collection => @vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @is_boxoffice, :is_boxoffice_manager => @is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
+
+  - end

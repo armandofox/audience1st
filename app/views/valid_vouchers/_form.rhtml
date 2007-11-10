@@ -1,0 +1,47 @@
+<%= error_messages_for 'valid_voucher' %>
+
+<!--[form:valid_voucher]-->
+
+<table>
+  <tr>
+    <td>
+      <label for="valid_voucher_max_sales_for_type">Max sales for this
+        type</label>
+    </td>
+    <td>
+      <%= text_field 'valid_voucher', 'max_sales_for_type', 'size'=>5  %>
+    </td>
+  </tr>
+  <tr>
+    <td><label for="valid_voucher_password">Password</label> </td>
+    <td valign='top'>
+      <%= text_field 'valid_voucher', 'password', 'size'=>40  %>
+    </td>
+  </tr>
+  <tr> 
+    <td colspan="2">
+      If multiple passwords are allowed, separate them by commas. 
+      Passwords are not case-sensitive and redemption is tracked separately 
+      for each password. 
+    </td>
+  </tr>
+</table>
+
+<table>
+<tr>
+<td>
+<p><label for="valid_voucher_start_sales">Start sales on</label><br/>
+<%= datetime_select 'valid_voucher', 'start_sales'  %></p>
+</td>
+<td>
+<p><label for="valid_voucher_end_sales">End sales on</label><br/>
+<%= datetime_select 'valid_voucher', 'end_sales'  %></p>
+</td>
+</tr>
+</table>
+
+<%= link_to 'Back', {:controller => 'shows', :action => 'edit', :id => @showdate.show.id }, {:class => 'genButton' } %>
+
+
+<!--[eoform:valid_voucher]-->
+

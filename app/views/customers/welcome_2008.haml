@@ -1,0 +1,49 @@
+- if @subscriber 
+
+  #subscriberMsg.pageDiv
+    %h1= "#{h(@customer.first_name)}'s Subscriber Benefits"
+    %ul
+      %li 
+        Use the menus and buttons below to use
+        your Subscriber tickets for upcoming shows.
+      %li 
+        You can <strong>cancel reservations</strong>
+        with no  penalty, up to
+        = (APP_CONFIG[:cancel_grace_period] / 60).floor
+        hours before showtime.
+      %li 
+        To buy <em>additional</em> tickets for special events, or
+        discount tickets for your guests accompanying you to the show, click 
+        the <strong>Buy Tickets</strong> tab above, and have a credit card ready.
+- else
+
+%p.clearboth/
+
+= error_messages_for :customer
+
+%a{:name => :yourTickets}/
+
+#yourTickets.pageDiv
+
+  %h1= "#{@customer.first_name}'s Tickets and Reservations"
+
+  - if @vouchers.empty?
+  %p There are no tickets in your account.
+  - else
+
+  %table#customerVoucherList
+    %thead
+      %tr.tableHeading
+        - if @is_admin
+          %th.adminField{:style => 'color: #555'} Tkt #
+        %th Ticket Type
+        %th How Acquired
+        %th Redeemed For
+        %th Actions
+        - if @is_admin
+          %th.adminField{:style => 'color: #555'} Admin
+          %th.adminField{:style => 'color: #555'} Comment
+    %tbody
+      = render :partial => "voucher_alt", :collection => @vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_admin => @is_admin, :is_subscriber => @subscriber, :customer => @customer }
+
+  - end

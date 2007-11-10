@@ -1,0 +1,47 @@
+= error_messages_for 'store'
+
+- cid = (@customer ? @customer.id : nil)
+
+%h1.bannerHead= link_to 'Click Here for 2008 Season Subscriptions!',:action=>'subscribe_2008',:id => cid
+
+#store
+
+  - unless @cart.is_empty?
+    #shoppingCart.pageDiv
+
+      %h1 My Shopping Cart
+      = start_form_tag :action => 'checkout', :id => cid
+      = render :partial => 'cart', :locals => {:editable => true, :id => cid}
+      = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid}
+      = submit_tag 'Checkout'
+      = end_form_tag
+  
+  #promo_entry.pageDiv
+
+    = render :partial => 'promo_entry', :locals => {:promo_code => @promo_code.to_s, :id => cid}
+
+  #purchaseIndividualTickets.pageDiv
+
+    %h1
+      Purchase Individual Tickets
+      = "(Using Promo Code: #{h(@promo_code)}" if @promo_code
+
+    - if @subscriber
+      %p.storeText
+        %strong Thanks for being a subscriber!
+        You get a 10% discount on ticket purchases for your guests (be sure
+        to select the 
+        %em Guest of Subscriber
+        ticket type) and exclusive access to subscriber-only tickets.  
+
+    = render :partial => 'buy_tickets', :locals => {:subscriber => @subscriber, :id => cid }
+
+  #makeDonation.pageDiv
+
+    %h1 Donate to the General Fund
+    %p
+      Donations are tax-deductible and all donations over $50.00 will be
+      acknowledged at the end of the year with a tax-exempt letter you can
+      include with your tax returns.
+
+    = render :partial => 'donate', :locals => {:id => cid }

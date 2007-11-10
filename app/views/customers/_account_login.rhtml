@@ -1,0 +1,17 @@
+
+<%= start_form_tag :controller => 'customers', :action => 'login' %>
+
+<%= error_messages_for 'customer' %>
+
+<p><label for="customer_login">Email address</label><br/>
+<%= text_field 'customer', 'login' %></p>
+
+<p><label for="customer_password">Password</label><br/>
+<%= password_field 'customer', 'password' %></p>
+
+<p><%= check_box_tag 'forgot_password' -%> I forgot my password, email
+  it to me </p>
+
+<%= submit_tag 'Continue' %>
+<%= gen_button "I Don't Have An Account", :action => 'new' %>
+<%= end_form_tag %>

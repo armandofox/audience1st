@@ -1,0 +1,28 @@
+%h1 Listing Shows
+
+%table
+  %thead
+    %tr
+      %th Show Name
+      %th Run Dates
+      %th House Cap.
+      %th Added to sytem
+  %tbody
+    - @shows.each do |show|
+    %tr
+      %td= link_to show.name, :action => 'edit', :id => show
+      %td
+        = show.opening_date.strftime('%b %e, %Y')
+        \-
+        = show.closing_date.strftime('%b %e, %Y')
+      %td= show.house_capacity
+      %td= show.created_on.strftime('%b %e, %Y')
+      - if @superadmin
+      %td= button_to 'Destroy',  :action => 'destroy', :id => show , :confirm => MESSAGES[:areyousure_0], :post => true 
+      - end
+    - end
+
+= link_to 'Previous page', { :page => @show_pages.current.previous } if @show_pages.current.previous 
+= link_to 'Next page', { :page => @show_pages.current.next } if @show_pages.current.next
+
+= gen_button 'Add New Show', :action => 'new'

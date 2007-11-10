@@ -1,0 +1,52 @@
+\def\Draft #1{
+\special{!userdict begin 
+         /bop-hook{gsave
+                   200 50 translate 
+                   65 rotate 
+                   /Times-Roman findfont 
+                   84 scalefont 
+                   setfont 
+                   80 100 moveto 
+                   .9 setgray 
+                   (#1) show 
+                   grestore}
+         def end}}
+
+% \def\Draft #1{
+% \special{!userdict begin /bop-hook{
+%                 gsave
+%                 /Times-Roman findfont 100 scalefont setfont
+%                 /message (Licensed to Altarena Playhouse) def
+%                 newpath clippath pathbbox /h exch 3 index sub def
+%                 /w exch 3 index sub def translate
+%                 newpath 0 0 moveto message true charpath pathbbox
+%                 /y2 exch def /x2 exch def /y1 exch def /x1 exch def
+%                 /ww x2 x1 sub def /hh y2 y1 sub def /k hh ww div def
+%                 h w gt {w h div}{h w div} ifelse k lt
+%                 {h w gt {w 0 translate 90 rotate /h w /w h def def} if
+%                 /s h hh div def s s scale w s div ww sub 2 div 0 translate}
+%                 {/k2 k k mul def
+%                 /b k h mul k2 w mul sub 1 k2 sub div def
+%                 /c w b sub def /a k c mul def /d h a sub def
+%                 /s c c mul d d mul add sqrt ww div def
+%                 b 0 translate d c atan rotate s s scale} ifelse
+%                 x1 neg y1 neg translate
+%                 0.9 setgray 0 0 moveto message show
+%                 grestore}}
+% def end}
+
+
+% \def\Draft #1{
+% \special{!userdict begin 
+%          /bop-hook{gsave
+%                    200 100 translate 
+%                    65 rotate 
+%                    /Times-Roman findfont 
+%                    48 scalefont 
+%                    setfont 
+%                    0 0 moveto 
+%                    .9 setgray 
+%                    (#1) show 
+%                    grestore}}}
+
+

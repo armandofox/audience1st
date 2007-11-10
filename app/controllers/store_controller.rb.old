@@ -1,0 +1,275 @@
+class StoreController < ApplicationController
+  include ActiveMerchant::Billing
+  require "money.rb"
+
+  model :cart
+
+  SECURE_ACTIONS = %w[checkout place_order walkup]
+  #before_filter :require_ssl, :only => SECURE_ACTIONS
+  before_filter :is_boxoffice_filter, :only => %w[walkup]
+
+  verify :method => :post,
+  :except => %w[index walkup empty_cart remove_from_cart],
+  :redirect_to => {:action => :index}
+
+  def index
+    @customer,@is_admin = for_customer(params[:id])
+    @subscriber = @customer && @customer.is_subscriber?
+    @cart = find_cart
+    @shows_to_offer = Store.get_shows_to_offer
+    # if patron selected menu options, capture them
+    @session_ticket = update_session_ticket(params)
+    @showdates_to_offer = Store.showdates_for_show(@session_ticket[:show_id])
+    if @session_ticket[:showdate_id].to_i.zero?
+      @session_ticket[:showdate_id] = @showdates_to_offer.first ? @showdates_to_offer.first.last : 0
+    end
+    @vouchers_to_offer =  Store.vouchertypes_for_showdate(@session_ticket[:showdate_id])
+  end
+
+  def add_tickets_to_cart
+    @cart = find_cart
+    qty = params[:qty].to_i
+    vtype = params[:vouchertype_id].to_i
+    @session_ticket = update_session_ticket(params)
+
+    if qty < 1 || qty > 99
+      flash[:notice] = 'Must order between 1 and 99 tickets'
+    elsif Vouchertype.find(:first, :conditions => ['id = ?', vtype]).nil?
+      flash[:notice] = 'Error: invalid ticket type'
+    else
+      (howmany,why) = Vouchertype.numseats_for_showdate_by_vouchertype(@session_ticket[:showdate_id], vtype)
+      if howmany.zero?
+        flash[:notice] = 'Ticket type invalid for that show date, or show sold out'
+      elsif howmany < qty
+        flash[:notice] = "Only #{howmany} seats of this type remaining for this show"
+      else      # add vouchers to cart.  Vouchers will be validated at checkout.
+        1.upto(qty) do
+          @cart.add(Voucher.anonymous_voucher_for(@session_ticket[:showdate_id], vtype))
+        end
+        @session_ticket = nil
+      end
+    end
+    redirect_to :action => 'index', :id => params[:id]
+  end
+
+  def add_donation_to_cart
+    @cart = find_cart
+    params[:donation][:amount] = amount_from_selects(params[:d])
+    if params[:donation][:amount] > 0
+      params[:donation].merge!({ :date => DateTime.now, :donation_type_id => 1 })
+      d = Donation.new(params[:donation])
+      @cart.add(d)
+    end
+    redirect_to :action => 'index', :id => params[:id]
+  end
+
+  def checkout
+    @cart = find_cart
+    @sales_final_acknowledged = (params[:sales_final].to_i > 0)
+    if @cart.is_empty?
+      flash[:notice] = "There is nothing in your cart."
+      redirect_to :action => 'index', :id => params[:id]
+    else
+      @cust,@is_admin = for_customer(params[:id])
+      # fall thru to checkout screen
+    end
+  end
+    
+  def do_walkup_sale
+
+  end
+
+  def place_order
+    @cart = find_cart
+    id = params[:id]
+    sales_final = params[:sales_final]
+    @bill_to = params[:customer]
+    @cc_info = params[:credit_card].symbolize_keys
+    @cc_info[:first_name] = @bill_to[:first_name]
+    @cc_info[:last_name] = @bill_to[:last_name]
+    # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
+    # called rather than to_i to convert month and year to ints.
+    @cc_info[:month] = @cc_info[:month].to_i
+    @cc_info[:year] = @cc_info[:year].to_i
+    cc = CreditCard.new(@cc_info)
+    # prevalidations: CC# and address appear valid, amount >0,
+    # billing address appears to be a well-formed address
+    unless (errors = do_prevalidations(params, @cart, @bill_to, cc)).empty?
+      flash[:notice] = errors
+      redirect_to :action => 'checkout', :id => id, :sales_final => sales_final
+      return
+    end
+    #
+    # basic prevalidations OK, continue with customer validation
+    #
+    @customer, @is_admin = (params[:id] ?
+                            for_customer(params[:id]) :
+                            [Customer.new_or_find(params[:customer]), nil])
+    unless @customer.kind_of?(Customer)
+      flash[:notice] = @customer
+      redirect_to :action => 'checkout', :id => id, :sales_final => sales_final
+      return
+    end
+    # OK, we have a customer record to tie the transaction to
+    resp = do_cc_transaction(@cart.total_price, cc, @bill_to)
+    if !resp.success?
+      flash[:notice] = "PAYMENT GATEWAY ERROR: " + resp.message
+      redirect_to :action => 'checkout', :id => id, :sales_final => sales_final
+      return
+    end
+    #     All is well, fall through to confirmation
+    #
+    @customer.add_items(@cart.items, logged_in_id, (@is_admin ? 'box_cash' : 'cust_web'), resp.params['transaction_id'])
+    @customer.validation_level = 1 # UGH - address validated
+    @customer.save!
+    @amount = @cart.total_price
+    @tid = resp.params['transaction_id'] rescue 0
+    @cart.empty!
+  end
+  
+  def remove_from_cart
+    @cart = find_cart
+    @cart.remove_index(params[:item])
+    redirect_to :action => 'index', :id => params[:id]
+  end
+
+  def empty_cart
+    session[:cart] = Cart.new
+    session[:ticket] = nil
+    redirect_to :action => 'index', :id => params[:id]
+  end
+
+  # AJAX method designed to return credit card fields (first, last, card#, exp) from swipe data
+  def convert_swipe_to_cc_info(s)
+    # trak1 Ex: B1234123412341234^CardUser/John^030510100000019301000000877000000?
+    trk1 = '[A-Z]?(\d+)^([A-Z\d]+)/?([A-Z\d]+)?^(\d\d)(\d\d)\d*'
+    # trk2 Ex: 1234123412341234=0305101193010877?
+    trk2 = '[A-Z]?(\d+)=(\d\d)(\d\d)\d*'
+    if s.match(Regexp.new("^%?#{trk1}\\?;#{trk2}\\?$"))
+      # has tracks 1 and 2
+    elsif s.match(Regexp.new("^%?#{trk1}\\?$"))
+      # has track 1 only
+      accnum = Regexp.last_match(1).to_s
+      lastname = Regexp.last_match(2).to_s
+      firstname = Regexp.last_match(3).to_s # may be nil if this field was absent
+      expyear = 2000 + Regexp.last_match(4).to_i
+      expmonth = Regexp.last_match(5).to_i
+    elsif s.match(Regexp.new("^#{trk2}\\?"))
+      # has track 2 only
+      accnum = Regexp.last_match(1).to_s
+      expyear = 2000 + Regexp.last_match(2).to_i
+      expmonth = Regexp.last_match(3).to_i
+      lastname = firstname = ''
+    else
+      accnum = lastname = firstname = 'ERROR'
+      expyear = expmonth = 0
+    end
+    [accnum,lastname,firstname,expyear,expmonth]
+  end
+  
+  def walkup
+    show = Show.find(7)
+    @showname = show.name
+    @showdate = show.showdates.first
+    @vouchertypes = Vouchertype.vouchertypes_for_showdate(@showdate.id)
+
+    s = Show.find(:all)
+    @shows = Show.find(:all).map { |h| [h, h.showdates] }
+  end
+
+  private
+  
+  def find_cart
+    session[:cart] ||= Cart.new
+  end
+
+  def update_session_ticket(parms)
+    session[:ticket] ||= {:show_id => Show.find(:all).first.id}
+    if parms['show_id'].to_i > 0 && parms['show_id'].to_i != session[:ticket][:show_id]
+      parms['showdate_id'] = 0
+    end
+    %w[show_id showdate_id vouchertype_id].each do |k|
+      if parms[k]
+        session[:ticket][k.to_sym] = parms[k].to_i
+      end
+    end
+    session[:ticket]
+  end
+
+  def do_prevalidations(params,cart,billing_info,cc)
+    err = ''
+    if cart.total_price <= 0
+      #
+      #  BEGIN CHECKS:
+      #  total amount to be charged >= 0
+      #
+      err = "Total amount of sale must be greater than zero."
+    elsif params[:sales_final].to_i.zero?
+      #
+      #  customer must accept Sales Final policy
+      #
+      err = "Please indicate your acceptance of our Sales Final policy "
+      err << "by checking the box."
+    elsif ! cc.valid?
+      #
+      #  CC# appears to be well formed
+      #
+      err = "Please provide valid credit card information:<br/>" + 
+        cc.errors.full_messages.join("<br/>")
+    elsif !prevalidate_billing_addr(billing_info)
+      #
+      #  Billing address appears to be a valid address
+      #
+      err = 'Please provide a valid billing name and address.'
+    end
+    return err
+  end
+  
+  def prevalidate_credit_card(ccinfo)
+  end
+
+  def prevalidate_billing_addr(billinfo)
+    true
+  end
+
+  def do_cc_transaction(amount, cc, bill_to)
+    email = bill_to[:login].to_s.default_to("invalid@audience1st.com")
+    phone = bill_to[:day_phone].to_s.default_to("555-555-5555")
+    params = {
+      :order_id => '999',
+      :email => email,
+      :address =>  { 
+        :name => "#{bill_to[:first_name]} #{bill_to[:last_name]}",
+        :address1 => bill_to[:street],
+        :city => bill_to[:city],
+        :state => bill_to[:state],
+        :zip => bill_to[:zip],
+        :phone => phone,
+        :country => 'US'
+      }
+    }
+    amount = Money.us_dollar((100 * amount).to_i)
+    gw = get_payment_gateway_info
+    Base.gateway_mode = :test if gw[:testing]
+    gateway = gw[:gateway].new(:login => gw[:username],
+                               :password => gw[:password],
+                               :pem => gw[:pem])
+    response = gateway.purchase(amount, cc, params)
+  end
+                                
+  # filter that redirects to ssl
+  
+  def require_ssl
+    if RAILS_ENV == 'production' and ! @request.ssl?
+      redirect_to :protocol => 'https://'
+    end
+  end
+
+  if nil
+  def default_url_options(options)
+    RAILS_ENV == 'production' && SECURE_ACTIONS.include?(options[:action]) ?
+    { :protocol => 'https://' } : { :protocol => 'http://' }
+  end
+  end
+
+end

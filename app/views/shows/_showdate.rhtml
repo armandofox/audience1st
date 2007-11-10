@@ -1,0 +1,49 @@
+<!--form:showdate-->
+
+<tr valign="top" <%= stripe %>>
+<td> <%= fmt_date(showdate.thedate) %> <br/>
+     <%= link_to 'Edit', {:controller => 'showdates', :action => 'edit', :id => showdate.id} %>  
+     <%= link_to 'Report', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id } %> 
+     <%= link_to_if showdate.compute_total_sales == 0, 'Del', { :controller => 'showdates', :action => 'destroy', :post => true, :id => showdate.id }, :confirm => MESSAGES[:delete_performance_0]  %>
+</td>
+<td> <%= fmt_date(showdate.end_advance_sales) %> </td>
+<td> <%= showdate.max_sales.zero? ? "Same as Show" : showdate.max_sales %> </td>
+<td> <%= showdate.compute_total_sales %> </td>
+
+<!-- show the allowed vouchers associated with each performance -->
+
+<td> 
+  <table border="0"> 
+    <tbody>
+      <% showdate.valid_vouchers.each do |v| %>
+      <tr valign='top' <%= "style='color: red;'" unless v.vouchertype.offer_public==2 %> >
+        <% nsales = showdate.sales_by_type(v.vouchertype_id) %>
+        <% if (max = v.max_sales_for_type).zero? %>
+        <td><%= nsales %></td>
+        <% else %>
+        <td><%= nsales %> / <%= v.max_sales_for_type %> </td>
+        <% end %>
+       <td><%= link_to v.vouchertype.name, { :controller => 'valid_vouchers', :action => 'edit', :id => v.id } %>
+           <%= '('+v.password+')' if (v.password > "") %></td>
+       <td><%= fmt_date(v.start_sales) %> </td>
+       <td><%= fmt_date(v.end_sales) %> </td>
+       <% if is_boxoffice_manager %>
+        <td>
+          <%= link_to_if nsales.zero?, 'Delete', { :controller =>
+          'valid_vouchers', :action => 'destroy', :id => v.id } %>
+        </td>
+        <% end %>
+      </tr>
+     <% end %>
+     <% if is_boxoffice_manager %>
+     <tr>
+       <td colspan="4">
+          <%= gen_button  "Add New", { :controller => 'valid_vouchers', :action => 'new', :showdate_id => showdate.id } %>
+       </td>
+     </tr>
+     <% end %>
+     </tbody> </table>
+</tr>
+
+
+<!--eoform:showdate-->
