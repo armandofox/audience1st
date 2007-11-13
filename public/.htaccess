@@ -20,6 +20,10 @@ Options +FollowSymLinks +ExecCGI
 #RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
 RewriteEngine On
 
+RewriteCond %{DOCUMENT_ROOT}/altarena/system/maintenance.html -f
+RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+RewriteRule ^.*$ /altarena/system/maintenance.html [L]
+
 # If your Rails application is accessed via an Alias directive,
 # then you MUST also set the RewriteBase in this htaccess file.
 #
@@ -32,6 +36,8 @@ RewriteRule ^([^.]+)$ $1.html [QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
 #NEVER USE dispatch.cgi ON HOSTINGRAILS SERVERS!
+
+
 
 # In case Rails experiences terminal errors
 # Instead of displaying this message you can supply a file here which will be rendered instead
