@@ -2,7 +2,7 @@
 
 config.after_initialize do
   ExceptionNotifier.sender_address =
-    %("EXCEPTION NOTIFIER" <errors@audience1st.com>)
+    %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)
   ExceptionNotifier.exception_recipients =
     %w(armandofox@gmail.com)
 end
