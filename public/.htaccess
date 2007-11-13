@@ -1,7 +1,8 @@
 # General Apache options
-AddHandler fastcgi-script .fcgi
-AddHandler cgi-script .cgi
-Options +FollowSymLinks +ExecCGI All -Indexes
+#AddHandler fastcgi-script .fcgi
+#THE ABOVE LINE SHOULD BE COMMENTED OUT ON HOSTINGRAILS SERVERS
+
+Options +FollowSymLinks +ExecCGI
 
 # If you don't want Rails to look in certain directories,
 # use the following rewrite rules so that Apache won't rewrite certain requests
@@ -16,7 +17,7 @@ Options +FollowSymLinks +ExecCGI All -Indexes
 # For better performance replace the dispatcher with the fastcgi one
 #
 # Example:
-#   RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
+#RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
 RewriteEngine On
 
 # If your Rails application is accessed via an Alias directive,
@@ -29,8 +30,8 @@ RewriteEngine On
 RewriteRule ^$ index.html [QSA]
 RewriteRule ^([^.]+)$ $1.html [QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteRule ^(.*)$ dispatch.cgi [QSA,L]
 RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
+#NEVER USE dispatch.cgi ON HOSTINGRAILS SERVERS!
 
 # In case Rails experiences terminal errors
 # Instead of displaying this message you can supply a file here which will be rendered instead
@@ -39,8 +40,3 @@ RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
 #   ErrorDocument 500 /500.html
 
 ErrorDocument 500 "<h2>Application error</h2>Rails application failed to start properly"
-
-#AuthType Basic
-#AuthName "Altarena"
-#AuthUserFile "/home/audience/.htpasswds/altarena/passwd"
-#require valid-user

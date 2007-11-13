@@ -4,11 +4,7 @@ require 'yaml'
 
 # Uncomment below to force Rails into production mode when 
 # you don't control web/app server and can't set it the proper way
-# ENV['RAILS_ENV'] ||= 'production'
-
-# Specifies gem version of Rails to use when vendor/rails is not present
-#RAILS_GEM_VERSION = '1.1.5'
-# RAILS_GEM_VERSION = '1.1.2'
+ENV['RAILS_ENV'] ||= 'production'
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
