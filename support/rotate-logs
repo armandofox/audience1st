@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+# Rotate the backed-up database log once a month.
+# whatever THIS month is, delete all of LAST month's backups EXCEPT the
+#  one on the first of the month.
+# Intended to be run on the first of the month, but silently exits if
+# today is not the first of the month.
+
+use POSIX qw(strftime);
+
+$no = grep(/^-n/,@ARGV);
+
+$backupdir = "~/backup";
+
+@ltime = localtime;
+$day = @ltime[3];
+$month = @ltime[4]+1;
+$year = @ltime[5]+1900;
+
+# don't do anything unless it's the first of the month
+exit 0 unless $day==1;
+
+# don't delete an end-of-year backup
+exit 0 if $month == 1;
+
+# otherwise rename last month's first-of-month backup
+$lastmonth = sprintf("%04d-%02d", $year, $month-1);
+
+@cmd = ();
+push(@cmd, "mv $backupdir/$lastmonth-01.gz $backupdir/$lastmonth.gz");
+push(@cmd, "/bin/rm $backupdir/$lastmonth-??.gz");
+
+for (@cmd) {
+    if ($no) {
+        warn "-$_\n";
+    } else {
+        system $_;
+        die $! if $? >> 8;
+    }
+}
