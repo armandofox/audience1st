@@ -26,5 +26,5 @@ deploy.task :after_update_code do
 end
 
 deploy.task :restart do
-  run "killall -usr1 dispatch.fcgi"
+  run "killall -usr1 dispatch.fcgi >& /dev/null"
 end
