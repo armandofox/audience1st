@@ -8,6 +8,7 @@ ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
 # servers (which is the default), you can specify the actual location
 # via the :deploy_to variable:
 set :deploy_to, "/home/audienc/rails/#{application}"
+set :use_sudo, false
 
 # If you aren't using Subversion to manage your source code, specify
 # your SCM below:
@@ -20,4 +21,8 @@ role :db,  "74.86.212.70", :primary => true
 deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
   run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
+end
+
+deploy.task :restart do
+  run "killall -usr1 dispatch.fcgi"
 end
