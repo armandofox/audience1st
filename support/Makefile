@@ -16,7 +16,7 @@ BACKUPDIR = $(HOME)/backup
 
 # directory where utility scripts live
 # BUG: should deduce this as being same directory as Makefile
-BINDIR = $(HOME)/rails/vbo/releases/current/support
+BINDIR = $(HOME)/rails/vbo/current/support
 
 all: nightly
 nightly: clean_sessions kill_zombies backup
