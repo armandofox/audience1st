@@ -55,6 +55,9 @@ end
 # read global configuration info
 APP_CONFIG = YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
 
+# read build version
+APP_CONFIG[:version] = IO.read("#{RAILS_ROOT}/REVISION").to_s.strip rescue "DEV"
+
 MESSAGES = APP_CONFIG[:messages].symbolize_keys
 # set local timezone
 ENV['TZ'] = APP_CONFIG[:timezone] || 'PST8PDT'

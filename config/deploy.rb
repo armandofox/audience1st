@@ -21,6 +21,8 @@ role :db,  "74.86.212.70", :primary => true
 deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
   run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
+  run "mv #{release_path}/config/database.yml.production #{release_path}/config/database.yml"
+  run "mv #{release_path}/public/dispatch.fcgi.production #{release_path}/public/dispatch.fcgi"
 end
 
 deploy.task :restart do
