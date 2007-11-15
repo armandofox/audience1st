@@ -18,6 +18,8 @@ BACKUPDIR = $(HOME)/backup
 # BUG: should deduce this as being same directory as Makefile
 BINDIR = $(HOME)/rails/vbo/current/support
 
+.PHONY: all nightly monthly clean_sessions backup rotate_logs kill_zombies
+
 all: nightly
 nightly: clean_sessions kill_zombies backup
 monthly: rotate_logs
