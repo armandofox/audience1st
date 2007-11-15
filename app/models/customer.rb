@@ -352,7 +352,7 @@ class Customer < ActiveRecord::Base
   #bad address. 
   
   def invalid_mailing_address?
-    return (self.validation_level < 1 or self.street.empty? or self.city.empty? or self.state.empty? or (self.zip.length > 0 and self.zip.length < 5))
+    return (self.validation_level < 1 or self.street.blank? or self.city.blank? or self.state.blank? or self.zip.to_s.length < 5)
   end
   
   def self.find_subs

@@ -6,6 +6,10 @@ module ApplicationHelper
       '[' + arr.map { |a| a.kind_of?(Fixnum) ? "#{a}" : "'#{a}'" }.join(',') + ']'
   end
 
+  def strip_rcs_header(str)
+    str.gsub( /\$\s*[^:]+:\s*([^$]+)\s*\$/, '\1' )
+  end
+
   def admin_button(name,options={},html_opts={},*parms)
     #options.merge!(:method => :get) unless options.has_key?(:method)
     #button_to(name, options, html_opts.merge(:background=>:yellow))
