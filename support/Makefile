@@ -23,13 +23,13 @@ nightly: clean_sessions kill_zombies backup
 monthly: rotate_logs
 
 clean_sessions:
-        $(MYSQL) $(MYSQL_OPTS) -D$(MYSQL_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)'
+	$(MYSQL) $(MYSQL_OPTS) -D$(MYSQL_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)'
 
 backup:
-        $(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) | gzip > $(BACKUPDIR)/$(shell date +\%F).gz
+	$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) | gzip > $(BACKUPDIR)/$(shell date +\%F).gz
 
 rotate_logs:
-        $(BINDIR)/rotate_logs
+	$(BINDIR)/rotate_logs
 
 kill_zombies:
 	killall -usr1 dispatch.fcgi
