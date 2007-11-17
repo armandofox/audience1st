@@ -1,36 +1,36 @@
 .pageDiv
   %h1 Advanced Customer Query
-  = start_form_tag :action => 'customer_list',:method=>'post'
-  %table{:style=>"vertical-align: top"}
-    %tr
-      %td  Find
-      %td= select_tag('subscribers', options_for_select(["All patrons", "Subscribers", "Non-subscribers"]))
-      %td{:colspan=>2} who:
-    %tr
-      %td= check_box_tag('added_or_updated_since')
-      %td{:colspan=>2}= select_tag('added_or_updated_since_how', options_for_select(["Were added since", "Were added before", "Have been updated since", "Have not been updated since", "Have logged in since", "Have not logged in since"]))
-      %td= select_date
-    %tr
-      %td= check_box_tag('restrict_by_show')
-      %td= select_tag('restrict_by_show_how', select_have_or_have_not)
-      %td  seen these shows:
-      %td= select_tag('shows', options_from_collection_for_select(@show_names,:id,:name), :multiple=>true)
-    %tr
-      %td= check_box_tag('restrict_by_purchase')
-      %td= select_tag('restrict_by_purchase_how', select_have_or_have_not)
-      %td redeemed a ticket since
-      %td= select_date
-    %tr
-      %td= check_box_tag('restrict_by_email')
-      %td= select_tag('restrict_by_email_how', select_have_or_have_not)
-      %td{:colspan=>2}  registered a valid email address
-    %tr
-      %td= check_box_tag('restrict_by_snailmail')
-      %td= select_tag('restrict_by_snailmail_how', select_have_or_have_not)
-      %td{:colspan=>2}  registered a valid US Mail address
-    %tr
-      %td= check_box_tag('restrict_by_voucher')
-      %td= select_tag('restrict_by_voucher_how', select_have_or_have_not("Do not have"))
-      %td  unreserved vouchers of these types
-      %td= select_tag('voucher_types', options_from_collection_for_select(@vouchertypes, :id, :name), {:multiple=>true})
-  = submit_tag "Search"
+  - form_tag :action => 'customer_list',:method=>'post' do
+    %table{:style=>"vertical-align: top"}
+      %tr
+        %td  Find
+        %td= select_tag('subscribers', options_for_select(["All patrons", "Subscribers", "Non-subscribers"]))
+        %td{:colspan=>2} who:
+      %tr
+        %td= check_box_tag('added_or_updated_since')
+        %td{:colspan=>2}= select_tag('added_or_updated_since_how', options_for_select(["Were added since", "Were added before", "Have been updated since", "Have not been updated since", "Have logged in since", "Have not logged in since"]))
+        %td= select_date
+      %tr
+        %td= check_box_tag('restrict_by_show')
+        %td= select_tag('restrict_by_show_how', select_have_or_have_not)
+        %td  seen these shows:
+        %td= select_tag('shows', options_from_collection_for_select(@show_names,:id,:name), :multiple=>true)
+      %tr
+        %td= check_box_tag('restrict_by_purchase')
+        %td= select_tag('restrict_by_purchase_how', select_have_or_have_not)
+        %td redeemed a ticket since
+        %td= select_date
+      %tr
+        %td= check_box_tag('restrict_by_email')
+        %td= select_tag('restrict_by_email_how', select_have_or_have_not)
+        %td{:colspan=>2}  registered a valid email address
+      %tr
+        %td= check_box_tag('restrict_by_snailmail')
+        %td= select_tag('restrict_by_snailmail_how', select_have_or_have_not)
+        %td{:colspan=>2}  registered a valid US Mail address
+      %tr
+        %td= check_box_tag('restrict_by_voucher')
+        %td= select_tag('restrict_by_voucher_how', select_have_or_have_not("Do not have"))
+        %td  unreserved vouchers of these types
+        %td= select_tag('voucher_types', options_from_collection_for_select(@vouchertypes, :id, :name), {:multiple=>true})
+    = submit_tag "Search"

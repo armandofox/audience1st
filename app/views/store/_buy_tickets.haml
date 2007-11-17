@@ -1,0 +1,6 @@
+/ select tickets and add to cart
+
+- form_tag({:action => 'add_tickets_to_cart'}) do
+  = hidden_field_tag 'id', id ||= Customer.nobody_id
+  #ticket_menus
+    = render(:partial => 'ticket_menus',:locals => {:shows => @shows,:show_id => nil,:showdates => nil,:showdate_id => nil,:vouchertypes => nil, :vouchertype_id => nil,:id => id, :subscriber => subscriber})

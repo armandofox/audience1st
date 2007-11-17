@@ -10,11 +10,10 @@
     #shoppingCart.pageDiv
 
       %h1 My Shopping Cart
-      = start_form_tag :action => 'checkout', :id => cid
-      = render :partial => 'cart', :locals => {:editable => true, :id => cid}
-      = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid}
-      = submit_tag 'Checkout'
-      = end_form_tag
+      - form_tag :action => 'checkout', :id => cid do
+        = render :partial => 'cart', :locals => {:editable => true, :id => cid}
+        = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid}
+        = submit_tag 'Checkout'
   
   #promo_entry.pageDiv
 

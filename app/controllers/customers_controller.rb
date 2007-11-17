@@ -43,7 +43,7 @@ class CustomersController < ApplicationController
     if (@checkout_in_progress = session[:checkout_in_progress])
       @cart = find_cart
     end
-    return unless @request.post? # just show login page
+    return unless request.post? # just show login page
     return unless params[:customer]
     l = params[:customer][:login].to_s
     l.strip! rescue nil

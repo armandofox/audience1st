@@ -1,7 +1,6 @@
-
 <h2>Make Reservation for <%=h @customer.full_name %></h2>
 
-<%= start_form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher %>
+<% form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher do %>
 
 <table><tbody>
 <tr>
@@ -47,5 +46,6 @@
 
 <%= gen_button  back_label, {:controller => 'customers', :action => 'welcome', :id => @customer} %>
 
-<%= end_form_tag %>
+<% end %>
+
 

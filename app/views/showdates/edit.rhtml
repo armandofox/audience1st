@@ -2,8 +2,8 @@
 <%= fmt_date(@showdate.thedate) %>
 performance of  '<%= @showdate.show.name %>' </h2>
 
-<%= start_form_tag :action => 'update', :id => @showdate.id %>
+<% form_tag :action => 'update', :id => @showdate.id do %>
   <%= render :partial => 'form' %>
   <%= submit_tag 'Save Changes' %>
-<%= end_form_tag %>
+<% end %>
 

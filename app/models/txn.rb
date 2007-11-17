@@ -59,7 +59,7 @@ class TxnType < ActiveRecord::Base
   has_many :txns
 
   def self.get_type_by_name(str)
-    (TxnType.find_by_shortdesc(str) || TxnType.find_first).id rescue 0
+    (TxnType.find_by_shortdesc(str) || TxnType.find(:first)).id rescue 0
   end
 
 end

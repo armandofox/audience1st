@@ -1,0 +1,23 @@
+%h2
+  Add ticket type for 
+  = @showdate.show.name
+
+- form_tag :action => 'create' do
+  %label{:for=>:valid_voucher_vouchertype_id} Voucher/ticket type
+  = select_tag("valid_voucher[vouchertype_id]", options_from_collection_for_select(Vouchertype.find(:all,:conditions=>'is_bundle = 0'), "id", "name"))
+  %br/
+  = render :partial => 'form'
+  %table
+    %tr
+      %td Add ticket type to:
+      %td
+        = hidden_field_tag 'valid_voucher[showdate_id]', @showdate_id
+        = radio_button_tag "addtojustone", 1, true
+        = fmt_date(Showdate.find(params[:showdate_id]).thedate) 
+        Only
+        %br/
+        = radio_button_tag "addtojustone", 0, false
+        All Dates
+        %br/
+  = submit_tag "Add"
+

@@ -4,9 +4,6 @@ class StoreController < ApplicationController
   
   require "money.rb"
   
-  model :cart
-  model :available_seat
-  
   before_filter :walkup_sales_filter, :only => %w[walkup do_walkup_sale]
   
   if RAILS_ENV == 'production'
@@ -360,7 +357,7 @@ class StoreController < ApplicationController
   def walkup
     # walkup sales are restricted to either boxoffice staff or
     # specific IP's
-    @ip = @request.remote_ip
+    @ip = request.remote_ip
     # generate one-time pad for encrypting CC#s
     session[:otp] = @otp = String.random_string(256)
     now = Time.now - 1.hour
@@ -432,11 +429,11 @@ class StoreController < ApplicationController
       end
       tid = 0
       howpurchased = Purchasemethod.get_type_by_name('walk_cc')
-      flash[:notice] = "Credit card purchase recorded<br/>"
+      flash[:notice] = "Credit card purchase recorded, "
     else
       tid = 0
       howpurchased = Purchasemethod.get_type_by_name('walk_cash')
-      flash[:notice] = "Cash purchase recorded<br/>"
+      flash[:notice] = "Cash purchase recorded, "
     end
     # add tickets to "walkup customer"'s account
     unless (vouchers.empty?)
@@ -651,7 +648,7 @@ class StoreController < ApplicationController
   # anyone from selected IP addresses
 
   def walkup_sales_filter
-    unless is_walkup or APP_CONFIG[:walkup_locations].include?(@request.remote_ip)
+    unless is_walkup or APP_CONFIG[:walkup_locations].include?(request.remote_ip)
       flash[:notice] = 'To process walkup sales, you must either sign in with
         Walkup Sales privilege OR from an approved walkup sales computer.'
       session[:return_to] = request.request_uri

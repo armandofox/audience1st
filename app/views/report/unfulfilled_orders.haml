@@ -4,25 +4,27 @@
   = button_to 'Export Addresses to Excel', :action => 'unfulfilled_orders_addresses', :method => :get
   = button_to_function 'Check All', "checkBoxes('uf',true)"
   = button_to_function 'Clear All', "checkBoxes('uf',false)"
-  = start_form_tag({:action=>'mark_fulfilled'},:method => :post, :id=>'uf')
+
+- form_tag({:action=>'mark_fulfilled'},:method => :post, :id=>'uf') do
   = submit_tag 'Mark Checked Orders as Fulfilled'
 
-%table.ordersTable
-  %tr{:class=>cycle(:evenRow,:oddRow)}
-    %th First name
-    %th Last name
-    %th Street
-    %th City
-    %th State
-    %th Zip
-    %th Product
-    %th Completed
-  
-  - @vouchers.each do |v|
-    %tr
-      - [:first_name,:last_name,:street,:city,:state,:zip].each do |c|
-        %td= h v.customer.send(c)
-      %td= h v.vouchertype.name 
-      %td= check_box 'voucher', v.id, :class=>'check'
+  %table.ordersTable
+    %tr{:class=>cycle(:evenRow,:oddRow)}
+      %th First name
+      %th Last name
+      %th Street
+      %th City
+      %th State
+      %th Zip
+      %th Product
+      %th Completed
 
-= submit_tag 'Mark Checked Orders as Fulfilled'
+    - @vouchers.each do |v|
+      %tr
+        - [:first_name,:last_name,:street,:city,:state,:zip].each do |c|
+          %td= h v.customer.send(c)
+        %td= h v.vouchertype.name 
+        %td= check_box 'voucher', v.id, :class=>'check'
+
+  = submit_tag 'Mark Checked Orders as Fulfilled'
+

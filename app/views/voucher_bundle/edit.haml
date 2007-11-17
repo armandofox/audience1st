@@ -1,0 +1,11 @@
+%h1
+  Editing product bundle
+  = h @voucher_bundle.description
+
+- form_tag :action => 'update', :id => @voucher_bundle do
+  = render :partial => 'form' 
+  = submit_tag 'Save Changes'
+
+%br/
+= link_to "Don't Save Changes", { :action => 'list'}, {:class => 'genButton' }
+

@@ -1,9 +1,0 @@
-<h1>New donation for <%=h @cust.full_name %></h1>
-
-<% @donation.customer_id = @cust.id %>
-<%= start_form_tag :action => 'create' %>
-  <%= render :partial => 'form' %>
-  <%= submit_tag "Record" %>
-  <%= gen_button  "Don't Record", {:action => 'list'} %>
-<%= end_form_tag %>
-

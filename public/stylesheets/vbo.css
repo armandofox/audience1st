@@ -20,6 +20,10 @@ table {
   border: 0;
  }
 
+td.label { 
+  text-align: right;
+}
+
 input[type="submit"] { 
   display: inline;
  }

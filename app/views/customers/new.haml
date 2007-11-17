@@ -1,9 +1,7 @@
 - if @checkout_in_progress
-.pageDiv
-  %h1 Your Shopping Cart
-  = render :partial => 'store/cart', :passive => true
-
-- end
+  .pageDiv
+    %h1 Your Shopping Cart
+    = render :partial => 'store/cart', :passive => true
 
 #customerNew.pageDiv
   %h1 Create Your Account
@@ -37,14 +35,10 @@
     %a{:target=>:blank,:href=>"http://www.ftc.gov/ogc/coppa1.htm"} COPPA
     you may not use this site. 
 
-  = start_form_tag :action => (@is_admin ? 'create' : 'user_create')
-  = render :partial => 'form'
-  - if @is_admin
-    = render :partial => 'form_admin' 
-  = render :partial => 'password' 
-  = submit_tag "Create My Account"
-  = gen_button  'Cancel', {:action => (@is_admin ? 'list' : 'login') } 
-  = end_form_tag
-
-
-  
+  - form_tag :action => (@is_admin ? 'create' : 'user_create') do
+    = render :partial => 'form'
+    - if @is_admin
+      = render :partial => 'form_admin' 
+    = render :partial => 'password' 
+    = submit_tag "Create My Account"
+    = gen_button  'Cancel', {:action => (@is_admin ? 'list' : 'login') } 

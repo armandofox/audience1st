@@ -7,27 +7,27 @@
 = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
 %br/
 
-= start_form_tag({:action => 'merge'}, {:method => :get})
-- cols = %w[street city state zip day_phone eve_phone login]
-%table
-  %thead
-    %tr
-      %th
-      %th Name
-      - cols.each do |c|
-        %th= link_to Inflector.humanize(c), :action=>'list', :order_by=>c,:filter=>params[:filter]
-  %tbody  
-    - @customers.each do |c|
-      %tr{:valign=>:top,:class=>(c.display_class || cycle(:oddRow,:evenRow))}
-        %td= check_box_tag "merge[#{c.id}]"
-        %td= link_to c.full_name, {:action => 'welcome', :id => c }
-        - cols.each do |column|
-          %td= h c.send(column)
+- form_tag({:action => 'merge'}, {:method => :get}) do
+  - cols = %w[street city state zip day_phone eve_phone login]
+  %table
+    %thead
+      %tr
+        %th
+        %th Name
+        - cols.each do |c|
+          %th= link_to Inflector.humanize(c), :action=>'list', :order_by=>c,:filter=>params[:filter]
+    %tbody  
+      - @customers.each do |c|
+        %tr{:valign=>:top,:class=>(c.display_class || cycle(:oddRow,:evenRow))}
+          %td= check_box_tag "merge[#{c.id}]"
+          %td= link_to c.full_name, {:action => 'welcome', :id => c }
+          - cols.each do |column|
+            %td= h c.send(column)
 
-= pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'}
+  = pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'}
 
-%br/
-= submit_tag 'Merge Selected Customers'
-= end_form_tag
+  %br/
+  = submit_tag 'Merge Selected Customers'
+
 
 

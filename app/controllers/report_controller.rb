@@ -274,7 +274,9 @@ EOQ
     filenm = custs.first.class.to_s.downcase
     CSV::Writer.generate(output='') do |csv|
       custs.each do |c|
-        csv << [c.first_name,c.last_name,c.street,c.city,c.state,c.zip]
+        csv << [c.first_name.name_capitalize,
+                c.last_name.name_capitalize,
+                c.street,c.city,c.state,c.zip]
       end
       download_to_excel(output,filenm)
     end

@@ -1,0 +1,10 @@
+%h1
+  Editing Voucher Type
+  =h @vouchertype.name
+
+- form_tag :action => 'update', :id => @vouchertype do
+  = render :partial => 'form' 
+  = submit_tag 'Save Changes' 
+
+= link_to 'Cancel', :action => 'list'
+

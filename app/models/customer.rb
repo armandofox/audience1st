@@ -45,6 +45,17 @@ class Customer < ActiveRecord::Base
   attr_protected :id, :salt, :role, :vouchers, :donations, :validation_level
   attr_accessor :password
 
+  @@user_entered_strings =
+    %w[first_name last_name street city state zip day_phone eve_phone login]
+  
+  # strip whitespace before saving
+  def before_save
+    @@user_entered_strings.each do |col|
+      c = self.send(col)
+      c.send(:strip!) if c.kind_of?(String)
+    end
+  end
+
   def self.extra_attributes
     [:referred_by_id, :referred_by_other, :formal_relationship, :member_type,
      :company, :title, :company_address_line_1, :company_address_line_2,

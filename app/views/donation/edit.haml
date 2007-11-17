@@ -1,0 +1,13 @@
+%h1
+  Editing donation ID 
+  = h(@donation.id)
+  for 
+  = @donation.customer.full_name
+
+- form_tag :action => 'update', :id => @donation do
+  = render :partial => 'form' 
+  = submit_tag 'Edit' 
+
+= gen_button  'Show', {:action => 'show', :id => @donation} 
+= gen_button  'Back', {:action => 'list'}
+

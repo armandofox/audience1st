@@ -78,8 +78,8 @@ class VoucherTest < Test::Unit::TestCase
     assert no_exp_date_unchangeable.can_be_changed?(customers(:walkup_sales_user))
     # if show has started, voucher is unchangeable
     no_exp_date_changeable.showdate_id = showdates(:past_musical_hasmax_1).id
-    assert !(no_exp_date_changeable.can_be_changed?(customers(:tom)))
     assert no_exp_date_changeable.can_be_changed?(customers(:walkup_sales_user))
+    assert !(no_exp_date_changeable.can_be_changed?(customers(:tom)))
   end
 
   def test_030_validity

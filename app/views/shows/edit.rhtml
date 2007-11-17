@@ -1,9 +1,9 @@
 <h1>Details for '<%= @show.name %>'</h1>
 
-<%= start_form_tag :action => 'update', :id => @show %>
+<% form_tag :action => 'update', :id => @show  do %>
   <%= render :partial => 'form' %>
   <%= submit_tag 'Save Changes' %>
-<%= end_form_tag %>
+<% end %>
 
 
 <h2>Performances: 

@@ -60,12 +60,12 @@ class CustomersControllerTest < Test::Unit::TestCase
   def test_000_failed_login
     post :login, :customer => {:login => customers(:tom).login, :password => 'BAD'}
     assert_nil session[:cid]
-    assert_flash /mistyped your password/i
+    assert_flash( /mistyped your password/i)
     post :login, :customer => {:login => 'NOBODY', :password => 'BAD'}
-    assert_flash /can\'t find that email address/i
+    assert_flash(/can\'t find that email address/i)
     assert_nil session[:cid]
     post :login, :customer => {}
-    assert_flash /please provide both/i
+    assert_flash(/please provide both/i)
   end
 
   def test_001_double_login
@@ -79,10 +79,10 @@ class CustomersControllerTest < Test::Unit::TestCase
   def test_0015_last_login
     c = customers(:tom)
     now = Time.now
-    assert (c.last_login < now)
+    assert c.last_login < now
     cust,admin = login_as(customers(:tom))
     c.reload
-    assert ((c.last_login - now).abs < 3.seconds), "#{c.last_login} should be <= #{now}"
+    assert (c.last_login - now).abs < 3.seconds, "#{c.last_login} should be <= #{now}"
   end
 
   def test_002_must_be_logged_in
@@ -284,6 +284,26 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_flash /some new attribute values were ignored/i
     tom.reload
     assert_equal tom.title, old_title
+  end
+
+  def test_013_name_capitalize
+    # this test is here even though the name_capitalize method is actually
+    # added to String (by application.rb).  I couldn't think of where else
+    # to put this even though it is a unit test.
+    tests = {
+      "O'Leary" => "O'Leary",
+      "OJ Simpson" => "OJ Simpson",
+      "o.j. simpson" => "O. J. Simpson",
+      "Tom w jones" => "Tom W. Jones",
+      "Dell'angelo" => "Dell'angelo",
+      "Dell'Angelo" => "Dell'Angelo",
+      "Raymond O'Loan" => "Raymond O'Loan",
+      "diMaggio" => "diMaggio",
+      "McHugh" => "McHugh",
+      "tom van der mark" => "Tom van der Mark",
+      "Ludwig Von Beethoven" => "Ludwig von Beethoven"
+    }
+    tests.each_pair { |b,a| assert_equal a, b.name_capitalize }
   end
 
 end

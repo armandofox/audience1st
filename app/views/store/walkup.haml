@@ -1,0 +1,53 @@
+= javascript_include_tag 'utils'
+
+%h1= "Walk-up Sale (from #{h(@ip)})"
+
+= error_messages_for 'store'
+                  
+= search_panel('customers', 'list', {:label => "Walk-up subscriber search:",:newpage => true,:submit => "Search in new window"}) 
+
+- form_tag :action => 'do_walkup_sale' do
+  = hidden_field_tag 'otp', @otp
+  - js,showmenu,showdatemenu = dependent_js_selects(@shows, 'show', 'name', 'showdate', 'printable_date',:selected_parent => @show_id, :selected_child => @showdate_id)
+  = js
+  - js_fields = to_js_array(@vouchertypes.map { |v| v.id })
+  - onChg = "javascript:recalculate('total',#{js_fields})"
+
+  %table{:border=>1}
+    %tr
+      %td.help{:valign=>:top}
+        %p 1. Select show, date, tickets & donation
+      %td.help{:valign=>:top}
+        %p 2. Collect payment or process credit card, record sale
+    %tr
+      %td{:valign=>:top}
+        %table
+          %tr
+            %td.label
+              %label{:for=>:show_name} Show:
+            %td= showmenu
+          %tr
+            %td.label
+              %label{:for=>:showdate_thedate} Date:
+            %td= showdatemenu
+        %table
+          %tr
+            %td{:colspan=>2,:align=>:center}
+              %strong TOTAL TO COLLECT
+            %td= text_field_tag 'total', 0, :id => 'total', :size => 6,:disabled => true, :style => "font-weight: bold;"
+          %tr
+            %td.label{:colspan=>2}
+              %label{:for=>:donation} Additional donation:
+            %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => onChg
+          - @vouchertypes.each do |v|
+            %tr
+              %td.label= h(v.name)
+              %td= text_field_tag("price#{v.id}", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)
+              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0),{:id => "select#{v.id}", :onChange => onChg}
+
+      %td{:align=>:center,:valign=>:top}
+        %p Click here once payment has been collected:
+        = submit_tag 'Cash Purchase'
+        = submit_tag APP_CONFIG[:cc_purch]
+        %br/
+        = submit_tag 'Generate Report'

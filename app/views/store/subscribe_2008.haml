@@ -1,0 +1,61 @@
+= error_messages_for 'store'
+
+- cid = (@customer ? @customer.id : nil)
+
+#store
+  - unless @cart.is_empty?
+    #shoppingCart.pageDiv
+      %h1 2008 Subscriptions Shopping Cart
+      - form_tag :action => 'checkout', :id => cid do
+        = render :partial => 'cart', :locals => {:editable => true, :id => cid, :redirect_to => 'subscribe_2008'}
+        = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid, :redirect_to => 'subscribe_2008'}
+        = submit_tag 'Checkout'
+  #subscriptionsMenus.pageDiv
+    %h1 
+      Subscriber Benefits
+      = "and Early Renewal Discount" if @subscriber
+    %p 
+      Enjoy early access to reservations for popular shows (like next season's
+      %i Chicago, 
+      which is sure to sell out), along with preferred seating, 
+      no-cost ticket exchange privileges, discounts for your guests, exclusive
+      access to special events, and more!
+      = link_to("Learn more",APP_CONFIG[:subscription_info],{:popup => true})
+      about subscription packages and why it pays to subscribe!
+    %p
+      %strong 
+        2007 subscribers, renew by
+        = h (@renew_discount_date.strftime("%D"))
+        and save an additional 10%, as a "Thank You" for supporting us in 2007.
+    - unless @subscriber
+      %p 
+        If you're a current subscriber,
+        = link_to 'log in to your account',:controller=>'customers',:action=>'login'
+        and click the
+        %strong Renew for 2008
+        button on your account page to get the renewal discount.
+      
+    - form_tag :action => 'add_subscriptions_to_cart' do
+      = hidden_field_tag 'id', @customer.id
+      %table.ticketSelect
+        %tr
+          %td.label Subscription type and price
+          %td
+            - if @subs_to_offer.empty?
+              %p (No subscriptions on sale at this time)
+            - else
+              = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price')
+        %tr
+          %td.label
+            %label{:for=>:subscription_qty} Quantity
+          %td
+            = select_tag("subscription_qty", options_for_select((1..10).to_a))
+            = submit_tag 'Add Subscriptions to Cart', :class => 'genButton'
+
+  #makeDonation.pageDiv
+    %h1 Please Consider Adding a Donation
+    %p
+      Donations are tax-deductible and all donations will be acknowledged 
+      with a tax-exempt letter you can include with your tax return.
+    = render :partial => 'donate', :locals => {:id => cid, :redirect_to => 'subscribe_2008' }
+

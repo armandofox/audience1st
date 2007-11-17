@@ -5,8 +5,11 @@ PLUGINS = $(shell find vendor/plugins -name '*.rb' -print -or -name '*.yml' -pri
 all:
 	@echo Must force explicit target
 
-TAGS: $(FILES) $(PLUGINS)
-	etags $(FILES) $(PLUGINS)
+#TAGS: $(FILES) $(PLUGINS)
+#	etags $(FILES) $(PLUGINS)
+
+TAGS: $(FILES)
+	@etags $(FILES) >/dev/null
 
 .PHONY: doc
 doc:	

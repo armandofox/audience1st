@@ -1,0 +1,13 @@
+%h2 
+  Edit
+  %strong=  @valid_voucher.vouchertype.name
+  ticket eligibility
+  %br/
+  for
+  %strong= fmt_date(@valid_voucher.printable_name
+
+- form_tag :action => 'update', :id => @valid_voucher do
+
+  = hidden_field 'valid_voucher', 'vouchertype_id', :value => @valid_voucher.vouchertype.id
+  = render :partial => 'form'
+  = submit_tag 'Save Changes'

@@ -66,13 +66,13 @@ module ApplicationHelper
     form_tag_opts = {:method => :get}
     form_tag_opts.merge!(:target => '_blank') if opts[:newpage]
     s = ""
-    s << start_form_tag({:controller => controller, :action => action_name},
+    s << form_tag({:controller => controller, :action => action_name},
                         form_tag_opts)
     s << (opts[:label] || 'Search/filter:')
     varname = Inflector.tableize(controller) + "_filter"
     s << text_field_tag(varname, eval("@#{varname}"))
     s << submit_tag((opts[:submit] || 'Search'), html_opts)
-    s << end_form_tag
+    s << "</form>"
     s << " " + opts[:extra] if opts[:extra]
     s
   end

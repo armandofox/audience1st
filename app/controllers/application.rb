@@ -8,14 +8,23 @@ class String
   @@name_connectors = %w[and & van von der de di]
   @@name_prefixes = /^m(a?c)(\w+)/i
   def capitalize_name_word
+    # short all-caps (like "OJ") are left as-is
+    return self if self.match(/^[A-Z]+$/)
+    # words that are already BiCapitalized are left as-is
+    # (i.e., contain at least one uppercase letter that is preceded by
+    # a lowercase letter; catches McHugh, diBlasio, etc.)
+    return self if self.match( /[a-z][A-Z]/ )
+    # single initial: capitalize the initial
     return "#{self.upcase}." if self.match(/^\w$/i)
-    @@name_connectors.include?(self.downcase) ? self.downcase :
-      self.sub(/^(\w)/) { |a| a.upcase }
+    # connector word (von, van, de, etc.) - lowercase
+    return self.downcase if @@name_connectors.include?(self.downcase)
+    # default: capitalize first letter
+    return self.sub(/^(\w)/) { |a| a.upcase }
     #self.match(@@name_prefixes) ? self.sub(@@name_prefixes, "M#{$1}#{$2.capitalize}") :
     # self.capitalize
   end
   def name_capitalize
-    self.split(/\W+/).map { |w| w.capitalize_name_word }.join(" ")
+    self.split(/[\., ]+/).map { |w| w.capitalize_name_word }.join(" ")
   end
 end
 
@@ -54,7 +63,7 @@ class ApplicationController < ActionController::Base
   
   filter_parameter_logging :credit_card,:password
 
-  model :cart
+  #model :cart
   def find_cart
     session[:cart] ||= Cart.new
   end

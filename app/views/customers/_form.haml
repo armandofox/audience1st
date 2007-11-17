@@ -37,16 +37,16 @@
       %td
         %label{:for=>:customer_day_phone} Day phone
         %br/
-        =text_field 'customer', 'day_phone', :size => 16, :max_length => 16  
+        =text_field 'customer', 'day_phone', {:size => 16, :max_length => 16, :readonly => disabled}
       %td{:colspan=>2}
         %label{:for=>:customer_eve_phone} Eve. phone
         %br/
-        =text_field 'customer', 'eve_phone', :size => 16, :max_length => 16  
+        =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
     %tr 
       %td{:colspan=>3}
         %label{:for=>:customer_login} Email
         %br/
-        =text_field 'customer', 'login', :size => 20, :max_length => 40
+        =text_field 'customer', 'login', {:size => 20, :max_length => 40, :readonly => disabled }
     %tr
       %td{:colspan=>3}
         =check_box 'customer', 'e_blacklist'
