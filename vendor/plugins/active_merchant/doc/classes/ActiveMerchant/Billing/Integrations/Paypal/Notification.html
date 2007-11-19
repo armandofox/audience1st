@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: ActiveMerchant::Billing::Integrations::Paypal::Notification</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">ActiveMerchant::Billing::Integrations::Paypal::Notification</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../../../../files/lib/active_merchant/billing/integrations/paypal/notification_rb.html">
+                lib/active_merchant/billing/integrations/paypal/notification.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                <a href="../Notification.html">
+                ActiveMerchant::Billing::Integrations::Notification
+               </a>
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+Parser and handler for incoming Instant payment notifications from paypal.
+The Example shows a typical handler in a rails application. Note that this
+is an example, please read the <a href="../Paypal.html">Paypal</a> API
+documentation for all the details on creating a safe payment controller.
+</p>
+<p>
+Example
+</p>
+<pre>
+  class BackendController &lt; ApplicationController
+    include ActiveMerchant::Billing::Integrations
+
+    def paypal_ipn
+      notify = Paypal::Notification.new(request.raw_post)
+
+      order = Order.find(notify.item_id)
+
+      if notify.acknowledge
+        begin
+
+          if notify.complete? and order.total == notify.amount
+            order.status = 'success'
+
+            shop.ship(order)
+          else
+            logger.error(&quot;Failed to verify Paypal's notification, please investigate&quot;)
+          end
+
+        rescue =&gt; e
+          order.status        = 'failed'
+          raise
+        ensure
+          order.save
+        end
+      end
+
+      render :nothing
+    end
+  end
+</pre>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000036">acknowledge</a>&nbsp;&nbsp;
+      <a href="#M000025">complete?</a>&nbsp;&nbsp;
+      <a href="#M000032">currency</a>&nbsp;&nbsp;
+      <a href="#M000031">fee</a>&nbsp;&nbsp;
+      <a href="#M000030">gross</a>&nbsp;&nbsp;
+      <a href="#M000034">invoice</a>&nbsp;&nbsp;
+      <a href="#M000033">item_id</a>&nbsp;&nbsp;
+      <a href="#M000026">received_at</a>&nbsp;&nbsp;
+      <a href="#M000027">status</a>&nbsp;&nbsp;
+      <a href="#M000035">test?</a>&nbsp;&nbsp;
+      <a href="#M000028">transaction_id</a>&nbsp;&nbsp;
+      <a href="#M000029">type</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000036" class="method-detail">
+        <a name="M000036"></a>
+
+        <div class="method-heading">
+          <a href="#M000036" class="method-signature">
+          <span class="method-name">acknowledge</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Acknowledge the transaction to paypal. This method has to be called after a
+new ipn arrives. <a href="../Paypal.html">Paypal</a> will verify that all
+the information we received are correct and will return a ok or a fail.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  def paypal_ipn
+    notify = PaypalNotification.new(request.raw_post)
+
+    if notify.acknowledge
+      ... process order ... if notify.complete?
+    else
+      ... log possible hacking attempt ...
+    end
+</pre>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000036-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000036-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 162</span>
+162:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">acknowledge</span>      
+163:             <span class="ruby-identifier">payload</span> =  <span class="ruby-identifier">raw</span>
+164: 
+165:             <span class="ruby-identifier">uri</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">Paypal</span>.<span class="ruby-identifier">service_url</span>)
+166:             <span class="ruby-identifier">request_path</span> = <span class="ruby-node">&quot;#{uri.path}?cmd=_notify-validate&quot;</span>
+167: 
+168:             <span class="ruby-identifier">request</span> = <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span><span class="ruby-operator">::</span><span class="ruby-constant">Post</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">request_path</span>)
+169:             <span class="ruby-identifier">request</span>[<span class="ruby-value str">'Content-Length'</span>] = <span class="ruby-node">&quot;#{payload.size}&quot;</span>
+170:             <span class="ruby-identifier">request</span>[<span class="ruby-value str">'User-Agent'</span>]     = <span class="ruby-value str">&quot;Active Merchant -- http://home.leetsoft.com/am&quot;</span>
+171: 
+172:             <span class="ruby-identifier">http</span> = <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">uri</span>.<span class="ruby-identifier">host</span>, <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">port</span>)
+173: 
+174:             <span class="ruby-identifier">http</span>.<span class="ruby-identifier">verify_mode</span>    = <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">SSL</span><span class="ruby-operator">::</span><span class="ruby-constant">VERIFY_NONE</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@ssl_strict</span>
+175:             <span class="ruby-identifier">http</span>.<span class="ruby-identifier">use_ssl</span>        = <span class="ruby-keyword kw">true</span>
+176: 
+177:             <span class="ruby-identifier">request</span> = <span class="ruby-identifier">http</span>.<span class="ruby-identifier">request</span>(<span class="ruby-identifier">request</span>, <span class="ruby-identifier">payload</span>)
+178: 
+179:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">StandardError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;Faulty paypal result: #{request.body}&quot;</span>) <span class="ruby-keyword kw">unless</span> [<span class="ruby-value str">&quot;VERIFIED&quot;</span>, <span class="ruby-value str">&quot;INVALID&quot;</span>].<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">body</span>)
+180: 
+181:             <span class="ruby-identifier">request</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;VERIFIED&quot;</span>
+182:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000025" class="method-detail">
+        <a name="M000025"></a>
+
+        <div class="method-heading">
+          <a href="#M000025" class="method-signature">
+          <span class="method-name">complete?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Was the transaction complete?
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000025-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000025-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 76</span>
+76:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">complete?</span>
+77:             <span class="ruby-identifier">status</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;Completed&quot;</span>
+78:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000032" class="method-detail">
+        <a name="M000032"></a>
+
+        <div class="method-heading">
+          <a href="#M000032" class="method-signature">
+          <span class="method-name">currency</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+What currency have we been dealing with
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000032-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000032-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 127</span>
+127:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">currency</span>
+128:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'mc_currency'</span>]
+129:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000031" class="method-detail">
+        <a name="M000031"></a>
+
+        <div class="method-heading">
+          <a href="#M000031" class="method-signature">
+          <span class="method-name">fee</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+the markup paypal charges for the transaction
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000031-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000031-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 122</span>
+122:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fee</span>
+123:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'mc_fee'</span>]
+124:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000030" class="method-detail">
+        <a name="M000030"></a>
+
+        <div class="method-heading">
+          <a href="#M000030" class="method-signature">
+          <span class="method-name">gross</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+the money amount we received in X.2 decimal.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000030-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000030-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 117</span>
+117:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">gross</span>
+118:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'mc_gross'</span>]
+119:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000034" class="method-detail">
+        <a name="M000034"></a>
+
+        <div class="method-heading">
+          <a href="#M000034" class="method-signature">
+          <span class="method-name">invoice</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+This is the invoice which you passed to paypal
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000034-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000034-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 139</span>
+139:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">invoice</span>
+140:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'invoice'</span>]
+141:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000033" class="method-detail">
+        <a name="M000033"></a>
+
+        <div class="method-heading">
+          <a href="#M000033" class="method-signature">
+          <span class="method-name">item_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+This is the item number which we submitted to paypal The custom field is
+also mapped to <a href="Notification.html#M000033">item_id</a> because
+PayPal doesn&#8217;t return item_number in dispute notifications
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000033-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000033-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 134</span>
+134:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">item_id</span>
+135:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'item_number'</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">params</span>[<span class="ruby-value str">'custom'</span>]
+136:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000026" class="method-detail">
+        <a name="M000026"></a>
+
+        <div class="method-heading">
+          <a href="#M000026" class="method-signature">
+          <span class="method-name">received_at</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+When was this payment received by the client. sometimes it can happen that
+we get the notification much later. One possible scenario is that our web
+application was down. In this case paypal tries several times an hour to
+inform us about the notification
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000026-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000026-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 84</span>
+84:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">received_at</span>
+85:             <span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">params</span>[<span class="ruby-value str">'payment_date'</span>]
+86:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000027" class="method-detail">
+        <a name="M000027"></a>
+
+        <div class="method-heading">
+          <a href="#M000027" class="method-signature">
+          <span class="method-name">status</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Status of transaction. List of possible values:
+<tt>Canceled-Reversal</tt>:: <tt>Completed</tt>:: <tt>Denied</tt>::
+<tt>Expired</tt>:: <tt>Failed</tt>:: <tt>In-Progress</tt>::
+<tt>Partially-Refunded</tt>:: <tt>Pending</tt>:: <tt>Processed</tt>::
+<tt>Refunded</tt>:: <tt>Reversed</tt>:: <tt>Voided</tt>::
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000027-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000027-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 101</span>
+101:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">status</span>
+102:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'payment_status'</span>]
+103:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000035" class="method-detail">
+        <a name="M000035"></a>
+
+        <div class="method-heading">
+          <a href="#M000035" class="method-signature">
+          <span class="method-name">test?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Was this a test transaction?
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000035-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000035-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 144</span>
+144:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test?</span>
+145:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'test_ipn'</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'1'</span>
+146:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000028" class="method-detail">
+        <a name="M000028"></a>
+
+        <div class="method-heading">
+          <a href="#M000028" class="method-signature">
+          <span class="method-name">transaction_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Id of this transaction (paypal number)
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000028-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000028-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 106</span>
+106:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction_id</span>
+107:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'txn_id'</span>]
+108:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000029" class="method-detail">
+        <a name="M000029"></a>
+
+        <div class="method-heading">
+          <a href="#M000029" class="method-signature">
+          <span class="method-name">type</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+What type of transaction are we dealing with?
+</p>
+<pre>
+ &quot;cart&quot; &quot;send_money&quot; &quot;web_accept&quot; are possible here.
+</pre>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000029-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000029-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/paypal/notification.rb, line 112</span>
+112:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">type</span>
+113:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'txn_type'</span>]
+114:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

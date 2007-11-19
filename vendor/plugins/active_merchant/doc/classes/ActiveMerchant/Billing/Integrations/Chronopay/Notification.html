@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: ActiveMerchant::Billing::Integrations::Chronopay::Notification</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">ActiveMerchant::Billing::Integrations::Chronopay::Notification</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../../../../files/lib/active_merchant/billing/integrations/chronopay/notification_rb.html">
+                lib/active_merchant/billing/integrations/chronopay/notification.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                <a href="../Notification.html">
+                ActiveMerchant::Billing::Integrations::Notification
+               </a>
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000080">acknowledge</a>&nbsp;&nbsp;
+      <a href="#M000069">city</a>&nbsp;&nbsp;
+      <a href="#M000055">complete?</a>&nbsp;&nbsp;
+      <a href="#M000068">country</a>&nbsp;&nbsp;
+      <a href="#M000077">currency</a>&nbsp;&nbsp;
+      <a href="#M000075">custom2</a>&nbsp;&nbsp;
+      <a href="#M000076">custom3</a>&nbsp;&nbsp;
+      <a href="#M000058">customer_id</a>&nbsp;&nbsp;
+      <a href="#M000063">date</a>&nbsp;&nbsp;
+      <a href="#M000066">email</a>&nbsp;&nbsp;
+      <a href="#M000078">gross</a>&nbsp;&nbsp;
+      <a href="#M000074">item_id</a>&nbsp;&nbsp;
+      <a href="#M000061">language</a>&nbsp;&nbsp;
+      <a href="#M000065">name</a>&nbsp;&nbsp;
+      <a href="#M000073">password</a>&nbsp;&nbsp;
+      <a href="#M000060">product_id</a>&nbsp;&nbsp;
+      <a href="#M000062">received_at</a>&nbsp;&nbsp;
+      <a href="#M000059">site_id</a>&nbsp;&nbsp;
+      <a href="#M000071">state</a>&nbsp;&nbsp;
+      <a href="#M000056">status</a>&nbsp;&nbsp;
+      <a href="#M000067">street</a>&nbsp;&nbsp;
+      <a href="#M000079">test?</a>&nbsp;&nbsp;
+      <a href="#M000064">time</a>&nbsp;&nbsp;
+      <a href="#M000057">transaction_id</a>&nbsp;&nbsp;
+      <a href="#M000072">username</a>&nbsp;&nbsp;
+      <a href="#M000070">zip</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000080" class="method-detail">
+        <a name="M000080"></a>
+
+        <div class="method-heading">
+          <a href="#M000080" class="method-signature">
+          <span class="method-name">acknowledge</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000080-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000080-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 149</span>
+149:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">acknowledge</span>
+150:             <span class="ruby-keyword kw">true</span>
+151:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000069" class="method-detail">
+        <a name="M000069"></a>
+
+        <div class="method-heading">
+          <a href="#M000069" class="method-signature">
+          <span class="method-name">city</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s city
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000069-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000069-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 96</span>
+96:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">city</span>
+97:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'city'</span>]
+98:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000055" class="method-detail">
+        <a name="M000055"></a>
+
+        <div class="method-heading">
+          <a href="#M000055" class="method-signature">
+          <span class="method-name">complete?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000055-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000055-source">
+<pre>
+   <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 6</span>
+6:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">complete?</span>
+7:             <span class="ruby-identifier">status</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'Completed'</span>
+8:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000068" class="method-detail">
+        <a name="M000068"></a>
+
+        <div class="method-heading">
+          <a href="#M000068" class="method-signature">
+          <span class="method-name">country</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s country - 3 digit country code
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000068-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000068-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 91</span>
+91:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">country</span>
+92:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'country'</span>]
+93:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000077" class="method-detail">
+        <a name="M000077"></a>
+
+        <div class="method-heading">
+          <a href="#M000077" class="method-signature">
+          <span class="method-name">currency</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The currency the purchase was made in
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000077-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000077-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 136</span>
+136:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">currency</span>
+137:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'currency'</span>]
+138:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000075" class="method-detail">
+        <a name="M000075"></a>
+
+        <div class="method-heading">
+          <a href="#M000075" class="method-signature">
+          <span class="method-name">custom2</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Additional parameter
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000075-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000075-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 126</span>
+126:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">custom2</span>
+127:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'cs2'</span>]
+128:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000076" class="method-detail">
+        <a name="M000076"></a>
+
+        <div class="method-heading">
+          <a href="#M000076" class="method-signature">
+          <span class="method-name">custom3</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Additional parameter
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000076-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000076-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 131</span>
+131:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">custom3</span>
+132:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'cs3'</span>]
+133:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000058" class="method-detail">
+        <a name="M000058"></a>
+
+        <div class="method-heading">
+          <a href="#M000058" class="method-signature">
+          <span class="method-name">customer_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Unique ID of customer
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000058-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000058-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 42</span>
+42:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">customer_id</span>
+43:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'customer_id'</span>]
+44:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000063" class="method-detail">
+        <a name="M000063"></a>
+
+        <div class="method-heading">
+          <a href="#M000063" class="method-signature">
+          <span class="method-name">date</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Date of transaction in MM/DD/YYYY format
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000063-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000063-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 66</span>
+66:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">date</span> 
+67:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'date'</span>]
+68:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000066" class="method-detail">
+        <a name="M000066"></a>
+
+        <div class="method-heading">
+          <a href="#M000066" class="method-signature">
+          <span class="method-name">email</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s email address
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000066-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000066-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 81</span>
+81:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">email</span>
+82:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'email'</span>]
+83:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000078" class="method-detail">
+        <a name="M000078"></a>
+
+        <div class="method-heading">
+          <a href="#M000078" class="method-signature">
+          <span class="method-name">gross</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+the money amount we received in X.2 decimal.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000078-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000078-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 141</span>
+141:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">gross</span>
+142:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'total'</span>]
+143:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000074" class="method-detail">
+        <a name="M000074"></a>
+
+        <div class="method-heading">
+          <a href="#M000074" class="method-signature">
+          <span class="method-name">item_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The item id passed in the first custom parameter
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000074-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000074-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 121</span>
+121:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">item_id</span>
+122:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'cs1'</span>]
+123:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000061" class="method-detail">
+        <a name="M000061"></a>
+
+        <div class="method-heading">
+          <a href="#M000061" class="method-signature">
+          <span class="method-name">language</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Language
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000061-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000061-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 57</span>
+57:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">language</span>
+58:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'language'</span>]
+59:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000065" class="method-detail">
+        <a name="M000065"></a>
+
+        <div class="method-heading">
+          <a href="#M000065" class="method-signature">
+          <span class="method-name">name</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s full name
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000065-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000065-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 76</span>
+76:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">name</span>
+77:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'name'</span>]
+78:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000073" class="method-detail">
+        <a name="M000073"></a>
+
+        <div class="method-heading">
+          <a href="#M000073" class="method-signature">
+          <span class="method-name">password</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Customer&#8217;s password for restricted access zone of Merchant’s
+Web-site, as chosen
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000073-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000073-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 116</span>
+116:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">password</span>
+117:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'password'</span>]
+118:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000060" class="method-detail">
+        <a name="M000060"></a>
+
+        <div class="method-heading">
+          <a href="#M000060" class="method-signature">
+          <span class="method-name">product_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+ID of a product that was purchased
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000060-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000060-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 52</span>
+52:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">product_id</span>
+53:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'product_id'</span>]
+54:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000062" class="method-detail">
+        <a name="M000062"></a>
+
+        <div class="method-heading">
+          <a href="#M000062" class="method-signature">
+          <span class="method-name">received_at</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000062-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000062-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 61</span>
+61:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">received_at</span>
+62:             <span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-node">&quot;#{date} #{time}&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">date</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">time</span>.<span class="ruby-identifier">blank?</span>
+63:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000059" class="method-detail">
+        <a name="M000059"></a>
+
+        <div class="method-heading">
+          <a href="#M000059" class="method-signature">
+          <span class="method-name">site_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Unique ID of Merchant’s web-site
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000059-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000059-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 47</span>
+47:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">site_id</span> 
+48:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'site_id'</span>]
+49:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000071" class="method-detail">
+        <a name="M000071"></a>
+
+        <div class="method-heading">
+          <a href="#M000071" class="method-signature">
+          <span class="method-name">state</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s state. Only useful for US Customers
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000071-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000071-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 106</span>
+106:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">state</span>
+107:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'state'</span>]
+108:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000056" class="method-detail">
+        <a name="M000056"></a>
+
+        <div class="method-heading">
+          <a href="#M000056" class="method-signature">
+          <span class="method-name">status</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Status of transaction. List of possible values: <tt>onetime – one time
+payment has been made, no repayment required;</tt>:: <tt>initial – first
+payment has been made, repayment required in corresponding period;</tt>::
+<tt>decline – charge request has been rejected;</tt>:: <tt>rebill –
+repayment has been made together with initial transaction;&lt;/ttt&gt;::
+&lt;tt&gt;cancel – repayments has been disabled;</tt>:: <tt>expire –
+customer’s access to restricted zone membership has been expired;</tt>::
+<tt>refund – request to refund has been received;</tt>:: <tt>chargeback
+– request to chargeback has been received.</tt>::
+</p>
+<p>
+This implementation of <a href="../Chronopay.html">Chronopay</a> does not
+support subscriptions. The status codes used are matched to the status
+codes that <a href="../Paypal.html">Paypal</a> sends. See <a
+href="../Paypal/Notification.html#M000027">Paypal::Notification#status</a>
+for more details
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000056-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000056-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 23</span>
+23:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">status</span>
+24:             <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">params</span>[<span class="ruby-value str">'transaction_type'</span>]
+25:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'onetime'</span>
+26:               <span class="ruby-value str">'Completed'</span>
+27:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'refund'</span>
+28:               <span class="ruby-value str">'Refunded'</span>
+29:             <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'chargeback'</span>
+30:               <span class="ruby-value str">'Reversed'</span>
+31:             <span class="ruby-keyword kw">else</span>
+32:               <span class="ruby-value str">'Failed'</span>
+33:             <span class="ruby-keyword kw">end</span>
+34:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000067" class="method-detail">
+        <a name="M000067"></a>
+
+        <div class="method-heading">
+          <a href="#M000067" class="method-signature">
+          <span class="method-name">street</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s street address
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000067-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000067-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 86</span>
+86:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">street</span>
+87:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'street'</span>]
+88:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000079" class="method-detail">
+        <a name="M000079"></a>
+
+        <div class="method-heading">
+          <a href="#M000079" class="method-signature">
+          <span class="method-name">test?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000079-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000079-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 145</span>
+145:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test?</span>
+146:             <span class="ruby-identifier">date</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">time</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">transaction_id</span>.<span class="ruby-identifier">blank?</span>
+147:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000064" class="method-detail">
+        <a name="M000064"></a>
+
+        <div class="method-heading">
+          <a href="#M000064" class="method-signature">
+          <span class="method-name">time</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Time of transaction in HH:MM:SS format
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000064-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000064-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 71</span>
+71:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">time</span>
+72:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'time'</span>]
+73:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000057" class="method-detail">
+        <a name="M000057"></a>
+
+        <div class="method-heading">
+          <a href="#M000057" class="method-signature">
+          <span class="method-name">transaction_id</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Unique ID of transaction
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000057-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000057-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 37</span>
+37:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction_id</span>
+38:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'transaction_id'</span>]
+39:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000072" class="method-detail">
+        <a name="M000072"></a>
+
+        <div class="method-heading">
+          <a href="#M000072" class="method-signature">
+          <span class="method-name">username</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Customer’s login for restricted access zone of Merchant’s Web-site
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000072-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000072-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 111</span>
+111:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">username</span>
+112:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'username'</span>]
+113:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000070" class="method-detail">
+        <a name="M000070"></a>
+
+        <div class="method-heading">
+          <a href="#M000070" class="method-signature">
+          <span class="method-name">zip</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The customer&#8217;s zip
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000070-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000070-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/active_merchant/billing/integrations/chronopay/notification.rb, line 101</span>
+101:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">zip</span>
+102:             <span class="ruby-identifier">params</span>[<span class="ruby-value str">'zip'</span>]
+103:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

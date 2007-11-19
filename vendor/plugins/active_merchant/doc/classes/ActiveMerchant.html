@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActiveMerchant</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActiveMerchant</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/lib/active_merchant/billing/base_rb.html">
+                lib/active_merchant/billing/base.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/credit_card_rb.html">
+                lib/active_merchant/billing/credit_card.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateway_rb.html">
+                lib/active_merchant/billing/gateway.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/response_rb.html">
+                lib/active_merchant/billing/response.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/authorized_net_rb.html">
+                lib/active_merchant/billing/gateways/authorized_net.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/bogus_rb.html">
+                lib/active_merchant/billing/gateways/bogus.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/eway_rb.html">
+                lib/active_merchant/billing/gateways/eway.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/linkpoint_rb.html">
+                lib/active_merchant/billing/gateways/linkpoint.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/moneris_rb.html">
+                lib/active_merchant/billing/gateways/moneris.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/paypal_rb.html">
+                lib/active_merchant/billing/gateways/paypal.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/psigate_rb.html">
+                lib/active_merchant/billing/gateways/psigate.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/trust_commerce_rb.html">
+                lib/active_merchant/billing/gateways/trust_commerce.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/gateways/usa_epay_rb.html">
+                lib/active_merchant/billing/gateways/usa_epay.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/action_view_helper_rb.html">
+                lib/active_merchant/billing/integrations/action_view_helper.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/bogus_rb.html">
+                lib/active_merchant/billing/integrations/bogus.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/chronopay_rb.html">
+                lib/active_merchant/billing/integrations/chronopay.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/helper_rb.html">
+                lib/active_merchant/billing/integrations/helper.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/nochex_rb.html">
+                lib/active_merchant/billing/integrations/nochex.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/notification_rb.html">
+                lib/active_merchant/billing/integrations/notification.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/paypal_rb.html">
+                lib/active_merchant/billing/integrations/paypal.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/bogus/helper_rb.html">
+                lib/active_merchant/billing/integrations/bogus/helper.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/bogus/notification_rb.html">
+                lib/active_merchant/billing/integrations/bogus/notification.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/chronopay/helper_rb.html">
+                lib/active_merchant/billing/integrations/chronopay/helper.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/chronopay/notification_rb.html">
+                lib/active_merchant/billing/integrations/chronopay/notification.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/nochex/helper_rb.html">
+                lib/active_merchant/billing/integrations/nochex/helper.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/nochex/notification_rb.html">
+                lib/active_merchant/billing/integrations/nochex/notification.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/paypal/helper_rb.html">
+                lib/active_merchant/billing/integrations/paypal/helper.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/billing/integrations/paypal/notification_rb.html">
+                lib/active_merchant/billing/integrations/paypal/notification.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/lib/country_rb.html">
+                lib/active_merchant/lib/country.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/lib/posts_data_rb.html">
+                lib/active_merchant/lib/posts_data.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/lib/requires_parameters_rb.html">
+                lib/active_merchant/lib/requires_parameters.rb
+                </a>
+        <br />
+                <a href="../files/lib/active_merchant/lib/validateable_rb.html">
+                lib/active_merchant/lib/validateable.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Module <a href="ActiveMerchant/Billing.html" class="link">ActiveMerchant::Billing</a><br />
+Module <a href="ActiveMerchant/PostsData.html" class="link">ActiveMerchant::PostsData</a><br />
+Module <a href="ActiveMerchant/RequiresParameters.html" class="link">ActiveMerchant::RequiresParameters</a><br />
+Module <a href="ActiveMerchant/Validateable.html" class="link">ActiveMerchant::Validateable</a><br />
+Class <a href="ActiveMerchant/Country.html" class="link">ActiveMerchant::Country</a><br />
+Class <a href="ActiveMerchant/CountryCode.html" class="link">ActiveMerchant::CountryCode</a><br />
+Class <a href="ActiveMerchant/CountryCodeFormatError.html" class="link">ActiveMerchant::CountryCodeFormatError</a><br />
+Class <a href="ActiveMerchant/InvalidCountryCodeError.html" class="link">ActiveMerchant::InvalidCountryCodeError</a><br />
+
+    </div>
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
