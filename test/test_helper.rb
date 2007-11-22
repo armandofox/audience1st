@@ -50,11 +50,7 @@ class Test::Unit::TestCase
   end
 
   def simulate_login(u)
-    if false|| (u == :admin)
-      @request.session[:cid] = 1
-    else
-      @request.session[:cid] = u.id
-    end
+    @request.session[:cid] = u.id
   end
 
   def simulate_logout()

@@ -33,13 +33,13 @@ class VouchertypesControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_index
+  def test_002_index
     get :index
     assert_response :success
     assert_template 'list'
   end
 
-  def test_list
+  def test_003_list
     get :list
 
     assert_response :success
@@ -48,7 +48,7 @@ class VouchertypesControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:vouchertypes)
   end
 
-  def test_new
+  def test_004_new
     get :new
 
     assert_response :success
@@ -57,7 +57,7 @@ class VouchertypesControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:vouchertype)
   end
 
-  def test_create
+  def test_005_create
     num_vouchertypes = Vouchertype.count
 
     post :create, :vouchertype => {
@@ -69,8 +69,8 @@ class VouchertypesControllerTest < Test::Unit::TestCase
     assert_equal num_vouchertypes + 1, Vouchertype.count
   end
 
-  def test_destroy
-    assert_not_nil v=Vouchertype.find_first
+  def test_006_destroy
+    assert_not_nil v=Vouchertype.find(:first)
     post :destroy, :id => v.id
     assert_response :redirect
     assert_redirected_to :action => 'list'

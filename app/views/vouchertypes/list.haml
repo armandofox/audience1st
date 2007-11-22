@@ -15,7 +15,7 @@
       %tr{:class => stripeclass}
         %td
           - if @superadmin
-          = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :post => true, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
+          = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
           - end
           = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
         %td{:align => :right}= sprintf("%3.2f", vouchertype.price)   

@@ -11,9 +11,7 @@
         = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid, :redirect_to => 'subscribe_2008'}
         = submit_tag 'Checkout'
   #subscriptionsMenus.pageDiv
-    %h1 
-      Subscriber Benefits
-      = "and Early Renewal Discount" if @subscriber
+    %h1 Subscriber Benefits
     %p 
       Enjoy early access to reservations for popular shows (like next season's
       %i Chicago, 
@@ -22,11 +20,7 @@
       access to special events, and more!
       = link_to("Learn more",APP_CONFIG[:subscription_info],{:popup => true})
       about subscription packages and why it pays to subscribe!
-    %p
-      %strong 
-        2007 subscribers, renew by
-        = h (@renew_discount_date.strftime("%D"))
-        and save an additional 10%, as a "Thank You" for supporting us in 2007.
+
     - unless @subscriber
       %p 
         If you're a current subscriber,

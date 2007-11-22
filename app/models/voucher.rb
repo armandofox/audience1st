@@ -147,7 +147,7 @@ class Voucher < ActiveRecord::Base
   def not_already_used
     # Make sure voucher is not already in use.
     # Shouldn't happen using web interface.
-    showdate.nil? || showdate.id == 0
+    showdate_id.to_i == 0 
   end
 
   def can_be_changed?(who = Customer.generic_customer)
@@ -157,9 +157,9 @@ class Voucher < ActiveRecord::Base
     if (who.is_walkup)          # admin ?
       return true
     else
-      return (changeable? and
-              expiration_date > Time.now and
-              (not_already_used or
+      return (changeable? &&
+              (expiration_date > Time.now) &&
+              (not_already_used ||
                (showdate.thedate > (Time.now - APP_CONFIG[:cancel_grace_period].minutes))))
     end
   end
