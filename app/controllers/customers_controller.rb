@@ -4,7 +4,7 @@ class CustomersController < ApplicationController
   require 'net/http'
   require 'uri'
   
-  # must be validly logged in before doing anything except login itself
+  # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
                 :only=>%w[welcome welcome_subscriber change_password edit update],
                 :redirect_to => {:action=>:login},
@@ -12,7 +12,7 @@ class CustomersController < ApplicationController
   before_filter :not_logged_in, :only => %w[user_create]
   
   # must be boxoffice to view other customer records or adding/removing vouchers
-  before_filter :is_staff_filter, :only => %w[list show search]
+  before_filter :is_staff_filter, :only => %w[list switch_to search]
   before_filter :is_boxoffice_filter, :only=>%w[merge create]
 
   # only superadmin can destory customers, because that wreaks havoc
@@ -184,15 +184,14 @@ class CustomersController < ApplicationController
   end
     
   def change_password
-    @customer,@is_admin = for_customer(params[:id])
+    @customer = current_customer
     if (request.post?)
-      pass = params[:customer][:password].to_s rescue nil
-      if (pass.nil? || pass.empty?)
-        flash[:notice] = "You must set a password."
-        render :action => 'change_password', :id => @customer
+      pass = params[:customer][:password].to_s.strip rescue nil
+      if pass.blank?
+        flash[:notice] = "You must set a non-empty password."
+        render :action => 'change_password'
         return
       else
-        pass.strip!
         @customer.password = pass
         if (@customer.save)
           flash[:notice] = "Password has been changed."
@@ -258,7 +257,7 @@ class CustomersController < ApplicationController
   end
 
   # Following actions are for use by admins only:
-  # list, merge, search, create, destroy
+  # list, switch_to, merge, search, create, destroy
 
   def list
     @is_admin = is_admin
@@ -273,6 +272,16 @@ class CustomersController < ApplicationController
     end
   end
 
+  def switch_to
+    if (c = Customer.find_by_id(params[:id]))
+      session[:cid] = c.id
+      redirect_to :action => 'welcome'
+    else
+      flash[:notice] = "No such customer: id# #{params[:id]}"
+      redirect_to :action => 'list'
+    end
+  end
+  
   def merge
     if request.get?
       # display info from two records and allow selection

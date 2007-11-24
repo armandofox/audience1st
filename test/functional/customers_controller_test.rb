@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require 'application'
 require 'customers_controller'
 
 # Re-raise errors caught by the controller.
@@ -120,6 +121,28 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_nil session[:cart]
   end
 
+  def test_0022_effective_logged_in_id
+    simulate_logout
+    tom,admin = customers(:tom),customers(:admin)
+    post :login, :customer=>{:login=>tom.login,:password=>'pass'}
+    assert_redirected_to :action=>'welcome'
+    assert_equal tom.id, logged_in_id
+  end
+
+  def test_0023_effective_logged_in_id
+    simulate_logout
+    tom,admin = customers(:tom),customers(:admin)
+    post :login, :customer=>{:login=>admin.login,:password=>'pass'}
+    assert_redirected_to :action=>'list'
+    assert_equal admin.id, logged_in_id
+    # switch to another customer but verify that logged_in_id still points
+    # to admin
+    post :switch_to, :id => tom.id
+    assert_redirected_to :action=>'welcome'
+    assert_not_nil assigns(:customer)
+    assert_equal admin.id, logged_in_id
+  end
+    
   def test_0030_non_admin_cant_view_cust_record
     simulate_login(customers(:tom))
     get :list

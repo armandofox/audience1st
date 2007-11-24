@@ -1,8 +1,8 @@
 <ul id="storeNav">
-  <%= nav_tabs(['Buy~Tickets', :store, :index, customer], 
-               ['My~Tickets', :customers, :welcome, customer], 
-               ['Contact~Info', :customers, :edit, customer] ) %>
-  <% if c.is_staff %>
+  <%= nav_tabs(['Buy~Tickets', :store, :index, c], 
+               ['My~Tickets', :customers, :welcome, c], 
+               ['Contact~Info', :customers, :edit, c] ) %>
+  <% if logged_in.is_staff %>
   <%= nav_tabs(['Walkup~Sales', :store, :walkup],
                ['Customers', :customers, :list],
                ['Shows', :shows, :list],
@@ -12,18 +12,18 @@
   <% end %>
 </ul>
 
-<% if is_admin && customer %>
+<% if logged_in.is_staff && c %>
 
 <p class="adminField">
-  <%= h("#{customer.full_name}'s Account:") %>
-  <%  buttons = [['Contact History', :visits, :list, {:id => @customer}],
-                 ['Prospecting Activities', :visits, :list_by_prospector, {:id => @customer}],
-                 ['Database Transactions',:txn, :list,{:params => {:txns_filter => @customer.id}}],
-                 ['Record donation',:donation,:new,{:customer => @customer}]] %>
+  <%= h("#{c.full_name}'s Account:") %>
+  <%  buttons = [['Contact History', :visits, :list, {}],
+                 ['Prospecting Activities', :visits, :list_by_prospector, {}],
+                 ['Database Transactions',:txn, :list,{:params => {:txns_filter => c.id}}],
+                 ['Record donation',:donation,:new,{:customer => c}]] %>
   <%  if c.is_boxoffice_manager %>
-  <%    buttons.push(['Add Vouchers',:vouchers, :addvoucher,{:customer => @customer}],
+  <%    buttons.push(['Add Vouchers',:vouchers, :addvoucher,{:customer => c}],
                  ['Donation & Purchase History', :donation, :list,
-                  {:use_cid => 1, :commit => 'Go', :cid => @customer,
+                  {:use_cid => 1, :commit => 'Go', :cid => c,
                     :show_vouchers => true}]) %>
   <% end %>
   <%= button_bar(buttons) %>

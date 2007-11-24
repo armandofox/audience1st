@@ -11,10 +11,16 @@
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(RAILS_ENV != 'production' ? :testing : nil)}
 
-    - if (c=Customer.find_by_id(session[:cid])) && session[:cid] != 0 
-      = render :partial => 'layouts/login_banner', :locals => {:c => c}
-      = render :partial => 'layouts/storenav', :locals => {:is_admin =>c.is_staff,:c => c,:customer => @customer} 
-    - if flash[:notice] && !flash[:notice].blank?
+    - c = Customer.find_by_id(session[:cid] || Customer.nobody_id)
+    - if (admin=Customer.find_by_id(session[:admin_id]))
+      - logged_in = admin
+    - else
+      - logged_in = c
+
+    - if c && (session[:cid] != 0)
+      = render :partial => 'layouts/login_banner', :locals => {:c => c,:logged_in=>logged_in}
+      = render :partial => 'layouts/storenav', :locals => {:admin=>admin,:c=>c,:logged_in=>logged_in}
+    - unless flash[:notice].blank?
       %p.infoMsg{:clear=>:both}= flash[:notice]
 
     = yield 

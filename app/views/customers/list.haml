@@ -20,7 +20,7 @@
       - @customers.each do |c|
         %tr{:valign=>:top,:class=>(c.display_class || cycle(:oddRow,:evenRow))}
           %td= check_box_tag "merge[#{c.id}]"
-          %td= link_to c.full_name, {:action => 'welcome', :id => c }
+          %td= link_to c.full_name, {:action => 'switch_to', :id => c }
           - cols.each do |column|
             %td= h c.send(column)
 

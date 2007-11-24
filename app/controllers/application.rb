@@ -151,18 +151,17 @@ class ApplicationController < ActionController::Base
   end
 
   def logged_in_id
-    # returns the ID of the logged-in person, whether they are a customer or 
-    # an admin acting on behalf of a customer 
-    return session[:cid].to_i
+    # Return the "effective logged-in ID" for audit purposes (ie to track
+    # who did what).
+    # if NO ADMIN is logged in, this is the logged-in customer's ID, or the
+    #   id of the 'nobody' fake customer if not set.
+    # if an admin IS logged in, it's that admin's ID.
+    return (session[:admin_id] || session[:cid] || Customer.nobody_id).to_i
   end
 
   def has_privilege(id,level)
     c = Customer.find_by_id(id)
-    if (c)
-      return c.role >= level
-    else
-      return nil
-    end
+    return c && (c.role >= level)
   end
     
   # filter that requires login as an admin
