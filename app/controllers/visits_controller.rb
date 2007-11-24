@@ -27,7 +27,7 @@ class VisitsController < ApplicationController
 
   def create
     @visit = Visit.new(params[:visit])
-    @customer = Customer.get_customer(@visit.customer_id)
+    @customer = Customer.find_by_id(@visit.customer_id)
     unless @customer.kind_of?(Customer)
       flash[:notice] = "You must go to a customer's account page before adding a visit"
       redirect_to :action => 'list'

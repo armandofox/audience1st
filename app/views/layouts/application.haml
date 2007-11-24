@@ -11,7 +11,7 @@
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(RAILS_ENV != 'production' ? :testing : nil)}
 
-    - if (c=Customer.get_customer(session[:cid])) && session[:cid] != 0 
+    - if (c=Customer.find_by_id(session[:cid])) && session[:cid] != 0 
       = render :partial => 'layouts/login_banner', :locals => {:c => c}
       = render :partial => 'layouts/storenav', :locals => {:is_admin =>c.is_staff,:c => c,:customer => @customer} 
     - if flash[:notice] && !flash[:notice].blank?

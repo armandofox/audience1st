@@ -1,6 +1,6 @@
 %h2= "Add vouchers for #{h(@customer.full_name)}"
 
-= form_tag :action => 'addvoucher', :customer => @customer do
+- form_tag :action => 'addvoucher', :customer => @customer do
 
   %table
     %tbody
@@ -23,5 +23,3 @@
   = submit_tag "Add Vouchers"
 
   = gen_button  "Cancel", {:controller => 'customers', :action => 'welcome', :id => @customer}
-
-= end_form_tag

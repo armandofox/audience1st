@@ -63,11 +63,9 @@ class ApplicationController < ActionController::Base
   
   filter_parameter_logging :credit_card,:password
 
-  #model :cart
   def find_cart
     session[:cart] ||= Cart.new
   end
-
 
   def get_filter_info(params,modelname,default=nil,descending=nil)
     cols = eval(Inflector.camelize(modelname) + ".columns")
@@ -130,8 +128,7 @@ class ApplicationController < ActionController::Base
   # filter that requires user to login before accessing account
   
   def is_logged_in
-    c = logged_in_id
-    if c.nil? or c.zero?
+    unless (c = Customer.find_by_id(session[:cid])).kind_of?(Customer)
       flash[:notice] = 'You must sign in to view this page.'
       session[:return_to] = request.request_uri
       redirect_to :controller => 'customers', :action => 'login'
@@ -160,7 +157,7 @@ class ApplicationController < ActionController::Base
   end
 
   def has_privilege(id,level)
-    c = Customer.get_customer(id)
+    c = Customer.find_by_id(id)
     if (c)
       return c.role >= level
     else
@@ -175,7 +172,7 @@ class ApplicationController < ActionController::Base
   Customer.roles.each do |r|
     eval <<EOEVAL 
     def is_#{r}
-      (c = Customer.get_customer(session[:cid])) && c.is_#{r}
+      (c = Customer.find_by_id(session[:admin_id])) && c.is_#{r}
     end
     def is_#{r}_filter
       unless is_#{r}
@@ -188,14 +185,25 @@ class ApplicationController < ActionController::Base
 EOEVAL
   end
    
+  # current_customer is only called from controller actions filtered by
+  # is_logged_in, so the find() should never fail.  We deliberately
+  # leave it unprotected so we'll know if it does fail.
   def current_customer
-    Customer.get_customer(session[:cid])
+    Customer.find(session[:cid].to_i)
+  end
+
+  # current_admin is called from controller actions filtered by is_logged_in,
+  # so there might in fact be NO admin logged in.
+  # So it returns customer record of current admin, if one is logged in;
+  # otherwise returns a 'generic' customer with no admin privileges but on
+  # which it is safe to call instance methods of Customer.
+  def current_admin
+    Customer.find_by_id(session[:admin_id]) || Customer.generic_customer
   end
 
   def redirect_to_stored(params={})
-    return_to = session[:return_to]
-    unless (return_to.to_s.empty? ||
-            return_to.to_s == url_for(:controller => 'customers', :action => 'login'))
+    return_to = session[:return_to].to_s
+    unless (return_to.blank? ||  return_to == url_for(:controller => 'customers', :action => 'login'))
       session[:return_to] = nil
       redirect_to_url(return_to,params)
     else

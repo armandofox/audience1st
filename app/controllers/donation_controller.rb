@@ -20,7 +20,7 @@ class DonationController < ApplicationController
     conds = {}
     if (params[:use_cid] &&
         (cid = params[:cid].to_i) != 0) &&
-        (c = Customer.get_customer(cid))
+        (c = Customer.find_by_id(cid))
       @page_title = "Donation history: #{c.full_name}"
       flash[:notice] = "Search restricted to customer #{c.full_name}"
       conds.merge!("customer_id = ?" => cid)
@@ -89,7 +89,7 @@ class DonationController < ApplicationController
   end
   
   def new
-    unless @cust = Customer.get_customer(params[:customer])
+    unless @cust = Customer.find_by_id(params[:customer])
       flash[:notice] = "Must select a customer to add a donation"
       redirect_to :controller => 'customers', :action => 'list'
       return
@@ -99,7 +99,7 @@ class DonationController < ApplicationController
 
   def create
     @donation = Donation.new(params[:donation])
-    unless (c = Customer.get_customer(@donation.customer.id))
+    unless (c = Customer.find_by_id(@donation.customer.id))
       flash[:notice] = "Select a customer to add a donation"
       redirect_to :controller => 'customers', :action => 'list'
       return

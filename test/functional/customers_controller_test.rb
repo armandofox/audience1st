@@ -57,7 +57,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     params
   end
 
-  def test_000_failed_login
+  def test_0000_failed_login
     post :login, :customer => {:login => customers(:tom).login, :password => 'BAD'}
     assert_nil session[:cid]
     assert_flash( /mistyped your password/i)
@@ -68,43 +68,65 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_flash(/please provide both/i)
   end
 
-  def test_001_double_login
-    cust,admin = login_as(customers(:admin))
-    assert_not_nil admin
-    cust,admin = login_as(customers(:tom))
-    assert_equal false, admin
+  def test_0010_double_login
+    admin = customers(:admin)
+    tom = customers(:tom)
+    post :login, :customer => {:login => admin.login, :password=>'pass'}
+    assert_not_nil session[:admin_id]
+    assert_not_nil Customer.find(session[:admin_id]).is_staff
+    assert_redirected_to :action=>'list'
+    # now make sure new nonadmin login post clears out admin info
+    post :login, :customer => {:login=>tom.login, :password=>'pass'}
+    assert_nil session[:admin_id]
     assert_redirected_to :action => 'welcome'
   end
 
-  def test_0015_last_login
+  def test_0011_last_login
     c = customers(:tom)
     now = Time.now
     assert c.last_login < now
-    cust,admin = login_as(customers(:tom))
+    post :login, :customer=>{:login=>c.login,:password=>'pass'}
     c.reload
     assert (c.last_login - now).abs < 3.seconds, "#{c.last_login} should be <= #{now}"
   end
 
-  def test_002_must_be_logged_in
-    [:index, :welcome, :change_password, :list, :show, :edit, :merge].each do |act|
-      logout
+  def test_0019_must_be_logged_in_index
+    simulate_logout
+    get :index
+    assert_redirected_to :action => 'welcome'
+    follow_redirect
+    assert_redirected_to :action => 'login'
+  end
+
+  def test_0020_must_be_logged_in
+    [:welcome, :change_password, :list, :show, :edit, :merge].each do |act|
+      simulate_logout
       get act
-      assert_redirected_to :action => 'login'
+      assert_redirected_to({:action => 'login'}, "(on 'get #{act}')")
     end
     [:destroy, :create, :update, :merge].each do |act|
-      logout
+      simulate_logout
       post act
-      assert_redirected_to :action => 'login'
+      assert_redirected_to({:action => 'login'}, "(on 'post #{act}')")
     end
   end
 
-  def test_003_non_admin_cant_view_cust_record
+  def test_0021_logout
+    post :logout
+    assert_nil session[:cid]
+    assert_nil session[:admin_id]
+    assert_nil session[:store_customer]
+    assert_nil session[:return_to]
+    assert_nil session[:cart]
+  end
+
+  def test_0030_non_admin_cant_view_cust_record
     simulate_login(customers(:tom))
     get :list
     assert_redirected_to :action => 'login'
   end
 
-  def test_004_merge_records
+  def test_0040_merge_records
     simulate_login(customers(:admin))
     params = merge_prep
     v1 = params.delete(:v1)
@@ -126,7 +148,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     }
   end
 
-  def test_005_staff_create_customer_with_no_email_or_pass
+  def test_0050_staff_create_customer_with_no_email_or_pass
     simulate_login(customers(:admin))
     post :create, {:customer => {:first_name => 'Test', :last_name => 'Tester'}}
     # shouldn't work - should re-render the 'new' template to fix errors
@@ -148,7 +170,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     ['password','password_confirmation','login'].each { |k| @params[:customer].delete(k) }
     post :create, @params        # should fail because not an admin
     assert_redirected_to :action => 'login'
-    assert_flash /must sign in to view this page/i
+    assert_flash /must have at least boxoffice privilege/i
     assert_nil Customer.find_by_last_name("Tester")
     post :user_create, @params   # should fail because no email
     assert_template 'new'
@@ -202,7 +224,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     parms = {:forgot_password => '1'}
     parms[:customer] = {:login => ''}
     post :login, parms
-    assert_flash /please provide your login name/i
+    assert_flash /please enter the email address/i
     assert_nil session[:cid]
   end
 
@@ -232,7 +254,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     parms.delete(:forgot_password)
     parms[:customer][:password] = newpass
     post :login, parms
-    assert_redirected_to :action => 'welcome'
+    assert_redirected_to :action => 'welcome' 
     assert_equal session[:cid], customers(:tom).id
   end
 
@@ -253,7 +275,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_equal Customer.role_value(newrole), c.role
   end
 
-  def test_010_nonadmin_cant_change_role_or_comments
+  def test_0100_nonadmin_cant_change_role_or_comments
     simulate_login(c = customers(:tom))
     oldcomment = c.comments
     oldrole = c.role
@@ -265,7 +287,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_equal oldrole, c.role
   end
 
-  def test_011_default_when_login
+  def test_0110_default_when_login
     simulate_login(customers(:tom))
     get :edit
     assert_response :success
@@ -273,7 +295,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:customer)
   end
 
-  def test_012_customer_cant_edit_contact
+  def test_0120_customer_cant_edit_contact
     tom = customers(:tom)
     simulate_login(tom)
     # post update event, should be turned back if not admin
@@ -286,7 +308,7 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_equal tom.title, old_title
   end
 
-  def test_013_name_capitalize
+  def test_0130_name_capitalize
     # this test is here even though the name_capitalize method is actually
     # added to String (by application.rb).  I couldn't think of where else
     # to put this even though it is a unit test.
@@ -304,6 +326,18 @@ class CustomersControllerTest < Test::Unit::TestCase
       "Ludwig Von Beethoven" => "Ludwig von Beethoven"
     }
     tests.each_pair { |b,a| assert_equal a, b.name_capitalize }
+  end
+
+  def test_0140_subscriber_welcome
+    simulate_login(customers(:tom)) # tom is a subscriber
+    get :welcome
+    assert_redirected_to :action=>'welcome_subscriber'
+  end
+
+  def test_0150_nonsubscriber_welcome
+    simulate_login(customers(:tom2)) # tom2 is not a subscriber
+    get :welcome_subscriber
+    assert_redirected_to :action=>'welcome'
   end
 
 end

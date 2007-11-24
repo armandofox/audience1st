@@ -27,34 +27,13 @@ class Test::Unit::TestCase
 
   # Add more helper methods to be used by all tests here...
 
-  # UGH! Why does this method have to be pasted in from application.rb?  
-  # Why can't controller tests see the methods in application.rb??
-
-  def login_as(u,p='pass')
-    post :login, :customer => {:login => u.login, :password => p}
-    assert_redirected_to :action => 'welcome', :controller => 'customers'
-    assert_not_nil(session[:cid])
-    cust = Customer.find(session[:cid])
-    is_admin = cust.is_staff
-    assert_equal cust.id, u.id
-    return cust,is_admin
-  end
-
-  def login_as_admin
-    login_as(customers(:admin))
-  end
-
-  def logout
-    post :logout
-    assert_nil session[:cid]
-  end
-
   def simulate_login(u)
     @request.session[:cid] = u.id
+    @request.session[:admin_id] = u.is_staff ? u.id : nil
   end
 
   def simulate_logout()
-    @request.session[:cid] = nil
+    @request.reset_session
   end
 
   def assert_flash(re)

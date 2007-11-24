@@ -221,13 +221,11 @@ class Customer < ActiveRecord::Base
     Digest::SHA1.hexdigest(pass.strip.to_s+salt.to_s)
   end
 
-  # Authenticate: if password matches login, set the current customer
-  # id, and in addition, set is_admin flag if this customer is an admin.
-  # If password doesn't match, return nil and ensure current customer is
-  # unset.
+  # Authenticate: if password matches login, return customer id, else
+  # a symbol explaining what failed
 
   def self.authenticate(login,pass)
-    u=find(:first, :conditions=>["login LIKE ?", login])
+    u=Customer.find(:first, :conditions=>["login LIKE ?", login])
     return :login_not_found unless u.kind_of?(Customer)
     if Customer.encrypt(pass,u.salt) == u.hashed_password
       return u
@@ -306,10 +304,6 @@ class Customer < ActiveRecord::Base
   
   def before_destroy
     raise "Cannot destroy walkup customer entry" if self.role == -1
-  end
-
-  def self.get_customer(id)
-    Customer.find(id.to_i) rescue nil
   end
 
   @@roles.each do |r|

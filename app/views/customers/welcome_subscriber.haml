@@ -1,0 +1,19 @@
+= error_messages_for :customer
+
+#subscriberMsg.pageDiv
+  %h1= "#{h(@customer.first_name)}'s Subscriber Benefits"
+  %ul
+    %li 
+      Use the convenient per-show menus below to make reservations using
+      your Subscriber vouchers.
+    %li 
+      To buy <em>additional</em> tickets for special events, or
+      discount tickets for your guests accompanying you to the show, click 
+      the <strong>Buy Tickets</strong> tab above, and have a credit card ready.
+    %li 
+      Use the <strong>Cancel Reservation</strong> button to cancel
+      existing reservations, with no penalty, up to
+      =APP_CONFIG[:cancel_grace_period] 
+      minutes before showtime.
+
+%h1 Subscriber reservation dialog goes here....

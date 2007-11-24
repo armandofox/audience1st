@@ -13,7 +13,7 @@ class VouchersController < ApplicationController
          :redirect_to => {:controller => 'customers', :action => 'welcome'})
 
   def addvoucher
-    unless (@customer = Customer.get_customer(params[:customer]))
+    unless (@customer = Customer.find_by_id(params[:customer]))
       flash[:notice] = "Must select a customer to add vouchers"
       redirect_to :controller => 'customers', :action => 'list'
     end
