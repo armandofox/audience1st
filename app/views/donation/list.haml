@@ -10,51 +10,21 @@
   = submit_tag(@export_label) unless @things.empty?
 
 - unless @things.empty?
-%table
-  %thead
-    %tr
-      %th Donor
-      %th Date
-      %th Amount
-      %th Description
-      %th Type
-      %th Ltr Sent? / Processed By
-      %th Comment
-  %tbody 
-    - @things.each do |t|
-    -   c = t.customer 
-    -   if t.kind_of?(Donation) 
-    %tr.oddRow
-      %td= link_to c.full_name, :controller => 'customers', :action => 'welcome', :id => c
-      %td= t.date.strftime("%D")
-      %td{:align => 'right'}= sprintf("%5.0f", t.amount)
-      %td= t.donation_fund.name
-      %td= t.donation_type.name
-      %td
-        %div[t]
-          - c = Customer.find(t.processed_by).login rescue "(ERROR)"
-          - if t.letter_sent
-          =   "#{t.letter_sent.strftime('%D')} by #{c}"
-          - else
-          =   link_to_remote("Mark Sent", :update => "donation_#{t.id}", :url => {:action => :mark_ltr_sent, :id => t.id})
-          = c
-          - end
-      %td= t.comment
-      %td= link_to 'Edit', :action => 'edit', :id => t
-      %td= link_to 'Delete', {:action => 'destroy', :id => t}, :confirm => MESSAGES[:areyousure_0], :post => true
-    -   else
-    %tr.evenRow
-      %td= link_to c.full_name, :controller => 'customers', :action => 'welcome', :id => c    
-      %td= t.showdate.thedate.strftime("%D") 
-      %td{:align=>"right"}= sprintf("%5.0f", t.price)  
-      %td= t.showdate.show.name 
-      %td= t.purchasemethod.description 
-      %td 
-      %td= t.comments 
-      %td 
-      %td 
-    - end
-  - end
-%br
-
-- end
+  %table
+    %thead
+      %tr
+        %th Customer
+        %th Date
+        %th Amount
+        %th Description
+        %th Type
+        %th Ltr Sent? / Processed By
+        %th Comment
+    %tbody 
+      - @things.each do |t|
+        - c = t.customer 
+        - if t.kind_of?(Donation) 
+          = render :partial => 'donation', :object => t
+        - else
+          = render :partial => 'voucher', :object => t
+  %br

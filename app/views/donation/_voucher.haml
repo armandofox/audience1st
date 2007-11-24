@@ -1,0 +1,8 @@
+%tr.evenRow
+  %td= link_to voucher.customer.full_name, :controller => 'customers', :action => 'welcome', :id => voucher.customer
+  %td= voucher.updated_on.strftime("%D")
+  %td{:align=>"right"}= number_to_currency(voucher.price)
+  %td= voucher.showdate.printable_name
+  %td= voucher.purchasemethod.description
+  %td 
+  %td{:colspan=>2}= voucher.comments

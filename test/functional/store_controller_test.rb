@@ -202,7 +202,7 @@ class StoreControllerTest < Test::Unit::TestCase
   end
 
   def test_050_walkup_1
-    simulate_login(:admin)
+    simulate_login(customers(:admin))
     get :walkup
     assert_response :success
     # select a show and showdate that are not the default.  Verify that after a

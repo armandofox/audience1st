@@ -107,7 +107,7 @@ CREATE TABLE `sessions` (
   `updated_at` datetime default NULL,
   PRIMARY KEY  (`id`),
   KEY `sessions_session_id_index` (`session_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9302 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9303 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `showdates` (
   `thedate` datetime default NULL,
@@ -148,7 +148,7 @@ CREATE TABLE `txns` (
   `dollar_amount` float NOT NULL default '0',
   `comments` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11438 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11439 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `valid_vouchers` (
   `showdate_id` int(11) unsigned default NULL,

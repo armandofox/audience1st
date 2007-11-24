@@ -24,7 +24,7 @@ class ShowsControllerTest < Test::Unit::TestCase
     assert_redirected_to :action => :list # only POST allowed for this
     assert_not_nil Show.find_by_id(show.id)
     post :destroy, :id => show.id
-    assert_raise(ActiveRecord::RecordNotFound) { Show.find(@show.id) }
+    assert_raise(ActiveRecord::RecordNotFound) { Show.find(show.id) }
     vv.each do |v|
       assert_raise(ActiveRecord::RecordNotFound) { ValidVoucher.find(v) }
     end
