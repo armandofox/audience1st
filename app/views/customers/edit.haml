@@ -3,7 +3,7 @@
   = error_messages_for :customer
   %br/
   = gen_button  'Change password...', {:action => 'change_password', :id => @customer}
-  - form_tag :action => 'update', :id => @customer do
+  - form_tag :action => 'edit', :id => @customer do
     = render :partial => 'form' 
     - if @is_admin
       = render :partial => 'form_admin'

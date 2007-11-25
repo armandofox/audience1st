@@ -37,8 +37,7 @@
 
   - form_tag :action => (@is_admin ? 'create' : 'user_create') do
     = render :partial => 'form'
-    - if @is_admin
-      = render :partial => 'form_admin' 
+    = render(:partial => 'form_admin') if @is_admin
     = render :partial => 'password' 
     = submit_tag "Create My Account"
     = gen_button  'Cancel', {:action => (@is_admin ? 'list' : 'login') } 

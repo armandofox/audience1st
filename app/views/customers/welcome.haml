@@ -1,13 +1,11 @@
 %h1.bannerHead= link_to 'Subscribe & Save! Click Here to Renew Your Season Tickets for 2008', :controller => 'store', :action =>'subscribe_2008',:id => @customer
 
-
-
 = error_messages_for :customer
 
 %a{:name => :yourTickets}/
 
 #yourTickets.pageDiv
-  %h1= "#{h @customer.first_name}'s Tickets and Reservations"
+  %h1= "#{h @customer.first_name.name_capitalize}'s Tickets and Reservations"
   - if @vouchers.empty?
   %p There are no tickets in your account.
   - else

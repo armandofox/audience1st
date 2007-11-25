@@ -42,7 +42,7 @@ class Customer < ActiveRecord::Base
   validates_columns :formal_relationship
   validates_columns :member_type
 
-  attr_protected :id, :salt, :role, :vouchers, :donations, :validation_level
+  attr_protected :id, :salt, :role, :vouchers, :donations
   attr_accessor :password
 
   @@user_entered_strings =
@@ -357,7 +357,7 @@ class Customer < ActiveRecord::Base
   #bad address. 
   
   def invalid_mailing_address?
-    return (self.validation_level < 1 or self.street.blank? or self.city.blank? or self.state.blank? or self.zip.to_s.length < 5)
+    return (self.street.blank? or self.city.blank? or self.state.blank? or self.zip.to_s.length < 5)
   end
   
   def self.find_subs

@@ -342,7 +342,34 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_equal tom.title, old_title
   end
 
-  def test_0130_name_capitalize
+  def test_0130_customer_change_own_password
+    simulate_logout
+    simulate_login(customers(:tom))
+    finish_password
+  end
+
+  def test_0131_admin_set_customer_password
+    simulate_logout
+    simulate_login(customers(:admin))
+    post :switch_to, :id => customers(:tom)
+    assert_equal customers(:admin).id, session[:admin_id]
+    finish_password
+  end
+
+  def finish_password
+    assert_nothing_raised { post :change_password, :customer=>{} }
+    assert_flash /must set a non-empty password/
+    assert_template 'change_password'
+    post :change_password, :customer=>{:password => 'newpass'}
+    assert_redirected_to :action=>'welcome'
+    # make sure it worked
+    simulate_logout
+    post :login, :customer=>{:login=>customers(:tom).login,:password=>'newpass'}
+    assert_redirected_to :action=>'welcome'
+    assert_equal customers(:tom).id, session[:cid]
+  end
+  
+  def test_0200_name_capitalize
     # this test is here even though the name_capitalize method is actually
     # added to String (by application.rb).  I couldn't think of where else
     # to put this even though it is a unit test.

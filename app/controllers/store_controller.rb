@@ -324,7 +324,6 @@ class StoreController < ApplicationController
     @customer.add_items(@cart.items, logged_in_id,
                         (logged_in_id == @customer.id ? 'cust_web' : 'cust_ph'),
                         @tid)
-    @customer.validation_level = 1 # UGH - address validated
     @customer.save
     @amount = @cart.total_price
     @order_summary = @cart.to_s

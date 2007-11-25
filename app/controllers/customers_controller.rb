@@ -104,47 +104,33 @@ class CustomersController < ApplicationController
 
   # welcome screen: different for nonsubscribers vs. subscribers
   
-  def welcome
-    # welcome screen for nonsubscribers
+  def welcome                   # for nonsubscribers
     @customer = current_customer
     # if customer is a subscriber, redirect to correct page
     redirect_to(:action=>'welcome_subscriber') and return if @customer.is_subscriber?
-    # can also be reached by an admin 'acting on behalf of' a customer.
-    @admin = current_admin
-    @page_title = "Welcome, #{@customer.full_name}"
-    @vouchers = @customer.active_vouchers.sort { |x,y| x.created_on <=> y.created_on }
-    session[:store_customer] = @customer.id
+    setup_for_welcome(@customer)
   end
 
-  def welcome_subscriber
-    # welcome screen for subscribers
+  def welcome_subscriber        # for subscribers
     @customer = current_customer
-    # can also be reached by an admin 'acting on behalf of' a customer.
-    @admin = current_admin
-    # make sure customer is really a subscriber; else, show nonsubscriber page
     redirect_to(:action=>'welcome') and return unless @customer.is_subscriber?
-    @page_title = "Welcome, Subscriber #{@customer.full_name}"
-    @vouchers = @customer.active_vouchers.sort { |x,y| x.created_on <=> y.created_on }
-    session[:store_customer] = @customer.id
+    setup_for_welcome(@customer)
   end
 
-  def update
-    @customer,@is_admin = for_customer(params[:id])
+  def edit
+    @customer = current_customer
+    @is_admin = current_admin.is_staff
+    @superadmin = current_admin.is_admin
+    return unless request.post? # fall thru to showing edit screen
     flash[:notice] = ''
     # squeeze empty-string params into nils.
-    params[:customer].each_pair { |k,v| params[:customer][k] = nil if v.blank? }
+    params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
     # unless admin, remove "extra contact" fields
     unless @is_admin
       Customer.extra_attributes.each { |a| params[:customer].delete(a) }
       flash[:notice] << "Warning: Some new attribute values were ignored<br/>"
     end
     old_login  = @customer.login
-    # make sure user is empowered to do this.
-    unless (params[:id].to_i == session[:cid].to_i) || is_boxoffice
-      flash[:notice] << "You can update only your own contact information."
-      redirect_to :action => 'welcome', :id => @customer
-      return
-    end
     #
     #  special case: updating 'role' (privilege) is protected attrib
     #
@@ -155,7 +141,7 @@ class CustomersController < ApplicationController
         @customer.save!
         confirm = "Role set to #{newrole}<br/>"
         Txn.add_audit_record(:txn_type => 'edit',
-                             :customer_id => params[:id],
+                             :customer_id => @customer.id,
                              :logged_in_id => logged_in_id,
                              :comments => confirm)
         flash[:notice] << confirm
@@ -166,10 +152,10 @@ class CustomersController < ApplicationController
     params[:customer].delete(:comments) unless @is_admin
     # update generic attribs
     # if login is empty - make it nil to avoid failing validation
-    params[:customer].delete(:login) if params[:customer][:login].to_s.empty?
+    params[:customer].delete(:login) if params[:customer][:login].blank?
     if @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => params[:id],
+                           :customer_id => @customer.id,
                            :logged_in_id => logged_in_id)
       flash[:notice] << 'Contact information was successfully updated.'
       if (@customer.login != old_login) && @customer.has_valid_email_address?
@@ -177,10 +163,12 @@ class CustomersController < ApplicationController
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
       end
+      redirect_to :action => 'welcome'
     else                      # update was legal to try, but it failed
-      flash[:notice] << 'Information was NOT updated: ' + @customer.errors.full_messages.join("; ")
+      flash[:notice] << 'Information was NOT updated: ' <<
+        @customer.errors.full_messages.join("; ")
+      redirect_to :action => 'edit'
     end
-    redirect_to :action => 'edit', :id => @customer
   end
     
   def change_password
@@ -191,36 +179,26 @@ class CustomersController < ApplicationController
         flash[:notice] = "You must set a non-empty password."
         render :action => 'change_password'
         return
-      else
-        @customer.password = pass
-        if (@customer.save)
-          flash[:notice] = "Password has been changed."
-          email_confirmation(:send_new_password,@customer,
-                             pass, "changed your password on our system")
-          Txn.add_audit_record(:txn_type => 'edit',
-                               :customer_id => @customer.id,
-                               :comments => 'Change password')
-          redirect_to :action => 'welcome', :id => @customer.id
-        end
+      end
+      @customer.password = pass
+      if (@customer.save)
+        flash[:notice] = "Password has been changed."
+        email_confirmation(:send_new_password,@customer,
+                           pass, "changed your password on our system")
+        Txn.add_audit_record(:txn_type => 'edit',
+                             :customer_id => @customer.id,
+                             :comments => 'Change password')
+        redirect_to :action => 'welcome'
       end
     end
   end
  
-  def edit
-    # an admin can edit any customer from the listing screen, but a non-admin
-    # can only edit their own info and only if already logged in
-    @customer,@is_admin = for_customer(params[:id])
-    # this is the one place the customer's Role (privilege) can be changed
-    @superadmin = is_admin
-  end
-
 
   def user_create
     @customer = Customer.new(params[:customer])
     if (@checkout_in_progress = session[:checkout_in_progress])
       @cart = find_cart
     end
-    @customer.validation_level = 0
     flash[:notice] = ''
     unless @customer.has_valid_email_address?
       flash[:notice] = "Please provide a valid email address as your login ID."
@@ -240,7 +218,7 @@ class CustomersController < ApplicationController
       if session[:checkout_in_progress]
         redirect_to :controller => 'store', :action => 'checkout', :id => @customer.id
       else
-        redirect_to :action => 'welcome', :id => @customer.id
+        redirect_to :action => 'welcome'
       end
     else
       flash[:notice] = "There was a problem creating your account.<br/>"
@@ -249,7 +227,7 @@ class CustomersController < ApplicationController
   end
   
   def new
-    @is_admin = is_boxoffice
+    @is_admin = current_admin.is_boxoffice
     @customer = Customer.new
     if (@checkout_in_progress = session[:checkout_in_progress])
       @cart = find_cart
@@ -260,7 +238,6 @@ class CustomersController < ApplicationController
   # list, switch_to, merge, search, create, destroy
 
   def list
-    @is_admin = is_admin
     @conds,@o, @customers_filter = get_filter_info(params, :customer, :last_name)
     if (@conds)
       @count = Customer.count(:conditions => @conds)
@@ -335,16 +312,14 @@ class CustomersController < ApplicationController
     flash[:notice] = ''
     # if neither email address nor password was given, assign a random
     # password so validation doesn't fail.
-    if params[:customer][:password].to_s.empty? &&
-        params[:customer][:login].to_s.empty?
-        # assign a random password
+    if params[:customer][:password].blank? && params[:customer][:login].blank?
+      # assign a random password
       params[:customer][:login] = nil
       params[:customer][:password] =
         params[:customer][:password_confirmation] = String.random_string(6)
     end
     @customer = Customer.new(params[:customer])
     # then must have a password too....
-    @customer.validation_level = 1 # 1 means hand-validated by staff
     if @customer.save
       flash[:notice] <<  'Account was successfully created.'
       Txn.add_audit_record(:txn_type => 'edit',
@@ -361,9 +336,13 @@ class CustomersController < ApplicationController
     end
   end
 
+  # DANGEROUS METHOD: restricted to super-admin
+  # TBD: what this really should do is link all related stuff to
+  # the placeholder 'walkup customer'
+
   def destroy
-    p = params[:id].to_i
-    if p == logged_in_id.to_i
+    p = session[:cid].to_i
+    if p == logged_in_id
       flash[:notice] = "Can't delete yourself while logged in"
     elsif p.zero?
       flash[:notice] = "Can't delete placeholder customer 0"
@@ -381,6 +360,8 @@ class CustomersController < ApplicationController
   end
 
 
+  #  TBD this method only used by (eg) visits controller to replace-in-place
+  # a customer id with a name. Should be obsoleted.
   def lookup
     if ((params[:id].to_i != 0) && (c=Customer.find_by_id(params[:id])))
       render :text => c.full_name
@@ -389,7 +370,11 @@ class CustomersController < ApplicationController
     end
   end
 
-  # this is an AJAX handler
+  # TBD this is an AJAX handler that is called from the partial
+  #  _validate.rhtml, which can be rendered as part of the customer
+  # _form partial to validate US Mail address.  But first it needs to be
+  # connected to a working validation service!
+  
   def validate_address
     cust = Customer.find(params[:id])
     formdata = "#{cust[:street]}\n#{cust[:city]}, #{cust[:state]} #{cust[:zip]}"
@@ -403,7 +388,6 @@ class CustomersController < ApplicationController
         cust.city = Regexp.last_match(2)
         cust.state = Regexp.last_match(3)
         cust.zip = Regexp.last_match(4)
-        cust.validation_level = 2
       end
     end
     render :partial => 'form', :locals => {:customer => cust }
@@ -411,6 +395,14 @@ class CustomersController < ApplicationController
 
 
   private
+
+  def setup_for_welcome(customer)
+    @admin = current_admin
+    @page_title = sprintf("Welcome, %s#{customer.full_name.name_capitalize}",
+                          customer.is_subscriber? ? 'Subscriber ' : '')
+    @vouchers = customer.active_vouchers.sort { |x,y| x.created_on <=> y.created_on }
+    session[:store_customer] = customer.id
+  end
 
   def forgot_password(login)
     if login.blank?
