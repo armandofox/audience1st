@@ -22,22 +22,7 @@ class CustomersControllerTest < Test::Unit::TestCase
       }}
     simulate_logout
   end
-
-  def change_admin_info(customer, look_for_admin_form, newcomment,newrole)
-    c = customers(customer)
-    get :edit, :id => c.id
-    tags = [{:tag => 'div', :attributes => {:id => 'adminForm'}},
-            {:tag => 'label', :attributes => {:for => 'customer_blacklist'}},
-            {:tag => 'label', :attributes => {:for => 'customer_role'}},
-            {:tag => 'label', :attributes => {:for => 'customer_comments'}}]
-    if look_for_admin_form
-      tags.each { |t| assert_tag t }
-    else
-      tags.each { |t| assert_no_tag t }
-    end
-    post :update, :id => c.id, :customer => {:comments => newcomment, :role => newrole}
-  end
-
+  
   def merge_prep
     params = {
       :v1 => Voucher.create!,
@@ -100,12 +85,12 @@ class CustomersControllerTest < Test::Unit::TestCase
   end
 
   def test_0020_must_be_logged_in
-    [:welcome, :change_password, :list, :show, :edit, :merge].each do |act|
+    [:welcome, :change_password, :list, :edit, :merge].each do |act|
       simulate_logout
       get act
       assert_redirected_to({:action => 'login'}, "(on 'get #{act}')")
     end
-    [:destroy, :create, :update, :merge].each do |act|
+    [:destroy, :create, :merge].each do |act|
       simulate_logout
       post act
       assert_redirected_to({:action => 'login'}, "(on 'post #{act}')")
@@ -121,27 +106,27 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_nil session[:cart]
   end
 
-  def test_0022_effective_logged_in_id
-    simulate_logout
-    tom,admin = customers(:tom),customers(:admin)
-    post :login, :customer=>{:login=>tom.login,:password=>'pass'}
-    assert_redirected_to :action=>'welcome'
-    assert_equal tom.id, logged_in_id
-  end
+#   def test_0022_effective_logged_in_id
+#     simulate_logout
+#     tom,admin = customers(:tom),customers(:admin)
+#     post :login, :customer=>{:login=>tom.login,:password=>'pass'}
+#     assert_redirected_to :action=>'welcome'
+#     assert_equal tom.id, logged_in_id
+#   end
 
-  def test_0023_effective_logged_in_id
-    simulate_logout
-    tom,admin = customers(:tom),customers(:admin)
-    post :login, :customer=>{:login=>admin.login,:password=>'pass'}
-    assert_redirected_to :action=>'list'
-    assert_equal admin.id, logged_in_id
-    # switch to another customer but verify that logged_in_id still points
-    # to admin
-    post :switch_to, :id => tom.id
-    assert_redirected_to :action=>'welcome'
-    assert_not_nil assigns(:customer)
-    assert_equal admin.id, logged_in_id
-  end
+#   def test_0023_effective_logged_in_id
+#     simulate_logout
+#     tom,admin = customers(:tom),customers(:admin)
+#     post :login, :customer=>{:login=>admin.login,:password=>'pass'}
+#     assert_redirected_to :action=>'list'
+#     assert_equal admin.id, logged_in_id
+#     # switch to another customer but verify that logged_in_id still points
+#     # to admin
+#     post :switch_to, :id => tom.id
+#     assert_redirected_to :action=>'welcome'
+#     assert_not_nil assigns(:customer)
+#     assert_equal admin.id, logged_in_id
+#   end
     
   def test_0030_non_admin_cant_view_cust_record
     simulate_login(customers(:tom))
@@ -281,18 +266,44 @@ class CustomersControllerTest < Test::Unit::TestCase
     assert_equal session[:cid], customers(:tom).id
   end
 
-  def test_008_update_login
+  def test_0080_update_login
     # test to make sure an email is generated.
     #flunk
   end
 
-  def test_009_admin_change_customer_role
+  def test_0088_switch_to
     simulate_login(customers(:admin))
+    post :switch_to, :id => customers(:tom2)
+    assert_redirected_to :action=>'welcome'
+    assert_equal session[:cid], customers(:tom2).id
+  end
+
+  def test_0089_switch_to
+    simulate_login(customers(:tom))
+    post :switch_to, :id => customers(:tom2)
+    assert_redirected_to :action => 'login'
+    assert_equal session[:cid], customers(:tom).id
+  end
+
+  # helper method for the following 2 tests
+  def customer_admin_form_tags
+    [{:tag => 'div', :attributes => {:id => 'adminForm'}},
+     {:tag => 'label', :attributes => {:for => 'customer_blacklist'}},
+     {:tag => 'label', :attributes => {:for => 'customer_role'}},
+     {:tag => 'label', :attributes => {:for => 'customer_comments'}}]
+  end
+
+  def test_0090_admin_change_customer_role
+    simulate_login(customers(:admin))
+    c = customers(:tom)
+    post :switch_to, :id => c.id
     newcomment = 'New comment'
     newrole = 'boxoffice'
     assert_not_nil customers(:admin).can_grant(newrole)
-    change_admin_info(:tom,true, newcomment, newrole)
-    c = customers(:tom)
+    get :edit
+    assert_not_nil assigns(:customer)
+    customer_admin_form_tags.each { |t| assert_tag t }
+    post :edit, :customer => {:comments=>newcomment,:role=>newrole}
     c.reload
     assert_equal newcomment, c.comments
     assert_equal Customer.role_value(newrole), c.role
@@ -304,7 +315,8 @@ class CustomersControllerTest < Test::Unit::TestCase
     oldrole = c.role
     newcomment = "Can't change this"
     newrole = 'admin'
-    change_admin_info(:tom,false, newcomment,  newrole)
+    post :edit, :customer => {:comments=>newcomment,:role=>newrole}
+    assert_redirected_to :action => 'welcome'
     c.reload
     assert_equal oldcomment, c.comments
     assert_equal oldrole, c.role
@@ -323,9 +335,8 @@ class CustomersControllerTest < Test::Unit::TestCase
     simulate_login(tom)
     # post update event, should be turned back if not admin
     old_title = tom.title
-    get :edit
-    post( :update, {:id => tom.id,:customer => {:title => "#{old_title}_1"}} )
-    assert_redirected_to :action => 'edit'
+    post( :edit, {:customer => {:title => "#{old_title}_1"}} )
+    assert_redirected_to :action => 'welcome'
     assert_flash /some new attribute values were ignored/i
     tom.reload
     assert_equal tom.title, old_title
