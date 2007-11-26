@@ -1,7 +1,7 @@
 <ul id="storeNav">
-  <%= nav_tabs(['Buy~Tickets', :store, :index, c], 
-               ['My~Tickets', :customers, :welcome, c], 
-               ['Contact~Info', :customers, :edit, c] ) %>
+  <%= nav_tabs(['Buy~Tickets', :store, :index], 
+               ['My~Tickets', :customers, :welcome], 
+               ['Contact~Info', :customers, :edit] ) %>
   <% if logged_in.is_staff %>
   <%= nav_tabs(['Walkup~Sales', :store, :walkup],
                ['Customers', :customers, :list],

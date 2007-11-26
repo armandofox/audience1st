@@ -5,6 +5,7 @@ class StoreController < ApplicationController
   require "money.rb"
   
   before_filter :walkup_sales_filter, :only => %w[walkup do_walkup_sale]
+  before_filter :is_logged_in, :only => %w[not_me edit_billing_address]
   
   if RAILS_ENV == 'production'
     ssl_required :checkout, :place_order, :walkup, :do_walkup_sale
@@ -21,9 +22,8 @@ class StoreController < ApplicationController
          :redirect_to => {:action => 'index'})
 
   def index
-    @customer,@is_admin = for_customer(params[:id])
-    session[:store_customer] = @customer.id
-    @subscriber = @customer && @customer.is_subscriber?
+    @customer = store_customer
+    @subscriber = @customer.is_subscriber?
     @promo_code = session[:promo_code] || nil
     @cart = find_cart
     #
@@ -36,15 +36,16 @@ class StoreController < ApplicationController
     @vouchertypes = nil
   end
 
+  # these are AJAX handlers that just render partials (no views)
   def reset_ticket_menus
-    @customer,@is_admin = for_customer(params[:id])
-    @customer = Customer.find(session[:store_customer]) if session[:store_customer]
-    @subscriber = @customer && @customer.is_subscriber?
+    @customer = store_customer
+    @subscriber = @customer.is_subscriber?
+    is_admin = current_admin.is_boxoffice
     showdates = vouchertypes = show_id = showdate_id = nil
-    shows  = get_all_shows(get_all_showdates(@is_admin))
+    shows  = get_all_shows(get_all_showdates(is_admin))
     unless shows.empty?
       s = shows.first
-      showdates = get_showdates(s.id, @is_admin)
+      showdates = get_showdates(s.id, is_admin)
     end
     render(:partial => 'ticket_menus',
            :locals => {
@@ -55,14 +56,13 @@ class StoreController < ApplicationController
   end
 
   def show_changed
-    @customer,@is_admin = for_customer(params[:id])
-    @customer = Customer.find(session[:store_customer]) if session[:store_customer]
-    @subscriber = @customer && @customer.is_subscriber?
-    #@is_admin = Customer.find(logged_in_id).is_boxoffice
+    @customer = current_customer || Customer.walkup_customer
+    @subscriber = @customer.is_subscriber?
+    is_admin = current_admin.is_boxoffice
     show_id = params[:show_id].to_i
-    @shows = get_all_shows(get_all_showdates(@is_admin))
+    @shows = get_all_shows(get_all_showdates(is_admin))
     if show_id > 0
-      @showdates = get_showdates(show_id, @is_admin)
+      @showdates = get_showdates(show_id, is_admin)
     else
       @showdates = nil
       show_id = nil
@@ -77,16 +77,16 @@ class StoreController < ApplicationController
   end
 
   def showdate_changed
-    @customer,@is_admin = for_customer(params[:id])
-    @customer = Customer.find(session[:store_customer]) if session[:store_customer]
-    @subscriber = @customer && @customer.is_subscriber?
+    @customer = current_customer || Customer.walkup_customer
+    @subscriber = @customer.is_subscriber?
+    is_admin = current_admin.is_boxoffice
     showdate_id = params[:showdate_id].to_i
     if showdate_id > 0
       @vouchertypes = ValidVoucher.numseats_for_showdate(showdate_id, @customer,
-                                                         :ignore_cutoff => @is_admin)
+                                                         :ignore_cutoff => is_admin)
       show_id = Showdate.find(showdate_id).show_id
       # if not staff, strip out stuff they shouldn't see
-      @vouchertypes.reject! { |av| av.staff_only } unless @is_admin
+      @vouchertypes.reject! { |av| av.staff_only } unless is_admin
       # if vouchertypes with promo code, only show if promo code supplied
       @vouchertypes.reject! do |av|
         (codes = av.promo_codes) &&
@@ -98,9 +98,9 @@ class StoreController < ApplicationController
     end
     render(:partial => 'ticket_menus',
            :locals => {
-             :shows => get_all_shows(get_all_showdates(@is_admin)),
+             :shows => get_all_shows(get_all_showdates(is_admin)),
              :show_id => show_id,
-             :showdates => get_showdates(show_id, @is_admin),
+             :showdates => get_showdates(show_id, is_admin),
              :showdate_id => showdate_id,
              :subscriber => @subscriber,
              :vouchertypes => @vouchertypes
@@ -116,14 +116,13 @@ class StoreController < ApplicationController
     if !code.empty?
       session[:promo_code] = code
     end
-    redirect_to :action => 'index', :id => params[:id]
-    #render( :partial => 'promo_entry', :locals => {:promo_code => code})
+    redirect_to :action => 'index'
   end
 
   def subscribe_2008
-    @customer,@is_admin = for_customer(params[:id])
-    session[:store_customer] = @customer.id
-    @subscriber = @customer && @customer.is_subscriber?
+    @customer = store_customer
+    @subscriber = @customer.is_subscriber?
+    is_admin = current_admin.is_boxoffice
     @cart = find_cart
     @renew_discount_date = Date.new(2007, 9, 30)
     subs = {
@@ -134,57 +133,6 @@ class StoreController < ApplicationController
     @subs_to_offer = Vouchertype.find_products(subs).sort_by { |v| v.price }.reverse
   end
 
-  # RSS feed of ticket availability info
-  def ticket_rss
-    @venue = APP_CONFIG[:venue]
-    # what are the next N shows?
-    now = Time.now
-    end_date = now.next_year.at_beginning_of_year
-    showdates =
-      Showdate.find(:all,
-                    :conditions => ["thedate > ? AND thedate < ?", now, end_date],
-                    :order => "thedate")
-    @showdate_avail = []
-    unless showdates.nil? || showdates.empty?
-      showdates.each do |sd|
-        case sd.availability_in_words
-        when :sold_out
-          desc,link = "SOLD OUT", false
-        when :nearly_sold_out
-          desc,link = "Nearly sold out", true
-        else
-          desc,link = "Available", true
-        end
-        if link
-          desc << " - " << (sd.advance_sales? ? "Buy online now" :
-                            "Advance sales ended (Tickets may be available at box office)")
-        end
-        @showdate_avail << [sd, desc, link]
-      end
-    end
-    render :layout => false
-  end
-
-  def ticket_vxml
-    @venue = APP_CONFIG[:venue]
-    @xferphone = APP_CONFIG[:venue_telephone]
-    # just check shows thru "this weekend"
-    end_date = (Time.now + 1.day + 1.week).at_beginning_of_week
-    showdates = Showdate.find(:all, :conditions =>
-                              ["thedate BETWEEN ? and ?", Time.now, end_date],
-                              :order => "thedate" )
-    if (showdates.nil? || showdates.empty?)
-      @next_perf = Showdate.find(:first, :order => 'thedate',
-                                 :conditions => ["thedate >?",Time.now])
-      render :template => "ticket_noperfs_vxml", :layout => false
-    else
-      @showdates_info = showdates.map do |s|
-        [s.speak, s.availability_in_words, s.advance_sales? ]
-      end
-      render :layout => false
-    end
-  end
-  
   def add_subscriptions_to_cart
     @cart = find_cart
     qty = params[:subscription_qty].to_i
@@ -204,18 +152,16 @@ class StoreController < ApplicationController
   end
       
   def add_tickets_to_cart
-    @cart = find_cart
-    @customer,@is_admin = for_customer(params[:id])
+    @customer = store_customer
+    @is_admin = current_admin.is_boxoffice
     qty = params[:qty].to_i
     vtype = params[:vouchertype_id].to_i
     showdate_id = params[:showdate_id].to_i
 
-    if  vtype.to_i.zero?
-      flash[:ticket_error] = 'Please select show, date, and type of ticket first.'
-    elsif ! Vouchertype.find_by_id(vtype)
-      flash[:ticket_error] = "Sorry, you're not authorized to purchase that ticket type."
+    if  vtype.zero?
+      flash[:ticket_error]='Please select show, date, and type of ticket first.'
     elsif qty < 1 || qty > 99
-      flash[:ticket_error] = 'Must order between 1 and 99 tickets.'
+      flash[:ticket_error] = 'Please specify between 1 and 99 tickets.'
     else
       av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,@customer,vtype,:ignore_cutoff => @is_admin)
       if av.howmany.zero?
@@ -226,16 +172,17 @@ class StoreController < ApplicationController
         # was a promo code necessary to select this vouchertype?
         promo_code = ((session[:promo_code] && av.promo_codes) ?
                       session[:promo_code].upcase : nil)
+        cart = find_cart
         1.upto(qty) do
-          @cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
+          cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
         end
       end
     end
-    redirect_to :action => 'index', :id => params[:id]
+    redirect_to :action => 'index'
   end
 
   def add_donation_to_cart
-    @cart = find_cart
+    cart = find_cart
     params[:donation] = {
       :amount => amount_from_selects(params[:d]),
       :donation_fund_id => DonationFund.default_fund_id
@@ -243,15 +190,15 @@ class StoreController < ApplicationController
     if params[:donation][:amount] > 0
       params[:donation].merge!({ :date => Time.now, :donation_type_id => 1 })
       d = Donation.new(params[:donation])
-      @cart.add(d)
+      cart.add(d)
     end
-    redirect_to :action =>(params[:redirect_to] || 'index'), :id => params[:id]
+    redirect_to :action =>(params[:redirect_to] || 'index')
   end
 
   def checkout
-    @cust,@is_admin = for_customer(params[:id])
+    @cust = store_customer
     @cart = find_cart
-    @sales_final_acknowledged = (params[:sales_final].to_i > 0)
+    @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     if @cart.is_empty?
       flash[:notice] = "There is nothing in your cart."
       redirect_to :action => 'index', :id => params[:id]
@@ -259,27 +206,26 @@ class StoreController < ApplicationController
     end
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
-    if @cust.is_walkup_customer?
-      @cust = Customer.new
-      session[:checkout_in_progress] = true
-      flash[:notice] = "Please sign in, or create an account if you don't already have one, so we can help you track your reservations and take advantage of ticket discounts.  We never share this information with anyone."
-      redirect_to :controller => 'customers', :action => 'login'
-      return
-    end
-    # else fall thru to checkout screen
+    redirect_to :action => 'not_me' and return if nobody_really_logged_in
+    # else reset flag indicating 'login needed', fall thru to checkout screen
     session[:checkout_in_progress] = false
   end
 
   def not_me
     @cust = Customer.new
     session[:checkout_in_progress] = true
-    flash[:notice] = "Please sign in, or create an account if you don't already have one, so we can help you track your reservations and take advantage of ticket discounts.  We never share this information with anyone."
+    flash[:notice] = "Please sign in, or create an account if you don't already have one, to enter your credit card billing address.  We never share this information with anyone."
     redirect_to :controller => 'customers', :action => 'login'
   end
-  
+
+  def edit_billing_address
+    session[:checkout_in_progress] = true
+    flash[:notice] = "Please enter your credit card billing address and click 'Save Changes' when done to continue with your order."
+    redirect_to :controller => 'customers', :action => 'edit'
+  end
+
   def place_order
     @cart = find_cart
-    id = params[:id]
     sales_final = params[:sales_final]
     @bill_to = params[:customer]
     cc_info = params[:credit_card].symbolize_keys
@@ -294,35 +240,34 @@ class StoreController < ApplicationController
     # billing address appears to be a well-formed address
     unless (errors = do_prevalidations(params, @cart, @bill_to, cc)).empty?
       flash[:notice] = errors
-      redirect_to :action => 'checkout', :id => id, :sales_final => sales_final
+      redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
     #
     # basic prevalidations OK, continue with customer validation
     #
-    @customer, @is_admin = (params[:id] ?
-                            for_customer(params[:id]) :
-                            [Customer.new_or_find(params[:customer]), nil])
+    @customer = current_customer
+    @is_admin = current_admin.is_boxoffice
     unless @customer.kind_of?(Customer)
       flash[:notice] = @customer
-      redirect_to :action => 'checkout', :id => id, :sales_final => sales_final
+      redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
     # OK, we have a customer record to tie the transaction to
     resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to)
     if !resp.success?
-      flash[:notice] = "PAYMENT GATEWAY ERROR: " << resp.message
+      flash[:notice] = "Payment gateway error: " << resp.message
       flash[:notice] << "<br/>Please contact your credit card
         issuer for assistance."  if resp.message.match(/decline/i)
       logger.info("Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
-      redirect_to :action => 'checkout', :id => @customer.id, :sales_final => sales_final
+      redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
     #     All is well, fall through to confirmation
     #
     @tid = resp.params['transaction_id'] || '0'
     @customer.add_items(@cart.items, logged_in_id,
-                        (logged_in_id == @customer.id ? 'cust_web' : 'cust_ph'),
+                        (current_admin.is_boxoffice ? 'cust_ph' : 'cust_web'),
                         @tid)
     @customer.save
     @amount = @cart.total_price
@@ -332,25 +277,18 @@ class StoreController < ApplicationController
                        @amount, "Credit card ending in #{@cc_number[-4..-1]}")
     @cart.empty!
     session[:promo_code] =  nil
-    session[:store_customer] = nil
-  end
-
-  def show_cart
-    cart = find_cart
-    breakpoint
-    render :text => "<pre> #{cart.to_s} </pre>"
   end
 
   def remove_from_cart
     @cart = find_cart
     @cart.remove_index(params[:item])
-    redirect_to :action => (params[:redirect_to] || 'index'), :id => params[:id]
+    redirect_to :action => (params[:redirect_to] || 'index')
   end
 
   def empty_cart
     session[:cart] = Cart.new
     session[:promo_code] = nil
-    redirect_to :action => (params[:redirect_to] || 'index'), :id => params[:id]
+    redirect_to :action => (params[:redirect_to] || 'index')
   end
 
   def walkup
@@ -359,7 +297,7 @@ class StoreController < ApplicationController
     @ip = request.remote_ip
     # generate one-time pad for encrypting CC#s
     session[:otp] = @otp = String.random_string(256)
-    now = Time.now - 1.hour
+    now = Time.now
     @showdates = Showdate.find(:all,:conditions => ["thedate >= ?", now-1.week])
     @shows = get_all_shows(@showdates).map  { |s| [s,@showdates.select { |sd| sd.show_id == s.id } ]}
     @vouchertypes = Vouchertype.find(:all, :conditions => ["is_bundle = ? AND walkup_sale_allowed = ?", false, true])
@@ -434,7 +372,10 @@ class StoreController < ApplicationController
       howpurchased = Purchasemethod.get_type_by_name('walk_cash')
       flash[:notice] = "Cash purchase recorded, "
     end
+    #
     # add tickets to "walkup customer"'s account
+    # TBD CONSOLIDATE this with 'place_order' code for normal orders
+    #
     unless (vouchers.empty?)
       vouchers.each do |v|
         if v.kind_of?(Voucher)
@@ -461,6 +402,7 @@ class StoreController < ApplicationController
                 :show => params[:show_select])
   end
 
+  # AJAX handler called when credit card is swiped thru USB reader
   def process_swipe
     swipe_data = String.new(params[:swipe_data])
     key = session[:otp].to_s
@@ -473,10 +415,67 @@ class StoreController < ApplicationController
     end
   end
 
-  def dummy
-    @amount= 50.00
-    @cc_number='xxxxxxxxx'
-    render :action => 'place_order'
+  # RSS feed of ticket availability info: renders an XML view for external use
+  def ticket_rss
+    now = Time.now
+    end_date = now.next_year.at_beginning_of_year
+    showdates =
+      Showdate.find(:all,
+                    :conditions => ["thedate BETWEEN ? AND ?", now, end_date],
+                    :order => "thedate")
+    @showdate_avail = []
+    showdates.each do |sd|
+      case sd.availability_in_words
+      when :sold_out
+        desc,link = "SOLD OUT", false
+      when :nearly_sold_out
+        desc,link = "Nearly sold out", true
+      else
+        desc,link = "Available", true
+      end
+      if link
+        desc << " - " << (sd.advance_sales? ? "Buy online now" :
+                          "Advance sales ended (Tickets may be available at box office)")
+      end
+      @showdate_avail << [sd, desc, link]
+    end
+    @venue = APP_CONFIG[:venue]
+    render :layout => false
+  end
+
+  # supports VXML voice playback of available shows
+  def ticket_vxml
+    @venue = APP_CONFIG[:venue]
+    @xferphone = APP_CONFIG[:venue_telephone]
+    # just check shows thru "this weekend"
+    end_date = (Time.now + 1.day + 1.week).at_beginning_of_week
+    showdates = Showdate.find(:all, :conditions =>
+                              ["thedate BETWEEN ? and ?", Time.now, end_date],
+                              :order => "thedate" )
+    if (showdates.nil? || showdates.empty?)
+      @next_perf = Showdate.find(:first, :order => 'thedate',
+                                 :conditions => ["thedate >?",Time.now])
+      render :template => "ticket_noperfs_vxml", :layout => false
+    else
+      @showdates_info = showdates.map do |s|
+        [s.speak, s.availability_in_words, s.advance_sales? ]
+      end
+      render :layout => false
+    end
+  end
+  
+  private
+
+  # Customer on whose behalf the store displays are based (for special
+  # ticket eligibility, etc.)  Current implementation: same as the active
+  # customer, if any; otherwise, the walkup customer.
+  # INVARIANT: this MUST return a valid Customer record.
+  def store_customer
+    current_customer || Customer.walkup_customer
+  end
+
+  def nobody_really_logged_in
+    session[:cid].nil? || session[:cid].to_i.zero?
   end
 
   def encrypt_with(orig,pad)
@@ -535,41 +534,27 @@ class StoreController < ApplicationController
   end
 
   def do_prevalidations(params,cart,billing_info,cc)
-    err = ''
+    err = []
     if cart.total_price <= 0
-      #
-      #  BEGIN CHECKS:
-      #  total amount to be charged >= 0
-      #
-      err = "Total amount of sale must be greater than zero."
-    elsif params[:sales_final].to_i.zero?
-      #
-      #  customer must accept Sales Final policy
-      #
-      err = "Please indicate your acceptance of our Sales Final policy "
-      err << "by checking the box."
-    elsif ! cc.valid?
-      #
-      #  CC# appears to be well formed
-      #
-      err = "Please provide valid credit card information:<br/>" + 
-        cc.errors.full_messages.join("<br/>")
-    elsif !prevalidate_billing_addr(billing_info)
-      #
-      #  Billing address appears to be a valid address
-      #
+      err << "Total amount of sale must be greater than zero."
+    end
+    if params[:sales_final].to_i.zero?
+      err << "Please indicate your acceptance of our Sales Final policy by checking the box."
+    end
+    if ! cc.valid?              # format check on credit card number
+      err << ("Please provide valid credit card information:<br/>" + 
+              cc.errors.full_messages.join("<br/>"))
+    end
+    if !prevalidate_billing_addr(billing_info)
       err = 'Please provide a valid billing name and address.'
     end
-    return err
-  end
-  
-  def prevalidate_credit_card(ccinfo)
+    return err.join("<br/>")
   end
 
-  def prevalidate_billing_addr(billinfo)
-    true
-  end
+  # TBD this should try to prevalidate that the address looks reasonable
+  def prevalidate_billing_addr(billinfo) ;   true ;  end
 
+  # the next two functions actually call the payment gateway
   def do_cc_present_transaction(amount, cc)
     params = {
       :order_id => '999',
@@ -609,6 +594,10 @@ class StoreController < ApplicationController
     response = gateway.purchase(amount, cc, params)
   end
                                 
+  # helpers for the AJAX handlers. These should probably be moved
+  # to the respective models for shows and showdates, or called as
+  # helpers from the views directly.
+
   def get_all_shows(showdates)
     return showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
   end
@@ -634,25 +623,19 @@ class StoreController < ApplicationController
     return Vouchertype.find(:all, :conditions => ["is_bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.is_subscriber? ? 0 : 1)])
   end
   
-  # helper: given array of showdates, produce an array each of whose
-  # elements is an array [show, [showdate1,...,showdateN]]
-
-  def parent_child_array(children,parent_method)
-    return nil if (children.nil? || children.empty?)
-    parents = children.map { |s| s.send(parent_method) }.uniq
-    parents.map { |s| [s,children.select { |x| x.send("#{parent_method}_id") == s.id } ] }
-  end
-  
   # filter for walkup sales: requires specific privilege OR allows
   # anyone from selected IP addresses
 
   def walkup_sales_filter
-    unless is_walkup or APP_CONFIG[:walkup_locations].include?(request.remote_ip)
+    unless (current_admin.is_walkup ||
+            APP_CONFIG[:walkup_locations].include?(request.remote_ip))
       flash[:notice] = 'To process walkup sales, you must either sign in with
         Walkup Sales privilege OR from an approved walkup sales computer.'
       session[:return_to] = request.request_uri
       redirect_to :controller => 'customers', :action => 'login'
     end
   end
+
+
 
 end

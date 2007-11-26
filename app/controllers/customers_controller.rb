@@ -63,13 +63,12 @@ class CustomersController < ApplicationController
         action = 'welcome'
       end
       if @checkout_in_progress
-        redirect_to(:controller => 'store', :action => 'checkout', :id => c.id)
+        redirect_to :controller => 'store', :action => 'checkout'
         return
       end
       # authentication succeeded, and customer is NOT in the middle of a
       # store checkout. Proceed to welcome page.
       session[:promo_code] = nil
-      session[:store_customer] = nil
       redirect_to :action => action
       return
     else
@@ -105,6 +104,10 @@ class CustomersController < ApplicationController
   # welcome screen: different for nonsubscribers vs. subscribers
   
   def welcome                   # for nonsubscribers
+    # if a checkout is in progress, customer was redirected here from
+    # either signing up for new account, or modifying billing address
+    # for CC purchase.  In that case, return to checkout flow.
+    redirect_to(:controller=>'store',:action=>'checkout') and return if session[:checkout_in_progress]
     @customer = current_customer
     # if customer is a subscriber, redirect to correct page
     redirect_to(:action=>'welcome_subscriber') and return if @customer.is_subscriber?

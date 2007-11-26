@@ -1,18 +1,10 @@
-- if @checkout_in_progress 
+- unless @checkout_in_progress
 
-.pageDiv
-  %h1 Please sign in or create account to complete checkout
-  = render :partial => 'store/cart', :locals => {:editable => false}
-
-- else
-
-%h1.banner Welcome to Altarena's Online Box Office
-%p 
-  Sign in or create your account, or
-  = gen_button "Click Here to Buy Tickets Now", {:controller => 'store', :action => 'index' }
-  and create your account later.
-
-- end
+  %h1.banner Welcome to Altarena's Online Box Office
+  %p 
+    Sign in or create your account, or
+    = gen_button "Click Here to Buy Tickets Now", {:controller => 'store', :action => 'index' }
+    and create your account later.
 
 #loginDiv.pageDiv
   %h1 Sign In or Create Account

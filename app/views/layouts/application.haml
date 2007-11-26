@@ -20,8 +20,14 @@
     - if c && (session[:cid] != 0)
       = render :partial => 'layouts/login_banner', :locals => {:c => c,:logged_in=>logged_in}
       = render :partial => 'layouts/storenav', :locals => {:admin=>admin,:c=>c,:logged_in=>logged_in}
+
     - unless flash[:notice].blank?
       %p.infoMsg{:clear=>:both}= flash[:notice]
+
+    - if session[:checkout_in_progress]
+      .pageDiv
+        %h1 Your Order So Far
+        = render :partial => 'store/cart', :locals => {:editable => false,:cart=>session[:cart]}
 
     = yield 
 

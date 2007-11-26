@@ -100,31 +100,6 @@ class ApplicationController < ActionController::Base
     amt
   end
 
-  def for_customer(id, lvl=:is_boxoffice)
-    @cust = nil
-    @is_admin = false
-    is_admin_method = method(lvl)
-    begin
-      if (is_admin_method.call && id)
-        @cust = Customer.find(id)
-        @is_admin = true
-      elsif session[:cid]
-        @cust = Customer.find(session[:cid])
-        @is_admin = is_admin_method.call
-      elsif id.nil?
-        @cust = Customer.generic_customer
-        @is_admin = false
-      else
-        @cust = Customer.generic_customer
-        @is_admin = false
-      end
-    rescue
-      @cust = Customer.generic_customer
-      @is_admin = false
-    end
-    return @cust,@is_admin
-  end
-
   # filter that requires user to login before accessing account
   
   def is_logged_in
@@ -185,10 +160,9 @@ EOEVAL
   end
    
   # current_customer is only called from controller actions filtered by
-  # is_logged_in, so the find() should never fail.  We deliberately
-  # leave it unprotected so we'll know if it does fail.
+  # is_logged_in, so the find should never fail.
   def current_customer
-    Customer.find(session[:cid].to_i)
+    Customer.find_by_id(session[:cid].to_i)
   end
 
   # current_admin is called from controller actions filtered by is_logged_in,

@@ -12,16 +12,14 @@
 
 %p
   %strong If you purchased one or more subcriptions,
-  you'll receive a  brochure, show calendar, and other materials 
-  by mail in about 4 weeks, and you'll be able to 
-  make reservations for 2008 shows as soon as you receive your
+  you'll be able to 
+  make reservations for shows as soon as you receive your
   Subscriber Kit in December.
 
 %center
   - if @is_admin
-  = admin_button('Back to Customer List', {:controller => 'customers', :action => 'list'})
-  = admin_button('Back to This Customer', {:controller => 'customers', :action => 'welcome', :id => @customer })
+    = admin_button('Back to Customer List', {:controller => 'customers', :action => 'list'})
+    = admin_button('Back to This Customer', {:controller => 'customers', :action => 'welcome' })
   - else
-  = gen_button('Back to My Tickets and Reservations', {:controller => 'customers', :action => 'welcome', :id => @customer })
-  = gen_button('Make Another Purchase', {:controller => 'store', :action => 'index', :id => @customer})
-  - end
+    = gen_button('Back to My Tickets and Reservations', {:controller => 'customers', :action => 'welcome' })
+    = gen_button('Make Another Purchase', {:controller => 'store', :action => 'index'})
