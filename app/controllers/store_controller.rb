@@ -463,6 +463,17 @@ class StoreController < ApplicationController
       render :layout => false
     end
   end
+
+  # iCal-compatible feed of upcoming shows
+  def calendar_ical
+    this_year = Time.now.at_beginning_of_year
+    @venue = APP_CONFIG[:venue]
+    @showdates =
+      Showdate.find(:all, :conditions => ['thedate BETWEEN ? AND ?',
+                                          this_year, this_year + 1.year],
+                    :order => 'thedate')
+    render :layout => false
+  end
   
   private
 
