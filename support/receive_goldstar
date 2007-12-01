@@ -13,6 +13,5 @@ else
     env=production
     dir=current
 fi
-cd /home/audienc/rails/vbo/$dir
 # bug: should deduce path to script/runner dir as $ARGV[0]/..
-RAILS_ENV=$env ruby script/runner 'EmailGoldstar.receive(STDIN.read)' >/dev/null 2>&1
+RAILS_ENV=$env /usr/local/bin/ruby /home/audienc/rails/vbo/current/script/runner 'EmailGoldstar.receive(STDIN.read)' >/dev/null 2>&1
