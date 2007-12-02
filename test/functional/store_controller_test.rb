@@ -30,8 +30,9 @@ class StoreControllerTest < Test::Unit::TestCase
     simulate_login(customers(:tom))
     get :index
     assert_response :success
-    assert_tag(:tag => 'a', :content => /Tom\s+Foolery/i,
-               :parent => {:tag => 'td', :attributes => {:id => 'welcome'}})
+    assert_tag(:tag => 'td', :content => /Tom\s+Foolery/i,
+               :attributes => {:id => 'welcome'},
+               :parent => {:tag => 'tr'})
   end
 
   def test_0013_sanitycheck_postactions
@@ -80,7 +81,7 @@ class StoreControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_010_which_shows_listed
+  def test_0100_which_shows_listed_nonadmin
     simulate_login(customers(:tom))
     get :index
     assert_response :success
@@ -90,11 +91,15 @@ class StoreControllerTest < Test::Unit::TestCase
     assert_tag :tag => 'select', :attributes => {:name => 'show_id'}
     assert_tag :tag => 'option', :content => shows(:upcoming_musical).name, :attributes => {:value => shows(:upcoming_musical).id.to_s }
     assert_no_tag :tag => 'option', :content => shows(:past_musical).name
+  end
+
+  def test_0101_which_shows_listed_admin
     # for an admin, all shows should be visible
     simulate_logout
     simulate_login(customers(:admin))
     get :index
     assert_response :success
+    assert_tag :tag => 'select', :attributes => {:name => 'show_id'}
     assert_tag  :tag => 'option', :content => shows(:past_musical).name
   end
 

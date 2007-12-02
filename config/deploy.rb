@@ -25,6 +25,7 @@ deploy.task :after_update_code do
   #run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
   run "mv #{release_path}/config/database.yml.production #{release_path}/config/database.yml"
   run "mv #{release_path}/public/dispatch.fcgi.production #{release_path}/public/dispatch.fcgi"
+  run "rm -rf #{release_path}/manual #{release_path}/doc #{release_path}/about"
 end
 
 deploy.task :restart do

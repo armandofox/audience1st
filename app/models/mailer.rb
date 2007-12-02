@@ -47,6 +47,19 @@ class Mailer < ActionMailer::Base
                  )
   end
   
+  def pending_followups(who, visits)
+    @recipients = who
+    @from = 'AutoConfirm@audience1st.com' # bug
+    @headers = {}
+    today = Date.today
+    @subject = "Followup visits reminder"
+    @body = {
+      :visits => visits,
+      :who => who,
+      :today => Time.now
+    }
+  end
+
   def sending_to(recipient)
     @recipients = recipient.kind_of?(Customer)? recipient.login : recipient.to_s
     @from = 'AutoConfirm@audience1st.com'

@@ -1,7 +1,6 @@
 .pageDiv
-  %h1= "Review Your Order"
   = render :partial => 'cart'
-  = link_to 'Make Changes',{:action=>'index',:id=>@cust}, :class => 'genButton' 
+  = link_to 'Make Changes',{:action=>'index'}, :class => 'genButton' 
   - form_tag :action => 'place_order' do
     %table
       %tr
@@ -19,7 +18,6 @@
             %li We do not store your card number after completing your purchase.
             %li Our transactions are securely processed through Authorize.net.
           = render :partial => 'credit_card'
-          = hidden_field_tag 'id', @cust.id
       %tr
         %td{:colspan=>2,:align=>:center}
           = check_box_tag 'sales_final',1,@sales_final_acknowledged

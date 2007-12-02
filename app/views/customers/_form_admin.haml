@@ -16,6 +16,10 @@
     %br/
     =text_area :customer, :comments, :cols => 60, :rows => 5
 
+  %p.adminField
+    =check_box_tag 'dont_send_email'
+    %label{:for=>:dont_send_email}  DON'T email customer a confirmation of these changes
+
   %p=button_to_function "Extra Contact Info...", visual_effect(:toggle_slide, :contact)
 
   #contact{:style => "display: none;"}

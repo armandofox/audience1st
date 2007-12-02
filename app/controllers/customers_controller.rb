@@ -108,14 +108,14 @@ class CustomersController < ApplicationController
     # either signing up for new account, or modifying billing address
     # for CC purchase.  In that case, return to checkout flow.
     redirect_to(:controller=>'store',:action=>'checkout') and return if session[:checkout_in_progress]
-    @customer = current_customer
+    @customer = @gCustomer
     # if customer is a subscriber, redirect to correct page
     redirect_to(:action=>'welcome_subscriber') and return if @customer.is_subscriber?
     setup_for_welcome(@customer)
   end
 
   def welcome_subscriber        # for subscribers
-    @customer = current_customer
+    @customer = @gCustomer
     redirect_to(:action=>'welcome') and return unless @customer.is_subscriber?
     setup_for_welcome(@customer)
   end
@@ -161,7 +161,8 @@ class CustomersController < ApplicationController
                            :customer_id => @customer.id,
                            :logged_in_id => logged_in_id)
       flash[:notice] << 'Contact information was successfully updated.'
-      if (@customer.login != old_login) && @customer.has_valid_email_address?
+      if (@customer.login != old_login) && @customer.has_valid_email_address? &&
+          params[:dont_send_email].blank?
         # send confirmation email
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
@@ -330,8 +331,10 @@ class CustomersController < ApplicationController
                            :comments => 'new customer added',
                            :logged_in_id => logged_in_id)
       # if valid email, send user a welcome message
-      email_confirmation(:send_new_password,@customer,
-                         params[:customer][:password],"set up an account with us")
+      unless params[:dont_send_email]
+        email_confirmation(:send_new_password,@customer,
+                           params[:customer][:password],"set up an account with us")
+      end
       redirect_to :action => 'welcome', :id => @customer.id
     else
       flash[:notice] << 'Errors creating account'

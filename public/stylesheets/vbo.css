@@ -41,7 +41,7 @@ input[type="submit"] {
   border: none;
   background: none;              
   font-size: large;
-  font-weight: bold
+  font-weight: bold;
   color: red;
 }
 
@@ -160,7 +160,7 @@ submit:hover {
   background-color: #e0e0e0;
   color: black;
   line-height: 1.5em;
-  border: 1px solid grey;  
+  border: 1px solid gray;  
   padding: 2px;
   text-align: center;
 }
@@ -185,7 +185,6 @@ submit:hover {
    clear: both;
    padding: 2px 10px;
    background-color: yellow;            
-   #font-size: larger;
 }
 
 .ccAlert { 
@@ -258,7 +257,7 @@ th {
 
 .wideCell { 
   width: 50%;
-  border: 1px solid grey;
+  border: 1px solid gray;
   vertical-align: top;
   padding: 2px 2px;
   margin: 2px 2px;
@@ -291,7 +290,7 @@ th {
   margin: 0 0 10px 0;
   padding: 10px 0 0 10px;
   list-style: none;
-  border-bottom: 1px solid grey;
+  border-bottom: 1px solid gray;
  }
 
 #storeNav li.disabled { 
@@ -300,7 +299,7 @@ th {
   text-align: center;
   margin: 0 4px 0 0;
   padding: 4px 8px;
-  border: 1px solid grey;
+  border: 1px solid gray;
   border-bottom: none;
   font-family: "Arial Narrow", sans-serif;
   font-size: larger;
@@ -324,7 +323,7 @@ th {
   padding: 4px 8px;
   color: #333;
   text-decoration: none;
-  border: 1px solid grey;
+  border: 1px solid gray;
   border-bottom: none;
  }
 
@@ -351,7 +350,7 @@ div.progressBar {
 
 div.progressBar div.border {
   background-color: #fff;
-  border: 1px solid grey;
+  border: 1px solid gray;
   width: 100%;
 }
 
@@ -362,11 +361,11 @@ div.progressBar div.background {
 }
 
 .loginTable { 
-  border: 1px solid grey;
+  border: 1px solid gray;
  }
 
 .loginTableCell { 
-  border: 1px solid grey;
+  border: 1px solid gray;
   vertical-align: top
 }
 

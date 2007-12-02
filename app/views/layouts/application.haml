@@ -1,7 +1,8 @@
 !!! Strict
-%html
+%html{:xmlns=>"http://www.w3.org/1999/xhtml","xml:lang"=>:en,:lang=>:en}
   %head
-    = stylesheet_link_tag 'vbo'
+    - unless mobile_user_agent?(controller.request.user_agent)
+      = stylesheet_link_tag 'vbo'
     = javascript_include_tag :defaults 
 
     %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.capitalize) 
@@ -11,23 +12,17 @@
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(RAILS_ENV != 'production' ? :testing : nil)}
 
-    - c = Customer.find_by_id(session[:cid] || Customer.nobody_id)
-    - if (admin=Customer.find_by_id(session[:admin_id]))
-      - logged_in = admin
-    - else
-      - logged_in = c
-
-    - if c && (session[:cid] != 0)
-      = render :partial => 'layouts/login_banner', :locals => {:c => c,:logged_in=>logged_in}
-      = render :partial => 'layouts/storenav', :locals => {:admin=>admin,:c=>c,:logged_in=>logged_in}
+    - if @gCustomer
+      = render :partial => 'layouts/login_banner', :locals => {:c => @gCustomer,:logged_in=>@gLoggedIn}
+      = render :partial => 'layouts/storenav', :locals => {:admin=>@gAdmin,:c=>@gCustomer,:logged_in=>@gLoggedIn}
 
     - unless flash[:notice].blank?
       %p.infoMsg{:clear=>:both}= flash[:notice]
 
-    - if session[:checkout_in_progress]
+    - if @gCheckoutInProgress
       .pageDiv
         %h1 Your Order So Far
-        = render :partial => 'store/cart', :locals => {:editable => false,:cart=>session[:cart]}
+        = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
 
     = yield 
 

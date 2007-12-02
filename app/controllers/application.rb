@@ -60,6 +60,17 @@ class ApplicationController < ActionController::Base
   include ActiveMerchant::Billing
   include SslRequirement
   require 'csv.rb'
+
+  before_filter :set_globals
+
+  def set_globals
+    @gCustomer = current_customer
+    @gAdmin = current_admin
+    @gCart = find_cart
+    @gCheckoutInProgress = session[:checkout_in_progress]
+    @gLoggedIn = (admin=Customer.find_by_id(session[:admin_id])) ? admin : (@gCustomer || Customer.walkup_customer)
+    true
+  end
   
   filter_parameter_logging :credit_card,:password
 
@@ -227,4 +238,13 @@ EOEVAL
     end
   end
 
+end
+
+# the following allows functional tests to not choke on the user_agent method,
+# since by default TestRequest doesn't provide that method.
+
+module ActionController
+  class TestRequest < AbstractRequest
+    attr_accessor :user_agent
+  end
 end

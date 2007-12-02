@@ -5,7 +5,7 @@ class StoreController < ApplicationController
   require "money.rb"
   
   before_filter :walkup_sales_filter, :only => %w[walkup do_walkup_sale]
-  before_filter :is_logged_in, :only => %w[not_me edit_billing_address]
+  before_filter :is_logged_in, :only => %w[edit_billing_address]
   
   if RAILS_ENV == 'production'
     ssl_required :checkout, :place_order, :walkup, :do_walkup_sale
@@ -23,6 +23,7 @@ class StoreController < ApplicationController
 
   def index
     @customer = store_customer
+    @is_admin = current_admin.is_boxoffice
     @subscriber = @customer.is_subscriber?
     @promo_code = session[:promo_code] || nil
     @cart = find_cart
@@ -122,7 +123,6 @@ class StoreController < ApplicationController
   def subscribe_2008
     @customer = store_customer
     @subscriber = @customer.is_subscriber?
-    is_admin = current_admin.is_boxoffice
     @cart = find_cart
     @renew_discount_date = Date.new(2007, 9, 30)
     subs = {
@@ -208,7 +208,10 @@ class StoreController < ApplicationController
     # customer to avoid modifing the Walkup customer.
     redirect_to :action => 'not_me' and return if nobody_really_logged_in
     # else reset flag indicating 'login needed', fall thru to checkout screen
-    session[:checkout_in_progress] = false
+    # NOTE: @gCheckoutInProgress is actually set in a global before_filter,
+    # but we override it in this *one* place since the normal checkout
+    # screen already includes a render of the cart.
+    @gCheckoutInProgress = session[:checkout_in_progress] = false
   end
 
   def not_me
@@ -220,7 +223,7 @@ class StoreController < ApplicationController
 
   def edit_billing_address
     session[:checkout_in_progress] = true
-    flash[:notice] = "Please enter your credit card billing address and click 'Save Changes' when done to continue with your order."
+    flash[:notice] = "Please update your credit card billing address below. Click 'Save Changes' when done to continue with your order."
     redirect_to :controller => 'customers', :action => 'edit'
   end
 
@@ -469,8 +472,9 @@ class StoreController < ApplicationController
     this_year = Time.now.at_beginning_of_year
     @venue = APP_CONFIG[:venue]
     @showdates =
-      Showdate.find(:all, :conditions => ['thedate BETWEEN ? AND ?',
-                                          this_year, this_year + 1.year],
+      Showdate.find(:all,
+                    :conditions => ['thedate BETWEEN ? AND ?',
+                                    this_year, this_year + 1.year],
                     :order => 'thedate')
     render :layout => false
   end

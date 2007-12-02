@@ -2,6 +2,11 @@
 
 module ApplicationHelper
   
+  # does the user-agent string suggest that this is a mobile device?
+  def mobile_user_agent?(uastring)
+    !uastring.blank? && uastring.match( /iphone|palmos|palmsource|blazer/i )
+  end
+    
   def to_js_array(arr)
       '[' + arr.map { |a| a.kind_of?(Fixnum) ? "#{a}" : "'#{a}'" }.join(',') + ']'
   end

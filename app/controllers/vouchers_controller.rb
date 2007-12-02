@@ -1,5 +1,6 @@
 class VouchersController < ApplicationController
 
+  before_filter :is_logged_in
   before_filter(:is_boxoffice_manager_filter,
                 :only => %w[addvoucher remove_voucher cancel_prepaid])
   before_filter(:owns_voucher_or_is_boxoffice, 

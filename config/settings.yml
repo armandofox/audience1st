@@ -72,7 +72,7 @@ boxoffice_daemon_notify: goldstar-reports@altarena.org
 
 # Who email appears to come from (IMPORTANT: on many ISP's, this must be 
 #  a valid deliverable username)
-boxoffice_daemon_address: audience@audience1st.com
+boxoffice_daemon_address: boxofficedaemon@audience1st.com
 
 # Whom to contact for general application error
 bug_notify:  armandofox@gmail.com

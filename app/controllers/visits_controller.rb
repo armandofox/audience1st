@@ -53,5 +53,5 @@ class VisitsController < ApplicationController
     end
     redirect_to :action => 'list', :id => @visit.customer
   end
-  
+
 end
