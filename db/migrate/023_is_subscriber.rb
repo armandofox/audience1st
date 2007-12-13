@@ -1,5 +1,6 @@
 class IsSubscriber < ActiveRecord::Migration
   def self.up
+    raise "STOP! This migration isn't fully baked."
     add_column :customers, :is_subscriber_tmp,:boolean,:null=>true,:default=>false
     # reload model...
     subscribers = 0

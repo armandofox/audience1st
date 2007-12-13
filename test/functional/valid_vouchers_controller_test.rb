@@ -10,7 +10,6 @@ class ValidVouchersControllerTest < Test::Unit::TestCase
     @controller = ValidVouchersController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
-    simulate_login(:admin)
   end
 
   def test_truth

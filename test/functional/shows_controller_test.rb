@@ -11,7 +11,6 @@ class ShowsControllerTest < Test::Unit::TestCase
     @controller = ShowsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
-    simulate_login(:admin)
   end
 
   # test destroying shows destroys all its showdates and valid_vouchers

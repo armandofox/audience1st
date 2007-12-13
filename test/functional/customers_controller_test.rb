@@ -390,12 +390,14 @@ class CustomersControllerTest < Test::Unit::TestCase
   end
 
   def test_0140_subscriber_welcome
+    simulate_logout
     simulate_login(customers(:tom)) # tom is a subscriber
     get :welcome
     assert_redirected_to :action=>'welcome_subscriber'
   end
 
   def test_0150_nonsubscriber_welcome
+    simulate_logout
     simulate_login(customers(:tom2)) # tom2 is not a subscriber
     get :welcome_subscriber
     assert_redirected_to :action=>'welcome'

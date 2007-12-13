@@ -31,7 +31,7 @@ QUIET      =  >/dev/null 2>&1
 .PHONY: all nightly monthly clean_sessions backup rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
-nightly: clean_sessions kill_zombies backup
+nightly: clean_sessions notify_pending_followups kill_zombies backup
 monthly: rotate_logs
 
 clean_sessions:
@@ -50,6 +50,7 @@ receive_goldstar:
 	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'EmailGoldstar.receive(STDIN.read)' $(QUIET)
 
 receive_goldstar_test:
-	@cd $(APPROOT_STAGE)
-	@RAILS_ENV=development $(RUBY) script/runner 'EmailGoldstar.receive(STDIN.read)' $(QUIET)
+	@RAILS_ENV=development $(RUBY) $(APPROOT)/script/runner 'EmailGoldstar.receive(STDIN.read)' $(QUIET)
 
+notify_pending_followups:
+	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'Visit.notify_pending_followups' $(QUIET)

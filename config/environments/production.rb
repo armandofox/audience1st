@@ -1,5 +1,7 @@
 # Settings specified here will take precedence over those in config/environment.rb
 
+RAILS_GEM_VERSION = '1.2.5'
+
 config.after_initialize do
   ExceptionNotifier.sender_address =
     %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)
