@@ -1,9 +1,16 @@
 .pageDiv
-  %h1 Unfulfilled Orders
+  %h1 Order Detail Reports
 
-  %p Show all orders still in need of fulfillment (usually means mailing something to customer).
+  - form_tag({:action => 'sales_detail'},{:method => :get}) do
+    %p  
+      Daily transaction detail from
+      = select_date Date.today, :prefix => 'from', :discard_hour => true 
+      to
+      = select_date Date.today, :prefix => 'to', :discard_hour => true 
+      = submit_tag 'Go' 
 
   - form_tag({:action => 'unfulfilled_orders'},:method => :get) do
+    %p Show all orders still in need of fulfillment (usually means mailing something to customer).
     /
       %p Include in report:
       = check_box_tag 'include', 'dollar_amount'
