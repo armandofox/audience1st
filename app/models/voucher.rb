@@ -124,14 +124,6 @@ class Voucher < ActiveRecord::Base
     self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
   end
 
-  def valid_date
-    self.vouchertype.valid_date
-  end
-
-  def expiration_date
-    self.vouchertype.expiration_date
-  end
-
   def date
     self.showdate_id.zero? ? nil : self.showdate.thedate
   end

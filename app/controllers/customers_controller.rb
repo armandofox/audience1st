@@ -114,13 +114,15 @@ class CustomersController < ApplicationController
     # if customer is a subscriber, redirect to correct page
     redirect_to(:action=>'welcome_subscriber') and return if @customer.is_subscriber?
     setup_for_welcome(@customer)
+    @subscriber = false
   end
 
   def welcome_subscriber        # for subscribers
     @customer = @gCustomer
     redirect_to(:action=>'welcome') and return unless @customer.is_subscriber?
     setup_for_welcome(@customer)
-
+    @subscriber = true
+    
     # ASSUME that within the context of a subscription, a given
     # vouchertype is valid for AT MOST ONE production.  THis UI will 
     # break otherwise.
@@ -149,11 +151,6 @@ class CustomersController < ApplicationController
     # BUG this should be computed from voucher validity period...
     @mindate = Time.now
     @maxdate = (@mindate + 1.year).at_beginning_of_year
-    @nsubs = @customer.active_vouchers.select do |v|
-      v.vouchertype.is_subscription?  # &&
-      # v.vouchertype.valid_date >= @mindate &&
-      # v.vouchertype.expiration_date >= Time.now
-    end.length
     @shows = Show.find(:all, :conditions => ["opening_date > ? OR closing_date < ?",@mindate,@maxdate],
                        :order => "opening_date")
   end

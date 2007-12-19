@@ -1,11 +1,8 @@
 = error_messages_for :customer
 
 .pageDiv
-  %h1 
-    Reserve Regular Season Show Seats: You Have
-    =name_with_quantity("Subscription", @nsubs)
-  
-  %table
+  %h1 Reserve Regular Season Show Seats
+  %table#SubscriptionReservations
     %tr
       %th Show
       %th Your Reservation
@@ -29,6 +26,20 @@
               %td= select_tag 'showdate_id', options_for_select({'Select date...' => 0},0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
               %td= submit_tag 'Click to Confirm'
 
-
-
-      
+- unless @other_vouchers.empty?
+  .pageDiv#additionalTickets
+    %h1 Additional Tickets You've Purchased
+    %table#customerVoucherList
+      %thead
+        %tr.tableHeading
+          - if @admin.is_boxoffice
+            %th.adminField{:style => 'color: #555'} Tkt #
+          %th Ticket Type
+          %th How Acquired
+          %th Redeemed For
+          %th Actions
+          - if @admin.is_boxoffice
+            %th.adminField{:style => 'color: #555'} Admin
+            %th.adminField{:style => 'color: #555'} Comment
+      %tbody
+        = render :partial => "voucher", :collection => @other_vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
