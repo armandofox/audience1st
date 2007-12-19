@@ -1,11 +1,9 @@
 - if @next_showdate.kind_of?(Showdate)
   = render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
 
-.pageDiv
-  %h1 Order Details
-= render :partial => 'mailinglists'
-
 = render :partial => 'order_details'
+
+= render :partial => 'mailinglists'
 
 .pageDiv
   %h1 

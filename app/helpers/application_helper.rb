@@ -222,6 +222,11 @@ module ApplicationHelper
     return (d ||= "").strftime('%b %e, %Y, %I:%M %p')
   end
 
+  def name_with_quantity(str,qty)
+    qty.to_i == 1  ?  "1 #{str}" : "#{qty} #{str.pluralize}" 
+  end
+      
+
   # create a set of dropdown selects to allow entry of an integral
   # dollar amount, given number of digits and default selection 
   def selects_for_dollar_amount(name, ndigits=1, default=0)

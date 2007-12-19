@@ -1,19 +1,34 @@
 = error_messages_for :customer
 
-#subscriberMsg.pageDiv
-  %h1= "#{h(@customer.first_name)}'s Subscriber Benefits"
-  %ul
-    %li 
-      Use the convenient per-show menus below to make reservations using
-      your Subscriber vouchers.
-    %li 
-      To buy <em>additional</em> tickets for special events, or
-      discount tickets for your guests accompanying you to the show, click 
-      the <strong>Buy Tickets</strong> tab above, and have a credit card ready.
-    %li 
-      Use the <strong>Cancel Reservation</strong> button to cancel
-      existing reservations, with no penalty, up to
-      =APP_CONFIG[:cancel_grace_period] 
-      minutes before showtime.
+.pageDiv
+  %h1 
+    Reserve Regular Season Show Seats: You Have
+    =name_with_quantity("Subscription", @nsubs)
+  
+  %table
+    %tr
+      %th Show
+      %th Your Reservation
+      %th
+    - @subscriber_vouchers.sort_by(&:vouchertype_id).each do |v|
+      - if v.reserved?
+        %tr
+          %td= v.vouchertype.name
+          %td.c= v.showdate.printable_date
+          / BUG this shouldn't appear if it's impossble to cancel this res
+          - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_reservation', :id => v do
+            %td.c= submit_tag 'Click to Cancel'
+      - else
+        %tr
+          %td= v.vouchertype.name
+          - if (dates = v.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
+            %td None of your vouchers are valid for this show
+            %td
+          - else
+            - form_tag :controller => 'vouchers', :action => 'confirm_reservation', :id => v do
+              %td= select_tag 'showdate_id', options_for_select({'Select date...' => 0},0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
+              %td= submit_tag 'Click to Confirm'
 
-%h1 Subscriber reservation dialog goes here....
+
+
+      

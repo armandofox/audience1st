@@ -12,20 +12,28 @@
       %label{:for=>:valid_voucher_password} Password
     %td{:valign=>:top}= text_field 'valid_voucher', 'password', 'size'=>40
 
-%p
-  If multiple passwords are allowed, separate them by commas. 
-  Passwords are not case-sensitive and redemption is tracked separately 
-  for each password. 
-
-%table
   %tr
-    %td
-      %label{:for=>:valid_voucher_start_sales} Start sales on
+    %td{:colspan=>2}
+      If multiple passwords are allowed, separate them by commas. 
+      Passwords are not case-sensitive and redemption is tracked separately 
+      for each password. 
+  %tr
+    %td.label
+      %label{:for=>:valid_voucher_start_sales}
+      Start sales on
+    %td.top= datetime_select 'valid_voucher', 'start_sales'
+
+  %tr
+    %td.top.label
+      %label{:for=>:valid_voucher_end_sales} 
+      End sales:
+    %td.top
+      = radio_button_tag 'end_is_relative', 1, true
+      = text_field_tag 'hours_before', 2, :size => 4
+      hours before show time
       %br/
-      = datetime_select 'valid_voucher', 'start_sales'
-    %td
-      %label{:for=>:valid_voucher_end_sales} End sales on
-      %br/
+      = radio_button_tag 'end_is_relative', 0
+      On this date:
       = datetime_select 'valid_voucher', 'end_sales'
 
 = link_to 'Back', {:controller => 'shows', :action => 'edit', :id => @showdate.show.id }, {:class => 'genButton' }

@@ -50,3 +50,9 @@ free:
   name: Goldstar Comp
   price: 0.00
   offer_public: 2
+
+not_used_by_any_fixture:
+  id: 99999
+  name: Not Used By Any Fixture
+  price: 99.99
+  offer_public: 2

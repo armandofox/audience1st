@@ -128,20 +128,34 @@ class Voucher < ActiveRecord::Base
     self.vouchertype.valid_date
   end
 
+  def expiration_date
+    self.vouchertype.expiration_date
+  end
+
   def date
     self.showdate_id.zero? ? nil : self.showdate.thedate
   end
   
   # this should probably be eliminated and the function call inlined to wherever 
   # this is called from.
-  def numseats_for_showdate(sd,ignore_cutoff=false)
-    if self.expiration_date && self.expiration_date > sd.thedate
+  def numseats_for_showdate(sd,args={})
+    if self.vouchertype.expiration_date && self.vouchertype.expiration_date < sd.thedate
       AvailableSeat.no_seats(self,sd,"Voucher expires #{self.expiration_date.strftime('%x')}")
     else
       ValidVoucher.numseats_for_showdate_by_vouchertype(sd, self.customer,
                                                         self.vouchertype,
-                                                        :ignore_cutoff => ignore_cutoff)
+                                                        :ignore_cutoff => args[:ignore_cutoff],
+                                                        :redeeming => args[:redeeming])
     end
+  end
+
+  def redeemable_showdates(ignore_cutoff = false)
+    self.vouchertype.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }
+  end
+
+  def redeemable_for_show?(show,ignore_cutoff = false)
+    show = Show.find(show) unless show.kind_of?(Show)
+    show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
   end
 
   def not_already_used
@@ -164,6 +178,27 @@ class Voucher < ActiveRecord::Base
     end
   end
     
+  def reserved?
+    self.showdate_id.to_i > 0
+  end
+
+  def reserved_for?(s)
+    d = self.showdate_id.to_i
+    if s.kind_of?(Show)
+      s.showdates.map(&:id).include?(d)
+    elsif s.kind_of?(Showdate)
+      s.id == d
+    elsif s.kind_of?(Fixnum)
+      s == d
+    else
+      raise "Can't ask if voucher is reserved for a #{s.class}"
+    end
+  end
+
+  def part_of_subscription?
+    self.purchasemethod.shortdesc =~ /bundle/i
+  end
+
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
     if self.not_already_used

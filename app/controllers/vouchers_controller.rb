@@ -64,7 +64,7 @@ class VouchersController < ApplicationController
     else
       old_voucher_id = v.id
       old_cust_id = v.customer.id
-      if v.showdate.nil? or v.showdate.id.zero?
+      unless v.reserved?
         comment = ''
         v.destroy
         flash[:notice] = 'Voucher removed'
@@ -115,7 +115,7 @@ class VouchersController < ApplicationController
   def confirm_reservation
     @voucher = Voucher.find(params[:id])
     @customer = @voucher.customer
-    @is_admin = Customer.find(logged_in_id).is_walkup rescue nil
+    @is_admin = @gAdmin.is_walkup
     showdate = params[:showdate_id].to_i
     if @voucher.reserve_for(showdate, logged_in_id,
                             params[:comments], :ignore_cutoff => @is_admin)

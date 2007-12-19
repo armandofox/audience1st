@@ -25,22 +25,32 @@ class ValidVouchersController < ApplicationController
 
   def create
     msgs = ''
-    args = @params[:valid_voucher]
+    args = params[:valid_voucher]
+    hours_before = (params[:end_is_relative].to_i > 0 ?
+                    params[:hours_before].to_f.hours :
+                    false)
     showdate = Showdate.find(args[:showdate_id])
     raise "New voucher type must be added to valid showdate" unless showdate.kind_of?(Showdate)
-    addtojustone = @params[:addtojustone].to_i
+    addtojustone = params[:addtojustone].to_i
     if addtojustone.zero?
       # add voucher type to all dates
       showdate.show.showdates.each do |dt|
         args[:showdate_id] = dt.id
-        ValidVoucher.new(args).save!
+        vv = ValidVoucher.new(args)
+        if hours_before
+          vv.end_sales = dt.thedate - hours_before
+        end
+        vv.save!
       end
       if (msgs == '')
         msgs = 'Ticket type added to all dates'
       end
     else
       # add to just one date
-      @validvoucher = ValidVoucher.new(args)
+      @validvoucher = ValidVoucher.new(params[:valid_voucher])
+      if hours_before
+        @validvoucher.end_sales = showdate.thedate - hours_before
+      end
       if @validvoucher.save
         msgs = 'Added to date' + showdate.thedate.strftime('%b %e %y %I:%M%p') # ugh
       else
@@ -59,10 +69,17 @@ class ValidVouchersController < ApplicationController
 
   def update
     @valid_voucher = ValidVoucher.find(params[:id])
-    if @valid_voucher.update_attributes(params[:valid_voucher])
+    begin
+      # this is ugly: we incur 2 database writes on an update if
+      # end_is_relative  is set.
+      @valid_voucher.update_attributes!(params[:valid_voucher])
+      if params[:end_is_relative].to_i > 0
+        @valid_voucher.update_attribute(:end_sales,
+           @valid_voucher.showdate.thedate - params[:hours_before].to_f.hours)
+      end
       flash[:notice] = 'Update successful'
-    else
-      flash[:notice] = error_messages_for :valid_voucher
+    rescue Exception => e
+      flash[:notice] = e.message + @valid_voucher.errors.full_messages.join("\n")
     end
     redirect_to :controller => 'shows', :action => 'edit', :id => @valid_voucher.showdate.show.id
   end
@@ -73,4 +90,5 @@ class ValidVouchersController < ApplicationController
     ValidVoucher.find(params[:id]).destroy
     redirect_to :controller => 'shows', :action => 'edit', :id => theShowID
   end
+
 end

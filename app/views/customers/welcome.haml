@@ -2,26 +2,22 @@
 
 = error_messages_for :customer
 
-%a{:name => :yourTickets}/
-
 #yourTickets.pageDiv
   %h1= "#{h @customer.first_name.name_capitalize}'s Tickets and Reservations"
   - if @vouchers.empty?
-  %p There are no tickets in your account.
+    %p There are no tickets in your account.
   - else
-  %table#customerVoucherList
-    %thead
-      %tr.tableHeading
-        - if @admin.is_boxoffice
-          %th.adminField{:style => 'color: #555'} Tkt #
-        %th Ticket Type
-        %th How Acquired
-        %th Redeemed For
-        %th Actions
-        - if @admin.is_boxoffice
-          %th.adminField{:style => 'color: #555'} Admin
-          %th.adminField{:style => 'color: #555'} Comment
-    %tbody
-      = render :partial => "voucher", :collection => @vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
-
-  - end
+    %table#customerVoucherList
+      %thead
+        %tr.tableHeading
+          - if @admin.is_boxoffice
+            %th.adminField{:style => 'color: #555'} Tkt #
+          %th Ticket Type
+          %th How Acquired
+          %th Redeemed For
+          %th Actions
+          - if @admin.is_boxoffice
+            %th.adminField{:style => 'color: #555'} Admin
+            %th.adminField{:style => 'color: #555'} Comment
+      %tbody
+        = render :partial => "voucher", :collection => @vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }

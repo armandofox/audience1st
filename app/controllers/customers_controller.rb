@@ -3,6 +3,8 @@ class CustomersController < ApplicationController
   require File.dirname(__FILE__) + '/../helpers/application_helper.rb'
   require 'net/http'
   require 'uri'
+
+  include Enumerable
   
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
@@ -118,6 +120,42 @@ class CustomersController < ApplicationController
     @customer = @gCustomer
     redirect_to(:action=>'welcome') and return unless @customer.is_subscriber?
     setup_for_welcome(@customer)
+
+    # ASSUME that within the context of a subscription, a given
+    # vouchertype is valid for AT MOST ONE production.  THis UI will 
+    # break otherwise.
+    # - select out SUBSCRIPTION vouchers. (ultimately need better way to
+    #   identify them - maybe is_bundle should be either 0 or the ID of
+    # the bundle from which it comes)  
+    # - partition these by vouchertype.
+    # - use valid_vouchers to find out for each *vouchertype* which 
+    #   SHOWDATES it's valid for.  This includes checkng showdates that
+    #   have already passed and ones that are sold out or capacity-maxed
+    #   for this vouchertype.
+    # - assert that all these showdates belong to the same show.
+    # - for each partition, pick any showdate, get its show, and assume
+    #   all vouchers of that same type are valid only for that same
+    #   show.
+    # - the object array passed to the view will be sorted in order of show
+    #   and each pair of elements [vt,showdate] will be a vouchertype to
+    #   display and a list of showdates to display.
+
+    # separate vouchers into these categories:
+     #   unreserved subscriber vouchers, reserved subscriber vouchers, everything else
+    @subscriber_vouchers, @other_vouchers = @vouchers.partition { |v| v.part_of_subscription? }
+    @reserved_vouchers,@unreserved_vouchers = @subscriber_vouchers.partition { |v| v.reserved? }
+    # find all shows whose run dates overlap the validity period of any voucher.
+
+    # BUG this should be computed from voucher validity period...
+    @mindate = Time.now
+    @maxdate = (@mindate + 1.year).at_beginning_of_year
+    @nsubs = @customer.active_vouchers.select do |v|
+      v.vouchertype.is_subscription?  # &&
+      # v.vouchertype.valid_date >= @mindate &&
+      # v.vouchertype.expiration_date >= Time.now
+    end.length
+    @shows = Show.find(:all, :conditions => ["opening_date > ? OR closing_date < ?",@mindate,@maxdate],
+                       :order => "opening_date")
   end
 
   def edit

@@ -1,7 +1,7 @@
 %table
   %tr
     %td{:colspan=>2}
-      %label{:for=>:referred_by_id} Referred by (Altarena ID)
+      %label{:for=>:referred_by_id} Referred by (customer ID)
       %br/
       =text_field 'customer', 'referred_by_id', :size=>10, :id => 'referred_by_id'
       %span#referred_by_name{:width=>"40ex"}= @customer.referred_by_name

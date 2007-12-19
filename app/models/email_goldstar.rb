@@ -5,10 +5,16 @@ class EmailGoldstar < ActionMailer::Base
   require 'generator'
   
   @@verbose = false
+  @@error_trace = []
 
   def self.debug(s)
     puts(s) if @@verbose
     logger.info(s)
+    @@error_trace << s
+  end
+
+  def self.error_trace
+    @@error_trace.reverse.join("\n")
   end
 
   def self.parse_only(email,verbose=false)
@@ -54,9 +60,11 @@ class EmailGoldstar < ActionMailer::Base
         end
       end
      rescue Exception => e
-      msg << "** ERROR processing Goldstar report:\n#{e.message}"
+      msg << "** ERROR processing Goldstar report (trace follows):\n"
+      msg << e.message << "\n"
+      msg << self.error_trace
       if defined?(tix_added)
-        msg << "\nOnly #{tix_added} tickets were successfully recorded\n"
+        msg << "\n(#{tix_added} tickets were successfully recorded)\n"
       end
       showdate = nil unless defined?(showdate)
     end

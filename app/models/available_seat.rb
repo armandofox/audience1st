@@ -31,7 +31,7 @@ class AvailableSeat
     str << "\n"
   end
 
-  def no_seats(voucher,showdate,explanation='')
+  def self.no_seats(voucher,showdate,explanation='')
     AvailableSeat.new(showdate,voucher.customer,voucher.vouchertype,0,explanation)
   end
   
@@ -52,6 +52,10 @@ class AvailableSeat
 
   def showdate_name_with_explanation
     @howmany > 0 ? showdate_name : "#{showdate_name} (#{@explanation})"
+  end
+
+  def date_with_explanation
+    @howmany > 0 ? showdate.printable_date : "#{showdate.printable_date} (#{@explanation})"
   end
 
   def vouchertype_id;  @vouchertype.id;  end

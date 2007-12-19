@@ -14,6 +14,10 @@
       = text_field 'vouchertype', 'price', :size => 6
 
 %p
+  %label{:for=>:vouchertype_account_code} Account Code
+  = text_field 'vouchertype', 'account_code', :size => 8
+
+%p
   %label{:for=>:vouchertype_offer_public} Availability
   = select "vouchertype", "offer_public", Vouchertype.offer_to
 
@@ -54,31 +58,29 @@
 
 - if @vouchertype.is_bundle?
 
-%p
-  %label{:for=>:voucher_included_vouchers}Included vouchers
-  %br/
+  %p
+    %label{:for=>:voucher_included_vouchers}Included vouchers
+    %br/
 
-%table
-  - Vouchertype.find(:all).each do |v|
-  -   unless v.is_bundle?
-  %tr
-    %td.r= h(v.name)
-    %td.l
-      %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
-  -   end 
-  - end
+  %table
+    - Vouchertype.find(:all).each do |v|
+    -   unless v.is_bundle?
+    %tr
+      %td.r= h(v.name)
+      %td.l
+        %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
+    -   end 
+    - end
 
 - else
 
-%p
-  %strong Note:
-  You  must
-  %em first 
-  define a voucher to be a  bundle,
-  %em then 
-  go back and edit to add the appropriate tickets to the bundle.
-
-- end
+  %p
+    %strong Note:
+    You  must
+    %em first 
+    define a voucher to be a  bundle,
+    %em then 
+    go back and edit to add the appropriate tickets to the bundle.
 
 /[eoform:vouchertype]
 

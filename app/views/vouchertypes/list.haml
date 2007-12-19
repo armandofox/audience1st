@@ -5,6 +5,7 @@
     %tr 
       %th Name
       %th Price
+      %th Acct #
       %th Who can purchase?
       %th Valid Dates
       %th Description
@@ -18,7 +19,8 @@
           = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
           - end
           = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
-        %td{:align => :right}= sprintf("%3.2f", vouchertype.price)   
+        %td.right= number_to_currency(vouchertype.price)   
+        %td.right= h(vouchertype.account_code)
         %td= h(vouchertype.visibility)  
         %td
           = vouchertype.valid_date.strftime("%m/%d/%y") 
