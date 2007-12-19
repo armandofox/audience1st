@@ -46,39 +46,34 @@ class Voucher < ActiveRecord::Base
   # purchased, and only then is it recorded permanently 
 
   def self.anonymous_voucher_for(showdate,vouchertype,promocode=nil,comment=nil)
-    v = Voucher.new(:showdate_id => showdate,
-                    :vouchertype_id => vouchertype,
-                    :fulfillment_needed => Vouchertype.find(vouchertype).fulfillment_needed,
-                    :promo_code => promocode,
-                    :comments => comment,
-                    :changeable => false,
-                    :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'),
-                    :expiration_date => Vouchertype.find(vouchertype).expiration_date)
+    Voucher.new_from_vouchertype(vouchertype,
+                                     :showdate_id => showdate,
+                                     :promo_code => promocode,
+                                     :comments => comment,
+                                     :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))
   end
 
   def self.anonymous_bundle_for(vouchertype)
-    v = Voucher.new(:vouchertype_id => vouchertype,
-                    :changeable => false,
-                    :fulfillment_needed => Vouchertype.find(vouchertype).fulfillment_needed,
-                    :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))                    
+    v = Voucher.new_from_vouchertype(vouchertype,
+                                     :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))                    
   end
 
   
 
   def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false)
-    raise "Vouchertype ID invalid" unless Vouchertype.find(vtype_id)
+    vt = Vouchertype.find(vtype_id)
     raise "Number to add must be positive" unless howmany > 0
     raise  "Customer record invalid" unless cust.is_a?(Customer)
     raise "Purchase method is invalid" unless Purchasemethod.find(purchasemethod_id)
     raise "Invalid showdate" unless (showdate_id.zero? or Showdate.find(showdate_id))
     newvouchers = Array.new(howmany) { |v|
-      v = Voucher.new(:vouchertype_id => vtype_id,
-                       :purchasemethod_id => purchasemethod_id,
-                       :comments => comments,
-                      :fulfillment_needed => fulfillment_needed,
-                       :customer_id => cust.id,
-                      :processed_by => bywhom,
-                      :showdate_id => showdate_id)
+      v = Voucher.new_from_vouchertype(vtype_id,
+                                       :purchasemethod_id => purchasemethod_id,
+                                       :comments => comments,
+                                       :fulfillment_needed => fulfillment_needed,
+                                       :customer_id => cust.id,
+                                       :processed_by => bywhom,
+                                       :showdate_id => showdate_id)
       v.customer = cust
       v.save!
       cust.vouchers << v
@@ -106,9 +101,10 @@ class Voucher < ActiveRecord::Base
         Voucher.transaction do
           self.vouchertype.get_included_vouchers.each do |type, qty|
             1.upto qty do
-              c.vouchers << Voucher.new(:vouchertype_id => type,
-                                        :processed_by => self.processed_by,
-                                        :purchasemethod_id => purch_bundle)
+              c.vouchers <<
+                Voucher.new_from_vouchertype(type,
+                                             :processed_by => self.processed_by,
+                                             :purchasemethod_id => purch_bundle)
             end
           end
         end
@@ -119,7 +115,17 @@ class Voucher < ActiveRecord::Base
     end
     return [true,self]
   end
-  
+
+  def self.new_from_vouchertype(vt,args={})
+    vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
+    Voucher.new({:vouchertype_id => vt.id,
+                  :fulfillment_needed => vt.fulfillment_needed,
+                  :sold_on => Time.now,
+                  :valid_date => vt.valid_date,
+                  :expiration_date => vt.expiration_date,
+                  :changeable => false}.merge(args))
+  end
+
   def price
     self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
   end
