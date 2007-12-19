@@ -370,7 +370,8 @@ class CustomersController < ApplicationController
         email_confirmation(:send_new_password,@customer,
                            params[:customer][:password],"set up an account with us")
       end
-      redirect_to :action => 'welcome', :id => @customer.id
+      session[:cid] = @customer.id
+      redirect_to :action => 'welcome'
     else
       flash[:notice] << 'Errors creating account'
       render :action => 'new'
@@ -397,6 +398,7 @@ class CustomersController < ApplicationController
         flash[:notice] = "Error deleting customer: #{e.message}"
       end
     end
+    session[:cid] = @gAdmin.id
     redirect_to :action => 'list'
   end
 
