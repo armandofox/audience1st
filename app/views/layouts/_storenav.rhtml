@@ -2,7 +2,7 @@
   <%= nav_tabs(['Buy~Tickets', :store, :index], 
                ['My~Tickets', :customers, :welcome], 
                ['Contact~Info', :customers, :edit] ) %>
-  <% if logged_in.is_staff %>
+  <% if @gAdmin.is_staff %>
   <%= nav_tabs(['Walkup~Sales', :store, :walkup],
                ['Customers', :customers, :list],
                ['Shows', :shows, :list],
@@ -12,7 +12,7 @@
   <% end %>
 </ul>
 
-<% if logged_in.is_staff && c %>
+<% if @gAdmin.is_staff && @gCustomer %>
 
 <p class="adminField">
   <%= h("#{@gCustomer.full_name}'s Account:") %>
