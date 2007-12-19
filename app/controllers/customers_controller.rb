@@ -112,7 +112,7 @@ class CustomersController < ApplicationController
     redirect_to(:controller=>'store',:action=>'checkout') and return if session[:checkout_in_progress]
     @customer = @gCustomer
     # if customer is a subscriber, redirect to correct page
-    redirect_to(:action=>'welcome_subscriber') and return if @customer.is_subscriber?
+    redirect_to(:action=>'welcome_subscriber') and return if (@customer.is_subscriber? && !(params[:force_classic] && @gAdmin.is_boxoffice))
     setup_for_welcome(@customer)
     @subscriber = false
   end
