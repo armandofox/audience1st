@@ -235,9 +235,6 @@ class CustomersController < ApplicationController
 
   def user_create
     @customer = Customer.new(params[:customer])
-    if (@checkout_in_progress = session[:checkout_in_progress])
-      @cart = find_cart
-    end
     flash[:notice] = ''
     unless @customer.has_valid_email_address?
       flash[:notice] = "Please provide a valid email address as your login ID."
@@ -254,8 +251,8 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
                            :comments => 'new customer self-signup')
-      if session[:checkout_in_progress]
-        redirect_to :controller => 'store', :action => 'checkout', :id => @customer.id
+      if @gCheckoutInProgress
+        redirect_to :controller => 'store', :action => 'checkout'
       else
         redirect_to :action => 'welcome'
       end
@@ -268,9 +265,6 @@ class CustomersController < ApplicationController
   def new
     @is_admin = current_admin.is_boxoffice
     @customer = Customer.new
-    if (@checkout_in_progress = session[:checkout_in_progress])
-      @cart = find_cart
-    end
   end
 
   # Following actions are for use by admins only:
@@ -347,7 +341,6 @@ class CustomersController < ApplicationController
 
   def create
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
-    @checkout_in_progress = session[:checkout_in_progress]
     flash[:notice] = ''
     # if neither email address nor password was given, assign a random
     # password so validation doesn't fail.
@@ -371,7 +364,11 @@ class CustomersController < ApplicationController
                            params[:customer][:password],"set up an account with us")
       end
       session[:cid] = @customer.id
-      redirect_to :action => 'welcome'
+      if @gCheckoutInProgress
+        redirect_to :controller => 'store', :action => 'checkout'
+      else
+        redirect_to :action => 'welcome'
+      end
     else
       flash[:notice] << 'Errors creating account'
       render :action => 'new'

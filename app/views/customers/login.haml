@@ -1,6 +1,6 @@
 - unless @checkout_in_progress
 
-  %h1.banner Welcome to Altarena's Online Box Office
+  %h1.banner= "Welcome to the Online Box Office for #{APP_CONFIG[:venue]}"
   %p 
     Sign in or create your account, or
     = gen_button "Click Here to Buy Tickets Now", {:controller => 'store', :action => 'index' }

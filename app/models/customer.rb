@@ -1,21 +1,5 @@
 require 'digest/sha1'
 
-class String
-  def self.random_string(len)
-    # generate a random string of alphanumerics, but to avoid user confusion,
-    # omit o/0 and 1/i/l
-    newpass = ''
-    chars = ("a".."z").to_a + ("A".."Z").to_a + ("2".."9").to_a - %w[O o L l I i]
-    1.upto(len) { |i| newpass << chars[rand(chars.size-1)] }
-    return newpass
-  end
-
-  def valid_email_address?
-    return self && self.match( /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.([A-Z]{2,4})?$/i )
-  end
-
-end
-
 class Customer < ActiveRecord::Base
 
   has_many :vouchers, :dependent => :destroy

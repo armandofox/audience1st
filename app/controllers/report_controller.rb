@@ -169,6 +169,10 @@ class ReportController < ApplicationController
     end
   end
 
+  def accounting_report
+    
+  end
+
   def subscriber_details
     y = (params[:year] || Time.now.year).to_i
     subs = subscription_vouchers(y)
@@ -202,6 +206,7 @@ EOQ
     if @customers.empty?
       flash[:notice] = 'No unfulfilled orders at this time.'
       redirect_to :action => 'index'
+      return
     end
     export_customers_to_excel(@customers)
   end

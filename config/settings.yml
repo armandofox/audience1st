@@ -1,35 +1,15 @@
-# Configuration settings
+# Configuration settings common to ALL VENUES
 # PLEASE BE CAREFUL WHEN EDITING THIS FILE. The number of spaces at the
 # beginnings of lines is significant. Do not use tabs.
 
-# Time zone
+# Time zone ->options
 
 timezone: 'PST8PDT'
 
-# At what percentage of sales is a show reported 'sold out/nearly sold out'
-
-sold_out_threshold: 95
-nearly_sold_out_threshold: 85
-
-# What month does each year's subscription season start? (1-12)
-
-season_start_month: 1
-
 # where to get help
-
+  
 help_manual: http://www.audience1st.com/help/manual.html
 help_link: <a href="mailto:help@audience1st.com">help@audience1st.com</a>
-help_email: help@audience1st.com
-
-# how to contact the venue
-# venue name
-venue: Altarena Playhouse
-# general information telephone
-venue_telephone: 510-523-1553
-# box office/phone sales help
-boxoffice_telephone: 510-523-1553
-privacy_policy_url: http://www.altarena.org/privacypolicy.html
-donation_ack_from: Diana Moore, Fundraising, Board of Directors
 
 # Special seating needs or requests
 
@@ -44,10 +24,6 @@ voucher_comments:
  - Requires Aisle - Right Side
  - Near Restroom
  - Other (briefly describe:)
-
-# Formatting a date
-as_date: '%b %d, %y %I:%M%p'
-date_only: '%b %d'
 
 phplist_default_list_id: 8
 
@@ -64,12 +40,6 @@ messages:
   release_reservation_0: 'Really release this reservation? Click OK to release it, or Cancel to leave things as they are.'
   remove_vouchertype_1: 'This will destroy all existing "%s" vouchers, removing them from customer accounts. This action cannot be undone. Continue?'
 
-# Links to more info
-subscription_info: http://www.altarena.org/2008-season/subscriber-benefits/
-
-# Whom to contact by email when boxoffice daemon hits an error
-boxoffice_daemon_notify: goldstar-reports@altarena.org
-
 # Who email appears to come from (IMPORTANT: on many ISP's, this must be 
 #  a valid deliverable username)
 boxoffice_daemon_address: boxofficedaemon@audience1st.com
@@ -77,24 +47,12 @@ boxoffice_daemon_address: boxofficedaemon@audience1st.com
 # Whom to contact for general application error
 bug_notify:  armandofox@gmail.com
 
-# Address validation via NAS at Buffalo CEDAR
-
-address_validation_url:    http://www.cedar.buffalo.edu/cgi-bin/nasciic
-
 # Payment information
 
 # IP addresses from which Walkup Sale page can be accessed w/o authentication
 # separate with commas.  Not a good idea to rely on this in presence of DHCP.
 
 walkup_locations: 127.0.0.1
-
-# Latest time to cancel a reservation, expressed in minutes before curtain
-
-cancel_grace_period: 120
-
-# Number of minutes after which a user session is considered inactive
-
-session_timeout: 10
 
 # Number of DAYS OLD an inactive session must be before it's reaped
 

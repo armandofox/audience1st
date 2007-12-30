@@ -1,0 +1,19 @@
+- form_tag 'edit' do 
+  - @vars.each_pair do |group,varlist|
+    .pageDiv
+      %h1= h(group)
+      %table
+        - varlist.each do |v|
+          %tr{:class=>cycle(:evenRow,:oddRow)}
+            %td.l= Inflector.humanize(v.name)
+            %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 32, :maxlength => 200
+            %td.l= h(v.description)
+  .pageDiv
+    %h1 Save Changes
+    %p
+      Clicking the button below will cause your changes to take effect
+      in the next 15 minutes.  If you've changed your mind,
+      =link_to "click here to cancel",:controller=>'customers',:action=>'welcome'
+      and discard your changes.
+
+    %p.c= submit_tag  "Update Settings"

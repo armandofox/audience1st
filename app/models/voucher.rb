@@ -236,16 +236,6 @@ class Voucher < ActiveRecord::Base
     end
   end
 
-  def render_name
-    begin
-      sprintf("%s - %s - %s", self.showdate.show.name,
-              self.showdate.thedate.strftime(APP_CONFIG[:as_date]),
-              self.vouchertype.name)
-    rescue
-      "Error getting voucher name"
-    end
-  end
-
   def processed_by_name
     case
     when self.processed_by.to_i.zero?

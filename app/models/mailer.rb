@@ -83,7 +83,7 @@ Instead, please email #{APP_CONFIG[:help_email]} or call #{APP_CONFIG[:boxoffice
 Thanks for your patronage!
 
 #{APP_CONFIG[:venue]}
-hosted by Audience1st LLC
+hosted by Audience1st Inc.
 
 EOS
 

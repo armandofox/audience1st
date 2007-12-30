@@ -54,7 +54,19 @@ end
 # Include your application configuration below
 
 # read global configuration info
-APP_CONFIG = YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
+APP_CONFIG =  YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
+
+# read config variables from database
+Option.find(:all).each do |opt|
+  case opt.typ
+  when :int
+    APP_CONFIG[opt.name.to_sym] = opt.value.to_i
+  when :float
+    APP_CONFIG[opt.name.to_sym] = opt.value.to_f
+  else
+    APP_CONFIG[opt.name.to_sym] = opt.value
+  end
+end
 
 # read build version
 APP_CONFIG[:version] = IO.read("#{RAILS_ROOT}/REVISION").to_s.strip rescue "DEV"

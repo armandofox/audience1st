@@ -17,33 +17,3 @@ Sincerely,
 <%= @donation_chair %>
 <%= @venue %>
 
-Hello from the online box office at <%= APP_CONFIG[:venue] -%>!
-
-You're receiving this message because you, or someone on your behalf, 
-<%= @whathappened %>.
-
-Your email (and account login) is:   <%= @login %>
-
-<% if @newpass -%>
-            Your new password is:    <%= @newpass %>
-            (You can change your password after logging in.)
-<% else %>
-If you don't remember your password, you can use the Forgot Password
-feature on our website to have it emailed to you.
-<% end %>
-
-<% if @provide_logout_url %>
-<a href="http://www.audience1st.com/altarena/customers/logout">Click here</a>
-to reset your browser session and clear out any old
-password/session information.
-<% end %>
-
-
-If you're still having trouble, contact <%= APP_CONFIG[:help_email] %>.
-Please include your full name and login (as shown above), a description
-of the problem, and which browser and operating system you're using
-(Internet Explorer on Windows, Safari or Firefox on Mac, etc.)
-
-Thank you,
-<%= APP_CONFIG[:venue] %>
-hosted by AudienceFirst LLC

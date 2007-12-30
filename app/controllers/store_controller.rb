@@ -230,7 +230,7 @@ class StoreController < ApplicationController
   def place_order
     @cart = find_cart
     sales_final = params[:sales_final]
-    @bill_to = params[:customer]
+   @bill_to = params[:customer]
     cc_info = params[:credit_card].symbolize_keys
     cc_info[:first_name] = @bill_to[:first_name]
     cc_info[:last_name] = @bill_to[:last_name]
@@ -395,8 +395,12 @@ class StoreController < ApplicationController
                            :logged_in_id => logged_in_id)
     end
     if donation > 0.0
-      flash[:notice] << sprintf(" $%.02f donation processed,", donation)
-      # add donation for customer...
+      begin
+        Donation.walkup_cash_donation(donation,logged_in_id)
+        flash[:notice] << sprintf(" $%.02f donation processed,", donation)
+      rescue Exception => e
+        flash[:notice] << "Donation could NOT be recorded: #{e.message}"
+      end
     end
     flash[:notice] << sprintf(" total $%.02f",  total)
     flash[:notice] << sprintf("<br/>%d seats remaining for this performance",
@@ -458,7 +462,7 @@ class StoreController < ApplicationController
     if (showdates.nil? || showdates.empty?)
       @next_perf = Showdate.find(:first, :order => 'thedate',
                                  :conditions => ["thedate >?",Time.now])
-      render :template => "ticket_noperfs_vxml", :layout => false
+      render :template => "store/ticket_noperfs_vxml", :layout => false
     else
       @showdates_info = showdates.map do |s|
         [s.speak, s.availability_in_words, s.advance_sales? ]
