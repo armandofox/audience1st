@@ -1,6 +1,7 @@
 class ReportController < ApplicationController
 
   include Enumerable
+  require 'set'
   
   before_filter :is_staff_filter
   before_filter(:is_boxoffice_manager_filter,
@@ -146,10 +147,10 @@ class ReportController < ApplicationController
     to = (to+1.day).midnight
     conds = ["customer_id != 0",
              "(showdate_id > 0 OR (vouchertype.is_bundle=1 AND vouchertype.is_subscription=1))",
-             "updated_on BETWEEN ? AND ?"]
+             "sold_on BETWEEN ? AND ?"]
     conds = [conds.join(" AND "), from, to]
     sql = ["SELECT DISTINCT v.* FROM vouchers v,vouchertypes vt WHERE " <<
-           "(v.updated_on BETWEEN ? AND ?) AND " <<
+           "(v.sold_on BETWEEN ? AND ?) AND " <<
            "v.customer_id !=0 AND " <<
            "(v.showdate_id > 0 OR (v.vouchertype_id = vt.id AND vt.is_bundle=1 AND vt.is_subscription=1))", from, to]
     sales = Voucher.find_by_sql(sql)
@@ -158,7 +159,7 @@ class ReportController < ApplicationController
     @page_title = "#{@nsales} Transactions: #{from.strftime('%a %b %e')} " <<
       (to - from > 1.day ? (" - " << to.strftime('%a %b %e')) : '')
     @daily_sales = sales.group_by do |v|
-      u = v.updated_on
+      u = v.sold_on
       "#{u.change(:min => u.min - u.min.modulo(3))},#{v.customer.last_name},#{v.customer.first_name},#{v.vouchertype_id},#{v.processed_by}"
     end
     @nunique = sales.group_by { |v| v.customer.id }.keys.size
@@ -170,7 +171,48 @@ class ReportController < ApplicationController
   end
 
   def accounting_report
-    
+    @from = Time.local(*([:year,:month,:day].map { |x| params[:from][x] }))
+    @to = Time.local(*([:year,:month,:day].map { |x| params[:to][x] }))
+    @from,@to = @to,@from if @from > @to
+    @from = @from.midnight
+    @to = (@to+1.day).midnight
+    # get all vouchers sold between these dates where:
+    #  - NOT walkup sales
+    #  - purchasemethod is some credit card transaction
+    #  - vouchertype has a price > 0
+    purchasemethods = params[:purchasemethods].map { |x| x.to_i } * ","
+    # run report for all vouchertypes such that:
+    # - account code is not null
+    # - price > 0
+    vouchertypes = Vouchertype.find(:all, :conditions =>
+                                    "account_code IS NOT NULL AND price > 0")
+    acc_codes = vouchertypes.map { |vt| vt.account_code }
+    @vtypes_for_acc_code = {}
+    vouchertypes.group_by(&:account_code).each_pair do |k,v|
+      @vtypes_for_acc_code[k] = "alert('" <<
+        v.map { |vt| vt.name }.join(", ")  << "')"
+    end
+    # for each account code, find all vouchers sold for each show
+    @txns = {}
+    @total = 0.0
+    sh = Showdate.find(:all).group_by(&:show_id)
+    acc_codes.each do |acc|
+      sh.each_pair do |show_id, showdate_id_list|
+        showdate_ids = showdate_id_list.map { |x| x.id }.join(",")
+        sql = ["SELECT SUM(vt.price) " <<
+               "FROM vouchers v INNER JOIN vouchertypes vt ON v.vouchertype_id = vt.id WHERE " <<
+               "(v.sold_on BETWEEN ? and ?) AND " <<
+               "vt.account_code = ? AND " <<
+               "v.showdate_id IN (#{showdate_ids}) AND " <<
+               "v.customer_id != 0 AND v.customer_id != ? AND " <<
+               "(v.purchasemethod_id IN (#{purchasemethods}))",
+               @from, @to, acc, Customer.walkup_customer.id]
+        result = Voucher.find_by_sql(sql)
+        ttl = result[0]["SUM(vt.price)"].to_i
+        @txns["#{show_id},#{acc}"] = ttl unless ttl.zero?
+        @total += ttl
+      end
+    end
   end
 
   def subscriber_details

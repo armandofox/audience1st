@@ -126,6 +126,15 @@ class Voucher < ActiveRecord::Base
                   :changeable => false}.merge(args))
   end
 
+  # return the "show" associated with a voucher.  If a regular voucher,
+  # it's the show the voucher is associated with. If a bundle voucher,
+  # it's the name of the bundle.
+  def show ;  showdate.show ; end
+  def show_or_bundle_name
+    show.kind_of?(Show)  ? show.name :
+      (vouchertype_id > 0 && vouchertype.is_bundle? ? vouchertype.name : "??")
+  end
+
   def price
     self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
   end

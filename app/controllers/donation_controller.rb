@@ -129,7 +129,7 @@ class DonationController < ApplicationController
                 d.customer.state,
                 d.customer.zip,
                 d.amount,
-                d.date.strftime("%Y-%m-%d"),
+                d.date.to_formatted_s(:db),
                 d.donation_type.name,
                 d.donation_fund.name,
                 d.letter_sent]

@@ -1,14 +1,12 @@
 = error_messages_for 'store'
 
-- cid = (@customer ? @customer.id : nil)
-
 #store
   - unless @cart.is_empty?
     #shoppingCart.pageDiv
       %h1 2008 Subscriptions Shopping Cart
-      - form_tag :action => 'checkout', :id => cid do
-        = render :partial => 'cart', :locals => {:editable => true, :id => cid, :redirect_to => 'subscribe_2008'}
-        = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid, :redirect_to => 'subscribe_2008'}
+      - form_tag :action => 'checkout' do
+        = render :partial => 'cart', :locals => {:editable => true, :redirect_to => 'subscribe_2008'}
+        = gen_button  'Empty Cart', {:action => 'empty_cart', :redirect_to => 'subscribe_2008'}
         = submit_tag 'Checkout'
   #subscriptionsMenus.pageDiv
     %h1 Subscriber Benefits
@@ -30,7 +28,6 @@
         button on your account page to get the renewal discount.
       
     - form_tag :action => 'add_subscriptions_to_cart' do
-      = hidden_field_tag 'id', @customer.id
       %table.ticketSelect
         %tr
           %td.label Subscription type and price
@@ -46,10 +43,5 @@
             = select_tag("subscription_qty", options_for_select((1..10).to_a))
             = submit_tag 'Add Subscriptions to Cart', :class => 'genButton'
 
-  #makeDonation.pageDiv
-    %h1 Please Consider Adding a Donation
-    %p
-      Donations are tax-deductible and all donations will be acknowledged 
-      with a tax-exempt letter you can include with your tax return.
-    = render :partial => 'donate', :locals => {:id => cid, :redirect_to => 'subscribe_2008' }
+  = render :partial => 'donate', :locals => {:redirect_to => 'subscribe_2008' }
 

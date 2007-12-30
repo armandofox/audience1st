@@ -2,7 +2,7 @@
 
 - cid = (@customer ? @customer.id : nil)
 
-%h1.bannerHead= link_to 'Click Here for 2008 Season Subscriptions!',:action=>'subscribe_2008',:id => cid
+%h1.bannerHead= link_to 'Click Here for 2008 Season Subscriptions!',:action=>'subscribe_2008'
 
 #store
 
@@ -35,12 +35,4 @@
 
     = render :partial => 'buy_tickets', :locals => {:subscriber => @subscriber, :id => cid }
 
-  #makeDonation.pageDiv
-
-    %h1 Donate to the General Fund
-    %p
-      Donations are tax-deductible and all donations over $50.00 will be
-      acknowledged at the end of the year with a tax-exempt letter you can
-      include with your tax returns.
-
-    = render :partial => 'donate', :locals => {:id => cid }
+  = render :partial => 'donate'

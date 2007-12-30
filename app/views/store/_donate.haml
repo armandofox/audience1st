@@ -1,12 +1,16 @@
-/ make a donation
+#makeDonation.pageDiv
+  %h1 Please Consider Adding a Donation
+  %p
+    Donations are tax-deductible and all donations will be acknowledged 
+    with a tax-exempt letter you can include with your tax return.
 
-- form_tag :action => 'add_donation_to_cart', :redirect_to => (redirect_to ||= nil) do
-  - if id
-    = hidden_field_tag 'id', id
-  %table.donationEntry
-    %tr
-      %td.label Donation amount: $
-      %td
-        = selects_for_dollar_amount('d', 4, 0)
-        %span{:style=>"font-size: larger;"} .00
-      %td= submit_tag 'Add Donation to Cart', :class => 'genButton'
+  - form_tag :action => 'add_donation_to_cart', :redirect_to => (redirect_to ||= nil) do
+    - if id
+      = hidden_field_tag 'id', id
+    %table.donationEntry
+      %tr
+        %td.label Donation amount: $
+        %td
+          = selects_for_dollar_amount('d', 4, 0)
+          %span{:style=>"font-size: larger;"} .00
+        %td= submit_tag 'Add Donation to Cart', :class => 'genButton'

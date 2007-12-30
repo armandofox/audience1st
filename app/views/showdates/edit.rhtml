@@ -1,6 +1,6 @@
 <h2>Editing
-<%= fmt_date(@showdate.thedate) %>
-performance of  '<%= @showdate.show.name %>' </h2>
+  <%= @showdate.printable_name %>
+  </h2>
 
 <% form_tag :action => 'update', :id => @showdate.id do %>
   <%= render :partial => 'form' %>

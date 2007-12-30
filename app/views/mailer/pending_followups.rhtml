@@ -1,5 +1,5 @@
 Summary of pending follow-ups for <%= @who %>
-Generated at <%= @today.to_formatted_s(:short) -%>
+Generated on <%= @today.to_formatted_s(:short) -%>
 
 <% @visits.each do |v| %>
 Name:            <%= v.customer.full_name %>

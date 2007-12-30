@@ -1,6 +1,24 @@
 .pageDiv
   %h1 
     Accounting Report for 
-    = @start_date.to_s(:short)
+    = @from.to_formatted_s(:date_only)
     to
-    = @end_date.to_s(:short)
+    = @to.to_formatted_s(:date_only)
+
+  %table
+    %thead
+      %tr
+        %th Code
+        %th Show
+        %th Gross rcpts
+    %tbody
+      - @txns.keys.sort.each do |acc_and_show|
+        - show_id,acc = acc_and_show.split(",")
+        %tr{:class=>cycle(:evenRow,:oddRow)}
+          %td= link_to_function acc, @vtypes_for_acc_code[acc]
+          %td= Show.find(show_id.to_i).name rescue show_id
+          %td.r= number_to_currency(@txns[acc_and_show])
+      %tr.totalsRow
+        %td
+        %td TOTAL
+        %td.r= number_to_currency(@total)

@@ -1,6 +1,9 @@
 # Filters added to this controller will be run for all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
+# add a couple of useful formats to ActiveSupport to_formatted_s conversion
+ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS[:date_only] = "%e %B %Y"
+
 class String
 
   def self.random_string(len)
