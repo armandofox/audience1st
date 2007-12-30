@@ -1,11 +1,14 @@
 # Audience1st nightly and monthly cleanups
 # run 'make nightly' every night and 'make monthly' every month via cron
 
+# must set VENUE properly!
+
 NAME	   = audienc
 HOME	   = /home/$(NAME)
-APPROOT    = $(HOME)/rails/vbo/current
-APPROOT_STAGE = $(HOME)/rails/vbo/stage
-BACKUPDIR = $(HOME)/backup
+APPROOT    = $(HOME)/rails/$(VENUE)/current
+APPROOT_STAGE = $(HOME)/rails/$(VENUE)/stage
+BACKUPDIR = $(HOME)/backup/$(VENUE)
+
 #  IMPORTANT:  Binary path names below refer to the binary's path ON THE
 #   DEPLOYMENT SYSTEM, not on your (development) system.  Many of these
 #   commands are run from a cron job (which runs in an uncertain
@@ -41,7 +44,7 @@ backup:
 	@$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) | $(GZIP) > $(BACKUPDIR)/$(shell date +\%F).gz
 
 rotate_logs:
-	@$(PERL) $(BINDIR)/rotate_logs $(QUIET)
+	@$(PERL) $(BINDIR)/rotate_logs $(BACKUPDIR) $(QUIET)
 
 kill_zombies:
 	@killall -usr1 dispatch.fcgi $(QUIET)

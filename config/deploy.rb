@@ -3,7 +3,7 @@ abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
 set :application,     "vbo"
 set :user,            "audienc"
 set :home,            "/home/#{user}"
-set :deploy_to,       "#{home}/rails/#{application}/#{venue}"
+set :deploy_to,       "#{home}/rails/#{venue}"
 set :use_sudo,        false
 set :host,            "audience1st.com"
 role :app,            "#{host}"
@@ -27,6 +27,7 @@ deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
   #run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
   run "mv #{release_path}/config/database.yml.#{venue} #{release_path}/config/database.yml"
+  run "rm -f #{release_path}/config/database.yml.*"
   run "mv #{release_path}/public/dispatch.fcgi.production #{release_path}/public/dispatch.fcgi"
   run "rm -rf #{release_path}/manual #{release_path}/doc #{release_path}/about"
 end

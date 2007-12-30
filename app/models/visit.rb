@@ -30,7 +30,7 @@ class Visit < ActiveRecord::Base
 
   # this is a class method because it's called via script/runner from
   # a cron job.  Identify all visits that have a followup due in the next
-  # week; group by whose job it is to followup; and send emails.
+  # 3 days; group by whose job it is to followup; and send emails.
   def self.notify_pending_followups
     # bug: these should all be configurable variables...
     start = Time.now
