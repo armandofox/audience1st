@@ -8,23 +8,19 @@
 
 use POSIX qw(strftime);
 
-$no = grep(/^-n/,@ARGV);
-
-$backupdir = "~/backup";
+shift @ARGV, $no=1 if $ARGV[0] =~ /^-n/;
+$backupdir = $ARGV[0] || "/home/audienc/backup";
 
 @ltime = localtime;
 $day = @ltime[3];
 $month = @ltime[4]+1;
 $year = @ltime[5]+1900;
 
-# don't do anything unless it's the first of the month
-exit 0 unless $day==1;
-
-# don't delete an end-of-year backup
-exit 0 if $month == 1;
-
-# otherwise rename last month's first-of-month backup
-$lastmonth = sprintf("%04d-%02d", $year, $month-1);
+if ($month == 1) { 
+    $lastmonth = sprintf("%04d-12", $year-1);
+} else {
+    $lastmonth = sprintf("%04d-%02d", $year, $month-1);
+}
 
 @cmd = ();
 push(@cmd, "mv $backupdir/$lastmonth-01.gz $backupdir/$lastmonth.gz");
