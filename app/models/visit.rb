@@ -33,15 +33,20 @@ class Visit < ActiveRecord::Base
   # 3 days; group by whose job it is to followup; and send emails.
   def self.notify_pending_followups
     # bug: these should all be configurable variables...
+    logger.info "#{Time.now.to_formatted_s(:short)}: Generating pending followups"
     start = Time.now
     nd = (start + 3.days)
     vs = Visit.find(:all,
                     :conditions => ["followup_date BETWEEN ? AND ?",start,nd],
                     :order => 'followup_date')
-    # group them by who's responsible
-    vs.group_by(&:followup_assigned_to_id).each_pair do |who,visits|
-      w = Customer.find(who)
-      deliver_pending_followups(w.login, visits) unless visits.empty?
+    logger.info "#{vs.length} followups to report"
+    unless vs.empty?
+      # group them by who's responsible
+      vs.group_by(&:followup_assigned_to_id).each_pair do |who,visits|
+        w = Customer.find(who)
+        logger.info "#{visits.length} for #{w.full_name} <#{w.login}>"
+        deliver_pending_followups(w.login, visits) 
+      end
     end
   end
   
