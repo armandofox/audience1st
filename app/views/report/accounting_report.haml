@@ -12,12 +12,13 @@
         %th Show
         %th Gross rcpts
     %tbody
-      - @txns.keys.sort.each do |acc_and_show|
-        - show_id,acc = acc_and_show.split(",")
+      - @total = 0.0
+      - @txns.each do |t|
         %tr{:class=>cycle(:evenRow,:oddRow)}
-          %td= link_to_function acc, @vtypes_for_acc_code[acc]
-          %td= Show.find(show_id.to_i).name rescue show_id
-          %td.r= number_to_currency(@txns[acc_and_show])
+          %td= link_to_function t[0], "alert('" << escape_javascript(@vtypes_for_acc_code[t[0]]) << "')"
+          %td= h(t[1])
+          %td.r= number_to_currency(t[2])
+          - @total += t[2].to_f
       %tr.totalsRow
         %td
         %td TOTAL

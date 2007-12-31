@@ -13,7 +13,7 @@
 production:
   adapter: mysql
   database: audienc_bphprod
-  username: bph
+  username: audienc_bph
   password: nrtlr;ru[;sujpidr
   host: localhost
 

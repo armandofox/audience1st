@@ -3,11 +3,11 @@
     .pageDiv
       %h1= h(group)
       %table
-        - varlist.each do |v|
+        - varlist.sort_by(&:id).each do |v|
           %tr{:class=>cycle(:evenRow,:oddRow)}
             %td.l= Inflector.humanize(v.name)
             %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 32, :maxlength => 200
-            %td.l= h(v.description)
+            %td.l= link_to_function h(v.shortdesc), "alert('#{escape_javascript(v.description)}')"
   .pageDiv
     %h1 Save Changes
     %p

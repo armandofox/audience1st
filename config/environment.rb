@@ -57,14 +57,18 @@ end
 APP_CONFIG =  YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
 
 # read config variables from database
-Option.find(:all).each do |opt|
-  case opt.typ
-  when :int
-    APP_CONFIG[opt.name.to_sym] = opt.value.to_i
-  when :float
-    APP_CONFIG[opt.name.to_sym] = opt.value.to_f
-  else
-    APP_CONFIG[opt.name.to_sym] = opt.value
+# When doing a new installation, set environment variable SETUP to
+# some nonempty value to skip this, otherwise rake db:schema:load barfs.
+unless ENV['SETUP']
+  Option.find(:all).each do |opt|
+    case opt.typ
+    when :int
+      APP_CONFIG[opt.name.to_sym] = opt.value.to_i
+    when :float
+      APP_CONFIG[opt.name.to_sym] = opt.value.to_f
+    else
+      APP_CONFIG[opt.name.to_sym] = opt.value
+    end
   end
 end
 

@@ -2,8 +2,13 @@ class ShowsController < ApplicationController
 
   # must be admin to do anything related to shows
   # FUTURE: distinguish reading from writing
-  before_filter :is_boxoffice_filter # for all functions, must be at least boxoffice
-  before_filter :is_boxoffice_manager_filter, :only => ['create', 'update', 'destroy']
+  before_filter(:is_boxoffice_filter,
+                :add_to_flash => "Must have Box Office privilege to administer shows and showdates",
+                :redirect_to => {:controller =>'customers',:action =>'welcome'})
+  before_filter(:is_boxoffice_manager_filter,
+                :only => ['create', 'update', 'destroy'],
+                :add_to_flash => "Only Box Office Manager can modify show information",
+                :redirect_to => {:controller =>'customers',:action =>'welcome'})
 
   def index
     list

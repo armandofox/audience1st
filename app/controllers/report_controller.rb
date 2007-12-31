@@ -119,16 +119,20 @@ class ReportController < ApplicationController
   def advance_sales
     case params[:showdate_id]
     when /current/i
-      @shows = [Show.find(:first, :conditions => ['closing_date >= ?', Date.today], :order => 'opening_date')]
+      @shows = [Show.find(:first,
+                          :conditions => ['closing_date >= ?', Date.today],
+                          :order => 'opening_date')]
     when /^(\d+)$/
       @shows = [Show.find_by_id($1)]
     when /future/i 
-      @shows = Show.find(:all, :conditions => ['closing_date >= ?', Date.today], :order => 'opening_date')
+      @shows = Show.find(:all,
+                         :conditions => ['closing_date >= ?', Date.today],
+                         :order => 'opening_date')
     else
       @shows = Show.find(:all,:order => 'opening_date')
     end
     if (@shows.empty? rescue nil)
-      flash[:notice] = "No shows match your critera"
+      flash[:notice] = "No shows match your criteria"
       redirect_to :action => 'index'
       return
     end
@@ -140,21 +144,12 @@ class ReportController < ApplicationController
   end
 
   def sales_detail
-    from = Time.local(*([:year,:month,:day].map { |x| params[:from][x] }))
-    to = Time.local(*([:year,:month,:day].map { |x| params[:to][x] }))
-    from,to = to,from if from > to
-    from = from.midnight
-    to = (to+1.day).midnight
-    conds = ["customer_id != 0",
-             "(showdate_id > 0 OR (vouchertype.is_bundle=1 AND vouchertype.is_subscription=1))",
-             "sold_on BETWEEN ? AND ?"]
-    conds = [conds.join(" AND "), from, to]
+    from,to = get_dates_from_params(:from,:to)
     sql = ["SELECT DISTINCT v.* FROM vouchers v,vouchertypes vt WHERE " <<
            "(v.sold_on BETWEEN ? AND ?) AND " <<
            "v.customer_id !=0 AND " <<
            "(v.showdate_id > 0 OR (v.vouchertype_id = vt.id AND vt.is_bundle=1 AND vt.is_subscription=1))", from, to]
     sales = Voucher.find_by_sql(sql)
-    #sales = Voucher.find(:all,:include => :vouchertype,:conditions => conds)
     @nsales = sales.size
     @page_title = "#{@nsales} Transactions: #{from.strftime('%a %b %e')} " <<
       (to - from > 1.day ? (" - " << to.strftime('%a %b %e')) : '')
@@ -171,11 +166,13 @@ class ReportController < ApplicationController
   end
 
   def accounting_report
-    @from = Time.local(*([:year,:month,:day].map { |x| params[:from][x] }))
-    @to = Time.local(*([:year,:month,:day].map { |x| params[:to][x] }))
-    @from,@to = @to,@from if @from > @to
-    @from = @from.midnight
-    @to = (@to+1.day).midnight
+    unless params[:purchasemethods]
+      flash[:notice] = "You must select one or more purchase methods " <<
+        "for the Accounting Report"
+      redirect_to :action => 'index'
+      return
+    end
+    @from,@to = get_dates_from_params(:from,:to)
     # get all vouchers sold between these dates where:
     #  - NOT walkup sales
     #  - purchasemethod is some credit card transaction
@@ -189,30 +186,34 @@ class ReportController < ApplicationController
     acc_codes = vouchertypes.map { |vt| vt.account_code }
     @vtypes_for_acc_code = {}
     vouchertypes.group_by(&:account_code).each_pair do |k,v|
-      @vtypes_for_acc_code[k] = "alert('" <<
-        v.map { |vt| vt.name }.join(", ")  << "')"
+      @vtypes_for_acc_code[k] = "Account code #{k}:\n" <<
+        v.map { |vt| vt.name }.join("\n")
     end
-    # for each account code, find all vouchers sold for each show
     @txns = {}
     @total = 0.0
-    sh = Showdate.find(:all).group_by(&:show_id)
-    acc_codes.each do |acc|
-      sh.each_pair do |show_id, showdate_id_list|
-        showdate_ids = showdate_id_list.map { |x| x.id }.join(",")
-        sql = ["SELECT SUM(vt.price) " <<
-               "FROM vouchers v INNER JOIN vouchertypes vt ON v.vouchertype_id = vt.id WHERE " <<
-               "(v.sold_on BETWEEN ? and ?) AND " <<
-               "vt.account_code = ? AND " <<
-               "v.showdate_id IN (#{showdate_ids}) AND " <<
-               "v.customer_id != 0 AND v.customer_id != ? AND " <<
-               "(v.purchasemethod_id IN (#{purchasemethods}))",
-               @from, @to, acc, Customer.walkup_customer.id]
-        result = Voucher.find_by_sql(sql)
-        ttl = result[0]["SUM(vt.price)"].to_i
-        @txns["#{show_id},#{acc}"] = ttl unless ttl.zero?
-        @total += ttl
-      end
-    end
+    sql = ["SELECT s.name,vt.account_code,SUM(vt.price) " <<
+           "FROM vouchers v " <<
+           "  INNER JOIN vouchertypes vt ON v.vouchertype_id=vt.id" <<
+           "  INNER JOIN showdates sd ON sd.id = v.showdate_id" <<
+           "  INNER JOIN shows s ON s.id = sd.show_id " <<
+           "WHERE " <<
+           "v.showdate_id != 0 AND " <<
+           "(v.sold_on BETWEEN ? and ?) AND " <<
+           "v.customer_id != 0 AND v.customer_id != ? AND " <<
+           "(v.purchasemethod_id IN (#{purchasemethods})) " <<
+           "GROUP BY vt.account_code,s.name",
+           @from, @to, Customer.walkup_customer.id]
+    @txns = Voucher.find_by_sql(sql).reject { |v| v.attributes["SUM(vt.price)"].to_f.zero? }.sort_by(&Proc.new { |x| "#{x.attributes['name']},#{x.attributes['account_code']}" }).map { |e| e.attributes.values_at("account_code", "name", "SUM(vt.price)") }
+    # next, all the Bundle Vouchers - regardless of purchase method
+    sql = ["SELECT vt.account_code, vt.name, SUM(vt.price) " <<
+           "FROM vouchers v INNER JOIN vouchertypes vt " <<
+           "  ON v.vouchertype_id = vt.id WHERE " <<
+           "(v.sold_on BETWEEN ? AND ?) AND " <<
+           "v.customer_id != 0 AND v.customer_id != ? AND " <<
+           "vt.is_bundle = 1 " <<
+           "GROUP BY vt.account_code",
+           @from, @to, Customer.walkup_customer.id]
+    result = Voucher.find_by_sql(sql)
   end
 
   def subscriber_details
@@ -295,16 +296,14 @@ EOQ
       return
     end
     @cash_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('walk_cash'))
-    @cc_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('walk_cc'))
     @cash_tix_types = {}
     @cash_tix.each do |v|
-      @cash_tix_types[v.vouchertype] ||= 0
-      @cash_tix_types[v.vouchertype] += 1
+      @cash_tix_types[v.vouchertype] = 1 + (@cash_tix_types[v.vouchertype] || 0)
     end
+    @cc_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('walk_cc'))
     @cc_tix_types = {}
     @cc_tix.each do |v|
-      @cc_tix_types[v.vouchertype] ||= 0
-      @cc_tix_types[v.vouchertype] += 1
+      @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)
     end
   end
   
@@ -342,4 +341,14 @@ EOQ
       end
     end
   end
+
+  def get_dates_from_params(from_param,to_param)
+    from = Time.local(*([:year,:month,:day].map { |x| params[from_param][x] }))
+    to = Time.local(*([:year,:month,:day].map { |x| params[to_param][x] }))
+    from,to = to,from if from > to
+    from = from.midnight
+    to = (to+1.day).midnight
+    return from,to
+  end
+
 end

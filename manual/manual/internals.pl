@@ -1,4 +1,4 @@
-# LaTeX2HTML 2002-2-1 (1.70)
+# LaTeX2HTML 2002-2-1 (1.71)
 # Associate internals original text with physical files.
 
 
@@ -7,6 +7,10 @@ $ref_files{$key} = "$dir".q|manual.html|;
 $noresave{$key} = "$nosave";
 
 $key = q/sec:merging/;
+$ref_files{$key} = "$dir".q|manual.html|; 
+$noresave{$key} = "$nosave";
+
+$key = q/sec:sql/;
 $ref_files{$key} = "$dir".q|manual.html|; 
 $noresave{$key} = "$nosave";
 

@@ -302,6 +302,12 @@ class StoreController < ApplicationController
     session[:otp] = @otp = String.random_string(256)
     now = Time.now
     @showdates = Showdate.find(:all,:conditions => ["thedate >= ?", now-1.week])
+    # bail out right now if there are no showdate for which to sell
+    if @showdates.empty?
+      flash[:notice] = "No upcoming shows for walkup sales"
+      redirect_to :controller => 'shows', :action => 'list'
+      return
+    end
     @shows = get_all_shows(@showdates).map  { |s| [s,@showdates.select { |sd| sd.show_id == s.id } ]}
     @vouchertypes = Vouchertype.find(:all, :conditions => ["is_bundle = ? AND walkup_sale_allowed = ?", false, true])
     # if there was a show and showdate selected before redirect to this screen,

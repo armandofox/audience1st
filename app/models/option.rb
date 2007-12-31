@@ -1,7 +1,6 @@
 class Option < ActiveRecord::Base
   validates_uniqueness_of :name
   def validate
-    errors.add_on_empty %w(value)
     errors.add(name.humanize, "must be an integer") if
       typ == :int and value =~ /[^0-9]/
     errors.add(name.humanize, "must be an email address") if

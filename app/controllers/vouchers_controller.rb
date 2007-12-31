@@ -17,6 +17,13 @@ class VouchersController < ApplicationController
     unless (@customer = Customer.find_by_id(params[:customer]))
       flash[:notice] = "Must select a customer to add vouchers"
       redirect_to :controller => 'customers', :action => 'list'
+      return
+    end
+    # can this be declared as a filter?
+    unless Vouchertypes.find(:first)
+      flash[:notice] = "You must define some vouchertypes first"
+      redirect_to :controller => 'vouchertypes', :action => 'list'
+      return
     end
     if request.get?
       @regular_vouchers = Vouchertype.find(:all, :conditions => 'is_bundle = 0')
