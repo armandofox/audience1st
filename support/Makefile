@@ -19,8 +19,10 @@ RUBY	   = /usr/local/bin/ruby
 PERL	   = /usr/local/bin/perl
 MYSQL      = /usr/bin/mysql
 MYSQLDUMP  = /usr/bin/mysqldump
-MYSQL_OPTS = -u$(NAME) '-ps;ystrms'
-MYSQL_DB   =  $(NAME)_vboproduction
+MYSQL_DB   = $(shell perl -ne 'print $1 if /database: +(.*)$$/' $(APPROOT)/config/database.yml)
+MYSQL_PASS = $(shell perl -ne 'print $1 if /password: +(.*)$$/' $(APPROOT)/config/database.yml)
+MYSQL_USER = $(shell perl -ne 'print $1 if /username: +(.*)$$/' $(APPROOT)/config/database.yml)
+MYSQL_OPTS = '-u$(MYSQL_USER)' '-p$(MYSQL_PASS)'
 
 # clean out sessions older than this many seconds
 SESSION_CLEANOUT = 86400
