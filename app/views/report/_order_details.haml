@@ -11,18 +11,27 @@
 
   - form_tag({:action => 'unfulfilled_orders'},:method => :get) do
     %p 
-      Show all orders still in need of fulfillment 
+      Show orders needing fulfillment as of today
       (usually means mailing something to customer).
       = submit_tag 'Generate Listing'
 
   - form_tag({:action => 'accounting_report'},{:method => :get}) do
-    %p
-      Aggregate sales by account code from
-      = select_date Date.today, :prefix => 'from', :discard_hour => true 
-      to
-      = select_date Date.today, :prefix => 'to', :discard_hour => true 
-      %br/
-      where purchase method is
-      = select_tag('purchasemethods[]', options_from_collection_for_select(Purchasemethod.find(:all),:id,:description), :multiple => true)
-      = submit_tag 'Go' 
+    %table
+      %tbody
+        %tr
+          %td Revenue by account code within dates:
+          %td{:colspan=>2} Where purchase method is (Shift-click to select multiple):
+        %tr
+          %td{:valign=>:top}
+            %br/
+            = select_date Date.today, :prefix => 'from', :discard_hour => true 
+            %br/
+            %br/
+            to
+            %br/
+            %br/
+            = select_date Date.today, :prefix => 'to', :discard_hour => true 
+          %td{:valign=>:top}
+            = select_tag('purchasemethods[]', options_from_collection_for_select(Purchasemethod.find(:all),:id,:description), :multiple => true)
+          %td= submit_tag 'Go' 
 

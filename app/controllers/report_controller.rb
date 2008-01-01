@@ -197,23 +197,34 @@ class ReportController < ApplicationController
            "  INNER JOIN showdates sd ON sd.id = v.showdate_id" <<
            "  INNER JOIN shows s ON s.id = sd.show_id " <<
            "WHERE " <<
-           "v.showdate_id != 0 AND " <<
-           "(v.sold_on BETWEEN ? and ?) AND " <<
-           "v.customer_id != 0 AND v.customer_id != ? AND " <<
-           "(v.purchasemethod_id IN (#{purchasemethods})) " <<
+           " vt.price > 0" <<
+           " AND v.showdate_id != 0" <<
+           " AND (v.sold_on BETWEEN ? and ?)" <<
+           " AND v.customer_id NOT IN (0,?)" <<
+           " AND (v.purchasemethod_id IN (#{purchasemethods})) " <<
            "GROUP BY vt.account_code,s.name",
            @from, @to, Customer.walkup_customer.id]
-    @txns = Voucher.find_by_sql(sql).reject { |v| v.attributes["SUM(vt.price)"].to_f.zero? }.sort_by(&Proc.new { |x| "#{x.attributes['name']},#{x.attributes['account_code']}" }).map { |e| e.attributes.values_at("account_code", "name", "SUM(vt.price)") }
+    @txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
     # next, all the Bundle Vouchers - regardless of purchase method
-    sql = ["SELECT vt.account_code, vt.name, SUM(vt.price) " <<
-           "FROM vouchers v INNER JOIN vouchertypes vt " <<
-           "  ON v.vouchertype_id = vt.id WHERE " <<
-           "(v.sold_on BETWEEN ? AND ?) AND " <<
-           "v.customer_id != 0 AND v.customer_id != ? AND " <<
-           "vt.is_bundle = 1 " <<
-           "GROUP BY vt.account_code",
+    sql = ["SELECT vt.name,vt.account_code,SUM(vt.price) " <<
+           "FROM vouchers v " <<
+           "  INNER JOIN vouchertypes vt ON v.vouchertype_id = vt.id " <<
+           "WHERE " <<
+           " vt.price > 0" <<
+           " AND (v.sold_on BETWEEN ? AND ?)" <<
+           " AND v.customer_id NOT IN (0,?)" <<
+           " AND vt.is_bundle = 1 " <<
+           "GROUP BY vt.account_code,vt.name",
            @from, @to, Customer.walkup_customer.id]
-    result = Voucher.find_by_sql(sql)
+    @txns += sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
+    # last, all the Donations
+    sql = ["SELECT dt.name,dt.account_code,SUM(d.amount) " <<
+           "FROM donations d" <<
+           "  INNER JOIN donation_types dt ON d.donation_type_id = dt.id " <<
+           "WHERE d.date BETWEEN ? AND ? " <<
+           "GROUP BY dt.account_code,dt.name",
+           @from, @to]
+    @txns += sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
   end
 
   def subscriber_details
@@ -351,4 +362,17 @@ EOQ
     return from,to
   end
 
+  # given a list of AR records returned from the GROUP BY sql queries of the
+  # accounting report, squeeze out the ones with a zero total, and sort
+  # the collection by (name,account code) where name may be a show name,
+  # subscription-vouchertype name, or donation-type name.
+  def sort_and_filter(records,price_key)
+    records.reject do |v|
+      v.attributes["SUM(#{price_key})"].to_f.zero?
+    end.sort_by(&Proc.new do |x|
+                  "#{x.attributes['name']},#{x.attributes['account_code']}"
+                end).map do |e|
+      e.attributes.values_at("account_code", "name", "SUM(#{price_key})")
+    end
+  end
 end

@@ -6,13 +6,13 @@
         - varlist.sort_by(&:id).each do |v|
           %tr{:class=>cycle(:evenRow,:oddRow)}
             %td.l= Inflector.humanize(v.name)
-            %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 32, :maxlength => 200
+            %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 20, :maxlength => 254
             %td.l= link_to_function h(v.shortdesc), "alert('#{escape_javascript(v.description)}')"
   .pageDiv
     %h1 Save Changes
     %p
-      Clicking the button below will cause your changes to take effect
-      in the next 15 minutes.  If you've changed your mind,
+      Clicking the button below will commit your changes, but it may take
+      up to an hour for them to all take effect.  If you've changed your mind,
       =link_to "click here to cancel",:controller=>'customers',:action=>'welcome'
       and discard your changes.
 
