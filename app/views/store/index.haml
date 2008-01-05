@@ -1,8 +1,6 @@
-= error_messages_for 'store'
-
 - cid = (@customer ? @customer.id : nil)
 
-%h1.bannerHead= link_to 'Click Here for 2008 Season Subscriptions!',:action=>'subscribe_2008'
+= render :partial => 'store_banner', :locals => {:subscriber => @subscriber}
 
 #store
 
@@ -10,14 +8,14 @@
     #shoppingCart.pageDiv
 
       %h1 My Shopping Cart
-      - form_tag :action => 'checkout', :id => cid do
-        = render :partial => 'cart', :locals => {:editable => true, :id => cid}
-        = gen_button  'Empty Cart', {:action => 'empty_cart', :id => cid}
+      - form_tag :action => 'checkout' do
+        = render :partial => 'cart', :locals => {:editable => true}
+        = gen_button  'Empty Cart', {:action => 'empty_cart'}
         = submit_tag 'Checkout'
   
   #promo_entry.pageDiv
 
-    = render :partial => 'promo_entry', :locals => {:promo_code => @promo_code.to_s, :id => cid}
+    = render :partial =>'promo_entry',:locals=>{:promo_code=>@promo_code.to_s}
 
   #purchaseIndividualTickets.pageDiv
 
@@ -25,14 +23,11 @@
       Purchase Individual Tickets
       = "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
-    - if @subscriber
-      %p.storeText
-        %strong Thanks for being a subscriber!
-        You get a 10% discount on ticket purchases for your guests (be sure
-        to select the 
-        %em Guest of Subscriber
-        ticket type) and exclusive access to subscriber-only tickets.  
+    - if @subscriber && !APP_CONFIG[:subscriber_store_message].blank?
+      %p.storeText= APP_CONFIG[:subscriber_store_message]
+    - if !@subscriber && !APP_CONFIG[:nonsubscriber_store_message].blank?
+      %p.storeText= APP_CONFIG[:nonsubscriber_store_message]
 
-    = render :partial => 'buy_tickets', :locals => {:subscriber => @subscriber, :id => cid }
+    = render :partial => 'ticket_menus'
 
   = render :partial => 'donate'

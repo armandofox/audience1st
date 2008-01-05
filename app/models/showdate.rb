@@ -49,15 +49,15 @@ class Showdate < ActiveRecord::Base
     cap.zero? ? 0 : (100.0 * (cap - self.total_seats_left) / cap).floor
   end
 
+  def sold_out? ; percent_sold.to_i >= APP_CONFIG[:sold_out_threshold].to_i ; end
+
+  def nearly_sold_out? ; percent_sold.to_i >= APP_CONFIG[:nearly_sold_out_threshold].to_i ; end
+
   def availability_in_words
-    pct = self.percent_sold
-    if pct >= (APP_CONFIG[:sold_out_threshold] || 95)
-      :sold_out
-    elsif pct >= (APP_CONFIG[:nearly_sold_out_threshold] || 85)
-      :nearly_sold_out
-    else
+    pct = percent_sold
+    pct >= APP_CONFIG[:sold_out_threshold].to_i ?  :sold_out :
+      pct >= APP_CONFIG[:nearly_sold_out_threshold].to_i ? :nearly_sold_out :
       :available
-    end
   end
   
   def seats_left_for_voucher(vouchertype,cust=Customer.generic_customer)

@@ -22,6 +22,8 @@ class StoreController < ApplicationController
          :redirect_to => {:action => 'index'})
 
   def index
+    # if this is initial visit to page, reset ticket choice info
+    reset_current_show_and_showdate
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
     @subscriber = @customer.is_subscriber?
@@ -32,9 +34,10 @@ class StoreController < ApplicationController
     # customer is allowed to purchase vouchers; then determine show
     # names from that.
     #
-    @shows = get_all_shows(get_all_showdates(@is_admin))
-    @showdates = nil
-    @vouchertypes = nil
+#     @shows = get_all_shows(get_all_showdates(@is_admin))
+#     @showdates = nil
+#     @vouchertypes = nil
+    setup_ticket_menus
   end
 
   # these are AJAX handlers that just render partials (no views)
@@ -56,61 +59,54 @@ class StoreController < ApplicationController
              :vouchertypes => vouchertypes})
   end
 
-  def show_changed
-    @customer = current_customer || Customer.walkup_customer
-    @subscriber = @customer.is_subscriber?
+  def setup_ticket_menus
+    @customer = store_customer
     is_admin = current_admin.is_boxoffice
-    show_id = params[:show_id].to_i
-    @shows = get_all_shows(get_all_showdates(is_admin))
-    if show_id > 0
-      @showdates = get_showdates(show_id, is_admin)
-    else
-      @showdates = nil
-      show_id = nil
+    # will set the following instance variables:
+    # @all_shows - choice for Shows menu
+    # @sh - selected show; nil means none selected
+    # @all_showdates - choices for Showdates menu
+    # @sd - selected showdate; nil means none selected
+    # @vouchertypes - array of AvailableSeat objects indicating vouchertypes
+    #   to offer, which includes how many are available
+    #   empty array means must choose showdate first
+    @all_shows = get_all_shows(get_all_showdates(is_admin))
+    if @sd = current_showdate   # everything keys off of selected showdate
+      @sh = @sd.show
+      @all_showdates = @sh.showdates
+      @vouchertypes = ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin)
+    elsif @sh = current_show    # show selected, but not showdate
+      @all_showdates = @sh.showdates
+      @vouchertypes = []
+    else                      # not even show is selected
+      @all_showdates = []
+      @vouchertypes = []
     end
-    render(:partial => 'ticket_menus',
-           :locals => {
-             :shows => @shows, :show_id => show_id,
-             :showdates => @showdates, :showdate_id => nil,
-             :subscriber => @subscriber,
-             :vouchertypes => nil
-           } )
+    # filtering:
+    # remove any showdates that are sold out (which could cause showdate menu
+    #   to become empty)
+    # remove any vouchertypes tht customer should not even see the existence
+    #  of (unless "customer" is actually an admin)
+    @vouchertypes.reject! { |av| av.staff_only } unless is_admin
+    @vouchertypes.reject! { |av| av.howmany.zero? }
+  end
+
+  def show_changed
+    if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
+      set_current_show(s)
+      set_current_showdate(nil)
+    end
+    setup_ticket_menus
+    render :partial => 'ticket_menus'
   end
 
   def showdate_changed
-    @customer = current_customer || Customer.walkup_customer
-    @subscriber = @customer.is_subscriber?
-    is_admin = current_admin.is_boxoffice
-    showdate_id = params[:showdate_id].to_i
-    if showdate_id > 0
-      @vouchertypes = ValidVoucher.numseats_for_showdate(showdate_id, @customer,
-                                                         :ignore_cutoff => is_admin)
-      show_id = Showdate.find(showdate_id).show_id
-      # if not staff, strip out stuff they shouldn't see
-      @vouchertypes.reject! { |av| av.staff_only } unless is_admin
-      # if vouchertypes with promo code, only show if promo code supplied
-      @vouchertypes.reject! do |av|
-        (codes = av.promo_codes) &&
-          !(codes.include?(session[:promo_code].to_s))
-      end
-    else
-      @vouchertypes = nil
-      show_id = 0
+    if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
+      set_current_showdate(s)
     end
-    render(:partial => 'ticket_menus',
-           :locals => {
-             :shows => get_all_shows(get_all_showdates(is_admin)),
-             :show_id => show_id,
-             :showdates => get_showdates(show_id, is_admin),
-             :showdate_id => showdate_id,
-             :subscriber => @subscriber,
-             :vouchertypes => @vouchertypes
-           } )
+    setup_ticket_menus
+    render :partial => 'ticket_menus'
   end
-
-  # TBD: pull out above logic into a controller helper that, given a
-  # showdate and purchaser (customer), returns a list of valid voucher
-  # types and the corresponding show ID (or nils if needed).
   
   def enter_promo_code
     code = (params[:promo_code] || '').upcase
@@ -502,6 +498,12 @@ class StoreController < ApplicationController
   def nobody_really_logged_in
     session[:cid].nil? || session[:cid].to_i.zero?
   end
+
+  def reset_current_show_and_showdate ;  session[:store] = {} ;  end
+  def set_current_show(s) ; (session[:store] ||= {})[:show] = s ; end
+  def set_current_showdate(sd) ; (session[:store] ||= {})[:showdate] = sd ; end
+  def current_showdate ;  (session[:store] ||= {})[:showdate] ;  end
+  def current_show ; (session[:store] ||= {})[:show] ;  end
 
   def encrypt_with(orig,pad)
     str = String.new(orig)

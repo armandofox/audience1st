@@ -18,7 +18,7 @@
       %td= show.house_capacity
       %td= show.created_on.strftime('%b %e, %Y')
       - if @superadmin
-      %td= button_to 'Destroy',  :action => 'destroy', :id => show , :confirm => MESSAGES[:areyousure_0], :post => true 
+      %td= button_to 'Destroy',  {:action => 'destroy', :id => show}, :confirm => MESSAGES[:areyousure_0], :post => true 
       - end
     - end
 

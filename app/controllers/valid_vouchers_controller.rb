@@ -52,9 +52,9 @@ class ValidVouchersController < ApplicationController
         @validvoucher.end_sales = showdate.thedate - hours_before
       end
       if @validvoucher.save
-        msgs = 'Added to date' + showdate.thedate.strftime('%b %e %y %I:%M%p') # ugh
+        msgs = 'Added to performance on ' << showdate.printable_date 
       else
-        msgs = error_messages_for :valid_voucher
+        msgs = @validvoucher.errors.full_messages.join("<br/>")
       end
     end
     flash[:notice] = msgs

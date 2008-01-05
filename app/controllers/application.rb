@@ -132,10 +132,8 @@ class ApplicationController < ActionController::Base
   
   def is_logged_in
     unless (c = Customer.find_by_id(session[:cid])).kind_of?(Customer)
-      flash[:notice] = 'You must sign in to view this page.'
       session[:return_to] = request.request_uri
       redirect_to :controller => 'customers', :action => 'login'
-      logger.info("Is_logged_in returns false for id=#{c} for request:\n#{request}")
       false
     else
       c

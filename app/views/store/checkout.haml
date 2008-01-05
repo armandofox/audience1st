@@ -23,7 +23,7 @@
           = check_box_tag 'sales_final',1,@sales_final_acknowledged
           %strong
             I understand and agree to the
-            = link_to_function "Terms of Use and Sales Final Policy", "alert(#{escape_javascript(MESSAGES[:terms_of_sale_0])})"
+            = link_to_function "Terms of Use and Sales Final Policy", "alert('#{escape_javascript(MESSAGES[:terms_of_sale_0])}')"
       %tr
         %td{:colspan=>2,:align=>:center}
           = submit_tag APP_CONFIG[:cc_purch], {:onClick => "this.disabled=true;this.value='Processing, Please Wait';document.getElementById('cancel').style.display='none';this.form.submit();"}

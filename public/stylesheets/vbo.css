@@ -252,7 +252,7 @@ th {
   background: white;
   padding: 2px 2px;
   margin: 2px 2px;
-  text-align: top;           
+  vertical-align: top;           
  }
 
 .wideCell { 
@@ -443,3 +443,12 @@ div.progressBar div.background {
   font-family: verdana, helvetica, sans-serif;
   color: #333;
  }
+
+/* Elements on specific pages */
+
+/* Login page */
+
+#haveAccount { 
+}
+#newCustomer { 
+}

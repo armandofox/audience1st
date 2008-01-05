@@ -1,0 +1,11 @@
+- if subscriber && !APP_CONFIG[:subscriber_banner].blank?
+  - if APP_CONFIG[:subscriber_banner_link].blank?
+    %h1.bannerHead= link_to APP_CONFIG[:subscriber_banner], APP_CONFIG[:subscriber_banner_link]
+  - else
+    %h1.bannerHead= APP_CONFIG[:subscriber_banner]
+- if !subscriber && !APP_CONFIG[:nonsubscriber_banner].blank?
+  - if APP_CONFIG[:nonsubscriber_banner_link].blank?
+    %h1.bannerHead= link_to APP_CONFIG[:nonsubscriber_banner], APP_CONFIG[:nonsubscriber_banner_link]
+  - else
+    %h1.bannerHead= APP_CONFIG[:nonsubscriber_banner]
+
