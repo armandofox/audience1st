@@ -111,8 +111,13 @@ class CustomersController < ApplicationController
     # for CC purchase.  In that case, return to checkout flow.
     redirect_to(:controller=>'store',:action=>'checkout') and return if session[:checkout_in_progress]
     @customer = @gCustomer
-    # if customer is a subscriber, redirect to correct page
-    redirect_to(:action=>'welcome_subscriber') and return if (@customer.is_subscriber? && !(params[:force_classic] && @gAdmin.is_boxoffice))
+    # if customer is a subscriber, AND force_classic is not indicated,
+    # redirect to correct page
+    if @customer.is_subscriber?
+      redirect_to(:action=>'welcome_subscriber') and return unless
+        (params[:force_classic] && @gAdmin.is_boxoffice) ||
+        !(APP_CONFIG[:force_classic_view].blank?)
+    end
     setup_for_welcome(@customer)
     @subscriber = false
   end

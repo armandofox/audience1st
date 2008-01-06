@@ -1,7 +1,6 @@
 #ticket_menus
   - form_tag :action => 'add_tickets_to_cart' do
     %table.ticketSelect{:width=>'100%'}
-      Show subscriber msg here
       %tr
         - choose = @sh ? "" : options_for_select({"Select..." => 0})
         %td.label{:width=>'30%'} Show

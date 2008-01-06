@@ -23,6 +23,17 @@ else
 end
 ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
 
+namespace :deploy do
+  namespace :web do
+    task :protect do
+      run "perl -pi -e 's/^\s*#\s*require\s*valid-user/require valid-user/' #{deploy_to}/current/public/.htaccess"
+    end
+    task :unprotect do
+      run "perl -pi -e 's/^\s*require\s*valid-user/# require valid-user/' #{deploy_to}/current/public/.htaccess"
+    end
+  end
+end
+
 deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
   #run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"

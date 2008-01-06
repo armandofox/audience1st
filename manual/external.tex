@@ -1,0 +1,104 @@
+\section{External Integration}
+
+\af is designed to integrate with external/existing Web sites in various
+ways described in this section.
+
+\subsection{Warning: Don't Use IFrames}
+\label{sec:iframes}
+
+An IFrame is an HTML construct that allows you to display content from a
+third-party site within a ``frame'' served from your main Web site.
+
+\textbf{Do not attempt to embed Audience1st into your venue's primary
+  web page using IFrames.}  The reason is that most browsers are
+configured not to honor so-called ``browser cookies'' from sites
+rendered within an IFrame, yet without cookies it's impossible for a
+patron (or administrator) to login to \af.
+
+Instead, customize \af's look and feel using the CSS hooks provided, as
+described in section~\ref{sec:creating_css}.
+
+\subsection{Linking Into Audience1st}
+\label{sec:linking}
+
+You can place various kinds of links directly on your own Web site to
+take patrons to \af pages with preselected choices.  In the following
+table, all URL's shown are \emph{relative} to the path
+\url{http://www.audience1st.com/VENUE} where VENUE is replaced with the
+shortname of your venue.  That is, a URL shown in the table as
+\emph{/store}, for the fictitious Silver Start Theater  whose shortname
+assigned by A1~Patron Systems is \verb+silverstar+, really expands to
+\url{http://www.audience1st.com/silverstar/store} 
+
+\begin{table}
+  \begin{tabular}{|l|p{0.75\textwidth}}
+    \hline
+    \textbf{URL} & \textbf{Where it goes} \\
+    \hline
+    /customers/login  & Login page for subscribers and returning
+    customers \\
+    /store & Default page for buying individual tickets \\
+    /store?showdate_id=\emph{id} & Purchase individual tickets with
+    performance preselected to the performance whose showdate ID is \emph{id}.
+    You can determine the showdate ID by going to the \emph{Shows} tab
+    and clicking on the name of a show. \\
+    /store?show_id=\emph{id} & Purchase individual tickets with
+    production preselected to the show whose show ID is \emph{id}, but
+    no specific performance preselected.  Show
+    ID's are shown to the left of each show name when you click the
+    \emph{Shows} tab. \\
+    /store/subscribe & Page for purchasing subscriptions for the current
+    season.  If no such subscriptions are still on sale, patron will
+    simply be redirected to the page for regular ticket purchase. \\
+  \end{tabular}
+\label{table:links}
+\caption{External links directly pointing to Audience1st.  Replace
+  \smallcaps{venue} with the shortname of your venue in all examples.}
+\end{table}
+
+\subsection{RSS Feed}
+\label{sec:rss}
+
+\af provides an RSS feed of upcoming performances, where each feed item
+includes a one-line description of the performance's sales volume
+(``Available,'' ``Nearly sold out,'' or ``Sold out'') and is a link to
+the ticket-purchase page preselected for that performance (sold-out
+shows don't include a link).
+
+The RSS feed is compatible with most popular content-management or blog
+software that includes an RSS feed plug-in.  The feed returns one item
+for each upcoming show in the calendar season, so if you want to display
+fewer, you'll have to configure your RSS plug-in or widget accordingly.
+
+The URL at which the feed is available is
+\url{http://www.audience1st.com/VENUE/store/ticket_rss}.
+
+\subsection{Show Calendar}
+\label{sec:calendar}
+
+\af exports the calendar of all upcoming performances for the calendar
+season in the standard vCalendar format.  This makes it suitable for
+subscribing to the calendar from any plug-in or application (e.g. iCal
+on Mac OS~X, Outlook 2003 or later) that can subscribe to a
+vCalendar-format calendar.  It also makes it easy to display a ``season
+calendar'' on your venue's Web site by using a plug-in that understands
+the vCalendar format.
+
+The URL at which the calendar is available is
+\url{http://www.audience1st.com/VENUE/store/calendar_ical}.
+
+\subsection{CSS Designer's Guide}
+\label{sec:creating_css}
+
+This section is provided for designers familiar with the Cascading
+Stylesheets (CSS) standard for visual design of Web pages.  It contains
+the necessary information to style the \af pages to match a venue's
+existing Web site.
+
+(Section TBD)
+
+Any images (e.g. background pictures) or other resources used by the CSS
+must be hosted on the venue's own web site or another external site, and
+fully-qualified URL's must be used to name them.  (The URL of the main
+stylesheet itself is settable as a configuration option of \af; see
+section~\ref{sec:config-vars}.)

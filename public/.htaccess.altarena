@@ -1,3 +1,10 @@
+# Authentication: commenting out the single line 'require valid-user' will disable authentication
+AuthUserFile /home/audienc/htpasswd-general
+AuthGroupFile /dev/null
+AuthName "Limited Access"
+AuthType Basic
+# require valid-user
+
 # General Apache options
 #AddHandler fastcgi-script .fcgi
 #THE ABOVE LINE SHOULD BE COMMENTED OUT ON HOSTINGRAILS SERVERS

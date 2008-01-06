@@ -13,7 +13,7 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1" do
           sd,desc,link = avail
           xml.title       "#{sd.printable_name} - #{desc}"
           if link
-            xml.link url_for :only_path => false, :controller => 'store', :action => 'index'
+            xml.link url_for :only_path => false, :controller => 'store', :action => 'index', :showdate_id => sd.id
           end
         end
       end

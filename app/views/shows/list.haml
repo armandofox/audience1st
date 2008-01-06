@@ -3,13 +3,15 @@
 %table
   %thead
     %tr
+      %th ID
       %th Show Name
       %th Run Dates
       %th House Cap.
-      %th Added to sytem
+      %th Added to system
   %tbody
     - @shows.each do |show|
-    %tr
+    %tr{:class=>cycle(:evenRow,:oddRow)}
+      %td.r= show.id
       %td= link_to show.name, :action => 'edit', :id => show
       %td
         = show.opening_date.strftime('%b %e, %Y')

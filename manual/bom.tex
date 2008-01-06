@@ -59,17 +59,85 @@ as valid only for certain performances.
 \subsubsection{Creating a New Regular Voucher}
 \label{sec:addingregularvouchertypes}
 
-
 When a new voucher type is set up, whether or not it is a bundle,
-additional properties can be specified for it:
+the following properties must be specified for it:
 
 \begin{itemize}
-\item[Expiration] A date after which the voucher expires and can no
-  longer be used.  Useful for time-limited promotions.
+\item[Name] The name that will appear (e.g. in dropdown menus on
+  purchase screens, in reports, etc.) for the voucher; for example,
+  ``Adult General Admission'' or ``2008 Subscriber Package''.  Note that
+  you can change the name at any time in the future without affecting
+  anything except the appearance of menus and reports.
+\item[Price] The price of this type of voucher.  Enter zero for comps.
+  Don't enter a negative number.  When a voucher is sold, the sale price
+  is recorded as the value of this property.  Note that if you change
+  the sale price of a voucher type, the change applies retroactively to
+  all purchases.    So, if you expect
+  to raise General Admission prices, you will need to create a new
+  Voucher Type for the different price in the future.
+  \emph{future} purchases (as you'd expect).  (This will change soon,
+  allowing the price paid for vouchers to remain the same even after the
+  voucher type's price is changed.)
+\item[Account Code] If you use accounting software, you can enter a code
+  here (up to 8 characters) corresponding to the account code you use to
+  track sales of this voucher type.  It's OK for multiple voucher types
+  to share an account code; for example, you may have different voucher
+  types for Adult vs. Student general admission, yet the income from
+  both types should be aggregated under the same account code.  The
+  account code is used in the Accounting Reports, which break out
+  revenue by production and account number.  Obviously, voucher types
+  whose price is zero need not have an account code.  You can leave this
+  blank initially and fill it in later, and your reports will still be
+  correct (i.e., changing the account code is retroactive to all
+  vouchers already sold of a particular type).
+\tip{Important}{If you give \emph{any} voucher type an account code, to
+  be consistent you should give \emph{all} voucher types account codes.
+  Otherwise, when generating the accounting report, any voucher types
+  with no account code will silently be excluded from the report.}
+\item[Not valid before] The earliest date on which a voucher of this
+  type can be purchased or redeemed. This allows you to define voucher
+  types far in advance of when they will be offered for sale.
+\item[Not valid after] A date after which the voucher expires and can no
+  longer be used.  Useful for time-limited promotions.  When a voucher
+  of a particular type is issued, it ``inherits'' this expiration date.
+  However, if the Voucher Type's expiration date is changed, the change
+  is \emph{not} applied to Vouchers of that type already issued.
+
+\tip{Example}{The ``General Admission'' voucher type is defined with
+an expiration date of December 31, 2008.  All customers
+purchasing General Admission tickets will get vouchers that expire on
+that date.  When the new season rolls around, the General Admission
+voucher type's expiration date is changed to December 31, 2009.  This
+later date will apply to any \emph{future} vouchers of this type that
+are issued, but customers already holding vouchers of this type will
+still have the old expiration date.}
+
+\item[Mail fulfillment needed] Check this box if acquisition of the
+  voucher by a patron implies manual fulfillment.  This is used by the
+  ``Generate Orders Needing Fulfillment'' report.  You might set this,
+  e.g., for Subscription bundles where you prefer to mail the customer
+  some collaterals.  (Note that this doesn't affect the customer's
+  ability to use the voucher---she can make reservations as soon as the
+  voucher is paid for.)
+\item[Walkup sales allowed] Some vouchers can also be sold at the door,
+  e.g. General Admission.  Others, such as advance-purchase-only
+  specials, cannot.  Only voucher types that have this flag set will
+  appear on the Walk-Up Sales screen (section~\ref{sec:walkup}).
+\tip{Note}{You \emph{should not} allow Subscription
+  Bundles to be sold as Walkup, because the Walkup Sales interface does
+  not allow capturing the patron's name and address.  Use this field
+  only for voucher types that you're comfortable selling
+  ``anonymously''.}
+
+\item[Is bundle] To create a bundle voucher, you must first create all
+  of the individual voucher types that the bundle will contain,
+  \emph{then} create a new Bundle voucher type, then edit it to include
+  the right quantity of each voucher.
 \item[Is subscriber] Does the purchase of this voucher qualify the
   purchaser as a ``subscriber''?  Useful for distinguishing bundles
-  corresponding to subscriptions from bundles corresponding to promos;
-  however, a non-bundle voucher can also be designated as
+  corresponding to subscriptions from bundles corresponding to promos.
+  Note that while you probably only want to set this property for Bundle
+  vouchers, a non-bundle voucher can also be designated as
   subscriber-qualifying. 
 \item[Changeable] Specifies whether the voucher is tied to a particular
   show date or can be used to reserve for a variety of dates. This
@@ -78,7 +146,8 @@ additional properties can be specified for it:
   pre-purchased as part of subscriptions or promos are generally
   changeable; vouchers corresponding to tickets purchased for a
   particular performance are generally not.
-\item
+\item[Comments] Any additional comments, seen only by staff when working
+  with reports.
 \end{itemize}
 
 
@@ -86,7 +155,7 @@ additional properties can be specified for it:
 \label{sec:addingbundlevouchertypes}
 
 
-A bundle is itself a voucher that cannot be ``redeemed'' for anything
+A bundle is a voucher that cannot itself be ``redeemed'' for anything
 but serves as a placeholder.  For example, if a patron buys a
 subscription containing 3 vouchers good for any performance, they would
 actually see 4 vouchers in their account.  The first is a nonredeemable
@@ -96,16 +165,26 @@ easy to figure out how many people took advantage of a particular
 bundle promotion even if the promotion includes ``regular'' tickets.
 
 In general, to define a bundle voucher, you \emph{first} have to define the
-regular vouchers that the bundle is going to include.
-
-(To be written)
+regular vouchers that the bundle is going to include, as described
+above.   Then create a new voucher type and check the ``Is Bundle'' box,
+and save the voucher.  Next click the \emph{Edit} link next to the
+newly-created bundle voucher's name, and you will see an ``Included
+Vouchers''  panel where you can enter the
+number of each type of regular vouchers included in the bundle.
 
 \subsection{Shows and Show Dates}
+\label{sec:shows-and-showdates}
 
 A \emph{show} is a series of 1 or more performances of the same piece.
 In general, to list a show you must first enter the general information
 about the production (opening and closing dates, house capacity, etc.),
 then enter specific information about each show date.
+
+Several default properties apply to the show (production) as a whole,
+such as the capacity of the house, but can be overridden selectively for
+individual dates (for example, if you want to hold back house seats on
+opening night of a performance, you can set this up automatically to
+reduce the number of tickets allowed to be sold for that performance).
 
 \subsubsection{Creating Shows}
 \label{sec:addingshows}

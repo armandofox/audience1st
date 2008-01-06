@@ -24,39 +24,17 @@ class StoreController < ApplicationController
   def index
     # if this is initial visit to page, reset ticket choice info
     reset_current_show_and_showdate
+    if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
+      set_current_showdate(s)
+    elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
+      set_current_show(s)
+    end
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
     @subscriber = @customer.is_subscriber?
     @promo_code = session[:promo_code] || nil
     @cart = find_cart
-    #
-    # determine showdates first; then determine showdates for which this
-    # customer is allowed to purchase vouchers; then determine show
-    # names from that.
-    #
-#     @shows = get_all_shows(get_all_showdates(@is_admin))
-#     @showdates = nil
-#     @vouchertypes = nil
     setup_ticket_menus
-  end
-
-  # these are AJAX handlers that just render partials (no views)
-  def reset_ticket_menus
-    @customer = store_customer
-    @subscriber = @customer.is_subscriber?
-    is_admin = current_admin.is_boxoffice
-    showdates = vouchertypes = show_id = showdate_id = nil
-    shows  = get_all_shows(get_all_showdates(is_admin))
-    unless shows.empty?
-      s = shows.first
-      showdates = get_showdates(s.id, is_admin)
-    end
-    render(:partial => 'ticket_menus',
-           :locals => {
-             :shows => shows, :show_id => show_id,
-             :showdates => showdates, :showdate_id => showdate_id,
-             :subscriber => @subscriber,
-             :vouchertypes => vouchertypes})
   end
 
   def setup_ticket_menus
@@ -630,15 +608,7 @@ class StoreController < ApplicationController
   end
 
   def get_all_showdates(ignore_cutoff=false)
-    get_showdates(0, ignore_cutoff)
-  end
-
-  def get_showdates(show_id,ignore_cutoff=false)
-    if show_id.zero?
-      showdates = Showdate.find(:all)
-    else
-      showdates = Show.find(show_id).showdates rescue []
-    end
+    showdates = Showdate.find(:all)
     unless ignore_cutoff
       now = Time.now
       showdates.reject! { |sd| sd.end_advance_sales < now || sd.thedate < now }
