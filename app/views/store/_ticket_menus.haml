@@ -4,11 +4,11 @@
       %tr
         - choose = @sh ? "" : options_for_select({"Select..." => 0})
         %td.label{:width=>'30%'} Show
-        %td#selectShow.l= select_tag('show_select', choose + options_from_collection_for_select(@all_shows, :id, :name, (@sh ? @sh.id : 0)))
+        %td#selectShow.l= select_tag('show', choose + options_from_collection_for_select(@all_shows, :id, :name, (@sh ? @sh.id : 0)))
       %tr
         - choose = @sd ? "" : options_for_select({"Select..." => 0})
         %td.label{:width=>'30%'} Date
-        %td#selectShowdate.l= select_tag('showdate_select', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
+        %td#selectShowdate.l= select_tag('showdate', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
       - @vouchertypes.each do |av|
         %tr
           %td.label= av.vouchertype.name
@@ -24,7 +24,7 @@
             - unless flash[:ticket_error].blank?
               %span.infoMsg= flash[:ticket_error]
 
-= observe_field('show_select', :update => :ticket_menus,:with => 'show_id', :url => {:controller => 'store', :action => :show_changed})
+= observe_field('show', :update => :ticket_menus,:with => 'show_id', :url => {:controller => 'store', :action => :show_changed})
 
-= observe_field('showdate_select',:update => :ticket_menus,:with => 'showdate_id', :url => {:controller => 'store', :action => :showdate_changed} )
+= observe_field('showdate',:update => :ticket_menus,:with => 'showdate_id', :url => {:controller => 'store', :action => :showdate_changed} )
         

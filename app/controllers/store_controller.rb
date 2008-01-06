@@ -9,7 +9,7 @@ class StoreController < ApplicationController
   
   if RAILS_ENV == 'production'
     ssl_required :checkout, :place_order, :walkup, :do_walkup_sale
-    ssl_allowed(:index, :reset_ticket_menus,
+    ssl_allowed(:index, 
                 :show_changed, :showdate_changed, :enter_promo_code,
                 :add_tickets_to_cart, :add_donation_to_cart, :remove_from_cart,
                 :empty_cart, :process_swipe)
@@ -128,30 +128,35 @@ class StoreController < ApplicationController
   def add_tickets_to_cart
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
-    qty = params[:qty].to_i
-    vtype = params[:vouchertype_id].to_i
-    showdate_id = params[:showdate_id].to_i
-
-    if  vtype.zero?
-      flash[:ticket_error]='Please select show, date, and type of ticket first.'
-    elsif qty < 1 || qty > 99
-      flash[:ticket_error] = 'Please specify between 1 and 99 tickets.'
-    else
+    qtys = params[:vouchertype] # a hash of vouchertypeID => qty of this type
+    showdate_id = params[:showdate].to_i
+    flash[:ticket_error] = ""
+    
+    qtys.reject { |v,q| q.to_i.zero? }.each_pair do |vtype_str,qty_str|
+      vtype,qty = vtype_str.to_i, qty_str.to_i
+      unless (vt = Vouchertype.find_by_id(vtype))
+        flash[:ticket_error] << "Ticket ID #{vtype} is invalid. "
+        next
+      end
+      if qty > 99
+        flash[:ticket_error] << "Please specify between 1 and 99 tickets for type '#{vt.name}'. "
+        next
+      end
       av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,@customer,vtype,:ignore_cutoff => @is_admin)
-      if av.howmany.zero?
-        flash[:ticket_error] = 'Ticket type invalid for that show date, or show sold out'
-      elsif av.howmany < qty
-        flash[:ticket_error] = "Only #{av.howmany} of these tickets remaining for this show"
-      else      # add vouchers to cart.  Vouchers will be validated at checkout.
-        # was a promo code necessary to select this vouchertype?
-        promo_code = ((session[:promo_code] && av.promo_codes) ?
-                      session[:promo_code].upcase : nil)
-        cart = find_cart
-        1.upto(qty) do
-          cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
-        end
+      flash[:ticket_error] <<
+        "Ticket type '#{vt.name}' not valid for that show, or show sold out. " and next if av.howmany.zero?
+      flash[:ticket_error] <<
+        "Only #{av.howmany} '#{vt.name}' tickets remaining for selected performance. "  and next if av.howmany < qty
+      # add vouchers to cart.  Vouchers will be validated at checkout.
+      # was a promo code necessary to select this vouchertype?
+      promo_code = ((session[:promo_code] && av.promo_codes) ?
+                    session[:promo_code].upcase : nil)
+      cart = find_cart
+      1.upto(qty) do
+        cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
       end
     end
+    reset_current_show_and_showdate
     redirect_to :action => 'index'
   end
 
@@ -402,67 +407,6 @@ class StoreController < ApplicationController
     end
   end
 
-  # RSS feed of ticket availability info: renders an XML view for external use
-  def ticket_rss
-    now = Time.now
-    end_date = now.next_year.at_beginning_of_year
-    showdates =
-      Showdate.find(:all,
-                    :conditions => ["thedate BETWEEN ? AND ?", now, end_date],
-                    :order => "thedate")
-    @showdate_avail = []
-    showdates.each do |sd|
-      case sd.availability_in_words
-      when :sold_out
-        desc,link = "SOLD OUT", false
-      when :nearly_sold_out
-        desc,link = "Nearly sold out", true
-      else
-        desc,link = "Available", true
-      end
-      if link
-        desc << " - " << (sd.advance_sales? ? "Buy online now" :
-                          "Advance sales ended (Tickets may be available at box office)")
-      end
-      @showdate_avail << [sd, desc, link]
-    end
-    @venue = APP_CONFIG[:venue]
-    render :layout => false
-  end
-
-  # supports VXML voice playback of available shows
-  def ticket_vxml
-    @venue = APP_CONFIG[:venue]
-    @xferphone = APP_CONFIG[:venue_telephone]
-    # just check shows thru "this weekend"
-    end_date = (Time.now + 1.day + 1.week).at_beginning_of_week
-    showdates = Showdate.find(:all, :conditions =>
-                              ["thedate BETWEEN ? and ?", Time.now, end_date],
-                              :order => "thedate" )
-    if (showdates.nil? || showdates.empty?)
-      @next_perf = Showdate.find(:first, :order => 'thedate',
-                                 :conditions => ["thedate >?",Time.now])
-      render :template => "store/ticket_noperfs_vxml", :layout => false
-    else
-      @showdates_info = showdates.map do |s|
-        [s.speak, s.availability_in_words, s.advance_sales? ]
-      end
-      render :layout => false
-    end
-  end
-
-  # iCal-compatible feed of upcoming shows
-  def calendar_ical
-    this_year = Time.now.at_beginning_of_year
-    @venue = APP_CONFIG[:venue]
-    @showdates =
-      Showdate.find(:all,
-                    :conditions => ['thedate BETWEEN ? AND ?',
-                                    this_year, this_year + 1.year],
-                    :order => 'thedate')
-    render :layout => false
-  end
-  
   private
 
   # Customer on whose behalf the store displays are based (for special

@@ -6,9 +6,14 @@ xml.vxml "version" => "2.0", "xmlns" => "http://www.w3.org/2001/vxml", "xml:lang
       xml.audio "There are no performances at #{@venue} this weekend."
       if @next_perf
         xml.break "time" => 500
-        xml.audio "The next scheduled performance is #{@next_perf.speak}."
+        xml.audio "The next scheduled performance is "
+        xml.break "time" => 100
+        xml.audio @next_perf.show.name
+        xml.break "time" => 100
+        xml.audio "on #{@next_perf.thedate.speak}."
+        xml.break "time" => 500
         xml.audio "Please call back after"
-        xml.audio (@next_perf.thedate - 1.week).speak(:omit_time => true)
+        xml.audio ((@next_perf.thedate - 1.week).speak(:omit_time => true))
         xml.break "time" => 500
         xml.audio "for ticket availability."
       end
