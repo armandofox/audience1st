@@ -2,11 +2,11 @@
   - form_tag :action => 'add_tickets_to_cart' do
     %table.ticketSelect{:width=>'100%'}
       %tr
-        - choose = @sh ? "" : options_for_select({"Select..." => 0})
+        - choose = @sh ? "" : options_for_select({"Select Show..." => 0})
         %td.label{:width=>'30%'} Show
         %td#selectShow.l= select_tag('show', choose + options_from_collection_for_select(@all_shows, :id, :name, (@sh ? @sh.id : 0)))
       %tr
-        - choose = @sd ? "" : options_for_select({"Select..." => 0})
+        - choose = @sd ? "" : options_for_select({"Select Date..." => 0})
         %td.label{:width=>'30%'} Date
         %td#selectShowdate.l= select_tag('showdate', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
       - @vouchertypes.each do |av|
