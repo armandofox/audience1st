@@ -20,14 +20,18 @@ class Donation < ActiveRecord::Base
                     :processed_by => logged_in_id)
   end
 
-  def self.online_donation(amount,cid,logged_in_id,purch=Purchasemethod.get_type_by_name('cust_web'))
-    Donation.create(:date => Date.today,
-                    :amount => amount,
-                    :customer_id => cid,
-                    :donation_fund_id => DonationFund.default_fund_id,
-                    :donation_type_id => DonationType.cash_donation_id,
-                    :purchasemethod_id => purch.id,
-                    :letter_sent => false,
-                    :processed_by => logged_in_id)
+  def self.online_donation(amount,cid,logged_in_id,purch=nil)
+    unless purch
+      purch = Purchasemethod.get_type_by_name(cid == logged_in_id ? 'cust_web' :
+                                              'box_credit')
+    end
+    Donation.new(:date => Time.now,
+                 :amount => amount,
+                 :customer_id => cid,
+                 :donation_fund_id => DonationFund.default_fund_id,
+                 :donation_type_id => DonationType.cash_donation_id,
+                 :purchasemethod_id => purch.id,
+                 :letter_sent => false,
+                 :processed_by => logged_in_id)
   end
 end

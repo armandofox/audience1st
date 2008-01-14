@@ -12,9 +12,9 @@
 
 %p
   %strong If you purchased one or more subcriptions,
-  you'll be able to 
-  make reservations for shows as soon as you receive your
-  Subscriber Kit in December.
+  reservations can be made 
+  = link_to 'online', {:controller => 'customers',:action=>'welcome'}
+  or by phone.
 
 %center
   - if @is_admin

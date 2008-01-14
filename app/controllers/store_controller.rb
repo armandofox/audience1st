@@ -33,7 +33,7 @@ class StoreController < ApplicationController
     else                        # neither: pick earliest show
       s = get_all_showdates(@is_admin)
       unless (s.nil? || s.empty?)
-        set_current_showdate(s.first)
+        set_current_showdate(s.sort.detect { |sd| sd.thedate >= Time.now } || s.first)
       end
     end
     @subscriber = @customer.is_subscriber?
@@ -79,7 +79,7 @@ class StoreController < ApplicationController
   def show_changed
     if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
-      set_current_showdate(nil)
+      set_current_showdate(s.showdates.empty? ? nil : s.showdates.first)
     end
     setup_ticket_menus
     render :partial => 'ticket_menus'
@@ -169,14 +169,10 @@ class StoreController < ApplicationController
 
   def add_donation_to_cart
     cart = find_cart
-    params[:donation] = {
-      :amount => amount_from_selects(params[:d]),
-      :donation_fund_id => DonationFund.default_fund_id
-    }
-    if params[:donation][:amount] > 0
-      params[:donation].merge!({ :date => Time.now, :donation_type_id => 1 })
-      d = Donation.new(params[:donation])
-      cart.add(d)
+    if (d = params[:donation_amount].to_i) > 0
+      cart.add(Donation.online_donation(d, store_customer.id, logged_in_id))
+    else
+      flash[:notice] = "Donation amount must be at least 1 dollar"
     end
     redirect_to :action =>(params[:redirect_to] || 'index')
   end

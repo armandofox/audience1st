@@ -9,10 +9,16 @@
         - choose = @sd ? "" : options_for_select({"Select Date..." => 0})
         %td.label{:width=>'30%'} Date
         %td#selectShowdate.l= select_tag('showdate', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
-      - @vouchertypes.each do |av|
+      - if @vouchertypes.empty?
         %tr
-          %td.label= av.vouchertype.name
-          %td.l= select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((0..[av.howmany,10].min).to_a))
+          %td
+          %td
+            %strong No tickets on sale for this performance
+      - else
+        - @vouchertypes.each do |av|
+          %tr
+            %td.label= av.vouchertype.name
+            %td.l= select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((0..[av.howmany,10].min).to_a))
       - unless @vouchertypes.empty?
         %tr
           %td.label Special seating needs

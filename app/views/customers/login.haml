@@ -2,35 +2,20 @@
   %h1.banner= "Welcome to the Online Box Office for #{Option.value(:venue)}"
 
 #loginDiv
-  #haveAccount.pageDiv
-    %h1 Have an Account?
-    %p 
-      If you're a Subscriber, or you've bought tickets from us online
-      before, use your email address and password to re-enter our site.
-    %table{:width=>"75%"}
-      %tbody
-        %tr
-          %td= render :partial => 'account_login'
-          %td
-            .explain
-              %p
-                %strong Subscriber? Already on our email list?
-                %br/
-                Enter the  email address you provided for our email
-                list or subscription purchase, and  click 
-                %strong Forgot My Password 
-                to have your password emailed to you
-                %br/
-                If you don't see the email in a few minutes, 
-                check your Spam or Junk mail folder.
-
-  #newCustomer.pageDiv
-    %h1 New Customer?
-    %p#createAccount
-      = link_to "Click here", :action => 'new'
-      to create your account.
-    %p#or Or...
-    %p#buyTicketsFirst
-      = link_to "Click here", :controller => 'store', :action => 'index'
-      to select tickets first.  (You'll choose an account password 
-      when completing your purchase.)
+  %table{:width=>"100%"}
+    %tr
+      %td
+        #haveAccount.pageDiv
+          %h1 Have an Account?
+          %p.explain
+            If you're a Subscriber, or you've bought tickets from us online
+            before, use your email address and password to re-enter our site.
+          = render :partial => 'account_login'
+      %td.c{:valign=>"top"}
+        #newCustomer.pageDiv
+          %h1 New Customer?
+          %p#createAccount= button_to "Create your account", {:action => 'new'}, {:method => :get}
+          %p#or Or...
+          %p#buyTicketsFirst
+            = button_to "Buy Tickets", {:controller => 'store', :action => 'index'}, {:method => :get}
+            (You'll choose an account password when completing your purchase.)

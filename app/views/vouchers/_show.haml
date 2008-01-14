@@ -1,0 +1,29 @@
+%div[show]
+  %h2= h(show.name_with_run_dates)
+  - r = reserved_vouchers.select { |v| v.reserved_for?(show) }
+  - unless r.empty?
+    %p Confirmed reservations:
+    %table
+      %tr
+        %th Voucher Type
+        %th Date
+        - r.each do |v|
+          %tr
+            %td= h(v.vouchertype.name)
+            %td= v.showdate.thedate.to_formatted_s(:long)
+
+  - u = unreserved_vouchers.select { |v| v.redeemable_for_show?(show) }
+
+  - unless u.empty?
+    %p Available to redeem:
+    %table
+      %tr
+        %th Voucher Type
+        %th Select Date
+        - u.each do |v|
+          %tr
+            %td= h(v.vouchertype.name)
+            %td= select_tag 'date', options_from_collection_for_select(v.redeemable_showdates(@gAdmin.is_boxoffice), :showdate_id, :showdate_name_with_explanation)
+            
+        
+  

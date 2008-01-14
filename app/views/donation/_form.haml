@@ -24,10 +24,16 @@
     %td
       %label{:for=>:donation_donation_fund} Donation fund
       %br/
-      = collection_select 'donation', 'donation_fund_id', DonationFund.find_all, 'id', 'name'
+      = collection_select 'donation', 'donation_fund_id', DonationFund.find(:all), 'id', 'name'
     %td
       %br/
       = gen_button 'Add new', {:controller => 'donation_fund', :action => 'new'}
+  %tr
+    %td
+      %label{:for=>:donation_purchasemethod} How effected
+      %br/
+      = collection_select 'donation', 'purchasemethod_id', Purchasemethod.find(:all), 'id', 'description'
+    %td
   %tr
     %td{:colspan=>4}
       %label{:for=>:donation_comment} Comment

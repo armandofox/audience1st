@@ -5,12 +5,10 @@
     with a tax-exempt letter you can include with your tax return.
 
   - form_tag :action => 'add_donation_to_cart', :redirect_to => (redirect_to ||= nil) do
-    - if id
-      = hidden_field_tag 'id', id
     %table.donationEntry
       %tr
         %td.label Donation amount: $
         %td
-          = selects_for_dollar_amount('d', 4, 0)
+          = text_field_tag 'donation_amount', '', :size => 4
           %span{:style=>"font-size: larger;"} .00
-        %td= submit_tag 'Add Donation to Cart', :class => 'genButton'
+        %td= submit_tag 'Add Donation to Cart'

@@ -1,18 +1,18 @@
 
 - form_tag :controller => 'customers', :action => 'login' do 
   = error_messages_for 'customer'
-  %p
-    %label{:for=>:customer_login} Email address
-    %br/
-    = text_field 'customer', 'login'
-  %p
-    %label{:for=>:customer_password} Password
-    %br/
-    = password_field 'customer', 'password'
-
-  %p
-    = check_box_tag 'forgot_password'
-    I forgot my password, email it to me
-
-  = submit_tag 'Continue'
-  = gen_button "I Don't Have An Account", :action => 'new'
+  %table
+    %tr
+      %td
+        %label{:for=>:customer_login} Email address
+        %br
+        = text_field 'customer', 'login', :size => 20
+      %td
+        %label{:for=>:customer_password} Password
+        %br/
+        = password_field 'customer', 'password', :size => 12
+      %td= submit_tag 'Go'
+    %tr
+      %td{:colspan=>2}
+        = check_box_tag 'forgot_password'
+        I forgot my password, email it to me
