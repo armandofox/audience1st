@@ -20,7 +20,7 @@ class VouchersController < ApplicationController
       return
     end
     # can this be declared as a filter?
-    unless Vouchertypes.find(:first)
+    unless Vouchertype.find(:first)
       flash[:notice] = "You must define some vouchertypes first"
       redirect_to :controller => 'vouchertypes', :action => 'list'
       return

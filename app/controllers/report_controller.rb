@@ -189,7 +189,6 @@ class ReportController < ApplicationController
       @vtypes_for_acc_code[k] = "Account code #{k}:\n" <<
         v.map { |vt| vt.name }.join("\n")
     end
-    @txns = {}
     @total = 0.0
     sql = ["SELECT s.name,vt.account_code,SUM(vt.price) " <<
            "FROM vouchers v " <<
@@ -204,7 +203,7 @@ class ReportController < ApplicationController
            " AND (v.purchasemethod_id IN (#{purchasemethods})) " <<
            "GROUP BY vt.account_code,s.name",
            @from, @to, Customer.walkup_customer.id]
-    @txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
+    @show_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
     # next, all the Bundle Vouchers - regardless of purchase method
     sql = ["SELECT vt.name,vt.account_code,SUM(vt.price) " <<
            "FROM vouchers v " <<
@@ -216,7 +215,7 @@ class ReportController < ApplicationController
            " AND vt.is_bundle = 1 " <<
            "GROUP BY vt.account_code,vt.name",
            @from, @to, Customer.walkup_customer.id]
-    @txns += sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
+    @subs_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
     # last, all the Donations
     sql = ["SELECT dt.name,dt.account_code,SUM(d.amount) " <<
            "FROM donations d" <<
@@ -224,7 +223,7 @@ class ReportController < ApplicationController
            "WHERE d.date BETWEEN ? AND ? " <<
            "GROUP BY dt.account_code,dt.name",
            @from, @to]
-    @txns += sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
+    @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
   end
 
   def subscriber_details

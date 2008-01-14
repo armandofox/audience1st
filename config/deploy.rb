@@ -13,10 +13,10 @@ set :base_repository, "svn+ssh://#{user}@#{host}/#{home}/svn/#{application}"
 
 
 if variables[:tag]
-  # to deploy from a tag, run 'cap deploy -Stag=tagname'
+  # to deploy from a tag, run 'cap -Stag=tagname -Svenue=venuename deploy'
   set :repository,    "#{base_repository}/tags/#{variables[:tag]}"
 elsif variables[:branch]
-  # to deploy from a branch, run 'cap deploy -Sbranch=branchname'
+  # to deploy from a branch, run 'cap -Sbranch=branchname -Svenue=venuename deploy'
   set :repository,    "#{base_repository}/branches/#{variables[:branch]}"
 else
   set :repository,    "#{base_repository}/trunk"

@@ -4,23 +4,28 @@
     = @from.to_formatted_s(:date_only)
     to
     = @to.to_formatted_s(:date_only)
-
   %table
-    %thead
+    - total = 0.0
+    - [["Shows", @show_txns], ["Subscriptions", @subs_txns], ["Donations", @donation_txns]].each do |grp| 
+      - label,txns = grp
+      - subtotal = 0.0
       %tr
         %th Code
-        %th Show
+        %th= label
         %th Gross rcpts
-    %tbody
-      - @total = 0.0
-      - @txns.each do |t|
-        %tr{:class=>cycle(:evenRow,:oddRow)}
-          %td= link_to_function t[0], "alert('" << escape_javascript(@vtypes_for_acc_code[t[0]]) << "')"
-          %td= h(t[1])
-          %td.r= number_to_currency(t[2])
-          - @total += t[2].to_f
-      %tr.totalsRow
+        - txns.each do |t|
+          %tr{:class=>cycle(:evenRow,:oddRow)}
+            %td= link_to_function t[0], "alert('" << escape_javascript(@vtypes_for_acc_code[t[0]]) << "')"
+            %td= h(t[1])
+            %td.r= number_to_currency(t[2])
+            - subtotal += t[2].to_f
+      %tr
         %td
-        %td TOTAL SINGLE-TICKET SALES
-        %td.r= number_to_currency(@total)
+        %td
+        %td.totalsRow.r= number_to_currency(subtotal)
+        - total += subtotal
+    %tr.totalsRow
+      %td
+      %td TOTAL SINGLE-TICKET SALES
+      %td.r= number_to_currency(total)
         
