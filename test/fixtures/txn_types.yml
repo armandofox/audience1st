@@ -1,5 +1,69 @@
-other:
-  id: 1
-  desc: Other
+--- 
+txn_types_008: 
+  id: "8"
+  shortdesc: don_svc
+  desc: Donation - Services
+txn_types_009: 
+  id: "9"
+  shortdesc: don_good
+  desc: Donation - Goods or In-Kind
+txn_types_010: 
+  id: "10"
+  shortdesc: res_made
+  desc: Reservation
+txn_types_011: 
+  id: "11"
+  shortdesc: res_cancl
+  desc: Cancellation
+txn_types_012: 
+  id: "12"
+  shortdesc: pmt_rcv
+  desc: Receipt of Pending Payment
+txn_types_001: 
+  id: "1"
   shortdesc: other
-
+  desc: Other
+txn_types_013: 
+  id: "13"
+  shortdesc: refund
+  desc: Refund
+txn_types_002: 
+  id: "2"
+  shortdesc: tkt_purch
+  desc: Ticket purchase
+txn_types_014: 
+  id: "14"
+  shortdesc: del_tkts
+  desc: Remove tickets from account
+txn_types_003: 
+  id: "3"
+  shortdesc: sub_purch
+  desc: Subscription purchase
+txn_types_015: 
+  id: "0"
+  shortdesc: ???
+  desc: UNKNOWN
+txn_types_004: 
+  id: "4"
+  shortdesc: add_tkts
+  desc: Add tickets to account
+txn_types_016: 
+  id: "15"
+  shortdesc: config
+  desc: Configuration Change
+txn_types_005: 
+  id: "5"
+  shortdesc: oth_purch
+  desc: Other purchase
+txn_types_017: 
+  id: "20"
+  shortdesc: don_ack
+  desc: Acknowledge donation
+txn_types_006: 
+  id: "6"
+  shortdesc: edit
+  desc: Edit customer info
+txn_types_007: 
+  id: "7"
+  shortdesc: don_cash
+  desc: Donation - Cash

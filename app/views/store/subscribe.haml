@@ -10,8 +10,8 @@
         = submit_tag 'Checkout'
   #subscriptionsMenus.pageDiv
     %h1 Subscriber Benefits
-    %p= h(APP_CONFIG[:subscription_benefits_short_description])
-    %p= link_to "Learn more",APP_CONFIG[:subscription_info],{:target=>'_blank'}
+    %p= h(Option.value(:subscription_benefits_short_description))
+    %p= link_to "Learn more",Option.value(:subscription_info),{:target=>'_blank'}
     - unless @subscriber
       %p 
         If you're a current subscriber,

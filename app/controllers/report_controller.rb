@@ -321,7 +321,7 @@ EOQ
   private
 
   def subscription_vouchers(year)
-    season_start = Time.local(year,APP_CONFIG[:season_start_month].to_i)
+    season_start = Time.local(year,Option.value(:season_start_month).to_i)
     v = Vouchertype.find(:all, :conditions =>"is_bundle=1 AND is_subscription=1 AND name LIKE '%#{year}%'")
     #valid_date>=? AND expiration_date<?',season_start, season_start + 1.year])
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }

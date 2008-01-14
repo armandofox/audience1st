@@ -9,5 +9,25 @@ class Option < ActiveRecord::Base
       typ == :float and value !~ /[^0-9.]/
     return !errors.empty?
   end
+
+  def self.value(name)
+    opt = Option.find_by_name(name).get_value
+  end
+
+  # read all configuration options from database
+  def self.read_all_options
+    Hash[*(Option.find(:all).map { |o| [o.name.to_sym,o.get_value] }.flatten)]
+  end
   
+  def get_value
+    case self.typ
+    when :int
+      self.value.to_i
+    when :float
+      self.value.to_f
+    else
+      self.value
+    end
+  end
+    
 end

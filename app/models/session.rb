@@ -1,7 +1,7 @@
 class Session < ActiveRecord::Base
 
   def self.num_active
-    timeout = APP_CONFIG[:session_timeout].to_i
+    timeout = Option.value(:session_timeout).to_i
     timeout = 1 if timeout < 1
     Session.count(:conditions => ['updated_at > ?', timeout.minutes.ago])
   end

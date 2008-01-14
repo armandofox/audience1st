@@ -33,6 +33,23 @@ Rails::Initializer.run do |config|
   # like if you have constraints or database-specific column types
   config.active_record.schema_format = :sql
 
+
+  config.after_initialize do
+    if RAILS_ENV == 'production'
+      # bug: this if clause should just be moved to environments/production.rb,
+      # but currently you're allowed only a single after_initialize hook.
+      ExceptionNotifier.sender_address =
+        %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)
+      ExceptionNotifier.exception_recipients =
+        %w(armandofox@gmail.com)
+    end
+    # read global configuration info
+    APP_CONFIG =  YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
+    MESSAGES = APP_CONFIG[:messages].symbolize_keys
+    ENV['TZ'] = APP_CONFIG[:timezone] || 'PST8PDT' # local timezone
+    APP_VERSION = IO.read("#{RAILS_ROOT}/REVISION").to_s.strip rescue "DEV"
+  end
+
   # Activate observers that should always be running
   # config.active_record.observers = :cacher, :garbage_collector
 
@@ -53,31 +70,6 @@ end
 
 # Include your application configuration below
 
-# read global configuration info
-APP_CONFIG =  YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
-
-# read config variables from database
-# When doing a new installation, set environment variable SETUP to
-# some nonempty value to skip this, otherwise rake db:schema:load barfs.
-unless ENV['SETUP']
-  Option.find(:all).each do |opt|
-    case opt.typ
-    when :int
-      APP_CONFIG[opt.name.to_sym] = opt.value.to_i
-    when :float
-      APP_CONFIG[opt.name.to_sym] = opt.value.to_f
-    else
-      APP_CONFIG[opt.name.to_sym] = opt.value
-    end
-  end
-end
-
-# read build version
-APP_CONFIG[:version] = IO.read("#{RAILS_ROOT}/REVISION").to_s.strip rescue "DEV"
-
-MESSAGES = APP_CONFIG[:messages].symbolize_keys
-# set local timezone
-ENV['TZ'] = APP_CONFIG[:timezone] || 'PST8PDT'
 
 # session key name
 ActionController::Base.session_options[:session_key] = 'audience1st_session_id'

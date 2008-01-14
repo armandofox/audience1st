@@ -35,9 +35,9 @@ BINDIR     = $(APPROOT)/support
 # syntax for "be quiet" in whatever shell (usually bash or sh)
 # suppreses Cron daemon from sending you email, but also means you won't
 # see error messages.  if you comment this out, you'll get those emails.
-QUIET      =  >/dev/null 2>&1
+# QUIET      =  >/dev/null 2>&1
 
-.PHONY: all nightly monthly clean_sessions backup dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
+.PHONY: all nightly monthly clean_sessions backup run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
 nightly: clean_sessions notify_pending_followups kill_zombies backup

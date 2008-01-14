@@ -2,12 +2,6 @@
 
 RAILS_GEM_VERSION = '1.2.5'
 
-config.after_initialize do
-  ExceptionNotifier.sender_address =
-    %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)
-  ExceptionNotifier.exception_recipients =
-    %w(armandofox@gmail.com)
-end
 
 # The production environment is meant for finished, "live" apps.
 # Code is not reloaded between requests

@@ -15,6 +15,11 @@ class String
     return newpass
   end
 
+  def wrap(col = 80)
+    # from blog.macromates.com/2006/wrapping-text-with-regular-expressions
+    self.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/, "\\1\\3\n") 
+  end
+
   def valid_email_address?
     return self && self.match( /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.([A-Z]{2,4})?$/i )
   end
@@ -79,7 +84,6 @@ class ApplicationController < ActionController::Base
   require 'csv.rb'
 
   before_filter :set_globals
-
   def set_globals
     @gCustomer = current_customer
     @gAdmin = current_admin

@@ -99,7 +99,7 @@ class CustomersController < ApplicationController
     reset_session
     @customer = nil
     (flash[:notice] ||= '') << 'You have successfully logged out.' <<
-      " Thanks for supporting #{APP_CONFIG[:venue]}!"
+      " Thanks for supporting #{Option.value(:venue)}!"
     redirect_to :action => 'login'       # no separate logout screen.
   end
 
@@ -116,7 +116,7 @@ class CustomersController < ApplicationController
     if @customer.is_subscriber?
       redirect_to(:action=>'welcome_subscriber') and return unless
         (params[:force_classic] && @gAdmin.is_boxoffice) ||
-        !(APP_CONFIG[:force_classic_view].blank?)
+        !(Option.value(:force_classic_view).blank?)
     end
     setup_for_welcome(@customer)
     @subscriber = false
@@ -472,7 +472,7 @@ class CustomersController < ApplicationController
                              :comments => 'Password has been reset')
       rescue Exception => e
          flash[:notice] = e.message +
-           "<br/>Please contact #{APP_CONFIG[:help_email]} if you need help."
+           "<br/>Please contact #{Option.value(:help_email)} if you need help."
       end
     end
     redirect_to :action => :login

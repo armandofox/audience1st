@@ -4,27 +4,28 @@
 
 Whereas Box Office Agents can handle ticket sales and reservations for
 performances, the Box Office Manager is the one who \emph{causes tickets
-  and reservations to become available} for shows.  The general process
-of entering a show into the system, associating performance dates with
-it, and indicating what tickets are redeemable for each performance is
+  and reservations to become available} for shows, by entering
+a show into the system, associating performance dates with
+it, and indicating what tickets are redeemable for each
+performance. These steps are
 collectively called \emph{listing the show}.
 
-It's important to realize that, in general, listing a show can involve
-up to four steps:
+In general, listing a show involves three steps:
 
 \begin{enumerate}
-\item[Add the show] Enter the overall information for the show---start
-  and end dates, default seating capacity, etc.  This step can be
+\item[Add the show] Enter the overall information for the show---name, 
+  default seating capacity, etc.  This step can be
   skipped if just adding or removing performance dates from an existing
   show. 
 \item[Add show dates] Associate performance dates with the show (or
   remove performance dates).  Information such as the deadline for
   advance sales cutoff and the specific house capacity can be overridden
-  for each show date.
+  for each show date.  The show's ``opening date'' and ``closing date''
+  are automatically determined from the earliest and latest showdates.
 \item[Indicate valid vouchers] Associate particular ticket types
   (General Admission, Subscriber, etc.) with the performance.
   \emph{Without this step, the performances are listed but no vouchers
-    can be redeemed for them.}
+    can be redeemed or tickets sold for those performances.}
 \end{enumerate}
 
 In addition, the Box Office Manager can define new types of vouchers
@@ -34,11 +35,13 @@ Manager can set up \emph{bundle} vouchers; a bundle is a collection of
 single tickets that is offered to the customer as a unit, for example, a
 subscription or series package.
 
+Before listing any shows, it makes sense to define some \emph{voucher
+  types}, which correspond to the types of tickets your venue sells,
+including both revenue (``single tickets'') and subscription vouchers.
 The next section covers how to set up both regular and bundle vouchers.
 In general, you would set up most basic voucher types once only, and
 only occasionally add new voucher types when you want to add a new
 promotion or ticket type.
-
 The subsequent three sections cover the three steps in listing a show:
 entering show information (section~\ref{sec:addingshows}), adding
 performance dates for a show (section~\ref{sec:addingshowdates}), and
@@ -49,23 +52,25 @@ indicating voucher validity for each performance date
 \label{sec:vouchertypes-details}
 
 There are two types of vouchers.  A \emph{regular} voucher is a single
-seat or ticket to a single performance.  A \emph{bundle} is a package
-that includes several regular vouchers.  For example, we may
-offer a special 2-for-1 promo or kid-free-with-adult promo that is
-limited to specific performances; to implement this you would create a
-new voucher type representing this promo and then mark the voucher type
-as valid only for certain performances.
+seat or ticket to a single performance with a price of zero dollars or
+more.  For example, a General Admission seat would be a regular voucher,
+as would a Staff Comp.  A \emph{bundle} is a package
+that includes several regular vouchers.  A subscription is usually one
+type of bundle, but nonsubscription bundles are also possible; for example,
+a 2-for-1 promo or kid-free-with-adult promo.
+To create a bundle, you first have to create the regular vouchers the
+bundle will contain, so we'll cover that first.
 
-\subsubsection{Creating a New Regular Voucher}
+\subsubsection{Creating a Regular Voucher Type}
 \label{sec:addingregularvouchertypes}
 
-When a new voucher type is set up, whether or not it is a bundle,
+When a new voucher type is set up, 
 the following properties must be specified for it:
 
 \begin{itemize}
 \item[Name] The name that will appear (e.g. in dropdown menus on
   purchase screens, in reports, etc.) for the voucher; for example,
-  ``Adult General Admission'' or ``2008 Subscriber Package''.  Note that
+  ``Adult General Admission'' or ``Staff Comp''.  Note that
   you can change the name at any time in the future without affecting
   anything except the appearance of menus and reports.
 \item[Price] The price of this type of voucher.  Enter zero for comps.
@@ -132,7 +137,7 @@ still have the old expiration date.}
 \item[Is bundle] To create a bundle voucher, you must first create all
   of the individual voucher types that the bundle will contain,
   \emph{then} create a new Bundle voucher type, then edit it to include
-  the right quantity of each voucher.
+  the right quantity of each voucher.  That's covered in the next section.
 \item[Is subscriber] Does the purchase of this voucher qualify the
   purchaser as a ``subscriber''?  Useful for distinguishing bundles
   corresponding to subscriptions from bundles corresponding to promos.
@@ -172,6 +177,70 @@ newly-created bundle voucher's name, and you will see an ``Included
 Vouchers''  panel where you can enter the
 number of each type of regular vouchers included in the bundle.
 
+\subsection{Approaches to Subscriptions}
+\label{sec:subscriptions}
+
+In general, a subscription is just a bundle that qualifies the buyer as
+a Subscriber.  The bundle includes some number of ``vouchers'' each of
+which can be used to make a reservation for a season show.  However,
+there's many ways to set up subscriptions, and it's worth understanding
+the differences before you set one up.
+
+For the purposes of these examples, we'll assume you have a 4-show
+season in which you present 2 plays and 2 musicals: Deathtrap, Chicago,
+The Foreigner, and Seussical, in that order.
+
+\subsubsection{One of Each Show}
+
+The most conventional subscription type gives the subscriber exactly one
+reservation for each production.  In other words, the subscriber cannot
+choose to use (say) all 4 subscription vouchers to get 4 reservations
+for the same performance or even for the same production.
+
+To set this up, you'd first create 4 different types of regular
+vouchers, with names such as  \emph{Subscriber - Chicago}, \emph{Subscriber -
+Seussical}, \emph{Subscriber - Deathtrap}, and \emph{Subscriber -
+Foreigner}.  When you list the shows, you will arrange that only
+\emph{Subscriber - Chicago} vouchers can be redeemed for Chicago, etc.  You
+then create a bundle \emph{2008 Subscriber} that includes one each of
+those four vouchers.
+
+In fact, after Deathtrap closes, you could further
+define another bundle \emph{Late Season} that includes only the 3
+remaining shows.
+
+Note that if a single subscriber purchases multiple subscriptions
+(e.g. a family of 4), the subscription vouchers don't all have to be
+redeemed together---that is, they can choose to all attend the same show
+or four different performances.
+
+\subsubsection{Limited Flex}
+
+Another type of subscription is ``Limited Flex''.  For example, you
+might separate your shows into categories (say, plays vs. musicals, or
+dramas vs. comedies) and then setup a voucher good for any show in that
+category.  You could then offer, e.g., a ``two from group A and one from
+group B'' mini-subscription, and the two vouchers for group A could be
+used either for two different productions or for two seats to the same
+production. 
+
+\subsubsection{Flex}
+
+The ``flex pass'' type of subscription has been gaining some popularity:
+the patron receives a fixed number of vouchers to be redeemed however
+she wants---all at once for a single production, one for each
+production, etc.  Typically these are priced more expensively than
+regular ``one of each'' subscriptions but still priced to offer a break
+compared to buying single tickets.
+
+Lastly, a caveat.  It's easy to get carried away with all the
+flexibility, and having too many types of subscriptions seems to confuse
+some patrons.  Think about one or two easy-to-explain scenarios and
+stick to them.
+
+TBD: discuss connection between how subscription is setup and whether to
+use Classic View or Streamlined(?) View for subscriber welcome screen
+
 \subsection{Shows and Show Dates}
 \label{sec:shows-and-showdates}
 
@@ -186,15 +255,36 @@ individual dates (for example, if you want to hold back house seats on
 opening night of a performance, you can set this up automatically to
 reduce the number of tickets allowed to be sold for that performance).
 
-\subsubsection{Creating Shows}
 \label{sec:addingshows}
-
-
-\subsubsection{Changing Show Details}
-\label{sec:changingshowdetails}
-
-\subsubsection{Adding Show Dates}
 \label{sec:addingshowdates}
+
+The next step is to add show dates for the production.  To do this,
+click on the show's name in the list of all productions (you can get to
+this list by clicking the Shows navigation tab), and then click
+the \emph{Add A Performance} button on the Show Details page.
+
+For a new performance, you need to enter these items:
+\begin{enumerate}
+\item[Date and Time] The curtain date and curtain time.  This
+  information is also used by the External Integration features such as
+  the calendar and RSS feed (see section~\ref{sec:external-integration}.
+\item[Advance sales stop] When do online sales for this performance
+  stop.  As you will see, you can also set start/end sales dates for
+  different ticket types for the same performance, but \emph{no} online
+  tickets will be sold after the time specified here, regardless of
+  their individual End Sales deadlines.  Note that a Box Office Agent
+  processing phone sales can override this deadline, as do Walkup
+  Sales (section~\ref{sec:walkup}) processed at the door.
+\item[Max sales] Enter a number here to restrict the total number of
+  tickets sold to be something \emph{other} than the house capacity
+  specified for the show as a whole (e.g. to hold back a block of seats
+  to be purchased through a separate channel or as house seats).  Enter
+  0 to make the max sales the same as the house capacity.
+\end{enumerate}
+
+\tip{Note}{The External Integration Tools can be made to actually report
+  a show as ``Sold Out'' \emph{before} the maximum number of tickets
+  have been sold.}
 
 \subsection{Managing Voucher Validity For Show Dates}
 
@@ -202,19 +292,16 @@ To allow a particular type of voucher (e.g. ``General Admission'') to be
 redeemed for a particular performance, you must indicate that it is a
 \emph{valid voucher} for that performance.
 
-\textbf{Important.} When a voucher type is first created, it is
+\tip{Important.}{When a voucher type is first created, it is
 \emph{not} automatically redeemable for any particular show.  Its
-validity for specific performances must be explicitly established as
-described in this section.
-
-\subsection{Setting What Tickets Can Be Redeemed for a Performance}
-\label{sec:validvouchers}
+validity for specific performances \emph{must} be explicitly established as
+described in this section.}
 
 Note that a bundle voucher cannot be made redeemable, but the regular
-vouchers included in the bundle can be.  For example, if a ``Family
-Promo'' bundle voucher includes 2 ``Adult'' and 2 ``Child'' tickets, the
-ticket types ``Adult'' and ``Child'' can be made redeemable, but the
-bundle ``Family Promo'' cannot be.
+vouchers included in the bundle can be.  For example, if a \emph{Family
+Promo} bundle voucher includes 2 \emph{Adult} and 2 \emph{Child} tickets, the
+ticket types \emph{Adult} and \emph{Child} can be made redeemable, but the
+bundle \emph{Family Promo} cannot be.
 
 \subsubsection{Adding Valid Vouchers to a Performance}
 \label{sec:addingvalidvouchers}
@@ -237,8 +324,61 @@ change any validity properties such as redemption limits or sales
 cutoff, click on the name of the voucher type and see
 section~\ref{sec:changingvalidvoucher}.) 
 
+You must specify the following redemption properties for the voucher:
 
-\subsubsection{Changing Existing Valid Vouchers}
-\label{sec:changingvalidvoucher}
+\begin{itemize}
+\item[Voucher type] Select from the dropdown list of voucher types
+  you've defined.  Only non-bundle vouchers will appear in the list.
+\item[Max sales] To limit capacity of this ticket type, enter a number
+  here; for example, you may want to limit Staff Comps redemption to no
+  more than 4 per performance, or you may want to limit the number of
+  discounted tickets sold per performance. Enter 0 for unlimited (i.e.,
+  up to the capacity of the house).
+\item[Password] If you enter a password, patrons buying online will be
+  required to enter it (``promo code'') to be able to buy that ticket
+  type.  You can actually enter multiple promo codes separated by commas
+  if you want to track redemption separately for the same promo offered
+  through different ad channels.
+\item[Start sales on] Enter the earliest date and time at which this
+  type of ticket goes on sale.
+\item[End sales] You can either end sales a certain number of hours
+  (decimal points OK) before curtain, or on a specific date and time.
+\item[Add ticket type to] Specify whether this valid voucher should be
+  added only for the specific performance or for all performances. (In
+  the future you will be able to select any arbitrary subset of
+  performances to add to.)
+\end{itemize}
 
-To be written
+\tip{Important}{If you specify ``Add to All Dates'', you probably want
+  to specify the end sales as ``hours before
+  curtain'', which will then be
+  correctly computed for each show date.  If you specify the end sales
+  as a specific date, that \emph{same} date will be the end-sales date
+  for \emph{all} show dates to which it's added.}
+
+
+\subsection{Ticketing Strategy Tips}
+\label{sec:ticketingstrategy}
+
+If you have a ``signature'' show that's expected to anchor your season,
+you could define the Full (regular) subscription to include that show,
+but any Short or Late Season subscriptions to exclude it, to maximize
+your subscriber base.
+
+Using the Advance Sales Start date when setting up valid vouchers allows
+you to offer benefits to subscribers such as earlier reservations for
+shows that may sell out.
+
+Using the Advance Sales Stop date allows you to setup time-limited
+promotions, e.g. ``Purchase your tickets by midnight Tuesday for a
+discount on Friday's show.''  You would implement this by creating a
+special Voucher Type for the discounted ticket (e.g. \emph{Early Bird
+  Discount}) and set it up as redeemable for certain performances but
+with advance sales start/stop dates that are more restrictive than those
+for your ``regular'' general admission.
+
+Remember that Subscribers (by definition, anyone who acquires a voucher
+that has the Is Subscription flag set) are visually identified on the
+Box Office report (door list) as well as in all displayed customer
+listings, making it easy to single them out for special treatment.
+

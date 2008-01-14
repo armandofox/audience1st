@@ -1,10 +1,13 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-fund1:
-  id: 1
-  name: fund1
-
-fund2:
-  id: 2
-  name: fund2
-
+--- 
+donation_funds_004: 
+  name: EBRC Front Of House Refurb
+  id: "4"
+donation_funds_001: 
+  name: General Fund
+  id: "1"
+donation_funds_002: 
+  name: Music Fund
+  id: "2"
+donation_funds_003: 
+  name: Endowment
+  id: "3"

@@ -1,5 +1,5 @@
 - unless @checkout_in_progress
-  %h1.banner= "Welcome to the Online Box Office for #{APP_CONFIG[:venue]}"
+  %h1.banner= "Welcome to the Online Box Office for #{Option.value(:venue)}"
 
 #loginDiv
   #haveAccount.pageDiv

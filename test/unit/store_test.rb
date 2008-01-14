@@ -9,7 +9,7 @@ class StoreTest < Test::Unit::TestCase
   
   def setup
     settings = YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
-    buyers = YAML::load(ERB.new((IO.read(File.dirname(__FILE__)+'/../fixtures/buyers.yml'))).result).symbolize_keys
+    buyers = YAML::load(ERB.new((IO.read(File.dirname(__FILE__)+'/../fixtures/buyers.yaml'))).result).symbolize_keys
     Base.gateway_mode = :test
     pp = settings[:authorized_net_test_account].symbolize_keys
     @toms_cc = CreditCard.new(buyers[:toms_credit_card].symbolize_keys)

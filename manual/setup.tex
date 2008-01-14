@@ -1,0 +1,153 @@
+\section{One-Time Setup: Read Me First}
+
+Here's the ``quick start'' guide to getting your installation
+configured, once you have received the ``green light'' from
+Audience1st.  Please follow these steps before trying any of the other
+system operations.
+
+It's recommended you follow these steps in the order listed.
+
+\subsection{Configuration Variables}
+\label{sec:config-vars}
+
+By default, the system comes with a single customer account whose login
+is \verb+admin+ and password is \verb+admin+.  Login using this
+information to set the configuration variables.
+
+Configuration variables are a set of values specific to each venue that
+are expected to change very rarely (or never) during routine operations.
+Hence, there is no built-in link to reach this screen: you must type the
+URL \url{http://www.audience1st.com/VENUE/options}, replacing
+\emph{VENUE} with the ``shortname'' of your venue as given to you by
+A1~Patron Systems.\footnote{The shortname is a URL-friendly version of your
+venue's name assigned by A1~Patron Systems; for example, the venue
+``Silver Star Theater'' might have the shortname \venue+silverstar+.
+Contact A1~Patron Systems if you're not sure of your venue's shortname.}
+
+Most of the options are self-explanatory, but the property
+\textbf{External CSS File} deserves separate mention.  \af uses strict
+XHTML (Extended HTML) and CSS (Cascading Style Sheets) to control the
+visual appearance and layout of its pages.\footnote{Currently CSS is the
+  \emph{only} way to change \af's look anad feel.  This is hardly a
+  restriction, given the power of CSS; skeptics are invited to examine
+  \url{csszengarden.com} to get a feel for just how radically different
+  the exact same XHTML can be made to look by changing only the CSS
+  stylesheet.} 
+While a default ``look and
+feel'' is provided, you will probably want to create your own CSS
+stylesheet so that the \af pages match the ``look and feel'' of your
+venue's main Web site.  You should create this CSS file and host it on
+your own venue's site, and supply the full URL to the CSS file (e.g.,
+\url{http://www.mylittletheater.org/stylesheets/my_styles.css}) as the
+value of this option.  A~CSS~designer can use the
+information in section~\ref{sec:creating_css} to style the site.  In the
+meantime, you can use the value \verb+/default.css+ (the initial slash
+is important) to use \af's default look and feel.
+
+Click Save Changes when
+you're done; then, \emph{log out} from the built-in \verb+admin+
+account and log back in using the account you setup with Box Office
+Manager privilege.
+
+\subsection{Create Administrator Account(s)}
+
+The built-in \verb+admin+ account should be used only for top-level
+administrative tasks, not day-to-day tasks.  Instead, you should next
+create a Box Office Manager level account for day-to-day
+administration, as well as (possibly) additional semi-administrative
+accounts for other staff.
+
+\begin{enumerate}
+\item Still logged in as \verb+admin+,  use the
+``Adding a New Patron'' feature (see section~\ref{sec:addpatron}) to add
+a patron account for the system's \emph{real} administrator.  Grant
+Box Office Manager privilege to the new user when creating.
+\item \textbf{Log out}, and then log back in as the new Box Office
+  Manager.
+\item Optional: use Add New Patron to create additional accounts for
+  other staff.  In general, each account should be created with the
+  least privilege level that will allow the user to accomplish her
+  assigned tasks.  See section~\ref{sec:privilege-levels} for a
+  description of the available levels.
+\end{enumerate}
+
+\subsection{Goldstar Events Automatic Processing}
+
+If your venue sells tickets through GoldStar Events, Audience1st can be
+setup to automatically intercept will-call lists from GoldStar and
+integrate them with your regular lists.  (Note that for this feature to
+work, you must \emph{also} make sure that the appropriate voucher types
+are setup for the eligible shows; details are in
+section~\ref{sec:goldstar-setup}.) 
+
+For this to work, you must arrange for the GoldStar will-call lists to
+be routed to the email address \verb+goldstar-VENUE@audience1st.com+,
+where \verb+VENUE+ is replaced with your venue name.  There's more than
+one way to do this.  The easiest way is to 
+set \verb+goldstar-VENUE@audience1st.com+ as the email address  for
+will-call lists---the nice folks at \verb+venues@goldstarevents.com+ can
+help you with this.  The more robust and recommended way is to direct
+GoldStar to send its emails to a designated address at your venue's
+domain---say, \verb+goldstar-reports@mytheater.org+---and arrange for
+that address to act as a \emph{reflector} (also called an \emph{alias})
+that forwards the email to \emph{both} the Audience1st.com address
+\emph{and} the personal email address of your House Manager or Managing
+Director.  Why do this?  So that if something goes wrong during
+automatic will-call processing, a human being
+will still have received a human-readable copy of the GoldStar will-call
+list.  (GoldStar has been known to change the format of their will-call
+list unannounced, which causes automatic processing to break.)
+
+\subsection{Donation Funds}
+
+When donations are recorded by backoffice staff, they can be allotted to
+one or more Donation Funds.  By default, the only existing fund is the
+General Fund.  (This is also the fund to which online donations made at
+the time of ticket purchase always go.)  To create an additional fund,
+use this somewhat roundabout procedure:
+
+\begin{enumerate}
+\item In the yellow Admin button bar, click \emph{Record Donation}.
+\item To the \emph{right} of the Donation Fund dropdown menu, click the
+  \emph{Add New} button.
+\item Enter the name and optional account code\footnote{Account codes
+    are optional and for your use only; in most generated reports,
+    account codes are produced for aggregate totals, to facilitate
+    exporting the information to your bookkeeping software. Account
+    codes can always be added later if they're not specified initially.} 
+  for  the new donation fund.
+\end{enumerate}
+
+\subsection{Set Up Voucher Types}
+\label{sec:setup-vouchertypes}
+
+Most of the existing reports will not be available until at least one
+Voucher Type is defined.  Furthermore, when entering new shows and show
+dates, you need to associate Voucher Types with each show date.
+Therefore the next step is to enter at least
+one or two basic Voucher Types.
+
+From the main navigation tabs, select \emph{Voucher Types}.  See
+section~\ref{sec:vouchertypes-details} for how to add or modify voucher
+types.  You can always add more types later and add newly-defined types
+to already-entered performances, but enter one or two basic types now,
+possibly including your Subscription vouchers.
+
+\subsection{Set Up Shows and Show Dates}
+\label{sec:setup-shows-and-showdates}
+
+Lastly, set up your shows and show dates.  See
+section~\ref{sec:shows-and-showdates} for instructions.  To avoid
+confusion on the part of your patrons, it's recommended that you enter a
+show and its showdates all at once.  That is, do not enter a show
+without also entering all its showdates---otherwise, the show will
+appear as a choice for salable tickets, but no tickets will appear to be
+available since no show dates have been defined for it.
+
+\subsection{Unprotect the Site}
+
+Contact A1 Patron Systems to ``unprotect'' the site (remove the master
+password that prevents patrons from getting in).
+
+Congratulations---you're live!
+

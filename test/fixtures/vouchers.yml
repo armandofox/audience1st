@@ -1,6 +1,8 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 <% one_year_from_now = (Time.now + 1.year).to_formatted_s(:db) %>
+<% one_week_ago = (Time.now - 1.week).to_formatted_s(:db) %>
+<% yesterday = (Time.now - 1.day).to_formatted_s(:db) %>
 
 # subscription owned by tom
 subscription:
@@ -9,7 +11,6 @@ subscription:
   customer_id: 77
   showdate_id: 0
   changeable: false
-  expiration_date: <%= one_year_from_now %>
 
 # type1 voucher owned by tom
 tom_type1:
@@ -17,6 +18,7 @@ tom_type1:
   vouchertype_id: 1
   customer_id: 77
   showdate_id: 0
+  valid_date: <%= one_week_ago %>
   expiration_date: <%= (Time.now - 10.minutes).to_formatted_s(:db)  %>
   changeable: true
 
@@ -25,7 +27,8 @@ tom_expired_voucher:
   vouchertype_id: 1
   customer_id: 77
   showdate_id: 0
-  expiration_date: <%= (Time.now - 1.day).to_formatted_s(:db)  %>
+  valid_date: <%= one_week_ago %>
+  expiration_date: <%= yesterday  %>
   changeable: true
   
 
@@ -37,6 +40,7 @@ tom_type2_<%= x %>:
   customer_id: 77
   showdate_id: 0
   changeable: true
+  valid_date: <%= one_week_ago %>
   expiration_date: <%= one_year_from_now %>
 
 <% end %>
@@ -48,4 +52,5 @@ tom3_type1:
   customer_id: 79
   showdate_id: 0
   changeable: true
+  valid_date: <%= one_week_ago %>
   expiration_date: <%= one_year_from_now %>

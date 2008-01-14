@@ -87,3 +87,5 @@ authorized_net_cp_account:
   testing: false
   pemfile:
                                     
+# used to differentiate transactions at gateway
+venue_id: 10

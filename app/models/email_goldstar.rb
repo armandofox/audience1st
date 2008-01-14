@@ -198,7 +198,7 @@ class EmailGoldstar < ActionMailer::Base
       :msg => msg,
       :showdate => sh
     }
-    @recipients = APP_CONFIG[:boxoffice_daemon_notify]
+    @recipients = Option.value(:boxoffice_daemon_notify)
     @from       = APP_CONFIG[:boxoffice_daemon_address]
     @headers    = {}
   end

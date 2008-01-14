@@ -2,7 +2,7 @@
 Dear <%= @greeting %>,
 
 This is an automatic confirmation from the online box office 
-at <%= APP_CONFIG[:venue] -%>.
+at <%= Option.value(:venue) -%>.
 
 Please check this information carefully:
 

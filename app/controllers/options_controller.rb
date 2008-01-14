@@ -7,13 +7,14 @@ class OptionsController < ApplicationController
   end
 
   def edit
-    @vars = Option.find(:all).group_by(&:group)
+    @vars = Option.find(:all, :conditions => "grp != \"Config\"").group_by(&:grp)
     return if request.get?
     # update config variables
     msgs = []
     params[:values].each_pair do |var,val|
+      o = Option.find_by_name(var)
+      next if o.grp == 'Config'
       begin
-        o = Option.find_by_name(var)
         o.value = val
         o.save!                 # don't use update_attribute since we want validation
       rescue Exception => e

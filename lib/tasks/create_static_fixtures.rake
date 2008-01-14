@@ -13,9 +13,11 @@ task :create_static_fixtures => :environment do |env|
     data = ActiveRecord::Base.connection.select_all("SELECT * FROM #{t}")
     i = "000"
     File.open(outfile,'w') do |f|
+      hsh = {}
       data.each do |row|
-        f.write Hash["option_#{i.succ!}" => row].to_yaml
+        hsh["#{t}_#{i.succ!}"] = row
       end
+      f.write hsh.to_yaml
     end
   end
 end

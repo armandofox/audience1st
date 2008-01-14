@@ -1,10 +1,9 @@
 class CreateOptions < ActiveRecord::Migration
   def self.up
     create_table :options, :force => true do |t|
-      t.column :group, :string
+      t.column :grp, :string
       t.column :name, :string
       t.column :value, :string, :null => false
-      t.column :shortdesc, :string
       t.column :description, :text
       t.column :typ, :enum, :limit => [:int,:string,:email,:float], :null => false, :default => :string
     end

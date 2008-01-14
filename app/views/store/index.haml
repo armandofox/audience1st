@@ -1,5 +1,3 @@
-- cid = (@customer ? @customer.id : nil)
-
 = render :partial => 'store_banner', :locals => {:subscriber => @subscriber}
 
 #store
@@ -23,10 +21,10 @@
       Purchase Individual Tickets
       = "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
-    - if @subscriber && !APP_CONFIG[:subscriber_store_message].blank?
-      %p.storeText= APP_CONFIG[:subscriber_store_message]
-    - if !@subscriber && !APP_CONFIG[:nonsubscriber_store_message].blank?
-      %p.storeText= APP_CONFIG[:nonsubscriber_store_message]
+    - if @subscriber && !Option.value(:subscriber_store_message).blank?
+      %p.storeText= Option.value(:subscriber_store_message)
+    - if !@subscriber && !Option.value(:nonsubscriber_store_message).blank?
+      %p.storeText= Option.value(:nonsubscriber_store_message)
 
     = render :partial => 'ticket_menus'
 

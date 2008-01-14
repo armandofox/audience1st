@@ -1,16 +1,17 @@
 Summary of pending follow-ups for <%= @who %>
-Generated on <%= @today.to_formatted_s(:short) -%>
+Generated on <%= @today.to_formatted_s(:date_only) -%>
 
 <% @visits.each do |v| %>
 Name:            <%= v.customer.full_name %>
-Followup date:   <%= v.followup_date.strftime("%m %e") %>
+Followup date:   <%= v.followup_date.to_formatted_s(:date_only) %>
 Followup action: <%= v.followup_action %>
 Last visit by:   <%= v.summarize %>
-Details:         <%= url_for(:controller => 'visits', :action=>'list', :id=>v.customer) %>
+Details:         <%= @urls[v] %>
 Last visit notes:  -------------------------------------------
-<%= v.additional_notes %>
+<%= v.additional_notes.wrap(60) %>
 --------------------------------------------------------------
 
 <% end %>
 
 Powered by Audience1st
+

@@ -1,3 +1,5 @@
+/ = render :partial => 'store/store_banner', :locals => {:subscriber => true }
+
 = error_messages_for :customer
 
 .pageDiv
@@ -13,7 +15,7 @@
           %td= v.vouchertype.name
           %td.c= v.showdate.printable_date
           / BUG this shouldn't appear if it's impossble to cancel this res
-          - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_reservation', :id => v do
+          - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_reservation', :id => v.id do
             %td.c= submit_tag 'Click to Cancel'
       - else
         %tr

@@ -181,7 +181,7 @@ class Voucher < ActiveRecord::Base
       return (changeable? &&
               (expiration_date > Time.now) &&
               (not_already_used ||
-               (showdate.thedate > (Time.now - APP_CONFIG[:cancel_grace_period].minutes))))
+               (showdate.thedate > (Time.now - Option.value(:cancel_grace_period).minutes))))
     end
   end
     

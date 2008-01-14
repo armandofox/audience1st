@@ -43,19 +43,22 @@ class Mailer < ActionMailer::Base
     @body.merge!(:customer => customer,
                  :amount   => amount,
                  :nonprofit=> nonprofit,
-                 :donation_chair => APP_CONFIG[:donation_ack_from]
+                 :donation_chair => Option.value(:donation_ack_from)
                  )
   end
   
   def pending_followups(who, visits)
+    urls_for_visits = visits.map do |v|
+      url_for(:controller => 'visits', :action=>'list', :id=>v.customer)
+    end
     @recipients = who
     @from = 'AutoConfirm@audience1st.com' # bug
     @headers = {}
-    today = Date.today
     @subject = "Followup visits reminder"
     @body = {
       :visits => visits,
       :who => who,
+      :urls => Hash.[](*(visits.zip(urls_for_visits).flatten)),
       :today => Time.now
     }
   end
@@ -64,11 +67,11 @@ class Mailer < ActionMailer::Base
     @recipients = recipient.kind_of?(Customer)? recipient.login : recipient.to_s
     @from = 'AutoConfirm@audience1st.com'
     @headers = {}
-    @subject = "#{APP_CONFIG[:venue]} - "
+    @subject = "#{Option.value(:venue)} - "
     @body = {
-      :email => APP_CONFIG[:help_email],
-      :phone => APP_CONFIG[:boxoffice_telephone],
-      :venue => APP_CONFIG[:venue],
+      :email => Option.value(:help_email),
+      :phone => Option.value(:boxoffice_telephone),
+      :venue => Option.value(:venue),
       :how_to_contact_us =>  @@contact_string
     }
   end
@@ -78,11 +81,11 @@ If this isn't correct, or if you have questions about your order or
 any problems using our Web site, PLEASE DO NOT REPLY to this email
 as it was generated automatically.
 
-Instead, please email #{APP_CONFIG[:help_email]} or call #{APP_CONFIG[:boxoffice_telephone]}.
+Instead, please email #{Option.value(:help_email)} or call #{Option.value(:boxoffice_telephone)}.
 
 Thanks for your patronage!
 
-#{APP_CONFIG[:venue]}
+#{Option.value(:venue)}
 hosted by Audience1st Inc.
 
 EOS

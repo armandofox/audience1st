@@ -24,6 +24,8 @@ bundle_1oftype1_3oftype2:
   is_bundle:    true
   is_subscription: true
   included_vouchers:  { 1: 1, 2: 3 }
+  valid_date:  <%= (Time.now - 1.day).to_formatted_s(:db) %>
+  expiration_date: <%= (Time.now + 1.year).to_formatted_s(:db) %>
 
 simple:
   id:           4

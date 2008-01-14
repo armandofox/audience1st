@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 # of type 1 and 3 of type 2, and qualifies him as a subscriber
 
 class VoucherTest < Test::Unit::TestCase
-  fixtures :vouchers, :vouchertypes, :customers, :purchasemethods, :showdates, :shows, :valid_vouchers
+  fixtures :vouchers, :vouchertypes, :customers, :purchasemethods, :showdates, :shows, :valid_vouchers, :options
 
   self.use_transactional_fixtures = true
 
@@ -16,12 +16,12 @@ class VoucherTest < Test::Unit::TestCase
   def refresh_tom_vouchers
     Customer.find(customers(:tom2).id).vouchers.reload
   end
-  
+
   def test_001_regular_voucher
     Voucher.add_vouchers_for_customer(vouchertypes(:single_generic_1_offerpublic).id, 
                                       2,
                                       customers(:tom2),
-                                      purchasemethods(:simple_purch).id, 
+                                      purchasemethods(:purchasemethods_001).id, 
                                       0, 
                                       'Comment')
     # did it get added?
@@ -36,7 +36,7 @@ class VoucherTest < Test::Unit::TestCase
     Voucher.add_vouchers_for_customer(vouchertypes(:bundle_1oftype1_3oftype2).id,
                                       2,
                                       customers(:tom2),
-                                      purchasemethods(:simple_purch).id,
+                                      purchasemethods(:purchasemethods_001).id,
                                       0,
                                       'Comment')
     # did all 10 get added? (2 bundles of 1+3, plus the bundle vouchers themselves)

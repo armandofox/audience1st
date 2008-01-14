@@ -1,4 +1,4 @@
-%h1.bannerHead= link_to 'Subscribe & Save! Click Here to Become a 2008 Subscriber', :controller => 'store', :action =>'subscribe_2008',:id => @customer
+= render :partial => 'store/store_banner', :locals => {:subscriber => false }
 
 = error_messages_for :customer
 

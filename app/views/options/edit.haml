@@ -1,3 +1,4 @@
+%p.infoMsg Click on the name of each configuration option for more information.
 - form_tag 'edit' do 
   - @vars.each_pair do |group,varlist|
     .pageDiv
@@ -5,9 +6,8 @@
       %table
         - varlist.sort_by(&:id).each do |v|
           %tr{:class=>cycle(:evenRow,:oddRow)}
-            %td.l= Inflector.humanize(v.name)
-            %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 20, :maxlength => 254
-            %td.l= link_to_function h(v.shortdesc), "alert('#{escape_javascript(v.description)}')"
+            %td.l= link_to_function h(Inflector.humanize(v.name)), "alert('#{escape_javascript(v.description)}')"
+            %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 60, :maxlength => 254
   .pageDiv
     %h1 Save Changes
     %p

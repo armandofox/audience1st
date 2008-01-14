@@ -1,20 +1,20 @@
 class StoreController < ApplicationController
   include ActiveMerchant::Billing
   include Enumerable
-  
+
   require "money.rb"
-  
+
   before_filter :walkup_sales_filter, :only => %w[walkup do_walkup_sale]
   before_filter :is_logged_in, :only => %w[edit_billing_address]
-  
+
   if RAILS_ENV == 'production'
     ssl_required :checkout, :place_order, :walkup, :do_walkup_sale
-    ssl_allowed(:index, 
+    ssl_allowed(:index,
                 :show_changed, :showdate_changed, :enter_promo_code,
                 :add_tickets_to_cart, :add_donation_to_cart, :remove_from_cart,
                 :empty_cart, :process_swipe)
   end
-  
+
   verify(:method => :post,
          :only => %w[do_walkup_sale add_tickets_to_cart add_donation_to_cart
                         add_subscriptions_to_cart place_order],
@@ -22,15 +22,20 @@ class StoreController < ApplicationController
          :redirect_to => {:action => 'index'})
 
   def index
+    @customer = store_customer
+    @is_admin = current_admin.is_boxoffice
     # if this is initial visit to page, reset ticket choice info
     reset_current_show_and_showdate
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
       set_current_showdate(s)
     elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
+    else                        # neither: pick earliest show
+      s = get_all_showdates(@is_admin)
+      unless (s.nil? || s.empty?)
+        set_current_showdate(s.first)
+      end
     end
-    @customer = store_customer
-    @is_admin = current_admin.is_boxoffice
     @subscriber = @customer.is_subscriber?
     @promo_code = session[:promo_code] || nil
     @cart = find_cart
@@ -67,6 +72,8 @@ class StoreController < ApplicationController
     #  of (unless "customer" is actually an admin)
     @vouchertypes.reject! { |av| av.staff_only } unless is_admin
     @vouchertypes.reject! { |av| av.howmany.zero? }
+    # BUG: must filter vouchertypes by promo code!!
+    # @vouchertypes.reject!
   end
 
   def show_changed
@@ -85,7 +92,7 @@ class StoreController < ApplicationController
     setup_ticket_menus
     render :partial => 'ticket_menus'
   end
-  
+
   def enter_promo_code
     code = (params[:promo_code] || '').upcase
     if !code.empty?
@@ -94,7 +101,7 @@ class StoreController < ApplicationController
     redirect_to :action => 'index'
   end
 
-  def subscribe_2008
+  def subscribe
     @customer = store_customer
     @subscriber = @customer.is_subscriber?
     @cart = find_cart
@@ -122,16 +129,16 @@ class StoreController < ApplicationController
         end
       end
     end
-    redirect_to :action => 'subscribe_2008', :id => params[:id]
+    redirect_to :action => 'subscribe', :id => params[:id]
   end
-      
+
   def add_tickets_to_cart
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
     qtys = params[:vouchertype] # a hash of vouchertypeID => qty of this type
     showdate_id = params[:showdate].to_i
     flash[:ticket_error] = ""
-    
+
     qtys.reject { |v,q| q.to_i.zero? }.each_pair do |vtype_str,qty_str|
       vtype,qty = vtype_str.to_i, qty_str.to_i
       unless (vt = Vouchertype.find_by_id(vtype))
@@ -381,7 +388,7 @@ class StoreController < ApplicationController
     end
     if donation > 0.0
       begin
-        Donation.walkup_cash_donation(donation,logged_in_id)
+        Donation.walkup_donation(donation,logged_in_id)
         flash[:notice] << sprintf(" $%.02f donation processed,", donation)
       rescue Exception => e
         flash[:notice] << "Donation could NOT be recorded: #{e.message}"
@@ -447,7 +454,7 @@ class StoreController < ApplicationController
     # if card has a track 1, we use that (even if trk 2 also present)
     # else if only has a track 2, try to use that, but doesn't include name
     # else error.
-    
+
     if s.match(trk1)
       accnum = Regexp.last_match(1).to_s
       lastname = Regexp.last_match(2).to_s.upcase
@@ -470,7 +477,7 @@ class StoreController < ApplicationController
                    :number => accnum.strip,
                    :type => CreditCard.type?(accnum.strip) || '')
   end
-  
+
   def populate_cc_object(params)
     cc_info = params[:credit_card].symbolize_keys || {}
     cc_info[:first_name] = @bill_to[:first_name]
@@ -491,7 +498,7 @@ class StoreController < ApplicationController
       err << "Please indicate your acceptance of our Sales Final policy by checking the box."
     end
     if ! cc.valid?              # format check on credit card number
-      err << ("Please provide valid credit card information:<br/>" + 
+      err << ("Please provide valid credit card information:<br/>" +
               cc.errors.full_messages.join("<br/>"))
     end
     if !prevalidate_billing_addr(billing_info)
@@ -506,7 +513,7 @@ class StoreController < ApplicationController
   # the next two functions actually call the payment gateway
   def do_cc_present_transaction(amount, cc)
     params = {
-      :order_id => '999',
+      :order_id => Option.value(:venue_id).to_i,
       :address => {
         :name => "#{cc.first_name} #{cc.last_name}"
       }
@@ -518,9 +525,9 @@ class StoreController < ApplicationController
     email = bill_to[:login].to_s.default_to("invalid@audience1st.com")
     phone = bill_to[:day_phone].to_s.default_to("555-555-5555")
     params = {
-      :order_id => '999',
+      :order_id => Option.value(:venue_id).to_i,
       :email => email,
-      :address =>  { 
+      :address =>  {
         :name => "#{bill_to[:first_name]} #{bill_to[:last_name]}",
         :address1 => bill_to[:street],
         :city => bill_to[:city],
@@ -542,7 +549,7 @@ class StoreController < ApplicationController
                                :pem => gw[:pem])
     response = gateway.purchase(amount, cc, params)
   end
-                                
+
   # helpers for the AJAX handlers. These should probably be moved
   # to the respective models for shows and showdates, or called as
   # helpers from the views directly.
@@ -559,11 +566,11 @@ class StoreController < ApplicationController
     end
     showdates.sort_by { |s| s.thedate }
   end
-  
+
   def get_all_subs(cust = Customer.generic_customer)
     return Vouchertype.find(:all, :conditions => ["is_bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.is_subscriber? ? 0 : 1)])
   end
-  
+
   # filter for walkup sales: requires specific privilege OR allows
   # anyone from selected IP addresses
 

@@ -3,13 +3,13 @@
   %head
     - unless mobile_user_agent?(controller.request.user_agent)
       = stylesheet_link_tag 'vbo'
-      = stylesheet_link_tag(APP_CONFIG[:external_css_file]) unless APP_CONFIG[:external_css_file].blank?
+      = stylesheet_link_tag(Option.value(:external_css_file)) unless Option.value(:external_css_file).blank?
     = javascript_include_tag :defaults 
 
     %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.humanize) 
-    %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
-    %meta{'http-equiv'=>:imagetoolbar, :content=>:no}/
-    %meta{:name=>:description, :content=>''}/
+    %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}
+    %meta{'http-equiv'=>:imagetoolbar, :content=>:no}
+    %meta{:name=>:description, :content=>''}
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(RAILS_ENV != 'production' ? :testing : nil)}
 
@@ -29,7 +29,7 @@
 
     #footer
       %p
-        \&copy; 2007
-        = link_to 'A1 Patron Systems', 'http://www.audience1st.com'
-        = " - Build #{APP_CONFIG[:version]} - "
-        = link_to "Terms of Use & Privacy Policy", APP_CONFIG[:privacy_policy_url], :target=>:_blank
+        \&copy; 2008
+        = link_to 'A1 Patron Systems', 'http://www.a1patronsystems.com'
+        = " - Build #{APP_VERSION} - "
+        = link_to "Terms of Use & Privacy Policy", Option.value(:privacy_policy_url), :target=>:_blank
