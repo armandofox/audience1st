@@ -52,7 +52,7 @@ class Mailer < ActionMailer::Base
     #  know the hostname for the URL....removed for now
     #urls_for_visits = visits.map do |v|
     #url_for(:controller => 'visits', :action=>'list', :id=>v.customer)
-    end
+    #end
     @recipients = who
     @from = 'AutoConfirm@audience1st.com' # bug
     @headers = {}
@@ -60,7 +60,6 @@ class Mailer < ActionMailer::Base
     @body = {
       :visits => visits,
       :who => who,
-    #:urls => Hash.[](*(visits.zip(urls_for_visits).flatten)),
       :today => Time.now
     }
   end
