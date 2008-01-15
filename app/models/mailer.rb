@@ -48,8 +48,10 @@ class Mailer < ActionMailer::Base
   end
   
   def pending_followups(who, visits)
-    urls_for_visits = visits.map do |v|
-      url_for(:controller => 'visits', :action=>'list', :id=>v.customer)
+    # BUG: url_for doesn't work from script/runner since it doesn't
+    #  know the hostname for the URL....removed for now
+    #urls_for_visits = visits.map do |v|
+    #url_for(:controller => 'visits', :action=>'list', :id=>v.customer)
     end
     @recipients = who
     @from = 'AutoConfirm@audience1st.com' # bug
@@ -58,7 +60,7 @@ class Mailer < ActionMailer::Base
     @body = {
       :visits => visits,
       :who => who,
-      :urls => Hash.[](*(visits.zip(urls_for_visits).flatten)),
+    #:urls => Hash.[](*(visits.zip(urls_for_visits).flatten)),
       :today => Time.now
     }
   end

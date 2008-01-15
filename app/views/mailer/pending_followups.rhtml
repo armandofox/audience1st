@@ -6,8 +6,7 @@ Name:            <%= v.customer.full_name %>
 Followup date:   <%= v.followup_date.to_formatted_s(:date_only) %>
 Followup action: <%= v.followup_action %>
 Last visit by:   <%= v.summarize %>
-Details:         <%= @urls[v] %>
-Last visit notes:  -------------------------------------------
+Notes from last visit: ---------------------------------------
 <%= v.additional_notes.wrap(60) %>
 --------------------------------------------------------------
 
