@@ -60,7 +60,7 @@ class Voucher < ActiveRecord::Base
 
   
 
-  def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false)
+  def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false)
     vt = Vouchertype.find(vtype_id)
     raise "Number to add must be positive" unless howmany > 0
     raise  "Customer record invalid" unless cust.is_a?(Customer)
@@ -73,6 +73,7 @@ class Voucher < ActiveRecord::Base
                                        :fulfillment_needed => fulfillment_needed,
                                        :customer_id => cust.id,
                                        :processed_by => bywhom,
+                                       :changeable => can_change,
                                        :showdate_id => showdate_id)
       v.customer = cust
       v.save!
@@ -80,11 +81,12 @@ class Voucher < ActiveRecord::Base
       # if this voucher is actually a "bundle", recursively add the
       # bundled vouchers  
       if v.vouchertype.is_bundle?
+        can_change = v.vouchertype.is_subscription?
         purchasemethod_bundle_id = Purchasemethod.get_type_by_name('bundle')
         v.vouchertype.get_included_vouchers.each {  |type, qty|
           if (qty > 0)
             self.add_vouchers_for_customer(type, qty, cust,
-                                           purchasemethod_bundle_id, showdate_id, '', bywhom)
+                                           purchasemethod_bundle_id, showdate_id, '', bywhom, fulfillment_needed, can_change)
           end
         }
       end
@@ -122,8 +124,7 @@ class Voucher < ActiveRecord::Base
                   :fulfillment_needed => vt.fulfillment_needed,
                   :sold_on => Time.now,
                   :valid_date => vt.valid_date,
-                  :expiration_date => vt.expiration_date,
-                  :changeable => false}.merge(args))
+                  :expiration_date => vt.expiration_date}.merge(args))
   end
 
   # return the "show" associated with a voucher.  If a regular voucher,
@@ -139,6 +140,10 @@ class Voucher < ActiveRecord::Base
     self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
   end
 
+  def is_bundle?
+    self.vouchertype.kind_of?(Vouchertype) && self.vouchertype.is_bundle?
+  end
+  
   def date
     self.showdate_id.zero? ? nil : self.showdate.thedate
   end

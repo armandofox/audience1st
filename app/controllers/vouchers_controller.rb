@@ -38,9 +38,6 @@ class VouchersController < ApplicationController
       thepurchasemethodname = Purchasemethod.find(thepurchasemethod).description
       fulfillment_needed = params[:fulfillment_needed] 
       thecomment = params[:comment] || "Add  #{thenumtoadd} vouchertype_id=#{thevouchertype} '#{thevouchername}' vouchers, paid by '#{thepurchasemethodname}'"
-      if params[:comment]
-        thecomment << ": " + params[:comment]
-      end
       custid = @customer.id
       begin
         v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
@@ -60,7 +57,7 @@ class VouchersController < ApplicationController
       rescue Exception => e
         flash[:notice] = "Error adding vouchers:<br/>#{e.message}"
       end
-      redirect_to :controller => 'customers', :action => 'welcome', :id => custid
+      redirect_to :controller => 'customers', :action => 'welcome'
     end
   end
   
@@ -180,7 +177,7 @@ class VouchersController < ApplicationController
         flash[:notice] = 'Error - reservation could not be cancelled'
       end
     end
-    redirect_to :controller => 'customers', :action => 'welcome', :id => @v.customer
+    redirect_to :controller => 'customers', :action => 'welcome'
   end
 
   def owns_voucher_or_is_boxoffice

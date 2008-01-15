@@ -2,7 +2,9 @@
                      {:controller => 'vouchers',
                        :action => 'remove_voucher',
                        :id => voucher.id },
-                     {:confirm => MESSAGES[:remove_bundle_0]}] %>
+                     {:confirm => (voucher.is_bundle? ?
+                                   MESSAGES[:remove_bundle_0] :
+                                   MESSAGES[:remove_voucher_0])}] %>
 <% cancel_res = ['Release',
                  {:controller => 'vouchers',
                    :action => :cancel_reservation,

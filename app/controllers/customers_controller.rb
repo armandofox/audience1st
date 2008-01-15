@@ -103,20 +103,32 @@ class CustomersController < ApplicationController
     redirect_to :action => 'login'       # no separate logout screen.
   end
 
+  def test
+    flash[:notice] = "I am the flash"
+    redirect_to :action => 'welcome'
+  end
+
   # welcome screen: different for nonsubscribers vs. subscribers
   
   def welcome                   # for nonsubscribers
     # if a checkout is in progress, customer was redirected here from
     # either signing up for new account, or modifying billing address
     # for CC purchase.  In that case, return to checkout flow.
-    redirect_to(:controller=>'store',:action=>'checkout') and return if session[:checkout_in_progress]
+    if session[:checkout_in_progress]
+      flash.keep(:notice)
+      redirect_to :controller=>'store',:action=>'checkout'
+      return
+    end
     @customer = @gCustomer
     # if customer is a subscriber, AND force_classic is not indicated,
     # redirect to correct page
-    if @customer.is_subscriber?
-      redirect_to(:action=>'welcome_subscriber') and return unless
-        (params[:force_classic] && @gAdmin.is_boxoffice) ||
-        !(Option.value(:force_classic_view).blank?)
+    if (@customer.is_subscriber?)
+      unless ((params[:force_classic] && @gAdmin.is_boxoffice) ||
+              !(Option.value(:force_classic_view).blank?))
+        flash.keep(:notice)
+        redirect_to :action=>'welcome_subscriber'
+        return
+      end
     end
     setup_for_welcome(@customer)
     @subscriber = false
@@ -124,7 +136,11 @@ class CustomersController < ApplicationController
 
   def welcome_subscriber        # for subscribers
     @customer = @gCustomer
-    redirect_to(:action=>'welcome') and return unless @customer.is_subscriber?
+    unless @customer.is_subscriber?
+      flash.keep(:notice)
+      redirect_to :action=>'welcome'
+      return
+    end
     setup_for_welcome(@customer)
     @subscriber = true
     
