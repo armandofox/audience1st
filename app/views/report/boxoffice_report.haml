@@ -26,8 +26,8 @@
             %tr{:class=>(c.is_subscriber? ? 'subscriber' : nil)}
               - ln,fn=c.last_name.name_capitalize, c.first_name.name_capitalize
               %td.maincolumn= (ln[0,1].upcase==cur_ltr ? '' : cur_ltr=ln[0,1].upcase)
-              %td= link_to_unless c.is_walkup_customer?, ln, c_lnk
-              %td= link_to_unless c.is_walkup_customer?, fn, c_lnk
+              %td= ln
+              %td= fn
               %td= h v.vouchertype.name
               %td.c= h @vouchers[k].size
               / concatenate all nonempty comments

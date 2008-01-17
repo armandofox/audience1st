@@ -1,24 +1,6 @@
-- remove_voucher = ['Remove',
-  {:controller => 'vouchers',
-  :action => 'remove_voucher',
-  :id => voucher.id },
-  {:confirm => (voucher.is_bundle? ?
-  MESSAGES[:remove_bundle_0] :
-  MESSAGES[:remove_voucher_0])}]
-  cancel_res = ['Release',
-  {:controller => 'vouchers',
-  :action => :cancel_reservation,
-  :id => voucher.id,
-  :customer => customer},
-  {:confirm => MESSAGES[:release_reservation_0]} ] 
-  cancel_prepaid = ['Cancel', { :controller => 'vouchers',
-  :action => 'cancel_prepaid',
-  :id => voucher.id,
-  :customer => customer },
-  {:confirm => MESSAGES[:cancel_prepaid_0] }]
-  showed_cancel_button = false
-
-%p= "Boxoffice = #{is_boxoffice}  BOM = #{is_boxoffice_manager}"
+- remove_voucher = ['Destroy',  {:controller => 'vouchers',:action => 'remove_voucher',:id => voucher.id },  {:confirm => (voucher.is_bundle? ?  MESSAGES[:remove_bundle_0] :  MESSAGES[:remove_voucher_0])}]
+- cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => customer}, {:confirm => MESSAGES[:release_reservation_0]} ] 
+- cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
 
 %tr
   - if is_boxoffice
@@ -36,8 +18,8 @@
     / regular voucher, unreserved
     %td.c Available
     / customer actions on unreserved voucher: make reservation
-    %td.c= button_to('Make reservation',{ :controller => 'vouchers',
-      \:action => 'reserve', :id => voucher.id, :customer => customer } )
+    %td.c
+      = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer } )
     - if is_boxoffice_manager
       / admin actions on unreserved voucher: remove
       %td.c= button_to(*remove_voucher)
@@ -51,18 +33,12 @@
     %td.c
       - if (is_subscriber && voucher.can_be_changed?) || (is_boxoffice && voucher.changeable)
         = button_to(*cancel_res) 
-        - showed_cancel_button = true
     / admin actions on reserved voucher:
     - if is_boxoffice_manager
       %td.c=  button_to(*cancel_res)
-
   - if is_boxoffice
     / admin can update voucher comments
     %td
-      = form_remote_tag(
-        \:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id },
-        \:success => "alert('Comment saved')",
-        \:failure => "alert('Comment NOT saved - error ' + request.status)") 
-      = text_field_tag 'comments', voucher.comments
-      = submit_tag 'Save' 
-      = end_form_tag 
+      - form_remote_tag(:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id }, :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
+        = text_field_tag 'comments', voucher.comments
+        = submit_tag 'Save' 
