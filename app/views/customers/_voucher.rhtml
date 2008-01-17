@@ -1,93 +1,68 @@
-<% remove_voucher = ['Remove',
-                     {:controller => 'vouchers',
-                       :action => 'remove_voucher',
-                       :id => voucher.id },
-                     {:confirm => (voucher.is_bundle? ?
-                                   MESSAGES[:remove_bundle_0] :
-                                   MESSAGES[:remove_voucher_0])}] %>
-<% cancel_res = ['Release',
-                 {:controller => 'vouchers',
-                   :action => :cancel_reservation,
-                   :id => voucher.id,
-                   :customer => customer},
-                 {:confirm => MESSAGES[:release_reservation_0]} ] %>
-<% cancel_prepaid = ['Cancel', { :controller => 'vouchers',
-                       :action => 'cancel_prepaid',
-                       :id => voucher.id,
-                       :customer => customer },
-                     {:confirm => MESSAGES[:cancel_prepaid_0] }] %>
-<% showed_cancel_button = false %>
+- remove_voucher = ['Remove',
+  {:controller => 'vouchers',
+  :action => 'remove_voucher',
+  :id => voucher.id },
+  {:confirm => (voucher.is_bundle? ?
+  MESSAGES[:remove_bundle_0] :
+  MESSAGES[:remove_voucher_0])}]
+  cancel_res = ['Release',
+  {:controller => 'vouchers',
+  :action => :cancel_reservation,
+  :id => voucher.id,
+  :customer => customer},
+  {:confirm => MESSAGES[:release_reservation_0]} ] 
+  cancel_prepaid = ['Cancel', { :controller => 'vouchers',
+  :action => 'cancel_prepaid',
+  :id => voucher.id,
+  :customer => customer },
+  {:confirm => MESSAGES[:cancel_prepaid_0] }]
+  showed_cancel_button = false
 
-<tr>
-  <% if is_boxoffice %>
-  <td class="adminField"> <%=h voucher.id %> <br/> <%= voucher.processed_by_name unless voucher.processed_by == voucher.customer.id %></td>
-  <% end %>
-  <td> <%=h voucher.vouchertype.name %> </td> 
-  <td> <%=h voucher.purchasemethod.description if voucher.purchasemethod %> </td>
-  <% if voucher.vouchertype.is_bundle? %> 
-  <!-- voucher bundle - not reservable -->
-  <td colspan='2'></td>
-  <% if is_boxoffice_manager %>
-  <!-- admin actions on bundle: remove -->
-  <td>  <%= button_to(*remove_voucher) %> </td>
-  <% end %> 
-  <% elsif voucher.showdate.nil? or voucher.showdate.id.zero? %> 
-  <!-- regular voucher, unreserved -->
-  <td align="center">Available</td>
+%p= "Boxoffice = #{is_boxoffice}  BOM = #{is_boxoffice_manager}"
 
-  <!-- customer actions on unreserved voucher: make reservation -->
+%tr
+  - if is_boxoffice
+    %td.adminField
+      = h voucher.id
+      = voucher.processed_by_name unless voucher.processed_by == voucher.customer.id 
+  %td= h voucher.vouchertype.name
+  %td= h voucher.purchasemethod.description if voucher.purchasemethod
+  - if voucher.is_bundle?
+    / voucher bundle - not reservable
+    %td{:colspan=>2}
+    - if is_boxoffice_manager
+      %td= button_to(*remove_voucher) 
+  - elsif voucher.unreserved?
+    / regular voucher, unreserved
+    %td.c Available
+    / customer actions on unreserved voucher: make reservation
+    %td.c= button_to('Make reservation',{ :controller => 'vouchers',
+      \:action => 'reserve', :id => voucher.id, :customer => customer } )
+    - if is_boxoffice_manager
+      / admin actions on unreserved voucher: remove
+      %td.c= button_to(*remove_voucher)
+  - else
+    / regular voucher, reserved
+    %td.c
+      %span.showName= h voucher.showdate.show.name
+      %br
+      %span.showDate= h voucher.showdate.thedate.strftime('%a, %b %e, %I:%M %p')
+    / customer actions on reserved voucher:
+    %td.c
+      - if (is_subscriber && voucher.can_be_changed?) || (is_boxoffice && voucher.changeable)
+        = button_to(*cancel_res) 
+        - showed_cancel_button = true
+    / admin actions on reserved voucher:
+    - if is_boxoffice_manager
+      %td.c=  button_to(*cancel_res)
 
-  <td align="center">
-    <%= button_to('Make reservation',{ :controller => 'vouchers',
-    :action => 'reserve', :id => voucher.id, :customer => customer } )%>
-  </td>
-  <% if is_boxoffice_manager %>
-
-  <!-- admin actions on unreserved voucher: remove -->
-
-  <td align="center"> <%= button_to(*remove_voucher) %>  </td>
-  <% end %>
-  <% else %>
-
-  <!-- regular voucher, reserved -->
-
-  <td align="center">
-    <span class="showName"><%=h voucher.showdate.show.name %> </span>
-    <br/>
-    <span class="showDate"><%=h voucher.showdate.thedate.strftime('%a, %b %e, %I:%M %p') %></span>
-  </td>
-
-  <!-- customer actions on reserved voucher: -->
-
-  <td align='center'>
-    <% if (is_subscriber && voucher.can_be_changed?) || (is_boxoffice && voucher.changeable) %>
-    <%=  button_to(*cancel_res) %>
-    <%   showed_cancel_button = 1 %>
-    <% end %>
-  </td>
-
-  <!-- admin actions on reserved voucher: -->
-
-  <% if is_boxoffice_manager %>
-  <td align="center">
-    <%   if (!voucher.changeable) %>
-    <%=      button_to(*cancel_prepaid) %>
-    <%   elsif (!showed_cancel_button)  %>
-    <%=      button_to(*cancel_res) %>
-    <%   end %>
-  </td>
-  <% end %>
-  
-  <% end %>
-  <% if is_boxoffice %>
-  <td>
-    <%= form_remote_tag(
-         :url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id },
-        :success => "alert('Comment saved')",
-        :failure => "alert('Comment NOT saved - error ' + request.status)") %>
-    <%= text_field_tag 'comments', voucher.comments %>
-    <%= submit_tag 'Save' %>
-    <%= end_form_tag %>
-  </td>
-  <% end %>
-</tr>
+  - if is_boxoffice
+    / admin can update voucher comments
+    %td
+      = form_remote_tag(
+        \:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id },
+        \:success => "alert('Comment saved')",
+        \:failure => "alert('Comment NOT saved - error ' + request.status)") 
+      = text_field_tag 'comments', voucher.comments
+      = submit_tag 'Save' 
+      = end_form_tag 
