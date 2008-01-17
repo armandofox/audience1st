@@ -8,25 +8,8 @@
     %tr
       %th Show
       %th Your Reservation
-      %th
-    - @subscriber_vouchers.sort_by(&:vouchertype_id).each do |v|
-      - if v.reserved?
-        %tr
-          %td= v.vouchertype.name
-          %td.c= v.showdate.printable_date
-          / BUG this shouldn't appear if it's impossble to cancel this res
-          - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_reservation', :id => v.id do
-            %td.c= submit_tag 'Click to Cancel'
-      - else
-        %tr
-          %td= v.vouchertype.name
-          - if (dates = v.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
-            %td None of your vouchers are valid for this show
-            %td
-          - else
-            - form_tag :controller => 'vouchers', :action => 'confirm_reservation', :id => v do
-              %td= select_tag 'showdate_id', options_for_select({'Select date...' => 0},0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
-              %td= submit_tag 'Click to Confirm'
+      %th Actions
+    = render :partial => 'subscriber_voucher', :collection => @subscriber_vouchers.sort_by(&:vouchertype_id)
 
 .pageDiv#additionalTickets
   %h1 Purchased Tickets

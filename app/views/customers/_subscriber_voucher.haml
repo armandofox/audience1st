@@ -1,0 +1,19 @@
+%div[subscriber_voucher]
+  - if subscriber_voucher.reserved?
+    %tr
+      %td= subscriber_voucher.vouchertype.name
+      %td.c= subscriber_voucher.showdate.printable_date
+      / BUG this shouldn't appear if it's impossble to cancel this res
+      - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_reservation', :id => subscriber_voucher.id do
+        %td.c= submit_tag 'Click to Cancel', :disable_with => 'Cancelling...'
+  - else
+    %tr
+      %td= subscriber_voucher.vouchertype.name
+      - if (dates = subscriber_voucher.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
+        %td None of your vouchers are valid for this show
+        %td
+      - else
+        - form_tag :controller => 'vouchers', :action => 'confirm_reservation', :id => subscriber_voucher do
+          %td= select_tag 'showdate_id', options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
+          %td= submit_tag 'Click to Confirm', :disable_with => 'Confirming...'
+

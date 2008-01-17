@@ -123,7 +123,7 @@ class VouchersController < ApplicationController
     showdate = params[:showdate_id].to_i
     if @voucher.reserve_for(showdate, logged_in_id,
                             params[:comments], :ignore_cutoff => @is_admin)
-      flash[:notice] = 'Reservation is confirmed. '
+      flash[:notice] = "Reservation confirmed for #{showdate.printable_date}. "
       email_confirmation(:confirm_reservation, @customer, @voucher)
     else
       flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.comments}"
@@ -154,7 +154,7 @@ class VouchersController < ApplicationController
                            :show_id => save_show,
                            :showdate => save_showdate,
                            :comment => 'Prepaid, comp or other nonsubscriber ticket')
-      flash[:notice] = 'Reservation cancelled, voucher unlinked from customer'
+      flash[:notice] = "Reservation cancelled, voucher unlinked from customer"
     end
     redirect_to :controller => 'customers', :action => 'welcome', :id => save_customer
   end
