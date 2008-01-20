@@ -120,7 +120,11 @@ class VouchersController < ApplicationController
     @voucher = Voucher.find(params[:id])
     @customer = @voucher.customer
     @is_admin = @gAdmin.is_walkup
-    showdate = params[:showdate_id].to_i
+    if (showdate = params[:showdate_id].to_i).zero?
+      flash[:notice] = "Please select a date."
+      redirect_to :controller => 'customers', :action => 'welcome'
+      return
+    end
     if @voucher.reserve_for(showdate, logged_in_id,
                             params[:comments], :ignore_cutoff => @is_admin)
       flash[:notice] = "Reservation confirmed. "

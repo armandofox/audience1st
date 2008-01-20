@@ -1,4 +1,37 @@
-\section{Troubleshooting}
+\section{Troubleshooting and Maintenance}
+
+\subsection{Backups}
+\label{sec:backups}
+
+A1 Patron Systems backs up all Audience1st databases nightly at
+approximately 3~AM Pacific time.  At any given time, the following
+backups are available:
+
+\begin{itemize}
+\item Nightly backups for each of the last 30 calendar days
+\item Monthly backups taken on the first of the month, every month from
+  the past 5 years (or from the beginning of service, whichever is later)
+\end{itemize}
+
+So, for example, on April  4, the following backups will be
+available: nightly snapshots for any day from March 2 to April 3;
+and snapshots for April 1, March 1, February 1, January 1, and the
+first of each previous  month up to five years ago (or the beginning of
+service, whichever is later).
+
+Backups are kept encrypted on Amazon's S3 (Simple Storage Service) which
+replicates data extensively for reliability.
+If you use A1 Patron Systems' optional Web Hosting Service, your Web
+content databases are backed up according to the same schedule.
+
+These backups are intended for disaster recovery, not as an ``undo''
+for user errors.  A technical support fee applies to restoring from
+backup.  Furthermore, if restoring from an older backup and the data
+schema has changed, the data will be provided only as CSV files rather
+than loaded into the database.  Also, if you request old data to be
+loaded into the database, new data and changes made since the time of
+the loaded backup will be lost.
+
 
 \subsection{Recovering From Common Mistakes}
 \label{sec:recovering}

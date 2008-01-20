@@ -298,7 +298,7 @@ class StoreController < ApplicationController
     if (params[:show])
       @show_id = params[:show].to_i
       @showdate_id = params[:showdate] ? params[:showdate].to_i : nil
-    elsif (future_shows = @showdates.select { |x| x.thedate >= now })
+    elsif (future_shows = @showdates.select { |x| x.thedate >= (now - 2.hours) })
       next_show = future_shows.min
       @showdate_id = next_show.id
       @show_id = next_show.show.id

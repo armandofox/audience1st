@@ -8,6 +8,7 @@ HOME	   = /home/$(NAME)
 APPROOT    = $(HOME)/rails/$(VENUE)/current
 APPROOT_STAGE = $(HOME)/rails/$(VENUE)/stage
 BACKUPDIR = $(HOME)/backup/$(VENUE)
+TODAY	   = $(shell date +\%d)
 
 #  IMPORTANT:  Binary path names below refer to the binary's path ON THE
 #   DEPLOYMENT SYSTEM, not on your (development) system.  Many of these
@@ -19,6 +20,7 @@ RUBY	   = /usr/local/bin/ruby
 PERL	   = /usr/local/bin/perl
 MYSQL      = /usr/bin/mysql
 MYSQLDUMP  = /usr/bin/mysqldump
+S3	   = /home/audienc/s3sync/s3cmd.rb
 MYSQL_DB   = $(shell perl -ne 'print $$1 if /database: +(.*)$$/' $(APPROOT)/config/database.yml)
 MYSQL_PASS = $(shell perl -ne 'print $$1 if /password: +(.*)$$/' $(APPROOT)/config/database.yml)
 MYSQL_USER = $(shell perl -ne 'print $$1 if /username: +(.*)$$/' $(APPROOT)/config/database.yml)
@@ -47,7 +49,8 @@ clean_sessions:
 	@$(MYSQL) $(MYSQL_OPTS) -D$(MYSQL_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)
 
 backup:
-	@$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) | $(GZIP) > $(BACKUPDIR)/$(shell date +\%F).gz
+	@$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) | $(GZIP) > $(BACKUPDIR)/$(TODAY).gz
+	@$(S3CMD) put a1_$(VENUE):db-$(TODAY).gz  $(BACKUPDIR)/$(TODAY).gz
 
 dump_static_data:
 	@$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) $(STATIC_TABLES) > static.sql
