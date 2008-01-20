@@ -334,7 +334,8 @@ class CustomersController < ApplicationController
       rescue Exception => e
         flash[:notice] = "Problems during merge: #{e.message}"
       end
-      redirect_to :action => 'welcome', :id => c0.id
+      session[:cid] = c0.id
+      redirect_to :action => 'welcome'
     end
   end
 

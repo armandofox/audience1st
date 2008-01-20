@@ -123,7 +123,7 @@ class VouchersController < ApplicationController
     showdate = params[:showdate_id].to_i
     if @voucher.reserve_for(showdate, logged_in_id,
                             params[:comments], :ignore_cutoff => @is_admin)
-      flash[:notice] = "Reservation confirmed for #{showdate.printable_date}. "
+      flash[:notice] = "Reservation confirmed. "
       email_confirmation(:confirm_reservation, @customer, @voucher)
     else
       flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.comments}"

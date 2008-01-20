@@ -119,19 +119,6 @@ class ApplicationController < ActionController::Base
     return conds, order, f
   end
 
-
-  # given results of a form submission containing a select for dollar
-  # amount, return the amount
-  def amount_from_selects(hsh)
-    base = 1
-    amt = 0
-    hsh.keys.sort.reverse.each do |k|
-      amt += hsh[k].to_i * base
-      base *= 10
-    end
-    amt
-  end
-
   # filter that requires user to login before accessing account
   
   def is_logged_in

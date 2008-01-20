@@ -80,13 +80,14 @@ class Voucher < ActiveRecord::Base
       cust.vouchers << v
       # if this voucher is actually a "bundle", recursively add the
       # bundled vouchers  
+      # NOTE: fulfillment_needed is ALWAYS FALSE for vouchers included in a bundle!
       if v.vouchertype.is_bundle?
         can_change = v.vouchertype.is_subscription?
         purchasemethod_bundle_id = Purchasemethod.get_type_by_name('bundle')
         v.vouchertype.get_included_vouchers.each {  |type, qty|
           if (qty > 0)
             self.add_vouchers_for_customer(type, qty, cust,
-                                           purchasemethod_bundle_id, showdate_id, '', bywhom, fulfillment_needed, can_change)
+                                           purchasemethod_bundle_id, showdate_id, '', bywhom, false, can_change)
           end
         }
       end
@@ -150,12 +151,38 @@ class Voucher < ActiveRecord::Base
   def date
     self.showdate_id.zero? ? nil : self.showdate.thedate
   end
+
+  def valid_for_date?(dt)
+    if (vd = self.valid_date)  && (ed = self.expiration_date)
+      dt.between?(vd, ed)
+    elsif vd && !ed
+      dt >= vd
+    elsif !vd && ed
+      dt <= ed
+    else
+      true
+    end
+  end
   
+  def validity_dates_as_string
+    fmt = '%m/%d/%y'
+    if (vd = self.valid_date) && (ed = self.expiration_date)
+      "between #{vd.strftime(fmt)} and #{ed.strftime(fmt)}"
+    elsif vd
+      "after #{vd.strftime(fmt)}"
+    elsif ed
+      "until #{ed.strftime(fmt)}"
+    else
+      "for all dates"
+    end
+  end
+
+
   # this should probably be eliminated and the function call inlined to wherever 
   # this is called from.
   def numseats_for_showdate(sd,args={})
-    if self.vouchertype.expiration_date && self.vouchertype.expiration_date < sd.thedate
-      AvailableSeat.no_seats(self,sd,"Voucher expires #{self.expiration_date.strftime('%x')}")
+    unless self.valid_for_date?(sd.thedate)
+      AvailableSeat.no_seats(self,sd,"Voucher only valid #{self.validity_dates_as_string}")
     else
       ValidVoucher.numseats_for_showdate_by_vouchertype(sd, self.customer,
                                                         self.vouchertype,

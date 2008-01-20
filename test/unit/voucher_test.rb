@@ -82,13 +82,34 @@ class VoucherTest < Test::Unit::TestCase
     assert !(no_exp_date_changeable.can_be_changed?(customers(:tom)))
   end
 
+  def test_022_expiration
+    expired = vouchers(:tom_type1)
+    assert_equal false, expired.valid_for_date?(Time.now)
+    assert_not_nil expired.valid_for_date?(Time.now - 1.day)
+    expired.valid_date = Time.now - 2.days
+    assert_not_nil expired.valid_for_date?(Time.now - 1.day)
+    expired.expiration_date = nil
+    assert_not_nil expired.valid_for_date?(Time.now)
+    assert_not_nil expired.valid_for_date?(Time.now + 1.year)
+    expired.valid_date = nil
+    expired.expiration_date = Time.now - 10.minutes
+    assert_not_nil expired.valid_for_date?(Time.local(2000,1,1))
+    expired.expiration_date = nil
+    assert_not_nil expired.valid_for_date?(Time.now)
+  end
+  
   def test_030_validity
     v = vouchers(:tom_type1)
-    a = v.numseats_for_showdate(showdates(:upcoming_musical_nomax), ignore_cutoff=true)
+    a = v.numseats_for_showdate(showdates(:upcoming_musical_nomax), :ignore_cutoff=>true)
+    assert !(a.available?)
+    assert_match /voucher only valid between/i, a.explanation, a.explanation
+    # now try resetting expiration date, but voucher still not valid for this perf
+    v.expiration_date = nil
+    a = v.numseats_for_showdate(showdates(:upcoming_musical_nomax), :ignore_cutoff=>true)
     assert !(a.available?)
     assert_match /not valid for this performance/i, a.explanation, a.explanation
     assert_equal 0, a.howmany
-    a = v.numseats_for_showdate(showdates(:upcoming_musical_hasmax_2), ignore_cutoff=true)
+    a = v.numseats_for_showdate(showdates(:upcoming_musical_hasmax_2), :ignore_cutoff=>true)
     assert a.available?, a.explanation
     assert_equal 1, a.howmany
   end

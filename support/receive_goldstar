@@ -8,10 +8,11 @@
 
 if [ "$1" = "-t" ]; then
     env=development
-    dir=stage
 else
     env=production
-    dir=current
 fi
-# bug: should deduce path to script/runner dir as $ARGV[0]/..
-RAILS_ENV=$env /usr/local/bin/ruby /home/audienc/rails/vbo/current/script/runner 'EmailGoldstar.receive(STDIN.read)' >/dev/null 2>&1
+
+# bug: should check exit status of the below cmd and send email if it 
+# fails; otherwise nothing will show up in logs
+RAILS_ENV=$env /usr/local/bin/ruby $(dirname "$0")/../script/runner 'EmailGoldstar.receive(STDIN.read)' 
+# add  >/dev/null 2>&1 to above line to suppress emails of error reports

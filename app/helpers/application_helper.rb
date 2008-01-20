@@ -226,22 +226,6 @@ module ApplicationHelper
     qty.to_i == 1  ?  "1 #{str}" : "#{qty} #{str.pluralize}" 
   end
       
-
-  # create a set of dropdown selects to allow entry of an integral
-  # dollar amount, given number of digits and default selection 
-  def selects_for_dollar_amount(name, ndigits=1, default=0)
-    #opts = (0..9).to_a.map { |i| "<option>#{i}</option>\n" }
-    str = ''
-    opts = (0..9).to_a.map { |i| [i, i.to_s] }
-    default_val = sprintf("%0#{ndigits}d", default).split('')
-    for i in 0..ndigits-1 do
-      str << "<select id='#{name}[#{i}]' name='#{name}[#{i}]'>\n"
-      str << options_for_select(opts, default_val[i])
-      str << "</select>\n"
-    end
-    str
-  end
-
   def select_menu_or_freeform(name, choices)
     lastidx = choices.length
     # should allow freeform entry as well as a menu of choices

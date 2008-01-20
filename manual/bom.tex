@@ -124,6 +124,14 @@ still have the old expiration date.}
   some collaterals.  (Note that this doesn't affect the customer's
   ability to use the voucher---she can make reservations as soon as the
   voucher is paid for.)
+\tip{Important}{When a bundle voucher is marked as requiring
+  fulfillment, \emph{only} the actual bundle voucher itself---and not
+  the regular vouchers included with it---will appear on the ``Orders
+  Needing Fulfillment'' report
+  (section~\ref{sec:report_unfulfilled}). This is usually what you want,
+  because (e.g.) in the case of a family that buys 2 subscriptions
+  containing 4 tickets each, you will get 2 lines on the fulfillment
+  report rather than $2+(2\times 4)=10$ lines.}
 \item[Walkup sales allowed] Some vouchers can also be sold at the door,
   e.g. General Admission.  Others, such as advance-purchase-only
   specials, cannot.  Only voucher types that have this flag set will

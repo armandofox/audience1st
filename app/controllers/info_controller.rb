@@ -12,15 +12,15 @@ class InfoController < ApplicationController
     showdates.each do |sd|
       case sd.availability_in_words
       when :sold_out
-        desc,link = "SOLD OUT", false
+        desc = "SOLD OUT" ; link = false
       when :nearly_sold_out
-        desc,link = "Nearly sold out", true
+        desc = "Nearly sold out" ; link = true
       else
-        desc,link = "Available", true
+        desc = "Available" ; link  = true
       end
       if link
         desc << " - " << (sd.advance_sales? ? "Buy online now" :
-                          "Advance sales ended (Tickets may be available at box office)")
+                          "Advance sales ended, box office sales only")
       end
       @showdate_avail << [sd, desc, link]
     end

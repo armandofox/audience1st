@@ -163,7 +163,8 @@ class StoreController < ApplicationController
         cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
       end
     end
-    reset_current_show_and_showdate
+    #reset_current_show_and_showdate
+    params[:showdate] = showdate_id # refresh screen back to same showdate
     redirect_to :action => 'index'
   end
 

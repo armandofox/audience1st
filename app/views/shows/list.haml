@@ -19,9 +19,9 @@
         = show.closing_date.strftime('%b %e, %Y')
       %td= show.house_capacity
       %td= show.created_on.strftime('%b %e, %Y')
-      - if @superadmin
-      %td= button_to 'Destroy',  {:action => 'destroy', :id => show}, :confirm => MESSAGES[:areyousure_0], :post => true 
-      - end
+      -# if @superadmin
+      -# %td= button_to 'Destroy',  {:action => 'destroy', :id => show}, :confirm => MESSAGES[:areyousure_0], :post => true 
+      -# end
     - end
 
 = link_to 'Previous page', { :page => @show_pages.current.previous } if @show_pages.current.previous 
