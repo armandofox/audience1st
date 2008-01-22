@@ -47,10 +47,10 @@ class Voucher < ActiveRecord::Base
 
   def self.anonymous_voucher_for(showdate,vouchertype,promocode=nil,comment=nil)
     Voucher.new_from_vouchertype(vouchertype,
-                                     :showdate_id => showdate,
-                                     :promo_code => promocode,
-                                     :comments => comment,
-                                     :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))
+                                 :showdate_id => showdate,
+                                 :promo_code => promocode,
+                                 :comments => comment,
+                                 :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))
   end
 
   def self.anonymous_bundle_for(vouchertype)
@@ -125,6 +125,7 @@ class Voucher < ActiveRecord::Base
                   :fulfillment_needed => vt.fulfillment_needed,
                   :sold_on => Time.now,
                   :valid_date => vt.valid_date,
+                  :changeable => false,
                   :expiration_date => vt.expiration_date}.merge(args))
   end
 
