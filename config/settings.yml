@@ -6,10 +6,15 @@
 
 timezone: 'PST8PDT'
 
+
+# this is the Authorize.net test account gateway properties
+payment_gateway_test:  
+  authorized_net_api_login_id: 33XUqKRw96
+  authorized_net_transaction_key: 3GxPg8bh9ar358RA
+
 # where to get help
   
 help_manual: http://www.audience1st.com/help/manual.html
-help_link: <a href="mailto:help@audience1st.com">help@audience1st.com</a>
 
 # Special seating needs or requests
 
@@ -63,29 +68,3 @@ messages:
   release_reservation_0: 'Really release this reservation? Click OK to release it, or Cancel to leave things as they are.'
   remove_vouchertype_1: 'This will destroy all existing "%s" vouchers, removing them from customer accounts. This action cannot be undone. Continue?'
 
-
-# the underscored version of gateway_type's value will be used to derive the 
-# _account  names, eg PayPal => pay_pal_account
-
-gateway_type: AuthorizedNet
-
-authorized_net_account:
-  username: alamedalit1713
-  password: 535HE3h837tD4wgp
-  testing: false
-  pemfile:
-
-authorized_net_test_account:
-  username: 33XUqKRw96
-  password: 3GxPg8bh9ar358RA
-  testing: true
-  pemfile:
-
-authorized_net_cp_account:
-  username: 66Fx8Nue5
-  password: 2HX5f5563f9XfS7J
-  testing: false
-  pemfile:
-                                    
-# used to differentiate transactions at gateway
-venue_id: 10

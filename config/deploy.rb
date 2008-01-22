@@ -38,7 +38,7 @@ deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
   #run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
   # copy installation-specific files
-  %w[public/.htaccess config/database.yml public/vbo.css].each do |file|
+  %w[public/.htaccess config/database.yml].each do |file|
     run "mv #{release_path}/#{file}.#{venue}  #{release_path}/#{file}"
     run "rm -rf #{release_path}/#{file}.*"
   end
