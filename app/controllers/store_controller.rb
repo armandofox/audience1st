@@ -56,10 +56,10 @@ class StoreController < ApplicationController
     @all_shows = get_all_shows(get_all_showdates(is_admin))
     if @sd = current_showdate   # everything keys off of selected showdate
       @sh = @sd.show
-      @all_showdates = @sh.showdates
+      @all_showdates = (is_admin ? @sh.showdates : @sh.future_showdates)
       @vouchertypes = ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin)
     elsif @sh = current_show    # show selected, but not showdate
-      @all_showdates = @sh.showdates
+      @all_showdates = (is_admin ? @sh.showdates : @sh.future_showdates)
       @vouchertypes = []
     else                      # not even show is selected
       @all_showdates = []
@@ -79,7 +79,8 @@ class StoreController < ApplicationController
   def show_changed
     if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
-      set_current_showdate(s.showdates.empty? ? nil : s.showdates.first)
+      sd = s.future_showdates
+      set_current_showdate(sd.empty? ? nil : sd.first)
     end
     setup_ticket_menus
     render :partial => 'ticket_menus'
@@ -336,7 +337,6 @@ class StoreController < ApplicationController
       return
     end
     # link record as a walkup customer
-    # TBD: if can match name from CC, try to link to customer record
     customer = Customer.walkup_customer
     if is_cc_purch
       if false
@@ -539,12 +539,9 @@ class StoreController < ApplicationController
 
   def cc_transaction(amount,cc,params,card_present)
     amount = Money.us_dollar((100 * amount).to_i)
-    gw = get_payment_gateway_info(card_present)
-    Base.gateway_mode = :test if gw[:testing]
-    gateway = gw[:gateway].new(:login => gw[:username],
-                               :password => gw[:password],
-                               :pem => gw[:pem])
-    response = gateway.purchase(amount, cc, params)
+    Base.gateway_mode = :test unless RAILS_ENV == 'production'
+    AuthorizedNetGateway.new(:login => Option.value(:pgw_id),
+                             :password => Option.value(:pgw_txn_key)).purchase(amount, cc, params)
   end
 
   # helpers for the AJAX handlers. These should probably be moved

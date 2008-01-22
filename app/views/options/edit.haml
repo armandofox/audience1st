@@ -7,7 +7,10 @@
         - varlist.sort_by(&:id).each do |v|
           %tr{:class=>cycle(:evenRow,:oddRow)}
             %td.l= link_to_function h(Inflector.humanize(v.name)), "alert('#{escape_javascript(v.description)}')"
-            %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 60, :maxlength => 254
+            - if v.typ == :int
+              %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 6, :maxlength => 6
+            - else
+              %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 60, :maxlength => 254
   .pageDiv
     %h1 Save Changes
     %p

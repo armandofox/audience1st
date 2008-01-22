@@ -9,8 +9,8 @@ LATEX2HTML = /sw/bin/latex2html
 
 SCP = scp
 SCPOPTS =
-SCPHOST = audience@audience1st.com
-SCPPATH = public_html/help
+SCPHOST = audienc@audience1st.com
+SCPPATH = public_html/manual
 
 all: manual.pdf html TAGS
 

@@ -1,0 +1,28 @@
+= error_messages_for 'show'
+
+%table{:border=>1}
+  %tr
+    %td{:colspan=>3}
+      %label{:for=>:show_name} Show Name
+      %br
+      = text_field 'show', 'name'
+    %td
+      %label{:for=>:show_house_capacity} House cap.
+      %br
+      = text_field 'show', 'house_capacity', :size => 5
+  %tr
+    %td{:colspan=>2}
+      %label{:for=>:show_opening_date} Opens
+      %br
+      = date_select 'show', 'opening_date'
+    %td{:colspan=>2}
+      %label{:for=>:show_closing_date} Closes
+      %br
+      = date_select 'show', 'closing_date'
+  %tr
+    %td{:colspan=>3}
+      %label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); leave blank if none
+      %br
+      = text_area :show, :patron_notes, :cols =>60,:rows => 3,:maxlength => 254
+
+

@@ -1,5 +1,6 @@
 class Show < ActiveRecord::Base
   has_many :showdates, :dependent => :destroy
+  has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= NOW()'
   has_many :vouchers, :through => :showdates
   validates_numericality_of :house_capacity
   validates_presence_of :opening_date, :closing_date

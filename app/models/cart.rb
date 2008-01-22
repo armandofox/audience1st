@@ -18,7 +18,8 @@ class Cart
   end
 
   def to_s
-    self.items.map do |i|
+    notes = {}
+    txt = self.items.map do |i|
       case
       when i.kind_of?(Voucher)
         if i.showdate_id.to_i > 0
@@ -26,6 +27,9 @@ class Cart
                     i.showdate.printable_name,
                     i.vouchertype.name, i.id)
           s << "\n         Seating request: #{i.comments}" unless i.comments.to_s.empty?
+          unless i.showdate.show.patron_notes.blank?
+            notes[i.showdate.show.name] = i.showdate.show.patron_notes
+          end
           s
         else
           sprintf("$%6.2f  %s - ticket #%d",i.vouchertype.price,
@@ -35,6 +39,12 @@ class Cart
         sprintf("$%6.2f  Donation to General Fund", i.amount)
       end
     end.join("\n")
+    txt << "\n"
+    # add per-show notes if there
+    notes.each_pair do |showname,note|
+      txt << "\nSPECIAL NOTE for #{showname}:\n#{note.wrap(60)}"
+    end
+    txt
   end
 
   def add(itm)

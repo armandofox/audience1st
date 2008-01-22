@@ -28,3 +28,4 @@
         %td{:colspan=>2,:align=>:center}
           = submit_tag APP_CONFIG[:cc_purch], {:onClick => "this.disabled=true;this.value='Processing, Please Wait';document.getElementById('cancel').style.display='none';this.form.submit();"}
           = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
+

@@ -249,7 +249,7 @@ stick to them.
 TBD: discuss connection between how subscription is setup and whether to
 use Classic View or Streamlined(?) View for subscriber welcome screen
 
-\subsection{Shows and Show Dates}
+\subsection{Adding Shows and Show Dates}
 \label{sec:shows-and-showdates}
 
 A \emph{show} is a series of 1 or more performances of the same piece.
@@ -263,7 +263,34 @@ individual dates (for example, if you want to hold back house seats on
 opening night of a performance, you can set this up automatically to
 reduce the number of tickets allowed to be sold for that performance).
 
+\subsubsection{Adding A New Show}
 \label{sec:addingshows}
+
+The first step is to add a new show (production).  Click the Shows nav
+tab, and click Add New Show.  You'll specify the following properties
+for the new show:
+
+\begin{itemize}
+\item The show's name.
+\item The default house capacity for the show. This can be overridden on
+  a per-performance basis, so enter the number that will be ``most
+  typical'' for your venue for that show.
+\item The start and end dates of the run.  These dates will be used as
+  the ``official'' start and end dates in emails and other information
+  feeds, even if they don't match up with the earliest and latest
+  performance 
+  dates you specify for the show.
+\item Special notes to patron. When a patron orders tickets or makes
+  a reservation for any performance of this show, they will receive an
+  auto-generated email (provided their patron record has a valid email
+  address on file) confirming this action. Any text you provide here (up
+  to 255 characters) will be included in that email, and clearly
+  identified as ``Special notes for (show name)'', if any
+  tickets/reservations in their order are for this show.
+\end{itemize}
+
+
+\subsubsection{Adding Show Dates to an Existing Show}
 \label{sec:addingshowdates}
 
 The next step is to add show dates for the production.  To do this,

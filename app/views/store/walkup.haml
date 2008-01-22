@@ -47,7 +47,9 @@
 
       %td{:align=>:center,:valign=>:top}
         %p Click here once payment has been collected:
-        = submit_tag 'Cash Purchase'
+        = submit_tag 'Cash Payment'
+        %br
         = submit_tag APP_CONFIG[:cc_purch]
-        %br/
+        %br
+        %br
         = submit_tag 'Generate Report'

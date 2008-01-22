@@ -30,12 +30,14 @@ class Visit < ActiveRecord::Base
 
   # this is a class method because it's called via script/runner from
   # a cron job.  Identify all visits that have a followup due in the next
-  # 3 days; group by whose job it is to followup; and send emails.
+  # followup_visit_reminder_lead_time days;
+  #  group by whose job it is to followup; and send emails.
   def self.notify_pending_followups
-    # bug: these should all be configurable variables...
+    # if followup_reminder_lead_time option is 0, don't even do this.
+    return if (d = Option.value(:followup_visit_reminder_lead_time)).zero?
     logger.info "#{Time.now.to_formatted_s(:short)}: Generating pending followups"
     start = Time.now
-    nd = (start + 3.days)
+    nd = start + d.days
     vs = Visit.find(:all,
                     :conditions => ["followup_date BETWEEN ? AND ?",start,nd],
                     :order => 'followup_date')

@@ -26,8 +26,9 @@ class Mailer < ActionMailer::Base
     sending_to(customer)
     @subject  << "reservation confirmation"
     @body.merge!(:greeting => customer.full_name,
-                  :performance => voucher.showdate.printable_name,
-                  :subscriber => customer.is_subscriber?
+                 :performance => voucher.showdate.printable_name,
+                 :subscriber => customer.is_subscriber?,
+                 :notes => voucher.showdate.show.patron_notes
                   )
   end
     

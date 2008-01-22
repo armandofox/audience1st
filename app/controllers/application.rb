@@ -201,23 +201,6 @@ EOEVAL
     end
   end
 
-  def get_payment_gateway_info(card_present=nil)
-    gwtype = APP_CONFIG[:gateway_type]
-    gwacct = Inflector.underscore(gwtype) +
-      (RAILS_ENV == 'production' ?
-       (card_present ? '_cp_account' : '_account') :
-       '_test_account')
-    gw =  APP_CONFIG[gwacct.to_sym]
-    # some gateways require a PEM, others don't.  if filename is nonempty,
-    # it names the file containing PEM; otherwise PEM not needed.
-    if gw['pemfile'] and !gw['pemfile'].empty?
-      gw['pem'] = File.read("#{RAILS_ROOT}/config/#{gw['pemfile']}")
-    end
-    #gw['gateway'] = Module.const_get(gwtype + 'Gateway')
-    gw['gateway'] = AuthorizedNetGateway
-    gw.symbolize_keys
-  end
-
   def download_to_excel(output,filename="data",timestamp=true)
     (filename << "_" << Time.now.strftime("%Y_%m_%d")) if timestamp
     send_data(output,:type => (request.user_agent =~ /windows/i ?
