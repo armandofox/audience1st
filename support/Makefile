@@ -20,7 +20,8 @@ RUBY	   = /usr/local/bin/ruby
 PERL	   = /usr/local/bin/perl
 MYSQL      = /usr/bin/mysql
 MYSQLDUMP  = /usr/bin/mysqldump
-S3	   = /home/audienc/s3sync/s3cmd.rb
+S3CONF	   = /home/audienc/.s3conf
+S3CMD	   = S3CONF=$(S3CONF) /home/audienc/s3sync/s3cmd.rb
 MYSQL_DB   = $(shell perl -ne 'print $$1 if /database: +(.*)$$/' $(APPROOT)/config/database.yml)
 MYSQL_PASS = $(shell perl -ne 'print $$1 if /password: +(.*)$$/' $(APPROOT)/config/database.yml)
 MYSQL_USER = $(shell perl -ne 'print $$1 if /username: +(.*)$$/' $(APPROOT)/config/database.yml)
