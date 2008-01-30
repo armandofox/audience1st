@@ -1,19 +1,33 @@
-%div[subscriber_voucher]
-  - if subscriber_voucher.reserved?
+%table#SubscriptionReservations
+  %tr
+    %th No. Tkts.
+    %th Show
+    %th Your Reservation Date
+    %th Actions
+  - vouchertypes.each_pair do |v,voucherset|
+    - showdate,vouchertype = v
+    - vouchers = voucherset.to_a
+    - voucherlist = vouchers.map { |v| v.id }.join(',')
+    - num = vouchers.length
     %tr
-      %td= subscriber_voucher.vouchertype.name
-      %td.c= subscriber_voucher.showdate.printable_date
-      / BUG this shouldn't appear if it's impossble to cancel this res
-      - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_reservation', :id => subscriber_voucher.id do
-        %td.c= submit_tag 'Click to Cancel', :disable_with => 'Cancelling...'
-  - else
-    %tr
-      %td= subscriber_voucher.vouchertype.name
-      - if (dates = subscriber_voucher.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
-        %td None of your vouchers are valid for this show
+      - if showdate.kind_of?(Showdate)
+        %td= num
+        %td= vouchertype.name
+        %td.c= showdate.printable_date
+        -# BUG this shouldn't appear if it's impossble to cancel this res
+        %td.c
+          - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_multiple'  do
+            = hidden_field_tag 'voucher_ids', voucherlist
+            = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...'
+      - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
         %td
+        %td= vouchertype.name
+        %td{:colspan=>2} None of your vouchers are valid for this show
       - else
-        - form_tag :controller => 'vouchers', :action => 'confirm_reservation', :id => subscriber_voucher do
+        - form_tag :controller => 'vouchers', :action => 'confirm_multiple' do
+          = hidden_field_tag 'voucher_ids', voucherlist
+          %td= select_tag 'number', options_for_select((1..num).to_a, num)
+          %td= vouchertype.name
           %td= select_tag 'showdate_id', content_tag(:option, "Select date...", :value => 0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
           %td= submit_tag 'Click to Confirm', :disable_with => 'Confirming...'
 

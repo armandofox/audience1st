@@ -4,12 +4,7 @@
 
 .pageDiv
   %h1 Reserve Regular Season Show Seats
-  %table#SubscriptionReservations
-    %tr
-      %th Show
-      %th Your Reservation
-      %th Actions
-    = render :partial => 'subscriber_voucher', :collection => @subscriber_vouchers.sort_by(&:vouchertype_id)
+  = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(@subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
 
 .pageDiv#additionalTickets
   %h1 Purchased Tickets

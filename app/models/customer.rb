@@ -13,12 +13,12 @@ class Customer < ActiveRecord::Base
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
   
   validates_uniqueness_of :login, :allow_nil => true
-  validates_length_of :login, :in => 3..30, :allow_nil => true
+  validates_length_of :login, :in => 3..50, :allow_nil => true
   
   validates_presence_of :first_name
-  validates_length_of :first_name, :within => 1..30
+  validates_length_of :first_name, :within => 1..50
   validates_presence_of :last_name
-  validates_length_of :last_name, :within => 1..30
+  validates_length_of :last_name, :within => 1..50
 
   validates_length_of :password, :in => 3..20, :allow_nil => true
   validates_confirmation_of :password

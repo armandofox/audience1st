@@ -5,8 +5,8 @@
     #shoppingCart.pageDiv
       %h1 Season Subscriptions Shopping Cart
       - form_tag :action => 'checkout' do
-        = render :partial => 'cart', :locals => {:editable => true, :redirect_to => 'subscribe_2008'}
-        = gen_button  'Empty Cart', {:action => 'empty_cart', :redirect_to => 'subscribe_2008'}
+        = render :partial => 'cart', :locals => {:editable => true, :redirect_to => 'subscribe'}
+        = gen_button  'Empty Cart', {:action => 'empty_cart', :redirect_to => 'subscribe'}
         = submit_tag 'Checkout'
   #subscriptionsMenus.pageDiv
     %h1 Subscriber Benefits
@@ -36,5 +36,5 @@
             = select_tag("subscription_qty", options_for_select((1..10).to_a))
             = submit_tag 'Add Subscriptions to Cart', :class => 'genButton'
 
-  = render :partial => 'donate', :locals => {:redirect_to => 'subscribe_2008' }
+  = render :partial => 'donate', :locals => {:redirect_to => 'subscribe' }
 

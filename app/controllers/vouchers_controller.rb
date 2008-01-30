@@ -116,6 +116,16 @@ class VouchersController < ApplicationController
     end
   end
   
+  def confirm_multiple
+    @is_admin = @gAdmin.is_walkup # really need to do this?? not in prefilter??
+    showdate = params[:showdate_id].to_i
+    num = params[:number].to_i
+    Voucher.find(params[:voucher_ids].split(",")).slice(0,num).each do |v|
+      v.reserve_for(showdate, logged_in_id, "", :ignore_cutoff => @is_admin)
+    end
+    redirect_to :controller => 'customers', :action => 'welcome'
+  end
+
   def confirm_reservation
     @voucher = Voucher.find(params[:id])
     @customer = @voucher.customer
@@ -163,10 +173,18 @@ class VouchersController < ApplicationController
     redirect_to :controller => 'customers', :action => 'welcome', :id => save_customer
   end
 
+  def cancel_multiple
+    params[:voucher_ids].split(",").each do |vid|
+      Voucher.find(vid).cancel(logged_in_id)
+    end
+    redirect_to :controller => 'customers', :action => 'welcome'
+  end
+    
+
   def cancel_reservation
     @v = Voucher.find(params[:id])
     unless @v.can_be_changed?(logged_in_id)
-      flash[:notice] = "This reservation is not changeable"
+      (flash[:notice] ||= "") << "This reservation is not changeable"
     else
       old_customer = @v.customer.clone
       if (old_showdate = @v.cancel(logged_in_id))
