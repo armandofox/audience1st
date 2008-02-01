@@ -4,21 +4,25 @@
     %th Show
     %th Your Reservation Date
     %th Actions
-  - vouchertypes.each_pair do |v,voucherset|
+  - vouchertypes.keys.sort { |a,b| group_subscriber_vouchers(a,b) }.each do |v|
     - showdate,vouchertype = v
+    - voucherset = vouchertypes[v]
     - vouchers = voucherset.to_a
     - voucherlist = vouchers.map { |v| v.id }.join(',')
     - num = vouchers.length
     %tr
-      - if showdate.kind_of?(Showdate)
-        %td= num
+      - if showdate
+        %td.c= num
         %td= vouchertype.name
         %td.c= showdate.printable_date
-        -# BUG this shouldn't appear if it's impossble to cancel this res
-        %td.c
-          - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_multiple'  do
-            = hidden_field_tag 'voucher_ids', voucherlist
-            = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...'
+        -# ALL vouchers must be cancellable to allow multi-cancel option.
+        - if @gAdmin.is_boxoffice || vouchers.all? { |v| v.can_be_changed? }
+          %td.c
+            - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_multiple'  do
+              = hidden_field_tag 'voucher_ids', voucherlist
+              = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...'
+        - else
+          %td
       - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
         %td
         %td= vouchertype.name
@@ -26,8 +30,12 @@
       - else
         - form_tag :controller => 'vouchers', :action => 'confirm_multiple' do
           = hidden_field_tag 'voucher_ids', voucherlist
-          %td= select_tag 'number', options_for_select((1..num).to_a, num)
+          - if num > 1
+            %td= select_tag 'number', options_for_select((1..num).to_a, num)
+          - else
+            %td.c 1
+            = hidden_field_tag 'number', 1
           %td= vouchertype.name
-          %td= select_tag 'showdate_id', content_tag(:option, "Select date...", :value => 0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
+          %td= select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation)
           %td= submit_tag 'Click to Confirm', :disable_with => 'Confirming...'
 

@@ -10,7 +10,7 @@ class Showdate < ActiveRecord::Base
 
   include Comparable
   def <=>(other_showdate)
-    thedate <=> other_showdate.thedate
+    other_showdate ? thedate <=> other_showdate.thedate : 1
   end
 
   def sales_by_type(vouchertype_id)

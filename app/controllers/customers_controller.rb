@@ -55,15 +55,8 @@ class CustomersController < ApplicationController
       # success
       session[:cid] = c.id
       c.update_attribute(:last_login,Time.now)
-      # is this an admin-enabled login?
-      if c.is_staff # the least privilege level that allows seeing other customer accts
-        (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
-        session[:admin_id] = c.id
-        action = 'list'
-      else
-        session[:admin_id] = nil
-        action = 'welcome'
-      end
+      # set redirect-to action based on whether this customer is an admin.
+      action = possibly_enable_admin(c)      
       if @checkout_in_progress
         redirect_to :controller => 'store', :action => 'checkout'
         return
@@ -103,11 +96,6 @@ class CustomersController < ApplicationController
     redirect_to :action => 'login'       # no separate logout screen.
   end
 
-  def test
-    flash[:notice] = "I am the flash"
-    redirect_to :action => 'welcome'
-  end
-
   # welcome screen: different for nonsubscribers vs. subscribers
   
   def welcome                   # for nonsubscribers
@@ -143,28 +131,8 @@ class CustomersController < ApplicationController
     end
     setup_for_welcome(@customer)
     @subscriber = true
-    
-    # ASSUME that within the context of a subscription, a given
-    # vouchertype is valid for AT MOST ONE production.  THis UI will 
-    # break otherwise.
-    # - select out SUBSCRIPTION vouchers. (ultimately need better way to
-    #   identify them - maybe is_bundle should be either 0 or the ID of
-    # the bundle from which it comes)  
-    # - partition these by vouchertype.
-    # - use valid_vouchers to find out for each *vouchertype* which 
-    #   SHOWDATES it's valid for.  This includes checkng showdates that
-    #   have already passed and ones that are sold out or capacity-maxed
-    #   for this vouchertype.
-    # - assert that all these showdates belong to the same show.
-    # - for each partition, pick any showdate, get its show, and assume
-    #   all vouchers of that same type are valid only for that same
-    #   show.
-    # - the object array passed to the view will be sorted in order of show
-    #   and each pair of elements [vt,showdate] will be a vouchertype to
-    #   display and a list of showdates to display.
-
     # separate vouchers into these categories:
-     #   unreserved subscriber vouchers, reserved subscriber vouchers, everything else
+    # unreserved subscriber vouchers, reserved subscriber vouchers, others
     @subscriber_vouchers, @other_vouchers = @vouchers.partition { |v| v.part_of_subscription? }
     @reserved_vouchers,@unreserved_vouchers = @subscriber_vouchers.partition { |v| v.reserved? }
     # find all shows whose run dates overlap the validity period of any voucher.
@@ -456,7 +424,38 @@ class CustomersController < ApplicationController
   end
 
 
+#   def toggle_admin
+#     if session[:admin_id]
+#       session[:save_admin] = session[:admin_id]
+#       disable_admin
+#       flash[:notice] = "Admin view temporarily disabled, " <<
+#         "click Toggle Admin to re-enable"
+#     elsif ((c = Customer.find_by_id(session[:admin_id])).is_staff rescue false)
+#       possibly_enable_admin(c)
+#       session[:save_admin] = false
+#     end
+#     redirect_to :controller => 'customers', :action => 'welcome'
+#   end
+
+  def disable_admin
+    session[:admin_id] = nil
+    redirect_to :controller => 'customers', :action => 'welcome'
+  end
+
   private
+
+
+  def possibly_enable_admin(c = Customer.generic_customer)
+    if c.is_staff # least privilege level that allows seeing other customer accts
+      (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
+      session[:admin_id] = c.id
+      action = 'list'
+    else
+      session[:admin_id] = nil
+      action = 'welcome'
+    end
+    action
+  end
 
   def setup_for_welcome(customer)
     @admin = current_admin
@@ -495,4 +494,6 @@ class CustomersController < ApplicationController
     redirect_to :action => :login
   end
   
+
+
 end

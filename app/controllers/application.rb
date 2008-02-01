@@ -179,7 +179,7 @@ EOEVAL
   # current_customer is only called from controller actions filtered by
   # is_logged_in, so the find should never fail.
   def current_customer
-    Customer.find_by_id(session[:cid].to_i)
+    Customer.find_by_id(session[:cid].to_i, :include => :vouchers)
   end
 
   # current_admin is called from controller actions filtered by is_logged_in,

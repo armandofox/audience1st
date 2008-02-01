@@ -49,7 +49,7 @@ class ValidVoucher < ActiveRecord::Base
     if (res = sold_out_or_date_invalid(sd,ignore_cutoff))
       av.howmany = 0
       av.explanation = res
-      av.staff_only = false
+      av.staff_only = true
       return av
     end
     # Find the valid_vouchers, if any, that make this vouchertype eligible
@@ -58,7 +58,8 @@ class ValidVoucher < ActiveRecord::Base
     unless redeeming
       return av unless  check_visible_to(av)
     end
-    vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
+    #vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
+    vv  = vtype.valid_vouchers.select { |v| v.showdate_id == sd.id }
     if vv.empty?
       av.howmany = 0
       av.explanation = "Ticket type not valid for this performance"

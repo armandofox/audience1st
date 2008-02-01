@@ -6,7 +6,6 @@
 NAME	   = audienc
 HOME	   = /home/$(NAME)
 APPROOT    = $(HOME)/rails/$(VENUE)/current
-APPROOT_STAGE = $(HOME)/rails/$(VENUE)/stage
 BACKUPDIR = $(HOME)/backup/$(VENUE)
 TODAY	   = $(shell date +\%d)
 
@@ -20,12 +19,18 @@ RUBY	   = /usr/local/bin/ruby
 PERL	   = /usr/local/bin/perl
 MYSQL      = /usr/bin/mysql
 MYSQLDUMP  = /usr/bin/mysqldump
-S3CONF	   = /home/audienc/.s3conf
-S3CMD	   = S3CONF=$(S3CONF) /home/audienc/s3sync/s3cmd.rb
-MYSQL_DB   = $(shell perl -ne 'print $$1 if /database: +(.*)$$/' $(APPROOT)/config/database.yml)
-MYSQL_PASS = $(shell perl -ne 'print $$1 if /password: +(.*)$$/' $(APPROOT)/config/database.yml)
-MYSQL_USER = $(shell perl -ne 'print $$1 if /username: +(.*)$$/' $(APPROOT)/config/database.yml)
-MYSQL_OPTS = '-u$(MYSQL_USER)' '-p$(MYSQL_PASS)'
+S3CMD	   = S3CONF=$(HOME)/.s3conf /home/audienc/s3sync/s3cmd.rb
+A1_DB   = $(shell perl -ne 'print $$1 if /database: +(.*)$$/' $(APPROOT)/config/database.yml)
+A1_DBPASS = $(shell perl -ne 'print $$1 if /password: +(.*)$$/' $(APPROOT)/config/database.yml)
+A1_DBUSER = $(shell perl -ne 'print $$1 if /username: +(.*)$$/' $(APPROOT)/config/database.yml)
+A1_MYSQL_OPTS = '-u$(A1_DBUSER)' '-p$(A1_DBPASS)'
+
+#WP_CONFIG  = $(HOME)/public_html/$(VENUE)web/wp-config.php
+WP_CONFIG = /tmp/wp.php
+WP_DB      = $(shell perl -ne 'print $$1 if /DB_NAME.,\s*'"'([^']+"')/' $(WP_CONFIG))
+WP_DBPASS  =  $(shell perl -ne 'print $$1 if /DB_PASSWORD.,\s*'"'([^']+"')/' $(WP_CONFIG))
+WP_DBUSER  =  $(shell perl -ne 'print $$1 if /DB_USER.,\s*'"'([^']+"')/' $(WP_CONFIG))
+WP_MYSQL_OPTS = '-u$(WP_DBUSER)' '-p$(WP_DBPASS)'
 
 STATIC_TABLES = purchasemethods txn_types options 
 
@@ -47,14 +52,18 @@ nightly: clean_sessions notify_pending_followups kill_zombies backup
 monthly: rotate_logs
 
 clean_sessions:
-	@$(MYSQL) $(MYSQL_OPTS) -D$(MYSQL_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)
+	@$(MYSQL) $(A1_MYSQL_OPTS) -D$(A1_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)
 
-backup:
-	@$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) | $(GZIP) > $(BACKUPDIR)/$(TODAY).gz
-	@$(S3CMD) put a1_$(VENUE):db-$(TODAY).gz  $(BACKUPDIR)/$(TODAY).gz
+backup_db:
+	@$(MYSQLDUMP) $(A1_MYSQL_OPTS) $(A1_DB) | $(GZIP) > $(BACKUPDIR)/db-$(TODAY).gz
+	@$(S3CMD) put a1_$(VENUE):db-$(TODAY).gz  $(BACKUPDIR)/db-$(TODAY).gz
+
+backup_wp:
+	@$(MYSQLDUMP) $(WP_MYSQL_OPTS) $(WP_DB) | $(GZIP) > $(BACKUPDIR)/wp-$(TODAY).gz
+	@$(S3CMD) put a1_$(VENUE):wp-$(TODAY).gz  $(BACKUPDIR)/wp-$(TODAY).gz
 
 dump_static_data:
-	@$(MYSQLDUMP) $(MYSQL_OPTS) $(MYSQL_DB) $(STATIC_TABLES) > static.sql
+	@$(MYSQLDUMP) $(MYSQL_OPTS) $(A1_DB) $(STATIC_TABLES) > static.sql
 
 rotate_logs:
 	@$(PERL) $(BINDIR)/rotate_logs $(BACKUPDIR) $(QUIET)

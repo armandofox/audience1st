@@ -2,18 +2,17 @@
   %tr
     %td.l#welcome
       Welcome,
-      - if logged_in.is_staff
-        %span{:class=>:adminField} Administrator
-      = logged_in.full_name
-      = h("<#{logged_in.login}>")
-      = link_to 'Log Out', {:controller=>'customers', :action=>'logout'}, {:class => 'genButton'} 
-      - if Customer.can_ignore_cutoff?(logged_in.id) 
-        %br/
-        %span{:class=>:adminField} Sales cutoff times will be ignored
+      - if @gAdmin.is_staff
+        %span.adminField= h("#{logged_in.full_name} <#{logged_in.login}>")
+        = button_to 'Disable Admin', :controller => 'customers', :action => 'disable_admin'
+      - else
+        = h("#{logged_in.full_name} <#{logged_in.login}>")
+      = button_to 'Log Out', {:controller=>'customers', :action=>'logout'}, {:class => 'genButton'} 
+
     %td.r
-      - if logged_in.is_staff 
+      - if @gAdmin.is_staff 
         = link_to 'Help', APP_CONFIG[:help_manual], {:class=>:adminButton, :target=>:_blank}
       = Time.now.to_formatted_s(:short)
-      - if logged_in.is_admin 
-        %br/
+      - if @gAdmin.is_admin 
+        %br
         = "#{h Session.num_active} users logged in"

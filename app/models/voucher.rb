@@ -197,7 +197,7 @@ class Voucher < ActiveRecord::Base
   end
 
   def redeemable_for_show?(show,ignore_cutoff = false)
-    show = Show.find(show) unless show.kind_of?(Show)
+    show = Show.find(show, :include => :showdates) unless show.kind_of?(Show)
     show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
   end
 
