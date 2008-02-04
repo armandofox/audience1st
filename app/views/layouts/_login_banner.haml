@@ -4,7 +4,7 @@
       Welcome,
       - if @gAdmin.is_staff
         %span.adminField= h("#{logged_in.full_name} <#{logged_in.login}>")
-        = button_to 'Disable Admin', :controller => 'customers', :action => 'disable_admin'
+        = button_to('Disable Admin', :controller => 'customers', :action => 'disable_admin') if controller.controller_name =~ /customer|store/
       - else
         = h("#{logged_in.full_name} <#{logged_in.login}>")
       = button_to 'Log Out', {:controller=>'customers', :action=>'logout'}, {:class => 'genButton'} 

@@ -305,12 +305,12 @@ EOQ
       redirect_to :action => 'index'
       return
     end
-    @cash_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('walk_cash'))
+    @cash_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('box_cash'))
     @cash_tix_types = {}
     @cash_tix.each do |v|
       @cash_tix_types[v.vouchertype] = 1 + (@cash_tix_types[v.vouchertype] || 0)
     end
-    @cc_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('walk_cc'))
+    @cc_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('box_cc'))
     @cc_tix_types = {}
     @cc_tix.each do |v|
       @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)

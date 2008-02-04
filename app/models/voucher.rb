@@ -50,12 +50,12 @@ class Voucher < ActiveRecord::Base
                                  :showdate_id => showdate,
                                  :promo_code => promocode,
                                  :comments => comment,
-                                 :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))
+                                 :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
   end
 
   def self.anonymous_bundle_for(vouchertype)
     v = Voucher.new_from_vouchertype(vouchertype,
-                                     :purchasemethod_id => Purchasemethod.get_type_by_name('cust_web'))                    
+                                     :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))                    
   end
 
   

@@ -357,11 +357,11 @@ class StoreController < ApplicationController
         flash[:notice] = "Transaction approved (#{tid})<br/>"
       end
       tid = 0
-      howpurchased = Purchasemethod.get_type_by_name('walk_cc')
+      howpurchased = Purchasemethod.get_type_by_name('box_cc')
       flash[:notice] = "Credit card purchase recorded, "
     else
       tid = 0
-      howpurchased = Purchasemethod.get_type_by_name('walk_cash')
+      howpurchased = Purchasemethod.get_type_by_name('box_cash')
       flash[:notice] = "Cash purchase recorded, "
     end
     #

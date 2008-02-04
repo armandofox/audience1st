@@ -24,7 +24,7 @@
         <% else %>
         <td><%= nsales %> / <%= v.max_sales_for_type %> </td>
         <% end %>
-       <td><%= link_to v.vouchertype.name, { :controller => 'valid_vouchers', :action => 'edit', :id => v.id } %>
+       <td><%= link_to v.vouchertype.name_with_price, { :controller => 'valid_vouchers', :action => 'edit', :id => v.id } %>
            <%= '('+v.password+')' if (v.password > "") %></td>
        <td><%= fmt_date(v.start_sales) %> </td>
        <td><%= fmt_date(v.end_sales) %> </td>

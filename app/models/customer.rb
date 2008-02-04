@@ -163,7 +163,7 @@ class Customer < ActiveRecord::Base
   # add items to a customer's account - could be vouchers, record of a
   # donation, or purchased goods
 
-  def add_items(items, logged_in, howpurchased=Purchasemethod.get_type_by_name('cust_web'), comment='')
+  def add_items(items, logged_in, howpurchased=Purchasemethod.get_type_by_name('web_cc'), comment='')
     items.each do |v|
       if v.kind_of?(Voucher)
         v.processed_by = logged_in

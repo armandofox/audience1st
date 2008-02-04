@@ -33,6 +33,8 @@ class Setup < Test::Unit::TestCase
     walkup.update_attribute(:password, nil)
     # default donation fund
     DonationFund.create!(:name => "General Fund")
+    # default donation type
+    DonationType.create!(:name => "Cash")
   end
 
 end
