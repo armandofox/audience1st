@@ -11,8 +11,9 @@ class ExternalTicketOrder
   end
   
   def to_s
-    sprintf("#{@last_name},#{@first_name}: %2d of <%s> (order key %s) => %s",
-            qty, ticket_offer.vouchertype.name, order_key, status)
+    "#{@last_name},#{@first_name}: " +
+      sprintf("%2d of <%s> (order key %s) => %s",
+              qty, ticket_offer.vouchertype.name, order_key, status)
   end
     
   def process!(args={})

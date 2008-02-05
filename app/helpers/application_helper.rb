@@ -201,9 +201,9 @@ module ApplicationHelper
   def make_js_array(name,keys,values)
     s = "var #{name} = new Array();\n"
     collection.each do |elt|
-      s <<  sprintf("#{name}[\"%s\"] = '%s';\n",
-                    escape_javascript(elt.send(keymethod)),
-                    escape_javascript(elt.send(valuemethod)))
+      s <<  "#{name}" << sprintf("[\"%s\"] = '%s';\n",
+                                 escape_javascript(elt.send(keymethod)),
+                                 escape_javascript(elt.send(valuemethod)))
     end
   end
 

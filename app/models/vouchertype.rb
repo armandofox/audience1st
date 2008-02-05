@@ -79,7 +79,7 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def name_with_price
-    sprintf("#{self.name} - $%0.2f", self.price)
+    self.name + sprintf(" - $%0.2f", self.price)
   end
 
   # Override content_columns to not display included vouchers (since
