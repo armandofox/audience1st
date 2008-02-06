@@ -344,21 +344,4 @@ class Customer < ActiveRecord::Base
     return (self.street.blank? or self.city.blank? or self.state.blank? or self.zip.to_s.length < 5)
   end
   
-  def self.find_subs
-    sub2007 = (21..26).to_a + (29..32).to_a
-    sub2008 = (55..58).to_a
-
-    c = Customer.find_by_sql("SELECT DISTINCT c.* FROM customers c,vouchers v WHERE c.id=v.customer_id AND ((v.vouchertype_id >= 21 AND v.vouchertype_id <= 26) OR (v.vouchertype_id >= 29 AND v.vouchertype_id <= 32))")
-
-    puts "#{c.size} 2007 subscriber households"
-    c.reject! { |cu| cu.vouchers.any? { |v| sub2008.include?(v.vouchertype_id) } }
-    puts "#{c.size} who have NOT renewed 2008"
-    out = File.open('/tmp/csvout','wb') 
-    CSV::Writer.generate(out) do |csv|
-      c.each do |cu|
-        csv << [cu.first_name, cu.last_name, cu.street, cu.city, cu.state, cu.zip]
-      end
-    end
-    out.close
-  end
 end

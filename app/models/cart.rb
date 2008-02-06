@@ -23,7 +23,8 @@ class Cart
       case
       when i.kind_of?(Voucher)
         if i.showdate_id.to_i > 0
-          s=sprintf("$%6.2f  %s\n         %s - ticket #%d", i.vouchertype.price,
+          s=sprintf("$%6.2f  %s\n         %s - ticket #%d",
+                    i.vouchertype.price,
                     i.showdate.printable_name,
                     i.vouchertype.name, i.id)
           s << "\n         Seating request: #{i.comments}" unless i.comments.to_s.empty?
@@ -32,7 +33,8 @@ class Cart
           end
           s
         else
-          sprintf("$%6.2f  %s - ticket #%d",i.vouchertype.price,
+          sprintf("$%6.2f  %s - ticket #%d",
+                  i.vouchertype.price,
                   i.vouchertype.name,i.id)
         end
       when i.kind_of?(Donation)

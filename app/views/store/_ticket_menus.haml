@@ -17,7 +17,7 @@
       - else
         - @vouchertypes.each do |av|
           %tr
-            %td.label= av.vouchertype.name
+            %td.label= av.vouchertype.name_with_price
             %td.l= select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((0..[av.howmany,10].min).to_a))
       - unless @vouchertypes.empty?
         %tr
