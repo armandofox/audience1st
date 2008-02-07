@@ -96,7 +96,7 @@ Instead, please email #{Option.value(:help_email)} or call #{Option.value(:boxof
 Thanks for your patronage!
 
 #{Option.value(:venue)}
-hosted by Audience1st Inc.
+Powered by Audience1st
 
 EOS
 

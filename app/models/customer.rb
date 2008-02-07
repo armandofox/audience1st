@@ -339,6 +339,16 @@ class Customer < ActiveRecord::Base
   # check if mailing address appears valid.
   # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if 
   #bad address. 
+
+  def self.find_all_subscribers(order_by='last_name')
+    Customer.find_by_sql("SELECT DISTINCT " <<
+                         "c.first_name,c.last_name,c.street,c.city,c.state,c.zip " <<
+                         " FROM customers c JOIN vouchers v ON v.customer_id=c.id " <<
+                         " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
+                         " WHERE vt.is_subscription=1 AND " <<
+                         "vt.valid_date <= NOW() AND vt.expiration_date >= NOW() " <<
+                         " ORDER BY #{order_by}")
+  end
   
   def invalid_mailing_address?
     return (self.street.blank? or self.city.blank? or self.state.blank? or self.zip.to_s.length < 5)

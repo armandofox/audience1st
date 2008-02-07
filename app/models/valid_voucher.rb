@@ -56,7 +56,7 @@ class ValidVoucher < ActiveRecord::Base
     vtype = Vouchertype.find(vtype, :include => :valid_vouchers) unless
       vtype.kind_of?(Vouchertype)
     unless redeeming
-      return av unless  check_visible_to(av)
+      return av unless  check_visible_to(av,ignore_cutoff)
     end
     #vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
     vv  = vtype.valid_vouchers.select { |v| v.showdate_id == sd.id }
@@ -82,17 +82,17 @@ class ValidVoucher < ActiveRecord::Base
 
   private
 
-  def self.check_visible_to(av)
+  def self.check_visible_to(av, admin=false)
     cust = av.customer
     av.staff_only = true        # only staff can see reason for reject
     case av.vouchertype.offer_public
-    when -1
+    when -1                     # external reseller
       av.explanation = "Sold by external reseller only"
       return false
-    when 0
+    when 0                      # box office use only
       av.explanation = "Not for customer purchase"
-      return false
-    when 1
+      return (admin && av.vouchertype.price.to_f > 0.0) # don't show comps.
+    when 1                      # subscribers only
       av.explanation = "Subscribers only"
       av.staff_only = false     # ok to show this to customer
       return cust.is_subscriber?
