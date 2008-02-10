@@ -118,6 +118,7 @@ class VouchersController < ApplicationController
       (showdate = params[:showdate_id].to_i).zero?
     num = params[:number].to_i
     count = 0
+    lasterr = ''
     Voucher.find(params[:voucher_ids].split(",")).slice(0,num).each do |v|
       if v.reserve_for(showdate, logged_in_id, "", :ignore_cutoff => @is_admin)
         count += 1
@@ -136,7 +137,7 @@ class VouchersController < ApplicationController
       email_confirmation(:confirm_reservation, @customer, showdate, count)
     else
       flash[:notice] = "Some of your reservations could not be completed " <<
-        "(#{v.comments}).  Please check the results below carefully before " <<
+        "(#{lasterr}).  Please check the results below carefully before " <<
         "continuing."
       email_confirmation(:confirm_reservation, @customer, showdate, count)
     end
