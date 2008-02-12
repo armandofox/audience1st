@@ -163,15 +163,17 @@ class ApplicationController < ActionController::Base
   Customer.roles.each do |r|
     eval <<EOEVAL 
     def is_#{r}
-      (c = Customer.find_by_id(session[:admin_id])) && c.is_#{r}
+      current_admin.is_#{r}
+      # (c = Customer.find_by_id(session[:admin_id])) && c.is_#{r}
     end
     def is_#{r}_filter
-      unless is_#{r}
+      unless current_admin.is_#{r}
         flash[:notice] = 'You must have at least #{Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
         redirect_to :controller => 'customers', :action => 'login'
-        false
+        return false
       end
+      return true
     end
 EOEVAL
   end

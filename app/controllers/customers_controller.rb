@@ -359,7 +359,7 @@ class CustomersController < ApplicationController
       if @gCheckoutInProgress
         redirect_to :controller => 'store', :action => 'checkout'
       else
-        redirect_to :action => 'welcome'
+        redirect_to :action => 'switch_to', :id => @customer.id
       end
     else
       flash[:notice] << 'Errors creating account'

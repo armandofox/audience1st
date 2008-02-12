@@ -29,16 +29,17 @@
     = link_to "COPPA", "http://www.ftc.gov/ogc/coppa1.htm"
     you may not use this site. 
 
-  - unless @is_admin
+  - if @is_admin
     - form_tag :action => 'create' do
-      = render :partial => 'form'
-      = render :partial => 'password'
-      = submit_tag "Create My Account"
-      = gen_button 'Cancel', :action => 'login'
-  - else
-    - form_tag :action => 'user_create' do
       = render :partial => 'form'
       = render :partial => 'form_admin'
       = render :partial => 'password' 
       = submit_tag "Create New User Account"
       = gen_button  'Cancel', :action => :list
+  - else      
+    - form_tag :action => 'user_create' do
+      = render :partial => 'form'
+      = render :partial => 'password'
+      = submit_tag "Create My Account"
+      = gen_button 'Cancel', :action => 'login'
+
