@@ -103,12 +103,7 @@ class ReportController < ApplicationController
   def customer_list
     order_by = (params[:sort_by_zip] ? 'zip, last_name' : 'last_name, zip')
     if params[:subscribers_only]
-      # @c = Customer.find(:all, :order => order_by, :include => :vouchers).delete_if { |c| !c.is_subscriber? }
-      @c = Customer.find_by_sql("SELECT DISTINCT c.first_name,c.last_name,c.street,c.city,c.state,c.zip " <<
-                                 " FROM customers c JOIN vouchers v ON v.customer_id=c.id " <<
-                                 " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
-                                " WHERE vt.is_subscription=1 AND vt.valid_date <= NOW() AND vt.expiration_date >= NOW() " <<
-                                " ORDER BY #{order_by}")
+      @c = Customer.find_all_subscribers(order_by)
     else
       @c = Customer.find(:all, :order => order_by)
     end
@@ -122,16 +117,16 @@ class ReportController < ApplicationController
 
   def advance_sales
     case params[:showdate_id]
-    when /current/i
-      @shows = [Show.find(:first,
-                          :conditions => ['closing_date >= ?', Date.today],
-                          :order => 'opening_date')]
     when /^(\d+)$/
       @shows = [Show.find_by_id($1)]
     when /future/i 
       @shows = Show.find(:all,
                          :conditions => ['closing_date >= ?', Date.today],
                          :order => 'opening_date')
+    when /current/i
+      @shows = [Show.find(:first,
+                          :conditions => ['closing_date >= ?', Date.today],
+                          :order => 'opening_date')]
     else
       @shows = Show.find(:all,:order => 'opening_date')
     end

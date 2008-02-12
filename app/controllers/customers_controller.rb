@@ -11,7 +11,9 @@ class CustomersController < ApplicationController
                 :only=>%w[welcome welcome_subscriber change_password edit update],
                 :redirect_to => {:action=>:login},
                 :add_to_flash => 'Please log in or create an account to view this page.')
-  before_filter :not_logged_in, :only => %w[user_create]
+  before_filter(:not_logged_in, :only => %w[user_create],
+                :redirect_to => {:action => :welcome},
+                :add_to_flash => "You appear to already be logged in. If this isn't you, please click the Log Out button.")
   
   # must be boxoffice to view other customer records or adding/removing vouchers
   before_filter :is_staff_filter, :only => %w[list switch_to search]

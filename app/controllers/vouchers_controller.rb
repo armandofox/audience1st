@@ -118,15 +118,12 @@ class VouchersController < ApplicationController
       (showdate = params[:showdate_id].to_i).zero?
     num = params[:number].to_i
     count = 0
-    lasterr = ''
+    lasterr = 'errors occurred making reservations'
     Voucher.find(params[:voucher_ids].split(",")).slice(0,num).each do |v|
       if v.reserve_for(showdate, logged_in_id, "", :ignore_cutoff => @is_admin)
         count += 1
       else
-        flash[:notice] ||=
-          (lasterr =
-           "Some reservations could not be completed (#{v.comments}). " <<
-          "Please review the results below carefully before continuing.")
+        lasterr = v.comments
       end
     end
     case count

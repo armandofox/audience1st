@@ -29,7 +29,7 @@
     = link_to "COPPA", "http://www.ftc.gov/ogc/coppa1.htm"
     you may not use this site. 
 
-  - if @is_admin
+  - unless @is_admin
     - form_tag :action => 'create' do
       = render :partial => 'form'
       = render :partial => 'password'
