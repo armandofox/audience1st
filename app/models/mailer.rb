@@ -63,7 +63,7 @@ class Mailer < ActionMailer::Base
     #url_for(:controller => 'visits', :action=>'list', :id=>v.customer)
     #end
     @recipients = who
-    @from = 'AutoConfirm@audience1st.com' # bug
+    @from = @@from_addr # bug
     @headers = {}
     @subject = "Followup visits reminder"
     @body = {
@@ -75,7 +75,7 @@ class Mailer < ActionMailer::Base
 
   def sending_to(recipient)
     @recipients = recipient.kind_of?(Customer)? recipient.login : recipient.to_s
-    @from = 'AutoConfirm@audience1st.com'
+    @from = @@from_addr
     @headers = {}
     @subject = "#{Option.value(:venue)} - "
     @body = {
@@ -86,6 +86,8 @@ class Mailer < ActionMailer::Base
     }
   end
   
+  @@from_addr = "AutoConfirm-#{Option.value(:venue_shortname)}@audience1st.com"
+
   @@contact_string = <<EOS
 If this isn't correct, or if you have questions about your order or
 any problems using our Web site, PLEASE DO NOT REPLY to this email
