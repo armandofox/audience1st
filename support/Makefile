@@ -45,10 +45,10 @@ BINDIR     = $(APPROOT)/support
 # see error messages.  if you comment this out, you'll get those emails.
 # QUIET      =  >/dev/null 2>&1
 
-.PHONY: all nightly monthly clean_sessions backup run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
+.PHONY: all nightly monthly clean_sessions backup_db backup_wp run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
-nightly: clean_sessions notify_pending_followups kill_zombies backup
+nightly: clean_sessions notify_pending_followups kill_zombies backup_db 
 monthly: rotate_logs
 
 clean_sessions:

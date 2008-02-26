@@ -6,10 +6,14 @@ class DonationFixup < ActiveRecord::Migration
   # for all existing donations, set purchasemethod correctly:
   #   - if 
 
+  # other random schema improvements:
+  #  add a "landing page URL" field to Show info, for exporting calendar etc
+  
+
   def self.up
-    Purchasemethod.create!(:shortdesc => 'in_kind',
-                           :description => "In Kind Goods/Services")
-    ActiveRecord::Base.connection.execute "INSERT INTO `purchasemethods` (`id`,`description`,`shortdesc`) VALUES ('1','Web - Credit Card','web_cc')"
+    ActiveRecord::Base.connection.execute "INSERT INTO `purchasemethods` (`id`,`description`,`shortdesc`) VALUES ('10','In-Kind Goods or Services', 'in_kind')"
+    add_column :shows, :landing_page_url,:string,:null => true, :default =>nil
+    change_column :options, :value, :text
   end
 
   def self.down

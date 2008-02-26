@@ -246,6 +246,7 @@ class Voucher < ActiveRecord::Base
         self.showdate = Showdate.find(showdate_id)
         self.comments = comments.to_s || ''
         self.processed_by = logged_in
+        self.sold_on = Time.now
         self.save!
         Txn.add_audit_record(:txn_type => 'res_made',
                              :customer_id => self.customer.id, 
