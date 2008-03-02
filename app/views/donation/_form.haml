@@ -4,38 +4,33 @@
 
 %table
   %tr
-    %td{:colspan=>2}
+    %td
       %label{:for=>:donation_date} Date
       %br/
       = date_select 'donation', 'date'
-    %td{:colspan=>2}
+    %td
       %label{:for=>:donation_amount} Amount or approx. dollar value
       %br/
       $ 
       = text_field 'donation', 'amount', 'size' => 8
   %tr
     %td
-      %label{:for=>:donation_donation_type} Donation type
-      %br/
-      = collection_select 'donation', 'donation_type_id', DonationType.find_all, 'id', 'name'
-    %td
-      %br/
-      = gen_button 'Add new',{:controller => 'donation_type', :action => 'new'}
-    %td
       %label{:for=>:donation_donation_fund} Donation fund
       %br/
       = collection_select 'donation', 'donation_fund_id', DonationFund.find(:all), 'id', 'name'
-    %td
-      %br/
       = gen_button 'Add new', {:controller => 'donation_fund', :action => 'new'}
+    %td
   %tr
     %td
       %label{:for=>:donation_purchasemethod} How effected
       %br/
       = collection_select 'donation', 'purchasemethod_id', Purchasemethod.find(:all), 'id', 'description'
     %td
+      %label{:for=>:donation_account_code} Account Code
+      %br/
+      = text_field 'donation', 'account_code'
   %tr
-    %td{:colspan=>4}
+    %td{:colspan=>2}
       %label{:for=>:donation_comment} Comment
       %br/
       = text_area 'donation', 'comment', 'cols' => 80, 'rows' => 2

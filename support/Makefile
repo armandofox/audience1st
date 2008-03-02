@@ -25,8 +25,8 @@ A1_DBPASS = $(shell perl -ne 'print $$1 if /password: +(.*)$$/' $(APPROOT)/confi
 A1_DBUSER = $(shell perl -ne 'print $$1 if /username: +(.*)$$/' $(APPROOT)/config/database.yml)
 A1_MYSQL_OPTS = '-u$(A1_DBUSER)' '-p$(A1_DBPASS)'
 
-#WP_CONFIG  = $(HOME)/public_html/$(VENUE)web/wp-config.php
-WP_CONFIG = /tmp/wp.php
+WP_CONFIG  = $(HOME)/public_html/$(VENUE)web/wp-config.php
+#WP_CONFIG = /tmp/wp.php
 WP_DB      = $(shell perl -ne 'print $$1 if /DB_NAME.,\s*'"'([^']+"')/' $(WP_CONFIG))
 WP_DBPASS  =  $(shell perl -ne 'print $$1 if /DB_PASSWORD.,\s*'"'([^']+"')/' $(WP_CONFIG))
 WP_DBUSER  =  $(shell perl -ne 'print $$1 if /DB_USER.,\s*'"'([^']+"')/' $(WP_CONFIG))
@@ -48,7 +48,7 @@ BINDIR     = $(APPROOT)/support
 .PHONY: all nightly monthly clean_sessions backup_db backup_wp run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
-nightly: clean_sessions notify_pending_followups kill_zombies backup_db 
+nightly: clean_sessions notify_pending_followups kill_zombies backup_db
 monthly: rotate_logs
 
 clean_sessions:

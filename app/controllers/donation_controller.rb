@@ -120,7 +120,7 @@ class DonationController < ApplicationController
   def export(donations)
     content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
     CSV::Writer.generate(output = '') do |csv|
-      csv << %w[last first street city state zip amount date type fund letterSent]
+      csv << %w[last first street city state zip amount date fund letterSent]
       donations.each do |d|
         csv << [d.customer.last_name.name_capitalize,
                 d.customer.first_name.name_capitalize,
@@ -130,7 +130,6 @@ class DonationController < ApplicationController
                 d.customer.zip,
                 d.amount,
                 d.date.to_formatted_s(:db),
-                d.donation_type.name,
                 d.donation_fund.name,
                 d.letter_sent]
       end
