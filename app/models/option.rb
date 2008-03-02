@@ -25,7 +25,7 @@ class Option < ActiveRecord::Base
       self.value.to_i
     when :float
       self.value.to_f
-    else
+    else                        # string or text field
       self.value
     end
   end

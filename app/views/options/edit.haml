@@ -10,7 +10,7 @@
             - if v.typ == :int
               %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 6, :maxlength => 6
             - else
-              %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 60, :maxlength => 254
+              %td.l= text_field_tag "values[#{v.name}]", v.value, :size => 60
   .pageDiv
     %h1 Save Changes
     %p

@@ -138,6 +138,7 @@ class Voucher < ActiveRecord::Base
       (vouchertype_id > 0 && vouchertype.is_bundle? ? vouchertype.name : "??")
   end
 
+  def amount ; self.price ; end
   def price
     self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
   end
