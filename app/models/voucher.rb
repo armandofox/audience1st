@@ -143,6 +143,8 @@ class Voucher < ActiveRecord::Base
     self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
   end
 
+  def account_code ; self.vouchertype.account_code ; end
+  
   def is_bundle?
     self.vouchertype.kind_of?(Vouchertype) && self.vouchertype.is_bundle?
   end

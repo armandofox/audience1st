@@ -67,7 +67,7 @@ class DonationController < ApplicationController
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label
-      export(@things)
+      export(@things.select { |thing| thing.kind_of?(Donation) })
     end
   end
 
@@ -120,7 +120,7 @@ class DonationController < ApplicationController
   def export(donations)
     content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
     CSV::Writer.generate(output = '') do |csv|
-      csv << %w[last first street city state zip amount date fund letterSent]
+      csv << %w[last first street city state zip amount date code fund letterSent]
       donations.each do |d|
         csv << [d.customer.last_name.name_capitalize,
                 d.customer.first_name.name_capitalize,
@@ -130,6 +130,7 @@ class DonationController < ApplicationController
                 d.customer.zip,
                 d.amount,
                 d.date.to_formatted_s(:db),
+                d.account_code,
                 d.donation_fund.name,
                 d.letter_sent]
       end

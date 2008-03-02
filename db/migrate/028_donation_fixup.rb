@@ -32,7 +32,7 @@ EOQ2
     change_column :options, :typ, :enum, :limit => [:int,:string,:email,:float,:text], :null => false, :default => :string
     # set some of the options to :text
     [3020,3030,3040,3050,3060,3070,3080].each do |id|
-      Option.find(id).update_attribute(:typ => :text)
+      Option.find(id).update_attribute(:typ, :text)
     end
   end
 
