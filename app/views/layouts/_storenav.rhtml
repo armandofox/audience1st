@@ -1,35 +1,37 @@
-<ul id="storeNav">
-  <%= nav_tabs(['Buy~Tickets', :store, :index], 
-               ['My~Tickets', :customers, :welcome], 
-               ['Contact~Info', :customers, :edit] ) %>
-  <% if @gAdmin.is_staff %>
-  <%= nav_tabs(['Walkup~Sales', :store, :walkup],
-               ['Customers', :customers, :list],
-               ['Shows', :shows, :list],
-               ['Voucher~Types', :vouchertypes, :list],
-               ['Reports', :report, :index],
-               ['Donations', :donation, :list]) %>
-  <% end %>
+<ul id="store_nav">
+  <%= nav_tabs(['Buy Tickets', :store, :index], 
+               ['My Tickets', :customers, :welcome], 
+               ['Contact Info', :customers, :edit] ) %>
 </ul>
 
-<% if @gAdmin.is_staff && @gCustomer %>
+<% if @gAdmin.is_staff -%>
+  <ul id="staff_nav" class="clear">
+    <%= nav_tabs(['Walkup Sales', :store, :walkup],
+                 ['Customers', :customers, :list],
+                 ['Shows', :shows, :list],
+                 ['Voucher Types', :vouchertypes, :list],
+                 ['Reports', :report, :index],
+                 ['Donations', :donation, :list]) %>
+  </ul>
+<% end -%>
+<div class="clear"></div>
+<br />
 
-<p class="adminField">
-  <%= h("#{@gCustomer.full_name}'s Account:") %>
-  <%  buttons = [['Contact History', :visits, :list, {}],
-                 ['Prospecting Activities', :visits, :list_by_prospector, {}],
-                 ['Database Transactions',:txn, :list,{:params => {:txns_filter => c.id}}],
-                 ['Record donation',:donation,:new,{:customer => c}]] %>
-  <%  if @gAdmin.is_boxoffice_manager %>
-  <%    buttons.push(['Add Vouchers',:vouchers, :addvoucher,{:customer => c}],
-                 ['Force Classic View', :customers, :welcome, {:force_classic => 1}],
-                 ['Donation & Purchase History', :donation, :list,
-                  {:use_cid => 1, :commit => 'Go', :cid => c,
-                    :show_vouchers => true}]) %>
-  <% end %>
-  <%= button_bar(buttons) %>
-</p>
-
-<% end %>
-<p class="clearboth"/>
-
+<% if @gAdmin.is_staff && @gCustomer -%>
+  <p class="admin_field">
+    <%= h("#{@gCustomer.full_name}'s Account:") %>
+    <%  buttons = [['Contact History', :visits, :list, {}],
+                   ['Prospecting Activities', :visits, :list_by_prospector, {}],
+                   ['Database Transactions',:txn, :list,{:params => {:txns_filter => c.id}}],
+                   ['Record donation',:donation,:new,{:customer => c}]] -%>
+    <%  if @gAdmin.is_boxoffice_manager -%>
+    <%    buttons.push(['Add Vouchers',:vouchers, :addvoucher,{:customer => c}],
+                   ['Force Classic View', :customers, :welcome, {:force_classic => 1}],
+                   ['Donation & Purchase History', :donation, :list,
+                    {:use_cid => 1, :commit => 'Go', :cid => c,
+                      :show_vouchers => true}]) -%>
+    <% end -%>
+    <%= button_bar(buttons) %>
+  </p>
+<% end -%>
+<div class="clear"></div>

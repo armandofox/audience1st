@@ -1,0 +1,404 @@
+/* 
+  @file = generic.css
+  @author =  Arthur Klepchukov 
+  @modified = 02.10.2008
+  @for = Audience 1st ticket-buying software
+*/
+
+/*
+  Eric Meyer's CSS Reset Reloaded ///////////////////////////////////////////////////////////
+  http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+body {
+	line-height: 1;
+	color: black;
+	background: white;
+}
+ol, ul {
+	list-style: none;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {
+	text-align: left;
+	font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+}
+blockquote, q {
+	quotes: "" "";
+}
+
+/*
+  Baseline styles ///////////////////////////////////////////////////////////
+*/
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+body.testing { 
+  border: 4px solid red;
+  margin: 4px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  line-height: 1.4em;
+}
+h1 {
+  font-size: 1.8em;
+  margin: 10px 0;
+  padding: 0;
+}
+h2 {
+  font-size: 1.5em;
+  margin: 6px 0;
+  padding: 0;
+}
+h3 {
+  font-size: 1.3em;
+}
+h4 {
+  font-size: 1.2em;
+}
+h5 {
+  font-size: 1.1em;
+}
+h6 {
+  font-size: 1.0em;
+}
+
+p {
+  margin: 10px 0;
+}
+
+strong {
+  font-weight: bold;
+}
+em {
+  font-style: italic;
+}
+
+fieldset {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+dt {
+  font-weight: bold;
+}
+dd {
+  margin: 0;
+  padding-left: 20px;
+}
+
+label {
+  margin: 0;
+  padding-right: 5px;
+  float: left;
+  clear: left;
+  width: 150px;
+  text-align: right;
+  font-size: 0.9em;
+}
+
+thead {
+  background-color: #EEE;
+  color: black;
+}
+th {
+  margin: 0;
+  padding: 3px;
+  font-weight: bold;
+}
+#customerVoucherList tbody td {
+  border-bottom: 3px solid #CCC;
+}
+
+.center {
+  text-align: center;
+}
+.small {
+  font-size: 0.8em;
+}
+.clear {
+  clear: both;
+}
+.no_float {
+  float: none;
+  width: 100%;
+}
+.feedback {
+  margin: 0;
+  padding: 5px;
+  background-color: #FEA;
+  color: #F50;
+}
+.notice {
+  margin: 3px 0;
+  padding: 5px;
+  background-color: #EEE;
+  color: #666;
+  border: 1px solid #CCC;
+}
+.wide_button {
+  letter-spacing: 0.25em;
+  width: 150px;
+}
+.wide_label {
+  width: 300px;
+}
+.even {}
+.odd {
+  background-color: #EEE;
+  color: inherit;
+}
+
+#outer_wrapper {
+  margin: 0 auto;
+  padding: 0;
+  width: 760px;
+  border: 1px solid #EEE;
+}
+#inner_wrapper {
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+}
+.full_width {
+  width: 740px;
+}
+
+#footer {
+  margin: 0;
+  padding: 20px;
+}
+
+#logged_in {
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 1em;
+  background-color: #EEE;
+  color: #444;
+}
+#logged_in_welcome {}
+#logged_in_details {
+  float: right;
+  width: 20%;
+  text-align: right;
+}
+.admin_field, .admin_button {
+  background-color: yellow; 
+}
+.indented {
+  margin: 5px 0 5px 150px;
+  padding: 0;
+}
+
+#store_nav, #staff_nav {
+  float: left;
+  width: 760px;
+}
+#store_nav { border-bottom: 3px double #999; }
+#store_nav li, #staff_nav li {
+  float: left;
+  border-right: 1px solid #666;
+}
+#store_nav li { border-top: 2px dashed #CCC; }
+#staff_nav li { border-bottom: 2px dashed #CCC; }
+#store_nav li a, #staff_nav li a {
+  margin: 0;
+  padding: 10px 5px 3px 5px;
+  display: block;
+  float: left;
+  font-weight: bold;
+  font-family: serif;
+  font-variant: small-caps;
+  text-decoration: none;
+}
+#store_nav li a {
+  background: url('/images/tab_out_bg.gif') repeat-x top left;
+  color: #222;
+}
+#staff_nav li a {
+  background: url('/images/tab_over_bg.gif') repeat-x bottom left;
+  color: #222;
+}
+#store_nav li a:hover {
+  background: url('/images/tab_over_bg.gif') repeat-x bottom left;
+  color: #444;
+}
+#staff_nav li a:hover {
+  background: url('/images/tab_out_bg.gif') repeat-x top left;
+  color: #444;
+}
+
+/*
+  Cart styles ///////////////////////////////////////////////////////////
+*/
+div#cart {
+  margin: 5px 0;
+  padding: 10px;
+  border: 3px double #CCC;
+}
+p#empty_cart {
+  
+}
+ol#cart_items { }
+li.cart_item {
+  margin: 0;
+  padding: 3px;
+}
+.price_and_actions {
+  margin: 0;
+  padding-left: 5px;
+  width: 20%;
+  float: right;
+}
+.price_and_actions .actions {
+  float: right;
+}
+.cart_item_price { }
+span.cart_item_desc {
+  display: block;
+}
+.voucher_show_name {
+  text-decoration: underline;
+}
+.voucher_show_date {
+  font-style: italic;
+}
+.voucher_type {
+  margin: 0;
+  padding: 0 3px;
+  background-color: transparent;
+  color: #888;
+}
+.promo_code { }
+.donation_name {
+  background-color: transparent;
+  color: green;
+  font-weight: bold;
+}
+#cart_total {
+  margin: 0;
+  padding: 2px;
+  background-color: #999;
+  color: white;
+  border: 1px solid #EEE;
+}
+#total_price {
+  display: block;
+  float: right;
+  width: 20%;
+}
+
+
+/*
+  Page-specific styles ///////////////////////////////////////////////////////////
+*/
+.page_heading {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 5px double black;
+}
+h2.subscription_msg {
+  margin: 0;
+  padding: 10px;
+  background-color: #EEE;
+  color: #057;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 1.1em;
+  text-align: center;
+}
+.subscription_msg2 {
+  margin-top: 3px;
+  padding: 0;
+  font-size: 0.9em;
+  text-align: center;
+}
+
+#have_account {
+  margin: 0;
+  padding: 10px;
+  
+  float: left;
+  width: 475px;
+  
+  /*border: 1px solid red;*/
+  border-right: 5px double black;
+}
+#new_customer {
+  margin: 0;
+  padding: 10px;
+  
+  float: left;
+  width: 200px;
+  
+  /*border: 1px solid green;*/
+}
+
+fieldset#FAQ {
+  border: 1px solid red;
+}
+
+fieldset#admin_form, fieldset#admin_form legend {
+  background-color: yellow;
+  color: black;
+  border: 1px solid black;
+}
+
+#ticket_menus {
+  margin-top: 20px;
+  padding: 0;
+}
+#ticket_menus label {
+  width: 300px;
+}
+#ticket_menus #add_to_cart {
+  margin-left: 300px;
+  padding: 0;
+}
+
+#donate {
+  margin: 0 0 20px 0;
+  padding: 10px 0;
+  background-color: #9E9;
+}
+#donate_info {
+  margin: 0 auto 10px auto;
+  padding: 5px;
+  width: 400px; 
+  background-color: #EEE;
+  color: black;
+  border: 1px solid green;
+}

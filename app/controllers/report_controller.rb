@@ -216,11 +216,10 @@ class ReportController < ApplicationController
            @from, @to, Customer.walkup_customer.id]
     @subs_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
     # last, all the Donations
-    sql = ["SELECT dt.name,dt.account_code,SUM(d.amount) " <<
-           "FROM donations d" <<
-           "  INNER JOIN donation_types dt ON d.donation_type_id = dt.id " <<
+    sql = ["SELECT df.name,d.account_code,SUM(d.amount) " <<
+           "FROM donations d,donation_funds df " <<
            "WHERE d.date BETWEEN ? AND ? " <<
-           "GROUP BY dt.account_code,dt.name",
+           "GROUP BY d.purchasemethod_id",
            @from, @to]
     @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
   end
@@ -314,6 +313,10 @@ EOQ
     @cc_tix.each do |v|
       @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)
     end
+  end
+
+  def invoice
+    
   end
   
   private

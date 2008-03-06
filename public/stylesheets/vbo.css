@@ -1,32 +1,11 @@
-body { background-color: #fff; color: #333; }
-
-body, p, ol, ul, td {
-  font-family: "helvetica narrow", "arial narrow", arial, helvetica, sans-serif;
-  line-height: 1.25em;
-  font-size:   small;
-  }
-* html body { 
-  font-size: x-small; /* workaround IE5/Win bug */
-  f\ont-size: small;  /* for other IE versions */
-  }
-
-body.testing { 
-  border: solid;
-  border-width: thick;
-  border-color: red;
-}
 
 table { 
   border: 0;
- }
-
-td.label { 
-  text-align: right;
 }
 
 input[type="submit"] { 
   display: inline;
- }
+}
 
 .clearboth {
   clear: both;
@@ -35,7 +14,7 @@ input[type="submit"] {
 .strong { 
   font-weight: bold;
   color: red;
- }
+}
 
 .maincolumn { 
   border: none;
@@ -116,12 +95,6 @@ a.subHead { color: blue; text-decoration: none; }
   border: 2px solid red;
  }
 
-table { 
-  border: 0;
-  background-color: white;
-  margin: 10px 10px;
- }
-
 submit { 
   background-color: #eeeeee;
   font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -156,31 +129,6 @@ submit:hover {
   border: none;
 }
 
-.genButton { 
-  background-color: #e0e0e0;
-  color: black;
-  line-height: 1.5em;
-  border: 1px solid gray;  
-  padding: 2px;
-  text-align: center;
-}
-
-.adminButton { 
-  background-color: yellow;
-  line-height: 1.5em;
-  color: black;
-  text-align: center;
-  border: 1px solid black;
-  padding: 2px;
- }
-
-.navButton { 
-  background-color: #e0e0e0;
-  color: black;
-  font-size: 90%;
-  padding: 1px;
-}
-
 .adminField { 
    clear: both;
    padding: 2px 10px;
@@ -200,11 +148,6 @@ submit:hover {
  }
 
 
-
-th { 
-  background-color: #555555; 
-  color: #ffffff;
-}
 .oddRow { background-color: #ffffff; }
 .evenRow { background-color: #e7e7e7; }
 .totalsRow { 
@@ -263,76 +206,8 @@ th {
   margin: 2px 2px;
  }
 
-.pageDiv { 
-  border: 1px solid black;
-  margin: 5px 5px;
-  background-color: #f5f0e2;
-  padding: 0 10px 20px 20px;
-  color: #8d3127;
- }
-
-.pageDiv h1 { 
-  background-color: #d3bf8e;
-  color: #872b21;
-  font-size: 110%;
-  line-height: 0.75;
-  padding: 4px 3px;
-  margin:  0 -10px 0 -20px;
- }
-
 #loginDiv { 
   float: left;
- }
-
-#storeNav { 
-  float: left;
-  width: 100%;
-  margin: 0 0 10px 0;
-  padding: 10px 0 0 10px;
-  list-style: none;
-  border-bottom: 1px solid gray;
- }
-
-#storeNav li.disabled { 
-  float: left;
-  display: block;
-  text-align: center;
-  margin: 0 4px 0 0;
-  padding: 4px 8px;
-  border: 1px solid gray;
-  border-bottom: none;
-  font-family: "Arial Narrow", sans-serif;
-  font-size: larger;
-  color: #ccc;
-}
-
-#storeNav li { 
-  float: left;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  font-family: "Arial Narrow", sans-serif;
-  font-size: larger;
- }
-
-
-#storeNav a { 
-  float: left;
-  display: block;
-  margin: 0 4px 0 0;
-  padding: 4px 8px;
-  color: #333;
-  text-decoration: none;
-  border: 1px solid gray;
-  border-bottom: none;
- }
-
-#storeNav a:hover, body#store_index #t_store_index, body#customers_welcome #t_customers_welcome, body#customers_edit #t_customers_edit, body#store_walkup #t_store_walkup, body#customers_list #t_customers_list, body#shows_list #t_shows_list, body#report_index #t_report_index, body#donation_list #t_donation_list, body#vouchertypes_list #t_vouchertypes_list { 
-  background:  #eee;
-  position: relative;
-  top: 1px;
-  border-color: black;
-  border-bottom-color: white;
  }
 
 div dt { 
@@ -425,24 +300,6 @@ div.progressBar div.background {
 .top { 
   vertical-align: top;
 }
-
-#store .showInfo { 
-  color: blue;
-  font-weight: bold;
- }
-
-.subscriberVouchertype { 
-  color: blue;
-  font-weight: bold;
- }
-
-#footer * { 
-  text-align: center;
-  clear: both;
-  border-top: 2px ridge #888;
-  font-family: verdana, helvetica, sans-serif;
-  color: #333;
- }
 
 /* Elements on specific pages */
 
