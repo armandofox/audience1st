@@ -5,7 +5,7 @@
     %td=h vtype.name
     %td=h ntix
     %td=sprintf("%.02f",p=vtype.price)
-    %td=sprintf("%.02f",p*ntix)
+    %td.currency= number_to_currency(p*ntix)
   -total += ntix
   -tprice += (p*ntix)
   -end
@@ -13,4 +13,4 @@
     %td= "TOTAL #{label}"
     %td= total
     %td
-    %td= sprintf("%.02f", tprice)
+    %td.currency= number_to_currency(tprice)

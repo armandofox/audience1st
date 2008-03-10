@@ -19,10 +19,10 @@
         %td= v.customer.full_name
         %td= v.showdate.printable_name if v.showdate.kind_of?(Showdate)
         %td= v.vouchertype.name
-        %td.r= number_to_currency(v.vouchertype.price)
+        %td.currency= number_to_currency(v.vouchertype.price)
         %td.c= @daily_sales[k].size
         - nsold += @daily_sales[k].size
-        %td.r= number_to_currency(t = v.vouchertype.price * @daily_sales[k].size)
+        %td.currency= number_to_currency(t = v.vouchertype.price * @daily_sales[k].size)
         - total += t
         %td= v.purchasemethod.description
         %td= v.processed_by_name if (v.processed_by != v.customer.id)
@@ -31,4 +31,4 @@
       %td.r{:colspan=>3} # Unique customers: 
       %td= @nunique
       %td= nsold
-      %td= number_to_currency(total)
+      %td.currency= number_to_currency(total)

@@ -7,5 +7,10 @@ module ReportHelper
   def select_have_or_have_not(positive="Have",negative="Have not")
     options_for_select([[positive,"1"],[negative,""]])
   end
-  
+
+  def vouchertypes_for_account_code(acc_code)
+    "Account code #{acc_code}:\n" <<
+      Vouchertype.find_all_by_account_code(acc_code).map { |vt| vt.name }.join("\n")
+  end
+
 end

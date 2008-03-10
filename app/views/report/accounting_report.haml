@@ -1,31 +1,21 @@
 .pageDiv
   %h1 
-    Accounting Report for 
+    Reconciliation Report for 
     = @from.to_formatted_s(:date_only)
     to
     = @to.to_formatted_s(:date_only)
-  %table
     - total = 0.0
-    - [["Shows", @show_txns], ["Subscriptions", @subs_txns], ["Donations", @donation_txns]].each do |grp| 
-      - label,txns = grp
-      - subtotal = 0.0
-      %tr
-        %th Code
-        %th= label
-        %th Gross rcpts
-        - txns.each do |t|
-          %tr{:class=>cycle(:evenRow,:oddRow)}
-            %td= link_to_function t[0], "alert('" << escape_javascript(@vtypes_for_acc_code[t[0]]) << "')"
-            %td= h(t[1])
-            %td.r= number_to_currency(t[2])
-            - subtotal += t[2].to_f
-      %tr
-        %td
-        %td
-        %td.totalsRow.r= number_to_currency(subtotal)
-        - total += subtotal
-    %tr.totalsRow
-      %td
-      %td TOTAL ALL CATEGORIES
-      %td.r= number_to_currency(total)
-        
+    - @show_txns.group_by(&:purchasemethod_id).each_pair do |pm_id, pm_txns|
+      %h3= h(Purchasemethod.find(pm_id).description)
+      %table
+        %tr
+          %th Code
+          %th Description
+          %th Units
+          %th Gross rcpts
+        - pm_txns.sort_by(&Proc.new { |tx| [tx.attributes["name"],tx.attributes["account_code"]] }).each do |t|
+          %tr
+            %td= link_to_function t.attributes["account_code"], "alert('" << escape_javascript(vouchertypes_for_account_code(t.attributes["account_code"])) << "')"
+            %td= h(t.attributes["name"])
+            %td.c= h(t.attributes["numunits"])
+            %td.currency= number_to_currency(t.attributes["totalprice"])

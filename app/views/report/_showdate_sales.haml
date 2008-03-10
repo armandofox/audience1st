@@ -3,5 +3,5 @@
     %tr
       %td{:width=>'70%'}= vt.name
       %td{:width=>'10%',:align=>:right}= v.size
-      %td{:width=>'10%',:align=>:right}= number_to_currency(vt.price * v.size)
+      %td.currency{:width=>'10%'}= number_to_currency(vt.price * v.size)
       %td

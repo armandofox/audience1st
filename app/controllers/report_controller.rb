@@ -165,44 +165,29 @@ class ReportController < ApplicationController
   end
 
   def accounting_report
-    unless params[:purchasemethods]
-      flash[:notice] = "You must select one or more purchase methods " <<
-        "for the Accounting Report"
-      redirect_to :action => 'index'
-      return
-    end
     @from,@to = get_dates_from_params(:from,:to)
     # get all vouchers sold between these dates where:
     #  - NOT walkup sales
     #  - purchasemethod is some credit card transaction
     #  - vouchertype has a price > 0
-    purchasemethods = params[:purchasemethods].map { |x| x.to_i } * ","
     # run report for all vouchertypes such that:
     # - account code is not null
     # - price > 0
-    vouchertypes = Vouchertype.find(:all, :conditions =>
-                                    "account_code IS NOT NULL AND price > 0")
-    acc_codes = vouchertypes.map { |vt| vt.account_code }
-    @vtypes_for_acc_code = {}
-    vouchertypes.group_by(&:account_code).each_pair do |k,v|
-      @vtypes_for_acc_code[k] = "Account code #{k}:\n" <<
-        v.map { |vt| vt.name }.join("\n")
-    end
-    @total = 0.0
-    sql = ["SELECT s.name,vt.account_code,SUM(vt.price) " <<
-           "FROM vouchers v " <<
-           "  INNER JOIN vouchertypes vt ON v.vouchertype_id=vt.id" <<
-           "  INNER JOIN showdates sd ON sd.id = v.showdate_id" <<
-           "  INNER JOIN shows s ON s.id = sd.show_id " <<
-           "WHERE " <<
-           " vt.price > 0" <<
-           " AND v.showdate_id != 0" <<
-           " AND (v.sold_on BETWEEN ? and ?)" <<
-           " AND v.customer_id NOT IN (0,?)" <<
-           " AND (v.purchasemethod_id IN (#{purchasemethods})) " <<
-           "GROUP BY vt.account_code,s.name",
-           @from, @to, Customer.walkup_customer.id]
-    @show_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
+    sql_query = <<EOQ1
+      SELECT v.purchasemethod_id,vt.account_code,s.name,
+                SUM(vt.price) AS totalprice,COUNT(*) AS numunits
+        FROM vouchers v
+          INNER JOIN vouchertypes vt ON v.vouchertype_id=vt.id
+          INNER JOIN showdates sd ON sd.id = v.showdate_id
+          INNER JOIN shows s ON s.id = sd.show_id
+        WHERE
+          v.showdate_id != 0
+          AND (v.sold_on BETWEEN ? and ?)
+          AND v.customer_id NOT IN (0,?)
+        GROUP BY v.purchasemethod_id,vt.account_code,s.name
+EOQ1
+    sql = [sql_query, @from, @to, Customer.walkup_customer.id]
+    @show_txns = Voucher.find_by_sql(sql)
     # next, all the Bundle Vouchers - regardless of purchase method
     sql = ["SELECT vt.name,vt.account_code,SUM(vt.price) " <<
            "FROM vouchers v " <<
@@ -316,8 +301,30 @@ EOQ
   end
 
   def invoice
-    
+    start = (Time.now - 1.month).at_beginning_of_month
+    @from,@to =
+      get_dates_from_params(:from,:to, start, start + 1.month - 1.second)
+    @bill = Option.values_hash(:monthly_fee, :cc_fee_markup, :per_ticket_fee, :per_ticket_commission,:customer_service_per_hour,:venue)
+    # following calc doesn't handle per-ticket commissions, only fixed fees
+    raise "Can't invoice based on nonzero per-ticket commission" if
+      @bill[:per_ticket_commission] > 0
+    @num_vouchers =
+      Voucher.count(:all, :include => :vouchertype,
+                    :conditions =>
+                    ["vouchertypes.price > 0 AND sold_on BETWEEN ? AND ?",
+                     @from, @to])
+    @nmonths = ((@to-@from)/1.year) * 12
+    @monthly_fee =  @nmonths * @bill[:monthly_fee]
+    @tickets_fee = @num_vouchers * @bill[:per_ticket_fee]
+    @tickets_commission =
+      (@bill[:per_ticket_commission].zero? ? 0 :
+       @num_vouchers.inject(0) { |s,v| s + v.price })
+    @customer_service_charges = 0.0 # must compute
+    @total = @monthly_fee + @tickets_fee + @tickets_commission +
+      @customer_service_charges
+    render :layout => false
   end
+
   
   private
 
@@ -354,14 +361,23 @@ EOQ
     end
   end
 
-  def get_dates_from_params(from_param,to_param)
-    from = Time.local(*([:year,:month,:day].map { |x| params[from_param][x] }))
-    to = Time.local(*([:year,:month,:day].map { |x| params[to_param][x] }))
+  def get_dates_from_params(from_param,to_param,
+                            default_from=Time.now,default_to=Time.now+1.day-1.second)
+    from = date_from_param(from_param,default_from)
+    to = date_from_param(to_param,default_to)
     from,to = to,from if from > to
     from = from.midnight
-    to = (to+1.day).midnight
+    to = to.midnight - 1.second
     return from,to
   end
+
+  def date_from_param(param,default=Time.now)
+    (params[param].blank? ? default :
+     (params[param].kind_of?(Hash) ?
+      Time.local(*([:year,:month,:day].map { |x| params[param][x] })) :
+      Time.parse(params[param])))
+  end
+
 
   # given a list of AR records returned from the GROUP BY sql queries of the
   # accounting report, squeeze out the ones with a zero total, and sort

@@ -5,6 +5,7 @@
 
 NAME	   = audienc
 HOME	   = /home/$(NAME)
+SVNROOT	   = $(HOME)/svn
 APPROOT    = $(HOME)/rails/$(VENUE)/current
 BACKUPDIR = $(HOME)/backup/$(VENUE)
 TODAY	   = $(shell date +\%d)
@@ -50,6 +51,10 @@ BINDIR     = $(APPROOT)/support
 all: nightly
 nightly: clean_sessions notify_pending_followups kill_zombies backup_db
 monthly: rotate_logs
+
+backup_svn: 
+	@tar -zcf $(BACKUPDIR)/svn-$(TODAY).tgz $(SVNROOT)
+	@$(S3CMD) put a1_svn:svn-$(TODAY).tgz $(BACKUPDIR)/svn-$(TODAY).tgz
 
 clean_sessions:
 	@$(MYSQL) $(A1_MYSQL_OPTS) -D$(A1_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)
