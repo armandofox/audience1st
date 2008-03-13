@@ -56,10 +56,19 @@ class StoreController < ApplicationController
     @all_shows = get_all_shows(get_all_showdates(is_admin))
     if @sd = current_showdate   # everything keys off of selected showdate
       @sh = @sd.show
-      @all_showdates = (is_admin ? @sh.showdates : @sh.future_showdates)
-      @vouchertypes = ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin)
+      @all_showdates = (is_admin ? @sh.showdates :
+                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+      # make sure originally-selected showdate is included among those
+      #  to be displayed.
+      unless @all_showdates.include?(@sd)
+        @sd = @all_showdates.first
+      end
+      @vouchertypes = (@sd ?
+                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin) :
+                       [] )
     elsif @sh = current_show    # show selected, but not showdate
-      @all_showdates = (is_admin ? @sh.showdates : @sh.future_showdates)
+      @all_showdates = (is_admin ? @sh.showdates :
+                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
       @vouchertypes = []
     else                      # not even show is selected
       @all_showdates = []

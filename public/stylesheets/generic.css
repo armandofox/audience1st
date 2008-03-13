@@ -386,6 +386,10 @@ fieldset#admin_form, fieldset#admin_form legend {
   margin-left: 300px;
   padding: 0;
 }
+#ticket_menus *.explanation { 
+  margin-left: 300px;
+  border: 1px dashed #ccc;
+}
 
 #donate {
   margin: 0 0 20px 0;

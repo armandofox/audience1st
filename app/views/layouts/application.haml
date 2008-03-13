@@ -3,8 +3,7 @@
   %head
     - unless mobile_user_agent?(controller.request.user_agent)
       = stylesheet_link_tag 'vbo'
-      = stylesheet_link_tag 'generic'
-      = stylesheet_link_tag(Option.value(:external_css_file)) unless Option.value(:external_css_file).blank?
+      = stylesheet_link_tag((s = Option.value(:external_css_file)).blank? ? 'generic' : s)
     = javascript_include_tag :defaults 
 
     %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.humanize) 

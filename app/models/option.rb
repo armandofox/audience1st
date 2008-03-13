@@ -1,16 +1,17 @@
 class Option < ActiveRecord::Base
   validates_uniqueness_of :name
   def validate
+    value.strip unless value.blank?
     case typ
       when :int
       errors.add(name.humanize, "must be an integer") unless
-        value.kind_of?(Fixnum) || value.to_s =~ /^[^0-9]+$/
+        value.kind_of?(Fixnum) || value.to_s =~ /^[0-9]+$/
       when :email
       errors.add(name.humanize, "must be an email address") unless
         value.valid_email_address?
       when :float
       errors.add(name.humanize, "must be a decimal number") unless
-        value.kind_of?(Float) || value.to_s =~ /^[^0-9.]+$/
+        value.kind_of?(Float) || value.to_s =~ /^[0-9.]+$/
     end
     return !errors.empty?
   end

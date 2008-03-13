@@ -43,7 +43,7 @@ deploy.task :after_update_code do
     run "rm -rf #{release_path}/#{file}.*"
   end
   run "mv #{release_path}/public/dispatch.fcgi.production #{release_path}/public/dispatch.fcgi"
-  run "rm -rf #{release_path}/manual #{release_path}/doc #{release_path}/about"
+  %w[manual doc about test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
 end
 
 deploy.task :restart do
