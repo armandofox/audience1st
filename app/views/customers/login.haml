@@ -1,21 +1,15 @@
 - unless @checkout_in_progress
-  %h1.banner= "Welcome to the Online Box Office for #{Option.value(:venue)}"
+  %h1.page_heading.center= "#{Option.value(:venue)} Online Box Office"
+  
+#have_account
+  %h2 Subscribers and Previous Customers
+  = render :partial => 'account_login'
 
-#loginDiv
-  %table{:width=>"100%"}
-    %tr
-      %td
-        #haveAccount.pageDiv
-          %h1 Have an Account?
-          %p.explain
-            If you're a Subscriber, or you've bought tickets from us online
-            before, use your email address and password to re-enter our site.
-          = render :partial => 'account_login'
-      %td.c{:valign=>"top"}
-        #newCustomer.pageDiv
-          %h1 New Customer?
-          %p#createAccount= button_to "Create your account", {:action => 'new'}, {:method => :get}
-          %p#or Or...
-          %p#buyTicketsFirst
-            = button_to "Buy Tickets", {:controller => 'store', :action => 'index'}, {:method => :get}
-            (You'll choose an account password when completing your purchase.)
+#new_customer
+  %h2 New Customer?
+  = gen_button "Create Account", {:action => 'new'}
+  %br/
+  %br/
+  = gen_button "Buy Tickets", {:controller => 'store', :action => 'index'}
+
+.clear

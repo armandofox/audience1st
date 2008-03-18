@@ -1,36 +1,32 @@
 #ticket_menus
   - form_tag :action => 'add_tickets_to_cart' do
-    %table.ticketSelect{:width=>'100%'}
-      %tr
-        - choose = @sh ? "" : options_for_select({"Select Show..." => 0})
-        %td.label{:width=>'30%'} Show
-        %td#selectShow.l= select_tag('show', choose + options_from_collection_for_select(@all_shows, :id, :name, (@sh ? @sh.id : 0)))
-      %tr
-        - choose = @sd ? "" : options_for_select({"Select Date..." => 0})
-        %td.label{:width=>'30%'} Date
-        %td#selectShowdate.l= select_tag('showdate', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
-      - if @vouchertypes.empty?
-        %tr
-          %td
-          %td
-            %strong No tickets on sale for this performance
-      - else
-        - @vouchertypes.each do |av|
-          %tr
-            %td.label= av.vouchertype.name_with_price
-            %td.l= select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((0..[av.howmany,10].min).to_a))
-      - unless @vouchertypes.empty?
-        %tr
-          %td.label Special seating needs
-          %td.l= text_field_tag('comments', '', :maxlength => 100, :size => 60)
-        %tr
-          %td
-          %td.l
-            = submit_tag 'Add to Cart', :class => 'genButton'
-            - unless flash[:ticket_error].blank?
-              %span.infoMsg= flash[:ticket_error]
+    - choose = @sh ? "" : options_for_select({"Select Show..." => 0})
+    %label{:for => "show"} Show
+    = select_tag('show', choose + options_from_collection_for_select(@all_shows, :id, :name, (@sh ? @sh.id : 0)))
+    %br/
+    %p.explanation Only dates with available seats are shown.
+    - choose = @sd ? "" : options_for_select({"Select Date..." => 0})
+    %label{:for => "showdate"} Date
+    = select_tag('showdate', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
+    %br/
+    
+    - if @vouchertypes.empty?
+      %p.explanation No tickets on sale for this performance
+    - else
+      - @vouchertypes.each do |av|
+        %label{:for => "vouchertype[#{av.vouchertype.id}]"}= av.vouchertype.name_with_price
+        = select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((0..[av.howmany,10].min).to_a))
+        %br/
+    - unless @vouchertypes.empty?
+      %label{:for => 'comments'} Special seating needs
+      = text_area_tag('comments', '', :rows => 3, :cols => 30)
+      %br/
+      
+      = submit_tag 'Add to Cart', :class => 'genButton', :id => 'add_to_cart'
+      - unless flash[:ticket_error].blank?
+        %span.feedback= flash[:ticket_error]
 
-= observe_field('show', :update => :ticket_menus,:with => 'show_id', :url => {:controller => 'store', :action => :show_changed})
+= observe_field('show', :update => :ticket_menus, :with => 'show_id', :url => {:controller => 'store', :action => :show_changed})
 
-= observe_field('showdate',:update => :ticket_menus,:with => 'showdate_id', :url => {:controller => 'store', :action => :showdate_changed} )
+= observe_field('showdate', :update => :ticket_menus, :with => 'showdate_id', :url => {:controller => 'store', :action => :showdate_changed} )
         

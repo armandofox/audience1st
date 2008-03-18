@@ -1,25 +1,28 @@
-%h1.customerInfo Thank You For Your Purchase!
+%h1.page_heading.center Thank You for Your Purchase!
 
-%p.customerInfo
+%p.feedback
   Your credit card ending in 
   %strong= h(@cc_number[-4..-1])
   has been charged 
   %strong= h(sprintf("%0.2f",@amount.to_f))
+%br/
 
-%p 
+%p
   %strong If you purchased show tickets,
   they'll be available at the box office 1 hour before show time.
+%br/
 
 %p
   %strong If you purchased one or more subcriptions,
   reservations can be made 
   = link_to 'online', {:controller => 'customers',:action=>'welcome'}
   or by phone.
+%br/
 
-%center
+%p.center
   - if @is_admin
     = admin_button('Back to Customer List', {:controller => 'customers', :action => 'list'})
     = admin_button('Back to This Customer', {:controller => 'customers', :action => 'welcome' })
   - else
-    = gen_button('Back to My Tickets and Reservations', {:controller => 'customers', :action => 'welcome' })
+    = gen_button('Back to My Tickets', {:controller => 'customers', :action => 'welcome' })
     = gen_button('Make Another Purchase', {:controller => 'store', :action => 'index'})

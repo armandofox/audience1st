@@ -56,9 +56,8 @@
         <tr>
           <td align="right"><%=h v.name %></td>
           <td align="center">$
-            <%= text_field_tag "price#{v.id}", 
-                     number_to_currency(v.price, :unit => ''),
-                     :disabled => true, :size => 6, :id => "price#{v.id}" %> 
+            <%= text_field_tag "price#{v.id}", sprintf("%.02f", v.price),
+                :disabled => true, :size => 6, :id => "price#{v.id}" %> 
           </td>
           <td>
             <%= select_tag "qty[#{v.id}]", options_for_select((0..8),0),

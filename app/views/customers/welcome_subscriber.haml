@@ -1,26 +1,32 @@
 / = render :partial => 'store/store_banner', :locals => {:subscriber => true }
-
 = error_messages_for :customer
 
-.pageDiv
-  %h1 Reserve Regular Season Show Seats
-  = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(@subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
+%h1.page_heading.center Reserve Regular Season Show Seats
+%br/
 
-.pageDiv#additionalTickets
-  %h1 Purchased Tickets
-  - unless @other_vouchers.empty?
-    %table#customerVoucherList
-      %thead
-        %tr.tableHeading
-          - if @admin.is_boxoffice
-            %th.adminField{:style => 'color: #555'} Tkt #
-          %th Ticket Type
-          %th How Acquired
-          %th Redeemed For
-          %th Actions
-          - if @admin.is_boxoffice
-            %th.adminField{:style => 'color: #555'} Admin
-            %th.adminField{:style => 'color: #555'} Comment
-      %tbody
-        = render :partial => "voucher", :collection => @other_vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
-  = button_to 'Buy Additional Tickets...', {:controller => 'store', :action => 'index'}, {:method => :get}
+= render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(@subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
+    
+%br/
+%h1.page_heading.center Purchased Tickets
+%br/
+
+- if @vouchers.empty?
+  %p There are no tickets in your account.
+- else #unless @other_vouchers.empty?
+  %table#customerVoucherList.full_width
+    %thead
+      %tr
+        - if @admin.is_boxoffice
+          %th.admin_field Ticket #
+        %th Type
+        %th Acquired
+        %th Redeemed
+        %th Actions
+        - if @admin.is_boxoffice
+          %th.admin_field Admin
+          %th.admin_field Comment
+    %tbody
+      = render :partial => "voucher", :collection => @other_vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
+
+%br/
+= button_to 'Buy More Tickets', {:controller => 'store', :action => 'index'}, {:method => :get}

@@ -4,7 +4,7 @@
 
 %tr
   - if is_boxoffice
-    %td.adminField
+    %td.admin_field{:style => "background-color: white;"}
       = h voucher.id
       = voucher.processed_by_name unless voucher.processed_by == voucher.customer.id 
   %td= h voucher.vouchertype.name
@@ -13,26 +13,26 @@
     / voucher bundle - not reservable
     %td{:colspan=>2}
     - if is_boxoffice_manager
-      %td= button_to(*remove_voucher) 
+      %td= button_to(*remove_voucher)
   - elsif voucher.unreserved?
     / regular voucher, unreserved
-    %td.c Available
+    %td Available
     / customer actions on unreserved voucher: make reservation
-    %td.c
-      = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer } )
+    %td
+      = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer },:method=>:get )
     - if is_boxoffice_manager
       / admin actions on unreserved voucher: remove
-      %td.c= button_to(*remove_voucher)
+      %td= button_to(*remove_voucher)
   - else
     / regular voucher, reserved
-    %td.c
+    %td
       %span.showName= h voucher.showdate.show.name
-      %br
+      %br/
       %span.showDate= h voucher.showdate.thedate.strftime('%a, %b %e, %I:%M %p')
     / customer actions on reserved voucher:
-    %td.c
+    %td
       - if (is_subscriber && voucher.can_be_changed?) || (is_boxoffice && voucher.changeable)
-        = button_to(*cancel_res) 
+        = button_to(*cancel_res)
     / admin actions on reserved voucher:
     - if is_boxoffice_manager
       %td.c=  button_to(*cancel_res)

@@ -1,31 +1,36 @@
-.pageDiv
-  = render :partial => 'cart'
-  = link_to 'Make Changes',{:action=>'index'}, :class => 'genButton' 
-  - form_tag :action => 'place_order' do
-    %table
-      %tr
-        %td{:valign=>:top}
-          %h2 Please Verify Billing Info
-          .infoMsg
-            %center
-              = gen_button "This Isn't Me", :action => 'not_me'
-              = gen_button "Change Billing Address", :action => 'edit_billing_address'
-            %br/
-            = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true }
-        %td{:valign=>:top}
-          %h2 Credit Card Information
-          %ul
-            %li We do not store your card number after completing your purchase.
-            %li Our transactions are securely processed through Authorize.net.
-          = render :partial => 'credit_card'
-      %tr
-        %td{:colspan=>2,:align=>:center}
-          = check_box_tag 'sales_final',1,@sales_final_acknowledged
-          %strong
-            I understand and agree that
-            = link_to_function "all ticket sales are final and there are no refunds or exchanges.", "alert('#{escape_javascript(MESSAGES[:terms_of_sale_0])}')"
-      %tr
-        %td{:colspan=>2,:align=>:center}
-          = submit_tag APP_CONFIG[:cc_purch], {:onClick => "this.disabled=true;this.value='Processing, Please Wait';document.getElementById('cancel').style.display='none';this.form.submit();"}
-          = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
+%h1.page_heading.center Checkout
+
+= render :partial => 'cart'
+= link_to 'Make Changes to Order',{:action=>'index'}, :class => 'genButton' 
+%br/
+%br/
+
+- form_tag :action => 'place_order' do
+  %h2 Please Verify Billing Info
+  %p
+    %strong= gen_button "This Isn't Me", :action => 'not_me'
+    | 
+    %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
+  = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true }
+  %br/
+  %br/
+  
+  %h2 Credit Card Information
+  %p.notice
+    We do not store your card number after completing your purchase.
+    %br/
+    Our transactions are securely processed through Authorize.net.
+  %br/
+  = render :partial => 'credit_card'
+  
+  = check_box_tag 'sales_final',1,@sales_final_acknowledged
+  %label.no_float{:for => 'sales_final'}
+    %strong 
+      I understand and agree that
+      = link_to_function "all ticket sales are final and there are no refunds or exchanges.", "alert('#{escape_javascript(MESSAGES[:terms_of_sale_0])}')"
+  %br/
+  %br/
+  
+  = submit_tag APP_CONFIG[:cc_purch], { :onClick => "this.disabled=true;this.value='Processing, Please Wait';document.getElementById('cancel').style.display='none';this.form.submit();", :class => 'indented' }
+  = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton' } 
 

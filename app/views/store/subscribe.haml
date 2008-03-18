@@ -2,16 +2,18 @@
 
 #store
   - unless @cart.is_empty?
-    #shoppingCart.pageDiv
-      %h1 Season Subscriptions Shopping Cart
-      - form_tag :action => 'checkout' do
-        = render :partial => 'cart', :locals => {:editable => true, :redirect_to => 'subscribe'}
-        = gen_button  'Empty Cart', {:action => 'empty_cart', :redirect_to => 'subscribe'}
-        = submit_tag 'Checkout'
-  #subscriptionsMenus.pageDiv
-    %h1 Subscriber Benefits
-    %p= h(Option.value(:subscription_benefits_short_description))
-    %p= link_to "Learn more",Option.value(:subscription_info),{:target=>'_blank'}
+    %h1.page_heading.center Season Subscriptions Shopping Cart
+    - form_tag :action => 'checkout' do
+      = render :partial => 'cart', :locals => {:editable => true, :redirect_to => 'subscribe'}
+      = submit_tag 'Checkout'
+      = gen_button  'Empty Cart', {:action => 'empty_cart', :redirect_to => 'subscribe'}
+
+  #subscriptionsMenus
+    %h1.page_heading.center Subscriber Benefits
+    %p
+      = h(Option.value(:subscription_benefits_short_description))
+      = link_to "Learn more",Option.value(:subscription_info),{:target=>'_blank'}
+    
     - unless @subscriber
       %p 
         If you're a current subscriber,
@@ -21,20 +23,16 @@
         button on your account page to get the renewal discount.
       
     - form_tag :action => 'add_subscriptions_to_cart' do
-      %table.ticketSelect
-        %tr
-          %td.label Subscription type and price
-          %td
-            - if @subs_to_offer.empty?
-              %p (No subscriptions on sale at this time)
-            - else
-              = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price')
-        %tr
-          %td.label
-            %label{:for=>:subscription_qty} Quantity
-          %td
-            = select_tag("subscription_qty", options_for_select((1..10).to_a))
-            = submit_tag 'Add Subscriptions to Cart', :class => 'genButton'
+      - if @subs_to_offer.empty?
+        %p (No subscriptions on sale at this time)
+      - else
+        %label Subscription 
+        = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price')
+        %br/
+        %label{:for=>:subscription_qty} Quantity
+        = select_tag("subscription_qty", options_for_select((1..10).to_a))
+        %br/
+        = submit_tag 'Add Subscriptions to Cart', :class => 'genButton indented'
 
   = render :partial => 'donate', :locals => {:redirect_to => 'subscribe' }
 

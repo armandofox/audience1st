@@ -1,15 +1,15 @@
 - if subscriber && !Option.value(:subscriber_banner).blank?
   - if Option.value(:subscriber_banner_link).blank?
-    %h1.bannerHead= Option.value(:subscriber_banner)
+    %h2.subscription_msg= Option.value(:subscriber_banner)
   - else
-    %h1.bannerHead= link_to h(Option.value(:subscriber_banner)), Option.value(:subscriber_banner_link)
+    %h2.subscription_msg= link_to h(Option.value(:subscriber_banner)), Option.value(:subscriber_banner_link)
 - if !subscriber && !Option.value(:nonsubscriber_banner).blank?
   - if Option.value(:nonsubscriber_banner_link).blank?
-    %h1.bannerHead= Option.value(:nonsubscriber_banner)
+    %h2.subscription_msg= Option.value(:nonsubscriber_banner)
   - else
-    %h1.bannerHead= link_to h(Option.value(:nonsubscriber_banner)), Option.value(:nonsubscriber_banner_link)
+    %h2.subscription_msg= link_to h(Option.value(:nonsubscriber_banner)), Option.value(:nonsubscriber_banner_link)
 - if !subscriber
-  %p.explain.c
+  %p.subscription_msg2
     %strong Already a subscriber?
     = link_to "Sign in to your account", :controller => 'customers', :action => 'login'
     to manage your reservations and get your Subscriber benefits.

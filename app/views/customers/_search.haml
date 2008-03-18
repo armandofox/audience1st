@@ -1,5 +1,5 @@
 .pageDiv
-  %h1 Search for a Patron
+  %h1.page_heading.center Search for a Patron
   #search
     = form_remote_tag(:url => {:controller=>'customers', :action=>'search'}, :update => 'search')
     = hidden_field_tag 'searching', 1

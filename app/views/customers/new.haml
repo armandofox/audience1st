@@ -1,45 +1,45 @@
-#customerNew.pageDiv
-  %h1 Create Your Account
+%h1.page_heading.center Create Your Account
 
-  %dl
-    %dt Why do you need my email address?
-    %dd To communicate with you about your order.
-    %dt Why do you need my name and billing address?
-    %dd 
-      For credit card ticket purchase.  
-      %strong= link_to( "We never share  this information with anyone and we do not store credit card information.",Option.value(:privacy_policy_url),:target => "_blank")
-      Choosing a password protects access to your account. 
-    %dt I'm a Subscriber, but I couldn't retrieve my password.
-    %dd 
-      All Subscribers already have accounts containing your subscription
-      information and vouchers.  It may be under a different email address.
-      If you need help, email
-      = mail_to(Option.value(:help_email),nil,:encode=>"hex", :subject=>"Help with Audience1st account")
-      with your full name and billing address and we'll be happy to help.
-
-  %p
-    %strong Under 18?  
-    Patrons under 18 are required to get the
-    permission of a parent or adult guardian before providing any contact
-    information on this site.
-
-  %p 
-    %strong Under 13? 
-    Sorry, but in accordance with 
-    = link_to "COPPA", "http://www.ftc.gov/ogc/coppa1.htm"
-    you may not use this site. 
+#inner_wrapper
+  %fieldset#FAQ
+    %legend FAQs
+    %dl
+      %dt Why do you need my email address?
+      %dd To communicate with you about your order.
+      %dt Why do you need my name and billing address?
+      %dd 
+        For credit card ticket purchase.  
+        %strong= link_to( "We never share  this information with anyone and we do not store credit card information.",Option.value(:privacy_policy_url))
+        Choosing a password protects access to your account. 
+      %dt I'm a Subscriber, but I couldn't retrieve my password.
+      %dd 
+        All Subscribers already have accounts containing your subscription
+        information and vouchers.  It may be under a different email address.
+        If you need help, email
+        = mail_to(Option.value(:help_email),nil,:encode=>"hex", :subject=>"Help with Audience1st account")
+        with your full name and billing address and we'll be happy to help.
+      %dt Under 18?  
+      %dd
+        Patrons under 18 are required to get the
+        permission of a parent or adult guardian before providing any contact
+        information on this site.
+      %dt Under 13? 
+      %dd
+        Sorry, but in accordance with 
+        = link_to "COPPA", "http://www.ftc.gov/ogc/coppa1.htm"
+        you may not use this site. 
 
   - if @is_admin
     - form_tag :action => 'create' do
+      = render :partial => 'password' 
       = render :partial => 'form'
       = render :partial => 'form_admin'
-      = render :partial => 'password' 
       = submit_tag "Create New User Account"
-      = gen_button  'Cancel', :action => :list
-  - else      
+      = gen_button 'Cancel', :action => :list
+  - else
     - form_tag :action => 'user_create' do
-      = render :partial => 'form'
       = render :partial => 'password'
+      = render :partial => 'form'
       = submit_tag "Create My Account"
       = gen_button 'Cancel', :action => 'login'
 

@@ -5,26 +5,24 @@
   - unless @cart.is_empty?
     #shoppingCart.pageDiv
 
-      %h1 My Shopping Cart
+      %h2.center My Shopping Cart
       - form_tag :action => 'checkout' do
         = render :partial => 'cart', :locals => {:editable => true}
-        = gen_button  'Empty Cart', {:action => 'empty_cart'}
         = submit_tag 'Checkout'
+        = gen_button  'Empty Cart', {:action => 'empty_cart'}
   
   / #promo_entry.pageDiv
   /  = render :partial =>'promo_entry',:locals=>{:promo_code=>@promo_code.to_s}
 
-  #purchaseIndividualTickets.pageDiv
+  %h1.page_heading.center
+    Buy Tickets
+    %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
-    %h1
-      Purchase Individual Tickets
-      = "(Using Promo Code: #{h(@promo_code)}" if @promo_code
-
-    - if @subscriber && !Option.value(:subscriber_store_message).blank?
-      %p.storeText= Option.value(:subscriber_store_message)
-    - if !@subscriber && !Option.value(:nonsubscriber_store_message).blank?
-      %p.storeText= Option.value(:nonsubscriber_store_message)
-
-    = render :partial => 'ticket_menus'
-
+  - if @subscriber && !Option.value(:subscriber_store_message).blank?
+    %p.storeText= Option.value(:subscriber_store_message)
+  - if !@subscriber && !Option.value(:nonsubscriber_store_message).blank?
+    %p.storeText= Option.value(:nonsubscriber_store_message)
+  
+  = render :partial => 'ticket_menus'
+  %br/
   = render :partial => 'donate'

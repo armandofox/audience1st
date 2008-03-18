@@ -4,57 +4,39 @@
 - disabled =  defined?(passive) && passive 
 
 /[form:customer]
-#customerContact
-  %table
-    %tr
-      %td
-        %label{:for=>:customer_first_name} First name
-        %br/
-        =text_field 'customer', 'first_name', :size => 16, :max_length => 40, :id => 'customer_first_name', :readonly => disabled
-      %td{:colspan=>2}
-        %label{:for=>:customer_last_name} Last name
-        %br/
-        =text_field 'customer', 'last_name', :size => 16, :max_length => 40,:id => 'customer_last_name', :readonly => disabled 
-    %span#addressInfo
-      %tr
-        %td{:colspan=>3}
-          %label{:for=>:customer_street} Street (Credit card billing address)
-          %br/
-          =text_field 'customer', 'street', :readonly => disabled  
-      %tr
-        %td
-          %label{:for=>:customer_city} City
-          %br/
-          =text_field 'customer', 'city', :size => 16, :max_length => 32, :readonly => disabled
-        %td 
-          %label{:for=>:customer_state} State
-          %br/
-          =text_field 'customer', 'state', {:size => 2, :max_length => 2, :readonly => disabled}
-        %td 
-          %label{:for=>:customer_zip} Zip
-          %br/
-          =text_field 'customer', 'zip', {:size => 10, :max_length => 10, :readonly => disabled}
-    %tr 
-      %td
-        %label{:for=>:customer_day_phone} Day phone
-        %br/
-        =text_field 'customer', 'day_phone', {:size => 16, :max_length => 16, :readonly => disabled}
-      %td{:colspan=>2}
-        %label{:for=>:customer_eve_phone} Eve. phone
-        %br/
-        =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
-    %tr 
-      %td{:colspan=>3}
-        %label{:for=>:customer_login} Email
-        %br/
-        =text_field 'customer', 'login', {:size => 20, :max_length => 40, :readonly => disabled }
-    %tr
-      %td{:colspan=>3}
-        =check_box 'customer', 'e_blacklist'
-        %label{:for=>:customer_e_blacklist} 
-          Please don't send me email about upcoming shows & events.
-          %br/
-          (We never share our email list with anyone.)
+%fieldset#billing_info
+  %legend Credit Card Billing Address
+  %label{:for=>:customer_first_name} First name
+  =text_field 'customer', 'first_name', :size => 16, :max_length => 40, :id => 'customer_first_name', :readonly => disabled
+  %br/
+  
+  %label{:for=>:customer_last_name} Last name
+  =text_field 'customer', 'last_name', :size => 16, :max_length => 40,:id => 'customer_last_name', :readonly => disabled 
+  %br/
+  %br/
+  
+  %label{:for=>:customer_street} Street
+  =text_field 'customer', 'street', :readonly => disabled  
+  %br/
+  %label{:for=>:customer_city} City
+  =text_field 'customer', 'city', :size => 16, :max_length => 32, :readonly => disabled
+  %label.no_float{:for=>:customer_state} State
+  =text_field 'customer', 'state', {:size => 2, :max_length => 2, :readonly => disabled}
+  %label.no_float{:for=>:customer_zip} Zip
+  =text_field 'customer', 'zip', {:size => 10, :max_length => 10, :readonly => disabled}
+  %br/
+  %br/
+  
+  %label{:for=>:customer_day_phone} Day phone
+  =text_field 'customer', 'day_phone', {:size => 16, :max_length => 16, :readonly => disabled}
+  %br/
+  %label{:for=>:customer_eve_phone} Evening phone
+  =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
+  %br/
+    
+=check_box 'customer', 'e_blacklist'
+%label.no_float{:for=>:customer_e_blacklist}= "Please don't send me email about upcoming shows &amp; events."
+%span.small= link_to "Privacy Policy", Option.value(:privacy_policy_url)
 
 /[eoform:customer]
 
