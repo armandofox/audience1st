@@ -7,13 +7,13 @@
     %tbody
       %tr
         %td Select a show and performance date:
-        %td= select_tag('showdate_id', options_from_collection_for_select(@available_seats.sort_by { |av| av.showdate.thedate }, 'showdate_id', 'showdate_name_with_explanation')
+        %td= select_tag('showdate_id', options_from_collection_for_select(@available_seats.sort_by { |av| av.showdate.thedate }, 'showdate_id', 'showdate_name_with_explanation'))
       %tr
         %td Special seating needs or requests:
         %td= select_menu_or_freeform 'comments', APP_CONFIG[:voucher_comments]
   %br
   - if @available_seats.detect { |d| d.available? }
-    = submit_tag 'Confirm Reservation' %> 
+    = submit_tag 'Confirm Reservation'
     - back_label = "Don't Make Reservation"
   - else
     - back_label = "Back to My Account"
@@ -24,7 +24,7 @@
       %li All shows for which it's valid may be sold out
       %li All seats allocated for this type of ticket may be sold out 
       %li Seats allocated for this type of ticket may not be available for reservation until a future date
-  = gen_button  back_label, {:controller => 'customers', :action => 'welcome'}
+  = gen_button (back_label, {:controller => 'customers', :action => 'welcome'})
 
 
 
