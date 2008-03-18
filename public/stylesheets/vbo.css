@@ -7,6 +7,14 @@ body.testing {
 table { 
   border: 0;
 }
+td,th { 
+  padding: 1px 2px;
+}
+th { 
+  text-align: center;
+  background: #333;
+  color: #fff;
+}
 
 input[type="submit"] { 
   display: inline;
@@ -138,6 +146,13 @@ submit:hover {
    clear: both;
    padding: 2px 10px;
    background-color: yellow;            
+   line-height: 1.5em;
+}
+.adminButton { 
+   border: 1px solid black;
+   margin: 1px;
+   padding: 1px;               
+   line-height: 1.5em;
 }
 
 .ccAlert { 
@@ -157,8 +172,7 @@ submit:hover {
 .evenRow { background-color: #e7e7e7; }
 .totalsRow { 
   font-weight: bold;
-  background-color: #555;
-  color: white;
+  background-color: #ccc;
   font-size: larger;             
  }
 .r {  text-align: right; }
@@ -304,6 +318,20 @@ div.progressBar div.background {
 
 .top { 
   vertical-align: top;
+}
+
+// Tabular report format
+
+table.report { 
+}
+
+.subtitle { 
+  background-color: #eee;
+  font-size: larger;                        
+  height: 1.5em;
+  padding: 4px;
+  margin: 1em 0 0 0;              
+  font-weight: bold;
 }
 
 /* Elements on specific pages */

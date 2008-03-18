@@ -21,6 +21,22 @@ class ReportController < ApplicationController
   verify(:method => :post, :only => %w[noshow_subscriber mark_fulfilled],
          :add_flash => {:notice => 'ERROR: Action can only be called via POST'})
 
+  def do_report
+    # this is a dispatcher that just redirects to the correct report
+    # based on a dropdown menu.
+    case params[:rep]
+    when /transaction/i
+      sales_detail
+    when /revenue/i
+      accounting_report
+    when /invoice/i
+      invoice
+    else
+      flash[:notice] = "Please select a valid report."
+      redirect_to :action => :index and return
+    end
+  end
+
   def advanced_customer_list
     @show_names = Show.find_all
     @vouchertypes =
@@ -135,6 +151,7 @@ class ReportController < ApplicationController
       redirect_to :action => 'index'
       return
     end
+    render :action => :advance_sales
   end
 
   def showdate_sales
@@ -162,6 +179,7 @@ class ReportController < ApplicationController
       redirect_to :action => 'index'
       return
     end
+    render :action => :sales_detail
   end
 
   def accounting_report
@@ -185,6 +203,7 @@ class ReportController < ApplicationController
           AND (v.sold_on BETWEEN ? and ?)
           AND v.customer_id NOT IN (0,?)
         GROUP BY v.purchasemethod_id,vt.account_code,s.name
+        ORDER BY v.purchasemethod_id
 EOQ1
     sql = [sql_query, @from, @to, Customer.walkup_customer.id]
     @show_txns = Voucher.find_by_sql(sql)
@@ -207,6 +226,7 @@ EOQ1
            "GROUP BY d.purchasemethod_id",
            @from, @to]
     @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
+    render :action => :accounting_report
   end
 
   def subscriber_details
@@ -305,24 +325,38 @@ EOQ
     @from,@to =
       get_dates_from_params(:from,:to, start, start + 1.month - 1.second)
     @bill = Option.values_hash(:monthly_fee, :cc_fee_markup, :per_ticket_fee, :per_ticket_commission,:customer_service_per_hour,:venue)
+    @page_title = "Invoice for #{@bill[:venue]} : " <<
+      "#{@from.to_formatted_s(:date_only)} - #{@to.to_formatted_s(:date_only)}"
     # following calc doesn't handle per-ticket commissions, only fixed fees
     raise "Can't invoice based on nonzero per-ticket commission" if
       @bill[:per_ticket_commission] > 0
-    @num_vouchers =
-      Voucher.count(:all, :include => :vouchertype,
-                    :conditions =>
-                    ["vouchertypes.price > 0 AND sold_on BETWEEN ? AND ?",
-                     @from, @to])
+    sql = <<EOQ2
+        SELECT DISTINCT COUNT(*) AS count,
+                        SUM(vt.price) AS totalprice,
+                        vt.account_code,
+                        vt.price,
+                        vt.name AS vouchertype_name,
+                        s.name AS show_name
+        FROM (((vouchers v
+                JOIN vouchertypes vt on v.vouchertype_id=vt.id)
+                JOIN showdates sd on v.showdate_id=sd.id)
+                JOIN shows s on sd.show_id=s.id)
+        WHERE (v.sold_on BETWEEN ? AND ?) and vt.price > 0
+        GROUP BY vt.account_code,s.id
+EOQ2
+    @vouchers = Voucher.find_by_sql([sql,@from,@to])
+    @total = 0.0
+    @subtotal = {}
+    @vouchers.each do |vgrp|
+      @total +=
+        (@subtotal[vgrp.attributes.values_at('show_name','account_code').join(',')] =
+         vgrp.attributes['count'].to_f * @bill[:per_ticket_fee])
+    end
     @nmonths = ((@to-@from)/1.year) * 12
     @monthly_fee =  @nmonths * @bill[:monthly_fee]
-    @tickets_fee = @num_vouchers * @bill[:per_ticket_fee]
-    @tickets_commission =
-      (@bill[:per_ticket_commission].zero? ? 0 :
-       @num_vouchers.inject(0) { |s,v| s + v.price })
     @customer_service_charges = 0.0 # must compute
-    @total = @monthly_fee + @tickets_fee + @tickets_commission +
-      @customer_service_charges
-    render :layout => false
+    @total += @customer_service_charges + @monthly_fee
+    render :action => :invoice
   end
 
   

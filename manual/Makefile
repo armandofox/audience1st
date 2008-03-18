@@ -12,13 +12,18 @@ SCPOPTS =
 SCPHOST = audienc@audience1st.com
 SCPPATH = public_html/manual
 
-all: manual.pdf html TAGS
+ZIP = zip
+
+all: manual.pdf html css_style_kit.zip TAGS
 
 docinstall: all
 	$(SCP) $(SCPOPTS) manual/manual.html $(SCPHOST):$(SCPPATH)/manual.html
 	$(SCP) $(SCPOPTS) manual.pdf $(SCPHOST):$(SCPPATH)/manual.pdf
 
 html: manual/manual.html
+
+css_style_kit.zip: $(wildcard css_style_kit/*.html)
+	$(ZIP) -r $@ css_style_kit
 
 manual/manual.html: $(TEXFILES) $(OTHERFILES)
 	-$(LATEX2HTML) -split 2 $<

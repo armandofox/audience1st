@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <link href="vbo.css?1204838323" media="screen" rel="Stylesheet" type="text/css" />
+    <link href="generic.css?1205440182" media="screen" rel="Stylesheet" type="text/css" />
+    <script src="/javascripts/prototype.js?1204930640" type="text/javascript"></script>
+    <script src="/javascripts/effects.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/dragdrop.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/controls.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/application.js?1194912209" type="text/javascript"></script>
+    <title>Customers: New</title>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type' />
+    <meta content='no' http-equiv='imagetoolbar' />
+    <meta content='' name='description' />
+  </head>
+  <body class='testing' id='customers_new'>
+    <div id='outer_wrapper'>
+      <div id='inner_wrapper'>
+        <h1 class='page_heading center'>Create Your Account</h1>
+        <div id='inner_wrapper'>
+          <fieldset id='FAQ'>
+            <legend>FAQs</legend>
+            <dl>
+              <dt>Why do you need my email address?</dt>
+              <dd>To communicate with you about your order.</dd>
+              <dt>Why do you need my name and billing address?</dt>
+              <dd>
+                For credit card ticket purchase.
+                <strong>
+                  <a href="http://www.altarena.org/privacy-policy">We never share  this information with anyone and we do not store credit card information.</a>
+                </strong>
+                Choosing a password protects access to your account.
+              </dd>
+              <dt>
+                I'm a Subscriber, but I couldn't retrieve my password.
+              </dt>
+              <dd>
+                All Subscribers already have accounts containing your subscription
+                information and vouchers.  It may be under a different email address.
+                If you need help, email
+                <a href="mailto:%68%65%6c%70@%61%6c%74%61%72%65%6e%61.%6f%72%67?subject=Help%20with%20Audience1st%20account">help@altarena.org</a>
+                with your full name and billing address and we'll be happy to help.
+              </dd>
+              <dt>Under 18?</dt>
+              <dd>
+                Patrons under 18 are required to get the
+                permission of a parent or adult guardian before providing any contact
+                information on this site.
+              </dd>
+              <dt>Under 13?</dt>
+              <dd>
+                Sorry, but in accordance with
+                <a href="http://www.ftc.gov/ogc/coppa1.htm">COPPA</a>
+                you may not use this site.
+              </dd>
+            </dl>
+          </fieldset>
+        <form action="/customers/create" method="post">
+            <fieldset id="login_info">
+              <legend>Login Information</legend>
+              
+              <label for="customer_login">Email</label>
+              <input id="customer_login" max_length="40" name="customer[login]" readonly="readonly" size="20" type="text" />
+              <br />
+              
+              <label for="customer_password"> Password</label>
+              <input id="customer_password" name="customer[password]" size="20" type="password" value="" />
+              <br />
+            
+              <label for="customer_password_confirmation">
+              Confirm  Password
+              </label>
+              <input id="customer_password_confirmation" name="customer[password_confirmation]" size="20" type="password" value="" />
+              <br />
+            </fieldset>
+            
+            <!-- [form:customer] -->
+            <fieldset id='billing_info'>
+              <legend>Credit Card Billing Address</legend>
+              <label for='customer_first_name'>First name</label>
+              <input id="customer_first_name" max_length="40" name="customer[first_name]" size="16" type="text" value="" />
+              <br />
+              <label for='customer_last_name'>Last name</label>
+              <input id="customer_last_name" max_length="40" name="customer[last_name]" size="16" type="text" value="" />
+              <br />
+              <br />
+              <label for='customer_street'>Street</label>
+              <input id="customer_street" name="customer[street]" size="30" type="text" />
+              <br />
+              <label for='customer_city'>City</label>
+              <input id="customer_city" max_length="32" name="customer[city]" size="16" type="text" />
+              <label class='no_float' for='customer_state'>State</label>
+              <input id="customer_state" max_length="2" name="customer[state]" size="2" type="text" value="CA" />
+              <label class='no_float' for='customer_zip'>Zip</label>
+              <input id="customer_zip" max_length="10" name="customer[zip]" size="10" type="text" />
+              <br />
+              <br />
+              <label for='customer_day_phone'>Day phone</label>
+              <input id="customer_day_phone" max_length="16" name="customer[day_phone]" size="16" type="text" />
+              <br />
+              <label for='customer_eve_phone'>Evening phone</label>
+              <input id="customer_eve_phone" max_length="16" name="customer[eve_phone]" size="16" type="text" />
+              <br />
+            </fieldset>
+            <input id="customer_e_blacklist" name="customer[e_blacklist]" type="checkbox" value="1" /><input name="customer[e_blacklist]" type="hidden" value="0" />
+            <label class='no_float' for='customer_e_blacklist'>
+              Please don't send me email about upcoming shows &amp; events.
+            </label>
+            <span class='small'>
+              <a href="http://www.altarena.org/privacy-policy">Privacy Policy</a>
+            </span>
+            <!-- [eoform:customer] -->
+            <input name="commit" type="submit" value="Create My Account" />
+            <a href="/customers/login" class="genButton">Cancel</a>
+        </form>
+        </div>
+      </div>
+    </div>
+    <div class='center' id='footer'>
+      &copy; 2008
+      <a href="http://www.a1patronsystems.com">A1 Patron Systems</a>
+       - Build DEV - 
+      <a href="http://www.altarena.org/privacy-policy">Terms of Use & Privacy Policy</a>
+    </div>
+  </body>
+</html>

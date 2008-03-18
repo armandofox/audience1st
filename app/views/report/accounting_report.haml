@@ -5,17 +5,27 @@
     to
     = @to.to_formatted_s(:date_only)
     - total = 0.0
+  %table
     - @show_txns.group_by(&:purchasemethod_id).each_pair do |pm_id, pm_txns|
-      %h3= h(Purchasemethod.find(pm_id).description)
-      %table
+      %tr
+        %th= h(Purchasemethod.find(pm_id).description)
+        %th Code
+        %th Description
+        %th Units
+        %th Gross rcpts
+      - subtotal = 0.0
+      - subtotalunits = 0
+      - pm_txns.sort_by(&Proc.new { |tx| [tx.attributes["name"],tx.attributes["account_code"]] }).each do |t|
         %tr
-          %th Code
-          %th Description
-          %th Units
-          %th Gross rcpts
-        - pm_txns.sort_by(&Proc.new { |tx| [tx.attributes["name"],tx.attributes["account_code"]] }).each do |t|
-          %tr
-            %td= link_to_function t.attributes["account_code"], "alert('" << escape_javascript(vouchertypes_for_account_code(t.attributes["account_code"])) << "')"
-            %td= h(t.attributes["name"])
-            %td.c= h(t.attributes["numunits"])
-            %td.currency= number_to_currency(t.attributes["totalprice"])
+          %td
+          %td= account_code_with_links t.attributes["account_code"]
+          %td= h(t.attributes["name"])
+          %td.r= h(t.attributes["numunits"])
+          %td.currency= number_to_currency(t.attributes["totalprice"])
+          - subtotalunits += t.attributes["numunits"].to_i
+          - subtotal += t.attributes["totalprice"].to_f
+      %tr.totalsRow
+        %td
+        %td{:colspan=>2}
+        %td.r= subtotalunits
+        %td.currency= number_to_currency subtotal

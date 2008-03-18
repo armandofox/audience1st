@@ -25,9 +25,11 @@ ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
 
 namespace :deploy do
   namespace :web do
+    desc "Protect app by requiring valid-user in htaccess."
     task :protect do
       run "perl -pi -e 's/^\s*#\s*require\s*valid-user/require valid-user/' #{deploy_to}/current/public/.htaccess"
     end
+    desc "Unprotect app by NOT requiring valid-user in htaccess."
     task :unprotect do
       run "perl -pi -e 's/^\s*require\s*valid-user/# require valid-user/' #{deploy_to}/current/public/.htaccess"
     end
@@ -43,7 +45,7 @@ deploy.task :after_update_code do
     run "rm -rf #{release_path}/#{file}.*"
   end
   run "mv #{release_path}/public/dispatch.fcgi.production #{release_path}/public/dispatch.fcgi"
-  %w[manual doc about test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
+  %w[manual doc test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
 end
 
 deploy.task :restart do

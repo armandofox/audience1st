@@ -54,7 +54,7 @@ module ApplicationHelper
   def button_bar(ary)
     ary.map do |a|
       options = {:controller => a[1].to_s, :action => a[2].to_s}
-      admin_button a[0], options.merge(a[3])
+      admin_button a[0].gsub(/ /,'&nbsp;'), options.merge(a[3])
     end.join("\n")
   end
 

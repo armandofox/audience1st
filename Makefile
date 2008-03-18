@@ -13,4 +13,4 @@ TAGS: $(FILES)
 
 .PHONY: doc
 doc:	
-	cd doc && make
+	cd manual && make

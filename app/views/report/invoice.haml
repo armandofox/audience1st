@@ -1,46 +1,38 @@
-!!! Strict
-%html
-  %head
-    = stylesheet_link_tag 'vbo'
-    = stylesheet_link_tag 'generic'
-    = stylesheet_link_tag 'boxoffice_report'
-    - ttl = h("Invoice for #{@bill[:venue]}")
-    - dates =  h("#{@from.to_formatted_s(:date_only)} - #{@to.to_formatted_s(:date_only)}")
-    %title= "#{ttl} : #{dates}"
-  %body{:class => (RAILS_ENV != 'production' ? :testing : nil)}
-    %h1
-      = ttl
-      %br/
-      = dates
-    #doorList
-      %table
-        %tr
-          %th Description
-          %th Qty
-          %th Each
-          %th Total
-        %tr
-          %td Base Monthly Usage Fee 
-          %td.r= sprintf("%.1f",@nmonths)
-          %td.currency= number_to_currency @bill[:monthly_fee]
-          %td.currency= number_to_currency @monthly_fee
-        %tr
-          %td Fixed Charge per Revenue Ticket
-          %td.r= @num_vouchers
-          %td.currency= number_to_currency @bill[:per_ticket_fee]
-          %td.currency= number_to_currency @tickets_fee
-        %tr
-          %td Commission on Revenue Ticket Sales
-          %td.r= @num_vouchers
-          %td.currency= number_to_currency @bill[:per_ticket_commission]
-          %td.currency= number_to_currency @tickets_commission
-        %tr
-          %td Customer service charges per hour
-          %td.r= 0
-          %td.currency= number_to_currency @bill[:customer_service_per_hour]
-          %td.currency= number_to_currency 0
-        %tr.totalsRow
-          %td= "Total payment due #{Time.now.to_formatted_s(:date_only)}"
-          %td
-          %td
-          %td.currency= number_to_currency(@total)
+%h1
+  = @page_title
+#invoice
+  %table
+    %tr
+      %th{:colspan=>2} Acct Code &amp; Desc
+      %th Show
+      %th Qty
+      %th Each
+      %th Total
+    %tr
+      %td
+      %td.strong{:colspan=>2} Customer service charges per hour
+      %td.r= 0
+      %td.currency= number_to_currency @bill[:customer_service_per_hour]
+      %td.currency= number_to_currency 0
+    %tr
+      %td
+      %td.strong{:colspan=>2} Base Monthly Usage Fee 
+      %td.r= sprintf("%.1f",@nmonths)
+      %td.currency= number_to_currency @bill[:monthly_fee]
+      %td.currency= number_to_currency @monthly_fee
+    %tr
+      %td
+      %td.strong{:colspan=>5} Charges on Revenue Ticket Sales
+    - @vouchers.sort_by(&Proc.new { |x| x.attributes.values_at('show_name','account_code').join(',') }).each do |vgrp|
+      %tr
+        %td= account_code_with_links vgrp.attributes['account_code']
+        %td= vgrp.attributes['vouchertype_name']
+        %td= vgrp.attributes['show_name']
+        %td.r= vgrp.attributes['count']
+        %td.currency= number_to_currency @bill[:per_ticket_fee]
+        %td.currency= number_to_currency @subtotal[vgrp.attributes.values_at('show_name','account_code').join(',')]
+    %tr.totalsRow
+      %td
+      %td= "Total payment due #{Time.now.to_formatted_s(:date_only)}"
+      %td{:colspan=>3}
+      %td.currency= number_to_currency(@total)

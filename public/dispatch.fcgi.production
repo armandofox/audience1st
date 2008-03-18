@@ -21,4 +21,29 @@
 require File.dirname(__FILE__) + "/../config/environment"
 require 'fcgi_handler'
 
+class RailsFCGIHandler
+  private
+    # improved version of frao_handler
+    # by Chris Gaskett chris.gaskett.com
+    # tries to keep one fcgi process alive
+    # still might need a kill -9 sometimes if processes hangs
+    def pfrao_handler(signal)
+      dispatcher_log :info, "asked to terminate immediately"
+      number_procs = `/bin/ps ux | /bin/grep -c fcgi$`.to_i
+      # note: to_i produces 0 if conversion to integer is not successful
+      case number_procs
+      when 0
+        dispatcher_log :info, "pfrao handler error, check number_procs query, paths. Exiting"
+        exit
+      when 1
+        dispatcher_log :info, "pfrao handler restarting instead, only one process left"
+        restart_handler(signal)
+      else 
+        dispatcher_log :info, "pfrao handler agreed to exit, more than one process is running"
+        exit
+      end
+    end
+    alias_method :exit_now_handler, :pfrao_handler
+  end
+  
 RailsFCGIHandler.process!

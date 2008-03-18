@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <link href="vbo.css?1204838323" media="screen" rel="Stylesheet" type="text/css" />
+    <link href="generic.css?1205440182" media="screen" rel="Stylesheet" type="text/css" />
+    <script src="/javascripts/prototype.js?1204930640" type="text/javascript"></script>
+    <script src="/javascripts/effects.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/dragdrop.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/controls.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/application.js?1194912209" type="text/javascript"></script>
+    <title>Welcome, Subscriber Armando Fox</title>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type' />
+    <meta content='no' http-equiv='imagetoolbar' />
+    <meta content='' name='description' />
+  </head>
+  <body class='testing' id='customers_welcome_subscriber'>
+    <div id='outer_wrapper'>
+      <table width='100%'>
+        <tr>
+          <td class='l' id='welcome'>
+            Welcome,
+            Armando Fox &lt;af-theater@reinysfox.com&gt;
+            <form method="post" action="/customers/logout" class="button-to"><div><input class="genButton" type="submit" value="Log Out" /></div></form>
+          </td>
+          <td class='r'>
+            13 Mar 14:29
+          </td>
+        </tr>
+      </table>
+      <ul id="store_nav">
+        <li id="t_store_index"><a href="/store"><br/>Buy Tickets</a></li>
+      <li id="t_customers_welcome"><a href="/customers/welcome"><br/>My Tickets</a></li>
+      <li id="t_customers_edit"><a href="/customers/edit"><br/>Contact Info</a></li>
+      </ul>
+      
+      <div class="clear"></div>
+      <br />
+      
+      <div class="clear"></div>
+      <div id='inner_wrapper'>
+        <!-- 
+          = render :partial => 'store/store_banner', :locals => {:subscriber => true }
+        -->
+        
+        <h1 class='page_heading center'>Reserve Regular Season Show Seats</h1>
+        <br />
+        <table class='full_width' id='SubscriptionReservations'>
+          <thead>
+            <tr>
+              <th>No. Tkts.</th>
+              <th>Show</th>
+              <th>Your Reservation</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Wait Until Dark (2008 Subscription)</td>
+              <td>Friday, Jan 18, 08:00PM</td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Chicago (2008 Subscription)</td>
+              <td>Saturday, Mar  8, 08:00PM</td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>On Golden Pond (2008 Subscription)</td>
+              <td>Friday, May 30, 08:00PM</td>
+              <td>
+        <form action="/vouchers/cancel_multiple?method=post" method="post">
+                  <input id="voucher_ids" name="voucher_ids" type="hidden" value="8670" />
+                  <input name="commit" onclick="this.disabled=true;this.value='Cancelling...';this.form.submit();" style="width: 100px" type="submit" value="Click to Cancel" />
+        </form>
+              </td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>Hay Fever (2008 Subscription)</td>
+              <td>Friday, Jul 11, 08:00PM</td>
+              <td>
+        <form action="/vouchers/cancel_multiple?method=post" method="post">
+                  <input id="voucher_ids" name="voucher_ids" type="hidden" value="8671" />
+                  <input name="commit" onclick="this.disabled=true;this.value='Cancelling...';this.form.submit();" style="width: 100px" type="submit" value="Click to Cancel" />
+        </form>
+              </td>
+            </tr>
+            <tr>
+        <form action="/vouchers/confirm_multiple" method="post">
+                <input id="voucher_ids" name="voucher_ids" type="hidden" value="8672" />
+                <td>1</td>
+                <input id="number" name="number" type="hidden" value="1" />
+                <td>Bat Boy: The Musical (2008 Subscription)</td>
+                <td>
+                  <select id="showdate_id" name="showdate_id" style="width: 200px"><option value="0">Select date to reserve...</option><option value="165">Friday, Sep 26, 08:00PM</option>
+                  <option value="166">Saturday, Sep 27, 08:00PM</option>
+                  <option value="167">Friday, Oct  3, 08:00PM</option>
+                  <option value="168">Saturday, Oct  4, 08:00PM</option>
+                  <option value="169">Sunday, Oct  5, 02:00PM</option>
+                  <option value="170">Friday, Oct 10, 08:00PM</option>
+                  <option value="171">Saturday, Oct 11, 08:00PM</option>
+                  <option value="172">Sunday, Oct 12, 02:00PM</option>
+                  <option value="173">Friday, Oct 17, 08:00PM</option>
+                  <option value="174">Saturday, Oct 18, 08:00PM</option>
+                  <option value="175">Sunday, Oct 19, 02:00PM</option>
+                  <option value="176">Friday, Oct 24, 08:00PM</option>
+                  <option value="177">Saturday, Oct 25, 08:00PM</option>
+                  <option value="178">Sunday, Oct 26, 02:00PM</option>
+                  <option value="179">Friday, Oct 31, 08:00PM</option>
+                  <option value="180">Saturday, Nov  1, 08:00PM</option></select>
+                </td>
+                <td>
+                  <input name="commit" onclick="this.disabled=true;this.value='Confirming...';this.form.submit();" style="width: 17ex" type="submit" value="Click to Confirm" />
+                </td>
+        </form>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <h1 class='page_heading center'>Purchased Tickets</h1>
+        <br />
+        <table class='full_width' id='customerVoucherList'>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Acquired</th>
+              <th>Redeemed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Goldstar 1/2 price</td>
+              <td>External Vendor</td>
+              <!-- regular voucher, reserved -->
+              <td>
+                <span class='showName'>Wait Until Dark</span>
+                <br />
+                <span class='showDate'>Fri, Jan 18, 08:00 PM</span>
+              </td>
+              <!-- customer actions on reserved voucher: -->
+              <td>
+              </td>
+              <!-- admin actions on reserved voucher: -->
+            </tr>
+            <tr>
+              <td>Goldstar 1/2 price</td>
+              <td>External Vendor</td>
+              <!-- regular voucher, reserved -->
+              <td>
+                <span class='showName'>Wait Until Dark</span>
+                <br />
+                <span class='showDate'>Fri, Jan 18, 08:00 PM</span>
+              </td>
+              <!-- customer actions on reserved voucher: -->
+              <td>
+              </td>
+              <!-- admin actions on reserved voucher: -->
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <form method="get" action="/store" class="button-to"><div><input type="submit" value="Buy More Tickets" /></div></form>
+      </div>
+    </div>
+    <div class='center' id='footer'>
+      &copy; 2008
+      <a href="http://www.a1patronsystems.com">A1 Patron Systems</a>
+       - Build DEV - 
+      <a href="http://www.altarena.org/privacy-policy">Terms of Use & Privacy Policy</a>
+    </div>
+  </body>
+</html>

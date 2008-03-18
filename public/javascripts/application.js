@@ -24,3 +24,11 @@ function checkBoxes(formid,newval) {
 }
 
 
+function showEltOnCondition(menu,elt,cond) {
+    if (menu.options[menu.selectedIndex].value == cond) {
+        Element.show(elt);
+    } else {
+        Element.hide(elt);
+    }
+}
+

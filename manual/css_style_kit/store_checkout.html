@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <link href="vbo.css?1204838323" media="screen" rel="Stylesheet" type="text/css" />
+    <link href="generic.css?1205440182" media="screen" rel="Stylesheet" type="text/css" />
+    <script src="/javascripts/prototype.js?1204930640" type="text/javascript"></script>
+    <script src="/javascripts/effects.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/dragdrop.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/controls.js?1199416033" type="text/javascript"></script>
+    <script src="/javascripts/application.js?1194912209" type="text/javascript"></script>
+    <title>Store: Checkout</title>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type' />
+    <meta content='no' http-equiv='imagetoolbar' />
+    <meta content='' name='description' />
+  </head>
+  <body class='testing' id='store_checkout'>
+    <div id='outer_wrapper'>
+      <table width='100%'>
+        <tr>
+          <td class='l' id='welcome'>
+            Welcome,
+            Armando Fox &lt;af-theater@reinysfox.com&gt;
+            <form method="post" action="/customers/logout" class="button-to"><div><input class="genButton" type="submit" value="Log Out" /></div></form>
+          </td>
+          <td class='r'>
+            13 Mar 14:24
+          </td>
+        </tr>
+      </table>
+      <ul id="store_nav">
+        <li id="t_store_index"><a href="/store"><br/>Buy Tickets</a></li>
+      <li id="t_customers_welcome"><a href="/customers/welcome"><br/>My Tickets</a></li>
+      <li id="t_customers_edit"><a href="/customers/edit"><br/>Contact Info</a></li>
+      </ul>
+      
+      <div class="clear"></div>
+      <br />
+      
+      <div class="clear"></div>
+      <div id='inner_wrapper'>
+        <h1 class='page_heading center'>Checkout</h1>
+        
+        <!--[form:cart]-->
+        <!-- cart display -->
+        
+        <div id="cart">
+          <ol id="cart_items">
+              <li class="cart_item even">
+                <div class="price_and_actions">
+              <div class="actions">
+                    </div>
+              <div class="cart_item_price">$15.00</div>
+            </div>
+            
+            <span class="cart_item_desc">
+                                <span class="voucher_show_name">Chicago</span>
+                <span class="voucher_show_date">Mar 28, 2008, 08:00 PM</span>
+                    <span class="voucher_type">Guest of Subscriber - Student/Sr</span>
+                      </span>
+            
+            </li>
+              <li class="cart_item odd">
+                <div class="price_and_actions">
+              <div class="actions">
+                    </div>
+              <div class="cart_item_price">$20.00</div>
+            </div>
+            
+            <span class="cart_item_desc">
+                                <span class="voucher_show_name">Chicago</span>
+                <span class="voucher_show_date">Mar 29, 2008, 08:00 PM</span>
+                    <span class="voucher_type">General Adm - Adult</span>
+                      </span>
+            
+            </li>
+              <li class="cart_item even">
+                <div class="price_and_actions">
+              <div class="actions">
+                    </div>
+              <div class="cart_item_price">$10.00</div>
+            </div>
+            
+            <span class="cart_item_desc">
+                        <span class="donation_name">Donation to General Fund</span>
+                </span>
+            
+            </li>
+            </ol>
+          <div id="cart_total">
+            <div id="total_price">$45.00</div>
+            <div>&nbsp;</div>
+          </div>
+        </div>
+        <a href="/store" class="genButton">Make Changes to Order</a>
+        <br />
+        <br />
+        <form action="/store/place_order" method="post">
+          <h2>Please Verify Billing Info</h2>
+          <p>
+            <strong>
+              <a href="/store/not_me" class="genButton">This Isn't Me</a>
+            </strong>
+            |
+            <strong>
+              <a href="/store/edit_billing_address" class="genButton">Change Billing Address</a>
+            </strong>
+          </p>
+          
+          <!-- [form:customer] -->
+          <fieldset id='billing_info'>
+            <legend>Credit Card Billing Address</legend>
+            <label for='customer_first_name'>First name</label>
+            <input id="customer_first_name" max_length="40" name="customer[first_name]" readonly="readonly" size="16" type="text" value="Armando" />
+            <br />
+            <label for='customer_last_name'>Last name</label>
+            <input id="customer_last_name" max_length="40" name="customer[last_name]" readonly="readonly" size="16" type="text" value="Fox" />
+            <br />
+            <br />
+            <label for='customer_street'>Street</label>
+            <input id="customer_street" name="customer[street]" readonly="readonly" size="30" type="text" value="251 Surrey St" />
+            <br />
+            <label for='customer_city'>City</label>
+            <input id="customer_city" max_length="32" name="customer[city]" readonly="readonly" size="16" type="text" value="San Francisco" />
+            <label class='no_float' for='customer_state'>State</label>
+            <input id="customer_state" max_length="2" name="customer[state]" readonly="readonly" size="2" type="text" value="CA" />
+            <label class='no_float' for='customer_zip'>Zip</label>
+            <input id="customer_zip" max_length="10" name="customer[zip]" readonly="readonly" size="10" type="text" value="94131" />
+            <br />
+            <br />
+            <label for='customer_day_phone'>Day phone</label>
+            <input id="customer_day_phone" max_length="16" name="customer[day_phone]" readonly="readonly" size="16" type="text" value="6507239558" />
+            <br />
+            <label for='customer_eve_phone'>Evening phone</label>
+            <input id="customer_eve_phone" max_length="16" name="customer[eve_phone]" readonly="readonly" size="16" type="text" value="6502795289" />
+            <br />
+          </fieldset>
+          <input id="customer_e_blacklist" name="customer[e_blacklist]" type="checkbox" value="1" /><input name="customer[e_blacklist]" type="hidden" value="0" />
+          <label class='no_float' for='customer_e_blacklist'>
+            Please don't send me email about upcoming shows &amp; events.
+          </label>
+          <span class='small'>
+            <a href="http://www.altarena.org/privacy-policy">Privacy Policy</a>
+          </span>
+          <!-- [eoform:customer] -->
+          <br />
+          <br />
+          <h2>Credit Card Information</h2>
+          <p class='notice'>
+            We do not store your card number after completing your purchase.
+            <br />
+            Our transactions are securely processed through Authorize.net.
+          </p>
+          <br />
+          
+          <!--[form:credit_card]-->
+          
+          
+          
+          <label for="credit_card_type">Type</label>
+          <select id="credit_card_type" name="credit_card[type]"><option value="visa">Visa</option>
+          <option value="master">MasterCard</option>
+          <option value="discover">Discover</option>
+          <option value="american_express">AmEx</option>
+          <option value="diners_club">Diners Club</option></select>
+          <br />
+          <label for="credit_card_number">Number (no spaces)</label>
+          <input id="credit_card_number" max_length="16" name="credit_card[number]" size="16" type="text" />
+          <br/>
+          
+           
+          <label for="credit_card_month">Expiration Month</label>
+          <select id="credit_card_month" name="credit_card[month]">
+          <option value="1" selected="selected">1 - January</option>
+          <option value="2">2 - February</option>
+          <option value="3">3 - March</option>
+          <option value="4">4 - April</option>
+          <option value="5">5 - May</option>
+          <option value="6">6 - June</option>
+          <option value="7">7 - July</option>
+          <option value="8">8 - August</option>
+          <option value="9">9 - September</option>
+          <option value="10">10 - October</option>
+          <option value="11">11 - November</option>
+          <option value="12">12 - December</option>
+          </select>
+          
+          <br />
+          <label for="credit_card_year">Expiration Year</label>
+          <select id="credit_card_year" name="credit_card[year]">
+          <option value="2008">2008</option>
+          <option value="2009">2009</option>
+          <option value="2010">2010</option>
+          <option value="2011">2011</option>
+          <option value="2012">2012</option>
+          <option value="2013">2013</option>
+          <option value="2014">2014</option>
+          </select>
+          
+          <br/>
+          
+          <label for="credit_card_verification_value">Security code</label>
+          <input id="credit_card_verification_value" max_length="4" name="credit_card[verification_value]" size="4" type="text" />
+          <br/>
+          
+          <!--[eoform:credit_card]-->
+          <input id="sales_final" name="sales_final" type="checkbox" value="1" />
+          <label class='no_float' for='sales_final'>
+            <strong>
+              I understand and agree that
+              <a href="#" onclick="alert('Terms of use:\n\nI certify that I am 18 or over, or that I have the permission of a parent or adult guardian to provide the information required to complete this sale.\n\nI understand that ticket sales are final: No refunds or exchanges are allowed.'); return false;">all ticket sales are final and there are no refunds or exchanges.</a>
+            </strong>
+          </label>
+          <br />
+          <br />
+          <input class="indented" name="commit" onClick="this.disabled=true;this.value='Processing, Please Wait';document.getElementById('cancel').style.display='none';this.form.submit();" type="submit" value="Credit Card Payment" />
+          <a href="/store" class="genButton" id="cancel">Cancel</a>
+        </form>
+      </div>
+    </div>
+    <div class='center' id='footer'>
+      &copy; 2008
+      <a href="http://www.a1patronsystems.com">A1 Patron Systems</a>
+       - Build DEV - 
+      <a href="http://www.altarena.org/privacy-policy">Terms of Use & Privacy Policy</a>
+    </div>
+  </body>
+</html>

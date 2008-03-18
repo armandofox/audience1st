@@ -179,9 +179,6 @@ th {
 .currency { 
   text-align: right;
 }
-.hidden { 
-  display: none;
-}
 
 #outer_wrapper {
   margin: 0 auto;

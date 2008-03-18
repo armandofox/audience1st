@@ -1,6 +1,6 @@
 .pageDiv
-  %h1 Box Office Reports
-  - form_tag(:action => 'walkup_sales', :method => :get) do
+  %h1 Ticket Sales and Box Office Reports
+  - form_tag({:action => 'walkup_sales'}, {:method => :get}) do
     %p 
       Walkup Sales Summary by Ticket Type for
       = select_tag ('showdate_id', options_from_collection_for_select(@all_showdates, :id,:printable_name,@next_showdate.id)) 
@@ -14,6 +14,11 @@
 
   - form_tag({:action => 'boxoffice_report'}, {:method => :get}) do
     %p 
-      Detailed boxoffice report for 
+      Door List for
       = select_tag 'showdate_id',  options_from_collection_for_select(@all_showdates,:id,:printable_name,@next_showdate.id) 
       = submit_tag 'Go' 
+  - form_tag({:action => 'unfulfilled_orders'},:method => :get) do
+    %p 
+      Show orders needing fulfillment as of today
+      (usually means mailing something to customer).
+      = submit_tag 'Generate Listing'
