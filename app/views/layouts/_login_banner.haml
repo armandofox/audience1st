@@ -7,11 +7,8 @@
         = button_to('Disable Admin', :controller => 'customers', :action => 'disable_admin') if controller.controller_name =~ /customer|store/
       - else
         = h("#{logged_in.full_name} <#{logged_in.login}>")
-      = button_to 'Log Out', {:controller=>'customers', :action=>'logout'}, {:class => 'genButton'} 
-
+      = button_to 'Log Out', {:controller=>'customers', :action=>'logout'}
     %td.r
-      - if @gAdmin.is_staff 
-        = link_to 'Help', APP_CONFIG[:help_manual], {:class=>:adminButton, :target=>:_blank}
       = Time.now.to_formatted_s(:short)
       - if @gAdmin.is_admin 
         %br

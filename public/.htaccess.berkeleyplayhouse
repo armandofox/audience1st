@@ -3,7 +3,7 @@ AuthUserFile /home/audienc/htpasswd-general
 AuthGroupFile /dev/null
 AuthName "Limited Access"
 AuthType Basic
-require valid-user
+# require valid-user
 
 # General Apache options
 #AddHandler fastcgi-script .fcgi

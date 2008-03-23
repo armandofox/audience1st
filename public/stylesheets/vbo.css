@@ -146,6 +146,7 @@ submit:hover {
    clear: both;
    padding: 2px 10px;
    background-color: yellow;            
+   color: black;
    line-height: 1.5em;
 }
 .adminButton { 

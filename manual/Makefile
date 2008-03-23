@@ -23,7 +23,8 @@ docinstall: all
 html: manual/manual.html
 
 css_style_kit.zip: $(wildcard css_style_kit/*.html)
-	$(ZIP) -r $@ css_style_kit
+	rm -f $@
+	$(ZIP) -r $@ css_style_kit -x 'css_style_kit/.svn/*'
 
 manual/manual.html: $(TEXFILES) $(OTHERFILES)
 	-$(LATEX2HTML) -split 2 $<

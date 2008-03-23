@@ -14,7 +14,7 @@ class VouchersController < ApplicationController
          :redirect_to => {:controller => 'customers', :action => 'welcome'})
 
   def addvoucher
-    unless (@customer = Customer.find_by_id(params[:customer]))
+    unless (@customer = @gCustomer)
       flash[:notice] = "Must select a customer to add vouchers"
       redirect_to :controller => 'customers', :action => 'list'
       return
@@ -30,35 +30,46 @@ class VouchersController < ApplicationController
       @bundle_vouchers = Vouchertype.find(:all, :conditions => 'is_bundle = 1')
       @purchasemethods = Purchasemethod.find(:all)
       # fall through to rendering
-    else                        # post
-      thenumtoadd = params[:howmany].to_i
-      thevouchertype = params[:vouchertype_id].to_i
-      thevouchername = Vouchertype.find(thevouchertype).name
-      thepurchasemethod = params[:purchasemethod_id].to_i
-      thepurchasemethodname = Purchasemethod.find(thepurchasemethod).description
-      fulfillment_needed = params[:fulfillment_needed] 
-      thecomment = params[:comment] || "Add  #{thenumtoadd} vouchertype_id=#{thevouchertype} '#{thevouchername}' vouchers, paid by '#{thepurchasemethodname}'"
-      custid = @customer.id
-      begin
-        v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
-                                              @customer,thepurchasemethod, 0,
-                                              thecomment, logged_in_id,
-                                              fulfillment_needed)
-        if (v.kind_of?(Array))
-          flash[:notice] = thecomment + " for customer #{@customer.full_name}"
-          Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
-                               :voucher_id => v.first.id,
-                               :comments => thecomment,
-                               :logged_in_id => logged_in_id,
-                               :purchasemethod_id => thepurchasemethod)
-        else
-          flash[:notice] = "Add voucher failed: #{v}"
-        end
-      rescue Exception => e
-        flash[:notice] = "Error adding vouchers:<br/>#{e.message}"
-      end
-      redirect_to :controller => 'customers', :action => 'welcome'
+      return
     end
+
+    thenumtoadd = params[:howmany].to_i
+    thevouchertype = params[:vouchertype_id].to_i
+    thevouchername = (vt = Vouchertype.find(thevouchertype)).name
+    thepurchasemethod = params[:purchasemethod_id].to_i
+    thepurchasemethodname = (pm = Purchasemethod.find(thepurchasemethod)).description
+    # if comp vouchers are being added, only purchasemethod allowed
+    #  is 'no payment necessary'
+    if vt.price.zero? && !pm.nonrevenue?
+      flash[:notice] = "Only the following payment methods are valid for " <<
+        "zero-cost vouchers: " <<
+        Purchasemethod.find_all_by_nonrevenue(true).map {|s| s.description}.join(', ')
+      redirect_to :action => :addvoucher
+      return
+    end
+      
+    fulfillment_needed = params[:fulfillment_needed] 
+    thecomment = params[:comment]
+    custid = @customer.id
+    begin
+      v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
+                                            @customer,thepurchasemethod, 0,
+                                            thecomment, logged_in_id,
+                                            fulfillment_needed)
+      if (v.kind_of?(Array))
+        flash[:notice] = thecomment + " for customer #{@customer.full_name}"
+        Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
+                             :voucher_id => v.first.id,
+                             :comments => thecomment,
+                             :logged_in_id => logged_in_id,
+                             :purchasemethod_id => thepurchasemethod)
+      else
+        flash[:notice] = "Add voucher failed: #{v}"
+      end
+    rescue Exception => e
+      flash[:notice] = "Error adding vouchers:<br/>#{e.message}"
+    end
+    redirect_to :controller => 'customers', :action => 'welcome'
   end
   
   def remove_voucher
