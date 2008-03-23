@@ -2,16 +2,13 @@
 
 /[form:vouchertype]
 
-%table
-  %tr
-    %td
-      %label{:for=>:vouchertype_name} Name
-      %br/
-      = text_field 'vouchertype', 'name'
-    %td
-      %label{:for=>:vouchertype_price}Price
-      %br/
-      = text_field 'vouchertype', 'price', :size => 6
+%p
+  %label{:for=>:vouchertype_name} Name
+  = text_field 'vouchertype', 'name'
+
+%p
+  %label{:for=>:vouchertype_price}Price
+  = text_field 'vouchertype', 'price', :size => 6
 
 %p
   %label{:for=>:vouchertype_account_code} Account Code
@@ -23,12 +20,10 @@
 
 %p
   %label{:for=>:vouchertype_valid_date} Not valid before midnight on
-  %br/
   = datetime_select 'vouchertype', 'valid_date', :discard_hour => true, :discard_minute => true
 
 %p
   %label{:for=>:vouchertype_expiration_date} Not valid after midnight on
-  %br/
   = datetime_select 'vouchertype', 'expiration_date', :discard_hour => true, :discard_minute => true
 
 %p
