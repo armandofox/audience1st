@@ -269,4 +269,53 @@ module ApplicationHelper
     end
   end
 
+  # return a SELECT with shortcuts for "today", "this week", etc. that has onSelect
+  # code to set the menus with the given prefix for the shortcuts.
+
+  def select_date_shortcuts(start_year,from_prefix,to_prefix)
+    # shortcut dates
+    t = Time.now
+    shortcuts = [["Today", t,t],
+                 ["Yesterday", t-1.day, t-1.day],
+                 ["Past 7 days", t-7.days, t],
+                 ["Month to date", t.at_beginning_of_month, t],
+                 ["Last month", (t-1.month).at_beginning_of_month,
+                  t.at_beginning_of_month - 1.day],
+                 ["Year to date", t.at_beginning_of_year, t],
+                 ["Last year", (t-1.year).at_beginning_of_year,
+                  t.at_beginning_of_year - 1.day],
+                 ["Custom...",t,t ]]
+    onsel = <<EOS1
+      function setShortcut(v) {
+        switch(v) {        
+EOS1
+    shortcuts.each_with_index do |e,indx|
+      s,f,t = e
+      onsel << <<EOS2
+          case #{indx}:
+             fy=#{f.year-start_year};  fm=#{f.month-1}; fd=#{f.day-1};
+             ty=#{t.year-start_year};  tm=#{t.month-1}; td=#{t.day-1};
+             break;
+EOS2
+    end
+    onsel << <<EOS3
+          default:
+             fy=-1;
+          }
+        if (fy>0) {
+          $('#{from_prefix}_year').selectedIndex=fy;
+          $('#{from_prefix}_month').selectedIndex=fm;
+          $('#{from_prefix}_day').selectedIndex=fd;
+          $('#{to_prefix}_year').selectedIndex=ty;
+          $('#{to_prefix}_month').selectedIndex=tm;
+          $('#{to_prefix}_day').selectedIndex=td;
+        }
+      }
+EOS3
+    javascript_tag(onsel) <<
+      select_tag("shortcut_#{from_prefix}_#{to_prefix}",
+                 options_for_select(shortcuts.each { |e| e.first }),
+                 :onChange => "setShortcut(this.selectedIndex)")
+  end
+
 end

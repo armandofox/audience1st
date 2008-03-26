@@ -7,7 +7,7 @@
 
 .pageDiv
   %h1 
-    Quick Subscriber Stats for
+    Subscription Counts for
     - y = Time.now.year
     = select_tag('year', options_for_select((y-2..y+1).to_a, y))
     %span#wait{:style=>'display: none'} Refreshing...

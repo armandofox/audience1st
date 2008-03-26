@@ -6,16 +6,6 @@
 
 timezone: 'PST8PDT'
 
-
-# this is the Authorize.net test account gateway properties
-payment_gateway_test:  
-  authorized_net_api_login_id: 33XUqKRw96
-  authorized_net_transaction_key: 3GxPg8bh9ar358RA
-
-# where to get help
-  
-help_manual: http://www.audience1st.com/help/manual.html
-
 # Special seating needs or requests
 
 voucher_comments:
@@ -60,7 +50,7 @@ cc_purch: "Credit Card Payment"
 messages:
   terms_of_sale_0: "Terms of use:\n\nI certify that I am 18 or over, or that I have the permission of a parent or adult guardian to provide the information required to complete this sale.\n\nI understand that ticket sales are final: No refunds or exchanges are allowed."
   areyousure_0: "Are you sure?"
-  delete_user_2: "Delete customer %s %s? Perhaps you should consider merging the customer with another customer instead, or merging with WALKUP CUSTOMER to permanently deactivate this customer.  If you click OK, this customer's vouchers will be destroyed, which affects show reservation counts and will screw up referential integrity. This action cannot be undone, and it's probably not what you want.  If you are wise, click Cancel to back out now."
+  delete_user_2: "Delete customer %s %s? Perhaps you should consider merging the customer with another customer instead, or merging with WALKUP CUSTOMER to permanently deactivate this customer.  If you click OK, this customer's vouchers will be destroyed, which affects show reservation counts and will screw up referential integrity. This action cannot be undone, and it's probably not what you want.  If you are wise, click Cancel to back out now. If you are SURE you know what you're doing, click OK to confirm deleting this customer."
   remove_bundle_0: "OK to remove this voucher from customer account? This will NOT remove the individual vouchers that were part of the bundle - you have to remove those separately."
   remove_voucher_0: "OK to remove this voucher from customer account?"
   cancel_prepaid_0: "OK to cancel this revenue reservation?  NOTE: If this reservation was paid for with a credit card, cancellation WILL NOT cause the charge to be refunded.  Click OK to go ahead and cancel the reservation.  Click CANCEL to leave things as they are."

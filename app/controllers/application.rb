@@ -78,6 +78,7 @@ class Time
 end
 
 class ApplicationController < ActionController::Base
+  include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
   include SslRequirement
