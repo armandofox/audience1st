@@ -2,22 +2,27 @@
   %p.strong No subscriptions
 - else
   %table#subsList
-    %tr
-      %thead
+    %thead
+      %tr
         %th Type 
-        %th Price 
         %th Qty 
-      %tbody 
-        - total = tprice = 0 
-        - subscriptions.each do |s| 
-          %tr{:class=>cycle(:oddRow,:evenRow)}
-            = s.map { |ss| "<td align='right'>#{ss}" }.join('')  
-            - total += s[2] 
-            - tprice += s[1]*s[2] 
-        %tr
-          %th Total  
-          %th= tprice  
-          %th= total   
+        %th Price 
+        %th Subttl
+    %tbody 
+      - total = tprice = 0 
+      - subscriptions.each do |s| 
+        %tr{:class=>cycle(:oddRow,:evenRow)}
+          %td.l= s[0]
+          %td.r= s[1]
+          %td.currency= number_to_currency(s[2])
+          %td.currency= number_to_currency (s[1]*s[2])
+          - total += s[2] 
+          - tprice += s[1]*s[2] 
+      %tr.totalsRow
+        %td Total  
+        %td.r= total   
+        %td
+        %td.currency= number_to_currency tprice  
 
   = button_to('Download to Excel', {:action=>'subscriber_details', :year=>year, :download=>true},{:method=>:get})
 

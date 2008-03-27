@@ -5,9 +5,10 @@
     %p
       = select_tag 'rep', options_for_select(["Transaction details", "Categorized Revenue", "Invoice"])
       = select_date_shortcuts 2007, 'from', 'to'
-      from
+      = submit_tag 'Go' 
+    %p
+      Custom dates: from
       = select_date Date.today, :prefix => 'from', :start_year => 2007
       to
       = select_date Date.today, :prefix => 'to',  :start_year => 2007
-      = submit_tag 'Go' 
 

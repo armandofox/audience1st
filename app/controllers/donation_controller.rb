@@ -63,7 +63,7 @@ class DonationController < ApplicationController
       @things += vouchers
     end
     @things = @things.sort_by { |x| (x.kind_of?(Donation) ?
-                                     x.date : x.showdate.thedate.date_part) }
+                                     x.date : x.showdate.thedate.to_date) }
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label

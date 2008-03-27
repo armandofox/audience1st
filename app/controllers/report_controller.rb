@@ -184,6 +184,8 @@ class ReportController < ApplicationController
 
   def accounting_report
     @from,@to = get_dates_from_params(:from,:to)
+    @page_title =
+      "Revenue by Category: #{@from.to_formatted_s(:short)} - #{@to.to_formatted_s(:short)}"
     # get all vouchers sold between these dates where:
     #  - NOT walkup sales
     #  - purchasemethod is some credit card transaction
@@ -396,13 +398,11 @@ EOQ2
   end
 
   def get_dates_from_params(from_param,to_param,
-                            default_from=Time.now,default_to=Time.now+1.day-1.second)
+                            default_from=Time.now,default_to=Time.now)
     from = date_from_param(from_param,default_from)
     to = date_from_param(to_param,default_to)
     from,to = to,from if from > to
-    from = from.midnight
-    to = to.midnight - 1.second
-    return from,to
+    return from.at_beginning_of_day, to.at_end_of_day
   end
 
   def date_from_param(param,default=Time.now)

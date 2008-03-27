@@ -1,10 +1,7 @@
 .pageDiv
-  %h1 
-    Reconciliation Report for 
-    = @from.to_formatted_s(:date_only)
-    to
-    = @to.to_formatted_s(:date_only)
-    - total = 0.0
+  %h1= h(@page_title)
+  - total = 0.0
+  - totalunits = 0
   %table
     - @show_txns.group_by(&:purchasemethod_id).each_pair do |pm_id, pm_txns|
       %tr
@@ -29,3 +26,10 @@
         %td{:colspan=>2}
         %td.r= subtotalunits
         %td.currency= number_to_currency subtotal
+        - total += subtotal 
+        - totalunits += subtotalunits
+    %tr
+    %tr.totalsRow
+      %td{:colspan=>3}
+      %td.r= totalunits
+      %td.currency= number_to_currency total

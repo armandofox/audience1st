@@ -1,89 +1,15 @@
 # Filters added to this controller will be run for all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
-# add a couple of useful formats to ActiveSupport to_formatted_s conversion
-ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS[:date_only] = "%e %B %Y"
-
-class String
-
-  def self.random_string(len)
-    # generate a random string of alphanumerics, but to avoid user confusion,
-    # omit o/0 and 1/i/l
-    newpass = ''
-    chars = ("a".."z").to_a + ("A".."Z").to_a + ("2".."9").to_a - %w[O o L l I i]
-    1.upto(len) { |i| newpass << chars[rand(chars.size-1)] }
-    return newpass
-  end
-
-  def wrap(col = 80)
-    # from blog.macromates.com/2006/wrapping-text-with-regular-expressions
-    self.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/, "\\1\\3\n") 
-  end
-
-  def valid_email_address?
-    return self && self.match( /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.([A-Z]{2,4})?$/i )
-  end
-
-  def default_to(val)
-    self.to_s.empty? ? val : self.to_s
-  end
-  @@name_connectors = %w[and & van von der de di]
-  @@name_prefixes = /^m(a?c)(\w+)/i
-  def capitalize_name_word
-    # short all-caps (like "OJ") are left as-is
-    return self if self.match(/^[A-Z]+$/)
-    # words that are already BiCapitalized are left as-is
-    # (i.e., contain at least one uppercase letter that is preceded by
-    # a lowercase letter; catches McHugh, diBlasio, etc.)
-    return self if self.match( /[a-z][A-Z]/ )
-    # single initial: capitalize the initial
-    return "#{self.upcase}." if self.match(/^\w$/i)
-    # connector word (von, van, de, etc.) - lowercase
-    return self.downcase if @@name_connectors.include?(self.downcase)
-    # default: capitalize first letter
-    return self.sub(/^(\w)/) { |a| a.upcase }
-    #self.match(@@name_prefixes) ? self.sub(@@name_prefixes, "M#{$1}#{$2.capitalize}") :
-    # self.capitalize
-  end
-  def name_capitalize
-    self.split(/[\., ]+/).map { |w| w.capitalize_name_word }.join(" ")
-  end
-end
-
-class Time
-  def speak(args={})
-    res = []
-    unless args[:omit_date]
-      res << strftime("%A, %B %e")
-    end
-    unless args[:omit_time]
-      say_min = min.zero? ? "" :  min < 10 ? "oh #{min}" : min
-      res<<"#{self.strftime('%I').to_i} #{say_min} #{self.strftime('%p')[0,1]} M"
-    end
-    res.join(", at ")
-  end
-  def self.new_from_hash(h)
-    return Time.now unless h.respond_to?(:has_key)
-    if h.has_key?(:hour)
-      Time.local(h[:year].to_i,h[:month].to_i,h[:day].to_i,h[:hour].to_i,
-               (h[:minute] || "00").to_i,
-               (h[:second] || "00").to_i)
-    else
-      Time.local(h[:year].to_i,h[:month].to_i,h[:day].to_i)
-    end
-  end
-  def date_part
-    Date.parse(self.strftime("%D"))
-  end
-end
-
 class ApplicationController < ActionController::Base
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
   include SslRequirement
   require 'csv.rb'
-
+  require 'string_extras.rb'
+  require 'date_time_extras.rb'
+  
   before_filter :set_globals
   def set_globals
     @gCustomer = current_customer
