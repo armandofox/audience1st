@@ -24,7 +24,7 @@
 <% for t in @txns %>
 <% c = Customer.find(:first, :conditions => ["id = ?", t.customer_id])  %>
 <% s = Customer.find(:first, :conditions => ["id = ?", t.entered_by_id]) %>
-<tr <%= stripe %>>
+<tr class="<%= cycle(:oddRow,:evenRow) -%>">
   <td> <%= t.txn_date %> </td>
   <td> <%= s ? s.login : "" %> </td>
   <% if c.nil? %>

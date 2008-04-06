@@ -46,7 +46,7 @@ BINDIR     = $(APPROOT)/support
 # see error messages.  if you comment this out, you'll get those emails.
 # QUIET      =  >/dev/null 2>&1
 
-.PHONY: all nightly monthly clean_sessions backup_db backup_wp run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
+.PHONY: all nightly monthly clean_sessions backup_db backup_wp backup_svn run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
 nightly: clean_sessions notify_pending_followups kill_zombies backup_db
@@ -66,6 +66,12 @@ backup_db:
 backup_wp:
 	@$(MYSQLDUMP) $(WP_MYSQL_OPTS) $(WP_DB) | $(GZIP) > $(BACKUPDIR)/wp-$(TODAY).gz
 	@$(S3CMD) put a1_$(VENUE):wp-$(TODAY).gz  $(BACKUPDIR)/wp-$(TODAY).gz
+
+restore_db:
+	$(MYSQL) $(A1_MYSQL_OPTS) $(A1_DB)
+
+restore_wp:
+	$(MYSQL) $(WP_MYSQL_OPTS) $(WP_DB)
 
 dump_static_data:
 	@$(MYSQLDUMP) $(MYSQL_OPTS) $(A1_DB) $(STATIC_TABLES) > static.sql

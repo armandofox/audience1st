@@ -10,7 +10,7 @@
   <table border="0">
   <% @voucher_bundle.included_vouchers.each_pair do |v,qty| %>
      <% if qty.to_i != 0 %>
-      <tr <%= stripe -%>> 
+      <tr class="<%= cycle(:oddRow,:evenRow) -%>"> 
         <td align="right"> <%=h Vouchertype.find(v).name %> </td>
         <td> <%=h qty %> </td>
       </tr>

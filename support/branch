@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+$branch = shift @ARGV or die "Usage: $0 branchname 'msg'\n";
+$msg = shift @ARGV or die "Usage: $0 branchname 'msg'\n";
+die "Must be in trunk directory\n" unless ($_=`pwd`) =~ m!/trunk$!;
+$_ = `svn info` or die $!;
+if ( /URL:\s+(\S+)/ ) {
+    $_ = $1;
+} else {
+    die "Can't find repo URL";
+}
+s!trunk$!branches! or die "Subst failed";
+$cmd = "svn cp . $_/$branch -m '$msg'" ;
+system $cmd;
+

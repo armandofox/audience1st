@@ -19,7 +19,7 @@ class String
   end
 
   def default_to(val)
-    self.to_s.empty? ? val : self.to_s
+    self.blank? ? val : self.to_s
   end
   @@name_connectors = %w[and & van von der de di]
   @@name_prefixes = /^m(a?c)(\w+)/i

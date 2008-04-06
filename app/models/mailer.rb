@@ -22,7 +22,7 @@ class Mailer < ActionMailer::Base
                   )
   end
 
-  def confirm_reservation(customer,showdate_id,num=1)
+  def confirm_reservation(customer,showdate_id,num=1,confnum=0)
     sending_to(customer)
     begin
       showdate = Showdate.find(showdate_id)
@@ -34,16 +34,18 @@ class Mailer < ActionMailer::Base
     @body.merge!(:greeting => customer.full_name,
                  :performance => showdate.printable_name,
                  :num => num,
+                 :confnum => confnum,
                  :subscriber => customer.is_subscriber?,
                  :notes => showdate.show.patron_notes
                   )
   end
     
-  def cancel_reservation(old_customer, old_showdate, num = 1)
+  def cancel_reservation(old_customer, old_showdate, num = 1, confnum = 0)
     sending_to(old_customer)
     @subject << "CANCELLED reservation"
     @body.merge!(:showdate => old_showdate,
-                 :num => num)
+                 :num => num,
+                 :confnum => confnum)
   end
 
   def donation_ack(customer,amount,nonprofit=true)

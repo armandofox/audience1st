@@ -12,6 +12,10 @@ We're confirming your reservation for the following performance --
 
   Number of seats: <%= @num %>
 
+<% if (@confnum > 0)  %>
+  Your reservation confirmation number is <%= @confnum %>.
+
+<% end %>
 All tickets and reservations can be picked up at will-call beginning one
 hour before showtime.
 

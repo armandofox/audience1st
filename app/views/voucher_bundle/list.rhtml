@@ -9,7 +9,7 @@
   </tr>
   
 <% for voucher_bundle in @voucher_bundles %>
-  <tr <%= stripe %>>
+  <tr class="<%= cycle(:oddRow,:evenRow) -%>">
   <% for column in cols %>
     <% next if column.name == 'included_vouchers' %>
     <td><%=h voucher_bundle.send(column.name) %></td>

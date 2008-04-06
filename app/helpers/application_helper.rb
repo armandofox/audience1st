@@ -207,17 +207,6 @@ module ApplicationHelper
     end
   end
 
-  def stripeclass
-    session[:row] = 1-(session[:row] || 0)
-    return (session[:row].nonzero? ? 'oddRow' : 'evenRow')
-  end
-
-  def stripe
-    # return bgcolor markup for alternating table stripes
-    session[:row] = 1- (session[:row] || 0)
-    return 'class=' + (session[:row].nonzero? ? 'oddRow' : 'evenRow')
-  end
-
   def fmt_date(d)
     return (d ||= "").strftime('%b %e, %Y, %I:%M %p')
   end

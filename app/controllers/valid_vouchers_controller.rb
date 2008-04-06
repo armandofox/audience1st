@@ -1,9 +1,7 @@
 class ValidVouchersController < ApplicationController
 
-  def index
-    list
-    render :action => 'list'
-  end
+  before_filter :is_boxoffice_filter
+  before_filter(:is_boxoffice_manager_filter,:except => :show)
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => [ :create, :update ],

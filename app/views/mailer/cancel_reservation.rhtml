@@ -5,4 +5,8 @@ has CANCELLED the following reservation:
 
    Number of seats released: <%= @num %>
 
+<% if @confnum > 0 %>
+   Cancellation confirmation number: <%= @confnum %>
+
+<% end %>
 <%= @how_to_contact_us %>

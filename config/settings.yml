@@ -55,6 +55,6 @@ messages:
   remove_voucher_0: "OK to remove this voucher from customer account?"
   cancel_prepaid_0: "OK to cancel this revenue reservation?  NOTE: If this reservation was paid for with a credit card, cancellation WILL NOT cause the charge to be refunded.  Click OK to go ahead and cancel the reservation.  Click CANCEL to leave things as they are."
   delete_performance_0: 'Delete this performance: are you sure?'
-  release_reservation_0: 'Really release this reservation? Click OK to release it, or Cancel to leave things as they are.'
+  release_reservation_0: 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'
   remove_vouchertype_1: 'This will destroy all existing "%s" vouchers, removing them from customer accounts. This action cannot be undone. Continue?'
 

@@ -251,13 +251,13 @@ class Voucher < ActiveRecord::Base
         self.processed_by = logged_in
         self.sold_on = Time.now
         self.save!
-        Txn.add_audit_record(:txn_type => 'res_made',
-                             :customer_id => self.customer.id, 
-                             :logged_in_id => logged_in, 
-                             :show_id => self.showdate.show.id,
-                             :showdate_id => showdate_id,
-                             :voucher_id => self.id)
-        return true
+        a = Txn.add_audit_record(:txn_type => 'res_made',
+                                 :customer_id => self.customer.id, 
+                                 :logged_in_id => logged_in, 
+                                 :show_id => self.showdate.show.id,
+                                 :showdate_id => showdate_id,
+                                 :voucher_id => self.id)
+        return a
       else
         self.comments = avail.explanation
         return false

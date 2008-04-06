@@ -1,6 +1,6 @@
 <!--form:showdate-->
 
-<tr valign="top" <%= stripe %>>
+<tr valign="top" class="<%= cycle(:oddRow,:evenRow) -%>">
 <td> ID: <%= showdate.id %> <br/>
      <%= showdate.printable_date %> <br/>
      <%= link_to 'Edit', {:controller => 'showdates', :action => 'edit', :id => showdate.id} %>  

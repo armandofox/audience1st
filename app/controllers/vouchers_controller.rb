@@ -84,7 +84,7 @@ class VouchersController < ApplicationController
         v.destroy
         flash[:notice] = 'Voucher removed'
         Txn.add_audit_record(:txn_type => 'del_tkts',
-                             :customer_id => current_customer.id, 
+                             :customer_id => @gCustomer.id, 
                              :logged_in_id => logged_in_id, 
                              :voucher_id => old_voucher_id, 
                              :comments => comment)
@@ -158,10 +158,11 @@ class VouchersController < ApplicationController
     @is_admin = @gAdmin.is_walkup
     try_again("Please select a date") and return if
       (showdate = params[:showdate_id].to_i).zero?
-    if @voucher.reserve_for(showdate, logged_in_id,
-                            params[:comments], :ignore_cutoff => @is_admin)
-      flash[:notice] = "Reservation confirmed. "
-      email_confirmation(:confirm_reservation, @customer, showdate, 1)
+    if (a = @voucher.reserve_for(showdate, logged_in_id,
+                                 params[:comments], :ignore_cutoff => @is_admin))
+      flash[:notice] = "Reservation confirmed. " <<
+        "Your confirmation number is #{a}."
+      email_confirmation(:confirm_reservation, @customer, showdate, 1, a)
     else
       flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.comments}"
     end
@@ -184,11 +185,12 @@ class VouchersController < ApplicationController
     @v.processed_by = logged_in_id
     @v.save!
     Txn.add_audit_record(:txn_type => 'res_cancl',
+                         :customer_id => @gCustomer.id,
                          :voucher_id => params[:id],
-                           :logged_in_id => logged_in_id,
-                           :show_id => save_show,
-                           :showdate => save_showdate,
-                           :comment => 'Prepaid, comp or other nonsubscriber ticket')
+                         :logged_in_id => logged_in_id,
+                         :show_id => save_show,
+                         :showdate => save_showdate,
+                         :comment => 'Prepaid, comp or other nonsubscriber ticket')
     flash[:notice] = "Reservation cancelled, voucher unlinked from customer"
     redirect_to :controller => 'customers', :action => 'welcome'
   end
@@ -198,21 +200,26 @@ class VouchersController < ApplicationController
     old_showdate = vchs.first.showdate.clone
     vchs.each do |v|
       if v.can_be_changed?(logged_in_id)
+        showdate = v.showdate
+        showdate_id = showdate.id
+        show_id = showdate.show.id
         v.cancel(logged_in_id)
-        Txn.add_audit_record(:txn_type => 'res_cancl',
-                             :customer_id => @gCustomer.id,
-                             :logged_in_id => logged_in_id,
-                             :showdate_id => old_showdate.id,
-                             :voucher_id => v.id)
+        a = Txn.add_audit_record(:txn_type => 'res_cancl',
+                                 :customer_id => @gCustomer.id,
+                                 :logged_in_id => logged_in_id,
+                                 :showdate_id => showdate_id,
+                                 :show_id => show_id,
+                                 :voucher_id => v.id)
       else
         flash[:notice] ||= "Some reservations could NOT be cancelled. " <<
           "Please review your reservations below and contact a " <<
           "box office agent if you need assistance."
       end
     end
-    flash[:notice] ||= "Your reservations have been cancelled. "
+    flash[:notice] ||= "Your reservations have been cancelled. " <<
+      "Your cancellation confirmation number is #{a}. "
     email_confirmation(:cancel_reservation, @gCustomer, old_showdate,
-                       vchs.length)
+                       vchs.length, a)
     redirect_to :controller => 'customers', :action => 'welcome'
   end
     
@@ -222,15 +229,20 @@ class VouchersController < ApplicationController
     unless @v.can_be_changed?(logged_in_id)
       (flash[:notice] ||= "") << "This reservation is not changeable"
     else
-      old_customer = @v.customer.clone
-      if (old_showdate = @v.cancel(logged_in_id).clone)
-        Txn.add_audit_record(:txn_type => 'res_cancl',
-                             :customer_id => old_customer.id, 
-                             :logged_in_id => logged_in_id, 
-                             :showdate_id => old_showdate.id,
-                             :voucher_id => @v.id)
-        flash[:notice] = 'Reservation cancelled.'
-        email_confirmation(:cancel_reservation, old_customer, old_showdate, 1)
+      showdate = @v.showdate
+      old_showdate = showdate.clone
+      showdate_id = showdate.id
+      show_id = showdate.show.id
+      if @v.cancel(logged_in_id)
+        a= Txn.add_audit_record(:txn_type => 'res_cancl',
+                                :customer_id => @gCustomer.id, 
+                                :logged_in_id => logged_in_id, 
+                                :showdate_id => showdate_id,
+                                :show_id => show_id,
+                                :voucher_id => @v.id)
+        flash[:notice] = "Your reservation has been cancelled. " <<
+          "Your cancellation confirmation number is #{a}. "
+        email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
       else
         flash[:notice] = 'Error - reservation could not be cancelled'
       end
@@ -242,7 +254,7 @@ class VouchersController < ApplicationController
     return true if is_walkup    # or higher
     return true if (params[:id] &&
                     (voucher = Voucher.find(params[:id].to_i)) &&
-                    (voucher.customer.id == current_customer.id)) rescue nil
+                    (voucher.customer.id == @gCustomer.id)) rescue nil
     flash[:notice] = "Attempt to reserve a voucher that isn't yours."
     redirect_to(:controller => 'customers', :action => 'logout')
     return false

@@ -39,7 +39,7 @@ class Txn < ActiveRecord::Base
     comments =  args[:comments] ||  ''
     purch_id = args[:purchasemethod_id] || Purchasemethod.get_type_by_name('none')
 
-    a = Txn.create( [:customer_id => cust_id,
+    a = Txn.create( :customer_id => cust_id,
                      :entered_by_id => logged_in,
                      :txn_date => Time.now,
                      :txn_type_id => type_id,
@@ -48,8 +48,8 @@ class Txn < ActiveRecord::Base
                      :purchasemethod_id => purch_id,
                      :voucher_id => voucher_id,
                      :dollar_amount => amt,
-                     :comments => comments ] )
-    
+                     :comments => comments  )
+    a.id
   end
 
 
