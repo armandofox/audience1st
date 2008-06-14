@@ -28,7 +28,9 @@ input[type="submit"] {
   font-weight: bold;
   color: red;
 }
-
+.callout { 
+  color: red;
+}
 .maincolumn { 
   border: none;
   background: none;              
@@ -65,7 +67,9 @@ input[type="submit"] {
   background-color: #883333;
   color: white;
 }
-
+.hidden { 
+  display: none;          
+ }
 .validatedAddress { 
   background-color: #1f1;
  }
@@ -179,6 +183,8 @@ submit:hover {
 .r {  text-align: right; }
 .c { text-align: center; }
 .l { text-align: left; }
+.t { vertical-align: top; }
+.b { vertical-align: bottom; }
 
 #errorExplanation {
   width: 400px;
@@ -311,10 +317,11 @@ div.progressBar div.background {
   width: 100%;
  }
 
-.wideTable >td { 
+table.wideTable > td { 
   padding: 0;
   margin: 0;
   vertical-align: top;
+  text-align: top;
  }
 
 .top { 
@@ -342,4 +349,15 @@ table.report {
 #haveAccount { 
 }
 #newCustomer { 
+}
+
+/* Advanced customer report  (SQL builder) page */
+
+#sqlQuery { 
+  border: 1px solid red;
+  padding: 4px;
+  margin: 4px 0 2px 0;
+  background: #eee;
+  color: red;
+  font-size: 90%;
 }

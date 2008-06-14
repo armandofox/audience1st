@@ -17,7 +17,9 @@ class Option < ActiveRecord::Base
   end
 
   def self.value(name)
-    opt = Option.find_by_name(name).get_value
+    (opt = Option.find_by_name(name)) ?
+    opt.get_value :
+      nil
   end
 
   def self.values_hash(*ary)

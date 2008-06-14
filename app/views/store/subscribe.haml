@@ -27,7 +27,7 @@
         %p (No subscriptions on sale at this time)
       - else
         %label Subscription 
-        = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price')
+        = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price',@selected_sub)
         %br/
         %label{:for=>:subscription_qty} Quantity
         = select_tag("subscription_qty", options_for_select((1..10).to_a))

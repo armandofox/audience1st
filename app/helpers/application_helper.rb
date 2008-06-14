@@ -307,4 +307,23 @@ EOS3
                  :onChange => "setShortcut(this.selectedIndex)")
   end
 
+  def purchase_link_popup(text,url)
+    msg = "Copy and paste this link into an email message:"
+    link_to_function(text, "prompt('#{escape_javascript(msg)}', '#{escape_javascript(url)}')")
+  end
+
+  def link_to_show_tickets(show_id)
+    url_for(:only_path => false, :controller => 'store', :show_id => show_id)
+  end
+
+  def link_to_showdate_tickets(showdate_id)
+    url_for(:only_path => false, :controller => 'store',
+            :showdate_id => showdate_id)
+  end
+
+  def link_to_subscription_purchase(vouchertype_id)
+    url_for(:only_path => false, :controller => 'store', :action => 'subscribe',
+            :vouchertype_id => vouchertype_id)
+  end
+
 end

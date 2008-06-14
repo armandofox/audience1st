@@ -5,9 +5,10 @@
     %tr 
       %th Name
       %th Price
-      %th Acct #
+      %th Acc#
       %th Sub?
       %th Who can purchase?
+      %th Link
       %th Valid Dates
       %th Description
       %th Walkup?
@@ -24,7 +25,8 @@
         %td.r= h(vouchertype.account_code)
         %td.c= vouchertype.is_subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
-        %td
+        %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id)) if (vouchertype.is_subscription? && vouchertype.offer_public > 0)
+        %td.c
           = vouchertype.valid_date.strftime("%m/%d/%y") 
           \-
           = vouchertype.expiration_date.strftime("%m/%d/%y")

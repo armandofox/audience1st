@@ -115,13 +115,15 @@ class StoreController < ApplicationController
     @customer = store_customer
     @subscriber = @customer.is_subscriber?
     @cart = find_cart
-    @renew_discount_date = Date.new(2007, 9, 30)
-    subs = {
-      :type => :subscription,
-      :since => Date.new(2007,9,11)
-    }
+    subs = { :type => :subscription  }
     subs.merge!({:for_purchase_by => :subscribers}) if @subscriber
-    @subs_to_offer = Vouchertype.find_products(subs).sort_by { |v| v.price }.reverse
+    @subs_to_offer = Vouchertype.find_products(subs).sort_by(&:price).reverse
+    if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
+        vt = Vouchertype.find_by_id(v) &&
+        # note! must use grep (uses ===) rather than include (uses ==)
+        @subs_to_offer.grep(vt)
+      @selected_sub = v.to_i
+    end
   end
 
   def add_subscriptions_to_cart

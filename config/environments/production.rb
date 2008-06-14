@@ -19,3 +19,8 @@ config.action_controller.perform_caching             = true
 
 # Disable delivery errors if you bad email addresses should just be ignored
 # config.action_mailer.raise_delivery_errors = false
+
+# Enable Google Analytics (http://svn.rubaidh.com/plugins/trunk/google_analytics)
+Rubaidh::GoogleAnalytics.tracker_id = 'UA-123456-7'  
+Rubaidh::GoogleAnalytics.domain_name  = 'mydomain.com'  
+Rubaidh::GoogleAnalytics.environments = ['production']

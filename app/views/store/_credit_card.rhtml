@@ -12,9 +12,7 @@
 <% end %>
 
 <label for="credit_card_type">Type</label>
-<%= select 'credit_card', 'type',
-    [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover'],
-     ['AmEx','american_express'],['Diners Club','diners_club']],
+<%= select 'credit_card', 'type', Store.options_for_credit_card,
          {:id => 'credit_card_type'} %>
 <br />
 <label for="credit_card_number">Number (no spaces)</label>

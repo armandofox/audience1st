@@ -47,11 +47,13 @@ class Vouchertype < ActiveRecord::Base
     when :bundle
       restrict << "is_bundle = 1"
     end
-    case args[:walkup]
-    when true
-      restrict << "walkup_sale_allowed = 1"
-    when nil,false
-      restrict << "walkup_sale_allowed = 0"
+    if args.has_key?(:walkup)
+      case args[:walkup]
+      when true
+        restrict << "walkup_sale_allowed = 1"
+      when false
+        restrict << "walkup_sale_allowed = 0"
+      end
     end
     arglist.unshift(restrict.join(" AND "))
     Vouchertype.find(:all, :conditions => arglist)

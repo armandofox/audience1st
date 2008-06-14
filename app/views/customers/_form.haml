@@ -33,6 +33,9 @@
   %label{:for=>:customer_eve_phone} Evening phone
   =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
   %br/
+
+  %label{:for=>:customer_login} Email
+  =text_field 'customer', 'login', {:size => 20, :max_length => 40, :readonly => disabled }
     
 =check_box 'customer', 'e_blacklist'
 %label.no_float{:for=>:customer_e_blacklist}= "Please don't send me email about upcoming shows &amp; events."

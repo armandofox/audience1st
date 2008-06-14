@@ -5,6 +5,7 @@
     %tr
       %th ID
       %th Show Name
+      %th Link
       %th Run Dates
       %th House Cap.
       %th Added to system
@@ -13,6 +14,7 @@
     %tr{:class=>cycle(:evenRow,:oddRow)}
       %td.r= show.id
       %td= link_to show.name, :action => 'edit', :id => show
+      %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id)
       %td
         = show.opening_date.strftime('%b %e, %Y')
         \-

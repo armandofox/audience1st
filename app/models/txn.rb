@@ -8,18 +8,7 @@ class Txn < ActiveRecord::Base
   validates_associated :txn_type, :purchasemethod
 
   # since the audit record schema is generic, not all fields are
-  # relevant for every entry. There is a generic (private) add_audit_record
-  # function that expects values for all fields, and specialized
-  # (public)functions for each type of record that are actually called
-  # from the relevant controllers when changes are committed.
-
-  # in all cases, the id of the person making the change and the id of
-  # the affected customer are recorded.  if the customer is logged in to
-  # their online account, these id's will be the same.
-
-  # TBD: can probably redo using keyword args to add_audit_record
-  # (filling in defaults for omitted args) and eliminating the
-  # specialized calls.
+  # relevant for every entry. 
 
   def self.add_audit_record(args={})
 

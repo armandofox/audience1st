@@ -17,14 +17,18 @@ class QueryBuilder
   end
 
   def sql_for_find
-    sql = "#{@select} WHERE " << @terms.map { |t| "(#{t})" }.join(" AND ")
+    sql = "#{@select}\n  WHERE " << @terms.map { |t| "(#{t})" }.join(" AND ")
     sql << " ORDER BY #{@order}" if @order
     return [sql] + @conds
   end
   
   def render_sql
-    Customer.render_sql([@terms.map { |t| "(#{t})" }.join(" AND ")] +@conds)
+    sql = "#{@select}<br/>  WHERE " <<
+      Customer.render_sql([@terms.map { |t| "(#{t})" }.join("<br/>   AND ")] <<
+                          "<br/>  " << @conds)
+    sql << " ORDER BY #{@order}" if @order
     # just a wrapper around ActiveRecord::Base.sanitize_sql
+    sql
   end
   
 end

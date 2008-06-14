@@ -18,7 +18,9 @@
   %br/
   
   =check_box_tag 'dont_send_email'
-  %label.no_float{:for=>:dont_send_email}  <strong style="color: red">Do not</strong> email customer a confirmation of these changes
+  %label.no_float{:for=>:dont_send_email}  
+    %span.strong Do not
+    email customer a confirmation of these changes
 
   %p=button_to_function "Extra Contact Info...", visual_effect(:toggle_slide, :contact)
 

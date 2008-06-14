@@ -44,9 +44,14 @@ class ReportController < ApplicationController
     @bundle_vouchertypes =
       Vouchertype.find(:all, :conditions => ["is_bundle = ?", true])
     return unless params[:commit]
-    # process the query...
-    sql = QueryBuilder.new("SELECT DISTINCT c.* FROM customers c, vouchers v")
-    sql.add_clause("c.id=v.customer_id")
+  end
+
+  def build_sql
+    # build query from menu selections
+    sql = QueryBuilder.new("SELECT DISTINCT c.* FROM customers c " <<
+                           "JOIN vouchers v ON  v.customer_id = c.id " <<
+                           "JOIN showdates sd ON v.showdate_id = sd.id " <<
+                           "JOIN shows s ON sd.show_id = s.id")
     sql.add_clause("c.role >= 0")
     if params[:restrict_by_date]
       d = params[:date]
@@ -67,52 +72,57 @@ class ReportController < ApplicationController
       end
     end
     if params[:restrict_by_email]
-      sql.add_clause((params[:restrict_by_email_how].blank? ?
-                      "c.login NOT LIKE ?" : "c.login LIKE ?"), "%@%%.%")
+      sql.add_clause(params[:restrict_by_email_how].blank? ?
+                     "c.login NOT LIKE '%%@%%%%.%%'" : "c.login LIKE '%%@%%%%.%%'")
     end
     if params[:restrict_by_snailmail]
-      sql.add_clause((params[:restrict_by_snailmail_how].blank? ?
-                      "c.street IS NULL OR c.street = ?" :
-                      "c.street IS NOT NULL AND c.street != ?"), "")
+      sql.add_clause(params[:restrict_by_snailmail_how].blank? ?
+                      "c.street IS NULL OR c.street = ''" :
+                      "c.street IS NOT NULL AND c.street != ''")
     end
     # restrict_by_voucher and restrict_by_bundle must be handled together.
     # restrict_by_voucher requires that the showdate_id be zero, while
     # restrict_by_bundle doesn't.  if both are present we must do an OR.
-    clauses = []
-    if params[:restrict_by_voucher]
-      v_types = Array.new(params[:voucher_types].length,"v.vouchertype_id = ?").join(" OR ")
-      clauses << "(v.showdate_id = 0 AND (#{v_types}))"
-      
+    if params[:restrict_by_show] && params[:shows] && !params[:shows].empty?
+      sql.add_clause("v.showdate_id > 0 AND (" <<
+                     params[:shows].map { |s| "s.id = #{s.to_i}" }.join(" OR ") <<
+                     ")")
     end
-    if params[:restrict_by_bundle_voucher]
-      vt_types = Array.new(params[:bundle_voucher_types].length,"v.vouchertype_id = ?").join(" OR ")
-      clauses << "(#{vt_types})"
+    if params[:restrict_by_voucher] && params[:voucher_types] && !params[:voucher_types].empty?
+      sql.add_clause("v.showdate_id = 0 AND (" <<
+                     params[:voucher_types].map { |v| "v.vouchertype_id = #{v.to_i}" }.join(" OR ") <<
+                     ")")
     end
-    unless clauses.empty?
-      sql.add_clause("(" << clauses.join(" OR ") << ")",
-                     *((params[:voucher_types]+params[:bundle_voucher_types]).map {|v| v.to_i}))
+    if params[:restrict_by_bundle_voucher] && params[:bundle_voucher_types] && !params[:bundle_voucher_types].empty?
+      sql.add_clause(params[:bundle_voucher_types].map do |v|
+                       "v.vouchertype_id = #{v.to_i}"
+                     end.join(" OR "))
     end
     @sql = sql.render_sql
-    @results = Customer.find_by_sql(sql.sql_for_find)
-    # postprocessing - stuff that can't easily be done in the join
-    # subscribers, nonsubscribers, or all?
-    if params[:subscribers] =~ /^non/i
-      @results.reject { |c| c.is_subscriber? }
-    elsif params[:subscribers] =~ /^subscriber/i
-      @results.select { |c| c.is_subscriber? }
-    end
-    # seen all, any, none of these shows?
-    if params[:restrict_by_show]
-      selected_shows = params[:shows].map { |s| Show.find(s) }
-      case params[:restrict_by_show_how]
-      when /all/i
-        @results.reject! { |c| !(c.shows.to_set.subset?(selected_shows.to_set)) }
-      when /none/i
-        @results.reject! { |c| selected_shows.any? { |s| c.shows.include?(s) }}
-      when /any/i
-        @results.reject! { |c| !(selected_shows.any? { |s| c.shows.include?(s) })}
-      end
-    end
+    render(:text => @sql) 
+  end
+  
+  def foo
+    # @results = Customer.find_by_sql(sql.sql_for_find)
+#     # postprocessing - stuff that can't easily be done in the join
+#     # subscribers, nonsubscribers, or all?
+#     if params[:subscribers] =~ /^non/i
+#       @results.reject { |c| c.is_subscriber? }
+#     elsif params[:subscribers] =~ /^subscriber/i
+#       @results.select { |c| c.is_subscriber? }
+#     end
+#     # seen all, any, none of these shows?
+#     if params[:restrict_by_show]
+#       selected_shows = params[:shows].map { |s| Show.find(s) }
+#       case params[:restrict_by_show_how]
+#       when /all/i
+#         @results.reject! { |c| !(c.shows.to_set.subset?(selected_shows.to_set)) }
+#       when /none/i
+#         @results.reject! { |c| selected_shows.any? { |s| c.shows.include?(s) }}
+#       when /any/i
+#         @results.reject! { |c| !(selected_shows.any? { |s| c.shows.include?(s) })}
+#       end
+#     end
     @params = params
   end
 

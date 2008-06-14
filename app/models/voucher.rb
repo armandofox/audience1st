@@ -11,12 +11,18 @@ class Voucher < ActiveRecord::Base
     return unless customer_id > 0
     begin
       if (c = Customer.find_by_id(customer_id)).kind_of?(Customer)
-        c.update_attribute(:is_subscriber,
-                           c.role >= 0 &&
-                           c.vouchers.detect do |f|
-                             f.vouchertype && f.vouchertype.is_subscription? &&
-                               f.vouchertype.valid_now?
-                           end)
+        old = c.is_current_subscriber
+        new = c.role >= 0 &&
+          c.vouchers.detect do |f|
+          f.vouchertype && f.vouchertype.is_subscription? &&
+            f.vouchertype.valid_now?
+        end
+        unless (old == new)
+          logger.info("Customer #{c.full_name} (#{c.id}) " <<
+                      "subscriber status change from #{old} to #{new} " <<
+                      "while saving voucher #{id}")
+        end
+        c.update_attribute(:is_current_subscriber, new)
       else
         logger.error("Voucher #{id} owned by nonexistent cust #{customer_id}")
       end
