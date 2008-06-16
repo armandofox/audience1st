@@ -42,6 +42,9 @@ class ShowsController < ApplicationController
     @show = Show.find(params[:id])
     @showdates = @show.showdates.sort_by { |s| s.thedate }
     @is_boxoffice_manager = is_boxoffice_manager
+    if params[:display].blank?
+      @maybe_hide = "display: none;"
+    end
   end
 
   def update

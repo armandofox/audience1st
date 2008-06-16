@@ -271,7 +271,7 @@ class Voucher < ActiveRecord::Base
     else                        # voucher already in use
       self.comments = "This ticket is already holding a reservation for
                         #{self.showdate.show.name} on
-                        #{self.showdate.thedate.strftime('%b %e %y %i:%M%p')}"
+                        #{self.showdate.thedate.to_formatted_s(:showtime)}"
       return false
     end
   end

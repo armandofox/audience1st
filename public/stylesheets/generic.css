@@ -246,19 +246,19 @@ th {
   text-decoration: none;
 }
 #store_nav li a {
-  background: url('/images/tab_out_bg.gif') repeat-x top left;
+  background: url('../images/tab_out_bg.gif') repeat-x top left;
   color: #222;
 }
 #staff_nav li a {
-  background: url('/images/tab_over_bg.gif') repeat-x bottom left;
+  background: url('../images/tab_over_bg.gif') repeat-x bottom left;
   color: #222;
 }
 #store_nav li a:hover {
-  background: url('/images/tab_over_bg.gif') repeat-x bottom left;
+  background: url('../images/tab_over_bg.gif') repeat-x bottom left;
   color: #444;
 }
 #staff_nav li a:hover {
-  background: url('/images/tab_out_bg.gif') repeat-x top left;
+  background: url('../images/tab_out_bg.gif') repeat-x top left;
   color: #444;
 }
 

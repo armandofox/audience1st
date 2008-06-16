@@ -3,7 +3,8 @@
 %table{:width=>"100%"}
   %tr
     %td{:width=>"70%"}
-      = link_to_remote(hdr ||= showdate.printable_date,:update=>"#{s}_#{showdate.id}",:url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, :complete=>visual_effect(:toggle_slide,divid,:duration=>0.5))
+      = link_to_remote(hdr ||= showdate.printable_date,:update=> divid,:url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, :before => "Element.show('wait_#{divid}')", :complete=> visual_effect(:toggle_slide,divid,:duration=>0.5) + "Element.hide('wait_#{divid}');")
+      = image_tag('wait16trans.gif',:id=>"wait_#{divid}",:style=>"display: none;")
     %td.r{:width=>"10%"}
       %strong= showdate.vouchers.size
     %td.c{:width=>"10%"}= number_to_percentage(showdate.percent_sold,:precision=>0)
