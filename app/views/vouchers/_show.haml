@@ -10,7 +10,7 @@
         - r.each do |v|
           %tr
             %td= h(v.vouchertype.name)
-            %td= v.showdate.thedate.to_formatted_s(:long)
+            %td= v.showdate.printable_date
 
   - u = unreserved_vouchers.select { |v| v.redeemable_for_show?(show) }
 

@@ -25,7 +25,7 @@
       <% price = i.vouchertype.price -%>
       <% if i.showdate_id.to_i > 0 -%>
         <span class="voucher_show_name"><%=h i.showdate.show.name %></span>
-        <span class="voucher_show_date"><%=h fmt_date(i.showdate.thedate) %></span>
+        <span class="voucher_show_date"><%=h i.showdate.thedate.to_formatted_s(:showtime) %></span>
       <% end -%>
       <span class="voucher_type"><%=h i.vouchertype.name %></span>
       <% if i.promo_code -%>

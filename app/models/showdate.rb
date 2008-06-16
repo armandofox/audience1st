@@ -85,6 +85,6 @@ class Showdate < ActiveRecord::Base
   end
 
   def printable_date
-    self.thedate.strftime('%A, %b %e, %I:%M%p')
+    self.thedate.to_formatted_s(:showtime)
   end
 end

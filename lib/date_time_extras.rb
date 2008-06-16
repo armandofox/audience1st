@@ -2,7 +2,7 @@
 # making a Time from menus
 
 # add a couple of useful formats to ActiveSupport to_formatted_s conversion
-ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS[:date_only] = "%e %B %Y"
+ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({:date_only => "%e %B %Y", :showtime => '%A, %b %e, %l:%M %p'})
 
 class Time
   def speak(args={})

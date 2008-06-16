@@ -11,7 +11,7 @@
     = link_to 'Report', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id } 
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id)
     = link_to_if showdate.compute_total_sales.zero?, 'Del', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :post,:confirm => MESSAGES[:delete_performance_0] }
-  %td.t= showdate.end_advance_sales.to_formatted_s(:long)
+  %td.t= showdate.end_advance_sales.to_formatted_s(:showtime)
   %td.t= showdate.max_sales.zero? ? "Same as Show" : showdate.max_sales
   %td.t= showdate.compute_total_sales 
   %td
@@ -23,8 +23,8 @@
           %td
             = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
             = "(#{v.password})" unless v.password.blank?
-          %td= v.start_sales.to_formatted_s(:long)
-          %td= v.end_sales.to_formatted_s(:long)
+          %td= v.start_sales.to_formatted_s(:showtime)
+          %td= v.end_sales.to_formatted_s(:showtime)
           - if is_boxoffice_manager 
             %td= link_to_if nsales.zero?, 'Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }
       - if is_boxoffice_manager

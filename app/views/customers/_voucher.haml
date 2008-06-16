@@ -28,7 +28,7 @@
     %td
       %span.showName= h voucher.showdate.show.name
       %br/
-      %span.showDate= h voucher.showdate.thedate.strftime('%a, %b %e, %I:%M %p')
+      %span.showDate= h voucher.showdate.thedate.to_formatted_s(:showtime)
     / customer actions on reserved voucher:
     %td
       - if (is_subscriber && voucher.can_be_changed?) || (is_boxoffice && voucher.changeable)

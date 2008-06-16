@@ -207,10 +207,6 @@ module ApplicationHelper
     end
   end
 
-  def fmt_date(d)
-    return (d ||= "").strftime('%b %e, %Y, %I:%M %p')
-  end
-
   def name_with_quantity(str,qty)
     qty.to_i == 1  ?  "1 #{str}" : "#{qty} #{str.pluralize}" 
   end
@@ -239,6 +235,7 @@ module ApplicationHelper
     ds << select_day(thedate, options.merge( {:prefix => sprintf(pfx,3) }))
     ds << " &mdash; "
     ds << select_hour(thedate, options.merge( {:prefix => sprintf(pfx,4) } ))
+    ds << " : "
     ds << select_minute(thedate, options.merge({:prefix => sprintf(pfx,5) }))
     i = 0
     ds.gsub!(/<select/) do |m|

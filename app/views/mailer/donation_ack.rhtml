@@ -2,7 +2,7 @@
 Dear <%= @customer.full_name %>,
 
 Thank you for your donation to <%= @venue %>
-on <%= Date.today.to_s(:long) %> in the amount of <%= number_to_currency(@amount) %>.
+on <%= Date.today.to_formatted_s(:date_only) %> in the amount of <%= number_to_currency(@amount) %>.
 
 <% if @nonprofit %>
 As a 501(c)(3) nonprofit, we rely on donations from patrons 

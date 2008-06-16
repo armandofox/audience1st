@@ -10,14 +10,14 @@ LATEX2HTML = /sw/bin/latex2html
 SCP = scp
 SCPOPTS =
 SCPHOST = audienc@audience1st.com
-SCPPATH = public_html/manual
+SCPPATH = sites/a1patronsystems.com/wp/wp-content/uploads
 
 ZIP = zip
 
 all: manual.pdf html css_style_kit.zip TAGS
 
 docinstall: all
-	$(SCP) $(SCPOPTS) manual/manual.html $(SCPHOST):$(SCPPATH)/manual.html
+	$(SCP) $(SCPOPTS) manual/manual.html $(SCPHOST):$(SCPPATH)/index.html
 	$(SCP) $(SCPOPTS) manual.pdf $(SCPHOST):$(SCPPATH)/manual.pdf
 
 html: manual/manual.html

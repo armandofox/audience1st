@@ -48,8 +48,8 @@ class ShowdatesController < ApplicationController
     end
     @showdate = Showdate.new
     @showdate.show_id = params[:show_id]
-    @default_date = latest_showdate + 1.day
-    @default_cutoff_date = latest_showdate + 21.hours
+    @showdate.thedate = latest_showdate + 1.day
+    @showdate.end_advance_sales = latest_showdate + 21.hours
   end
 
   def edit

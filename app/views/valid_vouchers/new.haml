@@ -13,7 +13,7 @@
       %td
         = hidden_field_tag 'valid_voucher[showdate_id]', @showdate_id
         = radio_button_tag "addtojustone", 1, true
-        = fmt_date(Showdate.find(params[:showdate_id]).thedate) 
+        = Showdate.find(params[:showdate_id]).thedate.printable_date
         Only
         %br/
         = radio_button_tag "addtojustone", 0, false
