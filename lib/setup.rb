@@ -1,5 +1,6 @@
 # To setup a new venue:
 # - setup its production DB, regular username & pass, RO username & pass
+# - create and svn add database.yml.<venue> and public/.htaccess.<venue>
 # - run 'cap deploy:setup'
 # - mysql '-uaudienc' '-ps;ystrms' --database=audienc_vbodevelopment < dumpfile
 # - copy a schema.rb from somewhere

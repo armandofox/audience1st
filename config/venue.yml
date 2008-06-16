@@ -1,0 +1,18 @@
+altarena:
+  dbname: vboproduction
+  dbuser: audienc
+  dbpass: 's;ystrms'
+  protected: false
+
+altarena-test:
+  dbname: vbodevelopment
+  dbuser: audienc
+  dbpass: 's;ystrms'
+  protected: true
+
+berkeleyplayhouse:
+  dbname: bphprod
+  dbuser: bph
+  dbpass: 'nrtlr;ru[;sujpidr'
+  protected: false
+
