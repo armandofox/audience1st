@@ -13,7 +13,17 @@ class VouchertypesController < ApplicationController
 
   def list
     @superadmin = is_admin
-    @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => 25
+    perpage = 50
+    # possibly limit pagination to only bundles or only subs
+    @filter = params[:filter].to_s
+    case @filter
+    when "Bundles"
+      @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => perpage, :conditions => "is_bundle = 1"
+    when "Subscriptions"
+      @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => perpage, :conditions => "is_subscription = 1"
+    else
+      @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => perpage
+    end
   end
 
   def new

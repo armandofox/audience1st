@@ -38,7 +38,11 @@ class ValidVouchersController < ApplicationController
         if hours_before
           vv.end_sales = dt.thedate - hours_before
         end
-        vv.save!
+        unless vv.save
+          msgs << %{Voucher type NOT added to
+                #{dt.thedate.to_formatted_s(:date_only)}:
+                #{vv.errors.full_messages.join("<br/>")}} << "<br/>"
+        end
       end
       if (msgs == '')
         msgs = 'Ticket type added to all dates'

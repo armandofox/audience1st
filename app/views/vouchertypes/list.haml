@@ -1,4 +1,8 @@
-%h1 Listing Voucher Types
+- form_tag({:controller=>'vouchertypes', :action => 'list'},{:method=>:get}) do
+  %h1 
+    Listing Voucher Types:
+    = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles"],@filter)
+    = submit_tag 'Go'
 
 %table
   %thead

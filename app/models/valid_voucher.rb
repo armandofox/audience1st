@@ -11,7 +11,7 @@ class ValidVoucher < ActiveRecord::Base
   validates_numericality_of :max_sales_for_type
 
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
-  validates_uniqueness_of :vouchertype_id, :scope => :showdate_id
+  validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
   def visible_to(cust)
     Vouchertype.find(self.vouchertype_id).visible_to(cust)
