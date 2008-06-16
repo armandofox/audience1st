@@ -70,6 +70,11 @@ end
 
 # Include your application configuration below
 
+# Enable Google Analytics (http://svn.rubaidh.com/plugins/trunk/google_analytics)
+Rubaidh::GoogleAnalytics.tracker_id = 'UA-4613071-1'
+Rubaidh::GoogleAnalytics.domain_name  = 'www.audience1st.com'  
+Rubaidh::GoogleAnalytics.environments = ['production']
+
 
 # session key name
 ActionController::Base.session_options[:session_key] = 'audience1st_session_id'
