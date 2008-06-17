@@ -13,10 +13,10 @@
       - subscriptions.each do |s| 
         %tr{:class=>cycle(:oddRow,:evenRow)}
           %td.l= s[0]
-          %td.r= s[1]
-          %td.currency= number_to_currency(s[2])
+          %td.r= s[2]
+          %td.currency= number_to_currency(s[1])
           %td.currency= number_to_currency (s[1]*s[2])
-          - total += s[2] 
+          - total += s[1] 
           - tprice += s[1]*s[2] 
       %tr.totalsRow
         %td Total  
