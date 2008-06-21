@@ -89,12 +89,12 @@ class DonationController < ApplicationController
   end
   
   def new
-    unless @cust = Customer.find_by_id(params[:customer])
+    unless (@cust = @gCustomer)
       flash[:notice] = "Must select a customer to add a donation"
       redirect_to :controller => 'customers', :action => 'list'
       return
     end
-    @donation = Donation.new({'customer_id' => params[:customer]})
+    @donation = Donation.new({'customer_id' => @cust})
   end
 
   def create

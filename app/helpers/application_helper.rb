@@ -288,7 +288,7 @@ EOS2
           default:
              fy=-1;
           }
-        if (fy>0) {
+        if (fy>=0) {
           $('#{from_prefix}_year').selectedIndex=fy;
           $('#{from_prefix}_month').selectedIndex=fm;
           $('#{from_prefix}_day').selectedIndex=fd;

@@ -225,7 +225,7 @@ class StoreController < ApplicationController
   def place_order
     @cart = find_cart
     sales_final = params[:sales_final]
-   @bill_to = params[:customer]
+    @bill_to = params[:customer]
     cc_info = params[:credit_card].symbolize_keys
     cc_info[:first_name] = @bill_to[:first_name]
     cc_info[:last_name] = @bill_to[:last_name]
