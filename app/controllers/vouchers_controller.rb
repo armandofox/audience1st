@@ -49,7 +49,7 @@ class VouchersController < ApplicationController
     end
       
     fulfillment_needed = params[:fulfillment_needed] 
-    thecomment = params[:comment]
+    thecomment = params[:comment] || ""
     custid = @customer.id
     begin
       v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
@@ -57,7 +57,6 @@ class VouchersController < ApplicationController
                                             thecomment, logged_in_id,
                                             fulfillment_needed)
       if (v.kind_of?(Array))
-        flash[:notice] = thecomment + " for customer #{@customer.full_name}"
         Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
                              :voucher_id => v.first.id,
                              :comments => thecomment,
