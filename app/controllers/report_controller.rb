@@ -46,59 +46,47 @@ class ReportController < ApplicationController
     return unless params[:commit]
   end
 
-  def build_sql
+  def build_report
     # build query from menu selections
-    sql = QueryBuilder.new("SELECT DISTINCT c.* FROM customers c " <<
-                           "JOIN vouchers v ON  v.customer_id = c.id " <<
-                           "JOIN showdates sd ON v.showdate_id = sd.id " <<
-                           "JOIN shows s ON sd.show_id = s.id")
-    sql.add_clause("c.role >= 0")
+    report = Report.new
+    report.restrict_to_real_users
     if params[:restrict_by_date]
       d = params[:date]
       date = Time.local(d[:year],d[:month],d[:day])
       case params[:date_how]
       when /^added since/i
-        sql.add_clause("c.created_on >= ?", date)
+        report.restrict_by_date(:created_on, "<=", date)
       when /^added before/i
-        sql.add_clause("c.created_on < ?", date)
+        report.restrict_by_date(:created_on, "<", date)
       when /^updated since/i
-        sql.add_clause("c.updated_on >= ?", date)
+        report.restrict_by_date(:updated_on, ">=", date)
       when /^not updated since/i
-        sql.add_clause("c.updated_on < ?", date)
+        report.restrict_by_date(:updated_on, "<", date)
       when /^logged in since/i
-        sql.add_clause("c.last_login >= ?", date)
+        report.restrict_by_date(:last_login, ">=", date)
       when /^not logged in since/i
-        sql.add_clause("c.last_login < ?", date)
+        report.restrict_by_date(:last_login, "<", date)
       end
     end
     if params[:restrict_by_email]
-      sql.add_clause(params[:restrict_by_email_how].blank? ?
-                     "c.login NOT LIKE '%%@%%%%.%%'" : "c.login LIKE '%%@%%%%.%%'")
+      report.restrict_has_valid_email( !params[:restrict_by_email_how].blank? )
     end
     if params[:restrict_by_snailmail]
-      sql.add_clause(params[:restrict_by_snailmail_how].blank? ?
-                      "c.street IS NULL OR c.street = ''" :
-                      "c.street IS NOT NULL AND c.street != ''")
+      report.restrict_has_valid_address( !params[:restrict_by_snailmail_how].blank?)
     end
     # restrict_by_voucher and restrict_by_bundle must be handled together.
     # restrict_by_voucher requires that the showdate_id be zero, while
     # restrict_by_bundle doesn't.  if both are present we must do an OR.
-    if params[:restrict_by_show] && params[:shows] && !params[:shows].empty?
-      sql.add_clause("v.showdate_id > 0 AND (" <<
-                     params[:shows].map { |s| "s.id = #{s.to_i}" }.join(" OR ") <<
-                     ")")
+    if params[:restrict_by_show]
+      report.restrict_by_shows(:seen, params[:shows])
     end
-    if params[:restrict_by_voucher] && params[:voucher_types] && !params[:voucher_types].empty?
-      sql.add_clause("v.showdate_id = 0 AND (" <<
-                     params[:voucher_types].map { |v| "v.vouchertype_id = #{v.to_i}" }.join(" OR ") <<
-                     ")")
+    if params[:restrict_by_voucher] 
+      report.restrict_by_vouchers(params[:voucher_types])
     end
-    if params[:restrict_by_bundle_voucher] && params[:bundle_voucher_types] && !params[:bundle_voucher_types].empty?
-      sql.add_clause(params[:bundle_voucher_types].map do |v|
-                       "v.vouchertype_id = #{v.to_i}"
-                     end.join(" OR "))
+    if params[:restrict_by_bundle_voucher]
+      report.restrict_by_vouchers(params[:bundle_voucher_types])
     end
-    @sql = sql.render_sql
+    @sql = report.render_sql
     render(:text => @sql) 
   end
   

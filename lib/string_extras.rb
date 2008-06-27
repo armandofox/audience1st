@@ -1,3 +1,8 @@
+# makes it easier to check for empty arrays when submitted from forms
+class NilClass
+  def empty? ; true ; end
+end
+
 class String
 
   def self.random_string(len)

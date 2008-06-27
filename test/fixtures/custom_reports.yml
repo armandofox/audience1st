@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id: 1
+  sql: MyText
+  name: MyString
+  description: MyString
+  created_on: 2008-06-27 11:20:28
+  updated_on: 2008-06-27 11:20:28
+  last_run_on: 2008-06-27 11:20:28
+  terms: MyText
+  conds: MyText
+  order: MyString
+two:
+  id: 2
+  sql: MyText
+  name: MyString
+  description: MyString
+  created_on: 2008-06-27 11:20:28
+  updated_on: 2008-06-27 11:20:28
+  last_run_on: 2008-06-27 11:20:28
+  terms: MyText
+  conds: MyText
+  order: MyString
