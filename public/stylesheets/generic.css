@@ -134,6 +134,14 @@ th {
   padding: 3px;
   font-weight: bold;
 }
+ol { 
+  list-style-type: decimal;
+  list-style-position: inside;
+}
+ul { 
+  list-style-type: disc;
+  list-style-position: inside;
+}
 #customerVoucherList tbody td {
   border-bottom: 3px solid #CCC;
 }
@@ -163,6 +171,13 @@ th {
   background-color: #EEE;
   color: #666;
   border: 1px solid #CCC;
+}
+.warning {
+  margin: 3px 0;
+  padding: 5px;
+  background-color: white;
+  color: red;
+  border: 2px solid red;
 }
 .wide_button {
   letter-spacing: 0.25em;

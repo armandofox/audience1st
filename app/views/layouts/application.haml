@@ -1,7 +1,10 @@
 !!! Strict
 %html{:xmlns=>"http://www.w3.org/1999/xhtml","xml:lang"=>:en,:lang=>:en}
   %head
-    = stylesheet_link_tag((s = Option.value(:external_css_file)).blank? ? 'generic' : s)
+    - if (s = Option.value(:external_css_file)).blank?
+      = stylesheet_link_tag 'generic'
+    - else
+      = stylesheet_link_tag possibly_https(s)
     = stylesheet_link_tag 'vbo'
     = javascript_include_tag :defaults 
 
@@ -21,6 +24,9 @@
       - unless flash[:notice].blank?
         %p.feedback.clear= flash[:notice]
 
+      - unless flash[:warning].blank?
+        = render :partial => 'store/checkout_error'
+
       - if @gCheckoutInProgress and controller.controller_name != 'store'
         %h1.center Your Order So Far
         = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
@@ -31,5 +37,5 @@
     #footer.center
       \&copy; 2008
       = link_to 'A1 Patron Systems', 'http://www.a1patronsystems.com'
-      = " - Build #{APP_VERSION} - "
+      = " - Version #{APP_VERSION} - "
       = link_to "Terms of Use & Privacy Policy", Option.value(:privacy_policy_url)

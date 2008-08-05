@@ -1,0 +1,5 @@
+- if @results
+  = render :partial => 'query_results'
+
+- form_tag({:action => 'create'}, { :id => 'custom_report'}) do
+  = render :partial => 'form'

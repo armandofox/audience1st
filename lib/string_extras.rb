@@ -19,6 +19,12 @@ class String
     self.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/, "\\1\\3\n") 
   end
 
+  def boldify(s, tag=:strong, tag_opts = {})
+    tag_opts_str = tag_opts.each_pair { |k,v| "#{k}=\"#{v}\"" }.join " "
+    tagstart,tagend = "<#{tag.to_s} #{tag_opts_str}>", "</#{tag.to_s}>"
+    self.gsub s, "#{tagstart}#{s}#{tagend}"
+  end
+  
   def valid_email_address?
     return self && self.match( /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.([A-Z]{2,4})?$/i )
   end
@@ -39,8 +45,8 @@ class String
     return "#{self.upcase}." if self.match(/^\w$/i)
     # connector word (von, van, de, etc.) - lowercase
     return self.downcase if @@name_connectors.include?(self.downcase)
-    # default: capitalize first letter
-    return self.sub(/^(\w)/) { |a| a.upcase }
+    # default: capitalize first letter AND any letter after a hyphen
+    return self.gsub(/^(\w)|-(\w)/) { |a| a.upcase }
     #self.match(@@name_prefixes) ? self.sub(@@name_prefixes, "M#{$1}#{$2.capitalize}") :
     # self.capitalize
   end

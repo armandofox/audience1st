@@ -1,0 +1,7 @@
+#customer_quick_search
+  - form_tag({:action => 'switch_to'}, {:method => :get}) do 
+    Quick search by first or last name:
+    = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
+    = spinner('wait')
+    = hidden_field_tag 'id'
+    = submit_tag 'Go'

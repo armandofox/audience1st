@@ -41,7 +41,10 @@
         %td
           %label{:for=>:followup_assigned_to} Follow-up Assigned To
           %br/
-          = text_field_tag 'visit', visit.followup_by, :disabled => true
+          = customer_search_field 'visit_followup_by', visit.followup_by, {}, :also_update => {'visit[followup_assigned_to_id]' => :id}, :select_opts => {:indicator => "wait#{visit.id.to_s}"}
+          = spinner("wait#{visit.id.to_s}")
+          = hidden_field_tag 'visit[followup_assigned_to_id]'
+          / = text_field_tag 'visit', visit.followup_by, :disabled => true
         %td
           %label{:for=>:visit_location} Visit Location
           %br/

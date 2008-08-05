@@ -17,7 +17,7 @@
 <br />
 <label for="credit_card_number">Number (no spaces)</label>
 <%= text_field 'credit_card', 'number', :size => 16, :max_length => 16,
-         :id => 'credit_card_number' %>
+         :autocomplete => :off, :id => 'credit_card_number' %>
 <br/>
 
 <% if @credit_card && @credit_card.year.to_i > 0

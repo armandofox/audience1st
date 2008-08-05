@@ -23,19 +23,19 @@ class Cart
       case
       when i.kind_of?(Voucher)
         if i.showdate_id.to_i > 0
-          s=sprintf("$%6.2f  %s\n         %s - ticket #%d",
+          s=sprintf("$%6.2f  %s\n         %s",
                     i.vouchertype.price,
                     i.showdate.printable_name,
-                    i.vouchertype.name, i.id)
+                    i.vouchertype.name)
           s << "\n         Seating request: #{i.comments}" unless i.comments.to_s.empty?
           unless i.showdate.show.patron_notes.blank?
             notes[i.showdate.show.name] = i.showdate.show.patron_notes
           end
           s
         else
-          sprintf("$%6.2f  %s - ticket #%d",
+          sprintf("$%6.2f  %s",
                   i.vouchertype.price,
-                  i.vouchertype.name,i.id)
+                  i.vouchertype.name)
         end
       when i.kind_of?(Donation)
         sprintf("$%6.2f  Donation to General Fund", i.amount)

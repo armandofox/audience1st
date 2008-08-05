@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
     @gCart = find_cart
     @gCheckoutInProgress = session[:checkout_in_progress]
     @gLoggedIn = (admin=Customer.find_by_id(session[:admin_id])) ? admin : (@gCustomer || Customer.walkup_customer)
+    @gNobodyReallyLoggedIn = nobody_really_logged_in
     true
   end
   
@@ -76,6 +77,10 @@ class ApplicationController < ActionController::Base
     #   id of the 'nobody' fake customer if not set.
     # if an admin IS logged in, it's that admin's ID.
     return (session[:admin_id] || session[:cid] || Customer.nobody_id).to_i
+  end
+
+  def nobody_really_logged_in
+    session[:cid].nil? || session[:cid].to_i.zero?
   end
 
   def has_privilege(id,level)
@@ -157,6 +162,7 @@ EOEVAL
   end
 
 end
+
 
 # the following allows functional tests to not choke on the user_agent method,
 # since by default TestRequest doesn't provide that method.

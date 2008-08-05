@@ -33,6 +33,6 @@ class Show < ActiveRecord::Base
   end
 
   def name_with_run_dates
-    "#{name} - #{opening_date.strftime('%b %e')}-#{closing_date.strftime('%b %e')}"
+    "#{name} - #{opening_date.to_formatted_s(:month_day_only)}-#{closing_date.to_formatted_s(:month_day_only)}"
   end
 end

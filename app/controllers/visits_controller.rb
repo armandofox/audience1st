@@ -1,6 +1,8 @@
 class VisitsController < ApplicationController
 
   before_filter :is_logged_in   # ensures session[:cid] is valid
+  #before_filter :get_customer_ids, :only => [:create,:update], :redirect_to => 'list', :add_to_flash => 'Must assign followup to a valid user.'
+  
   before_filter(:is_staff_filter,
                 :redirect_to => {:controller =>'customers', :action =>'login'},
                 :add_to_flash => 'Staff privilege required for this action.')
@@ -48,5 +50,7 @@ class VisitsController < ApplicationController
     end
     redirect_to :action => 'list', :id => @visit.customer
   end
+
+  private
 
 end

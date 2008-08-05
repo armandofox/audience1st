@@ -29,7 +29,7 @@
         %td.r= h(vouchertype.account_code)
         %td.c= vouchertype.is_subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
-        %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id)) if (vouchertype.is_subscription? && vouchertype.offer_public > 0)
+        %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.is_subscription? && vouchertype.offer_public > 0)
         %td.c
           = vouchertype.valid_date.strftime("%m/%d/%y") 
           \-

@@ -1,6 +1,6 @@
 .pageDiv
   %h1 Generate Mailing Labels or Email List
-  %p= link_to 'Create/Run Custom Reports', :action => 'advanced_customer_list'
+  /  %p= link_to 'Create/Run Custom Reports', :controller => 'custom_reports', :action => 'list'
   %p (Advanced reports coming soon)
   - form_tag :action => "customer_list" do
     %p

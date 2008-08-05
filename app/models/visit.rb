@@ -1,5 +1,3 @@
-require 'application'           # to get String#name_capitalize...ugh....
-  
 class Visit < ActiveRecord::Base
   belongs_to :customer
   validates_associated :customer

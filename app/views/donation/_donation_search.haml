@@ -2,10 +2,12 @@
   %tbody 
     %tr 
       %td= check_box_tag 'use_cid', 1, @params[:use_cid], {:onClick => "if (!(this.checked)) {$$('show_vouchers').checked=false;}"} 
-      %td Only for this customer ID:
+      %td Only for this customer (type first or last name):
       %td
-        = text_field_tag 'cid', @params[:cid], :size => 14 
-        = gen_button('Search for customer...', {:controller => 'customers', :action => 'list'})
+        = customer_search_field 'donor_name', @full_name, {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {:cid => :id, :use_cid => {:checked => 'true'}}, :select_opts => {:indicator => :wait}
+        = spinner('wait')
+        or customer ID number: 
+        = text_field_tag 'cid', @params[:cid], :size => 14
     %tr 
       %td 
       %td{:colspan=>2} 
@@ -15,9 +17,11 @@
       %td= check_box_tag 'use_date', 1, @params[:use_date] 
       %td Date is in the range:
       %td
-        = select_date((@params[:from] || Date.today),:prefix => 'from')
-        to 
-        = select_date((@params[:to] || Date.today),:prefix => 'to') 
+        - d1,d2,d3 = select_date_with_shortcuts(@params[:donation_date_from]||Date.today, @params[:donation_date_to]||Date.today, Date.today.year - 10, 'donation_date', @params[:date_shortcut]||'Custom')
+        = d1
+        %br
+        or
+        = "#{d2} to #{d3}"
     %tr 
       %td= check_box_tag 'use_amount', 1, @params[:use_amount]
       %td  Donation amount between:
@@ -30,3 +34,10 @@
     %tr
       %td= check_box_tag 'use_ltr_sent', 1, @params[:use_ltr_sent]
       %td  Only if letter not yet sent
+    %tr
+      %td= check_box_tag 'use_repeat_donor', 1, @params[:use_repeat_donor]
+      %td Only donors who have made at least
+      %td
+        = select_tag 'num_donations', options_for_select(2..12)
+        donations since
+        = select_date((@params[:donated_since] || Date.today), :prefix => 'since')

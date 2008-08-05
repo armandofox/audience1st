@@ -12,7 +12,7 @@
     = "|"
     = link_to 'Report', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id } 
     = "|"
-    = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id)
+    = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id), showdate.printable_name
     = "|"
     = link_to_if showdate.compute_total_sales.zero?, 'Delete', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :post,:confirm => MESSAGES[:delete_performance_0] }
     = "|"
@@ -31,9 +31,11 @@
               = "(#{v.password})" unless v.password.blank?
             %td= v.start_sales.to_formatted_s(:showtime)
             %td= v.end_sales.to_formatted_s(:showtime)
-            - if is_boxoffice_manager 
-              %td= link_to_if nsales.zero?, 'Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }
+            %td
+              - if is_boxoffice_manager && nsales.zero?
+                = gen_button 'Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }
+                / %td= link_to_if nsales.zero?, 'Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }
         - if is_boxoffice_manager
           %tr
             %td{:colspan=>4}
-              = gen_button  "Add New", {:controller => 'valid_vouchers', :action => 'new', :showdate_id => showdate.id }
+              = gen_button  "Add New...", {:controller => 'valid_vouchers', :action => 'new', :showdate_id => showdate.id }

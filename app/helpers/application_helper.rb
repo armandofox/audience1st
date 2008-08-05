@@ -6,7 +6,50 @@ module ApplicationHelper
   def mobile_user_agent?(uastring)
     !uastring.blank? && uastring.match( /iphone|palmos|palmsource|blazer/i )
   end
-    
+
+  # spinner
+  def spinner(id='wait')
+    image_tag('wait16trans.gif', :id => id, :style => 'display: none;')
+  end
+  
+  def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
+    # default select args
+    default_select_opts = {
+      :url => {:controller => :customers, :action => :auto_complete_for_customer_full_name},
+      :with => "'__arg=' + $('#{field_id}').value",
+      :select => :full_name,
+      :after_update_element => "function(e,v) { complete_#{field_id}(v) }"
+    }
+    select_opts = (opts[:select_opts] || {}).merge(default_select_opts)
+    complete_func = "function complete_#{field_id}(v) {\n"
+    opts[:also_update].each_pair do |field,attr|
+      if attr.kind_of?(Symbol) 
+        complete_func << "  $('#{field}').value = Ajax.Autocompleter.extract_value(v,'#{attr}');\n"
+      elsif attr.kind_of?(Hash)
+        attr.each_pair do |elt_attr, elt_val|
+          complete_func << "  $('#{field}').#{elt_attr} = #{elt_val};\n"
+        end
+      else
+        complete_func << "  $('#{field}').value = '#{attr}';\n"
+      end
+    end
+    complete_func << "}"
+    return text_field_tag(field_id, default_val, field_opts) <<
+      javascript_tag(complete_func) << "\n" <<
+      auto_complete_stylesheet <<
+      content_tag("div", nil, {:id => field_id + "_auto_complete", :class => :auto_complete}) <<
+      auto_complete_field(field_id, select_opts)
+  end
+
+  # workaround an IE problem: if a nonsecure CSS file is pulled in by a
+  # secure page, IE puts up a complaint dialog.  Workaround is to rewrite
+  # the URL of the CSS file to make it secure. Ugh.
+
+  def possibly_https(url)
+    request.user_agent.match( /MSIE ([0-9]{1,}[\.0-9]{0,})/ ) &&
+      request.protocol == 'https://' ? url.gsub( /^http:/, 'https:' ) : url
+  end
+  
   def to_js_array(arr)
       '[' + arr.map { |a| a.kind_of?(Fixnum) ? "#{a}" : "'#{a}'" }.join(',') + ']'
   end
@@ -31,20 +74,20 @@ module ApplicationHelper
     "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
   end
                        
-  def nav_tabs(*ary)
+  def nav_tabs(klass,*ary)
     ary.map do |a|
       a[0].insert(0,"<br/>") unless a[0].gsub!( /~/, "<br/>")
       if a.length > 3
         if a[3].nil?
           "<li class='disabled'>#{a[0]}</li>"
         else
-          "<li id=\"t_#{a[1]}_#{a[2]}\">" <<
+          "<li class='#{klass}' id=\"t_#{a[1]}_#{a[2]}\">" <<
             link_to(a[0], {:controller => a[1].to_s,:action => a[2].to_s,
                       :id => a[3].id}.merge(a[4] || {})) <<
             "</li>"
         end
       else
-        "<li id=\"t_#{a[1]}_#{a[2]}\">" <<
+        "<li class='#{klass}' id=\"t_#{a[1]}_#{a[2]}\">" <<
           link_to(a[0], {:controller => a[1].to_s,:action => a[2].to_s}) <<
           "</li>"
       end
@@ -258,7 +301,18 @@ module ApplicationHelper
   # return a SELECT with shortcuts for "today", "this week", etc. that has onSelect
   # code to set the menus with the given prefix for the shortcuts.
 
-  def select_date_shortcuts(start_year,from_prefix,to_prefix)
+  def select_date_with_shortcuts(default_from_date = Date.today,
+                                 default_to_date = Date.today,
+                                 sy = Date.today.year, basename="",
+                                 selected_shortcut = "Custom")
+    from,to = "#{basename}_from","#{basename}_to"
+    oc = "$('shortcut_#{from}_#{to}').selectedIndex=7;"
+    [select_date_shortcuts(sy, from, to, selected_shortcut),
+     select_date(default_from_date, :prefix => from, :start_year => sy),
+     select_date(default_to_date, :prefix => to, :start_year => sy)]
+  end
+
+  def select_date_shortcuts(start_year=Date.today.year,from_prefix="from",to_prefix="to", selected_shortcut = "Today")
     # shortcut dates
     t = Time.now
     shortcuts = [["Today", t,t],
@@ -270,9 +324,9 @@ module ApplicationHelper
                  ["Year to date", t.at_beginning_of_year, t],
                  ["Last year", (t-1.year).at_beginning_of_year,
                   t.at_beginning_of_year - 1.day],
-                 ["Custom...",t,t ]]
+                 ["Custom",t,t ]]
     onsel = <<EOS1
-      function setShortcut(v) {
+      function setShortcut_#{from_prefix}(v) {
         switch(v) {        
 EOS1
     shortcuts.each_with_index do |e,indx|
@@ -300,12 +354,14 @@ EOS2
 EOS3
     javascript_tag(onsel) <<
       select_tag("shortcut_#{from_prefix}_#{to_prefix}",
-                 options_for_select(shortcuts.each { |e| e.first }),
-                 :onChange => "setShortcut(this.selectedIndex)")
+                 options_for_select(shortcuts.each { |e| e.first }, selected_shortcut.to_s),
+                 :onChange => "setShortcut_#{from_prefix}(this.selectedIndex)")
   end
 
-  def purchase_link_popup(text,url)
-    msg = "Copy and paste this link into an email message:"
+  def purchase_link_popup(text,url,name=nil)
+    msg = "This link points to a prepopulated Store page"
+    msg << " for #{name}" if name
+    msg << ":"
     link_to_function(text, "prompt('#{escape_javascript(msg)}', '#{escape_javascript(url)}')")
   end
 

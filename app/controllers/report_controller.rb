@@ -37,59 +37,6 @@ class ReportController < ApplicationController
     end
   end
 
-  def advanced_customer_list
-    @show_names = Show.find_all
-    @vouchertypes =
-      Vouchertype.find(:all, :conditions => ["is_bundle = ?", false])
-    @bundle_vouchertypes =
-      Vouchertype.find(:all, :conditions => ["is_bundle = ?", true])
-    return unless params[:commit]
-  end
-
-  def build_report
-    # build query from menu selections
-    report = Report.new
-    report.restrict_to_real_users
-    if params[:restrict_by_date]
-      d = params[:date]
-      date = Time.local(d[:year],d[:month],d[:day])
-      case params[:date_how]
-      when /^added since/i
-        report.restrict_by_date(:created_on, "<=", date)
-      when /^added before/i
-        report.restrict_by_date(:created_on, "<", date)
-      when /^updated since/i
-        report.restrict_by_date(:updated_on, ">=", date)
-      when /^not updated since/i
-        report.restrict_by_date(:updated_on, "<", date)
-      when /^logged in since/i
-        report.restrict_by_date(:last_login, ">=", date)
-      when /^not logged in since/i
-        report.restrict_by_date(:last_login, "<", date)
-      end
-    end
-    if params[:restrict_by_email]
-      report.restrict_has_valid_email( !params[:restrict_by_email_how].blank? )
-    end
-    if params[:restrict_by_snailmail]
-      report.restrict_has_valid_address( !params[:restrict_by_snailmail_how].blank?)
-    end
-    # restrict_by_voucher and restrict_by_bundle must be handled together.
-    # restrict_by_voucher requires that the showdate_id be zero, while
-    # restrict_by_bundle doesn't.  if both are present we must do an OR.
-    if params[:restrict_by_show]
-      report.restrict_by_shows(:seen, params[:shows])
-    end
-    if params[:restrict_by_voucher] 
-      report.restrict_by_vouchers(params[:voucher_types])
-    end
-    if params[:restrict_by_bundle_voucher]
-      report.restrict_by_vouchers(params[:bundle_voucher_types])
-    end
-    @sql = report.render_sql
-    render(:text => @sql) 
-  end
-  
   def foo
     # @results = Customer.find_by_sql(sql.sql_for_find)
 #     # postprocessing - stuff that can't easily be done in the join
@@ -397,18 +344,12 @@ EOQ2
 
   def get_dates_from_params(from_param,to_param,
                             default_from=Time.now,default_to=Time.now)
-    from = date_from_param(from_param,default_from)
-    to = date_from_param(to_param,default_to)
+    from = Time.from_param(params[from_param],default_from)
+    to = Time.from_param(params[to_param],default_to)
     from,to = to,from if from > to
     return from.at_beginning_of_day, to.at_end_of_day
   end
 
-  def date_from_param(param,default=Time.now)
-    (params[param].blank? ? default :
-     (params[param].kind_of?(Hash) ?
-      Time.local(*([:year,:month,:day].map { |x| params[param][x] })) :
-      Time.parse(params[param])))
-  end
 
 
   # given a list of AR records returned from the GROUP BY sql queries of the

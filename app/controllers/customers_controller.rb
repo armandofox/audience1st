@@ -30,11 +30,27 @@ class CustomersController < ApplicationController
          :only => %w[destroy create update user_create],
          :redirect_to => { :action => :welcome })
 
+  # auto-completion for customer search
+  def auto_complete_for_customer_full_name
+    begin
+      # if multiple words are given, ALL must match.
+      n = params[:__arg].split( / +/ )
+      conds = ("(first_name LIKE ? OR last_name LIKE ?) AND " * n.length).gsub( / AND $/, '')
+      conds_ary = n.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
+      @customers = Customer.find(:all, :conditions => conds_ary, :order => :last_name)
+      logger.info "Autocompleting '#{n}': #{@customers.length} results; query = #{conds_ary}.join(',')}"
+      render :partial => 'customers/customer_search_result', :locals => {:matches => @customers}
+    #rescue (Exception e)
+      #logger.error "autocomplete_for_donation_customer: #{e.message}"
+      #render :inline => ""
+    end
+  end
+
   # the default is to show your welcome page, which automatically redirects
   # to login if you're not logged in or to subscriber welcome if you're a
   # subscriber.
   def index ; redirect_to :action => 'welcome' ; end
-  
+
   # login and logout
   def login
     if (@checkout_in_progress = session[:checkout_in_progress])
@@ -58,15 +74,15 @@ class CustomersController < ApplicationController
       session[:cid] = c.id
       c.update_attribute(:last_login,Time.now)
       # set redirect-to action based on whether this customer is an admin.
-      action = possibly_enable_admin(c)      
       if @checkout_in_progress
         redirect_to :controller => 'store', :action => 'checkout'
         return
       end
       # authentication succeeded, and customer is NOT in the middle of a
       # store checkout. Proceed to welcome page.
+      controller,action = possibly_enable_admin(c)      
       session[:promo_code] = nil
-      redirect_to :action => action
+      redirect_to :controller => controller, :action => action
       return
     else
       # authentication failed
@@ -105,7 +121,8 @@ class CustomersController < ApplicationController
     # either signing up for new account, or modifying billing address
     # for CC purchase.  In that case, return to checkout flow.
     if session[:checkout_in_progress]
-      flash.keep(:notice)
+      flash.keep :notice
+      flash.keep :warning
       redirect_to :controller=>'store',:action=>'checkout'
       return
     end
@@ -115,7 +132,8 @@ class CustomersController < ApplicationController
     if (@customer.is_subscriber?)
       unless ((params[:force_classic] && @gAdmin.is_boxoffice) ||
               !(Option.value(:force_classic_view).blank?))
-        flash.keep(:notice)
+        flash.keep :notice
+        flash.keep :warning
         redirect_to :action=>'welcome_subscriber'
         return
       end
@@ -127,7 +145,8 @@ class CustomersController < ApplicationController
   def welcome_subscriber        # for subscribers
     @customer = @gCustomer
     unless @customer.is_subscriber?
-      flash.keep(:notice)
+      flash.keep :notice
+      flash.keep :warning
       redirect_to :action=>'welcome'
       return
     end
@@ -152,12 +171,13 @@ class CustomersController < ApplicationController
     @superadmin = current_admin.is_admin
     return unless request.post? # fall thru to showing edit screen
     flash[:notice] = ''
+    flash[:warning] = ''
     # squeeze empty-string params into nils.
     params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
     # unless admin, remove "extra contact" fields
     unless @is_admin
       Customer.extra_attributes.each { |a| params[:customer].delete(a) }
-      flash[:notice] << "Warning: Some new attribute values were ignored<br/>"
+      # flash[:notice] << "Warning: Some new attribute values were ignored<br/>"
     end
     old_login  = @customer.login
     #
@@ -227,6 +247,7 @@ class CustomersController < ApplicationController
   def user_create
     @customer = Customer.new(params[:customer])
     flash[:notice] = ''
+    flash[:warning] = ''
     unless @customer.has_valid_email_address?
       flash[:notice] = "Please provide a valid email address as your login ID."
       render :action => 'new'
@@ -408,36 +429,20 @@ class CustomersController < ApplicationController
   # connected to a working validation service!
   
   def validate_address
-    cust = Customer.find(params[:id])
-    formdata = "#{cust[:street]}\n#{cust[:city]}, #{cust[:state]} #{cust[:zip]}"
-    url = APP_CONFIG[:address_validation_url]
-    res = Net::HTTP.post_form(URI.parse(url), {'address' => formdata})
-    if !(res.body.match(/address was rejected/i)) &&
-        res.body.match(/<PRE><FONT SIZE=\+2>([^<]+)<\/FONT><\/PRE>/i)
-      newaddr = $1
-      if newaddr.match( /(.+)$\s*\b(.+)\b\s+(\w\w)\s+([-\d]+)/ )
-        cust.street = Regexp.last_match(1)
-        cust.city = Regexp.last_match(2)
-        cust.state = Regexp.last_match(3)
-        cust.zip = Regexp.last_match(4)
-      end
+    cust = params[:customer]
+    url = "http://zip4.usps.com/zip4/zcl_0_results.jsp?visited=1&pagenumber=0&firmname=&address2=#{cust[:street]}&address1=&city=#{cust[:city]}&state=#{cust[:state]}&urbanization=&zip5=#{cust[:zip]}"
+    res = Net::HTTP.get_response(URI.parse(URI.escape(url)))
+    if res.code.to_i == 200 && res.body.match(/.*td headers="full"[^>]+>(.*)<br \/>\s+<\/td>\s+<td style=/m )
+      street,csz = Regexp.last_match(1).split /<br \/>/
+      city,state,zip = (csz.strip.split( /(&nbsp;)+/ )).values_at(0,2,4)
     end
-    render :partial => 'form', :locals => {:customer => cust }
+    render :update do |page|
+      page['customer_street'].value = street.strip
+      page['customer_city'].value = city.strip
+      page['customer_state'].value = state.strip
+      page['customer_zip'].value = zip.strip
+    end
   end
-
-
-#   def toggle_admin
-#     if session[:admin_id]
-#       session[:save_admin] = session[:admin_id]
-#       disable_admin
-#       flash[:notice] = "Admin view temporarily disabled, " <<
-#         "click Toggle Admin to re-enable"
-#     elsif ((c = Customer.find_by_id(session[:admin_id])).is_staff rescue false)
-#       possibly_enable_admin(c)
-#       session[:save_admin] = false
-#     end
-#     redirect_to :controller => 'customers', :action => 'welcome'
-#   end
 
   def disable_admin
     session[:admin_id] = nil
@@ -448,22 +453,24 @@ class CustomersController < ApplicationController
 
 
   def possibly_enable_admin(c = Customer.generic_customer)
+    session[:admin_id] = nil
     if c.is_staff # least privilege level that allows seeing other customer accts
       (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
       session[:admin_id] = c.id
-      action = 'list'
+      return ['customers', 'list']
+    elsif c.is_subscriber?
+      return ['customers', 'welcome_subscriber']
     else
-      session[:admin_id] = nil
-      action = 'welcome'
+      return ['store', 'index']
     end
-    action
   end
 
   def setup_for_welcome(customer)
     @admin = current_admin
     @page_title = sprintf("Welcome, %s#{customer.full_name.name_capitalize}",
                           customer.is_subscriber? ? 'Subscriber ' : '')
-    @vouchers = customer.active_vouchers.sort { |x,y| x.created_on <=> y.created_on }
+    @vouchers = customer.active_vouchers.sort_by(&:created_on)
+    #{ |x,y| x.created_on <=> y.created_on }
     session[:store_customer] = customer.id
   end
 

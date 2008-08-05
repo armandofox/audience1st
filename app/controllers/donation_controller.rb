@@ -21,20 +21,18 @@ class DonationController < ApplicationController
     if (params[:use_cid] &&
         (cid = params[:cid].to_i) != 0) &&
         (c = Customer.find_by_id(cid))
-      @page_title = "Donation history: #{c.full_name}"
-      flash[:notice] = "Search restricted to customer #{c.full_name}"
+      @full_name = c.full_name
+      @page_title = "Donation history: #{@full_name}"
+      flash[:notice] = "Search restricted to customer #{@full_name}"
       conds.merge!("customer_id = ?" => cid)
     else
       @page_title = "Donation history"
     end
-    if params[:from]
-      params[:from] = mindate = Time.local(*([:year,:month,:day].map { |x| params[:from][x] }))
-    end
-    if params[:to]
-      params[:to] = maxdate = Time.local(*([:year,:month,:day].map { |x| params[:to][x] }))
-    end
+    mindate,maxdate = Time.range_from_params(params[:donation_date_from],
+                                             params[:donation_date_to])
+    params[:donation_date_from] = mindate
+    params[:donation_date_to] = maxdate
     if params[:use_date]
-      mindate,maxdate = maxdate,mindate if mindate > maxdate
       conds.merge!("date >= ?" => mindate, "date <= ?" => maxdate)
     end
     if params[:use_amount]

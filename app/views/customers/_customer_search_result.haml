@@ -1,0 +1,8 @@
+%ul.customer_match_list
+  - if defined?(matches) && !matches.nil?
+    - matches.each do |c|
+      %li
+        .full_name= h(c.full_name)
+        .id.hidden= c.id
+  - else
+    %li.full_name (No matches)

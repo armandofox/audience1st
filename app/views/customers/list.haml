@@ -1,6 +1,6 @@
 %h1.page_heading.center Listing customers
 
-= search_panel('customers', 'list',  {:extra => button_to('Add new customer...', {:action=>'new',:method=>'get'})})
+= search_panel('customers', 'list',  {:label => 'Search on any field:', :extra => button_to('Add new customer...', {:action=>'new',:method=>'get'})})
 
 %br/
 
@@ -21,8 +21,13 @@
         %tr{:valign=>:top,:class=>(c.display_class || cycle(:oddRow,:evenRow))}
           %td= check_box_tag "merge[#{c.id}]"
           %td= link_to c.full_name, {:action => 'switch_to', :id => c }
-          - cols.each do |column|
-            %td= h c.send(column)
+          %td= h c.street
+          %td= h c.city
+          %td= h c.state
+          %td= h c.zip
+          %td= number_to_phone_2(c.day_phone)
+          %td= number_to_phone_2(c.eve_phone)
+          %td= h c.login
 
   = pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'}
 

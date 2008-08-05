@@ -1,5 +1,11 @@
 module CustomersHelper
 
+  def number_to_phone_2(s)
+    (!s.blank? && s.strip.match(/^([-0-9.()\/ ]{10,})([EXText.0-9]+)?$/) ?
+     number_to_phone($1.gsub(/[^0-9]/,'').to_i, :delimiter=>'.') << h($2.to_s) :
+     h(s))
+  end
+  
   def group_subscriber_vouchers(v1,v2)
     # each of v1 and v2 is an array of [showdate,vouchertype].
     # showdate is nil for open voucher.

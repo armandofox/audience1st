@@ -2,38 +2,31 @@
 
 /[form:donation]
 
-%table
-  %tr
-    %td
-      %label{:for=>:donation_date} Date
-      %br/
-      = date_select 'donation', 'date'
-    %td
-      %label{:for=>:donation_amount} Amount or approx. dollar value
-      %br/
-      $ 
-      = text_field 'donation', 'amount', 'size' => 8
-  %tr
-    %td
-      %label{:for=>:donation_donation_fund} Donation fund
-      %br/
-      = collection_select 'donation', 'donation_fund_id', DonationFund.find(:all), 'id', 'name'
-      = gen_button 'Add new', {:controller => 'donation_fund', :action => 'new'}
-    %td
-  %tr
-    %td
-      %label{:for=>:donation_purchasemethod} How effected
-      %br/
-      = collection_select 'donation', 'purchasemethod_id', Purchasemethod.find(:all), 'id', 'description'
-    %td
-      %label{:for=>:donation_account_code} Account Code
-      %br/
-      = text_field 'donation', 'account_code'
-  %tr
-    %td{:colspan=>2}
-      %label{:for=>:donation_comment} Comment
-      %br/
-      = text_area 'donation', 'comment', 'cols' => 80, 'rows' => 2
+%p
+  %label{:for=>:donation_date} Date
+  = date_select 'donation', 'date'
+  
+%p
+  %label{:for=>:donation_amount} Amount or approx. dollar value
+  $ 
+  = text_field 'donation', 'amount', 'size' => 8
+
+%p
+  %label{:for=>:donation_donation_fund} Donation fund
+  = collection_select 'donation', 'donation_fund_id', DonationFund.find(:all), 'id', 'name'
+  = gen_button 'Add new...', {:controller => 'donation_fund', :action => 'new'}
+
+%p
+  %label{:for=>:donation_purchasemethod} How effected
+  = collection_select 'donation', 'purchasemethod_id', Purchasemethod.find(:all), 'id', 'description'
+
+%p
+  %label{:for=>:donation_account_code} Account Code
+  = text_field 'donation', 'account_code'
+
+%p
+  %label{:for=>:donation_comment} Comment
+  = text_area 'donation', 'comment', 'cols' => 80, 'rows' => 2
       
 = hidden_field 'donation', 'customer_id'
 

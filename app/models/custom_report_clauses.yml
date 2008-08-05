@@ -1,0 +1,74 @@
+- 
+  name: customer_type
+  choices: 
+    - label: Subscribers only
+      term:  c.is_subscriber > 0
+    - label: Non-subscribers only
+      term:  c.is_subscriber = 0 OR c.is_subscriber IS NULL
+  text: who...
+
+- 
+  name: customer_record
+  choices: 
+    - label: were added since
+      term:  c.created_on >= ?
+    - label: were added before
+      term:  c.created_on < ?
+    - label: were updated since
+      term:  c.updated_on >= ?
+    - label: were not updated since
+      term:  c.updated_on < ?
+    - label: have logged in since
+      term:  c.last_login >= ?
+    - label: have not logged in since
+      term:  c.last_login < ?
+  text:
+  param_type: date
+
+-
+  name: customer_email
+  choices:
+    - label: Have
+      term:  c.login IS NOT NULL and c.login != ''    
+    - label: Do not have
+      term:  c.login IS NULL or c.login = ''
+  text: a valid email address
+
+- 
+  name: customer_address
+  choices:
+    - label: Have
+      term:  c.street IS NOT NULL and c.street != ''
+    - label: Do not have
+      term:  c.street IS NULL or c.street = ''
+  text:  a valid US Mail address
+
+- 
+  name: customer_zip
+  choices:
+    - label: Have Zip code matching
+      term:  c.zip LIKE ?
+    - label: Have Zip code NOT matching
+      term:  c.zip NOT LIKE ?
+  param_type: text
+
+-
+  name: customer_reserve
+  text: RESERVE (or cancel) a voucher during
+  param_type: date_range
+  choices:
+    - label: Did
+      term:  v.updated_on >= ? AND v.updated_on <= ?
+    - label: Did not
+      term:  v.updated_on < ?  OR  v.updated_on > ?
+
+-
+  name: customer_ticket_purchase
+  text: PURCHASE a ticket during
+  param_type: date_range
+  choices:
+    - label: Did 
+      term:  v.sold_on >= ? AND v.sold_on <= ?
+    - label: Did not
+      term:  v.sold_on < ?  OR  v.sold_on > ?
+

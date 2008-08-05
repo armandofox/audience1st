@@ -3,16 +3,18 @@ altarena:
   dbuser: audienc
   dbpass: 's;ystrms'
   protected: false
+  active: true
 
 altarena-test:
   dbname: vbodevelopment
   dbuser: audienc
   dbpass: 's;ystrms'
   protected: true
+  active: true
 
 berkeleyplayhouse:
   dbname: bphprod
   dbuser: bph
   dbpass: 'nrtlr;ru[;sujpidr'
   protected: false
-
+  active: true

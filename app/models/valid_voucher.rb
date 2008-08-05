@@ -1,6 +1,12 @@
-# A ValidVoucher is a record that states "for a particular showdate ID, this particular type of voucher 
-# is accepted", and encodes additional information such as the capacity limit for this vouchertype for thsi
-#  performance, the start and end dates of redemption for this vouchertype, etc.
+=begin rdoc
+A ValidVoucher is a record indicating the conditions under which a particular
+voucher type can be redeemed.  For non-subscriptions, the valid voucher refers
+to a particular showdate ID.  For subscriptions, the showdate ID is zero.
+#
+is a record that states "for a particular showdate ID, this particular type of voucher 
+is accepted", and encodes additional information such as the capacity limit for this vouchertype for thsi
+ performance, the start and end dates of redemption for this vouchertype, etc.
+=end
 
 class ValidVoucher < ActiveRecord::Base
   # A valid_voucher must be associated with exactly 1 showdate and 1 vouchertype
@@ -125,7 +131,7 @@ class ValidVoucher < ActiveRecord::Base
       if v.end_sales && v.end_sales < Time.now
         [0, "Advance sales for this ticket type have ended"]
       elsif v.start_sales && v.start_sales > Time.now
-        [0, "Tickets go on sale #{v.start_sales.strftime('%b %e')}"]
+        [0, "Tickets go on sale #{v.start_sales.to_formatted_s(:month_day_only)}"]
       else
         [howmany, "available"]
       end

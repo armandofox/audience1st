@@ -14,7 +14,7 @@
     %tr{:class=>cycle(:evenRow,:oddRow)}
       %td.r= show.id
       %td= link_to show.name, :action => 'edit', :id => show
-      %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id)
+      %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id), show.name
       %td
         = show.opening_date.strftime('%b %e, %Y')
         \-

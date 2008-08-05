@@ -1,0 +1,9 @@
+%tr
+  %td= clause_check_box clause, @custom_report.uses_clause?(clause.name)
+  %td
+    = clause_select clause
+    = h(clause.text)
+  %td= clause_params clause
+
+
+  

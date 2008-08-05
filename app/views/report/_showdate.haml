@@ -1,10 +1,10 @@
 - s = showdate.class
 - divid = "#{s}_#{showdate.id}"
-%table{:width=>"100%"}
+%table
   %tr
-    %td{:width=>"70%"}
+    %td{:style=>'width: 20em;'}
       = link_to_remote(hdr ||= showdate.printable_date,:update=> divid,:url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, :before => "Element.show('wait_#{divid}')", :complete=> visual_effect(:toggle_slide,divid,:duration=>0.5) + "Element.hide('wait_#{divid}');")
-      = image_tag('wait16trans.gif',:id=>"wait_#{divid}",:style=>"display: none;")
+      = spinner("wait_#{divid}")
     %td.r{:width=>"10%"}
       %strong= showdate.vouchers.size
     %td.c{:width=>"10%"}= number_to_percentage(showdate.percent_sold,:precision=>0)

@@ -325,9 +325,7 @@ class Customer < ActiveRecord::Base
                            
   # Override content_columns method to omit password hash and salt
   def self.content_columns
-    c = super
-    c.delete_if { |x| x.name.match(%w[role last_login hashed_password salt _at$ _on$].join('|')) }
-    return c
+    super.delete_if { |x| x.name.match(%w[role oldid hashed_password salt _at$ _on$].join('|')) }
   end
 
   def self.address_columns

@@ -2,7 +2,11 @@
 # making a Time from menus
 
 # add a couple of useful formats to ActiveSupport to_formatted_s conversion
-ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({:date_only => "%e %B %Y", :showtime => '%A, %b %e, %l:%M %p'})
+ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
+  :date_only => "%e %B %Y",
+  :showtime => '%A, %b %e, %l:%M %p',
+  :month_day_only => "%b %e"
+})
 
 class Time
   def speak(args={})
@@ -30,6 +34,20 @@ class Time
     else
       Time.local(h[:year].to_i,h[:month].to_i,h[:day].to_i)
     end
+  end
+
+  def self.from_param(param,default=Time.now)
+    (param.blank? ? default :
+     (param.kind_of?(Hash) ?
+      Time.local(param[:year],param[:month],param[:day]) :
+      Time.parse(param)))
+  end
+
+  def self.range_from_params(minp,maxp,default=Time.now)
+    min = Time.from_param(minp)
+    max = Time.from_param(maxp)
+    min,max = max,min if min > max
+    return min,max
   end
 end
 

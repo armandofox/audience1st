@@ -1,0 +1,19 @@
+.pageDiv#selectCriteria
+  %h1 Select criteria:
+  %table
+    = render :partial => 'clause', :collection => CustomReport::Clause.all_clauses
+
+.pageDiv#selectFields
+  %h1 Select fields:
+  = render :partial => 'field_chooser', :locals => {:cols => Customer, :width => 5}
+
+.pageDiv#formOptions
+  = link_to_function "Show/Hide SQL", visual_effect(:toggle_slide, :sqlQuery)
+  #sqlQuery
+    %p= @sql
+  %p 
+    Name of report:
+    = text_field 'custom_report', 'name', :size => 20
+    = submit_tag "Save Report Options"
+    = submit_to_remote :show, "Show SQL", :url => {:action => :show_sql, :id => @custom_report}, :update => :sqlQuery
+    = submit_to_remote :preview, "Preview Report", :url => {:action => :preview, :id => @custom_report}, :update => :sqlQuery

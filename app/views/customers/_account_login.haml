@@ -13,5 +13,8 @@
     .small 
       = check_box_tag 'forgot_password'
       I forgot my password, email it to me
+      %br/
+      = check_box_tag 'remember_me'
+      Remember me (Don't use on public/shared computers)
     = submit_tag 'Login', :disable_with => 'Logging in...'
   

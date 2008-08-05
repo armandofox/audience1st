@@ -1,23 +1,21 @@
 %h1.page_heading.center Thank You for Your Purchase!
 
-%p.feedback
-  Your credit card ending in 
-  %strong= h(@cc_number[-4..-1])
-  has been charged 
-  %strong= h(sprintf("%0.2f",@amount.to_f))
-%br/
+.notice
+  %p 
+    Your credit card ending in 
+    %strong= h(@cc_number[-4..-1])
+    has been charged 
+    %strong= h(sprintf("%0.2f",@amount.to_f))
 
-%p
-  %strong If you purchased show tickets,
-  they'll be available at the box office 1 hour before show time.
-%br/
+  %p.strong Please print this confirmation for your records:
+  %pre= @order_summary
 
-%p
-  %strong If you purchased one or more subcriptions,
-  reservations can be made 
-  = link_to 'online', {:controller => 'customers',:action=>'welcome'}
-  or by phone.
-%br/
+  %ul
+    %li All ticket sales are final. No refunds or exchanges permitted.
+    %li Tickets will be held at will-call and may be picked up 1 hour prior to curtain.
+    %li Seating begins 30 minutes prior to curtain.
+    %li Latecomers will be seated at the discretion of the House Manager. Please arrive early.
+
 
 %p.center
   - if @is_admin

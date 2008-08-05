@@ -1,6 +1,19 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
 
+Ajax.Autocompleter.extract_value = 
+  function (value, className) {
+    var result;
+
+    var elements = 
+      value.getElementsByClassName(className, value);
+    if (elements && elements.length == 1) {
+      result = elements[0].innerHTML.unescapeHTML();
+    }
+
+    return result;
+};
+
 function setOptionsFrom(parent,child) {
     p = document.getElementById(parent+"_select");
     v = p.options[p.selectedIndex].value;

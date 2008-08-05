@@ -7,7 +7,7 @@
 <% if @cart.items.empty? -%>
   <p id="empty_cart">Shopping cart is empty.</p>
 <% else -%>
-  <ol id="cart_items">
+  <ul id="cart_items">
   <% @cart.items.each_with_index do |i,index| -%>
     <li class="cart_item <%= cycle('even', 'odd') %>">
     <% price = (i.kind_of?(Voucher)) ? i.vouchertype.price : i.amount -%>
@@ -39,7 +39,7 @@
     
     </li>
   <% end -%>
-  </ol>
+  </ul>
   <div id="cart_total">
     <div id="total_price"><%= number_to_currency(@cart.total_price) %></div>
     <div>&nbsp;</div>

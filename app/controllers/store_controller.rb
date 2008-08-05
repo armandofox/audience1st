@@ -18,12 +18,13 @@ class StoreController < ApplicationController
   verify(:method => :post,
          :only => %w[do_walkup_sale add_tickets_to_cart add_donation_to_cart
                         add_subscriptions_to_cart place_order],
-         :add_flash => {:notice => "SYSTEM ERROR: action only callable as POST"},
+         :add_flash => {:warning => "SYSTEM ERROR: action only callable as POST"},
          :redirect_to => {:action => 'index'})
 
   def index
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
+    session[:checkout_in_progress] = true
     # if this is initial visit to page, reset ticket choice info
     reset_current_show_and_showdate
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
@@ -131,10 +132,10 @@ class StoreController < ApplicationController
     qty = params[:subscription_qty].to_i
     vtype = params[:subscription_vouchertype_id].to_i
     if qty < 1
-      flash[:notice] = "Quantity must be 1 or more."
+      flash[:warning] = "Quantity must be 1 or more."
     else
       unless (((v = Vouchertype.find(vtype)).is_subscription? && v.is_bundle?) rescue nil)
-        flash[:notice] = "Invalid subscription type."
+        flash[:warning] = "Invalid subscription type."
       else
         1.upto(qty) do
           @cart.add(Voucher.anonymous_bundle_for(vtype))
@@ -185,7 +186,7 @@ class StoreController < ApplicationController
     if (d = params[:donation_amount].to_i) > 0
       cart.add(Donation.online_donation(d, store_customer.id, logged_in_id))
     else
-      flash[:notice] = "Donation amount must be at least 1 dollar"
+      flash[:warning] = "Donation amount must be at least 1 dollar"
     end
     redirect_to :action =>(params[:redirect_to] || 'index')
   end
@@ -195,7 +196,7 @@ class StoreController < ApplicationController
     @cart = find_cart
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     if @cart.is_empty?
-      flash[:notice] = "There is nothing in your cart."
+      flash[:warning] = "There is nothing in your cart."
       redirect_to :action => 'index', :id => params[:id]
       return
     end
@@ -237,7 +238,7 @@ class StoreController < ApplicationController
     # prevalidations: CC# and address appear valid, amount >0,
     # billing address appears to be a well-formed address
     unless (errors = do_prevalidations(params, @cart, @bill_to, cc)).empty?
-      flash[:notice] = errors
+      flash[:warning] = errors
       redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
@@ -254,8 +255,8 @@ class StoreController < ApplicationController
     # OK, we have a customer record to tie the transaction to
     resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to)
     if !resp.success?
-      flash[:notice] = "Payment gateway error: " << resp.message
-      flash[:notice] << "<br/>Please contact your credit card
+      flash[:warning] = "Payment gateway error: " << resp.message
+      flash[:warning] << "<br/>Please contact your credit card
         issuer for assistance."  if resp.message.match(/decline/i)
       logger.info("Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
       redirect_to :action => 'checkout', :sales_final => sales_final
@@ -342,7 +343,7 @@ class StoreController < ApplicationController
       end
       total += (donation=params[:donation].to_f)
     rescue Exception => e
-      flash[:notice] = "There was a problem verifying the total amount of the order:<br/>#{e.message}"
+      flash[:warning] = "There was a problem verifying the total amount of the order:<br/>#{e.message}"
       redirect_to(:action => :walkup, :showdate => showdate,
                   :show => params[:show_select])
       return
@@ -359,7 +360,7 @@ class StoreController < ApplicationController
         # run cc transaction....
         resp = do_cc_present_transaction(total,cc)
         unless resp.success?
-          flash[:notice] = "PAYMENT GATEWAY ERROR: " + resp.message
+          flash[:warning] = "PAYMENT GATEWAY ERROR: " + resp.message
           redirect_to :action => 'walkup', :showdate => showdate,
           :show => params[:show_select]
           return
@@ -399,7 +400,7 @@ class StoreController < ApplicationController
         Donation.walkup_donation(donation,logged_in_id)
         flash[:notice] << sprintf(" $%.02f donation processed,", donation)
       rescue Exception => e
-        flash[:notice] << "Donation could NOT be recorded: #{e.message}"
+        flash[:warning] << "Donation could NOT be recorded: #{e.message}"
       end
     end
     flash[:notice] << sprintf(" total $%.02f",  total)
@@ -430,10 +431,6 @@ class StoreController < ApplicationController
   # INVARIANT: this MUST return a valid Customer record.
   def store_customer
     current_customer || Customer.walkup_customer
-  end
-
-  def nobody_really_logged_in
-    session[:cid].nil? || session[:cid].to_i.zero?
   end
 
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
@@ -506,8 +503,10 @@ class StoreController < ApplicationController
       err << "Please indicate your acceptance of our Sales Final policy by checking the box."
     end
     if ! cc.valid?              # format check on credit card number
-      err << ("Please provide valid credit card information:<br/>" +
-              cc.errors.full_messages.join("<br/>"))
+      err << ("<p>Please provide valid credit card information:</p>" <<
+              "<ul><li>" <<
+              cc.errors.full_messages.join("</li><li>") <<
+              "</li></ul>")
     end
     if !prevalidate_billing_addr(billing_info)
       err = 'Please provide a valid billing name and address.'
@@ -550,9 +549,17 @@ class StoreController < ApplicationController
 
   def cc_transaction(amount,cc,params,card_present)
     amount = Money.us_dollar((100 * amount).to_i)
-    Base.gateway_mode = :test unless RAILS_ENV == 'production'
-    AuthorizedNetGateway.new(:login => Option.value(:pgw_id),
-                             :password => Option.value(:pgw_txn_key)).purchase(amount, cc, params)
+    if RAILS_ENV == 'production'
+      #Base.gateway_mode = :test unless RAILS_ENV == 'production'
+      gw = AuthorizedNetGateway.new(:login => Option.value(:pgw_id),
+                                    :password => Option.value(:pgw_txn_key))
+    else
+      Base.gateway_mode = :test
+      cc.number = (cc.number.match( /^42/ ) ? '1' : '3')
+      gw = BogusGateway.new(:login => Option.value(:pgw_id),
+                            :password => Option.value(:pgw_txn_key))
+    end
+    return gw.purchase(amount, cc, params)
   end
 
   # helpers for the AJAX handlers. These should probably be moved
@@ -582,7 +589,7 @@ class StoreController < ApplicationController
   def walkup_sales_filter
     unless (current_admin.is_walkup ||
             APP_CONFIG[:walkup_locations].include?(request.remote_ip))
-      flash[:notice] = 'To process walkup sales, you must either sign in with
+      flash[:warning] = 'To process walkup sales, you must either sign in with
         Walkup Sales privilege OR from an approved walkup sales computer.'
       session[:return_to] = request.request_uri
       redirect_to :controller => 'customers', :action => 'login'
