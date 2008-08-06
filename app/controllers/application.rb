@@ -20,6 +20,10 @@ class ApplicationController < ActionController::Base
     @gNobodyReallyLoggedIn = nobody_really_logged_in
     true
   end
+
+  def set_checkout_in_progress(val = true)
+    @gCheckoutInProgress = session[:checkout_in_progress] = val
+  end
   
   filter_parameter_logging :credit_card,:password
 

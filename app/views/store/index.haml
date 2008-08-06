@@ -5,7 +5,7 @@
   - unless @cart.is_empty?
     #shoppingCart.pageDiv
 
-      %h2.center My Shopping Cart
+      %h2.center Your Order So Far
       - form_tag :action => 'checkout' do
         = render :partial => 'cart', :locals => {:editable => true}
         = submit_tag 'Checkout'

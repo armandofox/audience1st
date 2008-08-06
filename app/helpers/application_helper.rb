@@ -7,6 +7,13 @@ module ApplicationHelper
     !uastring.blank? && uastring.match( /iphone|palmos|palmsource|blazer/i )
   end
 
+  # hidden image tag; if a number is appended, gives it that unique id
+  def hidden_image(name)
+    id = name
+    id << $1 if name.gsub!(/_(\d+)$/) { |s| '' }
+    image_tag("#{name}.png", :id => id, :style =>  'display: none;')
+  end
+
   # spinner
   def spinner(id='wait')
     image_tag('wait16trans.gif', :id => id, :style => 'display: none;')

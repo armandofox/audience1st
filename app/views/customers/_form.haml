@@ -25,10 +25,13 @@
     =text_field 'customer', 'state', {:size => 2, :max_length => 2, :readonly => disabled}
     %label.no_float{:for=>:customer_zip} Zip
     =text_field 'customer', 'zip', {:size => 10, :max_length => 10, :readonly => disabled}
-    %br/
-    %br/
-    %label.no_float= submit_to_remote 'Validate','Validate', :url => {:action => 'validate_address'}, :before => "Element.show('wait_validate')", :complete => "Element.hide('wait_validate')"
-    = spinner('wait_validate')
+    - if @gAdmin.is_boxoffice
+      = submit_to_remote 'Validate','Validate...', :url => {:action => 'validate_address'}, :before => "Element.show('wait_validate')", :complete => "Element.hide('wait_validate')", :success => "Element.show('success');Element.hide('failure')", :failure => "Element.show('failure');Element.hide('success')"
+      = spinner('wait_validate')
+      = hidden_image('success')
+      = hidden_image('failure')
+    %br
+    %br
     %label{:for=>:customer_day_phone} Day phone
     =text_field 'customer', 'day_phone', {:size => 16, :max_length => 16, :readonly => disabled}
     %br/

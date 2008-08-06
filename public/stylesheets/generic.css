@@ -245,6 +245,7 @@ ul {
 }
 #store_nav { border-bottom: 3px double #999; }
 #store_nav li, #staff_nav li {
+  list-style: none;
   float: left;
   border-right: 1px solid #666;
 }
@@ -290,6 +291,7 @@ p#empty_cart {
 }
 ol#cart_items { }
 li.cart_item {
+  list-style: none;
   margin: 0;
   padding: 3px;
 }

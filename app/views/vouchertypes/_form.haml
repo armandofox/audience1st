@@ -51,6 +51,14 @@
 - if @vouchertype.is_bundle?
 
   %p
+    %label{:for=>:vouchertype_bundle_sales_start} Sales start
+    = datetime_select 'vouchertype', 'bundle_sales_start'
+
+  %p
+    %label{:for=>:vouchertype_bundle_sales_start} Sales end
+    = datetime_select 'vouchertype', 'bundle_sales_end'
+
+  %p
     %label{:for=>:voucher_included_vouchers}Included vouchers:
     %br/
 

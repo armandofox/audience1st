@@ -116,9 +116,9 @@ class StoreController < ApplicationController
     @customer = store_customer
     @subscriber = @customer.is_subscriber?
     @cart = find_cart
-    subs = { :type => :subscription  }
-    subs.merge!({:for_purchase_by => :subscribers}) if @subscriber
-    @subs_to_offer = Vouchertype.find_products(subs).sort_by(&:price).reverse
+    # this uses the temporary hack of adding bundle sales start/end
+    #   to bundle voucher record directly...ugh
+    @subs_to_offer = Vouchertype.find(:all, :conditions => "is_bundle = 1 AND is_subscription = 1 AND (NOW() BETWEEN bundle_sales_start AND bundle_sales_end)").sort_by(&:price).reverse
     if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
         vt = Vouchertype.find_by_id(v) &&
         # note! must use grep (uses ===) rather than include (uses ==)
@@ -287,6 +287,7 @@ class StoreController < ApplicationController
   def empty_cart
     session[:cart] = Cart.new
     session[:promo_code] = nil
+    set_checkout_in_progress(false)
     redirect_to :action => (params[:redirect_to] || 'index')
   end
 

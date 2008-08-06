@@ -3,7 +3,11 @@ FILES = $(shell find app -name '*.rb' -print -or -name '*.rhtml' -print -or -nam
 PLUGINS = $(shell find vendor/plugins -name '*.rb' -print -or -name '*.yml' -print)
 
 all:
-	@echo Must force explicit target
+	@echo Must force explicit target: dev, TAGS, doc
+
+dev:
+	mkdir log
+	cp config/database.yml config/database.yml.dev
 
 #TAGS: $(FILES) $(PLUGINS)
 #	etags $(FILES) $(PLUGINS)
