@@ -6,7 +6,7 @@
       %th Your Reservation
       %th Actions
       - if @gAdmin.is_boxoffice
-        %th Comments
+        %th.admin Comments
   %tbody
     - vouchertypes.keys.sort { |a,b| group_subscriber_vouchers(a,b) }.each do |v|
       - showdate,vouchertype = v
@@ -16,7 +16,7 @@
       - num = vouchers.length
       %tr
         - if showdate
-          %td= num
+          %td.c= num
           %td= vouchertype.name
           %td= showdate.printable_date
           -# ALL vouchers must be cancellable to allow multi-cancel option.
@@ -27,9 +27,11 @@
                 = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :style => "width: 15ex"
           - if @gAdmin.is_boxoffice
             %td
-              - form_remote_tag(:url => {:controller=>'vouchers', :action=>'update_comment', :vid => vouchers[0].id}, :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
-                = text_field_tag 'comments', vouchers.map { |v| v.comments }.join(";")
-                = submit_tag 'Save'
+              - vid = vouchers.first.id
+              - svid = "save_#{vid}"
+              - form_remote_tag(:url => {:controller=>'vouchers', :action=>'update_comment', :vid => vid}, :before => disable_with(svid,'Saving...'), :complete => enable_with(svid, 'Save'), :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
+                = text_field_tag 'comments', multiple_voucher_comments(vouchers)
+                = submit_tag 'Save', :id => svid, :style => 'width: 7em'
         - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
           %td
           %td= vouchertype.name
@@ -38,9 +40,9 @@
           - form_tag :controller => 'vouchers', :action => 'confirm_multiple' do
             = hidden_field_tag 'voucher_ids', voucherlist
             - if num > 1
-              %td= select_tag 'number', options_for_select((1..num).to_a, num)
+              %td.c= select_tag 'number', options_for_select((1..num).to_a, num)
             - else
-              %td 1
+              %td.c 1
               = hidden_field_tag 'number', 1
             %td= vouchertype.name
             %td= select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation), :style => "width: 200px"

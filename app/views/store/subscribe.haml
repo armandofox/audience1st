@@ -10,21 +10,13 @@
 
   #subscriptionsMenus
     %h1.page_heading.center Subscriber Benefits
-    %p
-      = h(Option.value(:subscription_benefits_short_description))
-      = link_to "Learn more",Option.value(:subscription_info),{:target=>'_blank'}
-    
+    = sanitize_option_text(:subscription_benefits_short_description)
     - unless @subscriber
-      %p 
-        If you're a current subscriber,
-        = link_to 'log in to your account',:controller=>'customers',:action=>'login'
-        and click the
-        %strong Renew Subscription
-        button on your account page to get the renewal discount.
+      = sanitize_option_text :nonsubscriber_subscription_teaser
       
     - form_tag :action => 'add_subscriptions_to_cart' do
       - if @subs_to_offer.empty?
-        %p (No subscriptions on sale at this time)
+        %p.page_heading.center (No subscriptions on sale at this time)
       - else
         %label Subscription 
         = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price',@selected_sub)

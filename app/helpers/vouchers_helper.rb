@@ -1,1 +1,2 @@
-Module VouchersHelper
+module VouchersHelper
+end

@@ -150,6 +150,10 @@ submit:hover {
   border: none;
 }
 
+.admin { 
+   background-color: yellow;
+   color: black;
+}
 .adminField { 
    clear: both;
    padding: 2px 10px;
@@ -262,8 +266,7 @@ div.spinner16 {
   width: 18px;
   padding: 1px;
   margin: 0;
-  background: url('/images/wait18trans.gif');
-  display: none;
+  display: block;
  }
 
 div.uploadStatus {
@@ -302,6 +305,34 @@ div.progressBar div.background {
 #customerVoucherList td { 
   text-align: center;
 }
+
+/* Sales reports */
+
+div.show .showSalesDate { 
+  width: 15em;
+}
+div.show .showSalesVoucherType { 
+  padding-left: 1em;
+  width: 20em;
+}
+div.show .showSalesDateQty { 
+  width: 5em;
+  text-align: right;
+  font-weight: bold;
+}
+div.show .showSalesDatePercent, div.show .showSalesPercent { 
+  width: 5em;
+  text-align: center;
+}                               
+div.show .showSalesDateRevenue { 
+  width: 10em;
+  font-weight: bold;
+}
+div.show .showSalesRevenue { 
+  width: 10em;
+}
+
+
 
 #pageDiv .showDateSummary { 
   margin: 2px;

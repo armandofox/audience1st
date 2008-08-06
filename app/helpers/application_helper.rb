@@ -14,9 +14,33 @@ module ApplicationHelper
     image_tag("#{name}.png", :id => id, :style =>  'display: none;')
   end
 
+  # if an option has some HTML text associated with it, sanitize the text;
+  #  otherwise return the alternate text
+
+  def sanitize_option_text(opt, alt='')
+    ((s = Option.value(opt)).blank? ?
+     alt :
+     content_tag(:p, sanitize(s), :id => opt, :class => [opt,:template]))
+  end
+
+  def link_to_if_option(opt, text, alt='', opts={})
+    ((s = Option.value(opt)).blank? ?
+     alt :
+     content_tag(:span, link_to(text, s, opts), :id => opt, :class => [opt,:template]))
+  end
+
+  # helpers that generate JS to disable and then re-enable a button
+  #  (eg a submit button) during AJAX form submission
+  def disable_with(elt_id,new_str)
+    "$('#{elt_id}').value='#{new_str}'; $('#{elt_id}').disabled=true;"
+  end
+  def enable_with(elt_id,new_str)
+    "$('#{elt_id}').value='#{new_str}'; $('#{elt_id}').disabled=false;"
+  end
+
   # spinner
   def spinner(id='wait')
-    image_tag('wait16trans.gif', :id => id, :style => 'display: none;')
+    content_tag('span', image_tag('wait16trans.gif', :style => 'display: none', :id => id), :class => 'spinner16')
   end
   
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})

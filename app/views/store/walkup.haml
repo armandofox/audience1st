@@ -1,14 +1,14 @@
 = javascript_include_tag 'utils'
 
-%h1= "Walk-up Sale (from #{h(@ip)})"
+%h1 
+  Walk-up Sales:
+  %span#showdate= Showdate.find(@showdate_id).printable_name if @showdate_id
 
 = error_messages_for 'store'
                   
-= search_panel('customers', 'list', {:label => "Walk-up subscriber search:",:newpage => true,:submit => "Search in new window"}) 
-
 - form_tag :action => 'do_walkup_sale' do
   = hidden_field_tag 'otp', @otp
-  - js,showmenu,showdatemenu = dependent_js_selects(@shows, 'show', 'name', 'showdate', 'printable_date',:selected_parent => @show_id, :selected_child => @showdate_id)
+  - js,showmenu,showdatemenu = dependent_js_selects(@shows, 'show', 'name', 'showdate', 'printable_date',:selected_parent => @show_id, :selected_child => @showdate_id, :child_html_options => 'onChange="$(\'showdate\').innerHTML=this.options[this.selectedIndex].text;"')
   = js
   - js_fields = to_js_array(@vouchertypes.map { |v| v.id })
   - onChg = "javascript:recalculate('total',#{js_fields})"
@@ -39,7 +39,7 @@
             %td.label{:colspan=>2}
               %label{:for=>:donation} Additional donation:
             %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => onChg
-          - @vouchertypes.each do |v|
+          - @vouchertypes.sort_by(&:price).reverse.each do |v|
             %tr
               %td.label= h(v.name)
               %td= text_field_tag("price#{v.id}", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)

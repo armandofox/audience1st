@@ -5,6 +5,11 @@ module CustomersHelper
      number_to_phone($1.gsub(/[^0-9]/,'').to_i, :delimiter=>'.') << h($2.to_s) :
      h(s))
   end
+
+  def multiple_voucher_comments(vouchers)
+    vouchers.map { |v| v.comments unless v.comments.blank? }.compact.join('; ')
+  end
+  
   
   def group_subscriber_vouchers(v1,v2)
     # each of v1 and v2 is an array of [showdate,vouchertype].
