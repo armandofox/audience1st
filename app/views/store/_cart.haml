@@ -1,0 +1,32 @@
+- @cart ||= cart 
+
+#cart
+  - if @cart.items.empty?
+    %p#empty_cart No items in your order.
+  - else
+    %ul#cart_items
+      - @cart.items.each_with_index do |i,index|
+        %li.cart_item{:class=>cycle(:even,:odd)}
+          - price = (i.kind_of?(Voucher)) ? i.vouchertype.price : i.amount
+          .price_and_actions
+            .actions
+              - if defined?(editable) && editable
+                = gen_button('Remove', {:action => 'remove_from_cart', :item => index, :redirect_to => (defined?(redirect_to) ? redirect_to : nil), :id => id})
+            .cart_item_price= number_to_currency(price)
+    
+          %span.cart_item_desc
+            - if i.kind_of?(Voucher)
+              - price = i.vouchertype.price
+              - if i.showdate_id.to_i > 0 
+                %span.voucher_show_name= h i.showdate.show.name
+                %span.voucher_show_date= h i.showdate.thedate.to_formatted_s(:showtime)
+              %span.voucher_type= h i.vouchertype.name
+              - if i.promo_code
+                %span.promo_code= "(Promo #{h(i.promo_code)})"
+            - elsif i.kind_of?(Donation)
+              - price = i.amount
+              %span.donation_name "Donation to #{h(i.donation_fund.name)}"
+              
+    #cart_total
+      #total_price= number_to_currency(@cart.total_price)
+      %div &nbsp;
