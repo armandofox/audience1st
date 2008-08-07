@@ -114,15 +114,6 @@ class CustomersController < ApplicationController
   # welcome screen: different for nonsubscribers vs. subscribers
   
   def welcome                   # for nonsubscribers
-    # if a checkout is in progress, customer was redirected here from
-    # either signing up for new account, or modifying billing address
-    # for CC purchase.  In that case, return to checkout flow.
-    if session[:checkout_in_progress]
-      flash.keep :notice
-      flash.keep :warning
-      redirect_to :controller=>'store',:action=>'checkout'
-      return
-    end
     @customer = @gCustomer
     # if customer is a subscriber, AND force_classic is not indicated,
     # redirect to correct page
@@ -258,11 +249,7 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
                            :comments => 'new customer self-signup')
-      if @gCheckoutInProgress
-        redirect_to :controller => 'store', :action => 'checkout'
-      else
-        redirect_to :action => 'welcome'
-      end
+      redirect_to_stored
     else
       flash[:notice] = "There was a problem creating your account.<br/>"
       render :action => 'new'
@@ -373,7 +360,7 @@ class CustomersController < ApplicationController
       end
       session[:cid] = @customer.id
       if @gCheckoutInProgress
-        redirect_to :controller => 'store', :action => 'checkout'
+        redirect_to_stored
       else
         redirect_to :action => 'switch_to', :id => @customer.id
       end
@@ -467,8 +454,6 @@ class CustomersController < ApplicationController
     @vouchers = customer.active_vouchers.sort_by(&:created_on)
     #{ |x,y| x.created_on <=> y.created_on }
     session[:store_customer] = customer.id
-    flash[:warning] = ''
-    flash[:notice] = ''
   end
 
   def forgot_password(login)

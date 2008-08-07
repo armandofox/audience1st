@@ -22,7 +22,7 @@
         = render :partial => 'layouts/storenav', :locals => {:admin=>@gAdmin,:c=>@gCustomer,:logged_in=>@gLoggedIn}
 
       - unless flash[:notice].blank?
-        %p.feedback.clear= h flash[:notice]
+        %p.feedback.clear= flash[:notice]
 
       - unless flash[:warning].blank?
         = render :partial => 'store/warning'

@@ -217,7 +217,7 @@ class StoreController < ApplicationController
   def not_me
     @cust = Customer.new
     session[:checkout_in_progress] = true
-    flash[:notice] = "Please sign in, or create an account if you don't already have one, to enter your credit card billing address.  We never share this information with anyone."
+    flash[:warning] = "Please sign in, or create an account if you don't already have one, to enter your credit card billing address.  We never share this information with anyone."
     redirect_to :controller => 'customers', :action => 'login'
   end
 
