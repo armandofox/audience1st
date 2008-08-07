@@ -25,6 +25,7 @@ class StoreController < ApplicationController
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
     session[:checkout_in_progress] = true
+    set_return_to :controller => 'store', :action => 'index'
     # if this is initial visit to page, reset ticket choice info
     reset_current_show_and_showdate
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
@@ -202,6 +203,7 @@ class StoreController < ApplicationController
       redirect_to :action => 'index', :id => params[:id]
       return
     end
+    set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
     redirect_to :action => 'not_me' and return if nobody_really_logged_in
@@ -260,7 +262,7 @@ class StoreController < ApplicationController
       flash[:checkout_error] = "Payment gateway error: " << resp.message
       flash[:checkout_error] << "<br/>Please contact your credit card
         issuer for assistance."  if resp.message.match(/decline/i)
-      logger.info("Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
+      logger.info("DECLINED: Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
       redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
@@ -273,11 +275,13 @@ class StoreController < ApplicationController
     @customer.save
     @amount = @cart.total_price
     @order_summary = @cart.to_s
-    @cc_number = cc.number
+    @cc_number = (cc.number || 'XXXX').to_s
     email_confirmation(:confirm_order, @customer,@order_summary,
                        @amount, "Credit card ending in #{@cc_number[-4..-1]}")
     @cart.empty!
     session[:promo_code] =  nil
+    session[:checkout_in_progress] = nil
+    set_return_to
   end
 
   def remove_from_cart

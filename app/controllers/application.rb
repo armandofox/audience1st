@@ -129,14 +129,19 @@ EOEVAL
     Customer.find_by_id(session[:admin_id]) || Customer.generic_customer
   end
 
+  def set_return_to(hsh=nil)
+    session[:return_to] = hsh
+    true
+  end
+
   def redirect_to_stored(params={})
-    return_to = session[:return_to].to_s
-    unless (return_to.blank? ||  return_to == url_for(:controller => 'customers', :action => 'login'))
-      session[:return_to] = nil
-      redirect_to_url(return_to,params)
+    if session[:return_to]
+      redirect_to session[:return_to]
     else
-      redirect_to({:controller => 'customers', :action => 'welcome'}.merge(params))
+      redirect_to :controller => 'customers', :action => 'welcome'
     end
+    session[:return_to] = nil
+    true
   end
 
   def download_to_excel(output,filename="data",timestamp=true)

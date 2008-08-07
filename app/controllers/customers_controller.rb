@@ -74,10 +74,7 @@ class CustomersController < ApplicationController
       session[:cid] = c.id
       c.update_attribute(:last_login,Time.now)
       # set redirect-to action based on whether this customer is an admin.
-      if @checkout_in_progress
-        redirect_to :controller => 'store', :action => 'checkout'
-        return
-      end
+      redirect_to_stored and return if @checkout_in_progress
       # authentication succeeded, and customer is NOT in the middle of a
       # store checkout. Proceed to welcome page.
       controller,action = possibly_enable_admin(c)      
@@ -212,7 +209,7 @@ class CustomersController < ApplicationController
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
       end
-      redirect_to :action => 'welcome'
+      redirect_to_stored
     else                      # update was legal to try, but it failed
       flash[:notice] << 'Information was NOT updated: ' <<
         @customer.errors.full_messages.join("; ")
@@ -470,6 +467,8 @@ class CustomersController < ApplicationController
     @vouchers = customer.active_vouchers.sort_by(&:created_on)
     #{ |x,y| x.created_on <=> y.created_on }
     session[:store_customer] = customer.id
+    flash[:warning] = ''
+    flash[:notice] = ''
   end
 
   def forgot_password(login)

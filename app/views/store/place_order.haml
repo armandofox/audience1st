@@ -5,7 +5,7 @@
     Your credit card ending in 
     %strong= h(@cc_number[-4..-1])
     has been charged 
-    %strong= h(sprintf("%0.2f",@amount.to_f))
+    %strong= number_to_currency @amount
 
   %p.strong Please print this confirmation for your records:
   %pre= @order_summary
