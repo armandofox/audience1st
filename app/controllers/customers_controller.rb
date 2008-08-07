@@ -171,7 +171,6 @@ class CustomersController < ApplicationController
     @superadmin = current_admin.is_admin
     return unless request.post? # fall thru to showing edit screen
     flash[:notice] = ''
-    flash[:warning] = ''
     # squeeze empty-string params into nils.
     params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
     # unless admin, remove "extra contact" fields
@@ -247,7 +246,6 @@ class CustomersController < ApplicationController
   def user_create
     @customer = Customer.new(params[:customer])
     flash[:notice] = ''
-    flash[:warning] = ''
     unless @customer.has_valid_email_address?
       flash[:notice] = "Please provide a valid email address as your login ID."
       render :action => 'new'

@@ -31,7 +31,7 @@ class CustomReportsController < ApplicationController
       flash[:notice] = "New custom report saved"
       redirect_to :action => 'list'
     else
-      flash[:warning] = @custom_report.errors.full_messages
+      flash[:notice] = @custom_report.errors.full_messages
       redirect_to :action => 'new'
     end
   end

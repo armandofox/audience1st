@@ -22,9 +22,12 @@
         = render :partial => 'layouts/storenav', :locals => {:admin=>@gAdmin,:c=>@gCustomer,:logged_in=>@gLoggedIn}
 
       - unless flash[:notice].blank?
-        %p.feedback.clear= flash[:notice]
+        %p.feedback.clear= h flash[:notice]
 
       - unless flash[:warning].blank?
+        = render :partial => 'store/warning'
+
+      - unless flash[:checkout_error].blank?
         = render :partial => 'store/checkout_error'
 
       - if @gCheckoutInProgress and controller.controller_name != 'store'

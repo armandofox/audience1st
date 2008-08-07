@@ -150,22 +150,24 @@ class StoreController < ApplicationController
     @is_admin = current_admin.is_boxoffice
     qtys = params[:vouchertype] # a hash of vouchertypeID => qty of this type
     showdate_id = params[:showdate].to_i
-    flash[:ticket_error] = ""
+    flash[:warning] = ""
 
-    qtys.reject { |v,q| q.to_i.zero? }.each_pair do |vtype_str,qty_str|
+    qtys.reject! { |v,q| q.to_i.zero? }
+    flash[:warning] = "Please select one or more tickets." and redirect_to(:action => :index) and return if qtys.empty?
+    qtys.each_pair do |vtype_str,qty_str|
       vtype,qty = vtype_str.to_i, qty_str.to_i
       unless (vt = Vouchertype.find_by_id(vtype))
-        flash[:ticket_error] << "Ticket ID #{vtype} is invalid. "
+        flash[:warning] << "Ticket ID #{vtype} is invalid. "
         next
       end
       if qty > 99
-        flash[:ticket_error] << "Please specify between 1 and 99 tickets for type '#{vt.name}'. "
+        flash[:warning] << "Please specify between 1 and 99 tickets for type '#{vt.name}'. "
         next
       end
       av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,@customer,vtype,:ignore_cutoff => @is_admin)
-      flash[:ticket_error] <<
+      flash[:warning] <<
         "Ticket type '#{vt.name}' not valid for that show, or show sold out. " and next if av.howmany.zero?
-      flash[:ticket_error] <<
+      flash[:warning] <<
         "Only #{av.howmany} '#{vt.name}' tickets remaining for selected performance. "  and next if av.howmany < qty
       # add vouchers to cart.  Vouchers will be validated at checkout.
       # was a promo code necessary to select this vouchertype?
@@ -186,7 +188,7 @@ class StoreController < ApplicationController
     if (d = params[:donation_amount].to_i) > 0
       cart.add(Donation.online_donation(d, store_customer.id, logged_in_id))
     else
-      flash[:warning] = "Donation amount must be at least 1 dollar"
+      flash[:warning] = "Please enter a donation amount."
     end
     redirect_to :action =>(params[:redirect_to] || 'index')
   end
@@ -238,7 +240,7 @@ class StoreController < ApplicationController
     # prevalidations: CC# and address appear valid, amount >0,
     # billing address appears to be a well-formed address
     unless (errors = do_prevalidations(params, @cart, @bill_to, cc)).empty?
-      flash[:warning] = errors
+      flash[:checkout_error] = errors
       redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
@@ -255,8 +257,8 @@ class StoreController < ApplicationController
     # OK, we have a customer record to tie the transaction to
     resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to)
     if !resp.success?
-      flash[:warning] = "Payment gateway error: " << resp.message
-      flash[:warning] << "<br/>Please contact your credit card
+      flash[:checkout_error] = "Payment gateway error: " << resp.message
+      flash[:checkout_error] << "<br/>Please contact your credit card
         issuer for assistance."  if resp.message.match(/decline/i)
       logger.info("Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
       redirect_to :action => 'checkout', :sales_final => sales_final
@@ -344,7 +346,7 @@ class StoreController < ApplicationController
       end
       total += (donation=params[:donation].to_f)
     rescue Exception => e
-      flash[:warning] = "There was a problem verifying the total amount of the order:<br/>#{e.message}"
+      flash[:checkout_error] = "There was a problem verifying the total amount of the order:<br/>#{e.message}"
       redirect_to(:action => :walkup, :showdate => showdate,
                   :show => params[:show_select])
       return
@@ -361,7 +363,7 @@ class StoreController < ApplicationController
         # run cc transaction....
         resp = do_cc_present_transaction(total,cc)
         unless resp.success?
-          flash[:warning] = "PAYMENT GATEWAY ERROR: " + resp.message
+          flash[:checkout_error] = "PAYMENT GATEWAY ERROR: " + resp.message
           redirect_to :action => 'walkup', :showdate => showdate,
           :show => params[:show_select]
           return
@@ -401,7 +403,7 @@ class StoreController < ApplicationController
         Donation.walkup_donation(donation,logged_in_id)
         flash[:notice] << sprintf(" $%.02f donation processed,", donation)
       rescue Exception => e
-        flash[:warning] << "Donation could NOT be recorded: #{e.message}"
+        flash[:checkout_error] << "Donation could NOT be recorded: #{e.message}"
       end
     end
     flash[:notice] << sprintf(" total $%.02f",  total)

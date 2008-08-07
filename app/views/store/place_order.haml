@@ -10,12 +10,7 @@
   %p.strong Please print this confirmation for your records:
   %pre= @order_summary
 
-  %ul
-    %li All ticket sales are final. No refunds or exchanges permitted.
-    %li Tickets will be held at will-call and may be picked up 1 hour prior to curtain.
-    %li Seating begins 30 minutes prior to curtain.
-    %li Latecomers will be seated at the discretion of the House Manager. Please arrive early.
-
+  #checkout_notices= sanitize_option_text(:checkout_notices)
 
 %p.center
   - if @is_admin
