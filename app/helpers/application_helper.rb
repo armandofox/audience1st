@@ -18,9 +18,7 @@ module ApplicationHelper
   #  otherwise return the alternate text
 
   def sanitize_option_text(opt, alt='')
-    ((s = Option.value(opt)).blank? ?
-     alt :
-     content_tag(:p, sanitize(s), :id => opt, :class => [opt,:template]))
+    ((s = Option.value(opt)).blank? ?   alt :  sanitize(s))
   end
 
   def link_to_if_option(opt, text, alt='', opts={})
@@ -28,6 +26,18 @@ module ApplicationHelper
      alt :
      content_tag(:span, link_to(text, s, opts), :id => opt, :class => [opt,:template]))
   end
+
+  
+  # return a checkbox that "protects" another form element by hiding/showing it
+  # when checked/unchecked, given initial state.  It's the caller's responsibility
+  # to ensure the initial state matches the actual display state of the
+  # guarded element.
+
+  def checkbox_guard_for(elt_name, visible=false)
+    check_box_tag("show_" << elt_name.to_s, '1', visible,
+                  :onClick => visual_effect(:toggle_appear, elt_name))
+  end
+
 
   # helpers that generate JS to disable and then re-enable a button
   #  (eg a submit button) during AJAX form submission

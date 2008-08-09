@@ -23,11 +23,11 @@
   %br/
   = render :partial => 'credit_card'
   
+  %label{:for => 'sales_final'} TERMS OF SALE:
   = check_box_tag 'sales_final',1,@sales_final_acknowledged
-  %label.no_float{:for => 'sales_final'}
-    %strong 
-      I understand and agree that
-      = link_to_function "all ticket sales are final and there are no refunds or exchanges.", "alert('#{escape_javascript(MESSAGES[:terms_of_sale_0])}')"
+  %strong 
+    I understand and agree that
+    = link_to_unless Option.value(:terms_of_sale).blank?, "all ticket sales are final and there are no refunds or exchanges.", "javascript:alert('#{escape_javascript(Option.value(:terms_of_sale))}')"
   %br/
   %br/
   

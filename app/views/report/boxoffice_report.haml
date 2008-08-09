@@ -34,4 +34,4 @@
               %td= h(@vouchers[k].map { |v| v.comments unless v.comments.blank? }.compact.uniq.join(";"))
 
       %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
-      %p= "Box office report generated #{Time.now.to_formatted_s(:short)}"
+      %p= "Box office report generated #{Time.now.to_formatted_s(:showtime)}"

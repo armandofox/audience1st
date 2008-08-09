@@ -130,8 +130,9 @@ class VouchersController < ApplicationController
     count = 0
     lasterr = 'errors occurred making reservations'
     Voucher.find(params[:voucher_ids].split(",")).slice(0,num).each do |v|
-      if v.reserve_for(showdate, logged_in_id, "", :ignore_cutoff => @is_admin)
+      if v.reserve_for(showdate, logged_in_id, params[:comments].to_s, :ignore_cutoff => @is_admin)
         count += 1
+        params[:comments] = nil # only first voucher gets comment field
       else
         lasterr = v.comments
       end

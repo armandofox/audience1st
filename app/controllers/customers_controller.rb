@@ -5,7 +5,11 @@ class CustomersController < ApplicationController
   require 'uri'
 
   include Enumerable
-  
+
+  if RAILS_ENV == 'production'
+    ssl_required :login, :change_password, :create, :user_create
+  end
+
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
                 :only=>%w[welcome welcome_subscriber change_password edit update],
@@ -74,11 +78,11 @@ class CustomersController < ApplicationController
       session[:cid] = c.id
       c.update_attribute(:last_login,Time.now)
       # set redirect-to action based on whether this customer is an admin.
-      redirect_to_stored and return if @checkout_in_progress
       # authentication succeeded, and customer is NOT in the middle of a
       # store checkout. Proceed to welcome page.
       controller,action = possibly_enable_admin(c)      
       session[:promo_code] = nil
+      redirect_to_stored and return if (@checkout_in_progress || stored_action)
       redirect_to :controller => controller, :action => action
       return
     else

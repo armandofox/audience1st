@@ -1,5 +1,7 @@
 class Mailer < ActionMailer::Base
 
+  helper :application
+  
   def send_new_password(customer, newpass, whathappened)
     sending_to(customer)
     @subject    << "#{customer.full_name}'s account"
@@ -12,13 +14,14 @@ class Mailer < ActionMailer::Base
     )
   end
 
-  def confirm_order(customer, description, amount, payment_desc)
+  def confirm_order(customer, description, amount, payment_desc, special_instructions='')
     sending_to(customer)
     @subject << "order confirmation"
     @body.merge!(:greeting => customer.full_name,
-                  :description => description,
-                  :amount => amount,
-                  :payment_desc => payment_desc
+                 :description => description,
+                 :amount => amount,
+                 :payment_desc => payment_desc,
+                 :special_instructions => special_instructions
                   )
   end
 

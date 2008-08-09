@@ -179,6 +179,9 @@ ul {
   color: red;
   border: 2px solid red;
 }
+.emphasis { 
+  color: red;
+}
 .wide_button {
   letter-spacing: 0.25em;
   width: 150px;
@@ -394,6 +397,29 @@ fieldset#admin_form, fieldset#admin_form legend {
   color: black;
   border: 1px solid black;
 }
+
+/* 
+ *  My tickets and reservations  //////////////////////////////
+ */
+
+
+table#subscriptionReservations tr {
+	line-height: 1.75;
+}
+table#subscriptionReservations td.selectShowdate { 
+  width: 25em;
+}
+table#subscriptionReservations .showdate { 
+  width: 20em;
+}
+table#subscriptionReservations .action { 
+  text-align: center;
+  vertical-align: bottom;
+}
+
+/*
+ *  Store   //////////////////////////////////////////////////
+ */ 
 
 #ticket_menus {
   margin-top: 20px;

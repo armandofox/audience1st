@@ -39,7 +39,7 @@
             %td.label{:colspan=>2}
               %label{:for=>:donation} Additional donation:
             %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => onChg
-          - @vouchertypes.sort_by(&:price).reverse.each do |v|
+          - @vouchertypes.each do |v|
             %tr
               %td.label= h(v.name)
               %td= text_field_tag("price#{v.id}", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)

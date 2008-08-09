@@ -332,7 +332,16 @@ div.show .showSalesRevenue {
   width: 10em;
 }
 
+/* Options */
 
+table#options_table td.option_name { 
+  width: 20em;
+  vertical-align: top;
+  text-align: left; 
+}
+table#options_table td.option_value { 
+  text-align: left;
+}
 
 #pageDiv .showDateSummary { 
   margin: 2px;

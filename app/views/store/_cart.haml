@@ -30,3 +30,9 @@
     #cart_total
       #total_price= number_to_currency(@cart.total_price)
       %div &nbsp;
+
+    - unless @cart.comments.blank?
+      #cart_comments
+        %p
+          %span.emphasis Special seating needs:
+          = h @cart.comments

@@ -46,6 +46,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus
     @customer = store_customer
+    @cart = find_cart
     is_admin = current_admin.is_boxoffice
     # will set the following instance variables:
     # @all_shows - choice for Shows menu
@@ -175,8 +176,12 @@ class StoreController < ApplicationController
       promo_code = ((session[:promo_code] && av.promo_codes) ?
                     session[:promo_code].upcase : nil)
       cart = find_cart
+      # Comments field is used for special seating instructions.  Add the
+      # comment to the cart, and add it to *1* (not all) of the vouchers.
+      cart.comments = params[:comments]
       1.upto(qty) do
         cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
+        params[:comments] = nil
       end
     end
     #reset_current_show_and_showdate
@@ -277,7 +282,9 @@ class StoreController < ApplicationController
     @order_summary = @cart.to_s
     @cc_number = (cc.number || 'XXXX').to_s
     email_confirmation(:confirm_order, @customer,@order_summary,
-                       @amount, "Credit card ending in #{@cc_number[-4..-1]}")
+                       @amount, "Credit card ending in #{@cc_number[-4..-1]}",
+                       @cart.comments)
+    @special_instructions = @cart.comments
     @cart.empty!
     session[:promo_code] =  nil
     session[:checkout_in_progress] = nil

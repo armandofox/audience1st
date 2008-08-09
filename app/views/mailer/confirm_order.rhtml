@@ -9,6 +9,14 @@ Please check this information carefully:
 ORDER SUMMARY:
 
 <%= @description %>
+
+<% unless @special_instructions.blank? %>
+------------------------------------------------------------
+SPECIAL INSTRUCTIONS:
+
+<%= @special_instructions %>
+
+<% end %>
 ------------------------------------------------------------
 PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
 

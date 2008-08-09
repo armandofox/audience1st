@@ -2,15 +2,18 @@ class Cart
 
   attr_accessor :items
   attr_accessor :total_price
+  attr_accessor :comments
 
   def initialize
     @items = []
     @total_price = 0.0
+    @comments = ''
   end
   
   def empty!
     @items = []
     @total_price = 0.0
+    @comments = ''
   end
 
   def is_empty?

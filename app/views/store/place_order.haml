@@ -12,6 +12,13 @@
 
   #checkout_notices= sanitize_option_text(:checkout_notices)
 
+  - unless @special_instructions.blank?
+    #accessible_seating_notices
+      %p
+        %strong Accessible seating request:
+        = h @special_instructions
+      %p.accessible_seating_notices= sanitize_option_text(:accessible_seating_notices)
+
 %p.center
   - if @is_admin
     = admin_button('Back to Customer List', {:controller => 'customers', :action => 'list'})

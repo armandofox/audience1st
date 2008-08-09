@@ -1,4 +1,4 @@
-%table#SubscriptionReservations.full_width
+%table#subscriptionReservations.full_width
   %thead
     %tr
       %th #Tix
@@ -20,7 +20,7 @@
           %td= vouchertype.name
           %td= showdate.printable_date
           -# ALL vouchers must be cancellable to allow multi-cancel option.
-          %td
+          %td.action
             - if @gAdmin.is_boxoffice || vouchers.all? { |v| v.can_be_changed? }
               - form_tag :method => :post, :controller => 'vouchers', :action => 'cancel_multiple'  do
                 = hidden_field_tag 'voucher_ids', voucherlist
@@ -45,5 +45,13 @@
               %td.c 1
               = hidden_field_tag 'number', 1
             %td= vouchertype.name
-            %td= select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation), :style => "width: 200px"
-            %td= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"  
+            %td.selectShowdate
+              = select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates, :showdate_id, :date_with_explanation), :class => :showdate, :onChange => visual_effect(:toggle_appear, 'special_seating')
+              #special_seating{:style=>'display:none'}
+                %span.emphasis ADA-accessible seating required?
+                = checkbox_guard_for 'special_seating_div'
+                #special_seating_div{:style=>'display:none'}
+                  Please describe (wheelchair, walker, cane, etc.)
+                  %br
+                  = text_field_tag 'comments', '', :size => '20em', :class => :showdate
+            %td.action= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"  

@@ -3,30 +3,36 @@
     - choose = @sh ? "" : options_for_select({"Select Show..." => 0})
     %label{:for => "show"} Show
     = select_tag('show', choose + options_from_collection_for_select(@all_shows, :id, :name, (@sh ? @sh.id : 0)))
+    = spinner('wait_show')
     %br/
     %p.explanation Only dates with available seats are shown.
     - choose = @sd ? "" : options_for_select({"Select Date..." => 0})
     %label{:for => "showdate"} Date
     = select_tag('showdate', choose + options_from_collection_for_select(@all_showdates, :id, :printable_date, (@sd ? @sd.id : 0)))
+    = spinner('wait_showdate')
     %br/
     
     - if @vouchertypes.empty?
       %p.explanation No tickets on sale for this performance
     - else
+      - min_tix = (@vouchertypes.length == 1 ?  1 : 0)
       - @vouchertypes.each do |av|
         %label{:for => "vouchertype[#{av.vouchertype.id}]"}= av.vouchertype.name_with_price
-        = select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((0..[av.howmany,10].min).to_a))
+        = select_tag("vouchertype[#{av.vouchertype.id}]", options_for_select((min_tix..[av.howmany,10].min).to_a))
         %br/
     - unless @vouchertypes.empty?
-      %label{:for => 'comments'} Special seating needs
-      = text_area_tag('comments', '', :rows => 3, :cols => 30)
-      %br/
-      
+      %label.emphasis ADA-accessible seating required
+      = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
+      #comments_div{:style=> @cart.comments.blank? ? 'display: none' : ''}
+        %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
+        = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
+    
+      %br.clear
       = submit_tag 'Add to Cart', :class => 'genButton', :id => 'add_to_cart'
       - unless flash[:ticket_error].blank?
         %span.feedback= flash[:ticket_error]
 
-= observe_field('show', :update => :ticket_menus, :with => 'show_id', :url => {:controller => 'store', :action => :show_changed})
+= observe_field('show', :update => :ticket_menus, :with => 'show_id', :before => "Element.show('wait_show')", :url => {:controller => 'store', :action => :show_changed})
 
-= observe_field('showdate', :update => :ticket_menus, :with => 'showdate_id', :url => {:controller => 'store', :action => :showdate_changed} )
+= observe_field('showdate', :update => :ticket_menus, :with => 'showdate_id', :before => "Element.show('wait_showdate')", :url => {:controller => 'store', :action => :showdate_changed} )
         

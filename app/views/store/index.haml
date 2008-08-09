@@ -18,10 +18,7 @@
     Buy Tickets
     %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
-  - if @subscriber && !Option.value(:subscriber_store_message).blank?
-    %p.storeText= Option.value(:subscriber_store_message)
-  - if !@subscriber && !Option.value(:nonsubscriber_store_message).blank?
-    %p.storeText= Option.value(:nonsubscriber_store_message)
+  %p.storeText= sanitize_option_text(@subscriber ? :subscriber_store_message : :nonsubscriber_store_message)
   
   = render :partial => 'ticket_menus'
   %br/

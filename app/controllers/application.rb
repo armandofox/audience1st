@@ -134,6 +134,8 @@ EOEVAL
     true
   end
 
+  def stored_action ; !session[:return_to].nil? ; end
+  
   def redirect_to_stored(params={})
     if session[:return_to]
       redirect_to session[:return_to]

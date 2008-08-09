@@ -12,18 +12,13 @@ We're confirming your reservation for the following performance --
 
   Number of seats: <%= @num %>
 
-<% if (@confnum > 0)  %>
+<% if (@confnum.to_i > 0)  %>
   Your reservation confirmation number is <%= @confnum %>.
 
 <% end %>
-All tickets and reservations can be picked up at will-call beginning one
-hour before showtime.
 
-<% if @subscriber %>
-Remember that as a valued Subscriber, you can enter the theater ahead
-of non-subscribers (starting 30 minutes before showtime), and we will
-also hold the best seating sections for Subscribers until 5 minutes 
-before the show. 
-<% end %>
+<%= sanitize_option_text(:general_confirmation_email_notes).wrap(60) %>
+
+<%= sanitize_option_text(@subscriber ? :subscriber_confirmation_email_notes : :nonsubscriber_confirmation_email_notes).wrap(60) %>
 
 <%= @how_to_contact_us %>

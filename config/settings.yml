@@ -48,7 +48,6 @@ cc_purch: "Credit Card Payment"
 # Confirmation dialogs.  Trailing digit is # of string args expected.
 
 messages:
-  terms_of_sale_0: "Terms of use:\n\nI certify that I am 18 or over, or that I have the permission of a parent or adult guardian to provide the information required to complete this sale.\n\nI understand that ticket sales are final: No refunds or exchanges are allowed."
   areyousure_0: "Are you sure?"
   delete_user_2: "Delete customer %s %s? Perhaps you should consider merging the customer with another customer instead, or merging with WALKUP CUSTOMER to permanently deactivate this customer.  If you click OK, this customer's vouchers will be destroyed, which affects show reservation counts and will screw up referential integrity. This action cannot be undone, and it's probably not what you want.  If you are wise, click Cancel to back out now. If you are SURE you know what you're doing, click OK to confirm deleting this customer."
   remove_bundle_0: "OK to remove this voucher from customer account? This will NOT remove the individual vouchers that were part of the bundle - you have to remove those separately."
