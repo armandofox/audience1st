@@ -237,6 +237,7 @@ class CustomersController < ApplicationController
     if request.get?
       @is_admin = current_admin.is_boxoffice
       @customer = Customer.new
+      render :action => 'new'
       return
     end
     @customer = Customer.new(params[:customer])
@@ -340,6 +341,7 @@ class CustomersController < ApplicationController
     if request.get?
       @is_admin = current_admin.is_boxoffice
       @customer = Customer.new
+      render :action => 'new'
       return
     end
     @is_admin = true            # needed for choosing correct method in 'new' tmpl

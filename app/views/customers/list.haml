@@ -1,6 +1,6 @@
 %h1.page_heading.center Listing customers
 
-= search_panel('customers', 'list',  {:label => 'Search on any field:', :extra => button_to('Add new customer...', {:action=>'new',:method=>'get'})})
+= search_panel('customers', 'list',  {:label => 'Search on any field:', :extra => button_to('Add new customer...', {:action=>'create'},{:method=>'get'})})
 
 %br/
 

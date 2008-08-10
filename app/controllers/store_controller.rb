@@ -9,10 +9,10 @@ class StoreController < ApplicationController
 
   if RAILS_ENV == 'production'
     ssl_required :checkout, :place_order, :walkup, :do_walkup_sale
-    ssl_allowed(:index,
-                :show_changed, :showdate_changed, :enter_promo_code,
-                :add_tickets_to_cart, :add_donation_to_cart, :remove_from_cart,
-                :empty_cart, :process_swipe)
+    ssl_allowed(:index, :show_changed, :showdate_changed,
+                :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
+                :remove_from_cart,:empty_cart,
+                :process_swipe)
   end
 
   verify(:method => :post,
