@@ -43,6 +43,11 @@ Rails::Initializer.run do |config|
       ExceptionNotifier.exception_recipients =
         %w(armandofox@gmail.com)
     end
+    # are we operating in 'sandbox' mode?  if so, some features like
+    # "real" CC purchases and email sending are turned off or
+    # handled differently.
+    SANDBOX = (RAILS_ENV != 'production'  ||
+               Option.value(:sandbox).to_i != 0)
     # read global configuration info
     APP_CONFIG =  YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
     MESSAGES = APP_CONFIG[:messages].symbolize_keys
@@ -70,11 +75,12 @@ end
 
 # Include your application configuration below
 
+# session key name
+ActionController::Base.session_options[:session_key] = 'audience1st_session_id'
+
+
 # Enable Google Analytics (http://svn.rubaidh.com/plugins/trunk/google_analytics)
+
 Rubaidh::GoogleAnalytics.tracker_id = 'UA-4613071-1'
 Rubaidh::GoogleAnalytics.domain_name  = 'www.audience1st.com'  
 Rubaidh::GoogleAnalytics.environments = ['production']
-
-
-# session key name
-ActionController::Base.session_options[:session_key] = 'audience1st_session_id'

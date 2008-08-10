@@ -7,17 +7,17 @@ class CustomersController < ApplicationController
   include Enumerable
 
   if RAILS_ENV == 'production'
-    ssl_required :login, :change_password, :create, :user_create
+    ssl_required :login, :change_password, :create, :user_create, :edit, :forgot_password
   end
 
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
-                :only=>%w[welcome welcome_subscriber change_password edit update],
+                :only=>%w[welcome welcome_subscriber change_password edit],
                 :redirect_to => {:action=>:login},
                 :add_to_flash => 'Please log in or create an account to view this page.')
   before_filter(:not_logged_in, :only => %w[user_create],
                 :redirect_to => {:action => :welcome},
-                :add_to_flash => "You appear to already be logged in. If this isn't you, please click the Log Out button.")
+                :add_to_flash => "You appear to be logged in already. If this isn't you, please click the Log Out button.")
   
   # must be boxoffice to view other customer records or adding/removing vouchers
   before_filter :is_staff_filter, :only => %w[list switch_to search]
@@ -30,9 +30,7 @@ class CustomersController < ApplicationController
                 :add_to_flash => 'Only super-admin can delete customer; use Merge instead')
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify(:method => :post,
-         :only => %w[destroy create update user_create],
-         :redirect_to => { :action => :welcome })
+  verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
@@ -236,6 +234,11 @@ class CustomersController < ApplicationController
  
 
   def user_create
+    if request.get?
+      @is_admin = current_admin.is_boxoffice
+      @customer = Customer.new
+      return
+    end
     @customer = Customer.new(params[:customer])
     flash[:notice] = ''
     unless @customer.has_valid_email_address?
@@ -260,11 +263,6 @@ class CustomersController < ApplicationController
     end
   end
   
-  def new
-    @is_admin = current_admin.is_boxoffice
-    @customer = Customer.new
-  end
-
   # Following actions are for use by admins only:
   # list, switch_to, merge, search, create, destroy
 
@@ -339,6 +337,11 @@ class CustomersController < ApplicationController
   end
 
   def create
+    if request.get?
+      @is_admin = current_admin.is_boxoffice
+      @customer = Customer.new
+      return
+    end
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     flash[:notice] = ''
     # if neither email address nor password was given, assign a random

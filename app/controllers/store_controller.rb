@@ -563,17 +563,23 @@ class StoreController < ApplicationController
 
   def cc_transaction(amount,cc,params,card_present)
     amount = Money.us_dollar((100 * amount).to_i)
-    if RAILS_ENV == 'production'
-      #Base.gateway_mode = :test unless RAILS_ENV == 'production'
+    unless SANDBOX
       gw = AuthorizedNetGateway.new(:login => Option.value(:pgw_id),
                                     :password => Option.value(:pgw_txn_key))
+      purch = gw.purchase(amount, cc, params)
     else
       Base.gateway_mode = :test
-      cc.number = (cc.number.match( /^42/ ) ? '1' : '3')
+      old_cc_num = cc.number
+      # ActiveMerchant "bogus gateway" will declare success if credit
+      # card number of '1' is used, failure if '3'.  
+      cc.number = (old_cc_num.match( /^42/ ) ? '1' : '3')
       gw = BogusGateway.new(:login => Option.value(:pgw_id),
                             :password => Option.value(:pgw_txn_key))
+      purch = gw.purchase(amount, cc, params)
+      # restore originally-typed cc number
+      cc.number = old_cc_num
     end
-    return gw.purchase(amount, cc, params)
+    return purch
   end
 
   # helpers for the AJAX handlers. These should probably be moved
