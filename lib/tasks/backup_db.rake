@@ -4,7 +4,8 @@ namespace :db do
     cmd = retrieve_db_info
     archive = ENV['FILE'] || Time.now.strftime("%Y%m%d-%H%M%S.sql")
     cmd = "mysqldump --opt --skip-add-locks #{cmd} > #{archive}"
-    puts "Dumping #{RAILS_ENV} database to #{archive}"
+    puts "Dumping #{RAILS_ENV} database to #{archive} using command:"
+    puts cmd
     result = system(cmd)
     raise("mysqldump failed: #{$?}") unless result
   end
@@ -14,12 +15,13 @@ namespace :db do
     opts = retrieve_db_info
     #raise "Must set FILE=filename to restore from" unless file = ENV['FILE']
     if (file = ENV['FILE'])
-      puts "Restoring #{RAILS_ENV} database from #{file}"
       cmd = "mysql #{opts} < #{file}"
+      puts "Restoring #{RAILS_ENV} database from #{file} using:"
     else
-      puts "Restoring #{RAILS_ENV} database from STDIN"
       cmd = "mysql #{opts}"
+      puts "Restoring #{RAILS_ENV} database from STDIN using:"
     end
+    puts cmd
     result = system(cmd)
     raise("mysql failed.  msg: #{$?}") unless result
   end
