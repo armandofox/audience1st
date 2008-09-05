@@ -48,6 +48,9 @@ Rails::Initializer.run do |config|
     # handled differently.
     SANDBOX = (RAILS_ENV != 'production'  ||
                Option.value(:sandbox).to_i != 0)
+    if SANDBOX
+      ActionMailer::Base.delivery_method = :test
+    end
     # read global configuration info
     APP_CONFIG =  YAML::load(ERB.new((IO.read("#{RAILS_ROOT}/config/settings.yml"))).result).symbolize_keys
     MESSAGES = APP_CONFIG[:messages].symbolize_keys
