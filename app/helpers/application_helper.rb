@@ -2,22 +2,6 @@
 
 module ApplicationHelper
 
-  REGULAR_NAV_TABS =
-    [['Buy Tickets', :store, :index], 
-     ['My Tickets', :customers, :welcome], 
-     ['Billing Address', :customers, :edit],
-     ['Change Password', :customers, :change_password]
-    ]
-  
-  STAFF_NAV_TABS =
-    [['Walkup Sales', :store, :walkup],
-     ['Customers', :customers, :list],
-     ['Shows', :shows, :list],
-     ['Voucher Types', :vouchertypes, :list],
-     ['Reports', :report, :index],
-     ['Donations', :donation, :list]]
-  
-  
   # does the user-agent string suggest that this is a mobile device?
   def mobile_user_agent?(uastring)
     !uastring.blank? && uastring.match( /iphone|palmos|palmsource|blazer/i )
@@ -137,10 +121,6 @@ module ApplicationHelper
     "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
   end
                        
-  def store_nav_tabs(klass) ; nav_tabs(klass, REGULAR_NAV_TABS) ;  end
-
-  def staff_nav_tabs(klass) ; nav_tabs(klass, STAFF_NAV_TABS) ; end
-
   def nav_tabs(klass,ary)
     ary.map do |a|
       a[0].insert(0,"<br/>") unless a[0].gsub!( /~/, "<br/>")

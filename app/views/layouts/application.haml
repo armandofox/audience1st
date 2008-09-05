@@ -20,9 +20,9 @@
       #nav
         - if @gCustomer
           = render :partial => 'layouts/login_banner'
-          %ul#store_nav= store_nav_tabs 'store_nav'
+          %ul#store_nav= nav_tabs 'store_nav', [['Buy Tickets', :store, :index], ['My Tickets', :customers, :welcome], ['Billing Address', :customers, :edit],['Change Password', :customers, :change_password]]
           - if @gAdmin.is_staff
-            %ul#staff_nav= staff_nav_tabs 'staff_nav'
+            %ul#staff_nav= nav_tabs 'staff_nav',[['Walkup Sales', :store, :walkup],['Customers', :customers, :list],['Shows', :shows, :list],['Voucher Types', :vouchertypes, :list],['Reports', :report, :index],['Donations', :donation, :list]]
             = render :partial => 'customers/quick_search'
             = render :partial => 'customers/staff_buttons'
           - else
