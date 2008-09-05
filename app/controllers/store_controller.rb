@@ -52,17 +52,18 @@ class StoreController < ApplicationController
   end
 
   def shipping_address
+    # if this is a post, add items to cart first (since we're coming from
+    #  ticket selection page).  If a get, buyer just wants to modify
+    #  gift recipient info.
     # add items to cart
     @cart = find_cart
-    if params[:redirect_to] == 'subscribe'
-      process_subscription_request
-    else
-      process_ticket_request
-    end
-    # did anything go wrong?
-    redirect_to :action => :index and return unless flash[:warning].blank?
-    if params[:donation].to_i > 0
-      @cart.add(Donation.online_donation(params[:donation].to_i, store_customer.id,logged_in_id))
+    if request.post?
+      params[:redirect_to] == 'subscribe' ? process_subscription_request : process_ticket_request
+      # did anything go wrong?
+      redirect_to :action => :index and return unless flash[:warning].blank?
+      if params[:donation].to_i > 0
+        @cart.add(Donation.online_donation(params[:donation].to_i, store_customer.id,logged_in_id))
+      end
     end
     # make sure something actually got added.
     if @cart.is_empty?
@@ -73,9 +74,11 @@ class StoreController < ApplicationController
     # all is well. if this is a gift order, fall through to get Recipient info.
     # if NOT a gift, set recipient to same as current customer, and
     # continue to checkout.
+    # in case it's a gift, customer should know donation is made in their name.
+    @includes_donation = @cart.items.detect { |v| v.kind_of?(Donation) }
     set_checkout_in_progress
     if params[:gift]
-      @recipient = Customer.new
+      @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new 
     else
       redirect_to :action => :checkout
     end
@@ -83,7 +86,19 @@ class StoreController < ApplicationController
 
   def set_shipping_address
     @cart = find_cart
-    unless (@recipient = Customer.find_unique(params[:customer])) # exact match
+    # if we can find a unique match for the customer AND our existing DB record
+    #  has enough contact info, great.  OR, if the new record was already created but
+    #  the buyer needs to modify it, great.
+    #  Otherwise... create a NEW record based
+    #  on the gift receipient information provided.
+    if session[:recipient_id]
+      @recipient = Customer.find_by_id(session[:recipient_id])
+      @recipient.update_attributes(params[:customer])
+    elsif ((@recipient = Customer.find_unique(params[:customer])) && # exact match
+           @recipient.valid_as_gift_recipient?)                    # valid contact info
+      # we're good; unique match, and already valid contact info.
+    else
+      # assume we'll have to create a new customer record.
       @recipient = Customer.new(params[:customer])
     end
     # make sure minimal info for gift receipient was specified.
@@ -367,10 +382,15 @@ class StoreController < ApplicationController
     #     All is well, fall through to confirmation
     #
     @tid = resp.params['transaction_id'] || '0'
-    @recipient.add_items(@cart.items, logged_in_id,
+    # add non-donation items to recipient's account
+    @recipient.add_items(@cart.items.reject { |v| v.kind_of?(Donation) }, logged_in_id,
                         (current_admin.is_boxoffice ? 'cust_ph' : 'cust_web'),
                         @tid)
     @recipient.save
+    # add donation items to payer's account
+    @customer.add_items(@cart.items.find_all { |v| v.kind_of?(Donation) }, logged_in_id,
+                        (current_admin.is_boxoffice ? 'cust_ph' : 'cust_web'),
+                        @tid)
     @amount = @cart.total_price
     @order_summary = @cart.to_s
     @cc_number = (cc.number || 'XXXX').to_s

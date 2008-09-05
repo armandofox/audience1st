@@ -1,6 +1,6 @@
-- if controller.controller_name == 'customers'
-  #staffButtons.admin_field
-    %p.strong= h "#{@gCustomer.full_name}:"
+#staffButtons.admin_field
+  %p.strong= "Logged in on behalf of #{@gCustomer.full_name}"
+  - if controller.controller_name == 'customers'
     %p= button_bar( |
          ['Contact History', :visits, :list, {}], |
          ['Prospecting Activities', :visits, :list_by_prospector, {}], |

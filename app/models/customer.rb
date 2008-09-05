@@ -26,7 +26,7 @@ class Customer < ActiveRecord::Base
   validates_columns :formal_relationship
   validates_columns :member_type
 
-  attr_protected :id, :salt, :role, :vouchers, :donations
+  attr_protected :id, :salt, :role, :vouchers, :donations, :validation_level
   attr_accessor :password
 
   # before validation, squeeze out any attributes that are whitespace-only,
@@ -141,7 +141,9 @@ class Customer < ActiveRecord::Base
       end
     end
     # role column keeps the more privileged of the two roles
-    c0.role = [c0.role,c1.role].max
+    c0.role = c1.role if c1.role > c0.role
+    # validation_level keeps the higher of the two validation levels
+    c0.validation_level = c1.validation_level if c1.validation_level > c0.validation_level
     # passwd,salt columns are kept based on last_login or updated_at
     if (((c0.last_login < c1.last_login) ||
         ((c0.last_login == c1.last_login) && (c0.updated_on <
@@ -330,7 +332,7 @@ class Customer < ActiveRecord::Base
   # high confidence; but if not found, create new record for this
   # customer and return that.
 
-  def self.find_unique(p, loggedin_id=0)
+  def self.find_unique(p)
     p.symbolize_keys!
     # attempt 1: try exact match on last name and first name
     c = nil
@@ -340,16 +342,16 @@ class Customer < ActiveRecord::Base
         c = matches.first
       elsif (!p[:login].blank? &&
              p[:login].valid_email_address? &&
-             (c = matches.find_all { |cust| cust.login.casecmp(p[:login]).zero? }) &&
-             c.length == 1)  # multiple names, but exact hit on email
-        c = c.first
+             (m = matches.find_all { |cust| cust.login.casecmp(p[:login]).zero? }) &&
+             m.length == 1)  # multiple names, but exact hit on email
+        c = m.first
       end
     end
     c
   end
 
   def self.new_or_find(p, loggedin_id=0)
-    unless (c = Customer.find_unique(p, loggedin_id))
+    unless (c = Customer.find_unique(p))
       c = Customer.new(p)
       c.save!
       Txn.add_audit_record(:txn_type => 'edit',

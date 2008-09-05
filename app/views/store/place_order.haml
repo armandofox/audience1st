@@ -10,6 +10,17 @@
   %p.strong Please print this confirmation for your records:
   %pre= @order_summary
 
+  - if @recipient != @customer
+    #gift
+      %fieldset#gift_recipient
+        %legend This order is a gift for:
+        %label= h @recipient.full_name
+        %br
+        %label= h @recipient.street
+        %br
+        %label= "#{h @recipient.city}, #{h @recipient.state} #{h @recipient.zip}"
+      %p.emphasis Note: Recipient has NOT been notified of this gift.
+
   #checkout_notices= sanitize_option_text(:checkout_notices)
 
   - unless @special_instructions.blank?

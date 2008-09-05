@@ -194,6 +194,7 @@ class CustomersController < ApplicationController
     # update generic attribs
     # if login is empty - make it nil to avoid failing validation
     params[:customer].delete(:login) if params[:customer][:login].blank?
+    @customer.validation_level = 1 # since editing own info
     if @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
@@ -250,6 +251,7 @@ class CustomersController < ApplicationController
       render :action => 'new'
       return
     end
+    @customer.validation_level = 1
     if @customer.save
       @customer.update_attribute(:last_login, Time.now)
       flash[:notice] = "Thanks for setting up an account!<br/>"
@@ -358,6 +360,7 @@ class CustomersController < ApplicationController
         params[:customer][:password_confirmation] = String.random_string(6)
     end
     @customer = Customer.new(params[:customer])
+    @customer.validation_level = 1
     # then must have a password too....
     if @customer.save
       flash[:notice] <<  'Account was successfully created.'

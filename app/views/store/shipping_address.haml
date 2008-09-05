@@ -4,17 +4,16 @@
   %h1.page_heading.center Gift Order
 
   %p 
-    Please enter the gift recipient's contact information.
-    %br
-    (If the recipient has purchased tickets from us before, the first and last name
-    may be sufficient. Otherwise, please provide an address and phone number, and
-    if possible an email address.)
+    Please enter the gift recipient's full name, and if s/he is not already an 
+    Altarena patron, provide recipient's mailing address and phone or email.
+
+  - if @includes_donation
+    %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
   - form_tag :action => 'set_shipping_address' do
     = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient", :hide_opt_out => false}
+    = submit_tag '<< Go Back', :onClick => "location.href='#{url_for :action => :index}'"
+    to change or cancel order, or
     = submit_tag 'CONTINUE >>'
-    %span#nextstep to enter your Billing Information,
-    or
-    = button_to 'Go Back', {:action => :index}, {:method => :get}
-    to start over or cancel order
+    %span#nextstep to Billing Information
 
