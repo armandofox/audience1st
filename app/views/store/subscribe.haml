@@ -1,30 +1,30 @@
 / = error_messages_for 'store'
 
 #store
-  - unless @cart.is_empty?
-    %h1.page_heading.center Season Subscriptions Shopping Cart
-    - form_tag :action => 'checkout' do
-      = render :partial => 'cart', :locals => {:editable => true, :redirect_to => 'subscribe'}
-      = submit_tag 'Checkout'
-      = gen_button  'Empty Cart', {:action => 'empty_cart', :redirect_to => 'subscribe'}
-
   #subscriptionsMenus
     %h1.page_heading.center Subscriber Benefits
-    = sanitize_option_text(:subscription_benefits_short_description)
+    = sanitize_option_text :subscription_benefits_short_description
     - unless @subscriber
       = sanitize_option_text :nonsubscriber_subscription_teaser
-      
-    - form_tag :action => 'add_subscriptions_to_cart' do
-      - if @subs_to_offer.empty?
-        %p.page_heading.center (No subscriptions on sale at this time)
-      - else
-        %label Subscription 
-        = select_tag "subscription_vouchertype_id", options_from_collection_for_select(@subs_to_offer,'id','name_with_price',@selected_sub)
+    - form_tag :action => 'shipping_address' do
+      = javascript_recalc_function :total, @subs_to_offer.map {|s| s.id}, :price, :vouchertype, :donation, :submit
+      - @subs_to_offer.each do |s|
+        %label.wide_label{:for => "vouchertype[#{s.id}]"}= s.name_with_price
+        = select_tag("vouchertype[#{s.id}]", options_for_select((0..8).to_a), :onChange => 'recalc_total()')
         %br/
-        %label{:for=>:subscription_qty} Quantity
-        = select_tag("subscription_qty", options_for_select((1..10).to_a))
-        %br/
-        = submit_tag 'Add Subscriptions to Cart', :class => 'genButton indented'
-
-  = render :partial => 'donate', :locals => {:redirect_to => 'subscribe' }
+        = hidden_field_tag "price[#{s.id}]", s.price
+      %label.wide_label{:for => :donation} Additional tax-deductible donation
+      = text_field_tag 'donation', '', :size => 5, :onBlur => 'recalc_total()'
+      \.00
+      %br
+      #orderTotal
+        %label.strong.wide_label{:for=>:total} Order Total:
+        = text_field_tag 'total', '0.00', :size => 6, :disabled => true
+      %label.emphasis.wide_label{:for=>:gift} Is this order a <strong>gift?</strong>
+      = check_box_toggle 'gift', false, :nextstep, 'to enter Recipient information', 'to Billing information'
+      %br
+      %label.wide_label &nbsp;
+      = hidden_field_tag 'redirect_to', 'subscribe'
+      = submit_tag 'CONTINUE >>', {:disabled => true, :id => 'submit'}
+      %span#nextstep to Billing Information
 

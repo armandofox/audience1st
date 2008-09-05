@@ -4,7 +4,7 @@
       %th #Tix
       %th Show
       %th Your Reservation
-      %th Actions
+      %th 
       - if @gAdmin.is_boxoffice
         %th.admin Comments
   %tbody
@@ -29,7 +29,13 @@
             %td
               - vid = vouchers.first.id
               - svid = "save_#{vid}"
-              - form_remote_tag(:url => {:controller=>'vouchers', :action=>'update_comment', :vid => vid}, :before => disable_with(svid,'Saving...'), :complete => enable_with(svid, 'Save'), :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
+              - form_remote_tag(:url => {:controller=>'vouchers', |
+                    :action=>'update_comment', :vid => vid}, |
+                    :before => disable_with(svid,'Saving...'), |
+                    :complete => enable_with(svid, 'Save'), |
+                    :success => "alert('Comment saved')", |
+                    :failure => "alert('Comment NOT saved - error ' + |
+                      request.status)") do |
                 = text_field_tag 'comments', multiple_voucher_comments(vouchers)
                 = submit_tag 'Save', :id => svid, :style => 'width: 7em'
         - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?

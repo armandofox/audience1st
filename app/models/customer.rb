@@ -29,6 +29,37 @@ class Customer < ActiveRecord::Base
   attr_protected :id, :salt, :role, :vouchers, :donations
   attr_accessor :password
 
+  # before validation, squeeze out any attributes that are whitespace-only,
+  # so the allow_nil validations behave as expected.
+
+  before_validation :remove_blank_attributes
+  def remove_blank_attributes
+    Customer.content_columns.each do |c|
+      self.send("#{c.name}=", nil) if self.send(c.name).blank?
+    end
+  end
+
+  # custom validations
+
+  def valid_as_gift_recipient?
+    # must have first and last name, and two out of three of
+    #  address, email and phone#
+    valid = true
+    if (first_name.blank? || last_name.blank?)
+      errors.add_to_base "First and last name must be provided"
+      valid = false
+    end
+    if invalid_mailing_address?
+      errors.add_to_base "Valid mailing address must be provided"
+      valid = false
+    end
+    if day_phone.blank? && eve_phone.blank? && !has_valid_email_address?
+      errors.add_to_base "At least one phone number or email address must be provided"
+      valid = false
+    end
+    valid
+  end
+  
   @@user_entered_strings =
     %w[first_name last_name street city state zip day_phone eve_phone login]
   
@@ -62,6 +93,10 @@ class Customer < ActiveRecord::Base
     "#{self.first_name.name_capitalize} #{self.last_name.name_capitalize}"
   end
 
+  def sortable_name
+    "#{self.last_name.downcase},#{self.first_name.downcase}"
+  end
+
   def has_valid_email_address?
     self.login && self.login.valid_email_address?
   end
@@ -72,11 +107,6 @@ class Customer < ActiveRecord::Base
       f.vouchertype && f.vouchertype.is_subscription? &&
         f.vouchertype.valid_now?
     end
-  end
-
-  def is_2008_subscriber?
-    self.role >= 0 &&
-      self.vouchers.any? { |f| f.vouchertype.name.match /2008/ }
   end
 
   def referred_by_name(maxlen=1000)
@@ -300,19 +330,27 @@ class Customer < ActiveRecord::Base
   # high confidence; but if not found, create new record for this
   # customer and return that.
 
-  def self.new_or_find(p, loggedin_id=0)
-    params = p.symbolize_keys
+  def self.find_unique(p, loggedin_id=0)
+    p.symbolize_keys!
     # attempt 1: try exact match on last name and first name
-    if (!(params[:last_name].to_s.empty?) &&
-        !(params[:first_name].to_s.empty?) &&
-        (matches = Customer.find(:all, :conditions => ['last_name LIKE ? AND first_name LIKE ?', params[:last_name], params[:first_name]])) &&
-        (matches.to_a.length == 1))  # exactly 1 match - victory
-      c = matches.first
-    else
-      c = Customer.new(params)
-      unless c.has_valid_email_address?
-        c.login = String.random_string(8)
+    c = nil
+    if (!(p[:last_name].blank?) && !(p[:first_name].blank?) &&
+        (matches = Customer.find(:all, :conditions => ['last_name LIKE ? AND first_name LIKE ?', p[:last_name], p[:first_name]])))
+      if (matches.to_a.length == 1)  # exactly 1 match - victory
+        c = matches.first
+      elsif (!p[:login].blank? &&
+             p[:login].valid_email_address? &&
+             (c = matches.find_all { |cust| cust.login.casecmp(p[:login]).zero? }) &&
+             c.length == 1)  # multiple names, but exact hit on email
+        c = c.first
       end
+    end
+    c
+  end
+
+  def self.new_or_find(p, loggedin_id=0)
+    unless (c = Customer.find_unique(p, loggedin_id))
+      c = Customer.new(p)
       c.save!
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => c.id,

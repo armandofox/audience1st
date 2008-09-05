@@ -34,6 +34,12 @@ input[type="submit"] {
 .callout { 
   color: red;
 }
+.hilite { 
+  background: #feffb7;
+}
+.browsable:hover { 
+  background: #feffb7;
+}
 .maincolumn { 
   border: none;
   background: none;              

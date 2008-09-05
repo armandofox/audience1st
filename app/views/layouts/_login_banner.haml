@@ -3,10 +3,10 @@
     %td.l#welcome
       Welcome,
       - if @gAdmin.is_staff
-        %span.adminField= h("#{logged_in.full_name} <#{logged_in.login}>")
+        %span.adminField= h("#{@gLoggedIn.full_name} <#{@gLoggedIn.login}>")
         = button_to('Disable Admin', :controller => 'customers', :action => 'disable_admin') if controller.controller_name =~ /customer|store/
       - else
-        = h("#{logged_in.full_name} <#{logged_in.login}>")
+        = h("#{@gLoggedIn.full_name} <#{@gLoggedIn.login}>")
       = button_to 'Log Out', {:controller=>'customers', :action=>'logout'}
     %td.r
       = Time.now.to_formatted_s(:short)

@@ -106,11 +106,11 @@ class CustomersController < ApplicationController
   end
 
   def logout
-    reset_session
     @customer = nil
     (flash[:notice] ||= '') << 'You have successfully logged out.' <<
       " Thanks for supporting #{Option.value(:venue)}!"
-    redirect_to :action => 'login'       # no separate logout screen.
+    redirect_to_stored
+    reset_session
   end
 
   # welcome screen: different for nonsubscribers vs. subscribers
@@ -159,6 +159,9 @@ class CustomersController < ApplicationController
     @customer = current_customer
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
+    # editing contact info may be called from various places. correctly
+    # set the return-to so that form buttons can do the right thing.
+    @return_to = session[:return_to]
     return unless request.post? # fall thru to showing edit screen
     flash[:notice] = ''
     # squeeze empty-string params into nils.
@@ -437,7 +440,7 @@ class CustomersController < ApplicationController
 
   def disable_admin
     session[:admin_id] = nil
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to_stored
   end
 
   private
@@ -461,7 +464,6 @@ class CustomersController < ApplicationController
     @page_title = sprintf("Welcome, %s#{customer.full_name.name_capitalize}",
                           customer.is_subscriber? ? 'Subscriber ' : '')
     @vouchers = customer.active_vouchers.sort_by(&:created_on)
-    #{ |x,y| x.created_on <=> y.created_on }
     session[:store_customer] = customer.id
   end
 

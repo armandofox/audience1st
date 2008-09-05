@@ -1,8 +1,12 @@
 %ul.customer_match_list
   - if defined?(matches) && !matches.nil?
-    - matches.each do |c|
+    - first,last = '',''
+    - matches.sort_by(&:sortable_name).each do |c|
       %li
-        .full_name= h(c.full_name)
-        .id.hidden= c.id
+        %span.full_name= h(c.full_name)
+        - if c.first_name.downcase == first && c.last_name.downcase == last
+          %span.street= " (#{h(c.street)})"
+        - first,last = c.first_name.downcase, c.last_name.downcase
+        %span.id.hidden= c.id
   - else
     %li.full_name (No matches)

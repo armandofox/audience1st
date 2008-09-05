@@ -1,12 +1,12 @@
 = error_messages_for :customer
 
-- @customer ||= customer
+- @customer = customer if defined?(customer)
 - disabled =  defined?(passive) && passive 
 
 #contact_info
   /[form:customer]
   %fieldset#billing_info
-    %legend Credit Card Billing Address
+    %legend= defined?(legend) ? legend :  'Credit Card Billing Address'
     %label{:for=>:customer_first_name} First name
     =text_field 'customer', 'first_name', :size => 16, :max_length => 40, :id => 'customer_first_name', :readonly => disabled
     %br/
@@ -42,9 +42,10 @@
     %label{:for=>:customer_login} Email
     =text_field 'customer', 'login', {:size => 20, :max_length => 40, :readonly => disabled }
 
-  =check_box 'customer', 'e_blacklist'
-  %label.no_float{:for=>:customer_e_blacklist}= "Please don't send me email about upcoming shows &amp; events."
-  %span.small= link_to "Privacy Policy", Option.value(:privacy_policy_url)
+  - unless defined?(hide_opt_out)
+    =check_box 'customer', 'e_blacklist'
+    %label.no_float{:for=>:customer_e_blacklist}= "Please don't send email about upcoming shows &amp; events."
+    %span.small= link_to "Privacy Policy", Option.value(:privacy_policy_url)
 
   /[eoform:customer]
 

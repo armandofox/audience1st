@@ -1,0 +1,18 @@
+- if controller.controller_name == 'customers'
+  #staffButtons.admin_field
+    %p.strong= h "#{@gCustomer.full_name}:"
+    %p= button_bar( |
+         ['Contact History', :visits, :list, {}], |
+         ['Prospecting Activities', :visits, :list_by_prospector, {}], |
+         ['Database Transactions',:txn, :list, |
+            {:params => {:txns_filter => @gCustomer.id}}], |
+         ['Record donation',:donation,:new, {}] ) |
+    - if @gAdmin.is_boxoffice_manager
+      = button_bar( |
+           ['Add Vouchers',:vouchers, :addvoucher, {}], |
+           ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}], |
+           ['Force Classic View', :customers,:welcome, {:force_classic => 1}], |
+           ['Donation & Purchase History', :donation, :list, |
+                {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
+                :show_vouchers => true}] ) |
+  .clear

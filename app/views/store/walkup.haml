@@ -9,9 +9,7 @@
 - form_tag :action => 'do_walkup_sale' do
   = hidden_field_tag 'otp', @otp
   - js,showmenu,showdatemenu = dependent_js_selects(@shows, 'show', 'name', 'showdate', 'printable_date',:selected_parent => @show_id, :selected_child => @showdate_id, :child_html_options => 'onChange="$(\'showdate\').innerHTML=this.options[this.selectedIndex].text;"')
-  = js
-  - js_fields = to_js_array(@vouchertypes.map { |v| v.id })
-  - onChg = "javascript:recalculate('total',#{js_fields})"
+  = javascript_recalc_function 'total', @vouchertypes.map { |v| v.id }, 'price','qty','donation'
 
   %table{:border=>1}
     %tr
@@ -38,12 +36,12 @@
           %tr
             %td.label{:colspan=>2}
               %label{:for=>:donation} Additional donation:
-            %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => onChg
+            %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => 'recalc_total()'
           - @vouchertypes.each do |v|
             %tr
               %td.label= h(v.name)
-              %td= text_field_tag("price#{v.id}", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)
-              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0),{:id => "select#{v.id}", :onChange => onChg}
+              %td= text_field_tag("price[#{v.id}]", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)
+              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0),{:onChange => 'recalc_total()'}
 
       %td{:align=>:center,:valign=>:top}
         %p Click here once payment has been collected:

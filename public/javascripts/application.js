@@ -45,6 +45,36 @@ function showEltOnCondition(menu,elt,cond) {
     }
 }
 
+// walkup sales - calculator
+
+function recalculate(target,elts,price_field_name,qty_field_name,
+                     addl_field_name,field_to_enable_if_nonzero) {
+    $(target).value = '';
+    var tot = 0.0;
+    for (i=0; i<elts.length; i++) {
+        e = elts[i].toString();
+        price = $(price_field_name+'['+e+']');
+        qty = $(qty_field_name+'['+e+']');
+        qty = qty.options[qty.selectedIndex];
+        tot += (parseFloat(price.value) * parseInt(qty.value));
+    }
+    if (addl_field_name != '') {
+        if ($(addl_field_name).value != '') {
+            tot += parseFloat($(addl_field_name).value);
+        }
+    }
+    if (field_to_enable_if_nonzero != '') {
+        if (tot > 0.0) {
+            $(field_to_enable_if_nonzero).disabled = false;
+        } else {
+            $(field_to_enable_if_nonzero).disabled = true;
+        }
+    }
+    $(target).value = tot.toFixed(2);
+}
+
+
+
 // Enable chaining of onLoad handlers.
 
 function addLoadEvent(func) {
@@ -60,3 +90,4 @@ function addLoadEvent(func) {
     }
   }
 }
+

@@ -10,11 +10,24 @@ ORDER SUMMARY:
 
 <%= @description %>
 
+All tickets and reservations can be picked up at will-call beginning one
+hour before showtime.
+
 <% unless @special_instructions.blank? %>
 ------------------------------------------------------------
 SPECIAL INSTRUCTIONS:
 
 <%= @special_instructions %>
+------------------------------------------------------------
+<% end %>
+<% if @recipient %>
+This order is a GIFT for the following recipient.
+NOTE: The recipient HAS NOT BEEN notified of your gift!
+
+  <%= @recipient.full_name %>
+  <%= @recipient.street %>
+  <%= @recipient.city %>, <%= @recipient.state %>  <%= @recipient.zip %>
+  <%= [@recipient.day_phone,@recipient.eve_phone,@recipient.login].compact.join(' - ') %>
 
 <% end %>
 ------------------------------------------------------------
@@ -22,8 +35,5 @@ PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
 
 PAYMENT METHOD: <%= @payment_desc %>
 ------------------------------------------------------------
-
-All tickets and reservations can be picked up at will-call beginning one
-hour before showtime.
 
 <%= @how_to_contact_us %>

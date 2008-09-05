@@ -9,7 +9,7 @@ config.cache_classes = false
 config.whiny_nils = true
 
 # Enable the breakpoint server that script/breakpointer connects to
-config.breakpoint_server = true
+#config.breakpoint_server = true
 
 # Don't colorize logs - so we can view them in emacs...
 config.active_record.colorize_logging = false
@@ -25,3 +25,5 @@ config.action_view.debug_rjs                         = true
 config.action_mailer.raise_delivery_errors = true
 config.action_mailer.delivery_method = :test
 config.action_mailer.default_charset = 'utf-8'
+
+require 'ruby-debug'

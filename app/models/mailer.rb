@@ -14,7 +14,7 @@ class Mailer < ActionMailer::Base
     )
   end
 
-  def confirm_order(customer, description, amount, payment_desc, special_instructions='')
+  def confirm_order(customer, recipient, description, amount, payment_desc, special_instructions='')
     sending_to(customer)
     @subject << "order confirmation"
     @body.merge!(:greeting => customer.full_name,
@@ -22,7 +22,8 @@ class Mailer < ActionMailer::Base
                  :amount => amount,
                  :payment_desc => payment_desc,
                  :special_instructions => special_instructions
-                  )
+                 )
+    @body[:recipient] = recipient if recipient != customer
   end
 
   def confirm_reservation(customer,showdate_id,num=1,confnum=0)

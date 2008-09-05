@@ -44,8 +44,12 @@ class Vouchertype < ActiveRecord::Base
     case args[:type]
     when :subscription
       restrict << "is_bundle = 1 AND is_subscription = 1"
+      restrict << "NOW() BETWEEN bundle_sales_start AND bundle_sales_end" unless
+        (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :bundle
       restrict << "is_bundle = 1"
+      restrict << "NOW() BETWEEN bundle_sales_start AND bundle_sales_end" unless
+        (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     end
     if args.has_key?(:walkup)
       case args[:walkup]

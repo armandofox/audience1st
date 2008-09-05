@@ -15,10 +15,10 @@ toms_order_info:
 
 toms_credit_card:
   type: Visa
-  number: '4818509242681173'
-  verification_value: '000'
+  number: '4242424242424242'
+  verification_value: '111'
   month: 12
-  year: 2009
+  year: 2012
   first_name: Tom
   last_name: Foolery
 

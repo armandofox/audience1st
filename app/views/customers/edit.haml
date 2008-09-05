@@ -2,7 +2,6 @@
 
 = error_messages_for :customer
 %br/
-= gen_button  'Change password...', {:action => 'change_password', :id => @customer}
 - form_tag :action => 'edit', :id => @customer do
   = render :partial => 'form' 
   - if @is_admin
@@ -10,4 +9,4 @@
   %br/
   %br/
   = submit_tag 'Save Changes' 
-  = link_to 'Cancel', {:action => 'welcome', :id => @customer}, :class => 'genButton'
+  = link_to 'Cancel', (@return_to || {:action => 'welcome', :id => @customer}), :class => 'genButton'

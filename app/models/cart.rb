@@ -3,6 +3,7 @@ class Cart
   attr_accessor :items
   attr_accessor :total_price
   attr_accessor :comments
+  attr_accessor
 
   def initialize
     @items = []
@@ -52,7 +53,7 @@ class Cart
     txt
   end
 
-  def add(itm)
+  def add(itm,qty=1)
     if itm.kind_of?(Voucher)
       price = itm.vouchertype.price
     elsif itm.kind_of?(Donation)

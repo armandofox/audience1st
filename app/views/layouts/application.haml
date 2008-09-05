@@ -13,32 +13,40 @@
     %meta{'http-equiv'=>:imagetoolbar, :content=>:no}/
     %meta{:name=>:description, :content=>''}/
 
-  %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(RAILS_ENV != 'production' ? :testing : nil)}
+  %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(SANDBOX ? :testing : nil)}
     
     #outer_wrapper
       #header
-      - if @gCustomer
-        = render :partial => 'layouts/login_banner', :locals => {:c => @gCustomer,:logged_in=>@gLoggedIn}
-        = render :partial => 'layouts/storenav', :locals => {:admin=>@gAdmin,:c=>@gCustomer,:logged_in=>@gLoggedIn}
+      #nav
+        - if @gCustomer
+          = render :partial => 'layouts/login_banner'
+          %ul#store_nav= store_nav_tabs 'store_nav'
+          - if @gAdmin.is_staff
+            %ul#staff_nav= staff_nav_tabs 'staff_nav'
+            = render :partial => 'customers/quick_search'
+            = render :partial => 'customers/staff_buttons'
+          - else
+            %br.clear
 
-      - unless flash[:notice].blank?
-        %p.feedback.clear= flash[:notice]
-
-      - unless flash[:warning].blank?
-        = render :partial => 'store/warning'
-
-      - unless flash[:checkout_error].blank?
-        = render :partial => 'store/checkout_error'
-
-      - if @gCheckoutInProgress and controller.controller_name != 'store'
-        %h1.center Your Order So Far
-        = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
-      
       #inner_wrapper
+        %br.clear
+        - unless flash[:notice].blank?
+          %p.feedback.clear= flash[:notice]
+
+        - unless flash[:warning].blank?
+          = render :partial => 'store/warning'
+
+        - unless flash[:checkout_error].blank?
+          = render :partial => 'store/checkout_error'
+
+        - if @gCheckoutInProgress and controller.controller_name != 'store'
+          %h1.center Your Order So Far
+          = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
         = yield 
 
     #footer.center
       \&copy; 2008
+      Secure ticketing by
       = link_to 'A1 Patron Systems', 'http://www.a1patronsystems.com'
       = " - Version #{APP_VERSION} - "
       = link_to "Terms of Use & Privacy Policy", Option.value(:privacy_policy_url)

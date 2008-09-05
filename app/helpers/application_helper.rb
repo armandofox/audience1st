@@ -1,6 +1,22 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module ApplicationHelper
+
+  REGULAR_NAV_TABS =
+    [['Buy Tickets', :store, :index], 
+     ['My Tickets', :customers, :welcome], 
+     ['Billing Address', :customers, :edit],
+     ['Change Password', :customers, :change_password]
+    ]
+  
+  STAFF_NAV_TABS =
+    [['Walkup Sales', :store, :walkup],
+     ['Customers', :customers, :list],
+     ['Shows', :shows, :list],
+     ['Voucher Types', :vouchertypes, :list],
+     ['Reports', :report, :index],
+     ['Donations', :donation, :list]]
+  
   
   # does the user-agent string suggest that this is a mobile device?
   def mobile_user_agent?(uastring)
@@ -18,13 +34,15 @@ module ApplicationHelper
   #  otherwise return the alternate text
 
   def sanitize_option_text(opt, alt='')
-    ((s = Option.value(opt)).blank? ?   alt :  sanitize(s))
+    ((s = Option.value(opt)).blank? ?
+     alt :
+     content_tag(:span, sanitize(s), :id => opt, :class => opt))
   end
 
   def link_to_if_option(opt, text, alt='', opts={})
     ((s = Option.value(opt)).blank? ?
      alt :
-     content_tag(:span, link_to(text, s, opts), :id => opt, :class => [opt,:template]))
+     content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
   
@@ -38,6 +56,10 @@ module ApplicationHelper
                   :onClick => visual_effect(:toggle_appear, elt_name))
   end
 
+  # a checkbox that toggles the innerHTML of another guarded element.
+  def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
+    check_box_tag name, 1, checked, :onClick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
+  end
 
   # helpers that generate JS to disable and then re-enable a button
   #  (eg a submit button) during AJAX form submission
@@ -115,7 +137,11 @@ module ApplicationHelper
     "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
   end
                        
-  def nav_tabs(klass,*ary)
+  def store_nav_tabs(klass) ; nav_tabs(klass, REGULAR_NAV_TABS) ;  end
+
+  def staff_nav_tabs(klass) ; nav_tabs(klass, STAFF_NAV_TABS) ; end
+
+  def nav_tabs(klass,ary)
     ary.map do |a|
       a[0].insert(0,"<br/>") unless a[0].gsub!( /~/, "<br/>")
       if a.length > 3
@@ -135,7 +161,7 @@ module ApplicationHelper
     end.join("\n")
   end
 
-  def button_bar(ary)
+  def button_bar(*ary)
     ary.map do |a|
       options = {:controller => a[1].to_s, :action => a[2].to_s}
       admin_button a[0].gsub(/ /,'&nbsp;'), options.merge(a[3])
@@ -418,6 +444,18 @@ EOS3
   def link_to_subscription_purchase(vouchertype_id)
     url_for(:only_path => false, :controller => 'store', :action => 'subscribe',
             :vouchertype_id => vouchertype_id)
+  end
+
+  # return a recalc function that can be embedded in a page and used
+  #  as the target of an onChange handler for a form
+
+  def javascript_recalc_function(target,fields,price_fields,qty_fields,extra_field='',field_to_enable_if_nonzero='')
+    javascript_tag <<-EOJS
+       recalc_#{target} = function() {
+          recalculate('#{target}', #{to_js_array(fields)}, '#{price_fields}',
+            '#{qty_fields}', '#{extra_field}', '#{field_to_enable_if_nonzero}')
+       }
+EOJS
   end
 
 end

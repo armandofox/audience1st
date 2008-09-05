@@ -52,6 +52,8 @@ class Voucher < ActiveRecord::Base
   # purchased, and only then is it recorded permanently 
 
   def self.anonymous_voucher_for(showdate,vouchertype,promocode=nil,comment=nil)
+    showdate = showdate.kind_of?(Showdate) ? showdate.id : showdate.to_i
+    vouchertype = vouchertype.kind_of?(Vouchertype) ? vouchertype.id : vouchertype.to_i
     Voucher.new_from_vouchertype(vouchertype,
                                  :showdate_id => showdate,
                                  :promo_code => promocode,

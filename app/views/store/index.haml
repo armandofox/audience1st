@@ -1,25 +1,33 @@
 = render :partial => 'store_banner', :locals => {:subscriber => @subscriber}
 
 #store
-
-  - unless @cart.is_empty?
-    #shoppingCart.pageDiv
-
-      %h2.center Your Order So Far
-      - form_tag :action => 'checkout' do
-        = render :partial => 'cart', :locals => {:editable => true}
-        = submit_tag 'Checkout'
-        = gen_button  'Empty Cart', {:action => 'empty_cart'}
   
   / #promo_entry.pageDiv
   /  = render :partial =>'promo_entry',:locals=>{:promo_code=>@promo_code.to_s}
 
   %h1.page_heading.center
-    Buy Tickets
+    Step 1 of 4: Select Tickets
     %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
   %p.storeText= sanitize_option_text(@subscriber ? :subscriber_store_message : :nonsubscriber_store_message)
+  %p.storeText= sanitize_option_text(:store_message)
   
-  = render :partial => 'ticket_menus'
-  %br/
-  = render :partial => 'donate'
+  #ticket_menus
+    - form_tag :action => 'shipping_address' do
+      = render :partial => 'ticket_menus', :locals => {:donation_field => 'donation', :submit_button => 'submit'}
+
+      %label{:for => :donation} Additional tax-deductible donation
+      = text_field_tag 'donation', '', :size => 5, :onBlur => 'recalc_total()'
+      \.00
+      %br
+      #orderTotal
+        %label.strong{:for=>:total} Order Total:
+        = text_field_tag 'total', '0.00', :size => 6, :disabled => true
+      %label.emphasis{:for=>:gift} 
+        Is this order a 
+        %strong gift?
+      = check_box_tag 'gift', 1, false, :onClick => "a = $('nextstep'); if (this.checked) { a.innerHTML = 'to enter Recipient information'; } else { a.innerHTML = 'to Billing Information'; } a.highlight({startcolor: '#ffff00', duration: 3});"
+      %br
+      %label &nbsp;
+      = submit_tag 'CONTINUE >>', {:disabled => true, :id => 'submit'}
+      %span#nextstep to Billing Information

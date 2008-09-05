@@ -1,0 +1,10 @@
+.browsable[voucher]
+  %tr{:class => cycle(:evenRow,:oddRow)}
+    %td= check_box_tag "select[voucher][#{voucher.id}]", ''
+    %td= voucher.id
+    %td= h voucher.vouchertype.name
+    %td= h(voucher.customer.full_name) if voucher.customer
+    %td= voucher.purchasemethod.description if voucher.purchasemethod
+    %td= voucher.sold_on.to_formatted_s(:long) if voucher.sold_on
+    %td= voucher.showdate.printable_name if voucher.showdate
+    %td= voucher.comments

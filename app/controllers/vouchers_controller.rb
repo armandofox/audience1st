@@ -2,7 +2,7 @@ class VouchersController < ApplicationController
 
   before_filter :is_logged_in
   before_filter(:is_boxoffice_manager_filter,
-                :only => %w[addvoucher remove_voucher cancel_prepaid])
+                :only => %w[addvoucher remove_voucher cancel_prepaid manage])
   before_filter(:owns_voucher_or_is_boxoffice, 
                 :only => %w[reserve confirm_reservation cancel_reservation])
   before_filter(:is_boxoffice_filter, :only => %w[update_comment] )
@@ -249,6 +249,17 @@ class VouchersController < ApplicationController
       end
     end
     redirect_to :controller => 'customers', :action => 'welcome'
+  end
+
+  def manage
+    if request.get?
+      if params[:vouchers]
+        @vouchers = Voucher.find(params[:vouchers].split(','))
+      elsif params[:customer]
+        @vouchers = Customer.find(params[:customer]).vouchers
+      end
+      return
+    end
   end
 
   def owns_voucher_or_is_boxoffice

@@ -1,0 +1,25 @@
+- form_tag :action => 'manage' do
+  %p With checked vouchers:
+  %p
+    Transfer to another customer:
+    = customer_search_field 'xfer_name', '', {:size=>20}, |
+      :also_update => {:xfer_id => :id}, |
+      :select_opts => {:indicator => 'wait2'} |
+    = spinner 'wait2'
+    = hidden_field_tag 'xfer_id'
+    = submit_tag 'Transfer'
+  %p= submit_tag 'Release Reservations'
+
+  %table#manageVouchers.full_width
+    %thead
+      %th
+      %th #
+      %th Type
+      %th Owner
+      %th How acquired
+      %th When acquired
+      %th Reservation
+      %th Comments
+    %tbody
+      = render :partial => 'voucher', :collection => @vouchers
+

@@ -5,6 +5,9 @@
 %br/
 %br/
 
+- if @recipient.id != @cust.id
+  = render :partial => 'customers/form', :locals => {:customer => @recipient, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
+
 - form_tag :action => 'place_order' do
   %h2 Please Verify Billing Info
   %p
