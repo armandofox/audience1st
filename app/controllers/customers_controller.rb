@@ -19,6 +19,8 @@ class CustomersController < ApplicationController
                 :redirect_to => {:action => :welcome},
                 :add_to_flash => "You appear to be logged in already. If this isn't you, please click the Log Out button.")
   
+  before_filter :reset_shopping, :only => %w[welcome,welcome_subscriber,logout]
+
   # must be boxoffice to view other customer records or adding/removing vouchers
   before_filter :is_staff_filter, :only => %w[list switch_to search]
   before_filter :is_boxoffice_filter, :only=>%w[merge create]
@@ -429,6 +431,7 @@ class CustomersController < ApplicationController
     cust = params[:customer]
     url = "http://zip4.usps.com/zip4/zcl_0_results.jsp?visited=1&pagenumber=0&firmname=&address2=#{cust[:street]}&address1=&city=#{cust[:city]}&state=#{cust[:state]}&urbanization=&zip5=#{cust[:zip]}"
     res = Net::HTTP.get_response(URI.parse(URI.escape(url)))
+    debugger
     if res.code.to_i == 200 && res.body.match(/.*td headers="full"[^>]+>(.*)<br \/>\s+<\/td>\s+<td style=/m )
       street,csz = Regexp.last_match(1).split /<br \/>/
       city,state,zip = (csz.strip.split( /(&nbsp;)+/ )).values_at(0,2,4)

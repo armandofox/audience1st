@@ -334,8 +334,17 @@ class Customer < ActiveRecord::Base
 
   def self.find_unique(p)
     p.symbolize_keys!
-    # attempt 1: try exact match on last name and first name
     c = nil
+    # attempt 0: try exact match on email; first/last name must ALSO match
+    if (!p[:login].blank?) &&
+        (m = Customer.find(:first, :conditions => ['login LIKE ?', p[:login].strip])) &&
+        # email matches - but unless name & address also match, we're screwed.
+        m.first_name.casecmp(p[:first_name]).zero? &&
+        m.last_name.casecmp(p[:last_name]).zero?
+      return m
+    end
+    # either email didn't match, or email matched but names didn't.
+    # so, attempt 1: try exact match on last name and first name
     if (!(p[:last_name].blank?) && !(p[:first_name].blank?) &&
         (matches = Customer.find(:all, :conditions => ['last_name LIKE ? AND first_name LIKE ?', p[:last_name], p[:first_name]])))
       if (matches.to_a.length == 1)  # exactly 1 match - victory
@@ -353,6 +362,10 @@ class Customer < ActiveRecord::Base
   def self.new_or_find(p, loggedin_id=0)
     unless (c = Customer.find_unique(p))
       c = Customer.new(p)
+      # precaution: make sure login is unique.
+      if c.login
+        c.login = nil if Customer.find(:first,:conditions => ['login like ?',c.login])
+      end
       c.save!
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => c.id,

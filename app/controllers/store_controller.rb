@@ -30,7 +30,7 @@ class StoreController < ApplicationController
   end
 
   def index
-    start_over
+    reset_shopping
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
     set_return_to :controller => 'store', :action => 'index'
@@ -51,14 +51,37 @@ class StoreController < ApplicationController
     setup_ticket_menus
   end
 
+  def subscribe
+    reset_shopping
+    session[:redirect_to] = :subscribe
+    @customer = store_customer
+    @subscriber = @customer.is_subscriber?
+    @cart = find_cart
+    # this uses the temporary hack of adding bundle sales start/end
+    #   to bundle voucher record directly...ugh
+    @subs_to_offer = Vouchertype.find_products(:type => :subscription, :for_purchase_by => (@subscriber ? :subscribers : :nonsubscribers), :ignore_cutoff => @gAdmin.is_boxoffice)
+    if @subs_to_offer.empty?
+      flash[:warning] = "There are no subscriptions on sale at this time."
+      redirect_to :action => :index
+      return
+    end
+    if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
+        vt = Vouchertype.find_by_id(v) &&
+        # note! must use grep (uses ===) rather than include (uses ==)
+        @subs_to_offer.grep(vt)
+      @selected_sub = v.to_i
+    end
+  end
+
   def shipping_address
     # if this is a post, add items to cart first (since we're coming from
     #  ticket selection page).  If a get, buyer just wants to modify
     #  gift recipient info.
     # add items to cart
     @cart = find_cart
+    @redirect_to = params[:redirect_to] == 'subscribe' ? :subscribe : :index
     if request.post?
-      params[:redirect_to] == 'subscribe' ? process_subscription_request : process_ticket_request
+      @redirect_to == :subscribe ? process_subscription_request : process_ticket_request
       # did anything go wrong?
       redirect_to :action => :index and return unless flash[:warning].blank?
       if params[:donation].to_i > 0
@@ -196,99 +219,6 @@ class StoreController < ApplicationController
     redirect_to :action => 'index'
   end
 
-  def subscribe
-    @customer = store_customer
-    @subscriber = @customer.is_subscriber?
-    @cart = find_cart
-    # this uses the temporary hack of adding bundle sales start/end
-    #   to bundle voucher record directly...ugh
-    @subs_to_offer = Vouchertype.find_products(:type => :subscription, :for_purchase_by => (@subscriber ? :subscribers : :nonsubscribers), :ignore_cutoff => @gAdmin.is_boxoffice)
-    if @subs_to_offer.empty?
-      flash[:warning] = "There are no subscriptions on sale at this time."
-      redirect_to :action => :index
-      return
-    end
-    if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
-        vt = Vouchertype.find_by_id(v) &&
-        # note! must use grep (uses ===) rather than include (uses ==)
-        @subs_to_offer.grep(vt)
-      @selected_sub = v.to_i
-    end
-  end
-
-  def add_subscriptions_to_cart
-    @cart = find_cart
-    qty = params[:subscription_qty].to_i
-    vtype = params[:subscription_vouchertype_id].to_i
-    if qty < 1
-      flash[:warning] = "Quantity must be 1 or more."
-    else
-      unless (((v = Vouchertype.find(vtype)).is_subscription? && v.is_bundle?) rescue nil)
-        flash[:warning] = "Invalid subscription type."
-      else
-        1.upto(qty) do
-          @cart.add(Voucher.anonymous_bundle_for(vtype))
-        end
-        set_checkout_in_progress
-      end
-    end
-    redirect_to :action => 'subscribe', :id => params[:id]
-  end
-
-  def add_tickets_to_cart
-    @customer = store_customer
-    @is_admin = current_admin.is_boxoffice
-    qtys = params[:vouchertype] # a hash of vouchertypeID => qty of this type
-    showdate_id = params[:showdate].to_i
-    flash[:warning] = ""
-
-    qtys.reject! { |v,q| q.to_i.zero? }
-    flash[:warning] = "Please select one or more tickets." and redirect_to(:action => :index) and return if qtys.empty?
-    qtys.each_pair do |vtype_str,qty_str|
-      vtype,qty = vtype_str.to_i, qty_str.to_i
-      unless (vt = Vouchertype.find_by_id(vtype))
-        flash[:warning] << "Ticket ID #{vtype} is invalid. "
-        next
-      end
-      if qty > 99
-        flash[:warning] << "Please specify between 1 and 99 tickets for type '#{vt.name}'. "
-        next
-      end
-      av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,@customer,vtype,:ignore_cutoff => @is_admin)
-      flash[:warning] <<
-        "Ticket type '#{vt.name}' not valid for that show, or show sold out. " and next if av.howmany.zero?
-      flash[:warning] <<
-        "Only #{av.howmany} '#{vt.name}' tickets remaining for selected performance. "  and next if av.howmany < qty
-      # add vouchers to cart.  Vouchers will be validated at checkout.
-      # was a promo code necessary to select this vouchertype?
-      promo_code = ((session[:promo_code] && av.promo_codes) ?
-                    session[:promo_code].upcase : nil)
-      cart = find_cart
-      # Comments field is used for special seating instructions.  Add the
-      # comment to the cart, and add it to *1* (not all) of the vouchers.
-      cart.comments = params[:comments]
-      1.upto(qty) do
-        cart.add(Voucher.anonymous_voucher_for(showdate_id, vtype, promo_code, params[:comments]))
-        params[:comments] = nil
-      end
-    end
-    #reset_current_show_and_showdate
-    params[:showdate] = showdate_id # refresh screen back to same showdate
-    set_checkout_in_progress
-    redirect_to :action => 'index'
-  end
-
-  def add_donation_to_cart
-    cart = find_cart
-    if (d = params[:donation_amount].to_i) > 0
-      cart.add(Donation.online_donation(d, store_customer.id, logged_in_id))
-      set_checkout_in_progress
-    else
-      flash[:warning] = "Please enter a donation amount."
-    end
-    redirect_to :action =>(params[:redirect_to] || 'index')
-  end
-
   def checkout
     @cust = store_customer
     if session[:recipient_id]
@@ -298,21 +228,11 @@ class StoreController < ApplicationController
     end
     @cart = find_cart
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    if @cart.is_empty?
-      flash[:warning] = "There is nothing in your cart."
-      redirect_to :action => 'index', :id => params[:id]
-      return
-    end
+    redirect_to(:action => 'index', :id => params[:id]) and return if @cart.is_empty?
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
     redirect_to :action => 'not_me' and return if nobody_really_logged_in
-    # else reset flag indicating 'login needed', fall thru to checkout screen
-    # NOTE: @gCheckoutInProgress is actually set in a global before_filter,
-    # but we override it in this *one* place since the normal checkout
-    # screen already includes a render of the cart.
-    set_checkout_in_progress(false)
-    @gCheckoutInProgress = false
   end
 
   def not_me
@@ -398,14 +318,8 @@ class StoreController < ApplicationController
                        @amount, "Credit card ending in #{@cc_number[-4..-1]}",
                        @cart.comments)
     @special_instructions = @cart.comments
-    start_over                  # clear out shopping session info.
+    reset_shopping                  # clear out shopping session info.
     set_return_to
-  end
-
-  def remove_from_cart
-    @cart = find_cart
-    @cart.remove_index(params[:item])
-    redirect_to :action => (params[:redirect_to] || 'index')
   end
 
   def walkup
@@ -750,13 +664,6 @@ class StoreController < ApplicationController
     end
   end
 
-  def start_over
-    @cart = find_cart
-    @cart.empty!
-    session[:promo_code] = nil
-    session[:recipient_id] = nil
-    set_checkout_in_progress(false)
-  end
 
 
 

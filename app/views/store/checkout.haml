@@ -1,11 +1,5 @@
-%h1.page_heading.center Checkout
-
-= render :partial => 'cart'
-= link_to 'Cancel and Start Over',{:action=>'index'}, :class => 'genButton' 
-%br/
-%br/
-
 - if @recipient.id != @cust.id
+  %h2 This Order is a Gift For...
   = render :partial => 'customers/form', :locals => {:customer => @recipient, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
   = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 

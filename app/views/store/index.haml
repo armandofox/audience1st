@@ -6,7 +6,7 @@
   /  = render :partial =>'promo_entry',:locals=>{:promo_code=>@promo_code.to_s}
 
   %h1.page_heading.center
-    Step 1 of 4: Select Tickets
+    Select Tickets
     %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
   %p.storeText= sanitize_option_text(@subscriber ? :subscriber_store_message : :nonsubscriber_store_message)
@@ -23,11 +23,12 @@
       #orderTotal
         %label.strong{:for=>:total} Order Total:
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true
-      %label.emphasis{:for=>:gift} 
-        Is this order a 
-        %strong gift?
-      = check_box_tag 'gift', 1, false, :onClick => "a = $('nextstep'); if (this.checked) { a.innerHTML = 'to enter Recipient information'; } else { a.innerHTML = 'to Billing Information'; } a.highlight({startcolor: '#ffff00', duration: 3});"
+      - unless Option.value(:allow_gift_tickets).blank?
+        %label.emphasis{:for=>:gift} Is this order a <strong>gift?</strong>
+        = check_box_toggle 'gift', false, :nextstep, 'to enter Recipient information', |
+          'to Billing information' |
       %br
       %label &nbsp;
+      = hidden_field_tag 'redirect_to', 'index'
       = submit_tag 'CONTINUE >>', {:disabled => true, :id => 'submit'}
       %span#nextstep to Billing Information

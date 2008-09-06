@@ -24,6 +24,15 @@ class ApplicationController < ActionController::Base
   def set_checkout_in_progress(val = true)
     @gCheckoutInProgress = session[:checkout_in_progress] = val
   end
+
+  def reset_shopping           # called as a filter
+    @cart = find_cart
+    @cart.empty!
+    session[:promo_code] = nil
+    session[:recipient_id] = nil
+    set_checkout_in_progress(false)
+    true
+  end
   
   filter_parameter_logging :credit_card,:password
 
