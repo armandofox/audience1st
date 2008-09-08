@@ -1,4 +1,4 @@
-= error_messages_for :customer
+%p= error_messages_for :customer
 
 - @customer = customer if defined?(customer)
 - disabled =  defined?(passive) && passive 
@@ -7,23 +7,27 @@
   /[form:customer]
   %fieldset#billing_info
     %legend= defined?(legend) ? legend :  'Credit Card Billing Address'
-    %label{:for=>:customer_first_name} First name
+    %p
+      Fields
+      %span.strong like this
+      are required.
+    %label.strong{:for=>:customer_first_name} First name
     =text_field 'customer', 'first_name', :size => 16, :max_length => 40, :id => 'customer_first_name', :readonly => disabled
     %br/
 
-    %label{:for=>:customer_last_name} Last name
+    %label.strong{:for=>:customer_last_name} Last name
     =text_field 'customer', 'last_name', :size => 16, :max_length => 40,:id => 'customer_last_name', :readonly => disabled 
     %br/
     %br/
 
-    %label{:for=>:customer_street} Street
+    %label.strong{:for=>:customer_street} Street
     =text_field 'customer', 'street', :readonly => disabled  
     %br/
-    %label{:for=>:customer_city} City
+    %label.strong{:for=>:customer_city} City
     =text_field 'customer', 'city', :size => 16, :max_length => 32, :readonly => disabled
-    %label.no_float{:for=>:customer_state} State
+    %label.no_float.strong{:for=>:customer_state} State
     =text_field 'customer', 'state', {:size => 2, :max_length => 2, :readonly => disabled}
-    %label.no_float{:for=>:customer_zip} Zip
+    %label.no_float.strong{:for=>:customer_zip} Zip
     =text_field 'customer', 'zip', {:size => 10, :max_length => 10, :readonly => disabled}
     - if @gAdmin.is_boxoffice && !disabled
       = submit_to_remote 'Validate','Validate...', |
@@ -44,7 +48,7 @@
     =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
     %br/
 
-    %label{:for=>:customer_login} Email
+    %label.strong{:for=>:customer_login} Email
     =text_field 'customer', 'login', {:size => 20, :max_length => 40, :readonly => disabled }
 
   - unless defined?(hide_opt_out)

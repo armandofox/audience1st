@@ -168,6 +168,13 @@ class CustomersController < ApplicationController
     flash[:notice] = ''
     # squeeze empty-string params into nils.
     params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
+    # this is messy: if this is part of a checkout flow, it's OK for customer
+    #  not to specify a password.  This will be obsolete when customers are
+    #  subclassed with different validations on each subclass.
+    if @gCheckoutInProgress && params[:customer][:password].blank?
+      params[:customer][:password] = params[:customer][:password_confirmation] =
+        String.random_string(8)
+    end
     # unless admin, remove "extra contact" fields
     unless @is_admin
       Customer.extra_attributes.each { |a| params[:customer].delete(a) }
@@ -245,6 +252,13 @@ class CustomersController < ApplicationController
       @customer = Customer.new
       render :action => 'new'
       return
+    end
+    # this is messy: if this is part of a checkout flow, it's OK for customer
+    #  not to specify a password.  This will be obsolete when customers are
+    #  subclassed with different validations on each subclass.
+    if @gCheckoutInProgress && params[:customer][:password].blank?
+      params[:customer][:password] = params[:customer][:password_confirmation] =
+        String.random_string(8)
     end
     @customer = Customer.new(params[:customer])
     flash[:notice] = ''

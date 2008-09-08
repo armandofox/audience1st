@@ -20,8 +20,8 @@ class Customer < ActiveRecord::Base
   validates_presence_of :last_name
   validates_length_of :last_name, :within => 1..50
 
-  validates_length_of :password, :in => 3..20, :allow_nil => true
-  validates_confirmation_of :password
+  #validates_length_of :password, :in => 3..20, :allow_nil => true
+  #validates_confirmation_of :password
 
   validates_columns :formal_relationship
   validates_columns :member_type
@@ -34,9 +34,10 @@ class Customer < ActiveRecord::Base
 
   before_validation :remove_blank_attributes
   def remove_blank_attributes
-    Customer.content_columns.each do |c|
+    Customer.columns.each do |c|
       self.send("#{c.name}=", nil) if self.send(c.name).blank?
     end
+    self.password = nil if self.password.blank?
   end
 
   # custom validations

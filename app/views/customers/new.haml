@@ -1,11 +1,12 @@
-%h1.page_heading.center Create Your Account
+%h1.page_heading.center= @gCheckoutInProgress ? 'Billing Information' : 'Create Your Account'
 
 #inner_wrapper
-  %fieldset#FAQ
+  = link_to_function 'Questions about this page? Already have an account but forgot your password?',visual_effect(:toggle_slide,'FAQ')
+  %fieldset#FAQ{:style => 'display: none'}
     %legend FAQs
     %dl
       %dt Why do you need my email address?
-      %dd To communicate with you about your order.
+      %dd To communicate with you about your order in case there is a problem.
       %dt Why do you need my name and billing address?
       %dd 
         For credit card ticket purchase.  
@@ -14,9 +15,10 @@
       %dt I'm a Subscriber, but I couldn't retrieve my password.
       %dd 
         All Subscribers already have accounts containing your subscription
-        information and vouchers.  It may be under a different email address.
-        If you need help, email
-        = mail_to(Option.value(:help_email),nil,:encode=>"hex", :subject=>"Help with Audience1st account")
+        information and vouchers.  Go to the 
+        = link_to 'Login screen', :controller =>  'customers', :action => 'login'
+        and check the "Forgot Password" box. If you need further help, email
+        = mail_to(Option.value(:help_email),nil,:encode=>"hex", :subject=>"Help with Audience1st account for #{Option.value(:venue)}")
         with your full name and billing address and we'll be happy to help.
       %dt Under 18?  
       %dd
@@ -38,8 +40,8 @@
       = gen_button 'Cancel', :action => :list
   - else
     - form_tag :action => 'user_create' do
-      = render :partial => 'password'
       = render :partial => 'form'
-      = submit_tag "Create My Account"
+      = render :partial => 'password'
+      = submit_tag (@gCheckoutInProgress ? 'CONTINUE >>' : 'Create My Account')
       = gen_button 'Cancel', :action => 'login'
 

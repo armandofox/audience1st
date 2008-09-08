@@ -1,6 +1,28 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
 
+// Check place-order form before it's submitted.
+
+function checkPlaceOrderForm() {
+    alrt = '';
+    if (! $('credit_card_number').value.match('[0-9]{15,16}')) {
+        alrt += "Credit card number appears to be too short.\n";
+    }
+    if (! $('credit_card_verification_value').value.match('[0-9]{3,4}')) {
+        alrt += "Credit card security code appears to be too short.\n";
+    }
+    if (! ($('sales_final').checked)) {
+        alrt += "Please indicate your acceptance of our Sales Final policy by checking the TERMS OF SALE box.\n";
+    }
+    if (alrt != '') {
+        alrt = "Please correct the following errors:\n\n" + alrt;
+    } else {
+        $('submit').disabled = false;
+    }
+    return alrt;
+}
+    
+
 Ajax.Autocompleter.extract_value = 
   function (value, className) {
     var result;

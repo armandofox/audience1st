@@ -6,10 +6,13 @@
   = render :partial => 'account_login'
 
 #new_customer
-  %h2 New Customer?
-  = gen_button "Create Account", {:action => 'new'}
-  %br/
-  %br/
-  = gen_button "Buy Tickets", {:controller => 'store', :action => 'index'}
+  %h2 New Customers
+  - if @gCheckoutInProgress
+    = gen_button "Enter Billing Information", :action => 'new'
+  - else
+    = gen_button "Create Account", :action => 'new'
+    %br/
+    %br/
+    = gen_button "Buy Tickets", {:controller => 'store', :action => 'index'}
 
 .clear

@@ -206,7 +206,6 @@ class StoreController < ApplicationController
 
   def comment_changed
     cart = find_cart
-    raise params[:comments].inspect
     cart.comments = params[:comments]
     render :nothing => true
   end
@@ -238,7 +237,7 @@ class StoreController < ApplicationController
   def not_me
     @cust = Customer.new
     set_return_to :controller => 'store', :action => 'checkout'
-    flash[:warning] = "Please sign in, or create an account if you don't already have one, to enter your credit card billing address.  We never share this information with anyone."
+    flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
     redirect_to :controller => 'customers', :action => 'login'
   end
 
