@@ -93,7 +93,7 @@ module ApplicationHelper
   # the URL of the CSS file to make it secure. Ugh.
 
   def possibly_https(url)
-    request.user_agent.match( /MSIE ([0-9]{1,}[\.0-9]{0,})/ ) &&
+    request.user_agent.to_s.match( /MSIE ([0-9]{1,}[\.0-9]{0,})/ ) &&
       request.protocol == 'https://' ? url.gsub( /^http:/, 'https:' ) : url
   end
   
