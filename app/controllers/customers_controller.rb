@@ -171,9 +171,9 @@ class CustomersController < ApplicationController
     # this is messy: if this is part of a checkout flow, it's OK for customer
     #  not to specify a password.  This will be obsolete when customers are
     #  subclassed with different validations on each subclass.
+    temp_password = nil
     if @gCheckoutInProgress && params[:customer][:password].blank?
-      params[:customer][:password] = params[:customer][:password_confirmation] =
-        String.random_string(8)
+      temp_password =  params[:customer][:password] = params[:customer][:password_confirmation] =  String.random_string(8)
     end
     # unless admin, remove "extra contact" fields
     unless @is_admin
@@ -210,7 +210,7 @@ class CustomersController < ApplicationController
                            :logged_in_id => logged_in_id)
       flash[:notice] << 'Contact information was successfully updated.'
       if (@customer.login != old_login) && @customer.has_valid_email_address? &&
-          params[:dont_send_email].blank?
+          params[:dont_send_email].blank? && temp_password.blank?
         # send confirmation email
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
@@ -256,8 +256,9 @@ class CustomersController < ApplicationController
     # this is messy: if this is part of a checkout flow, it's OK for customer
     #  not to specify a password.  This will be obsolete when customers are
     #  subclassed with different validations on each subclass.
+    temp_password = nil
     if @gCheckoutInProgress && params[:customer][:password].blank?
-      params[:customer][:password] = params[:customer][:password_confirmation] =
+      temp_password = params[:customer][:password] = params[:customer][:password_confirmation] =
         String.random_string(8)
     end
     @customer = Customer.new(params[:customer])
@@ -270,9 +271,11 @@ class CustomersController < ApplicationController
     @customer.validation_level = 1
     if @customer.save
       @customer.update_attribute(:last_login, Time.now)
-      flash[:notice] = "Thanks for setting up an account!<br/>"
-      email_confirmation(:send_new_password,@customer,
+      unless temp_password
+        flash[:notice] = "Thanks for setting up an account!<br/>"
+        email_confirmation(:send_new_password,@customer,
                          params[:customer][:password],"set up an account with us")
+      end
       session[:cid] = @customer.id
       logger.info "Session cid set to #{session[:cid]}"
       Txn.add_audit_record(:txn_type => 'edit',
