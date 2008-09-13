@@ -20,8 +20,8 @@ class Customer < ActiveRecord::Base
   validates_presence_of :last_name
   validates_length_of :last_name, :within => 1..50
 
-  #validates_length_of :password, :in => 3..20, :allow_nil => true
-  #validates_confirmation_of :password
+  validates_length_of :password, :in => 3..20, :allow_nil => true
+  validates_confirmation_of :password
 
   validates_columns :formal_relationship
   validates_columns :member_type

@@ -7,20 +7,25 @@ class StoreController < ApplicationController
   before_filter :walkup_sales_filter, :only => %w[walkup do_walkup_sale]
   before_filter :is_logged_in, :only => %w[edit_billing_address]
 
-  if RAILS_ENV == 'production'
-    ssl_required :checkout, :place_order, :walkup, :do_walkup_sale
-    ssl_allowed(:index, :show_changed, :showdate_changed,
-                :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
-                :remove_from_cart,
-                :process_swipe)
-  end
-
   verify(:method => :post,
          :only => %w[do_walkup_sale add_tickets_to_cart add_donation_to_cart
                         add_subscriptions_to_cart place_order],
          :add_flash => {:warning => "SYSTEM ERROR: action only callable as POST"},
          :redirect_to => {:action => 'index'})
 
+  # this should be the last declarative spec since it will append another
+  # before_filter
+  if RAILS_ENV == 'production'
+    ssl_required(:checkout, :place_order, :walkup, :do_walkup_sale,
+                 :index, :subscribe,
+                 :show_changed, :showdate_changed,
+                 :shipping_address, :set_shipping_address,
+                 :comment_changed,
+                 :not_me, :edit_billing_address, 
+                 :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
+                :remove_from_cart,
+                :process_swipe)
+  end
 
   def mini_index
     @cart = find_cart
@@ -142,50 +147,6 @@ class StoreController < ApplicationController
     redirect_to :action => :checkout
   end
   
-  def setup_ticket_menus
-    @customer = store_customer
-    @cart = find_cart
-    is_admin = current_admin.is_boxoffice
-    # will set the following instance variables:
-    # @all_shows - choice for Shows menu
-    # @sh - selected show; nil means none selected
-    # @all_showdates - choices for Showdates menu
-    # @sd - selected showdate; nil means none selected
-    # @vouchertypes - array of AvailableSeat objects indicating vouchertypes
-    #   to offer, which includes how many are available
-    #   empty array means must choose showdate first
-    @all_shows = get_all_shows(get_all_showdates(is_admin))
-    if @sd = current_showdate   # everything keys off of selected showdate
-      @sh = @sd.show
-      @all_showdates = (is_admin ? @sh.showdates :
-                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
-      # make sure originally-selected showdate is included among those
-      #  to be displayed.
-      unless @all_showdates.include?(@sd)
-        @sd = @all_showdates.first
-      end
-      @vouchertypes = (@sd ?
-                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin) :
-                       [] )
-    elsif @sh = current_show    # show selected, but not showdate
-      @all_showdates = (is_admin ? @sh.showdates :
-                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
-      @vouchertypes = []
-    else                      # not even show is selected
-      @all_showdates = []
-      @vouchertypes = []
-    end
-    # filtering:
-    # remove any showdates that are sold out (which could cause showdate menu
-    #   to become empty)
-    # remove any vouchertypes tht customer should not even see the existence
-    #  of (unless "customer" is actually an admin)
-    @vouchertypes.reject! { |av| av.staff_only } unless is_admin
-    @vouchertypes.reject! { |av| av.howmany.zero? }
-    # BUG: must filter vouchertypes by promo code!!
-    # @vouchertypes.reject!
-  end
-
   def show_changed
     if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
@@ -455,6 +416,50 @@ class StoreController < ApplicationController
   end
 
   private
+
+  def setup_ticket_menus
+    @customer = store_customer
+    @cart = find_cart
+    is_admin = current_admin.is_boxoffice
+    # will set the following instance variables:
+    # @all_shows - choice for Shows menu
+    # @sh - selected show; nil means none selected
+    # @all_showdates - choices for Showdates menu
+    # @sd - selected showdate; nil means none selected
+    # @vouchertypes - array of AvailableSeat objects indicating vouchertypes
+    #   to offer, which includes how many are available
+    #   empty array means must choose showdate first
+    @all_shows = get_all_shows(get_all_showdates(is_admin))
+    if @sd = current_showdate   # everything keys off of selected showdate
+      @sh = @sd.show
+      @all_showdates = (is_admin ? @sh.showdates :
+                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+      # make sure originally-selected showdate is included among those
+      #  to be displayed.
+      unless @all_showdates.include?(@sd)
+        @sd = @all_showdates.first
+      end
+      @vouchertypes = (@sd ?
+                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin) :
+                       [] )
+    elsif @sh = current_show    # show selected, but not showdate
+      @all_showdates = (is_admin ? @sh.showdates :
+                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+      @vouchertypes = []
+    else                      # not even show is selected
+      @all_showdates = []
+      @vouchertypes = []
+    end
+    # filtering:
+    # remove any showdates that are sold out (which could cause showdate menu
+    #   to become empty)
+    # remove any vouchertypes tht customer should not even see the existence
+    #  of (unless "customer" is actually an admin)
+    @vouchertypes.reject! { |av| av.staff_only } unless is_admin
+    @vouchertypes.reject! { |av| av.howmany.zero? }
+    # BUG: must filter vouchertypes by promo code!!
+    # @vouchertypes.reject!
+  end
 
   # Customer on whose behalf the store displays are based (for special
   # ticket eligibility, etc.)  Current implementation: same as the active
