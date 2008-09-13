@@ -1,7 +1,9 @@
 %h1.page_heading.center= @gCheckoutInProgress ? 'Billing Information' : 'Create Your Account'
 
 #inner_wrapper
-  = link_to_function 'Questions about this page? Already have an account but forgot your password?',visual_effect(:toggle_slide,'FAQ')
+  %p 
+    Questions about this page? Already have an account but forgot your password?
+    = link_to_function 'Click here.', visual_effect(:toggle_slide,'FAQ')
   %fieldset#FAQ{:style => 'display: none'}
     %legend FAQs
     %dl

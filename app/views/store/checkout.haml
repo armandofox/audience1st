@@ -31,9 +31,8 @@
   %br
   %br
   
-  = submit_tag APP_CONFIG[:cc_purch], {:id=>'submit',:disabled=>true,:class=>:indented, |
-      :onClick => "{ this.disabled=true;this.value='Processing, Please Wait'; Element.hide('cancel'); }"} |
+  = submit_tag APP_CONFIG[:cc_purch], :disable_with => "Processing, Please Wait..."
   = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton' } 
-  = observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
-  = observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'
-  = observe_field 'sales_final', :function => 'checkPlaceOrderForm()'
+= observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
+= observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'
+= observe_field 'sales_final', :function => 'checkPlaceOrderForm()'

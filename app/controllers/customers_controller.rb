@@ -6,10 +6,6 @@ class CustomersController < ApplicationController
 
   include Enumerable
 
-  if RAILS_ENV == 'production'
-    ssl_required :login, :change_password, :create, :user_create, :edit, :forgot_password
-  end
-
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
                 :only=>%w[welcome welcome_subscriber change_password edit],
@@ -33,6 +29,11 @@ class CustomersController < ApplicationController
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
+
+  # checks for SSL should be last, as they append a before_filter
+  if RAILS_ENV == 'production'
+    ssl_required :login, :change_password, :new, :create, :user_create, :edit, :forgot_password
+  end
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
