@@ -1,7 +1,7 @@
 - form_tag :controller => 'customers', :action => 'login' do 
   = error_messages_for 'customer'
   
-  %label{:for=>:customer_login} Email 
+  %label{:for=>:customer_login} Login Name
   = text_field 'customer', 'login', :size => 20
   %br/
   

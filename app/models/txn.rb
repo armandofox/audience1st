@@ -7,6 +7,16 @@ class Txn < ActiveRecord::Base
 
   validates_associated :txn_type, :purchasemethod
 
+  # provide a handler to be called when customers are merged.
+  # Transfers the txns from old to new id, and also changes the
+  # values of entered_by_id field, which is really a customer id.
+  # Returns number of actual txns transferred.
+  
+  def self.merge_handler(old,new)
+    Txn.update_all("entered_by_id = '#{new}'", "entered_by_id = '#{old}'")
+    Txn.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
+  end
+
   # since the audit record schema is generic, not all fields are
   # relevant for every entry. 
 

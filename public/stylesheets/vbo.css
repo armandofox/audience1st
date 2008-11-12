@@ -267,12 +267,12 @@ div dt {
 /* show 'spinner' in a DIV that is the right size for the image, so 
    layout isn't affected when it is shown/hidden */
 
-div.spinner16 { 
+.spinner16 { 
   height: 18px;
   width: 18px;
   padding: 1px;
   margin: 0;
-  display: block;
+  display: none;
  }
 
 div.uploadStatus {

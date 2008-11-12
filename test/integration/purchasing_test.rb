@@ -13,35 +13,17 @@ class PurchasingTest < ActionController::IntegrationTest
 
   def setup
     post "/customers/logout"
+    follow_redirect
+    visit_page "/store/index"
   end
 
-  def visit_store_without_login
-    post "/customers/logout"
-    get "/store/index"
-    assert_response :success
-    assert_template "index"
-    assert_no_tag :tag => 'td', :content => /logged in as/i
-    assert_no_tag(:tag => 'input', :attributes => {:name => 'id', :id => 'id',
-                   :type => 'hidden', :value => /[0-9-]+/})
+  def test_buy_regular_tickets
+    show = shows(:upcoming_musical)
+    showdt = showdates(:upcoming_musical_nomax)
+    assert_menu :show, :containing => [show.id, show.name]
+    assert_menu :showdate, :containing => [showdt.id, showdt.printable_date]
   end
-
-  def select_show(show)
-    assert_tag :tag => 'select', :attributes => {:name => 'show_id'}
-    assert_tag :tag => 'option', :content => Regexp.new(show.name), :attributes => {:value => show.id.to_i}
-    xml_http_request("/store/show_changed", :show_id => show.id, :id => @custid)
-  end
-
-  def select_showdate(showdate)
-    assert_tag :tag => 'select', :attributes => {:name => 'showdate_id'}
-    assert_tag :tag => 'option', :attributes => {:value => showdate.id.to_s}
-    xml_http_request("/store/showdate_changed", :showdate_id => showdate.id, :id => @custid)
-    assert_tag :tag => 'select', :attributes => {:name => 'vouchertype_id'}
-  end
-
-  def assert_cart_empty
-    assert_tag :tag => 'p', :content => /shopping cart is empty/i
-  end
-
+  
   def assert_cart_contains_ticket(qty, sd, vtype)
     cart_tbl = {:tag => 'table', :attributes => {:class => 'cart'}}
     showname = {:tag => 'td', :content => Regexp.new(sd.show.name, :ignore_case)}
@@ -73,4 +55,26 @@ class PurchasingTest < ActionController::IntegrationTest
     try_add_tkts_to_cart(1, my_tkt)
     assert_cart_contains_ticket(1, my_showdate, my_tkt)
   end
+
+
+  private
+
+  def visit_page(page,args={})
+    unless (template = args[:template])
+      raise "No page" unless (page.match( /[^\/]+$/ ))
+      template = $1
+    end
+    if args[:method] == :post
+      post page
+      assert_response :success
+      assert_template template
+    end
+  end
+  
+  def assert_menu(menu_id, args)
+    contents = args[:containing]
+    assert_tag(:tag => :select, :attributes => {:id => menu_id},
+               :descendant => {:tag => 'option', :attributes => {:value => contents[0].to_s}, :content => contents[1].to_s})
+  end
+
 end

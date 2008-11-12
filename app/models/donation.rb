@@ -13,6 +13,17 @@ class Donation < ActiveRecord::Base
   validates_numericality_of :amount
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
 
+  # provide a handler to be called when customers are merged.
+  # Transfers the donations from old to new id, and also changes the
+  # values of processed_by field, which is really a customer id.
+  # Returns number of actual donation records transferred.
+  
+  def self.merge_handler(old,new)
+    Donation.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
+    Donation.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
+  end
+
+
   def price ; self.amount ; end # why can't I use alias for this?
 
   def self.walkup_donation(amount,logged_in_id,purch=Purchasemethod.get_type_by_name('box_cash'))

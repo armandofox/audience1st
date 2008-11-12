@@ -41,20 +41,20 @@
       = hidden_image('failure')
     %br
     %br
-    %label{:for=>:customer_day_phone} Day phone
+    %label.strong{:for=>:customer_day_phone} Preferred phone
     =text_field 'customer', 'day_phone', {:size => 16, :max_length => 16, :readonly => disabled}
     %br/
-    %label{:for=>:customer_eve_phone} Evening phone
+    %label{:for=>:customer_eve_phone} Alternate phone
     =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
     %br/
 
-    %label.strong{:for=>:customer_login} Email
-    =text_field 'customer', 'login', {:size => 20, :max_length => 40, :readonly => disabled }
+    %label.strong{:for=>:customer_email} Email
+    =text_field 'customer', 'email', {:size => 20, :max_length => 40, :readonly => disabled }
 
   - unless defined?(hide_opt_out)
     =check_box 'customer', 'e_blacklist'
     %label.no_float{:for=>:customer_e_blacklist}= "Please don't send email about upcoming shows &amp; events."
-    %span.small= link_to "Privacy Policy", Option.value(:privacy_policy_url)
+    %span.small= link_to "Privacy Policy", Option.value(:privacy_policy_url), :target => '_blank'
 
   /[eoform:customer]
 

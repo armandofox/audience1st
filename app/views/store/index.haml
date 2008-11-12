@@ -11,6 +11,7 @@
 
   %p.storeText= sanitize_option_text(@subscriber ? :subscriber_store_message : :nonsubscriber_store_message)
   %p.storeText= sanitize_option_text(:store_message)
+  %p.storeText= sanitize_option_text(:single_ticket_purchase_message)
   
   #ticket_menus
     - form_tag :action => 'shipping_address' do

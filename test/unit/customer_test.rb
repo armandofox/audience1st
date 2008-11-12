@@ -48,11 +48,11 @@ class CustomerTest < Test::Unit::TestCase
   def test_013_valid_email
     c = Customer.new
     ["", nil, "nodomain", "!abc", "123", "newbie@aol"].each do |e|
-      c.login = e
+      c.email = e
       assert_nil c.has_valid_email_address?, e
     end
     ["joe@blow.info", "i@an.", "NEWBIE@AOL.COM"].each do |e|
-      c.login = e
+      c.email = e
       assert_not_nil c.has_valid_email_address?, e
     end
   end

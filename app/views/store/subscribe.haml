@@ -4,6 +4,7 @@
   #subscriptionsMenus
     %h1.page_heading.center Subscriber Benefits
     %p.storeText= sanitize_option_text :subscription_benefits_short_description
+    %p.storeText= sanitize_option_text :subscription_purchase_method
     - unless @subscriber
       %p.storeText= sanitize_option_text :nonsubscriber_subscription_teaser
       

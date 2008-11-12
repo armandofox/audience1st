@@ -56,7 +56,7 @@ module ApplicationHelper
 
   # spinner
   def spinner(id='wait')
-    content_tag('span', image_tag('wait16trans.gif', :style => 'display: none', :id => id), :class => 'spinner16')
+    image_tag('wait16trans.gif', :id => id, :class => 'spinner16')
   end
   
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})

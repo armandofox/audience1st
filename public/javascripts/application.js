@@ -17,7 +17,7 @@ function checkPlaceOrderForm() {
     if (alrt != '') {
         alrt = "Please correct the following errors:\n\n" + alrt;
     } else {
-        $('submit').disabled = false;
+        $('commit').disabled = false;
     }
     return alrt;
 }

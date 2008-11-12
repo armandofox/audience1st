@@ -80,7 +80,7 @@ class Mailer < ActionMailer::Base
   end
 
   def sending_to(recipient)
-    @recipients = recipient.kind_of?(Customer)? recipient.login : recipient.to_s
+    @recipients = recipient.kind_of?(Customer)? recipient.email : recipient.to_s
     @from = @@from_addr
     @headers = {}
     @subject = "#{Option.value(:venue)} - "

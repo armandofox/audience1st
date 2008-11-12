@@ -165,15 +165,16 @@ EOEVAL
   def email_confirmation(method,*args)
     flash[:notice] ||= ""
     customer = *args.first
+    addr = customer.email
     if customer.has_valid_email_address?
       begin
         Mailer.send("deliver_"<< method.to_s,*args)
-        flash[:notice] << " An email confirmation was sent to #{customer.login}"
-        logger.info("Confirmation email sent to #{customer.login}")
+        flash[:notice] << " An email confirmation was sent to #{addr}"
+        logger.info("Confirmation email sent to #{addr}")
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "
-        flash[:notice] << "send an email confirmation to #{customer.login}."
-        logger.error("Emailing #{customer.login}: #{e.message}")
+        flash[:notice] << "send an email confirmation to #{addr}."
+        logger.error("Emailing #{addr}: #{e.message}")
       end
     else
       flash[:notice] << " Email confirmation was NOT sent because there isn't"

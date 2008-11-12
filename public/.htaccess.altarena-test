@@ -27,9 +27,9 @@ Options +FollowSymLinks +ExecCGI
 #RewriteRule ^(.*)$ dispatch.fcgi [QSA,L]
 RewriteEngine On
 
-RewriteCond %{DOCUMENT_ROOT}/altarena/system/maintenance.html -f
+RewriteCond %{DOCUMENT_ROOT}/altarena-test/system/maintenance.html -f
 RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-RewriteRule ^.*$ /altarena/system/maintenance.html [L]
+RewriteRule ^.*$ /altarena-test/system/maintenance.html [L]
 
 # If your Rails application is accessed via an Alias directive,
 # then you MUST also set the RewriteBase in this htaccess file.

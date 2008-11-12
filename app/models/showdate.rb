@@ -68,6 +68,11 @@ class Showdate < ActiveRecord::Base
     ValidVoucher.numseats_for_showdate(self.id, cust)
   end
 
+  def no_seats_for(cust = Customer.generic_customer)
+    cust ||= Customer.generic_customer
+    self.seats_left(cust).all? { |av| av.howmany.zero? }
+  end
+
   def compute_total_sales
     return Voucher.count(:conditions => ['showdate_id =  ?', self.id])
   end

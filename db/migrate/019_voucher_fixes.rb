@@ -1,6 +1,6 @@
 require 'rubygems'
 #require_gem 'activesupport'
-Gem::require 'activesupport'
+#Gem::require 'activesupport'
 
 class VoucherFixes < ActiveRecord::Migration
   

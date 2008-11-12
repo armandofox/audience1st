@@ -62,7 +62,7 @@ class Customer < ActiveRecord::Base
   end
   
   @@user_entered_strings =
-    %w[first_name last_name street city state zip day_phone eve_phone login]
+    %w[first_name last_name street city state zip day_phone eve_phone login email]
   
   # strip whitespace before saving
   def before_save
@@ -99,7 +99,7 @@ class Customer < ActiveRecord::Base
   end
 
   def has_valid_email_address?
-    self.login && self.login.valid_email_address?
+    self.email && self.email.valid_email_address?
   end
   
   def is_subscriber?
@@ -170,14 +170,9 @@ class Customer < ActiveRecord::Base
       end
       c0.save!
       [Donation, Voucher, Txn].each do |t|
-        howmany = t.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
+        howmany = t.merge_handler(old,new)
         msg << "#{howmany} #{t}s"
       end
-      # also handle the processed_by field for vouchers & donations & the entered_by
-      # field for Txns, both of which are really a customer id
-      Voucher.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
-      Donation.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
-      Txn.update_all("entered_by_id = '#{new}'", "entered_by_id = '#{old}'")
       c[1].destroy
       status = "Transferred " + msg.join(",") + " to customer id #{new}"
       ok = true
@@ -337,11 +332,8 @@ class Customer < ActiveRecord::Base
     p.symbolize_keys!
     c = nil
     # attempt 0: try exact match on email; first/last name must ALSO match
-    if (!p[:login].blank?) &&
-        (m = Customer.find(:first, :conditions => ['login LIKE ?', p[:login].strip])) &&
-        # email matches - but unless name & address also match, we're screwed.
-        m.first_name.casecmp(p[:first_name]).zero? &&
-        m.last_name.casecmp(p[:last_name]).zero?
+    if (!p[:email].blank?) &&
+        (m = Customer.find(:first, :conditions => ['email LIKE ? AND first_name LIKE ? and last_name LIKE ?', p[:email].strip, p[:first_name], p[:last_name]]))
       return m
     end
     # either email didn't match, or email matched but names didn't.
@@ -350,9 +342,9 @@ class Customer < ActiveRecord::Base
         (matches = Customer.find(:all, :conditions => ['last_name LIKE ? AND first_name LIKE ?', p[:last_name], p[:first_name]])))
       if (matches.to_a.length == 1)  # exactly 1 match - victory
         c = matches.first
-      elsif (!p[:login].blank? &&
-             p[:login].valid_email_address? &&
-             (m = matches.find_all { |cust| cust.login.casecmp(p[:login]).zero? }) &&
+      elsif (!p[:email].blank? &&
+             p[:email].valid_email_address? &&
+             (m = matches.find_all { |cust| cust.email.casecmp(p[:email]).zero? }) &&
              m.length == 1)  # multiple names, but exact hit on email
         c = m.first
       end

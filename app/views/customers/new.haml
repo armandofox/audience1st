@@ -1,37 +1,10 @@
 %h1.page_heading.center= @gCheckoutInProgress ? 'Billing Information' : 'Create Your Account'
 
 #inner_wrapper
-  %p 
-    Questions about this page? Already have an account but forgot your password?
-    = link_to_function 'Click here.', visual_effect(:toggle_slide,'FAQ')
-  %fieldset#FAQ{:style => 'display: none'}
-    %legend FAQs
-    %dl
-      %dt Why do you need my email address?
-      %dd To communicate with you about your order in case there is a problem.
-      %dt Why do you need my name and billing address?
-      %dd 
-        For credit card ticket purchase.  
-        %strong= link_to( "We never share  this information with anyone and we do not store credit card information.",Option.value(:privacy_policy_url))
-        Choosing a password protects access to your account. 
-      %dt I'm a Subscriber, but I couldn't retrieve my password.
-      %dd 
-        All Subscribers already have accounts containing your subscription
-        information and vouchers.  Go to the 
-        = link_to 'Login screen', :controller =>  'customers', :action => 'login'
-        and check the "Forgot Password" box. If you need further help, email
-        = mail_to(Option.value(:help_email),nil,:encode=>"hex", :subject=>"Help with Audience1st account for #{Option.value(:venue)}")
-        with your full name and billing address and we'll be happy to help.
-      %dt Under 18?  
-      %dd
-        Patrons under 18 are required to get the
-        permission of a parent or adult guardian before providing any contact
-        information on this site.
-      %dt Under 13? 
-      %dd
-        Sorry, but in accordance with 
-        = link_to "COPPA", "http://www.ftc.gov/ogc/coppa1.htm"
-        you may not use this site. 
+  %p.strong 
+    Subscribers, please
+    = link_to 'sign in', :controller => 'customers', :action => 'login'
+    to use your existing billing information.
 
   - if @is_admin
     - form_tag :action => 'create' do
@@ -43,7 +16,11 @@
   - else
     - form_tag :action => 'user_create' do
       = render :partial => 'form'
-      = render :partial => 'password'
-      = submit_tag (@gCheckoutInProgress ? 'CONTINUE >>' : 'Create My Account')
-      = gen_button 'Cancel', :action => 'login'
+      - if @gCheckoutInProgress
+        = submit_tag 'CONTINUE >>'
+        = gen_button 'Cancel', :controller => :store, :action => :index
+      - else
+        = render :partial => 'password'
+        = submit_tag 'Create My Account'
+        = gen_button 'Cancel', :controller => :customers, :action => :login
 

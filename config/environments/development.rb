@@ -12,7 +12,7 @@ config.whiny_nils = true
 #config.breakpoint_server = true
 
 # Don't colorize logs - so we can view them in emacs...
-config.active_record.colorize_logging = false
+config.active_record.colorize_logging = true
 
 # Show full error reports and disable caching
 config.action_controller.consider_all_requests_local = true

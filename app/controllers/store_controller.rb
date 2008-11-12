@@ -188,7 +188,11 @@ class StoreController < ApplicationController
     end
     @cart = find_cart
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    redirect_to(:action => 'index', :id => params[:id]) and return if @cart.is_empty?
+    if @cart.is_empty?
+      logger.warn "Cart empty at checkout, redirecting to storefront"
+      redirect_to(:action => 'index', :id => params[:id])
+      return
+    end
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
@@ -197,9 +201,10 @@ class StoreController < ApplicationController
 
   def not_me
     @cust = Customer.new
+    @cart = find_cart
     set_return_to :controller => 'store', :action => 'checkout'
-    flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
-    redirect_to :controller => 'customers', :action => 'login'
+    # flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
+    redirect_to :controller => 'customers', :action => 'new'
   end
 
   def edit_billing_address
@@ -565,7 +570,7 @@ class StoreController < ApplicationController
   end
 
   def do_cc_not_present_transaction(amount, cc, bill_to)
-    email = bill_to[:login].to_s.default_to("invalid@audience1st.com")
+    email = bill_to[:email].to_s.default_to("invalid@audience1st.com")
     phone = bill_to[:day_phone].to_s.default_to("555-555-5555")
     params = {
       :order_id => Option.value(:venue_id).to_i,
@@ -613,10 +618,12 @@ class StoreController < ApplicationController
   end
 
   def get_all_showdates(ignore_cutoff=false)
-    showdates = Showdate.find(:all)
-    unless ignore_cutoff
+    if ignore_cutoff
+      showdates = Showdate.find(:all)
+    else
       now = Time.now
-      showdates.reject! { |sd| sd.end_advance_sales < now || sd.thedate < now }
+      showdates = Showdate.find(:all, :conditions => ['thedate >= ? AND end_advance_sales >= ?' , now, now])
+      showdates.reject! { |sd| sd.no_seats_for(current_customer) }
     end
     showdates.sort_by { |s| s.thedate }
   end

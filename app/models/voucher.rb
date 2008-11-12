@@ -4,6 +4,18 @@ class Voucher < ActiveRecord::Base
   belongs_to :vouchertype
   belongs_to :purchasemethod
 
+  # provide a handler to be called when customers are merged.
+  # Transfers the vouchers from old to new id, and also changes the
+  # values of processed_by field, which is really a customer id.
+  # Returns number of actual voucher records transferred.
+  
+  def self.merge_handler(old,new)
+    Voucher.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
+    Voucher.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
+    logger.warn "Remove obsolete update of purchaser_id in voucher.rb, and add one for cart"
+    Voucher.update_all("purchaser_id = '#{new}'", "purchaser_id = '#{old}'")
+  end
+
   # every time a voucher is saved that belongs to a customer, that customer's
   # is_subscriber? attribute must be recomputed
 

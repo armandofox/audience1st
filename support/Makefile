@@ -80,7 +80,7 @@ rotate_logs:
 	@$(PERL) $(BINDIR)/rotate_logs $(BACKUPDIR) $(QUIET)
 
 kill_zombies:
-	@killall -usr1 dispatch.fcgi $(QUIET)
+        @killall -u audienc -s SIGUSR1 dispatch.fcgi $(QUIET)
 
 receive_goldstar:
 	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'EmailGoldstar.receive(STDIN.read)' $(QUIET)
