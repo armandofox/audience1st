@@ -224,16 +224,18 @@ class CustomersController < ApplicationController
     @customer = current_customer
     if (request.post?)
       pass = params[:customer][:password].to_s.strip rescue nil
-      if pass.blank?
-        flash[:notice] = "You must set a non-empty password."
+      login = params[:customer][:login].to_s.strip rescue nil
+      if ( pass.blank? || login.blank? )
+        flash[:notice] = "Password and login cannot be blank."
         render :action => 'change_password'
         return
       end
       @customer.password = pass
+      @customer.login = login
       if (@customer.save)
-        flash[:notice] = "Password has been changed."
+        flash[:notice] = "New login and password are confirmed."
         email_confirmation(:send_new_password,@customer,
-                           pass, "changed your password on our system")
+                           pass, "changed your login or password on our system")
         Txn.add_audit_record(:txn_type => 'edit',
                              :customer_id => @customer.id,
                              :comments => 'Change password')
@@ -260,11 +262,16 @@ class CustomersController < ApplicationController
     end
     @customer = Customer.new(params[:customer])
     flash[:notice] = ''
-    unless @customer.has_valid_email_address?
-      flash[:notice] = "Please provide a valid email address as your login ID."
+    if @gCheckoutInProgress && @customer.day_phone.blank?
+      flash[:notice] = "Please provide a contact phone number in case we need to contact you about your order."
       render :action => 'new'
       return
     end
+#     unless @customer.has_valid_email_address?
+#       flash[:notice] = "Please provide a valid email address so we can send you an order confirmation."
+#       render :action => 'new'
+#       return
+#     end
     @customer.validation_level = 1
     if @customer.save
       @customer.update_attribute(:last_login, Time.now)
@@ -445,7 +452,6 @@ class CustomersController < ApplicationController
     cust = params[:customer]
     url = "http://zip4.usps.com/zip4/zcl_0_results.jsp?visited=1&pagenumber=0&firmname=&address2=#{cust[:street]}&address1=&city=#{cust[:city]}&state=#{cust[:state]}&urbanization=&zip5=#{cust[:zip]}"
     res = Net::HTTP.get_response(URI.parse(URI.escape(url)))
-    debugger
     if res.code.to_i == 200 && res.body.match(/.*td headers="full"[^>]+>(.*)<br \/>\s+<\/td>\s+<td style=/m )
       street,csz = Regexp.last_match(1).split /<br \/>/
       city,state,zip = (csz.strip.split( /(&nbsp;)+/ )).values_at(0,2,4)

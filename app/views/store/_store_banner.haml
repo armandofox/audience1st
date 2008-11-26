@@ -1,9 +1,0 @@
-- if subscriber && !Option.value(:subscriber_banner).blank?
-  %h2.subscription_msg= link_to_unless(Option.value(:subscriber_banner_link).blank?, Option.value(:subscriber_banner), Option.value(:subscriber_banner_link))
-- elsif !subscriber && !Option.value(:nonsubscriber_banner).blank?
-  %h2.subscription_msg= link_to_unless(Option.value(:nonsubscriber_banner_link).blank?, Option.value(:nonsubscriber_banner))
-- if @gNobodyReallyLoggedIn
-  %p.subscription_msg2
-    %strong Already a subscriber?
-    = link_to "Sign in to your account", :controller => 'customers', :action => 'login'
-    to manage your reservations and get your Subscriber benefits.

@@ -12,8 +12,7 @@ class Voucher < ActiveRecord::Base
   def self.merge_handler(old,new)
     Voucher.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
     Voucher.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
-    logger.warn "Remove obsolete update of purchaser_id in voucher.rb, and add one for cart"
-    Voucher.update_all("purchaser_id = '#{new}'", "purchaser_id = '#{old}'")
+    Voucher.update_all("gift_purchaser_id = '#{new}'", "gift_purchaser_id = '#{old}'")
   end
 
   # every time a voucher is saved that belongs to a customer, that customer's

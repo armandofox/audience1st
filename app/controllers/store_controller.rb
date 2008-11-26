@@ -52,6 +52,7 @@ class StoreController < ApplicationController
       end
     end
     @subscriber = @customer.is_subscriber?
+    @next_season_subscriber = @customer.is_next_season_subscriber?
     @promo_code = session[:promo_code] || nil
     setup_ticket_menus
   end
@@ -61,6 +62,7 @@ class StoreController < ApplicationController
     session[:redirect_to] = :subscribe
     @customer = store_customer
     @subscriber = @customer.is_subscriber?
+    @next_season_subscriber = @customer.is_next_season_subscriber?
     @cart = find_cart
     # this uses the temporary hack of adding bundle sales start/end
     #   to bundle voucher record directly...ugh
@@ -189,7 +191,7 @@ class StoreController < ApplicationController
     @cart = find_cart
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     if @cart.is_empty?
-      logger.warn "Cart empty at checkout, redirecting to storefront"
+      logger.warn "Cart empty, redirecting from checkout back to store"
       redirect_to(:action => 'index', :id => params[:id])
       return
     end
@@ -201,10 +203,9 @@ class StoreController < ApplicationController
 
   def not_me
     @cust = Customer.new
-    @cart = find_cart
     set_return_to :controller => 'store', :action => 'checkout'
-    # flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
-    redirect_to :controller => 'customers', :action => 'new'
+    flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
+    redirect_to :controller => 'customers', :action => 'login'
   end
 
   def edit_billing_address
@@ -215,6 +216,11 @@ class StoreController < ApplicationController
 
   def place_order
     @cart = find_cart
+    if @cart.total_price <= 0
+      flash[:checkout_error] = "Your order appears to be empty. Please select some tickets."
+      redirect_to :action => 'index'
+      return
+    end
     sales_final = params[:sales_final]
     @bill_to = params[:customer]
     cc_info = params[:credit_card].symbolize_keys
@@ -229,6 +235,7 @@ class StoreController < ApplicationController
     # billing address appears to be a well-formed address
     unless (errors = do_prevalidations(params, @cart, @bill_to, cc)).empty?
       flash[:checkout_error] = errors
+      logger.warn "#{@bill_to[:first_name]} #{@bill_to[:last_name]}: Redirecting from place_order: #{errors}"
       redirect_to :action => 'checkout', :sales_final => sales_final
       return
     end
@@ -245,21 +252,28 @@ class StoreController < ApplicationController
     end
     # verify we have a valid recipient
     if session[:recipient_id]
+      # buyer is different from recipient
       unless @recipient = Customer.find_by_id(session[:recipient_id])
         flash[:warning] = 'Gift recipient is invalid'
         logger.error "Gift order, but invalid recipient; id=#{session[:recipient_id]}"
         redirect_to :action => 'index'
         return
       end
+      @cart.gift_from(@customer)
     else
       @recipient = @customer
     end
     # OK, we have a customer record to tie the transaction to
     resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to)
     if !resp.success?
-      flash[:checkout_error] = "Payment gateway error: " << resp.message
-      flash[:checkout_error] << "<br/>Please contact your credit card
-        issuer for assistance."  if resp.message.match(/decline/i)
+      flash[:checkout_error] = "Payment gateway error: " 
+      if resp.message.match( /ECONNRESET/ )
+        flash[:checkout_error] << "Payment gateway not responding. Please wait a few seconds and try again."
+      elsif resp.message.match(/decline/i)
+        flash[:checkout_error] << "<br/>This charge was declined. Please contact your credit card issuer for assistance."
+      else
+        flash[:checkout_error] << resp.message
+      end
       logger.info("DECLINED: Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
       redirect_to :action => 'checkout', :sales_final => sales_final
       return
@@ -537,9 +551,6 @@ class StoreController < ApplicationController
 
   def do_prevalidations(params,cart,billing_info,cc)
     err = []
-    if cart.total_price <= 0
-      err << "Total amount of sale must be greater than zero."
-    end
     if params[:sales_final].to_i.zero?
       err << "Please indicate your acceptance of our Sales Final policy by checking the box."
     end
@@ -602,7 +613,11 @@ class StoreController < ApplicationController
       cc.number = (old_cc_num.match( /^42/ ) ? '1' : '3')
       gw = BogusGateway.new(:login => Option.value(:pgw_id),
                             :password => Option.value(:pgw_txn_key))
-      purch = gw.purchase(amount, cc, params)
+      begin
+        purch = gw.purchase(amount, cc, params)
+      rescue Exception => e
+        purch = ActiveMerchant::Billing::Response.new(success=false, message = e.message)
+      end
       # restore originally-typed cc number
       cc.number = old_cc_num
     end
@@ -614,7 +629,7 @@ class StoreController < ApplicationController
   # helpers from the views directly.
 
   def get_all_shows(showdates)
-    return showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
+    showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
   end
 
   def get_all_showdates(ignore_cutoff=false)
@@ -635,6 +650,7 @@ class StoreController < ApplicationController
   def process_ticket_request
     flash[:warning] = "Invalid show date selected" and return unless (showdate = Showdate.find_by_id(params[:showdate]))
     msgs = []
+    comments = params[:comments]
     params[:vouchertype].each_pair do |vtype, qty|
       qty = qty.to_i
       unless qty.zero?
@@ -644,9 +660,12 @@ class StoreController < ApplicationController
         elsif av.howmany < qty
           msgs << "Only #{qty} '#{vtype.name}' tickets available for this performance."
         else
-          qty.times { @cart.add(Voucher.anonymous_voucher_for(showdate,vtype)) }
+          @cart.comments ||= comments
+          qty.times  do
+            @cart.add(Voucher.anonymous_voucher_for(showdate,vtype,nil,comments))
+            comments = nil      # HACK - only add to first voucher
+          end
         end
-        @cart.comments = params[:comments]
       end
     end
     flash[:warning] = msgs.join("<br/>") unless msgs.empty?

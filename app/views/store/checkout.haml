@@ -5,7 +5,10 @@
 
 - form_tag :action => 'place_order' do
   %h2 Please Review Billing Information
-  = gen_button "Change Billing Information", :action => 'not_me'
+  %p
+    %strong= gen_button "This Isn't Me", :action => 'not_me'
+    | 
+    %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true }
   %br/
   %br/
@@ -19,7 +22,7 @@
   = render :partial => 'credit_card'
   
   %label{:for => 'sales_final'} TERMS OF SALE:
-  = check_box_tag 'sales_final',1,@sales_final_acknowledged
+  = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
   %strong 
     I understand and agree that
     = link_to_unless Option.value(:terms_of_sale).blank?, |
@@ -28,9 +31,7 @@
   %br
   %br
   
-  = submit_tag APP_CONFIG[:cc_purch], {:id => 'commit',:class=>'indented submit', |
-      :onclick => "this.disabled=true;this.value='Processing, Please Wait'; Element.hide('cancel'); this.form.submit();" } |
-
+  = submit_tag APP_CONFIG[:cc_purch], :disable_with => "Processing, Please Wait..."
   = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton' } 
 = observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
 = observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'

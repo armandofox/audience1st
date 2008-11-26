@@ -1,4 +1,18 @@
-= render :partial => 'store_banner', :locals => {:subscriber => @subscriber}
+- if @next_season_subscriber
+  #storeBannerNextSeasonSubscriber.storeBannerNextSeasonSubscriber
+    = sanitize_option_text :single_ticket_sales_banner_for_next_season_subscribers
+- elsif @subscriber
+  #storeBannerSubscriber.storeBannerSubscriber
+    = sanitize_option_text :single_ticket_sales_banner_for_current_subscribers
+- else
+  #storeBannerNonSubscriber.storeBannerNonSubscriber
+    = sanitize_option_text :single_ticket_sales_banner_for_nonsubscribers
+
+- if @gNobodyReallyLoggedIn
+  %p.subscription_msg2
+    %strong Already a subscriber?
+    = link_to "Sign in to your account", :controller => 'customers', :action => 'login'
+    to manage your reservations and get your Subscriber benefits.
 
 #store
   
@@ -9,7 +23,7 @@
     Select Tickets
     %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
-  %p.storeText= sanitize_option_text(@subscriber ? :subscriber_store_message : :nonsubscriber_store_message)
+  %p.storeText= sanitize_option_text(@next_season_subscriber ? :next_season_subscriber_store_message : @subscriber ? :subscriber_store_message : :nonsubscriber_store_message)
   %p.storeText= sanitize_option_text(:store_message)
   %p.storeText= sanitize_option_text(:single_ticket_purchase_message)
   

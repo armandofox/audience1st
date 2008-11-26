@@ -1,13 +1,24 @@
 / = error_messages_for 'store'
 
+- if @next_season_subscriber
+  #subscriptionBannerNextSeasonSubscriber.subscriptionBannerNextSeasonSubscriber
+    = sanitize_option_text :subscription_sales_banner_for_next_season_subscribers
+- elsif @subscriber
+  #subscriptionBannerSubscriber.subscriptionBannerSubscriber
+    = sanitize_option_text :subscription_sales_banner_for_current_subscribers
+- else
+  #subscriptionBannerNonSubscriber.subscriptionBannerNonSubscriber
+    = sanitize_option_text :subscription_sales_banner_for_nonsubscribers
+
+- if @gNobodyReallyLoggedIn
+  %p.subscription_msg2
+    %strong Already a subscriber?
+    = link_to "Sign in to your account", :controller => 'customers', :action => 'login'
+    to manage your reservations and get your Subscriber benefits.
+
 #store
   #subscriptionsMenus
-    %h1.page_heading.center Subscriber Benefits
-    %p.storeText= sanitize_option_text :subscription_benefits_short_description
-    %p.storeText= sanitize_option_text :subscription_purchase_method
-    - unless @subscriber
-      %p.storeText= sanitize_option_text :nonsubscriber_subscription_teaser
-      
+    %h1.page_heading.center Buy Subscriptions
     - form_tag :action => 'shipping_address' do
       = javascript_recalc_function :total, @subs_to_offer.map {|s| s.id}, :price, :vouchertype, :donation, :submit
       - @subs_to_offer.each do |s|

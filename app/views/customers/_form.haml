@@ -48,7 +48,7 @@
     =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
     %br/
 
-    %label.strong{:for=>:customer_email} Email
+    %label{:for=>:customer_email,:class => (:strong unless @gCheckoutInProgress)} Email
     =text_field 'customer', 'email', {:size => 20, :max_length => 40, :readonly => disabled }
 
   - unless defined?(hide_opt_out)

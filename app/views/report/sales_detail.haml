@@ -15,7 +15,7 @@
     - @daily_sales.keys.sort.each do |k|
       - v = @daily_sales[k].first
       %tr{:class=>cycle(:oddRow,:evenRow)}
-        %td= v.updated_on.strftime("%d %b %l:%M %p")
+        %td= v.sold_on.strftime("%d %b %l:%M %p")
         %td= v.customer.full_name
         %td= v.showdate.printable_name if v.showdate.kind_of?(Showdate)
         %td= v.vouchertype.name

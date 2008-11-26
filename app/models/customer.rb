@@ -110,6 +110,15 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  def is_next_season_subscriber?
+    self.role >= 0 &&
+      self.vouchers.detect do |f|
+      f.vouchertype && f.vouchertype.is_subscription? &&
+        f.vouchertype.name.match(/^2009/ )
+    end
+  end
+      
+
   def referred_by_name(maxlen=1000)
     if (c = Customer.find_by_id(self.referred_by_id.to_i))
       c.full_name[0..maxlen-1]
@@ -224,6 +233,8 @@ class Customer < ActiveRecord::Base
   end    
 
   def password=(pass)
+    # BUG BUG BUG
+    return if pass.nil?
     @password=pass.to_s.strip
     self.salt = String.random_string(10)
     self.hashed_password = Customer.encrypt(@password, self.salt)

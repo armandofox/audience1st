@@ -86,6 +86,9 @@ input[type="submit"] {
   color: red;
  }
 
+.highlighted { 
+  background-color: #9f9;
+}
 .staff { 
   background-color: yellow;
 }

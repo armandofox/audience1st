@@ -52,6 +52,11 @@ all: nightly
 nightly: clean_sessions notify_pending_followups kill_zombies backup_db
 monthly: rotate_logs
 
+dev:
+	-mv ../config/database.yml.dev ../config/database.yml
+	mkdir ../log
+	touch ../log/development.log
+
 backup_svn: 
 	@tar -zcf $(BACKUPDIR)/svn-$(TODAY).tgz $(SVNROOT)
 	@$(S3CMD) put a1_svn:svn-$(TODAY).tgz $(BACKUPDIR)/svn-$(TODAY).tgz

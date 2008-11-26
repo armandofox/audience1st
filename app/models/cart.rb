@@ -21,6 +21,21 @@ class Cart
     self.items.empty?
   end
 
+  def vouchers_only
+    self.items.select { |i| i.kind_of?(Voucher) }
+  end
+
+  def donations_only
+    self.items.select { |i| i.kind_of?(Donation) }
+  end
+
+  def gift_from(buyer)
+    # mark all Vouchers (but not Donations or other stuff in cart) as a gift
+    # for the given customer.
+    raise "Invalid gift recipient record" unless buyer.kind_of?(Customer)
+    self.vouchers_only.map { |v|  v.gift_purchaser_id = buyer.id }
+  end
+  
   def to_s
     notes = {}
     txt = self.items.map do |i|

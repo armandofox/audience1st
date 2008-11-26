@@ -126,7 +126,7 @@ EOEVAL
   # current_customer is only called from controller actions filtered by
   # is_logged_in, so the find should never fail.
   def current_customer
-    Customer.find_by_id(session[:cid].to_i, :include => :vouchers)
+    Customer.find_by_id(session[:cid].to_i)
   end
 
   # current_admin is called from controller actions filtered by is_logged_in,
@@ -135,7 +135,7 @@ EOEVAL
   # otherwise returns a 'generic' customer with no admin privileges but on
   # which it is safe to call instance methods of Customer.
   def current_admin
-    Customer.find_by_id(session[:admin_id]) || Customer.generic_customer
+    session[:admin_id].to_i.zero? ? Customer.generic_customer : (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
   end
 
   def set_return_to(hsh=nil)

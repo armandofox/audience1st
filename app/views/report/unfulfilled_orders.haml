@@ -20,11 +20,18 @@
       %th Completed
 
     - @vouchers.each do |v|
-      %tr
+      - gift = v.gift_purchaser_id.to_i
+      - cust =  (gift.zero? ? v.customer : Customer.find(gift))
+      %tr{:class => (gift.zero? ? nil : 'highlighted')}
         - [:first_name,:last_name,:street,:city,:state,:zip].each do |c|
-          %td= h v.customer.send(c)
+          %td= h cust.send(c)
         %td= h v.vouchertype.name 
         %td= check_box 'voucher', v.id, :class=>'check'
-
+      - unless gift.zero?
+        %tr.highlighted
+          %td{:colspan=>8}
+            Gift for 
+            = h(v.customer.full_name)
+          
   = submit_tag 'Mark Checked Orders as Fulfilled'
 
