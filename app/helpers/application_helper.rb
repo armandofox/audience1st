@@ -17,10 +17,12 @@ module ApplicationHelper
   # if an option has some HTML text associated with it, sanitize the text;
   #  otherwise return the alternate text
 
-  def sanitize_option_text(opt, alt='')
+  def sanitize_option_text(opt, alt='', args={:spanify => true, :alt => ''})
     ((s = Option.value(opt)).blank? ?
-     alt :
-     content_tag(:span, sanitize(s), :id => opt, :class => opt))
+     sanitize(args[:alt]) :
+     ( args[:spanify] ?
+       content_tag(:span, sanitize(s), :id => opt, :class => opt) :
+       sanitize(s)))
   end
 
   def link_to_if_option(opt, text, alt='', opts={})
@@ -29,7 +31,7 @@ module ApplicationHelper
      content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
-  
+
   # return a checkbox that "protects" another form element by hiding/showing it
   # when checked/unchecked, given initial state.  It's the caller's responsibility
   # to ensure the initial state matches the actual display state of the
@@ -58,7 +60,7 @@ module ApplicationHelper
   def spinner(id='wait')
     image_tag('wait16trans.gif', :id => id, :class => 'spinner16')
   end
-  
+
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
     # default select args
     default_select_opts = {
@@ -70,7 +72,7 @@ module ApplicationHelper
     select_opts = (opts[:select_opts] || {}).merge(default_select_opts)
     complete_func = "function complete_#{field_id}(v) {\n"
     opts[:also_update].each_pair do |field,attr|
-      if attr.kind_of?(Symbol) 
+      if attr.kind_of?(Symbol)
         complete_func << "  $('#{field}').value = Ajax.Autocompleter.extract_value(v,'#{attr}');\n"
       elsif attr.kind_of?(Hash)
         attr.each_pair do |elt_attr, elt_val|
@@ -96,7 +98,7 @@ module ApplicationHelper
     request.user_agent.to_s.match( /MSIE ([0-9]{1,}[\.0-9]{0,})/ ) &&
       request.protocol == 'https://' ? url.gsub( /^http:/, 'https:' ) : url
   end
-  
+
   def to_js_array(arr)
       '[' + arr.map { |a| a.kind_of?(Fixnum) ? "#{a}" : "'#{a}'" }.join(',') + ']'
   end
@@ -120,7 +122,7 @@ module ApplicationHelper
   def option_separator(name,value='')
     "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
   end
-                       
+
   def nav_tabs(klass,ary)
     ary.map do |a|
       a[0].insert(0,"<br/>") unless a[0].gsub!( /~/, "<br/>")
@@ -151,12 +153,12 @@ module ApplicationHelper
   def pagination_bar(thispage, f, count, htmlopts={})
     s = ""
     curval = eval("@"+ f.to_s)  # value of the filter isntance variable
-    s += link_to('<< Previous page', { :page => thispage.previous, f => curval}, htmlopts) if thispage.previous 
+    s += link_to('<< Previous page', { :page => thispage.previous, f => curval}, htmlopts) if thispage.previous
     s += sprintf(" %d - %d of %d ", thispage.first_item, thispage.last_item, count)
     s += link_to('Next page >>', { :page => thispage.next, f => curval}, htmlopts) if thispage.next
     s
   end
-  
+
   def search_panel(controller, action_name='list', opts={}, html_opts={})
     form_tag_opts = {:method => :get}
     form_tag_opts.merge!(:target => '_blank') if opts[:newpage]
@@ -181,19 +183,19 @@ module ApplicationHelper
     empty_val = (args[:empty_value] || -1).to_s
     empty_text = args[:empty_text] || "No #{name.pluralize} available"
     js = ''
-    js << "var #{name}_value = new Array(#{array_of_parents.size});\n" 
-    js << "var #{name}_text = new Array(#{array_of_parents.size});\n" 
+    js << "var #{name}_value = new Array(#{array_of_parents.size});\n"
+    js << "var #{name}_text = new Array(#{array_of_parents.size});\n"
     array_of_parents.map do |p|
       ndx = p.first.send(key_method)
       js << "#{name}_value['#{ndx}'] = "
       if p.last.empty?
-        js << "[#{js_quote_nonnumeric(empty_val)}];\n" 
+        js << "[#{js_quote_nonnumeric(empty_val)}];\n"
       else
         js << "[" << p.last.map { |c| js_quote_nonnumeric(c.send(vals_method)) }.join(',') << "];\n"
       end
       js << "#{name}_text['#{ndx}'] = "
       if p.last.empty?
-        js << "[#{js_quote_nonnumeric(empty_val)}];\n" 
+        js << "[#{js_quote_nonnumeric(empty_val)}];\n"
       else
         js << "[" << p.last.map { |c| js_quote_nonnumeric(c.send(text_method)) }.join(',') << "];\n"
       end
@@ -206,7 +208,7 @@ module ApplicationHelper
   def array_of_arrays(array_name, array_of_parents, key_method, vals_method,
                       empty_val)
     js = ''
-    js << "var #{array_name} = new Array(#{array_of_parents.size});\n" 
+    js << "var #{array_name} = new Array(#{array_of_parents.size});\n"
     array_of_parents.map do |p|
       js << "#{array_name}['#{p.first.send(key_method)}'] = "
       if p.last.empty?
@@ -267,7 +269,7 @@ module ApplicationHelper
       chi = chi.first
     end
     unless selected_child
-      selected_child = par.last.first.send(child_id_method) 
+      selected_child = par.last.first.send(child_id_method)
     end
     js = "<script language='javascript'> <!--\n" <<
       array_of_arrays("#{child_name}_value", array_of_parents, parent_id_method, child_id_method, no_child_avail_value) <<
@@ -298,9 +300,9 @@ module ApplicationHelper
   end
 
   def name_with_quantity(str,qty)
-    qty.to_i == 1  ?  "1 #{str}" : "#{qty} #{str.pluralize}" 
+    qty.to_i == 1  ?  "1 #{str}" : "#{qty} #{str.pluralize}"
   end
-      
+
   def select_menu_or_freeform(name, choices)
     lastidx = choices.length
     # should allow freeform entry as well as a menu of choices
@@ -314,7 +316,7 @@ module ApplicationHelper
 
   # generate two datetime_selects where the second is dynamically
   # dependent on the first (when first is changed, second clones the
-  # change) 
+  # change)
 
   def parent_datetime_select(obj,meth,child,options)
     options = options.merge({:discard_type => true})
@@ -339,7 +341,7 @@ module ApplicationHelper
     #ds = select_datetime(options[:date], options.delete(:date))
     i = 0
     ds.gsub(/<select /) do |m|
-      i =i +1 
+      i =i +1
       "<select id='#{meth}_#{i}' "
       #"<select id='#{meth}_#{i}' name=\"#{obj}[#{meth}_#{i}i]\">"
     end
@@ -374,7 +376,7 @@ module ApplicationHelper
                  ["Custom",t,t ]]
     onsel = <<EOS1
       function setShortcut_#{from_prefix}(v) {
-        switch(v) {        
+        switch(v) {
 EOS1
     shortcuts.each_with_index do |e,indx|
       s,f,t = e

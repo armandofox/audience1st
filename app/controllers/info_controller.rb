@@ -3,7 +3,8 @@ class InfoController < ApplicationController
   # RSS feed of ticket availability info: renders an XML view for external use
   def ticket_rss
     now = Time.now
-    end_date = now.next_year.at_beginning_of_year
+    # end_date = now.next_year.at_beginning_of_year
+    end_date = now + 3.months
     showdates =
       Showdate.find(:all,
                     :conditions => ["thedate BETWEEN ? AND ?", now, end_date],
