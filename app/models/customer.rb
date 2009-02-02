@@ -401,7 +401,7 @@ class Customer < ActiveRecord::Base
                          " FROM customers c JOIN vouchers v ON v.customer_id=c.id " <<
                          " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
                          " WHERE vt.is_subscription=1 AND " <<
-                         "vt.valid_date <= NOW() AND vt.expiration_date >= NOW() " <<
+                         "vt.valid_date <= #{Time.db_now} AND vt.expiration_date >= #{Time.db_now} " <<
                          " ORDER BY #{order_by}")
   end
   

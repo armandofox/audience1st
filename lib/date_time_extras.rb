@@ -9,6 +9,12 @@ ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
 })
 
 class Time
+  # Needed since DB may not be in same timezone, so its notion of NOW() may
+  # not be correct
+  def self.db_now
+    "\"#{Time.now.to_formatted_s(:db)}\""
+  end
+
   def speak(args={})
     res = []
     unless args[:omit_date]

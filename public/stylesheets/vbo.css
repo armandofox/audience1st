@@ -1,25 +1,25 @@
-body.testing { 
+body.testing {
   /* background: url('/images/testing.png') repeat-x top left;
-  z-index: 100;               
+  z-index: 100;
      */
   border: 4px solid red;
   margin: 4px;
 }
 
 
-table { 
+table {
   border: 0;
 }
-td,th { 
+td,th {
   padding: 1px 2px;
 }
-th { 
+th {
   text-align: center;
   background: #333;
   color: #fff;
 }
 
-input[type="submit"] { 
+input[type="submit"] {
   display: inline;
 }
 
@@ -27,33 +27,33 @@ input[type="submit"] {
   clear: both;
 }
 
-.strong { 
+.strong {
   font-weight: bold;
   color: red;
 }
-.callout { 
+.callout {
   color: red;
 }
-.hilite { 
+.hilite {
   background: #feffb7;
 }
-.browsable:hover { 
+.browsable:hover {
   background: #feffb7;
 }
-.maincolumn { 
+.maincolumn {
   border: none;
-  background: none;              
+  background: none;
   font-size: large;
   font-weight: bold;
   color: red;
 }
 
-.welcomeBanner { 
+.welcomeBanner {
   font-size: 125%;
   font-weight: bold;
 }
 
-.bannerHead { 
+.bannerHead {
   background-color: #883333;
   color: white;
   padding: 8px;
@@ -61,38 +61,38 @@ input[type="submit"] {
   border: 2px solid #d3bf8e;
   text-align: center;
  }
- .bannerHead a { 
-  color: white; 
+ .bannerHead a {
+  color: white;
   text-decoration: none;
- } 
+ }
 
-.subHead { 
+.subHead {
   color: blue;
   font-weight: bold;
 }
 
-.callout { 
+.callout {
   vertical-align: top;
   background-color: #883333;
   color: white;
 }
-.hidden { 
-  display: none;          
+.hidden {
+  display: none;
  }
-.validatedAddress { 
+.validatedAddress {
   background-color: #1f1;
  }
-.validationError { 
+.validationError {
   color: red;
  }
 
-.highlighted { 
+.highlighted {
   background-color: #9f9;
 }
-.staff { 
+.staff {
   background-color: yellow;
 }
-.subscriber { 
+.subscriber {
   background-color: #9f9;
 }
 
@@ -106,7 +106,7 @@ a { color: blue; text-decoration: none; }
 a:hover { color: #fff; background-color:#000; }
 a.subHead { color: blue; text-decoration: none; }
 
-#yourTickets .showName { 
+#yourTickets .showName {
   font-weight: bold;
  }
 */
@@ -117,7 +117,7 @@ a.subHead { color: blue; text-decoration: none; }
   display: table;
 }
 
-.infoMsg { 
+.infoMsg {
   color: red;
   margin: 5px 5px;
   padding: 5px 5px;
@@ -125,18 +125,18 @@ a.subHead { color: blue; text-decoration: none; }
   border: 2px solid red;
  }
 
-submit { 
+submit {
   background-color: #eeeeee;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   padding: 3px;
  }
 
-submit:hover { 
+submit:hover {
   background-color: black;
   color: white;
 }
 
-#ccWaiting { 
+#ccWaiting {
   background-color: white;
   color: red;
   line-height: 1.5em;
@@ -145,11 +145,11 @@ submit:hover {
   border: 1px solid red;
   padding: 2px;
 }
-#ccWaiting a a:hover { 
+#ccWaiting a a:hover {
   color: red;
  }
 
-.invisible { 
+.invisible {
   position: absolute;
   left: 0;
   top: 0;
@@ -159,40 +159,40 @@ submit:hover {
   border: none;
 }
 
-.admin { 
+.admin {
    background-color: yellow;
    color: black;
 }
-.adminField { 
+.adminField {
    clear: both;
    padding: 2px 10px;
-   background-color: yellow;            
+   background-color: yellow;
    color: black;
    line-height: 1.5em;
 }
-.adminButton { 
+.adminButton {
    color: black;
    background-color: whitesmoke;
    border:  1px solid black;
    margin: 1px;
-   padding: 2px;               
+   padding: 2px;
    line-height: 1.5em;
 }
 
 .adminButton:hover {
    background-color: yellow;
-   color: maroon;	
+   color: maroon;
    border:  1px solid maroon;
    text-decoration: none;
 }
 
-.ccAlert { 
+.ccAlert {
    color: red;
    border: 1px solid red;
    padding: 0px 1px;
    margin: 5px 5px;
  }
-.help { 
+.help {
    background-color: #eee;
    color: black;
    text-align: center;
@@ -201,10 +201,10 @@ submit:hover {
 
 .oddRow { background-color: #ffffff; }
 .evenRow { background-color: #e7e7e7; }
-.totalsRow { 
+.totalsRow {
   font-weight: bold;
   background-color: #ccc;
-  font-size: larger;             
+  font-size: larger;
  }
 .r {  text-align: right; }
 .c { text-align: center; }
@@ -242,15 +242,15 @@ submit:hover {
   list-style: square;
 }
 
-.explain { 
+.explain {
   border: 1px solid #8d3127;
   background: white;
   padding: 2px 2px;
   margin: 2px 2px;
-  vertical-align: top;           
+  vertical-align: top;
  }
 
-.wideCell { 
+.wideCell {
   width: 50%;
   border: 1px solid gray;
   vertical-align: top;
@@ -258,19 +258,19 @@ submit:hover {
   margin: 2px 2px;
  }
 
-#loginDiv { 
+#loginDiv {
   float: left;
  }
 
-div dt { 
+div dt {
   font-weight: bold;
   margin: 2px;
  }
 
-/* show 'spinner' in a DIV that is the right size for the image, so 
+/* show 'spinner' in a DIV that is the right size for the image, so
    layout isn't affected when it is shown/hidden */
 
-.spinner16 { 
+.spinner16 {
   height: 18px;
   width: 18px;
   padding: 1px;
@@ -298,66 +298,66 @@ div.progressBar div.background {
   width: 0%;
 }
 
-.loginTable { 
+.loginTable {
   border: 1px solid gray;
  }
 
-.loginTableCell { 
+.loginTableCell {
   border: 1px solid gray;
   vertical-align: top
 }
 
-.customerName { 
+.customerName {
   display: block;
  }
 
-#customerVoucherList td { 
+#customerVoucherList td {
   text-align: center;
 }
 
 /* Sales reports */
 
-div.show .showSalesDate { 
+div.show .showSalesDate {
   width: 15em;
 }
-div.show .showSalesVoucherType { 
+div.show .showSalesVoucherType {
   padding-left: 1em;
   width: 20em;
 }
-div.show .showSalesDateQty { 
+div.show .showSalesDateQty {
   width: 5em;
   text-align: right;
   font-weight: bold;
 }
-div.show .showSalesDatePercent, div.show .showSalesPercent { 
+div.show .showSalesDatePercent, div.show .showSalesPercent {
   width: 5em;
   text-align: center;
-}                               
-div.show .showSalesDateRevenue { 
+}
+div.show .showSalesDateRevenue {
   width: 10em;
   font-weight: bold;
 }
-div.show .showSalesRevenue { 
+div.show .showSalesRevenue {
   width: 10em;
 }
 
 /* Options */
 
-table#options_table td.option_name { 
+table#options_table td.option_name {
   width: 20em;
   vertical-align: top;
-  text-align: left; 
+  text-align: left;
 }
-table#options_table td.option_value { 
+table#options_table td.option_value {
   text-align: left;
 }
 
-#pageDiv .showDateSummary { 
+#pageDiv .showDateSummary {
   margin: 2px;
   background: white;
 }
 
-#pageDiv .showDate { 
+#pageDiv .showDate {
   float: left;
   font-size: larger;
   background-color: #666;
@@ -365,59 +365,66 @@ table#options_table td.option_value {
   display: block;
  }
 
-#pageDiv .showDateNav { 
+#pageDiv .showDateNav {
   text-align: right;
   background-color: white;
   color: black;
   font-weight: bold;
  }
 
-#pageDiv table.summarySales { 
+#pageDiv table.summarySales {
   width: 80%;
   min-width: 400px;
   max-width: 800px;
  }
 
-#pageDiv td.salesCategory { 
+#pageDiv td.salesCategory {
   width: 85%;
  }
-#pageDiv td.salesQty { 
+#pageDiv td.salesQty {
   width: 15%;
  }
 
-.wideTable { 
+.wideTable {
   padding: 0;
   margin: 0;
   width: 100%;
  }
 
-table.wideTable > td { 
+table.wideTable > td {
   padding: 0;
   margin: 0;
   vertical-align: top;
  }
 
-.top { 
+.top {
   vertical-align: top;
 }
 
 /* Tabular report format */
 
-table.report { 
+table.report {
 }
 
-.subtitle { 
+.subtitle {
   background-color: #eee;
-  font-size: larger;                        
+  font-size: larger;
   height: 1.5em;
   padding: 4px;
-  margin: 1em 0 0 0;              
+  margin: 1em 0 0 0;
   font-weight: bold;
+}
+
+/* Report-generation page */
+
+.reportParams {
+  border: 1px solid #eee;
+  margin-left: 20px;
 }
 
 /* Advanced customer report  (SQL builder) page */
 
-#sqlQuery { 
+#sqlQuery {
   border: 1px solid red;
   padding: 4px;
   margin: 4px 0 2px 0;

@@ -7,7 +7,7 @@ class Vouchertype < ActiveRecord::Base
   validates_length_of :name, :within => 3..40, :message => "Voucher type name must be between 3 and 40 characters"
   validates_numericality_of :price
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
-  
+
   # Functions that determine visibility of a voucher type to particular
   # customers
 
@@ -23,7 +23,7 @@ class Vouchertype < ActiveRecord::Base
   def visibility
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
   end
-  
+
   def self.find_products(args={})
     restrict = []
     arglist = []
@@ -42,13 +42,17 @@ class Vouchertype < ActiveRecord::Base
       arglist << created_on
     end
     case args[:type]
+    when :bundled_voucher
+      restrict << "is_bundle = 0 AND is_subscription = 0"
+      restrict << "#{Time.db.now} BETWEEN valid_date AND expiration_date" unless
+        (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :subscription
       restrict << "is_bundle = 1 AND is_subscription = 1"
-      restrict << "NOW() BETWEEN bundle_sales_start AND bundle_sales_end" unless
+      restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :bundle
       restrict << "is_bundle = 1"
-      restrict << "NOW() BETWEEN bundle_sales_start AND bundle_sales_end" unless
+      restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     end
     if args.has_key?(:walkup)
@@ -62,7 +66,7 @@ class Vouchertype < ActiveRecord::Base
     arglist.unshift(restrict.join(" AND "))
     Vouchertype.find(:all, :conditions => arglist)
   end
-        
+
   def valid_as_of?(date)
     d = date.to_time
     d >= valid_date && d <= expiration_date
@@ -89,7 +93,7 @@ class Vouchertype < ActiveRecord::Base
   end
 
   # Override content_columns to not display included vouchers (since
-  # requires special code)  
+  # requires special code)
 
   def self.content_columns
     c = super

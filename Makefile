@@ -1,5 +1,5 @@
 
-FILES = $(shell find . -name '*.rb' -print -or -name '*.rhtml' -print -or -name '*.haml' -print -or -name '*.yml' -print)
+FILES = $(shell find app config db lib public support  . -name '*.rb' -print -or -name '*.rhtml' -print -or -name '*.haml' -print -or -name '*.yml' -print)
 PLUGINS = $(shell find vendor/plugins -name '*.rb' -print -or -name '*.yml' -print)
 
 all:

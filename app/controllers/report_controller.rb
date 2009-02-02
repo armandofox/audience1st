@@ -2,10 +2,8 @@ class ReportController < ApplicationController
 
   include Enumerable
   require 'set'
-  
+
   before_filter :is_staff_filter
-  before_filter(:is_boxoffice_manager_filter,
-                :only => %w[customer_list])
 
   def index
     # all showdates
@@ -16,6 +14,9 @@ class ReportController < ApplicationController
     @all_shows = Show.find_all
     # quick subscription stats
     @subscriptions = subscription_vouchers(Time.now.year)
+    # list of all special reports
+    @special_report_names =
+      Dir.entries("#{RAILS_ROOT}/app/models/reports/").select { |x| x.gsub!(/\.rb$/,'') }
   end
 
   verify(:method => :post, :only => %w[noshow_subscriber mark_fulfilled],
@@ -37,50 +38,11 @@ class ReportController < ApplicationController
     end
   end
 
-  def foo
-    # @results = Customer.find_by_sql(sql.sql_for_find)
-#     # postprocessing - stuff that can't easily be done in the join
-#     # subscribers, nonsubscribers, or all?
-#     if params[:subscribers] =~ /^non/i
-#       @results.reject { |c| c.is_subscriber? }
-#     elsif params[:subscribers] =~ /^subscriber/i
-#       @results.select { |c| c.is_subscriber? }
-#     end
-#     # seen all, any, none of these shows?
-#     if params[:restrict_by_show]
-#       selected_shows = params[:shows].map { |s| Show.find(s) }
-#       case params[:restrict_by_show_how]
-#       when /all/i
-#         @results.reject! { |c| !(c.shows.to_set.subset?(selected_shows.to_set)) }
-#       when /none/i
-#         @results.reject! { |c| selected_shows.any? { |s| c.shows.include?(s) }}
-#       when /any/i
-#         @results.reject! { |c| !(selected_shows.any? { |s| c.shows.include?(s) })}
-#       end
-#     end
-    @params = params
-  end
-
-  def customer_list
-    order_by = (params[:sort_by_zip] ? 'zip, last_name' : 'last_name, zip')
-    if params[:subscribers_only]
-      @c = Customer.find_all_subscribers(order_by)
-    else
-      @c = Customer.find(:all, :order => order_by)
-    end
-    @total = @c.length
-    # remove invalid addresses
-    @c.delete_if { |cst| cst.invalid_mailing_address? } if params[:filter_invalid_addresses]
-    remove_dup_addresses(@c) if params[:remove_dups]
-    @selected = @c.length
-    export_customers_to_excel(@c)
-  end
-
   def advance_sales
     case params[:showdate_id]
     when /^(\d+)$/
       @shows = [Show.find_by_id($1)]
-    when /future/i 
+    when /future/i
       @shows = Show.find(:all,
                          :conditions => ['closing_date >= ?', Date.today],
                          :order => 'opening_date')
@@ -191,6 +153,29 @@ EOQ1
     end
   end
 
+  def show_special_report
+    n = params[:report_name]
+    unless n.blank?
+      # setup any parameters needed to render the report's partial
+      report_subclass = n.camelize.constantize
+      @report = report_subclass.__send__(:new)
+      @args = @report.view_params
+      render :partial => "report/special/#{n}"
+    end
+  end
+
+  def run_special_report
+    n = params[:_report]
+    @report = n.constantize.__send__(:new)
+    @report.generate(params)
+    if @report.errors.blank?
+      @report.create_csv
+      download_to_excel(@report.output, @report.filename, false)
+    else
+      render :text => "Error generating report: #{@report.errors}"
+    end
+  end
+
   def unfulfilled_orders
     @vouchers = Voucher.find(:all, :conditions => 'fulfillment_needed = 1')
     if @vouchers.empty?
@@ -201,7 +186,7 @@ EOQ1
 
   def unfulfilled_orders_addresses
     sql = <<-EOQ
-     SELECT DISTINCT c.first_name,c.last_name,c.street,c.city,c.state,c.zip 
+     SELECT DISTINCT c.first_name,c.last_name,c.street,c.city,c.state,c.zip
      FROM customers c,vouchers v
      WHERE c.id=v.customer_id AND v.fulfillment_needed=1
 EOQ
@@ -213,7 +198,7 @@ EOQ
     end
     export_customers_to_excel(@customers)
   end
-    
+
   def mark_fulfilled
     i = 0
     flash[:notice] = ''
@@ -306,7 +291,7 @@ EOQ2
     render :action => :invoice
   end
 
-  
+
   private
 
   def subscription_vouchers(year)
@@ -316,7 +301,7 @@ EOQ2
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
   end
 
-  def export_customers_to_excel(custs)      
+  def export_customers_to_excel(custs)
     filenm = custs.first.class.to_s.downcase
     CSV::Writer.generate(output='') do |csv|
       custs.each do |c|
@@ -325,20 +310,6 @@ EOQ2
                 c.street,c.city,c.state,c.zip]
       end
       download_to_excel(output,filenm)
-    end
-  end
-  
-  def remove_dup_addresses(arr)
-    # remove duplicate addresses - based on case-insensitive match of street, whitespace squeezed
-    # TBD this should be done with Array.uniq
-    hshtemp = Hash.new
-    arr.each_index do |i|
-      canonical = arr[i].street.downcase.tr_s(' ', ' ')
-      if hshtemp.has_key?(canonical)
-        arr.delete_at(i)
-      else
-        hshtemp[canonical] = true
-      end
     end
   end
 

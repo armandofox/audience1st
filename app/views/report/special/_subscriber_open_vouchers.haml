@@ -1,0 +1,7 @@
+- form_tag :action => 'run_special_report' do
+  %fieldset
+    %legend= @args[:name]
+    %p List customers who have open (unreserved) vouchers for ANY of these:
+    = select_tag 'vouchertypes[]', options_from_collection_for_select(@args[:vouchertypes], :id, :name), :multiple => true
+    = hidden_field_tag '_report', 'SubscriberOpenVouchers'
+    = submit_tag "Download to Excel"

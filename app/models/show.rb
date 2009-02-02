@@ -1,12 +1,18 @@
 class Show < ActiveRecord::Base
   has_many :showdates, :dependent => :destroy
-  has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= NOW()'
+  # NOTE: We can't do the trick below because the database's timezone
+  #  may not be the same as the appserver's timezone.
+  #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
   has_many :vouchers, :through => :showdates
   validates_numericality_of :house_capacity
   validates_presence_of :opening_date, :closing_date
   validates_length_of :name, :within => 3..40, :message => "Show name must be between 3 and 40 characters"
 
   INFTY = 999999                # UGH!!
+
+  def future_showdates
+    self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now])
+  end
 
   # capacity: if zero, assumes unlimited
 

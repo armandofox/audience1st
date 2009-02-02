@@ -1,17 +1,35 @@
 - if @next_showdate.kind_of?(Showdate)
   = render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
 
-= render :partial => 'order_details' if Voucher.find(:first)
+- if Voucher.find(:first)
+  .pageDiv
+    %h1 Accounting Reports
 
-= render :partial => 'mailinglists'
+    - form_tag({:action => 'do_report'}, {:method => :get}) do
+      %p
+        = select_tag 'rep', options_for_select(["Transaction details", "Categorized Revenue", "Invoice"])
+        = select_date_shortcuts 2007, 'from', 'to'
+        = submit_tag 'Go'
+      %p
+        Custom dates: from
+        = select_date Date.today, :prefix => 'from', :start_year => 2007
+        to
+        = select_date Date.today, :prefix => 'to',  :start_year => 2007
 
 .pageDiv
-  %h1 
+  %h1 Customer Lists
+  #report_body
+    - @special_report_names.each do |name|
+      %p= link_to_remote "#{name.humanize}...", :url => {:action => 'show_special_report', :report_name => name}, :update => name
+      %div{:id => name, :style => {:display => :none}}
+
+.pageDiv
+  %h1
     Subscription Counts for
     - y = Time.now.year
     = select_tag('year', options_for_select((y-2..y+1).to_a, y))
     = spinner('wait_subs')
   = observe_field('year', :with=>'year', :update=>'subscriber_stats', :url => {:action => 'subscriber_details'}, :before => "Element.show('wait_subs')", :complete => "Element.hide('wait_subs')")
-    
+
   #subscriber_stats= render :partial => 'subscriptions', :object => @subscriptions, :locals => {:year => y}
 
