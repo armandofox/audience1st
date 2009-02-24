@@ -8,7 +8,7 @@ class Voucher < ActiveRecord::Base
   # Transfers the vouchers from old to new id, and also changes the
   # values of processed_by field, which is really a customer id.
   # Returns number of actual voucher records transferred.
-  
+
   def self.merge_handler(old,new)
     Voucher.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
     Voucher.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
@@ -60,7 +60,7 @@ class Voucher < ActiveRecord::Base
 
   # return a voucher object that can be added to a shopping cart.
   # Fields like customer_id will be bound when voucher is actualy
-  # purchased, and only then is it recorded permanently 
+  # purchased, and only then is it recorded permanently
 
   def self.anonymous_voucher_for(showdate,vouchertype,promocode=nil,comment=nil)
     showdate = showdate.kind_of?(Showdate) ? showdate.id : showdate.to_i
@@ -74,10 +74,10 @@ class Voucher < ActiveRecord::Base
 
   def self.anonymous_bundle_for(vouchertype)
     v = Voucher.new_from_vouchertype(vouchertype,
-                                     :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))                    
+                                     :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
   end
 
-  
+
 
   def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false)
     vt = Vouchertype.find(vtype_id)
@@ -98,7 +98,7 @@ class Voucher < ActiveRecord::Base
       v.save!
       cust.vouchers << v
       # if this voucher is actually a "bundle", recursively add the
-      # bundled vouchers  
+      # bundled vouchers
       # NOTE: fulfillment_needed is ALWAYS FALSE for vouchers included in a bundle!
       if v.vouchertype.is_bundle?
         can_change = v.vouchertype.is_subscription?
@@ -163,11 +163,11 @@ class Voucher < ActiveRecord::Base
   end
 
   def account_code ; self.vouchertype.account_code ; end
-  
+
   def is_bundle?
     self.vouchertype.kind_of?(Vouchertype) && self.vouchertype.is_bundle?
   end
-  
+
   def reserved? ;   !self.showdate_id.to_i.zero? ;  end
   def unreserved? ; self.showdate_id.to_i.zero?  ;  end
 
@@ -186,7 +186,7 @@ class Voucher < ActiveRecord::Base
       true
     end
   end
-  
+
   def validity_dates_as_string
     fmt = '%m/%d/%y'
     if (vd = self.valid_date) && (ed = self.expiration_date)
@@ -201,7 +201,7 @@ class Voucher < ActiveRecord::Base
   end
 
 
-  # this should probably be eliminated and the function call inlined to wherever 
+  # this should probably be eliminated and the function call inlined to wherever
   # this is called from.
   def numseats_for_showdate(sd,args={})
     unless self.valid_for_date?(sd.thedate)
@@ -226,7 +226,7 @@ class Voucher < ActiveRecord::Base
   def not_already_used
     # Make sure voucher is not already in use.
     # Shouldn't happen using web interface.
-    showdate_id.to_i == 0 
+    showdate_id.to_i == 0
   end
 
   def can_be_changed?(who = Customer.generic_customer)
@@ -239,10 +239,10 @@ class Voucher < ActiveRecord::Base
       return (changeable? &&
               (expiration_date > Time.now) &&
               (not_already_used ||
-               (showdate.thedate > (Time.now - Option.value(:cancel_grace_period).minutes))))
+               (Time.now < (showdate.thedate - Option.value(:cancel_grace_period).minutes))))
     end
   end
-    
+
   def reserved_for?(s)
     d = self.showdate_id.to_i
     if s.kind_of?(Show)
@@ -271,8 +271,8 @@ class Voucher < ActiveRecord::Base
         self.sold_on = Time.now
         self.save!
         a = Txn.add_audit_record(:txn_type => 'res_made',
-                                 :customer_id => self.customer.id, 
-                                 :logged_in_id => logged_in, 
+                                 :customer_id => self.customer.id,
+                                 :logged_in_id => logged_in,
                                  :show_id => self.showdate.show.id,
                                  :showdate_id => showdate_id,
                                  :voucher_id => self.id)
@@ -291,7 +291,7 @@ class Voucher < ActiveRecord::Base
 
   def cancel(logged_in = Customer.generic_customer.id)
     save_showdate = self.showdate.clone
-    self.showdate = nil
+    self.showdate_id = 0
     self.processed_by = logged_in
     if (self.save)
       save_showdate
