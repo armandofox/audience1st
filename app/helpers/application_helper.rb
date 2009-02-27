@@ -375,7 +375,7 @@ module ApplicationHelper
                   t.at_beginning_of_year - 1.day],
                  ["Custom",t,t ]]
     onsel = <<EOS1
-      function setShortcut_#{from_prefix}(v) {
+      function setShortcut(from,to,v) {
         switch(v) {
 EOS1
     shortcuts.each_with_index do |e,indx|
@@ -392,19 +392,19 @@ EOS2
              fy=-1;
           }
         if (fy>=0) {
-          $('#{from_prefix}_year').selectedIndex=fy;
-          $('#{from_prefix}_month').selectedIndex=fm;
-          $('#{from_prefix}_day').selectedIndex=fd;
-          $('#{to_prefix}_year').selectedIndex=ty;
-          $('#{to_prefix}_month').selectedIndex=tm;
-          $('#{to_prefix}_day').selectedIndex=td;
+          $(from+'_year').selectedIndex=fy;
+          $(from+'_month').selectedIndex=fm;
+          $(from+'_day').selectedIndex=fd;
+          $(to+'_year').selectedIndex=ty;
+          $(to+'_month').selectedIndex=tm;
+          $(to+'_day').selectedIndex=td;
         }
       }
 EOS3
     javascript_tag(onsel) <<
       select_tag("shortcut_#{from_prefix}_#{to_prefix}",
                  options_for_select(shortcuts.each { |e| e.first }, selected_shortcut.to_s),
-                 :onChange => "setShortcut_#{from_prefix}(this.selectedIndex)")
+                 :onChange => "setShortcut('#{from_prefix}','#{to_prefix}',this.selectedIndex)")
   end
 
   def purchase_link_popup(text,url,name=nil)

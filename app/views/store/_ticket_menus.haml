@@ -20,7 +20,7 @@
     - @vouchertypes.each do |av|
       - vid = av.vouchertype.id
       %label{:for => "vouchertype[#{vid}]"}= av.vouchertype.name_with_price
-      = select_tag("vouchertype[#{vid}]", options_for_select((min_tix..[av.howmany,10].min).to_a), :onChange => 'recalc_total()')
+      = select_tag("vouchertype[#{vid}]", options_for_select((min_tix..[av.howmany,30].min).to_a), :onChange => 'recalc_total()')
       %br/
       = hidden_field_tag "price[#{vid}]", av.vouchertype.price
   - unless @vouchertypes.empty?
