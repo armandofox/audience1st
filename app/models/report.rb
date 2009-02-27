@@ -22,6 +22,7 @@ class Report
                 c.day_phone,
                 c.eve_phone,
                 c.street,c.city,c.state,c.zip,
+                c.created_on.to_formatted_s(:db)
                ]
       end
     end

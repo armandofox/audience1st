@@ -11,9 +11,19 @@
       and
       = select_date Date.today, :prefix => 'newTo', :start_year => 2007
     %p
-      = check_box_tag :require_valid_email
+      = check_box_tag :require_valid_email, 1, true
       Require valid email address
     %p
       = check_box_tag :require_valid_address
       Require non-blank mailing address
+    // %p
+    //  When multiple accounts have the same email address
+    //  but different (nonblank) mailing addresses:
+    //  %br
+    //  = radio_button_tag 'dups', 'keep_all'
+    //  Include all of them
+    //  %br
+    //  = radio_button_tag 'dups', 'most_recent', true
+    //  Include only the most recent one
+
     = submit_tag 'Download to Excel'
