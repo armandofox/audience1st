@@ -21,7 +21,7 @@ class StoreController < ApplicationController
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
-                 :not_me, :edit_billing_address, 
+                 :not_me, :edit_billing_address,
                  :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
                 :remove_from_cart,
                 :process_swipe)
@@ -48,7 +48,8 @@ class StoreController < ApplicationController
     else                        # neither: pick earliest show
       s = get_all_showdates(@is_admin)
       unless (s.nil? || s.empty?)
-        set_current_showdate(s.sort.detect { |sd| sd.thedate >= Time.now } || s.first)
+        #set_current_showdate(s.sort.detect { |sd| sd.thedate >= Time.now } || s.first)
+        set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
       end
     end
     @subscriber = @customer.is_subscriber?
@@ -108,7 +109,7 @@ class StoreController < ApplicationController
     @includes_donation = @cart.items.detect { |v| v.kind_of?(Donation) }
     set_checkout_in_progress
     if params[:gift]
-      @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new 
+      @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
     else
       redirect_to :action => :checkout
     end
@@ -148,12 +149,13 @@ class StoreController < ApplicationController
     session[:recipient_id] = @recipient.id
     redirect_to :action => :checkout
   end
-  
+
   def show_changed
     if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
       sd = s.future_showdates
-      set_current_showdate(sd.empty? ? nil : sd.first)
+      # set_current_showdate(sd.empty? ? nil : sd.first)
+      set_current_showdate(nil)
     end
     setup_ticket_menus
     render :partial => 'ticket_menus'
@@ -266,7 +268,7 @@ class StoreController < ApplicationController
     # OK, we have a customer record to tie the transaction to
     resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to)
     if !resp.success?
-      flash[:checkout_error] = "Payment gateway error: " 
+      flash[:checkout_error] = "Payment gateway error: "
       if resp.message.match( /ECONNRESET/ )
         flash[:checkout_error] << "Payment gateway not responding. Please wait a few seconds and try again."
       elsif resp.message.match(/decline/i)
@@ -609,7 +611,7 @@ class StoreController < ApplicationController
       Base.gateway_mode = :test
       old_cc_num = cc.number
       # ActiveMerchant "bogus gateway" will declare success if credit
-      # card number of '1' is used, failure if '3'.  
+      # card number of '1' is used, failure if '3'.
       cc.number = (old_cc_num.match( /^42/ ) ? '1' : '3')
       gw = BogusGateway.new(:login => Option.value(:pgw_id),
                             :password => Option.value(:pgw_txn_key))

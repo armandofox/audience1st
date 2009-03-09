@@ -13,7 +13,7 @@
   = spinner('wait_showdate')
   %br/
 
-  - if @vouchertypes.empty?
+  - if @vouchertypes.empty? && @sd
     %p.explanation No tickets on sale for this performance
   - else
     - min_tix = (@vouchertypes.length == 1 ?  1 : 0)

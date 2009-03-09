@@ -3,7 +3,7 @@ class VouchersController < ApplicationController
   before_filter :is_logged_in
   before_filter(:is_boxoffice_manager_filter,
                 :only => %w[addvoucher remove_voucher cancel_prepaid manage])
-  before_filter(:owns_voucher_or_is_boxoffice, 
+  before_filter(:owns_voucher_or_is_boxoffice,
                 :only => %w[reserve confirm_reservation cancel_reservation])
   before_filter(:is_boxoffice_filter, :only => %w[update_comment] )
 
@@ -47,8 +47,8 @@ class VouchersController < ApplicationController
       redirect_to :action => :addvoucher
       return
     end
-      
-    fulfillment_needed = params[:fulfillment_needed] 
+
+    fulfillment_needed = params[:fulfillment_needed]
     thecomment = params[:comment] || ""
     custid = @customer.id
     begin
@@ -70,10 +70,10 @@ class VouchersController < ApplicationController
     end
     redirect_to :controller => 'customers', :action => 'welcome'
   end
-  
+
   def remove_voucher
     v = Voucher.find(params[:id])
-    if v.nil? 
+    if v.nil?
       flash[:notice] = 'Voucher not found! Please logout and login again to re-sync.'
     else
       old_voucher_id = v.id
@@ -83,9 +83,9 @@ class VouchersController < ApplicationController
         v.destroy
         flash[:notice] = 'Voucher removed'
         Txn.add_audit_record(:txn_type => 'del_tkts',
-                             :customer_id => @gCustomer.id, 
-                             :logged_in_id => logged_in_id, 
-                             :voucher_id => old_voucher_id, 
+                             :customer_id => @gCustomer.id,
+                             :logged_in_id => logged_in_id,
+                             :voucher_id => old_voucher_id,
                              :comments => comment)
       else
         flash[:notice] = 'Voucher not removed, must cancel reservation first'
@@ -93,7 +93,7 @@ class VouchersController < ApplicationController
     end
     redirect_to :controller => 'customers', :action => 'welcome', :id => old_cust_id
   end
-  
+
   def update_comment
     who = logged_in_id rescue Customer.nobody_id
     if (voucher = Voucher.find_by_id(params[:vid]))
@@ -108,7 +108,7 @@ class VouchersController < ApplicationController
     render :nothing => true
   end
 
-  def reserve                     
+  def reserve
     @voucher = Voucher.find(params[:id]) # this is the voucher that customer wants to use
     @customer = @voucher.customer
     @is_admin = Customer.find(logged_in_id).is_walkup rescue nil
@@ -120,7 +120,7 @@ class VouchersController < ApplicationController
       ValidVoucher.numseats_for_showdate_by_vouchertype(s,@customer,@voucher.vouchertype,:redeeming => true,:ignore_cutoff => @is_admin)
     end
   end
-  
+
   def confirm_multiple
     @is_admin = @gAdmin.is_walkup # really need to do this?? not in prefilter??
     @customer = @gCustomer
@@ -162,7 +162,9 @@ class VouchersController < ApplicationController
                                  params[:comments], :ignore_cutoff => @is_admin))
       flash[:notice] = "Reservation confirmed. " <<
         "Your confirmation number is #{a}."
-      email_confirmation(:confirm_reservation, @customer, showdate, 1, a)
+      unless is_boxoffice
+        email_confirmation(:confirm_reservation, @customer, showdate, 1, a)
+      end
     else
       flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.comments}"
     end
@@ -170,7 +172,7 @@ class VouchersController < ApplicationController
   end
 
   def cancel_prepaid
-    # A prepaid ticket can be cancelled at any time, but the voucher is 
+    # A prepaid ticket can be cancelled at any time, but the voucher is
     # NOT reused.  it is "orphaned" and not linked to any customer or
     # show, but the record of its existence remains so that we can track
     # the fact that it was sold.  Its ID number will still be referred
@@ -223,7 +225,7 @@ class VouchersController < ApplicationController
                        vchs.length, a)
     redirect_to :controller => 'customers', :action => 'welcome'
   end
-    
+
 
   def cancel_reservation
     @v = Voucher.find(params[:id])
@@ -236,14 +238,16 @@ class VouchersController < ApplicationController
       show_id = showdate.show.id
       if @v.cancel(logged_in_id)
         a= Txn.add_audit_record(:txn_type => 'res_cancl',
-                                :customer_id => @gCustomer.id, 
-                                :logged_in_id => logged_in_id, 
+                                :customer_id => @gCustomer.id,
+                                :logged_in_id => logged_in_id,
                                 :showdate_id => showdate_id,
                                 :show_id => show_id,
                                 :voucher_id => @v.id)
         flash[:notice] = "Your reservation has been cancelled. " <<
           "Your cancellation confirmation number is #{a}. "
-        email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
+        unless is_boxoffice
+          email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
+        end
       else
         flash[:notice] = 'Error - reservation could not be cancelled'
       end
@@ -278,5 +282,5 @@ class VouchersController < ApplicationController
     flash[:notice] = msg
     redirect_to :controller => 'customers', :action => 'welcome'
   end
-  
+
 end
