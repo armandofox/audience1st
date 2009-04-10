@@ -11,8 +11,8 @@ class AttendanceByShow < Report
     @errors = "Please specify one or more productions." and return if
       (shows = params[:shows]).blank?
     # do default search for OR. if it's AND, winnow the list afterward.
-    shows = Show.find_by_id(shows)
-    showdates = Showdate.find(:all, :conditions => ['show_id IN (?)', shows]).map { |s| s.id }
+    shows.map! { |s| s.to_i }.reject { |s| s.zero? }
+    showdates = Showdate.find_all_by_show_id(shows).map { |s| s.id }
     @customers = Customer.find_by_sql %{
          SELECT DISTINCT c.*
          FROM customers c JOIN vouchers v ON v.customer_id = c.id
