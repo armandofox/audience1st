@@ -1,0 +1,10 @@
+- form_tag :action => 'run_special_report' do
+  %fieldset
+    %legend= @args[:name]
+    %p
+      List customers who have attended
+      = select_tag 'operator', options_for_select(['Any','All'])
+      of the following productions:
+    = select_tag 'shows[]', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
+    = hidden_field_tag '_report', 'AttendanceByShow'
+    = submit_tag 'Download to Excel'
