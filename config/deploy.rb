@@ -6,12 +6,10 @@ set :home,            "/home/#{user}"
 set :deploy_to,       "#{home}/rails/#{venue}"
 set :use_sudo,        false
 set :host,            "audience1st.com"
-#set :host, "74.63.14.66"
 role :app,            "#{host}"
 role :web,            "#{host}"
 role :db,             "#{host}", :primary => true
-#set :base_repository, "svn+ssh://#{user}@#{host}/#{home}/svn/#{application}"
-set :base_repository, "svn+ssh://audienc@audience1st.com/home/audienc/svn/vbo"
+set :base_repository, "svn+ssh://#{user}@#{host}/#{home}/svn/#{application}"
 
 if variables[:tag]
   # to deploy from a tag, run 'cap -Stag=tagname -Svenue=venuename deploy'
@@ -49,6 +47,5 @@ deploy.task :after_update_code do
 end
 
 deploy.task :restart do
-  run "touch #"
-  run "killall -usr1 dispatch.fcgi >& /dev/null"
+  run "touch #{release_path}/tmp/restart.txt"
 end
