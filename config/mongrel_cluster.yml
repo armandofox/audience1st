@@ -1,0 +1,9 @@
+---
+group: audienc
+log_file: log/mongrel.log
+port: "4000"
+cwd: /home/audienc/rails/current
+environment: production
+user: audienc
+pid_file: tmp/pids/mongrel.pid
+servers: 2

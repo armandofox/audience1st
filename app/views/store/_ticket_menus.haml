@@ -13,25 +13,26 @@
   = spinner('wait_showdate')
   %br/
 
-  - if @vouchertypes.empty? && @sd
-    %p.explanation No tickets on sale for this performance
-  - else
-    - min_tix = (@vouchertypes.length == 1 ?  1 : 0)
-    - @vouchertypes.each do |av|
-      - vid = av.vouchertype.id
-      %label{:for => "vouchertype[#{vid}]"}= av.vouchertype.name_with_price
-      = select_tag("vouchertype[#{vid}]", options_for_select((min_tix..[av.howmany,30].min).to_a), :onChange => 'recalc_total()')
-      %br/
-      = hidden_field_tag "price[#{vid}]", av.vouchertype.price
-  - unless @vouchertypes.empty?
-    %label.emphasis ADA-accessible seating required
-    = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
-    #comments_div{:style=> @cart.comments.blank? ? 'display: none' : ''}
-      %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
-      = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
+  #voucher_menus
+    - if @vouchertypes.empty? && @sd
+      %p.explanation No tickets on sale for this performance
+    - else
+      - min_tix = (@vouchertypes.length == 1 ?  1 : 0)
+      - @vouchertypes.each do |av|
+        - vid = av.vouchertype.id
+        %label{:for => "vouchertype[#{vid}]"}= av.vouchertype.name_with_price
+        = select_tag("vouchertype[#{vid}]", options_for_select((min_tix..[av.howmany,30].min).to_a), :onChange => 'recalc_total()')
+        %br/
+        = hidden_field_tag "price[#{vid}]", av.vouchertype.price
+    - unless @vouchertypes.empty?
+      %label.emphasis ADA-accessible seating required
+      = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
+      #comments_div{:style=> @cart.comments.blank? ? 'display: none' : ''}
+        %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
+        = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
   = hidden_field_tag 'redirect_to', 'index'
   = observe_field('show', :update => :ticket_menus_inner, :with => 'show_id', :before => "Element.show('wait_show')", :complete => 'recalc_total()', :url => {:controller => 'store', :action => :show_changed})
 
-  = observe_field('showdate', :update => :ticket_menus_inner, :with => 'showdate_id', :before => "Element.show('wait_showdate')", :complete => 'recalc_total()', :url => {:controller => 'store', :action => :showdate_changed} )
+  = observe_field('showdate', :update => :ticket_menus_inner, :with => 'showdate_id', :before => "Element.show('wait_showdate')", :complete => "recalc_total()", :url => {:controller => 'store', :action => :showdate_changed} )
 
   = observe_field('comments', :url => {:controller => :store, :action => :comment_changed}, :with => 'comment')

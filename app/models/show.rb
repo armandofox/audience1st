@@ -41,4 +41,16 @@ class Show < ActiveRecord::Base
   def name_with_run_dates
     "#{name} - #{opening_date.to_formatted_s(:month_day_only)}-#{closing_date.to_formatted_s(:month_day_only)}"
   end
+
+  def name_with_run_dates_short
+    s = self.opening_date
+    e = self.closing_date
+    if s.year == e.year
+      dt = (s.month == e.month)? s.strftime('%b %Y') :
+        "#{s.strftime('%b')} - #{e.strftime('%b %Y')}"
+    else                        # different years
+      dt = "#{s.strftime('%b %Y')} - #{e.strftime('%b %Y')}"
+    end
+    "#{self.name} (#{dt})"
+  end
 end

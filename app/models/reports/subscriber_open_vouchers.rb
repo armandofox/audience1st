@@ -11,9 +11,8 @@ class SubscriberOpenVouchers < Report
   end
 
   def generate(params = [])
-    vouchertypes = params[:vouchertypes] || []
-    @errors = "Please specify one or more subscriber voucher types." and return unless
-      vouchertypes.size > 0
+    @errors = "Please specify one or more subscriber voucher types." and return if
+      (vouchertypes = params[:vouchertypes]).blank?
     vouchertypes.reject! { |x| x.to_i < 1 }
     @customers = Customer.find_by_sql %{
         SELECT DISTINCT c.*
