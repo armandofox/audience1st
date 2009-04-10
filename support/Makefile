@@ -49,7 +49,7 @@ BINDIR     = $(APPROOT)/support
 .PHONY: all nightly monthly clean_sessions backup_db backup_wp backup_svn run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
-nightly: clean_sessions notify_pending_followups kill_zombies backup_db
+nightly: clean_sessions notify_pending_followups backup_db
 monthly: rotate_logs
 
 dev:
