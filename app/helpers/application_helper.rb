@@ -233,6 +233,7 @@ module ApplicationHelper
     child_id_method =  args[:child_value_method] || 'id'
     selected_parent = args[:selected_parent]
     selected_child = args[:selected_child]
+    onchange_cmd = args[:on_parent_change]
     no_parent_avail_value = args[:no_parent_available_value] || -1
     no_parent_avail_text = args[:no_parent_available_text] || parent_name.pluralize
     no_child_avail_value = args[:no_child_available_value] || -1

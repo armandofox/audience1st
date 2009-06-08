@@ -10,6 +10,13 @@ class Show < ActiveRecord::Base
 
   INFTY = 999999                # UGH!!
 
+  # current_or_next returns the Show object corresponding to either the
+  # currently running show, or the one with the next soonest opening date.
+
+  def self.current_or_next
+    (sd = Showdate.current_or_next) ? sd.show : nil
+  end
+
   def future_showdates
     self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now])
   end

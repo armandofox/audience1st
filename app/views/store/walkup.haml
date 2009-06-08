@@ -1,14 +1,12 @@
 = javascript_include_tag 'utils'
 
-%h1 
+%h1
   Walk-up Sales:
   %span#showdate= Showdate.find(@showdate_id).printable_name if @showdate_id
 
 = error_messages_for 'store'
-                  
+
 - form_tag :action => 'do_walkup_sale' do
-  = hidden_field_tag 'otp', @otp
-  - js,showmenu,showdatemenu = dependent_js_selects(@shows, 'show', 'name', 'showdate', 'printable_date',:selected_parent => @show_id, :selected_child => @showdate_id, :child_html_options => 'onChange="$(\'showdate\').innerHTML=this.options[this.selectedIndex].text;"')
   = javascript_recalc_function 'total', @vouchertypes.map { |v| v.id }, 'price','qty','donation'
 
   %table{:border=>1}
@@ -23,11 +21,11 @@
           %tr
             %td.label
               %label{:for=>:show_name} Show:
-            %td= showmenu
+            %td= select_tag 'show_select', options_from_collection_for_select(@shows, :id, :name, @show_id), :onChange => 'window.location.search = "?show=" + this.options[this.selectedIndex].value;'
           %tr
             %td.label
               %label{:for=>:showdate_thedate} Date:
-            %td= showdatemenu
+            %td= select_tag 'showdate_select', options_from_collection_for_select(@showdates, :id, :printable_date, @showdate_id), :onChange => '$("showdate").innerHTML=this.options[this.selectedIndex].text;'
         %table
           %tr
             %td{:colspan=>2,:align=>:center}

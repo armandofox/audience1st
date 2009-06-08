@@ -1,14 +1,19 @@
 class Showdate < ActiveRecord::Base
-  
+
   belongs_to :show
   has_many :vouchers
   has_many :valid_vouchers, :dependent => :destroy
   has_many :vouchertypes, :through => :valid_vouchers
-  
+
   validates_numericality_of :max_sales
   validates_associated :show
 
+  def self.current_or_next
+    Showdate.find(:first, :conditions => "thedate >= NOW()")
+  end
+
   include Comparable
+
   def <=>(other_showdate)
     other_showdate ? thedate <=> other_showdate.thedate : 1
   end
@@ -59,7 +64,7 @@ class Showdate < ActiveRecord::Base
       pct >= Option.value(:nearly_sold_out_threshold).to_i ? :nearly_sold_out :
       :available
   end
-  
+
   def seats_left_for_voucher(vouchertype,cust=Customer.generic_customer)
     ValidVoucher.numseats_for_showdate_by_vouchertype(self.id, vouchertype, cust)
   end
@@ -84,7 +89,7 @@ class Showdate < ActiveRecord::Base
   def speak
     self.spoken_name + ", on " + self.thedate.speak
   end
-  
+
   def printable_name
     self.show.name + " - " + self.printable_date
   end

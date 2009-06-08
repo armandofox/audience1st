@@ -304,33 +304,27 @@ class StoreController < ApplicationController
   end
 
   def walkup
-    # walkup sales are restricted to either boxoffice staff or
-    # specific IP's
-    @ip = request.remote_ip
-    # generate one-time pad for encrypting CC#s
-    session[:otp] = @otp = String.random_string(256)
     now = Time.now
-    @showdates = Showdate.find(:all,:conditions => ["thedate >= ?", now-1.week])
-    # bail out right now if there are no showdate for which to sell
-    if @showdates.empty?
+    @shows = Show.find(:all)
+    if params[:show] &&  @show = Show.find(params[:show])
+      @show_id = params[:show].to_i
+    elsif (@show = Show.current_or_next)
+      @show_id = @show.id
+    else
+      # bail out right now if there are no showdate for which to sell
       flash[:notice] = "No upcoming shows for walkup sales"
       redirect_to :controller => 'shows', :action => 'list'
       return
     end
-    @shows = get_all_shows(@showdates).map  { |s| [s,@showdates.select { |sd| sd.show_id == s.id } ]}
-    @vouchertypes = Vouchertype.find(:all, :conditions => ["is_bundle = ? AND walkup_sale_allowed = ?", false, true])
-    # if there was a show and showdate selected before redirect to this screen,
-    # keep it selected
-    if (params[:show])
-      @show_id = params[:show].to_i
-      @showdate_id = params[:showdate] ? params[:showdate].to_i : nil
-    elsif (future_shows = @showdates.select { |x| x.thedate >= (now - 2.hours) })
-      next_show = future_shows.min
-      @showdate_id = next_show.id
-      @show_id = next_show.show.id
+    @showdates = @show.showdates
+    # if a showdate was selected, and is "compatible" with current show, use it
+    if (sd = params[:showdate].to_i) &&
+        @show.showdates.map { |s| s.id }.include?(sd)
+      @showdate_id = sd
     else
-      @show_id = @showdate_id = nil # defaults
+      @showdate_id = @showdates.first.id
     end
+    @vouchertypes = Vouchertype.find(:all, :conditions => ["is_bundle = ? AND walkup_sale_allowed = ?", false, true])
   end
 
   def do_walkup_sale
