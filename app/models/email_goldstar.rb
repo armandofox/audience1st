@@ -6,6 +6,7 @@ class EmailGoldstar < ActionMailer::Base
 
   @@verbose = false
   @@error_trace = []
+  @@testing = false
 
   def self.debug(s)
     puts(s) if @@verbose
@@ -39,14 +40,14 @@ class EmailGoldstar < ActionMailer::Base
 
   def self.process(email, verbose=false)
     @@verbose = verbose
-    testing = ! ENV["TESTING"].blank?
+    @@testing = ! ENV["TESTING"].blank?
     tix_added = 0
     msg = ""
     showdate = nil
     begin
       offers, orders = self.prepare(email)
       raise "No valid ticket offers found" unless offers
-      msg << "\n\n        *** TEST MODE *** NO ORDERS ADDED ***\n\n" if testing
+      msg << "\n\n        *** TEST MODE *** NO ORDERS ADDED ***\n\n" if @@testing
       showdate = offers[offers.keys.first].showdate
       if orders.nil? || orders.empty?
         msg << "No Goldstar tickets sold for this performance\n"
@@ -54,7 +55,7 @@ class EmailGoldstar < ActionMailer::Base
         msg << "Goldstar sold:\n" <<
           offers.keys.map { |k| "#{k}: #{offers[k]}" }.join("\n") <<
           "\n" << ("-" * 40) << "\n"
-        tix_added = self.process_orders(orders) unless testing
+        tix_added = self.process_orders(orders) unless @@testing
         msg << orders.map { |o| o.to_s }.join("\n")
         if (unsold = TicketOffer.unsold(offers.values)) > 0
           msg << "\n#{unsold} tickets can be released to general inventory\n"
@@ -72,7 +73,7 @@ class EmailGoldstar < ActionMailer::Base
     end
     debug(showdate ? showdate.printable_name : "(No showdate)")
     debug("\n" << msg)
-    if testing
+    if @@testing
       File.open("/tmp/email_goldstar_log", "w+") { |f|  f.print msg }
     else
       deliver_goldstar_email_report(showdate,msg)
@@ -175,7 +176,7 @@ class EmailGoldstar < ActionMailer::Base
   def self.extract_attachment(filename_regexp,email)
     # check if from Goldstar
     debug("Received email from  #{email.from[0]}")
-    if RAILS_ENV == 'production' && email.from[0] !~ /venues@goldstar/i
+    if !@@testing && RAILS_ENV == 'production' && email.from[0] !~ /venues@goldstar/i
       raise "Bad sender"
     end
     raise "No attachments found" unless email.has_attachments?
