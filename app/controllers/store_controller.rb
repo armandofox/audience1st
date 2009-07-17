@@ -644,10 +644,14 @@ class StoreController < ApplicationController
   end
 
   def process_ticket_request
-    flash[:warning] = "Invalid show date selected" and return unless (showdate = Showdate.find_by_id(params[:showdate]))
+    unless (showdate = Showdate.find_by_id(params[:showdate])) ||
+        params[:donation].to_i > 0
+      flash[:warning] = "Please select a show date and tickets, or enter a donation amount."
+      return
+    end
     msgs = []
     comments = params[:comments]
-    params[:vouchertype].each_pair do |vtype, qty|
+    (params[:vouchertype] ||= {}).each_pair do |vtype, qty|
       qty = qty.to_i
       unless qty.zero?
         av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => @gAdmin.is_boxoffice)

@@ -1,0 +1,572 @@
+/* @override http://localhost:3001/stylesheets/altarena.css?1215651123 */
+
+/*
+  @file = generic.css
+  @author =  Arthur Klepchukov
+  @modified = 02.10.2008
+  @for = Audience 1st ticket-buying software
+*/
+
+/*
+  Eric Meyer's CSS Reset Reloaded
+  http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
+*/
+
+/*
+  Eric Meyer's CSS Reset Reloaded
+  http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-weight: inherit;
+        font-style: inherit;
+        font-size: 100%;
+        font-family: inherit;
+        vertical-align: baseline;
+}
+/* remember to define focus styles! */
+:focus {
+        outline: 0;
+}
+body {
+        line-height: 1;
+        color: black;
+        background: white;
+}
+ol, ul {
+        list-style: none;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+        border-collapse: separate;
+        border-spacing: 0;
+}
+caption, th, td {
+        text-align: left;
+        font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+        content: "";
+}
+blockquote, q {
+        quotes: "" "";
+}
+
+/*
+  Baseline styles ///////////////////////////////////////////////////////////
+*/
+body {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 9pt;
+  color: #333;
+  background-color: #671e22;
+}
+a {
+        text-decoration: none;
+        color: #800000;
+}
+a:hover {
+        text-decoration:  underline;
+}
+a.genButton {
+        background-color: #671e22;
+        color:  white;
+        padding: 2px;
+        text-decoration: none;
+}
+a.genButton:hover {
+        text-decoration: none;
+        color: #800000;
+        background-color: white;
+        border:  1px solid #800000;
+        padding: 2px;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-weight: bold;
+  line-height: 1.4em;
+        color: maroon;
+}
+h1 {
+  font-size: 1.8em;
+  margin: 10px 0;
+  padding: 0;
+  letter-spacing:  1pt;
+}
+h2 {
+  font-size: 1.5em;
+  margin: 6px 0;
+  padding: 0;
+  letter-spacing: 1pt;
+}
+h3 {
+  font-size: 1.3em;
+}
+h4 {
+  font-size: 1.2em;
+}
+h5 {
+  font-size: 1.1em;
+}
+h6 {
+  font-size: 1.0em;
+}
+
+p {
+  margin: 10px 0;
+}
+
+strong {
+  font-weight: bold;
+}
+em {
+  font-style: italic;
+}
+
+fieldset {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+dt {
+  font-weight: bold;
+}
+dd {
+  margin: 0;
+  padding-left: 20px;
+}
+
+label {
+  margin: 0;
+  padding-right: 5px;
+  float: left;
+  clear: left;
+  width: 150px;
+  text-align: right;
+  vertical-align: bottom;
+  font-size: 0.9em;
+}
+
+thead {
+  background-color: #EEE;
+  color: black;
+}
+th {
+  margin: 0;
+  padding: 3px;
+  font-weight: bold;
+}
+ul {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+}
+#customerVoucherList tbody td {
+  border-bottom: 3px solid #CCC;
+}
+
+.center {
+  text-align: center;
+}
+.small {
+  font-size: 0.8em;
+}
+.clear {
+  clear: both;
+}
+.no_float {
+  float: none;
+  width: 100%;
+}
+.emphasis {
+  color: red;
+}
+.feedback {
+  margin: 0;
+  padding: 5px;
+  background-color: #ddc;
+  color: #555;
+}
+.notice {
+  margin: 3px 0;
+  padding: 5px;
+  background-color: #EEE;
+  color: #333;
+  border: 1px solid #CCC;
+  line-height: 1.2;
+}
+.warning {
+  margin: 3px 20px;
+  color: red;
+  border: 1px solid red;
+  line-height: 1.2;
+  font-weight: bold;
+  padding: 6px 10px;
+}
+.checkout_error {
+    margin: 3px 20px;
+    background-color: yellow;
+    color: red;
+    font-weight: bold;
+    padding: 6px 10px;
+    line-height: 1.2;
+    border: 1px double red;
+}
+.spinner16 {
+  /* display: none; */
+}
+
+.wide_button {
+  letter-spacing: 0.25em;
+  width: 150px;
+}
+.wide_label {
+  width: 300px;
+}
+.even {}
+.odd {
+  background-color: #EEE;
+  color: inherit;
+}
+.currency {
+  text-align: right;
+}
+
+#outer_wrapper {
+  margin: 0 auto;
+  padding: 0;
+  width: 900px;
+  border: 1px solid #EEE;
+  background-color: white;
+  height:  100%;
+}
+#inner_wrapper {
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+
+}
+.full_width {
+  width: 800px;
+}
+
+#footer {
+  margin: 0;
+  padding: 20px;
+  color:  #ddd;
+}
+#footer a {
+        color:  white;
+        font-weight: bold;
+        text-decoration:  underline;
+}
+
+#logged_in {
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 1em;
+  background-color: #EEE;
+  color: #444;
+}
+#logged_in_welcome, #welcome {
+        color: #787878;
+        padding: 5px;
+        font: italic 10pt "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+#logged_in_welcome .button-to, #welcome .gen_button {
+        display: inline;
+}
+#logged_in_details {
+  float: right;
+  width: 20%;
+  text-align: right;
+}
+.button_button, .to-to * {
+  display: inline;
+}
+.admin_field, .admin_button {
+  background-color: yellow;
+}
+.indented {
+  margin: 5px 0 5px 150px;
+  padding: 0;
+}
+
+/* Navigation tabs */
+
+#store_nav, #staff_nav {
+  float: left;
+  width: 900px;
+  list-style: none;
+}
+#staff_nav {
+  margin-top: 12px;
+  border-bottom: 2px solid #ccc;
+}
+#store_nav {
+   border-bottom: 3px double #999;
+}
+#store_nav li {
+  float: left;
+  border-right: 1px solid #666;
+}
+#staff_nav li {
+        float:  left;
+        border-right: 1px solid #666;
+        border-top: 2px solid #ccc;
+}
+#store_nav li { border-top: 2px solid #CCC; }
+
+#store_nav li a, #staff_nav li a {
+  margin: 0;
+  padding: 10px 5px 3px 5px;
+  display: block;
+  float: left;
+  font-weight: bold;
+  font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+  text-decoration: none;
+  color:  #222;
+  background-color: #eee;
+}
+
+#store_nav li a:hover, #staff_nav li a:hover {
+  background-color: #ccc;
+}
+
+/* override nav tab color when tab selected */
+body#store_index li#t_store_index a, body#customers_welcome li#t_customers_welcome a, body#customers_welcome_subscriber li#t_customers_welcome a, body#customers_edit li#t_customers_edit a, body#customers_list li#t_customers_list a, body#report_index li#t_report_index a,  body#donation_list li#t_donation_list a {
+        background-color: white;
+        color: #800;
+}
+
+/*
+  Cart styles ///////////////////////////////////////////////////////////
+*/
+div#cart {
+  margin: 5px 0;
+  padding: 10px;
+  border: 3px double #CCC;
+}
+p#empty_cart {
+
+}
+ol#cart_items { }
+li.cart_item {
+  margin: 0;
+  padding: 3px;
+}
+.price_and_actions {
+  margin: 0;
+  padding-left: 5px;
+  width: 20%;
+  float: right;
+}
+.price_and_actions .actions {
+  float: right;
+}
+.cart_item_price { }
+span.cart_item_desc {
+  display: block;
+}
+.voucher_show_name {
+  text-decoration: none;
+        text-transform: capitalize;
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-variant: small-caps;
+        font-size: 150%;
+        color: #800000;
+}
+.voucher_show_date {
+  font-style: italic;
+}
+.voucher_type {
+  margin: 0;
+  padding: 0 3px;
+  background-color: transparent;
+  color: #444;
+}
+.promo_code { }
+.donation_name {
+  background-color: transparent;
+color:  maroon;
+font-weight: bold;
+}
+#cart_total {
+  margin-top:  2px;
+  padding: 2px;
+  background-color: #666;
+  color: white;
+  border: 1px solid #EEE;
+}
+#total_price {
+  display: block;
+  float: right;
+  font-weight:  bold;
+  width: 20%;
+}
+
+
+/*
+  Page-specific styles ///////////////////////////////////////////////////////////
+*/
+.page_heading {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 5px double #777;
+}
+/* "show my tickets" page */
+.showName {
+        font-weight: bold;
+        color:  maroon;
+        line-height: 1.4
+}
+h2.subscription_msg {
+  margin: 0;
+  padding: 10px;
+  background-color: #EEE;
+  color: #057;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 150%;
+  text-align: center;
+  letter-spacing: normal;
+}
+.subscription_msg2 {
+  margin-top: 3px;
+  padding: 0;
+  font-size: 0.9em;
+  text-align: center;
+}
+
+#have_account {
+  margin: 0;
+  padding: 10px;
+
+  float: left;
+  width: 475px;
+
+  /*border: 1px solid red;*/
+  border-right: 5px double black;
+}
+#new_customer {
+  margin: 0;
+  padding: 10px;
+
+  float: left;
+  width: 200px;
+
+  /*border: 1px solid green;*/
+}
+#new_customer a.genButton {
+        text-decoration: underline;
+        background-color:  transparent;
+        color:  maroon;
+
+}
+
+fieldset#FAQ {
+  border: 1px solid red;
+}
+
+fieldset#admin_form, fieldset#admin_form legend {
+  background-color: yellow;
+  color: black;
+  border: 1px solid black;
+}
+
+/*
+ *  My tickets and reservations  //////////////////////////////
+ */
+
+
+table#subscriptionReservations tr {
+        line-height: 1.75;
+}
+table#subscriptionReservations td.selectShowdate {
+  width: 25em;
+}
+table#subscriptionReservations .showdate {
+  width: 20em;
+}
+table#subscriptionReservations .action {
+  text-align: center;
+  vertical-align: bottom;
+}
+/*
+ *  Store   //////////////////////////////////////////////////
+ */
+#ticket_menus {
+  margin-top: 20px;
+  padding: 0;
+}
+#ticket_menus label {
+  width: 300px;
+}
+#ticket_menus #add_to_cart {
+  margin-left: 300px;
+  padding: 0;
+}
+#ticket_menus *.explanation {
+  margin-left: 300px;
+  padding:  1px;
+  padding-bottom: 2px;
+  /* border: 1px solid #ccc;*/
+  border: 1px solid rgba(137,25,18,0.5);
+  color: rgba(137,25,18,0.85);
+}
+#orderTotal, #orderTotal * {
+  font-size: larger;
+  font-weight: bold;
+  vertical-align: bottom;
+  color: red;
+  background-color: #eee;
+}
+.storeText {
+  text-align: center;
+}
+
+#donate {
+  margin: 0 0 20px 0;
+  padding: 10px 0;
+  background-color: #f6f6ed;
+}
+#donate_info {
+  margin: 0 auto 10px auto;
+  padding: 5px;
+  width: 400px;
+  background-color: #EEE;
+  color: black;
+  border: 1px solid black;
+}
+
+/*
+ *  The "mini store" in a popup window
+ */
+
+#miniStoreOuter {
+}
+#miniStoreInner {
+  background: white;
+  padding: 4px;
+  margin: 4px;
+  border: 2px solid maroon;
+}
+#miniStoreInner label {
+  width: 30em;
+  text-align: right;
+}

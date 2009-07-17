@@ -33,6 +33,7 @@ class CustomersController < ApplicationController
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
+    render :inline => "" and return if params[:__arg].blank?
     begin
       # if multiple words are given, ALL must match.
       n = params[:__arg].split( / +/ )
@@ -77,7 +78,7 @@ class CustomersController < ApplicationController
       # set redirect-to action based on whether this customer is an admin.
       # authentication succeeded, and customer is NOT in the middle of a
       # store checkout. Proceed to welcome page.
-      controller,action = possibly_enable_admin(c)      
+      controller,action = possibly_enable_admin(c)
       session[:promo_code] = nil
       redirect_to_stored and return if (@checkout_in_progress || stored_action)
       redirect_to :controller => controller, :action => action
@@ -113,7 +114,7 @@ class CustomersController < ApplicationController
   end
 
   # welcome screen: different for nonsubscribers vs. subscribers
-  
+
   def welcome                   # for nonsubscribers
     @customer = @gCustomer
     # if customer is a subscriber, AND force_classic is not indicated,
@@ -219,7 +220,7 @@ class CustomersController < ApplicationController
       redirect_to :action => 'edit'
     end
   end
-    
+
   def change_password
     @customer = current_customer
     if (request.post?)
@@ -243,7 +244,7 @@ class CustomersController < ApplicationController
       end
     end
   end
- 
+
 
   def user_create
     if request.get?
@@ -291,7 +292,7 @@ class CustomersController < ApplicationController
       render :action => 'new'
     end
   end
-  
+
   # Following actions are for use by admins only:
   # list, switch_to, merge, search, create, destroy
 
@@ -316,7 +317,7 @@ class CustomersController < ApplicationController
       redirect_to :action => 'list'
     end
   end
-  
+
   def merge
     if request.get?
       # display info from two records and allow selection
@@ -447,7 +448,7 @@ class CustomersController < ApplicationController
   #  _validate.rhtml, which can be rendered as part of the customer
   # _form partial to validate US Mail address.  But first it needs to be
   # connected to a working validation service!
-  
+
   def validate_address
     cust = params[:customer]
     url = "http://zip4.usps.com/zip4/zcl_0_results.jsp?visited=1&pagenumber=0&firmname=&address2=#{cust[:street]}&address1=&city=#{cust[:city]}&state=#{cust[:state]}&urbanization=&zip5=#{cust[:zip]}"
@@ -495,8 +496,8 @@ class CustomersController < ApplicationController
 
   def forgot_password(login)
     if login.blank?
-      flash[:notice]="Please enter the email address with which you originally"
-      flash[:notice]<<"signed up, and we will email you a new password."
+      flash[:notice] = "Please enter the email address with which you originally"
+      flash[:notice] << "signed up, and we will email you a new password."
       # do we already know this person?
     elsif ! login.valid_email_address?
       flash[:notice] = "'#{login}' does not appear to be a valid email address."
@@ -521,7 +522,7 @@ class CustomersController < ApplicationController
     end
     redirect_to :action => :login
   end
-  
+
 
 
 end
