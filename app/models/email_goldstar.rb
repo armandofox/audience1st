@@ -45,9 +45,9 @@ class EmailGoldstar < ActionMailer::Base
     msg = ""
     showdate = nil
     begin
+      msg << "\n\n        *** TEST MODE *** NO ORDERS WILL BE ADDED ***\n\n" if @@testing
       offers, orders = self.prepare(email)
       raise "No valid ticket offers found" unless offers
-      msg << "\n\n        *** TEST MODE *** NO ORDERS ADDED ***\n\n" if @@testing
       showdate = offers[offers.keys.first].showdate
       if orders.nil? || orders.empty?
         msg << "No Goldstar tickets sold for this performance\n"
