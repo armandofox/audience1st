@@ -70,6 +70,7 @@ class EmailGoldstar < ActionMailer::Base
         msg << "\n(#{tix_added} tickets were successfully recorded)\n"
       end
       showdate = nil unless defined?(showdate)
+      msg << "\n\n------#{email}\n--------\n"
     end
     debug(showdate ? showdate.printable_name : "(No showdate)")
     debug("\n" << msg)
