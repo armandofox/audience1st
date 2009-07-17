@@ -3,7 +3,7 @@ class EmailGoldstar < ActionMailer::Base
   require 'application.rb'
   require 'parseexcel'
   require 'generator'
-  
+
   @@verbose = false
   @@error_trace = []
 
@@ -32,12 +32,12 @@ class EmailGoldstar < ActionMailer::Base
   def self.import(email,verbose=false)
     EmailGoldstar.process(email, verbose)
   end
-  
+
   def receive(email)
-    EmailGoldstar.process(email, false)
+    EmailGoldstar.process(email, false, (RAILS_ENV != 'production' ))
   end
-  
-  def self.process(email, verbose=false)
+
+  def self.process(email, verbose=false, testing=false)
     @@verbose = verbose
     tix_added = 0
     msg = ""
@@ -45,6 +45,7 @@ class EmailGoldstar < ActionMailer::Base
     begin
       offers, orders = self.prepare(email)
       raise "No valid ticket offers found" unless offers
+      msg << "\n\n        *** TEST MODE *** NO ORDERS ADDED ***\n\n" if testing
       showdate = offers[offers.keys.first].showdate
       if orders.nil? || orders.empty?
         msg << "No Goldstar tickets sold for this performance\n"
@@ -52,7 +53,7 @@ class EmailGoldstar < ActionMailer::Base
         msg << "Goldstar sold:\n" <<
           offers.keys.map { |k| "#{k}: #{offers[k]}" }.join("\n") <<
           "\n" << ("-" * 40) << "\n"
-        tix_added = self.process_orders(orders)
+        tix_added = self.process_orders(orders) unless testing
         msg << orders.map { |o| o.to_s }.join("\n")
         if (unsold = TicketOffer.unsold(offers.values)) > 0
           msg << "\n#{unsold} tickets can be released to general inventory\n"
@@ -109,7 +110,7 @@ class EmailGoldstar < ActionMailer::Base
   end
 
   private
-  
+
   def self.scan_to(rowgen, regex)
     debug "Scanning for #{regex.inspect}...\n"
     mtch = false
@@ -119,12 +120,12 @@ class EmailGoldstar < ActionMailer::Base
     end
     raise "Column header not found: '#{regex.inspect}'" unless mtch
     r
-  end      
+  end
 
   def self.starts_with(row, regex)
     row && row.at(0) && row.at(0).to_s.match(regex)
   end
-  
+
   def self.parse_ticket_types_for_showdate(rows, sd)
     row = scan_to(rows, /^offer$/i )
     offers = {}
@@ -155,7 +156,7 @@ class EmailGoldstar < ActionMailer::Base
     while (rows.next?) do
       row = rows.next
       if (row && !row.empty? && row[4].to_s.match( /^\d+$/ ))
-        
+
         tix<< ExternalTicketOrder.new(:last_name => row[0].to_s,
                                       :first_name => row[1].to_s,
                                       :qty => row[2].to_i,
@@ -165,7 +166,7 @@ class EmailGoldstar < ActionMailer::Base
     end
     tix
   end
-  
+
   def self.extract_attachment(filename_regexp,email)
     # check if from Goldstar
     debug("Received email from  #{email.from[0]}")
@@ -182,7 +183,7 @@ class EmailGoldstar < ActionMailer::Base
     debug("File saved in #{t.path}")
     Spreadsheet::ParseExcel.parse(t.path)
   end
-           
+
 
   def self.get_showdate(rows)
     # find the "Date/Time" line
