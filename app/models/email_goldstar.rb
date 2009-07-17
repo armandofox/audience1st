@@ -33,8 +33,8 @@ class EmailGoldstar < ActionMailer::Base
     EmailGoldstar.process(email, verbose)
   end
 
-  def receive(email)
-    EmailGoldstar.process(email, false, (RAILS_ENV != 'production' ))
+  def receive(email,testing_flag)
+    EmailGoldstar.process(email, false, (testing_flag == "-t"))
   end
 
   def self.process(email, verbose=false, testing=false)
