@@ -71,7 +71,11 @@ class EmailGoldstar < ActionMailer::Base
     end
     debug(showdate ? showdate.printable_name : "(No showdate)")
     debug("\n" << msg)
-    deliver_goldstar_email_report(showdate,msg)
+    if testing
+      File.open("/tmp/email_goldstar_log", "w+") { |f|  f.print msg }
+    else
+      deliver_goldstar_email_report(showdate,msg)
+    end
   end
 
   def self.prepare(excel_filepath)
