@@ -33,12 +33,13 @@ class EmailGoldstar < ActionMailer::Base
     EmailGoldstar.process(email, verbose)
   end
 
-  def receive(email,testing_flag)
-    EmailGoldstar.process(email, false, (testing_flag == "-t"))
+  def receive(email)
+    EmailGoldstar.process(email, false)
   end
 
-  def self.process(email, verbose=false, testing=false)
+  def self.process(email, verbose=false)
     @@verbose = verbose
+    testing = ! ENV["TESTING"].blank?
     tix_added = 0
     msg = ""
     showdate = nil
