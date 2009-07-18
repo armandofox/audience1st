@@ -113,8 +113,8 @@ class EmailGoldstar < ActionMailer::Base
 
   private
 
-  def to_s0(s)
-    s.to_s.gsub( /\000/, '')
+  def sqz(s)
+    s.gsub( /\000/, '')
   end
 
   def self.scan_to(rowgen, regex)
@@ -129,7 +129,7 @@ class EmailGoldstar < ActionMailer::Base
   end
 
   def self.starts_with(row, regex)
-    row && row.at(0) && row.at(0).to_s0.match(regex)
+    row && row.at(0) && row.at(0).to_s.sqz.match(regex)
   end
 
   def self.parse_ticket_types_for_showdate(rows, sd)
@@ -137,8 +137,8 @@ class EmailGoldstar < ActionMailer::Base
     offers = {}
     while (row && rows.next? && !starts_with(row, /will-call/i )) do
       row = rows.next
-      if row && row[0] && !(row[0].to_s0.blank?)
-        name = row[0].to_s0
+      if row && row[0] && !(row[0].to_s.sqz.blank?)
+        name = row[0].to_s.sqz
         price= row[2].to_f
         noffered = row[3].to_i
         nsold = row[4].to_i
@@ -161,13 +161,13 @@ class EmailGoldstar < ActionMailer::Base
     row = scan_to(rows, /^last\s+name$/i)
     while (rows.next?) do
       row = rows.next
-      if (row && !row.empty? && row[4].to_s0.match( /^\d+$/ ))
+      if (row && !row.empty? && row[4].to_s.sqz.match( /^\d+$/ ))
 
-        tix<< ExternalTicketOrder.new(:last_name => row[0].to_s0,
-                                      :first_name => row[1].to_s0,
+        tix<< ExternalTicketOrder.new(:last_name => row[0].to_s.sqz,
+                                      :first_name => row[1].to_s.sqz,
                                       :qty => row[2].to_i,
-                                      :ticket_offer => tixtypes[row[3].to_s0],
-                                      :order_key => row[4].to_s0)
+                                      :ticket_offer => tixtypes[row[3].to_s.sqz],
+                                      :order_key => row[4].to_s.sqz)
       end
     end
     tix
@@ -195,7 +195,7 @@ class EmailGoldstar < ActionMailer::Base
     # find the "Date/Time" line
     row = scan_to(rows, /date\/time/i )
     # find the showdate that matches this date
-    Time.parse(row.at(1).to_s0)
+    Time.parse(row.at(1).to_s.sqz)
   end
 
   def goldstar_email_report(showdate,msg)
