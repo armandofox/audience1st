@@ -82,14 +82,9 @@ class EmailGoldstar < ActionMailer::Base
   end
 
   def self.prepare(excel_filepath)
-    if excel_filepath.kind_of?(TMail::Mail)
-      # extract it from an email
-      debug("Trying to extract Excel attachment...")
-      workbook =  extract_attachment(/\.xls$/i, excel_filepath)
-    else
-      debug("Trying to parse file #{excel_filepath}...")
-      workbook = Spreadsheet::ParseExcel.parse(excel_filepath)
-    end
+    debug("Trying to extract Excel attachment...")
+    workbook =  extract_attachment(/\.xls$/i, excel_filepath)
+    debug "#{workbook.num_rows} rows"
     rows = Generator.new(workbook.worksheet(0))
     sd = get_showdate(rows)
     debug "Showdate: #{sd}\n"
