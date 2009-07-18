@@ -1,3 +1,9 @@
+  class String
+    def sqz(s)
+      s.gsub( /\000/, '')
+    end
+  end
+
 class EmailGoldstar < ActionMailer::Base
   require 'tempfile'
   require 'application.rb'
@@ -112,10 +118,6 @@ class EmailGoldstar < ActionMailer::Base
   end
 
   private
-
-  def sqz(s)
-    s.gsub( /\000/, '')
-  end
 
   def self.scan_to(rowgen, regex)
     debug "Scanning for #{regex.inspect}...\n"
