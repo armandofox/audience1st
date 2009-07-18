@@ -1,6 +1,6 @@
   class String
-    def sqz(s)
-      s.gsub( /\000/, '')
+    def sqz
+      self.gsub( /\000/, '')
     end
   end
 
