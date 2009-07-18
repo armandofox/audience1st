@@ -1,15 +1,28 @@
+require 'tempfile'
+require 'application.rb'
+require 'parseexcel'
+require 'generator'
+
+# There is a problem with Spreadsheet::ParseExcel wherein some of the strings
+# parsed from recent Excel files have embedded nulls, which screws everything
+# up.  Here's a method that overrides to_i, to_s, and to_f to fix this up.
+
 class String
-  def sqz
-    self.gsub( "\x00", '')
+  def sqz ; self.gsub("\x00",'') ; end
+end
+module Spreadsheet
+  module ParseExcel
+    class Worksheet
+      class Cell
+        def to_s ; @value.to_s.sqz ; end
+        def to_i ; @value.to_s.sqz.to_i ; end
+        def to_f ; @value.to_s.sqz.to_f ; end
+      end
+    end
   end
 end
 
 class EmailGoldstar < ActionMailer::Base
-  require 'tempfile'
-  require 'application.rb'
-  require 'parseexcel'
-  require 'generator'
-
   @@verbose = false
   @@error_trace = []
   @@testing = false
@@ -131,7 +144,7 @@ class EmailGoldstar < ActionMailer::Base
   end
 
   def self.starts_with(row, regex)
-    row && row.at(0) && row.at(0).to_s.sqz.match(regex)
+    row && row.at(0) && row.at(0).to_s.match(regex)
   end
 
   def self.parse_ticket_types_for_showdate(rows, sd)
@@ -139,8 +152,8 @@ class EmailGoldstar < ActionMailer::Base
     offers = {}
     while (row && rows.next? && !starts_with(row, /will-call/i )) do
       row = rows.next
-      if row && row[0] && !(row[0].to_s.sqz.blank?)
-        name = row[0].to_s.sqz
+      if row && row[0] && !(row[0].to_s.blank?)
+        name = row[0].to_s
         price= row[2].to_f
         noffered = row[3].to_i
         nsold = row[4].to_i
@@ -163,13 +176,13 @@ class EmailGoldstar < ActionMailer::Base
     row = scan_to(rows, /^last\s+name$/i)
     while (rows.next?) do
       row = rows.next
-      if (row && !row.empty? && row[4].to_s.sqz.match( /^\d+$/ ))
+      if (row && !row.empty? && row[4].to_s.match( /^\d+$/ ))
 
-        tix<< ExternalTicketOrder.new(:last_name => row[0].to_s.sqz,
-                                      :first_name => row[1].to_s.sqz,
+        tix<< ExternalTicketOrder.new(:last_name => row[0].to_s,
+                                      :first_name => row[1].to_s,
                                       :qty => row[2].to_i,
-                                      :ticket_offer => tixtypes[row[3].to_s.sqz],
-                                      :order_key => row[4].to_s.sqz)
+                                      :ticket_offer => tixtypes[row[3].to_s],
+                                      :order_key => row[4].to_s)
       end
     end
     tix
@@ -197,7 +210,7 @@ class EmailGoldstar < ActionMailer::Base
     # find the "Date/Time" line
     row = scan_to(rows, /date\/time/i )
     # find the showdate that matches this date
-    Time.parse(row.at(1).to_s.sqz)
+    Time.parse(row.at(1).to_s)
   end
 
   def goldstar_email_report(showdate,msg)
