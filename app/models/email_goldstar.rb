@@ -1,8 +1,8 @@
-  class String
-    def sqz
-      self.gsub( /\000/, '')
-    end
+class String
+  def sqz
+    self.gsub( "\x00", '')
   end
+end
 
 class EmailGoldstar < ActionMailer::Base
   require 'tempfile'
