@@ -1,5 +1,7 @@
 class Showdate < ActiveRecord::Base
 
+  include Comparable
+
   belongs_to :show
   has_many :vouchers
   has_many :valid_vouchers, :dependent => :destroy
@@ -11,8 +13,6 @@ class Showdate < ActiveRecord::Base
   def self.current_or_next
     Showdate.find(:first, :conditions => "thedate >= NOW()")
   end
-
-  include Comparable
 
   def <=>(other_showdate)
     other_showdate ? thedate <=> other_showdate.thedate : 1
@@ -43,6 +43,19 @@ class Showdate < ActiveRecord::Base
     (self.max_sales <= 0 ?
      self.show.house_capacity :
      [self.max_sales, self.show.house_capacity].min )
+  end
+
+  # release unsold seats from an external channel back to general inventory.
+  # if show cap == house cap, this has no effect.
+  # otherwise, show cap is boosted back up by the number of unsold seats,
+  # but never higher than the house cap.
+
+  def release_holdback(num)
+    if (max_sales > 0) && max_sales < show.house_capacity
+      self.update_attribute(:max_sales,
+                            [max_sales + num, show.house_capacity].min)
+    end
+    self.capacity
   end
 
   def total_seats_left
@@ -97,4 +110,7 @@ class Showdate < ActiveRecord::Base
   def printable_date
     self.thedate.to_formatted_s(:showtime)
   end
+
+  def menu_selection_name ; printable_date ; end
+
 end

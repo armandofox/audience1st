@@ -77,8 +77,9 @@ class EmailGoldstar < ActionMailer::Base
         tix_added = self.process_orders(orders) unless @@testing
         msg << orders.map { |o| o.to_s }.join("\n")
         if (unsold = TicketOffer.unsold(offers.values)) > 0
-          msg << "\n#{unsold} tickets can be released to general inventory\n"
+          msg << "\n#{unsold} tickets were released back to general inventory\n"
           # TBD add extra seats back into general inv by boosting house cap?
+          showdate.release_holdback(unsold)
         end
       end
      rescue Exception => e
