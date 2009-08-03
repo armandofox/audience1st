@@ -1,6 +1,6 @@
-/* 
+/*
   @file = generic.css
-  @author =  Arthur Klepchukov 
+  @author =  Arthur Klepchukov
   @modified = 02.10.2008
   @for = Audience 1st ticket-buying software
 */
@@ -17,43 +17,43 @@ small, strike, strong, sub, sup, tt, var,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	outline: 0;
-	font-weight: inherit;
-	font-style: inherit;
-	font-size: 100%;
-	font-family: inherit;
-	vertical-align: baseline;
+        margin: 0;
+        padding: 0;
+        border: 1;
+        outline: 0;
+        font-weight: inherit;
+        font-style: inherit;
+        font-size: 100%;
+        font-family: inherit;
+        vertical-align: baseline;
 }
 /* remember to define focus styles! */
 :focus {
-	outline: 0;
+        outline: 0;
 }
 body {
-	line-height: 1;
-	color: black;
-	background: white;
+        line-height: 1;
+        color: black;
+        background: white;
 }
 ol, ul {
-	list-style: none;
+        list-style: none;
 }
 /* tables still need 'cellspacing="0"' in the markup */
 table {
-	border-collapse: separate;
-	border-spacing: 0;
+        border-collapse: separate;
+        border-spacing: 0;
 }
 caption, th, td {
-	text-align: left;
-	font-weight: normal;
+        text-align: left;
+        font-weight: normal;
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: "";
+        content: "";
 }
 blockquote, q {
-	quotes: "" "";
+        quotes: "" "";
 }
 
 /*
@@ -134,11 +134,11 @@ th {
   padding: 3px;
   font-weight: bold;
 }
-ol { 
+ol {
   list-style-type: decimal;
   list-style-position: inside;
 }
-ul { 
+ul {
   list-style-type: disc;
   list-style-position: inside;
 }
@@ -179,7 +179,7 @@ ul {
   color: red;
   border: 2px solid red;
 }
-.emphasis { 
+.emphasis {
   color: red;
 }
 .wide_button {
@@ -194,10 +194,10 @@ ul {
   background-color: #EEE;
   color: inherit;
 }
-.currency { 
+.currency {
   text-align: right;
 }
-.hidden { 
+.hidden {
   display: none;
 }
 
@@ -235,7 +235,7 @@ ul {
   text-align: right;
 }
 .admin_field, .admin_button {
-  background-color: yellow; 
+  background-color: yellow;
 }
 .indented {
   margin: 5px 0 5px 150px;
@@ -260,8 +260,6 @@ ul {
   display: block;
   float: left;
   font-weight: bold;
-  font-family: serif;
-  font-variant: small-caps;
   text-decoration: none;
 }
 #store_nav li a {
@@ -290,7 +288,7 @@ div#cart {
   border: 3px double #CCC;
 }
 p#empty_cart {
-  
+
 }
 ol#cart_items { }
 li.cart_item {
@@ -371,20 +369,20 @@ h2.subscription_msg {
 #have_account {
   margin: 0;
   padding: 10px;
-  
+
   float: left;
   width: 475px;
-  
+
   /*border: 1px solid red;*/
   border-right: 5px double black;
 }
 #new_customer {
   margin: 0;
   padding: 10px;
-  
+
   float: left;
   width: 200px;
-  
+
   /*border: 1px solid green;*/
 }
 
@@ -398,28 +396,28 @@ fieldset#admin_form, fieldset#admin_form legend {
   border: 1px solid black;
 }
 
-/* 
+/*
  *  My tickets and reservations  //////////////////////////////
  */
 
 
 table#subscriptionReservations tr {
-	line-height: 1.75;
+        line-height: 1.75;
 }
-table#subscriptionReservations td.selectShowdate { 
+table#subscriptionReservations td.selectShowdate {
   width: 25em;
 }
-table#subscriptionReservations .showdate { 
+table#subscriptionReservations .showdate {
   width: 20em;
 }
-table#subscriptionReservations .action { 
+table#subscriptionReservations .action {
   text-align: center;
   vertical-align: bottom;
 }
 
 /*
  *  Store   //////////////////////////////////////////////////
- */ 
+ */
 
 #ticket_menus {
   margin-top: 20px;
@@ -432,7 +430,7 @@ table#subscriptionReservations .action {
   margin-left: 300px;
   padding: 0;
 }
-#ticket_menus *.explanation { 
+#ticket_menus *.explanation {
   margin-left: 300px;
   border: 1px dashed #ccc;
 }
@@ -445,7 +443,7 @@ table#subscriptionReservations .action {
 #donate_info {
   margin: 0 auto 10px auto;
   padding: 5px;
-  width: 400px; 
+  width: 400px;
   background-color: #EEE;
   color: black;
   border: 1px solid green;

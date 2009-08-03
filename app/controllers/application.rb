@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   require 'csv.rb'
   require 'string_extras.rb'
   require 'date_time_extras.rb'
-  
+
   before_filter :set_globals
   def set_globals
     @gCustomer = current_customer
@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
     set_checkout_in_progress(false)
     true
   end
-  
+
   filter_parameter_logging :credit_card,:password
 
   def find_cart
@@ -61,7 +61,7 @@ class ApplicationController < ActionController::Base
   end
 
   # filter that requires user to login before accessing account
-  
+
   def is_logged_in
     unless (c = Customer.find_by_id(session[:cid])).kind_of?(Customer)
       session[:return_to] = request.request_uri
@@ -100,13 +100,13 @@ class ApplicationController < ActionController::Base
     c = Customer.find_by_id(id)
     return c && (c.role >= level)
   end
-    
+
   # filter that requires login as an admin
   # TBD: these should be defined using a higher-order function but I
-  # don't know the syntax for that 
+  # don't know the syntax for that
 
   Customer.roles.each do |r|
-    eval <<EOEVAL 
+    eval <<EOEVAL
     def is_#{r}
       current_admin.is_#{r}
       # (c = Customer.find_by_id(session[:admin_id])) && c.is_#{r}
@@ -122,7 +122,7 @@ class ApplicationController < ActionController::Base
     end
 EOEVAL
   end
-   
+
   # current_customer is only called from controller actions filtered by
   # is_logged_in, so the find should never fail.
   def current_customer
@@ -144,13 +144,9 @@ EOEVAL
   end
 
   def stored_action ; !session[:return_to].nil? ; end
-  
+
   def redirect_to_stored(params={})
-    if session[:return_to]
-      redirect_to session[:return_to]
-    else
-      redirect_to :controller => 'customers', :action => 'welcome'
-    end
+    redirect_to (session[:return_to] || { :controller => 'customers', :action => 'welcome'})
     session[:return_to] = nil
     true
   end

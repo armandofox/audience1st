@@ -15,6 +15,17 @@ class Voucher < ActiveRecord::Base
     Voucher.update_all("gift_purchaser_id = '#{new}'", "gift_purchaser_id = '#{old}'")
   end
 
+  def reserved ;  self.showdate_id > 0 ;  end
+  def unreserved ; self.showdate_id.zero? ;  end
+
+  def reserved_show
+    self.reserved ? self.showdate.show.name : ''
+  end
+
+  def reserved_date
+    self.reserved ? self.showdate.printable_date : ''
+  end
+
   # every time a voucher is saved that belongs to a customer, that customer's
   # is_subscriber? attribute must be recomputed
 
@@ -57,6 +68,12 @@ class Voucher < ActiveRecord::Base
   end
 
   #validates_associated :customer, :vouchertype, :purchasemethod
+
+  def <=>(other)
+    self.showdate_id == other.showdate_id ?
+    self.vouchertype_id <=> other.vouchertype_id :
+      self.showdate <=> other.showdate
+  end
 
   # return a voucher object that can be added to a shopping cart.
   # Fields like customer_id will be bound when voucher is actualy
@@ -145,6 +162,8 @@ class Voucher < ActiveRecord::Base
                   :sold_on => Time.now,
                   :valid_date => vt.valid_date,
                   :changeable => false,
+                  :price => vt.price,
+                  :type => vt.class.to_s,
                   :expiration_date => vt.expiration_date}.merge(args))
   end
 
@@ -158,15 +177,8 @@ class Voucher < ActiveRecord::Base
   end
 
   def amount ; self.price ; end
-  def price
-    self.vouchertype.kind_of?(Vouchertype) ? self.vouchertype.price : 0.0
-  end
 
   def account_code ; self.vouchertype.account_code ; end
-
-  def is_bundle?
-    self.vouchertype.kind_of?(Vouchertype) && self.vouchertype.is_bundle?
-  end
 
   def reserved? ;   !self.showdate_id.to_i.zero? ;  end
   def unreserved? ; self.showdate_id.to_i.zero?  ;  end

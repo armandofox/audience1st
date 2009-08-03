@@ -21,13 +21,13 @@ function checkPlaceOrderForm() {
     }
     return alrt;
 }
-    
 
-Ajax.Autocompleter.extract_value = 
+
+Ajax.Autocompleter.extract_value =
   function (value, className) {
     var result;
 
-    var elements = 
+    var elements =
       value.getElementsByClassName(className, value);
     if (elements && elements.length == 1) {
       result = elements[0].innerHTML.unescapeHTML();
@@ -70,15 +70,20 @@ function showEltOnCondition(menu,elt,cond) {
 // walkup sales - calculator
 
 function recalculate(target,elts,price_field_name,qty_field_name,
-                     addl_field_name,field_to_enable_if_nonzero) {
+                     addl_field_name,field_to_enable_if_nonzero,decplaces) {
     $(target).value = '';
     var tot = 0.0;
     for (i=0; i<elts.length; i++) {
         e = elts[i].toString();
-        price = $(price_field_name+'['+e+']');
+        if (price_field_name != '') {
+            price_field = $(price_field_name+'['+e+']');
+            price = parseFloat(price_field.value);
+        } else {
+            price = 1.0;
+        }
         qty = $(qty_field_name+'['+e+']');
         qty = qty.options[qty.selectedIndex];
-        tot += (parseFloat(price.value) * parseInt(qty.value));
+        tot += (price * parseInt(qty.value));
     }
     if (addl_field_name != '') {
         if ($(addl_field_name).value != '') {
@@ -92,7 +97,7 @@ function recalculate(target,elts,price_field_name,qty_field_name,
             $(field_to_enable_if_nonzero).disabled = true;
         }
     }
-    $(target).value = tot.toFixed(2);
+    $(target).value = tot.toFixed(decplaces);
 }
 
 

@@ -31,6 +31,15 @@ class Time
     (self + 1.day).midnight - 1.second
   end
 
+  def at_beginning_of_season
+    mon = Option.value(:season_start_month)
+    mday = Option.value(:season_start_day)
+    mon = 1 unless (1..12).include?(mon)
+    mday = 1 unless (1..31).include?(mday)
+    start = self.change(:month => mon, :mday => mday, :hour => 0,
+                        :year => (self.yday >= Time.local(self.year,mon,mday).yday ? self.year : self.year - 1))
+  end
+
   def self.new_from_hash(h)
     return Time.now unless h.respond_to?(:has_key)
     if h.has_key?(:hour)

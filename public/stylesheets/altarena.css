@@ -1,15 +1,8 @@
-/* @override http://localhost:3001/stylesheets/altarena.css?1215651123 */
-
 /*
-  @file = generic.css
+  @file = altarena.css
   @author =  Arthur Klepchukov
   @modified = 02.10.2008
   @for = Audience 1st ticket-buying software
-*/
-
-/*
-  Eric Meyer's CSS Reset Reloaded
-  http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
 */
 
 /*
@@ -66,6 +59,13 @@ blockquote, q {
 /*
   Baseline styles ///////////////////////////////////////////////////////////
 */
+#header {
+  height: 100px;
+  width:  100%;
+  background-repeat: no-repeat;
+  horizontal-align: left;
+  background-image: url('/images/altarena_banner.jpg');
+}
 body {
   font-family: Verdana, Helvetica, Arial, sans-serif;
   font-size: 9pt;
@@ -349,7 +349,7 @@ ol {
 }
 
 /* override nav tab color when tab selected */
-body#store_index li#t_store_index a, body#customers_welcome li#t_customers_welcome a, body#customers_welcome_subscriber li#t_customers_welcome a, body#customers_edit li#t_customers_edit a, body#customers_list li#t_customers_list a, body#report_index li#t_report_index a,  body#donation_list li#t_donation_list a {
+body#store_index li#t_store_index a, body#customers_welcome li#t_customers_welcome a, body#customers_welcome_subscriber li#t_customers_welcome a, body#customers_edit li#t_customers_edit a, body#customers_list li#t_customers_list a, body#report_index li#t_report_index a,  body#donation_list li#t_donation_list a, body#box_office_walkup li#t_box_office_walkup a {
         background-color: white;
         color: #800;
 }

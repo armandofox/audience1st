@@ -4,7 +4,6 @@ class Show < ActiveRecord::Base
   #  may not be the same as the appserver's timezone.
   #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
   has_many :vouchers, :through => :showdates
-  validates_numericality_of :house_capacity
   validates_presence_of :opening_date, :closing_date
   validates_length_of :name, :within => 3..40, :message => "Show name must be between 3 and 40 characters"
 
@@ -15,6 +14,10 @@ class Show < ActiveRecord::Base
 
   def self.current_or_next
     (sd = Showdate.current_or_next) ? sd.show : nil
+  end
+
+  def self.all
+    Show.find(:all) # will be conditioned on "current season" in future
   end
 
   def future_showdates
@@ -28,8 +31,10 @@ class Show < ActiveRecord::Base
     name + ', opens ' + opening_date.to_s
   end
 
-  def revenue
-    self.vouchers.inject(0) {|r,v| r + v.price}
+  def revenue ; self.vouchers.sum('price') ; end
+
+  def revenue_per_seat
+    self.revenue / self.vouchers.count("type='RevenueVoucher'")
   end
 
   def revenue_by_type(vouchertype_id)
@@ -44,6 +49,8 @@ class Show < ActiveRecord::Base
     showdates.size.zero? ? 0.0 :
       showdates.inject(0) { |t,sd| t + sd.percent_sold }.to_f / showdates.size
   end
+
+  def menu_selection_name ; name ; end
 
   def name_with_run_dates
     "#{name} - #{opening_date.to_formatted_s(:month_day_only)}-#{closing_date.to_formatted_s(:month_day_only)}"

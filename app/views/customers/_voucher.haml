@@ -1,18 +1,18 @@
 - remove_voucher = ['Destroy',  {:controller => 'vouchers',:action => 'remove_voucher',:id => voucher.id },  {:confirm => (voucher.is_bundle? ?  MESSAGES[:remove_bundle_0] :  MESSAGES[:remove_voucher_0])}]
-- cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => customer}, {:confirm => MESSAGES[:release_reservation_0]} ] 
+- cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => customer}, {:confirm => MESSAGES[:release_reservation_0]} ]
 - cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
 
 %tr
   - if is_boxoffice
     %td.admin_field{:style => "background-color: white;"}
       = h voucher.id
-      = voucher.processed_by_name unless voucher.processed_by == voucher.customer.id 
+      = voucher.processed_by_name unless voucher.processed_by == voucher.customer.id
   %td= h voucher.vouchertype.name
   %td= h voucher.purchasemethod.description if voucher.purchasemethod
   - if voucher.is_bundle?
     / voucher bundle - not reservable
     %td{:colspan=>2}
-    - if is_boxoffice_manager
+    - if is_boxoffice_manager && voucher.price.zero?
       %td= button_to(*remove_voucher)
   - elsif voucher.unreserved?
     / regular voucher, unreserved
@@ -22,7 +22,7 @@
       = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer },:method=>:get )
     - if is_boxoffice_manager
       / admin actions on unreserved voucher: remove
-      %td= button_to(*remove_voucher)
+      %td= button_to(*remove_voucher) if voucher.price.zero?
   - else
     / regular voucher, reserved
     %td
@@ -41,4 +41,4 @@
     %td
       - form_remote_tag(:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id }, :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
         = text_field_tag 'comments', voucher.comments
-        = submit_tag 'Save' 
+        = submit_tag 'Save'

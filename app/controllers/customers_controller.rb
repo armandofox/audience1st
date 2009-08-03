@@ -66,7 +66,7 @@ class CustomersController < ApplicationController
     return forgot_password(l) if  params[:forgot_password]
     # did customer leave login field or password blank?
     if (l.blank?) || (p.blank?)
-      flash[:notice] = "Please provide both your email address and password."
+      flash[:notice] = "Please provide both your login name and password, or check the 'Forgot Password' box to retrieve your password."
       logger.info("Empty login or password: login=<#{l}>")
       return
     end
@@ -496,33 +496,34 @@ class CustomersController < ApplicationController
 
   def forgot_password(login)
     if login.blank?
-      flash[:notice] = "Please enter the email address with which you originally"
-      flash[:notice] << "signed up, and we will email you a new password."
-      # do we already know this person?
-    elsif ! login.valid_email_address?
-      flash[:notice] = "'#{login}' does not appear to be a valid email address."
-    elsif ! (@customer = Customer.find_by_login(login))
-      flash[:notice] = "Sorry, '#{login}' is not in our database.  You might try under a different email address, or create a new account."
-    else    # reset the password and email it to them
-      begin
-        newpass = String.random_string(6)
-        @customer.password = newpass
-        @customer.save!
-        email_confirmation(:send_new_password,@customer, newpass,
-                           "requested your password for logging in")
-        # will reach this point (and change password) only if mail delivery
-        # doesn't raise any exceptions
-        Txn.add_audit_record(:txn_type => 'edit',
-                             :customer_id => @customer.id,
-                             :comments => 'Password has been reset')
-      rescue Exception => e
-         flash[:notice] = e.message +
-           "<br/>Please contact #{Option.value(:help_email)} if you need help."
-      end
+      flash[:notice] = "Please enter the login name with which you originally signed up, and we will email you a new password."
+      redirect_to :action => :login and return
+    end
+    @customer = Customer.find_by_login(login)
+    unless @customer
+      flash[:notice] = "Sorry, '#{login}' is not in our database.  You might try under a different login name, or create a new account."
+      redirect_to :action => :login and return
+    end
+    # valid email address?
+    unless @customer.has_valid_email_address?
+      flash[:notice] = "You're in our database but we don't have an email address for you.  Please set up a new account with an email address."
+      redirect_to :action => :new and return
+    end
+    begin
+      newpass = String.random_string(6)
+      @customer.password = newpass
+      @customer.save!
+      email_confirmation(:send_new_password,@customer, newpass,
+                         "requested your password for logging in")
+      # will reach this point (and change password) only if mail delivery
+      # doesn't raise any exceptions
+      Txn.add_audit_record(:txn_type => 'edit',
+                           :customer_id => @customer.id,
+                           :comments => 'Password has been reset')
+    rescue Exception => e
+      flash[:notice] = e.message +
+        "<br/>Please contact #{Option.value(:help_email)} if you need help."
     end
     redirect_to :action => :login
   end
-
-
-
 end

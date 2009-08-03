@@ -3,6 +3,14 @@
 /[form:vouchertype]
 
 %p
+  %label{:for => :vouchertype_type} Type
+  = select_tag 'vouchertype_type', options_for_select( |
+      [["Bundle", "BundleVouchertype"], |
+      ["Comp (single ticket)", "CompVouchertype"], |
+      ["Single subscriber voucher", "SubscriberVouchertype"], |
+      ["Regular revenue voucher", "RevenueVouchertype"]]) |
+
+%p
   %label{:for=>:vouchertype_name} Name
   = text_field 'vouchertype', 'name'
 
@@ -34,11 +42,7 @@
   %label{:for=>:vouchertype_walkup_sale_allowed}Walkup sales allowed
   = check_box 'vouchertype', 'walkup_sale_allowed'
 
-/This part of form is for bundle vouchers 
-
-%p
-  %label{:for=>:vouchertype_is_bundle}This voucher type is a 'bundle'
-  = check_box 'vouchertype', 'is_bundle'
+/This part of form is for bundle vouchers
 
 %p
   %label{:for=>:vouchertype_is_subscription}This voucher type qualifies buyer as a Subscriber
@@ -48,7 +52,7 @@
   %label{:for=>:vouchertype_comments}Comments/description
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
-- if @vouchertype.is_bundle?
+- if @vouchertype.is_bundle
 
   %p
     %label{:for=>:vouchertype_bundle_sales_start} Sales start
@@ -69,7 +73,7 @@
       %td.r= h(v.name)
       %td.l
         %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
-    -   end 
+    -   end
     - end
 
 - else
@@ -77,9 +81,9 @@
   %p
     %strong Note:
     You  must
-    %em first 
+    %em first
     define a voucher to be a  bundle,
-    %em then 
+    %em then
     go back and edit to add the appropriate tickets to the bundle.
 
 /[eoform:vouchertype]

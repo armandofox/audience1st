@@ -7,7 +7,6 @@
       %th Show Name
       %th Link
       %th Run Dates
-      %th House Cap.
       %th Added to system
   %tbody
     - @shows.each do |show|
@@ -19,7 +18,6 @@
         = show.opening_date.strftime('%b %e, %Y')
         \-
         = show.closing_date.strftime('%b %e, %Y')
-      %td= show.house_capacity
       %td= show.created_on.strftime('%b %e, %Y')
       -# if @superadmin
       -# %td= button_to 'Destroy',  {:action => 'destroy', :id => show}, :confirm => MESSAGES[:areyousure_0], :post => true 

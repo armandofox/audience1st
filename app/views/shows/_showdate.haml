@@ -5,12 +5,11 @@
     = showdate.printable_date
     %br
   %td.t= showdate.end_advance_sales.to_formatted_s(:showtime)
-  %td.t= showdate.max_sales.zero? ? "Same as Show" : showdate.max_sales
-  %td.t= showdate.compute_total_sales 
+  %td.t= showdate.max_sales
   %td{:width=>"50%"}
     = link_to 'Edit', {:controller => 'showdates', :action => 'edit', :id => showdate.id}
     = "|"
-    = link_to 'Report', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id } 
+    = link_to 'Report', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id }
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id), showdate.printable_name
     = "|"

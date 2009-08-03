@@ -3,7 +3,7 @@ A ValidVoucher is a record indicating the conditions under which a particular
 voucher type can be redeemed.  For non-subscriptions, the valid voucher refers
 to a particular showdate ID.  For subscriptions, the showdate ID is zero.
 #
-is a record that states "for a particular showdate ID, this particular type of voucher 
+is a record that states "for a particular showdate ID, this particular type of voucher
 is accepted", and encodes additional information such as the capacity limit for this vouchertype for thsi
  performance, the start and end dates of redemption for this vouchertype, etc.
 =end
@@ -16,6 +16,8 @@ class ValidVoucher < ActiveRecord::Base
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type
 
+  require 'set'
+
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
@@ -25,6 +27,17 @@ class ValidVoucher < ActiveRecord::Base
 
   def printable_name
     self.showdate.printable_name
+  end
+
+  def self.for_advance_sales(passwords = [])
+    general_conds = "start_sales <= NOW() AND end_sales >= NOW()"
+    password_conds = "password IS NULL OR password = ''"
+    unless passwords.empty?
+      password_conds += " OR password LIKE ? " * passwords.length
+      end
+    v = ValidVoucher.find(:all,
+                          :conditions => ["#{general_conds} AND (#{password_conds})", passwords])
+    v.to_set.classify( &:showdate_id )
   end
 
   def seats_remaining
@@ -38,14 +51,14 @@ class ValidVoucher < ActiveRecord::Base
     [nseatsleft, [0,max_sales_for_type-showdate.sales_by_type(vouchertype_id)].max].min
     end
   end
-  
+
   # get number of seats available for a showdate, given a customer
   # (different customers have different purchasing rights), a list of
   # passwords (some voucher types are password protected), and whether
   # to ignore time-based sales cutoffs (default: false).
   # Returns an AvailableSeat object encapsulating the result of htis
   # computation along with an English explanation if appropriate.
-  
+
   def self.numseats_for_showdate_by_vouchertype(sd,cust,vtype,opts={})
     av = AvailableSeat.new(sd,cust,vtype,0) # fail safe: 0 available
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : cust.is_boxoffice
@@ -109,7 +122,7 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
-  
+
   def self.sold_out_or_date_invalid(sd,ignore_cutoff)
     now = Time.now
     if sd.total_seats_left < 1
@@ -139,5 +152,5 @@ class ValidVoucher < ActiveRecord::Base
       [howmany, "available"]
     end
   end
-  
+
 end

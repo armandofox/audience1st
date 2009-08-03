@@ -62,8 +62,18 @@ class ReportController < ApplicationController
   end
 
   def showdate_sales
-    render :partial => 'showdate_sales', :locals => {:vouchers =>
-      Object.const_get(params[:klass]).find(params[:id]).vouchers.group_by(&:vouchertype) }
+    entity = Object.const_get(params[:klass]).find(params[:id])
+    vouchers = entity.vouchers
+    by_vtype = vouchers.group_by(&:vouchertype)
+    categories = vouchers.group_by(&:class)
+    revenue_per_seat = entity.revenue_per_seat
+    render :partial => 'showdate_sales',
+    :locals => {
+      :total_vouchers => vouchers.size,
+      :vouchers => by_vtype,
+      :categories => categories,
+      :revenue_per_seat => revenue_per_seat
+    }
   end
 
   def sales_detail
@@ -296,7 +306,7 @@ EOQ2
 
   def subscription_vouchers(year)
     season_start = Time.local(year,Option.value(:season_start_month).to_i)
-    v = Vouchertype.find(:all, :conditions =>"is_bundle=1 AND is_subscription=1 AND name LIKE '%#{year}%'")
+    v = BundleVouchertype.find(:all, :conditions =>"is_subscription=1 AND name LIKE '%#{year}%'")
     #valid_date>=? AND expiration_date<?',season_start, season_start + 1.year])
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
   end

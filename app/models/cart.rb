@@ -1,16 +1,24 @@
 class Cart
-
+  require 'set'
   attr_accessor :items
   attr_accessor :total_price
   attr_accessor :comments
-  attr_accessor
+  attr_reader :order_number
+
+  # number of seconds from the epoch to 1/1/2008, used to offset order ID's
+  TIMEBASE = 1230796800
+  def self.generate_order_id
+    sprintf("%02d%d%02d", Option.value(:venue_id), Time.now.to_i - TIMEBASE,
+           Time.now.usec % 37).to_i
+  end
 
   def initialize
     @items = []
     @total_price = 0.0
     @comments = ''
+    @order_number = Cart.generate_order_id
   end
-  
+
   def empty!
     @items = []
     @total_price = 0.0
@@ -35,7 +43,7 @@ class Cart
     raise "Invalid gift recipient record" unless buyer.kind_of?(Customer)
     self.vouchers_only.map { |v|  v.gift_purchaser_id = buyer.id }
   end
-  
+
   def to_s
     notes = {}
     txt = self.items.map do |i|
@@ -92,17 +100,7 @@ class Cart
     self.total_price += price
   end
 
-  def remove_index(itm)
-    if (removed = self.items.delete_at(itm.to_i))
-      if (removed.kind_of?(Voucher))
-        self.total_price -= removed.vouchertype.price
-      elsif (removed.kind_of?(Donation))
-        self.total_price -= removed.amount
-      else
-        raise "Invalid item removed from cart!"
-      end
-    end
-    self.total_price = [self.total_price, 0.0].max
+  def donation
+    self.items.detect { |i| i.kind_of?(Donation) }
   end
-
 end

@@ -8,9 +8,9 @@ class StoreController < ApplicationController
   before_filter :is_logged_in, :only => %w[edit_billing_address]
 
   verify(:method => :post,
-         :only => %w[do_walkup_sale add_tickets_to_cart add_donation_to_cart
+         :only => %w[add_tickets_to_cart add_donation_to_cart
                         add_subscriptions_to_cart place_order],
-         :add_flash => {:warning => "SYSTEM ERROR: action only callable as POST"},
+         :add_to_flash => {:warning => "SYSTEM ERROR: action only callable as POST"},
          :redirect_to => {:action => 'index'})
 
   # this should be the last declarative spec since it will append another
@@ -266,7 +266,8 @@ class StoreController < ApplicationController
       @recipient = @customer
     end
     # OK, we have a customer record to tie the transaction to
-    resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to)
+    resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to,
+                                         @cart.order_number)
     if !resp.success?
       flash[:checkout_error] = "Payment gateway error: "
       if resp.message.match( /ECONNRESET/ )
@@ -303,133 +304,6 @@ class StoreController < ApplicationController
     set_return_to
   end
 
-  def walkup
-    now = Time.now
-    @shows = Show.find(:all)
-    if params[:show] &&  @show = Show.find(params[:show])
-      @show_id = params[:show].to_i
-    elsif (@show = Show.current_or_next)
-      @show_id = @show.id
-    else
-      # bail out right now if there are no showdate for which to sell
-      flash[:notice] = "No upcoming shows for walkup sales"
-      redirect_to :controller => 'shows', :action => 'list'
-      return
-    end
-    @showdates = @show.showdates
-    # if a showdate was selected, and is "compatible" with current show, use it
-    if (sd = params[:showdate].to_i) &&
-        @show.showdates.map { |s| s.id }.include?(sd)
-      @showdate_id = sd
-    else
-      @showdate_id = @showdates.first.id
-    end
-    @vouchertypes = Vouchertype.find(:all, :conditions => ["is_bundle = ? AND walkup_sale_allowed = ?", false, true])
-  end
-
-  def do_walkup_sale
-    if params[:commit].match(/report/i) # generate report
-      redirect_to(:controller => 'report', :action => 'walkup_sales',
-                  :showdate_id => params[:showdate_select])
-      return
-    end
-    qtys = params[:qty]
-    showdate = params[:showdate_select]
-    # CAUTION: disable_with on a Submit button makes its name (params[:commit])
-    # empty on submit!
-    is_cc_purch = !(params[:commit] && params[:commit] != APP_CONFIG[:cc_purch])
-    vouchers = []
-    # recompute the price
-    total = 0.0
-    ntix = 0
-    begin
-      qtys.each_pair do |vtype,q|
-        ntix += (nq = q.to_i)
-        total += nq * Vouchertype.find(vtype).price
-        nq.times  { vouchers << Voucher.anonymous_voucher_for(showdate, vtype) }
-      end
-      total += (donation=params[:donation].to_f)
-    rescue Exception => e
-      flash[:checkout_error] = "There was a problem verifying the total amount of the order:<br/>#{e.message}"
-      redirect_to(:action => :walkup, :showdate => showdate,
-                  :show => params[:show_select])
-      return
-    end
-    # link record as a walkup customer
-    customer = Customer.walkup_customer
-    if is_cc_purch
-      if false
-        cc = CreditCard.new(params[:credit_card])
-        # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
-        # called rather than to_i to convert month and year to ints.
-        cc.month = cc.month.to_i
-        cc.year = cc.year.to_i
-        # run cc transaction....
-        resp = do_cc_present_transaction(total,cc)
-        unless resp.success?
-          flash[:checkout_error] = "PAYMENT GATEWAY ERROR: " + resp.message
-          redirect_to :action => 'walkup', :showdate => showdate,
-          :show => params[:show_select]
-          return
-        end
-        tid = resp.params['transaction_id']
-        flash[:notice] = "Transaction approved (#{tid})<br/>"
-      end
-      tid = 0
-      howpurchased = Purchasemethod.get_type_by_name('box_cc')
-      flash[:notice] = "Credit card purchase recorded, "
-    else
-      tid = 0
-      howpurchased = Purchasemethod.get_type_by_name('box_cash')
-      flash[:notice] = "Cash purchase recorded, "
-    end
-    #
-    # add tickets to "walkup customer"'s account
-    # TBD CONSOLIDATE this with 'place_order' code for normal orders
-    #
-    unless (vouchers.empty?)
-      vouchers.each do |v|
-        if v.kind_of?(Voucher)
-          v.purchasemethod_id = howpurchased
-        end
-      end
-      customer.add_items(vouchers, logged_in_id, howpurchased, tid)
-      customer.save!              # actually, probably unnecessary
-      flash[:notice] << sprintf("%d tickets sold,", ntix)
-      Txn.add_audit_record(:txn_type => 'tkt_purch',
-                           :customer_id => customer.id,
-                           :comments => 'walkup',
-                           :purchasemethod_id => howpurchased,
-                           :logged_in_id => logged_in_id)
-    end
-    if donation > 0.0
-      begin
-        Donation.walkup_donation(donation,logged_in_id)
-        flash[:notice] << sprintf(" $%.02f donation processed,", donation)
-      rescue Exception => e
-        flash[:checkout_error] << "Donation could NOT be recorded: #{e.message}"
-      end
-    end
-    flash[:notice] << sprintf(" total $%.02f",  total)
-    flash[:notice] << sprintf("<br/>%d seats remaining for this performance",
-                              Showdate.find(showdate).total_seats_left)
-    redirect_to(:action => 'walkup', :showdate => showdate,
-                :show => params[:show_select])
-  end
-
-  # AJAX handler called when credit card is swiped thru USB reader
-  def process_swipe
-    swipe_data = String.new(params[:swipe_data])
-    key = session[:otp].to_s
-    no_encrypt = (swipe_data[0] == 37)
-    if swipe_data && !(swipe_data.empty?)
-      swipe_data = encrypt_with(swipe_data, key) unless no_encrypt
-      @credit_card = convert_swipe_to_cc_info(swipe_data.chomp)
-      @credit_card.number = encrypt_with(@credit_card.number, key) unless no_encrypt
-      render :partial => 'credit_card', :locals => {'name_needed'=>true}
-    end
-  end
-
   private
 
   def setup_ticket_menus
@@ -448,7 +322,9 @@ class StoreController < ApplicationController
     if @sd = current_showdate   # everything keys off of selected showdate
       @sh = @sd.show
       @all_showdates = (is_admin ? @sh.showdates :
-                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+                        @sh.future_showdates)
+#       @all_showdates = (is_admin ? @sh.showdates :
+#                         @sh.future_showdates.select { |s| s.total_seats_left > 0 })
       # make sure originally-selected showdate is included among those
       #  to be displayed.
       unless @all_showdates.include?(@sd)
@@ -459,7 +335,9 @@ class StoreController < ApplicationController
                        [] )
     elsif @sh = current_show    # show selected, but not showdate
       @all_showdates = (is_admin ? @sh.showdates :
-                        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+                        @sh.future_showdates)
+#       @all_showdates = (is_admin ? @sh.showdates :
+#                         @sh.future_showdates.select { |s| s.total_seats_left > 0 })
       @vouchertypes = []
     else                      # not even show is selected
       @all_showdates = []
@@ -576,11 +454,11 @@ class StoreController < ApplicationController
     return cc_transaction(amount,cc,params,card_present=true)
   end
 
-  def do_cc_not_present_transaction(amount, cc, bill_to)
+  def do_cc_not_present_transaction(amount, cc, bill_to, order_num)
     email = bill_to[:email].to_s.default_to("invalid@audience1st.com")
     phone = bill_to[:day_phone].to_s.default_to("555-555-5555")
     params = {
-      :order_id => Option.value(:venue_id).to_i,
+      :order_id => order_num,
       :email => email,
       :address =>  {
         :name => "#{bill_to[:first_name]} #{bill_to[:last_name]}",
@@ -628,15 +506,12 @@ class StoreController < ApplicationController
     showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
   end
 
-  def get_all_showdates(ignore_cutoff=false)
+  def get_all_showdates(ignore_cutoff = false)
     if ignore_cutoff
-      showdates = Showdate.find(:all)
+      showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season])
     else
-      now = Time.now
-      showdates = Showdate.find(:all, :conditions => ['thedate >= ? AND end_advance_sales >= ?' , now, now])
-      showdates.reject! { |sd| sd.no_seats_for(current_customer) }
+      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).sort_by(&:thedate)
     end
-    showdates.sort_by { |s| s.thedate }
   end
 
   def get_all_subs(cust = Customer.generic_customer)
@@ -656,9 +531,9 @@ class StoreController < ApplicationController
       unless qty.zero?
         av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => @gAdmin.is_boxoffice)
         if av.howmany.zero?
-          msgs << "#{vtype.name} tickets not available for this performance."
+          msgs << "No '#{vtype.name}' tickets available for this performance."
         elsif av.howmany < qty
-          msgs << "Only #{qty} '#{vtype.name}' tickets available for this performance."
+          msgs << "Only #{av.howmany} '#{vtype.name}' tickets available for this performance, but you asked for #{qty}. Please try again."
         else
           @cart.comments ||= comments
           qty.times  do

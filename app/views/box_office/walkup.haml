@@ -1,0 +1,41 @@
+= javascript_include_tag 'utils'
+
+- form_tag :action => 'do_walkup_sale', :id => @showdate do
+  - vtypes = @vouchertypes.map { |v| v.id }
+  = javascript_recalc_function 'total', vtypes, 'price','qty','donation'
+  = javascript_recalc_function 'totaltix', vtypes, '', 'qty', '', '', 0
+
+  %table{:border=>1}
+    %tr
+      %td.help{:valign=>:top}
+        %p 1. Select tickets & donation amount
+      %td.help{:valign=>:top}
+        %p 2. Collect payment or process credit card, record sale
+    %tr
+      %td{:valign=>:top}
+        %table
+          %tr
+            %td{:colspan=>2}
+              %strong Tickets Processed
+            %td= text_field_tag 'totaltix', 0, :id => 'totaltix', :size => 4, :disabled => true, :style => "font-weight: bold;"
+          %tr
+            %td{:colspan=>2}
+              %strong TOTAL TO COLLECT
+            %td= text_field_tag 'total', 0, :id => 'total', :size => 6,:disabled => true, :style => "font-weight: bold;"
+          %tr
+            %td.label{:colspan=>2}
+              %label{:for=>:donation} Additional donation:
+            %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => 'recalc_total(); recalc_totaltix()'
+          - @vouchertypes.each do |v|
+            %tr
+              %td.label= h(v.name)
+              %td= text_field_tag("price[#{v.id}]", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)
+              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0),{:onChange => 'recalc_total(); recalc_totaltix()'}
+
+      %td{:align=>:center,:valign=>:top}
+        %p Click here once payment has been collected:
+        = submit_tag 'Cash Payment'
+        = submit_tag APP_CONFIG[:cc_purch]
+        %br
+        %br
+        = submit_tag 'Generate Report'

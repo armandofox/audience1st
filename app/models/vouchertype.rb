@@ -20,6 +20,11 @@ class Vouchertype < ActiveRecord::Base
     @@offer_to
   end
 
+  def is_bundle
+    self.class.to_s == 'BundleVouchertype'
+  end
+  def is_bundle? ; is_bundle ;  end
+
   def visibility
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
   end

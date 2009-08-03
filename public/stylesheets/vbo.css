@@ -7,6 +7,24 @@ body.testing {
 }
 
 
+/// Styles for divs and pages used in admin interface
+
+#outer_wrapper_admin {
+  margin: 0 auto;
+  padding: 0;
+  width: 900px;
+  border: 1px solid #EEE;
+  background-color: white;
+  height:  100%;
+}
+#inner_wrapper_admin {
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+
+}
+
+
 table {
   border: 0;
 }
@@ -22,6 +40,26 @@ th {
 input[type="submit"] {
   display: inline;
 }
+
+// Use <ul> environment to create horizontal tabs
+ul.horizontal_list {
+  float: left;
+  border-bottom: 2px solid black;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+ul.horizontal_list li {
+  width: auto;
+  list-style: none;
+  float: left;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: 8px;
+  margin-right: 60px;
+  font-size: larger;
+  font-weight: bold;
+}
+
 
 .clearboth {
   clear: both;

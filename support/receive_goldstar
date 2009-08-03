@@ -1,18 +1,14 @@
 #!/bin/bash
-#  usage:  $0 [-t]
+#  usage:  $0 venuename [-t]
 #  Pipe a raw email with will-call list attachment to this script, and
 #  it will use script/runner to try to integrate it with our main
 #  willcall list.
 #  -t option means use 'stage' version of app (usually development);
 #  otherwise production.
 
-if [ "$1" = "-t" ]; then
-    env=development
-else
-    env=production
-fi
-
-# bug: should check exit status of the below cmd and send email if it 
+# bug: should check if venuename exists and check argument line more carefully
+# bug: should check exit status of the below cmd and send email if it
 # fails; otherwise nothing will show up in logs
-RAILS_ENV=$env /usr/local/bin/ruby $(dirname "$0")/../script/runner 'EmailGoldstar.receive(STDIN.read)' 
+
+RAILS_ENV=production TESTING="$2" /usr/local/bin/ruby "/home/audienc/rails/$1/current/script/runner" 'EmailGoldstar.receive(STDIN.read)'
 # add  >/dev/null 2>&1 to above line to suppress emails of error reports

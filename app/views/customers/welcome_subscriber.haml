@@ -4,7 +4,7 @@
 %br/
 
 = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(@subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
-    
+
 %br/
 %h1.page_heading.center Purchased Tickets
 %br/
@@ -16,7 +16,7 @@
     %thead
       %tr
         - if @admin.is_boxoffice
-          %th.admin_field Ticket #
+          %th.admin Tkt #
         %th Type
         %th Acquired
         %th Redeemed

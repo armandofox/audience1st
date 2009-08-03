@@ -30,7 +30,7 @@ class Option < ActiveRecord::Base
   def self.read_all_options
     Hash[*(Option.find(:all).map { |o| [o.name.to_sym,o.get_value] }.flatten)]
   end
-  
+
   def get_value
     case self.typ
     when :int
@@ -41,5 +41,5 @@ class Option < ActiveRecord::Base
       self.value
     end
   end
-    
+
 end

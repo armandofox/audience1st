@@ -5,3 +5,13 @@
       %td.showSalesQty= v.size
       %td.currency.showSalesRevenue= number_to_currency(vt.price * v.size)
       %td
+  %tr
+    %td.strong{:colspan => 4}
+      - categories.each_pair do |ct, v|
+        = h ct.to_s.gsub(/voucher/i, '')
+        = number_to_percentage 100*v.size/total_vouchers, :precision => 0
+        ,
+      single-ticket revenue per seat
+      = number_to_currency revenue_per_seat
+
+

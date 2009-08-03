@@ -42,6 +42,14 @@ module ApplicationHelper
                   :onClick => visual_effect(:toggle_appear, elt_name))
   end
 
+  # yield a checkbox-guarded element
+  def guarded_by(tag_type, tag_id, contents)
+    content_tag(tag_type, :id => tag_id,
+                :style => (contents.blank? ? 'display: none;' : '')) do
+      yield
+    end
+  end
+
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
     check_box_tag name, 1, checked, :onClick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
@@ -432,11 +440,10 @@ EOS3
   # return a recalc function that can be embedded in a page and used
   #  as the target of an onChange handler for a form
 
-  def javascript_recalc_function(target,fields,price_fields,qty_fields,extra_field='',field_to_enable_if_nonzero='')
+  def javascript_recalc_function(target,fields,price_fields,qty_fields,extra_field='',field_to_enable_if_nonzero='',decimal_places=2)
     javascript_tag <<-EOJS
        recalc_#{target} = function() {
-          recalculate('#{target}', #{to_js_array(fields)}, '#{price_fields}',
-            '#{qty_fields}', '#{extra_field}', '#{field_to_enable_if_nonzero}')
+          recalculate('#{target}', #{to_js_array(fields)}, '#{price_fields}',           '#{qty_fields}', '#{extra_field}', '#{field_to_enable_if_nonzero}', #{decimal_places})
        }
 EOJS
   end

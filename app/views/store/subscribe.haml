@@ -23,7 +23,7 @@
       = javascript_recalc_function :total, @subs_to_offer.map {|s| s.id}, :price, :vouchertype, :donation, :submit
       - @subs_to_offer.each do |s|
         %label.wide_label{:for => "vouchertype[#{s.id}]"}= s.name_with_price
-        = select_tag("vouchertype[#{s.id}]", options_for_select((0..8).to_a), :onChange => 'recalc_total()')
+        = select_tag("vouchertype[#{s.id}]", options_for_select((0..20).to_a), :onChange => 'recalc_total()')
         %br/
         = hidden_field_tag "price[#{s.id}]", s.price
       %label.wide_label{:for => :donation} Additional tax-deductible donation

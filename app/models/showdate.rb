@@ -27,23 +27,30 @@ class Showdate < ActiveRecord::Base
   end
 
   def revenue
-    self.vouchers.inject(0) {|sum,v| sum + v.price}
+    self.vouchers.sum('price')
   end
 
   def revenue_per_seat
-    self.revenue / self.vouchers.length
+    self.revenue / self.vouchers.count("type='RevenueVoucher'")
+  end
+
+  def comp_seats
+    self.vouchers.count("type='CompVoucher'")
+  end
+
+  def nonsubscriber_revenue_seats
+    self.vouchers.count("type='RevenueVoucher'")
+  end
+
+  def subscriber_seats
+    self.vouchers.count("type='SubscriberVoucher'")
   end
 
   def advance_sales?
     (self.end_advance_sales - 5.minutes) > Time.now
   end
 
-  # capacity: if zero, then use show's capacity
-  def capacity
-    (self.max_sales <= 0 ?
-     self.show.house_capacity :
-     [self.max_sales, self.show.house_capacity].min )
-  end
+  def capacity ; max_sales ; end
 
   # release unsold seats from an external channel back to general inventory.
   # if show cap == house cap, this has no effect.
@@ -51,15 +58,12 @@ class Showdate < ActiveRecord::Base
   # but never higher than the house cap.
 
   def release_holdback(num)
-    if (max_sales > 0) && max_sales < show.house_capacity
-      self.update_attribute(:max_sales,
-                            [max_sales + num, show.house_capacity].min)
-    end
-    self.capacity
+    self.update_attribute(:max_sales, max_sales + num)
+    max_sales
   end
 
   def total_seats_left
-    [self.capacity - self.compute_total_sales, 0].max
+    [self.house_capacity - self.compute_total_sales, 0].max
   end
 
   def percent_sold
@@ -93,6 +97,16 @@ class Showdate < ActiveRecord::Base
 
   def compute_total_sales
     return Voucher.count(:conditions => ['showdate_id =  ?', self.id])
+  end
+
+  def compute_advance_sales
+    return Voucher.count(:conditions => ['showdate_id = ? AND customer_id != ?',
+                                        self.id, Customer.walkup_customer.id])
+  end
+
+  def checked_in
+    return Voucher.count(:conditions => ['showdate_id = ? AND used = 1',
+                                        self.id])
   end
 
   def spoken_name

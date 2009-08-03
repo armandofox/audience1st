@@ -3,18 +3,20 @@
   %head
     - if (s = Option.value(:external_css_file)).blank?
       = stylesheet_link_tag 'generic'
-    - else
+    - elsif s.match( /^http:|ftp:/i )
       = stylesheet_link_tag possibly_https(s)
+    - else
+      = stylesheet_link_tag s
     = stylesheet_link_tag 'vbo'
-    = javascript_include_tag :defaults 
+    = javascript_include_tag :defaults
 
-    %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.humanize) 
+    %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
     %meta{'http-equiv'=>:imagetoolbar, :content=>:no}/
     %meta{:name=>:description, :content=>''}/
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(SANDBOX ? :testing : nil)}
-    
+
     #outer_wrapper
       #header
       #nav
@@ -42,11 +44,6 @@
         - if @gCheckoutInProgress
           %h1.center Your Order So Far
           = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
-        = yield 
+        = yield
 
-    #footer.center
-      \&copy; 2008
-      Secure ticketing by
-      = link_to 'A1 Patron Systems', 'http://www.a1patronsystems.com'
-      = " - Version #{APP_VERSION} - "
-      = link_to "Terms of Use & Privacy Policy", Option.value(:privacy_policy_url)
+    = render :partial => 'layouts/footer'
