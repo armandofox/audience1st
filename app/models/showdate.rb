@@ -31,7 +31,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def revenue_per_seat
-    self.revenue / self.vouchers.count("type='RevenueVoucher'")
+    self.revenue / self.vouchers.count("type!='SubscriberVoucher'")
   end
 
   def comp_seats

@@ -34,7 +34,7 @@ class Show < ActiveRecord::Base
   def revenue ; self.vouchers.sum('price') ; end
 
   def revenue_per_seat
-    self.revenue / self.vouchers.count("type='RevenueVoucher'")
+    self.revenue / self.vouchers.count("type!='SubscriberVoucher'")
   end
 
   def revenue_by_type(vouchertype_id)
