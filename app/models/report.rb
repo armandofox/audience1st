@@ -33,4 +33,8 @@ class Report
     @errors.to_s
   end
 
+  protected
+  def self.sanitize_sql(arg)
+    ActiveRecord::Base.sanitize_sql(arg)
+  end
 end

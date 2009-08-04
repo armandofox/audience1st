@@ -48,15 +48,15 @@ class Vouchertype < ActiveRecord::Base
     end
     case args[:type]
     when :bundled_voucher
-      restrict << "is_bundle = 0 AND is_subscription = 0"
+      restrict << "type != 'BundleVouchertype' AND is_subscription = 0"
       restrict << "#{Time.db.now} BETWEEN valid_date AND expiration_date" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :subscription
-      restrict << "is_bundle = 1 AND is_subscription = 1"
+      restrict << "type = 'BundleVouchertype' AND is_subscription = 1"
       restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :bundle
-      restrict << "is_bundle = 1"
+      restrict << "type = 'BundleVouchertype'"
       restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     end
