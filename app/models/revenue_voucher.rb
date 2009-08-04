@@ -1,0 +1,2 @@
+class RevenueVoucher < Voucher
+end

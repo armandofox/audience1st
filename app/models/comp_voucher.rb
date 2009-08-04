@@ -1,0 +1,2 @@
+class CompVoucher < Voucher
+end

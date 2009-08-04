@@ -1,0 +1,2 @@
+class BundleVoucher < Voucher
+end
