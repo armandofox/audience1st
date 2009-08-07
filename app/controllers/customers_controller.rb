@@ -23,6 +23,9 @@ class CustomersController < ApplicationController
                 :redirect_to => {:action => :list},
                 :add_to_flash => 'Only super-admin can delete customer; use Merge instead')
 
+  # prevent complaints on AJAX autocompletion
+  skip_before_filter :verify_authenticity_token, :only => :auto_complete_for_customer_full_name
+
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
 
@@ -73,16 +76,12 @@ class CustomersController < ApplicationController
     # try authenticate
     if (c = Customer.authenticate(l,p)).kind_of?(Customer)
       # success
-      session[:cid] = c.id
-      c.update_attribute(:last_login,Time.now)
-      # set redirect-to action based on whether this customer is an admin.
-      # authentication succeeded, and customer is NOT in the middle of a
-      # store checkout. Proceed to welcome page.
-      controller,action = possibly_enable_admin(c)
-      session[:promo_code] = nil
-      redirect_to_stored and return if (@checkout_in_progress || stored_action)
-      redirect_to :controller => controller, :action => action
-      return
+      login_from_password(c)
+      if (@checkout_in_progress || stored_action)
+        redirect_to_stored
+      else
+        redirect_to :controller => controller, :action => action
+      end
     else
       # authentication failed
       case c

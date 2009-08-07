@@ -1,0 +1,11 @@
+<h1>New donation_fund</h1>
+
+<% form_for(@donation_fund) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.submit 'Create' %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', donation_funds_path %>

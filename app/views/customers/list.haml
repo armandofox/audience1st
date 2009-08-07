@@ -15,7 +15,7 @@
         %th
         %th Name
         - cols.each do |c|
-          %th= link_to Inflector.humanize(c), :action=>'list', :order_by=>c,:filter=>params[:filter]
+          %th= link_to ActiveSupport::Inflector.humanize(c), :action=>'list', :order_by=>c,:filter=>params[:filter]
     %tbody  
       - @customers.each do |c|
         %tr{:valign=>:top,:class=>(c.display_class || cycle(:oddRow,:evenRow))}

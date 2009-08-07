@@ -183,6 +183,9 @@ class Voucher < ActiveRecord::Base
   def reserved? ;   !self.showdate_id.to_i.zero? ;  end
   def unreserved? ; self.showdate_id.to_i.zero?  ;  end
 
+  def is_bundle ; self.vouchertype.is_bundle ; end
+  def is_bundle? ; self.vouchertype.is_bundle ; end
+
   def date
     self.showdate_id.zero? ? nil : self.showdate.thedate
   end

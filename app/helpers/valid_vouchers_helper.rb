@@ -1,2 +1,2 @@
-module Valid_VouchersHelper
+module ValidVouchersHelper
 end

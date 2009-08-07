@@ -6,8 +6,8 @@ class DonationController < ApplicationController
          :add_to_flash => "System error: method should only be called via POST",
          :redirect_to => {:action => 'list'})
 
-  scaffold :donation
-  
+  #scaffold :donation
+
   def list
     unless params[:commit]
       # first time visiting page: don't do "null search"
@@ -85,7 +85,7 @@ class DonationController < ApplicationController
       render :text => "(ERROR)"
     end
   end
-  
+
   def new
     unless (@cust = @gCustomer)
       flash[:notice] = "Must select a customer to add a donation"
@@ -112,7 +112,7 @@ class DonationController < ApplicationController
       render :action=>'new', :customer=>c
     end
   end
-      
+
   private
 
   def export(donations)
@@ -136,5 +136,5 @@ class DonationController < ApplicationController
                 :filename => "donations_#{Time.now.strftime('%Y_%m_%d')}.csv")
     end
   end
-  
+
 end

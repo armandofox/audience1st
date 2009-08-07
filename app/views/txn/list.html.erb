@@ -16,7 +16,7 @@
              "showdate_id", "voucher_id", "comments"]
 %>
 <th>
-<%= link_to_if c, Inflector.titleize(c), :action => 'list', :order_by => c, :filter => params[:filter]  %>
+<%= link_to_if c, ActiveSupport::Inflector.titleize(c), :action => 'list', :order_by => c, :filter => params[:filter]  %>
 </th>
 <% end %>
 </tr>

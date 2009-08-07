@@ -2,6 +2,10 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
+
+  helper :all
+  #protect_from_forgery
+
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
@@ -41,7 +45,7 @@ class ApplicationController < ActionController::Base
   end
 
   def get_filter_info(params,modelname,default=nil,descending=nil)
-    cols = eval(Inflector.camelize(modelname) + ".columns")
+    cols = eval(ActiveSupport::Inflector.camelize(modelname) + ".columns")
     order = params[:order_by]
     if order.nil? or order.empty?
       if (default)
@@ -52,12 +56,25 @@ class ApplicationController < ActionController::Base
     end
     order += " DESC" if descending
     conds = nil
-    f = params[(Inflector.tableize(modelname)+"_filter").to_sym]
+    f = params[(ActiveSupport::Inflector.tableize(modelname)+"_filter").to_sym]
     if f && !f.empty?
       fs = "'%" + f.gsub(/\'/, "''") + "%'"
       conds = cols.map { |c| "#{c.name} LIKE #{fs}"}.join(" OR ")
     end
     return conds, order, f
+  end
+
+  # login a customer
+  def login_from_password(c)
+    # success
+    session[:cid] = c.id
+    c.update_attribute(:last_login,Time.now)
+    # set redirect-to action based on whether this customer is an admin.
+    # authentication succeeded, and customer is NOT in the middle of a
+    # store checkout. Proceed to welcome page.
+    controller,action = possibly_enable_admin(c)
+    reset_shopping
+    c
   end
 
   # filter that requires user to login before accessing account
@@ -113,7 +130,7 @@ class ApplicationController < ActionController::Base
     end
     def is_#{r}_filter
       unless current_admin.is_#{r}
-        flash[:notice] = 'You must have at least #{Inflector.humanize(r)} privilege for this action.'
+        flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
         redirect_to :controller => 'customers', :action => 'login'
         return false
@@ -180,12 +197,3 @@ EOEVAL
 
 end
 
-
-# the following allows functional tests to not choke on the user_agent method,
-# since by default TestRequest doesn't provide that method.
-
-module ActionController
-  class TestRequest < AbstractRequest
-    attr_accessor :user_agent
-  end
-end

@@ -174,7 +174,7 @@ module ApplicationHelper
     s << form_tag({:controller => controller, :action => action_name},
                         form_tag_opts)
     s << (opts[:label] || 'Search/filter:')
-    varname = Inflector.tableize(controller) + "_filter"
+    varname = ActiveSupport::Inflector.tableize(controller) + "_filter"
     s << text_field_tag(varname, eval("@#{varname}"))
     s << submit_tag((opts[:submit] || 'Search'), html_opts)
     s << "</form>"

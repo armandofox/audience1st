@@ -23,10 +23,10 @@ class LapsedSubscribers < Report
         AND c.e_blacklist = 0
         ORDER BY c.last_name
         }
-    prev_subscribers = Customer.find_by_sql(sprintf sql, have.join(','))
+    prev_subscribers = Customer.find_by_sql(sprintf(sql, have.join(',')))
     # now identify those who ALSO have ANY of the new vouchertypes, and
     # subtract the sets
-    renewed_subscribers = Customer.find_by_sql(sprintf sql, have_not.join(','))
+    renewed_subscribers = Customer.find_by_sql(sprintf(sql, have_not.join(',')))
     @customers = prev_subscribers - renewed_subscribers
   end
 

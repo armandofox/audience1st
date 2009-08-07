@@ -24,13 +24,6 @@ class Show < ActiveRecord::Base
     self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now])
   end
 
-  # capacity: if zero, assumes unlimited
-
-  @scaffold_select_order = 'opening_date'
-  def scaffold_name
-    name + ', opens ' + opening_date.to_s
-  end
-
   def revenue ; self.vouchers.sum('price') ; end
 
   def revenue_per_seat

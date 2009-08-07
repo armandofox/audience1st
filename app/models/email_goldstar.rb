@@ -1,5 +1,5 @@
 require 'tempfile'
-require 'application.rb'
+require 'application_controller.rb'
 require 'parseexcel'
 require 'generator'
 

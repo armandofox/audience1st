@@ -76,12 +76,12 @@ function recalculate(target,elts,price_field_name,qty_field_name,
     for (i=0; i<elts.length; i++) {
         e = elts[i].toString();
         if (price_field_name != '') {
-            price_field = $(price_field_name+'['+e+']');
+            price_field = $(price_field_name+'_'+e);
             price = parseFloat(price_field.value);
         } else {
             price = 1.0;
         }
-        qty = $(qty_field_name+'['+e+']');
+        qty = $(qty_field_name+'_'+e);
         qty = qty.options[qty.selectedIndex];
         tot += (price * parseInt(qty.value));
     }

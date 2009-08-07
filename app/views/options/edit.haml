@@ -6,7 +6,7 @@
       %table#options_table
         - varlist.sort_by(&:id).each do |v|
           %tr{:class=>cycle(:evenRow,:oddRow)}
-            %td.option_name= link_to_function h(Inflector.humanize(v.name)), "alert('#{escape_javascript(v.description)}')"
+            %td.option_name= link_to_function h(ActiveSupport::Inflector.humanize(v.name)), "alert('#{escape_javascript(v.description)}')"
             %td.option_value= edit_field_for v
   .pageDiv
     %h1 Save Changes

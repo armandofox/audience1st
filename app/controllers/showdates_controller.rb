@@ -20,7 +20,7 @@ class ShowdatesController < ApplicationController
   end
 
   def create
-    args = @params[:showdate]
+    args = params[:showdate]
     raise "New showdate must be associated with an existing show" unless Show.find(args[:show_id])
     @showdate = Showdate.new(args)
     if @showdate.save
