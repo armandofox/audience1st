@@ -19,6 +19,7 @@ class SubscriberOpenVouchers < Report
         FROM customers c JOIN vouchers v ON v.customer_id = c.id
         WHERE v.showdate_id =0
         AND v.vouchertype_id IN (#{vouchertypes.join(',')})
+        AND c.e_blacklist=0
 }
   end
 

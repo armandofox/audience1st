@@ -43,7 +43,7 @@ class VouchersController < ApplicationController
     if vt.price.zero? && !pm.nonrevenue?
       flash[:notice] = "Only the following payment methods are valid for " <<
         "zero-cost vouchers: " <<
-        Purchasemethod.find_all_by_nonrevenue(true).map {|s| s.description}.join(', ')
+        Purchasemethod.find(:all, :conditions => 'nonrevenue=1').map {|s| s.description}.join(', ')
       redirect_to :action => :addvoucher
       return
     end

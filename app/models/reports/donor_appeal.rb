@@ -12,8 +12,8 @@ class DonorAppeal < Report
     where = " d.amount >= #{params[:donation_amount].to_f} " <<
       " AND (d.date BETWEEN '#{from.to_formatted_s(:db)}' AND '#{to.to_formatted_s(:db)}') "
     # require valid address and/or valid email
-    where << " AND email LIKE '%@%' " if params[:require_valid_email]
-    where << " AND street IS NOT NULL " if params[:require_valid_address]
+    where << " AND c.email LIKE '%@%' AND c.e_blacklist=0" if params[:require_valid_email]
+    where << " AND c.street IS NOT NULL " if params[:require_valid_address]
     # to include subscribers, join with vouchertypes table and
     # allow a match even if no donation.
     if params[:include_subscribers]

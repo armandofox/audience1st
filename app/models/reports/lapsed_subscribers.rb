@@ -20,6 +20,7 @@ class LapsedSubscribers < Report
         SELECT DISTINCT c.*
         FROM customers c JOIN vouchers v ON v.customer_id = c.id
         WHERE v.vouchertype_id IN (%s)
+        AND c.e_blacklist = 0
         ORDER BY c.last_name
         }
     prev_subscribers = Customer.find_by_sql(sprintf sql, have.join(','))

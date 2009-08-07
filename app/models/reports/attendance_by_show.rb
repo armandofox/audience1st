@@ -17,6 +17,7 @@ class AttendanceByShow < Report
          SELECT DISTINCT c.*
          FROM customers c JOIN vouchers v ON v.customer_id = c.id
          WHERE v.showdate_id IN (#{showdates.join(',')})
+         AND c.e_blacklist = 0
          ORDER BY c.last_name, c.first_name
 }
     # if this is an AND query, limit to customers who have seen ALL

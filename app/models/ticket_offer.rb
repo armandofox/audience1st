@@ -14,7 +14,7 @@ class TicketOffer
     # from the price and showdate, determine if we have assigned a
     # vouchertype corresponding to this.
     showdate_as_date = Time.parse(showdate_as_date) unless showdate_as_date.kind_of?(Time)
-    showdates = Showdate.find_all_by_thedate(showdate_as_date)
+    showdates = Showdate.find(:all, :conditions => ['thedate = ?',showdate_as_date])
     if showdates.length != 1
       raise(NoPerfMatch,
              "Found #{showdates.length} performances matching " <<

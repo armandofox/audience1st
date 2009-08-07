@@ -7,11 +7,11 @@ class ReportController < ApplicationController
 
   def index
     # all showdates
-    @all_showdates = Showdate.find_all.sort_by { |s| s.thedate }
+    @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
     # next showdate
     @next_showdate = @all_showdates.detect { |s| s.thedate >= Time.now }
     # all show names
-    @all_shows = Show.find_all
+    @all_shows = Show.find(:all)
     # quick subscription stats
     @subscriptions = subscription_vouchers(Time.now.year)
     # list of all special reports
@@ -250,12 +250,12 @@ EOQ
       redirect_to :action => 'index'
       return
     end
-    @cash_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('box_cash'))
+    @cash_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cash')])
     @cash_tix_types = {}
     @cash_tix.each do |v|
       @cash_tix_types[v.vouchertype] = 1 + (@cash_tix_types[v.vouchertype] || 0)
     end
-    @cc_tix = @showdate.vouchers.find_all_by_purchasemethod_id(Purchasemethod.get_type_by_name('box_cc'))
+    @cc_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cc')])
     @cc_tix_types = {}
     @cc_tix.each do |v|
       @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)

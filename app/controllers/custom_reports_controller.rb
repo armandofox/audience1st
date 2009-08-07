@@ -1,13 +1,13 @@
 class CustomReportsController < ApplicationController
 
   before_filter :is_boxoffice_manager_filter
-  
+
   scaffold :custom_report
 
   def new
     @custom_report = CustomReport.new
     @sql = @custom_report.render_sql
-    @show_names = Show.find_all
+    @show_names = Show.find(:all)
     @vouchertypes =
       Vouchertype.find(:all, :conditions => ["is_bundle = ?", false])
     @bundle_vouchertypes =

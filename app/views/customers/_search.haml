@@ -1,33 +1,33 @@
 .pageDiv
   %h1.page_heading.center Search for a Patron
   #search
-    = form_remote_tag(:url => {:controller=>'customers', :action=>'search'}, :update => 'search')
-    = hidden_field_tag 'searching', 1
+    - form_remote_tag(:url => {:controller=>'customers', :action=>'search'}, :update => 'search') do
+      = hidden_field_tag 'searching', 1
 
-    %p
-      = radio_button_tag 'match', 'any', :checked
-      %label{:for=>:any} Search ANY field for:
-      = text_field_tag :any
-    %p
-      = radio_button_tag 'match', 'all'
-      %label{:for=>:specific} Search by specific constraints (leave any
-      field blank to ignore it):
-    %table
-      %tr
-        %td Last name
-        %td= text_field_tag 'customer[last_name]'
-      %tr
-        %td First name
-        %td= text_field_tag 'customer[first_name]'
-      %tr
-        %td Street
-        %td= text_field_tag 'customer[street]'
-      %tr
-        %td City
-        %td= text_field_tag 'customer[city]'
-      %tr
-        %td Email address
-        %td= text_field_tag 'customer[login]'
-    = submit_tag 'Search'
-    %a.lbAction{:rel => :deactivate} Cancel
-    = end_form_tag
+      %p
+        = radio_button_tag 'match', 'any', :checked
+        %label{:for=>:any} Search ANY field for:
+        = text_field_tag :any
+      %p
+        = radio_button_tag 'match', 'all'
+        %label{:for=>:specific} Search by specific constraints (leave any
+        field blank to ignore it):
+      %table
+        %tr
+          %td Last name
+          %td= text_field_tag 'customer[last_name]'
+        %tr
+          %td First name
+          %td= text_field_tag 'customer[first_name]'
+        %tr
+          %td Street
+          %td= text_field_tag 'customer[street]'
+        %tr
+          %td City
+          %td= text_field_tag 'customer[city]'
+        %tr
+          %td Email address
+          %td= text_field_tag 'customer[login]'
+      = submit_tag 'Search'
+      %a.lbAction{:rel => :deactivate} Cancel
+
