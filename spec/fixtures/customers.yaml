@@ -1,5 +1,12 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
+
+generic_customer:
+  id: 1111
+  first_name: Generic
+  last_name: Customer
+  role: -1
+
 tom:
   id: 77
   first_name: Tom
@@ -39,7 +46,7 @@ tom3:
 
 cust_with_real_address:
   id: 222
-  first_name: Armando 
+  first_name: Armando
   last_name: Fox
   street: 251 Surrey St
   city: San Francisco
@@ -96,9 +103,3 @@ customer_with_empty_login:
   id: 6
   first_name: Nobody
   last_name: NoLogin
-
-generic_customer:
-  id: 1111
-  first_name: Generic
-  last_name: Customer
-  role: -1

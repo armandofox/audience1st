@@ -15,6 +15,7 @@ class AddTypeToVouchers < ActiveRecord::Migration
     ActiveRecord::Base.connection.execute "UPDATE vouchers v,vouchertypes vt SET v.price = vt.price WHERE v.vouchertype_id=vt.id"
     %w[Comp Revenue Subscriber Bundle].each do |w|
       ActiveRecord::Base.connection.execute "UPDATE vouchers v,vouchertypes vt SET v.type = '#{w}Voucher' WHERE vt.type = '#{w}Vouchertype'"
+    end
   end
 
   def self.down

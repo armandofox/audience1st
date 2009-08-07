@@ -109,7 +109,7 @@ class CustomersController < ApplicationController
     (flash[:notice] ||= '') << 'You have successfully logged out.' <<
       " Thanks for supporting #{Option.value(:venue)}!"
     redirect_to_stored
-    reset_session
+    logout_customer
   end
 
   # welcome screen: different for nonsubscribers vs. subscribers

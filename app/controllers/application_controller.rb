@@ -77,6 +77,10 @@ class ApplicationController < ActionController::Base
     c
   end
 
+  def logout_customer
+    reset_session
+  end
+
   # filter that requires user to login before accessing account
 
   def is_logged_in

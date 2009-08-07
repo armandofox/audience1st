@@ -45,4 +45,7 @@ Rails::Initializer.run do |config|
   # Add additional load paths for your own custom dirs
   config.load_paths += %W( #{RAILS_ROOT}/app/models/reports )
 
+  config.gem "activemerchant", :lib => "active_merchant"
+
+  config.active_record.timestamped_migrations = false
 end

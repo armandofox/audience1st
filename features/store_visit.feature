@@ -12,12 +12,12 @@ Feature: Visit Store Page
 
   Scenario: Nonsubscriber logs in
 
-    Given I login as a nonsubscriber
+    Given I am logged in as a nonsubscriber
     When I visit the store page
     Then I should see the NonSubscriber message
 
   Scenario: Subscriber logs in
 
-    Given I login as a subscriber
+    Given I am logged in as a subscriber
     When I visit the store page
     Then I should see the NonSubscriber message
