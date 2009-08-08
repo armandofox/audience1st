@@ -11,10 +11,10 @@ class Customer < ActiveRecord::Base
   has_many :visits
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
-  
+
   validates_uniqueness_of :login, :allow_nil => true
   validates_length_of :login, :in => 3..50, :allow_nil => true
-  
+
   validates_presence_of :first_name
   validates_length_of :first_name, :within => 1..50
   validates_presence_of :last_name
@@ -54,16 +54,21 @@ class Customer < ActiveRecord::Base
       errors.add_to_base "Valid mailing address must be provided"
       valid = false
     end
-    if day_phone.blank? && eve_phone.blank? && !has_valid_email_address?
+    if day_phone.blank? && eve_phone.blank? && !valid_email_address?
       errors.add_to_base "At least one phone number or email address must be provided"
       valid = false
     end
     valid
   end
-  
+
+  def valid_as_purchaser?
+    # must have full address and full name
+    valid_mailing_address? && !first_name.blank? && !last_name.blank?
+  end
+
   @@user_entered_strings =
     %w[first_name last_name street city state zip day_phone eve_phone login email]
-  
+
   # strip whitespace before saving
   def before_save
     @@user_entered_strings.each do |col|
@@ -83,13 +88,13 @@ class Customer < ActiveRecord::Base
     self.is_staff ? :staff :
       self.is_subscriber? ? :subscriber : nil
   end
-  
+
   # a convenient wrapper class for the ActiveRecord::sanitize_sql protected method
 
   def self.render_sql(sql)
     ActiveRecord::Base.sanitize_sql(sql)
   end
-  
+
   def full_name
     "#{self.first_name.name_capitalize} #{self.last_name.name_capitalize}"
   end
@@ -98,10 +103,40 @@ class Customer < ActiveRecord::Base
     "#{self.last_name.downcase},#{self.first_name.downcase}"
   end
 
-  def has_valid_email_address?
-    self.email && self.email.valid_email_address?
+  def valid_email_address?
+    !self.email.blank? &&
+      self.email.valid_email_address?
   end
-  
+  def valid_mailing_address?
+    !self.street.blank? &&
+      !self.city.blank? &&
+      !self.state.blank? &&
+      !self.zip.blank? &&
+      (5..10).include?(self.zip.to_s.length)
+  end
+  def invalid_mailing_address?
+    self.street.blank? ||
+      self.city.blank? ||
+      self.state.blank? ||
+      self.zip.to_s.length < 5
+  end
+
+
+  def possibly_synthetic_email
+    self.valid_email_address? ? self.email :
+      "patron-#{Option.value(:venue_id)}-#{self.id}@audience1st.com"
+  end
+
+  def possibly_synthetic_phone
+    if !day_phone.blank?
+      day_phone
+    elsif !eve_phone.blank?
+      eve_phone
+    else
+      "555-555-5555"
+    end
+  end
+
   def is_subscriber?
     self.role >= 0 &&
       self.vouchers.detect do |f|
@@ -117,7 +152,7 @@ class Customer < ActiveRecord::Base
         f.vouchertype.name.match(/^2009/ )
     end
   end
-      
+
 
   def referred_by_name(maxlen=1000)
     if (c = Customer.find_by_id(self.referred_by_id.to_i))
@@ -134,7 +169,7 @@ class Customer < ActiveRecord::Base
     t = Time.now
     self.vouchers.select { |v| (v.valid_date <= t  &&  v.expiration_date >= t) }
   end
-  
+
   # merge myself with another customer.  'params' array indicates which
   # record (self or other) to retain each field value from.  For
   # password and salt, the ones corresponding to most recent
@@ -221,7 +256,7 @@ class Customer < ActiveRecord::Base
       elsif v.kind_of?(Donation)
         self.donations << v
         Txn.add_audit_record(:txn_type => 'don_cash',
-                             :customer_id => self.id, 
+                             :customer_id => self.id,
                              :comments => comment,
                              :logged_in_id => logged_in,
                              :dollar_amount => v.amount,
@@ -230,7 +265,7 @@ class Customer < ActiveRecord::Base
         raise "Can't add this product type to customer record"
       end
     end
-  end    
+  end
 
   def password=(pass)
     # BUG BUG BUG
@@ -260,7 +295,7 @@ class Customer < ActiveRecord::Base
 
   # Values of the role field:
   # Roles are cumulative, ie higher privilege level can do everything
-  # the lower levels can do. 
+  # the lower levels can do.
   # < 10  regular user (customer)
   # at least 10 - board/staff member (can view/make reports, but not reservations)
   # at least 20 - box office user
@@ -286,13 +321,13 @@ class Customer < ActiveRecord::Base
   def role_name
     Customer.role_name(self.role)
   end
-  
+
   # you can grant someone else a particular role as long as it's less
-  # than your own. 
+  # than your own.
 
   def can_grant(newrole)
     # TBD should really check that the two are
-    # in different role-equivalence classes 
+    # in different role-equivalence classes
     self.role > Customer.role_value(newrole)
   end
 
@@ -304,7 +339,7 @@ class Customer < ActiveRecord::Base
     @@roles.map {|x| x.first}
   end
 
-  def self.nobody_id 
+  def self.nobody_id
     0
   end
 
@@ -324,7 +359,7 @@ class Customer < ActiveRecord::Base
     Customer.find_by_role(-1)
     # for now, same as the 'walkup customer'
   end
-  
+
   def before_destroy
     raise "Cannot destroy walkup customer entry" if self.role == -1
   end
@@ -378,8 +413,8 @@ class Customer < ActiveRecord::Base
     end
     c
   end
-      
-                           
+
+
   # Override content_columns method to omit password hash and salt
   def self.content_columns
     super.delete_if { |x| x.name.match(%w[role oldid hashed_password salt _at$ _on$].join('|')) }
@@ -387,13 +422,13 @@ class Customer < ActiveRecord::Base
 
   def self.address_columns
     self.content_columns.select {
-      |x| x.name.match('first_name|last_name|street|city|state|zip') 
+      |x| x.name.match('first_name|last_name|street|city|state|zip')
     }
   end
 
   # check if mailing address appears valid.
-  # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if 
-  #bad address. 
+  # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if
+  #bad address.
 
   def self.find_all_subscribers(order_by='last_name')
     Customer.find_by_sql("SELECT DISTINCT " <<
@@ -404,9 +439,5 @@ class Customer < ActiveRecord::Base
                          "vt.valid_date <= #{Time.db_now} AND vt.expiration_date >= #{Time.db_now} " <<
                          " ORDER BY #{order_by}")
   end
-  
-  def invalid_mailing_address?
-    return (self.street.blank? or self.city.blank? or self.state.blank? or self.zip.to_s.length < 5)
-  end
-  
+
 end

@@ -197,6 +197,7 @@ class StoreController < ApplicationController
       redirect_to(:action => 'index', :id => params[:id])
       return
     end
+    @credit_card = ActiveMerchant::Billing::CreditCard.new
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
@@ -224,10 +225,10 @@ class StoreController < ApplicationController
       return
     end
     sales_final = params[:sales_final]
-    @bill_to = params[:customer]
+    @bill_to = Customer.new(params[:customer])
     cc_info = params[:credit_card].symbolize_keys
-    cc_info[:first_name] = @bill_to[:first_name]
-    cc_info[:last_name] = @bill_to[:last_name]
+    cc_info[:first_name] = @bill_to.first_name
+    cc_info[:last_name] = @bill_to.last_name
     # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
     # called rather than to_i to convert month and year to ints.
     cc_info[:month] = cc_info[:month].to_i
@@ -266,8 +267,8 @@ class StoreController < ApplicationController
       @recipient = @customer
     end
     # OK, we have a customer record to tie the transaction to
-    resp = do_cc_not_present_transaction(@cart.total_price, cc, @bill_to,
-                                         @cart.order_number)
+    resp = Store.card_not_present_purchase(@cart.total_price, cc, @bill_to,
+                                           @cart.order_number)
     if !resp.success?
       flash[:checkout_error] = "Payment gateway error: "
       if resp.message.match( /ECONNRESET/ )
@@ -455,21 +456,6 @@ class StoreController < ApplicationController
   end
 
   def do_cc_not_present_transaction(amount, cc, bill_to, order_num)
-    email = bill_to[:email].to_s.default_to("invalid@audience1st.com")
-    phone = bill_to[:day_phone].to_s.default_to("555-555-5555")
-    params = {
-      :order_id => order_num,
-      :email => email,
-      :address =>  {
-        :name => "#{bill_to[:first_name]} #{bill_to[:last_name]}",
-        :address1 => bill_to[:street],
-        :city => bill_to[:city],
-        :state => bill_to[:state],
-        :zip => bill_to[:zip],
-        :phone => phone,
-        :country => 'US'
-      }
-    }
     return cc_transaction(amount,cc,params,card_present=false)
   end
 

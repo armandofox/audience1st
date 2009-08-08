@@ -49,3 +49,5 @@ Rails::Initializer.run do |config|
 
   config.active_record.timestamped_migrations = false
 end
+
+require 'active_merchant'

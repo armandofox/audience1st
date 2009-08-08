@@ -1,5 +1,12 @@
 module StoreHelper
 
+  def options_for_credit_card
+    opts = [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover'],
+            ['Diners Club','diners_club']]
+    opts << ['AmEx', 'american_express'] unless Option.value(:accept_amex).blank?
+    opts
+  end
+
   def options_with_default(default_item, collection, name=nil)
     name ||= collection.empty? ? '' : collection.first.class.name.humanize
     choose = default_item ? "" :
@@ -20,19 +27,28 @@ module StoreHelper
   end
 
   def watch_show_and_showdate_fields
-    return observe_field('show', :update => :ticket_menus_inner, :with => 'show_id',
+    s = "\n"
+    s << observe_field('show',
+                         :update => :ticket_menus_inner,
+                         :with => 'show_id',
                          :before => "Element.show('wait_show')",
                          :complete => 'recalc_total()',
-                         :url => {:controller => 'store', :action => :show_changed}) +
-      "\n" +
-      observe_field('showdate', :update => :ticket_menus_inner,:with => 'showdate_id',
-                    :before => "Element.show('wait_showdate')",
-                    :complete => 'recalc_total()',
-                    :url => {:controller => 'store', :action => :showdate_changed})
+                         :url => {:controller => 'store',
+                           :action => :show_changed})
+    s << "\n"
+    s << observe_field('showdate',
+                       :update => :ticket_menus_inner,
+                       :with => 'showdate_id',
+                       :before => "Element.show('wait_showdate')",
+                       :complete => 'recalc_total()',
+                       :url => {:controller => 'store',
+                         :action => :showdate_changed})
+    s
   end
 
   def watch_comment_field
-    observe_field('comments', :with => 'comment',
+    observe_field('comments',
+                  :with => 'comment',
                   :url => {:controller => :store, :action => :comment_changed})
   end
 

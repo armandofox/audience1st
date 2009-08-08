@@ -206,7 +206,7 @@ class CustomersController < ApplicationController
                            :customer_id => @customer.id,
                            :logged_in_id => logged_in_id)
       flash[:notice] << 'Contact information was successfully updated.'
-      if (@customer.login != old_login) && @customer.has_valid_email_address? &&
+      if (@customer.login != old_login) && @customer.valid_email_address? &&
           params[:dont_send_email].blank? && temp_password.blank?
         # send confirmation email
         email_confirmation(:send_new_password,@customer, nil,
@@ -267,7 +267,7 @@ class CustomersController < ApplicationController
       render :action => 'new'
       return
     end
-#     unless @customer.has_valid_email_address?
+#     unless @customer.valid_email_address?
 #       flash[:notice] = "Please provide a valid email address so we can send you an order confirmation."
 #       render :action => 'new'
 #       return
@@ -504,7 +504,7 @@ class CustomersController < ApplicationController
       redirect_to :action => :login and return
     end
     # valid email address?
-    unless @customer.has_valid_email_address?
+    unless @customer.valid_email_address?
       flash[:notice] = "You're in our database but we don't have an email address for you.  Please set up a new account with an email address."
       redirect_to :action => :new and return
     end

@@ -15,3 +15,7 @@ config.action_controller.perform_caching             = false
 
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
+
+# Payment gateway: use bogus (test) gateway
+PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
+ActiveMerchant::Billing::Base.mode = :test

@@ -34,4 +34,4 @@ Rubaidh::GoogleAnalytics.domain_name  = 'www.audience1st.com'
 Rubaidh::GoogleAnalytics.environments = ['production']
 
 PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway
-
+ActiveMerchant::Billing::Base.mode = :test

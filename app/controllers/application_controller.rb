@@ -183,7 +183,7 @@ EOEVAL
     flash[:notice] ||= ""
     customer = *args.first
     addr = customer.email
-    if customer.has_valid_email_address?
+    if customer.valid_email_address?
       begin
         Mailer.send("deliver_"<< method.to_s,*args)
         flash[:notice] << " An email confirmation was sent to #{addr}"
