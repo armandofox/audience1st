@@ -6,7 +6,7 @@
   - if is_boxoffice
     %td.admin_field{:style => "background-color: white;"}
       = h voucher.id
-      = voucher.processed_by_name unless voucher.processed_by == voucher.customer.id
+      = voucher.processed_by_name unless voucher.processed_by_id == voucher.customer.id
   %td= h voucher.vouchertype.name
   %td= h voucher.purchasemethod.description if voucher.purchasemethod
   - if voucher.is_bundle?

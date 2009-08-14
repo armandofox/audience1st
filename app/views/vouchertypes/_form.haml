@@ -52,8 +52,7 @@
   %label{:for=>:vouchertype_comments}Comments/description
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
-- if @vouchertype.is_bundle
-
+- if @vouchertype.is_bundle?
   %p
     %label{:for=>:vouchertype_bundle_sales_start} Sales start
     = datetime_select 'vouchertype', 'bundle_sales_start'

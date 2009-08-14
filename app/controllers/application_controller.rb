@@ -77,6 +77,11 @@ class ApplicationController < ActionController::Base
     c
   end
 
+  # setup session etc. for an "external" login, eg by a daemon
+  def login_from_external(c)
+    session[:cid] = c.id
+  end
+
   def logout_customer
     reset_session
   end

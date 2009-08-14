@@ -75,7 +75,7 @@ class DonationController < ApplicationController
       now = Time.now
       c = Customer.find(logged_in_id).login rescue "(ERROR)"
       t.update_attributes(:letter_sent => now,
-                          :processed_by => logged_in_id)
+                          :processed_by_id => logged_in_id)
       Txn.add_audit_record(:cust_id => t.customer_id,
                            :logged_in_id => logged_in_id,
                            :txn_type => 'don_ack',

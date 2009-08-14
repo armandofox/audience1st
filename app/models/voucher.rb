@@ -3,6 +3,12 @@ class Voucher < ActiveRecord::Base
   belongs_to :showdate
   belongs_to :vouchertype
   belongs_to :purchasemethod
+  has_one :processed_by, :class_name => 'Customer'
+  has_one :gift_purchaser, :class_name => 'Customer'
+
+  validates_presence_of :vouchertype
+  validates_presence_of :purchasemethod
+  validates_presence_of :processed_by
 
   # provide a handler to be called when customers are merged.
   # Transfers the vouchers from old to new id, and also changes the
@@ -10,24 +16,61 @@ class Voucher < ActiveRecord::Base
   # Returns number of actual voucher records transferred.
 
   def self.merge_handler(old,new)
-    Voucher.update_all("processed_by = '#{new}'", "processed_by = '#{old}'")
+    Voucher.update_all("processed_by_id = '#{new}'", "processed_by_id = '#{old}'")
     Voucher.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
     Voucher.update_all("gift_purchaser_id = '#{new}'", "gift_purchaser_id = '#{old}'")
   end
 
-  def reserved ;  self.showdate_id > 0 ;  end
-  def unreserved ; self.showdate_id.zero? ;  end
+  # accessors and convenience methods
 
-  def reserved_show
-    self.reserved ? self.showdate.show.name : ''
+  def price ; vouchertype.price ;  end
+  def amount ; vouchertype.price ; end
+
+  def reserved? ;   !showdate_id.to_i.zero? ;  end
+  def unreserved? ; showdate_id.to_i.zero?  ;  end
+
+  def reservable? ; !vouchertype.is_bundle? && unreserved?  ;  end
+  def is_bundle? ; self.vouchertype.is_bundle?; end
+  def reserved_show ; (self.showdate.show.name if self.reserved?).to_s ;  end
+  def reserved_date ; (self.showdate.printable_date if self.reserved?).to_s ; end
+  def date ; self.showdate.thedate if self.reserved? ; end
+
+  # return the "show" associated with a voucher.  If a regular voucher,
+  # it's the show the voucher is associated with. If a bundle voucher,
+  # it's the name of the bundle.
+  def show ;  showdate.show ; end
+  def show_or_bundle_name
+    show.kind_of?(Show)  ? show.name :
+      (vouchertype_id > 0 && vouchertype.is_bundle? ? vouchertype.name : "??")
   end
 
-  def reserved_date
-    self.reserved ? self.showdate.printable_date : ''
+  def account_code ; self.vouchertype.account_code ; end
+
+  def processed_by_name
+    if self.processed_by_id.to_i.zero?
+      ""
+    elsif (c = Customer.find_by_id(self.processed_by_id))
+      c.first_name
+    else
+      "???"
+    end
+  end
+
+  # sorting order: by showdate, or by vouchertype_id if same showdate
+  def <=>(other)
+    self.showdate_id == other.showdate_id ?
+    self.vouchertype_id <=> other.vouchertype_id :
+      self.showdate <=> other.showdate
   end
 
   # every time a voucher is saved that belongs to a customer, that customer's
   # is_subscriber? attribute must be recomputed
+
+  before_save :set_processed_by
+
+  def set_processed_by
+    self.processed_by = logged_in
+  end
 
   def compute_customer_is_subscriber
     return unless customer_id > 0
@@ -62,18 +105,23 @@ class Voucher < ActiveRecord::Base
             (vouchertype.name[0..10] rescue ""),
             (vouchertype.price.to_f rescue 0.0),
             ((vouchertype.is_subscription ? "S" : "s") rescue "-"),
-            ((vouchertype.is_bundle ? "B": "b") rescue "-"),
+            ((vouchertype.is_bundle?? "B": "b") rescue "-"),
             ((vouchertype.offer_public ? "P" : "p") rescue "-"),
             external_key)
   end
 
-  #validates_associated :customer, :vouchertype, :purchasemethod
+  # constructors
 
-  def <=>(other)
-    self.showdate_id == other.showdate_id ?
-    self.vouchertype_id <=> other.vouchertype_id :
-      self.showdate <=> other.showdate
+  def self.new_from_vouchertype(vt,args={})
+    vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
+    v = Voucher.new({:fulfillment_needed => vt.fulfillment_needed,
+                  :sold_on => Time.now,
+                  :valid_date => vt.valid_date,
+                  :changeable => false,
+                  :vouchertype => vt,
+                  :expiration_date => vt.expiration_date}.merge(args))
   end
+
 
   # return a voucher object that can be added to a shopping cart.
   # Fields like customer_id will be bound when voucher is actualy
@@ -108,7 +156,6 @@ class Voucher < ActiveRecord::Base
                                        :comments => comments,
                                        :fulfillment_needed => fulfillment_needed,
                                        :customer_id => cust.id,
-                                       :processed_by => bywhom,
                                        :changeable => can_change,
                                        :showdate_id => showdate_id)
       v.customer = cust
@@ -142,7 +189,6 @@ class Voucher < ActiveRecord::Base
             1.upto qty do
               c.vouchers <<
                 Voucher.new_from_vouchertype(type,
-                                             :processed_by => self.processed_by,
                                              :purchasemethod_id => purch_bundle)
             end
           end
@@ -153,41 +199,6 @@ class Voucher < ActiveRecord::Base
       return [nil,e.message]
     end
     return [true,self]
-  end
-
-  def self.new_from_vouchertype(vt,args={})
-    vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
-    Voucher.new({:vouchertype_id => vt.id,
-                  :fulfillment_needed => vt.fulfillment_needed,
-                  :sold_on => Time.now,
-                  :valid_date => vt.valid_date,
-                  :changeable => false,
-                  :price => vt.price,
-                  :type => vt.class.to_s,
-                  :expiration_date => vt.expiration_date}.merge(args))
-  end
-
-  # return the "show" associated with a voucher.  If a regular voucher,
-  # it's the show the voucher is associated with. If a bundle voucher,
-  # it's the name of the bundle.
-  def show ;  showdate.show ; end
-  def show_or_bundle_name
-    show.kind_of?(Show)  ? show.name :
-      (vouchertype_id > 0 && vouchertype.is_bundle? ? vouchertype.name : "??")
-  end
-
-  def amount ; self.price ; end
-
-  def account_code ; self.vouchertype.account_code ; end
-
-  def reserved? ;   !self.showdate_id.to_i.zero? ;  end
-  def unreserved? ; self.showdate_id.to_i.zero?  ;  end
-
-  def is_bundle ; self.vouchertype.is_bundle ; end
-  def is_bundle? ; self.vouchertype.is_bundle ; end
-
-  def date
-    self.showdate_id.zero? ? nil : self.showdate.thedate
   end
 
   def valid_for_date?(dt)
@@ -238,12 +249,6 @@ class Voucher < ActiveRecord::Base
     show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
   end
 
-  def not_already_used
-    # Make sure voucher is not already in use.
-    # Shouldn't happen using web interface.
-    showdate_id.to_i == 0
-  end
-
   def can_be_changed?(who = Customer.generic_customer)
     unless who.kind_of?(Customer)
       who = Customer.find(who) rescue Customer.generic_customer
@@ -253,23 +258,13 @@ class Voucher < ActiveRecord::Base
     else
       return (changeable? &&
               (expiration_date > Time.now) &&
-              (not_already_used ||
+              (unreserved? ||
                (Time.now < (showdate.thedate - Option.value(:cancel_grace_period).minutes))))
     end
   end
 
-  def reserved_for?(s)
-    d = self.showdate_id.to_i
-    if s.kind_of?(Show)
-      s.showdates.map(&:id).include?(d)
-    elsif s.kind_of?(Showdate)
-      s.id == d
-    elsif s.kind_of?(Fixnum)
-      s == d
-    else
-      raise "Can't ask if voucher is reserved for a #{s.class}"
-    end
-  end
+  def reserved_for_show?(s) ; reserved && (showdate.show == s) ;  end
+  def reserved_for_showdate?(sd) ;  reserved && (showdate == sd) ;  end
 
   def part_of_subscription?
     self.purchasemethod.shortdesc =~ /bundle/i
@@ -277,12 +272,11 @@ class Voucher < ActiveRecord::Base
 
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
-    if self.not_already_used
+    if self.unreserved?
       avail = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,self.customer,self.vouchertype, :redeeming => true, :ignore_cutoff => ignore_cutoff)
       if avail.available?
         self.showdate = Showdate.find(showdate_id)
         self.comments = comments.to_s || ''
-        self.processed_by = logged_in
         self.sold_on = Time.now
         self.save!
         a = Txn.add_audit_record(:txn_type => 'res_made',
@@ -307,7 +301,6 @@ class Voucher < ActiveRecord::Base
   def cancel(logged_in = Customer.generic_customer.id)
     save_showdate = self.showdate.clone
     self.showdate_id = 0
-    self.processed_by = logged_in
     if (self.save)
       save_showdate
     else
@@ -315,14 +308,4 @@ class Voucher < ActiveRecord::Base
     end
   end
 
-  def processed_by_name
-    case
-    when self.processed_by.to_i.zero?
-      ""
-    when c = Customer.find_by_id(self.processed_by)
-      c.first_name
-    else
-      "???"
-    end
-  end
 end

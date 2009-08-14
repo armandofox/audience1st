@@ -98,7 +98,7 @@ class VouchersController < ApplicationController
     who = logged_in_id rescue Customer.nobody_id
     if (voucher = Voucher.find_by_id(params[:vid]))
       voucher.update_attributes({:comments => params[:comments],
-                                  :processed_by => who})
+                                  :processed_by_id => who})
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => voucher.customer.id,
                            :voucher_id => voucher.id,
@@ -112,7 +112,7 @@ class VouchersController < ApplicationController
     @voucher = Voucher.find(params[:id]) # this is the voucher that customer wants to use
     @customer = @voucher.customer
     @is_admin = Customer.find(logged_in_id).is_walkup rescue nil
-    try_again("Voucher already used: #{@voucher.showdate.printable_name}") and return unless @voucher.not_already_used
+    try_again("Voucher already used: #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
     showdates = (@is_admin ?
                  Showdate.find(:all) :
                  Showdate.find(:all,:conditions => ["thedate > ?", Time.now]))
@@ -184,7 +184,7 @@ class VouchersController < ApplicationController
     save_customer = @v.customer.id
     @v.showdate = nil
     @v.customer = nil
-    @v.processed_by = logged_in_id
+    @v.processed_by_id = logged_in_id
     @v.save!
     Txn.add_audit_record(:txn_type => 'res_cancl',
                          :customer_id => @gCustomer.id,

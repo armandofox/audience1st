@@ -2,12 +2,12 @@
 %html{:xmlns=>"http://www.w3.org/1999/xhtml","xml:lang"=>:en,:lang=>:en}
   %head
     - if (s = Option.value(:external_css_file)).blank?
-      = stylesheet_link_tag 'generic'
+      = stylesheet_link_tag 'generic', :media => 'all'
     - elsif s.match( /^http:|ftp:/i )
-      = stylesheet_link_tag possibly_https(s)
+      = stylesheet_link_tag possibly_https(s), :media => 'all'
     - else
-      = stylesheet_link_tag s
-    = stylesheet_link_tag 'vbo'
+      = stylesheet_link_tag s, :media => 'all'
+    = stylesheet_link_tag 'vbo', :media => 'all'
     = javascript_include_tag :defaults
 
     %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.humanize)

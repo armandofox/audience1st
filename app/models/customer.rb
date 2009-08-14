@@ -238,7 +238,7 @@ class Customer < ActiveRecord::Base
   def add_items(items, logged_in, howpurchased=Purchasemethod.get_type_by_name('web_cc'), comment='')
     items.each do |v|
       if v.kind_of?(Voucher)
-        v.processed_by = logged_in
+        v.processed_by_id = logged_in
         success,msg = v.add_to_customer(self)
         if success
           Txn.add_audit_record(:txn_type => 'tkt_purch',
@@ -279,7 +279,7 @@ class Customer < ActiveRecord::Base
     Digest::SHA1.hexdigest(pass.strip.to_s+salt.to_s)
   end
 
-  # Authenticate: if password matches login, return customer id, else
+  # Authenticate: if password matches login, return customer, else
   # a symbol explaining what failed
 
   def self.authenticate(login,pass)
@@ -414,6 +414,15 @@ class Customer < ActiveRecord::Base
     c
   end
 
+  # case-insensitive find by first & last name.  if multiple terms given,
+  # all must match, though each term can match either first or last name
+  def self.find_by_multiple_terms(*terms)
+    return [] if terms.empty?
+    conds =
+      Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
+    conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
+    Customer.find(:all, :conditions => conds_ary, :order =>'last_name')
+  end
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns

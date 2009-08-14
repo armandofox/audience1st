@@ -44,7 +44,7 @@ class ExternalTicketOrder
         v = Voucher.anonymous_voucher_for(ticket_offer.showdate.id,
                                           ticket_offer.vouchertype.id)
         v.external_key = order_key.to_i
-        v.processed_by = Customer.nobody_id
+        v.processed_by_id = Customer.nobody_id
         @vouchers << v
       end
       c.vouchers += @vouchers

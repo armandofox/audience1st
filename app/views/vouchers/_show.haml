@@ -1,6 +1,6 @@
 %div[show]
   %h2= h(show.name_with_run_dates)
-  - r = reserved_vouchers.select { |v| v.reserved_for?(show) }
+  - r = reserved_vouchers.select { |v| v.reserved_for_show?(show) }
   - unless r.empty?
     %p Confirmed reservations:
     %table
@@ -24,6 +24,6 @@
           %tr
             %td= h(v.vouchertype.name)
             %td= select_tag 'date', options_from_collection_for_select(v.redeemable_showdates(@gAdmin.is_boxoffice), :showdate_id, :showdate_name_with_explanation)
-            
-        
-  
+
+
+

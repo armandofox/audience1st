@@ -1,2 +1,0 @@
-class RevenueVoucher < Voucher
-end

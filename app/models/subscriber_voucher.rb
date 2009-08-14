@@ -1,2 +1,0 @@
-class SubscriberVoucher < Voucher
-end

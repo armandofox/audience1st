@@ -8,6 +8,7 @@ HOME	   = /home/$(NAME)
 SVNROOT	   = $(HOME)/svn
 APPROOT    = $(HOME)/rails/$(VENUE)/current
 BACKUPDIR = $(HOME)/backup/$(VENUE)
+SVNBACKUPDIR = $(HOME)/backup/svn
 TODAY	   = $(shell date +\%d)
 
 #  IMPORTANT:  Binary path names below refer to the binary's path ON THE
@@ -49,7 +50,7 @@ BINDIR     = $(APPROOT)/support
 .PHONY: all nightly monthly clean_sessions backup_db backup_wp backup_svn run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
 
 all: nightly
-nightly: clean_sessions notify_pending_followups backup_db
+nightly: clean_sessions notify_pending_followups backup_db backup_svn
 monthly: rotate_logs
 
 dev:
@@ -58,8 +59,8 @@ dev:
 	touch ../log/development.log
 
 backup_svn: 
-	@tar -zcf $(BACKUPDIR)/svn-$(TODAY).tgz $(SVNROOT)
-	@$(S3CMD) put a1_svn:svn-$(TODAY).tgz $(BACKUPDIR)/svn-$(TODAY).tgz
+	@tar -zcf $(SVNBACKUPDIR)/svn-$(TODAY).tgz $(SVNROOT)
+	@$(S3CMD) put a1_svn:svn-$(TODAY).tgz $(SVNBACKUPDIR)/svn-$(TODAY).tgz
 
 clean_sessions:
 	@$(MYSQL) $(A1_MYSQL_OPTS) -D$(A1_DB) -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)

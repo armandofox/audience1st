@@ -37,18 +37,10 @@ class CustomersController < ApplicationController
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
     render :inline => "" and return if params[:__arg].blank?
-    begin
-      # if multiple words are given, ALL must match.
-      n = params[:__arg].split( / +/ )
-      conds = ("(first_name LIKE ? OR last_name LIKE ?) AND " * n.length).gsub( / AND $/, '')
-      conds_ary = n.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
-      @customers = Customer.find(:all, :conditions => conds_ary, :order => :last_name)
-      logger.info "Autocompleting '#{n}': #{@customers.length} results; query = #{conds_ary}.join(',')}"
-      render :partial => 'customers/customer_search_result', :locals => {:matches => @customers}
-    #rescue (Exception e)
-      #logger.error "autocomplete_for_donation_customer: #{e.message}"
-      #render :inline => ""
-    end
+    @customers =
+      Customer.find_by_multiple_terms(params[:__arg].to_s.split( / +/ ))
+    render(:partial => 'customers/customer_search_result',
+           :locals => {:matches => @customers})
   end
 
   # the default is to show your welcome page, which automatically redirects

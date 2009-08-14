@@ -88,7 +88,7 @@ class ReportController < ApplicationController
       (to - from > 1.day ? (" - " << to.strftime('%a %b %e')) : '')
     @daily_sales = sales.group_by do |v|
       u = v.sold_on
-      "#{u.change(:min => u.min - u.min.modulo(3))},#{v.customer.last_name},#{v.customer.first_name},#{v.vouchertype_id},#{v.processed_by}"
+      "#{u.change(:min => u.min - u.min.modulo(3))},#{v.customer.last_name},#{v.customer.first_name},#{v.vouchertype_id},#{v.processed_by_id}"
     end
     @nunique = sales.group_by { |v| v.customer.id }.keys.size
     if @daily_sales.empty?

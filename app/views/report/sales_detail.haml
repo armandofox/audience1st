@@ -25,7 +25,7 @@
         %td.currency= number_to_currency(t = v.vouchertype.price * @daily_sales[k].size)
         - total += t
         %td= v.purchasemethod.description
-        %td= v.processed_by_name if (v.processed_by != v.customer.id)
+        %td= v.processed_by_name if (v.processed_by_id != v.customer.id)
     %tr.totalsRow
       %td TOTALS
       %td.r{:colspan=>3} # Unique customers: 
