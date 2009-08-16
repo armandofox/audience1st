@@ -4,14 +4,16 @@ describe Voucher do
 
   before :all do
     # mock some Vouchertype objects for these tests
-    @vt_regular = mock_model(RevenueVouchertype)
-    @vt_bundle = mock_model(BundleVouchertype)
+    @vt_regular = mock_model(RevenueVouchertype, :null_object => true)
+    @vt_bundle = mock_model(BundleVouchertype, :null_object => true)
     { :fulfillment_needed => false,
       :valid_date => Time.now - 1.month,
       :expiration_date => Time.now + 1.month }.each_pair do |meth,retval|
       @vt_regular.stub!(meth).and_return(retval)
       @vt_bundle.stub!(meth).and_return(retval)
     end
+    @vt_regular.stub!(:is_bundle?).and_return(false)
+    @vt_bundle.stub!(:is_bundle?).and_return(true)
   end
 
   describe "regular voucher when first created", :shared => true do
@@ -26,7 +28,7 @@ describe Voucher do
     end
   end
 
-  context "regular voucher when templated from vouchertype" do
+  describe "regular voucher when templated from vouchertype" do
     before(:all) do
       @v = Voucher.new_from_vouchertype(@vt_regular)
     end
@@ -39,4 +41,30 @@ describe Voucher do
     it "should not be valid" do @v.should_not be_valid end
   end
 
+  describe "expired voucher" do
+    before(:all) do
+      @v = Voucher.new_from_vouchertype(@vt_regular)
+      @v.expiration_date = 1.month.ago
+    end
+    it "should not be valid today" do
+      @v.should_not be_valid_today
+    end
+    it "should not be reservable" do
+      @v.should_not be_reservable
+    end
+  end
+  describe "reserving a valid voucher for a showdate for which it's valid" do
+    context "when voucher is not reservable" do
+      it "reservation should fail" do
+        pending
+      end
+    end
+    context "when voucher is reservable " do
+      context "self-reservation by customer"
+      context "reservation by box office agent"
+    end
+  end
+
 end
+
+

@@ -2,7 +2,8 @@ require 'digest/sha1'
 
 class Customer < ActiveRecord::Base
 
-  has_many :vouchers, :dependent => :destroy
+  has_many :vouchers, :dependent => :nullify
+  has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
   has_many :showdates, :through => :vouchers
   has_many :shows, :through => :showdates
   has_many :txns
@@ -160,14 +161,6 @@ class Customer < ActiveRecord::Base
     else
       self.referred_by_other.to_s[0..maxlen-1]
     end
-  end
-
-  # XXX: BUG this should be implemented using has_many with :conditions,
-  # but not sure how since expiration-date and valid-date are columns of
-  # vouchertype, not of voucher....
-  def active_vouchers
-    t = Time.now
-    self.vouchers.select { |v| (v.valid_date <= t  &&  v.expiration_date >= t) }
   end
 
   # merge myself with another customer.  'params' array indicates which

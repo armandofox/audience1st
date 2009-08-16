@@ -1,6 +1,6 @@
 class Vouchertype < ActiveRecord::Base
   has_many :valid_vouchers
-  has_many :vouchers, :dependent => :destroy
+  has_many :vouchers, :dependent => :nullify
   has_many :showdates, :through => :valid_vouchers
   serialize :included_vouchers, Hash
 

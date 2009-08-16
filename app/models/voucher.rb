@@ -29,7 +29,7 @@ class Voucher < ActiveRecord::Base
   def reserved? ;   !showdate_id.to_i.zero? ;  end
   def unreserved? ; showdate_id.to_i.zero?  ;  end
 
-  def reservable? ; !vouchertype.is_bundle? && unreserved?  ;  end
+  def reservable? ; !is_bundle? && unreserved? && valid_today? ;  end
   def is_bundle? ; self.vouchertype.is_bundle?; end
   def reserved_show ; (self.showdate.show.name if self.reserved?).to_s ;  end
   def reserved_date ; (self.showdate.printable_date if self.reserved?).to_s ; end
@@ -116,7 +116,6 @@ class Voucher < ActiveRecord::Base
     vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
     v = Voucher.new({:fulfillment_needed => vt.fulfillment_needed,
                   :sold_on => Time.now,
-                  :valid_date => vt.valid_date,
                   :changeable => false,
                   :vouchertype => vt,
                   :expiration_date => vt.expiration_date}.merge(args))
@@ -164,7 +163,7 @@ class Voucher < ActiveRecord::Base
       # if this voucher is actually a "bundle", recursively add the
       # bundled vouchers
       # NOTE: fulfillment_needed is ALWAYS FALSE for vouchers included in a bundle!
-      if v.vouchertype.is_bundle?
+      if v.is_bundle?
         can_change = v.vouchertype.is_subscription?
         purchasemethod_bundle_id = Purchasemethod.get_type_by_name('bundle')
         v.vouchertype.get_included_vouchers.each {  |type, qty|
@@ -182,7 +181,7 @@ class Voucher < ActiveRecord::Base
   def add_to_customer(c)
     begin
       c.vouchers << self
-      if self.vouchertype.is_bundle?
+      if self.is_bundle?
         purch_bundle = Purchasemethod.get_type_by_name('bundle')
         Voucher.transaction do
           self.vouchertype.get_included_vouchers.each do |type, qty|
@@ -201,25 +200,12 @@ class Voucher < ActiveRecord::Base
     return [true,self]
   end
 
-  def valid_for_date?(dt)
-    if (vd = self.valid_date)  && (ed = self.expiration_date)
-      dt.between?(vd, ed)
-    elsif vd && !ed
-      dt >= vd
-    elsif !vd && ed
-      dt <= ed
-    else
-      true
-    end
-  end
+  def valid_for_date?(dt) ; dt.to_time <= expiration_date ; end
+  def valid_today? ; valid_for_date?(Time.now) ; end
 
   def validity_dates_as_string
     fmt = '%m/%d/%y'
-    if (vd = self.valid_date) && (ed = self.expiration_date)
-      "between #{vd.strftime(fmt)} and #{ed.strftime(fmt)}"
-    elsif vd
-      "after #{vd.strftime(fmt)}"
-    elsif ed
+    if (ed = self.expiration_date)
       "until #{ed.strftime(fmt)}"
     else
       "for all dates"

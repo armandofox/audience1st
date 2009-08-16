@@ -9,17 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 42) do
-
-  create_table "custom_reports", :force => true do |t|
-    t.string   "name"
-    t.string   "description"
-    t.text     "selected_clauses"
-    t.text     "selected_fields"
-    t.datetime "created_on"
-    t.datetime "updated_on"
-    t.datetime "last_run_at"
-  end
+ActiveRecord::Schema.define(:version => 43) do
 
   create_table "customers", :force => true do |t|
     t.string   "first_name",             :limit => 64,                                                                                                                                                  :default => "",                    :null => false
@@ -67,10 +57,6 @@ ActiveRecord::Schema.define(:version => 42) do
     t.string "name", :limit => 40, :default => "", :null => false
   end
 
-  create_table "donation_types", :force => true do |t|
-    t.string "name", :limit => 40, :default => "", :null => false
-  end
-
   create_table "donations", :force => true do |t|
     t.date     "date",                                      :null => false
     t.float    "amount",            :default => 0.0,        :null => false
@@ -80,7 +66,7 @@ ActiveRecord::Schema.define(:version => 42) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "letter_sent"
-    t.integer  "processed_by",      :default => 2146722771, :null => false
+    t.integer  "processed_by_id",   :default => 2146722771, :null => false
     t.integer  "purchasemethod_id", :default => 1,          :null => false
     t.string   "account_code"
   end
@@ -182,15 +168,12 @@ ActiveRecord::Schema.define(:version => 42) do
     t.integer  "external_key",       :default => 0
     t.boolean  "no_show",            :default => false,                 :null => false
     t.string   "promo_code"
-    t.integer  "processed_by",       :default => 2146722771,            :null => false
+    t.integer  "processed_by_id",    :default => 2146722771,            :null => false
     t.datetime "expiration_date",    :default => '2008-12-31 00:00:00', :null => false
-    t.datetime "valid_date",         :default => '2007-01-01 00:00:00', :null => false
     t.datetime "sold_on"
     t.integer  "bundle_id",          :default => 0,                     :null => false
     t.integer  "gift_purchaser_id",  :default => 0,                     :null => false
     t.datetime "used"
-    t.float    "price",              :default => 0.0,                   :null => false
-    t.string   "type"
   end
 
   add_index "vouchers", ["customer_id"], :name => "customer_id"

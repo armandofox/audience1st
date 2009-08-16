@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
-  describe "with only name and address filled in" do
+  context "with only name and address filled in" do
     before(:each) do
       @customer = Customer.create!(:first_name => "John", :last_name => "Doe")
     end
