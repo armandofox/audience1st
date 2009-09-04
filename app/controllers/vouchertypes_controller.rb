@@ -13,17 +13,30 @@ class VouchertypesController < ApplicationController
 
   def list
     @superadmin = is_admin
-    perpage = 50
     # possibly limit pagination to only bundles or only subs
+    earliest = Vouchertype.find(:first, :order => 'valid_date')
+    latest = Vouchertype.find(:first, :order => 'valid_date DESC')
+    @years = (earliest.valid_date.year .. latest.valid_date.year)
     @filter = params[:filter].to_s
     case @filter
     when "Bundles"
-      @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => perpage, :conditions => "is_bundle = 1"
+      c = "is_bundle = 1"
     when "Subscriptions"
-      @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => perpage, :conditions => "is_subscription = 1"
+      c = "is_subscription = 1"
     else
-      @vouchertype_pages, @vouchertypes = paginate :vouchertypes, :per_page => perpage
+      c = 'TRUE'
     end
+    @season = params[:season] || "All"
+    conditions = 
+      if (@season == "All")
+        [c]
+      else
+        s = Time.now.at_beginning_of_season(@season)
+        e = Time.now.at_end_of_season(@season)
+        ["#{c} AND (expiration_date BETWEEN ? AND ?)", s, e]
+      end
+    @vouchertypes = Vouchertype.find(:all, :conditions => conditions,
+                                     :order => "valid_date, is_subscription")
   end
 
   def new
@@ -79,9 +92,16 @@ class VouchertypesController < ApplicationController
   def destroy
     unless is_admin
       flash[:notice] = "Only superadmin can destroy vouchertypes."
+      redirect_to :action => 'list'
       return
     end
     v = Vouchertype.find(params[:id])
+    if ((c = v.vouchers.count) > 0)
+      flash[:notice] = "Can't destroy this voucher type, because there are
+                        #{c} issued vouchers of this type."
+      redirect_to :action => 'list'
+      return
+    end
     name = v.name
     v.destroy
     Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,

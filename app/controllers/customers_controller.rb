@@ -295,7 +295,7 @@ class CustomersController < ApplicationController
     else
       # list all
       @count = Customer.count
-      @customer_pages, @customers = paginate :customers,  :order_by => @o, :per_page => 20
+      @customer_pages, @customers = paginate :customers,  :order => @o, :per_page => 20
     end
   end
 

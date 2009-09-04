@@ -1,7 +1,10 @@
 - form_tag({:controller=>'vouchertypes', :action => 'list'},{:method=>:get}) do
   %h1 
-    Listing Voucher Types:
+    Listing
     = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles"],@filter)
+    voucher types valid during
+    = select_tag 'season', options_for_select(@years.to_a << "All", @season.to_i)
+    season
     = submit_tag 'Go'
 
 %table
@@ -18,34 +21,26 @@
       %th Walkup?
   %tbody
     - for vouchertype in @vouchertypes.sort_by { |v| v.is_bundle? ? 0 : 1 }
-    %span{:class => (vouchertype.is_subscription? ? 'subscriberVouchertype' : '')}
-      %tr{:class => cycle(:oddRow,:evenRow)}
-        %td
-          - if @superadmin
-          = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
-          - end
-          = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
-        %td.r= number_to_currency(vouchertype.price)   
-        %td.r= h(vouchertype.account_code)
-        %td.c= vouchertype.is_subscription? ? "Yes" : ""
-        %td= h(vouchertype.visibility)  
-        %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.is_subscription? && vouchertype.offer_public > 0)
-        %td.c
-          = vouchertype.valid_date.strftime("%m/%d/%y") 
-          \-
-          = vouchertype.expiration_date.strftime("%m/%d/%y")
-        %td 
-          -if vouchertype.is_bundle? 
-          -  vouchertype.get_included_vouchers.each_pair do |vt,qty| 
-          =    sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name) if qty>0 
-          -  end 
-          -end 
-        %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
-    - end
-
-= link_to 'Previous page', { :page => @vouchertype_pages.current.previous } if @vouchertype_pages.current.previous 
-= link_to 'Next page', { :page => @vouchertype_pages.current.next } if @vouchertype_pages.current.next  
+      %span{:class => (vouchertype.is_subscription? ? 'subscriberVouchertype' : '')}
+        %tr{:class => cycle(:oddRow,:evenRow)}
+          %td
+            - if @superadmin
+              = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
+            = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
+          %td.r= number_to_currency(vouchertype.price)   
+          %td.r= h(vouchertype.account_code)
+          %td.c= vouchertype.is_subscription? ? "Yes" : ""
+          %td= h(vouchertype.visibility)  
+          %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.is_subscription? && vouchertype.offer_public > 0)
+          %td.c
+            = vouchertype.valid_date.strftime("%m/%d/%y") 
+            \-
+            = vouchertype.expiration_date.strftime("%m/%d/%y")
+          %td 
+            -if vouchertype.is_bundle? 
+              - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
+                = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name) if qty>0 
+          %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
 
 %br/
-
 = gen_button  'New vouchertype', {:action => 'new'} 

@@ -22,7 +22,7 @@ class Time
     end
     unless args[:omit_time]
       say_min = min.zero? ? "" :  min < 10 ? "oh #{min}" : min
-      res<<"#{self.strftime('%I').to_i} #{say_min} #{self.strftime('%p')[0,1]} M"
+      res << "#{self.strftime('%I').to_i} #{say_min} #{self.strftime('%p')[0,1]} M"
     end
     res.join(", at ")
   end
@@ -31,13 +31,19 @@ class Time
     (self + 1.day).midnight - 1.second
   end
 
-  def at_beginning_of_season
+  def at_beginning_of_season(oldyear = self.year)
+    oldyear = oldyear.to_i
     mon = Option.value(:season_start_month)
     mday = Option.value(:season_start_day)
     mon = 1 unless (1..12).include?(mon)
     mday = 1 unless (1..31).include?(mday)
-    start = self.change(:month => mon, :mday => mday, :hour => 0,
-                        :year => (self.yday >= Time.local(self.year,mon,mday).yday ? self.year : self.year - 1))
+    self.change(:month => mon, :day => mday, :hour => 0,
+                :year => (self.yday >= Time.local(oldyear,mon,mday).yday ?
+                          oldyear : oldyear - 1))
+  end
+
+  def at_end_of_season(oldyear = self.year)
+    self.at_beginning_of_season(oldyear) + 1.year - 1.day
   end
 
   def self.new_from_hash(h)
@@ -64,5 +70,6 @@ class Time
     min,max = max,min if min > max
     return min,max
   end
+
 end
 
