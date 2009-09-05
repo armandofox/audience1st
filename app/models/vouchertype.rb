@@ -8,13 +8,32 @@ class Vouchertype < ActiveRecord::Base
   validates_numericality_of :price
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
 
+  # Vouchertypes whose price is zero must NOT be available
+  # to subscribers or general public
+  validates_exclusion_of :offer_public, :in => [1,2], :if => lambda { |v| v.price.zero? }, :message => "Zero-price vouchers must not be accessible to subscribers or regular patrons"
+
+  # Subscription vouchertypes shouldn't be available for walkup sale,
+  # since we need to capture the address
+  validate :subscriptions_shouldnt_be_walkups
+
+  def subscriptions_shouldnt_be_walkups
+    if walkup_sale_allowed && is_subscription
+      errors.add_to_base "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
+    end
+  end
+  
+
   # Functions that determine visibility of a voucher type to particular
   # customers
+  BOXOFFICE = 0
+  SUBSCRIBERS = 1
+  ANYONE = 2
+  EXTERNAL = -1
 
-  @@offer_to = [["Box office use only", 0],
-                ["Subscribers may purchase",1],
-                ["Anyone may purchase", 2],
-                ["Sold by external reseller", -1]]
+  @@offer_to = [["Box office use only", BOXOFFICE],
+                ["Subscribers may purchase",SUBSCRIBERS],
+                ["Anyone may purchase", ANYONE],
+                ["Sold by external reseller", EXTERNAL]]
 
   def self.offer_to
     @@offer_to
@@ -33,13 +52,13 @@ class Vouchertype < ActiveRecord::Base
     arglist = []
     case args[:for_purchase_by]
     when :subscribers
-      restrict << "(offer_public = 1 OR offer_public = 2)"
+      restrict << "(offer_public = #{SUBSCRIBERS} OR offer_public = #{ANYONE})"
     when :boxoffice
-      restrict << "offer_public = 0"
+      restrict << "offer_public = #{BOXOFFICE}"
     when :external
-      restrict << "offer_public = -1"
+      restrict << "offer_public = #{EXTERNAL}"
     else
-      restrict << "offer_public = 2"
+      restrict << "offer_public = #{ANYONE}"
     end
     if (created_on = args[:since])
       restrict << "created_on >= ?"

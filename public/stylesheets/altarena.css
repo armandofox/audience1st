@@ -83,6 +83,7 @@ a.genButton {
         background-color: #671e22;
         color:  white;
         padding: 2px;
+        margin: 2px;
         text-decoration: none;
 }
 a.genButton:hover {
@@ -91,6 +92,7 @@ a.genButton:hover {
         background-color: white;
         border:  1px solid #800000;
         padding: 2px;
+        margin: 2px;
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: Georgia, "Times New Roman", Times, serif;

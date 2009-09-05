@@ -65,6 +65,7 @@ class VouchertypesController < ApplicationController
 
   def edit
     @vouchertype = Vouchertype.find(params[:id])
+    @num_vouchers = @vouchertype.vouchers.count
   end
 
   def update

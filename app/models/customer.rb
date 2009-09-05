@@ -16,6 +16,9 @@ class Customer < ActiveRecord::Base
   validates_uniqueness_of :login, :allow_nil => true
   validates_length_of :login, :in => 3..50, :allow_nil => true
 
+  validates_uniqueness_of :email, :allow_nil => true
+  validate :valid_email?
+
   validates_presence_of :first_name
   validates_length_of :first_name, :within => 1..50
   validates_presence_of :last_name
@@ -41,11 +44,15 @@ class Customer < ActiveRecord::Base
     self.password = nil if self.password.blank?
   end
 
-  # custom validations
+  def valid_email?
+    return true if email.blank? || valid_email_address?
+    errors.add_to_base("Email address is invalid")
+    false
+  end
 
   def valid_as_gift_recipient?
-    # must have first and last name, and two out of three of
-    #  address, email and phone#
+    # must have first and last name, mailing addr, and at least one
+    #  phone or email
     valid = true
     if (first_name.blank? || last_name.blank?)
       errors.add_to_base "First and last name must be provided"

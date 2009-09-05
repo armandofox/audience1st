@@ -67,23 +67,15 @@
 
   %table
     - Vouchertype.find(:all).each do |v|
-    -   unless v.is_bundle?
-    %tr
-      %td.r= h(v.name)
-      %td.l
-        %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
-    -   end
-    - end
+      - unless v.is_bundle?
+        %tr
+          %td.r= h(v.name)
+          %td.l
+            %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
 
 - else
 
-  %p
-    %strong Note:
-    You  must
-    %em first
-    define a voucher to be a  bundle,
-    %em then
-    go back and edit to add the appropriate tickets to the bundle.
+  %p.strong Note: You  must first define a voucher to be a  bundle, then go back and edit to add the appropriate tickets to the bundle.
 
 /[eoform:vouchertype]
 
