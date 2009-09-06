@@ -20,7 +20,7 @@ class DonorAppeal < Report
       joins << ' JOIN vouchers v on v.customer_id = c.id ' <<
         'JOIN vouchertypes vt on v.vouchertype_id = vt.id '
       where =
-        "(#{where}) OR (vt.is_subscription = 1 AND
+        "(#{where}) OR (vt.subscription = 1 AND
                           NOW() BETWEEN vt.valid_date AND vt.expiration_date)"
     end
     sql =  <<eoq

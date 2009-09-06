@@ -1,2 +1,0 @@
-class BundleVouchertype < Vouchertype
-end

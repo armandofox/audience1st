@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 43) do
+ActiveRecord::Schema.define(:version => 44) do
 
   create_table "customers", :force => true do |t|
     t.string   "first_name",             :limit => 64,                                                                                                                                                  :default => "",                    :null => false
@@ -107,9 +107,10 @@ ActiveRecord::Schema.define(:version => 43) do
     t.string   "name"
     t.date     "opening_date"
     t.date     "closing_date"
-    t.datetime "created_on",       :null => false
+    t.datetime "created_on",                                 :null => false
     t.text     "patron_notes"
     t.string   "landing_page_url"
+    t.date     "listing_date",     :default => '2009-09-05', :null => false
   end
 
   create_table "txn_types", :force => true do |t|
@@ -184,7 +185,7 @@ ActiveRecord::Schema.define(:version => 43) do
     t.datetime "created_on"
     t.text     "comments"
     t.integer  "offer_public",                      :default => 0,                     :null => false
-    t.boolean  "is_subscription",                   :default => false,                 :null => false
+    t.boolean  "subscription",                      :default => false,                 :null => false
     t.text     "included_vouchers"
     t.string   "promo_code",          :limit => 20, :default => "",                    :null => false
     t.boolean  "walkup_sale_allowed",               :default => true
@@ -194,7 +195,7 @@ ActiveRecord::Schema.define(:version => 43) do
     t.string   "account_code",        :limit => 8,  :default => "",                    :null => false
     t.datetime "bundle_sales_start",                :default => '2007-01-01 00:00:00', :null => false
     t.datetime "bundle_sales_end",                  :default => '2008-01-01 06:00:00', :null => false
-    t.string   "type"
+    t.boolean  "bundle",                            :default => false,                 :null => false
   end
 
 end

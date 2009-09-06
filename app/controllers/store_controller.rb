@@ -501,7 +501,7 @@ class StoreController < ApplicationController
   end
 
   def get_all_subs(cust = Customer.generic_customer)
-    return Vouchertype.find(:all, :conditions => ["is_bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.is_subscriber? ? 0 : 1)])
+    return Vouchertype.find(:all, :conditions => ["bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.is_subscriber? ? 0 : 1)])
   end
 
   def process_ticket_request

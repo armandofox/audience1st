@@ -1,4 +1,8 @@
-%h1 Listing Shows
+- form_tag({:action => 'list'},{:method=>:get}) do
+  %h1 
+    Listing shows for season:
+    = select_tag 'season', options_for_select(@years.to_a.map(&:to_s) << "All", @season)
+    = submit_tag 'Go'
 
 %table
   %thead
@@ -10,21 +14,14 @@
       %th Added to system
   %tbody
     - @shows.each do |show|
-    %tr{:class=>cycle(:evenRow,:oddRow)}
-      %td.r= show.id
-      %td= link_to show.name, :action => 'edit', :id => show
-      %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id), show.name
-      %td
-        = show.opening_date.strftime('%b %e, %Y')
-        \-
-        = show.closing_date.strftime('%b %e, %Y')
-      %td= show.created_on.strftime('%b %e, %Y')
-      -# if @superadmin
-      -# %td= button_to 'Destroy',  {:action => 'destroy', :id => show}, :confirm => MESSAGES[:areyousure_0], :post => true 
-      -# end
-    - end
-
-= link_to 'Previous page', { :page => @show_pages.current.previous } if @show_pages.current.previous 
-= link_to 'Next page', { :page => @show_pages.current.next } if @show_pages.current.next
+      %tr{:class=>cycle(:evenRow,:oddRow)}
+        %td.r= show.id
+        %td= link_to show.name, :action => 'edit', :id => show
+        %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id), show.name
+        %td
+          = show.opening_date.to_formatted_s(:month_day_year)
+          \-
+          = show.closing_date.to_formatted_s(:month_day_year)
+        %td= show.created_on.to_formatted_s(:month_day_year)
 
 = gen_button 'Add New Show', :action => 'new'

@@ -4,16 +4,16 @@ describe Voucher do
 
   before :all do
     # mock some Vouchertype objects for these tests
-    @vt_regular = mock_model(RevenueVouchertype, :null_object => true)
-    @vt_bundle = mock_model(BundleVouchertype, :null_object => true)
+    @vt_regular = mock_model(Vouchertype, :null_object => true)
+    @vt_bundle = mock_model(Vouchertype, :null_object => true)
     { :fulfillment_needed => false,
       :valid_date => Time.now - 1.month,
       :expiration_date => Time.now + 1.month }.each_pair do |meth,retval|
       @vt_regular.stub!(meth).and_return(retval)
       @vt_bundle.stub!(meth).and_return(retval)
     end
-    @vt_regular.stub!(:is_bundle?).and_return(false)
-    @vt_bundle.stub!(:is_bundle?).and_return(true)
+    @vt_regular.stub!(:bundle?).and_return(false)
+    @vt_bundle.stub!(:bundle?).and_return(true)
   end
 
   describe "regular voucher when first created", :shared => true do

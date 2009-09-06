@@ -148,16 +148,15 @@ class Customer < ActiveRecord::Base
   def is_subscriber?
     self.role >= 0 &&
       self.vouchers.detect do |f|
-      f.vouchertype && f.vouchertype.is_subscription? &&
-        f.vouchertype.valid_now?
+      f.vouchertype.subscription? && f.vouchertype.valid_now?
     end
   end
 
   def is_next_season_subscriber?
     self.role >= 0 &&
       self.vouchers.detect do |f|
-      f.vouchertype && f.vouchertype.is_subscription? &&
-        f.vouchertype.name.match(/^2009/ )
+      f.vouchertype.subscription? &&
+        f.vouchertype.expiration_date.within_season(Time.now.at_end_of_season + 1.year)
     end
   end
 
@@ -444,7 +443,7 @@ class Customer < ActiveRecord::Base
                          "c.first_name,c.last_name,c.street,c.city,c.state,c.zip " <<
                          " FROM customers c JOIN vouchers v ON v.customer_id=c.id " <<
                          " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
-                         " WHERE vt.is_subscription=1 AND " <<
+                         " WHERE vt.subscription=1 AND " <<
                          "vt.valid_date <= #{Time.db_now} AND vt.expiration_date >= #{Time.db_now} " <<
                          " ORDER BY #{order_by}")
   end

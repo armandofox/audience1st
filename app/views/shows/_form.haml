@@ -13,6 +13,14 @@
   = date_select 'show', 'closing_date'
 
 %p
+  %label{:for=>:show_listing_date} List starting
+  = date_select 'show', 'listing_date'
+
+%p
+  %label{:for=>:landing_page_url} Landing page URL (optional)
+  = text_field 'show', 'landing_page_url'
+
+%p
   %label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); leave blank if none
   = text_area :show, :patron_notes, :cols =>60,:rows => 3,:maxlength => 254
 

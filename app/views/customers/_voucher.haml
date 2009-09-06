@@ -1,4 +1,4 @@
-- remove_voucher = ['Destroy',  {:controller => 'vouchers',:action => 'remove_voucher',:id => voucher.id },  {:confirm => (voucher.is_bundle? ?  MESSAGES[:remove_bundle_0] :  MESSAGES[:remove_voucher_0])}]
+- remove_voucher = ['Destroy',  {:controller => 'vouchers',:action => 'remove_voucher',:id => voucher.id },  {:confirm => (voucher.bundle? ?  MESSAGES[:remove_bundle_0] :  MESSAGES[:remove_voucher_0])}]
 - cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => customer}, {:confirm => MESSAGES[:release_reservation_0]} ]
 - cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
 
@@ -9,7 +9,7 @@
       = voucher.processed_by_name unless voucher.processed_by_id == voucher.customer.id
   %td= h voucher.vouchertype.name
   %td= h voucher.purchasemethod.description if voucher.purchasemethod
-  - if voucher.is_bundle?
+  - if voucher.bundle?
     / voucher bundle - not reservable
     %td{:colspan=>2}
     - if is_boxoffice_manager && voucher.price.zero?

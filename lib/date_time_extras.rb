@@ -5,7 +5,8 @@
 ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
   :date_only => "%e %B %Y",
   :showtime => '%A, %b %e, %l:%M %p',
-  :month_day_only => "%b %e"
+  :month_day_only => "%b %e",
+  :month_day_year => "%b %e, %Y"
 })
 
 class Time
@@ -46,6 +47,12 @@ class Time
     self.at_beginning_of_season(oldyear) + 1.year - 1.day
   end
 
+  def within_season(year)
+    year = year.year unless year.kind_of?(Numeric)
+    self.at_beginning_of_season(year) < self &&
+      self < self.at_end_of_season(year)
+  end
+
   def self.new_from_hash(h)
     return Time.now unless h.respond_to?(:has_key)
     if h.has_key?(:hour)
@@ -73,3 +80,14 @@ class Time
 
 end
 
+class Date
+  def at_beginning_of_season(arg=self.year)
+    self.to_time.at_beginning_of_season(arg).to_date
+  end
+  def at_end_of_season(arg=self.year)
+    self.to_time.at_end_of_season(arg).to_date
+  end
+  def within_season(arg)
+    self.to_time.within_season(arg)
+  end
+end

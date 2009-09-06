@@ -8,7 +8,7 @@ describe Vouchertype do
       @vt = Vouchertype.new(:price => 1.0,
                             :offer_public => Vouchertype::ANYONE,
                             :name => "Example",
-                            :is_subscription => false,
+                            :subscription => false,
                             :walkup_sale_allowed => true,
                             :comments => "A comment",
                             :account_code => "9999",
@@ -51,7 +51,7 @@ describe Vouchertype do
       @vt.should_not be_valid
     end
     it "should not be sold as walkup if it's a subscription" do
-      @vt.is_subscription = true
+      @vt.subscription = true
       @vt.walkup_sale_allowed = true
       @vt.should_not be_valid
     end

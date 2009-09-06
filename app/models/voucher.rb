@@ -29,8 +29,9 @@ class Voucher < ActiveRecord::Base
   def reserved? ;   !showdate_id.to_i.zero? ;  end
   def unreserved? ; showdate_id.to_i.zero?  ;  end
 
-  def reservable? ; !is_bundle? && unreserved? && valid_today? ;  end
-  def is_bundle? ; self.vouchertype.is_bundle?; end
+  def bundle? ; self.vouchertype.bundle? ; end
+  def subscription? ; self.vouchertype.subscription? ; end
+  def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (self.showdate.show.name if self.reserved?).to_s ;  end
   def reserved_date ; (self.showdate.printable_date if self.reserved?).to_s ; end
   def date ; self.showdate.thedate if self.reserved? ; end
@@ -41,7 +42,7 @@ class Voucher < ActiveRecord::Base
   def show ;  showdate.show ; end
   def show_or_bundle_name
     show.kind_of?(Show)  ? show.name :
-      (vouchertype_id > 0 && vouchertype.is_bundle? ? vouchertype.name : "??")
+      (vouchertype_id > 0 && vouchertype.bundle? ? vouchertype.name : "??")
   end
 
   def account_code ; self.vouchertype.account_code ; end
@@ -79,7 +80,7 @@ class Voucher < ActiveRecord::Base
         old = c.is_current_subscriber
         new = c.role >= 0 &&
           c.vouchers.detect do |f|
-          f.vouchertype && f.vouchertype.is_subscription? &&
+          f.vouchertype && f.vouchertype.subscription? &&
             f.vouchertype.valid_now?
         end
         unless (old == new)
@@ -104,8 +105,8 @@ class Voucher < ActiveRecord::Base
              ("#{customer.last_name[-6..-1]},#{customer.first_name[0..0]}" rescue "?#{customer_id}")),
             (vouchertype.name[0..10] rescue ""),
             (vouchertype.price.to_f rescue 0.0),
-            ((vouchertype.is_subscription ? "S" : "s") rescue "-"),
-            ((vouchertype.is_bundle?? "B": "b") rescue "-"),
+            ((vouchertype.subscription? ? "S" : "s") rescue "-"),
+            ((vouchertype.bundle?? "B": "b") rescue "-"),
             ((vouchertype.offer_public ? "P" : "p") rescue "-"),
             external_key)
   end
@@ -163,8 +164,8 @@ class Voucher < ActiveRecord::Base
       # if this voucher is actually a "bundle", recursively add the
       # bundled vouchers
       # NOTE: fulfillment_needed is ALWAYS FALSE for vouchers included in a bundle!
-      if v.is_bundle?
-        can_change = v.vouchertype.is_subscription?
+      if v.bundle?
+        can_change = v.vouchertype.subscription?
         purchasemethod_bundle_id = Purchasemethod.get_type_by_name('bundle')
         v.vouchertype.get_included_vouchers.each {  |type, qty|
           if (qty > 0)
@@ -181,7 +182,7 @@ class Voucher < ActiveRecord::Base
   def add_to_customer(c)
     begin
       c.vouchers << self
-      if self.is_bundle?
+      if self.bundle?
         purch_bundle = Purchasemethod.get_type_by_name('bundle')
         Voucher.transaction do
           self.vouchertype.get_included_vouchers.each do |type, qty|

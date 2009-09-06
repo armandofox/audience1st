@@ -26,8 +26,8 @@ class VouchersController < ApplicationController
       return
     end
     if request.get?
-      @regular_vouchers = Vouchertype.find(:all, :conditions => 'is_bundle = 0')
-      @bundle_vouchers = Vouchertype.find(:all, :conditions => 'is_bundle = 1')
+      @regular_vouchers = Vouchertype.find(:all, :conditions => 'bundle = 0')
+      @bundle_vouchers = Vouchertype.find(:all, :conditions => 'bundle = 1')
       @purchasemethods = Purchasemethod.find(:all)
       # fall through to rendering
       return

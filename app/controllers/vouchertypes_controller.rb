@@ -20,9 +20,9 @@ class VouchertypesController < ApplicationController
     @filter = params[:filter].to_s
     case @filter
     when "Bundles"
-      c = "is_bundle = 1"
+      c = "bundle = 1"
     when "Subscriptions"
-      c = "is_subscription = 1"
+      c = "subscription = 1"
     else
       c = 'TRUE'
     end
@@ -36,7 +36,7 @@ class VouchertypesController < ApplicationController
         ["#{c} AND (expiration_date BETWEEN ? AND ?)", s, e]
       end
     @vouchertypes = Vouchertype.find(:all, :conditions => conditions,
-                                     :order => "valid_date, is_subscription")
+                                     :order => "valid_date, subscription")
   end
 
   def new
@@ -51,7 +51,7 @@ class VouchertypesController < ApplicationController
     if @vouchertype.save
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                            :commments => "Create voucher type #{@vouchertype.name}")
-      if @vouchertype.is_bundle?
+      if @vouchertype.bundle?
         flash[:notice] = 'Please specify bundle quantities now.'
         redirect_to :action => 'edit', :id => @vouchertype
       else
@@ -70,14 +70,14 @@ class VouchertypesController < ApplicationController
 
   def update
     @vouchertype = Vouchertype.find(params[:id])
-    was_bundle_before = @vouchertype.is_bundle?
+    was_bundle_before = @vouchertype.bundle?
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
     end
     if @vouchertype.update_attributes(params[:vouchertype])
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                            :comments => "Modify voucher type #{@vouchertype.name}")
-      if @vouchertype.is_bundle? and !was_bundle_before
+      if @vouchertype.bundle? and !was_bundle_before
         flash[:notice] = 'Please edit bundle quantities now.'
         redirect_to :action => 'edit', :id => @vouchertype
       else

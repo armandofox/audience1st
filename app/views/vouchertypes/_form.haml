@@ -45,14 +45,14 @@
 /This part of form is for bundle vouchers
 
 %p
-  %label{:for=>:vouchertype_is_subscription}This voucher type qualifies buyer as a Subscriber
-  = check_box 'vouchertype', 'is_subscription'
+  %label{:for=>:vouchertype_subscription}This voucher type qualifies buyer as a Subscriber
+  = check_box 'vouchertype', 'subscription'
 
 %p
   %label{:for=>:vouchertype_comments}Comments/description
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
-- if @vouchertype.is_bundle?
+- if @vouchertype.bundle?
   %p
     %label{:for=>:vouchertype_bundle_sales_start} Sales start
     = datetime_select 'vouchertype', 'bundle_sales_start'
@@ -67,7 +67,7 @@
 
   %table
     - Vouchertype.find(:all).each do |v|
-      - unless v.is_bundle?
+      - unless v.bundle?
         %tr
           %td.r= h(v.name)
           %td.l

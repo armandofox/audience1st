@@ -81,7 +81,7 @@ class ReportController < ApplicationController
     sql = ["SELECT DISTINCT v.* FROM vouchers v,vouchertypes vt WHERE " <<
            "(v.sold_on BETWEEN ? AND ?) AND " <<
            "v.customer_id !=0 AND " <<
-           "(v.showdate_id > 0 OR (v.vouchertype_id = vt.id AND vt.is_bundle=1 AND vt.is_subscription=1))", from, to]
+           "(v.showdate_id > 0 OR (v.vouchertype_id = vt.id AND vt.bundle=1 AND vt.subscription=1))", from, to]
     sales = Voucher.find_by_sql(sql)
     @nsales = sales.size
     @page_title = "#{@nsales} Transactions: #{from.strftime('%a %b %e')} " <<
@@ -134,7 +134,7 @@ EOQ1
            " vt.price > 0" <<
            " AND (v.sold_on BETWEEN ? AND ?)" <<
            " AND v.customer_id NOT IN (0,?)" <<
-           " AND vt.is_bundle = 1 " <<
+           " AND vt.bundle = 1 " <<
            "GROUP BY vt.account_code,vt.name",
            @from, @to, Customer.walkup_customer.id]
     @subs_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
@@ -306,7 +306,7 @@ EOQ2
 
   def subscription_vouchers(year)
     season_start = Time.local(year,Option.value(:season_start_month).to_i)
-    v = BundleVouchertype.find(:all, :conditions =>"is_subscription=1 AND name LIKE '%#{year}%'")
+    v = Vouchertype.find(:all, :conditions =>"subscription=1 AND bundle=1 AND name LIKE '%#{year}%'")
     #valid_date>=? AND expiration_date<?',season_start, season_start + 1.year])
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
   end

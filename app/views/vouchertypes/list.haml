@@ -1,4 +1,4 @@
-- form_tag({:controller=>'vouchertypes', :action => 'list'},{:method=>:get}) do
+- form_tag({:action => 'list'},{:method=>:get}) do
   %h1 
     Listing
     = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles"],@filter)
@@ -20,8 +20,8 @@
       %th Description
       %th Walkup?
   %tbody
-    - for vouchertype in @vouchertypes.sort_by { |v| v.is_bundle? ? 0 : 1 }
-      %span{:class => (vouchertype.is_subscription? ? 'subscriberVouchertype' : '')}
+    - for vouchertype in @vouchertypes.sort_by { |v| v.bundle? ? 0 : 1 }
+      %span{:class => (vouchertype.subscription? ? 'subscriberVouchertype' : '')}
         %tr{:class => cycle(:oddRow,:evenRow)}
           %td
             - if @superadmin
@@ -29,15 +29,15 @@
             = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
           %td.r= number_to_currency(vouchertype.price)   
           %td.r= h(vouchertype.account_code)
-          %td.c= vouchertype.is_subscription? ? "Yes" : ""
+          %td.c= vouchertype.subscription? ? "Yes" : ""
           %td= h(vouchertype.visibility)  
-          %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.is_subscription? && vouchertype.offer_public > 0)
+          %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
           %td.c
             = vouchertype.valid_date.strftime("%m/%d/%y") 
             \-
             = vouchertype.expiration_date.strftime("%m/%d/%y")
           %td 
-            -if vouchertype.is_bundle? 
+            -if vouchertype.bundle? 
               - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
                 = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name) if qty>0 
           %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""

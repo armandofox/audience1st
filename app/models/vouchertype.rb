@@ -17,7 +17,7 @@ class Vouchertype < ActiveRecord::Base
   validate :subscriptions_shouldnt_be_walkups
 
   def subscriptions_shouldnt_be_walkups
-    if walkup_sale_allowed && is_subscription
+    if walkup_sale_allowed? && subscription?
       errors.add_to_base "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
     end
   end
@@ -37,10 +37,6 @@ class Vouchertype < ActiveRecord::Base
 
   def self.offer_to
     @@offer_to
-  end
-
-  def is_bundle?
-    self.class.to_s == 'BundleVouchertype'
   end
 
   def visibility
@@ -66,11 +62,11 @@ class Vouchertype < ActiveRecord::Base
     end
     case args[:type]
     when :bundled_voucher
-      restrict << "type != 'BundleVouchertype' AND is_subscription = 0"
+      restrict << "type != 'BundleVouchertype' AND subscription = 0"
       restrict << "#{Time.db.now} BETWEEN valid_date AND expiration_date" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :subscription
-      restrict << "type = 'BundleVouchertype' AND is_subscription = 1"
+      restrict << "type = 'BundleVouchertype' AND subscription = 1"
       restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
         (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
     when :bundle
@@ -100,7 +96,7 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def get_included_vouchers
-    if self.is_bundle?
+    if self.bundle?
       hsh = self.included_vouchers
       numeric_hsh = Hash.new
       # convert everthing to ints (stored as strings)

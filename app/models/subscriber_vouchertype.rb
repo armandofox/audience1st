@@ -1,5 +1,0 @@
-class SubscriberVouchertype < Vouchertype
-
-
-
-end

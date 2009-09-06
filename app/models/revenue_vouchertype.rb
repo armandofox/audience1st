@@ -1,2 +1,0 @@
-class RevenueVouchertype < Vouchertype
-end
