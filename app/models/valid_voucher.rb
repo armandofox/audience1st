@@ -30,13 +30,13 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def self.for_advance_sales(passwords = [])
-    general_conds = "start_sales <= NOW() AND end_sales >= NOW()"
+    general_conds = "start_sales <= ? AND end_sales >= ?"
     password_conds = "password IS NULL OR password = ''"
     unless passwords.empty?
       password_conds += " OR password LIKE ? " * passwords.length
       end
     v = ValidVoucher.find(:all,
-                          :conditions => ["#{general_conds} AND (#{password_conds})", passwords])
+                          :conditions => ["#{general_conds} AND (#{password_conds})", Time.now, Time.now, passwords])
     v.to_set.classify( &:showdate_id )
   end
 

@@ -11,7 +11,7 @@ class Showdate < ActiveRecord::Base
   validates_associated :show
 
   def self.current_or_next
-    Showdate.find(:first, :conditions => "thedate >= NOW()")
+    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now])
   end
 
   def <=>(other_showdate)

@@ -156,7 +156,7 @@ class Customer < ActiveRecord::Base
     self.role >= 0 &&
       self.vouchers.detect do |f|
       f.vouchertype.subscription? &&
-        f.vouchertype.expiration_date.within_season(Time.now.at_end_of_season + 1.year)
+        f.vouchertype.expiration_date.within_season?(Time.now.at_end_of_season + 1.year)
     end
   end
 

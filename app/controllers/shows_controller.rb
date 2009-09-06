@@ -24,7 +24,7 @@ class ShowsController < ApplicationController
     @shows = Show.find(:all, :order => 'opening_date')
     @season = params[:season] || "All"
     @years = (@shows.first.opening_date.year .. @shows.last.closing_date.year)
-    @shows.reject! { |s| !s.opening_date.within_season(@season) } if @season.to_i > 0
+    @shows.reject! { |s| !s.opening_date.within_season?(@season) } if @season.to_i > 0
   end
 
   def new

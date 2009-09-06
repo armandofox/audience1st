@@ -21,7 +21,7 @@ class DonorAppeal < Report
         'JOIN vouchertypes vt on v.vouchertype_id = vt.id '
       where =
         "(#{where}) OR (vt.subscription = 1 AND
-                          NOW() BETWEEN vt.valid_date AND vt.expiration_date)"
+                          #{Time.db_now} BETWEEN vt.valid_date AND vt.expiration_date)"
     end
     sql =  <<eoq
         SELECT DISTINCT c.*

@@ -47,28 +47,23 @@ class Time
     self.at_beginning_of_season(oldyear) + 1.year - 1.day
   end
 
-  def within_season(year)
+  def within_season?(year)
     year = year.year unless year.kind_of?(Numeric)
-    self.at_beginning_of_season(year) < self &&
-      self < self.at_end_of_season(year)
-  end
-
-  def self.new_from_hash(h)
-    return Time.now unless h.respond_to?(:has_key)
-    if h.has_key?(:hour)
-      Time.local(h[:year].to_i,h[:month].to_i,h[:day].to_i,h[:hour].to_i,
-               (h[:minute] || "00").to_i,
-               (h[:second] || "00").to_i)
-    else
-      Time.local(h[:year].to_i,h[:month].to_i,h[:day].to_i)
-    end
+    start = Time.local(year,Option.value(:season_start_month),
+                       Option.value(:season_start_day)).at_beginning_of_season
+    (start <= self) && (self <= start.at_end_of_season)
   end
 
   def self.from_param(param,default=Time.now)
-    (param.blank? ? default :
-     (param.kind_of?(Hash) ?
-      Time.local(param[:year],param[:month],param[:day]) :
-      Time.parse(param)))
+    return default if param.blank?
+    return Time.parse(param) unless param.kind_of?(Hash)
+    if param.has_key?(:hour)
+      Time.local(param[:year].to_i,param[:month].to_i,param[:day].to_i,param[:hour].to_i,
+                 (param[:minute] || "00").to_i,
+                 (param[:second] || "00").to_i)
+    else
+      Time.local(param[:year].to_i,param[:month].to_i,param[:day].to_i)
+    end
   end
 
   def self.range_from_params(minp,maxp,default=Time.now)
@@ -87,7 +82,7 @@ class Date
   def at_end_of_season(arg=self.year)
     self.to_time.at_end_of_season(arg).to_date
   end
-  def within_season(arg)
-    self.to_time.within_season(arg)
+  def within_season?(arg)
+    self.to_time.within_season?(arg)
   end
 end
