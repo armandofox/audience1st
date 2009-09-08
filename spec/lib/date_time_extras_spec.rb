@@ -10,7 +10,7 @@ end
 describe "Date/time extras" do
 
   describe "season calculations" do
-    context "for year 1/1 - 12/31" do
+    context "for season 1/1 - 12/31" do
       before(:each) do
         stub_month_and_day(1,1)
         @now = Time.local(2009,2,1)
@@ -67,6 +67,40 @@ describe "Date/time extras" do
       end
       it "should include a date that is next calendar year and in season" do
         (@end - 1.day).within_season?(2009).should be_true
+      end
+    end
+  end
+
+  describe "creating a date or time from params[]" do
+    it "should return default value if param is blank" do
+      deflt = Time.now
+      Time.from_param(nil,deflt).should == deflt
+    end
+    context "when param is not a hash" do
+      it "should parse if given a string" do
+        str = "February 3, 2008, 8:15PM"
+        Time.from_param(str).should == Time.local(2008,2,3,20,15)
+      end
+      it "should raise an exception if given garbage" do
+        lambda {
+          Time.from_param("00")
+        }.should raise_error
+      end
+    end
+    context "when param is a hash" do
+      before(:each) do
+        @h = {:year=>2008, :month=>1, :day=>2}
+      end
+      it "should parse a hash containing only date info" do
+        Time.from_param(@h).should == Time.local(2008,1,2,0,0,0)
+      end
+      it "should parse a hash containing date and hour" do
+        Time.from_param(@h.merge({:hour => 17})).should ==
+          Time.local(2008,1,2,17,0,0)
+      end
+      it "should parse a hash containing date, hour and minute" do
+        Time.from_param(@h.merge({:hour => 17,:minute => 3})).should ==
+          Time.local(2008,1,2,17,3,0)
       end
     end
   end

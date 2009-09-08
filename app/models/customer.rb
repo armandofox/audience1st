@@ -30,19 +30,51 @@ class Customer < ActiveRecord::Base
   validates_columns :formal_relationship
   validates_columns :member_type
 
-  attr_protected :id, :salt, :role, :vouchers, :donations, :validation_level
+  attr_protected :id, :salt, :role, :validation_level
   attr_accessor :password
 
+  #----------------------------------------------------------------------
+  #  private methods & callbacks
+  #----------------------------------------------------------------------
+  
   # before validation, squeeze out any attributes that are whitespace-only,
   # so the allow_nil validations behave as expected.
 
   before_validation :remove_blank_attributes
+
   def remove_blank_attributes
     Customer.columns.each do |c|
       self.send("#{c.name}=", nil) if self.send(c.name).blank?
     end
     self.password = nil if self.password.blank?
   end
+  
+  # when customer is saved, possibly update their email opt-in status
+  # with external mailing list.  This requires preserving their previous
+  # email address whenever they change it.  The email= setter takes care
+  # of this.
+
+  after_save :update_email_subscription
+
+  def update_email_subscription
+    return unless valid_email_address?
+    if e_blacklist
+      EmailList.unsubscribe(self)
+    else
+      EmailList.subscribe(self)
+    end
+  end
+  
+  #----------------------------------------------------------------------
+  #  public methods
+  #----------------------------------------------------------------------
+
+  def email=(new_email)
+    @old_email = self.email
+    self[:email] = new_email.to_s
+  end
+  def email_when_loaded ; @old_email || email ; end
+
 
   def valid_email?
     return true if email.blank? || valid_email_address?
@@ -447,5 +479,6 @@ class Customer < ActiveRecord::Base
                          "vt.valid_date <= #{Time.db_now} AND vt.expiration_date >= #{Time.db_now} " <<
                          " ORDER BY #{order_by}")
   end
+
 
 end

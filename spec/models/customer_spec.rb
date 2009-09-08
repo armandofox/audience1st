@@ -89,4 +89,49 @@ describe Customer do
     end
   end
 
+  describe "updating email address" do
+    it "should return originally-loaded email if unchanged" do
+      @customer = Customer.new(:first_name => "J", :last_name => "D",
+                               :email => "old")
+      @customer.email_when_loaded.should == "old"
+    end
+    it "should return originally-loaded email when changed to new" do
+      @customer = Customer.new(:first_name => "J", :last_name => "D",
+                               :email => "old")
+      @customer.email = "new"
+      @customer.email_when_loaded.should == "old"
+      @customer.email.should == "new"
+    end
+  end
+
+  describe "managing subcriptions" do
+    before(:each) do
+      @customer = Customer.new(:first_name => "J", :last_name => "D",
+                               :email => "john@doe.com")
+    end
+    context "when e-blacklist becomes true" do
+      it "should unsubscribe old (pre-update) email address"
+      it "should be unsubscribed from Mailchimp if has valid email address" do
+        @customer.e_blacklist = true
+        EmailList.should_receive(:unsubscribe).with(@customer).and_return(true)
+        @customer.save!
+      end
+      it "should take no action with Mailchimp if invalid email address" do
+        @customer.e_blacklist = true
+        @customer.email = ''
+        EmailList.should_not_receive(:unsubscribe)
+        @customer.save!
+      end
+    end
+    context "when e-blacklist becomes false" do
+      it "should be subscribed to Mailchimp if has valid email address"
+      it "should take no action with Mailchimp if no valid email address"
+    end
+    context "when email address is updated" do
+      it "should not update Mailchimp if e_blacklist is set"
+      it "should update Mailchimp if new valid email address" 
+      it "should unsubscribe old address from Mailchimp if new address invalid"
+    end
+
+  end
 end
