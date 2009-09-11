@@ -3,20 +3,16 @@
 %fieldset#admin_form
   %legend Administrator Preferences
   - if @superadmin
-  %p.adminField
-    %label{:for=>:customer_role} Role
-    =select('customer', 'role',Customer.roles,{:selected => @customer.role_name })
-    %br/ 
-  - end
+    %p.adminField
+      %label{:for=>:customer_role} Role
+      =select('customer', 'role',Customer.roles,{:selected => @customer.role_name })
+      %br/ 
+
 
   %label{:for=>:customer_comments} Staff Comments <br />(not seen by customer):
   =text_area :customer, :comments, :cols => 60, :rows => 5
   %br/
 
-  =check_box 'customer', 'blacklist'
-  %label.no_float{:for=>:customer_blacklist} Blacklist: don't include in mailings
-  %br/
-  
   =check_box_tag 'dont_send_email'
   %label.no_float{:for=>:dont_send_email}  
     %span.strong Do not

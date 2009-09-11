@@ -18,6 +18,7 @@ class Customer < ActiveRecord::Base
 
   validates_uniqueness_of :email, :allow_nil => true
   validate :valid_email?
+  validate :valid_or_blank_address?
 
   validates_presence_of :first_name
   validates_length_of :first_name, :within => 1..50
@@ -41,40 +42,41 @@ class Customer < ActiveRecord::Base
   # so the allow_nil validations behave as expected.
 
   before_validation :remove_blank_attributes
-
   def remove_blank_attributes
     Customer.columns.each do |c|
       self.send("#{c.name}=", nil) if self.send(c.name).blank?
     end
     self.password = nil if self.password.blank?
   end
+
+  # address is allowed to be blank, but if nonblank, it must be valid
+  def valid_or_blank_address?
+    errors.add_to_base "Mailing address must include street, city, state, Zip" unless (valid_mailing_address? || blank_mailing_address?)
+  end
   
   # when customer is saved, possibly update their email opt-in status
-  # with external mailing list.  This requires preserving their previous
-  # email address whenever they change it.  The email= setter takes care
-  # of this.
+  # with external mailing list.  
 
   after_save :update_email_subscription
-
   def update_email_subscription
-    return unless valid_email_address?
-    if e_blacklist
-      EmailList.unsubscribe(self)
-    else
-      EmailList.subscribe(self)
+    if e_blacklist      # opting out of email
+      EmailList.unsubscribe(self, email_was)
+    else                        # opt in
+      if email_changed?        # with new email
+        if email_was.blank?
+          EmailList.subscribe(self)
+        else
+          EmailList.update(self, email_was)
+        end
+      else                      # with same email
+        EmailList.subscribe(self)
+      end
     end
   end
   
   #----------------------------------------------------------------------
   #  public methods
   #----------------------------------------------------------------------
-
-  def email=(new_email)
-    @old_email = self.email
-    self[:email] = new_email.to_s
-  end
-  def email_when_loaded ; @old_email || email ; end
-
 
   def valid_email?
     return true if email.blank? || valid_email_address?
@@ -147,20 +149,18 @@ class Customer < ActiveRecord::Base
     !self.email.blank? &&
       self.email.valid_email_address?
   end
+  def invalid_email_address? ; !valid_email_address? ; end
   def valid_mailing_address?
-    !self.street.blank? &&
-      !self.city.blank? &&
-      !self.state.blank? &&
-      !self.zip.blank? &&
-      (5..10).include?(self.zip.to_s.length)
+    !street.blank? &&
+      !city.blank?  &&
+      !state.blank? &&
+      !zip.blank? &&
+      zip.to_s.length.between?(5,10)
   end
-  def invalid_mailing_address?
-    self.street.blank? ||
-      self.city.blank? ||
-      self.state.blank? ||
-      self.zip.to_s.length < 5
+  def invalid_mailing_address? ; !valid_mailing_address? ; end
+  def blank_mailing_address?
+    street.blank? && city.blank? && zip.blank?
   end
-
 
   def possibly_synthetic_email
     self.valid_email_address? ? self.email :
@@ -466,17 +466,34 @@ class Customer < ActiveRecord::Base
     }
   end
 
+  def self.mergeable_attributes
+    %w(first_name last_name email street city state zip day_phone eve_phone
+        blacklist e_blacklist
+        comments
+        formal_relationship member_type
+        company title company_address_line_1 company_address_line_2 company_url
+        company_city company_state company_zip work_phone cell_phone work_fax
+        best_way_to_contact
+)
+  end
+
   # check if mailing address appears valid.
   # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if
   #bad address.
 
-  def self.find_all_subscribers(order_by='last_name')
-    Customer.find_by_sql("SELECT DISTINCT " <<
-                         "c.first_name,c.last_name,c.street,c.city,c.state,c.zip " <<
+  def self.find_all_subscribers(order_by='last_name',opts={})
+    conds = ['vt.subscription=1',
+             "#{Time.db_now} BETWEEN vt.valid_date AND vt.expiration_date "]
+    conds.push('(c.e_blacklist IS NULL OR c.e_blacklist=0)') if
+      opts[:exclude_e_blacklist]
+    conds.push('(c.blacklist IS NULL OR c.blacklist=0)') if
+      opts[:exclude_blacklist]
+
+    Customer.find_by_sql("SELECT DISTINCT c.* " <<
                          " FROM customers c JOIN vouchers v ON v.customer_id=c.id " <<
                          " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
-                         " WHERE vt.subscription=1 AND " <<
-                         "vt.valid_date <= #{Time.db_now} AND vt.expiration_date >= #{Time.db_now} " <<
+                         " WHERE " <<
+                         conds.join(' AND ') <<
                          " ORDER BY #{order_by}")
   end
 

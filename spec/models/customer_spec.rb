@@ -1,9 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
-  context "with only name and address filled in" do
+  context "with no mailing address" do
     before(:each) do
       @customer = Customer.create!(:first_name => "John", :last_name => "Doe")
+    end
+    it "should be valid" do
+      @customer.should be_valid
     end
     it "should have a stand-in email address" do
       Option.stub!(:value).and_return('345')
@@ -21,7 +24,20 @@ describe Customer do
       @customer.should_not be_valid_as_gift_recipient
     end
   end
-
+  context "with nonblank address" do
+    before(:each) do
+      @customer = Customer.create!(:first_name => "John", :last_name => "Doe",
+                                   :street => "123 Fake St", :city => "Alameda",
+                                   :state => "CA", :zip => "94501")
+    end
+    it "should be valid" do
+      @customer.should be_valid
+    end
+    it "should be invalid if some address fields not filled in" do
+      @customer.city = ''
+      @customer.should_not be_valid
+    end
+  end
   describe "email validations" do
     before(:each) do
       @customer = Customer.new
@@ -89,49 +105,54 @@ describe Customer do
     end
   end
 
-  describe "updating email address" do
-    it "should return originally-loaded email if unchanged" do
-      @customer = Customer.new(:first_name => "J", :last_name => "D",
-                               :email => "old")
-      @customer.email_when_loaded.should == "old"
-    end
-    it "should return originally-loaded email when changed to new" do
-      @customer = Customer.new(:first_name => "J", :last_name => "D",
-                               :email => "old")
-      @customer.email = "new"
-      @customer.email_when_loaded.should == "old"
-      @customer.email.should == "new"
-    end
-  end
-
   describe "managing subcriptions" do
-    before(:each) do
-      @customer = Customer.new(:first_name => "J", :last_name => "D",
-                               :email => "john@doe.com")
-    end
-    context "when e-blacklist becomes true" do
-      it "should unsubscribe old (pre-update) email address"
-      it "should be unsubscribed from Mailchimp if has valid email address" do
-        @customer.e_blacklist = true
-        EmailList.should_receive(:unsubscribe).with(@customer).and_return(true)
+    context "when opting out" do
+      before(:each) do
+        @customer = Customer.create!(:first_name => "J", :last_name => "D",
+                                     :email => "john@doe.com",
+                                     :e_blacklist => false)
+        @customer.e_blacklist = true # so it's marked dirty
+      end
+      it "should be unsubscribed using old email" do
+        @customer.email_changed?.should_not be_true
+        EmailList.should_receive(:unsubscribe).with(@customer,"john@doe.com")
         @customer.save!
       end
-      it "should take no action with Mailchimp if invalid email address" do
-        @customer.e_blacklist = true
-        @customer.email = ''
-        EmailList.should_not_receive(:unsubscribe)
+      it "should be unsubscribed using old email even if email changed" do
+        @customer.email = "newjohn@doe.com"
+        @customer.email_changed?.should be_true
+        EmailList.should_receive(:unsubscribe).with(@customer,"john@doe.com")
         @customer.save!
       end
     end
-    context "when e-blacklist becomes false" do
-      it "should be subscribed to Mailchimp if has valid email address"
-      it "should take no action with Mailchimp if no valid email address"
+    context "when opting in" do
+      context "with new email address" do
+        it "should be updated from old to new if old address was nonblank" do
+          @customer = Customer.create!(:first_name => "J", :last_name => "D",
+                                       :email => "john@doe.com",
+                                       :e_blacklist => true)
+          @customer.e_blacklist = false
+          @customer.email = "newjohn@doe.com"
+          EmailList.should_receive(:update).with(@customer, "john@doe.com")
+          @customer.save!
+        end
+        it "should be subscribed with new email if old email was blank" do
+          @customer = Customer.create!(:first_name => "J", :last_name => "D",
+                                       :email => "",
+                                       :e_blacklist => true)
+          @customer.e_blacklist = false
+          EmailList.should_receive(:subscribe).with(@customer)
+          @customer.save!
+        end
+      end
+      it "with same email address should be subscribed with new email" do
+        @customer = Customer.create!(:first_name => "J", :last_name => "D",
+                                     :email => "john@doe.com",
+                                     :e_blacklist => true)
+        @customer.e_blacklist = false
+        EmailList.should_receive(:subscribe).with(@customer)
+        @customer.save!
+      end
     end
-    context "when email address is updated" do
-      it "should not update Mailchimp if e_blacklist is set"
-      it "should update Mailchimp if new valid email address" 
-      it "should unsubscribe old address from Mailchimp if new address invalid"
-    end
-
   end
 end

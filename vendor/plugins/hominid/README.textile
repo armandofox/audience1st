@@ -1,0 +1,76 @@
+h1. Hominid
+
+Hominid is a GemPlugin wrapper to the "Mailchimp API":http://www.mailchimp.com/api/1.2/.
+
+h2. Installation
+
+Install as a Rails plugin:
+
+<pre><code>script/plugin install git://github.com/bgetting/hominid.git</code></pre>
+
+Clone from the Github repository:
+
+<pre><code>git clone git://github.com/bgetting/hominid.git</code></pre>
+
+Use the GemPlugin:
+
+<pre><code>config.gem "bgetting-hominid", :lib => 'hominid', :source => "http://gems.github.com"</code></pre>
+
+h2. Configuration
+
+You can either use a master config file, which Hominid expects to find at @/config/hominid.yml@ or (thanks to "ron":http://github.com/ron) you can pass a hash of config options when calling Hominid. _If you are using Hominid as a Rails plugin, the config file will be created for you. If you are using Hominid as a gem, you will need to create the config file._
+
+You will also need to create a Mailchimp account to get your API key (available at "http://admin.mailchimp.com/account/api/":http://admin.mailchimp.com/account/api/) for configuration. 
+
+h2. Example
+
+To interact with the Mailchimp API, simply create a new Hominid object:
+
+<pre><code>@hominid = Hominid.new</code></pre>
+
+_or_
+
+<pre><code>@hominid = Hominid.new({:username => 'USERNAME', :password => 'PASSWORD', :api_key => 'API_KEY', :send_goodbye => false, :send_notify => false, :double_opt => false})</code></pre>
+
+You will need to have the @list ID@ of the mailing list you want to work with. You can find the @list ID@ of a list by:
+
+<pre><code>
+def find_list_id(list_name)
+  mailing_lists = @hominid.lists
+  unless mailing_lists.nil?
+    @list_id = mailing_lists.find {|list| list["name"] == list_name}["id"]
+  end
+end
+</code></pre>
+
+To subscribe someone:
+
+<pre><code>@hominid.subscribe(@list_id, "email@example.com", {:FNAME => 'Bob', :LNAME => 'Smith'}, 'html')</code></pre>
+
+To unsubscribe someone:
+
+<pre><code>@hominid.unsubscribe(@list_id, "email@example.com")</code></pre>
+
+To update a list member:
+
+<pre><code>@hominid.subscribe(@list_id, "email@example.com", {:FNAME => 'Robert', :EMAIL => 'another@example.com'}, 'html', true)</code></pre>
+
+_or_
+
+<pre><code>@hominid.update_member(@list_id, "email@example.com", {:FNAME => 'Robert', :EMAIL => 'another@example.com'})</code></pre>
+
+Campaign methods are also supported. You can get all the campaigns for a particular list by:
+
+<pre><code>@hominid.campaigns(@list_id)</code></pre>
+
+Leave the @@list_id@ out and it will return all the campaigns for your Mailchimp account.
+
+h2. Other Stuff
+
+For the most part, this whole thing was an attempt to optimize the acts_as_mailchimp plugin, and incorporates all the great work from "C.G. Brown":http://www.projectlocker.com/ and "Kelly Mahan":http://digimedia.com/, as well as "Matthew Carlson":http://mandarinsoda.com/, whose plugin inspired nearly all of this work. Recently, "ron":http://github.com/ron and "netguru":http://github.com/netguru have also provided useful changes as well.
+
+I encourage anyone using this gem to please fork it, improve it, and send me a pull request. I typically only use this gem in a minimal capacity, primarily for just managing whether or not a user is signed up for a mailing list. I do not intend to continue maintaining the "Acts As Mailchimp":http://github.com/bgetting/acts_as_mailchimp in the future, since I personally prefer to just use the Hominid gem.
+
+So please, help us to improve this gem!
+
+Copyright (c) 2009 Brian Getting, released under the MIT license.

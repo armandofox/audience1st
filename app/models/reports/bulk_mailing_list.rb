@@ -17,9 +17,18 @@ class BulkMailingList < Report
   def generate(params = [])
     order_by = (params[:sort_by_zip] ? 'zip, last_name' : 'last_name, zip')
     if params[:subscribers_only]
-      c = Customer.find_all_subscribers(order_by)
+      c = Customer.find_all_subscribers(order_by,
+                                        :exclude_blacklist => params[:exclude_blacklist],
+                                        :exclude_e_blacklist => params[:exclude_e_blacklist])
     else
-      c = Customer.find(:all, :order => order_by)
+      conds = []
+      conds.push('blacklist=0 OR blacklist IS NULL') if
+        params[:exclude_blacklist]
+      conds.push('e_blacklist=0 OR e_blacklist IS NULL') if
+        params[:exclude_e_blacklist]
+      c = Customer.find(:all,
+                        :conditions => conds.map { |s| "(#{s})" }.join(' AND '),
+                        :order => order_by)
     end
     total = c.length
     # remove invalid addresses

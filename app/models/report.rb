@@ -16,14 +16,18 @@ class Report
   def create_csv
     CSV::Writer.generate(@output='') do |csv|
       self.customers.each do |c|
+        begin
         csv << [c.first_name.name_capitalize,
-                c.last_name.name_capitalize,
-                c.email,
-                c.day_phone,
-                c.eve_phone,
-                c.street,c.city,c.state,c.zip,
-                (c.created_on.to_formatted_s(:db) rescue nil)
+                  c.last_name.name_capitalize,
+                  c.email,
+                  c.day_phone,
+                  c.eve_phone,
+                  c.street,c.city,c.state,c.zip,
+                  (c.created_on.to_formatted_s(:db) rescue nil)
                ]
+        rescue
+          debugger
+        end
       end
     end
     @filename = self.class.to_s.downcase + Time.now.strftime("%Y_%m_%d")

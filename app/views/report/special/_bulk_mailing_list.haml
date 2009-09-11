@@ -5,8 +5,14 @@
       = check_box_tag 'subscribers_only', '1', true
       Limit to subscribers only
     %p
+      = check_box_tag 'exclude_blacklist', '1', true
+      Exclude patrons who have opted out of US Mail mailings
+    %p
+      = check_box_tag 'exclude_e_blacklist', '1', true
+      Exclude patrons who have opted out of email
+    %p
       = check_box_tag 'filter_invalid_addresses', '1', true
-      Try to exclude invalid-looking mailing addresses (takes longer)
+      Try to exclude invalid-looking US Mail addresses (takes longer)
       %br
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       = check_box_tag 'remove_dups', '1', false

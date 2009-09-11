@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>load_monkey_brains (Hominid)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/hominid.rb, line 25</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">load_monkey_brains</span>(<span class="ruby-identifier">config</span>)
+    <span class="ruby-identifier">config</span> = <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-node">&quot;#{RAILS_ROOT}/config/hominid.yml&quot;</span>))[<span class="ruby-constant">RAILS_ENV</span>].<span class="ruby-identifier">symbolize_keys</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">config</span>
+    <span class="ruby-ivar">@chimpUsername</span>  = <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:username</span>].<span class="ruby-identifier">to_s</span>
+    <span class="ruby-ivar">@chimpPassword</span>  = <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:password</span>].<span class="ruby-identifier">to_s</span>
+    <span class="ruby-ivar">@api_key</span>        = <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:api_key</span>]
+    <span class="ruby-ivar">@send_goodbye</span>   = <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:send_goodbye</span>]
+    <span class="ruby-ivar">@send_notify</span>    = <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:send_notify</span>]
+    <span class="ruby-ivar">@double_opt</span>     = <span class="ruby-identifier">config</span>[<span class="ruby-identifier">:double_opt</span>]
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
