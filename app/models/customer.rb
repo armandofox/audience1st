@@ -209,11 +209,11 @@ class Customer < ActiveRecord::Base
   # the first one.
 
   def merge_with(c1,params)
+    debugger
     c0 = self
-    c = [c0,c1]
-    Customer.content_columns.each do |col|
-      if (params[col.name.to_sym].to_i > 0)
-        c0.send(col.name+"=", c1.send(col.name))
+    Customer.mergeable_attributes.each do |attr|
+      if (params[attr.to_sym].to_i > 0)
+        c0.send("#{attr}=", c1.send(attr))
       end
     end
     # role column keeps the more privileged of the two roles
@@ -224,6 +224,9 @@ class Customer < ActiveRecord::Base
     if (((c0.last_login < c1.last_login) ||
         ((c0.last_login == c1.last_login) && (c0.updated_on <
                                               c1.updated_on))) rescue nil)
+      Customer.keep_newer_attributes.each do |attr|
+        c0.send("#{attr}=", c1.send(attr))
+      end
       c0.hashed_password = c1.hashed_password
       c0.salt = c1.salt
     end                         # else keep what we have
@@ -233,32 +236,39 @@ class Customer < ActiveRecord::Base
     c0.oldid = c1.oldid if c0.oldid.zero?
     new = c0.id
     old = c1.id
+    
+    # special case: since login and email must be unique, if the two logins are
+    # non-nil and equal a validation error will prevent the save. to
+    # avoid this, temporarily nil out the one that WON'T be saved.
+    # if the save fails, its value is restored in the rescue clause.
+    if (c0.login && c1.login && c0.login==c1.login)
+      templogin = c1.login
+      c1.login = nil          # this is allowed by validation rules
+      
+      unless c1.save
+        c0.errors.add_to_base "Error during merge. Contact administrator for assistance. Original customer records have not been changed."
+        logger.error "Errors during merge of #{c0.id} with #{c1.id}: #{c1.errors.full_messages.join(';')}"
+        return nil
+      end
+    end
     begin
-      # special case: since login must be unique, if the two logins are
-      # non-nil and equal a validation error will prevent the save. to
-      # avoid this, temporarily nil out the one that WON'T be saved.
-      # if the save fails, its value is restored in the rescue clause.
-      if (c0.login && c1.login && c0.login==c1.login)
-        temp = c1.login
-        c1.login = nil          # this is allowed by validation rules
-        c1.save!
+      transaction do
+        [Donation, Voucher, Txn].each do |t|
+          howmany = t.merge_handler(old,new)
+          msg << "#{howmany} #{t}s"
+        end
+        c1.destroy
+        c0.save!
+        ok = "Transferred " + msg.join(",") + " to customer id #{new}"
       end
-      c0.save!
-      [Donation, Voucher, Txn].each do |t|
-        howmany = t.merge_handler(old,new)
-        msg << "#{howmany} #{t}s"
-      end
-      c[1].destroy
-      status = "Transferred " + msg.join(",") + " to customer id #{new}"
-      ok = true
     rescue Exception => e
       if defined?(temp) && temp
         c1.update_attribute(:login, temp)
       end
-      ok = false
-      status = "Customers NOT merged: #{e.message}"
+      ok = nil
+      c0.errors.add_to_base "Customers NOT merged: #{e.message}"
     end
-    return [ok,status]
+    return ok
   end
 
 
@@ -476,6 +486,9 @@ class Customer < ActiveRecord::Base
         best_way_to_contact
 )
   end
+
+  # when merging customers, these attributes are automatically merged
+  def self.keep_newer_attributes ;  %w(hashed_password  salt  last_login) ; end
 
   # check if mailing address appears valid.
   # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if
