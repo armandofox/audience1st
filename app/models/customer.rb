@@ -2,7 +2,7 @@ require 'digest/sha1'
 
 class Customer < ActiveRecord::Base
 
-  has_many :vouchers, :dependent => :nullify
+  has_many :vouchers
   has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
   has_many :showdates, :through => :vouchers
   has_many :shows, :through => :showdates
@@ -236,21 +236,6 @@ class Customer < ActiveRecord::Base
     c0.oldid = c1.oldid if c0.oldid.zero?
     new = c0.id
     old = c1.id
-    
-    # special case: since login and email must be unique, if the two logins are
-    # non-nil and equal a validation error will prevent the save. to
-    # avoid this, temporarily nil out the one that WON'T be saved.
-    # if the save fails, its value is restored in the rescue clause.
-    if (c0.login && c1.login && c0.login==c1.login)
-      templogin = c1.login
-      c1.login = nil          # this is allowed by validation rules
-      
-      unless c1.save
-        c0.errors.add_to_base "Error during merge. Contact administrator for assistance. Original customer records have not been changed."
-        logger.error "Errors during merge of #{c0.id} with #{c1.id}: #{c1.errors.full_messages.join(';')}"
-        return nil
-      end
-    end
     begin
       transaction do
         [Donation, Voucher, Txn].each do |t|
@@ -262,9 +247,6 @@ class Customer < ActiveRecord::Base
         ok = "Transferred " + msg.join(",") + " to customer id #{new}"
       end
     rescue Exception => e
-      if defined?(temp) && temp
-        c1.update_attribute(:login, temp)
-      end
       ok = nil
       c0.errors.add_to_base "Customers NOT merged: #{e.message}"
     end
