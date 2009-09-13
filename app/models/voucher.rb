@@ -21,6 +21,16 @@ class Voucher < ActiveRecord::Base
     Voucher.update_all("gift_purchaser_id = '#{new}'", "gift_purchaser_id = '#{old}'")
   end
 
+  # class methods
+
+  # count the number of subscriptions for a given season
+  def self.subscription_vouchers(year)
+    season_start = Time.now.at_beginning_of_season(year)
+    v = Vouchertype.find(:all, :conditions =>"category = 'bundle' AND subscription=1").select { |vt| vt.valid_for_season?(year) }
+    v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
+  end
+
+
   # accessors and convenience methods
 
   def price ; vouchertype.price ;  end
@@ -257,6 +267,8 @@ class Voucher < ActiveRecord::Base
     self.purchasemethod.shortdesc =~ /bundle/i
   end
 
+
+
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
     if self.unreserved?
@@ -295,4 +307,5 @@ class Voucher < ActiveRecord::Base
     end
   end
 
+  
 end

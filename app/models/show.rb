@@ -24,10 +24,10 @@ class Show < ActiveRecord::Base
     self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now])
   end
 
-  def revenue ; self.vouchers.sum('price') ; end
+  def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.price} ; end
 
   def revenue_per_seat
-    self.revenue / self.vouchers.count("type!='SubscriberVoucher'")
+    self.revenue / self.vouchers.count("category != 'comp'")
   end
 
   def revenue_by_type(vouchertype_id)

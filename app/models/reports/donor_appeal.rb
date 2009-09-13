@@ -5,15 +5,15 @@ class DonorAppeal < Report
 
   def generate(params=[])
     # if subscribers included, need to join to vouchertypes table
-    joins = 'customers c JOIN donations d ON d.customer_id = c.id '
+    joins = 'customers c LEFT OUTER JOIN donations d ON d.customer_id = c.id '
     from = Time.from_param(params[:newFrom])
     to = Time.from_param(params[:newTo])
     from,to = to,from if from > to
     where = " d.amount >= #{params[:donation_amount].to_f} " <<
       " AND (d.date BETWEEN '#{from.to_formatted_s(:db)}' AND '#{to.to_formatted_s(:db)}') "
     # require valid address and/or valid email
-    where << " AND c.email LIKE '%@%' AND c.e_blacklist=0" if params[:require_valid_email]
-    where << " AND c.street IS NOT NULL " if params[:require_valid_address]
+    where << " AND (c.email IS NOT NULL AND c.email != \"\"" if params[:require_valid_email]
+    where << " AND (c.street IS NOT NULL AND c.street != \"\" " if params[:require_valid_address]
     # to include subscribers, join with vouchertypes table and
     # allow a match even if no donation.
     if params[:include_subscribers]

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 44) do
+ActiveRecord::Schema.define(:version => 47) do
 
   create_table "customers", :force => true do |t|
     t.string   "first_name",             :limit => 64,                                                                                                                                                  :default => "",                    :null => false
@@ -52,6 +52,9 @@ ActiveRecord::Schema.define(:version => 44) do
     t.boolean  "is_current_subscriber",                                                                                                                                                                 :default => false
     t.string   "email"
   end
+
+  add_index "customers", ["first_name"], :name => "index_customers_on_first_name"
+  add_index "customers", ["last_name"], :name => "index_customers_on_last_name"
 
   create_table "donation_funds", :force => true do |t|
     t.string "name", :limit => 40, :default => "", :null => false
@@ -140,6 +143,9 @@ ActiveRecord::Schema.define(:version => 44) do
     t.integer  "max_sales_for_type", :limit => 2, :default => 0, :null => false
   end
 
+  add_index "valid_vouchers", ["showdate_id", "vouchertype_id"], :name => "index_valid_vouchers_on_showdate_id_and_vouchertype_id"
+  add_index "valid_vouchers", ["start_sales"], :name => "index_valid_vouchers_on_start_sales"
+
   create_table "visits", :force => true do |t|
     t.datetime "updated_at"
     t.integer  "visited_by_id",                                                                                                                    :default => 0, :null => false
@@ -157,45 +163,46 @@ ActiveRecord::Schema.define(:version => 44) do
   end
 
   create_table "vouchers", :force => true do |t|
-    t.integer  "vouchertype_id",     :default => 0,                     :null => false
-    t.integer  "customer_id",        :default => 0,                     :null => false
-    t.integer  "showdate_id",        :default => 0,                     :null => false
-    t.integer  "purchasemethod_id",  :default => 0,                     :null => false
+    t.integer  "vouchertype_id",                                                        :default => 0,                     :null => false
+    t.integer  "customer_id",                                                           :default => 0,                     :null => false
+    t.integer  "showdate_id",                                                           :default => 0,                     :null => false
+    t.integer  "purchasemethod_id",                                                     :default => 0,                     :null => false
     t.string   "comments"
     t.datetime "created_on"
     t.datetime "updated_on"
-    t.boolean  "changeable",         :default => true
-    t.boolean  "fulfillment_needed", :default => false
-    t.integer  "external_key",       :default => 0
-    t.boolean  "no_show",            :default => false,                 :null => false
+    t.boolean  "changeable",                                                            :default => true
+    t.boolean  "fulfillment_needed",                                                    :default => false
+    t.integer  "external_key",                                                          :default => 0
+    t.boolean  "no_show",                                                               :default => false,                 :null => false
     t.string   "promo_code"
-    t.integer  "processed_by_id",    :default => 2146722771,            :null => false
-    t.datetime "expiration_date",    :default => '2008-12-31 00:00:00', :null => false
+    t.integer  "processed_by_id",                                                       :default => 2146722771,            :null => false
+    t.datetime "expiration_date",                                                       :default => '2008-12-31 00:00:00', :null => false
     t.datetime "sold_on"
-    t.integer  "bundle_id",          :default => 0,                     :null => false
-    t.integer  "gift_purchaser_id",  :default => 0,                     :null => false
+    t.integer  "bundle_id",                                                             :default => 0,                     :null => false
+    t.integer  "gift_purchaser_id",                                                     :default => 0,                     :null => false
     t.datetime "used"
+    t.enum     "category",           :limit => [:revenue, :comp, :subscriber, :bundle]
   end
 
   add_index "vouchers", ["customer_id"], :name => "customer_id"
 
   create_table "vouchertypes", :force => true do |t|
     t.string   "name"
-    t.float    "price",                             :default => 0.0
+    t.float    "price",                                                                  :default => 0.0
     t.datetime "created_on"
     t.text     "comments"
-    t.integer  "offer_public",                      :default => 0,                     :null => false
-    t.boolean  "subscription",                      :default => false,                 :null => false
+    t.integer  "offer_public",                                                           :default => 0,                     :null => false
+    t.boolean  "subscription",                                                           :default => false,                 :null => false
     t.text     "included_vouchers"
-    t.string   "promo_code",          :limit => 20, :default => "",                    :null => false
-    t.boolean  "walkup_sale_allowed",               :default => true
-    t.datetime "valid_date",                        :default => '2007-01-01 00:00:00', :null => false
-    t.datetime "expiration_date",                   :default => '2008-01-01 00:00:00', :null => false
-    t.boolean  "fulfillment_needed",                :default => false
-    t.string   "account_code",        :limit => 8,  :default => "",                    :null => false
-    t.datetime "bundle_sales_start",                :default => '2007-01-01 00:00:00', :null => false
-    t.datetime "bundle_sales_end",                  :default => '2008-01-01 06:00:00', :null => false
-    t.boolean  "bundle",                            :default => false,                 :null => false
+    t.string   "promo_code",          :limit => 20,                                      :default => "",                    :null => false
+    t.boolean  "walkup_sale_allowed",                                                    :default => true
+    t.datetime "valid_date",                                                             :default => '2007-01-01 00:00:00', :null => false
+    t.datetime "expiration_date",                                                        :default => '2008-01-01 00:00:00', :null => false
+    t.boolean  "fulfillment_needed",                                                     :default => false
+    t.string   "account_code",        :limit => 8,                                       :default => "",                    :null => false
+    t.datetime "bundle_sales_start",                                                     :default => '2007-01-01 00:00:00', :null => false
+    t.datetime "bundle_sales_end",                                                       :default => '2008-01-01 06:00:00', :null => false
+    t.enum     "category",            :limit => [:revenue, :comp, :subscriber, :bundle]
   end
 
 end

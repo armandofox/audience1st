@@ -2,11 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 include Utils
 
-def stub_month_and_day(month,day)
-  stub_option!(:season_start_month, month)
-  stub_option!(:season_start_day, day)
-end
-
 describe "Date/time extras" do
 
   describe "season calculations" do

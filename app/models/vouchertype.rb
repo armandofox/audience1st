@@ -95,6 +95,11 @@ class Vouchertype < ActiveRecord::Base
     valid_as_of?(Time.now)
   end
 
+  def valid_for_season?(season = Time.now.year)
+    expiration_date <= Time.now.at_end_of_season(season)  &&
+      valid_date > Time.now.at_beginning_of_season(season - 1)
+  end
+  
   def get_included_vouchers
     if self.bundle?
       hsh = self.included_vouchers

@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+include Utils
 
 describe Vouchertype do
 
   describe "validations" do
-
     before(:each) do
       @vt = Vouchertype.new(:price => 1.0,
                             :offer_public => Vouchertype::ANYONE,
@@ -54,6 +54,28 @@ describe Vouchertype do
       @vt.subscription = true
       @vt.walkup_sale_allowed = true
       @vt.should_not be_valid
+    end
+
+    describe "a subscription voucher valid for 2008" do
+      before(:each) do
+        @start = Time.parse("Feb 5, 2008")
+        stub_month_and_day(@start.month, @start.day)
+      end
+      it "should have an end date no later than end of 2008 season" do
+        @vt.valid_date = @start - 3.months
+        @vt.expiration_date = @start.at_end_of_season(2008)
+        @vt.should be_valid_for_season(2008)
+      end
+      it "should not have a start date more than 1 year before season start" do
+        @vt.expiration_date = @start + 1.year
+        @vt.valid_date = @start - 1.month - 1.day
+        @vt.should_not be_valid_for_season(2008)
+      end
+      it "should not appear to be a 2007 subscription, even though its validity date is in 2007" do
+        @vt.expiration_date = @start + 1.year
+        @vt.valid_date = @start - 10.months
+        @vt.should_not be_valid_for_season(2007)
+      end
     end
   end
 

@@ -304,13 +304,6 @@ EOQ2
 
   private
 
-  def subscription_vouchers(year)
-    season_start = Time.local(year,Option.value(:season_start_month).to_i)
-    v = Vouchertype.find(:all, :conditions =>"subscription=1 AND bundle=1 AND name LIKE '%#{year}%'")
-    #valid_date>=? AND expiration_date<?',season_start, season_start + 1.year])
-    v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
-  end
-
   def export_customers_to_excel(custs)
     filenm = custs.first.class.to_s.downcase
     CSV::Writer.generate(output='') do |csv|

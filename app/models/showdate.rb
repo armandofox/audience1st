@@ -27,24 +27,23 @@ class Showdate < ActiveRecord::Base
   end
 
   def revenue
-    self.vouchers.sum('price')
+    self.vouchers.inject(0) {|sum,v| sum + v.price}
   end
 
   def revenue_per_seat
-    #self.revenue / self.vouchers.count("type!='SubscriberVoucher'")
-    self.revenue / self.vouchers.count(:conditions => ['type != ?', SubscriberVoucher])
+    self.revenue / self.vouchers.count("category != 'subscriber'")
   end
 
   def comp_seats
-    self.vouchers.count("type='CompVoucher'")
+    self.vouchers.count("category = 'comp'")
   end
 
   def nonsubscriber_revenue_seats
-    self.vouchers.count("type='RevenueVoucher'")
+    self.vouchers.count("category = 'revenue'")
   end
 
   def subscriber_seats
-    self.vouchers.count("type='SubscriberVoucher'")
+    self.vouchers.count("category = 'subscriber'")
   end
 
   def advance_sales?

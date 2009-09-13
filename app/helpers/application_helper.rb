@@ -2,6 +2,19 @@
 
 module ApplicationHelper
 
+  # gracefully show a range of dates
+  def humanize_date_range(d1,d2,separator=" - ")
+    d2,d1 = d1,d2 if d1 > d2
+    return d1.to_formatted_s(:month_day_year) if (d1 == d2)
+    return "#{d1.to_formatted_s(:month_day_year)}#{separator}#{d2.to_formatted_s(:month_day_year)}" if d1.year != d2.year
+    # same year
+    if d1.month == d2.month
+      "#{d1.strftime('%b')} #{d1.mday}#{separator}#{d2.mday}, #{d1.year}"
+    else
+      "#{d1.strftime('%b %e')}#{separator}#{d2.strftime('%b %e')}, #{d1.year}"
+    end
+  end
+
   # does the user-agent string suggest that this is a mobile device?
   def mobile_user_agent?(uastring)
     !uastring.blank? && uastring.match( /iphone|palmos|palmsource|blazer/i )
