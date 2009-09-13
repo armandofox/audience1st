@@ -22,6 +22,16 @@ class Vouchertype < ActiveRecord::Base
     end
   end
   
+  # Subscription vouchertypes' validity period must be < 2 years
+  validate :subscription_validity_length
+
+  def subscription_validity_length
+    if subscription? && (expiration_date - valid_date >= 2.years)
+      end_date = Time.local(Time.now.year, Option.value(:season_start_month),
+                            Option.value(:season_start_day)) - 1.day
+      errors.add_to_base "Maximum validity period of subscription vouchers is 2 years minus 1 day. It's suggested you make the expiration date the same as your season end date, which you set in Options as #{end_date.to_formatted_s(:month_day_only)}."
+    end
+  end
 
   # Functions that determine visibility of a voucher type to particular
   # customers
@@ -39,6 +49,8 @@ class Vouchertype < ActiveRecord::Base
     @@offer_to
   end
 
+  def bundle? ; category == :bundle ; end
+  
   def visibility
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
   end

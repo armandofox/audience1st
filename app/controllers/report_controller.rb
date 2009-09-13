@@ -13,7 +13,7 @@ class ReportController < ApplicationController
     # all show names
     @all_shows = Show.find(:all)
     # quick subscription stats
-    @subscriptions = subscription_vouchers(Time.now.year)
+    @subscriptions = Voucher.subscription_vouchers(Time.now.year)
     # list of all special reports
     @special_report_names =
       Dir.entries("#{RAILS_ROOT}/app/models/reports/").select { |x| x.gsub!(/\.rb$/,'') }
@@ -150,7 +150,7 @@ EOQ1
 
   def subscriber_details
     y = (params[:year] || Time.now.year).to_i
-    subs = subscription_vouchers(y)
+    subs = Voucher.subscription_vouchers(y)
     render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
     if params[:download]
       CSV::Writer.generate(output='') do |csv|

@@ -16,46 +16,60 @@ describe Vouchertype do
                             :expiration_date => Time.now.tomorrow
                             )
     end
-    it "should be valid with valid attributes" do
-      @vt.should be_valid
+    describe "vouchers in general" do
+      it "should be valid with valid attributes" do
+        @vt.should be_valid
+      end
+      it "should not be zero-price if accessible to anyone" do
+        @vt.price = 0.0
+        @vt.offer_public = Vouchertype::ANYONE
+        @vt.should_not be_valid
+      end
+      it "should not be zero-price if accessible for subscriber purchase" do
+        @vt.price = 0.0
+        @vt.offer_public = Vouchertype::SUBSCRIBERS
+        @vt.should_not be_valid
+      end
+      it "may be zero-price if accessible to boxoffice only" do
+        @vt.price = 0.0
+        @vt.offer_public = Vouchertype::BOXOFFICE
+        @vt.should be_valid
+      end
+      it "may be zero-price if provided by external reseller" do
+        @vt.price = 0.0
+        @vt.offer_public = Vouchertype::EXTERNAL
+        @vt.should be_valid
+      end
+      it "should be valid for redemption now" do
+        @vt.should be_valid_now
+      end
+      it "should not have a bogus offer-to-whom field" do
+        @vt.offer_public = 999
+        @vt.should_not be_valid
+      end
+      it "should not have a negative price" do
+        @vt = Vouchertype.new(:price => -1.0)
+        @vt.should_not be_valid
+      end
+      it "should not be sold as walkup if it's a subscription" do
+        @vt.subscription = true
+        @vt.walkup_sale_allowed = true
+        @vt.should_not be_valid
+      end
     end
-    it "should not be zero-price if accessible to anyone" do
-      @vt.price = 0.0
-      @vt.offer_public = Vouchertype::ANYONE
-      @vt.should_not be_valid
+    describe "subscription vouchers" do
+      before(:each) do
+        @vt.subscription = true
+        @vt.walkup_sale_allowed = false
+      end
+      it "should not be valid for more than (2 years - 1 day)" do
+        stub_month_and_day(5, 3)
+        @vt.valid_date = @vt.expiration_date - 2.years
+        @vt.should_not be_valid
+        @vt.errors[:base].should match(/May +2/)
+      end
     end
-    it "should not be zero-price if accessible for subscriber purchase" do
-      @vt.price = 0.0
-      @vt.offer_public = Vouchertype::SUBSCRIBERS
-      @vt.should_not be_valid
-    end
-    it "may be zero-price if accessible to boxoffice only" do
-      @vt.price = 0.0
-      @vt.offer_public = Vouchertype::BOXOFFICE
-      @vt.should be_valid
-    end
-    it "may be zero-price if provided by external reseller" do
-      @vt.price = 0.0
-      @vt.offer_public = Vouchertype::EXTERNAL
-      @vt.should be_valid
-    end
-    it "should be valid for redemption now" do
-      @vt.should be_valid_now
-    end
-    it "should not have a bogus offer-to-whom field" do
-      @vt.offer_public = 999
-      @vt.should_not be_valid
-    end
-    it "should not have a negative price" do
-      @vt = Vouchertype.new(:price => -1.0)
-      @vt.should_not be_valid
-    end
-    it "should not be sold as walkup if it's a subscription" do
-      @vt.subscription = true
-      @vt.walkup_sale_allowed = true
-      @vt.should_not be_valid
-    end
-
+     
     describe "a subscription voucher valid for 2008" do
       before(:each) do
         @start = Time.parse("Feb 5, 2008")
