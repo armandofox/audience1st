@@ -77,12 +77,6 @@ class Voucher < ActiveRecord::Base
   # every time a voucher is saved that belongs to a customer, that customer's
   # is_subscriber? attribute must be recomputed
 
-  before_save :set_processed_by
-
-  def set_processed_by
-    self.processed_by = logged_in
-  end
-
   def compute_customer_is_subscriber
     return unless customer_id > 0
     begin
@@ -126,10 +120,11 @@ class Voucher < ActiveRecord::Base
   def self.new_from_vouchertype(vt,args={})
     vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
     v = Voucher.new({:fulfillment_needed => vt.fulfillment_needed,
-                  :sold_on => Time.now,
-                  :changeable => false,
-                  :vouchertype => vt,
-                  :expiration_date => vt.expiration_date}.merge(args))
+                      :sold_on => Time.now,
+                      :changeable => false,
+                      :vouchertype => vt,
+                      :category => vt.category,
+                      :expiration_date => vt.expiration_date}.merge(args))
   end
 
 
@@ -238,7 +233,7 @@ class Voucher < ActiveRecord::Base
   end
 
   def redeemable_showdates(ignore_cutoff = false)
-    self.vouchertype.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }
+    self.vouchertype.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.sort
   end
 
   def redeemable_for_show?(show,ignore_cutoff = false)
@@ -268,6 +263,32 @@ class Voucher < ActiveRecord::Base
   end
 
 
+  # operations on vouchers:
+  #
+  # reserve!(showdate_id, logged_in)
+  #  customer already owns the voucher
+  #  reservation binds it to a showdate and fills in who processed it
+  # 
+  def reserve!(showdate, logged_in_customer)
+    self.showdate = showdate
+    self.processed_by = logged_in_customer
+    self.save!
+    self
+  end
+
+  # instantiate!(customer, vouchertype, showdate, logged_in_customer)
+  #  voucher of given type and for given showdate is created
+  #  voucher is bound to customer
+  # returns the list of newly-instantiated vouchers
+  def self.instantiate!(customer, vouchertype, showdate, logged_in_customer,
+                        purchasemethod, howmany=1)
+    Array.new(howmany) do |v|
+      v = Voucher.new_from_vouchertype(vouchertype, :purchasemethod => purchasemethod).reserve!(showdate, logged_in_customer)
+      customer.vouchers << v
+    end
+  end
+    
+    
 
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil

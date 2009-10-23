@@ -2,7 +2,7 @@ class Report
 
   attr_accessor :customers, :output, :filename
   attr_reader :view_params
-  attr_accessor :fields
+  attr_accessor :fields, :log
 
   def initialize(fields=%w[email day_phone eve_phone])
     @fields = fields.map { |s| s.to_sym }

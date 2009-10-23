@@ -9,6 +9,10 @@ class AvailableSeat
   attr_accessor :customer, :showdate, :vouchertype, :howmany,
   :explanation, :staff_only
 
+  def <=>(other)
+    self.showdate <=> other.showdate
+  end
+  
   def initialize(showdate,customer,vouchertype,howmany=0,explanation='',staff_only=nil)
     @customer = customer.kind_of?(Customer) ? customer: Customer.find(customer)
     raise "Invalid customer" unless @customer.kind_of?(Customer)

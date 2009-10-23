@@ -35,6 +35,28 @@ class Customer < ActiveRecord::Base
   attr_accessor :password
 
   #----------------------------------------------------------------------
+  #  private variables
+  #----------------------------------------------------------------------
+
+  private
+
+  WALKUP_CUSTOMER_ATTRIBUTES = {
+    :role => -1,
+    :first_name => 'WALKUP',
+    :last_name => 'CUSTOMER',
+    :blacklist => true,
+    :e_blacklist => true
+  }
+  GENERIC_CUSTOMER_ATTRIBUTES = WALKUP_CUSTOMER_ATTRIBUTES.merge({:first_name => 'GENERIC'})
+  BOXOFFICE_DAEMON_ATTRIBUTES = {
+    :role => -2,
+    :first_name => 'BoxOffice',
+    :last_name => 'Daemon',
+    :blacklist => true,
+    :e_blacklist => true
+  }
+
+  #----------------------------------------------------------------------
   #  private methods & callbacks
   #----------------------------------------------------------------------
   
@@ -78,6 +100,8 @@ class Customer < ActiveRecord::Base
   #  public methods
   #----------------------------------------------------------------------
 
+  public
+  
   def valid_email?
     return true if email.blank? || valid_email_address?
     errors.add_to_base("Email address is invalid")
@@ -209,7 +233,6 @@ class Customer < ActiveRecord::Base
   # the first one.
 
   def merge_with(c1,params)
-    debugger
     c0 = self
     Customer.mergeable_attributes.each do |attr|
       if (params[attr.to_sym].to_i > 0)
@@ -236,6 +259,7 @@ class Customer < ActiveRecord::Base
     c0.oldid = c1.oldid if c0.oldid.zero?
     new = c0.id
     old = c1.id
+    ok = nil
     begin
       transaction do
         [Donation, Voucher, Txn].each do |t|
@@ -247,7 +271,6 @@ class Customer < ActiveRecord::Base
         ok = "Transferred " + msg.join(",") + " to customer id #{new}"
       end
     rescue Exception => e
-      ok = nil
       c0.errors.add_to_base "Customers NOT merged: #{e.message}"
     end
     return ok
@@ -366,25 +389,34 @@ class Customer < ActiveRecord::Base
     0
   end
 
+  # a generic customer who is a 'stand in' for determining customer
+  # privileges; the least common denominator
+  def self.generic_customer
+    Customer.walkup_customer
+    # for now, same as the 'walkup customer'
+  end
+
   # a dummy customer that is cannot be deleted from the database
-  def self.walkup_customer;  Customer.find_by_role(-1);   end
+  def self.walkup_customer
+    Customer.find_by_role(-1) ||
+      Customer.create!(WALKUP_CUSTOMER_ATTRIBUTES)
+  end
 
   def is_walkup_customer? ;  self.role == -1;   end
+
+  def self.boxoffice_daemon
+    Customer.find_by_role(-2) ||
+      Customer.create!(BOXOFFICE_DAEMON_ATTRIBUTES)
+  end
 
   def real_customer?
     ! [Customer.nobody_id, Customer.walkup_customer.id,
        Customer.generic_customer.id].include?(self.id)
   end
 
-  # a generic customer who is a 'stand in' for determining customer
-  # privileges; the least common denominator
-  def self.generic_customer
-    Customer.find_by_role(-1)
-    # for now, same as the 'walkup customer'
-  end
 
   def before_destroy
-    raise "Cannot destroy walkup customer entry" if self.role == -1
+    raise "Cannot destroy special customer entries" if self.role < 0
   end
 
   @@roles.each do |r|

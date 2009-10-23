@@ -10,8 +10,17 @@ class Showdate < ActiveRecord::Base
   validates_numericality_of :max_sales
   validates_associated :show
 
+  # finders
+  
   def self.current_or_next
     Showdate.find(:first, :conditions => ["thedate >= ?", Time.now])
+  end
+
+  def self.all_shows_this_season
+    Showdate.find(:all, :order => 'thedate ASC',
+                  :conditions => ['thedate BETWEEN ? and ?',
+                                  Time.now.at_beginning_of_season,
+                                  Time.now.at_end_of_season])
   end
 
   def <=>(other_showdate)
