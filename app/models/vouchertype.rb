@@ -1,31 +1,33 @@
 class Vouchertype < ActiveRecord::Base
   has_many :valid_vouchers
-  has_many :vouchers, :dependent => :nullify
+  has_many :vouchers
   has_many :showdates, :through => :valid_vouchers
   serialize :included_vouchers, Hash
 
   validates_length_of :name, :within => 3..40, :message => "Voucher type name must be between 3 and 40 characters"
   validates_numericality_of :price
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
-
   # Vouchertypes whose price is zero must NOT be available
   # to subscribers or general public
-  validates_exclusion_of :offer_public, :in => [1,2], :if => lambda { |v| v.price.zero? }, :message => "Zero-price vouchers must not be accessible to subscribers or regular patrons"
+  validates_exclusion_of(:offer_public, :in => [1,2],
+                         :if => lambda { |v| v.price.zero? },
+                         :message => "Zero-price vouchers can only be sold
+                                        by box office or external reseller")
 
   # Subscription vouchertypes shouldn't be available for walkup sale,
   # since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups
+  # Subscription vouchertypes' validity period must be < 2 years
+  validate :subscriptions_valid_at_most_2_years
 
+  protected
   def subscriptions_shouldnt_be_walkups
     if walkup_sale_allowed? && subscription?
       errors.add_to_base "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
     end
   end
   
-  # Subscription vouchertypes' validity period must be < 2 years
-  validate :subscription_validity_length
-
-  def subscription_validity_length
+  def subscriptions_valid_at_most_2_years
     if subscription? && (expiration_date - valid_date >= 2.years)
       end_date = Time.local(Time.now.year, Option.value(:season_start_month),
                             Option.value(:season_start_day)) - 1.day
@@ -45,6 +47,8 @@ class Vouchertype < ActiveRecord::Base
                 ["Anyone may purchase", ANYONE],
                 ["Sold by external reseller", EXTERNAL]]
 
+  public
+  
   def self.offer_to
     @@offer_to
   end
@@ -128,6 +132,10 @@ class Vouchertype < ActiveRecord::Base
     self.name + sprintf(" - $%0.2f", self.price)
   end
 
+  def self.walkup_vouchertypes
+    Vouchertype.find(:all, :conditions => ['subscription = ? AND walkup_sale_allowed = ?', false, true])
+  end
+  
   # Override content_columns to not display included vouchers (since
   # requires special code)
 
