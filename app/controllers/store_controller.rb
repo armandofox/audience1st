@@ -517,9 +517,9 @@ class StoreController < ApplicationController
       unless qty.zero?
         av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => @gAdmin.is_boxoffice)
         if av.howmany.zero?
-          msgs << "No '#{vtype.name}' tickets available for this performance."
+          msgs << "Sorry, no '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance."
         elsif av.howmany < qty
-          msgs << "Only #{av.howmany} '#{vtype.name}' tickets available for this performance, but you asked for #{qty}. Please try again."
+          msgs << "Only #{av.howmany} '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance (you requested #{qty})."
         else
           @cart.comments ||= comments
           qty.times  do

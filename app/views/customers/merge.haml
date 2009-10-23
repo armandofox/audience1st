@@ -16,15 +16,15 @@
       %td Last activity
       %td= @cust[0].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
       %td= @cust[1].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
-    - Customer.content_columns.each do |c|
+    - Customer.mergeable_attributes.each do |c|
       %tr{:class=>cycle(:oddRow,:evenRow)}
-        %td= h c.human_name
+        %td= h c
         %td
-          = radio_button_tag c.name, 0, :selected=>true
-          = h @cust[0].send(c.name)
+          = radio_button_tag c, 0, :selected=>true
+          = h @cust[0].send(c)
         %td
-          = radio_button_tag c.name, 1
-          = h @cust[1].send(c.name)
+          = radio_button_tag c, 1
+          = h @cust[1].send(c)
 
   = submit_tag 'Merge Records'
 

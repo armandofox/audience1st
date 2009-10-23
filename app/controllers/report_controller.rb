@@ -149,7 +149,7 @@ EOQ1
   end
 
   def subscriber_details
-    y = (params[:year] || Time.now.year).to_i
+    y = (params[:id] || Time.now.year).to_i
     subs = Voucher.subscription_vouchers(y)
     render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
     if params[:download]
@@ -179,6 +179,7 @@ EOQ1
     @report = n.constantize.__send__(:new)
     @report.generate(params)
     if @report.errors.blank?
+      logger.info @report.log unless @report.log.blank?
       @report.create_csv
       download_to_excel(@report.output, @report.filename, false)
     else

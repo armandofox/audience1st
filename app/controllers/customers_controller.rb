@@ -32,6 +32,7 @@ class CustomersController < ApplicationController
   # checks for SSL should be last, as they append a before_filter
   if RAILS_ENV == 'production'
     ssl_required :login, :change_password, :new, :create, :user_create, :edit, :forgot_password
+    ssl_allowed :auto_complete_for_customer_full_name
   end
 
   # auto-completion for customer search
@@ -319,19 +320,23 @@ class CustomersController < ApplicationController
         @cust = params[:merge].keys.map { |x| Customer.find(x.to_i) }
         # fall through to merge.rhtml
       end
-    else                        # post: do the merge
-      begin
-        # do the merge
-        c0 = Customer.find(params.delete(:cust0))
-        c1 = Customer.find(params.delete(:cust1))
-        result,msg = c0.merge_with(c1, params)
-        # result (boolean) is whether it worked, msg is error/success msg
-        flash[:notice] = msg
-      rescue Exception => e
-        flash[:notice] = "Problems during merge: #{e.message}"
-      end
-      session[:cid] = c0.id
+      return
+    end
+    # post: do the merge
+    c0 = Customer.find_by_id(params.delete(:cust0))
+    c1 = Customer.find_by_id(params.delete(:cust1))
+    unless c0 && c1
+      flash[:error] = "At least one customer not found. Please try again."
+      redirect_to :action => :list and return
+    end
+    result = c0.merge_with(c1, params)
+    # result is nil if merge failed, else string describing result
+    if result
+      flash[:notice] = result
       redirect_to :action => 'welcome'
+    else                      # failure
+      flash[:notice] = c0.errors.full_messages.join(';')
+      redirect_to :action => 'merge', :method => :get
     end
   end
 

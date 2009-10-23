@@ -1,6 +1,7 @@
 - if subscriptions.empty?
   %p.strong No subscriptions
 - else
+  = hidden_field_tag 'year', year
   %table#subsList
     %thead
       %tr
@@ -24,5 +25,5 @@
         %td
         %td.currency= number_to_currency tprice  
 
-  = button_to('Download to Excel', {:action=>'subscriber_details', :year=>year, :download=>true},{:method=>:get})
+  = button_to('Download to Excel', {:action=>'subscriber_details', :id=>year, :download=>true},{:method=>:get})
 

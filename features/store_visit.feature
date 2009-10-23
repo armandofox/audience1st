@@ -1,8 +1,8 @@
 Feature: Visit Store Page
 
-  So that I can buy tickets for a show
-  As a patron
+  As a nonsubscriber
   I want to go to the Store page
+  So that I can buy tickets for a show
 
   Scenario: Starting from scratch
 

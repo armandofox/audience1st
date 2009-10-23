@@ -1,7 +1,5 @@
 = javascript_include_tag 'utils'
 
-- raise "This scren should show how many of each ticket type have already been sold, alongside the pulldown menus"
-
 - form_tag :action => 'do_walkup_sale', :id => @showdate do
   - vtypes = @vouchertypes.map { |v| v.id }
   = javascript_recalc_function 'total', vtypes, 'price','qty','donation'

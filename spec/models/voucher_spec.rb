@@ -53,6 +53,31 @@ describe Voucher do
       @v.should_not be_reservable
     end
   end
+  describe "instantiated from a vouchertype" do
+    before(:each) do
+      @showdate = mock_model(Showdate)
+      @logged_in_customer = Customer.walkup_customer
+      @owning_customer = Customer.walkup_customer
+      @purchasemethod = mock_model(Purchasemethod)
+      @vouchertype = mock_model(Vouchertype,
+                                :fulfillment_needed => false,
+                                :category => 'revenue',
+                                :expiration_date => Time.now+1.day)
+      num = 3
+      @new_vouchers = Voucher.instantiate!(@owning_customer,
+                                           @vouchertype,
+                                           @showdate,
+                                           @logged_in_customer,
+                                           @purchasemethod,
+                                           num)
+    end
+    it "should return the array of instantiated vouchers" do
+      @new_vouchers.should have(3).items
+    end
+    it "should belong to the customer" 
+    it "should be marked processed by the logged-in customer"
+    it "should belong to the showdate"
+  end
   describe "reserving a valid voucher for a showdate for which it's valid" do
     context "when voucher is not reservable" do
       it "reservation should fail" do

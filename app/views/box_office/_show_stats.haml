@@ -15,10 +15,11 @@
       %label{:for => :showdate_house_capacity} House capacity:
       %span#show_capacity= cap = @showdate.house_capacity
     %li
+      %label{:for => :sold} Sold:
+      %span#sold= @showdate.compute_advance_sales
+    %li
       %label{:for => :checked_in} Checked in:
       %span#checked_in= @showdate.checked_in
-      \ /
-      %span#max_sales= @showdate.compute_advance_sales
     %li
       %label{:for => :available} Available:
       - if (avail = @showdate.total_seats_left).zero?

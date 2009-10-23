@@ -24,8 +24,9 @@ class BoxOfficeController < ApplicationController
   end
 
   def walkup
-    @vouchertypes = Vouchertype.find(:all, :conditions => ["bundle = ? AND walkup_sale_allowed = ?", false, true])
-    @showdates = Showdate.find(:all, :conditions => ['thedate > ?', Time.now.at_beginning_of_season])
+    @vouchertypes = Vouchertype.walkup_vouchertypes
+    @showdates = Showdate.all_shows_this_season
+    @showdate = Showdate.find_by_id(params[:id]) || Showdate.current_or_next
   end
 
   def do_walkup_sale
