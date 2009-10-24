@@ -101,6 +101,22 @@ class ValidVoucher < ActiveRecord::Base
      # BUG: need to consider somewhere whether voucher is expired
   end
 
+  # instantiate!(logged_in_customer, purchasemethod, howmany=1)
+  #  n vouchers of given vouchertype and for given showdate are created
+  #  voucher is bound to customer
+  # returns the list of newly-instantiated vouchers
+  def instantiate!(logged_in_customer, purchasemethod, howmany=1)
+    Array.new(howmany) do |i|
+      self.new_voucher(purchasemethod).reserve!(self.showdate,
+                                                logged_in_customer)
+    end
+  end
+
+  def new_voucher(purchasemethod = Purchasemethod.default)
+    return Voucher.new_from_vouchertype(self.vouchertype,
+                                        :purchasemethod => purchasemethod)
+  end
+
   private
 
   def self.check_visible_to(av, admin=false)

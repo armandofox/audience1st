@@ -3,13 +3,12 @@ class Voucher < ActiveRecord::Base
   belongs_to :showdate
   belongs_to :vouchertype
   belongs_to :purchasemethod
-  has_one :processed_by, :class_name => 'Customer'
-  has_one :gift_purchaser, :class_name => 'Customer'
+  belongs_to :processed_by, :class_name => 'Customer'
+  belongs_to :gift_purchaser, :class_name => 'Customer'
 
   validates_presence_of :vouchertype
   validates_presence_of :purchasemethod
-  validates_presence_of :processed_by
-
+  validates_presence_of :processed_by_id
   # provide a handler to be called when customers are merged.
   # Transfers the vouchers from old to new id, and also changes the
   # values of processed_by field, which is really a customer id.
@@ -119,12 +118,11 @@ class Voucher < ActiveRecord::Base
 
   def self.new_from_vouchertype(vt,args={})
     vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
-    v = Voucher.new({:fulfillment_needed => vt.fulfillment_needed,
-                      :sold_on => Time.now,
-                      :changeable => false,
-                      :vouchertype => vt,
-                      :category => vt.category,
-                      :expiration_date => vt.expiration_date}.merge(args))
+    vt.vouchers.build({:fulfillment_needed => vt.fulfillment_needed,
+                       :sold_on => Time.now,
+                       :changeable => false,
+                       :category => vt.category,
+                       :expiration_date => vt.expiration_date}.merge(args))
   end
 
 
@@ -271,23 +269,11 @@ class Voucher < ActiveRecord::Base
   # 
   def reserve!(showdate, logged_in_customer)
     self.showdate = showdate
-    self.processed_by = logged_in_customer
+    self.processed_by_id = logged_in_customer.id
     self.save!
     self
   end
 
-  # instantiate!(customer, vouchertype, showdate, logged_in_customer)
-  #  voucher of given type and for given showdate is created
-  #  voucher is bound to customer
-  # returns the list of newly-instantiated vouchers
-  def self.instantiate!(customer, vouchertype, showdate, logged_in_customer,
-                        purchasemethod, howmany=1)
-    Array.new(howmany) do |v|
-      v = Voucher.new_from_vouchertype(vouchertype, :purchasemethod => purchasemethod).reserve!(showdate, logged_in_customer)
-      customer.vouchers << v
-    end
-  end
-    
     
 
   def reserve_for(showdate_id, logged_in, comments='', opts={})
