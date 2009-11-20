@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
-  describe "special customers that must not fail validation or be destroyed" do
+  describe "special customer that cannot fail validation or be destroyed:" do
     %w[walkup_customer generic_customer boxoffice_daemon].each do |c|
       it c.humanize do
         cust = Customer.send(c)

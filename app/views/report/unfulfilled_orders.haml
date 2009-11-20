@@ -1,4 +1,4 @@
-%h1= "#{@vouchers.length} Unfulfilled Orders as of #{Time.now.to_s(:short)}"
+%h1= "#{@vouchers.length} unfulfilled orders (#{@total} tickets) as of #{Time.now.to_s(:short)}"
 
 %p{:align=>:top}
   = button_to 'Export Addresses to Excel', :action => 'unfulfilled_orders_addresses', :method => :get
@@ -17,21 +17,25 @@
       %th State
       %th Zip
       %th Product
+      %th Qty
       %th Completed
 
-    - @vouchers.each do |v|
+
+    - @vouchers.each do |e|
+      - v,count = e[0],e[1]
       - gift = v.gift_purchaser_id.to_i
       - cust =  (gift.zero? ? v.customer : Customer.find(gift))
       %tr{:class => (gift.zero? ? nil : 'highlighted')}
         - [:first_name,:last_name,:street,:city,:state,:zip].each do |c|
           %td= h cust.send(c)
         %td= h v.vouchertype.name 
+        %td= h count
         %td= check_box 'voucher', v.id, :class=>'check'
       - unless gift.zero?
         %tr.highlighted
-          %td{:colspan=>8}
-            Gift for 
+          %td.strong{:colspan=>9}
+            (Gift for 
             = h(v.customer.full_name)
-          
+            )
   = submit_tag 'Mark Checked Orders as Fulfilled'
 

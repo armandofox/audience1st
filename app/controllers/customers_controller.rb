@@ -73,7 +73,8 @@ class CustomersController < ApplicationController
       if (@checkout_in_progress || stored_action)
         redirect_to_stored
       else
-        redirect_to :controller => controller, :action => action
+        #redirect_to :controller => controller, :action => action
+        redirect_to :controller => 'customers', :action => 'welcome'
       end
     else
       # authentication failed

@@ -4,17 +4,22 @@ Given /^I am not logged in$/ do
   visit '/logout'
 end
 
-Given /^I am logged in as (.*)?$/ do
-  @customer = Customer.find(77)
-  @customer.stub!(:update_attribute).and_return(true)
-  case $1
+Given /^I am logged in as (.*)?$/ do |who|
+  case who
   when /nonsubscriber/
-    @customer.stub!(:is_subscriber?).and_return(false)
+    @customer = customers(:tom)
   when /subscriber/
-    @customer.stub!(:is_subscriber?).and_return(true)
+    pending
+    @customer = customers(:tom)
+    @customer.make_subscriber!
   when /box ?office/
-    @customer.stub!(:is_boxoffice).and_return(true)
+    @customer = customers(:boxoffice_user)
+  else
+    @customer = customers(:generic_customer)
   end
-  login_from_password(@customer)
+  visit '/customers/login'
+  fill_in :customer_login, :with => @customer.login
+  fill_in :customer_password, :with => 'pass'
+  click_button 'Login'
+  response.should contain(Regexp.new("Welcome,.*#{@customer.first_name}"))
 end
-

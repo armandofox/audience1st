@@ -1,6 +1,7 @@
 class ReportController < ApplicationController
 
   include Enumerable
+  include Utils
   require 'set'
 
   before_filter :is_staff_filter
@@ -188,10 +189,19 @@ EOQ1
   end
 
   def unfulfilled_orders
-    @vouchers = Voucher.find(:all, :conditions => 'fulfillment_needed = 1')
-    if @vouchers.empty?
+    v = Voucher.find(:all,
+                     :include => :customer,
+                     :conditions => 'fulfillment_needed = 1',
+                     :order => "customers.last_name")
+    if v.empty?
       flash[:notice] = 'No unfulfilled orders at this time.'
       redirect_to :action => 'index'
+    end
+    @total = v.length
+    @vouchers = group_and_count(v) do |v1,v2|
+      v1.customer_id == v2.customer_id &&
+        v1.vouchertype_id == v2.vouchertype_id &&
+        v1.gift_purchaser_id ==  v2.gift_purchaser_id
     end
   end
 

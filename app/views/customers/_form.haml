@@ -58,7 +58,7 @@
     =text_field 'customer', 'email', {:size => 20, :max_length => 40, :readonly => disabled }
     %span.small= link_to "Our Privacy Policy", Option.value(:privacy_policy_url), :target => '_blank'
     
-    - unless (defined?(hide_opt_out) || @customer.invalid_email_address)
+    - unless (defined?(hide_opt_out) || @customer.invalid_email_address?)
       %br/
       %label Email preferences
       = check_box 'customer', 'e_blacklist'

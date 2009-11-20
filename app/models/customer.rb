@@ -40,16 +40,16 @@ class Customer < ActiveRecord::Base
 
   private
 
+  WALKUP_CUSTOMER_ROLE = -1
   WALKUP_CUSTOMER_ATTRIBUTES = {
-    :role => -1,
     :first_name => 'WALKUP',
     :last_name => 'CUSTOMER',
     :blacklist => true,
     :e_blacklist => true
   }
   GENERIC_CUSTOMER_ATTRIBUTES = WALKUP_CUSTOMER_ATTRIBUTES.merge({:first_name => 'GENERIC'})
+  BOXOFFICE_DAEMON_ROLE = -2
   BOXOFFICE_DAEMON_ATTRIBUTES = {
-    :role => -2,
     :first_name => 'BoxOffice',
     :last_name => 'Daemon',
     :blacklist => true,
@@ -94,6 +94,16 @@ class Customer < ActiveRecord::Base
         EmailList.subscribe(self)
       end
     end
+  end
+
+  # helper method used to create 'special' customers and immediately set
+  # the Role attribute (since that attribute is protected and can't be
+  # set directly in the create call)
+
+  def self.create_with_role!(attrs, role)
+    c = Customer.create!(attrs)
+    c.update_attribute(:role, role)
+    c
   end
   
   #----------------------------------------------------------------------
@@ -398,15 +408,15 @@ class Customer < ActiveRecord::Base
 
   # a dummy customer that is cannot be deleted from the database
   def self.walkup_customer
-    Customer.find_by_role(-1) ||
-      Customer.create!(WALKUP_CUSTOMER_ATTRIBUTES)
+    Customer.find_by_role(WALKUP_CUSTOMER_ROLE) ||
+      Customer.create_with_role!(WALKUP_CUSTOMER_ATTRIBUTES, WALKUP_CUSTOMER_ROLE)
   end
 
-  def is_walkup_customer? ;  self.role == -1;   end
+  def is_walkup_customer? ;  self.role == WALKUP_CUSTOMER_ROLE;   end
 
   def self.boxoffice_daemon
-    Customer.find_by_role(-2) ||
-      Customer.create!(BOXOFFICE_DAEMON_ATTRIBUTES)
+    Customer.find_by_role(BOXOFFICE_DAEMON_ROLE) ||
+      Customer.create_with_role!(BOXOFFICE_DAEMON_ATTRIBUTES, BOXOFFICE_DAEMON_ROLE)
   end
 
   def real_customer?

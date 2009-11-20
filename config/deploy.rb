@@ -4,6 +4,7 @@ set :application,     "vbo"
 set :user,            "audienc"
 set :home,            "/home/#{user}"
 set :deploy_to,       "#{home}/rails/#{venue}"
+set :stylesheet_dir,  "#{home}/public_html/stylesheets"
 set :use_sudo,        false
 set :host,            "audience1st.com"
 role :app,            "#{host}"
@@ -43,6 +44,8 @@ deploy.task :after_update_code do
     run "mv #{release_path}/#{file}.#{venue}  #{release_path}/#{file}"
     run "rm -rf #{release_path}/#{file}.*"
   end
+  # make public/stylesheets/venue point to venue's style assets
+  run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
   %w[manual doc test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
 end
 

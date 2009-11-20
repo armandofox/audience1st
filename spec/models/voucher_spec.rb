@@ -37,7 +37,7 @@ describe Voucher do
       @v = Voucher.new_from_vouchertype(@vt_regular)
     end
     it_should_behave_like "regular voucher when first created"
-    it "should have a vouchertype" do  @v.vouchertype.should_not be_nil end
+    it "should have a vouchertype" do  @v.vouchertype.should == @vt_regular end
     it "price should match its vouchertype" do
       @v.price.should == 10.00
     end

@@ -1,8 +1,23 @@
 class Store
 
-  def self.card_not_present_purchase(amount, cc, bill_to, order_num)
-    raise "Invalid purchaser" unless bill_to.valid_as_purchaser?
+  def self.purchase!(amount, params={}, &blk)
     raise "Zero transaction amount" if amount.zero?
+    case params[:method]
+    when :credit_card
+      self.purchase_with_credit_card!(amount, params[:credit_card],
+                                      params[:bill_to], params[:order_number],
+                                      blk)
+    when :check
+      self.purchase_with_check!(amount, params[:check_number], blk)
+    when :cash
+      self.purchase_with_cash!(amount, blk)
+    else
+      raise "Invalid payment type #{how}"
+    end
+  end
+
+  def self.purchase_with_credit_card!(amount, cc, bill_to, order_num, proc)
+    raise "Invalid purchaser" unless bill_to.valid_as_purchaser?
     params = {
       :order_id => order_num,
       :email => bill_to.possibly_synthetic_email,
@@ -19,13 +34,54 @@ class Store
     amount = Money.us_dollar((100 * amount).to_i)
     gw = PAYMENT_GATEWAY.new(:login => Option.value(:pgw_id),
                              :password => Option.value(:pgw_txn_key))
-    begin
-      purch = gw.purchase(amount, cc, params)
-    rescue Exception => e
-      purch = ActiveMerchant::Billing::Response.new(success=false,
-                                                    message = e.message)
+    ActiveRecord::Base.transaction do
+      begin
+        proc.call
+        purch = gw.purchase(amount, cc, params)
+        unless purch.success?
+          # raise error, to cause DB rollback of txn
+          case purch.message
+          when /ECONNRESET/
+            raise "Payment gateway not responding. Please wait a few seconds and try again."
+          when /decline/i
+            raise "Charge was declined. Please contact your credit card issuer for assistance."
+          else
+            raise purch.message
+          end
+        end
+      rescue Exception => e
+        purch = ActiveMerchant::Billing::Response.new(success=false,
+                                                      message = e.message)
+      end
     end
     purch
   end
 
+  def self.purchase_with_cash!(amount, proc)
+    ActiveRecord::Base.transaction do
+      begin
+        proc.call
+        ActiveMerchant::Billing::Response.new(success=true,
+                                              message="Cash purchase recorded",
+                                              :transaction_id => "CASH")
+      rescue Exception => e
+        ActiveMerchant::Billing::Response.new(success=false,
+                                              message=e.message)
+      end
+    end
+  end
+
+  def self.purchase_with_check!(amount, cknum, proc)
+    ActiveRecord::Base.transaction do
+      begin
+        proc.call
+        ActiveMerchant::Billing::Response.new(success = true,
+                                            message = "Check recorded",
+                                            :transaction_id => cknum.to_s)
+      rescue Exception => e
+        ActiveMerchant::Billing::Response.new(success = false,
+                                              message = e.message)
+      end
+    end
+  end    
 end

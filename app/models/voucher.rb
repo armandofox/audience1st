@@ -263,14 +263,12 @@ class Voucher < ActiveRecord::Base
 
   # operations on vouchers:
   #
-  # reserve!(showdate_id, logged_in)
-  #  customer already owns the voucher
+  # reserve(showdate_id, logged_in)
   #  reservation binds it to a showdate and fills in who processed it
   # 
-  def reserve!(showdate, logged_in_customer)
+  def reserve(showdate, logged_in_customer)
     self.showdate = showdate
     self.processed_by_id = logged_in_customer.id
-    self.save!
     self
   end
 

@@ -25,7 +25,8 @@ class Vouchertype < ActiveRecord::Base
   protected
   def subscriptions_shouldnt_be_walkups
     if walkup_sale_allowed? && subscription?
-      errors.add_to_base "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
+      errors.add_to_base "Subscription vouchers can't be sold via
+                walkup sales screen, since address must be captured."
     end
   end
   
@@ -33,7 +34,10 @@ class Vouchertype < ActiveRecord::Base
     if subscription? && (expiration_date - valid_date >= 2.years)
       end_date = Time.local(Time.now.year, Option.value(:season_start_month),
                             Option.value(:season_start_day)) - 1.day
-      errors.add_to_base "Maximum validity period of subscription vouchers is 2 years minus 1 day. It's suggested you make the expiration date the same as your season end date, which you set in Options as #{end_date.to_formatted_s(:month_day_only)}."
+      errors.add_to_base "Maximum validity period of subscription vouchers
+        is 2 years minus 1 day. It's suggested you make the expiration date
+        the same as your season end date, which you set in Options
+        as #{end_date.to_formatted_s(:month_day_only)}."
     end
   end
 

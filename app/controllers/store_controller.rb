@@ -4,7 +4,6 @@ class StoreController < ApplicationController
 
   require "money.rb"
 
-  before_filter :walkup_sales_filter, :only => %w[walkup do_walkup_sale]
   before_filter :is_logged_in, :only => %w[edit_billing_address]
 
   verify(:method => :post,
@@ -16,7 +15,7 @@ class StoreController < ApplicationController
   # this should be the last declarative spec since it will append another
   # before_filter
   if RAILS_ENV == 'production'
-    ssl_required(:checkout, :place_order, :walkup, :do_walkup_sale,
+    ssl_required(:checkout, :place_order, 
                  :index, :subscribe,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
@@ -25,13 +24,6 @@ class StoreController < ApplicationController
                  :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
                 :remove_from_cart,
                 :process_swipe)
-  end
-
-  def mini_index
-    @cart = find_cart
-    setup_ticket_menus
-    set_return_to :controller => 'store', :action => 'mini_index'
-    render :layout => 'mini_store'
   end
 
   def index
@@ -185,6 +177,7 @@ class StoreController < ApplicationController
 
   def checkout
     @cust = store_customer
+    @is_admin = current_admin.is_boxoffice
     if session[:recipient_id]
       @recipient = Customer.find( session[:recipient_id] )
     else
@@ -219,90 +212,60 @@ class StoreController < ApplicationController
 
   def place_order
     @cart = find_cart
-    if @cart.total_price <= 0
-      flash[:checkout_error] = "Your order appears to be empty. Please select some tickets."
-      redirect_to :action => 'index'
-      return
-    end
-    sales_final = params[:sales_final]
-    @bill_to = Customer.new(params[:customer])
-    cc_info = params[:credit_card].symbolize_keys
-    cc_info[:first_name] = @bill_to.first_name
-    cc_info[:last_name] = @bill_to.last_name
-    # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
-    # called rather than to_i to convert month and year to ints.
-    cc_info[:month] = cc_info[:month].to_i
-    cc_info[:year] = cc_info[:year].to_i
-    cc = CreditCard.new(cc_info)
-    # prevalidations: CC# and address appear valid, amount >0,
-    # billing address appears to be a well-formed address
-    unless (errors = do_prevalidations(params, @cart, @bill_to, cc)).empty?
-      flash[:checkout_error] = errors
-      logger.warn "#{@bill_to[:first_name]} #{@bill_to[:last_name]}: Redirecting from place_order: #{errors}"
-      redirect_to :action => 'checkout', :sales_final => sales_final
-      return
-    end
-    #
-    # basic prevalidations OK, continue with customer validation
-    #
-    @customer = current_customer
+    ensure_cart_not_empty or return
+    @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
-    unless @customer.kind_of?(Customer)
-      flash[:warning] = "SYSTEM ERROR: Invalid purchaser id! (id=#{@customer.id})"
-      logger.error "Reached place_order with invalid customer: #{@customer}"
-      redirect_to :action => 'checkout', :sales_final => sales_final
-      return
+    sales_final = params[:sales_final].to_i
+    if sales_final.zero?
+      flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
+      redirect_to :action => 'checkout'
     end
-    # verify we have a valid recipient
-    if session[:recipient_id]
-      # buyer is different from recipient
-      unless @recipient = Customer.find_by_id(session[:recipient_id])
-        flash[:warning] = 'Gift recipient is invalid'
-        logger.error "Gift order, but invalid recipient; id=#{session[:recipient_id]}"
-        redirect_to :action => 'index'
-        return
-      end
-      @cart.gift_from(@customer)
-    else
-      @recipient = @customer
+    if (params[:commit] =~ /credit/i || !@is_admin)
+      args = collect_credit_card_info or return
     end
+    @recipient = verify_valid_recipient or return
+    @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
-    resp = Store.card_not_present_purchase(@cart.total_price, cc, @bill_to,
-                                           @cart.order_number)
-    if !resp.success?
-      flash[:checkout_error] = "Payment gateway error: "
-      if resp.message.match( /ECONNRESET/ )
-        flash[:checkout_error] << "Payment gateway not responding. Please wait a few seconds and try again."
-      elsif resp.message.match(/decline/i)
-        flash[:checkout_error] << "<br/>This charge was declined. Please contact your credit card issuer for assistance."
-      else
-        flash[:checkout_error] << resp.message
-      end
-      logger.info("DECLINED: Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
-      redirect_to :action => 'checkout', :sales_final => sales_final
+    if (params[:commit] =~ /credit/i || !@is_admin)
+      args.merge({:order_number => @cart.order_number,
+                   :method => :credit})
+      @payment="credit card ending in #{args[:credit_card].number.to_s[-4..-1]}"
+    elsif params[:commit] =~ /check/i
+      args = {:method => :check, :check_number => params[:check_number]}
+      @payment = "check number #{params[:check_number]}"
+    elsif params[:commit] =~ /cash/i
+      args = {:method => :cash}
+      @payment = "cash"
+    end
+    resp = Store.purchase!(@cart.total_price, args) do
+      txn_id = "xxx"
+      # add non-donation items to recipient's account
+      @recipient.add_items(@cart.nondonations_only,
+                           logged_in_id,
+                           (current_admin.is_boxoffice ? 'cust_ph':'cust_web'),
+                           txn_id)
+      @recipient.save
+      # add donation items to payer's account
+      @customer.add_items(@cart.donations_only,
+                          logged_in_id,
+                          (current_admin.is_boxoffice ? 'cust_ph' :'cust_web'),
+                          txn_id)
+      @amount = @cart.total_price
+      @order_summary = @cart.to_s
+      @special_instructions = @cart.comments
+      email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
+                         @amount, @payment,
+                         @special_instructions)
+    end
+    if resp.success?
+      reset_shopping
+      set_return_to
       return
     end
-    #     All is well, fall through to confirmation
-    #
-    @tid = resp.params['transaction_id'] || '0'
-    # add non-donation items to recipient's account
-    @recipient.add_items(@cart.items.reject { |v| v.kind_of?(Donation) }, logged_in_id,
-                        (current_admin.is_boxoffice ? 'cust_ph' : 'cust_web'),
-                        @tid)
-    @recipient.save
-    # add donation items to payer's account
-    @customer.add_items(@cart.items.find_all { |v| v.kind_of?(Donation) }, logged_in_id,
-                        (current_admin.is_boxoffice ? 'cust_ph' : 'cust_web'),
-                        @tid)
-    @amount = @cart.total_price
-    @order_summary = @cart.to_s
-    @cc_number = (cc.number || 'XXXX').to_s
-    email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
-                       @amount, "Credit card ending in #{@cc_number[-4..-1]}",
-                       @cart.comments)
-    @special_instructions = @cart.comments
-    reset_shopping                  # clear out shopping session info.
-    set_return_to
+    # failure....
+    flash[:checkout_error] = resp.message
+    logger.info("FAILED purchase: Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
+    redirect_to :action => 'checkout', :sales_final => sales_final
   end
 
   private
@@ -413,77 +376,6 @@ class StoreController < ApplicationController
                    :type => CreditCard.type?(accnum.strip) || '')
   end
 
-  def populate_cc_object(params)
-    cc_info = params[:credit_card].symbolize_keys || {}
-    cc_info[:first_name] = @bill_to[:first_name]
-    cc_info[:last_name] = @bill_to[:last_name]
-    # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
-    # called rather than to_i to convert month and year to ints.
-    cc_info[:month] = cc_info[:month].to_i
-    cc_info[:year] = cc_info[:year].to_i
-    CreditCard.new(cc_info)
-  end
-
-  def do_prevalidations(params,cart,billing_info,cc)
-    err = []
-    if params[:sales_final].to_i.zero?
-      err << "Please indicate your acceptance of our Sales Final policy by checking the box."
-    end
-    if ! cc.valid?              # format check on credit card number
-      err << ("<p>Please provide valid credit card information:</p>" <<
-              "<ul><li>" <<
-              cc.errors.full_messages.join("</li><li>") <<
-              "</li></ul>")
-    end
-    if !prevalidate_billing_addr(billing_info)
-      err = 'Please provide a valid billing name and address.'
-    end
-    return err.join("<br/>")
-  end
-
-  # TBD this should try to prevalidate that the address looks reasonable
-  def prevalidate_billing_addr(billinfo) ;   true ;  end
-
-  # the next two functions actually call the payment gateway
-  def do_cc_present_transaction(amount, cc)
-    params = {
-      :order_id => Option.value(:venue_id).to_i,
-      :address => {
-        :name => "#{cc.first_name} #{cc.last_name}"
-      }
-    }
-    return cc_transaction(amount,cc,params,card_present=true)
-  end
-
-  def do_cc_not_present_transaction(amount, cc, bill_to, order_num)
-    return cc_transaction(amount,cc,params,card_present=false)
-  end
-
-  def cc_transaction(amount,cc,params,card_present)
-    amount = Money.us_dollar((100 * amount).to_i)
-    unless SANDBOX
-      gw = AuthorizedNetGateway.new(:login => Option.value(:pgw_id),
-                                    :password => Option.value(:pgw_txn_key))
-      purch = gw.purchase(amount, cc, params)
-    else
-      Base.gateway_mode = :test
-      old_cc_num = cc.number
-      # ActiveMerchant "bogus gateway" will declare success if credit
-      # card number of '1' is used, failure if '3'.
-      cc.number = (old_cc_num.match( /^42/ ) ? '1' : '3')
-      gw = BogusGateway.new(:login => Option.value(:pgw_id),
-                            :password => Option.value(:pgw_txn_key))
-      begin
-        purch = gw.purchase(amount, cc, params)
-      rescue Exception => e
-        purch = ActiveMerchant::Billing::Response.new(success=false, message = e.message)
-      end
-      # restore originally-typed cc number
-      cc.number = old_cc_num
-    end
-    return purch
-  end
-
   # helpers for the AJAX handlers. These should probably be moved
   # to the respective models for shows and showdates, or called as
   # helpers from the views directly.
@@ -542,20 +434,62 @@ class StoreController < ApplicationController
     end
   end
 
-  # filter for walkup sales: requires specific privilege OR allows
-  # anyone from selected IP addresses
-
-  def walkup_sales_filter
-    unless (current_admin.is_walkup ||
-            APP_CONFIG[:walkup_locations].include?(request.remote_ip))
-      flash[:warning] = 'To process walkup sales, you must either sign in with
-        Walkup Sales privilege OR from an approved walkup sales computer.'
-      session[:return_to] = request.request_uri
-      redirect_to :controller => 'customers', :action => 'login'
+  def verify_valid_recipient
+    if session[:recipient_id]
+      # buyer is different from recipient
+      unless recipient = Customer.find_by_id(session[:recipient_id])
+        flash[:warning] = 'Gift recipient is invalid'
+        logger.error "Gift order, but invalid recipient; id=#{session[:recipient_id]}"
+        redirect_to :action => 'index'
+        return nil
+      end
+    else
+      recipient = @customer
     end
+    recipient
   end
 
+  def verify_valid_customer
+    @customer = current_customer
+    unless @customer.kind_of?(Customer)
+      flash[:warning] = "SYSTEM ERROR: Invalid purchaser (id=#{@customer.id})"
+      logger.error "Reached place_order with invalid customer: #{@customer}"
+      redirect_to :action => 'checkout'
+      return nil
+    end
+    @customer
+  end
 
+  def collect_credit_card_info
+    bill_to = Customer.new(params[:customer])
+    cc_info = params[:credit_card].symbolize_keys
+    cc_info[:first_name] = bill_to.first_name
+    cc_info[:last_name] = bill_to.last_name
+    # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
+    # called rather than to_i to convert month and year to ints.
+    cc_info[:month] = cc_info[:month].to_i
+    cc_info[:year] = cc_info[:year].to_i
+    cc = CreditCard.new(cc_info)
+    # prevalidations: CC# and address appear valid, amount >0,
+    # billing address appears to be a well-formed address
+    if ! cc.valid?              # format check on credit card number
+      flash[:checkout_error] =
+        "<p>Please provide valid credit card information:</p> <ul><li>" <<
+        cc.errors.full_messages.join("</li><li>") <<
+        "</li></ul>"
+      redirect_to :action => 'checkout'
+      return nil
+    end
+    return {:credit_card => cc, :bill_to => bill_to}
+  end
 
-
+  def ensure_cart_not_empty
+    if @cart.total_price <= 0
+      flash[:checkout_error] =
+        "Your order appears to be empty. Please select some tickets."
+      redirect_to :action => 'index'
+      return nil
+    end
+    return true
+  end
 end

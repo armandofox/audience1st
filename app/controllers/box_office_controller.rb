@@ -2,14 +2,31 @@ class BoxOfficeController < ApplicationController
 
   before_filter(:is_boxoffice_filter,
                 :redirect_to => { :controller => :customers, :action => :login})
+
   # sets the instance variable @showdate for every method.
-  before_filter(:get_showdate,
-                :redirect_to => { :controller => :customers },
-                :add_to_flash =>  "There are no upcoming shows listed.")
+  before_filter :get_showdate
   verify(:method => :post,
          :only => :do_walkup_sale,
          :redirect_to => { :action => :walkup },
          :add_to_flash => "Warning: action only callable as POST, no transactions were recorded! ")
+
+  ssl_required(:walkup, :do_walkup_sale)   if RAILS_ENV == 'production'
+
+  private
+
+  # this filter must return non-nil for any method on this controller
+  def get_showdate
+    return if !params[:id].blank? && @showdate = Showdate.find_by_id(params[:id].to_i)
+    if (showdate = (Showdate.current_or_next ||
+                    Showdate.find(:first, :order => "thedate DESC")))
+      redirect_to :action => action_name, :id => showdate
+    else
+      flash[:notice] = "There are no shows listed.  Please add some."
+      redirect_to :controller => 'shows', :action => 'index'
+    end
+  end
+
+  public
 
   def index
     redirect_to :action => :walkup
@@ -126,14 +143,6 @@ class BoxOfficeController < ApplicationController
       @credit_card.number = encrypt_with(@credit_card.number, key) unless no_encrypt
       render :partial => 'credit_card', :locals => {'name_needed'=>true}
     end
-  end
-
-  private
-
-  # this filter must return non-nil for any method on this controller
-  def get_showdate
-    @showdate = (Showdate.find_by_id(params[:id].to_i) ||
-                 Showdate.current_or_next)
   end
 
 end

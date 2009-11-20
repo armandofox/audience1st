@@ -1,9 +1,8 @@
 module StoreHelper
 
   def options_for_credit_card
-    opts = [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover'],
-            ['Diners Club','diners_club']]
-    opts << ['AmEx', 'american_express'] unless Option.value(:accept_amex).blank?
+    opts = [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover']]
+    opts << ['AmEx', 'american_express'] unless Option.value(:accept_amex).to_i.zero?
     opts
   end
 
@@ -17,7 +16,7 @@ module StoreHelper
   end
 
   def ticket_menus(avs)
-    min_tix = avs.length == 1 ? 1 : 0
+    min_tix = 0
     avs.each do |av|
       vid = av.vouchertype.id
       max_tix = [av.howmany, 30].min

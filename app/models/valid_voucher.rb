@@ -12,7 +12,7 @@ class ValidVoucher < ActiveRecord::Base
   # A valid_voucher must be associated with exactly 1 showdate and 1 vouchertype
   belongs_to :showdate
   belongs_to :vouchertype
-  validates_associated :showdate
+  validates_associated :showdate, :if => lambda { |v| !v.vouchertype.bundle? }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type
 
@@ -101,14 +101,14 @@ class ValidVoucher < ActiveRecord::Base
      # BUG: need to consider somewhere whether voucher is expired
   end
 
-  # instantiate!(logged_in_customer, purchasemethod, howmany=1)
+  # instantiate(logged_in_customer, purchasemethod, howmany=1)
   #  n vouchers of given vouchertype and for given showdate are created
   #  voucher is bound to customer
   # returns the list of newly-instantiated vouchers
-  def instantiate!(logged_in_customer, purchasemethod, howmany=1)
+  def instantiate(logged_in_customer, purchasemethod, howmany=1)
     Array.new(howmany) do |i|
-      self.new_voucher(purchasemethod).reserve!(self.showdate,
-                                                logged_in_customer)
+      self.new_voucher(purchasemethod).reserve(self.showdate,
+                                               logged_in_customer)
     end
   end
 

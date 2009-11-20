@@ -3,9 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe VouchertypesController do
 
   before(:each) do
-    controller.stub!(:set_globals).and_return(true)
-    controller.stub!(:is_boxoffice_manager_filter).and_return(true)
-    controller.stub!(:logged_in_id).and_return(1)
+    stub_globals_and_userlevel(:boxoffice_manager)
     @vtype = mock(Vouchertype, :name => 'Test Vouchertype')
     Vouchertype.stub!(:find).and_return(@vtype)
   end

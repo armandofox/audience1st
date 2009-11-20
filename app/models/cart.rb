@@ -37,6 +37,10 @@ class Cart
     self.items.select { |i| i.kind_of?(Donation) }
   end
 
+  def nondonations_only
+    self.items.reject { |i| i.kind_of?(Donation) }
+  end
+
   def gift_from(buyer)
     # mark all Vouchers (but not Donations or other stuff in cart) as a gift
     # for the given customer.

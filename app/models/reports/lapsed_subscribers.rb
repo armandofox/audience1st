@@ -18,9 +18,9 @@ class LapsedSubscribers < Report
     # first find customers who have ANY of the given vouchertypes
     sql  = %{
         SELECT DISTINCT c.*
-        FROM customers c JOIN vouchers v ON v.customer_id = c.id
+        FROM customers c LEFT OUTER JOIN vouchers v ON v.customer_id = c.id
         WHERE v.vouchertype_id IN (%s)
-        AND c.e_blacklist = 0
+        AND (c.e_blacklist = 0 OR c.e_blacklist IS NULL)
         ORDER BY c.last_name
         }
     prev_subscribers = Customer.find_by_sql(sprintf(sql, have.join(',')))
