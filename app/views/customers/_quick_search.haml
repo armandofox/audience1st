@@ -1,7 +1,20 @@
 #customer_quick_search.adminField
-  - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do 
-    Quick search by first or last name:
-    = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
-    = spinner('wait')
-    = hidden_field_tag 'id'
-    = submit_tag 'Go'
+  %table
+    %tr
+      %td
+        - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do 
+          Quick select by first or last name:
+          = customer_search_field 'name', '', {:size => 12}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
+          = spinner('wait')
+          = hidden_field_tag 'id'
+          = submit_tag 'Go'
+      %td
+        - form_tag({:controller => 'customers',:action =>'list'},{:method =>:get}) do
+          Find all matching any field:
+          = text_field_tag 'customers_filter', '', :size => 12
+          = submit_tag 'Go'
+      %td
+        - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do
+          = submit_tag 'Add new customer...'
+          
+

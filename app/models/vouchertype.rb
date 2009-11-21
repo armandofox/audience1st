@@ -65,6 +65,16 @@ class Vouchertype < ActiveRecord::Base
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
   end
 
+  def self.nonbundle_vouchertypes
+    Vouchertype.find(:all, :conditions => ["category != ?", :bundle],
+                     :order => 'price')
+  end
+
+  def self.bundle_vouchertypes
+    Vouchertype.find(:all, :conditions => ["category = ?", :bundle],
+                     :order => 'price')
+  end
+
   def self.find_products(args={})
     restrict = []
     arglist = []

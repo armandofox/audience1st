@@ -1,18 +1,21 @@
-#staffButtons.admin_field
-  %p.strong= "Logged in on behalf of #{@gCustomer.full_name}"
+#staffButtons.adminField
+  %p.strong= "Customer: #{@gCustomer.full_name}"
   - if controller.controller_name == 'customers'
-    %p= button_bar( |
+    %p
+      %span.strong Report:
+      = button_bar( |
          ['Contact History', :visits, :list, {}], |
          ['Prospecting Activities', :visits, :list_by_prospector, {}], |
          ['Database Transactions',:txn, :list, |
             {:params => {:txns_filter => @gCustomer.id}}], |
-         ['Record donation',:donation,:new, {}] ) |
-    - if @gAdmin.is_boxoffice_manager
+         ['Donation & Purchase History', :donation, :list, |
+            {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
+            :show_vouchers => true}]) |
+    %p
+      %span.strong Actions:
       = button_bar( |
-           ['Add Vouchers',:vouchers, :addvoucher, {}], |
-           ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}], |
-           ['Force Classic View', :customers,:welcome, {:force_classic => 1}], |
-           ['Donation & Purchase History', :donation, :list, |
-                {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
-                :show_vouchers => true}] ) |
+         ['Record Donation',:donation,:new, {}],  |
+         ['Add Comps',:vouchers, :addvoucher, {}], |
+         ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}], |
+         ['Classic View', :customers,:welcome, {:force_classic => 1}] ) |
   .clear

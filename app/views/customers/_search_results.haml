@@ -10,12 +10,11 @@
       - end
   %tbody
     - @customers.each do |c|
-    %tr
-      %td= c.first_name
-      %td= c.last_name
-      - %w[street city login].each do |f|
-      %td= c.send(f)
-      - end
-    - end
+      %tr
+        %td= c.first_name
+        %td= c.last_name
+        - %w[street city login].each do |f|
+          %td= c.send(f)
+
 
     

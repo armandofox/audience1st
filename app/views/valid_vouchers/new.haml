@@ -4,7 +4,7 @@
 
 - form_tag :action => 'create' do
   %label{:for=>:valid_voucher_vouchertype_id} Voucher/ticket type
-  = select_tag("valid_voucher[vouchertype_id]", options_from_collection_for_select(Vouchertype.find(:all,:conditions=>'bundle = 0'), "id", "name"))
+  = select_tag 'valid_voucher[vouchertype_id]', options_from_collection_for_select(@vouchertypes, :id, :name_with_price)
   %br/
   = render :partial => 'form'
   %table
@@ -13,7 +13,7 @@
       %td
         = hidden_field_tag 'valid_voucher[showdate_id]', @showdate_id
         = radio_button_tag "addtojustone", 1, true
-        = Showdate.find(params[:showdate_id]).printable_date
+        = @showdate.printable_date
         Only
         %br/
         = radio_button_tag "addtojustone", 0, false

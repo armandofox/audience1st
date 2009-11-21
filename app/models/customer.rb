@@ -286,6 +286,20 @@ class Customer < ActiveRecord::Base
     return ok
   end
 
+  def self.mergeable_attributes
+    %w(first_name last_name email street city state zip day_phone eve_phone
+        blacklist e_blacklist
+        comments
+        formal_relationship member_type
+        company title company_address_line_1 company_address_line_2 company_url
+        company_city company_state company_zip work_phone cell_phone work_fax
+        best_way_to_contact
+)
+  end
+
+  # when merging customers, these attributes are automatically merged
+  def self.keep_newer_attributes ;  %w(hashed_password  salt  last_login) ; end
+
 
 
   # add items to a customer's account - could be vouchers, record of a
@@ -489,6 +503,15 @@ class Customer < ActiveRecord::Base
     Customer.find(:all, :conditions => conds_ary, :order =>'last_name')
   end
 
+  
+  # Match on any content column of a class
+
+  def self.match_any_content_column(string)
+    cols = self.content_columns
+    a = Array.new(cols.size) { "%#{string}%" }
+    a.unshift cols.map { |c| "(#{c.name} LIKE ?)" }.join " OR "
+  end
+
   # Override content_columns method to omit password hash and salt
   def self.content_columns
     super.delete_if { |x| x.name.match(%w[role oldid hashed_password salt _at$ _on$].join('|')) }
@@ -499,20 +522,6 @@ class Customer < ActiveRecord::Base
       |x| x.name.match('first_name|last_name|street|city|state|zip')
     }
   end
-
-  def self.mergeable_attributes
-    %w(first_name last_name email street city state zip day_phone eve_phone
-        blacklist e_blacklist
-        comments
-        formal_relationship member_type
-        company title company_address_line_1 company_address_line_2 company_url
-        company_city company_state company_zip work_phone cell_phone work_fax
-        best_way_to_contact
-)
-  end
-
-  # when merging customers, these attributes are automatically merged
-  def self.keep_newer_attributes ;  %w(hashed_password  salt  last_login) ; end
 
   # check if mailing address appears valid.
   # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if

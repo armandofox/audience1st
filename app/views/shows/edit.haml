@@ -1,18 +1,17 @@
-%h1= "Details for #{@show.name}"
+%h1
+  Details for 
+  %span.show_name= @show.name
 
 - form_tag :action => 'update', :id => @show  do
   = render :partial => 'form'
   = submit_tag 'Save Changes'
 
-%h2
-  Performances:
-  - if @is_boxoffice_manager
-    = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
+%h2 Performances
 
 %p
-  = link_to 'Show all details', :action => 'edit', :id => @show, :display => 1
-  = " | "
-  = link_to 'Hide all details', :action => 'edit', :id => @show
+  = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
+  = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
+  = gen_button 'Hide all details', :action => 'edit', :id => @show
 
 %table
   %thead
@@ -24,4 +23,4 @@
   %tbody
     = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 
-= link_to 'Back to List of Shows', :action => 'list'
+= gen_button 'Back to List of Shows', :action => 'list'

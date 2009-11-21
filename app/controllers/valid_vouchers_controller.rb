@@ -14,10 +14,14 @@ class ValidVouchersController < ApplicationController
 
   def new
     @showdate_id = params[:showdate_id]
-    @showdate = Showdate.find(@showdate_id)
-    raise "New voucher type must be associated with a valid showdate" unless @showdate.kind_of?(Showdate)
+    unless (@showdate = Showdate.find_by_id(@showdate_id))
+      flash[:notice] = "New voucher must be associated with a showdate"
+      redirect_to :controller => 'shows', :action => 'index'
+    end
+    @vouchertypes = Vouchertype.nonbundle_vouchertypes
     @valid_voucher = ValidVoucher.new
     # set some convenient defaults for new valid_voucher
+    @valid_voucher.start_sales = @showdate.show.listing_date
     @valid_voucher.end_sales = @showdate.end_advance_sales
   end
 

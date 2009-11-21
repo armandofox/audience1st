@@ -1,3 +1,10 @@
+/* @override http://localhost:3000/stylesheets/vbo.css?1258766471 */
+
+/* @override 
+	http://localhost:3000/stylesheets/vbo.css?1258754528
+	http://localhost:3000/stylesheets/vbo.css?1258761163
+*/
+
 body.testing {
   /* background: url('/images/testing.png') repeat-x top left;
   z-index: 100;
@@ -6,7 +13,9 @@ body.testing {
   margin: 4px;
 }
 
-
+form: {
+	display: inline;
+}
 /// Styles for divs and pages used in admin interface
 
 #outer_wrapper_admin {
@@ -27,6 +36,8 @@ body.testing {
 
 table {
   border: 0;
+	margin-bottom: 10px;
+	margin-top: 4px;
 }
 td,th {
   padding: 1px 2px;
@@ -167,6 +178,7 @@ submit {
   background-color: #eeeeee;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   padding: 3px;
+  display: inline;
  }
 
 submit:hover {
@@ -197,16 +209,22 @@ submit:hover {
   border: none;
 }
 
+/*
+ * Things visible only in admin views
+ */
 .admin {
-   background-color: yellow;
+   background-color:  #eff19e;
    color: black;
+}
+.adminDiv {
+   background-color:  #eff19e;
+   display: block;
 }
 .adminField {
    clear: both;
    padding: 2px 10px;
-   background-color: yellow;
+   background-color: #eff19e;
    color: black;
-   line-height: 1.5em;
 }
 .adminButton {
    color: black;
@@ -218,7 +236,7 @@ submit:hover {
 }
 
 .adminButton:hover {
-   background-color: yellow;
+   background-color:  #eff19e;
    color: maroon;
    border:  1px solid maroon;
    text-decoration: none;
@@ -336,6 +354,8 @@ div.progressBar div.background {
   width: 0%;
 }
 
+/* Login page */
+
 .loginTable {
   border: 1px solid gray;
  }
@@ -344,6 +364,8 @@ div.progressBar div.background {
   border: 1px solid gray;
   vertical-align: top
 }
+
+/* Customer welcome page */
 
 .customerName {
   display: block;
@@ -379,16 +401,6 @@ div.show .showSalesRevenue {
   width: 10em;
 }
 
-/* Options */
-
-table#options_table td.option_name {
-  width: 20em;
-  vertical-align: top;
-  text-align: left;
-}
-table#options_table td.option_value {
-  text-align: left;
-}
 
 #pageDiv .showDateSummary {
   margin: 2px;
@@ -437,6 +449,38 @@ table.wideTable > td {
 
 .top {
   vertical-align: top;
+}
+
+/* Edit shows and showdates */
+
+.show_name {
+	font-style: italic;
+}
+table.showdates_summary {
+	border-style: solid;
+	border-color: #000;
+	background-color: #e6e6e6;
+	line-height: normal;
+	padding-left: 20px;
+}
+table.showdates_summary th {
+	background-color: #e6e6e6;
+	color: #4c4c4c;
+	text-align: center;
+}
+table.showdates_summary td {
+	padding-right: 5px;
+	padding-left: 5px;
+}
+/* Options */
+
+table#options_table td.option_name {
+  width: 20em;
+  vertical-align: top;
+  text-align: left;
+}
+table#options_table td.option_value {
+  text-align: left;
 }
 
 /* Tabular report format */

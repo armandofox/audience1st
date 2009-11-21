@@ -211,25 +211,18 @@ class StoreController < ApplicationController
   end
 
   def place_order
-    @cart = find_cart
-    ensure_cart_not_empty or return
+    @cart = find_cart_not_empty or return
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
-    sales_final = params[:sales_final].to_i
-    if sales_final.zero?
-      flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
-      redirect_to :action => 'checkout'
-    end
-    if (params[:commit] =~ /credit/i || !@is_admin)
-      args = collect_credit_card_info or return
-    end
+    sales_final = verify_sales_final or return
     @recipient = verify_valid_recipient or return
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
     if (params[:commit] =~ /credit/i || !@is_admin)
+      args = collect_credit_card_info or return
       args.merge({:order_number => @cart.order_number,
                    :method => :credit})
-      @payment="credit card ending in #{args[:credit_card].number.to_s[-4..-1]}"
+      @payment="credit card #{args[:credit_card].display_number}"
     elsif params[:commit] =~ /check/i
       args = {:method => :check, :check_number => params[:check_number]}
       @payment = "check number #{params[:check_number]}"
@@ -237,34 +230,30 @@ class StoreController < ApplicationController
       args = {:method => :cash}
       @payment = "cash"
     end
+    howpurchased = (@customer.id == logged_in_id ? 'cust_ph' : 'cust_web')
     resp = Store.purchase!(@cart.total_price, args) do
-      txn_id = "xxx"
       # add non-donation items to recipient's account
-      @recipient.add_items(@cart.nondonations_only,
-                           logged_in_id,
-                           (current_admin.is_boxoffice ? 'cust_ph':'cust_web'),
-                           txn_id)
-      @recipient.save
+      @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)
+      @recipient.save!
       # add donation items to payer's account
-      @customer.add_items(@cart.donations_only,
-                          logged_in_id,
-                          (current_admin.is_boxoffice ? 'cust_ph' :'cust_web'),
-                          txn_id)
+      @customer.add_items(@cart.donations_only, logged_in_id, howpurchased)
       @amount = @cart.total_price
       @order_summary = @cart.to_s
       @special_instructions = @cart.comments
+    end
+    if resp.success?
+      @payment << " (transaction ID: #{resp.params[:transaction_id]})" if
+        @payment =~ /credit/i
       email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
                          @amount, @payment,
                          @special_instructions)
-    end
-    if resp.success?
       reset_shopping
       set_return_to
       return
     end
     # failure....
     flash[:checkout_error] = resp.message
-    logger.info("FAILED purchase: Cust id #{@customer.id} [#{@customer.full_name}] card xxxx..#{cc.number[-4..-1]}: #{resp.message}") rescue nil
+    logger.info("FAILED purchase for #{@customer.id} [#{@customer.full_name}] by #{@payment}:\n #{resp.message}") rescue nil
     redirect_to :action => 'checkout', :sales_final => sales_final
   end
 
@@ -483,13 +472,24 @@ class StoreController < ApplicationController
     return {:credit_card => cc, :bill_to => bill_to}
   end
 
-  def ensure_cart_not_empty
-    if @cart.total_price <= 0
+  def find_cart_not_empty
+    cart = find_cart
+    if cart.total_price <= 0
       flash[:checkout_error] =
         "Your order appears to be empty. Please select some tickets."
       redirect_to :action => 'index'
       return nil
     end
-    return true
+    return cart
+  end
+
+  def verify_sales_final
+    if (sales_final = params[:sales_final].to_i).zero?
+      flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
+      redirect_to :action => 'checkout'
+      return nil
+    else
+      return sales_final
+    end
   end
 end

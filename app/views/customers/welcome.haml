@@ -10,14 +10,14 @@
     %thead
       %tr
         - if @admin.is_boxoffice
-          %th.admin_field Tkt #
+          %th.adminField Tkt #
         %th Type
         %th Acquired
         %th Redeemed
         %th Actions
         - if @admin.is_boxoffice
-          %th.admin_field Admin
-          %th.admin_field Comment
+          %th.adminField Admin
+          %th.adminField Comment
     %tbody
       = render :partial => "voucher", :collection => @vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
 

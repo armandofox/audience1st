@@ -180,21 +180,6 @@ module ApplicationHelper
     s
   end
 
-  def search_panel(controller, action_name='list', opts={}, html_opts={})
-    form_tag_opts = {:method => :get}
-    form_tag_opts.merge!(:target => '_blank') if opts[:newpage]
-    s = ""
-    s << form_tag({:controller => controller, :action => action_name},
-                        form_tag_opts)
-    s << (opts[:label] || 'Search/filter:')
-    varname = ActiveSupport::Inflector.tableize(controller) + "_filter"
-    s << text_field_tag(varname, eval("@#{varname}"))
-    s << submit_tag((opts[:submit] || 'Search'), html_opts)
-    s << "</form>"
-    s << " " + opts[:extra] if opts[:extra]
-    s
-  end
-
   def js_quote_nonnumeric(o)
     o.kind_of?(Fixnum) ? o: "'#{o}'"
   end

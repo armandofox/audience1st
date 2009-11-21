@@ -4,37 +4,39 @@
   %td.t
     = showdate.printable_date
     %br
-  %td.t= showdate.end_advance_sales.to_formatted_s(:showtime)
+  %td.t= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
   %td.t= showdate.max_sales
   %td{:width=>"50%"}
     = link_to 'Edit', {:controller => 'showdates', :action => 'edit', :id => showdate.id}
     = "|"
-    = link_to 'Report', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id }
+    = link_to 'Door List', {:controller => 'report', :action => 'boxoffice_report', :showdate_id => showdate.id }
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id), showdate.printable_name
     = "|"
     = link_to_if showdate.compute_total_sales.zero?, 'Delete', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :post,:confirm => MESSAGES[:delete_performance_0] }
     = "|"
-    = link_to_function "Show/Hide Details", visual_effect(:toggle_slide,"detail_#{showdate.id}")
-%tr.t
+    = link_to_function "Ticket Details", visual_effect(:toggle_slide,"showdate_#{showdate.id}")
+%tr
   %td{:colspan=>4}
-  %td
-    %span{:id => "detail_#{showdate.id}",:style => @maybe_hide}
-      %table
+    %div[showdate]{:style => @maybe_hide}
+      %table.showdates_summary
+        %tr
+          %th Sold
+          %th Max
+          %th Type
+          %th Sales start
+          %th Sales end
         - showdate.valid_vouchers.each do |v|
-          %tr.t
+          %tr
             - nsales = showdate.sales_by_type(v.vouchertype_id)
-            %td= (max = v.max_sales_for_type).zero? ? nsales : "#{nsales}/#{max}"
+            %td= nsales
+            %td= max unless (max = v.max_sales_for_type).zero? 
             %td
               = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
               = "(#{v.password})" unless v.password.blank?
-            %td= v.start_sales.to_formatted_s(:showtime)
-            %td= v.end_sales.to_formatted_s(:showtime)
-            %td
-              - if is_boxoffice_manager && nsales.zero?
-                = gen_button 'Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }
-                / %td= link_to_if nsales.zero?, 'Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }
-        - if is_boxoffice_manager
-          %tr
-            %td{:colspan=>4}
-              = gen_button  "Add New...", {:controller => 'valid_vouchers', :action => 'new', :showdate_id => showdate.id }
+            %td= time_in_words_relative_to(v.start_sales,showdate.thedate)
+            %td= time_in_words_relative_to(v.end_sales,showdate.thedate)
+            %td= gen_button('Delete', { :controller => 'valid_vouchers', :action => 'destroy', :id => v.id }) if nsales.zero?
+        %tr
+          %td{:colspan=>4}
+            = gen_button  "Add New...", {:controller => 'valid_vouchers', :action => 'new', :showdate_id => showdate.id }

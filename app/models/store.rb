@@ -1,5 +1,7 @@
 class Store
 
+  public
+  
   def self.purchase!(amount, params={}, &blk)
     raise "Zero transaction amount" if amount.zero?
     case params[:method]
@@ -16,6 +18,8 @@ class Store
     end
   end
 
+  private
+  
   def self.purchase_with_credit_card!(amount, cc, bill_to, order_num, proc)
     raise "Invalid purchaser" unless bill_to.valid_as_purchaser?
     params = {

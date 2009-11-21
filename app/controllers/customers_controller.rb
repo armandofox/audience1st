@@ -290,14 +290,14 @@ class CustomersController < ApplicationController
   # list, switch_to, merge, search, create, destroy
 
   def list
-    @conds,@o, @customers_filter = get_filter_info(params, :customer, :last_name)
-    if (@conds)
-      @count = Customer.count(:conditions => @conds)
-      @customer_pages, @customers = paginate :customers, :per_page => 20, :order => @o, :conditions => @conds
+    unless (@customers_filter = params[:customers_filter]).blank?
+      conds = Customer.match_any_content_column(@customers_filter)
+      @customer_pages, @customers = paginate :customers, :per_page => 100, :order => 'last_name,first_name', :conditions => conds
+      @count = Customer.count(:conditions => conds)
+      curpage = @customer_pages.current_page
+      @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} items matching '#{@customers_filter}'"
     else
-      # list all
-      @count = Customer.count
-      @customer_pages, @customers = paginate :customers,  :order => @o, :per_page => 20
+      redirect_to :action => 'welcome'
     end
   end
 
