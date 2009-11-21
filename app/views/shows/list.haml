@@ -4,7 +4,7 @@
     = select_tag 'season', options_for_select(@years.to_a.map(&:to_s) << "All", @season)
     = submit_tag 'Go'
 
-%table
+%table.hilite
   %thead
     %tr
       %th ID

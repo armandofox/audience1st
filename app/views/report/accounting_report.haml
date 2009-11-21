@@ -2,7 +2,7 @@
   %h1= h(@page_title)
   - total = 0.0
   - totalunits = 0
-  %table
+  %table.hilite
     - @show_txns.group_by(&:purchasemethod_id).each_pair do |pm_id, pm_txns|
       %tr
         %th= h(Purchasemethod.find(pm_id).description)

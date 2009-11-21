@@ -17,11 +17,22 @@
       #nav
         - if @gCustomer
           = render :partial => 'layouts/login_banner'
-          %ul#store_nav= nav_tabs 'store_nav', [['Buy Tickets', :store, :index], ['My Tickets', :customers, :welcome], ['Billing Address', :customers, :edit],['Change Password', :customers, :change_password]]
+          - tabs = [['Buy Tickets', :store, :index], |
+            ['My Tickets', :customers, :welcome], |
+            ['Billing Address', :customers, :edit], |
+            ['Change Password', :customers, :change_password]] |
           - if @gAdmin.is_staff
-            %ul#staff_nav= nav_tabs 'staff_nav',[['Walkup Sales', :store, :walkup],['Customers', :customers, :list],['Shows', :shows, :list],['Voucher Types', :vouchertypes, :list],['Reports', :report, :index],['Donations', :donation, :list]]
+            - tabs += [['Walkup Sales', :store, :walkup], |
+              ['Shows', :shows, :list], |
+              ['Voucher Types', :vouchertypes, :list], |
+              ['Reports', :report, :index], |
+              ['Donations', :donation, :list], |
+              ['Settings', :options, :edit]] |
+          %ul#store_nav= nav_tabs 'store_nav', tabs
+          - if @gAdmin.is_staff
             = render :partial => 'customers/quick_search'
-            = render :partial => 'customers/staff_buttons'
+            = render :partial => 'customers/staff_buttons' if controller.controller_name == 'customers'
+
           - else
             %br.clear
 

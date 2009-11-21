@@ -295,7 +295,7 @@ class CustomersController < ApplicationController
       @customer_pages, @customers = paginate :customers, :per_page => 100, :order => 'last_name,first_name', :conditions => conds
       @count = Customer.count(:conditions => conds)
       curpage = @customer_pages.current_page
-      @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} items matching '#{@customers_filter}'"
+      @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} matching '#{@customers_filter}'"
     else
       redirect_to :action => 'welcome'
     end

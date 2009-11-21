@@ -160,10 +160,6 @@ class Customer < ActiveRecord::Base
      :work_fax, :company_url]
   end
 
-  def display_class
-    self.is_staff ? :staff :
-      self.is_subscriber? ? :subscriber : nil
-  end
 
   # a convenient wrapper class for the ActiveRecord::sanitize_sql protected method
 

@@ -1,6 +1,6 @@
 - s = showdate.class
 - divid = "#{s}_#{showdate.id}"
-%table.totalShowSales
+%table.hilite.totalShowSales
   %tr.showSalesRow
     %td.showSalesDate{:style=>'width: 20em;'}
       = link_to_remote(hdr ||= showdate.printable_date,:update=> divid,:url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, :before => "Element.show('wait_#{divid}')", :complete=> visual_effect(:toggle_slide,divid,:duration=>0.5) + "Element.hide('wait_#{divid}');")

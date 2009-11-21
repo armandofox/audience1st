@@ -7,7 +7,7 @@
 - form_tag :action=>'merge' do
   = hidden_field_tag 'cust0', @cust[0].id
   = hidden_field_tag 'cust1', @cust[1].id
-  %table
+  %table.hilite
     %tr{:class=>cycle(:oddRow,:evenRow)}
       %td Last login
       %td= @cust[0].last_login.to_formatted_s(:long)

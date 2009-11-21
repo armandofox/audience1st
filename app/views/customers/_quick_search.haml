@@ -1,10 +1,10 @@
 #customer_quick_search.adminField
-  %table
+  %table.layout
     %tr
       %td
         - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do 
           Quick select by first or last name:
-          = customer_search_field 'name', '', {:size => 12}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
+          = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
           = spinner('wait')
           = hidden_field_tag 'id'
           = submit_tag 'Go'
@@ -15,6 +15,6 @@
           = submit_tag 'Go'
       %td
         - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do
-          = submit_tag 'Add new customer...'
+          = submit_tag 'New customer...'
           
 

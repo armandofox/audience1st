@@ -3,7 +3,7 @@
   - r = reserved_vouchers.select { |v| v.reserved_for_show?(show) }
   - unless r.empty?
     %p Confirmed reservations:
-    %table
+    %table.hilite
       %tr
         %th Voucher Type
         %th Date
@@ -16,7 +16,7 @@
 
   - unless u.empty?
     %p Available to redeem:
-    %table
+    %table.hilite
       %tr
         %th Voucher Type
         %th Select Date

@@ -7,7 +7,7 @@
 
 - form_tag({:action => 'merge'}, {:method => :get}) do
   - cols = %w[street city state zip day_phone eve_phone login]
-  %table
+  %table.hilite
     %thead
       %tr
         %th
@@ -16,7 +16,7 @@
           %th= link_to ActiveSupport::Inflector.humanize(c), :action=>'list', :order_by=>c,:filter=>params[:filter]
     %tbody  
       - @customers.each do |c|
-        %tr{:valign=>:top,:class=>(c.display_class || cycle(:oddRow,:evenRow))}
+        %tr{:valign=>:top,:class=>display_class(c)}
           %td= check_box_tag "merge[#{c.id}]"
           %td= link_to c.full_name, {:action => 'switch_to', :id => c }
           %td= h c.street

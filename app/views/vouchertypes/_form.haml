@@ -65,7 +65,7 @@
     %label{:for=>:voucher_included_vouchers}Included vouchers:
     %br/
 
-  %table
+  %table.hilite
     - Vouchertype.find(:all).each do |v|
       - unless v.bundle?
         %tr

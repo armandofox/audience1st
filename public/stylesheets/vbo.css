@@ -1,3 +1,5 @@
+/* @override http://localhost:3000/stylesheets/vbo.css?1258770589 */
+
 /* @override http://localhost:3000/stylesheets/vbo.css?1258766471 */
 
 /* @override 
@@ -39,6 +41,10 @@ table {
 	margin-bottom: 10px;
 	margin-top: 4px;
 }
+table.hilite tr:hover {
+	background-color: #fcfe69;
+}
+
 td,th {
   padding: 1px 2px;
 }
@@ -139,7 +145,7 @@ ul.horizontal_list li {
   background-color: #9f9;
 }
 .staff {
-  background-color: yellow;
+  color: red;
 }
 .subscriber {
   background-color: #9f9;
@@ -365,7 +371,30 @@ div.progressBar div.background {
   vertical-align: top
 }
 
+/* Admin search bar */
+#customer_quick_search {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+#customer_quick_search table {
+	padding: 0;
+	margin: 0;
+}
+p#onBehalfOfName {
+	margin-top: 2px;
+	margin-bottom: 2px;
+	color: red;
+	font-weight: bold;
+	font-size:  larger;
+}
 /* Customer welcome page */
+#welcome_header {
+	float: left;
+}
+#admin_welcome_header {
+	float: right;
+}
+
 
 .customerName {
   display: block;

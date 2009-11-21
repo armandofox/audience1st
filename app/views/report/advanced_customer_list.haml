@@ -4,7 +4,7 @@
     %p= link_to_function("Show/Hide SQL", "Effect.toggle('sql','blind')")
     %pre#sql{:style=>'display: none;'}= @sql
     %p= "#{h(@results.length)} matching records"
-    %table
+    %table.hilite
       - @results.each do |r|
         %tr
           %td= link_to(h(r.full_name),{:controller=>'customers',:action=>'welcome',:id=>r},{:target=>'_blank'})

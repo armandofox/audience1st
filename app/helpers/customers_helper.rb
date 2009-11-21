@@ -10,7 +10,13 @@ module CustomersHelper
     vouchers.map { |v| v.comments unless v.comments.blank? }.compact.join('; ')
   end
   
-  
+  def display_class(c)
+    klass = []
+    klass << 'staff' if  c.is_staff
+    klass << 'subscriber' if c.is_subscriber?
+    klass.join ' '
+  end
+
   def group_subscriber_vouchers(v1,v2)
     # each of v1 and v2 is an array of [showdate,vouchertype].
     # showdate is nil for open voucher.

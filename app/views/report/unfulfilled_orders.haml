@@ -8,7 +8,7 @@
 - form_tag({:action=>'mark_fulfilled'},:method => :post, :id=>'uf') do
   = submit_tag 'Mark Checked Orders as Fulfilled'
 
-  %table.ordersTable
+  %table.hilite.ordersTable
     %tr{:class=>cycle(:evenRow,:oddRow)}
       %th First name
       %th Last name

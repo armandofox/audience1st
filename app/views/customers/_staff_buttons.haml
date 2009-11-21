@@ -1,21 +1,20 @@
 #staffButtons.adminField
-  %p.strong= "Customer: #{@gCustomer.full_name}"
-  - if controller.controller_name == 'customers'
-    %p
-      %span.strong Report:
-      = button_bar( |
-         ['Contact History', :visits, :list, {}], |
-         ['Prospecting Activities', :visits, :list_by_prospector, {}], |
-         ['Database Transactions',:txn, :list, |
-            {:params => {:txns_filter => @gCustomer.id}}], |
-         ['Donation & Purchase History', :donation, :list, |
-            {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
-            :show_vouchers => true}]) |
-    %p
-      %span.strong Actions:
-      = button_bar( |
-         ['Record Donation',:donation,:new, {}],  |
-         ['Add Comps',:vouchers, :addvoucher, {}], |
-         ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}], |
-         ['Classic View', :customers,:welcome, {:force_classic => 1}] ) |
-  .clear
+  %p#onBehalfOfName= "Customer: #{@gCustomer.full_name}"
+  %p
+    %span.strong Report:
+    = button_bar( |
+       ['Contact History', :visits, :list, {}], |
+       ['Prospecting Activities', :visits, :list_by_prospector, {}], |
+       ['Database Transactions',:txn, :list, |
+          {:params => {:txns_filter => @gCustomer.id}}], |
+       ['Donation & Purchase History', :donation, :list, |
+          {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
+          :show_vouchers => true}]) |
+  %p
+    %span.strong Actions:
+    = button_bar( |
+       ['Record Donation',:donation,:new, {}],  |
+       ['Add Comps',:vouchers, :addvoucher, {}], |
+       ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}], |
+       ['Classic View', :customers,:welcome, {:force_classic => 1}] ) |
+.clear
