@@ -1,6 +1,6 @@
 - form_tag :action => 'run_special_report' do
   %fieldset
-    %legend Lapsed subscribers/patrons
+    %legend= @args[:name]
     %table
       %tr
         %td
@@ -10,7 +10,8 @@
       %tr
         %td= select_tag 'have_vouchertypes[]', options_from_collection_for_select(@args[:have_vouchertypes], :id, :name), :multiple => true
         %td= select_tag 'dont_have_vouchertypes[]', options_from_collection_for_select(@args[:dont_have_vouchertypes], :id, :name), :multiple => true
+    = render :partial => 'output_options'
     = hidden_field_tag '_report', 'LapsedSubscribers'
     = submit_tag 'Download to Excel'
-
+    
 

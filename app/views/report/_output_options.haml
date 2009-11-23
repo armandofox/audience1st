@@ -1,0 +1,41 @@
+%fieldset#output_options
+  %legend Output options
+  %p
+    = check_box_tag 'subscribers_only', '1', true
+    Limit to subscribers only
+  %p.fieldgroup US Mail options
+  %p
+    = check_box_tag 'require_valid_address', '1', true
+    Require apparently-valid mailing address (takes longer)
+    %br
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    = check_box_tag 'remove_dups', '1', false
+    One entry per mailing address: remove similar addresses associated with distinct names (takes even longer)
+    %br
+    = check_box_tag 'exclude_blacklist', '1', true
+    Exclude patrons who have opted out of US Mail mailings
+  %p.fieldgroup Email/web options
+  %p
+    %br
+    = check_box_tag 'require_valid_email', '1', false
+    Require valid email address
+    %br
+    = check_box_tag 'exclude_e_blacklist', '1', true
+    Exclude patrons who have opted out of email
+    %br
+    = check_box_tag 'login_since', '1', false
+    Only those who
+    = select_tag 'login_since_test', options_for_select(['have','have not'])
+    logged in since
+    = select_date_shortcuts Time.now.year, 'login_from', 'login_to'
+    %br
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or custom dates:
+    = select_date Date.today, :prefix => 'login_from', :start_year => 2007
+    to
+    = select_date Date.today, :prefix => 'login_to', :start_year => 2007
+  %p.fieldgroup Sort list by:
+  %p
+    = radio_button_tag 'sort_by_zip', 1, true
+    Zip, then last name
+    = radio_button_tag 'sort_by_zip', 0, false
+    Last name, then zip
