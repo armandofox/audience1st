@@ -29,9 +29,26 @@ Webrat.configure do |config|
   config.mode = :rails
 end
 
+# make RSpec matchers available
 require 'cucumber/rails/rspec'
 require 'webrat/core/matchers'
+#
 
+# make RSpec mocks and stubs avialable: use with care
+require "spec/mocks"
+
+Before do
+  $rspec_mocks ||= Spec::Mocks::Space.new
+end
+
+After do
+  begin
+    $rspec_mocks.verify_all
+  ensure
+    $rspec_mocks.reset_all
+  end
+end
+# 
 
 # Before do
 #   Fixtures.reset_cache

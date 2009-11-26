@@ -16,7 +16,7 @@ class ShowsController < ApplicationController
   def list
     @superadmin = Customer.find(logged_in_id).is_admin rescue false
     @shows = Show.find(:all, :order => 'opening_date')
-    @season = params[:season] || "All"
+    @season = params[:season].to_i || Time.now.year
     @years = (@shows.first.opening_date.year .. @shows.last.closing_date.year)
     @shows.reject! { |s| !s.opening_date.within_season?(@season) } if @season.to_i > 0
   end

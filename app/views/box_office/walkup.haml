@@ -16,12 +16,13 @@
         %table
           %tr
             %td{:colspan=>2}
-              %strong Tickets Processed
+              %strong Tickets to be issues
             %td= text_field_tag 'totaltix', 0, :id => 'totaltix', :size => 4, :disabled => true, :style => "font-weight: bold;"
           %tr
             %td{:colspan=>2}
               %strong TOTAL TO COLLECT
-            %td= text_field_tag 'total', 0, :id => 'total', :size => 6,:disabled => true, :style => "font-weight: bold;"
+            %td= text_field_tag 'total', 0, :id => 'total', :size => 6, |
+              :disabled => true, :class => 'strong' |
           %tr
             %td.label{:colspan=>2}
               %label{:for=>:donation} Additional donation:
@@ -34,7 +35,7 @@
 
       %td{:align=>:center,:valign=>:top}
         %p Click here once payment has been collected:
-        = submit_tag 'Cash Payment'
+        = submit_tag 'Cash or Check Payment'
         = submit_tag APP_CONFIG[:cc_purch]
         %br
         %br

@@ -79,11 +79,7 @@ class ReportController < ApplicationController
 
   def sales_detail
     from,to = get_dates_from_params(:from,:to)
-    sql = ["SELECT DISTINCT v.* FROM vouchers v,vouchertypes vt WHERE " <<
-           "(v.sold_on BETWEEN ? AND ?) AND " <<
-           "v.customer_id !=0 AND " <<
-           "(v.showdate_id > 0 OR (v.vouchertype_id = vt.id AND vt.bundle=1 AND vt.subscription=1))", from, to]
-    sales = Voucher.find_by_sql(sql)
+    sales = Voucher.sold_between(from, to)
     @nsales = sales.size
     @page_title = "#{@nsales} Transactions: #{from.strftime('%a %b %e')} " <<
       (to - from > 1.day ? (" - " << to.strftime('%a %b %e')) : '')
@@ -236,22 +232,6 @@ EOQ
     end
     flash[:notice] << "#{i} orders marked fulfilled"
     redirect_to :action => 'index'
-  end
-
-  def boxoffice_report
-    @showdate = Showdate.find(params[:showdate_id], :include => :vouchers)
-    perf_vouchers = @showdate.vouchers
-    unless perf_vouchers.empty?
-      @total = perf_vouchers.size
-      @num_subscribers = perf_vouchers.select { |v| v.customer.is_subscriber? }.size
-      @vouchers = perf_vouchers.group_by do |v|
-        "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
-      end
-      render :layout => false
-    else
-      flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
-      redirect_to :action => 'index'
-    end
   end
 
   def walkup_sales

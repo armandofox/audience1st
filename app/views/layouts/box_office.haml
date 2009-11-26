@@ -9,7 +9,10 @@
     #outer_wrapper_admin
       #nav
         = render :partial => 'layouts/login_banner'
-        %ul#store_nav= nav_tabs 'boxoffice_nav', [['Walkup Sales', :box_office, :walkup], ['Printable Door List', :report, :boxoffice_report, '', {:showdate_id => @gShowdate}]]
+        %ul#store_nav= nav_tabs 'boxoffice_nav', |
+          [['Walkup Sales', :box_office, :walkup], |
+          ['Printable Door List', :box_office, :door_list, @showdate], |
+          ['Back to Main', :customers, :list]]  |
         %br.clear
       #inner_wrapper_admin
         - unless flash[:notice].blank?

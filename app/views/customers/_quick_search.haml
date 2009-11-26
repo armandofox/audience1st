@@ -1,13 +1,14 @@
 #customer_quick_search.adminField
   %table.layout
     %tr
-      %td
-        - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do 
+      - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do 
+        %td
           Quick select by first or last name:
           = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
-          = spinner('wait')
           = hidden_field_tag 'id'
           = submit_tag 'Go'
+        %td{:width => '16'}
+          = spinner('wait')
       %td
         - form_tag({:controller => 'customers',:action =>'list'},{:method =>:get}) do
           Find all matching any field:

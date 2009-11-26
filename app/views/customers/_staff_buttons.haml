@@ -1,5 +1,10 @@
 #staffButtons.adminField
-  %p#onBehalfOfName= "Customer: #{@gCustomer.full_name}"
+  %p
+    %span.strong Customer: 
+    %span#onBehalfOfName= h @gCustomer.full_name
+    (last login:
+    = h @gCustomer.last_login.to_formatted_s(:month_day_year)
+    )
   %p
     %span.strong Report:
     = button_bar( |

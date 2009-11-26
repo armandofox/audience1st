@@ -16,7 +16,8 @@ class BoxOfficeController < ApplicationController
 
   # this filter must return non-nil for any method on this controller
   def get_showdate
-    return if !params[:id].blank? && @showdate = Showdate.find_by_id(params[:id].to_i)
+    return true if (!params[:id].blank?) &&
+      (@showdate = Showdate.find_by_id(params[:id].to_i))
     if (showdate = (Showdate.current_or_next ||
                     Showdate.find(:first, :order => "thedate DESC")))
       redirect_to :action => action_name, :id => showdate
@@ -38,6 +39,21 @@ class BoxOfficeController < ApplicationController
       flash[:notice] = "Invalid show date."
     end
     redirect_to :action => :walkup, :id => sd
+  end
+
+  def door_list
+    perf_vouchers = @showdate.vouchers
+    unless perf_vouchers.empty?
+      @total = perf_vouchers.size
+      @num_subscribers = perf_vouchers.select { |v| v.customer.is_subscriber? }.size
+      @vouchers = perf_vouchers.group_by do |v|
+        "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
+      end
+      render :layout => false
+    else
+      flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
+      redirect_to :action => 'walkup', :id => @showdate
+    end
   end
 
   def walkup

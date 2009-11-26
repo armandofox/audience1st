@@ -14,13 +14,13 @@ class Voucher < ActiveRecord::Base
   # values of processed_by field, which is really a customer id.
   # Returns number of actual voucher records transferred.
 
+  # class methods
+
   def self.merge_handler(old,new)
     Voucher.update_all("processed_by_id = '#{new}'", "processed_by_id = '#{old}'")
     Voucher.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
     Voucher.update_all("gift_purchaser_id = '#{new}'", "gift_purchaser_id = '#{old}'")
   end
-
-  # class methods
 
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)
@@ -29,6 +29,17 @@ class Voucher < ActiveRecord::Base
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
   end
 
+  # methods to support reporting functions
+  def self.sold_between(from,to)
+    sql = %{
+        SELECT DISTINCT v.*
+        FROM vouchers v JOIN vouchertypes vt ON v.vouchertype_id=vt.id WHERE
+        (v.sold_on BETWEEN ? AND ?) AND 
+        v.customer_id !=0 AND 
+        (v.showdate_id > 0 OR (vt.category='bundle' AND vt.subscription=1))
+    }
+    Voucher.find_by_sql([sql,from,to])
+  end
 
   # accessors and convenience methods
 

@@ -1,3 +1,5 @@
+/* @override http://localhost:3000/stylesheets/vbo.css?1258844646 */
+
 /* @override http://localhost:3000/stylesheets/vbo.css?1258770589 */
 
 /* @override http://localhost:3000/stylesheets/vbo.css?1258766471 */
@@ -88,9 +90,6 @@ ul.horizontal_list li {
 }
 .callout {
   color: red;
-}
-.hilite {
-  background: #feffb7;
 }
 .browsable:hover {
   background: #feffb7;
@@ -479,6 +478,22 @@ table.wideTable > td {
 .top {
   vertical-align: top;
 }
+
+/* Customer lists */
+#output_options p {
+	margin-left: 2ex;
+	margin: 4px;
+}
+
+#output_options p.fieldgroup {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	font-weight: bold;
+	margin-left: 0;
+}
+
 
 /* Edit shows and showdates */
 

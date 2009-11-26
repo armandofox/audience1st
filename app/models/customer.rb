@@ -505,7 +505,7 @@ class Customer < ActiveRecord::Base
   def self.match_any_content_column(string)
     cols = self.content_columns
     a = Array.new(cols.size) { "%#{string}%" }
-    a.unshift cols.map { |c| "(#{c.name} LIKE ?)" }.join " OR "
+    a.unshift(cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR "))
   end
 
   # Override content_columns method to omit password hash and salt
