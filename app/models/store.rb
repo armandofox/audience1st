@@ -14,7 +14,9 @@ class Store
   public
   
   def self.purchase!(method, amount, params={}, &blk)
-    case method
+    return ActiveMerchant::Billing::Response.new(false, "Null payment type") unless (method && params)
+    blk = Proc.new {} unless block_given?
+    case method.to_sym
     when :credit_card
       raise "Zero transaction amount" if amount.zero?
       self.purchase_with_credit_card!(amount, params[:credit_card],
@@ -25,7 +27,8 @@ class Store
     when :cash
       self.purchase_with_cash!(amount, blk)
     else
-      raise "Invalid payment type #{how}"
+      ActiveMerchant::Billing::Response.new(false,
+        "Invalid payment type #{method}")
     end
   end
 
@@ -46,28 +49,26 @@ class Store
       }
     }
     purch = nil
-    ActiveRecord::Base.transaction do
-      begin
+    begin
+      ActiveRecord::Base.transaction do
         proc.call
+        # here if block didn't raise error
         purch = Store.pay_via_gateway(amount, cc, params)
-        unless purch.success?
-          # raise error, to cause DB rollback of txn
-          case purch.message
-          when /ECONNRESET/
-            raise "Payment gateway not responding. Please wait a few seconds and try again."
-          when /decline/i
-            raise "Charge was declined. Please contact your credit card issuer for assistance."
-          else
-            raise purch.message
-          end
-        end
-      rescue Exception => e
-        puts "=======================  EXCEPTION: #{e.message}"
-        purch = ActiveMerchant::Billing::Response.new(success=false,
-                                                      message = e.message)
+        raise purch.message unless purch.success?
       end
+    rescue Exception => e
+      message = purch.nil? ? e.message :
+        case purch.message
+        when /ECONNRESET/
+          "Payment gateway not responding. Please try again in a few seconds."
+        when /decline/i
+          "Charge declined. Please contact your credit card issuer for assistance."
+        else
+          purch.message
+        end
+      purch = ActiveMerchant::Billing::Response.new(false, message)
     end
-    purch
+    return purch
   end
 
   def self.purchase_with_cash!(amount, proc)
