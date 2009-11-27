@@ -94,7 +94,8 @@ class ValidVouchersController < ApplicationController
     v = ValidVoucher.find(params[:id])
     theShowID = v.showdate.show.id
     ValidVoucher.find(params[:id]).destroy
-    redirect_to :controller => 'shows', :action => 'edit', :id => theShowID
+    render :nothing => true
+    #redirect_to :controller => 'shows', :action => 'edit', :id => theShowID
   end
 
 end

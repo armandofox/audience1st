@@ -46,10 +46,9 @@ class ShowdatesController < ApplicationController
     else
       latest_showdate = Time.parse(show.closing_date.to_s) 
     end
-    @showdate = Showdate.new
-    @showdate.show_id = params[:show_id]
-    @showdate.thedate = latest_showdate + 1.day
-    @showdate.end_advance_sales = latest_showdate + 21.hours
+    @showdate = show.showdates.build(:thedate => latest_showdate + 1.day,
+                                     :max_sales => show.house_capacity,
+                                     :end_advance_sales => latest_showdate + 21.hours)
   end
 
   def edit

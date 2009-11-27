@@ -1,12 +1,10 @@
-/* @override http://localhost:3000/stylesheets/vbo.css?1258844646 */
-
-/* @override http://localhost:3000/stylesheets/vbo.css?1258770589 */
-
-/* @override http://localhost:3000/stylesheets/vbo.css?1258766471 */
-
 /* @override 
+	http://localhost:3000/stylesheets/vbo.css?1258844646
+	http://localhost:3000/stylesheets/vbo.css?1258770589
+	http://localhost:3000/stylesheets/vbo.css?1258766471
 	http://localhost:3000/stylesheets/vbo.css?1258754528
 	http://localhost:3000/stylesheets/vbo.css?1258761163
+	http://localhost:3000/stylesheets/vbo.css?1259000069
 */
 
 body.testing {
@@ -90,6 +88,7 @@ ul.horizontal_list li {
 }
 .callout {
   color: red;
+  font-style:  italic;
 }
 .browsable:hover {
   background: #feffb7;
@@ -125,11 +124,6 @@ ul.horizontal_list li {
   font-weight: bold;
 }
 
-.callout {
-  vertical-align: top;
-  background-color: #883333;
-  color: white;
-}
 .hidden {
   display: none;
  }
@@ -273,6 +267,8 @@ submit:hover {
 .t { vertical-align: top; }
 .b { vertical-align: bottom; }
 
+/* Error messages shown to customers */
+
 #errorExplanation {
   width: 400px;
   border: 2px solid red;
@@ -379,10 +375,8 @@ div.progressBar div.background {
 	padding: 0;
 	margin: 0;
 }
-p#onBehalfOfName {
-	margin-top: 2px;
-	margin-bottom: 2px;
-	color: red;
+#onBehalfOfName {
+	color: blue;
 	font-weight: bold;
 	font-size:  larger;
 }
@@ -401,6 +395,12 @@ p#onBehalfOfName {
 
 #customerVoucherList td {
   text-align: center;
+}
+
+/* "Quick search" panel and staff navbar */
+
+#staffButtons {
+	border-top: 1px groove #fff;
 }
 
 /* Sales reports */
@@ -558,3 +558,5 @@ table.report {
   color: red;
   font-size: 90%;
 }
+
+/* My Comment */

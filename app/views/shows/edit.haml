@@ -12,15 +12,21 @@
   = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
   = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
   = gen_button 'Hide all details', :action => 'edit', :id => @show
+  = gen_button 'Back to List of Shows', :action => 'list'
 
 %table.hilite
   %thead
     %tr
       %th Date/time
       %th Adv sales stop
-      %th Max Cap
+      %th Max Sale
       %th Redeemable Ticket Types (click name to edit)
   %tbody
     = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 
-= gen_button 'Back to List of Shows', :action => 'list'
+%p
+  = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
+  = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
+  = gen_button 'Hide all details', :action => 'edit', :id => @show
+  = gen_button 'Back to List of Shows', :action => 'list'
+

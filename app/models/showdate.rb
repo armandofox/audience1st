@@ -59,7 +59,7 @@ class Showdate < ActiveRecord::Base
     (self.end_advance_sales - 5.minutes) > Time.now
   end
 
-  def capacity ; max_sales ; end
+  def house_capacity ;   self.show.house_capacity ;  end
 
   # release unsold seats from an external channel back to general inventory.
   # if show cap == house cap, this has no effect.
@@ -72,12 +72,13 @@ class Showdate < ActiveRecord::Base
   end
 
   def total_seats_left
-    [self.house_capacity - self.compute_total_sales, 0].max
+    [self.house_capacity - compute_total_sales, 0].max
   end
 
   def percent_sold
-    cap = self.capacity.to_f
-    cap.zero? ? 0 : (100.0 * (cap - self.total_seats_left) / cap).floor
+    cap = self.house_capacity.to_f
+    cap == 0.0 ? 0 :
+      [100.0*(compute_total_sales / cap) , 100.0].min.floor
   end
 
   def sold_out? ; percent_sold.to_i >= Option.value(:sold_out_threshold).to_i ; end

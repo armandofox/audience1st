@@ -1,0 +1,3 @@
+#flash.feedback.clear
+  %p= flash[:notice]
+  = javascript_tag("addLoadEvent(function() { $('flash').highlight({startcolor: '#ffff00', duration: 3}); })")

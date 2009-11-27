@@ -8,9 +8,6 @@
     %td Advance sales stop
     %td= child_datetime_select 'showdate', 'end_advance_sales',  {:start_year => Time.now.year, :end_year => Time.now.year + 3,  :minute_step => 15 }
   %tr
-    %td Actual house capacity
-    %td= text_field 'showdate', 'house_capacity', 'size' => 5
-  %tr
     %td Max advance sales
     %td= text_field 'showdate', 'max_sales', 'size' => 5
     = hidden_field_tag "showdate[show_id]", @showdate.show.id

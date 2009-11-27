@@ -20,7 +20,6 @@ tom:
   login: tom@foolery.com
   last_login: 2006-01-01 00:00:00
   salt: abcdefghij
-  password: pass
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
 
 tom2:
@@ -36,7 +35,6 @@ tom2:
   eve_phone: 510-888-8888
   login: tom2@foolery.com
   salt: abcdefghij
-  password: pass
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
 
 tom3:
@@ -44,7 +42,6 @@ tom3:
   first_name: Another Tom
   last_name: Foolery
   login: tom3@foolery.com
-  password: pass
 
 cust_with_real_address:
   id: 222
@@ -55,7 +52,6 @@ cust_with_real_address:
   state: ca
   role: 0
   login: armando-test@nowhere.com
-  password: pass
 
 admin:
   id: 1
@@ -65,7 +61,6 @@ admin:
   role: 100
   salt: abcdefghij
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
-  password: pass
 
 staff_user:
   id: 2
@@ -75,7 +70,6 @@ staff_user:
   role: 11
   salt: abcdefghij
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
-  password: pass
 
 boxoffice_user:
   id: 3
@@ -85,7 +79,6 @@ boxoffice_user:
   role: 21
   salt: abcdefghij
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
-  password: pass
 
 boxoffice_manager:
   id: 4
@@ -95,7 +88,6 @@ boxoffice_manager:
   role: 31
   salt: abcdefghij
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
-  password: pass
 
 walkup_sales_user:
   id: 5
@@ -105,10 +97,8 @@ walkup_sales_user:
   role: 15
   salt: abcdefghij
   hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
-  password: pass
 
 customer_with_empty_login:
   id: 6
   first_name: Nobody
   last_name: NoLogin
-  password: 
