@@ -39,6 +39,19 @@ class BoxOfficeController < ApplicationController
     total
   end
 
+  # process a sale of walkup vouchers by linking them to the walkup customer
+  # pass a hash of {ValidVoucher ID => quantity} pairs
+  
+  def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'))
+    vouchers = []
+    qtys.each_pair do |vtype,q|
+      vv = ValidVoucher.find(vtype)
+      vouchers += vv.instantiate(logged_in_id, howpurchased, q.to_i)
+    end
+    Customer.walkup_customer.vouchers += vouchers
+    (flash[:notice] ||= "") << "Successfully added #{vouchers.size} vouchers"
+  end
+
   public
 
   def index
@@ -84,7 +97,12 @@ class BoxOfficeController < ApplicationController
         "There was a problem verifying the amount of the order:<br/>#{e.message}"
     end
     if total == 0.0 # zero-cost purchase
-      process_walkup_vouchers(qtys, Purchasemethod.find_by_shortdesc('none'))
+      process_walkup_vouchers(qtys, p=Purchasemethod.find_by_shortdesc('none'))
+      Txn.add_audit_record(:txn_type => 'tkt_purch',
+                           :customer_id => Customer.walkup_customer.id,
+                           :comments => 'walkup',
+                           :purchasemethod_id => p,
+                           :logged_in_id => logged_in_id)
     else
       case params[:commit]
       when /credit/i
@@ -97,23 +115,15 @@ class BoxOfficeController < ApplicationController
       Store.purchase!(total, :method => method) do
         process_walkup_vouchers(qtys, how)
         Donation.walkup_donation(donation,logged_in_id) if donation > 0.0
+        Txn.add_audit_record(:txn_type => 'tkt_purch',
+                             :customer_id => customer.id,
+                             :comments => 'walkup',
+                             :purchasemethod_id => howpurchased,
+                             :logged_in_id => logged_in_id)
+        flash[:notice] = "Success"
       end
     end
     redirect_to :action => 'walkup', :id => @showdate
-  end
-
-  def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'))
-    c = Customer.walkup_customer
-    qtys.each_pair do |vtype,q|
-      vv = ValidVoucher.find(vtype)
-      c.vouchers += vv.instantiate(logged_in, howpurchased, q.to_i)
-    end
-    c.save!
-    Txn.add_audit_record(:txn_type => 'tkt_purch',
-                         :customer_id => customer.id,
-                         :comments => 'walkup',
-                         :purchasemethod_id => howpurchased,
-                         :logged_in_id => logged_in_id)
   end
 
   def walkup_report

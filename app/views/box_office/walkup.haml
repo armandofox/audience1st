@@ -36,9 +36,14 @@
                 number_to_currency(v.price, :unit => ''), :disabled => true, |
                 :size => 6, :class => 'disabledField' |
               %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0), {:onChange => "recalc_total(); recalc_totaltix()"} 
-      %td{:align=>:center,:valign=>:top}
+      %td.c.t
         %p Click here once payment has been collected:
+        %br
         = submit_tag 'Record Cash or Check Payment'
+        %br
+        %br
         = javascript_tag "checkZero = function() { if ($('total').value.toFloat() != 0.0) { alert('This option may only be used when no payment needs to be collected.'); return false; } }"
         = submit_tag 'Record Zero-Revenue Order', :onClick => 'checkZero()'
-        = submit_tag APP_CONFIG[:cc_purch]
+        %br
+        %br
+        = submit_tag 'Credit Card Payment'
