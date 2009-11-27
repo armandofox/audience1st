@@ -4,8 +4,11 @@ class Show < ActiveRecord::Base
   #  may not be the same as the appserver's timezone.
   #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
   has_many :vouchers, :through => :showdates
+
   validates_presence_of :opening_date, :closing_date, :listing_date
-  validates_length_of :name, :within => 3..40, :message => "Show name must be between 3 and 40 characters"
+  validates_length_of :name, :within => 3..40, :message =>
+    "Show name must be between 3 and 40 characters"
+  validates_numericality_of :house_capacity, :greater_than_or_equal_to => 0
 
   INFTY = 999999                # UGH!!
 

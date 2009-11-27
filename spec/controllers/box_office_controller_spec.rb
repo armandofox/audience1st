@@ -45,4 +45,10 @@ describe BoxOfficeController do
     Showdate.find_by_id(@id).should == nil
     it_should_behave_like "visiting boxoffice page with bad showdate"
   end
+
+  describe "walkup sale" do
+    it "should associate the correct showdate with the voucher"
+    it "should associate the ticket with Walkup Customer"
+  end
+
 end

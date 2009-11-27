@@ -219,16 +219,18 @@ class StoreController < ApplicationController
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
     if (params[:commit] =~ /credit/i || !@is_admin)
-      args = collect_credit_card_info or return
       verify_valid_credit_card_purchaser or return
-      args.merge({:order_number => @cart.order_number,
-                   :method => :credit})
+      method = :credit_card
+      args = collect_credit_card_info or return
+      args.merge({:order_number => @cart.order_number})
       @payment="credit card #{args[:credit_card].display_number}"
     elsif params[:commit] =~ /check/i
-      args = {:method => :check, :check_number => params[:check_number]}
+      method = :check
+      args = {:check_number => params[:check_number]}
       @payment = "check number #{params[:check_number]}"
     elsif params[:commit] =~ /cash/i
-      args = {:method => :cash}
+      method = :cash
+      args = {}
       @payment = "cash"
     end
     howpurchased = (@customer.id == logged_in_id ? 'cust_ph' : 'cust_web')

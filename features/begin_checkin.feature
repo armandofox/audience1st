@@ -5,17 +5,16 @@ Feature: begin checkin
   I want to go to the checkin page for this show
 
   Scenario: visit checkin page
-    Given a performance at 8:00pm
+    Given a performance at 8:00pm October 31
     And I am logged in as a box office worker
     And I follow "Box Office"
-    Then I should be on the BoxOffice page
+    And I follow "Reservation Checkin"
+    Then I should be on the checkin page 
+    And I should see /Oct(ober)?\s+31/i
 
   Scenario: begin checkin
-    Given I am on the BoxOffice page
-    And I follow "Checkin"
-    Then I should be on the checkin page
+    Given I am on the checkin page
 
-  Scenario: see how many seats are available
 
 
   

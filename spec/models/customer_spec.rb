@@ -117,22 +117,25 @@ describe Customer do
   end
   
   describe "managing email subscriptions" do
+    before(:each) do
+      @email = "asdf@yahoo.com"
+    end
     context "when opting out" do
       before(:each) do
         @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                     :email => "john@doe.com",
+                                     :email => @email,
                                      :e_blacklist => false)
         @customer.e_blacklist = true # so it's marked dirty
       end
       it "should be unsubscribed using old email" do
         @customer.email_changed?.should_not be_true
-        EmailList.should_receive(:unsubscribe).with(@customer,"john@doe.com")
+        EmailList.should_receive(:unsubscribe).with(@customer,@email)
         @customer.save!
       end
       it "should be unsubscribed using old email even if email changed" do
         @customer.email = "newjohn@doe.com"
         @customer.email_changed?.should be_true
-        EmailList.should_receive(:unsubscribe).with(@customer,"john@doe.com")
+        EmailList.should_receive(:unsubscribe).with(@customer,@email)
         @customer.save!
       end
     end
@@ -140,11 +143,11 @@ describe Customer do
       context "with new email address" do
         it "should be updated from old to new if old address was nonblank" do
           @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                       :email => "john@doe.com",
+                                       :email => @email,
                                        :e_blacklist => true)
           @customer.e_blacklist = false
           @customer.email = "newjohn@doe.com"
-          EmailList.should_receive(:update).with(@customer, "john@doe.com")
+          EmailList.should_receive(:update).with(@customer, @email)
           @customer.save!
         end
         it "should be subscribed with new email if old email was blank" do
@@ -158,7 +161,7 @@ describe Customer do
       end
       it "with same email address should be subscribed with new email" do
         @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                     :email => "john@doe.com",
+                                     :email => @email,
                                      :e_blacklist => true)
         @customer.e_blacklist = false
         EmailList.should_receive(:subscribe).with(@customer)

@@ -1,9 +1,20 @@
 class Store
+  include ActiveMerchant::Billing
+  
+  private
+
+  def self.pay_via_gateway(amount, cc, params)
+    amount = Money.us_dollar((100 * amount).to_i)
+    login = Option.value(:pgw_id)
+    pwd = Option.value(:pgw_txn_key)
+    gw = PAYMENT_GATEWAY.new(:login => login, :password => password)
+    return gw.purchase(amount,cc,params)
+  end
 
   public
   
-  def self.purchase!(amount, params={}, &blk)
-    case params[:method]
+  def self.purchase!(method, amount, params={}, &blk)
+    case method
     when :credit_card
       raise "Zero transaction amount" if amount.zero?
       self.purchase_with_credit_card!(amount, params[:credit_card],
@@ -34,13 +45,11 @@ class Store
         :country => 'US'
       }
     }
-    amount = Money.us_dollar((100 * amount).to_i)
-    gw = PAYMENT_GATEWAY.new(:login => Option.value(:pgw_id),
-                             :password => Option.value(:pgw_txn_key))
+    purch = nil
     ActiveRecord::Base.transaction do
       begin
         proc.call
-        purch = gw.purchase(amount, cc, params)
+        purch = Store.pay_via_gateway(amount, cc, params)
         unless purch.success?
           # raise error, to cause DB rollback of txn
           case purch.message
@@ -53,6 +62,7 @@ class Store
           end
         end
       rescue Exception => e
+        puts "=======================  EXCEPTION: #{e.message}"
         purch = ActiveMerchant::Billing::Response.new(success=false,
                                                       message = e.message)
       end
