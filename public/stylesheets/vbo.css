@@ -165,6 +165,10 @@ a.subHead { color: blue; text-decoration: none; }
   display: table;
 }
 
+.disabledField {
+	background-color: #e6e6e6;
+	border: none;
+}
 .infoMsg {
   color: red;
   margin: 5px 5px;

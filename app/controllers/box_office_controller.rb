@@ -27,6 +27,18 @@ class BoxOfficeController < ApplicationController
     end
   end
 
+  # given a hash of valid-voucher ID's and quantities, compute the total
+  # price represented if those vouchers were to be purchase
+
+  def compute_price(qtys,donation='')
+    total = 0.0
+    qtys.each_pair do |vtype,q|
+      total += q.to_i * ValidVoucher.find(vtype).price
+    end
+    total += donation.to_f
+    total
+  end
+
   public
 
   def index
@@ -57,97 +69,72 @@ class BoxOfficeController < ApplicationController
   end
 
   def walkup
-    @vouchertypes = Vouchertype.walkup_vouchertypes
     @showdates = Showdate.all_shows_this_season
     @showdate = Showdate.find_by_id(params[:id]) || Showdate.current_or_next
+    @valid_vouchers = @showdate.valid_vouchers
   end
 
   def do_walkup_sale
-    if params[:commit].match(/report/i) # generate report
-      redirect_to(:controller => 'report', :action => 'walkup_sales',
-                  :showdate_id => @showdate)
-      return
-    end
     qtys = params[:qty]
-    # CAUTION: disable_with on a Submit button makes its name (params[:commit])
-    # empty on submit!
-    is_cc_purch = !(params[:commit] && params[:commit] != APP_CONFIG[:cc_purch])
-    vouchers = []
-    # recompute the price
-    total = 0.0
-    ntix = 0
+    donation = params[:donation].to_f
     begin
-      qtys.each_pair do |vtype,q|
-        ntix += (nq = q.to_i)
-        total += nq * Vouchertype.find(vtype).price
-        nq.times  { vouchers << Voucher.anonymous_voucher_for(@showdate, vtype) }
-      end
-      total += (donation=params[:donation].to_f)
+      total = compute_price(qtys, donation) 
     rescue Exception => e
-      flash[:checkout_error] = "There was a problem verifying the total amount of the order:<br/>#{e.message}"
-      redirect_to :action => :walkup, :id => @showdate
-      return
+      flash[:warning] =
+        "There was a problem verifying the amount of the order:<br/>#{e.message}"
     end
-    # link record as a walkup customer
-    customer = Customer.walkup_customer
-    if is_cc_purch
-      if false
-        cc = CreditCard.new(params[:credit_card])
-        # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
-        # called rather than to_i to convert month and year to ints.
-        cc.month = cc.month.to_i
-        cc.year = cc.year.to_i
-        # run cc transaction....
-        resp = do_cc_present_transaction(total,cc)
-        unless resp.success?
-          flash[:checkout_error] = "PAYMENT GATEWAY ERROR: " + resp.message
-          redirect_to :action => 'walkup', :id => @showdate
-          return
-        end
-        tid = resp.params['transaction_id']
-        flash[:notice] = "Transaction approved (#{tid})<br/>"
-      end
-      tid = 0
-      howpurchased = Purchasemethod.get_type_by_name('box_cc')
-      flash[:notice] = "Credit card purchase recorded, "
+    if total == 0.0 # zero-cost purchase
+      process_walkup_vouchers(qtys, Purchasemethod.find_by_shortdesc('none'))
     else
-      tid = 0
-      howpurchased = Purchasemethod.get_type_by_name('box_cash')
-      flash[:notice] = "Cash purchase recorded, "
-    end
-    #
-    # add tickets to "walkup customer"'s account
-    # TBD CONSOLIDATE this with 'place_order' code for normal orders
-    #
-    unless (vouchers.empty?)
-      vouchers.each do |v|
-        if v.kind_of?(Voucher)
-          v.purchasemethod_id = howpurchased
-        end
+      case params[:commit]
+      when /credit/i
+        method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
+      when /cash/i
+        method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
+      when /check/i
+        method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
       end
-      customer.add_items(vouchers, logged_in_id, howpurchased, tid)
-      customer.save!              # actually, probably unnecessary
-      flash[:notice] << sprintf("%d tickets sold,", ntix)
-      Txn.add_audit_record(:txn_type => 'tkt_purch',
-                           :customer_id => customer.id,
-                           :comments => 'walkup',
-                           :purchasemethod_id => howpurchased,
-                           :logged_in_id => logged_in_id)
-    end
-    if donation > 0.0
-      begin
-        Donation.walkup_donation(donation,logged_in_id)
-        flash[:notice] << sprintf(" $%.02f donation processed,", donation)
-      rescue Exception => e
-        flash[:checkout_error] << "Donation could NOT be recorded: #{e.message}"
+      Store.purchase!(total, :method => method) do
+        process_walkup_vouchers(qtys, how)
+        Donation.walkup_donation(donation,logged_in_id) if donation > 0.0
       end
     end
-    flash[:notice] << sprintf(" total $%.02f",  total)
-    flash[:notice] << sprintf("<br/>%d seats remaining for this performance",
-                              Showdate.find(@showdate).total_seats_left)
     redirect_to :action => 'walkup', :id => @showdate
   end
 
+  def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'))
+    c = Customer.walkup_customer
+    qtys.each_pair do |vtype,q|
+      vv = ValidVoucher.find(vtype)
+      c.vouchers += vv.instantiate(logged_in, howpurchased, q.to_i)
+    end
+    c.save!
+    Txn.add_audit_record(:txn_type => 'tkt_purch',
+                         :customer_id => customer.id,
+                         :comments => 'walkup',
+                         :purchasemethod_id => howpurchased,
+                         :logged_in_id => logged_in_id)
+  end
+
+  def walkup_report
+    unless (@showdate = Showdate.find_by_id(params[:id]))
+      flash[:notice] = "Walkup sales report requires valid showdate ID"
+      redirect_to :action => 'index'
+      return
+    end
+    @cash_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cash')])
+    @cash_tix_types = {}
+    @cash_tix.each do |v|
+      @cash_tix_types[v.vouchertype] = 1 + (@cash_tix_types[v.vouchertype] || 0)
+    end
+    @cc_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cc')])
+    @cc_tix_types = {}
+    @cc_tix.each do |v|
+      @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)
+    end
+  end
+
+    
   # AJAX handler called when credit card is swiped thru USB reader
   def process_swipe
     swipe_data = String.new(params[:swipe_data])

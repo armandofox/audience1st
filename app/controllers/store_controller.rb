@@ -220,6 +220,7 @@ class StoreController < ApplicationController
     # OK, we have a customer record to tie the transaction to
     if (params[:commit] =~ /credit/i || !@is_admin)
       args = collect_credit_card_info or return
+      verify_valid_credit_card_purchaser or return
       args.merge({:order_number => @cart.order_number,
                    :method => :credit})
       @payment="credit card #{args[:credit_card].display_number}"
@@ -448,6 +449,17 @@ class StoreController < ApplicationController
     end
     @customer
   end
+
+  def verify_valid_credit_card_purchaser
+    result = @customer.valid_as_purchaser?
+    unless result
+      flash[:warning] = "Customer address/contact data insufficient for credit card purchase"
+      logger.error "Reached place_order with customer who is invalid as purchaser: #{@customer}"
+      redirect_to :action => 'checkout'
+    end
+    result
+  end
+    
 
   def collect_credit_card_info
     bill_to = Customer.new(params[:customer])

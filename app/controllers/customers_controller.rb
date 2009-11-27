@@ -304,10 +304,14 @@ class CustomersController < ApplicationController
   def switch_to
     if (c = Customer.find_by_id(params[:id]))
       session[:cid] = c.id
-      redirect_to :action => 'welcome'
+      if params[:target_controller] && params[:target_action]
+        redirect_to :controller => params[:target_controller], :action => params[:target_action]
+      else
+        redirect_to :controller => 'customers',:action => 'welcome'
+      end
     else
       flash[:notice] = "No such customer: id# #{params[:id]}"
-      redirect_to :action => 'list'
+      redirect_to :controller => 'customers', :action => 'list'
     end
   end
 

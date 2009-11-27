@@ -25,9 +25,9 @@ class ValidVoucher < ActiveRecord::Base
     Vouchertype.find(self.vouchertype_id).visible_to(cust)
   end
 
-  def printable_name
-    self.showdate.printable_name
-  end
+  def printable_name ;  self.showdate.printable_name ;  end
+  def vouchertype_name ; self.vouchertype.name ; end
+  def price ; self.vouchertype.price ; end
 
   def self.for_advance_sales(passwords = [])
     general_conds = "? BETWEEN start_sales AND end_sales"

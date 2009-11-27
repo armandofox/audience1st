@@ -1,7 +1,5 @@
-= javascript_include_tag 'utils'
-
 - form_tag :action => 'do_walkup_sale', :id => @showdate do
-  - vtypes = @vouchertypes.map { |v| v.id }
+  - vtypes = @valid_vouchers.map { |v| v.id }
   = javascript_recalc_function 'total', vtypes, 'price','qty','donation'
   = javascript_recalc_function 'totaltix', vtypes, '', 'qty', '', '', 0
 
@@ -13,30 +11,34 @@
         %p 2. Collect payment or process credit card, record sale
     %tr
       %td{:valign=>:top}
-        %table
+        %table.hilite
           %tr
             %td{:colspan=>2}
-              %strong Tickets to be issues
-            %td= text_field_tag 'totaltix', 0, :id => 'totaltix', :size => 4, :disabled => true, :style => "font-weight: bold;"
+              %strong Tickets to be issued
+            %td= text_field_tag 'totaltix', 0, :id => 'totaltix',  |
+              :size => 4, :disabled => true, :class => 'disabledField'  |
           %tr
             %td{:colspan=>2}
               %strong TOTAL TO COLLECT
-            %td= text_field_tag 'total', 0, :id => 'total', :size => 6, |
-              :disabled => true, :class => 'strong' |
+            %td= text_field_tag 'total', '0.00', :id => 'total', :size => 6, |
+              :disabled => true, :class => 'disabledField strong' |
           %tr
-            %td.label{:colspan=>2}
-              %label{:for=>:donation} Additional donation:
-            %td= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,:id => 'donation', :onChange => 'recalc_total(); recalc_totaltix()'
-          - @vouchertypes.each do |v|
+            %td.label{:colspan => 2} Additional donation:
+            %td= text_field_tag 'donation', '', :maxlength => 7, :size => 5, |
+              :onChange => 'recalc_total(); recalc_totaltix()'  |
+          - @valid_vouchers.each do |v|
             %tr
-              %td.label= h(v.name)
-              %td= text_field_tag("price[#{v.id}]", number_to_currency(v.price,:unit=>''),:disabled => true, :size => 6)
-              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0),{:onChange => 'recalc_total(); recalc_totaltix()'}
-
+              %td.label
+                = h(v.vouchertype_name)
+                - unless v.max_sales_for_type.zero?
+                  %span.callout= "(#{v.seats_remaining} left)" 
+              %td= text_field_tag "price[#{v.id}]", |
+                number_to_currency(v.price, :unit => ''), :disabled => true, |
+                :size => 6, :class => 'disabledField' |
+              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0), {:onChange => "recalc_total(); recalc_totaltix()"} 
       %td{:align=>:center,:valign=>:top}
         %p Click here once payment has been collected:
-        = submit_tag 'Cash or Check Payment'
+        = submit_tag 'Record Cash or Check Payment'
+        = javascript_tag "checkZero = function() { if ($('total').value.toFloat() != 0.0) { alert('This option may only be used when no payment needs to be collected.'); return false; } }"
+        = submit_tag 'Record Zero-Revenue Order', :onClick => 'checkZero()'
         = submit_tag APP_CONFIG[:cc_purch]
-        %br
-        %br
-        = submit_tag 'Generate Report'

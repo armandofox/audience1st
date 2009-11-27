@@ -3,9 +3,9 @@ class Store
   public
   
   def self.purchase!(amount, params={}, &blk)
-    raise "Zero transaction amount" if amount.zero?
     case params[:method]
     when :credit_card
+      raise "Zero transaction amount" if amount.zero?
       self.purchase_with_credit_card!(amount, params[:credit_card],
                                       params[:bill_to], params[:order_number],
                                       blk)
@@ -21,7 +21,6 @@ class Store
   private
   
   def self.purchase_with_credit_card!(amount, cc, bill_to, order_num, proc)
-    raise "Invalid purchaser" unless bill_to.valid_as_purchaser?
     params = {
       :order_id => order_num,
       :email => bill_to.possibly_synthetic_email,

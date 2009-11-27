@@ -234,25 +234,6 @@ EOQ
     redirect_to :action => 'index'
   end
 
-  def walkup_sales
-    sd = params[:showdate_id]
-    unless (sd.to_i > 0) && (@showdate = Showdate.find_by_id(sd))
-      flash[:notice] = "Walkup sales report requires valid showdate ID"
-      redirect_to :action => 'index'
-      return
-    end
-    @cash_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cash')])
-    @cash_tix_types = {}
-    @cash_tix.each do |v|
-      @cash_tix_types[v.vouchertype] = 1 + (@cash_tix_types[v.vouchertype] || 0)
-    end
-    @cc_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cc')])
-    @cc_tix_types = {}
-    @cc_tix.each do |v|
-      @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)
-    end
-  end
-
   def invoice
     start = (Time.now - 1.month).at_beginning_of_month
     @from,@to =

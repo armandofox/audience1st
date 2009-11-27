@@ -1,11 +1,19 @@
 #customer_quick_search.adminField
+  %p
+    %span.strong Customer: 
+    %span#onBehalfOfName= h @gCustomer.full_name
+    (last login:
+    = h @gCustomer.last_login.to_formatted_s(:month_day_year)
+    )
   %table.layout
     %tr
-      - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do 
+      - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do
         %td
           Quick select by first or last name:
           = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
           = hidden_field_tag 'id'
+          = hidden_field_tag 'target_controller', controller.controller_name
+          = hidden_field_tag 'target_action', controller.action_name
           = submit_tag 'Go'
         %td{:width => '16'}
           = spinner('wait')
