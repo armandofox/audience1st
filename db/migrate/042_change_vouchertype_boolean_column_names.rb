@@ -1,4 +1,4 @@
-class AddTypeToVouchers < ActiveRecord::Migration
+class ChangeVouchertypeBooleanColumnNames < ActiveRecord::Migration
   def self.up
     change_column :vouchertypes, :is_bundle, :boolean, :null => true, :default => nil
     rename_column :vouchertypes, :is_bundle, :bundle
