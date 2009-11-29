@@ -49,7 +49,7 @@
         = render :partial => 'messages/notice' unless flash[:notice].blank?
         = render :partial => 'messages/warning' unless flash[:warning].blank?
         = render :partial => 'store/checkout_error' unless flash[:checkout_error].blank?
-        - if @gCheckoutInProgress
+        - if @gCheckoutInProgress && %w(customers store).include?(controller.controller_name)
           %h1.center Your Order So Far
           = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
         = yield

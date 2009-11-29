@@ -40,10 +40,12 @@ deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
   #run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
   # copy installation-specific files
-  %w[public/.htaccess config/database.yml].each do |file|
+  %w[config/database.yml].each do |file|
     run "mv #{release_path}/#{file}.#{venue}  #{release_path}/#{file}"
     run "rm -rf #{release_path}/#{file}.*"
   end
+  # instantiate htaccess file
+  run "perl -pe 's/\@\@VENUE\@\@/#{venue}/g' #{release_path}/public/htaccess-template > #{release_path}/public/.htaccess"
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
   %w[manual doc test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }

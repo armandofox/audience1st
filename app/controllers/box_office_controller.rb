@@ -74,7 +74,7 @@ class BoxOfficeController < ApplicationController
       @vouchers = perf_vouchers.group_by do |v|
         "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
       end
-      render :layout => false
+      render :layout => 'door_list'
     else
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
       redirect_to :action => 'walkup', :id => @showdate

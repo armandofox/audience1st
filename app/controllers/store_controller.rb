@@ -247,9 +247,11 @@ class StoreController < ApplicationController
     if resp.success?
       @payment << " (transaction ID: #{resp.params[:transaction_id]})" if
         @payment =~ /credit/i
-      email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
-                         @amount, @payment,
-                         @special_instructions)
+      if params[:email_confirmation]
+        email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
+          @amount, @payment,
+          @special_instructions)
+      end
       reset_shopping
       set_return_to
       return

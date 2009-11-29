@@ -1,9 +1,10 @@
 .clear
 #show_stats
-  %h1
-    %span#showdate= @showdate.printable_name
-    %span.inline_link.adminButton= link_to_function 'Change', visual_effect(:toggle_slide, 'select_show')
-
+  %h1.floatleft= h(@showdate.printable_name)
+  .floatleft.h1= link_to_function 'Change', |
+    visual_effect(:toggle_slide, 'select_show', :duration => 0.5), |
+    {:class => 'genButton'} |
+  .clear
 
   #select_show{:style => "display: none;"}
     - form_tag :action => :change_showdate, :method => :get do
@@ -11,20 +12,21 @@
       = select_tag 'id', options_from_collection_for_select(@showdates,:id, :printable_name, @showdate.id), :onChange => 'this.form.submit();'
       %label
 
-  %ul#showdate_info.horizontal_list
-    %li
-      %label{:for => :showdate_house_capacity} House capacity:
-      %span#show_capacity= cap = @showdate.house_capacity
-    %li
-      %label{:for => :sold} Sold:
-      %span#sold= @showdate.compute_total_sales
-    %li
-      %label{:for => :checked_in} Checked in:
-      %span#checked_in= @showdate.checked_in
-    %li
-      %label{:for => :available} Available:
-      - if (avail = @showdate.total_seats_left).zero?
-        %span#available.strong 0
-      - else
-        %span#available.highlighted= avail
+  %table#showdate_info
+    %tr
+      %td
+        Capacity:
+        %span#show_capacity= cap = @showdate.house_capacity
+      %td
+        Sold:
+        %span#sold= @showdate.compute_total_sales
+      %td
+        Checked in:
+        %span#checked_in= @showdate.checked_in
+      %td
+        Available:
+        - if (avail = @showdate.total_seats_left).zero?
+          %span#available.strong 0
+        - else
+          %span#available.highlighted= avail
 .clear

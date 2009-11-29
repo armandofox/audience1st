@@ -4,21 +4,19 @@
   = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
 - form_tag :action => 'place_order' do
-  %h2 Please Review Billing Information
-  %p
+  %h2.floatleft Please Review Billing Information
+  .floatright.h2
     %strong= gen_button "This Isn't Me", :action => 'not_me'
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
-  = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true }
-  %br/
-  %br/
-  
-  %h2 Credit Card Information
+  .clear
+  = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
+
   %p.notice
     We do not store your card number after completing your purchase.
     %br/
     Our transactions are securely processed through Authorize.net.
-  %br/
+
   = render :partial => 'credit_card'
   
   %label{:for => 'sales_final'} TERMS OF SALE:
@@ -31,14 +29,19 @@
   %br
   %br
   
-  = submit_tag APP_CONFIG[:cc_purch], :disable_with => "Processing, Please Wait..."
-  = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton' } 
+  %p.strong 
+    YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
+    = submit_tag 'Charge Credit Card', :disable_with => "Processing, Please Wait..."
+    = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv
       Or pay with check number: 
       = text_field_tag 'check_number', '', :size => 6
       = submit_tag "Accept Check Payment"
       = submit_tag "Accept Cash Payment"
+      - if @cust.valid_email_address?
+        = check_box_tag('email_confirmation', 1, true)
+        Send email confirmation
 = observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
 = observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'
 = observe_field 'sales_final', :function => 'checkPlaceOrderForm()'

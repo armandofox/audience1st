@@ -1,3 +1,7 @@
+/* @override http://localhost:3000/stylesheets/vbo.css?1259464583 */
+
+/* @override http://localhost:3000/stylesheets/vbo.css?1259464524 */
+
 /* @override 
 	http://localhost:3000/stylesheets/vbo.css?1258844646
 	http://localhost:3000/stylesheets/vbo.css?1258770589
@@ -5,6 +9,8 @@
 	http://localhost:3000/stylesheets/vbo.css?1258754528
 	http://localhost:3000/stylesheets/vbo.css?1258761163
 	http://localhost:3000/stylesheets/vbo.css?1259000069
+	http://localhost:3000/stylesheets/vbo.css?1259281680
+	http://localhost:3000/stylesheets/vbo.css?1259463992
 */
 
 body.testing {
@@ -168,6 +174,24 @@ a.subHead { color: blue; text-decoration: none; }
 .disabledField {
 	background-color: #e6e6e6;
 	border: none;
+	color: #000;
+	font-weight: bold;
+}
+.floatright {
+	float: right;
+}
+.h1 {
+	  margin: 14px 0 0 10px;
+	  padding: 0;
+	  font-size: 1.3em;
+	  vertical-align: ;
+}
+.h2 {
+  margin: 6px 0;
+  padding: 0;
+}
+.floatleft {
+	float: left;
 }
 .infoMsg {
   color: red;
@@ -552,6 +576,17 @@ table.report {
   margin-left: 20px;
 }
 
+/*
+ *  Walkup sales
+ */
+ 
+ table#showdate_info, table#showdate_info td {
+	border: 0;
+	font-size: larger;
+	width: 600px;
+	text-align: center;
+}
+ 
 /* Advanced customer report  (SQL builder) page */
 
 #sqlQuery {
@@ -563,4 +598,3 @@ table.report {
   font-size: 90%;
 }
 
-/* My Comment */
