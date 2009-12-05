@@ -1,15 +1,15 @@
-%table
-  - total = tprice = 0
-  - buckets.each_pair do |vtype,ntix|
+- total = tprice = 0
+- buckets.keys.sort_by(&:price).each do |vtype|
+  - if (ntix = buckets[vtype]) > 0
     %tr
-      %td=h vtype.name
-      %td=h ntix
-      %td=sprintf("%.02f",p=vtype.price)
+      %td= h vtype.name
+      %td= h ntix
+      %td.currency= number_to_currency(p=vtype.price)
       %td.currency= number_to_currency(p*ntix)
     -total += ntix
     -tprice += (p*ntix)
-  %tr
-    %td= "TOTAL #{label}"
-    %td= total
-    %td
-    %td.currency= number_to_currency(tprice)
+%tr.totalsRow
+  %td= "TOTAL #{label}"
+  %td= total
+  %td
+  %td.currency= number_to_currency(tprice)

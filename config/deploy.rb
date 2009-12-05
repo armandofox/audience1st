@@ -16,12 +16,18 @@ if variables[:tag]
   # to deploy from a tag, run 'cap -Stag=tagname -Svenue=venuename deploy'
   set :repository,    "#{base_repository}/tags/#{variables[:tag]}"
 elsif variables[:branch]
-  # to deploy from a branch, run 'cap -Sbranch=branchname -Svenue=venuename deploy'
+  # to deploy from branch, 'cap -Sbranch=branchname -Svenue=venuename deploy'
   set :repository,    "#{base_repository}/branches/#{variables[:branch]}"
 else
   set :repository,    "#{base_repository}/trunk"
 end
 ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
+
+# run migrations in a separate environment, so they can use a different
+# DB user
+task :migrate, :roles => [:db] do
+  run "cd #{release_path} && rake db:migrate RAILS_ENV=migration"
+end
 
 namespace :deploy do
   namespace :web do

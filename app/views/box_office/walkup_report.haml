@@ -1,6 +1,15 @@
 .pageDiv
   %h1  Walkup Sales Summary 
-  %p{:style => "font-weight: bold"} Credit Card Sales
-  = render :partial => 'walkup_transaction', :locals => {:buckets => @cc_tix_types, :label => 'Credit'}
-  %p{:style => "font-weight: bold"} Cash Sales
-  = render :partial => 'walkup_transaction', :locals => {:buckets => @cash_tix_types, :label => 'Cash'}
+  %table.hilite
+    %tr
+      %td.strong{:colspan => 4} Credit Card Sales
+    = render :partial => 'walkup_transaction', |
+      :locals => {:buckets => @cc_tix_types, :label => 'Credit'} |
+    %tr
+      %td.strong{:colspan => 4} Check Sales
+    = render :partial => 'walkup_transaction', |
+      :locals => {:buckets => @chk_tix_types, :label => 'Check'} |
+    %tr
+      %td.strong{:colspan => 4} Cash Sales
+      = render :partial => 'walkup_transaction', |
+      :locals => {:buckets => @cash_tix_types, :label => 'Cash'} |

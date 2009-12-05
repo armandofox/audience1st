@@ -17,3 +17,7 @@ production:
   password: s;ystrms
   host: localhost
 
+migration:
+  adapter: mysql
+  database: audienc_vboproduction
+  host: localhost

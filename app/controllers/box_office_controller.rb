@@ -70,7 +70,7 @@ class BoxOfficeController < ApplicationController
             (showdate = Showdate.find_by_id(sd)))
       flash[:notice] = "Invalid show date."
     end
-    redirect_to :action => :walkup, :id => sd
+    redirect_to :action => 'walkup', :id => sd
   end
 
   def door_list
@@ -137,18 +137,15 @@ class BoxOfficeController < ApplicationController
       redirect_to :action => 'index'
       return
     end
-    @cash_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cash')])
-    @cash_tix_types = {}
-    @cash_tix.each do |v|
-      @cash_tix_types[v.vouchertype] = 1 + (@cash_tix_types[v.vouchertype] || 0)
-    end
-    @cc_tix = @showdate.vouchers.find(:all, :conditions => ['purchasemethod_id = ?', Purchasemethod.get_type_by_name('box_cc')])
-    @cc_tix_types = {}
-    @cc_tix.each do |v|
-      @cc_tix_types[v.vouchertype] = 1 + (@cc_tix_types[v.vouchertype] || 0)
+    @cash_tix_types = Hash.new(0)
+    @cc_tix_types = Hash.new(0)
+    @chk_tix_types = Hash.new(0)
+    @showdate.vouchertypes.each do |v|
+      @cash_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cash')])
+      @cc_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cc')])
+      @chk_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_chk')])
     end
   end
-
     
   # AJAX handler called when credit card is swiped thru USB reader
   def process_swipe
