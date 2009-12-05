@@ -30,14 +30,11 @@ module ApplicationHelper
   # if an option has some HTML text associated with it, sanitize the text;
   #  otherwise return the alternate text
 
-  def sanitize_option_text(opt, alt='', args={:spanify => true, :alt => ''})
-    ((s = Option.value(opt)).blank? ?
-     sanitize(args[:alt]) :
-     ( args[:spanify] ?
-       content_tag(:span, sanitize(s), :id => opt, :class => opt) :
-       sanitize(s)))
+  def sanitize_option_text(opt, tag, tag_options = {})
+    s = Option.value(opt)
+    s.blank? ? '' : content_tag(tag, sanitize(s), tag_options)
   end
-
+  
   def link_to_if_option(opt, text, alt='', opts={})
     ((s = Option.value(opt)).blank? ?
      alt :
@@ -66,6 +63,21 @@ module ApplicationHelper
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
     check_box_tag name, 1, checked, :onClick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
+  end
+
+  # helper that generates a javascript function that submits a form 
+  # only if a certain field is zero
+  def submit_if_zero(func_name,field_name, alert)
+    return <<EJS1
+        #{func_name} = function() {
+          if (parseFloat($('#{field_name}').value) != 0.0) {
+            alert('#{alert}');
+            return false;
+          } else {
+            this.form.submit();
+          }
+        }
+EJS1
   end
 
   # helpers that generate JS to disable and then re-enable a button

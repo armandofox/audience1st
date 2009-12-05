@@ -47,7 +47,7 @@
     %label{:for=>:customer_eve_phone} Alternate phone
     =text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
     %br/
-    - unless (defined?(hide_opt_out) || @customer.invalid_mailing_address?)
+    - unless (defined?(hide_opt_out) || (@customer && @customer.invalid_mailing_address?))
       %label US Mail preferences
       = check_box 'customer', 'blacklist'
       %label.no_float{:for=>:customer_blacklist} 
@@ -58,11 +58,11 @@
     = text_field 'customer', 'email', {:size => 30, :max_length => 40, :readonly => disabled }
     %span.small= link_to "Our Privacy Policy", Option.value(:privacy_policy_url), :target => '_blank'
     
-    - unless (defined?(hide_opt_out) || @customer.invalid_email_address?)
+    - unless (defined?(hide_opt_out) || (@customer && @customer.invalid_email_address?))
       %br/
       %label Email preferences
       = check_box 'customer', 'e_blacklist'
-      %label.no_float{:for=>:customer_e_blacklist}= "Please DON'T notify '#{@customer.email}' about upcoming shows & events."
+      %label.no_float{:for=>:customer_e_blacklist}= "Please DON'T email me about upcoming shows & events."
 
   /[eoform:customer]
 

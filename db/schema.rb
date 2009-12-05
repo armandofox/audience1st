@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 47) do
+ActiveRecord::Schema.define(:version => 48) do
 
   create_table "customers", :force => true do |t|
     t.string   "first_name",             :limit => 64,                                                                                                                                                  :default => "",                    :null => false
@@ -57,7 +57,9 @@ ActiveRecord::Schema.define(:version => 47) do
   add_index "customers", ["last_name"], :name => "index_customers_on_last_name"
 
   create_table "donation_funds", :force => true do |t|
-    t.string "name", :limit => 40, :default => "", :null => false
+    t.string "name",         :limit => 40, :default => "", :null => false
+    t.string "account_code",               :default => "", :null => false
+    t.string "description"
   end
 
   create_table "donations", :force => true do |t|
@@ -101,7 +103,6 @@ ActiveRecord::Schema.define(:version => 47) do
     t.datetime "end_advance_sales"
     t.integer  "max_sales",         :default => 0, :null => false
     t.integer  "show_id",           :default => 0, :null => false
-    t.integer  "house_capacity",    :default => 0, :null => false
   end
 
   add_index "showdates", ["end_advance_sales"], :name => "end_advance_sales"
@@ -114,6 +115,7 @@ ActiveRecord::Schema.define(:version => 47) do
     t.text     "patron_notes"
     t.string   "landing_page_url"
     t.date     "listing_date",     :default => '2009-09-05', :null => false
+    t.integer  "house_capacity"
   end
 
   create_table "txn_types", :force => true do |t|

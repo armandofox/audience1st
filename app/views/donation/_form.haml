@@ -21,10 +21,6 @@
   = collection_select 'donation', 'purchasemethod_id', Purchasemethod.find(:all), 'id', 'description'
 
 %p
-  %label{:for=>:donation_account_code} Account Code
-  = text_field 'donation', 'account_code'
-
-%p
   %label{:for=>:donation_comment} Comment
   = text_area 'donation', 'comment', 'cols' => 80, 'rows' => 2
       

@@ -1,13 +1,20 @@
-%h2 
-  Edit
-  %strong=  @valid_voucher.vouchertype.name
-  ticket eligibility
-  %br/
-  for
-  %strong= @valid_voucher.printable_name
+%h2 Edit Ticket Redemption
+
+- vt = @valid_voucher.vouchertype
+%p
+  %strong Performance:
+  =  h(@valid_voucher.printable_name)
+%p
+  %strong Ticket type:
+  =  link_to vt.name, :controller => 'vouchertypes', :action => 'edit', :id =>vt
+  (valid 
+  = humanize_date_range(vt.valid_date, vt.expiration_date)
+  )
+
+%br
 
 - form_tag :action => 'update', :id => @valid_voucher do
 
-  = hidden_field 'valid_voucher', 'vouchertype_id', :value => @valid_voucher.vouchertype.id
+  = hidden_field 'valid_voucher', 'vouchertype_id', :value => vt.id
   = render :partial => 'form'
   = submit_tag 'Save Changes'

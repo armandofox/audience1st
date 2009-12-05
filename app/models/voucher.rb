@@ -194,7 +194,7 @@ class Voucher < ActiveRecord::Base
   end
 
   def add_to_customer(c)
-    begin
+    #begin
       c.vouchers << self
       if self.bundle?
         purch_bundle = Purchasemethod.get_type_by_name('bundle')
@@ -209,9 +209,9 @@ class Voucher < ActiveRecord::Base
         end
       end
       c.save!
-    rescue Exception => e
-      return [nil,e.message]
-    end
+    #rescue Exception => e
+    #  return [nil,e.message]
+    #end
     return [true,self]
   end
 

@@ -20,14 +20,14 @@
         %label= "#{h @recipient.city}, #{h @recipient.state} #{h @recipient.zip}"
       %p.emphasis Note: Recipient has NOT been notified of this gift.
 
-  #checkout_notices= sanitize_option_text(:checkout_notices)
+  = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
   - unless @special_instructions.blank?
     #accessible_seating_notices
       %p
         %strong Accessible seating request:
         = h @special_instructions
-      %p.accessible_seating_notices= sanitize_option_text(:accessible_seating_notices)
+      = sanitize_option_text(:accessible_seating_notices, 'p', :class => 'accessible_seating_notices')
 
 %p.center
   - if @is_admin

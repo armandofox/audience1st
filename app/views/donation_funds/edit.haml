@@ -1,0 +1,8 @@
+%h1 
+  Editing 
+  = h(@donation_fund.name)
+
+- form_for(@donation_fund) do |f| 
+  = render :partial => 'form', :locals => {:f => f}
+  = f.submit 'Update' 
+  = gen_button 'Cancel', donation_funds_path

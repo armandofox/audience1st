@@ -3,6 +3,8 @@ class BoxOfficeController < ApplicationController
   before_filter(:is_boxoffice_filter,
                 :redirect_to => { :controller => :customers, :action => :login})
 
+  before_filter :get_showdates
+
   # sets the instance variable @showdate for every method.
   before_filter :get_showdate
   verify(:method => :post,
@@ -25,6 +27,11 @@ class BoxOfficeController < ApplicationController
       flash[:notice] = "There are no shows listed.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'
     end
+  end
+
+  # this filter sets up showdates for _showdate_stats panel
+  def get_showdates
+    @showdates = Showdate.all_shows_this_season
   end
 
   # given a hash of valid-voucher ID's and quantities, compute the total
@@ -82,7 +89,6 @@ class BoxOfficeController < ApplicationController
   end
 
   def walkup
-    @showdates = Showdate.all_shows_this_season
     @showdate = Showdate.find_by_id(params[:id]) || Showdate.current_or_next
     @valid_vouchers = @showdate.valid_vouchers
   end
@@ -112,7 +118,7 @@ class BoxOfficeController < ApplicationController
       when /check/i
         method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
       end
-      Store.purchase!(total, :method => method) do
+      Store.purchase!(method,total) do
         process_walkup_vouchers(qtys, how)
         Donation.walkup_donation(donation,logged_in_id) if donation > 0.0
         Txn.add_audit_record(:txn_type => 'tkt_purch',
@@ -120,7 +126,6 @@ class BoxOfficeController < ApplicationController
                              :comments => 'walkup',
                              :purchasemethod_id => howpurchased,
                              :logged_in_id => logged_in_id)
-        flash[:notice] = "Success"
       end
     end
     redirect_to :action => 'walkup', :id => @showdate

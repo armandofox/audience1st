@@ -23,7 +23,7 @@ ActiveMerchant::Billing::Base.mode = :test
 # Mailchimp integration: use my test account
 
 EmailList.mode = {
-  :wrapper => :hominid,
+  :wrapper => :test,
   :mailchimp_api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
   :mailchimp_username => 'a1patronsystems',
   :mailchimp_password => 's;ystrms',

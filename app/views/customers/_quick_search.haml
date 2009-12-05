@@ -8,12 +8,16 @@
   %table.layout
     %tr
       - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do
+        - if controller.controller_name =~ /store|customers/i
+          = hidden_field_tag 'target_controller', controller.controller_name
+          = hidden_field_tag 'target_action', (controller.action_name == 'list' ? 'welcome' : controller.action_name)
+        - else
+          = hidden_field_tag 'target_controller', 'customers'
+          = hidden_field_tag 'target_action', 'welcome'
         %td
           Quick select by first or last name:
           = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
           = hidden_field_tag 'id'
-          = hidden_field_tag 'target_controller', controller.controller_name
-          = hidden_field_tag 'target_action', controller.action_name
           = submit_tag 'Go'
         %td{:width => '16'}
           = spinner('wait')

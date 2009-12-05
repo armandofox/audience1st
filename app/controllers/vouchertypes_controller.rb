@@ -20,9 +20,11 @@ class VouchertypesController < ApplicationController
     @filter = params[:filter].to_s
     case @filter
     when "Bundles"
-      c = "bundle = 1"
+      c = "category = 'bundle'"
     when "Subscriptions"
       c = "subscription = 1"
+    when "Single Tickets"
+      c = "category != 'bundle'"
     else
       c = 'TRUE'
     end
@@ -36,7 +38,7 @@ class VouchertypesController < ApplicationController
         ["#{c} AND (expiration_date BETWEEN ? AND ?)", s, e]
       end
     @vouchertypes = Vouchertype.find(:all, :conditions => conditions,
-                                     :order => "valid_date, subscription")
+                                     :order => "expiration_date DESC, subscription")
   end
 
   def new
@@ -66,10 +68,14 @@ class VouchertypesController < ApplicationController
   def edit
     @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
+    if @num_vouchers > 0
+      flash[:warning] = "#{@num_vouchers} vouchers of this voucher type have already been issued.  Any changes  you make will be retroactively reflected to all of them.  If this is not what you want, click Cancel below."
+    end
   end
 
   def update
     @vouchertype = Vouchertype.find(params[:id])
+    @num_vouchers = @vouchertype.vouchers.count
     was_bundle_before = @vouchertype.bundle?
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new

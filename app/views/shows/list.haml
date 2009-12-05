@@ -12,6 +12,7 @@
       %th Link
       %th Run Dates
       %th Added to system
+      %th
   %tbody
     - @shows.each do |show|
       %tr{:class=>cycle(:evenRow,:oddRow)}
@@ -23,5 +24,10 @@
           \-
           = show.closing_date.to_formatted_s(:month_day_year)
         %td= show.created_on.to_formatted_s(:month_day_year)
-
+        %td
+          - if (n = show.showdates.length) > 0
+            #{n} dates
+          - else
+            = button_to 'Delete', {:action => 'destroy', :id => show}, |
+              :confirm => "Delete '#{show.name}': are you sure?" |
 = gen_button 'Add New Show', :action => 'new'

@@ -24,7 +24,7 @@
             ['Walkup Report', :box_office, :walkup_report, @showdate], |
             ['Back to Main', :customers, :list]]  |
           = render :partial => 'box_office/show_stats'
-        - else
+        - elsif @gCustomer
           - tabs = [['Buy Tickets', :store, :index], |
             ['My Tickets', :customers, :welcome], |
             ['Billing Address', :customers, :edit], |

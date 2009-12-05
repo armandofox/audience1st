@@ -39,11 +39,15 @@
       %td.c.t
         %p Click here once payment has been collected:
         %br
-        = submit_tag 'Record Cash or Check Payment'
+        = submit_tag 'Record Cash Payment'
         %br
         %br
-        = javascript_tag "checkZero = function() { if ($('total').value.toFloat() != 0.0) { alert('This option may only be used when no payment needs to be collected.'); return false; } }"
-        = submit_tag 'Record Zero-Revenue Order', :onClick => 'checkZero()'
+        = submit_tag 'Record Check Payment'
+        %br
+        %br
+        = javascript_tag submit_if_zero('checkZero', 'total', |
+          'This option may only be used when no payment needs to be collected.') |
+        = button_to_function 'Record Zero-Revenue Order', 'checkZero()'
         %br
         %br
         = submit_tag 'Credit Card Payment'

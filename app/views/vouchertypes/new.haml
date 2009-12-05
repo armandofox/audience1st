@@ -3,6 +3,5 @@
 - form_tag :action => 'create' do
   = render :partial => 'form' 
   = submit_tag "Create"
-
-= link_to 'Cancel', :action => 'list'
+  = gen_button 'Cancel', :action => 'list'
 

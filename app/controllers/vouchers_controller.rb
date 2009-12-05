@@ -26,9 +26,7 @@ class VouchersController < ApplicationController
       return
     end
     if request.get?
-      @regular_vouchers = Vouchertype.find(:all, :conditions => 'bundle = 0')
-      @bundle_vouchers = Vouchertype.find(:all, :conditions => 'bundle = 1')
-      @purchasemethods = Purchasemethod.find(:all)
+      @vouchers = Vouchertype.find(:all, :conditions => "category='comp'")
       # fall through to rendering
       return
     end
@@ -36,26 +34,15 @@ class VouchersController < ApplicationController
     thenumtoadd = params[:howmany].to_i
     thevouchertype = params[:vouchertype_id].to_i
     thevouchername = (vt = Vouchertype.find(thevouchertype)).name
-    thepurchasemethod = params[:purchasemethod_id].to_i
-    thepurchasemethodname = (pm = Purchasemethod.find(thepurchasemethod)).description
-    # if comp vouchers are being added, only purchasemethod allowed
-    #  is 'no payment necessary'
-    if vt.price.zero? && !pm.nonrevenue?
-      flash[:notice] = "Only the following payment methods are valid for " <<
-        "zero-cost vouchers: " <<
-        Purchasemethod.find(:all, :conditions => 'nonrevenue=1').map {|s| s.description}.join(', ')
-      redirect_to :action => :addvoucher
-      return
-    end
+    thepurchasemethod = Purchasemethod.find_by_shortdesc('none')
 
-    fulfillment_needed = params[:fulfillment_needed]
     thecomment = params[:comment] || ""
     custid = @customer.id
     begin
       v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
                                             @customer,thepurchasemethod, 0,
                                             thecomment, logged_in_id,
-                                            fulfillment_needed)
+                                            Vouchertype.find(thevouchertype).fulfillment_needed)
       if (v.kind_of?(Array))
         Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
                              :voucher_id => v.first.id,

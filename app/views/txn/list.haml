@@ -1,0 +1,33 @@
+%h2 Transactions
+= error_messages_for :txn
+%br
+= pagination_bar @txn_pages.current, :txns_filter, @count, {:class => 'navButton'} 
+%br
+%table
+  %tr.tableHeading
+    - for c in ["txn_date", "entered_by_id", "customer_id", nil, nil, |
+      "txn_type_id", "purchasemethod_id", "dollar_amount", "show_id", |
+      "showdate_id", "voucher_id", "comments"] |
+      %th= ActiveSupport::Inflector.humanize(c)
+  - @txns.each do |t|
+    - c = Customer.find_by_id(t.customer_id)  
+    - s = Customer.find_by_id(t.entered_by_id) 
+    %tr
+      %td= t.txn_date
+      %td= s ? s.login : "" 
+      - if c.nil? 
+        %td{:colspan=>"3"}
+      - else 
+        %td= link_to c.id, {:controller => 'customers', :action => 'welcome', :id => t.customer_id } 
+        %td= link_to c.last_name, {:controller => 'customers', :action => 'welcome', :id => t.customer_id } 
+        %td= link_to c.first_name, {:controller => 'customers', :action => 'welcome', :id => t.customer_id } 
+      %td= t.txn_type.desc 
+      %td= t.purchasemethod ? t.purchasemethod.description : t.purchasemethod_id.to_i 
+      %td= number_to_currency(t.dollar_amount) 
+      %td= t.show ? t.show.name : "" 
+      %td= t.showdate ? t.showdate.thedate : "" 
+      %td= t.voucher_id.zero? ? "": t.voucher_id 
+      %td= t.comments 
+
+
+

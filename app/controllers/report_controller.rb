@@ -10,7 +10,7 @@ class ReportController < ApplicationController
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
     # next showdate
-    @next_showdate = @all_showdates.detect { |s| s.thedate >= Time.now }
+    @next_showdate = Showdate.next_or_latest
     # all show names
     @all_shows = Show.find(:all)
     # quick subscription stats
@@ -48,9 +48,7 @@ class ReportController < ApplicationController
                          :conditions => ['closing_date >= ?', Date.today],
                          :order => 'opening_date')
     when /current/i
-      @shows = [Show.find(:first,
-                          :conditions => ['closing_date >= ?', Date.today],
-                          :order => 'opening_date')]
+      @shows = [Show.current_or_next]
     else
       @shows = Show.find(:all,:order => 'opening_date')
     end
@@ -59,7 +57,6 @@ class ReportController < ApplicationController
       redirect_to :action => 'index'
       return
     end
-    render :action => :advance_sales
   end
 
   def showdate_sales

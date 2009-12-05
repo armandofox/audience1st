@@ -39,7 +39,7 @@ class CustomersController < ApplicationController
   def auto_complete_for_customer_full_name
     render :inline => "" and return if params[:__arg].blank?
     @customers =
-      Customer.find_by_multiple_terms(params[:__arg].to_s.split( / +/ ))
+      Customer.find_by_multiple_terms(params[:__arg].to_s.split( /\s+/ ))
     render(:partial => 'customers/customer_search_result',
            :locals => {:matches => @customers})
   end
@@ -51,7 +51,7 @@ class CustomersController < ApplicationController
 
   # login and logout
   def login
-    if (@checkout_in_progress = session[:checkout_in_progress])
+    if (@gCheckoutInProgress)
       @cart = find_cart
     end
     return unless request.post? # just show login page
@@ -70,7 +70,7 @@ class CustomersController < ApplicationController
     if (c = Customer.authenticate(l,p)).kind_of?(Customer)
       # success
       login_from_password(c)
-      if (@checkout_in_progress || stored_action)
+      if (@gCheckoutInProgress || stored_action)
         redirect_to_stored
       else
         #redirect_to :controller => controller, :action => action
@@ -158,20 +158,19 @@ class CustomersController < ApplicationController
     return unless request.post? # fall thru to showing edit screen
     flash[:notice] = ''
     # squeeze empty-string params into nils.
-    params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
-    # this is messy: if this is part of a checkout flow, it's OK for customer
-    #  not to specify a password.  This will be obsolete when customers are
-    #  subclassed with different validations on each subclass.
-    temp_password = nil
-    if @gCheckoutInProgress && params[:customer][:password].blank?
-      temp_password =  params[:customer][:password] = params[:customer][:password_confirmation] =  String.random_string(8)
-    end
+    # params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
+    # # this is messy: if this is part of a checkout flow, it's OK for customer
+    # #  not to specify a password.  This will be obsolete when customers are
+    # #  subclassed with different validations on each subclass.
+    # temp_password = nil
+    # if @gCheckoutInProgress && params[:customer][:password].blank?
+    #   temp_password =  params[:customer][:password] = params[:customer][:password_confirmation] =  String.random_string(8)
+    # end
     # unless admin, remove "extra contact" fields
     unless @is_admin
       Customer.extra_attributes.each { |a| params[:customer].delete(a) }
       # flash[:notice] << "Warning: Some new attribute values were ignored<br/>"
     end
-    old_login  = @customer.login
     #
     #  special case: updating 'role' (privilege) is protected attrib
     #
@@ -200,8 +199,8 @@ class CustomersController < ApplicationController
                            :customer_id => @customer.id,
                            :logged_in_id => logged_in_id)
       flash[:notice] << 'Contact information was successfully updated.'
-      if (@customer.login != old_login) && @customer.valid_email_address? &&
-          params[:dont_send_email].blank? && temp_password.blank?
+      if @customer.email_changed? && @customer.valid_email_address? &&
+          params[:dont_send_email].blank? # && temp_password.blank?
         # send confirmation email
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
@@ -290,15 +289,12 @@ class CustomersController < ApplicationController
   # list, switch_to, merge, search, create, destroy
 
   def list
-    unless (@customers_filter = params[:customers_filter]).blank?
-      conds = Customer.match_any_content_column(@customers_filter)
-      @customer_pages, @customers = paginate :customers, :per_page => 100, :order => 'last_name,first_name', :conditions => conds
-      @count = Customer.count(:conditions => conds)
-      curpage = @customer_pages.current_page
-      @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} matching '#{@customers_filter}'"
-    else
-      redirect_to :action => 'welcome'
-    end
+    @customers_filter ||= params[:customers_filter]
+    conds = Customer.match_any_content_column(@customers_filter)
+    @customer_pages, @customers = paginate :customers, :per_page => 100, :order => 'last_name,first_name', :conditions => conds
+    @count = Customer.count(:conditions => conds)
+    curpage = @customer_pages.current_page
+    @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} matching '#{@customers_filter}'"
   end
 
   def switch_to

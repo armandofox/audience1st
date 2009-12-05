@@ -491,7 +491,7 @@ class Customer < ActiveRecord::Base
 
   # case-insensitive find by first & last name.  if multiple terms given,
   # all must match, though each term can match either first or last name
-  def self.find_by_multiple_terms(*terms)
+  def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
     conds =
       Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')

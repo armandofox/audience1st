@@ -10,10 +10,17 @@ class Showdate < ActiveRecord::Base
   validates_numericality_of :max_sales
   validates_associated :show
 
+  validates_uniqueness_of :thedate, :scope => :show_id,
+  :message => "is already a performance for this show"
+
   # finders
   
   def self.current_or_next
     Showdate.find(:first, :conditions => ["thedate >= ?", Time.now])
+  end
+
+  def self.next_or_latest
+    Showdate.current_or_next || Showdate.find(:first, :order => "thedate DESC")
   end
 
   def self.all_shows_this_season

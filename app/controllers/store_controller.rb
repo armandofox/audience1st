@@ -5,6 +5,12 @@ class StoreController < ApplicationController
   require "money.rb"
 
   before_filter :is_logged_in, :only => %w[edit_billing_address]
+  before_filter(:find_cart_not_empty,
+    :only => %w[edit_billing_address shipping_address set_shipping_address
+                checkout place_order not_me],
+    :add_to_flash => {:checkout_error => "Your order appears to be empty. Please select some tickets."},
+    :redirect_to => {:action => 'index'})
+    
 
   verify(:method => :post,
          :only => %w[add_tickets_to_cart add_donation_to_cart
@@ -78,6 +84,7 @@ class StoreController < ApplicationController
     #  ticket selection page).  If a get, buyer just wants to modify
     #  gift recipient info.
     # add items to cart
+    set_checkout_in_progress
     @cart = find_cart
     @redirect_to = params[:redirect_to] == 'subscribe' ? :subscribe : :index
     if request.post?
@@ -234,7 +241,7 @@ class StoreController < ApplicationController
       @payment = "cash"
     end
     howpurchased = (@customer.id == logged_in_id ? 'cust_ph' : 'cust_web')
-    resp = Store.purchase!(@cart.total_price, args) do
+    resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
       @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)
       @recipient.save!
@@ -477,7 +484,7 @@ class StoreController < ApplicationController
     cc = CreditCard.new(cc_info)
     # prevalidations: CC# and address appear valid, amount >0,
     # billing address appears to be a well-formed address
-    if ! cc.valid?              # format check on credit card number
+    if (RAILS_ENV == 'production' && !cc.valid?) # format check on credit card number
       flash[:checkout_error] =
         "<p>Please provide valid credit card information:</p> <ul><li>" <<
         cc.errors.full_messages.join("</li><li>") <<
@@ -490,13 +497,13 @@ class StoreController < ApplicationController
 
   def find_cart_not_empty
     cart = find_cart
-    if cart.total_price <= 0
-      flash[:checkout_error] =
-        "Your order appears to be empty. Please select some tickets."
-      redirect_to :action => 'index'
-      return nil
+    # regular customers must have a total order > $0.00, but admins can
+    # have zero-cost order as long as has zero items
+    if @gAdmin.is_staff
+      return (cart.items.length > 0) ? cart : nil
+    else
+      return (cart.total_price > 0) ? cart : nil
     end
-    return cart
   end
 
   def verify_sales_final

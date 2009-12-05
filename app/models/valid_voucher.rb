@@ -16,10 +16,32 @@ class ValidVoucher < ActiveRecord::Base
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type
 
+  validate :check_expiration_dates
+
   require 'set'
 
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
+
+  private
+
+  # Vouchertype's valid date must not be later than valid_voucher start date
+  # Vouchertype expiration date must not be earlier than valid_voucher end date
+  def check_expiration_dates
+    vt = self.vouchertype
+    if self.start_sales < vt.valid_date
+      errors.add_to_base "Voucher type '#{vt.name}' isn't valid before
+        #{vt.valid_date.to_formatted_s(:short)}, but you've indicated
+        sales should start earlier (#{self.start_sales.to_formatted_s(:short)})"
+    end
+    if self.end_sales > vt.expiration_date
+      errors.add_to_base "Voucher type '#{vt.name}' expires on
+        #{vt.expiration_date.to_formatted_s(:short)}, but you've indicated
+        sales should continue until #{self.end_sales.to_formatted_s(:short)})"
+    end
+  end
+  
+  public
 
   def visible_to(cust)
     Vouchertype.find(self.vouchertype_id).visible_to(cust)

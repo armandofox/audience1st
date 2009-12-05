@@ -1,8 +1,6 @@
 .pageDiv
-  %h1 
-    Walkup Sales Summary for
-    =@showdate.printable_name
+  %h1  Walkup Sales Summary 
   %p{:style => "font-weight: bold"} Credit Card Sales
-  =render :partial => 'walkup_transaction', :locals => {:buckets => @cc_tix_types, :label => 'Credit'}
+  = render :partial => 'walkup_transaction', :locals => {:buckets => @cc_tix_types, :label => 'Credit'}
   %p{:style => "font-weight: bold"} Cash Sales
-  =render :partial => 'walkup_transaction', :locals => {:buckets => @cash_tix_types, :label => 'Cash'}
+  = render :partial => 'walkup_transaction', :locals => {:buckets => @cash_tix_types, :label => 'Cash'}

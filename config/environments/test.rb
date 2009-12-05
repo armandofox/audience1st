@@ -31,10 +31,10 @@ PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 
 EmailList.mode = {
-  :wrapper => :hominid,
-  :mailchimp_api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
-  :mailchimp_username => 'a1patronsystems',
-  :mailchimp_password => 's;ystrms',
-  :mailchimp_default_list_name => 'Test list'
+  :wrapper => :testn,
+  :mailchimp_api_key =>  '',
+  :mailchimp_username => '',
+  :mailchimp_password => '',
+  :mailchimp_default_list_name => 'Testing'
 }
 

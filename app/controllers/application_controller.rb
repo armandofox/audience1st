@@ -73,7 +73,7 @@ class ApplicationController < ActionController::Base
     # authentication succeeded, and customer is NOT in the middle of a
     # store checkout. Proceed to welcome page.
     controller,action = possibly_enable_admin(c)
-    reset_shopping
+    reset_shopping unless @gCheckoutInProgress
     c
   end
 

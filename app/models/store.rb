@@ -7,7 +7,7 @@ class Store
     amount = Money.us_dollar((100 * amount).to_i)
     login = Option.value(:pgw_id)
     pwd = Option.value(:pgw_txn_key)
-    gw = PAYMENT_GATEWAY.new(:login => login, :password => password)
+    gw = PAYMENT_GATEWAY.new(:login => login, :password => pwd)
     return gw.purchase(amount,cc,params)
   end
 

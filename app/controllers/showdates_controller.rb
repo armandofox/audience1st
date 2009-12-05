@@ -21,11 +21,20 @@ class ShowdatesController < ApplicationController
 
   def create
     args = params[:showdate]
-    raise "New showdate must be associated with an existing show" unless Show.find(args[:show_id])
+    sid = args[:show_id]
+    unless Show.find_by_id(sid)
+      flash[:warning] = "New showdate must be associated with an existing show" 
+      render :action => 'new'
+      return
+    end
     @showdate = Showdate.new(args)
     if @showdate.save
       flash[:notice] = 'Show date was successfully created.'
-      redirect_to :controller => 'shows', :action => 'edit', :id => args[:show_id]
+      if params[:commit] =~ /add another/i
+        redirect_to :action => 'new', :show_id => sid
+      else
+        redirect_to :controller => 'shows', :action => 'edit', :id => sid
+      end
     else
       render :action => 'new'
     end
@@ -41,10 +50,10 @@ class ShowdatesController < ApplicationController
 
   def new
     show = Show.find(params[:show_id])
-    if show.showdates.to_a.length > 0
+    if show.showdates.length > 0
       latest_showdate = show.showdates.map {|x| x.thedate}.max
     else
-      latest_showdate = Time.parse(show.closing_date.to_s) 
+      latest_showdate = Time.parse(show.opening_date.to_s).change(:hour => 20)
     end
     @showdate = show.showdates.build(:thedate => latest_showdate + 1.day,
                                      :max_sales => show.house_capacity,

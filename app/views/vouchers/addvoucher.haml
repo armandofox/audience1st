@@ -9,13 +9,7 @@
         %td= text_field_tag 'howmany', '', :size => 3, :maxlength => 2
       %tr
         %td What type:
-        %td= select_tag('vouchertype_id', option_separator('--Regular Vouchers--') + options_from_collection_for_select(@regular_vouchers,'id','name') + option_separator('--Bundle Vouchers--') +options_from_collection_for_select(@bundle_vouchers,'id','name'))
-      %tr
-        %td How acquired:
-        %td= select_tag 'purchasemethod_id', options_from_collection_for_select(@purchasemethods, 'id', 'description')
-      %tr
-        %td Fulfillment needed?
-        %td= check_box_tag 'fulfillment_needed'
+        %td= select_tag('vouchertype_id', options_from_collection_for_select(@vouchers,'id','name'))
       %tr
         %td  Optional comments:
         %td= text_field_tag 'comments', '', {:size => 30, :maxlength => 30}

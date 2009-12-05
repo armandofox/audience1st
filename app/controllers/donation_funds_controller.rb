@@ -5,6 +5,9 @@ class DonationFundsController < ApplicationController
   # GET /donation_funds
   # GET /donation_funds.xml
   def index
+    list
+  end
+  def list
     @donation_funds = DonationFund.all
 
     respond_to do |format|
@@ -48,7 +51,7 @@ class DonationFundsController < ApplicationController
     respond_to do |format|
       if @donation_fund.save
         flash[:notice] = 'DonationFund was successfully created.'
-        format.html { redirect_to(@donation_fund) }
+        format.html { redirect_to :action => 'index' }
         format.xml  { render :xml => @donation_fund, :status => :created, :location => @donation_fund }
       else
         format.html { render :action => "new" }
@@ -65,7 +68,7 @@ class DonationFundsController < ApplicationController
     respond_to do |format|
       if @donation_fund.update_attributes(params[:donation_fund])
         flash[:notice] = 'DonationFund was successfully updated.'
-        format.html { redirect_to(@donation_fund) }
+        format.html { redirect_to :action => 'index' }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

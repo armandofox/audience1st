@@ -12,7 +12,7 @@ class DonorAppeal < Report
     where = " d.amount >= #{params[:donation_amount].to_f} " <<
       " AND (d.date BETWEEN '#{from.to_formatted_s(:db)}' AND '#{to.to_formatted_s(:db)}') "
     # require valid address and/or valid email
-    (where << " AND c.email LIKE '%@%' AND c.e_blacklist=0") if params[:require_valid_email]
+    (where << " AND (c.email IS NOT NULL AND c.email != '') ") if params[:require_valid_email]
     (where << " AND c.street IS NOT NULL ") if params[:require_valid_address]
     # to include subscribers, join with vouchertypes table and
     # allow a match even if no donation.
@@ -20,8 +20,8 @@ class DonorAppeal < Report
       joins << ' JOIN vouchers v on v.customer_id = c.id ' <<
         'JOIN vouchertypes vt on v.vouchertype_id = vt.id '
       where =
-        "(#{where}) OR (vt.is_subscription = 1 AND
-                          #{Time.now.to_formatted_s(:db)} BETWEEN vt.valid_date AND vt.expiration_date)"
+        "(#{where}) OR (vt.subscription = 1 AND
+                          '#{Time.now.to_formatted_s(:db)}' BETWEEN vt.valid_date AND vt.expiration_date)"
     end
     sql =  <<eoq
         SELECT DISTINCT c.*
