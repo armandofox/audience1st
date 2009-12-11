@@ -21,6 +21,8 @@ class Vouchertype < ActiveRecord::Base
   validate :subscriptions_shouldnt_be_walkups
   # Subscription vouchertypes' validity period must be < 2 years
   validate :subscriptions_valid_at_most_2_years
+  # Free vouchers must not be subscriber vouchers or offered to public
+  validate :restrict_if_free
 
   protected
   def subscriptions_shouldnt_be_walkups
@@ -41,6 +43,16 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
+  def restrict_if_free
+    if price.zero?
+      if offer_public == ANYONE
+        errors.add_to_base "Free vouchers can't be available to public"
+      elsif category == 'subscription'
+        errors.add_to_base "Free vouchers can't qualify recipient as Subscriber"
+      end
+    end
+  end
+  
   # Functions that determine visibility of a voucher type to particular
   # customers
   BOXOFFICE = 0

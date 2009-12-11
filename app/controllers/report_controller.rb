@@ -95,8 +95,7 @@ class ReportController < ApplicationController
 
   def accounting_report
     @from,@to = get_dates_from_params(:from,:to)
-    @page_title =
-      "Revenue by Category: #{@from.to_formatted_s(:short)} - #{@to.to_formatted_s(:short)}"
+    @page_title =  "Revenue by Category: "
     # get all vouchers sold between these dates where:
     #  - NOT walkup sales
     #  - purchasemethod is some credit card transaction
@@ -128,18 +127,17 @@ EOQ1
            " vt.price > 0" <<
            " AND (v.sold_on BETWEEN ? AND ?)" <<
            " AND v.customer_id NOT IN (0,?)" <<
-           " AND vt.bundle = 1 " <<
+           " AND vt.category='bundle'" <<
            "GROUP BY vt.account_code,vt.name",
            @from, @to, Customer.walkup_customer.id]
     @subs_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
     # last, all the Donations
     sql = ["SELECT df.name,d.account_code,SUM(d.amount) " <<
-           "FROM donations d,donation_funds df " <<
+           "FROM donations d, donation_funds df " <<
            "WHERE d.date BETWEEN ? AND ? " <<
            "GROUP BY d.purchasemethod_id",
            @from, @to]
     @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
-    render :action => :accounting_report
   end
 
   def subscriber_details

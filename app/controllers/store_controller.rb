@@ -5,6 +5,8 @@ class StoreController < ApplicationController
   require "money.rb"
 
   before_filter :is_logged_in, :only => %w[edit_billing_address]
+  before_filter :is_admin, :only => %w[direct_transaction]
+  
   before_filter(:find_cart_not_empty,
     :only => %w[edit_billing_address shipping_address set_shipping_address
                 checkout place_order not_me],
@@ -222,13 +224,15 @@ class StoreController < ApplicationController
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
     sales_final = verify_sales_final or return
-    @recipient = verify_valid_recipient or return
+    redirect_to(:action => 'index') and return unless
+      @recipient = verify_valid_recipient 
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
     if (params[:commit] =~ /credit/i || !@is_admin)
       verify_valid_credit_card_purchaser or return
       method = :credit_card
-      args = collect_credit_card_info or return
+      redirect_to(:action => 'checkout') and return unless
+        args = collect_credit_card_info
       args.merge({:order_number => @cart.order_number})
       @payment="credit card #{args[:credit_card].display_number}"
     elsif params[:commit] =~ /check/i
@@ -269,6 +273,38 @@ class StoreController < ApplicationController
     redirect_to :action => 'checkout', :sales_final => sales_final
   end
 
+  def direct_transaction
+    unless request.post?
+      @credit_card = CreditCard.new
+      @customer = Customer.new
+      if RAILS_ENV == 'production'
+        flash[:warning] = <<EOM1
+WARNING: These are real transactions that will be submitted to the payment
+gateway.  Credit cards will really be charged.  Error messages from the
+gateway will be returned verbatim.
+EOM1
+      else
+        flash[:warning] = <<EOM2
+Because this deployment is in sandbox mode, transactions will NOT be processed.
+EOM2
+      end
+      return
+    end
+    # send request
+    args = collect_credit_card_info
+    amount = params[:amount].to_f
+    args[:order_number] = Time.now.to_i
+    resp = Store.purchase!(:credit_card, amount, args) do
+      # nothing to do
+    end
+    flash[:notice] = <<EON
+Success: #{resp.success?} <br/>
+Message: #{resp.message} <br/>
+Txn ID:  #{resp.params[:transaction_id]}
+EON
+    redirect_to :action => 'direct_transaction'
+  end
+    
   private
 
   def setup_ticket_menus
@@ -441,7 +477,6 @@ class StoreController < ApplicationController
       unless recipient = Customer.find_by_id(session[:recipient_id])
         flash[:warning] = 'Gift recipient is invalid'
         logger.error "Gift order, but invalid recipient; id=#{session[:recipient_id]}"
-        redirect_to :action => 'index'
         return nil
       end
     else
@@ -489,7 +524,6 @@ class StoreController < ApplicationController
         "<p>Please provide valid credit card information:</p> <ul><li>" <<
         cc.errors.full_messages.join("</li><li>") <<
         "</li></ul>"
-      redirect_to :action => 'checkout'
       return nil
     end
     return {:credit_card => cc, :bill_to => bill_to}

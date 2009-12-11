@@ -5,7 +5,7 @@ module ApplicationHelper
   # gracefully show a range of dates
   def humanize_date_range(d1,d2,separator=" - ")
     d2,d1 = d1,d2 if d1 > d2
-    return d1.to_formatted_s(:month_day_year) if (d1 == d2)
+    return d1.to_time.to_formatted_s(:month_day_year) if (d1 == d2)
     return "#{d1.to_formatted_s(:month_day_year)}#{separator}#{d2.to_formatted_s(:month_day_year)}" if d1.year != d2.year
     # same year
     if d1.month == d2.month

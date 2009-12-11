@@ -16,17 +16,6 @@ class DonationFundsController < ApplicationController
     end
   end
 
-  # GET /donation_funds/1
-  # GET /donation_funds/1.xml
-  def show
-    @donation_fund = DonationFund.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @donation_fund }
-    end
-  end
-
   # GET /donation_funds/new
   # GET /donation_funds/new.xml
   def new

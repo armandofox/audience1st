@@ -26,6 +26,7 @@ class BulkMailingList < Report
         params[:exclude_blacklist]
       conds.push('e_blacklist=0 OR e_blacklist IS NULL') if
         params[:exclude_e_blacklist]
+      conds.push('1') if conds.empty?
       c = Customer.find(:all,
                         :conditions => conds.map { |s| "(#{s})" }.join(' AND '),
                         :order => order_by)

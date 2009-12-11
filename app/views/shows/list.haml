@@ -11,7 +11,8 @@
       %th Show Name
       %th Link
       %th Run Dates
-      %th Added to system
+      %th List Date
+      %th # Perfs
       %th
   %tbody
     - @shows.each do |show|
@@ -19,15 +20,13 @@
         %td.r= show.id
         %td= link_to show.name, :action => 'edit', :id => show
         %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id), show.name
-        %td
-          = show.opening_date.to_formatted_s(:month_day_year)
-          \-
-          = show.closing_date.to_formatted_s(:month_day_year)
-        %td= show.created_on.to_formatted_s(:month_day_year)
-        %td
-          - if (n = show.showdates.length) > 0
-            #{n} dates
-          - else
-            = button_to 'Delete', {:action => 'destroy', :id => show}, |
-              :confirm => "Delete '#{show.name}': are you sure?" |
+        %td.c= humanize_date_range(show.opening_date, show.closing_date)
+        %td= show.listing_date.to_formatted_s(:showtime)
+        - if (n = show.showdates.length) > 0
+          %td.c= n
+          %td
+        - else
+          %td
+          %td= button_to 'Delete', {:action => 'destroy', :id => show}, |
+            :confirm => "Delete '#{show.name}': are you sure?" |
 = gen_button 'Add New Show', :action => 'new'

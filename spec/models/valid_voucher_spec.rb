@@ -20,8 +20,11 @@ describe ValidVoucher do
           @purchasemethod = mock_model(Purchasemethod)
           @valid_voucher =
             ValidVoucher.create!(:vouchertype => @vt_regular,
-                                 :showdate => @showdate,
-                                 :max_sales_for_type => 10)
+            :showdate => @showdate,
+            :start_sales => Time.now - 1.month + 1.day,
+            :end_sales => Time.now + 1.month - 1.day,
+            :max_sales_for_type => 10)
+          @valid_voucher.should be_valid
           @num = 3
           @vouchers =
             @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,@num)
