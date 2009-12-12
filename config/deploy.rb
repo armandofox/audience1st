@@ -34,10 +34,10 @@ end
 task :initialize_db, :roles => [:db] do
   abort "Must set source name with -Ssource=<venue>" unless variables[:source]
   tmptables = "#{release_path}/db/static_tables.sql"
-  puts "cd #{home}/rails/#{source} && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{release_path}/db/schema.rb"
-  puts "cd #{home}/rails/#{source} && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
-  puts "cd #{release_path} && rake db:schema:load RAILS_ENV=migration"
-  puts "cd #{release_path} && rake db:restore RAILS_ENV=migration FILE=#{tmptables}"
+  run "cd #{home}/rails/#{source}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{release_path}/db/schema.rb"
+  run "cd #{home}/rails/#{source}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
+  run "cd #{release_path} && rake db:schema:load RAILS_ENV=migration"
+  run "cd #{release_path} && rake db:restore RAILS_ENV=migration FILE=#{tmptables}"
 end
 
 namespace :deploy do
