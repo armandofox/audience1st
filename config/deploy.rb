@@ -33,11 +33,12 @@ end
 # source  DB
 task :initialize_db, :roles => [:db] do
   abort "Must set source name with -Ssource=<venue>" unless variables[:source]
-  tmptables = "#{release_path}/db/static_tables.sql"
-  run "cd #{home}/rails/#{source}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{release_path}/db/schema.rb"
+  init_release_path = "#{home}/rails/#{venue}/current"
+  tmptables = "#{init_release_path}/db/static_tables.sql"
+  run "cd #{home}/rails/#{source}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{init_release_path}/db/schema.rb"
   run "cd #{home}/rails/#{source}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
-  run "cd #{release_path} && rake db:schema:load RAILS_ENV=migration"
-  run "cd #{release_path} && rake db:restore RAILS_ENV=migration FILE=#{tmptables}"
+  run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
+  run "cd #{init_release_path} && rake db:restore RAILS_ENV=migration FILE=#{tmptables}"
 end
 
 namespace :deploy do
@@ -55,12 +56,13 @@ end
 
 deploy.task :after_update_code do
   run "chmod -R go-w #{release_path}"
-  #run "ln -nfs #{shared_path}/vendor #{release_path}/vendor"
+  # create database.yml
   # copy installation-specific files
-  %w[config/database.yml].each do |file|
-    run "mv #{release_path}/#{file}.#{venue}  #{release_path}/#{file}"
-    run "rm -rf #{release_path}/#{file}.*"
-  end
+  config = (YAML::load(IO.read("#{release_path}/config/venues.yml")))[venue].symbolize_keys
+  abort if config.empty?
+  dbconfig =   render :template => ERB.new(IO.read("#{release_path}/config/database.yml.erb")).result(binding)
+  put dbconfig, "#{release_path}/config/database.yml"
+  run "rm -f #{release_path}/config/venues.yml #{release_path}/config/database.yml.erb"
   # instantiate htaccess file
   run "perl -pe 's/\@\@VENUE\@\@/#{venue}/g' #{release_path}/public/htaccess-template > #{release_path}/public/.htaccess"
   # make public/stylesheets/venue point to venue's style assets

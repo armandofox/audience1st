@@ -1,0 +1,16 @@
+#   auto-generate database.yml
+
+base: &BASE
+  adapter: mysql
+  database: <%= config[:db] || venue %>
+  host: localhost
+
+production: 
+  username: <%= config[:username] %>
+  password: <%= config[:password] %>
+  <<: *BASE
+
+migration:
+  username: migration
+  password: m1Gr4ti0N
+  <<: *BASE
