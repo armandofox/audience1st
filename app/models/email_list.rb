@@ -12,7 +12,7 @@ class EmailList
   end
 
   def self.init_hominid
-    return nil if settings[:wrapper] == :test
+    return nil if @@settings[:wrapper] == :test
     return true if @@hominid
     @@settings[:api_key] ||= Option.value(:mailchimp_api_key)
     @@settings[:username] ||= Option.value(:mailchimp_username)

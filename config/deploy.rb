@@ -1,5 +1,7 @@
 abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
 
+set :rails_root, "#{File.dirname(__FILE__)}/.."
+
 set :application,     "vbo"
 set :user,            "audienc"
 set :home,            "/home/#{user}"
@@ -57,9 +59,9 @@ end
 deploy.task :after_update_code do
   # create database.yml
   # copy installation-specific files
-  config = (YAML::load(IO.read("#{release_path}/config/venues.yml")))[venue].symbolize_keys
+  config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
   abort if config.empty?
-  dbconfig =   render :template => ERB.new(IO.read("#{release_path}/config/database.yml.erb")).result(binding)
+  dbconfig = ERB.new(IO.read("#{rails_root}/config/database.yml.erb")).result(binding)
   put dbconfig, "#{release_path}/config/database.yml"
   run "rm -f #{release_path}/config/venues.yml #{release_path}/config/database.yml.erb"
   # instantiate htaccess file
