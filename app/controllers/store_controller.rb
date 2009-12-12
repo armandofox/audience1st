@@ -23,7 +23,7 @@ class StoreController < ApplicationController
   # this should be the last declarative spec since it will append another
   # before_filter
   if RAILS_ENV == 'production'
-    ssl_required(:checkout, :place_order, 
+    ssl_required(:checkout, :place_order, :direct_transaction,
                  :index, :subscribe,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,

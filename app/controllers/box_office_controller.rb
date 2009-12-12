@@ -16,7 +16,8 @@ class BoxOfficeController < ApplicationController
 
   private
 
-  # this filter must return non-nil for any method on this controller
+  # this filter must return non-nil for any method on this controller,
+  # or else force a redirect to a different controller & action
   def get_showdate
     return true if (!params[:id].blank?) &&
       (@showdate = Showdate.find_by_id(params[:id].to_i))

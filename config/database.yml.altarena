@@ -21,3 +21,6 @@ migration:
   adapter: mysql
   database: audienc_vboproduction
   host: localhost
+  username: migration
+  password: m1Gr4ti0N
+

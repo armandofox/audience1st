@@ -22,9 +22,9 @@
   %label{:for => 'sales_final'} TERMS OF SALE:
   = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
   %strong 
-    I understand and agree that
+    I understand and agree to our
     = link_to_unless Option.value(:terms_of_sale).blank?, |
-        "all ticket sales are final and there are no refunds or exchanges.", |
+        "sales final policy.", |
         "javascript:alert('#{escape_javascript(Option.value(:terms_of_sale))}')" |
   %br
   %br

@@ -1,13 +1,23 @@
 namespace :db do
+
+  static_tables = "options purchasemethods schema_migrations"
+
+  def do_db_cmd(cmd,archive=nil)
+    archive ||= ENV['FILE'] || Time.now.strftime("%Y%m%d-%H%M%S.sql")
+    cmd << " > #{archive}"
+    puts "With RAILS_ENV=#{RAILS_ENV}, running '#{cmd}'"
+    result = system(cmd)
+    raise("FAILED: #{$?}") unless result
+  end
+
   desc "Dump DB corresponding to RAILS_ENV to ENV[FILE] or an auto-generated filename"
   task :dump => :environment do
-    cmd = retrieve_db_info
-    archive = ENV['FILE'] || Time.now.strftime("%Y%m%d-%H%M%S.sql")
-    cmd = "mysqldump --opt --skip-add-locks #{cmd} > #{archive}"
-    puts "Dumping #{RAILS_ENV} database to #{archive} using command:"
-    puts cmd
-    result = system(cmd)
-    raise("mysqldump failed: #{$?}") unless result
+    do_db_cmd("mysqldump --opt --skip-add-locks #{retrieve_db_info}")
+  end
+
+  desc "Dump static tables only (#{static_tables}) ENV[FILE] or auto-generated filename"
+  task :dump_static => :environment do
+    do_db_cmd("mysqldump --opt --skip-add-locks #{retrieve_db_info} #{static_tables}")
   end
 
   desc "Restore DB corresponding to RAILS_ENV from ENV[FILE] or STDIN"
