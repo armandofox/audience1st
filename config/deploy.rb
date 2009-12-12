@@ -55,7 +55,6 @@ namespace :deploy do
 end
 
 deploy.task :after_update_code do
-  run "chmod -R go-w #{release_path}"
   # create database.yml
   # copy installation-specific files
   config = (YAML::load(IO.read("#{release_path}/config/venues.yml")))[venue].symbolize_keys
@@ -68,6 +67,7 @@ deploy.task :after_update_code do
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
   %w[manual doc test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
+  run "chmod -R go-w #{release_path}"
 end
 
 deploy.task :restart do
