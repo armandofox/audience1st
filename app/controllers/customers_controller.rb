@@ -300,6 +300,7 @@ class CustomersController < ApplicationController
   def switch_to
     if (c = Customer.find_by_id(params[:id]))
       session[:cid] = c.id
+      reset_shopping
       if params[:target_controller] && params[:target_action]
         redirect_to :controller => params[:target_controller], :action => params[:target_action]
       else

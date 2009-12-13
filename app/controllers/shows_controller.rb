@@ -19,6 +19,10 @@ class ShowsController < ApplicationController
     @season = params[:season] == "All" ? "All" : (params[:season] || Time.now.year).to_i
     @years = (@shows.first.opening_date.year .. @shows.last.closing_date.year)
     @shows.reject! { |s| !s.opening_date.within_season?(@season) } if @season.to_i > 0
+    if @shows.empty?
+      flash[:notice] = "There are no shows set up yet."
+      redirect_to :action => new
+    end
   end
 
   def new

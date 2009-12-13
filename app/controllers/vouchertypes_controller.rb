@@ -39,6 +39,10 @@ class VouchertypesController < ApplicationController
       end
     @vouchertypes = Vouchertype.find(:all, :conditions => conditions,
                                      :order => "expiration_date DESC, subscription")
+    if @vouchertypes.empty?
+      flash[:warning] = "You have not defined any voucher types yet."
+      redirect_to :action => new
+    end
   end
 
   def new

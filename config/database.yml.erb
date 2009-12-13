@@ -6,7 +6,7 @@ base: &BASE
   host: localhost
 
 production: 
-  username: <%= config['username'] || venue %>
+  username: <%= user = (config['username'] || venue) %>
   password: <%= config['password'] %>
   <<: *BASE
 
