@@ -1,0 +1,13 @@
+- tabs = [['Buy Tickets', :store, :index], |
+  ['My Tickets', :customers, :welcome], |
+  ['Billing Address', :customers, :edit], |
+  ['Change Password', :customers, :change_password]] |
+- if @gAdmin.is_staff
+  - tabs +=    |
+    [['Shows', :shows, :list], |
+    ['Vouchers', :vouchertypes, :list], |
+    ['Reports', :report, :index], |
+    ['Box Office', :box_office, :walkup], |
+    ['Donations', :donation, :list], |
+    ['Settings', :options, :edit]] |
+%ul#store_nav= nav_tabs 'store_nav', tabs
