@@ -1,4 +1,4 @@
-%tr.oddRow
+%tr.odd
   %td= link_to donation.customer.full_name, :action => 'list', :cid => donation.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
   %td= donation.date.strftime("%D")
   %td{:align => 'right'}= link_to number_to_currency(donation.amount), :action => 'edit', :id => donation

@@ -1,5 +1,5 @@
 .browsable[voucher]
-  %tr{:class => cycle(:evenRow,:oddRow)}
+  %tr{:class => cycle(:even,:odd)}
     %td= check_box_tag "select[voucher][#{voucher.id}]", ''
     %td= voucher.id
     %td= h voucher.vouchertype.name

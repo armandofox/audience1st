@@ -34,7 +34,7 @@
   %label{:for=>:vouchertype_expiration_date} Not valid after midnight on
   = datetime_select 'vouchertype', 'expiration_date', :discard_hour => true, :discard_minute => true
 
-%p.clearboth
+%p.clear
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
   = check_box 'vouchertype', 'fulfillment_needed'
 

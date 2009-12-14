@@ -22,7 +22,7 @@
   %tbody
     - for vouchertype in @vouchertypes.sort_by { |v| v.bundle? ? 0 : 1 }
       %span{:class => (vouchertype.subscription? ? 'subscriberVouchertype' : '')}
-        %tr{:class => cycle(:oddRow,:evenRow)}
+        %tr{:class => cycle(:odd,:even)}
           %td
             - if @superadmin
               = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 

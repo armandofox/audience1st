@@ -2,7 +2,6 @@
 %html{:xmlns=>"http://www.w3.org/1999/xhtml","xml:lang"=>:en,:lang=>:en}
   %head
     = stylesheet_link_tag 'venue/default', :media => 'all'
-    = stylesheet_link_tag 'vbo', :media => 'all'
     = javascript_include_tag :defaults
 
     %title= @page_title || sprintf("%s: %s", controller.controller_name.capitalize,controller.action_name.humanize)
@@ -12,46 +11,30 @@
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(SANDBOX ? :testing : nil)}
 
+    #outer_header
     #outer_wrapper
-      #header
-      #nav
-        = render :partial => 'layouts/login_banner' if @gCustomer
-        - if controller.controller_name == 'box_office'
-          %ul#store_nav= nav_tabs 'store_nav', |
-            [['Walkup Sales', :box_office, :walkup], |
-            ['Printable Door List', :box_office, :door_list, @showdate], |
-            ['Reservation Checkin', :box_office, :checkin, @showdate], |
-            ['Walkup Report', :box_office, :walkup_report, @showdate], |
-            ['Back to Main', :customers, :list]]  |
-          = render :partial => 'box_office/show_stats'
-        - elsif @gCustomer
-          - tabs = [['Buy Tickets', :store, :index], |
-            ['My Tickets', :customers, :welcome], |
-            ['Billing Address', :customers, :edit], |
-            ['Change Password', :customers, :change_password]] |
-          - if @gAdmin.is_staff
-            - tabs +=    |
-              [['Shows', :shows, :list], |
-              ['Vouchers', :vouchertypes, :list], |
-              ['Reports', :report, :index], |
-              ['Box Office', :box_office, :walkup], |
-              ['Donations', :donation, :list], |
-              ['Settings', :options, :edit]] |
-          %ul#store_nav= nav_tabs 'store_nav', tabs
-          - if @gAdmin.is_staff
-            = render :partial => 'customers/quick_search'
-            = render :partial => 'messages/staff_buttons' if controller.controller_name == 'customers'
-          - else
-            %br.clear
-
       #inner_wrapper
+        #header
+        #nav
+          = render :partial => 'layouts/login_banner' if @gCustomer
+          - if controller.controller_name == 'box_office'
+            = render :partial => 'layouts/box_office_tabs'
+            = render :partial => 'box_office/show_stats'
+          - elsif @gCustomer
+            = render :partial => 'layouts/main_tabs'
+            - if @gAdmin.is_staff
+              = render :partial => 'customers/quick_search'
+              = render :partial => 'messages/staff_buttons' if controller.controller_name == 'customers'
+            - else
+              %br.clear
         %br.clear
-        = render :partial => 'messages/notice' unless flash[:notice].blank?
-        = render :partial => 'messages/warning' unless flash[:warning].blank?
-        = render :partial => 'store/checkout_error' unless flash[:checkout_error].blank?
-        - if @gCheckoutInProgress && %w(customers store).include?(controller.controller_name)
-          %h1.center Your Order So Far
-          = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
-        = yield
+        #content
+          = render :partial => 'messages/notice' unless flash[:notice].blank?
+          = render :partial => 'messages/warning' unless flash[:warning].blank?
+          = render :partial => 'store/checkout_error' unless flash[:checkout_error].blank?
+          - if @gCheckoutInProgress && %w(customers store).include?(controller.controller_name)
+            %h1.center Your Order So Far
+            = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
+          = yield
 
     = render :partial => 'layouts/footer'

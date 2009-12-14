@@ -4,50 +4,52 @@
   = javascript_recalc_function 'totaltix', vtypes, '', 'qty', '', '', 0
 
   %table#walkup_tickets
-    %tr
-      %td.help{:valign=>:top}
-        %p 1. Select tickets & donation amount
-      %td.help{:valign=>:top}
-        %p 2. Collect payment or process credit card, record sale
-    %tr
-      %td{:valign=>:top}
-        %table.hilite
-          %tr
-            %td{:colspan=>2}
-              %strong Tickets to be issued
-            %td= text_field_tag 'totaltix', 0, :id => 'totaltix',  |
-              :size => 4, :disabled => true, :class => 'disabledField'  |
-          %tr
-            %td{:colspan=>2}
-              %strong TOTAL TO COLLECT
-            %td= text_field_tag 'total', '0.00', :id => 'total', :size => 6, |
-              :disabled => true, :class => 'disabledField strong' |
-          %tr
-            %td.label{:colspan => 2} Additional donation:
-            %td= text_field_tag 'donation', '', :maxlength => 7, :size => 5, |
-              :onChange => 'recalc_total(); recalc_totaltix()'  |
-          - @valid_vouchers.each do |v|
+    %thead
+      %tr
+        %th{:valign=>:top}
+          %p 1. Select tickets & donation amount
+        %th{:valign=>:top}
+          %p 2. Collect payment or process credit card, record sale
+    %tbody
+      %tr
+        %td{:valign=>:top}
+          %table.hilite
             %tr
-              %td.label
-                = h(v.vouchertype_name)
-                - unless v.max_sales_for_type.zero?
-                  %span.callout= "(#{v.seats_remaining} left)" 
-              %td= text_field_tag "price[#{v.id}]", |
-                number_to_currency(v.price, :unit => ''), :disabled => true, |
-                :size => 6, :class => 'disabledField' |
-              %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0), {:onChange => "recalc_total(); recalc_totaltix()"} 
-      %td.c.t
-        %p Click here once payment has been collected:
-        %br
-        = submit_tag 'Record Cash Payment'
-        %br
-        %br
-        = submit_tag 'Record Check Payment'
-        %br
-        %br
-        = javascript_tag submit_if_zero('checkZero', 'total', |
-          'This option may only be used when no payment needs to be collected.') |
-        = button_to_function 'Record Zero-Revenue Order', 'checkZero()'
-        %br
-        %br
-        = submit_tag 'Credit Card Payment'
+              %td{:colspan=>2}
+                %strong Tickets to be issued
+              %td= text_field_tag 'totaltix', 0, :id => 'totaltix',  |
+                :size => 4, :disabled => true, :class => 'disabledField'  |
+            %tr
+              %td{:colspan=>2}
+                %strong TOTAL TO COLLECT
+              %td= text_field_tag 'total', '0.00', :id => 'total', :size => 6, |
+                :disabled => true, :class => 'disabledField strong' |
+            %tr
+              %td.label{:colspan => 2} Additional donation:
+              %td= text_field_tag 'donation', '', :maxlength => 7, :size => 5, |
+                :onChange => 'recalc_total(); recalc_totaltix()'  |
+            - @valid_vouchers.each do |v|
+              %tr
+                %td.label
+                  = h(v.vouchertype_name)
+                  - unless v.max_sales_for_type.zero?
+                    %span.emphasis= "(#{v.seats_remaining} left)" 
+                %td= text_field_tag "price[#{v.id}]", |
+                  number_to_currency(v.price, :unit => ''), :disabled => true, |
+                  :size => 6, :class => 'disabledField' |
+                %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0), {:onChange => "recalc_total(); recalc_totaltix()"} 
+        %td.c.t
+          %p Click here once payment has been collected:
+          %br
+          = submit_tag 'Record Cash Payment'
+          %br
+          %br
+          = submit_tag 'Record Check Payment'
+          %br
+          %br
+          = javascript_tag submit_if_zero('checkZero', 'total', |
+            'This option may only be used when no payment needs to be collected.') |
+          = button_to_function 'Record Zero-Revenue Order', 'checkZero()'
+          %br
+          %br
+          = submit_tag 'Credit Card Payment'

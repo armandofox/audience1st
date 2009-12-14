@@ -29,7 +29,7 @@ ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
 
 # run migrations in a separate environment, so they can use a different
 # DB user
-task :migrate, :roles => [:db] do
+deploy.task :migrate, :roles => [:db] do
   run "cd #{release_path} && rake db:migrate RAILS_ENV=migration"
 end
 
@@ -45,6 +45,7 @@ task :initialize_db, :roles => [:db] do
   run "cd #{home}/rails/#{from}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
   run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
   run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
+  run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :login => \"admin\", :password => \"admin\", :role => 100)'"
 end
 
 namespace :deploy do

@@ -12,7 +12,7 @@
     %tbody 
       - total = tprice = 0 
       - subscriptions.each do |s| 
-        %tr{:class=>cycle(:oddRow,:evenRow)}
+        %tr{:class=>cycle(:odd,:even)}
           %td.l= s[0]
           %td.r= s[2]
           %td.currency= number_to_currency(s[1])
