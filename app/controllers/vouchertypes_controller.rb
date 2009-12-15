@@ -1,7 +1,18 @@
 class VouchertypesController < ApplicationController
 
   before_filter :is_boxoffice_manager_filter
+  before_filter :has_at_least_one, :except => [:new, :create]
 
+  private
+  def at_least_one_vouchertype
+    unless Vouchertype.find(:first)
+      flash[:warning] = "You have not defined any voucher types yet."
+      redirect_to :action => 'new'
+    end
+  end
+
+  public
+  
   def index
     list
     render :action => 'list'
@@ -40,8 +51,7 @@ class VouchertypesController < ApplicationController
     @vouchertypes = Vouchertype.find(:all, :conditions => conditions,
                                      :order => "expiration_date DESC, subscription")
     if @vouchertypes.empty?
-      flash[:warning] = "You have not defined any voucher types yet."
-      redirect_to :action => new
+      flash[:warning] = "No vouchertypes matched your criteria."
     end
   end
 

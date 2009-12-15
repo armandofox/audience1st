@@ -25,6 +25,18 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  # a generic filter that can be used by any RESTful controller that checks
+  # there's at least one instance of the model in the DB
+
+  def has_at_least_one
+    contr = self.controller_name
+    klass = Kernel.const_get(contr.singularize.camelize)
+    unless klass.find(:first)
+      flash[:warning] = "You have not set up any #{contr} yet."
+      redirect_to :action => 'new'
+    end
+  end
+
   def set_checkout_in_progress(val = true)
     @gCheckoutInProgress = session[:checkout_in_progress] = val
   end

@@ -3,6 +3,7 @@ class ShowsController < ApplicationController
   before_filter(:is_boxoffice_manager_filter,
                 :add_to_flash => "Only Box Office Manager can modify show information",
                 :redirect_to => {:controller =>'customers',:action =>'welcome'})
+  before_filter :has_at_least_one, :except => [:new, :create]
 
   def index
     list

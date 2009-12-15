@@ -29,7 +29,7 @@
     =text_field 'customer', 'state', {:size => 2, :max_length => 2, :readonly => disabled}
     %label.no_float.strong{:for=>:customer_zip} Zip
     =text_field 'customer', 'zip', {:size => 10, :max_length => 10, :readonly => disabled}
-    - if @gAdmin.is_boxoffice && !disabled
+    - if nil && @gAdmin.is_boxoffice && !disabled
       = submit_to_remote 'Validate','Validate...', |
         :url => {:controller => 'customers',:action => 'validate_address'}, |
         :before => "Element.show('wait_validate')", |
