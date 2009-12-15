@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 48) do
+ActiveRecord::Schema.define(:version => 49) do
 
   create_table "customers", :force => true do |t|
     t.string   "first_name",             :limit => 64,                                                                                                                                                  :default => "",                    :null => false
@@ -63,16 +63,16 @@ ActiveRecord::Schema.define(:version => 48) do
   end
 
   create_table "donations", :force => true do |t|
-    t.date     "date",                                      :null => false
-    t.float    "amount",            :default => 0.0,        :null => false
-    t.integer  "donation_fund_id",  :default => 0,          :null => false
+    t.date     "date",                               :null => false
+    t.float    "amount",            :default => 0.0, :null => false
+    t.integer  "donation_fund_id",  :default => 0,   :null => false
     t.string   "comment"
-    t.integer  "customer_id",       :default => 0,          :null => false
+    t.integer  "customer_id",       :default => 0,   :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "letter_sent"
-    t.integer  "processed_by_id",   :default => 2146722771, :null => false
-    t.integer  "purchasemethod_id", :default => 1,          :null => false
+    t.integer  "processed_by_id"
+    t.integer  "purchasemethod_id", :default => 1,   :null => false
     t.string   "account_code"
   end
 
@@ -88,6 +88,10 @@ ActiveRecord::Schema.define(:version => 48) do
     t.string  "description",               :default => "",        :null => false
     t.string  "shortdesc",   :limit => 10, :default => "?purch?", :null => false
     t.boolean "nonrevenue",                :default => false
+  end
+
+  create_table "schema_info", :id => false, :force => true do |t|
+    t.integer "version"
   end
 
   create_table "sessions", :force => true do |t|
@@ -111,11 +115,11 @@ ActiveRecord::Schema.define(:version => 48) do
     t.string   "name"
     t.date     "opening_date"
     t.date     "closing_date"
-    t.datetime "created_on",                                 :null => false
+    t.integer  "house_capacity",   :limit => 2, :default => 0,            :null => false
+    t.datetime "created_on",                                              :null => false
     t.text     "patron_notes"
     t.string   "landing_page_url"
-    t.date     "listing_date",     :default => '2009-09-05', :null => false
-    t.integer  "house_capacity"
+    t.date     "listing_date",                  :default => '2009-11-29', :null => false
   end
 
   create_table "txn_types", :force => true do |t|
@@ -177,7 +181,7 @@ ActiveRecord::Schema.define(:version => 48) do
     t.integer  "external_key",                                                          :default => 0
     t.boolean  "no_show",                                                               :default => false,                 :null => false
     t.string   "promo_code"
-    t.integer  "processed_by_id",                                                       :default => 2146722771,            :null => false
+    t.integer  "processed_by_id"
     t.datetime "expiration_date",                                                       :default => '2008-12-31 00:00:00', :null => false
     t.datetime "sold_on"
     t.integer  "bundle_id",                                                             :default => 0,                     :null => false
@@ -194,7 +198,7 @@ ActiveRecord::Schema.define(:version => 48) do
     t.datetime "created_on"
     t.text     "comments"
     t.integer  "offer_public",                                                           :default => 0,                     :null => false
-    t.boolean  "subscription",                                                           :default => false,                 :null => false
+    t.boolean  "subscription"
     t.text     "included_vouchers"
     t.string   "promo_code",          :limit => 20,                                      :default => "",                    :null => false
     t.boolean  "walkup_sale_allowed",                                                    :default => true
