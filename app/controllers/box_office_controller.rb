@@ -12,7 +12,7 @@ class BoxOfficeController < ApplicationController
          :redirect_to => { :action => :walkup },
          :add_to_flash => "Warning: action only callable as POST, no transactions were recorded! ")
 
-  ssl_required(:walkup, :do_walkup_sale)   if RAILS_ENV == 'production'
+  ssl_required(:walkup, :do_walkup_sale)
 
   private
 

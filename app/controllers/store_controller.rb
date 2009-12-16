@@ -22,8 +22,7 @@ class StoreController < ApplicationController
 
   # this should be the last declarative spec since it will append another
   # before_filter
-  if RAILS_ENV == 'production'
-    ssl_required(:checkout, :place_order, :direct_transaction,
+  ssl_required(:checkout, :place_order, :direct_transaction,
                  :index, :subscribe,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
@@ -32,8 +31,7 @@ class StoreController < ApplicationController
                  :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
                 :remove_from_cart,
                 :process_swipe)
-  end
-
+  
   def index
     reset_shopping
     @customer = store_customer
@@ -127,7 +125,7 @@ class StoreController < ApplicationController
       @recipient = Customer.find_by_id(session[:recipient_id])
       @recipient.update_attributes(params[:customer])
     elsif ((@recipient = Customer.find_unique(params[:customer])) && # exact match
-           @recipient.valid_as_gift_recipient?)                    # valid contact info
+        @recipient.valid_as_gift_recipient?)                    # valid contact info
       # we're good; unique match, and already valid contact info.
     else
       # assume we'll have to create a new customer record.

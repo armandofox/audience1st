@@ -30,10 +30,8 @@ class CustomersController < ApplicationController
   verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
 
   # checks for SSL should be last, as they append a before_filter
-  if RAILS_ENV == 'production'
-    ssl_required :login, :change_password, :new, :create, :user_create, :edit, :forgot_password
-    ssl_allowed :auto_complete_for_customer_full_name
-  end
+  ssl_required :login, :change_password, :new, :create, :user_create, :edit, :forgot_password
+  ssl_allowed :auto_complete_for_customer_full_name
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name

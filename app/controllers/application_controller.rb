@@ -9,7 +9,14 @@ class ApplicationController < ActionController::Base
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
-  include SslRequirement
+  if (RAILS_ENV == 'production' && !SANDBOX)
+    include SslRequirement
+  else
+    def self.ssl_required(*args) ; true ; end
+    def self.ssl_allowed(*args) ; true ; end
+    def ssl_required? ; nil ; end
+    def ssl_allowed? ; nil ; end
+  end
   require 'csv.rb'
   require 'string_extras.rb'
   require 'date_time_extras.rb'
