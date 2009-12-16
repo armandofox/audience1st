@@ -1,4 +1,4 @@
-- form_tag :action => 'do_walkup_sale', :id => @showdate do
+- form_tag :action => 'do_walkup_sale',:id => @showdate do
   - vtypes = @valid_vouchers.map { |v| v.id }
   = javascript_recalc_function 'total', vtypes, 'price','qty','donation'
   = javascript_recalc_function 'totaltix', vtypes, '', 'qty', '', '', 0
@@ -36,7 +36,7 @@
                     %span.emphasis= "(#{v.seats_remaining} left)" 
                 %td= text_field_tag "price[#{v.id}]", |
                   number_to_currency(v.price, :unit => ''), :disabled => true, |
-                  :size => 6, :class => 'disabledField' |
+                  :size => 6, :class => 'disabledField currency' |
                 %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0), {:onChange => "recalc_total(); recalc_totaltix()"} 
         %td.c.t
           %p Click here once payment has been collected:
@@ -52,4 +52,5 @@
           = button_to_function 'Record Zero-Revenue Order', 'checkZero()'
           %br
           %br
-          = submit_tag 'Credit Card Payment'
+          = submit_tag 'Credit Card Payment', :disabled => true
+

@@ -74,6 +74,11 @@ class BoxOfficeController < ApplicationController
     redirect_to :action => 'walkup', :id => sd
   end
 
+  def checkin
+    flash[:warning] = "Interactive checkin not yet implemented (coming soon)"
+    redirect_to :action => 'walkup', :id => @showdate
+  end
+
   def door_list
     perf_vouchers = @showdate.vouchers
     unless perf_vouchers.empty?
@@ -97,11 +102,16 @@ class BoxOfficeController < ApplicationController
   def do_walkup_sale
     qtys = params[:qty]
     donation = params[:donation].to_f
+    if (qtys.values.map(&:to_i).sum.zero?  &&  donation.zero?)
+      flash[:warning] = "No tickets or donation to process"
+      redirect_to(:action => 'walkup', :id => @showdate) and return
+    end
     begin
       total = compute_price(qtys, donation) 
     rescue Exception => e
       flash[:warning] =
         "There was a problem verifying the amount of the order:<br/>#{e.message}"
+      redirect_to(:action => 'walkup', :id => @showdate) and return
     end
     if total == 0.0 # zero-cost purchase
       process_walkup_vouchers(qtys, p=Purchasemethod.find_by_shortdesc('none'))
@@ -113,21 +123,24 @@ class BoxOfficeController < ApplicationController
     else
       case params[:commit]
       when /credit/i
+        raise "Credit card swipe processing not yet implemented"
         method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
       when /cash/i
         method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
       when /check/i
         method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
       end
-      Store.purchase!(method,total) do
+      resp = Store.purchase!(method,total) do
         process_walkup_vouchers(qtys, how)
         Donation.walkup_donation(donation,logged_in_id) if donation > 0.0
         Txn.add_audit_record(:txn_type => 'tkt_purch',
-                             :customer_id => customer.id,
+                             :customer_id => Customer.walkup_customer.id,
                              :comments => 'walkup',
-                             :purchasemethod_id => howpurchased,
+                             :purchasemethod_id => how,
                              :logged_in_id => logged_in_id)
       end
+      flash[:notice] = "Transaction NOT processed: #{resp.message}" unless
+        resp.success?
     end
     redirect_to :action => 'walkup', :id => @showdate
   end

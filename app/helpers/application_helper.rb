@@ -74,7 +74,7 @@ module ApplicationHelper
             alert('#{alert}');
             return false;
           } else {
-            this.form.submit();
+            this.forms[0].submit();
           }
         }
 EJS1
