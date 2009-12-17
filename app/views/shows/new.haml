@@ -1,0 +1,7 @@
+%h1 Setup new show
+
+- form_tag :action => 'create' do 
+  = render :partial => 'form'
+  = submit_tag "Create"
+
+= gen_button "Don't Create", :action => 'list'

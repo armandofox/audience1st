@@ -5,6 +5,7 @@
 - form_tag :action => 'update', :id => @show  do
   = render :partial => 'form'
   = submit_tag 'Save Changes'
+  = gen_button 'Back to List of Shows', :action => 'list'
 
 %h2 Performances
 

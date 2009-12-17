@@ -1,8 +1,8 @@
 %h1
   Listing 
-  =h @things.length
+  = h @things.length
   transactions totaling $
-  =h sprintf("%.02f",@things.inject(0) { |t,d| t + d.price })
+  = h sprintf("%.02f",@things.inject(0) { |t,d| t + d.price })
 
 - form_tag(:action => 'list', :method => :get) do
   = render :partial => 'donation_search', :locals => {:params => @params}

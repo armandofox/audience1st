@@ -12,7 +12,7 @@
   %td{:width=>"50%"}
     = link_to 'Edit', {:controller => 'showdates', :action => 'edit', :id => showdate.id}
     = "|"
-    = link_to 'Front of House', {:controller => 'box_office', :id => showdate }
+    = link_to 'Box Office', {:controller => 'box_office', :id => showdate }
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id), showdate.printable_name
     = "|"
@@ -23,12 +23,13 @@
   %td{:colspan=>4}
     %div[showdate]{:style => @maybe_hide}
       %table.hilite.showdates_summary
-        %tr
-          %th Sold
-          %th Max
-          %th Type
-          %th Sales start
-          %th Sales end
+        - unless showdate.valid_vouchers.empty?
+          %tr
+            %th Sold
+            %th Max
+            %th Type
+            %th Sales start
+            %th Sales end
         - showdate.valid_vouchers.each do |v|
           %tr[v]
             - nsales = showdate.sales_by_type(v.vouchertype_id)

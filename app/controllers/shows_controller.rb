@@ -33,8 +33,8 @@ class ShowsController < ApplicationController
   def create
     @show = Show.new(params[:show])
     if @show.save
-      flash[:notice] = 'Show was successfully created.'
-      redirect_to :action => 'list'
+      flash[:notice] = 'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
+      redirect_to :action => 'edit', :id => @show
     else
       render :action => 'new'
     end
