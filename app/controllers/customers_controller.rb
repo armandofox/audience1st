@@ -214,23 +214,23 @@ class CustomersController < ApplicationController
   def change_password
     @customer = current_customer
     if (request.post?)
-      pass = params[:customer][:password].to_s.strip rescue nil
-      login = params[:customer][:login].to_s.strip rescue nil
-      if ( pass.blank? || login.blank? )
-        flash[:notice] = "Password and login cannot be blank."
-        render :action => 'change_password'
-        return
+      pass = params[:customer][:password].to_s.strip
+      @customer.password = pass unless pass.blank?
+      @customer.login = params[:customer][:login].to_s.strip
+      if @customer.login.blank?
+        flash[:notice] = "Login can't be blank. Please choose a login name."
+        render(:action => 'change_password') and return
       end
-      @customer.password = pass
-      @customer.login = login
       if (@customer.save)
-        flash[:notice] = "New login and password are confirmed."
+        flash[:notice] = pass.blank? ? "New login confirmed (password unchanged)." : "New login and password are confirmed."
         email_confirmation(:send_new_password,@customer,
                            pass, "changed your login or password on our system")
         Txn.add_audit_record(:txn_type => 'edit',
                              :customer_id => @customer.id,
                              :comments => 'Change password')
         redirect_to :action => 'welcome'
+      else
+        render :action => 'change_password'
       end
     end
   end

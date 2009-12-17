@@ -19,7 +19,8 @@
         %span#show_capacity= cap = @showdate.house_capacity
       %td
         Sold:
-        %span#sold= @showdate.compute_total_sales
+        - tsales = @showdate.compute_total_sales
+        %span#sold{:class => (tsales>cap ? 'strong' : nil)}= @showdate.compute_total_sales
       %td
         Checked in:
         %span#checked_in= @showdate.checked_in

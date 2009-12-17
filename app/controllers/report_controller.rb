@@ -35,7 +35,7 @@ class ReportController < ApplicationController
       invoice
     else
       flash[:notice] = "Please select a valid report."
-      redirect_to :action => :index and return
+      redirect_to(:action => 'index') and return
     end
   end
 
@@ -138,6 +138,7 @@ EOQ1
            "GROUP BY d.purchasemethod_id",
            @from, @to]
     @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
+    render :action => 'accounting_report'
   end
 
   def subscriber_details
