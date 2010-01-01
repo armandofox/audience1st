@@ -46,8 +46,9 @@ describe Voucher do
 
   describe "expired voucher" do
     before(:all) do
-      @v = Voucher.new_from_vouchertype(@vt_regular)
+      @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @v.expiration_date = 1.month.ago
+      @v.should be_valid
     end
     it "should not be valid today" do
       @v.should_not be_valid_today
@@ -63,7 +64,40 @@ describe Voucher do
       context "by box office only"
     end
   end
-  
+  describe "transferring a voucher" do
+    before(:each) do
+      @from = Customer.create!(:first_name => "John", :last_name => "Donor")
+      @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
+      @v.should be_valid
+      @from.vouchers << @v
+      @from.save!
+    end
+    context "when recipient exists" do
+      before(:all) do
+        @to = Customer.create!(:first_name => "Jane", :last_name => "Recipient")
+      end
+      it "should add the voucher to the recipient's account" do
+        @v.transfer_to_customer(@to)
+        @to.vouchers.should include(@v)
+      end
+      it "should remove the voucher from the transferor's account" do
+        @v.transfer_to_customer(@to)
+        @from.vouchers.should_not include(@v)
+      end
+    end
+    context "when recipient doesn't exist" do
+      before(:all) do
+        @to = Customer.new(:first_name => "Jane", :last_name => "Nonexistent")
+      end
+      it "should not cause an error" do
+        lambda { @v.transfer_to_customer(@to) }.should_not raise_error
+      end
+      it "should not remove the voucher from the transferor's account" do
+        @v.transfer_to_customer(@to)
+        @from.vouchers.should include(@v)
+      end
+    end
+  end
 end
 
 

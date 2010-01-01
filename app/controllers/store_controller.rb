@@ -29,8 +29,7 @@ class StoreController < ApplicationController
                  :comment_changed,
                  :not_me, :edit_billing_address,
                  :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
-                :remove_from_cart,
-                :process_swipe)
+                :remove_from_cart)
   
   def index
     reset_shopping
@@ -366,50 +365,6 @@ EON
   def set_current_showdate(sd) ; (session[:store] ||= {})[:showdate] = sd ; end
   def current_showdate ;  (session[:store] ||= {})[:showdate] ;  end
   def current_show ; (session[:store] ||= {})[:show] ;  end
-
-  def encrypt_with(orig,pad)
-    str = String.new(orig)
-    for i in (0..str.length-1) do
-      str[i] ^= pad[i]
-    end
-    str
-  end
-
-  def convert_swipe_to_cc_info(s)
-    # trk1: '%B' accnum '^' last '/' first '^' YYMM svccode(3 chr)
-    #   discretionary data (up to 8 chr)  '?'
-    # '%B' is a format code for the standard credit card "open" format; format
-    # code '%A' would indicate a proprietary encoding
-    trk1 = Regexp.new('^%B(\d{1,19})\\^([^/]+)/?([^/]+)?\\^(\d\d)(\d\d)[^?]+\\?', :ignore_case => true)
-    # trk2: ';' accnum '=' YY MM svccode(3 chr) discretionary(up to 8 chr) '?'
-    trk2 = Regexp.new(';(\d{1,19})=(\d\d)(\d\d).{3,12}\?', :ignore_case => true)
-
-    # if card has a track 1, we use that (even if trk 2 also present)
-    # else if only has a track 2, try to use that, but doesn't include name
-    # else error.
-
-    if s.match(trk1)
-      accnum = Regexp.last_match(1).to_s
-      lastname = Regexp.last_match(2).to_s.upcase
-      firstname = Regexp.last_match(3).to_s.upcase # may be nil if this field was absent
-      expyear = 2000 + Regexp.last_match(4).to_i
-      expmonth = Regexp.last_match(5).to_i
-    elsif s.match(trk2)
-      accnum = Regexp.last_match(1).to_s
-      expyear = 2000 + Regexp.last_match(2).to_i
-      expmonth = Regexp.last_match(3).to_i
-      lastname = firstname = ''
-    else
-      accnum = lastname = firstname = 'ERROR'
-      expyear = expmonth = 0
-    end
-    CreditCard.new(:first_name => firstname.strip,
-                   :last_name => lastname.strip,
-                   :month => expmonth.to_i,
-                   :year => expyear.to_i,
-                   :number => accnum.strip,
-                   :type => CreditCard.type?(accnum.strip) || '')
-  end
 
   # helpers for the AJAX handlers. These should probably be moved
   # to the respective models for shows and showdates, or called as

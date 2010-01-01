@@ -32,6 +32,45 @@ class Store
     end
   end
 
+  def self.process_swipe_data(s)
+    s = s.chomp
+    # trk1: '%B' accnum '^' last '/' first '^' YYMM svccode(3 chr)
+    #   discretionary data (up to 8 chr)  '?'
+    # '%B' is a format code for the standard credit card "open" format; format
+    # code '%A' would indicate a proprietary encoding
+    trk1 = Regexp.new('^%B(\d{1,19})\\^([^/]+)/?([^/]+)?\\^(\d\d)(\d\d)[^?]+\\?', :ignore_case => true)
+    # trk2: ';' accnum '=' YY MM svccode(3 chr) discretionary(up to 8 chr) '?'
+    trk2 = Regexp.new(';(\d{1,19})=(\d\d)(\d\d).{3,12}\?', :ignore_case => true)
+
+    # if card has a track 1, we use that (even if trk 2 also present)
+    # else if only has a track 2, try to use that, but doesn't include name
+    # else error.
+
+    if s.match(trk1)
+      RAILS_DEFAULT_LOGGER.info "Matched track 1"
+      accnum = Regexp.last_match(1).to_s
+      lastname = Regexp.last_match(2).to_s.upcase
+      firstname = Regexp.last_match(3).to_s.upcase # may be nil if this field was absent
+      expyear = 2000 + Regexp.last_match(4).to_i
+      expmonth = Regexp.last_match(5).to_i
+    elsif s.match(trk2)
+      RAILS_DEFAULT_LOGGER.info "Matched track 2"
+      accnum = Regexp.last_match(1).to_s
+      expyear = 2000 + Regexp.last_match(2).to_i
+      expmonth = Regexp.last_match(3).to_i
+      lastname = firstname = ''
+    else
+      RAILS_DEFAULT_LOGGER.info "No match on track 1 or 2"
+      accnum = expyear = expmonth = lastname = firstname = ''
+    end
+    return CreditCard.new(:first_name => firstname.strip,
+                   :last_name => lastname.strip,
+                   :month => expmonth.to_i,
+                   :year => expyear.to_i,
+                   :number => accnum.strip)
+  end
+
+
   private
   
   def self.purchase_with_credit_card!(amount, cc, bill_to, order_num, proc)

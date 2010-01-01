@@ -37,13 +37,10 @@
                 %td= text_field_tag "price[#{v.id}]", |
                   number_to_currency(v.price, :unit => ''), :disabled => true, |
                   :size => 6, :class => 'disabledField currency' |
-                %td= select_tag "qty[#{v.id}]", options_for_select((0..12),0), {:onChange => "recalc_total(); recalc_totaltix()"} 
+                %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:onChange => "recalc_total(); recalc_totaltix()"})  
         %td.c.t
-          %p Click here once payment has been collected:
           %br
           = submit_tag 'Record Cash Payment'
-          %br
-          %br
           = submit_tag 'Record Check Payment'
           %br
           %br
@@ -52,5 +49,8 @@
           = button_to_function 'Record Zero-Revenue Order', 'checkZero()'
           %br
           %br
-          = submit_tag 'Credit Card Payment', :disabled => true
+          #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
+          = submit_tag 'Record Credit Card Payment', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
 
+= javascript_tag 'recalc_total(); recalc_totaltix();'
+            

@@ -1,6 +1,13 @@
 %fieldset#credit_card
   %legend= defined?(legend) ? legend : 'Credit Card Information'
   - fields_for :credit_card, credit_card do |cc|
+    - if defined?(name_needed) && name_needed
+      = label :credit_card, :first_name, 'First Name'
+      = cc.text_field :first_name, :size => 20
+      %br
+      = label :credit_card, :last_name, 'Last Name'
+      = cc.text_field :last_name, :size => 20
+      %br
     = label :credit_card, :type, 'Type'
     = select 'credit_card','type',options_for_credit_card, {:id=>'credit_card_type'}
     %br

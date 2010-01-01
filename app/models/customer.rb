@@ -81,11 +81,11 @@ class Customer < ActiveRecord::Base
 
   after_save :update_email_subscription
   def update_email_subscription
-    return unless (e_blacklist_changed? || email_changed?)
+    return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
     if e_blacklist      # opting out of email
       EmailList.unsubscribe(self, email_was)
     else                        # opt in
-      if email_changed?        # with new email
+      if (email_changed? || first_name_changed? || last_name_changed?)
         if email_was.blank?
           EmailList.subscribe(self)
         else

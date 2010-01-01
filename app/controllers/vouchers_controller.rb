@@ -249,8 +249,34 @@ class VouchersController < ApplicationController
       elsif params[:customer]
         @vouchers = Customer.find(params[:customer]).vouchers
       end
+      if @vouchers.empty?
+        flash[:notice] = "No vouchers selected."
+        redirect_to :controller => 'customers', :action => 'welcome'
+      end
       return
     end
+    # post: transfer vouchers
+    if params[:commit] !~ /transfer/i
+      flash[:notice] = "Sorry, this function isn't implemented yet."
+      redirect_to :controller => 'customers', :action => 'welcome'
+      return
+    end
+    unless (recipient = Customer.find_by_id(params[:xfer_id]))
+      flash[:notice] = "Recipient isn't in customer list. Please create an account for recipient first."
+      redirect_to(:controller => 'customers', :action => 'new') and return
+    end
+    if (params[:select][:voucher].keys.empty? rescue true)
+      flash[:notice] = "No vouchers were selected."
+      redirect_to :controller => 'customers', :action => 'welcome'
+      return
+    end
+    params[:select][:voucher].keys.each do |vid|
+      if (v = Voucher.find_by_id(vid))
+        v.transfer_to_customer(recipient)
+      end
+    end
+    flash[:notice] = "Vouchers were transferred to #{recipient.full_name}'s account."
+    redirect_to :controller => 'customers', :action => 'welcome'
   end
 
   def owns_voucher_or_is_boxoffice

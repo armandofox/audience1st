@@ -193,6 +193,15 @@ class Voucher < ActiveRecord::Base
     return newvouchers
   end
 
+  def transfer_to_customer(c)
+    if c.kind_of?(Customer) && !c.new_record?
+      self.update_attribute(:customer_id, c.id)
+      return c
+    else
+      return nil
+    end
+  end
+  
   def add_to_customer(c)
     #begin
       c.vouchers << self

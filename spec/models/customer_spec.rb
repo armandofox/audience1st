@@ -120,6 +120,33 @@ describe Customer do
     before(:each) do
       @email = "asdf@yahoo.com"
     end
+    context "when changing name only" do
+      it "should be updated with new name even if email doesn't change" do
+        @customer = Customer.create!(:first_name => "J", :last_name => "D",
+          :email => @email,
+          :e_blacklist => false)
+        @customer.first_name = "Q"
+        EmailList.should_receive(:update).with(@customer, @email)
+        @customer.save!
+      end
+      it "should not be updated if previously opted out" do
+        @customer = Customer.create!(:first_name => "J", :last_name => "D",
+          :email => @email,
+          :e_blacklist => true)
+        @customer.first_name = "Q"
+        EmailList.should_not_receive(:update)
+        @customer.save!
+      end
+      it "should not be updated if now opting out" do
+        @customer = Customer.create!(:first_name => "J", :last_name => "D",
+          :email => @email,
+          :e_blacklist => false)
+        @customer.first_name = "Q"
+        @customer.e_blacklist = true
+        EmailList.should_not_receive(:update)
+        @customer.save!
+      end
+    end
     context "when opting out" do
       before(:each) do
         @customer = Customer.create!(:first_name => "J", :last_name => "D",
