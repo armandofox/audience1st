@@ -139,8 +139,8 @@ class CustomersController < ApplicationController
     end
     @admin = current_admin
     @page_title = "Welcome, Subscriber #{@customer.full_name.name_capitalize}"
-    @vouchers = customer.active_vouchers.sort_by(&:created_on)
-    session[:store_customer] = customer.id
+    @vouchers = @customer.active_vouchers.sort_by(&:created_on)
+    session[:store_customer] = @customer.id
     @subscriber = true
     # separate vouchers into these categories:
     # unreserved subscriber vouchers, reserved subscriber vouchers, others
