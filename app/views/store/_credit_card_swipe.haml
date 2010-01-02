@@ -7,7 +7,7 @@
     = label :credit_card, :verification_value, 'Enter CVV code manually', :class => 'strong'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
     %br
-    %div Type in card data or
+    %div Then type in card data, or
     %br
     #ccReady= link_to_function 'Click Here to Swipe Card', 'waitForSwipe()', {:class => 'genButton'}
     #ccWaiting{:style => 'display: none;'}= link_to_function 'Swipe Card or Click Here to Cancel', 'resetSwipe()', {:class => 'genButton'}

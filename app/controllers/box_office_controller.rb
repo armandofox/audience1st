@@ -4,14 +4,14 @@ class BoxOfficeController < ApplicationController
                 :redirect_to => { :controller => :customers, :action => :login})
 
   # sets  instance variable @showdate and others for every method.
-  before_filter :get_showdates, :except => %w[swipe]
-  before_filter :get_showdate, :except => %w[swipe]
+  before_filter :get_showdate
   verify(:method => :post,
          :only => :do_walkup_sale,
-         :redirect_to => { :action => :walkup },
-         :add_to_flash => "Warning: action only callable as POST, no transactions were recorded! ")
+         :redirect_to => { :action => :walkup, :id => @showdate },
+    :add_to_flash => {:warning => "Warning: action only callable as POST, no transactions were recorded! "})
 
-  ssl_required(:walkup, :do_walkup_sale, :swipe)
+  ssl_required(:walkup, :do_walkup_sale)
+  ssl_allowed :change_showdate
   filter_parameter_logging :swipe_data
   
   private
@@ -19,6 +19,7 @@ class BoxOfficeController < ApplicationController
   # this filter must return non-nil for any method on this controller,
   # or else force a redirect to a different controller & action
   def get_showdate
+    @showdates = Showdate.all_shows_this_season
     return true if (!params[:id].blank?) &&
       (@showdate = Showdate.find_by_id(params[:id].to_i))
     if (showdate = (Showdate.current_or_next ||
@@ -28,11 +29,6 @@ class BoxOfficeController < ApplicationController
       flash[:notice] = "There are no shows listed.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'
     end
-  end
-
-  # this filter sets up showdates for _showdate_stats panel
-  def get_showdates
-    @showdates = Showdate.all_shows_this_season
   end
 
   # given a hash of valid-voucher ID's and quantities, compute the total
@@ -71,8 +67,9 @@ class BoxOfficeController < ApplicationController
       cc = Store.process_swipe_data(s)
       cc.verification_value = params[:credit_card][:verification_value]
     end
+    # allow testing using bogus credit card types
     return("Invalid credit card information: " <<
-      cc.errors.full_messages.join(',') <<
+      cc.errors.full_messages.join(', ') <<
       (s.blank? ? '' : '(try entering manually)')) unless cc.valid?
     args[:credit_card] = cc
     # generate bill_to argument
@@ -123,23 +120,15 @@ class BoxOfficeController < ApplicationController
     @qty = params[:qty] || {}     # voucher quantities
   end
 
-  def swipe
-    # AJAX handler for USB swipe read
-    cc = (params[:swipe_data].blank? ? CreditCard.new :
-      Store.process_swipe_data(params[:swipe_data]))
-    render :partial => 'store/credit_card',
-    :locals => {:name_needed => true, :credit_card => cc}
-  end
-  
   def do_walkup_sale
     @qty = params[:qty]
-    donation = params[:donation].to_f
-    if (@qty.values.map(&:to_i).sum.zero?  &&  donation.zero?)
-      flash[:warning] = "No tickets or donation to process"
+    @donation = params[:donation].to_f
+    if (@qty.values.map(&:to_i).sum.zero?  &&  @donation.zero?)
+      logger.info(flash[:warning] = "No tickets or donation to process")
       redirect_to(:action => 'walkup', :id => @showdate) and return
     end
     begin
-      total = compute_price(@qty, donation) 
+      total = compute_price(@qty, @donation) 
     rescue Exception => e
       flash[:warning] =
         "There was a problem verifying the amount of the order:<br/>#{e.message}"
@@ -152,43 +141,54 @@ class BoxOfficeController < ApplicationController
                            :comments => 'walkup',
                            :purchasemethod_id => p,
                            :logged_in_id => logged_in_id)
-    else
-      # if there was a swipe_data field, a credit card was swiped, so
-      # assume it was a credit card purchase; otherwise depends on which
-      # submit button was used.
-      params[:commit] = 'credit' unless (params[:swipe_data].blank? && params[:credit_card].all? { |field,val| val.blank? })
-      case params[:commit]
-      when /credit/i
-        method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
-        unless (args = collect_brief_credit_card_info).kind_of?(Hash)
-          flash[:warning] = args
-          redirect_to :action => 'walkup', :id => @showdate, :params => {:qty => @qty}
-          return
-        end
-        raise args.inspect
-      when /cash|zero/i
-        method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
-        args = {}
-      when /check/i
-        method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
-        args = {}
-      end
-      resp = Store.purchase!(method,total,args) do
-        process_walkup_vouchers(@qty, how)
-        Donation.walkup_donation(donation,logged_in_id) if donation > 0.0
-        Txn.add_audit_record(:txn_type => 'tkt_purch',
-                             :customer_id => Customer.walkup_customer.id,
-                             :comments => 'walkup',
-                             :purchasemethod_id => how.id,
-                             :logged_in_id => logged_in_id)
-      end
-      if resp.success?
-        flash[:notice] << " purchased via #{how.description}"
-      else
-        flash[:notice] = "Transaction NOT processed: #{resp.message}" 
-      end
+      flash[:notice] << " as zero-revenue order"
+      logger.info "Zero revenue order successful"
+      redirect_to :action => 'walkup', :id => @showdate
+      return
     end
-    redirect_to :action => 'walkup', :id => @showdate
+    # if there was a swipe_data field, a credit card was swiped, so
+    # assume it was a credit card purchase; otherwise depends on which
+    # submit button was used.
+    params[:commit] = 'credit' unless
+      params[:swipe_data].blank? && params[:credit_card].all? { |f,v| v.blank? }
+    case params[:commit]
+    when /credit/i
+      method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
+      unless (args = collect_brief_credit_card_info).kind_of?(Hash)
+        flash[:notice] = args
+        logger.info "Credit card validation failed: #{args}"
+        redirect_to(:action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation)
+        return
+      end
+    when /cash|zero/i
+      method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
+      args = {}
+    when /check/i
+      method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
+      args = {}
+    else
+      logger.info(flash[:notice] = "Unrecognized purchase type: #{params[:commit]}")
+      redirect_to(:action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation) and return
+    end
+    resp = Store.purchase!(method,total,args) do
+      process_walkup_vouchers(@qty, how)
+      Donation.walkup_donation(@donation,logged_in_id) if @donation > 0.0
+      Txn.add_audit_record(:txn_type => 'tkt_purch',
+        :customer_id => Customer.walkup_customer.id,
+        :comments => 'walkup',
+        :purchasemethod_id => how.id,
+        :logged_in_id => logged_in_id)
+    end
+    if resp.success?
+      flash[:notice] << " purchased via #{how.description}"
+      logger.info "Successful #{how.description} walkup"
+      redirect_to :action => 'walkup', :id => @showdate
+    else
+      flash[:warning] = "Transaction NOT processed: #{resp.message}"
+      flash[:notice] = ''
+      logger.info "Failed walkup sale: #{resp.message}"
+      redirect_to :action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation
+    end
   end
 
   def walkup_report

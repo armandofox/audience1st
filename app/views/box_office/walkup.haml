@@ -9,7 +9,7 @@
         %th{:valign=>:top}
           %p 1. Select tickets & donation amount
         %th{:valign=>:top}
-          %p 2. Collect payment or process credit card, record sale
+          %p 2. Collect & record payment
     %tbody
       %tr
         %td{:valign=>:top}
@@ -26,7 +26,7 @@
                 :disabled => true, :class => 'disabledField strong' |
             %tr
               %td.label{:colspan => 2} Additional donation:
-              %td= text_field_tag 'donation', '', :maxlength => 7, :size => 5, |
+              %td= text_field_tag 'donation', @donation, :maxlength => 7, :size => 5, |
                 :onChange => 'recalc_total(); recalc_totaltix()'  |
             - @valid_vouchers.each do |v|
               %tr

@@ -16,6 +16,8 @@ config.action_controller.perform_caching             = false
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
 
+config.log_level = :info
+
 # Payment gateway: use bogus (test) gateway
 PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
@@ -29,3 +31,4 @@ EmailList.mode = {
   :mailchimp_password => 's;ystrms',
   :mailchimp_default_list_name => 'Test list'
 }
+

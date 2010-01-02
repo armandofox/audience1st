@@ -1,5 +1,6 @@
 class Store
   include ActiveMerchant::Billing
+  require 'money'
   
   private
 
