@@ -7,10 +7,10 @@ AuthType Basic
 
 RewriteEngine On
 
-ErrorDocument 503 /sandbox/system/maintenance.html
-RewriteCond %{DOCUMENT_ROOT}/sandbox/system/maintenance.html -f
+ErrorDocument 503 /VENUE/system/maintenance.html
+RewriteCond %{DOCUMENT_ROOT}/VENUE/system/maintenance.html -f
 RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-RewriteRule ^.*$ /sandbox/system/maintenance.html [redirect=503,L]
+RewriteRule ^.*$ /VENUE/system/maintenance.html [redirect=503,L]
 
 # In case Rails experiences terminal errors
 
