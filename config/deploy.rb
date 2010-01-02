@@ -70,7 +70,7 @@ deploy.task :after_update_code do
   put dbconfig, "#{release_path}/config/database.yml"
   run "rm -f #{release_path}/config/venues.yml #{release_path}/config/database.yml.erb"
   # instantiate htaccess file
-  run "perl -pe 's/\@\@VENUE\@\@/#{venue}/g' #{release_path}/public/htaccess-template > #{release_path}/public/.htaccess"
+  run "perl -pe 's/VENUE/#{venue}/g' #{release_path}/public/htaccess-template > #{release_path}/public/.htaccess  &&  rm -f #{release_path}/public/htaccess-template"
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
   %w[manual doc test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
