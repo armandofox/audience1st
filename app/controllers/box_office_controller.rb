@@ -19,7 +19,7 @@ class BoxOfficeController < ApplicationController
   # this filter must return non-nil for any method on this controller,
   # or else force a redirect to a different controller & action
   def get_showdate
-    @showdates = Showdate.all_shows_this_season
+    @showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season - 1.year], :order => "thedate ASC")
     return true if (!params[:id].blank?) &&
       (@showdate = Showdate.find_by_id(params[:id].to_i))
     if (showdate = (Showdate.current_or_next ||

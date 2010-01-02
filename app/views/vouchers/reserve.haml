@@ -1,18 +1,24 @@
 %h2 
   Make Reservation for 
-  =h @customer.full_name
+  = h @customer.full_name
 
 - form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher do
-  %table
-    %tbody
-      %tr
-        %td Select a show and performance date:
-        %td= select_tag('showdate_id', options_from_collection_for_select(@available_seats.sort_by { |av| av.showdate.thedate }, 'showdate_id', 'showdate_name_with_explanation'))
-      %tr
-        %td Special seating needs or requests:
-        %td= select_menu_or_freeform 'comments', APP_CONFIG[:voucher_comments]
+  %label{:for => 'showdate_id'} Select a performance
+  = select_tag('showdate_id', options_from_collection_for_select(@available_seats.sort_by { |av| av.showdate.thedate }, 'showdate_id', 'showdate_name_with_explanation'))
   %br
+
+  %label.emphasis{:for => 'accessible_seating'} ADA seating required?
+  = checkbox_guard_for 'special_seating'
+  #special_seating{:style => 'display:none'}
+    %label{:for => 'comments'} Please describe ADA needs
+    = text_field_tag 'comments', '', :size => '20em', :class => :showdate
+  %br
+
   - if @available_seats.detect { |d| d.available? }
+    - if @customer.valid_email_address?
+      %label{:for => 'email_confirmation'} Send a confirmation email?
+      = check_box_tag 'email_confirmation', 1, !@customer.is_admin
+      %br
     = submit_tag 'Confirm Reservation'
     - back_label = "Don't Make Reservation"
   - else

@@ -376,7 +376,7 @@ EON
 
   def get_all_showdates(ignore_cutoff = false)
     if ignore_cutoff
-      showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season])
+      showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season - 1.year], :order => "thedate ASC")
     else
       showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).sort_by(&:thedate)
     end

@@ -111,6 +111,7 @@ class CustomersController < ApplicationController
     # if customer is a subscriber, AND force_classic is not indicated,
     # redirect to correct page
     if (@customer.is_subscriber?)
+      @subscriber = true
       unless ((params[:force_classic] && @gAdmin.is_boxoffice) ||
               !(Option.value(:force_classic_view).blank?))
         flash.keep :notice
@@ -118,9 +119,14 @@ class CustomersController < ApplicationController
         redirect_to :action=>'welcome_subscriber'
         return
       end
+    else
+      @subscriber = false
     end
-    setup_for_welcome(@customer)
-    @subscriber = false
+    @admin = current_admin
+    @page_title = sprintf("Welcome, %s#{@customer.full_name.name_capitalize}",
+                          @customer.is_subscriber? ? 'Subscriber ' : '')
+    @vouchers = (@admin.is_boxoffice ?  @customer.vouchers :  @customer.active_vouchers).sort_by(&:created_on).reverse
+    session[:store_customer] = @customer.id
   end
 
   def welcome_subscriber        # for subscribers
@@ -131,7 +137,10 @@ class CustomersController < ApplicationController
       redirect_to :action=>'welcome'
       return
     end
-    setup_for_welcome(@customer)
+    @admin = current_admin
+    @page_title = "Welcome, Subscriber #{@customer.full_name.name_capitalize}"
+    @vouchers = customer.active_vouchers.sort_by(&:created_on)
+    session[:store_customer] = customer.id
     @subscriber = true
     # separate vouchers into these categories:
     # unreserved subscriber vouchers, reserved subscriber vouchers, others
@@ -480,14 +489,6 @@ class CustomersController < ApplicationController
     else
       return ['store', 'index']
     end
-  end
-
-  def setup_for_welcome(customer)
-    @admin = current_admin
-    @page_title = sprintf("Welcome, %s#{customer.full_name.name_capitalize}",
-                          customer.is_subscriber? ? 'Subscriber ' : '')
-    @vouchers = customer.active_vouchers.sort_by(&:created_on)
-    session[:store_customer] = customer.id
   end
 
   def forgot_password(login)

@@ -149,7 +149,7 @@ class VouchersController < ApplicationController
                                  params[:comments], :ignore_cutoff => @is_admin))
       flash[:notice] = "Reservation confirmed. " <<
         "Your confirmation number is #{a}."
-      unless is_boxoffice
+      if params[:email_confirmation] && @customer.valid_email_address?
         email_confirmation(:confirm_reservation, @customer, showdate, 1, a)
       end
     else
