@@ -1,14 +1,11 @@
 / = error_messages_for 'store'
 
 - if @next_season_subscriber
-  #subscriptionBannerNextSeasonSubscriber.subscriptionBannerNextSeasonSubscriber
-    = sanitize_option_text :subscription_sales_banner_for_next_season_subscribers
+  = sanitize_option_text :subscription_sales_banner_for_next_season_subscribers, 'div', :id => 'subscriptionBannerNextSeasonSubscriber', :class => 'storeBanner'
 - elsif @subscriber
-  #subscriptionBannerSubscriber.subscriptionBannerSubscriber
-    = sanitize_option_text :subscription_sales_banner_for_current_subscribers
+  = sanitize_option_text :subscription_sales_banner_for_current_subscribers, 'div', :id => 'subscriptionBannerSubscriber', :class => 'storeBanner'
 - else
-  #subscriptionBannerNonSubscriber.subscriptionBannerNonSubscriber
-    = sanitize_option_text :subscription_sales_banner_for_nonsubscribers
+  = sanitize_option_text :subscription_sales_banner_for_nonsubscribers, 'div', :id => 'subscriptionBannerNonSubscriber', :class => 'storeBanner'
 
 - if @gNobodyReallyLoggedIn
   %p.subscription_msg2

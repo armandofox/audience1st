@@ -34,4 +34,6 @@
               %td= h(@vouchers[k].map { |v| v.comments unless v.comments.blank? }.compact.uniq.join(";"))
 
       %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
-      %p= "Box office report generated #{Time.now.to_formatted_s(:showtime)}"
+      %p
+        = "Box office report generated #{Time.now.to_formatted_s(:showtime)}"
+        %span{:style => 'float: right;'}= link_to '<< Back', :action => 'walkup', :id => @showdate
