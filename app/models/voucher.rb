@@ -159,6 +159,7 @@ class Voucher < ActiveRecord::Base
 
 
   def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false)
+    debugger
     vt = Vouchertype.find(vtype_id)
     raise "Number to add must be positive" unless howmany > 0
     raise  "Customer record invalid" unless cust.is_a?(Customer)
@@ -166,12 +167,13 @@ class Voucher < ActiveRecord::Base
     raise "Invalid showdate" unless (showdate_id.zero? or Showdate.find(showdate_id))
     newvouchers = Array.new(howmany) { |v|
       v = Voucher.new_from_vouchertype(vtype_id,
-                                       :purchasemethod_id => purchasemethod_id,
-                                       :comments => comments,
-                                       :fulfillment_needed => fulfillment_needed,
-                                       :customer_id => cust.id,
-                                       :changeable => can_change,
-                                       :showdate_id => showdate_id)
+        :purchasemethod_id => purchasemethod_id,
+        :comments => comments,
+        :fulfillment_needed => fulfillment_needed,
+        :processed_by => bywhom,
+        :customer_id => cust.id,
+        :changeable => can_change,
+        :showdate_id => showdate_id)
       v.customer = cust
       v.save!
       cust.vouchers << v

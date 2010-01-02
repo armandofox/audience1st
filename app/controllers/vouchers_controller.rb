@@ -15,22 +15,19 @@ class VouchersController < ApplicationController
 
   def addvoucher
     unless (@customer = @gCustomer)
-      flash[:notice] = "Must select a customer to add vouchers"
+      flash[:notice] = "Must select a customer to add comps"
       redirect_to :controller => 'customers', :action => 'list'
-      return
-    end
-    # can this be declared as a filter?
-    unless Vouchertype.find(:first)
-      flash[:notice] = "You must define some vouchertypes first"
-      redirect_to :controller => 'vouchertypes', :action => 'list'
       return
     end
     if request.get?
       @vouchers = Vouchertype.find(:all, :conditions => "category='comp'")
-      # fall through to rendering
+      if @vouchers.empty?
+        flash[:notice] = "You must define some vouchertypes first"
+        redirect_to :controller => 'vouchertypes', :action => 'list'
+      end
       return
     end
-
+    # post: add the actual comps
     thenumtoadd = params[:howmany].to_i
     thevouchertype = params[:vouchertype_id].to_i
     thevouchername = (vt = Vouchertype.find(thevouchertype)).name
@@ -40,7 +37,7 @@ class VouchersController < ApplicationController
     custid = @customer.id
     begin
       v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
-                                            @customer,thepurchasemethod, 0,
+                                            @customer,thepurchasemethod.id, 0,
                                             thecomment, logged_in_id,
                                             Vouchertype.find(thevouchertype).fulfillment_needed)
       if (v.kind_of?(Array))
