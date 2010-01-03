@@ -16,7 +16,7 @@
 
   - if @available_seats.detect { |d| d.available? }
     - if @customer.valid_email_address?
-      %label{:for => 'email_confirmation'} Send a confirmation email?
+      %label{:for => 'email_confirmation'} Send confirmation email?
       = check_box_tag 'email_confirmation', 1, !@customer.is_admin
       %br
     = submit_tag 'Confirm Reservation'

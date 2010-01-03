@@ -5,19 +5,21 @@ describe Voucher do
   before :all do
     #  some Vouchertype objects for these tests
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-                                      :name => 'regular voucher',
-                                      :category => 'revenue',
-                                      :account_code => '9999',
-                                      :price => 10.00,
-                                      :valid_date => Time.now - 1.month,
-                                      :expiration_date => Time.now+1.month)
+      :name => 'regular voucher',
+      :category => 'revenue',
+      :account_code => '9999',
+      :price => 10.00,
+      :valid_date => Time.now - 1.month,
+      :expiration_date => Time.now+1.month)
     @vt_bundle = Vouchertype.create!(:fulfillment_needed => false,
-                                     :name => 'bundle voucher',
-                                     :category => 'bundle',
-                                     :price => 25.00,
-                                     :account_code => '8888',
-                                     :valid_date => Time.now - 1.month,
-                                     :expiration_date => Time.now+1.month)
+      :name => 'bundle voucher',
+      :category => 'bundle',
+      :price => 25.00,
+      :account_code => '8888',
+      :valid_date => Time.now - 1.month,
+      :expiration_date => Time.now+1.month,
+      :included_vouchers => {@vt_regular.id => 2}
+      )
   end
 
   describe "regular voucher when first created", :shared => true do
@@ -96,6 +98,17 @@ describe Voucher do
         @v.transfer_to_customer(@to)
         @from.vouchers.should include(@v)
       end
+    end
+  end
+  describe "bundles" do
+    before(:each) do
+      @vt_bundle.included_vouchers.should have(3).voucher_ids
+    end
+    context "when created" do
+      it "should record bundle ID in each bundle voucher"
+    end
+    context "when destroyed" do
+      it "should destroy associated bundled vouchers"
     end
   end
 end

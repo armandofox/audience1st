@@ -98,8 +98,8 @@ class VouchersController < ApplicationController
     @is_admin = Customer.find(logged_in_id).is_walkup rescue nil
     try_again("Voucher already used: #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
     showdates = (@is_admin ?
-                 Showdate.find(:all) :
-                 Showdate.find(:all,:conditions => ["thedate > ?", Time.now]))
+                 Showdate.find(:all, :conditions => ["thedate >= ?", Time.now.at_beginning_of_season - 1.year]) :
+                 Showdate.all_shows_this_season)
     @available_seats = showdates.map do |s|
       ValidVoucher.numseats_for_showdate_by_vouchertype(s,@customer,@voucher.vouchertype,:redeeming => true,:ignore_cutoff => @is_admin)
     end

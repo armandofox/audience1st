@@ -40,15 +40,20 @@ class ReportController < ApplicationController
   end
 
   def advance_sales
+    @shows = []
     case params[:showdate_id]
     when /^(\d+)$/
-      @shows = [Show.find_by_id($1)]
+      if (show = Show.find_by_id($1))
+        @shows << show
+      end
     when /future/i
       @shows = Show.find(:all,
                          :conditions => ['closing_date >= ?', Date.today],
                          :order => 'opening_date')
     when /current/i
-      @shows = [Show.current_or_next]
+      if (show = Show.current_or_next)
+        @shows << show
+      end
     else
       @shows = Show.find(:all,:order => 'opening_date')
     end

@@ -43,8 +43,18 @@ class Show < ActiveRecord::Base
 
   def percent_sold
     showdates.size.zero? ? 0.0 :
-      showdates.inject(0) { |t,sd| t + sd.percent_sold }.to_f / showdates.size
+      showdates.inject(0) { |t,s| t+s.percent_sold } / showdates.size
   end
+
+  def percent_of_house
+    showdates.size.zero? ? 0.0 :
+      showdates.inject(0) { |t,s| t+s.percent_of_house } / showdates.size
+  end
+
+  def allowed_max_sales
+    showdates.inject(0) { |t,s| t+s.allowed_max_sales }
+  end
+
 
   def menu_selection_name ; name ; end
 

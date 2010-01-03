@@ -170,7 +170,7 @@ class Voucher < ActiveRecord::Base
         :purchasemethod_id => purchasemethod_id,
         :comments => comments,
         :fulfillment_needed => fulfillment_needed,
-        :processed_by => bywhom,
+        :processed_by_id => bywhom,
         :customer_id => cust.id,
         :changeable => can_change,
         :showdate_id => showdate_id)

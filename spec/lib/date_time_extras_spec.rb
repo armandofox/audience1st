@@ -5,7 +5,7 @@ include Utils
 describe "Date/time extras" do
 
   describe "season calculations" do
-    context "for season 1/1 - 12/31" do
+    context "for season 1/1/09 - 12/31/09" do
       before(:each) do
         stub_month_and_day(1,1)
         @now = Time.local(2009,2,1)
@@ -29,11 +29,31 @@ describe "Date/time extras" do
         Date.civil(2008,1,1).within_season?(2009).should be_false
       end
     end
+    context "for previous seasons" do
+      before(:each) do
+        @m, @d = 2,5
+        stub_month_and_day(@m, @d)
+      end
+      it "should calculate the beginning of the 2005 season" do
+        Time.now.at_beginning_of_season(2005).should == Time.local(2005,@m,@d)
+      end
+      it "should calculate the end of the 2005 season" do
+        Time.now.at_end_of_season(2005).should == (Time.local(2006,@m,@d) - 1.day)
+      end
+      it "should calculate beginning of current season when calendar date precedes season start date" do
+        y = Time.now.year
+        Time.local(y, @m, @d-1).at_beginning_of_season.should == Time.local(y-1,@m,@d)
+      end
+      it "should calculate beginning of current season when calendar date is after season start date" do
+        y = Time.now.year
+        Time.local(y, @m, @d+1).at_beginning_of_season.should == Time.local(y,@m,@d)
+      end
+    end
     context "for season 9/1/09 - 8/31/10" do
       before(:each) do
         stub_month_and_day(9,1)
-        @start = Date.civil(2009,9,1)
-        @end = Date.civil(2010,8,31)
+        @start = Time.local(2009,9,1)
+        @end = Time.local(2010,8,31)
       end
       it "should be identified as the 2009 season" do
         d = @start + 1.day

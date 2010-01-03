@@ -7,7 +7,7 @@ class Showdate < ActiveRecord::Base
   has_many :valid_vouchers, :dependent => :destroy
   has_many :vouchertypes, :through => :valid_vouchers
 
-  validates_numericality_of :max_sales
+  validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
   validates_associated :show
 
   validates_uniqueness_of :thedate, :scope => :show_id,
@@ -68,6 +68,10 @@ class Showdate < ActiveRecord::Base
 
   def house_capacity ;   self.show.house_capacity ;  end
 
+  def allowed_max_sales
+    self.max_sales.zero? ? self.house_capacity : self.max_sales
+  end
+
   # release unsold seats from an external channel back to general inventory.
   # if show cap == house cap, this has no effect.
   # otherwise, show cap is boosted back up by the number of unsold seats,
@@ -82,10 +86,19 @@ class Showdate < ActiveRecord::Base
     [self.house_capacity - compute_total_sales, 0].max
   end
 
+  def percent_of(cap)
+    cap.to_f == 0.0 ?  0 : (100.0 * compute_total_sales / cap).floor
+  end
+      
+
+  # percent of max sales: may exceed 100
   def percent_sold
-    cap = self.house_capacity.to_f
-    cap == 0.0 ? 0 :
-      [100.0*(compute_total_sales / cap) , 100.0].min.floor
+    percent_of(max_sales.to_i.zero? ? house_capacity : max_sales)
+  end
+
+  # percent of house: may exceed 100
+  def percent_of_house
+    percent_of(house_capacity)
   end
 
   def sold_out? ; percent_sold.to_i >= Option.value(:sold_out_threshold).to_i ; end

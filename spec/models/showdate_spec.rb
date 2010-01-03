@@ -24,15 +24,18 @@ describe Showdate do
       end
     end
     describe "for normal sales", :shared => true do
-      it "total sales" do
+      it "should compute total sales" do
         @showdate.compute_total_sales.should == @total_sold
         @showdate.compute_advance_sales.should == @total_sold
       end
-      it "total seats left" do
+      it "should compute total seats left" do
         @showdate.total_seats_left.should == @house_cap - @total_sold
       end
-      it "percent sold" do
-        @showdate.percent_sold.should == (@total_sold.to_f / @house_cap) * 100
+      it "should compute percent of max sales" do
+        @showdate.percent_sold.should == ((@total_sold.to_f / @max_sales) * 100).floor
+      end
+      it "should compute percent of house" do
+        @showdate.percent_of_house.should == ((@total_sold.to_f / @house_cap) * 100).floor
       end
     end
     describe "when house is partly sold" do
@@ -46,16 +49,14 @@ describe Showdate do
                                      :purchasemethod => mock_model(Purchasemethod))
         end
       end
-      it "should show as 100 percent sold (not more)" do
-        @showdate.percent_sold.should == 100.0
-      end
       it "should show zero (not negative) seats remaining" do
         @showdate.total_seats_left.should == 0
       end
     end
-    describe "when sold beyond max sales but not house" do
+    describe "when sold beyond max sales but not house cap" do
       before(:each) do
-        @showdate.update_attribute(:max_sales, 8)
+        @max_sales = 8
+        @showdate.update_attribute(:max_sales, @max_sales)
       end
       it_should_behave_like "for normal sales"
     end

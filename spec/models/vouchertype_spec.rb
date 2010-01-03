@@ -78,6 +78,9 @@ describe Vouchertype do
       it "should have an end date no later than end of 2008 season" do
         @vt.valid_date = @start - 3.months
         @vt.expiration_date = @start.at_end_of_season(2008)
+        puts @vt.inspect
+        puts Time.now.at_beginning_of_season(2008).inspect
+        puts Time.now.at_end_of_season(2008).inspect
         @vt.should be_valid_for_season(2008)
       end
       it "should not have a start date more than 1 year before season start" do
