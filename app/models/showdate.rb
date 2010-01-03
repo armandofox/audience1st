@@ -47,19 +47,19 @@ class Showdate < ActiveRecord::Base
   end
 
   def revenue_per_seat
-    self.revenue / self.vouchers.count("category != 'subscriber'")
+    revenue / (comp_seats + nonsubscriber_revenue_seats)
   end
 
   def comp_seats
-    self.vouchers.count("category = 'comp'")
+    self.vouchers.count(:conditions => ['category = ?', :comp])
   end
 
   def nonsubscriber_revenue_seats
-    self.vouchers.count("category = 'revenue'")
+    self.vouchers.count(:conditions => ['category = ?', :revenue])
   end
 
   def subscriber_seats
-    self.vouchers.count("category = 'subscriber'")
+    self.vouchers.count(:conditions => ['category = ?', :subscriber])
   end
 
   def advance_sales?

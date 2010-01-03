@@ -6,12 +6,7 @@
       %td.currency.showSalesRevenue= number_to_currency(vt.price * v.size)
       %td
   %tr
-    %td.strong{:colspan => 4}
-      - categories.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |ct|
-        = h ct.to_s.gsub(/voucher/i, '')
-        = number_to_percentage(100 * categories[ct].size/total_vouchers, :precision => 0)
-        ,
-      single-ticket revenue per seat
-      = number_to_currency revenue_per_seat
-
+    %td.strong{:colspan => 2} Nonsubscription revenue per seat
+    %td.currency= number_to_currency revenue_per_seat
+    %td
 
