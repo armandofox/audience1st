@@ -24,4 +24,5 @@
     %br
     = label :credit_card, :verification_value, 'Security (CVV) code'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4
+    = popup_help_for 'credit_card_verification_value'
   %br

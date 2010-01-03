@@ -45,6 +45,12 @@ session_reap: 1
 
 cc_purch: "Credit Card Payment"
 
+# Popup Help
+
+popup_help:
+  credit_card_verification_value:  "The CVV (security) code consists of the last three digits of the number printed on the BACK of your card, toward the right edge of the signature panel."
+
+
 # Confirmation dialogs.  Trailing digit is # of string args expected.
 
 messages:
