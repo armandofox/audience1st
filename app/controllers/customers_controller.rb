@@ -185,7 +185,10 @@ class CustomersController < ApplicationController
         (Customer.role_value(newrole) != Customer.role_value(@customer.role)))
       if Customer.find(logged_in_id).can_grant(newrole)
         @customer.role = Customer.role_value(params[:customer][:role])
-        @customer.save!
+        unless (@customer.save)
+          flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix this problem and try again."
+          redirect_to(:action => 'edit') and return
+        end
         confirm = "Role set to #{newrole}<br/>"
         Txn.add_audit_record(:txn_type => 'edit',
                              :customer_id => @customer.id,
@@ -323,6 +326,7 @@ class CustomersController < ApplicationController
     if request.get?
       # display info from two records and allow selection
       if (!params[:merge]) || (params[:merge].keys.length != 2)
+        debugger
         flash[:notice] = 'You must select exactly 2 records at a time to merge'
         redirect_to :action => 'list'
       else
@@ -345,7 +349,7 @@ class CustomersController < ApplicationController
       redirect_to :action => 'welcome'
     else                      # failure
       flash[:notice] = c0.errors.full_messages.join(';')
-      redirect_to :action => 'merge', :method => :get
+      redirect_to :action => 'list'
     end
   end
 
