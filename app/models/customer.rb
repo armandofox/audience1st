@@ -16,7 +16,7 @@ class Customer < ActiveRecord::Base
   validates_uniqueness_of :login, :allow_nil => true
   validates_length_of :login, :in => 3..50, :allow_nil => true
 
-  validates_uniqueness_of :email, :allow_nil => true
+  #validates_uniqueness_of :email, :allow_nil => true
   validate :valid_email?
   validate :valid_or_blank_address?
 

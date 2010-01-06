@@ -26,30 +26,26 @@ class VouchertypesController < ApplicationController
     @superadmin = is_admin
     # possibly limit pagination to only bundles or only subs
     earliest = Vouchertype.find(:first, :order => 'valid_date')
-    latest = Vouchertype.find(:first, :order => 'valid_date DESC')
-    @years = (earliest.valid_date.year .. latest.valid_date.year)
+    latest = Vouchertype.find(:first, :order => 'expiration_date DESC')
+    @years = (earliest.expiration_date.year .. latest.expiration_date.year)
     @filter = params[:filter].to_s
     case @filter
     when "Bundles"
-      c = "category = 'bundle'"
+      @vouchertypes = Vouchertype.bundle_vouchertypes
     when "Subscriptions"
-      c = "subscription = 1"
-    when "Single Tickets"
-      c = "category != 'bundle'"
-    else
-      c = 'TRUE'
+      @vouchertypes = Vouchertype.subscription_vouchertypes
+    when "Single Tickets (Comp)"
+      @vouchertypes = Vouchertype.comp_vouchertypes
+    when "Single Tickets (Revenue)"
+      @vouchertypes = Vouchertype.revenue_vouchertypes
+    else # ALL
+      @vouchertypes = Vouchertype.find(:all)
     end
     @season = params[:season] || "All"
-    conditions = 
-      if (@season == "All")
-        [c]
-      else
-        s = Time.now.at_beginning_of_season(@season)
-        e = Time.now.at_end_of_season(@season)
-        ["#{c} AND (expiration_date BETWEEN ? AND ?)", s, e]
-      end
-    @vouchertypes = Vouchertype.find(:all, :conditions => conditions,
-                                     :order => "expiration_date DESC, subscription")
+    if (@season != "All")
+      @vouchertypes.reject! { |vt| !(vt.expiration_date.between?(Time.now.at_beginning_of_season(@season), Time.now.at_end_of_season(@season))) }
+    end
+    @vouchertypes = @vouchertypes.sort_by(&:expiration_date).reverse
     if @vouchertypes.empty?
       flash[:warning] = "No vouchertypes matched your criteria."
     end

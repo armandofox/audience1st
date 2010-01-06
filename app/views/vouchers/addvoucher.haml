@@ -1,19 +1,26 @@
-%h2= "Add vouchers for #{h(@customer.full_name)}"
+%h2= "Add Comps for #{h(@customer.full_name)}"
 
-- form_tag :action => 'addvoucher', :customer => @customer do
+- form_tag({:action => 'addvoucher', :customer => @customer}, {:id => 'addcomps'}) do
 
-  %table
-    %tbody
-      %tr
-        %td How many:
-        %td= text_field_tag 'howmany', '', :size => 3, :maxlength => 2
-      %tr
-        %td What type:
-        %td= select_tag('vouchertype_id', options_from_collection_for_select(@vouchers,'id','name'))
-      %tr
-        %td  Optional comments:
-        %td= text_field_tag 'comments', '', {:size => 30, :maxlength => 30}
+  %label{:for => 'howmany'} How many:
+  = text_field_tag 'howmany', '', :size => 3, :maxlength => 2
+  %br
 
+  %label{:for => 'vouchertype_id'} What type:
+  = select_tag('vouchertype_id', options_from_collection_for_select(@vouchers,'id','name'))
+  = spinner('wait_showdate')
+  %br
+    
+  %label{:for => 'comments'}  Optional comments:
+  = text_field_tag 'comments', '', {:size => 30, :maxlength => 30}
+  %br
+
+  #reserve_for= render :partial => 'reserve_for', :locals => {:seats => @available_seats, :none => 'None (leave open)'}
+  = observe_form 'addcomps', :url => {:action => 'update_shows'}, |
+    :update => 'reserve_for', |
+    :before => "Element.show('wait_showdate')", |
+    :complete => "Element.hide('wait_showdate')" |
+    
   = submit_tag "Add Vouchers"
 
   = gen_button  "Cancel", {:controller => 'customers', :action => 'welcome', :id => @customer}

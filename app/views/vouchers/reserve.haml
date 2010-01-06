@@ -3,9 +3,7 @@
   = h @customer.full_name
 
 - form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher do
-  %label{:for => 'showdate_id'} Select a performance
-  = select_tag('showdate_id', options_from_collection_for_select(@available_seats.sort_by { |av| av.showdate.thedate }, 'showdate_id', 'showdate_name_with_explanation'))
-  %br
+  = render :partial => 'reserve_for', :locals => {:seats => @available_seats}
 
   %label.emphasis{:for => 'accessible_seating'} ADA seating required?
   = checkbox_guard_for 'special_seating'

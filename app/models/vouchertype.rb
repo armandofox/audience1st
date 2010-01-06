@@ -72,9 +72,15 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def bundle? ; category == :bundle ; end
-  
+  def comp? ; category == :comp ; end
+
   def visibility
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
+  end
+
+  def self.comp_vouchertypes
+    Vouchertype.find(:all, :conditions => ['category = ?', :comp],
+      :order => 'name')
   end
 
   def self.nonbundle_vouchertypes
@@ -85,6 +91,15 @@ class Vouchertype < ActiveRecord::Base
   def self.bundle_vouchertypes
     Vouchertype.find(:all, :conditions => ["category = ?", :bundle],
                      :order => 'price')
+  end
+
+  def self.subscription_vouchertypes
+    Vouchertype.find(:all,
+      :conditions => ["category = ? AND subscription = ?", :bundle, true])
+  end
+
+  def self.revenue_vouchertypes
+    Vouchertype.find(:all, :conditions => ["category = ?", :revenue])
   end
 
   def self.find_products(args={})

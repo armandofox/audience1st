@@ -15,6 +15,11 @@ class Showdate < ActiveRecord::Base
 
   # finders
   
+  def self.current_and_future
+    Showdate.find(:all, :conditions => ["thedate >= ?", Time.now - 1.day],
+      :order => 'thedate')
+  end
+
   def self.current_or_next
     Showdate.find(:first, :conditions => ["thedate >= ?", Time.now])
   end

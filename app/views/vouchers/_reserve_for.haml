@@ -1,0 +1,5 @@
+%label{:for => 'showdate'}  Reserve for:
+= select_tag('showdate_id', |
+  (defined?(none) ? options_for_select({none => 0}, 0) : '')  <<  |
+  options_from_collection_for_select(seats.sort_by { |av| av.showdate.thedate }, 'showdate_id', 'showdate_name_with_explanation'))  |
+%br

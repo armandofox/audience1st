@@ -12,7 +12,7 @@ describe VouchersController do
       :expiration_date => Time.now+1.month)
   end
   before(:each) do
-    stub_globals_and_userlevel(:boxoffice_manager)
+    stub_globals_and_userlevel(:boxoffice_manager, :boxoffice)
   end
   describe "transferring vouchers" do
     before(:each) do

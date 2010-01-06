@@ -4,11 +4,12 @@
 
 %p
   %label{:for => :vouchertype_type} Type
-  = select_tag 'vouchertype_type', options_for_select( |
-      [["Bundle", "BundleVouchertype"], |
-      ["Comp (single ticket)", "CompVouchertype"], |
-      ["Single subscriber voucher", "SubscriberVouchertype"], |
-      ["Regular revenue voucher", "RevenueVouchertype"]]) |
+  = select 'vouchertype', 'category', options_for_select( |
+      [["Bundle", :bundle], |
+      ["Comp (single ticket)", :comp], |
+      ["Single subscriber voucher", :subscriber], |
+      ["Regular revenue voucher", :revenue]]), |
+      {:selected => @vouchertype.category.to_s} |
 
 %p
   %label{:for=>:vouchertype_name} Name

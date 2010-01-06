@@ -1,11 +1,10 @@
 class VouchersController < ApplicationController
 
   before_filter :is_logged_in
-  before_filter(:is_boxoffice_manager_filter,
-                :only => %w[addvoucher remove_voucher cancel_prepaid manage])
+  before_filter(:is_boxoffice_filter,
+                :only => %w[addvoucher update_shows remove_voucher cancel_prepaid manage update_comment])
   before_filter(:owns_voucher_or_is_boxoffice,
                 :only => %w[reserve confirm_reservation cancel_reservation])
-  before_filter(:is_boxoffice_filter, :only => %w[update_comment] )
 
   verify(:method => :post,
          :only => %w[confirm_reservation cancel_reservation cancel_prepaid
@@ -13,44 +12,90 @@ class VouchersController < ApplicationController
          :add_to_flash => "System error: This operation must be a POST",
          :redirect_to => {:controller => 'customers', :action => 'welcome'})
 
+  # AJAX helper for addvoucher
+  def update_shows
+    @available_seats = Showdate.current_and_future.map do |s|
+      ValidVoucher.numseats_for_showdate_by_vouchertype(s,@gAdmin,Vouchertype.find(params[:vouchertype_id]), :redeeming => true,:ignore_cutoff => true)
+    end.reject { |av| av.howmany < params[:howmany].to_i }
+    render :partial => 'reserve_for', :locals => {:seats => @available_seats, :none => 'None (leave open)'}
+  end
+
+
   def addvoucher
+    @page_title = "Add Comps"
     unless (@customer = @gCustomer)
       flash[:notice] = "Must select a customer to add comps"
       redirect_to :controller => 'customers', :action => 'list'
       return
     end
     if request.get?
-      @vouchers = Vouchertype.find(:all, :conditions => "category='comp'")
+      @vouchers = Vouchertype.comp_vouchertypes.reject { |v| v.offer_public == Vouchertype::EXTERNAL }
       if @vouchers.empty?
         flash[:notice] = "You must define some vouchertypes first"
-        redirect_to :controller => 'vouchertypes', :action => 'list'
+        redirect_to(:controller => 'vouchertypes', :action => 'list')
       end
+      @available_seats = Showdate.current_and_future.map do |s|
+        ValidVoucher.numseats_for_showdate_by_vouchertype(s,@gAdmin, @vouchers.first,
+          :redeeming => true, :ignore_cutoff => true)
+      end.reject { |av| av.howmany.zero? }
       return
     end
-    # post: add the actual comps
+    # post: add the actual comps, and possibly reserve
     thenumtoadd = params[:howmany].to_i
     thevouchertype = params[:vouchertype_id].to_i
     thevouchername = (vt = Vouchertype.find(thevouchertype)).name
     thepurchasemethod = Purchasemethod.find_by_shortdesc('none')
 
+    unless vt.comp?
+      flash[:warning] = "Only comp vouchers can be added this way.  For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment."
+      redirect_to(:controller => 'customers', :action => 'welcome') and return
+    end
+
+    # if showdate specified, make sure allowed
+    sd = nil
+    if params[:showdate_id].to_i != 0
+      unless (sd = Showdate.find_by_id(params[:showdate_id]))
+        flash[:warning] = "No such performance."
+        redirect_to(:action => 'addvoucher', :method => :get) and return
+      end
+      av = ValidVoucher.numseats_for_showdate_by_vouchertype(sd, @gAdmin, vt,
+        :ignore_cutoff => true, :redeeming => true)
+      unless av.howmany >= thenumtoadd
+        flash[:warning] =
+          "Can't reserve #{howmany} comps, since only #{av.howmany} seats left for this performance."
+        redirect_to(:action => 'addvoucher', :method => :get) and return
+      end
+    end
+
     thecomment = params[:comment] || ""
     custid = @customer.id
     begin
-      v = Voucher.add_vouchers_for_customer(thevouchertype, thenumtoadd,
-                                            @customer,thepurchasemethod.id, 0,
-                                            thecomment, logged_in_id,
-                                            Vouchertype.find(thevouchertype).fulfillment_needed)
-      if (v.kind_of?(Array))
-        Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
-                             :voucher_id => v.first.id,
-                             :comments => thecomment,
-                             :logged_in_id => logged_in_id,
-                             :purchasemethod_id => thepurchasemethod)
-      else
-        flash[:notice] = "Add voucher failed: #{v}"
+      Voucher.transaction do
+        v = Array.new(thenumtoadd) do |i|
+          vc = Voucher.new_from_vouchertype(thevouchertype,
+            :purchasemethod_id => thepurchasemethod.id,
+            :comments => thecomment,
+            :processed_by_id => logged_in_id)
+          @customer.vouchers << vc
+          if sd
+            vc.reserve_for(sd.id, logged_in_id, thecomment, :ignore_cutoff => true)
+          end
+          vc
+        end
+        if (v.kind_of?(Array) && !v.empty?)
+          Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
+            :voucher_id => v.first.id,
+            :comments => thecomment,
+            :logged_in_id => logged_in_id,
+            :purchasemethod_id => thepurchasemethod)
+          flash[:notice] = "#{thenumtoadd} of '#{vt.name}' successfully added"
+          flash[:notice] << " and reserved for #{sd.printable_name}" if sd
+        else
+          flash[:notice] = "Adding comps FAILED: #{v}"
+        end
       end
-    rescue Exception => e
-      flash[:notice] = "Error adding vouchers:<br/>#{e.message}"
+   # rescue Exception => e
+      #flash[:notice] = "Error adding comps:<br/>#{e.message}"
     end
     redirect_to :controller => 'customers', :action => 'welcome'
   end
@@ -95,14 +140,14 @@ class VouchersController < ApplicationController
   def reserve
     @voucher = Voucher.find(params[:id]) # this is the voucher that customer wants to use
     @customer = @voucher.customer
-    @is_admin = Customer.find(logged_in_id).is_walkup rescue nil
+    @is_admin = @gAdmin.is_boxoffice
     try_again("Voucher already used: #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
     showdates = (@is_admin ?
                  Showdate.find(:all, :conditions => ["thedate >= ?", Time.now.at_beginning_of_season - 1.year]) :
                  Showdate.all_shows_this_season)
     @available_seats = showdates.map do |s|
       ValidVoucher.numseats_for_showdate_by_vouchertype(s,@customer,@voucher.vouchertype,:redeeming => true,:ignore_cutoff => @is_admin)
-    end
+    end.reject { |av| av.howmany.zero? }
   end
 
   def confirm_multiple
