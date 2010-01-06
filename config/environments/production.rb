@@ -27,6 +27,12 @@ config.action_controller.perform_caching             = true
 # Enable threaded mode
 # config.threadsafe!
 
+# Remote exception notification
+ExceptionNotifier.sender_address =
+  %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)
+ExceptionNotifier.exception_recipients =
+  %w(armandofox@gmail.com)
+
 # Enable Google Analytics (http://svn.rubaidh.com/plugins/trunk/google_analytics)
 
 Rubaidh::GoogleAnalytics.tracker_id = 'UA-4613071-1'
