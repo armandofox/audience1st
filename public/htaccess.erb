@@ -3,7 +3,7 @@ AuthUserFile /home/audienc/htpasswd-general
 AuthGroupFile /dev/null
 AuthName "Limited Access"
 AuthType Basic
-<%= (config['protected'] == 'true' ? '' : '# ') -%>require valid-user
+<%= (config['protected'] == 'true' ? '' : '# ') %>require valid-user
 
 RewriteEngine On
 
