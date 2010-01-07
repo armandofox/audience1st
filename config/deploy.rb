@@ -68,12 +68,12 @@ deploy.task :after_update_code do
   abort if config.empty?
   dbconfig = ERB.new(IO.read("#{rails_root}/config/database.yml.erb")).result(binding)
   put dbconfig, "#{release_path}/config/database.yml"
-  run "rm -f #{release_path}/config/venues.yml #{release_path}/config/database.yml.erb"
   # instantiate htaccess file
-  run "perl -pe 's/VENUE/#{venue}/g' #{release_path}/public/htaccess-template > #{release_path}/public/.htaccess  &&  rm -f #{release_path}/public/htaccess-template"
+  htaccess = ERB.new(IO.read("#{rails_root}/public/htaccess.erb")).result(binding)
+  put htaccess, "#{release_path}/public/.htaccess"
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
-  %w[manual doc test].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
+  %w[config/venues.yml config/database.yml.erb public/htaccess.erb manual doc test spec].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
   run "chmod -R go-w #{release_path}"
 end
 
