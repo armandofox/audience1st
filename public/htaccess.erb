@@ -7,10 +7,10 @@ AuthType Basic
 
 RewriteEngine On
 
-ErrorDocument 503 /<%= (venue) -%>/system/maintenance.html
-RewriteCond %{DOCUMENT_ROOT}/<%= (venue) -%>/system/maintenance.html -f
+ErrorDocument 503 /<%= venue %>/system/maintenance.html
+RewriteCond %{DOCUMENT_ROOT}/<%= venue %>/system/maintenance.html -f
 RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-RewriteRule ^.*$ /<%= (venue) -%>/system/maintenance.html [redirect=503,L]
+RewriteRule ^.*$ /<%= venue %>/system/maintenance.html [redirect=503,L]
 
 # In case Rails experiences terminal errors
 
