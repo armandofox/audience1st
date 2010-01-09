@@ -3,7 +3,7 @@
 %table.hilite.totalShowSales
   %tr.showSalesRow
     %td.showSalesDate{:style=>'width: 20em;'}
-      - hdr ||= "#{showdate.printable_date} (#{showdate.allowed_max_sales})"
+      - hdr ||= "#{showdate.printable_date} (#{showdate.max_allowed_sales})"
       = link_to_remote(hdr, :update=> divid, |
         :url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, |
         :before => "Element.show('wait_#{divid}')", |
@@ -12,7 +12,7 @@
     %td.showSalesDateQty= showdate.vouchers.size
     - p1 = number_to_percentage(showdate.percent_sold,:precision=>0)
     - p2 = number_to_percentage(showdate.percent_of_house, :precision => 0)
-    - if showdate.allowed_max_sales == showdate.house_capacity
+    - if showdate.max_allowed_sales == showdate.house_capacity
       %td.showSalesDatePercent= p1
     - else
       %td.showSalesDatePercent= "#{p1} (#{p2} house)"

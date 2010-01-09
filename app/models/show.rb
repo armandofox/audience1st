@@ -51,8 +51,8 @@ class Show < ActiveRecord::Base
       showdates.inject(0) { |t,s| t+s.percent_of_house } / showdates.size
   end
 
-  def allowed_max_sales
-    showdates.inject(0) { |t,s| t+s.allowed_max_sales }
+  def max_allowed_sales
+    showdates.inject(0) { |t,s| t+s.max_allowed_sales }
   end
 
 
