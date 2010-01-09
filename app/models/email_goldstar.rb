@@ -192,9 +192,9 @@ class EmailGoldstar < ActionMailer::Base
   def self.extract_attachment(filename_regexp,email)
     # check if from Goldstar
     debug("Received email from  #{email.from[0]}")
-    if !@@testing && RAILS_ENV == 'production' && email.from[0] !~ /venues@goldstar/i
-      raise "Bad sender"
-    end
+    # if !@@testing && RAILS_ENV == 'production' && email.from[0] !~ /venues@goldstar/i
+    #   raise "Bad sender"
+    # end
     raise "No attachments found" unless email.has_attachments?
     raise "No attachment of type #{filename_regexp.inspect} found" unless
       a = email.attachments.select { |a| a.original_filename.match(filename_regexp) }

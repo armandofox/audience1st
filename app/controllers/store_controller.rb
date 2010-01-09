@@ -322,7 +322,7 @@ EON
       # @all_showdates = (is_admin ? @sh.showdates :
       #                   @sh.future_showdates)
       @all_showdates = (is_admin ? @sh.showdates :
-        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+        @sh.future_showdates.select { |s| s.saleable_seats_left > 0 })
       # make sure originally-selected showdate is included among those
       #  to be displayed.
       unless @all_showdates.include?(@sd)
@@ -335,7 +335,7 @@ EON
       # @all_showdates = (is_admin ? @sh.showdates :
       #                   @sh.future_showdates)
       @all_showdates = (is_admin ? @sh.showdates :
-        @sh.future_showdates.select { |s| s.total_seats_left > 0 })
+        @sh.future_showdates.select { |s| s.saleable_seats_left > 0 })
       @vouchertypes = []
     else                      # not even show is selected
       @all_showdates = []

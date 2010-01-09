@@ -73,7 +73,7 @@ class Showdate < ActiveRecord::Base
 
   def house_capacity ;   self.show.house_capacity ;  end
 
-  def allowed_max_sales
+  def max_allowed_sales
     self.max_sales.zero? ? self.house_capacity : self.max_sales
   end
 
@@ -91,6 +91,10 @@ class Showdate < ActiveRecord::Base
     [self.house_capacity - compute_total_sales, 0].max
   end
 
+  def saleable_seats_left
+    [self.max_allowed_sales - compute_total_sales, 0].max
+  end
+
   def percent_of(cap)
     cap.to_f == 0.0 ?  0 : (100.0 * compute_total_sales / cap).floor
   end
@@ -98,7 +102,7 @@ class Showdate < ActiveRecord::Base
 
   # percent of max sales: may exceed 100
   def percent_sold
-    percent_of(max_sales.to_i.zero? ? house_capacity : max_sales)
+    percent_of(max_allowed_sales)
   end
 
   # percent of house: may exceed 100

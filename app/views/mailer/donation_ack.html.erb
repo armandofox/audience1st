@@ -1,6 +1,10 @@
 
 Dear <%= @customer.full_name %>,
 
+(Please DO NOT REPLY to this email...it was generated automatically,
+not by a human being, and our computer isn't smart enough to
+understand your reply!)
+
 Thank you for your donation to <%= @venue %>
 on <%= Date.today.to_formatted_s(:date_only) %> in the amount of <%= number_to_currency(@amount) %>.
 
