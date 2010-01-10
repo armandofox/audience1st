@@ -22,7 +22,7 @@
         %td= link_to c.last_name, {:controller => 'customers', :action => 'welcome', :id => t.customer_id } 
         %td= link_to c.first_name, {:controller => 'customers', :action => 'welcome', :id => t.customer_id } 
       %td= t.txn_type.desc 
-      %td= t.purchasemethod ? t.purchasemethod.description : t.purchasemethod_id.to_i 
+      %td= (t.voucher_id.to_i.zero? || (v= Voucher.find_by_id(t.voucher_id)).nil?) ? '' : v.purchasemethod.description
       %td= number_to_currency(t.dollar_amount) 
       %td= t.show ? t.show.name : "" 
       %td= t.showdate ? t.showdate.thedate : "" 

@@ -94,8 +94,8 @@ class VouchersController < ApplicationController
           flash[:notice] = "Adding comps FAILED: #{v}"
         end
       end
-   # rescue Exception => e
-      #flash[:notice] = "Error adding comps:<br/>#{e.message}"
+    rescue Exception => e
+      flash[:notice] = "Error adding comps:<br/>#{e.message}"
     end
     redirect_to :controller => 'customers', :action => 'welcome'
   end

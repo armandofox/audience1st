@@ -150,7 +150,8 @@ class BoxOfficeController < ApplicationController
     # assume it was a credit card purchase; otherwise depends on which
     # submit button was used.
     params[:commit] = 'credit' unless
-      params[:swipe_data].blank? && params[:credit_card].all? { |f,v| v.blank? }
+      params[:swipe_data].blank? &&
+      [:first_name,:last_name,:number,:verification_value].each { |f| params[:credit_card][f].blank? }
     case params[:commit]
     when /credit/i
       method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
