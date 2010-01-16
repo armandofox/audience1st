@@ -8,8 +8,9 @@
       [["Bundle", :bundle], |
       ["Comp (single ticket)", :comp], |
       ["Single subscriber voucher", :subscriber], |
-      ["Regular revenue voucher", :revenue]]), |
-      {:selected => @vouchertype.category.to_s} |
+      ["Regular revenue voucher", :revenue], |
+      ["Nonticket product", :nonticket]], |
+      {:selected => @vouchertype.category.to_sym}) |
 
 %p
   %label{:for=>:vouchertype_name} Name

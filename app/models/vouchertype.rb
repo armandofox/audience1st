@@ -9,6 +9,7 @@ class Vouchertype < ActiveRecord::Base
   validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
                         :message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
+  validates_inclusion_of :category, :in => [:revenue, :comp, :subscriber, :bundle, :nonticket]
   # Vouchertypes whose price is zero must NOT be available
   # to subscribers or general public
   validates_exclusion_of(:offer_public, :in => [1,2],

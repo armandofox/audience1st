@@ -20,12 +20,24 @@ describe Voucher do
       :expiration_date => Time.now+1.month,
       :included_vouchers => {@vt_regular.id => 2}
       )
+    @vt_nonticket = Vouchertype.create!(
+      :fulfillment_needed => false,
+      :name => 'fee',
+      :category => 'nonticket',
+      :price => 5.00,
+      :account_code => 9997,
+      :valid_date => Time.now - 1.month,
+      :expiration_date => Time.now + 1.month
+      )
   end
 
-  describe "regular voucher when first created", :shared => true do
+  describe "regular voucher when created", :shared => true do
     it "should not be reserved" do  @v.should_not be_reserved  end
     it "should not belong to anyone" do @v.customer.should be_nil end
     it "should not be valid" do @v.should_not be_valid end
+    it "should take on the vouchertype's category" do
+      @v.category.should == @v.vouchertype.category
+    end
     it "should not show up as processed by anyone" do
       @v.processed_by.should be_nil
     end
@@ -34,11 +46,19 @@ describe Voucher do
     end
   end
 
+  describe "nonticket voucher" do
+    before(:each) do
+      @v = Voucher.new_from_vouchertype(@vt_nonticket)
+      @v.purchasemethod = mock_model(Purchasemethod)
+      @v.save!
+    end
+  end
+
   describe "regular voucher when templated from vouchertype" do
     before(:all) do
       @v = Voucher.new_from_vouchertype(@vt_regular)
     end
-    it_should_behave_like "regular voucher when first created"
+    it_should_behave_like "regular voucher when created"
     it "should have a vouchertype" do  @v.vouchertype.should == @vt_regular end
     it "price should match its vouchertype" do
       @v.price.should == 10.00
@@ -61,7 +81,7 @@ describe Voucher do
   end
   describe "reservation for a valid showdate" do
     it "should fail when voucher is not reservable" 
-    context "when voucher is reservable by customer" do
+    context "when voucher is reservable" do
       context "by customer"
       context "by box office only"
     end

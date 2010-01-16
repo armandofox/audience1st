@@ -3,20 +3,38 @@ include Utils
 
 describe Vouchertype do
 
+  describe "nonticket vouchertypes" do
+    it "should be valid" do
+      @vtn = Vouchertype.new(
+        :price => 5.0,
+        :category => :nonticket,
+        :offer_public => Vouchertype::BOXOFFICE,
+        :name => "Fee",
+        :subscription => false,
+        :walkup_sale_allowed => true,
+        :comments => "A comment",
+        :account_code => "9997",
+        :valid_date => Time.now.yesterday,
+        :expiration_date => Time.now.tomorrow
+        )
+      @vtn.should be_valid
+    end
+  end
   describe "validations" do
     before(:each) do
       @vt = Vouchertype.new(:price => 1.0,
-                            :offer_public => Vouchertype::ANYONE,
-                            :name => "Example",
-                            :subscription => false,
-                            :walkup_sale_allowed => true,
-                            :comments => "A comment",
-                            :account_code => "9999",
-                            :valid_date => Time.now.yesterday,
-                            :expiration_date => Time.now.tomorrow
-                            )
+        :offer_public => Vouchertype::ANYONE,
+        :category => :revenue,
+        :name => "Example",
+        :subscription => false,
+        :walkup_sale_allowed => true,
+        :comments => "A comment",
+        :account_code => "9999",
+        :valid_date => Time.now.yesterday,
+        :expiration_date => Time.now.tomorrow
+        )
     end
-    describe "vouchers in general" do
+    describe "vouchertypes in general" do
       it "should be valid with valid attributes" do
         @vt.should be_valid
       end
@@ -70,7 +88,7 @@ describe Vouchertype do
       end
     end
      
-    describe "a subscription voucher valid for 2008" do
+    describe "a subscription vouchertype valid for 2008" do
       before(:each) do
         @start = Time.parse("Feb 5, 2008")
         stub_month_and_day(@start.month, @start.day)
@@ -78,9 +96,6 @@ describe Vouchertype do
       it "should have an end date no later than end of 2008 season" do
         @vt.valid_date = @start - 3.months
         @vt.expiration_date = @start.at_end_of_season(2008)
-        puts @vt.inspect
-        puts Time.now.at_beginning_of_season(2008).inspect
-        puts Time.now.at_end_of_season(2008).inspect
         @vt.should be_valid_for_season(2008)
       end
       it "should not have a start date more than 1 year before season start" do

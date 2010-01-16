@@ -3,7 +3,8 @@ class Showdate < ActiveRecord::Base
   include Comparable
 
   belongs_to :show
-  has_many :vouchers
+  has_many :vouchers, :conditions => "category != 'nonticket'"
+  has_many :all_vouchers, :class_name => 'Voucher'
   has_many :valid_vouchers, :dependent => :destroy
   has_many :vouchertypes, :through => :valid_vouchers
 
@@ -13,6 +14,10 @@ class Showdate < ActiveRecord::Base
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
 
+  # simple formater
+  def to_s
+    "#{category} - #{vouchertype} - #{showdate_id} - #{price}"
+  end
   # finders
   
   def self.current_and_future
@@ -40,7 +45,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def sales_by_type(vouchertype_id)
-    return Voucher.count(:conditions => ['showdate_id = ? AND vouchertype_id = ?', self.id, vouchertype_id])
+    return self.vouchers.count(:conditions => ['vouchertype_id = ?', vouchertype_id])
   end
 
   def revenue_by_type(vouchertype_id)
@@ -135,17 +140,15 @@ class Showdate < ActiveRecord::Base
   end
 
   def compute_total_sales
-    return Voucher.count(:conditions => ['showdate_id =  ?', self.id])
+    self.vouchers.count
   end
 
   def compute_advance_sales
-    return Voucher.count(:conditions => ['showdate_id = ? AND customer_id != ?',
-                                        self.id, Customer.walkup_customer.id])
+    self.vouchers.count(:conditions => ['customer_id != ?', Customer.walkup_customer.id])
   end
 
   def checked_in
-    return Voucher.count(:conditions => ['showdate_id = ? AND used = 1',
-                                        self.id])
+    self.vouchers.count(:conditions => ['used = ?', true])
   end
 
   def spoken_name

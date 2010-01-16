@@ -1,5 +1,5 @@
 class Show < ActiveRecord::Base
-  has_many :showdates, :dependent => :destroy
+  has_many :showdates, :dependent => :destroy, :order => 'thedate'
   # NOTE: We can't do the trick below because the database's timezone
   #  may not be the same as the appserver's timezone.
   #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
@@ -10,8 +10,6 @@ class Show < ActiveRecord::Base
     "Show name must be between 3 and 40 characters"
   validates_numericality_of :house_capacity, :greater_than_or_equal_to => 0
 
-  INFTY = 999999                # UGH!!
-
   # current_or_next returns the Show object corresponding to either the
   # currently running show, or the one with the next soonest opening date.
 
@@ -20,7 +18,7 @@ class Show < ActiveRecord::Base
   end
 
   def self.all
-    Show.find(:all) # will be conditioned on "current season" in future
+    Show.find(:all) 
   end
 
   def future_showdates

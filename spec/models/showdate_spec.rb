@@ -1,28 +1,54 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Showdate do
-  describe "capacity computations" do
-    before(:each) do
-      @house_cap = 12
-      @max_sales = 10
-      @thedate = Time.now
-      @vouchers = {:subscriber => 4,
-        :comp => 3,
-        :revenue => 2
-      }
-      @total_sold = @vouchers.values.inject(0) { |sum,n| sum + n }
-      @showdate = Showdate.create!(:thedate => @thedate,
-                                   :end_advance_sales => @thedate - 5.minutes,
-                                   :max_sales => @max_sales,
-                                   :show => mock_model(Show, :valid? => true, :house_capacity => @house_cap))
-      @vouchers.each_pair do |type,qty|
-        qty.times do
-          @showdate.vouchers.create!(:category => type,
-                                     :vouchertype => mock_model(Vouchertype, :category => type),
-                                     :purchasemethod => mock_model(Purchasemethod))
-        end
+  before(:each) do
+    @house_cap = 12
+    @max_sales = 10
+    @thedate = Time.now
+    @showdate = Showdate.create!(
+      :thedate => @thedate,
+      :end_advance_sales => @thedate - 5.minutes,
+      :max_sales => @max_sales,
+      :show => mock_model(Show, :valid? => true, :house_capacity => @house_cap))
+    @vouchers = {
+      :subscriber => 4,
+      :comp => 3,
+      :revenue => 2,
+    }
+    @nonticket_vouchers = {
+      :nonticket => 1
+    }
+    @total_sold = @vouchers.values.inject(0) { |sum,n| sum + n }
+    (@vouchers.merge(@nonticket_vouchers)).each_pair do |type,qty|
+      qty.times do
+        @showdate.vouchers.create!(:category => type,
+          :vouchertype => mock_model(Vouchertype, :category => type),
+          :purchasemethod => mock_model(Purchasemethod))
       end
     end
+  end
+
+  describe "vouchers" do
+    it "should have 9 vouchers" do
+      @showdate.should have(9).vouchers
+    end
+    it "should have 10 actual vouchers including nonticket" do
+      @showdate.should have(10).all_vouchers
+      (@showdate.all_vouchers - @showdate.vouchers).first.category.to_s.should == 'nonticket'
+    end
+  end
+  describe "revenue computations" do
+    before(:each) do
+      @showdate.vouchers.each do |v|
+        v.stub!(:price).and_return(11.00)
+      end
+    end
+    it "should compute revenue based on total seats sold" do
+      # based on selling 9 seats
+      @showdate.revenue.should == 99.00
+    end
+  end
+  describe "capacity computations" do
     describe "for normal sales", :shared => true do
       # house cap 12, max sales 10, sold 9
       it "should compute total sales" do
@@ -30,6 +56,17 @@ describe Showdate do
         @showdate.compute_advance_sales.should == @total_sold
       end
       it "should compute total seats left" do
+        @showdate.total_seats_left.should == 3
+      end
+      it "should not be affected by nonticket vouchers" do
+        @v = Voucher.new_from_vouchertype(
+          Vouchertype.create!(:category => :nonticket, :price => 99,
+            :name => 'fee', :account_code => '8888',
+            :valid_date => Time.now - 1.month,
+            :expiration_date => Time.now + 1.month))
+        @v.purchasemethod = mock_model(Purchasemethod)
+        @v.reserve(@showdate, mock_model(Customer))
+        @v.save!
         @showdate.total_seats_left.should == 3
       end
       it "should compute percent of max sales" do
