@@ -228,23 +228,26 @@ class StoreController < ApplicationController
       @recipient = verify_valid_recipient 
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
+    howpurchase = Purchasemethod.default
     if (params[:commit] =~ /credit/i || !@is_admin)
       verify_valid_credit_card_purchaser or return
       method = :credit_card
+      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'box_cc' : 'web_cc')
       redirect_to(:action => 'checkout',:sales_final => sales_final, :email_confirmation => params[:email_confirmation]) and return unless
         args = collect_credit_card_info
       args.merge({:order_number => @cart.order_number})
       @payment="credit card #{args[:credit_card].display_number}"
     elsif params[:commit] =~ /check/i
       method = :check
+      howpurchased = Purchasemethod.get_type_by_name('box_chk')
       args = {:check_number => params[:check_number]}
       @payment = "check number #{params[:check_number]}"
     elsif params[:commit] =~ /cash/i
       method = :cash
+      howpurchased = Purchasemethod.get_type_by_name('box_cash')
       args = {}
       @payment = "cash"
     end
-    howpurchased = (@customer.id == logged_in_id ? 'cust_ph' : 'cust_web')
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
       @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)

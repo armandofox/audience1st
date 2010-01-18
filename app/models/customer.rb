@@ -313,6 +313,7 @@ class Customer < ActiveRecord::Base
     items.each do |v|
       if v.kind_of?(Voucher)
         v.processed_by_id = logged_in
+        v.purchasemethod_id = howpurchased
         success,msg = v.add_to_customer(self)
         if success
           Txn.add_audit_record(:txn_type => 'tkt_purch',
