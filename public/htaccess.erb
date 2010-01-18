@@ -10,9 +10,9 @@ RewriteEngine On
 ErrorDocument 503 /<%= venue %>/system/maintenance.html
 RewriteCond %{DOCUMENT_ROOT}/<%= venue %>/system/maintenance.html -f
 RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-<%- debugging_ips.each do |addr| %>
+<% debugging_ips.each do |addr| %>
 RewriteCond %{REMOTE_ADDR} !^<%= addr.gsub('.','\.') %>$
-<%- end %>
+<% end %>
 RewriteRule ^.*$ /<%= venue %>/system/maintenance.html [redirect=503,L]
 
 # In case Rails experiences terminal errors
