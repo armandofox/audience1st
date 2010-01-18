@@ -19,6 +19,22 @@ class Cart
     @order_number = Cart.generate_order_id
   end
 
+  def workaround_rails_bug_2298!
+    # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
+    # that were not saved are NOT reset to nil, which causes problems when they are
+    # successfully saved later on (eg when transaction is rerun).  Also, new_record is
+    # not correctly reset to true.
+    # the fix is based on a patch shown here:
+    # http://s3.amazonaws.com/activereload-lighthouse/assets/fe67deaf98bb15d58218acdbbdf7d4f166255ad3/after_transaction.diff?AWSAccessKeyId=1AJ9W2TX1B2Z7C2KYB82&Expires=1263784877&Signature=ZxQebT1e9lG8hqexXb6IMvlfw4Q%3D
+    self.items.each do |i|
+      i.instance_eval {
+        @attributes.delete(self.class.primary_key)
+        @attributes_cache.delete(self.class.primary_key)
+        @new_record = true
+      }
+    end
+  end
+
   def empty!
     @items = []
     @total_price = 0.0
@@ -54,19 +70,21 @@ class Cart
       case
       when i.kind_of?(Voucher)
         if i.showdate_id.to_i > 0
-          s=sprintf("$%6.2f  %s\n         %s",
-                    i.vouchertype.price,
-                    i.showdate.printable_name,
-                    i.vouchertype.name)
+          s=sprintf("%d $%6.2f  %s\n         %s",
+            i.id,
+            i.vouchertype.price,
+            i.showdate.printable_name,
+            i.vouchertype.name)
           s << "\n         Seating request: #{i.comments}" unless i.comments.to_s.empty?
           unless i.showdate.show.patron_notes.blank?
             notes[i.showdate.show.name] = i.showdate.show.patron_notes
           end
           s
         else
-          sprintf("$%6.2f  %s",
-                  i.vouchertype.price,
-                  i.vouchertype.name)
+          sprintf("%d $%6.2f  %s",
+            i.id,
+            i.vouchertype.price,
+            i.vouchertype.name)
         end
       when i.kind_of?(Donation)
         sprintf("$%6.2f  Donation to General Fund", i.amount)

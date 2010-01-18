@@ -190,6 +190,10 @@ class StoreController < ApplicationController
       @recipient = @cust
     end
     @cart = find_cart
+    # Work around Rails bug 2298 here
+    @cart.workaround_rails_bug_2298!
+    logger.info "Checkout:\n#{@cart}"
+    debugger
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     if @cart.is_empty?
       logger.warn "Cart empty, redirecting from checkout back to store"
@@ -228,7 +232,7 @@ class StoreController < ApplicationController
     if (params[:commit] =~ /credit/i || !@is_admin)
       verify_valid_credit_card_purchaser or return
       method = :credit_card
-      redirect_to(:action => 'checkout') and return unless
+      redirect_to(:action => 'checkout',:sales_final => sales_final, :email_confirmation => params[:email_confirmation]) and return unless
         args = collect_credit_card_info
       args.merge({:order_number => @cart.order_number})
       @payment="credit card #{args[:credit_card].display_number}"
@@ -245,9 +249,16 @@ class StoreController < ApplicationController
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
       @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)
-      @recipient.save!
+      unless (@recipient.save)
+        s = @recipient.errors.full_messages.join(', ')
+        logger.error "Save failed, re-raising exception! #{s}"
+        raise s
+      end
       # add donation items to payer's account
-      @customer.add_items(@cart.donations_only, logged_in_id, howpurchased)
+      unless  @customer.add_items(@cart.donations_only, logged_in_id, howpurchased)
+        logger.error "Add items for #{@customer.full_name_with_id} of #{@cart} failed!"
+        raise "Add items failed!"
+      end
       @amount = @cart.total_price
       @order_summary = @cart.to_s
       @special_instructions = @cart.comments
@@ -255,6 +266,7 @@ class StoreController < ApplicationController
     if resp.success?
       @payment << " (transaction ID: #{resp.params[:transaction_id]})" if
         @payment =~ /credit/i
+      logger.info("SUCCESS purchase #{@customer.id} [#{@customer.full_name}] by #{@payment}; Cart summary: #{@cart}")
       if params[:email_confirmation]
         email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
           @amount, @payment,
@@ -267,7 +279,7 @@ class StoreController < ApplicationController
     # failure....
     flash[:checkout_error] = resp.message
     logger.info("FAILED purchase for #{@customer.id} [#{@customer.full_name}] by #{@payment}:\n #{resp.message}") rescue nil
-    redirect_to :action => 'checkout', :sales_final => sales_final
+    redirect_to :action => 'checkout', :sales_final => sales_final, :email_confirmation => params[:email_confirmation]
   end
 
   def direct_transaction

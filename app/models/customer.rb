@@ -168,10 +168,16 @@ class Customer < ActiveRecord::Base
     ActiveRecord::Base.sanitize_sql(sql)
   end
 
+  # convenience accessors
+
   def full_name
     "#{self.first_name.name_capitalize} #{self.last_name.name_capitalize}"
   end
 
+  def full_name_with_id
+    "#{self.id} [#{self.full_name}]"
+  end
+  
   def sortable_name
     "#{self.last_name.downcase},#{self.first_name.downcase}"
   end
@@ -303,6 +309,7 @@ class Customer < ActiveRecord::Base
   # donation, or purchased goods
 
   def add_items(items, logged_in, howpurchased=Purchasemethod.get_type_by_name('web_cc'), comment='')
+    status = true
     items.each do |v|
       if v.kind_of?(Voucher)
         v.processed_by_id = logged_in
@@ -318,6 +325,8 @@ class Customer < ActiveRecord::Base
                                :dollar_amount => v.vouchertype.price,
                                :purchasemethod_id => howpurchased)
         else
+          status = nil
+          logger.error "Error adding voucher #{v} to customer #{@self.full_name_with_id}:  #{msg}"
           raise "Error: #{msg}"
         end
       elsif v.kind_of?(Donation)
@@ -329,9 +338,11 @@ class Customer < ActiveRecord::Base
                              :dollar_amount => v.amount,
                              :purchasemethod_id => howpurchased)
       else
+        logger.error "Can't add this product type to customer record: #{v}"
         raise "Can't add this product type to customer record"
       end
     end
+    return status
   end
 
   def password=(pass)

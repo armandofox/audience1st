@@ -43,9 +43,20 @@ describe Showdate do
         v.stub!(:price).and_return(11.00)
       end
     end
-    it "should compute revenue based on total seats sold" do
+    it "should be based on total seats sold" do
       # based on selling 9 seats
       @showdate.revenue.should == 99.00
+    end
+    it "should not include nonticket revenue" do
+      @v = Voucher.new_from_vouchertype(
+        Vouchertype.create!(:category => :nonticket, :price => 22,
+          :name => 'fee', :account_code => '8888',
+          :valid_date => Time.now - 1.month,
+          :expiration_date => Time.now + 1.month))
+      @v.purchasemethod = mock_model(Purchasemethod)
+      @v.reserve(@showdate, mock_model(Customer))
+      @v.save!
+      @showdate.revenue.should ==  99.00
     end
   end
   describe "capacity computations" do

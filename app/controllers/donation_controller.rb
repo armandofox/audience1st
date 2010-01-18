@@ -95,6 +95,30 @@ class DonationController < ApplicationController
     @donation = Donation.new({'customer_id' => @cust})
   end
 
+  def edit
+    unless (@donation = Donation.find_by_id(params[:id]))
+      flash[:notice] = "Donation record not found."
+      logger.error "Donation id #{params[:id]} doesn't exist!"
+      redirect_to(:action => 'list') and return
+    end
+  end
+
+  def update
+    unless (@donation = Donation.find_by_id(params[:id]))
+      flash[:notice] = "Donation record not found."
+      logger.error "Donation id #{params[:id]} doesn't exist!"
+      redirect_to(:action => 'list') and return
+    end
+    if (@donation.update_attributes(params[:donation]))
+      flash[:notice] = "Donation updated successfully."
+      redirect_to :action => 'list'
+    else
+      flash[:notice] = "Error updating donation info: " <<
+        @donation.errors.full_messages.join(', ')
+      redirect_to :action => 'edit', :id => params[:id]
+    end
+  end
+
   def create
     @donation = Donation.new(params[:donation])
     unless (c = Customer.find_by_id(@donation.customer.id))
