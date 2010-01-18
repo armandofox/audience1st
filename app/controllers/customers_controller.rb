@@ -326,7 +326,6 @@ class CustomersController < ApplicationController
     if request.get?
       # display info from two records and allow selection
       if (!params[:merge]) || (params[:merge].keys.length != 2)
-        debugger
         flash[:notice] = 'You must select exactly 2 records at a time to merge'
         redirect_to :action => 'list'
       else

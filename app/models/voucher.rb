@@ -159,7 +159,6 @@ class Voucher < ActiveRecord::Base
 
 
   def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false)
-    debugger
     vt = Vouchertype.find(vtype_id)
     raise "Number to add must be positive" unless howmany > 0
     raise  "Customer record invalid" unless cust.is_a?(Customer)

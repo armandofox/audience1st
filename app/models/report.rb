@@ -25,8 +25,8 @@ class Report
                   c.street,c.city,c.state,c.zip,
                   (c.created_on.to_formatted_s(:db) rescue nil)
                ]
-        rescue
-          debugger
+        rescue Exception => e
+          logger.error "Error in create_csv: #{e.message}"
         end
       end
     end

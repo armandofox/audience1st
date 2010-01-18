@@ -70,8 +70,7 @@ class Cart
       case
       when i.kind_of?(Voucher)
         if i.showdate_id.to_i > 0
-          s=sprintf("%d $%6.2f  %s\n         %s",
-            i.id,
+          s=sprintf("$%6.2f  %s\n         %s - ticket \##{i.id}",
             i.vouchertype.price,
             i.showdate.printable_name,
             i.vouchertype.name)
@@ -81,13 +80,12 @@ class Cart
           end
           s
         else
-          sprintf("%d $%6.2f  %s",
-            i.id,
+          sprintf("$%6.2f  %s - voucher \##{i.id}",
             i.vouchertype.price,
             i.vouchertype.name)
         end
       when i.kind_of?(Donation)
-        sprintf("$%6.2f  Donation to General Fund", i.amount)
+        sprintf("$%6.2f  Donation to General Fund (confirmation \##{i.id})", i.amount)
       end
     end.join("\n")
     txt << "\n"

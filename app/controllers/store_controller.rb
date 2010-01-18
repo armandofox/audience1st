@@ -193,7 +193,6 @@ class StoreController < ApplicationController
     # Work around Rails bug 2298 here
     @cart.workaround_rails_bug_2298!
     logger.info "Checkout:\n#{@cart}"
-    debugger
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     if @cart.is_empty?
       logger.warn "Cart empty, redirecting from checkout back to store"
