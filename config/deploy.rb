@@ -4,6 +4,8 @@ set :venue, variables[:venue]
 set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
 
+set :debugging_ips, %w[67.170.230.166]
+
 set :application,     "vbo"
 set :user,            "audienc"
 set :home,            "/home/#{user}"
@@ -69,6 +71,7 @@ deploy.task :after_update_code do
   dbconfig = ERB.new(IO.read("#{rails_root}/config/database.yml.erb")).result(binding)
   put dbconfig, "#{release_path}/config/database.yml"
   # instantiate htaccess file
+  debugging_ips = variables[:debugging_ips]
   htaccess = ERB.new(IO.read("#{rails_root}/public/htaccess.erb")).result(binding)
   put htaccess, "#{release_path}/public/.htaccess"
   # make public/stylesheets/venue point to venue's style assets
