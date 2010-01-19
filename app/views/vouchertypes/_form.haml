@@ -41,17 +41,17 @@
   = check_box 'vouchertype', 'fulfillment_needed'
 
 %p
-  %label{:for=>:vouchertype_walkup_sale_allowed}Walkup sales allowed
+  %label{:for=>:vouchertype_walkup_sale_allowed} Walkup sales allowed
   = check_box 'vouchertype', 'walkup_sale_allowed'
 
 /This part of form is for bundle vouchers
 
 %p
-  %label{:for=>:vouchertype_subscription}This voucher type qualifies buyer as a Subscriber
+  %label{:for=>:vouchertype_subscription} Qualifies buyer as a Subscriber
   = check_box 'vouchertype', 'subscription'
 
 %p
-  %label{:for=>:vouchertype_comments}Comments/description
+  %label{:for=>:vouchertype_comments} Comments/description
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
 - if @vouchertype.bundle?
@@ -68,7 +68,7 @@
     %br/
 
   %table.hilite
-    - Vouchertype.find(:all).each do |v|
+    - Vouchertype.zero_cost_vouchertypes.each do |v|
       - unless v.bundle?
         %tr
           %td.r= h(v.name)

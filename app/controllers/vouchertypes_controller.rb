@@ -38,6 +38,8 @@ class VouchertypesController < ApplicationController
       @vouchertypes = Vouchertype.comp_vouchertypes
     when "Single Tickets (Revenue)"
       @vouchertypes = Vouchertype.revenue_vouchertypes
+    when "Nonticket Products"
+      @vouchertypes = Vouchertype.nonticket_vouchertypes
     else # ALL
       @vouchertypes = Vouchertype.find(:all)
     end
@@ -52,7 +54,7 @@ class VouchertypesController < ApplicationController
   end
 
   def new
-    @vouchertype = Vouchertype.new
+    @vouchertype = Vouchertype.new(:category => :revenue)
   end
 
   def create

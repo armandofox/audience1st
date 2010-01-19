@@ -4,7 +4,7 @@ set :venue, variables[:venue]
 set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
 
-set :debugging_ips, %w[67.170.230.166]
+set :debugging_ips, %w[67.169.93.204]
 
 set :application,     "vbo"
 set :user,            "audienc"

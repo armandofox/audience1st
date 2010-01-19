@@ -232,7 +232,7 @@ class StoreController < ApplicationController
     if (params[:commit] =~ /credit/i || !@is_admin)
       verify_valid_credit_card_purchaser or return
       method = :credit_card
-      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'box_cc' : 'web_cc')
+      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
       redirect_to(:action => 'checkout',:sales_final => sales_final, :email_confirmation => params[:email_confirmation]) and return unless
         args = collect_credit_card_info
       args.merge({:order_number => @cart.order_number})

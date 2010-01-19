@@ -86,21 +86,29 @@ class Vouchertype < ActiveRecord::Base
 
   def self.nonbundle_vouchertypes
     Vouchertype.find(:all, :conditions => ["category != ?", :bundle],
-                     :order => 'price')
+                     :order => 'price', :order => 'expiration_date DESC')
   end
 
   def self.bundle_vouchertypes
     Vouchertype.find(:all, :conditions => ["category = ?", :bundle],
-                     :order => 'price')
+                     :order => 'price', :order => 'expiration_date DESC')
   end
 
   def self.subscription_vouchertypes
     Vouchertype.find(:all,
-      :conditions => ["category = ? AND subscription = ?", :bundle, true])
+      :conditions => ["category = ? AND subscription = ?", :bundle, true], :order => 'expiration_date DESC')
   end
 
   def self.revenue_vouchertypes
-    Vouchertype.find(:all, :conditions => ["category = ?", :revenue])
+    Vouchertype.find(:all, :conditions => ["category = ?", :revenue], :order => 'expiration_date DESC')
+  end
+
+  def self.nonticket_vouchertypes
+    Vouchertype.find(:all, :conditions => ["category = ?", :nonticket], :order => 'expiration_date DESC')
+  end
+
+  def self.zero_cost_vouchertypes
+    Vouchertype.find(:all, :conditions => ["price = ?", 0.0], :order => 'expiration_date DESC')
   end
 
   def self.find_products(args={})

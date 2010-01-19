@@ -1,7 +1,7 @@
 - form_tag({:action => 'list'},{:method=>:get}) do
   %h1 
     Listing
-    = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)"],@filter)
+    = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)", "Nonticket Products"],@filter)
     voucher types valid during
     = select_tag 'season', options_for_select(@years.to_a.map(&:to_s) << "All", @season)
     season

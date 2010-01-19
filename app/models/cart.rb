@@ -97,27 +97,17 @@ class Cart
   end
 
   def add(itm,qty=1)
-    if itm.kind_of?(Voucher)
-      price = itm.vouchertype.price
-    elsif itm.kind_of?(Donation)
-      price = itm.amount
-    else
-      raise "Invalid item added to cart!"
-    end
     self.items << itm
     self.items.sort! do |a,b|
       if a.class != b.class
         b.class.to_s <=> a.class.to_s
-      elsif a.kind_of?(Voucher) && a.showdate_id.to_i > 0 && b.showdate_id.to_i > 0
-        (a.showdate.show.name <=> b.showdate.show.name ||
-         a.showdate.thedate <=> b.showdate.thedate)
-      elsif a.kind_of?(Voucher) # subscription voucher(s)
-        (a.showdate_id.to_i <=> b.showdate_id.to_i)
+      elsif a.kind_of?(Voucher) 
+        a <=> b
       else
         a.donation_fund_id <=> b.donation_fund_id
       end
     end
-    self.total_price += price
+    self.total_price += itm.price
   end
 
   def donation
