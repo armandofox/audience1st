@@ -22,8 +22,8 @@ We're confirming your reservation for the following performance --
 
 <% end %>
 
-<%= sanitize_option_text(:general_confirmation_email_notes, :spanify=>false).wrap(60) %>
+<%= strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)).wrap(60) %>
 
-<%= sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false).wrap(60) %>
+<%= strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)).wrap(60) %>
 
 <%= @how_to_contact_us %>

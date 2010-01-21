@@ -21,7 +21,7 @@ hour before showtime.
 ------------------------------------------------------------
 SPECIAL INSTRUCTIONS:
 
-<%= @special_instructions %>
+<%= strip_tags(@special_instructions) %>
 ------------------------------------------------------------
 <% end %>
 <% if @recipient %>
@@ -40,4 +40,4 @@ PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
 PAYMENT METHOD: <%= @payment_desc %>
 ------------------------------------------------------------
 
-<%= @how_to_contact_us %>
+<%= strip_tags(@how_to_contact_us) %>

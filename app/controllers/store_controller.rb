@@ -64,7 +64,11 @@ class StoreController < ApplicationController
     @cart = find_cart
     # this uses the temporary hack of adding bundle sales start/end
     #   to bundle voucher record directly...ugh
-    @subs_to_offer = Vouchertype.find_products(:type => :subscription, :for_purchase_by => (@subscriber ? :subscribers : :nonsubscribers), :ignore_cutoff => @gAdmin.is_boxoffice)
+    #@subs_to_offer = Vouchertype.find_products(:type => :subscription, :for_purchase_by => (@subscriber ? :subscribers : :nonsubscribers), :ignore_cutoff => @gAdmin.is_boxoffice)
+    @subs_to_offer = Vouchertype.subscription_vouchertypes
+    @subs_to_offer.reject! { |v| v.visibility == Vouchertype::BOXOFFICE } unless @gAdmin.is_boxoffice
+    @subs_to_offer.reject! { |v| v.visibility == Vouchertype::EXTERNAL }
+    @subs_to_offer.reject! { |v| v.visibility == Vouchertype::SUBSCRIBERS } unless @subscriber
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to :action => :index
