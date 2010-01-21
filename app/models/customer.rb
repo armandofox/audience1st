@@ -170,6 +170,12 @@ class Customer < ActiveRecord::Base
 
   # convenience accessors
 
+  def inspect
+    "[#{self.id}] #{first_name.name_capitalize} #{last_name.name_capitalize} " <<
+      (email.blank? ? '' : "<#{email}>") <<
+      (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
+  end
+  
   def full_name
     "#{self.first_name.name_capitalize} #{self.last_name.name_capitalize}"
   end
