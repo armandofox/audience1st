@@ -68,15 +68,15 @@ deploy.task :after_update_code do
   # copy installation-specific files
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
   abort if config.empty?
-  dbconfig = ERB.new(IO.read("#{rails_root}/config/database.yml.erb")).result(binding)
-  put dbconfig, "#{release_path}/config/database.yml"
-  # instantiate htaccess file
   debugging_ips = variables[:debugging_ips]
-  htaccess = ERB.new(IO.read("#{rails_root}/public/htaccess.erb")).result(binding)
-  put htaccess, "#{release_path}/public/.htaccess"
+  %w[config/database.yml public/.htaccess support/Makefile].each do |f|
+    file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
+    put file, "#{release_path}/#{f}"
+    run "rm -f #{release_path}/#{f}.erb"
+  end    
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
-  %w[config/venues.yml config/database.yml.erb public/htaccess.erb manual doc test spec].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
+  %w[config/venues.yml manual doc test spec].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
   run "chmod -R go-w #{release_path}"
 end
 
