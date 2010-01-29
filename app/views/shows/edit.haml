@@ -20,7 +20,7 @@
     %tr
       %th Date/time
       %th Adv sales stop
-      %th Max Sale
+      %th Max Sale<br/> (% of House)
       %th Redeemable Ticket Types (click name to edit)
   %tbody
     = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}

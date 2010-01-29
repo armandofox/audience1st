@@ -39,7 +39,7 @@ class Mailer < ActionMailer::Base
                  :performance => showdate.printable_name,
                  :num => num,
                  :confnum => confnum,
-                 :subscriber => customer.is_subscriber?,
+                 :subscriber => customer.subscriber?,
                  :notes => showdate.show.patron_notes
                   )
   end

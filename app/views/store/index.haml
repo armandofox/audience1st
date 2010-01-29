@@ -26,7 +26,7 @@
   
   #ticket_menus
     - form_tag :action => 'shipping_address' do
-      = render :partial => 'ticket_menus', :locals => {:donation_field => 'donation', :submit_button => 'submit'}
+      = render :partial => 'ticket_menus'
 
       %label{:for => :donation} Additional tax-deductible donation
       = text_field_tag 'donation', '', :size => 5, :onBlur => 'recalc_total()'
@@ -37,7 +37,7 @@
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true
       - unless Option.value(:allow_gift_tickets).blank?
         %label.emphasis{:for=>:gift} Is this order a <strong>gift?</strong>
-        = check_box_toggle 'gift', false, :nextstep, 'to enter Recipient information', |
+        = check_box_toggle 'gift', false, 'nextstep','to enter Recipient information', |
           'to Billing information' |
       %br
       %label &nbsp;

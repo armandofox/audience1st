@@ -31,6 +31,7 @@ class EmailGoldstar < ActionMailer::Base
     puts(s) if @@verbose
     logger.info(s)
     @@error_trace << s
+    s
   end
 
   def self.error_trace
@@ -54,56 +55,49 @@ class EmailGoldstar < ActionMailer::Base
   end
 
   def receive(email)
-    EmailGoldstar.process(email, false)
+    debug("Received email from  #{email.from[0]}")
+    unless (e = email.reply_to).include?("venues@goldstar.com")
+      debug("IGNORING EMAIL: Reply-to '#{e}' doesn't appear to be from Goldstar")
+      return
+    end
+    unless (s = email.subject).match?(/will-call/i)
+      debug("IGNORING EMAIL: Subject '#{s}' doesn't appear to indicate a will-call list")
+      return
+    end
+    debug("Trying to extract Excel attachment...")
+    abort_error("ERROR: Email appears to be will-call list, but no attachment") unless email.has_attachments?
+    a = email.attachments.select { |a| a.original_filename.match(/\.xls$/) }
+    abort_error("Appears to be will-call list, but found #{a.length} Excel attachments (expected 1)")  unless a.length == 1
+    t = nil
+    w= nil
+    begin
+      t = Tempfile.new('xls')
+      debug("Using tempfile #{t.path}")
+      t.write(a.first.read)
+      t.flush
+    rescue Exception => e
+      abort_error("Error saving attachment to tempfile: #{e.message}")
+    end
+    debug("Parsing Excel spreadsheet")
+    begin
+      w = Spreadsheet::ParseExcel.parse(t.path)
+    rescue Exception => e
+      abort_error("Error parsing spreadsheet: #{e.message}")
+    end
+    begin
+      EmailGoldstar.process(w, false)
+    rescue Exception => e
+      abort_error("Error processing orders: #{e.message}")
+    end
   end
 
-  def self.process(email, verbose=false)
+  def self.process(worksheet, verbose=false)
     @@verbose = verbose
     @@testing = ! ENV["TESTING"].blank?
     tix_added = 0
     msg = ""
     showdate = nil
-    begin
-      msg << "\n\n        *** TEST MODE *** NO ORDERS WILL BE ADDED ***\n\n" if @@testing
-      offers, orders = self.prepare(email)
-      raise "No valid ticket offers found" unless offers
-      showdate = offers[offers.keys.first].showdate
-      if orders.nil? || orders.empty?
-        msg << "No Goldstar tickets sold for this performance\n"
-      else
-        msg << "Goldstar sold:\n" <<
-          offers.keys.map { |k| "#{k}: #{offers[k]}" }.join("\n") <<
-          "\n" << ("-" * 40) << "\n"
-        tix_added = self.process_orders(orders) unless @@testing
-        msg << orders.map { |o| o.to_s }.join("\n")
-        if (unsold = TicketOffer.unsold(offers.values)) > 0
-          msg << "\n#{unsold} tickets were released back to general inventory\n"
-          # TBD add extra seats back into general inv by boosting house cap?
-          showdate.release_holdback(unsold)
-        end
-      end
-     rescue Exception => e
-      msg << "** ERROR processing Goldstar report (trace follows):\n"
-      msg << e.message << "\n"
-      msg << self.error_trace
-      if defined?(tix_added)
-        msg << "\n(#{tix_added} tickets were successfully recorded)\n"
-      end
-      showdate = nil unless defined?(showdate)
-      msg << "\n\n------#{email}\n--------\n"
-    end
-    debug(showdate ? showdate.printable_name : "(No showdate)")
-    debug("\n" << msg)
-    if @@testing
-      File.open("/tmp/email_goldstar_log", "w+") { |f|  f.print msg }
-    else
-      deliver_goldstar_email_report(showdate,msg)
-    end
-  end
-
-  def self.prepare(excel_filepath)
-    debug("Trying to extract Excel attachment...")
-    workbook =  extract_attachment(/\.xls$/i, excel_filepath)
+    msg << "\n\n        *** TEST MODE *** NO ORDERS WILL BE ADDED ***\n\n" if @@testing
     debug "#{workbook.worksheet(0).num_rows} rows"
     rows = Generator.new(workbook.worksheet(0))
     sd = get_showdate(rows)
@@ -112,8 +106,32 @@ class EmailGoldstar < ActionMailer::Base
     #  match each to a Vouchertype for this showdate.  returns a hash
     # with key=offer description and value=corresponding vouchertype object
     offers = parse_ticket_types_for_showdate(rows,sd)
+    abort_error("No valid ticket offers found") unless offers
     orders = parse_orders(offers,rows)
-    return [offers, orders]
+    showdate = offers[offers.keys.first].showdate
+    if orders.nil? || orders.empty?
+      deliver_goldstar_email_report(showdate, "No Goldstar tickets sold for this performance")
+      return
+    end
+    msg << offers.keys.map { |k| "#{k}: #{offers[k]}" }.join("\n") <<
+      "\n" << ("-" * 40) << "\n"
+    tix_added = self.process_orders(orders) unless @@testing
+    msg << "\n#{tix_added} tickets were successfully recorded:\n\n"
+    msg << orders.map { |o| o.to_s }.join("\n")
+    if (unsold = TicketOffer.unsold(offers.values)) > 0
+      showdate.release_holdback(unsold)
+      msg << "\n#{unsold} tickets were released back to general inventory\n"
+    end
+      end
+      showdate = nil unless defined?(showdate)
+    end
+    debug(showdate ? showdate.printable_name : "(No showdate)")
+    debug("\n" << msg)
+    if @@testing
+      File.open("/tmp/email_goldstar_log", "w+") { |f|  f.print msg }
+    else
+      deliver_goldstar_email_report(showdate,msg)
+    end
   end
 
   def self.process_orders(orders)
@@ -191,7 +209,6 @@ class EmailGoldstar < ActionMailer::Base
 
   def self.extract_attachment(filename_regexp,email)
     # check if from Goldstar
-    debug("Received email from  #{email.from[0]}")
     # if !@@testing && RAILS_ENV == 'production' && email.from[0] !~ /venues@goldstar/i
     #   raise "Bad sender"
     # end
@@ -226,4 +243,10 @@ class EmailGoldstar < ActionMailer::Base
     @headers    = {}
   end
 
+  def abort_error(s)
+    debug(s)
+    deliver_goldstar_email_report(nil,
+    "ERROR: #{s}\n\n---trace follows---\n\n" << self.error_trace)
+    exit(0)
+  end
 end

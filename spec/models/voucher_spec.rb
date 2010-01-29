@@ -80,7 +80,11 @@ describe Voucher do
     end
   end
   describe "reservation for a valid showdate" do
-    it "should fail when voucher is not reservable" 
+    context "should fail" do
+      it "when voucher is not reservable"
+      it "when advance sales have stopped"
+      it "when show is sold out"
+    end
     context "when voucher is reservable" do
       context "by customer"
       context "by box office only"

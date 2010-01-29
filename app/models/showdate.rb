@@ -14,10 +14,17 @@ class Showdate < ActiveRecord::Base
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
 
-  # simple formater
-  def to_s
-    "#{category} - #{vouchertype} - #{showdate_id} - #{price}"
+  # round off all showdates to the nearest minute
+  before_save :truncate_showdate_to_nearest_minute
+
+  private
+
+  def truncate_showdate_to_nearest_minute
+    self.thedate.change(:sec => 0)
   end
+
+  public
+
   # finders
   
   def self.current_and_future
@@ -25,8 +32,9 @@ class Showdate < ActiveRecord::Base
       :order => 'thedate')
   end
 
-  def self.current_or_next
-    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now])
+  def self.current_or_next(buffer = 0)
+    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer],
+      :order => "thedate")
   end
 
   def self.next_or_latest
@@ -79,7 +87,7 @@ class Showdate < ActiveRecord::Base
   def house_capacity ;   self.show.house_capacity ;  end
 
   def max_allowed_sales
-    self.max_sales.zero? ? self.house_capacity : self.max_sales
+    self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
   end
 
   # release unsold seats from an external channel back to general inventory.

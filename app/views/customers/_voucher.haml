@@ -4,41 +4,37 @@
 
 %tr
   - if is_boxoffice
-    %td.adminField{:style => "background-color: white;"}
+    %td.adminField
       = h voucher.id
+      %br
       = voucher.processed_by_name unless voucher.processed_by_id == voucher.customer.id
   %td= h voucher.vouchertype.name
   %td= h voucher.purchasemethod.description if voucher.purchasemethod
   - if voucher.bundle?
     / voucher bundle - not reservable
-    %td{:colspan=>2}
-    - if is_boxoffice_manager && voucher.price.zero?
-      %td= button_to(*remove_voucher)
+    %td
+    - if is_boxoffice_manager
+      %td.adminField= button_to(*remove_voucher) if voucher.price.zero?
   - elsif voucher.unreserved?
     / regular voucher, unreserved
-    %td Available
-    / customer actions on unreserved voucher: make reservation
-    %td
-      = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer },:method=>:get )
-    - if is_boxoffice_manager
-      / admin actions on unreserved voucher: remove
-      %td= button_to(*remove_voucher) if voucher.price.zero?
+    %td= button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer },:method=>:get )
+    - if is_boxoffice_manager 
+      %td.adminField= button_to(*remove_voucher) if voucher.price.zero?
   - else
     / regular voucher, reserved
     %td
       %span.showName= h voucher.showdate.show.name
-      %br/
+      %br
       %span.showDate= h voucher.showdate.thedate.to_formatted_s(:showtime)
-    / customer actions on reserved voucher:
-    %td
+      / customer actions on reserved voucher:
       - if (is_subscriber && voucher.can_be_changed?) || (is_boxoffice && voucher.changeable)
+        %br
         = button_to(*cancel_res)
-    / admin actions on reserved voucher:
     - if is_boxoffice_manager
-      %td.c.admin=  button_to(*cancel_res)
+      %td.adminField.c.admin=  button_to(*cancel_res)
+  / admin can update voucher comments
   - if is_boxoffice
-    / admin can update voucher comments
-    %td
+    %td.admin
       - form_remote_tag(:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id }, :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
         = text_field_tag 'comments', voucher.comments
         = submit_tag 'Save'

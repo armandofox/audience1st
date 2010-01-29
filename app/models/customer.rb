@@ -220,14 +220,14 @@ class Customer < ActiveRecord::Base
     end
   end
 
-  def is_subscriber?
+  def subscriber?
     self.role >= 0 &&
       self.vouchers.detect do |f|
       f.vouchertype.subscription? && f.vouchertype.valid_now?
     end
   end
 
-  def is_next_season_subscriber?
+  def next_season_subscriber?
     self.role >= 0 &&
       self.vouchers.detect do |f|
       f.vouchertype.subscription? &&

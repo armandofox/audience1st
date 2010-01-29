@@ -41,7 +41,7 @@ class Cart
     @comments = ''
   end
 
-  def is_empty?
+  def empty?
     self.items.empty?
   end
 
@@ -112,5 +112,12 @@ class Cart
 
   def donation
     self.items.detect { |i| i.kind_of?(Donation) }
+  end
+
+  def include_donation?
+    self.items.detect { |i| i.kind_of?(Donation) }
+  end
+  def include_vouchers?
+    self.items.detect { |i| i.kind_of?(Voucher) }
   end
 end

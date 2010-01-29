@@ -13,7 +13,7 @@ module CustomersHelper
   def display_class(c)
     klass = []
     klass << 'staff' if  c.is_staff
-    klass << 'subscriber' if c.is_subscriber?
+    klass << 'subscriber' if c.subscriber?
     klass.join ' '
   end
 

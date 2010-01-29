@@ -2,9 +2,9 @@
   name: customer_type
   choices: 
     - label: Subscribers only
-      term:  c.is_subscriber > 0
+      term:  c.subscriber > 0
     - label: Non-subscribers only
-      term:  c.is_subscriber = 0 OR c.is_subscriber IS NULL
+      term:  c.subscriber = 0 OR c.subscriber IS NULL
   text: who...
 
 - 

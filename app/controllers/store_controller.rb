@@ -8,9 +8,9 @@ class StoreController < ApplicationController
   before_filter :is_admin, :only => %w[direct_transaction]
   
   before_filter(:find_cart_not_empty,
-    :only => %w[edit_billing_address shipping_address set_shipping_address
-                checkout place_order not_me],
-    :add_to_flash => {:checkout_error => "Your order appears to be empty. Please select some tickets."},
+    :only => %w[edit_billing_address set_shipping_address
+                 place_order not_me],
+    :add_to_flash => {:warning => "Your order appears to be empty. Please select some tickets."},
     :redirect_to => {:action => 'index'})
     
 
@@ -49,8 +49,8 @@ class StoreController < ApplicationController
         set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
       end
     end
-    @subscriber = @customer.is_subscriber?
-    @next_season_subscriber = @customer.is_next_season_subscriber?
+    @subscriber = @customer.subscriber?
+    @next_season_subscriber = @customer.next_season_subscriber?
     @promo_code = session[:promo_code] || nil
     setup_ticket_menus
   end
@@ -59,19 +59,15 @@ class StoreController < ApplicationController
     reset_shopping
     session[:redirect_to] = :subscribe
     @customer = store_customer
-    @subscriber = @customer.is_subscriber?
-    @next_season_subscriber = @customer.is_next_season_subscriber?
+    @subscriber = @customer.subscriber?
+    @next_season_subscriber = @customer.next_season_subscriber?
     @cart = find_cart
     # this uses the temporary hack of adding bundle sales start/end
     #   to bundle voucher record directly...ugh
-    #@subs_to_offer = Vouchertype.find_products(:type => :subscription, :for_purchase_by => (@subscriber ? :subscribers : :nonsubscribers), :ignore_cutoff => @gAdmin.is_boxoffice)
-    @subs_to_offer = Vouchertype.subscription_vouchertypes
-    @subs_to_offer.reject! { |v| v.visibility == Vouchertype::BOXOFFICE } unless @gAdmin.is_boxoffice
-    @subs_to_offer.reject! { |v| v.visibility == Vouchertype::EXTERNAL }
-    @subs_to_offer.reject! { |v| v.visibility == Vouchertype::SUBSCRIBERS } unless @subscriber
+    @subs_to_offer = Vouchertype.subscriptions_available_for(store_customer, @gAdmin.is_boxoffice)
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
-      redirect_to :action => :index
+      redirect_to_index
       return
     end
     if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
@@ -87,33 +83,33 @@ class StoreController < ApplicationController
     #  ticket selection page).  If a get, buyer just wants to modify
     #  gift recipient info.
     # add items to cart
-    set_checkout_in_progress
     @cart = find_cart
     @redirect_to = params[:redirect_to] == 'subscribe' ? :subscribe : :index
     if request.post?
       @redirect_to == :subscribe ? process_subscription_request : process_ticket_request
       # did anything go wrong?
-      redirect_to :action => :index and return unless flash[:warning].blank?
+      redirect_to_index and return unless flash[:warning].blank?
       if params[:donation].to_i > 0
-        @cart.add(Donation.online_donation(params[:donation].to_i, store_customer.id,logged_in_id))
+        d = Donation.online_donation(params[:donation].to_i, store_customer.id,logged_in_id)
+        @cart.add(d)
       end
     end
-    # make sure something actually got added.
-    if @cart.is_empty?
-      flash[:warning] = "Please select some tickets."
-      redirect_to :action => (params[:redirect_to] || :index)
+    # did anything get added to cart?
+    if @cart.empty?
+      flash[:warning] = "Nothing was added to your order. Please try again."
+      redirect_to_index
       return
     end
     # all is well. if this is a gift order, fall through to get Recipient info.
-    # if NOT a gift, set recipient to same as current customer, and
+    # if NOT a gift, or if donation only, set recipient to same as current customer, and
     # continue to checkout.
     # in case it's a gift, customer should know donation is made in their name.
-    @includes_donation = @cart.items.detect { |v| v.kind_of?(Donation) }
+    @includes_donation = @cart.include_donation?
     set_checkout_in_progress
-    if params[:gift]
+    if params[:gift] && @cart.include_vouchers?
       @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
     else
-      redirect_to :action => :checkout
+      redirect_to_checkout
     end
   end
 
@@ -149,7 +145,7 @@ class StoreController < ApplicationController
       end
     end
     session[:recipient_id] = @recipient.id
-    redirect_to :action => :checkout
+    redirect_to_checkout
   end
 
   def show_changed
@@ -182,7 +178,7 @@ class StoreController < ApplicationController
     if !code.empty?
       session[:promo_code] = code
     end
-    redirect_to :action => 'index'
+    redirect_to_index
   end
 
   def checkout
@@ -193,14 +189,14 @@ class StoreController < ApplicationController
     else
       @recipient = @cust
     end
-    @cart = find_cart
+    @cart = find_cart_not_empty or return
     # Work around Rails bug 2298 here
     @cart.workaround_rails_bug_2298!
     logger.info "Checkout:\n#{@cart}"
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    if @cart.is_empty?
+    if @cart.empty?
       logger.warn "Cart empty, redirecting from checkout back to store"
-      redirect_to(:action => 'index', :id => params[:id])
+      redirect_to_index
       return
     end
     @credit_card = ActiveMerchant::Billing::CreditCard.new
@@ -228,7 +224,7 @@ class StoreController < ApplicationController
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
     sales_final = verify_sales_final or return
-    redirect_to(:action => 'index') and return unless
+    redirect_to_index and return unless
       @recipient = verify_valid_recipient 
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
@@ -237,8 +233,7 @@ class StoreController < ApplicationController
       verify_valid_credit_card_purchaser or return
       method = :credit_card
       howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
-      redirect_to(:action => 'checkout',:sales_final => sales_final, :email_confirmation => params[:email_confirmation]) and return unless
-        args = collect_credit_card_info
+      redirect_to_checkout and return unless args = collect_credit_card_info
       args.merge({:order_number => @cart.order_number})
       @payment="credit card #{args[:credit_card].display_number}"
     elsif params[:commit] =~ /check/i
@@ -285,7 +280,7 @@ class StoreController < ApplicationController
     # failure....
     flash[:checkout_error] = resp.message
     logger.info("FAILED purchase for #{@customer.id} [#{@customer.full_name}] by #{@payment}:\n #{resp.message}") rescue nil
-    redirect_to :action => 'checkout', :sales_final => sales_final, :email_confirmation => params[:email_confirmation]
+    redirect_to_checkout
   end
 
   def direct_transaction
@@ -401,7 +396,7 @@ EON
   end
 
   def get_all_subs(cust = Customer.generic_customer)
-    return Vouchertype.find(:all, :conditions => ["bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.is_subscriber? ? 0 : 1)])
+    return Vouchertype.find(:all, :conditions => ["bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.subscriber? ? 0 : 1)])
   end
 
   def process_ticket_request
@@ -430,6 +425,7 @@ EON
       end
     end
     flash[:warning] = msgs.join("<br/>") unless msgs.empty?
+    logger.info "Added to cart: #{@cart}"
   end
 
   def process_subscription_request
@@ -461,7 +457,7 @@ EON
     unless @customer.kind_of?(Customer)
       flash[:warning] = "SYSTEM ERROR: Invalid purchaser (id=#{@customer.id})"
       logger.error "Reached place_order with invalid customer: #{@customer}"
-      redirect_to :action => 'checkout'
+      redirect_to_index
       return nil
     end
     @customer
@@ -472,7 +468,7 @@ EON
     unless result
       flash[:warning] = "Customer address/contact data insufficient for credit card purchase"
       logger.error "Reached place_order with customer who is invalid as purchaser: #{@customer}"
-      redirect_to :action => 'checkout'
+      redirect_to_checkout
     end
     result
   end
@@ -502,22 +498,38 @@ EON
 
   def find_cart_not_empty
     cart = find_cart
-    # regular customers must have a total order > $0.00, but admins can
+    logger.info "Cart: #{cart.to_s}"
+    # regular custonmers must have a total order > $0.00, but admins can
     # have zero-cost order as long as has zero items
-    if @gAdmin.is_staff
-      return (cart.items.length > 0) ? cart : nil
+    if ((@gAdmin.is_staff && cart.items.length > 0) ||
+        cart.total_price > 0)
+      return cart
     else
-      return (cart.total_price > 0) ? cart : nil
+      flash[:warning] = "Your cart is empty - please add tickets and/or a donation."
+      redirect_to_index
+      return nil
     end
   end
 
   def verify_sales_final
     if (sales_final = params[:sales_final].to_i).zero?
       flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
-      redirect_to :action => 'checkout'
+      redirect_to_checkout
       return nil
     else
       return sales_final
     end
+  end
+
+  def redirect_to_checkout
+    redirect_to(:action => 'checkout',
+      :sales_final => params[:sales_final],
+      :email_confirmation => params[:email_confirmation])
+    true
+  end
+
+  def redirect_to_index
+    redirect_to :action => (params[:redirect_to] == 'subscribe' ? 'subscribe' : 'index')
+    true
   end
 end

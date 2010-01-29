@@ -111,6 +111,22 @@ class Vouchertype < ActiveRecord::Base
     Vouchertype.find(:all, :conditions => ["price = ?", 0.0], :order => 'expiration_date DESC')
   end
 
+  def self.subscriptions_available_to(customer = Customer.generic_customer, admin = nil)
+    if admin
+      str = "offer_public != ?"
+      vals = [Vouchertype::EXTERNAL]
+    elsif (customer.subscriber? || customer.next_season_subscriber?)
+      str = "offer_public IN (?) AND (? BETWEEN valid_date AND expiration_date)"
+      vals = [[Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE], Time.now]
+    else                      # generic customer
+      str = "(offer_public = ?) AND (? BETWEEN valid_date AND expiration_date)"
+      vals = [Vouchertype::ANYONE, Time.now]
+    end
+    str = "(category = ?) AND (subscription = ?) AND #{str}"
+    vals.unshift(str, :bundle, true)
+    Vouchertype.find(:all, :conditions => vals, :order => "price DESC")
+  end
+
   def self.find_products(args={})
     restrict = []
     arglist = []

@@ -111,4 +111,107 @@ describe Vouchertype do
     end
   end
 
+  describe "selecting" do
+    describe "subscriptions" do
+      before(:each) do
+        generic_args =  {
+          :price => 5.0,
+        :walkup_sale_allowed => false,
+        :comments => "A comment",
+        :account_code => "9997",
+        :valid_date => 1.day.ago,
+        :expiration_date => 1.day.from_now
+        }
+        @sub_anyone = Vouchertype.create!(generic_args.merge({
+              :category => :bundle, :subscription => true, :name => "Sub for anyone",
+              :offer_public => Vouchertype::ANYONE }))
+        @sub_boxoffice = Vouchertype.create!(generic_args.merge({
+              :category => :bundle, :offer_public => Vouchertype::BOXOFFICE,
+              :subscription => true,:name => "Sub for boxoffice" }))
+        @sub_subscriber = Vouchertype.create!(generic_args.merge({
+              :category => :bundle, :offer_public => Vouchertype::SUBSCRIBERS,
+              :subscription => true, :name => "Sub for subscribers"  }))
+        @sub_external = Vouchertype.create!(generic_args.merge({
+              :category => :bundle, :offer_public => Vouchertype::EXTERNAL,
+              :subscription => true, :name => "Sub for external sale" }))
+        @sub_expired = Vouchertype.create!(generic_args.merge({
+              :category => :bundle, :offer_public => Vouchertype::ANYONE,
+              :subscription => true, :name => "Expired sub",
+              :valid_date => 1.year.ago, :expiration_date => 1.month.ago     }))
+        @nonsub_bundle = Vouchertype.create!(generic_args.merge({
+              :category => :bundle, :offer_public => Vouchertype::ANYONE,
+              :subscription => false, :name => "Nonsub"   }))
+      end
+      describe "in general", :shared => true do
+        it "should include generic sub" do
+          @subs.should include(@sub_anyone)
+        end
+        it "should exclude nonsubscriptions" do
+          @subs.should_not include(@nonsub_bundle)
+        end
+        it "should exclude external-channel subs" do
+          @subs.should_not include(@sub_external)
+        end
+      end
+      describe "for anyone" do
+        before(:each) do
+          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = nil)
+        end
+        it_should_behave_like "in general"
+        it "should exclude subscriber-only products" do
+          @subs.should_not include(@sub_subscriber)
+        end
+        it "should exclude expired products" do
+          @subs.should_not include(@sub_expired)
+        end
+        it "should exclude boxoffice-only products" do
+          @subs.should_not include(@sub_boxoffice)
+        end
+      end
+      describe "for boxoffice", :shared => true do
+        before(:each) do
+          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
+        end
+        it_should_behave_like "in general"
+        it "should include boxoffice-only products" do
+          @subs.should include(@sub_boxoffice)
+        end
+        it "should include expired products" do
+          @subs.should include(@sub_expired)
+        end
+      end
+      describe "subscriber" do
+        before do
+          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => true, :next_season_subscriber? => false), admin = true)
+        end
+        it_should_behave_like "for boxoffice"
+      end
+      describe "nonsubscriber" do
+        before do
+          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
+        end
+        it_should_behave_like "for boxoffice"
+      end
+      describe "for non-boxoffice subscriber", :shared => true do
+        it "should include subscriber-only products" do
+          @subs.should include(@sub_subscriber)
+        end
+        it "should exclude expired products" do
+          @subs.should_not include(@sub_expired)
+        end
+      end
+      describe "this season" do
+        before do
+          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => true, :next_season_subscriber? => false), admin = false)
+        end
+        it_should_behave_like "for non-boxoffice subscriber"
+      end
+      describe "next season" do
+        before do
+          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => true), admin = false)
+        end
+        it_should_behave_like "for non-boxoffice subscriber"
+      end
+    end
+  end
 end

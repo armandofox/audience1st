@@ -110,7 +110,7 @@ class CustomersController < ApplicationController
     @customer = @gCustomer
     # if customer is a subscriber, AND force_classic is not indicated,
     # redirect to correct page
-    if (@customer.is_subscriber?)
+    if (@customer.subscriber?)
       @subscriber = true
       unless ((params[:force_classic] && @gAdmin.is_boxoffice) ||
               !(Option.value(:force_classic_view).blank?))
@@ -124,14 +124,14 @@ class CustomersController < ApplicationController
     end
     @admin = current_admin
     @page_title = sprintf("Welcome, %s#{@customer.full_name.name_capitalize}",
-                          @customer.is_subscriber? ? 'Subscriber ' : '')
+                          @customer.subscriber? ? 'Subscriber ' : '')
     @vouchers = (@admin.is_boxoffice ?  @customer.vouchers :  @customer.active_vouchers).sort_by(&:created_on).reverse
     session[:store_customer] = @customer.id
   end
 
   def welcome_subscriber        # for subscribers
     @customer = @gCustomer
-    unless @customer.is_subscriber?
+    unless @customer.subscriber?
       flash.keep :notice
       flash.keep :warning
       redirect_to :action=>'welcome'
@@ -487,7 +487,7 @@ class CustomersController < ApplicationController
       (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
       session[:admin_id] = c.id
       return ['customers', 'list']
-    elsif c.is_subscriber?
+    elsif c.subscriber?
       return ['customers', 'welcome_subscriber']
     else
       return ['store', 'index']

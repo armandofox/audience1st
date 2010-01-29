@@ -102,7 +102,7 @@ class BoxOfficeController < ApplicationController
     perf_vouchers = @showdate.vouchers
     unless perf_vouchers.empty?
       @total = perf_vouchers.size
-      @num_subscribers = perf_vouchers.select { |v| v.customer.is_subscriber? }.size
+      @num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
       @vouchers = perf_vouchers.group_by do |v|
         "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
       end
@@ -114,7 +114,8 @@ class BoxOfficeController < ApplicationController
   end
 
   def walkup
-    @showdate = Showdate.find_by_id(params[:id]) || Showdate.current_or_next
+    @showdate = (Showdate.find_by_id(params[:id]) ||
+      Showdate.current_or_next(2.hours))
     @valid_vouchers = @showdate.valid_vouchers
     @credit_card = CreditCard.new # needed by credit-card swipe functions
     @qty = params[:qty] || {}     # voucher quantities

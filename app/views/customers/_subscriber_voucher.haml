@@ -37,7 +37,7 @@
                     :failure => "alert('Comment NOT saved - error ' + |
                       request.status)") do |
                 = text_field_tag 'comments', multiple_voucher_comments(vouchers)
-                = submit_tag 'Save', :id => svid, :style => 'width: 7em'
+                = submit_tag 'Save', :id => svid
         - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
           %td
           %td= vouchertype.name

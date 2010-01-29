@@ -65,7 +65,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def seats_remaining
-    nseatsleft = self.showdate.total_seats_left
+    nseatsleft = self.showdate.saleable_seats_left
     if max_sales_for_type.zero?
       # no limits on this type, so limit is just how many seats are left
       return nseatsleft
@@ -154,7 +154,7 @@ class ValidVoucher < ActiveRecord::Base
     when 1                      # subscribers only
       av.explanation = "Subscribers only"
       av.staff_only = false     # ok to show this to customer
-      return cust.is_subscriber?
+      return cust.subscriber?
     when 2
       return true
     else
@@ -165,7 +165,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def self.sold_out_or_date_invalid(sd,ignore_cutoff)
     now = Time.now
-    if sd.total_seats_left < 1
+    if sd.saleable_seats_left < 1
       "Performance is sold out"
     elsif  sd.thedate < now && !ignore_cutoff
       "Performance date has already passed"

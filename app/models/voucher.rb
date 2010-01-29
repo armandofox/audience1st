@@ -85,7 +85,7 @@ class Voucher < ActiveRecord::Base
   end
 
   # every time a voucher is saved that belongs to a customer, that customer's
-  # is_subscriber? attribute must be recomputed
+  # subscriber? attribute must be recomputed
 
   def compute_customer_is_subscriber
     return unless customer_id > 0
@@ -158,7 +158,7 @@ class Voucher < ActiveRecord::Base
 
 
 
-  def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false)
+  def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false,bundle_id=nil)
     vt = Vouchertype.find(vtype_id)
     raise "Number to add must be positive" unless howmany > 0
     raise  "Customer record invalid" unless cust.is_a?(Customer)
@@ -172,6 +172,7 @@ class Voucher < ActiveRecord::Base
         :processed_by_id => bywhom,
         :customer_id => cust.id,
         :changeable => can_change,
+        :bundle_id => bundle_id,
         :showdate_id => showdate_id)
       v.customer = cust
       v.save!
@@ -185,7 +186,9 @@ class Voucher < ActiveRecord::Base
         v.vouchertype.get_included_vouchers.each {  |type, qty|
           if (qty > 0)
             self.add_vouchers_for_customer(type, qty, cust,
-                                           purchasemethod_bundle_id, showdate_id, '', bywhom, false, can_change)
+              purchasemethod_bundle_id,
+              showdate_id, '', bywhom, false, can_change,
+              v.id)
           end
         }
       end

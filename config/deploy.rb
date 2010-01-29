@@ -76,7 +76,7 @@ deploy.task :after_update_code do
   end    
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
-  %w[config/venues.yml manual doc test spec].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
+  %w[config/venues.yml manual doc spec].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
   run "chmod -R go-w #{release_path}"
 end
 
