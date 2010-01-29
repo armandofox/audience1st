@@ -75,7 +75,39 @@ describe Vouchertype do
         @vt.should_not be_valid
       end
     end
-    describe "subscription vouchers" do
+    describe "bundles" do
+      before :each do
+        args = {
+          :offer_public => Vouchertype::BOXOFFICE,
+          :subscription => false,
+          :walkup_sale_allowed => true,
+          :comments => "A comment",
+          :account_code => "9999",
+          :valid_date => Time.now.yesterday,
+          :expiration_date => Time.now.tomorrow
+        }
+        @vtb = Vouchertype.new(args.merge({
+              :category => :bundle,
+              :name => "Bundle"}))
+        @vt_free = Vouchertype.create!(args.merge({
+              :category => :comp,
+              :price => 0,
+              :name => "Free"}))
+        @vt_notfree = Vouchertype.create!(args.merge({
+              :category => :revenue,
+              :price => 1,
+              :name => "Revenue"}))
+      end
+      it "should be invalid if contains any nonzero-price vouchers" do
+        @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 1}
+        @vtb.should_not be_valid
+        @vtb.errors.full_messages.should include("Bundle can't include revenue voucher #{@vt_notfree.id} (#{@vt_notfree.name})"), @vtb.errors.full_messages.join(',')
+      end
+      it "should  be valid with only zero-price vouchers" do
+        @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
+      end
+    end
+    describe "subscription" do
       before(:each) do
         @vt.subscription = true
         @vt.walkup_sale_allowed = false

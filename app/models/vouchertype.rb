@@ -19,22 +19,24 @@ class Vouchertype < ActiveRecord::Base
 
   # Subscription vouchertypes shouldn't be available for walkup sale,
   # since we need to capture the address
-  validate :subscriptions_shouldnt_be_walkups
+  validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
   # Subscription vouchertypes' validity period must be < 2 years
-  validate :subscriptions_valid_at_most_2_years
+  validate :subscriptions_valid_at_most_2_years, :if => :subscription?
   # Free vouchers must not be subscriber vouchers or offered to public
-  validate :restrict_if_free
+  validate :restrict_if_free, :if => lambda { |v| v.price.zero? }
+  # Bundles must include only zero-cost vouchers
+  validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
   protected
   def subscriptions_shouldnt_be_walkups
-    if walkup_sale_allowed? && subscription?
+    if walkup_sale_allowed?
       errors.add_to_base "Subscription vouchers can't be sold via
                 walkup sales screen, since address must be captured."
     end
   end
   
   def subscriptions_valid_at_most_2_years
-    if subscription? && (expiration_date - valid_date >= 2.years)
+    if (expiration_date - valid_date >= 2.years)
       end_date = Time.local(Time.now.year, Option.value(:season_start_month),
                             Option.value(:season_start_day)) - 1.day
       errors.add_to_base "Maximum validity period of subscription vouchers
@@ -45,14 +47,27 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def restrict_if_free
-    if price.zero?
-      if offer_public == ANYONE
-        errors.add_to_base "Free vouchers can't be available to public"
-      elsif category == 'subscription'
-        errors.add_to_base "Free vouchers can't qualify recipient as Subscriber"
+    if offer_public == ANYONE
+      errors.add_to_base "Free vouchers can't be available to public"
+    elsif category == :subscription
+      errors.add_to_base "Free vouchers can't qualify recipient as Subscriber"
+    end
+  end
+
+  def bundles_include_only_zero_cost_vouchers
+    return if self.get_included_vouchers.empty?
+    self.get_included_vouchers.each_pair do |id,num|
+      next if num.to_i.zero?
+      unless v = Vouchertype.find_by_id(id)
+        errors.add_to_base "Vouchertype #{id} doesn't exist"
+      else
+        unless v.price.zero?
+          errors.add_to_base "Bundle can't include revenue voucher #{id} (#{v.name})"
+        end
       end
     end
   end
+
   
   # Functions that determine visibility of a voucher type to particular
   # customers
@@ -183,6 +198,7 @@ class Vouchertype < ActiveRecord::Base
   def get_included_vouchers
     if self.bundle?
       hsh = self.included_vouchers
+      return {} if (hsh.nil? || hsh.empty?)
       numeric_hsh = Hash.new
       # convert everthing to ints (stored as strings)
       hsh.each_pair { |k,v| numeric_hsh[k.to_i || 0] = (v.to_i || 0) }

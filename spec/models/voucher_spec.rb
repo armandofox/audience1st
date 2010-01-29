@@ -4,31 +4,31 @@ describe Voucher do
 
   before :all do
     #  some Vouchertype objects for these tests
-    @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-      :name => 'regular voucher',
-      :category => 'revenue',
-      :account_code => '9999',
-      :price => 10.00,
-      :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now+1.month)
-    @vt_bundle = Vouchertype.create!(:fulfillment_needed => false,
-      :name => 'bundle voucher',
-      :category => 'bundle',
-      :price => 25.00,
-      :account_code => '8888',
-      :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now+1.month,
-      :included_vouchers => {@vt_regular.id => 2}
-      )
-    @vt_nonticket = Vouchertype.create!(
+    args = {
       :fulfillment_needed => false,
-      :name => 'fee',
-      :category => 'nonticket',
-      :price => 5.00,
-      :account_code => 9997,
       :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now + 1.month
-      )
+      :expiration_date => Time.now+1.month
+    }
+    @vt_regular = Vouchertype.create!(args.merge({
+          :name => 'regular voucher',
+          :category => 'revenue',
+          :account_code => '9999',
+          :price => 10.00}))
+    @vt_subscriber = Vouchertype.create!(args.merge({
+          :name => 'subscriber voucher',
+          :category => :subscriber,
+          :account_code => '0'}))
+    @vt_bundle = Vouchertype.create!(args.merge({
+          :name => 'bundle voucher',
+          :category => 'bundle',
+          :price => 25.00,
+          :account_code => '8888',
+          :included_vouchers => {@vt_subscriber.id => 2}}))
+    @vt_nonticket = Vouchertype.create!(args.merge({
+          :name => 'fee',
+          :category => 'nonticket',
+          :price => 5.00,
+          :account_code => 9997}))
   end
 
   describe "regular voucher when created", :shared => true do

@@ -100,37 +100,29 @@ class EmailGoldstar < ActionMailer::Base
     msg << "\n\n        *** TEST MODE *** NO ORDERS WILL BE ADDED ***\n\n" if @@testing
     debug "#{workbook.worksheet(0).num_rows} rows"
     rows = Generator.new(workbook.worksheet(0))
-    sd = get_showdate(rows)
-    debug "Showdate: #{sd}\n"
+    showdate = get_showdate(rows)
+    debug "Showdate: #{showdate}\n"
     # parse the offered ticket types and
     #  match each to a Vouchertype for this showdate.  returns a hash
     # with key=offer description and value=corresponding vouchertype object
-    offers = parse_ticket_types_for_showdate(rows,sd)
+    offers = parse_ticket_types_for_showdate(rows,showdate)
     abort_error("No valid ticket offers found") unless offers
     orders = parse_orders(offers,rows)
-    showdate = offers[offers.keys.first].showdate
-    if orders.nil? || orders.empty?
-      deliver_goldstar_email_report(showdate, "No Goldstar tickets sold for this performance")
-      return
-    end
-    msg << offers.keys.map { |k| "#{k}: #{offers[k]}" }.join("\n") <<
-      "\n" << ("-" * 40) << "\n"
+    abort_error("No Goldstar tickets sold for this performance") if
+      (orders.nil? || orders.empty?)
+    debug(offers.keys.map { |k| "#{k}: #{offers[k]}" }.join("\n") <<
+      "\n" << ("-" * 40) << "\n")
     tix_added = self.process_orders(orders) unless @@testing
-    msg << "\n#{tix_added} tickets were successfully recorded:\n\n"
-    msg << orders.map { |o| o.to_s }.join("\n")
+    debug("\n#{tix_added} tickets were successfully recorded:\n\n")
+    debug(orders.map { |o| o.to_s }.join("\n"))
     if (unsold = TicketOffer.unsold(offers.values)) > 0
       showdate.release_holdback(unsold)
-      msg << "\n#{unsold} tickets were released back to general inventory\n"
+      debug("\n#{unsold} tickets were released back to general inventory\n")
     end
-      end
-      showdate = nil unless defined?(showdate)
-    end
-    debug(showdate ? showdate.printable_name : "(No showdate)")
-    debug("\n" << msg)
     if @@testing
-      File.open("/tmp/email_goldstar_log", "w+") { |f|  f.print msg }
+      File.open("/tmp/email_goldstar_log", "w+") { |f| f.print self.error_trace }
     else
-      deliver_goldstar_email_report(showdate,msg)
+      deliver_goldstar_email_report(showdate,self.error_trace)
     end
   end
 
