@@ -28,8 +28,7 @@ class StoreController < ApplicationController
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
                  :not_me, :edit_billing_address,
-                 :enter_promo_code, :add_tickets_to_cart, :add_donation_to_cart,
-                :remove_from_cart)
+                 :enter_promo_code)
   
   def index
     reset_shopping
@@ -64,7 +63,7 @@ class StoreController < ApplicationController
     @cart = find_cart
     # this uses the temporary hack of adding bundle sales start/end
     #   to bundle voucher record directly...ugh
-    @subs_to_offer = Vouchertype.subscriptions_available_for(store_customer, @gAdmin.is_boxoffice)
+    @subs_to_offer = Vouchertype.subscriptions_available_to(store_customer, @gAdmin.is_boxoffice)
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to_index

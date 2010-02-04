@@ -8,7 +8,7 @@
     = spinner 'wait2'
     = hidden_field_tag 'xfer_id'
     = submit_tag 'Transfer'
-  %p= submit_tag 'Release Reservations'
+  %p= submit_tag 'Destroy Permanently', :confirm => 'Destroying prepaid vouchers DOES NOT cause a refund to be issued and may cause the transaction totals reported by Audience1st to disagree with your credit card transaction reports unless you reconcile them manually.  If this is OK, click OK to PERMANENTLY DESTROY the selected vouchers, or Cancel to leave things as they are.'
 
   %table#manageVouchers.full_width.hilite
     %thead

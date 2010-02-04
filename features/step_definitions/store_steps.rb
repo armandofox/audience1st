@@ -1,4 +1,4 @@
-World(FixtureAccess)
+World()
 
 Given /^(.*) has an account with login (.*)$/ do |var,login|
   c = Customer.find_by_login(login)

@@ -1,2 +1,2 @@
-World(FixtureAccess)
+World()
 

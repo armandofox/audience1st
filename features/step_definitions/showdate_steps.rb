@@ -1,14 +1,16 @@
-World(FixtureAccess)
+World()
 
-Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)(?: with (\d+) "(.*)" tickets available at \$(.*) each)?$/i do |name,time,qty,type,price|
+Given /^(\d+) "(.*)" tickets available at \$(.*) each$/i do |qty,type,price|
+  @showdate.should be_an_instance_of(Showdate)
+  make_valid_tickets(@showdate, type, price.to_f, qty.to_i)
+end
+
+Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   time = Time.parse(time)
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
-  if (qty)
-    make_valid_tickets(@showdate, type, price.to_f, qty.to_i)
-  end
 end
-
+  
 Given /^today is (.*)$/i do |date|
   t = Time.parse(date)
   Time.stub!(:now).and_return(t)
@@ -28,8 +30,8 @@ end
 def setup_show_and_showdate(name,time,args={})
   show = Show.create!(:name => name,
     :house_capacity => args[:house_capacity] || 10,
-    :opening_date => args[:opening_date] || Date.today,
-    :closing_date => args[:closing_date] || Date.today)
+    :opening_date => args[:opening_date] || 1.month.ago,
+    :closing_date => args[:closing_date] || 1.month.from_now)
 
   return show.showdates.create!(:thedate => time,
     :max_sales => args[:max_sales] || 100)
@@ -37,11 +39,13 @@ end
 
 
 
-def make_valid_tickets(showdate,type,price,qty)
-  qty ||= showdate.max_sales
+def make_valid_tickets(showdate,type,price,qty=nil)
+  qty ||= showdate.max_allowed_sales
   vt = create_generic_vouchertype(type,price)
   showdate.valid_vouchers.create!(:vouchertype => vt,
-    :max_sales_for_type => qty.to_i)
+    :max_sales_for_type => qty.to_i,
+    :advance_sales_start => 1.day.ago,
+    :advance_sales_stop => 1.day.from_now)
 end
     
   
@@ -50,7 +54,8 @@ def create_generic_vouchertype(type,price)
     :name => type,
     :category => 'revenue',
     :account_code => '9999',
+    :offer_public => Vouchertype::ANYONE,
     :price => price.to_f,
-    :valid_date => Time.now - 1.month,
-    :expiration_date => Time.now + 1.month)
+    :valid_date => 1.month.ago,
+    :expiration_date => 1.month.from_now)
 end

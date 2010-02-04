@@ -48,7 +48,7 @@ describe VouchersController do
         it "should display success message" do
           post :manage, :commit => "Transfer", :select => @vouchers_hash,
           :xfer_id => @recip.id.to_s
-          flash[:notice].should == "Vouchers were transferred to #{@recip.full_name}'s account."
+          flash[:notice].should == "Vouchers #{@vouchers_hash['voucher'].keys.sort.join(',')} were transferred to #{@recip.full_name}'s account."
         end
         it "should redirect to the welcome page" do
           post :manage, :commit => "Transfer", :select => @vouchers_hash,

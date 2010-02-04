@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   helper :all
   #protect_from_forgery
 
+  require 'cart'                # since not an ActiveRecord model
+  
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing

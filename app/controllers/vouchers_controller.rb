@@ -298,26 +298,50 @@ class VouchersController < ApplicationController
       return
     end
     # post: transfer vouchers
-    if params[:commit] !~ /transfer/i
-      flash[:notice] = "Sorry, this function isn't implemented yet."
-      redirect_to :controller => 'customers', :action => 'welcome'
-      return
-    end
-    unless (recipient = Customer.find_by_id(params[:xfer_id]))
-      flash[:notice] = "Recipient isn't in customer list. Please create an account for recipient first."
-      redirect_to(:controller => 'customers', :action => 'new') and return
-    end
-    if (params[:select][:voucher].keys.empty? rescue true)
+    @ids = (params[:select][:voucher].keys.sort) rescue nil
+    if (@ids.nil? || @ids.empty?)
       flash[:notice] = "No vouchers were selected."
-      redirect_to :controller => 'customers', :action => 'welcome'
-      return
+      redirect_to(:controller => 'customers', :action => 'welcome') and return
     end
-    params[:select][:voucher].keys.each do |vid|
-      if (v = Voucher.find_by_id(vid))
-        v.transfer_to_customer(recipient)
+    @vouchers = @ids.map { |v| Voucher.find_by_id(v) }.reject { |v| v.nil? }
+    case params[:commit]
+    when /transfer/i
+      unless (recipient = Customer.find_by_id(params[:xfer_id]))
+        flash[:notice] = "Recipient isn't in customer list. Please create an account for recipient first."
+        redirect_to(:controller => 'customers', :action => 'new') and return
       end
+      Voucher.transaction do
+        @vouchers.each do |v|
+          v.transfer_to_customer(recipient)
+          Txn.add_audit_record(:txn_type => 'del_tkts',
+            :customer_id => v.customer.id,
+            :logged_in_id => logged_in_id,
+            :purchasemethod_id => Purchasemethod.find_by_shortdesc('none'),
+            :voucher_id => v.id)
+          Txn.add_audit_record(:txn_type => 'add_tkts',
+            :customer_id => recipient.id,
+            :voucher_id => v.id,
+            :logged_in_id => logged_in_id,
+            :purchasemethod_id => Purchasemethod.find_by_shortdesc('none')
+            )
+        end
+      end
+      flash[:notice] = "Vouchers #{@ids.join(',')} were transferred to #{recipient.full_name}'s account."
+    when /destroy/i
+      Voucher.transaction do
+        @vouchers.each do |v|
+          v.freeze
+          v.destroy
+          Txn.add_audit_record(:txn_type => 'del_tkts',
+            :customer_id => v.customer_id,
+            :voucher_id => v.id,
+            :logged_in_id => logged_in_id)
+        end
+      end
+      flash[:notice] = "Vouchers #{@ids.join(',')} were deleted permanently."
+    else
+      flash[:notice] = "Sorry, this function isn't implemented yet."
     end
-    flash[:notice] = "Vouchers were transferred to #{recipient.full_name}'s account."
     redirect_to :controller => 'customers', :action => 'welcome'
   end
 
