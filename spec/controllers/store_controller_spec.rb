@@ -6,16 +6,22 @@ describe StoreController do
     context "and no donation" do
       describe "all cases", :shared => true do
         it "should redirect to index" do
-          post 'shipping_address'
+          post 'shipping_address', @params
           response.should redirect_to(:action => 'index')
         end
         it "should display a warning" do
-          post 'shipping_address'
+          post 'shipping_address', @params
           flash[:warning].should match(/please select a show date and tickets/i)
         end
       end
-      context "if gift" do ; it_should_behave_like "all cases" ; end
-      context "if nongift" do ; it_should_behave_like "all cases"; end
+      context "if gift" do
+        before do ; @params = {:gift => '1'} ; end
+        it_should_behave_like "all cases"
+      end
+      context "if nongift" do
+        before do ; @params = {} ; end
+        it_should_behave_like "all cases"
+      end
     end
     context "with donation" do
       before(:each) do
@@ -56,8 +62,14 @@ describe StoreController do
       describe "always", :shared => true do
         it "should redirect to the index page"
       end
-      context "gift order" do ; it_should_behave_like "always" ; end
-      context "nongift order" do ; it_should_behave_like "always" ; end
+      context "gift order" do
+        before do ; @params = {:gift => '1'} ; end
+        it_should_behave_like "always"
+      end
+      context "nongift order" do
+        before do ; @params = {} ; end
+        it_should_behave_like "always"
+      end
     end
   end
 

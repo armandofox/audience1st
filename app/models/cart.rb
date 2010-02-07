@@ -3,7 +3,8 @@ class Cart
   attr_accessor :items
   attr_accessor :total_price
   attr_accessor :comments
-  attr_reader :order_number
+
+  private
 
   # number of seconds from the epoch to 1/1/2008, used to offset order ID's
   TIMEBASE = 1230796800
@@ -12,11 +13,16 @@ class Cart
            Time.now.usec % 37).to_i
   end
 
+  public
+  
   def initialize
     @items = []
     @total_price = 0.0
     @comments = ''
-    @order_number = Cart.generate_order_id
+  end
+
+  def order_number
+    Cart.generate_order_id
   end
 
   def workaround_rails_bug_2298!

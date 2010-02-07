@@ -4,6 +4,11 @@ describe Cart do
   before(:each) do
     @cart = Cart.new
   end
+  it "should not return same order ID twice" do
+    3.times do
+      @cart.order_number.should_not == @cart.order_number
+    end
+  end
   context "when empty" do
     it "should contain no vouchers" do
       @cart.include_vouchers?.should be_nil
