@@ -30,7 +30,7 @@ module StoreHelper
     s << observe_field('show',
                          :update => :ticket_menus_inner,
                          :with => 'show_id',
-                         :before => "Element.show('wait_show')",
+                         :before => "Element.show('wait_show'); $('submit').disabled = true;",
                          :complete => 'recalc_total()',
                          :url => {:controller => 'store',
                            :action => :show_changed})
@@ -38,7 +38,7 @@ module StoreHelper
     s << observe_field('showdate',
                        :update => :ticket_menus_inner,
                        :with => 'showdate_id',
-                       :before => "Element.show('wait_showdate')",
+                       :before => "Element.show('wait_showdate'); $('submit').disabled = true;",
                        :complete => 'recalc_total()',
                        :url => {:controller => 'store',
                          :action => :showdate_changed})
