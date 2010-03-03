@@ -45,6 +45,7 @@ begin
   elsif File.exist?(code_or_file)
     eval(File.read(code_or_file), nil, code_or_file)
   else
+    puts code_or_file
     eval(code_or_file)
   end
 ensure

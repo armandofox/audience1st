@@ -11,6 +11,9 @@
   %label{:for => "showdate"} Date
   = select_tag('showdate', options_with_default(@sd, @all_showdates))
   = spinner('wait_showdate')
+  - content_for :staff do
+    - if (@sd.kind_of?(Showdate))
+      %span.admin= "Available: #{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} total"
   %br/
 
   #voucher_menus
@@ -21,8 +24,12 @@
     - else
 
       - ticket_menus(@vouchertypes) do |vid,name,qty,price|
-        %label{:for => "vouchertype[#{vid}]"}= name
-        = select_tag("vouchertype[#{vid}]", options_for_select(qty), :onChange => 'recalc_total()')
+        - fieldname = "vouchertype[#{vid}]"
+        %label{:for => name}= name
+        - if @gAdmin.is_boxoffice
+          = text_field_tag fieldname, '', :size => 3, :onChange => 'recalc_total()'
+        - else
+          = select_tag(fieldname, options_for_select(qty), :onChange => 'recalc_total()')
         %br/
         = hidden_field_tag "price[#{vid}]", price
 

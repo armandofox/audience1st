@@ -383,7 +383,10 @@ EON
   # helpers from the views directly.
 
   def get_all_shows(showdates)
-    showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
+    s = showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
+    unless @gAdmin.is_boxoffice
+      s.reject! { |sh| sh.listing_date > Date.today }    end
+    s
   end
 
   def get_all_showdates(ignore_cutoff = false)
@@ -409,12 +412,13 @@ EON
     (params[:vouchertype] ||= {}).each_pair do |vtype, qty|
       qty = qty.to_i
       unless qty.zero?
-        av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => @gAdmin.is_boxoffice)
-        if av.howmany.zero?
+        admin = @gAdmin.is_boxoffice
+        av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => admin)
+        if (!admin && av.howmany.zero?)
           msgs << "Sorry, no '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance."
-        elsif av.howmany < qty
+        elsif (!admin && (av.howmany < qty))
           msgs << "Only #{av.howmany} '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance (you requested #{qty})."
-        else
+        else # either admin, or there's enough seats
           @cart.comments ||= comments
           qty.times  do
             @cart.add(Voucher.anonymous_voucher_for(showdate,vtype,nil,comments))

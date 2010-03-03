@@ -73,6 +73,7 @@ function recalculate(target,elts,price_field_name,qty_field_name,
                      addl_field_name,field_to_enable_if_nonzero,decplaces) {
     $(target).value = '';
     var tot = 0.0;
+    var priceEach;
     for (i=0; i<elts.length; i++) {
         e = elts[i].toString();
         if (price_field_name != '') {
@@ -82,8 +83,13 @@ function recalculate(target,elts,price_field_name,qty_field_name,
             price = 1.0;
         }
         qty = $(qty_field_name+'_'+e);
-        qty = qty.options[qty.selectedIndex];
-        tot += (price * parseInt(qty.value));
+        if (qty.tagName == "SELECT") {
+            qty = qty.options[qty.selectedIndex];
+        } 
+        qty = parseInt(qty.value);
+        if (isNaN(qty)) { qty = 0; }
+        console.log("qty="+qty.toString());
+        tot += (price * qty);
     }
     if (addl_field_name != '') {
         if ($(addl_field_name).value != '') {

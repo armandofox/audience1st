@@ -89,6 +89,15 @@ describe Showdate do
         @v.save!
         @showdate.revenue.should ==  99.00
       end
+      it "should never allow max sales to exceed house capacity" do
+        @showdate.show.stub!(:house_capacity).and_return(5)
+        @showdate.max_allowed_sales.should == 5
+      end
+      it "when max_sales not set should default to house capacity" do
+        @showdate.show.stub!(:house_capacity).and_return(9)
+        @showdate.update_attribute(:max_sales, 0)
+        @showdate.max_allowed_sales.should == 9
+      end
     end
     describe "capacity computations" do
       describe "for normal sales", :shared => true do
