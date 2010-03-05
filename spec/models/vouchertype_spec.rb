@@ -73,6 +73,7 @@ describe Vouchertype do
         @vt.subscription = true
         @vt.walkup_sale_allowed = true
         @vt.should_not be_valid
+        @vt.errors[:base].should match(/walkup sales/i)
       end
     end
     describe "bundles" do
@@ -114,7 +115,7 @@ describe Vouchertype do
       end
       it "should not be valid for more than (2 years - 1 day)" do
         stub_month_and_day(5, 3)
-        @vt.valid_date = @vt.expiration_date - 2.years
+        @vt.valid_date = @vt.expiration_date - 2.years - 1.day
         @vt.should_not be_valid
         @vt.errors[:base].should match(/May +2/)
       end

@@ -83,12 +83,11 @@ function recalculate(target,elts,price_field_name,qty_field_name,
             price = 1.0;
         }
         qty = $(qty_field_name+'_'+e);
-        if (qty.tagName == "SELECT") {
+        if (qty.tagName == "SELECT" || qty.tagName == "select") {
             qty = qty.options[qty.selectedIndex];
         } 
         qty = parseInt(qty.value);
         if (isNaN(qty)) { qty = 0; }
-        console.log("qty="+qty.toString());
         tot += (price * qty);
     }
     if (addl_field_name != '') {

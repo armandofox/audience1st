@@ -9,14 +9,14 @@ describe AdminContentHelper do
     content.should == "content"
   end
   it "should yield nothing if privilege level is lower" do
-    helper.stub!(:current_admin).and_return(mock_model(Customer, :is_boxoffice => nil))
+    helper.stub_chain(:controller,:current_admin).and_return(mock_model(Customer, :is_boxoffice => nil))
     content = helper.content_for :boxoffice do
       "content"
     end
     content.should be_nil
   end
   it "should yield nothing if privilege level is invalid" do
-    helper.stub!(:current_admin).and_return(mock_model(Customer))
+    helper.stub_chain(:controller,:current_admin).and_return(mock_model(Customer))
     content = helper.content_for :boxoffice do
       "content"
     end
