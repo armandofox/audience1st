@@ -1,0 +1,11 @@
+Will-Call Tickets,,,,,,,,,,,,,,,,,,,,,
+Event Date,Order Date,First Name,Last Name,Credit Card,Email,Phone,Shipping First Name,Shipping Last Name,Shipping Address,City,State,ZIP/Postal Code,Country,Note,Price Name,Value,Quantity,Ticket #,Section,Row,Seat
+3/18/06 20:00,3/1/06 14:01,Jane,Doe,N/A,,,Jane,Doe,200 Nowhere St,Alameda,CA,94501,,,General,$15.00 ,2,,,,
+3/18/06 20:00,3/2/06 10:07,john,doe,N/A,,,john,doe,N/A,,,,,,General,$15.00 ,2,,,,
+3/19/06 14:00,3/8/06 12:26,Susan,Dunn,N/A,sdunn@axarosenberg.com,925-253-3428,Susan,Dunn,c/o Axa Rosenberg,Orinda,CA,94563,,"I am lame, deaf and blind.  I need a lot of assistance",Comp,$0.00 ,2,,,,
+3/19/06 14:00,3/5/06 9:27,Susan,Dunn,N/A,susanmdunn@yahoo.com,510-337-1354,Susan,Dunn,36 Sunny Cove Circle,Alameda,CA,94501,,testing,Student/Senior(62+),$12.00 ,9,,,,
+3/25/06 20:00,3/8/06 12:27,Willy ,Wonka,N/A,,,Willy ,Wonka,N/A,,,,,,General,$15.00 ,5,,,,
+
+
+Shipped Tickets,,,,,,,,,,,,,,,,,,,,,
+Event Date,Order Date,First Name,Last Name,Credit Card,Email,Phone,Shipping First Name,Shipping Last Name,Shipping Address,City,State,ZIP/Postal Code,Country,Note,Price Name,Value,Quantity,Ticket #,Section,Row,Seat

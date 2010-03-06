@@ -309,7 +309,8 @@ EOM2
     flash[:notice] = <<EON
 Success: #{resp.success?} <br/>
 Message: #{resp.message} <br/>
-Txn ID:  #{resp.params["transaction_id"]}
+Txn ID:  #{resp.params["transaction_id"]} <br/>
+Response details: <br/> #{resp.params.to_yaml}
 EON
     redirect_to :action => 'direct_transaction'
   end

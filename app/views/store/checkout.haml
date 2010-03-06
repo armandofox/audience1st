@@ -31,7 +31,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :disable_with => "Processing, Please Wait..."
+    = submit_tag 'Charge Credit Card', :disable_with => "Processing, Please Wait...", :onclick => "Element.hide('cancel');"
     = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv
