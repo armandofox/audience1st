@@ -5,7 +5,7 @@ class StoreController < ApplicationController
   require "money.rb"
 
   before_filter :is_logged_in, :only => %w[edit_billing_address]
-  before_filter :is_admin, :only => %w[direct_transaction]
+  before_filter :is_admin_filter, :only => %w[direct_transaction]
   
   before_filter(:find_cart_not_empty,
     :only => %w[edit_billing_address set_shipping_address
@@ -264,7 +264,7 @@ class StoreController < ApplicationController
       @special_instructions = @cart.comments
     end
     if resp.success?
-      @payment << " (transaction ID: #{resp.params[:transaction_id]})" if
+      @payment << " (transaction ID: #{resp.params["transaction_id"]})" if
         @payment =~ /credit/i
       logger.info("SUCCESS purchase #{@customer.id} [#{@customer.full_name}] by #{@payment}; Cart summary: #{@cart}")
       if params[:email_confirmation]
@@ -309,7 +309,7 @@ EOM2
     flash[:notice] = <<EON
 Success: #{resp.success?} <br/>
 Message: #{resp.message} <br/>
-Txn ID:  #{resp.params[:transaction_id]}
+Txn ID:  #{resp.params["transaction_id"]}
 EON
     redirect_to :action => 'direct_transaction'
   end
