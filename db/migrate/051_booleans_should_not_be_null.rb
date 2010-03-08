@@ -8,7 +8,10 @@ class BooleansShouldNotBeNull < ActiveRecord::Migration
       :vouchers, :used,
       :vouchertypes, :walkup_sale_allowed,
       :vouchertypes, :fulfillment_needed].each_slice(2) do |t|
-      change_column t[0], t[1], :boolean, :null => false, :default => nil
+      cmd = "UPDATE #{t[0]} SET #{t[1]}=0 WHERE #{t[1]} IS NULL"
+      puts cmd
+      ActiveRecord::Base.connection.execute(cmd)
+      change_column t[0], t[1], :boolean, :null => false, :default => false
     end
   end
 

@@ -63,13 +63,13 @@ class Customer < ActiveRecord::Base
   # before validation, squeeze out any attributes that are whitespace-only,
   # so the allow_nil validations behave as expected.
 
-  before_validation :remove_blank_attributes
-  def remove_blank_attributes
-    Customer.columns.each do |c|
-      self.send("#{c.name}=", nil) if self.send(c.name).blank?
-    end
-    self.password = nil if self.password.blank?
-  end
+  # before_validation :remove_blank_attributes
+  # def remove_blank_attributes
+  #   Customer.columns.each do |c|
+  #     self.send("#{c.name}=", nil) if self.send(c.name).blank?
+  #   end
+  #   self.password = nil if self.password.blank?
+  # end
 
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
