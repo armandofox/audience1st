@@ -4,7 +4,7 @@
 class ApplicationController < ActionController::Base
 
   helper :all
-  #protect_from_forgery
+  protect_from_forgery
 
   require 'cart'                # since not an ActiveRecord model
   
@@ -53,8 +53,9 @@ class ApplicationController < ActionController::Base
   def reset_shopping           # called as a filter
     @cart = find_cart
     @cart.empty!
-    session[:promo_code] = nil
-    session[:recipient_id] = nil
+    session.delete(:promo_code)
+    session.delete(:recipient_id)
+    session.delete(:store)
     set_checkout_in_progress(false)
     true
   end

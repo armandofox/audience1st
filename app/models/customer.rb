@@ -333,7 +333,7 @@ class Customer < ActiveRecord::Base
                                :purchasemethod_id => howpurchased)
         else
           status = nil
-          logger.error "Error adding voucher #{v} to customer #{@self.full_name_with_id}:  #{msg}"
+          logger.error "Error adding voucher #{v} to customer #{self.full_name_with_id}:  #{msg}"
           raise "Error: #{msg}"
         end
       elsif v.kind_of?(Donation)

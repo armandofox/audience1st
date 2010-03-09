@@ -211,18 +211,17 @@ class Voucher < ActiveRecord::Base
       c.vouchers << self
       if self.bundle?
         purch_bundle = Purchasemethod.get_type_by_name('bundle')
-        Voucher.transaction do
-          self.vouchertype.get_included_vouchers.each do |type, qty|
-            1.upto qty do
-              c.vouchers <<
-                Voucher.new_from_vouchertype(type,
-                                             :purchasemethod_id => purch_bundle)
-            end
+        self.vouchertype.get_included_vouchers.each do |type, qty|
+          1.upto qty do
+            c.vouchers <<
+              Voucher.new_from_vouchertype(type,
+              :purchasemethod_id => purch_bundle)
           end
         end
       end
       c.save!
     rescue Exception => e
+      c.reload
       return [nil,e.message]
     end
     return [true,self]

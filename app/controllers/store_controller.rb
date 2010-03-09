@@ -374,10 +374,28 @@ EON
   end
 
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
-  def set_current_show(s) ; (session[:store] ||= {})[:show] = s ; end
-  def set_current_showdate(sd) ; (session[:store] ||= {})[:showdate] = sd ; end
-  def current_showdate ;  (session[:store] ||= {})[:showdate] ;  end
-  def current_show ; (session[:store] ||= {})[:show] ;  end
+  def set_current_show(s)
+    session[:store] ||= {}
+    session[:store][:show] = (s ? s.id : nil)
+  end
+  def set_current_showdate(sd)
+    session[:store] ||= {}
+    session[:store][:showdate] = (sd ? sd.id : nil)
+  end
+  def current_showdate
+    if session[:store] && session[:store][:showdate]
+      Showdate.find_by_id(session[:store][:showdate].to_i)
+    else
+      nil
+    end
+  end
+  def current_show
+    if session[:store] && session[:store][:show]
+      Show.find_by_id(session[:store][:show].to_i)
+    else
+      nil
+    end
+  end
 
   # helpers for the AJAX handlers. These should probably be moved
   # to the respective models for shows and showdates, or called as
@@ -386,7 +404,8 @@ EON
   def get_all_shows(showdates)
     s = showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
     unless @gAdmin.is_boxoffice
-      s.reject! { |sh| sh.listing_date > Date.today }    end
+      s.reject! { |sh| sh.listing_date > Date.today }
+    end
     s
   end
 
@@ -394,7 +413,7 @@ EON
     if ignore_cutoff
       showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season - 1.year], :order => "thedate ASC")
     else
-      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).sort_by(&:thedate)
+      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).sort_by(&:thedate).reject { |sd| sd.thedate < Date.today }
     end
   end
 
