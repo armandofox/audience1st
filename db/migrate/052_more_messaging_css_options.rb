@@ -1,6 +1,5 @@
 class MoreMessagingCssOptions < ActiveRecord::Migration
   def self.up
-    include AddOptionHelper
     opt = Option.create!(:grp => 'Web Site Messaging',
       :name =>     'top_level_banner_text',
       :description =>     'Text to be displayed, if any, in top-level header (div#header).',
