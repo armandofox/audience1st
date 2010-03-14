@@ -1,11 +1,12 @@
 class MoreMessagingCssOptions < ActiveRecord::Migration
   def self.up
     include AddOptionHelper
-    AddOptionHelper.add_new_option 3065, 'Web Site Messaging',
-    'top_level_banner_text',
-    '',
-    'Text to be displayed, if any, in top-level header (div#header).',
-    :text
+    opt = Option.create!(:grp => 'Web Site Messaging',
+      :name =>     'top_level_banner_text',
+      :description =>     'Text to be displayed, if any, in top-level header (div#header).',
+      :value => '',
+      :typ => :text)
+    ActiveRecord::Base.connection.execute("UPDATE options SET id=3065 WHERE id=#{opt.id}")
   end
 
   def self.down

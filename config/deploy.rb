@@ -42,6 +42,8 @@ namespace :provision do
     mysql = "mysql -uroot '-p#{pass}' -e \"%s;\""
     run (mysql % "create database #{venue}")
     run (mysql % "grant select,insert,update,delete,lock on #{venue}.* to '#{venue}'@'localhost'identified by '#{venuepass}'")
+    run "ln -s #{home}/rails/#{venue}/current/public #{home}/public_html"
+    # still need to link stylesheets
   end
 
   # initialize DB by copying schema and static content from a (production)
@@ -78,7 +80,7 @@ deploy.task :after_update_code do
   # create database.yml
   # copy installation-specific files
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
-  abort if config.empty?
+  abort if (config.nil? || config.empty?)
   debugging_ips = variables[:debugging_ips]
   %w[config/database.yml public/.htaccess support/Makefile].each do |f|
     file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
