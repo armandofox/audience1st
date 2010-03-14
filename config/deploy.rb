@@ -35,19 +35,30 @@ deploy.task :migrate, :roles => [:db] do
   run "cd #{release_path} && rake db:migrate RAILS_ENV=migration"
 end
 
-# initialize DB by copying schema and static content from a (production)
-# source  DB
-task :initialize_db, :roles => [:db] do
-  abort "Must set from name with -Sfrom=<venue>" unless variables[:from]
-  init_release_path = "#{home}/rails/#{venue}/current"
-  tmptables = "#{init_release_path}/db/static_tables.sql"
-  config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
-  db = config['db'] || venue
-  run "cd #{home}/rails/#{from}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{init_release_path}/db/schema.rb"
-  run "cd #{home}/rails/#{from}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
-  run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
-  run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
-  run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :login => \"admin\", :password => \"admin\", :role => 100)'"
+namespace :provision do
+  task :create_database do
+    "For new venue, create new database and user, and grant migration privileges to migration user.  Set venue password in venues.yml first."
+    abort "Need MySQL root password" unless (pass = variables[:password])
+    mysql = "mysql -uroot '-p#{pass}' -e \"%s;\""
+    run (mysql % "create database #{venue}")
+    run (mysql % "grant select,insert,update,delete,lock on #{venue}.* to '#{venue}'@'localhost'identified by '#{venuepass}'")
+  end
+
+  # initialize DB by copying schema and static content from a (production)
+  # source  DB
+  task :initialize_database, :roles => [:db] do
+    "Set up database (must exist already; use provision:create_database) for new venue by copying static structure and Options table from -Sfrom=<venue>."
+    abort "Must set from name with -Sfrom=<venue>" unless variables[:from]
+    init_release_path = "#{home}/rails/#{venue}/current"
+    tmptables = "#{init_release_path}/db/static_tables.sql"
+    config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
+    db = config['db'] || venue
+    run "cd #{home}/rails/#{from}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{init_release_path}/db/schema.rb"
+    run "cd #{home}/rails/#{from}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
+    run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
+    run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
+    run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :login => \"admin\", :password => \"admin\", :role => 100)'"
+  end
 end
 
 namespace :deploy do
@@ -58,7 +69,7 @@ namespace :deploy do
     end
     desc "Unprotect app by NOT requiring valid-user in htaccess."
     task :unprotect do
-      run "perl -pi -e 's/^\s*require\s*valid-user/# require valid-user/' #{deploy_to}/current/public/.htaccess"
+ run "perl -pi -e 's/^\s*require\s*valid-user/# require valid-user/' #{deploy_to}/current/public/.htaccess"
     end
   end
 end

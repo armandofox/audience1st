@@ -32,6 +32,8 @@ class StoreController < ApplicationController
   
   def index
     reset_shopping
+    # @@@BUG
+    params.delete(:show_id)
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
     set_return_to :controller => 'store', :action => 'index'
@@ -376,11 +378,20 @@ EON
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
   def set_current_show(s)
     session[:store] ||= {}
-    session[:store][:show] = (s ? s.id : nil)
+    if (sd = s.showdates.sort_by(&:thedate).first)
+      set_current_showdate(sd)
+    else
+      session[:store][:show] = session[:store][:showdate] = nil
+    end
   end
   def set_current_showdate(sd)
     session[:store] ||= {}
-    session[:store][:showdate] = (sd ? sd.id : nil)
+    if sd && sd.kind_of?(Showdate)
+      session[:store][:showdate] = sd.id
+      session[:store][:show] = sd.show.id
+    else
+      session[:store][:show] = session[:store][:showdate] = nil
+    end
   end
   def current_showdate
     if session[:store] && session[:store][:showdate]

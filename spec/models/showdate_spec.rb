@@ -1,6 +1,37 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+include BasicModels
 
 describe Showdate do
+  describe "displaying on tickets page" do
+    before(:each) do
+      @boxoffice = mock_model(Customer, :is_boxoffice => true)
+      @patron = mock_model(Customer, :is_boxoffice => false)
+      @past_show = BasicModels.create_one_showdate(Time.now.yesterday)
+      @future_show = BasicModels.create_one_showdate(Time.now.tomorrow)
+    end
+    it "for invalid customer should not be displayed" do
+      @future_show.ok_to_display_for(999999).should be_nil
+    end
+    context "for boxoffice user" do
+      before(:each) do
+        @boxoffice = mock_model(Customer, :is_boxoffice => true)
+      end
+      it "should be displayed even if showdate has passed" do
+        @past_show.ok_to_display_for(@boxoffice).should be_true
+      end
+      it "should be displayed even if show has no seats" 
+    end
+    context "for regular patron" do
+      before(:each) do
+        @patron = mock_model(Customer, :is_boxoffice => false)
+      end
+      it "should not be displayed if showdate has passed" do
+        @past_show.ok_to_display_for(@patron).should be_nil
+      end
+      it "should not be displayed if show is sold out"
+      it "should not be displayed if show has seats available but not for this patron type"
+    end
+  end
   describe "of next show" do
     context "when there are no showdates" do
       it "should be nil" do

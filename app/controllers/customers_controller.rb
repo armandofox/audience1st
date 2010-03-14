@@ -24,7 +24,7 @@ class CustomersController < ApplicationController
                 :add_to_flash => 'Only super-admin can delete customer; use Merge instead')
 
   # prevent complaints on AJAX autocompletion
-  skip_before_filter :verify_authenticity_token, :only => :auto_complete_for_customer_full_name
+  skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name,:logout]
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }

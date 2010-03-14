@@ -11,30 +11,34 @@
 
   %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(SANDBOX ? :testing : nil)}
 
-    #outer_header= link_to_if_option(:venue_homepage_url, Option.value(:venue_name))
+    #outer_header
     #outer_wrapper
       #inner_wrapper
-        #header
-        #nav
-          = render :partial => 'layouts/login_banner' if @gCustomer
-          - if controller.controller_name == 'box_office'
-            = render :partial => 'layouts/box_office_tabs'
-            = render :partial => 'box_office/show_stats'
-          - elsif @gCustomer
-            = render :partial => 'layouts/main_tabs'
-            - if @gAdmin.is_staff
-              = render :partial => 'customers/quick_search'
-              = render :partial => 'messages/staff_buttons' if controller.controller_name == 'customers'
-            - else
-              %br.clear
-        %br.clear
-        #content
-          = render :partial => 'messages/notice' unless flash[:notice].blank?
-          = render :partial => 'messages/warning' unless flash[:warning].blank?
-          = render :partial => 'store/checkout_error' unless flash[:checkout_error].blank?
-          - if @gCheckoutInProgress && %w(customers store).include?(controller.controller_name)
-            %h1.center Your Order So Far
-            = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
-          = yield
+        - if (url = Option.value(:venue_homepage_url)).blank?
+          #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
+        - else
+          %a{:href => url}
+            #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
+        #page_body
+          #left_sidebar
+          #right_main
+            #nav
+              = render :partial => 'layouts/login_banner' if @gCustomer
+              - if controller.controller_name == 'box_office'
+                = render :partial => 'layouts/box_office_tabs'
+                = render :partial => 'box_office/show_stats'
+              - elsif @gCustomer
+                = render :partial => 'layouts/main_tabs'
+                - if @gAdmin.is_staff
+                  = render :partial => 'customers/quick_search'
+                  = render :partial => 'messages/staff_buttons' if controller.controller_name == 'customers'
+            #content.clear
+              = render :partial => 'messages/notice' unless flash[:notice].blank?
+              = render :partial => 'messages/warning' unless flash[:warning].blank?
+              = render :partial => 'store/checkout_error' unless flash[:checkout_error].blank?
+              - if @gCheckoutInProgress && %w(customers store).include?(controller.controller_name)
+                %h1.center Your Order So Far
+                = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
+              = yield
 
     = render :partial => 'layouts/footer'

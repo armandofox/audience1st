@@ -48,6 +48,19 @@ class Showdate < ActiveRecord::Base
                                   Time.now.at_end_of_season])
   end
 
+  # to support Store views for which showdates to display
+
+  def ok_to_display_for(who = Customer.generic_customer)
+    unless who.kind_of?(Customer)
+      who = Customer.find_by_id(who)
+      return nil unless who.kind_of?(Customer)
+    end
+    # is showdate in past?  if so, only Boxoffice users can see
+    return who.is_boxoffice if self.thedate < Time.now
+  end
+
+  # reporting, comparisons
+  
   def <=>(other_showdate)
     other_showdate ? thedate <=> other_showdate.thedate : 1
   end
@@ -134,17 +147,8 @@ class Showdate < ActiveRecord::Base
       :available
   end
 
-  def seats_left_for_voucher(vouchertype,cust=Customer.generic_customer)
-    ValidVoucher.numseats_for_showdate_by_vouchertype(self.id, vouchertype, cust)
-  end
-
-  def seats_left(cust=Customer.generic_customer)
-    ValidVoucher.numseats_for_showdate(self.id, cust)
-  end
-
-  def no_seats_for(cust = Customer.generic_customer)
-    cust ||= Customer.generic_customer
-    self.seats_left(cust).all? { |av| av.howmany.zero? }
+  def num_seats_for_customer_by_vouchertype_and_password(customer, pass='')
+    # find which vouchers are
   end
 
   def compute_total_sales

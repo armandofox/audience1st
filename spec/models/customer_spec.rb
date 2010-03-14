@@ -252,6 +252,9 @@ describe Customer do
         @c1.hashed_password.should == 'newerpass'
         @c1.last_login.should == @now
       end
+      it "should keep the most recent login name" do
+        pending
+      end
       it "should keep the higher of the two roles" do
         @c1.role.should == 20
       end
