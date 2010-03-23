@@ -114,7 +114,7 @@ class ApplicationController < ActionController::Base
     unless (c = Customer.find_by_id(session[:cid])).kind_of?(Customer)
       session[:return_to] = request.request_uri
       redirect_to :controller => 'customers', :action => 'login'
-      false
+      nil
     else
       c
     end
@@ -164,7 +164,7 @@ class ApplicationController < ActionController::Base
         flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
         redirect_to :controller => 'customers', :action => 'login'
-        return false
+        return nil
       end
       return true
     end

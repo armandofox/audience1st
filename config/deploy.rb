@@ -3,6 +3,7 @@ abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
 set :venue, variables[:venue]
 set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
+set :config, (:venue ? (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue] : {} )
 
 set :debugging_ips, %w[67.169.93.204]
 
@@ -17,6 +18,8 @@ role :app,            "#{host}"
 role :web,            "#{host}"
 role :db,             "#{host}", :primary => true
 set :base_repository, "svn+ssh://#{user}@#{host}/#{home}/svn/#{application}"
+
+
 
 if variables[:tag]
   # to deploy from a tag, run 'cap -Stag=tagname -Svenue=venuename deploy'
@@ -46,6 +49,10 @@ namespace :provision do
     # still need to link stylesheets
   end
 
+  #  NEED A TASK TO SETUP THE VIRTUAL SERVER ENTRIES FOR PHUSION PASSENGER
+  #  add to end of  /usr/local/apache/conf/httpd.conf:  RailsBaseURI /venuename
+  #  then restart apache
+  
   # initialize DB by copying schema and static content from a (production)
   # source  DB
   task :initialize_database, :roles => [:db] do
@@ -59,7 +66,10 @@ namespace :provision do
     run "cd #{home}/rails/#{from}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
     run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
     run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
-    run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :login => \"admin\", :password => \"admin\", :role => 100)'"
+    run "/bin/rm -f #{tmptables}"
+    run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :login => \"admin\", :password => \"admin\""
+    run "cd #{init_release_path} && script/runner -e production 'Customer.find_by_login(:admin).update_attribute(:role, 100)'"
+    ## need to wipe out Options table values here
   end
 end
 

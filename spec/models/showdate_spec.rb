@@ -10,26 +10,28 @@ describe Showdate do
       @future_show = BasicModels.create_one_showdate(Time.now.tomorrow)
     end
     it "for invalid customer should not be displayed" do
-      @future_show.ok_to_display_for(999999).should be_nil
+      @future_show.should_not be_ok_to_display_for(999999)
     end
     context "for boxoffice user" do
       before(:each) do
         @boxoffice = mock_model(Customer, :is_boxoffice => true)
       end
       it "should be displayed even if showdate has passed" do
-        @past_show.ok_to_display_for(@boxoffice).should be_true
+        @past_show.should be_ok_to_display_for(@boxoffice)
       end
-      it "should be displayed even if show has no seats" 
     end
-    context "for regular patron" do
+    context "for nonsubscriber" do
       before(:each) do
-        @patron = mock_model(Customer, :is_boxoffice => false)
+        @patron = mock_model(Customer, :is_boxoffice => nil, :subscriber? => nil)
       end
       it "should not be displayed if showdate has passed" do
-        @past_show.ok_to_display_for(@patron).should be_nil
+        @past_show.should_not be_ok_to_display_for(@patron)
       end
-      it "should not be displayed if show is sold out"
-      it "should not be displayed if show has seats available but not for this patron type"
+      it "should not be displayed if show has no seats for nonsubscribers" do
+        pending
+        @future_show.should_receive(:available_seats_for).with(Vouchertype::ANYONE).and_return(nil)
+        @future_show.should_not be_ok_to_display_for(@patron)
+      end
     end
   end
   describe "of next show" do
@@ -43,21 +45,23 @@ describe Showdate do
     end
     context "when there is only 1 showdate and it's in the past" do
       it "should return nil" do
-        @showdate  = Showdate.create!(:thedate => Time.now - 1.day)
+        @showdate  = Showdate.create!(:thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
         Showdate.current_or_next.should be_nil
       end
     end
     context "when there are past and future showdates" do
       before :each do
-        @past_show = Showdate.create!(:thedate => Time.now - 1.day)
-        @show_in_1_hour = Showdate.create!(:thedate => Time.now + 1.hour)
+        @past_show = Showdate.create!(:thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
+        @show_in_1_hour = Showdate.create!(:thedate => 1.hour.from_now, :end_advance_sales => 1.hour.from_now)
       end
       it "should return the next showdate" do
-        @now_show = Showdate.create!(:thedate => Time.now + 5.minutes)
+        @now_show = Showdate.create!(:thedate => 5.minutes.from_now,
+          :end_advance_sales => 5.minutes.from_now)
         Showdate.current_or_next.id.should == @now_show.id
       end
       it "and 30-minute margin should return a showdate that started 5 minutes ago" do
-        @now_show = Showdate.create!(:thedate => Time.now - 5.minutes)
+        @now_show = Showdate.create!(:thedate => 5.minutes.ago,
+          :end_advance_sales => 5.minutes.ago)
         Showdate.current_or_next(30.minutes).id.should == @now_show.id
       end
     end

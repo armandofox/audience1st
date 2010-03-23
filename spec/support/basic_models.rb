@@ -15,7 +15,17 @@ module BasicModels
       :house_capacity => cap,
       :opening_date => dt - 1.week,
       :closing_date => dt + 1.week)
-    sd = s.showdates.create!(:thedate => dt)
+    sd = s.showdates.create!(:thedate => dt,
+      :end_advance_sales => dt - 1.minute)
+  end
+  def self.create_revenue_vouchertype()
+    Vouchertype.create!(:fulfillment_needed => false,
+      :name => 'regular voucher',
+      :category => 'revenue',
+      :account_code => '9999',
+      :price => 10.00,
+      :valid_date => Time.now - 1.month,
+      :expiration_date => Time.now+1.month)
   end
 end
 

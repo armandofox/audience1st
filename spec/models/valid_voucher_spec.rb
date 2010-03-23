@@ -1,16 +1,18 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+include BasicModels
 
 describe ValidVoucher do
   describe "for regular voucher" do
     before :all do
       #  some Vouchertype objects for these tests
       @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-                                        :name => 'regular voucher',
-                                        :category => 'revenue',
-                                        :account_code => '9999',
-                                        :price => 10.00,
-                                        :valid_date => Time.now - 1.month,
-                                        :expiration_date => Time.now+1.month)
+        :name => 'regular voucher',
+        :category => 'revenue',
+        :account_code => '9999',
+        :price => 10.00,
+        :offer_public => Vouchertype::ANYONE,
+        :valid_date => Time.now - 1.month,
+        :expiration_date => Time.now+1.month)
     end
     describe "when instantiated" do
       context "successfully" do
@@ -65,5 +67,140 @@ describe ValidVoucher do
     end
     it "should return all vouchers if success"
     it "should create no vouchers if any instantiation fails"
+  end
+
+  describe "seats remaining" do
+    before(:each) do
+      @sd = mock_model(Showdate, :saleable_seats_left => 10, :valid? => true)
+      @v = ValidVoucher.create!(:showdate => @sd,
+        :vouchertype => (@vt_regular = BasicModels.create_revenue_vouchertype),
+        :start_sales => 3.days.ago,
+        :end_sales => 1.day.from_now,
+        :max_sales_for_type => 0)
+    end
+    it "should match showdate's saleable seats if no capacity controls" do
+      @v.seats_left.should == 10
+    end
+    it "should respect capacity controls even if more seats remain" do
+      @v.update_attribute(:max_sales_for_type, 3)
+      @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(2)
+      @v.seats_left.should == 1
+    end
+    it "should not be confused even if capacity control already exceeded" do
+      @v.update_attribute(:max_sales_for_type, 3)
+      @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(5)
+      @v.seats_left.should be_zero # not negative
+    end
+    it "should respect overall capacity even if ticket capacity remains" do
+      @v.update_attribute(:max_sales_for_type, 15)
+      @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(1)
+      @v.seats_left.should == 10 # not 14
+    end
+    it "should respect overall capacity if show is advance-sold-out" do
+      @sd.stub(:saleable_seats_left).and_return(0)
+      @v.seats_left.should == 0
+    end
+  end
+
+  describe "seat availability" do
+    before(:each) do
+      #  some Vouchertype objects for these tests
+      @sd = BasicModels.create_one_showdate(2.days.from_now)
+      @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
+        :name => 'regular voucher',
+        :category => 'revenue',
+        :account_code => '9999',
+        :offer_public => Vouchertype::ANYONE,
+        :price => 10.00,
+        :valid_date => Time.now - 1.month,
+        :expiration_date => Time.now+1.month)
+    end
+    context "for boxoffice when advance sales have ended" do
+      it "should still show seats"
+    end
+    context "for regular patron", :shared => true do
+      describe "when advance sales have ended" do
+        before(:each) do
+          @sd.update_attribute(:end_advance_sales, 1.day.ago)
+          @v = ValidVoucher.create!(:showdate => @sd,
+            :vouchertype => @vt_regular,
+            :start_sales => 3.days.ago,
+            :end_sales => 1.day.from_now)
+        end
+        it "should be nil even if valid voucher's advance sales have not" do
+          ValidVoucher.advance_sale_seats_for(@sd,@u).should be_empty
+        end
+        it "should explain that no seats available since advance sales have ended" do
+          ValidVoucher.no_seats_explanation.should match(/advance sales/i)
+        end
+      end
+      describe "capacity-controlled seats", :shared => true  do
+        before(:each) do
+          @limit = 5
+          @v = ValidVoucher.create!(:showdate => @sd,
+            :vouchertype => @vt_regular,
+            :start_sales => 3.days.ago,
+            :end_sales => 1.day.from_now,
+            :max_sales_for_type => @limit)
+        end
+        describe "when show has 5 saleable seats left" do
+          before(:each) do ; @sd.stub!(:saleable_seats_left).and_return(5) ; end
+          context "but capacity control of #{@limit} exhausted" do
+            before(:each) do
+              @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(@limit)
+              @av = ValidVoucher.advance_sale_seats_for(@sd,@u)
+            end
+            it "should return an available-seats record" do
+              @av.should have(1).available_seat_record
+            end
+            it "should show zero seats" do
+              @av.first.howmany.should == 0
+            end
+          end
+          context "but only 3 are allowed by capacity control" do
+            before(:each) do
+              @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(0)
+              @v.update_attribute(:max_sales_for_type, 3)
+              @av = ValidVoucher.advance_sale_seats_for(@sd,@u)
+            end
+            it "should show available seats" do
+              @av.should have(1).available_seat_record
+            end
+            it "should show 3 available seats (not 5)" do
+              @av[0].howmany.should == 3
+            end
+          end
+          it "should show seats available when capacity available"
+        end
+        context "when show has no saleable seats left" do
+          it "should be empty when capacity reached"
+          it "should be empty when capacity not reached"
+        end
+      end
+      describe "password-protected seats", :shared => true do
+      end
+      describe "non-password, non-capacity-controlled seats" do
+        #it_should_behave_like "capacity-controlled seats"
+      end
+      describe "password-protected, non-cap-controlled seats" do
+        #it_should_behave_like "password-protected seats"
+      end
+      describe "password-protected, capacity-controlled seats" do
+        # it_should_behave_like "password-protected seats"
+        # it_should_behave_like "capacity-controlled seats"
+      end
+    end
+    context "for subscriber" do
+      before(:each) do
+        @u = mock_model(Customer, :is_boxoffice => false, :is_subscriber? => true)
+      end
+      it_should_behave_like "for regular patron"
+    end
+    context "for nonsubscriber" do
+      before(:each) do
+        @u = mock_model(Customer, :is_boxoffice => false, :is_subscriber? => nil)
+      end
+      it_should_behave_like "for regular patron"
+    end
   end
 end

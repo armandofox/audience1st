@@ -23,6 +23,9 @@ class ValidVoucher < ActiveRecord::Base
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
+  # explanation when no seats are available
+  cattr_accessor :no_seats_explanation
+
   private
 
   # Vouchertype's valid date must not be later than valid_voucher start date
@@ -47,6 +50,12 @@ class ValidVoucher < ActiveRecord::Base
     Vouchertype.find(self.vouchertype_id).visible_to(cust)
   end
 
+  def to_s
+    sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
+    start_sales.strftime('%c'), end_sales.strftime('%c'),
+    password
+  end
+  
   def printable_name ;  self.showdate.printable_name ;  end
   def vouchertype_name ; self.vouchertype.name ; end
   def price ; self.vouchertype.price ; end
@@ -75,6 +84,69 @@ class ValidVoucher < ActiveRecord::Base
     [nseatsleft, [0,max_sales_for_type-showdate.sales_by_type(vouchertype_id)].max].min
     end
   end
+
+  # is this valid-voucher redeemable by a Box Office agent?
+  def self.advance_sale_seats_for(showdate,customer,password='')
+    @@no_seats_explanation = ''
+    if customer.is_boxoffice
+      vv = showdate.valid_vouchers.find(:all, :joins => :vouchertype,
+        :conditions => ['vouchertypes.category IN (?)', [:revenue,:nonticket]])
+      # no date checks or anything like that.  Number available for each
+      # seat is based on actual house capacity (vs. max sales).
+      return vv.map do |v|
+        av = AvailableSeat.new(showdate,customer,v.vouchertype,
+          showdate.total_seats_left)
+      end
+    end
+    # not boxoffice.  Subscribers vs nonsubscribers differ only as
+    # far as the vouchertype availability.  If the show itself is not
+    # available for advance sales, we're done.
+    unless Time.now < showdate.end_advance_sales
+      @@no_seats_explanation = 'Advance sales for performance have ended'
+      return []
+    end
+    avail_to = (customer.is_subscriber? ?
+      [Vouchertype::SUBSCRIBERS,Vouchertype::ANYONE] :
+      [Vouchertype::ANYONE])
+    # make sure advance sales start/end are respected, as well
+    # as vouchertype
+    conds = <<EOCONDS1
+        (vouchertypes.category IN (?))
+        AND (vouchertypes.offer_public IN (?))
+        AND (? BETWEEN start_sales AND end_sales)
+EOCONDS1
+    bind_variables =  [[:revenue,:nonticket], avail_to, Time.now]
+    if !password.blank?
+      conds << " AND (LOWER(promo_code) IN (?))"
+      bind_variables << password.downcase.split(',').unshift('')
+    end
+    vv = showdate.valid_vouchers.find(:all, :joins => :vouchertype,
+      :conditions => [conds, *bind_variables])
+    if vv.empty?
+      @@no_seats_explanation = "No seats matching criteria: #{ValidVoucher.sanitize_sql([conds,*bind_variables])}.  Available types:\n" << showdate.valid_vouchers.map(&:to_s).join("\n")
+      return []
+    end
+    # remove those for which the max number of seats available
+    # (if specified) has already been reached in current sales
+    av = vv.map do |v|
+      a = AvailableSeat.new(showdate,customer,v.vouchertype,v.seats_left)
+    end
+    av
+  end
+
+  def seats_left
+    saleable_seats_left = showdate.saleable_seats_left
+    if (max_sales_for_type.zero? || saleable_seats_left.zero?)
+      # num seats left is just however many are left for show
+      saleable_seats_left
+    else
+      # num seats may be inventory constrained. Result is the LEAST
+      # of available seats left, or available seats for THIS TYPE.
+      inventory_left_for_type = [(max_sales_for_type - showdate.sales_by_type(self.vouchertype_id)), 0].max
+      [inventory_left_for_type, saleable_seats_left].min
+    end
+  end
+        
 
   # get number of seats available for a showdate, given a customer
   # (different customers have different purchasing rights), a list of

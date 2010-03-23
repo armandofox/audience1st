@@ -10,7 +10,8 @@ class Showdate < ActiveRecord::Base
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
   validates_associated :show
-
+  validates_presence_of :end_advance_sales
+  
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
 
@@ -50,7 +51,7 @@ class Showdate < ActiveRecord::Base
 
   # to support Store views for which showdates to display
 
-  def ok_to_display_for(who = Customer.generic_customer)
+  def ok_to_display_for?(who = Customer.generic_customer)
     unless who.kind_of?(Customer)
       who = Customer.find_by_id(who)
       return nil unless who.kind_of?(Customer)
@@ -147,10 +148,6 @@ class Showdate < ActiveRecord::Base
       :available
   end
 
-  def num_seats_for_customer_by_vouchertype_and_password(customer, pass='')
-    # find which vouchers are
-  end
-
   def compute_total_sales
     self.vouchers.count
   end
@@ -180,5 +177,5 @@ class Showdate < ActiveRecord::Base
   end
 
   def menu_selection_name ; printable_date ; end
-
+    
 end

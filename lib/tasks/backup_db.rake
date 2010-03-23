@@ -1,6 +1,6 @@
 namespace :db do
 
-  static_tables = "options purchasemethods schema_migrations"
+  static_tables = "options purchasemethods txn_types schema_migrations"
 
   def do_db_cmd(cmd,archive=nil)
     archive ||= ENV['FILE'] || Time.now.strftime("%Y%m%d-%H%M%S.sql")

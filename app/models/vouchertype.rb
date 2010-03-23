@@ -83,9 +83,31 @@ class Vouchertype < ActiveRecord::Base
 
   public
   
+  def to_s
+    sprintf("%-15.15s $%2.2f (%s,%s)", name, price, category, offer_public_as_string)
+  end
+
+  def offer_public_as_string
+    case offer_public
+    when BOXOFFICE
+      "Box ofc only"
+    when SUBSCRIBERS
+      "Subscribers"
+    when ANYONE
+      "Anyone"
+    when EXTERNAL
+      "External"
+    else
+      "Unknown (#{offer_public})"
+    end
+  end
+
+
   def self.offer_to
     @@offer_to
   end
+
+      
 
   def bundle? ; category == :bundle ; end
   def comp? ; category == :comp ; end

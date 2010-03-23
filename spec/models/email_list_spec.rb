@@ -35,7 +35,7 @@ describe EmailList do
     end
     it "should report customers that exist local but not remote" do
       @local_only.should include(@l3)
-      @local_only.should_not_include(@r5)
+      @local_only.should_not include(@r5)
     end
     it "should report customers that exist remote but not local" do
       @remote_only.should include(@r5)

@@ -227,7 +227,7 @@ EOQ
         unless v.fulfillment_needed
           flash[:notice] << "Warning: voucher ID #{vid} was already marked fulfilled<br/>"
         end
-        v.fulfillment_needed = false
+        v.fulfillment_needed = nil
         v.save!
         i += 1
       end

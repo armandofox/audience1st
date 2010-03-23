@@ -120,7 +120,7 @@ class CustomersController < ApplicationController
         return
       end
     else
-      @subscriber = false
+      @subscriber = nil
     end
     @admin = current_admin
     @page_title = sprintf("Welcome, %s#{@customer.full_name.name_capitalize}",
