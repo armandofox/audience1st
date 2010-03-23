@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+include BasicModels
 
 describe Voucher do
 
@@ -79,18 +80,59 @@ describe Voucher do
       @v.should_not be_reservable
     end
   end
-  describe "reservation for a valid showdate" do
-    context "should fail" do
-      it "when voucher is not reservable"
-      it "when advance sales have stopped"
-      it "when show is sold out"
+
+  describe "when valid for a showdate" do
+    before(:each) do
+      @c = BasicModels.create_customer_by_role(:patron)
+      @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
+      @c.vouchers << @v
+      @c.save!
+      @sd = BasicModels.create_one_showdate(1.day.from_now)
     end
-    context "when voucher is reservable" do
-      context "by customer"
-      context "by box office only"
+    context "that's sold out" do
+      before(:each) do
+      end
+      describe "when reserved by box office" do
+        before(:all) do
+          @b = BasicModels.create_customer_by_role(:boxoffice)
+        end
+        before(:each) do
+          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).with(
+            @sd.id,
+            @c,
+            @vt_regular,
+            {:redeeming => true, :ignore_cutoff => true}).and_return(mock('AvailableSeat', :available? => nil))
+          av = @v.reserve_for(@sd.id, @b.id, '', :ignore_cutoff => @b.is_boxoffice)
+        end
+        it "should succeed" do
+          @v.should be_reserved
+        end
+        it "should be tied to that showdate" do
+          @v.showdate.id.should == @sd.id
+        end
+      end
+      describe "when reserved by customer" do
+        before(:each) do
+        end
+        it "should not succeed" do
+          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
+            with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
+            and_return(mock('AvailableSeat', :available? => nil, :explanation => ''))
+          @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @c.is_boxoffice)
+          @v.should_not be_reserved
+        end
+        it "should display an explanation" do
+          as = mock('AvailableSeat', :available? => nil)
+          as.should_receive(:explanation).and_return('')
+          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
+            with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
+            and_return(as)
+          @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @c.is_boxoffice)
+        end
+      end
     end
   end
-  describe "transferring a voucher" do
+  describe "transferring" do
     before(:each) do
       @from = Customer.create!(:first_name => "John", :last_name => "Donor")
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
@@ -125,9 +167,6 @@ describe Voucher do
     end
   end
   describe "bundles" do
-    before(:each) do
-      @vt_bundle.included_vouchers.should have(3).voucher_ids
-    end
     context "when created" do
       it "should record bundle ID in each bundle voucher"
     end

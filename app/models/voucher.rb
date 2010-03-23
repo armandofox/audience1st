@@ -53,7 +53,7 @@ class Voucher < ActiveRecord::Base
   def subscription? ; self.vouchertype.subscription? ; end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (self.showdate.show.name if self.reserved?).to_s ;  end
-  def reserved_date ; (self.showdate.printable_date if self.reserved?).to_s ; end
+  def reserved_date ; (self.showdate.printable_name if self.reserved?).to_s ; end
   def date ; self.showdate.thedate if self.reserved? ; end
 
   # return the "show" associated with a voucher.  If a regular voucher,
@@ -258,28 +258,25 @@ class Voucher < ActiveRecord::Base
 
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
-    if self.unreserved?
-      avail = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,self.customer,self.vouchertype, :redeeming => true, :ignore_cutoff => ignore_cutoff)
-      if avail.available?
-        self.showdate = Showdate.find(showdate_id)
-        self.comments = comments.to_s || ''
-        self.sold_on = Time.now
-        self.save!
-        a = Txn.add_audit_record(:txn_type => 'res_made',
-                                 :customer_id => self.customer.id,
-                                 :logged_in_id => logged_in,
-                                 :show_id => self.showdate.show.id,
-                                 :showdate_id => showdate_id,
-                                 :voucher_id => self.id)
-        return a
-      else
-        self.comments = avail.explanation
-        return false
-      end
-    else                        # voucher already in use
-      self.comments = "This ticket is already holding a reservation for
-                        #{self.showdate.show.name} on
-                        #{self.showdate.thedate.to_formatted_s(:showtime)}"
+    if reserved?
+      comments = "This ticket is already holding a reservation for #{reserved_date}."
+      return nil
+    end
+    avail = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,self.customer,self.vouchertype, :redeeming => true, :ignore_cutoff => ignore_cutoff)
+    if (avail.available? || ignore_cutoff)
+      self.showdate = Showdate.find(showdate_id)
+      self.comments = comments.to_s || ''
+      self.sold_on = Time.now
+      self.save!
+      a = Txn.add_audit_record(:txn_type => 'res_made',
+        :customer_id => self.customer.id,
+        :logged_in_id => logged_in,
+        :show_id => self.showdate.show.id,
+        :showdate_id => showdate_id,
+        :voucher_id => self.id)
+      return a
+    else
+      self.comments = avail.explanation
       return false
     end
   end

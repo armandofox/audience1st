@@ -1,12 +1,12 @@
 module BasicModels
   def self.create_customer_by_name_and_email(args)
-      Customer.create!(:first_name => args[0],
+    Customer.create!(:first_name => args[0],
       :last_name => args[1], :email => args[2],
       :role => (Customer.role_value(args[3] || :patron)))
   end
   def self.create_customer_by_role(role)
     c = Customer.create!(:first_name => "Joe",
-      :last_name => "#{role}.to_s.capitalize")
+      :last_name => "#{role.to_s.capitalize}")
     c.update_attribute(:role, Customer.role_value(role))
     c
   end
