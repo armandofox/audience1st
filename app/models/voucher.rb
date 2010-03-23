@@ -156,47 +156,6 @@ class Voucher < ActiveRecord::Base
                                      :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
   end
 
-
-
-  def self.add_vouchers_for_customer(vtype_id,howmany,cust,purchasemethod_id,showdate_id, comments, bywhom=Customer.generic_customer.id, fulfillment_needed=false,can_change=false,bundle_id=nil)
-    vt = Vouchertype.find(vtype_id)
-    raise "Number to add must be positive" unless howmany > 0
-    raise  "Customer record invalid" unless cust.is_a?(Customer)
-    raise "Purchase method is invalid" unless Purchasemethod.find(purchasemethod_id)
-    raise "Invalid showdate" unless (showdate_id.zero? or Showdate.find(showdate_id))
-    newvouchers = Array.new(howmany) { |v|
-      v = Voucher.new_from_vouchertype(vtype_id,
-        :purchasemethod_id => purchasemethod_id,
-        :comments => comments,
-        :fulfillment_needed => fulfillment_needed,
-        :processed_by_id => bywhom,
-        :customer_id => cust.id,
-        :changeable => can_change,
-        :bundle_id => bundle_id,
-        :showdate_id => showdate_id)
-      v.customer = cust
-      v.save!
-      cust.vouchers << v
-      # if this voucher is actually a "bundle", recursively add the
-      # bundled vouchers
-      # NOTE: fulfillment_needed is ALWAYS FALSE for vouchers included in a bundle!
-      if v.bundle?
-        can_change = v.vouchertype.subscription?
-        purchasemethod_bundle_id = Purchasemethod.get_type_by_name('bundle')
-        v.vouchertype.get_included_vouchers.each {  |type, qty|
-          if (qty > 0)
-            self.add_vouchers_for_customer(type, qty, cust,
-              purchasemethod_bundle_id,
-              showdate_id, '', bywhom, false, can_change,
-              v.id)
-          end
-        }
-      end
-      v
-    }
-    return newvouchers
-  end
-
   def transfer_to_customer(c)
     if c.kind_of?(Customer) && !c.new_record?
       self.update_attribute(:customer_id, c.id)
