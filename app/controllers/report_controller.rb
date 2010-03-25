@@ -185,7 +185,7 @@ EOQ1
       wants.html {
         if result # ok
           @report.create_csv
-          download_to_excel(@report.customers, @report.filename, false)
+          download_to_excel(@report.output, @report.filename, false)
         else
           flash[:warning] = "Errors generating report: #{@report.errors}"
           redirect_to :action => 'index'

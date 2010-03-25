@@ -5,29 +5,22 @@
     (last login:
     = h @gCustomer.last_login.to_formatted_s(:month_day_year)
     )
-  %table.layout
-    %tr
-      - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do
-        - if controller.controller_name =~ /store|customers/i
-          = hidden_field_tag 'target_controller', controller.controller_name
-          = hidden_field_tag 'target_action', (controller.action_name == 'list' ? 'welcome' : controller.action_name)
-        - else
-          = hidden_field_tag 'target_controller', 'customers'
-          = hidden_field_tag 'target_action', 'welcome'
-        %td
-          Quick select by first or last name:
-          = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}, :select_opts => {:indicator => :wait}
-          = hidden_field_tag 'id'
-          = submit_tag 'Go'
-        %td{:width => '16'}
-          = spinner('wait')
-      %td
-        - form_tag({:controller => 'customers',:action =>'list'},{:method =>:get}) do
-          Find all matching any field:
-          = text_field_tag 'customers_filter', '', :size => 12
-          = submit_tag 'Go'
-      %td
-        - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do
-          = submit_tag 'New customer...'
+    - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get}) do
+      - if controller.controller_name =~ /store|customers/i
+        = hidden_field_tag 'target_controller', controller.controller_name
+        = hidden_field_tag 'target_action', (controller.action_name == 'list' ? 'welcome' : controller.action_name)
+      - else
+        = hidden_field_tag 'target_controller', 'customers'
+        = hidden_field_tag 'target_action', 'welcome'
+      Quick select by first or last name:
+      = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}
+      = hidden_field_tag 'id'
+      = submit_tag 'Go'
+    - form_tag({:controller => 'customers',:action =>'list'},{:method =>:get}) do
+      Match on any field:
+      = text_field_tag 'customers_filter', '', :size => 12
+      = submit_tag 'Go'
+    - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do
+      = submit_tag 'Add New...'
           
 

@@ -91,7 +91,9 @@ EJS1
 
   # spinner
   def spinner(id='wait')
-    image_tag('wait16trans.gif', :id => id, :style => 'display: none;')
+    content_tag('div', :style => 'display: inline; width: 18px; visibility: hidden;') do
+      image_tag('wait16trans.gif', :id => id, :style => 'display: none;')
+    end
   end
 
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
@@ -118,7 +120,6 @@ EJS1
     complete_func << "}"
     return text_field_tag(field_id, default_val, field_opts) <<
       javascript_tag(complete_func) << "\n" <<
-      auto_complete_stylesheet <<
       content_tag("div", nil, {:id => field_id + "_auto_complete", :class => :auto_complete}) <<
       auto_complete_field(field_id, select_opts)
   end

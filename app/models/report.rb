@@ -1,7 +1,7 @@
 class Report
 
   attr_accessor :output_options, :filename, :query
-  attr_reader :view_params, :customers
+  attr_reader :view_params, :customers, :output
   attr_accessor :fields, :log
 
   cattr_accessor :logger
@@ -32,9 +32,9 @@ class Report
   end
 
   def execute_query
-    @customers = Customer.find_by_sql(query)
+    res = Customer.find_by_sql(query)
     logger.info "Report Query:\n  #{query} \n   => #{@customers.length} results"
-    @customers
+    @customers = postprocess(res)
   end
 
   def count ; make_query(count=true) ; end
@@ -93,10 +93,12 @@ class Report
         wheres << "c.blacklist = #{val ? 0 : 1}"
       when :exclude_e_blacklist
         wheres << "c.e_blacklist = #{val ? 0 : 1}"
+      when :require_valid_address
+        wheres << "c.street != '' AND c.street IS NOT NULL" if !val.to_i.zero?
       when :filter_by_zip
         zips = @output_options[:zip_glob].split(/\s*,\s*/).map(&:to_i).reject { |zip| zip.zero? } # sanitize
         if !zips.empty?
-          wheres << ('(' + Array.new(zips.length, "c.zip LIKE ?").join(' OR ') + ')')
+          wheres << ('(c.zip = \'\' OR ' + Array.new(zips.length, "c.zip LIKE ?").join(' OR ') + ')')
           bind_variables += zips.map { |z| "#{z}%" }
         end
       end
@@ -124,5 +126,22 @@ class Report
 
   def add_error(itm)
     (@errors ||= []) << itm.to_s
+  end
+
+  def postprocess(arr)
+    # if output options include stuff like duplicate elimination, do that here
+    if @output_options[:remove_dups]
+      # remove duplicate mailing addresses
+      hshtemp = Hash.new
+      arr.each_index do |i|
+        canonical = arr[i].street.downcase.tr_s(' ', ' ')
+        if hshtemp.has_key?(canonical)
+          arr.delete_at(i)
+        else
+          hshtemp[canonical] = true
+        end
+      end
+    end
+    arr
   end
 end

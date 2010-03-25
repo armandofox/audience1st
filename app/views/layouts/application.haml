@@ -17,7 +17,7 @@
         - if (url = Option.value(:venue_homepage_url)).blank?
           #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         - else
-          %a{:href => url}
+          %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         #page_body
           #left_sidebar
