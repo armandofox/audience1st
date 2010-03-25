@@ -1,17 +1,11 @@
-- form_tag :action => 'run_special_report' do
-  %fieldset
-    %legend= @args[:name]
-    %table
-      %tr
-        %td
-          Find patrons who purchased <strong>ANY</strong> <br/>of these vouchers:
-        %td
-          But <strong>NONE</strong> of these:
-      %tr
-        %td= select_tag 'have_vouchertypes[]', options_from_collection_for_select(@args[:have_vouchertypes], :id, :name), :multiple => true
-        %td= select_tag 'dont_have_vouchertypes[]', options_from_collection_for_select(@args[:dont_have_vouchertypes], :id, :name), :multiple => true
-    = render :partial => 'output_options'
-    = hidden_field_tag '_report', 'LapsedSubscribers'
-    = submit_tag 'Download to Excel'
+%table
+  %tr
+    %td
+      Find patrons who purchased <strong>ANY</strong> <br/>of these vouchers:
+    %td
+      But <strong>NONE</strong> of these:
+  %tr
+    %td= select_tag 'have_vouchertypes[]', options_from_collection_for_select(@args[:have_vouchertypes], :id, :name), :multiple => true
+    %td= select_tag 'dont_have_vouchertypes[]', options_from_collection_for_select(@args[:dont_have_vouchertypes], :id, :name), :multiple => true
     
 

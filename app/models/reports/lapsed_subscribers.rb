@@ -1,33 +1,32 @@
 class LapsedSubscribers < Report
 
-  def initialize
+  def initialize(output_options = {})
     sub_vouchers =  Vouchertype.find_products :type => :subscription, :ignore_cutoff => true
     @view_params = {
       :have_vouchertypes => sub_vouchers,
       :dont_have_vouchertypes => sub_vouchers
     }
+    super
   end
 
   def generate(params=[])
     have = (params[:have_vouchertypes] ||= []).reject { |x| x.to_i < 1 }
     have_not = (params[:dont_have_vouchertypes] ||= []).reject { |x| x.to_i < 1 }
     unless have.size > 0 && have_not.size > 0
-      @errors = "You  must specify at least one type of voucher from each list."
-      return
+      add_error "You  must specify at least one type of voucher from each list."
+      return nil
     end
+    self.output_options = params[:output]
     # first find customers who have ANY of the given vouchertypes
-    sql  = %{
-        SELECT DISTINCT c.*
-        FROM customers c LEFT OUTER JOIN vouchers v ON v.customer_id = c.id
-        WHERE v.vouchertype_id IN (%s)
-        AND (c.e_blacklist = 0 OR c.e_blacklist IS NULL)
-        ORDER BY c.last_name
-        }
-    prev_subscribers = Customer.find_by_sql(sprintf(sql, have.join(',')))
-    # now identify those who ALSO have ANY of the new vouchertypes, and
-    # subtract the sets
-    renewed_subscribers = Customer.find_by_sql(sprintf(sql, have_not.join(',')))
-    @customers = prev_subscribers - renewed_subscribers
+    self.add_constraint('vouchertype.id IN (?)', have.join(','))
+    customers = self.execute_query
+    unless have_not.empty?
+      # now identify those who ALSO have ANY of the new vouchertypes, and
+      # subtract the sets
+      prev_subscribers = Report.new(params[:output])
+      prev_subscribers.add_constraint('vouchertype.id IN (?)', have_not.join(','))
+      customers -= prev_subscribers.execute_query
+    end
+    customers
   end
-
 end

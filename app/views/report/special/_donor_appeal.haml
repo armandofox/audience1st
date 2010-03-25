@@ -1,28 +1,14 @@
-- form_tag :action => 'run_special_report' do
-  %fieldset
-    %legend Donor Appeal
-    %p
-      Donors who have made at least one donation of $
-      = text_field_tag 'donation_amount', '1.00', :size => 5
-      or more
-      %br
-      since
-      = select_date_shortcuts 2007, 'newFrom', 'newTo'
-      or custom dates:
-      = select_date Date.today, :prefix => 'newFrom', :start_year => 2007
-      to
-      = select_date Date.today, :prefix => 'newTo', :start_year => 2007
-    %p
-      = check_box_tag 'include_subscribers', 1, true
-      Include all subscribers, even if they haven't made a donation
-    %p
-      = check_box_tag 'require_valid_address', 1, false
-      Require non-blank mailing address
-    %p
-      = check_box_tag 'require_valid_email', 1, false
-      Require valid email address
-
-    = hidden_field_tag '_report', 'DonorAppeal'
-    = submit_tag 'Download to Excel'
-
-
+%p
+  Donors who have made at least one donation of $
+  = text_field_tag 'donation_amount', '1.00', :size => 5
+  or more
+  %br
+  since
+  = select_date_shortcuts 2007, 'newFrom', 'newTo'
+  or custom dates:
+  = select_date Date.today, :prefix => 'newFrom', :start_year => 2007
+  to
+  = select_date Date.today, :prefix => 'newTo', :start_year => 2007
+%p
+  = check_box_tag 'include_subscribers', 1, true
+  Include all subscribers, even if they haven't made a donation

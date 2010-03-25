@@ -1,29 +1,3 @@
-- form_tag :action => 'run_special_report' do
-  %fieldset
-    %legend Bulk mailing list options
-    %p
-      = check_box_tag 'subscribers_only', '1', true
-      Limit to subscribers only
-    %p
-      = check_box_tag 'exclude_blacklist', '1', true
-      Exclude patrons who have opted out of US Mail mailings
-    %p
-      = check_box_tag 'exclude_e_blacklist', '1', true
-      Exclude patrons who have opted out of email
-    %p
-      = check_box_tag 'filter_invalid_addresses', '1', true
-      Try to exclude invalid-looking US Mail addresses (takes longer)
-      %br
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      = check_box_tag 'remove_dups', '1', false
-      One entry per mailing address: remove addresses that appear the same but are associated with distinct names (takes even longer)
-    %p
-      Sort by:
-      = radio_button_tag 'sort_by_zip', 1, true
-      Zip, then last name
-      = radio_button_tag 'sort_by_zip', 0, false
-      Last name, then zip
-
-    = hidden_field_tag '_report', 'BulkMailingList'
-    = submit_tag "Download to Excel"
-
+%p
+  = check_box_tag 'subscribers_only', '1', true
+  Limit to subscribers only

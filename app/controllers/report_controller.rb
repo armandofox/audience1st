@@ -168,20 +168,38 @@ EOQ1
       report_subclass = n.camelize.constantize
       @report = report_subclass.__send__(:new)
       @args = @report.view_params
-      render :partial => "report/special/#{n}"
+      render :partial => "report/special_report", :locals => {:name => n}
     end
   end
 
   def run_special_report
     n = params[:_report]
-    @report = n.constantize.__send__(:new)
-    @report.generate(params)
-    if @report.errors.blank?
-      logger.info @report.log unless @report.log.blank?
-      @report.create_csv
-      download_to_excel(@report.output, @report.filename, false)
-    else
-      render :text => "Error generating report: #{@report.errors}"
+    @report = n.camelize.constantize.__send__(:new, params[:output])
+    if (n.blank? || @report.nil? || !@report.kind_of?(Report))
+      flash[:warning] = "Error: unknown report name."
+      redirect_to(:action => 'index')
+      return
+    end
+    result = @report.generate(params) # error!
+    respond_to do |wants|
+      wants.html {
+        if result # ok
+          @report.create_csv
+          download_to_excel(@report.customers, @report.filename, false)
+        else
+          flash[:warning] = "Errors generating report: #{@report.errors}"
+          redirect_to :action => 'index'
+          return
+        end
+      }
+      wants.js {
+        if result
+          # just render the number of results that would be returned
+          render :text => "#{@report.customers.length} matches"
+        else # error
+          render :text => "Error: #{@report.errors}"
+        end
+      }
     end
   end
 
