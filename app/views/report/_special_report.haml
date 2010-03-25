@@ -7,6 +7,9 @@
     = submit_tag 'Download to Excel'
     = submit_to_remote 'count', 'Calculate number of matching customers', |
       :url => {:action => 'run_special_report'},  |
-      :update => 'reportPreview' |
-    %span#reportPreview
-        
+      :before => "Element.show('#{name}_spinner')", |
+      :complete => "Element.hide('#{name}_spinner')", |
+      :update => "#{name}_preview" |
+    = spinner("#{name}_spinner")
+    %span{:id => "#{name}_preview"}
+
