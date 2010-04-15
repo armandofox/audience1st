@@ -20,4 +20,4 @@ Feature: Visit Store Page
 
     Given I am logged in as a subscriber
     When I visit the store page
-    Then I should see the NonSubscriber message
+    Then I should see the Subscriber message
