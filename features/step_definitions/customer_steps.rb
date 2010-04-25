@@ -1,4 +1,4 @@
-World()
+World(FixtureAccess)
 
 Given /^I am not logged in$/ do
   visit '/logout'
@@ -12,7 +12,9 @@ Given /^I am logged in as (.*)?$/ do |who|
     pending
     @customer = customers(:tom)
     @customer.make_subscriber!
-  when /box ?office/
+  when /box ?office manager/i
+    @customer = customers(:boxoffice_manager)
+  when /box ?office/i
     @customer = customers(:boxoffice_user)
   else
     @customer = customers(:generic_customer)
