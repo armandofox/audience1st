@@ -6,8 +6,8 @@ class Vouchertype < ActiveRecord::Base
 
   validates_length_of :name, :within => 3..40, :message => "Voucher type name must be between 3 and 40 characters"
   validates_numericality_of :price
-  validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
-                        :message => "Vouchers that create revenue must have an account code")
+  #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
+  #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
   validates_inclusion_of :category, :in => [:revenue, :comp, :subscriber, :bundle, :nonticket]
   # Vouchertypes whose price is zero must NOT be available
