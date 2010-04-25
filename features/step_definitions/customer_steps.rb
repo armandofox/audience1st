@@ -5,6 +5,7 @@ Given /^I am not logged in$/ do
 end
 
 Given /^I am logged in as (.*)?$/ do |who|
+  admin = false
   case who
   when /nonsubscriber/
     @customer = customers(:tom)
@@ -14,8 +15,10 @@ Given /^I am logged in as (.*)?$/ do |who|
     @customer.make_subscriber!
   when /box ?office manager/i
     @customer = customers(:boxoffice_manager)
+    admin = true
   when /box ?office/i
     @customer = customers(:boxoffice_user)
+    admin = true
   else
     @customer = customers(:generic_customer)
   end
@@ -24,4 +27,5 @@ Given /^I am logged in as (.*)?$/ do |who|
   fill_in :customer_password, :with => 'pass'
   click_button 'Login'
   response.should contain(Regexp.new("Welcome,.*#{@customer.first_name}"))
+  response.should contain(Regexp.new("Logged in as Administrator")) if admin
 end

@@ -41,12 +41,6 @@ all: nightly
 nightly: clean_sessions notify_pending_followups backup_db backup_svn
 monthly: rotate_logs
 
-dev:
-	-ln -s ../config/database.yml.dev ../config/database.yml
-	mkdir ../log
-	touch ../log/development.log
-	-ln -s ~/Documents/fox/projects/stylesheets/sandbox ../public/stylesheets/venue
-
 clean_sessions:
 	@$(MYSQL) $(DBOPTS) '-D$(DBNAME)' -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)
 

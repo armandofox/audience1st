@@ -8,19 +8,20 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
     
-    when /the homepage/
+    when /the home ?page/i
       '/'
-    when /the walkup sales page/
+    when /the walkup sales page/i
       "/box_office/walkup/#{@showdate.id}"
     # Add more mappings here.
     # Here is a more fancy example:
     #
     #   when /^(.*)'s profile page$/i
     #     user_profile_path(User.find_by_login($1))
-
-    when /the store page/
+    when /the new show page/i
+      "/shows/new"
+    when /the store page/i
       "/store"
-    when /the subscriptions page/
+    when /the subscriptions page/i
       "/store/subscribe"
     else
       raise "Can't find mapping from \"#{page_name}\" to a path.\n" +
