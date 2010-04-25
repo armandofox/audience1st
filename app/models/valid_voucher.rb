@@ -174,7 +174,10 @@ EOCONDS1
       return av unless  check_visible_to(av,ignore_cutoff)
     end
     #vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
-    vv  = vtype.valid_vouchers.select { |v| v.showdate_id == sd.id }
+    vv  = vtype.valid_vouchers.select do |v|
+      v.showdate_id == sd.id &&
+        v.password_matches(opts[:promo_code])
+    end
     if vv.empty?
       av.howmany = 0
       av.explanation = "Ticket type not valid for this performance"
@@ -211,8 +214,18 @@ EOCONDS1
                                         :purchasemethod => purchasemethod)
   end
 
+  def password_matches(str)
+    str ||= ''
+    return true if self.password.blank?
+    return (self.password.upcase.split(/\s*,\s*/).include?(str.strip.upcase))
+  end
+
   private
 
+  # return true if this valid_voucher should be displayed based on password.
+  # that is, if it has no associated promo code, OR if the supplied string
+  # matches one of the associated promo codes.
+  
   def self.check_visible_to(av, admin=false)
     cust = av.customer
     av.staff_only = true        # only staff can see reason for reject

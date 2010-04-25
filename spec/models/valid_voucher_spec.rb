@@ -203,4 +203,45 @@ describe ValidVoucher do
       it_should_behave_like "for regular patron"
     end
   end
+  describe "promo code filtering" do
+    before(:each) do
+      @v = ValidVoucher.new
+    end
+    context "with no password" do
+      before(:each) do
+        @v.password = nil
+      end
+      it "should succeed if password is blank and promo code is empty string" do
+        @v.password_matches(nil).should be_true
+      end
+      it "should succeed if password is blank and promo code is not" do
+        @v.password_matches('foo!').should be_true
+      end
+      it "should succeed if promo code is nil (not empty)" do
+        @v.password_matches(nil).should be_true
+      end
+    end
+    describe "with nonblank", :shared => true do
+      it "should succeed if password matches exactly" do
+        @v.password_matches('foo').should be_true
+      end
+      it "should match case-insensitively" do
+        @v.password_matches('FoO').should be_true
+      end
+      it "should succeed if supplied password is not blank-stripped" do
+        @v.password_matches(' Foo ').should be_true
+      end
+      it "should fail if only partial word match" do
+        @v.password_matches('fo').should be_false
+      end
+    end
+    context "with a single password" do
+      before(:each) do ; @v.password = 'foo' ; end
+      it_should_behave_like "with nonblank"
+    end
+    context "with multiple passwords" do
+      before(:each) do ; @v.password = 'bAr,Foo,BAZ' ; end
+      it_should_behave_like "with nonblank"
+    end
+  end
 end

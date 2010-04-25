@@ -31,28 +31,31 @@ class StoreController < ApplicationController
                  :enter_promo_code)
   
   def index
-    reset_shopping
-    # @@@BUG
-    params.delete(:show_id)
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
-    set_return_to :controller => 'store', :action => 'index'
-    # if this is initial visit to page, reset ticket choice info
-    reset_current_show_and_showdate
-    if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
-      set_current_showdate(s)
-    elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
-      set_current_show(s)
-    else                        # neither: pick earliest show
-      s = get_all_showdates(@is_admin)
-      unless (s.nil? || s.empty?)
-        #set_current_showdate(s.sort.detect { |sd| sd.thedate >= Time.now } || s.first)
-        set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
+    if params[:commit] =~ /redeem/i
+      enter_promo_code
+      params.delete(:commit)
+    else
+      reset_shopping
+      set_return_to :controller => 'store', :action => 'index'
+      # if this is initial visit to page, reset ticket choice info
+      params.delete(:show_id)
+      reset_current_show_and_showdate
+      if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
+        set_current_showdate(s)
+      elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
+        set_current_show(s)
+      else                        # neither: pick earliest show
+        s = get_all_showdates(@is_admin)
+        unless (s.nil? || s.empty?)
+          #set_current_showdate(s.sort.detect { |sd| sd.thedate >= Time.now } || s.first)
+          set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
+        end
       end
     end
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
-    @promo_code = session[:promo_code] || nil
     setup_ticket_menus
   end
 
@@ -80,6 +83,7 @@ class StoreController < ApplicationController
   end
 
   def shipping_address
+    redirect_to(:action => 'index', :commit => 'redeem', :promo_code => params[:promo_code]) and return if params[:commit] =~ /redeem/i
     # if this is a post, add items to cart first (since we're coming from
     #  ticket selection page).  If a get, buyer just wants to modify
     #  gift recipient info.
@@ -154,7 +158,7 @@ class StoreController < ApplicationController
       set_current_show(s)
       sd = s.future_showdates
       # set_current_showdate(sd.empty? ? nil : sd.first)
-      set_current_showdate(nil)
+      # set_current_showdate(nil)
     end
     setup_ticket_menus
     render :partial => 'ticket_menus'
@@ -175,11 +179,11 @@ class StoreController < ApplicationController
   end
 
   def enter_promo_code
-    code = (params[:promo_code] || '').upcase
-    if !code.empty?
-      session[:promo_code] = code
+    @promo_code = (params[:promo_code] || '').upcase
+    if !@promo_code.blank?
+      session[:promo_code] = @promo_code
+      logger.info "Accepted promo code #{@promo_code}"
     end
-    redirect_to_index
   end
 
   def checkout
@@ -322,6 +326,7 @@ EON
   def setup_ticket_menus
     @customer = store_customer
     @cart = find_cart
+    @promo_code = session[:promo_code]
     is_admin = current_admin.is_boxoffice
     # will set the following instance variables:
     # @all_shows - choice for Shows menu
@@ -344,7 +349,7 @@ EON
         @sd = @all_showdates.first
       end
       @vouchertypes = (@sd ?
-                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin) :
+                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin, :promo_code => @promo_code) :
                        [] )
     elsif @sh = current_show    # show selected, but not showdate
       # @all_showdates = (is_admin ? @sh.showdates :
@@ -378,7 +383,8 @@ EON
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
   def set_current_show(s)
     session[:store] ||= {}
-    if (sd = s.showdates.sort_by(&:thedate).first)
+    sd = (@gAdmin.is_boxoffice ? s.showdates : s.future_showdates)
+    if (sd = sd.sort_by(&:thedate).first)
       set_current_showdate(sd)
     else
       session[:store][:show] = session[:store][:showdate] = nil
@@ -444,7 +450,7 @@ EON
       qty = qty.to_i
       unless qty.zero?
         admin = @gAdmin.is_boxoffice
-        av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => admin)
+        av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => admin, :promo_code => session[:promo_code])
         if (!admin && av.howmany.zero?)
           msgs << "Sorry, no '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance."
         elsif (!admin && (av.howmany < qty))
