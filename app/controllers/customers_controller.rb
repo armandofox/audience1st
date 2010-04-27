@@ -27,7 +27,7 @@ class CustomersController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name,:logout]
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
+  verify :method => :post, :only => %w[destroy create user_create], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
 
   # checks for SSL should be last, as they append a before_filter
   ssl_required :login, :change_password, :new, :create, :user_create, :edit, :forgot_password
@@ -249,12 +249,6 @@ class CustomersController < ApplicationController
 
 
   def user_create
-    if request.get?
-      @is_admin = current_admin.is_boxoffice
-      @customer = Customer.new
-      render :action => 'new'
-      return
-    end
     # this is messy: if this is part of a checkout flow, it's OK for customer
     #  not to specify a password.  This will be obsolete when customers are
     #  subclassed with different validations on each subclass.
@@ -270,20 +264,15 @@ class CustomersController < ApplicationController
       render :action => 'new'
       return
     end
-#     unless @customer.valid_email_address?
-#       flash[:notice] = "Please provide a valid email address so we can send you an order confirmation."
-#       render :action => 'new'
-#       return
-#     end
     @customer.validation_level = 1
-    if @customer.save
+    if @customer.save && @customer.errors.empty
       @customer.update_attribute(:last_login, Time.now)
       unless temp_password
         flash[:notice] = "Thanks for setting up an account!<br/>"
         email_confirmation(:send_new_password,@customer,
                          params[:customer][:password],"set up an account with us")
       end
-      session[:cid] = @customer.id
+      self.current_user = @customer
       logger.info "Session cid set to #{session[:cid]}"
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
@@ -374,13 +363,12 @@ class CustomersController < ApplicationController
     render :partial => 'search_results'
   end
 
+  def new
+    @is_admin = current_admin.is_boxoffice
+    @customer = Customer.new
+  end
+  
   def create
-    if request.get?
-      @is_admin = current_admin.is_boxoffice
-      @customer = Customer.new
-      render :action => 'new'
-      return
-    end
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     flash[:notice] = ''
     # if neither email address nor password was given, assign a random
@@ -481,18 +469,6 @@ class CustomersController < ApplicationController
   private
 
 
-  def possibly_enable_admin(c = Customer.generic_customer)
-    session[:admin_id] = nil
-    if c.is_staff # least privilege level that allows seeing other customer accts
-      (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
-      session[:admin_id] = c.id
-      return ['customers', 'list']
-    elsif c.subscriber?
-      return ['customers', 'welcome_subscriber']
-    else
-      return ['store', 'index']
-    end
-  end
 
   def forgot_password(login)
     if login.blank?

@@ -1,0 +1,22 @@
+- form_tag session_path do
+  = error_messages_for 'customer'
+
+  %label{:for=>:customer_login} Login Name
+  = text_field_tag 'login', '', :size => 20
+  %br/
+
+  %label{:for=>:customer_password} Password
+  = password_field_tag 'password', nil, :size => 20
+  %br/
+
+  .indented
+    .small
+      = check_box_tag 'forgot_password'
+      %strong Forgot your password?
+      Check this box, enter your email address or login name above,
+      and a new password will be emailed to you within 1 minute.
+      %br/
+      = check_box_tag 'remember_me', '1', @remember_me
+      Remember me for next time (Don't use on public/shared computers)
+    = submit_tag 'Login', :disable_with => 'Logging in...'
+

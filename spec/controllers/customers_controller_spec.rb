@@ -20,7 +20,7 @@ describe CustomersController do
       target = {:controller => 'store', :action => 'checkout'}
       session[:return_to] = target
       post :edit, params
-      @customer.hashed_password_changed?.should be_false
+      @customer.crypted_password_changed?.should be_false
       @customer.reload
       @customer.street.should == "100 Embarcadero"
       @customer.zip.should == "94100"

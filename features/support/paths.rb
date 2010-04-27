@@ -16,7 +16,7 @@ module NavigationHelpers
     # Here is a more fancy example:
     #
     #   when /^(.*)'s profile page$/i
-    #     user_profile_path(User.find_by_login($1))
+    #     user_profile_path(Customer.find_by_login($1))
     when /the new show page/i
       "/shows/new"
     when /the store page/i

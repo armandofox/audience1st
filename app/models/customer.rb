@@ -1,6 +1,7 @@
-require 'digest/sha1'
-
 class Customer < ActiveRecord::Base
+  include Authentication
+  include Authentication::ByPassword
+  include Authentication::ByCookieToken
 
   has_many :vouchers
   has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
@@ -13,17 +14,20 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
+  validates_length_of :login, :in => 3..40, :allow_nil => true
   validates_uniqueness_of :login, :allow_nil => true
-  validates_length_of :login, :in => 3..50, :allow_nil => true
+  #validates_format_of :login, :with => Authentication.login_regex, :message => Authentication.bad_login_message
 
   #validates_uniqueness_of :email, :allow_nil => true
   validate :valid_email?
+  
   validate :valid_or_blank_address?
 
-  validates_presence_of :first_name
   validates_length_of :first_name, :within => 1..50
-  validates_presence_of :last_name
+  #validates_format_of :first_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
+
   validates_length_of :last_name, :within => 1..50
+  #validates_format_of :last_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
 
   validates_length_of :password, :in => 0..20, :allow_nil => true
   validates_confirmation_of :password
@@ -33,6 +37,9 @@ class Customer < ActiveRecord::Base
 
   attr_protected :id, :salt, :role, :validation_level
   attr_accessor :password
+
+  before_save :trim_whitespace_from_user_entered_strings
+
 
   #----------------------------------------------------------------------
   #  private variables
@@ -147,7 +154,7 @@ class Customer < ActiveRecord::Base
     %w[first_name last_name street city state zip day_phone eve_phone login email]
 
   # strip whitespace before saving
-  def before_save
+  def trim_whitespace_from_user_entered_strings
     @@user_entered_strings.each do |col|
       c = self.send(col)
       c.send(:strip!) if c.kind_of?(String)
@@ -190,7 +197,7 @@ class Customer < ActiveRecord::Base
 
   def valid_email_address?
     !self.email.blank? &&
-      self.email.valid_email_address?
+      self.email.match(Authentication.email_regex)
   end
   def invalid_email_address? ; !valid_email_address? ; end
   def valid_mailing_address?
@@ -264,12 +271,12 @@ class Customer < ActiveRecord::Base
     c0.validation_level = c1.validation_level if c1.validation_level > c0.validation_level
     # passwd,salt columns are kept based on last_login or updated_at
     if (((c0.last_login < c1.last_login) ||
-        ((c0.last_login == c1.last_login) && (c0.updated_on <
-                                              c1.updated_on))) rescue nil)
+        ((c0.last_login == c1.last_login) && (c0.updated_at <
+                                              c1.updated_at))) rescue nil)
       Customer.keep_newer_attributes.each do |attr|
         c0.send("#{attr}=", c1.send(attr))
       end
-      c0.hashed_password = c1.hashed_password
+      c0.crypted_password = c1.crypted_password
       c0.salt = c1.salt
     end                         # else keep what we have
     msg = []
@@ -307,7 +314,7 @@ class Customer < ActiveRecord::Base
   end
 
   # when merging customers, these attributes are automatically merged
-  def self.keep_newer_attributes ;  %w(hashed_password  salt  last_login) ; end
+  def self.keep_newer_attributes ;  %w(crypted_password  salt  last_login) ; end
 
 
 
@@ -352,30 +359,21 @@ class Customer < ActiveRecord::Base
     return status
   end
 
-  def password=(pass)
-    # BUG BUG BUG
-    return if pass.nil?
-    @password=pass.to_s.strip
-    self.salt = String.random_string(10)
-    self.hashed_password = Customer.encrypt(@password, self.salt)
+  def self.authenticate(login, password)
+    return nil if login.blank? || password.blank?
+    u = Customer.find(:first, :conditions => ["login LIKE ?", login.downcase]) # need to get the salt
+    u && u.authenticated?(password) ? u : nil
   end
 
-  def self.encrypt(pass,salt)
-    Digest::SHA1.hexdigest(pass.strip.to_s+salt.to_s)
-  end
-
-  # Authenticate: if password matches login, return customer, else
-  # a symbol explaining what failed
-
-  def self.authenticate(login,pass)
-    u=Customer.find(:first, :conditions=>["login LIKE ?", login])
-    return :login_not_found unless u.kind_of?(Customer)
-    if Customer.encrypt(pass,u.salt) == u.hashed_password
-      return u
-    else
-      return :bad_password
-    end
-  end
+  # def self.authenticate(login,pass)
+  #   u=Customer.find(:first, :conditions=>["login LIKE ?", login])
+  #   return :login_not_found unless u.kind_of?(Customer)
+  #   if Customer.encrypt(pass,u.salt) == u.hashed_password
+  #     return u
+  #   else
+  #     return :bad_password
+  #   end
+  # end
 
 
   # Values of the role field:
@@ -529,7 +527,7 @@ class Customer < ActiveRecord::Base
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns
-    super.delete_if { |x| x.name.match(%w[role oldid hashed_password salt _at$ _on$].join('|')) }
+    super.delete_if { |x| x.name.match(%w[role oldid crypted_password salt _at$ _on$].join('|')) }
   end
 
   def self.address_columns

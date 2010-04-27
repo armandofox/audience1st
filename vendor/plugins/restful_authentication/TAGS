@@ -1,0 +1,144 @@
+
+generators/authenticated/authenticated_generator.rb,62
+require File.expand_path(expand_path1,0
+    @rspec 39,1793
+
+generators/authenticated/lib/insert_routes.rb,24
+    resource_list 3,82
+
+generators/authenticated/templates/features/step_definitions/ra_env.rb,24
+  fixtures_folder 4,34
+
+generators/authenticated/templates/features/step_definitions/ra_navigation_steps.rb,231
+When "$actor goes to $path" do |actor,actor8,49
+When /^(\w+) creates an? ([\w ]+) with ([\w: \',]+)$/ do |actor,actor19,477
+When /^(\w+) creates an? ([\w ]+) with ([\w: \',]+)$/ do |actor, resource,19,477
+  attributes 20,564
+
+generators/authenticated/templates/features/step_definitions/ra_resource_steps.rb,225
+Given "a $resource instance with $attributes" do |resource,resource14,387
+  klass,15,459
+  klass, instance,15,459
+  klass, instance, attributes 15,459
+  if func then new_value = new_value.send(func); old_value 109,3471
+
+generators/authenticated/templates/features/step_definitions/ra_response_steps.rb,730
+Then "$actor should be at $path" do |_,_15,381
+  response.should render_template(16,427
+Then "$actor should see a <$container> containing a $attributes" do |_,_38,909
+Then "$actor should see a <$container> containing a $attributes" do |_, container,38,909
+  attributes 39,1004
+      when "textfield" then with_tag "input[type='text']";     with_tag(43,1141
+Then "$actor should not see $an $notice message '$message'" do |_,_116,3265
+Then "$actor should not see $an $notice message '$message'" do |_, _,116,3265
+Then "$actor should not see $an $notice message '$message'" do |_, _, notice,116,3265
+  response.should_not have_flash(117,3352
+  response.should have_tag(128,3655
+  response.should_not have_tag(131,3775
+
+generators/authenticated/templates/features/step_definitions/user_steps.rb,13
+RE_User 1,0
+
+generators/authenticated/templates/model.rb,27
+class <%= class_name 3,23
+
+generators/authenticated/templates/site_keys.rb,28
+REST_AUTH_SITE_KEY 19,1184
+
+generators/authenticated/templates/spec/controllers/access_control_spec.rb,107
+  before_filter :login_required,login_required10,383
+  before_filter :login_required, :only only10,383
+
+generators/authenticated/templates/spec/controllers/authenticated_system_spec.rb,23
+def action_name(7,294
+
+generators/authenticated/templates/spec/controllers/sessions_controller_spec.rb,1228
+            it "kills existing login"        do controller.should_receive(:logout_keeping_session!); do_create;44,2096
+            it "authorizes me"               do do_create;45,2216
+            it "authorizes me"               do do_create; controller.send(:authorized?).should be_true;45,2216
+            it "logs me in"                  do do_create;46,2331
+            it "greets me nicely"            do do_create;47,2444
+            it "greets me nicely"            do do_create; response.flash[:notice].should should47,2444
+            it 'redirects to the home page'  do do_create;50,2806
+            it "does not reset my session"   do controller.should_not_receive(:reset_session).and_return nil;51,2904
+              it "sets an auth cookie"       do do_create;55,3355
+                it "sets an auth cookie"       do do_create;60,3703
+    it 'flashes an error'           do do_create;79,4526
+    it 'flashes an error'           do do_create; flash[:error].should should79,4526
+    it "doesn't log me in"          do do_create;81,4733
+    it "doesn't log me in"          do do_create; controller.send(:logged_in?).should should81,4733
+    it 'redirects me to the home page' do do_destroy;97,5226
+
+generators/authenticated/templates/spec/models/user_spec.rb,129
+     start_time = Time.now; test_reps.times{ <%= class_name %>.authenticate('quentin', 'monkey'+rand.to_s) }; end_time 184,6926
+
+lib/authentication/by_cookie_token.rb,38
+    def self.included(included5,115
+
+lib/authentication/by_password.rb,37
+    def self.included(included4,87
+
+lib/authentication.rb,543
+  mattr_accessor :login_regex,login_regex2,22
+  mattr_accessor :login_regex, :bad_login_message,bad_login_message2,22
+    :name_regex,name_regex3,74
+    :name_regex, :bad_name_message,bad_name_message3,74
+    :email_name_regex,email_name_regex4,110
+    :email_name_regex, :domain_head_regex,domain_head_regex4,110
+    :email_name_regex, :domain_head_regex, :domain_tld_regex,domain_tld_regex4,110
+    :email_name_regex, :domain_head_regex, :domain_tld_regex, :email_regex,email_regex4,110
+  self.login_regex login_regex6,206
+
+lib/authorization/aasm_roles.rb,46
+      STATEFUL_ROLES_CONSTANTS_DEFINED 4,112
+
+lib/authorization/stateful_roles.rb,46
+      STATEFUL_ROLES_CONSTANTS_DEFINED 4,116
+
+lib/authorization.rb,35
+  def self.included(included2,21
+
+lib/trustification/email_validation.rb,31
+      CONSTANTS_DEFINED 4,104
+
+lib/trustification.rb,35
+  def self.included(included2,22
+
+rails/init.rb,28
+require File.join(join1,0
+
+init.rb,0
+
+generators/authenticated/templates/test/unit_test.rb,0
+
+generators/authenticated/templates/test/model_functional_test.rb,0
+
+generators/authenticated/templates/test/mailer_test.rb,0
+
+generators/authenticated/templates/test/functional_test.rb,0
+
+generators/authenticated/templates/spec/helpers/users_helper_spec.rb,0
+
+generators/authenticated/templates/spec/controllers/users_controller_spec.rb,0
+
+generators/authenticated/templates/observer.rb,0
+
+generators/authenticated/templates/model_helper_spec.rb,0
+
+generators/authenticated/templates/model_helper.rb,0
+
+generators/authenticated/templates/model_controller.rb,0
+
+generators/authenticated/templates/migration.rb,0
+
+generators/authenticated/templates/mailer.rb,0
+
+generators/authenticated/templates/helper.rb,0
+
+generators/authenticated/templates/features/step_definitions/rest_auth_features_helper.rb,0
+
+generators/authenticated/templates/controller.rb,0
+
+generators/authenticated/templates/authenticated_test_helper.rb,0
+
+generators/authenticated/templates/authenticated_system.rb,0

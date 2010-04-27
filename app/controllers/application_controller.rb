@@ -1,6 +1,3 @@
-# Filters added to this controller will be run for all controllers in the application.
-# Likewise, all the methods added will be available for all controllers.
-
 class ApplicationController < ActionController::Base
 
   helper :all
@@ -8,9 +5,14 @@ class ApplicationController < ActionController::Base
 
   require 'cart'                # since not an ActiveRecord model
   
+  include AuthenticatedSystem
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
+
+  filter_parameter_logging :credit_card,:password
+
+
   if (RAILS_ENV == 'production' && !SANDBOX)
     include SslRequirement
   else
@@ -60,8 +62,6 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  filter_parameter_logging :credit_card,:password
-
   def find_cart
     session[:cart] ||= Cart.new
   end
@@ -84,19 +84,6 @@ class ApplicationController < ActionController::Base
       conds = cols.map { |c| "#{c.name} LIKE #{fs}"}.join(" OR ")
     end
     return conds, order, f
-  end
-
-  # login a customer
-  def login_from_password(c)
-    # success
-    session[:cid] = c.id
-    c.update_attribute(:last_login,Time.now)
-    # set redirect-to action based on whether this customer is an admin.
-    # authentication succeeded, and customer is NOT in the middle of a
-    # store checkout. Proceed to welcome page.
-    controller,action = possibly_enable_admin(c)
-    reset_shopping unless @gCheckoutInProgress
-    c
   end
 
   # setup session etc. for an "external" login, eg by a daemon

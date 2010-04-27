@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
+  fixtures :customers
   describe "special customer that cannot fail validation or be destroyed:" do
     %w[walkup_customer generic_customer boxoffice_daemon].each do |c|
       it c.humanize do
@@ -209,20 +211,20 @@ describe Customer do
         :street => "s1", :city => "c1", :state => "s1",
         :zip => "88888", :day_phone => "p1", :email => "e1@a.com",
         :last_login => @now.yesterday, :login => "aaa",
-        :updated_on => 2.days.ago,
-        :hashed_password => 'olderpass' }
+        :updated_at => 2.days.ago,
+        :crypted_password => 'olderpass' }
       @c1 = Customer.create!(@c1attrs)
       @c1.update_attribute(:role, 20)
       @c2attrs = {:first_name => "f2", :last_name => "l2",
         :street => "s2", :city => "c2", :state => "s2",
         :zip => "99999", :day_phone => "p2", :email => "e2@a.com",
         :last_login => @now, :login => "bbb",
-        :updated_on => 1.day.ago,
-        :hashed_password => 'newerpass'}
+        :updated_at => 1.day.ago,
+        :crypted_password => 'newerpass'}
       @c2 = Customer.create!(@c2attrs)
       # role is a protected attribute
       @c2.update_attribute(:role, 10)
-      # params with value of 1 should be copied , but hashed_password and some other
+      # params with value of 1 should be copied , but crypted_password and some other
       # attribs are automatically kept from record with most recent activity,
       # and role always keeps the higher one
       @params = {:first_name => 0, :last_name => 1,
@@ -248,8 +250,8 @@ describe Customer do
           end
         end
       end
-      it "should keep hashed_password and last_login based on most recent" do
-        @c1.hashed_password.should == 'newerpass'
+      it "should keep crypted_password and last_login based on most recent" do
+        @c1.crypted_password.should == 'newerpass'
         @c1.last_login.should == @now
       end
       it "should keep the most recent login name" do
@@ -281,7 +283,7 @@ describe Customer do
         lambda { @c2 = Customer.find(@c2.id) }.should_not raise_error
         # compare the attributes using to_s,  because things like
         # dates are not == or eql even if refer to same date.
-        @c1attrs.keys.reject { |s| s == :updated_on }.each do |attr|
+        @c1attrs.keys.reject { |s| s == :updated_at }.each do |attr|
           @c1.send(attr).should == @c1attrs[attr]
           @c2.send(attr).should == @c2attrs[attr]
         end
@@ -291,5 +293,99 @@ describe Customer do
       end
     end
   end
+
+  
+  it 'resets password' do
+    customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_false
+    Customer.authenticate('quentin', 'new password').should == customers(:quentin)
+  end
+
+  it 'does not rehash password' do
+    customers(:quentin).update_attributes(:login => 'quentin2').should_not be_false
+    Customer.authenticate('quentin2', 'monkey').should == customers(:quentin)
+  end
+
+  #
+  # Authentication
+  #
+
+  it 'authenticates user' do
+    Customer.authenticate('quentin', 'monkey').should == customers(:quentin)
+  end
+
+  it "doesn't authenticate user with bad password" do
+    Customer.authenticate('quentin', 'invalid_password').should be_nil
+  end
+
+  if REST_AUTH_SITE_KEY.blank?
+    # old-school passwords
+    it "authenticates a user against a hard-coded old-style password" do
+      Customer.authenticate('old_password_holder', 'test').should == customers(:old_password_holder)
+    end
+  else
+    it "doesn't authenticate a user against a hard-coded old-style password" do
+      Customer.authenticate('old_password_holder', 'test').should be_nil
+    end
+
+    # New installs should bump this up and set REST_AUTH_DIGEST_STRETCHES to give a 10ms encrypt time or so
+    desired_encryption_expensiveness_ms = 0.1
+    it "takes longer than #{desired_encryption_expensiveness_ms}ms to encrypt a password" do
+      test_reps = 100
+      start_time = Time.now; test_reps.times{ Customer.authenticate('quentin', 'monkey'+rand.to_s) }; end_time   = Time.now
+      auth_time_ms = 1000 * (end_time - start_time)/test_reps
+      auth_time_ms.should > desired_encryption_expensiveness_ms
+    end
+  end
+
+  #
+  # Authentication
+  #
+
+  it 'sets remember token' do
+    customers(:quentin).remember_me
+    customers(:quentin).remember_token.should_not be_nil
+    customers(:quentin).remember_token_expires_at.should_not be_nil
+  end
+
+  it 'unsets remember token' do
+    customers(:quentin).remember_me
+    customers(:quentin).remember_token.should_not be_nil
+    customers(:quentin).forget_me
+    customers(:quentin).remember_token.should be_nil
+  end
+
+  it 'remembers me for one week' do
+    before = 1.week.from_now.utc
+    customers(:quentin).remember_me_for 1.week
+    after = 1.week.from_now.utc
+    customers(:quentin).remember_token.should_not be_nil
+    customers(:quentin).remember_token_expires_at.should_not be_nil
+    customers(:quentin).remember_token_expires_at.between?(before, after).should be_true
+  end
+
+  it 'remembers me until one week' do
+    time = 1.week.from_now.utc
+    customers(:quentin).remember_me_until time
+    customers(:quentin).remember_token.should_not be_nil
+    customers(:quentin).remember_token_expires_at.should_not be_nil
+    customers(:quentin).remember_token_expires_at.should == time
+  end
+
+  it 'remembers me default two weeks' do
+    before = 2.weeks.from_now.utc
+    customers(:quentin).remember_me
+    after = 2.weeks.from_now.utc
+    customers(:quentin).remember_token.should_not be_nil
+    customers(:quentin).remember_token_expires_at.should_not be_nil
+    customers(:quentin).remember_token_expires_at.between?(before, after).should be_true
+  end
+
+  protected
+  def create_user(options = {})
+    record = Customer.new({ :login => 'quire', :email => 'quire@example.com', :password => 'quire69', :password_confirmation => 'quire69' }.merge(options))
+    record.save
+    record
+  end
+
   
 end
