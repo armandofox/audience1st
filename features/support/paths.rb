@@ -7,9 +7,10 @@ module NavigationHelpers
   #
   def path_to(page_name)
     case page_name
-    
     when /the home ?page/i
-      '/'
+      '/customers/welcome'
+    when /the subscriber home ?page/i
+      '/customers/welcome_subscriber'
     when /the walkup sales page/i
       "/box_office/walkup/#{@showdate.id}"
     # Add more mappings here.
