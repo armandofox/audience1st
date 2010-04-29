@@ -36,6 +36,13 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  def clear_session_state_preserving_auth_token
+    session[:cid] = nil   # keeps the session but kill our variable
+    session[:admin_id] = nil
+    reset_shopping
+  end
+
+
   # a generic filter that can be used by any RESTful controller that checks
   # there's at least one instance of the model in the DB
 
@@ -58,6 +65,8 @@ class ApplicationController < ActionController::Base
     session.delete(:promo_code)
     session.delete(:recipient_id)
     session.delete(:store)
+    session.delete(:store_customer)
+    session.delete(:cart)
     set_checkout_in_progress(false)
     true
   end
@@ -91,16 +100,13 @@ class ApplicationController < ActionController::Base
     session[:cid] = c.id
   end
 
-  def logout_customer
-    reset_session
-  end
-
   # filter that requires user to login before accessing account
 
   def is_logged_in
     unless (c = Customer.find_by_id(session[:cid])).kind_of?(Customer)
       session[:return_to] = request.request_uri
-      redirect_to :controller => 'customers', :action => 'login'
+      flash[:notice] = "Please log in or create an account in order to view this page."
+      redirect_to login_path
       nil
     else
       c
@@ -111,7 +117,7 @@ class ApplicationController < ActionController::Base
     c = logged_in_id
     unless c.nil? or c.zero?
       flash[:notice] = 'You cannot be logged in to do this action.'
-      redirect_to :controller => 'customers', :action => 'logout'
+      redirect_to logout_path
       false
     else
       true
@@ -150,7 +156,7 @@ class ApplicationController < ActionController::Base
       unless current_admin.is_#{r}
         flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
-        redirect_to :controller => 'customers', :action => 'login'
+        redirect_to login_path
         return nil
       end
       return true

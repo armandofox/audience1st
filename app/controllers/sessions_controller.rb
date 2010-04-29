@@ -10,19 +10,24 @@ class SessionsController < ApplicationController
 
   def create
     logout_keeping_session!
-    user = Customer.authenticate(params[:login], params[:password])
-    if user
+    @user = Customer.authenticate(params[:login], params[:password])
+    if (@user.nil? || !@user.errors.empty?)
+      note_failed_signin
+      @login       = params[:login]
+      @remember_me = params[:remember_me]
+      render :action => 'new'
+    else
       # Protects against session fixation attacks, causes request forgery
       # protection if user resubmits an earlier form using back
       # button. Uncomment if you understand the tradeoffs.
       # reset_session
-      self.current_user = user
-      user.update_attribute(:last_login,Time.now)
+      self.current_user = @user
+      @user.update_attribute(:last_login,Time.now)
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
       handle_remember_cookie! new_cookie_flag
       # if user is an admin, enable admin privs
-      possibly_enable_admin(user)
+      possibly_enable_admin(@user)
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
@@ -32,11 +37,6 @@ class SessionsController < ApplicationController
         redirect_back_or_default('/')
       end
       flash[:notice] = "Logged in successfully"
-    else
-      note_failed_signin
-      @login       = params[:login]
-      @remember_me = params[:remember_me]
-      render :action => 'new'
     end
   end
 
@@ -49,8 +49,9 @@ class SessionsController < ApplicationController
 protected
   # Track failed login attempts
   def note_failed_signin
-    flash[:error] = "Couldn't log you in as '#{params[:login]}'"
-    logger.warn "Failed login for '#{params[:login]}' from #{request.remote_ip} at #{Time.now.utc}"
+    flash[:warning] = "Couldn't log you in as '#{params[:login]}'"
+    flash[:warning] << ": #{@user.errors.on(:login_failed)}" if @user
+    logger.warn "Failed login for '#{params[:login]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:error]}"
   end
 
   def possibly_enable_admin(c = Customer.generic_customer)

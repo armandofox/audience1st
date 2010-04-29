@@ -36,4 +36,4 @@
   - else
     = gen_button('Back to My Tickets', {:controller => 'customers', :action => 'welcome' })
     = gen_button('Make Another Purchase', {:controller => 'store', :action => 'index'})
-    = gen_button('Log Out', {:controller => 'customers', :action => 'logout'})
+    = gen_button('Log Out', logout_path)

@@ -9,9 +9,8 @@ class CustomersController < ApplicationController
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
                 :only=>%w[welcome welcome_subscriber change_password edit],
-                :redirect_to => {:action=>:login},
                 :add_to_flash => 'Please log in or create an account to view this page.')
-  before_filter :reset_shopping, :only => %w[welcome,welcome_subscriber,logout]
+  before_filter :reset_shopping, :only => %w[welcome welcome_subscriber logout]
 
   # must be boxoffice to view other customer records or adding/removing vouchers
   before_filter :is_staff_filter, :only => %w[list switch_to search]
@@ -47,61 +46,59 @@ class CustomersController < ApplicationController
   # subscriber.
   def index ; redirect_to :action => 'welcome' ; end
 
-  # login and logout
-  def login
-    if (@gCheckoutInProgress)
-      @cart = find_cart
-    end
-    return unless request.post? # just show login page
-    return unless params[:customer]
-    l = params[:customer][:login].to_s.strip
-    p = params[:customer][:password].to_s.strip
-    # if customer clicked 'forgot password' box, send email
-    return forgot_password(l) if  params[:forgot_password]
-    # did customer leave login field or password blank?
-    if (l.blank?) || (p.blank?)
-      flash[:notice] = "Please provide both your login name and password, or check the 'Forgot Password' box to retrieve your password."
-      logger.info("Empty login or password: login=<#{l}>")
-      return
-    end
-    # try authenticate
-    if (c = Customer.authenticate(l,p)).kind_of?(Customer)
-      # success
-      login_from_password(c)
-      if (@gCheckoutInProgress || stored_action)
-        redirect_to_stored
-      else
-        #redirect_to :controller => controller, :action => action
-        redirect_to :controller => 'customers', :action => 'welcome'
-      end
-    else
-      # authentication failed
-      case c
-      when :login_not_found
-        flash[:notice] = "Can't find that email address in our database. " <<
-          "Maybe you signed up with a different address?  If not, click " <<
-          "Create Account to create a new account."
-        logger.info("Login not found: #{l}")
-      when :bad_password
-        flash[:notice] = "We recognize your email address, but you mistyped " <<
-          "your password. If you've forgotten your password, just enter " <<
-          "your email address, check the Forgot My Password box, and " <<
-          "click Continue, and we will email you a new password."
-        logger.info("Bad password supplied for login #{l}")
-      else
-        flash[:notice] = "Login unsuccessful"
-        logger.error("Bad login, don't know why, for login #{l}")
-      end
-      # by default, this will fall thru to re-rendering the login view.
-    end
-  end
+  # # login and logout
+  # def login
+  #   redirect_to new_session_path if request.get?
+  #   return unless params[:customer]
+  #   l = params[:customer][:login].to_s.strip
+  #   p = params[:customer][:password].to_s.strip
+  #   # if customer clicked 'forgot password' box, send email
+  #   return forgot_password(l) if  params[:forgot_password]
+  #   # did customer leave login field or password blank?
+  #   if (l.blank?) || (p.blank?)
+  #     flash[:notice] = "Please provide both your login name and password, or check the 'Forgot Password' box to retrieve your password."
+  #     logger.info("Empty login or password: login=<#{l}>")
+  #     return
+  #   end
+  #   # try authenticate
+  #   if (c = Customer.authenticate(l,p)).kind_of?(Customer)
+  #     # success
+  #     login_from_password(c)
+  #     if (@gCheckoutInProgress || stored_action)
+  #       redirect_to_stored
+  #     else
+  #       #redirect_to :controller => controller, :action => action
+  #       redirect_to :controller => 'customers', :action => 'welcome'
+  #     end
+  #   else
+  #     # authentication failed
+  #     case c
+  #     when :login_not_found
+  #       flash[:notice] = "Can't find that email address in our database. " <<
+  #         "Maybe you signed up with a different address?  If not, click " <<
+  #         "Create Account to create a new account."
+  #       logger.info("Login not found: #{l}")
+  #     when :bad_password
+  #       flash[:notice] = "We recognize your email address, but you mistyped " <<
+  #         "your password. If you've forgotten your password, just enter " <<
+  #         "your email address, check the Forgot My Password box, and " <<
+  #         "click Continue, and we will email you a new password."
+  #       logger.info("Bad password supplied for login #{l}")
+  #     else
+  #       flash[:notice] = "Login unsuccessful"
+  #       logger.error("Bad login, don't know why, for login #{l}")
+  #     end
+  #     # by default, this will fall thru to re-rendering the login view.
+  #   end
+  # end
 
   def logout
     @customer = nil
     (flash[:notice] ||= '') << 'You have successfully logged out.' <<
       " Thanks for supporting #{Option.value(:venue)}!"
     redirect_to_stored
-    logout_customer
+    logout_keeping_session!
+    clear_session_state_preserving_auth_token
   end
 
   # welcome screen: different for nonsubscribers vs. subscribers

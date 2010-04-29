@@ -360,9 +360,20 @@ class Customer < ActiveRecord::Base
   end
 
   def self.authenticate(login, password)
-    return nil if login.blank? || password.blank?
-    u = Customer.find(:first, :conditions => ["login LIKE ?", login.downcase]) # need to get the salt
-    u && u.authenticated?(password) ? u : nil
+    if (login.blank? || password.blank?)
+      u = Customer.new
+      u.errors.add(:login_failed, "Please provide a login name and password.")
+      return u
+    end
+    unless (u = Customer.find(:first, :conditions => ["login LIKE ?", login.downcase])) # need to get the salt
+      u = Customer.new
+      u.errors.add(:login_failed, "Can't find that login name in our database.  Maybe you signed up with a different name?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
+      return u
+    end
+    unless u.authenticated?(password)
+      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, enter your login name and check 'Forgot Password' and we will email you a new password within 1 minute.")
+    end
+    return u
   end
 
   # def self.authenticate(login,pass)

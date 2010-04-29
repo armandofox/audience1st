@@ -46,8 +46,7 @@ describe SessionsController do
     it 'kills my auth_token cookie' do should_receive(:kill_remember_cookie!); logout_keeping_session! end
     it 'nils the current user'      do logout_keeping_session!; current_user.should be_nil end
     it 'kills :user_id session' do
-      session.stub!(:[]=)
-      session.should_receive(:[]=).with(:cid, nil).at_least(:once)
+      session.should_receive(:[]=).with(:cid, nil).at_least(:once).and_return(nil)
       logout_keeping_session!
     end
     it 'forgets me' do    
