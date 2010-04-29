@@ -215,7 +215,7 @@ class StoreController < ApplicationController
     @cust = Customer.new
     set_return_to :controller => 'store', :action => 'checkout'
     flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
-    redirect_to :controller => 'customers', :action => 'login'
+    redirect_to login_path
   end
 
   def edit_billing_address

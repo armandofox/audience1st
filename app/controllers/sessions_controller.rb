@@ -1,6 +1,8 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
 
+  ssl_required :new, :create
+
   # render new.rhtml
   def new
     @page_title = "Login or Create Account"
