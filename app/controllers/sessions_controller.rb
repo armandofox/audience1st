@@ -3,6 +3,7 @@ class SessionsController < ApplicationController
 
   # render new.rhtml
   def new
+    @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
     end
@@ -31,11 +32,8 @@ class SessionsController < ApplicationController
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
-      if (@gCheckoutInProgress || stored_action)
-        redirect_to_stored
-      else
-        redirect_back_or_default('/')
-      end
+      #redirect_to_stored if (@gCheckoutInProgress || stored_action)
+      redirect_to_stored
       flash[:notice] = "Logged in successfully"
     end
   end
@@ -43,7 +41,7 @@ class SessionsController < ApplicationController
   def destroy
     logout_killing_session!
     flash[:notice] = "You have been logged out."
-    redirect_back_or_default('/')
+    redirect_to_stored
   end
 
 protected

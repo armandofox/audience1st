@@ -153,7 +153,7 @@ class CustomersController < ApplicationController
   end
 
   def edit
-    @customer = current_customer
+    @customer = current_user
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
     # editing contact info may be called from various places. correctly
@@ -221,7 +221,7 @@ class CustomersController < ApplicationController
   end
 
   def change_password
-    @customer = current_customer
+    @customer = current_user
     if (request.post?)
       pass = params[:customer][:password].to_s.strip
       @customer.password = pass unless pass.blank?

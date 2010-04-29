@@ -376,17 +376,6 @@ class Customer < ActiveRecord::Base
     return u
   end
 
-  # def self.authenticate(login,pass)
-  #   u=Customer.find(:first, :conditions=>["login LIKE ?", login])
-  #   return :login_not_found unless u.kind_of?(Customer)
-  #   if Customer.encrypt(pass,u.salt) == u.hashed_password
-  #     return u
-  #   else
-  #     return :bad_password
-  #   end
-  # end
-
-
   # Values of the role field:
   # Roles are cumulative, ie higher privilege level can do everything
   # the lower levels can do.

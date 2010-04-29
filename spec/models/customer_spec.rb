@@ -311,13 +311,21 @@ describe Customer do
 
   it 'authenticates user' do
     Customer.authenticate('quentin', 'monkey').should == customers(:quentin)
+    Customer.authenticate('quentin', 'monkey').errors.should be_empty
   end
 
-  it "doesn't authenticate user with bad password" do
-    Customer.authenticate('quentin', 'invalid_password').should be_nil
+  context "invalid login" do
+    it "should display a password-incorrect message for bad password" do
+      Customer.authenticate('quentin', 'invalid_password').errors.on(:login_failed).
+        should match(/password incorrect/i)
+    end
+    it "should display an unknown-username message for bad username" do
+      Customer.authenticate('asdkfljhadf', 'pass').errors.on(:login_failed).
+        should match(/can't find that login/i)
+    end
   end
 
-  if REST_AUTH_SITE_KEY.blank?
+  if (!defined?(REST_AUTH_SITE_KEY) || REST_AUTH_SITE_KEY.blank?)
     # old-school passwords
     it "authenticates a user against a hard-coded old-style password" do
       Customer.authenticate('old_password_holder', 'test').should == customers(:old_password_holder)

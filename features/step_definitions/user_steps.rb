@@ -95,20 +95,20 @@ end
 
 def log_out!
   log_out
-  response.should redirect_to('/')
+  response.should redirect_to(login_path)
   follow_redirect!
 end
 
 def create_user(user_params={})
   @user_params       ||= user_params
-  post "/customers", :customer => user_params
+  post "/customers/user_create", :customer => user_params
   @user = Customer.find_by_login(user_params['login'])
 end
 
 def create_user!(user_type, user_params)
   user_params['password_confirmation'] ||= user_params['password'] ||= user_params['password']
   create_user user_params
-  response.should redirect_to('/')
+  response.should redirect_to('/customers/welcome')
   follow_redirect!
 
 end

@@ -105,7 +105,10 @@ describe SessionsController do
       route_for(:controller => 'sessions', :action => 'new').should == "/login"
     end
     it "should route the create sessions correctly" do
-      route_for(:controller => 'sessions', :action => 'create').should == "/session"
+      # defective rspec test below replaced by
+      # http://github.com/dscataglini/restful-authentication/blob/master/generators/authenticated/templates/spec/controllers/sessions_controller_spec.rb
+      # route_for(:controller => 'sessions', :action => 'create').should == "/session"
+      route_for(:controller => 'sessions', :action => 'create').should == {:path => "/session", :method => :post}
     end
     it "should route the destroy sessions action correctly" do
       route_for(:controller => 'sessions', :action => 'destroy').should == "/logout"

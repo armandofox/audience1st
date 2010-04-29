@@ -208,7 +208,7 @@ class StoreController < ApplicationController
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
-    redirect_to :action => 'not_me' and return if nobody_really_logged_in
+    redirect_to :action => 'not_me' and return unless logged_in?
   end
 
   def not_me
@@ -377,7 +377,7 @@ EON
   # customer, if any; otherwise, the walkup customer.
   # INVARIANT: this MUST return a valid Customer record.
   def store_customer
-    current_customer || Customer.walkup_customer
+    current_user || Customer.walkup_customer
   end
 
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
@@ -493,7 +493,7 @@ EON
   end
 
   def verify_valid_customer
-    @customer = current_customer
+    @customer = current_user
     unless @customer.kind_of?(Customer)
       flash[:warning] = "SYSTEM ERROR: Invalid purchaser (id=#{@customer.id})"
       logger.error "Reached place_order with invalid customer: #{@customer}"

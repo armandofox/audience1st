@@ -1,22 +1,33 @@
 module AuthenticatedSystem
   protected
-    # Returns true or false if the user is logged in.
-    # Preloads @current_user with the user model if they're logged in.
-    def logged_in?
-      !!current_user
-    end
 
-    # Accesses the current user from the session.
-    # Future calls avoid the database because nil is not equal to false.
-    def current_user
-      @current_user ||= (login_from_session || login_from_basic_auth || login_from_cookie) unless @current_user == false
-    end
+  # Returns true or false if the user is logged in.
+  # Preloads @current_user with the user model if they're logged in.
+  def logged_in?
+    !!current_user
+  end
 
-    # Store the given user id in the session.
-    def current_user=(new_user)
-      session[:cid] = new_user ? new_user.id : nil
-      @current_user = new_user || false
-    end
+  # Accesses the current user from the session.
+  # Future calls avoid the database because nil is not equal to false.
+  def current_user
+    @current_user ||= (login_from_session || login_from_basic_auth || login_from_cookie) unless @current_user == false
+  end
+
+  # Store the given user id in the session.
+  def current_user=(new_user)
+    session[:cid] = new_user ? new_user.id : nil
+    @current_user = new_user || false
+  end
+
+  # current_admin is called from controller actions filtered by is_logged_in,
+  # so there might in fact be NO admin logged in.
+  # So it returns customer record of current admin, if one is logged in;
+  # otherwise returns a 'generic' customer with no admin privileges but on
+  # which it is safe to call instance methods of Customer.
+  def current_admin
+    session[:admin_id].to_i.zero? ? Customer.generic_customer : (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
+  end
+
 
     # Check if the user is authorized
     #
@@ -64,7 +75,7 @@ module AuthenticatedSystem
     def access_denied
       respond_to do |format|
         format.html do
-          store_location
+          set_return_to
           redirect_to new_session_path
         end
         # format.any doesn't work in rails version < http://dev.rubyonrails.org/changeset/8987
@@ -77,20 +88,23 @@ module AuthenticatedSystem
       end
     end
 
-    # Store the URI of the current request in the session.
-    #
-    # We can return to this location by calling #redirect_back_or_default.
-    def store_location
-      session[:return_to] = request.request_uri
+    # Store the action to return to, or URI of the current request if no action given.
+    # We can return to this location by calling #redirect_to_stored.
+    def set_return_to(hsh=nil)
+      session[:return_to] = hsh || request.request_uri
+      true
     end
+
+    def stored_action ; !session[:return_to].nil? ; end
 
     # Redirect to the URI stored by the most recent store_location call or
     # to the passed default.  Set an appropriately modified
     #   after_filter :store_location, :only => [:index, :new, :show, :edit]
     # for any controller you want to be bounce-backable.
-    def redirect_back_or_default(default)
-      redirect_to(session[:return_to] || default)
+    def redirect_to_stored(params={})
+      redirect_to (session[:return_to] || { :controller => 'customers', :action => 'welcome'})
       session[:return_to] = nil
+      true
     end
 
     # Inclusion hook to make #current_user and #logged_in?

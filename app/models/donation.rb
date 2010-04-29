@@ -39,9 +39,7 @@ class Donation < ActiveRecord::Base
   end
 
   def self.online_donation(amount,cid,logged_in_id,purch=nil)
-    unless purch
-      purch = Purchasemethod.get_type_by_name('web_cc')
-    end
+    purch ||= Purchasemethod.get_type_by_name('web_cc')
     Donation.new(:date => Time.now,
                  :amount => amount,
                  :customer_id => cid,

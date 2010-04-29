@@ -167,7 +167,7 @@ describe <%= class_name %> do
     <%= class_name %>.authenticate('quentin', 'invalid_password').should be_nil
   end
 
- if REST_AUTH_SITE_KEY.blank?
+ if (!defined?(REST_AUTH_SITE_KEY) || REST_AUTH_SITE_KEY.blank?)
    # old-school passwords
    it "authenticates a user against a hard-coded old-style password" do
      <%= class_name %>.authenticate('old_password_holder', 'test').should == <%= table_name %>(:old_password_holder)
