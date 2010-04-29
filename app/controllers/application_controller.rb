@@ -1,6 +1,3 @@
-# Filters added to this controller will be run for all controllers in the application.
-# Likewise, all the methods added will be available for all controllers.
-
 class ApplicationController < ActionController::Base
 
   helper :all
@@ -8,9 +5,14 @@ class ApplicationController < ActionController::Base
 
   require 'cart'                # since not an ActiveRecord model
   
+  include AuthenticatedSystem
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
+
+  filter_parameter_logging :credit_card,:password
+
+
   if (RAILS_ENV == 'production' && !SANDBOX)
     include SslRequirement
   else
@@ -25,14 +27,32 @@ class ApplicationController < ActionController::Base
 
   before_filter :set_globals
   def set_globals
-    @gCustomer = current_customer
+    @gCustomer = current_user
     @gAdmin = current_admin
     @gCart = find_cart
     @gCheckoutInProgress = session[:checkout_in_progress]
     @gLoggedIn = (admin=Customer.find_by_id(session[:admin_id])) ? admin : (@gCustomer || Customer.walkup_customer)
-    @gNobodyReallyLoggedIn = nobody_really_logged_in
     true
   end
+
+  def clear_session_state_preserving_auth_token
+    session[:cid] = nil   # keeps the session but kill our variable
+    session[:admin_id] = nil
+    reset_shopping
+  end
+
+  def reset_shopping           # called as a filter
+    @cart = find_cart
+    @cart.empty!
+    session.delete(:promo_code)
+    session.delete(:recipient_id)
+    session.delete(:store)
+    session.delete(:store_customer)
+    session.delete(:cart)
+    set_checkout_in_progress(false)
+    true
+  end
+
 
   # a generic filter that can be used by any RESTful controller that checks
   # there's at least one instance of the model in the DB
@@ -47,20 +67,14 @@ class ApplicationController < ActionController::Base
   end
 
   def set_checkout_in_progress(val = true)
-    @gCheckoutInProgress = session[:checkout_in_progress] = val
+    if val
+      session[:checkout_in_progress] = val
+    else
+      session.delete(:checkout_in_progress)
+      session.delete(:return_to)
+    end
+    @gCheckoutInProgress = val
   end
-
-  def reset_shopping           # called as a filter
-    @cart = find_cart
-    @cart.empty!
-    session.delete(:promo_code)
-    session.delete(:recipient_id)
-    session.delete(:store)
-    set_checkout_in_progress(false)
-    true
-  end
-
-  filter_parameter_logging :credit_card,:password
 
   def find_cart
     session[:cart] ||= Cart.new
@@ -86,37 +100,21 @@ class ApplicationController < ActionController::Base
     return conds, order, f
   end
 
-  # login a customer
-  def login_from_password(c)
-    # success
-    session[:cid] = c.id
-    c.update_attribute(:last_login,Time.now)
-    # set redirect-to action based on whether this customer is an admin.
-    # authentication succeeded, and customer is NOT in the middle of a
-    # store checkout. Proceed to welcome page.
-    controller,action = possibly_enable_admin(c)
-    reset_shopping unless @gCheckoutInProgress
-    c
-  end
-
   # setup session etc. for an "external" login, eg by a daemon
   def login_from_external(c)
     session[:cid] = c.id
   end
 
-  def logout_customer
-    reset_session
-  end
-
   # filter that requires user to login before accessing account
 
   def is_logged_in
-    unless (c = Customer.find_by_id(session[:cid])).kind_of?(Customer)
-      session[:return_to] = request.request_uri
-      redirect_to :controller => 'customers', :action => 'login'
+    unless logged_in?
+      set_return_to
+      flash[:notice] = "Please log in or create an account in order to view this page."
+      redirect_to login_path
       nil
     else
-      c
+      current_user
     end
   end
 
@@ -124,7 +122,7 @@ class ApplicationController < ActionController::Base
     c = logged_in_id
     unless c.nil? or c.zero?
       flash[:notice] = 'You cannot be logged in to do this action.'
-      redirect_to :controller => 'customers', :action => 'logout'
+      redirect_to logout_path
       false
     else
       true
@@ -138,10 +136,6 @@ class ApplicationController < ActionController::Base
     #   id of the 'nobody' fake customer if not set.
     # if an admin IS logged in, it's that admin's ID.
     return (session[:admin_id] || session[:cid] || Customer.nobody_id).to_i
-  end
-
-  def nobody_really_logged_in
-    session[:cid].nil? || session[:cid].to_i.zero?
   end
 
   def has_privilege(id,level)
@@ -163,40 +157,12 @@ class ApplicationController < ActionController::Base
       unless current_admin.is_#{r}
         flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
-        redirect_to :controller => 'customers', :action => 'login'
+        redirect_to login_path
         return nil
       end
       return true
     end
 EOEVAL
-  end
-
-  # current_customer is only called from controller actions filtered by
-  # is_logged_in, so the find should never fail.
-  def current_customer
-    Customer.find_by_id(session[:cid].to_i)
-  end
-
-  # current_admin is called from controller actions filtered by is_logged_in,
-  # so there might in fact be NO admin logged in.
-  # So it returns customer record of current admin, if one is logged in;
-  # otherwise returns a 'generic' customer with no admin privileges but on
-  # which it is safe to call instance methods of Customer.
-  def current_admin
-    session[:admin_id].to_i.zero? ? Customer.generic_customer : (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
-  end
-
-  def set_return_to(hsh=nil)
-    session[:return_to] = hsh
-    true
-  end
-
-  def stored_action ; !session[:return_to].nil? ; end
-
-  def redirect_to_stored(params={})
-    redirect_to (session[:return_to] || { :controller => 'customers', :action => 'welcome'})
-    session[:return_to] = nil
-    true
   end
 
   def download_to_excel(output,filename="data",timestamp=true)

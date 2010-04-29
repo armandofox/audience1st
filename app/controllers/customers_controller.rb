@@ -9,9 +9,8 @@ class CustomersController < ApplicationController
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
                 :only=>%w[welcome welcome_subscriber change_password edit],
-                :redirect_to => {:action=>:login},
                 :add_to_flash => 'Please log in or create an account to view this page.')
-  before_filter :reset_shopping, :only => %w[welcome,welcome_subscriber,logout]
+  before_filter :reset_shopping, :only => %w[welcome welcome_subscriber]
 
   # must be boxoffice to view other customer records or adding/removing vouchers
   before_filter :is_staff_filter, :only => %w[list switch_to search]
@@ -27,10 +26,10 @@ class CustomersController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name,:logout]
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => %w[destroy], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
+  verify :method => :post, :only => %w[destroy create user_create], :redirect_to => { :action => :welcome, :add_to_flash => "This action requires a POST." }
 
   # checks for SSL should be last, as they append a before_filter
-  ssl_required :login, :change_password, :new, :create, :user_create, :edit, :forgot_password
+  ssl_required :change_password, :new, :create, :user_create, :edit, :forgot_password
   ssl_allowed :auto_complete_for_customer_full_name
 
   # auto-completion for customer search
@@ -46,63 +45,6 @@ class CustomersController < ApplicationController
   # to login if you're not logged in or to subscriber welcome if you're a
   # subscriber.
   def index ; redirect_to :action => 'welcome' ; end
-
-  # login and logout
-  def login
-    if (@gCheckoutInProgress)
-      @cart = find_cart
-    end
-    return unless request.post? # just show login page
-    return unless params[:customer]
-    l = params[:customer][:login].to_s.strip
-    p = params[:customer][:password].to_s.strip
-    # if customer clicked 'forgot password' box, send email
-    return forgot_password(l) if  params[:forgot_password]
-    # did customer leave login field or password blank?
-    if (l.blank?) || (p.blank?)
-      flash[:notice] = "Please provide both your login name and password, or check the 'Forgot Password' box to retrieve your password."
-      logger.info("Empty login or password: login=<#{l}>")
-      return
-    end
-    # try authenticate
-    if (c = Customer.authenticate(l,p)).kind_of?(Customer)
-      # success
-      login_from_password(c)
-      if (@gCheckoutInProgress || stored_action)
-        redirect_to_stored
-      else
-        #redirect_to :controller => controller, :action => action
-        redirect_to :controller => 'customers', :action => 'welcome'
-      end
-    else
-      # authentication failed
-      case c
-      when :login_not_found
-        flash[:notice] = "Can't find that email address in our database. " <<
-          "Maybe you signed up with a different address?  If not, click " <<
-          "Create Account to create a new account."
-        logger.info("Login not found: #{l}")
-      when :bad_password
-        flash[:notice] = "We recognize your email address, but you mistyped " <<
-          "your password. If you've forgotten your password, just enter " <<
-          "your email address, check the Forgot My Password box, and " <<
-          "click Continue, and we will email you a new password."
-        logger.info("Bad password supplied for login #{l}")
-      else
-        flash[:notice] = "Login unsuccessful"
-        logger.error("Bad login, don't know why, for login #{l}")
-      end
-      # by default, this will fall thru to re-rendering the login view.
-    end
-  end
-
-  def logout
-    @customer = nil
-    (flash[:notice] ||= '') << 'You have successfully logged out.' <<
-      " Thanks for supporting #{Option.value(:venue)}!"
-    redirect_to_stored
-    logout_customer
-  end
 
   # welcome screen: different for nonsubscribers vs. subscribers
 
@@ -156,7 +98,7 @@ class CustomersController < ApplicationController
   end
 
   def edit
-    @customer = current_customer
+    @customer = current_user
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
     # editing contact info may be called from various places. correctly
@@ -224,7 +166,7 @@ class CustomersController < ApplicationController
   end
 
   def change_password
-    @customer = current_customer
+    @customer = current_user
     if (request.post?)
       pass = params[:customer][:password].to_s.strip
       @customer.password = pass unless pass.blank?
@@ -249,12 +191,6 @@ class CustomersController < ApplicationController
 
 
   def user_create
-    if request.get?
-      @is_admin = current_admin.is_boxoffice
-      @customer = Customer.new
-      render :action => 'new'
-      return
-    end
     # this is messy: if this is part of a checkout flow, it's OK for customer
     #  not to specify a password.  This will be obsolete when customers are
     #  subclassed with different validations on each subclass.
@@ -270,20 +206,15 @@ class CustomersController < ApplicationController
       render :action => 'new'
       return
     end
-#     unless @customer.valid_email_address?
-#       flash[:notice] = "Please provide a valid email address so we can send you an order confirmation."
-#       render :action => 'new'
-#       return
-#     end
     @customer.validation_level = 1
-    if @customer.save
+    if @customer.save && @customer.errors.empty
       @customer.update_attribute(:last_login, Time.now)
       unless temp_password
         flash[:notice] = "Thanks for setting up an account!<br/>"
         email_confirmation(:send_new_password,@customer,
                          params[:customer][:password],"set up an account with us")
       end
-      session[:cid] = @customer.id
+      self.current_user = @customer
       logger.info "Session cid set to #{session[:cid]}"
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
@@ -374,13 +305,12 @@ class CustomersController < ApplicationController
     render :partial => 'search_results'
   end
 
+  def new
+    @is_admin = current_admin.is_boxoffice
+    @customer = Customer.new
+  end
+  
   def create
-    if request.get?
-      @is_admin = current_admin.is_boxoffice
-      @customer = Customer.new
-      render :action => 'new'
-      return
-    end
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     flash[:notice] = ''
     # if neither email address nor password was given, assign a random
@@ -481,18 +411,6 @@ class CustomersController < ApplicationController
   private
 
 
-  def possibly_enable_admin(c = Customer.generic_customer)
-    session[:admin_id] = nil
-    if c.is_staff # least privilege level that allows seeing other customer accts
-      (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
-      session[:admin_id] = c.id
-      return ['customers', 'list']
-    elsif c.subscriber?
-      return ['customers', 'welcome_subscriber']
-    else
-      return ['store', 'index']
-    end
-  end
 
   def forgot_password(login)
     if login.blank?

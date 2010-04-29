@@ -7,16 +7,17 @@ module NavigationHelpers
   #
   def path_to(page_name)
     case page_name
-    
     when /the home ?page/i
-      '/'
+      '/customers/welcome'
+    when /the subscriber home ?page/i
+      '/customers/welcome_subscriber'
     when /the walkup sales page/i
       "/box_office/walkup/#{@showdate.id}"
     # Add more mappings here.
     # Here is a more fancy example:
     #
     #   when /^(.*)'s profile page$/i
-    #     user_profile_path(User.find_by_login($1))
+    #     user_profile_path(Customer.find_by_login($1))
     when /the new show page/i
       "/shows/new"
     when /the store page/i

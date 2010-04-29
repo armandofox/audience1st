@@ -4,7 +4,7 @@
       %td.l#welcome
         Welcome,
         = h @gLoggedIn.full_name
-      %td.l= button_to 'Log Out', {:controller=>'customers', :action=>'logout'}
+      %td.l= button_to 'Log Out', logout_path
       %td.l= button_to('Disable Admin', :controller => 'customers', :action => 'disable_admin') if (@gAdmin.is_staff && controller.controller_name=~/customer|store|vouchers/)
 - if @gAdmin.is_admin
   #admin_welcome_header

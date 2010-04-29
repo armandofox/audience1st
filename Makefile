@@ -6,7 +6,7 @@ all:
 	@echo Must force explicit target: dev, TAGS, doc
 
 dev:
-	-ln -s config/database.yml.dev ../config/database.yml
+	-cp config/database.yml.dev config/database.yml
 	mkdir log
 	touch log/development.log
 	-ln -s ~/Documents/fox/projects/stylesheets/sandbox public/stylesheets/venue

@@ -25,10 +25,6 @@ class String
     self.gsub s, "#{tagstart}#{s}#{tagend}"
   end
   
-  def valid_email_address?
-    return self && self.match( /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.([A-Z]{2,4})?$/i )
-  end
-
   def default_to(val)
     self.blank? ? val : self.to_s
   end

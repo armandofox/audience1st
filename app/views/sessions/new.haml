@@ -1,16 +1,16 @@
-- unless @checkout_in_progress
+- unless @gCheckoutInProgress
   %h1.page_heading.center= "#{Option.value(:venue)} Online Box Office"
   
 #have_account
   %h2 Subscribers and Returning Customers
-  = render :partial => 'account_login'
+  = render :partial => 'sessions/new'
 
 #new_customer
   %h2 New Customers
   - if @gCheckoutInProgress
-    = gen_button "Enter Billing Information", :action => 'new'
+    = gen_button "Enter Billing Information",  :controller => 'customers', :action => 'new'
   - else
-    = gen_button "Create Account", :action => 'new'
+    = gen_button "Create Account", :controller => 'customers', :action => 'new'
     %br/
     %br/
     = gen_button "Buy Tickets", {:controller => 'store', :action => 'index'}

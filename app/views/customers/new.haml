@@ -3,7 +3,7 @@
 #inner_wrapper
   %p.strong 
     Subscribers, please
-    = link_to 'sign in', :controller => 'customers', :action => 'login'
+    = link_to 'sign in', login_path
     to use your existing billing information.
 
   - if @is_admin
@@ -11,7 +11,7 @@
       = render :partial => 'password' 
       = render :partial => 'form'
       = render :partial => 'form_admin'
-      = submit_tag "Create New User Account"
+      = submit_tag "Create New Customer Account"
       = gen_button 'Cancel', :action => :list
   - else
     - form_tag :action => 'user_create' do
@@ -22,5 +22,5 @@
       - else
         = render :partial => 'password'
         = submit_tag 'Create My Account'
-        = gen_button 'Cancel', :controller => :customers, :action => :login
+        = gen_button 'Cancel', login_path
 

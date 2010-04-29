@@ -20,7 +20,7 @@ tom:
   login: tom@foolery.com
   last_login: 2006-01-01 00:00:00
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 tom2:
   id: 78
@@ -35,7 +35,7 @@ tom2:
   eve_phone: 510-888-8888
   login: tom2@foolery.com
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 tom3:
   id: 79
@@ -60,7 +60,7 @@ admin:
   login: admin
   role: 100
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 staff_user:
   id: 2
@@ -69,7 +69,7 @@ staff_user:
   login: staff
   role: 11
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 boxoffice_user:
   id: 3
@@ -78,7 +78,7 @@ boxoffice_user:
   login: boxoffice
   role: 21
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 boxoffice_manager:
   id: 4
@@ -87,7 +87,7 @@ boxoffice_manager:
   login: boxofficemanager
   role: 31
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 walkup_sales_user:
   id: 5
@@ -96,9 +96,46 @@ walkup_sales_user:
   login: walkupsales
   role: 15
   salt: abcdefghij
-  hashed_password: <%= Customer.encrypt('pass', 'abcdefghij') %>
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 customer_with_empty_login:
   id: 6
   first_name: Nobody
   last_name: NoLogin
+
+# fixtures for rspec tests included with restful_authentication plugin
+
+quentin:
+  id:                        9991
+  first_name: quentin
+  last_name:  q
+  login:                     quentin
+  email:                     quentin@example.com
+  salt:                      'abcdefghij'
+  crypted_password:          <%= Customer.password_digest('monkey',  'abcdefghij') %>
+  created_at:                <%= 5.days.ago.to_s :db  %>
+  remember_token_expires_at: <%= 1.days.from_now.to_s %>
+  remember_token:            77de68daecd823babbb58edb1c8e14d7106e83bb
+      
+aaron:
+  id:                        9992
+  first_name: aaron
+  last_name:  q
+  login:                     aaron
+  email:                     aaron@example.com
+  salt:                      'abcdefghij'
+  crypted_password:          <%= Customer.password_digest('monkey', 'abcdefghij') %>
+  created_at:                <%= 1.days.ago.to_s :db %>
+  remember_token_expires_at: 
+  remember_token:            
+
+
+old_password_holder:
+  id:                        9993
+  login:                     old_password_holder
+  email:                     salty_dog@example.com
+  salt:                      7e3041ebc2fc05a40c60028e2c4901a81035d3cd
+  crypted_password:          00742970dc9e6319f8019fd54864d3ea740f04b1 # test
+  created_at:                <%= 1.days.ago.to_s :db %>
+
+

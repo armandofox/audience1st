@@ -18,6 +18,7 @@ Spec::Runner.configure do |config|
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
   config.include Webrat::Matchers, :type => :views
+  config.include AuthenticatedTestHelper
   # == Fixtures
   #
   # You can declare fixtures for each example_group like this:

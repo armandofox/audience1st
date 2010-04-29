@@ -351,7 +351,7 @@ class VouchersController < ApplicationController
                     (voucher = Voucher.find(params[:id].to_i)) &&
                     (voucher.customer.id == @gCustomer.id)) rescue nil
     flash[:notice] = "Attempt to reserve a voucher that isn't yours."
-    redirect_to(:controller => 'customers', :action => 'logout')
+    redirect_to logout_path
     return false
   end
 
