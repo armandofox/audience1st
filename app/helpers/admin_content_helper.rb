@@ -1,7 +1,8 @@
 module AdminContentHelper
-
+  include AuthenticatedSystem
+  
   def content_for(priv,&blk)
-    c = @gAdmin
+    c = current_admin
     p = "is_#{priv}"
     yield blk if c.respond_to?(p) && c.send(p)
   end
