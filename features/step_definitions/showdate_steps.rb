@@ -1,5 +1,7 @@
 World()
 
+
+
 Given /^(\d+) "(.*)" tickets available at \$(.*) each$/i do |qty,type,price|
   @showdate.should be_an_instance_of(Showdate)
   make_valid_tickets(@showdate, type, price.to_f, qty.to_i)

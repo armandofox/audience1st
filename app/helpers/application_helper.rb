@@ -352,7 +352,7 @@ EJS1
     i = 0
     ds.gsub!(/<select/) do |m|
       i=i+1
-      "<select onChange='document.getElementById(\"#{child}_#{i}\").selectedIndex=this.selectedIndex'"
+      "<select onChange='$(\"#{child}_#{i}i\").selectedIndex=this.selectedIndex'"
     end
   end
 
@@ -362,7 +362,8 @@ EJS1
     i = 0
     ds.gsub(/<select /) do |m|
       i =i +1
-      "<select id='#{meth}_#{i}' "
+      "<select "
+      #"<select id='#{meth}_#{i}i' "
       #"<select id='#{meth}_#{i}' name=\"#{obj}[#{meth}_#{i}i]\">"
     end
   end

@@ -22,10 +22,10 @@ Given /^I am logged in as (.*)?$/ do |who|
   else
     @customer = customers(:generic_customer)
   end
-  visit '/customers/login'
-  fill_in :customer_login, :with => @customer.login
-  fill_in :customer_password, :with => 'pass'
+  visit login_path
+  fill_in 'login', :with => @customer.login
+  fill_in 'password', :with => 'pass'
   click_button 'Login'
   response.should contain(Regexp.new("Welcome,.*#{@customer.first_name}"))
-  response.should contain(Regexp.new("Logged in as Administrator")) if admin
+  response.should have_selector('div[id=customer_quick_search].adminField') if admin
 end

@@ -39,6 +39,7 @@ class ShowsController < ApplicationController
       flash[:notice] = 'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
       redirect_to :action => 'edit', :id => @show
     else
+      flash[:notice] = "There were errors creating the show."
       render :action => 'new'
     end
   end

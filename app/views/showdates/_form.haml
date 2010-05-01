@@ -2,13 +2,16 @@
 
 %table
   %tr
-    %td Date and time
-    %td= parent_datetime_select 'showdate', 'thedate', 'end_advance_sales', {:start_year => Time.now.year, :end_year => Time.now.year + 3, :minute_step => 15, :date => @showdate.thedate}
+    %td
+      %label{:for => :showdate_thedate} Date and time
+    %td= parent_datetime_select 'showdate', 'thedate', 'showdate_end_advance_sales', {:start_year => Time.now.year, :end_year => Time.now.year + 3, :minute_step => 15, :date => @showdate.thedate}
   %tr
-    %td Advance sales stop
+    %td 
+      %label{:for => :showdate_end_advance_sales} Advance sales stop
     %td= child_datetime_select 'showdate', 'end_advance_sales',  {:start_year => Time.now.year, :end_year => Time.now.year + 3,  :minute_step => 15 }
   %tr
-    %td Max advance sales
+    %td 
+      %label{:for => :showdate_max_sales} Max advance sales
     %td= text_field 'showdate', 'max_sales', 'size' => 5
     = popup_help_for(:max_advance_sales)
     = hidden_field_tag "showdate[show_id]", @showdate.show.id

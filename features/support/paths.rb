@@ -20,6 +20,13 @@ module NavigationHelpers
     #     user_profile_path(Customer.find_by_login($1))
     when /the new show page/i
       "/shows/new"
+    when /the show details page for "(.*)"/i
+      @show = Show.find_by_name($1)
+      @show.should_not be_nil
+      "/shows/edit/#{@show.id}"
+    when /the new showdate page for "(.*)"/i
+      @show = Show.find_by_name($1)
+      "/showdates/new?show_id=#{@show.id}"
     when /the store page/i
       "/store"
     when /the subscriptions page/i
