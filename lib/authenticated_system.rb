@@ -102,7 +102,11 @@ module AuthenticatedSystem
     #   after_filter :store_location, :only => [:index, :new, :show, :edit]
     # for any controller you want to be bounce-backable.
     def redirect_to_stored(params={})
-      redirect_to (session[:return_to] || { :controller => 'customers', :action => 'welcome'})
+      if session[:return_to]
+        redirect_to session[:return_to]
+      else
+        redirect_to :controller => 'customers', :action => 'welcome'
+      end
       session[:return_to] = nil
       true
     end

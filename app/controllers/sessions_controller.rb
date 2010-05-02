@@ -43,7 +43,7 @@ class SessionsController < ApplicationController
   def destroy
     logout_killing_session!
     flash[:notice] = "You have been logged out."
-    redirect_to_stored
+    redirect_to login_path
   end
 
 protected

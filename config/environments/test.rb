@@ -33,8 +33,11 @@ ActiveMerchant::Billing::Base.mode = :test
 EmailList.mode = {
   :wrapper => :test,
   :mailchimp_api_key =>  '',
-  :mailchimp_username => '',
-  :mailchimp_password => '',
   :mailchimp_default_list_name => 'Testing'
 }
 
+
+# for testing
+
+config.gem "cucumber", :lib => false, :version => ">= 0.6.4"
+config.gem "webrat", :lib => false, :version => ">= 0.7.1"

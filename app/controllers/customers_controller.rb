@@ -207,7 +207,7 @@ class CustomersController < ApplicationController
       return
     end
     @customer.validation_level = 1
-    if @customer.save && @customer.errors.empty
+    if @customer.save && @customer.errors.empty?
       @customer.update_attribute(:last_login, Time.now)
       unless temp_password
         flash[:notice] = "Thanks for setting up an account!<br/>"

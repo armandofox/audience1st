@@ -73,9 +73,9 @@ end
 
 def named_user login
   user_params = {
-    'admin'   => {'id' => 1, 'login' => 'addie', 'password' => '1234addie', 'email' => 'admin@example.com',       },
-    'oona'    => {          'login' => 'oona',   'password' => '1234oona',  'email' => 'unactivated@example.com'},
-    'reggie'  => {          'login' => 'reggie', 'password' => 'monkey',    'email' => 'registered@example.com' },
+    'admin'   => {'id' => 1, 'login' => 'addie', 'password' => '1234addie', 'email' => 'admin@example.com', :first_name => 'Addie', :last_name => 'Admin'    },
+    'oona'    => {          'login' => 'oona',   'password' => '1234oona',  'email' => 'unactivated@example.com', :first_name => 'Oona', :last_name => 'Ooblick' },
+    'reggie'  => {          'login' => 'reggie', 'password' => 'monkey',    'email' => 'registered@example.com', :first_name => 'Reggie', :last_name => 'Registered'},
     }
   user_params[login.downcase]
 end
@@ -103,14 +103,13 @@ def create_user(user_params={})
   @user_params       ||= user_params
   post "/customers/user_create", :customer => user_params
   @user = Customer.find_by_login(user_params['login'])
+  @user.should_not be_nil
 end
 
 def create_user!(user_type, user_params)
   user_params['password_confirmation'] ||= user_params['password'] ||= user_params['password']
   create_user user_params
-  response.should redirect_to('/customers/welcome')
   follow_redirect!
-
 end
 
 
@@ -125,7 +124,6 @@ end
 
 def log_in_user! *args
   log_in_user *args
-  response.should redirect_to('/')
   follow_redirect!
-  response.should have_flash("notice", /Logged in successfully/)
+  response.should contain("Welcome,")
 end

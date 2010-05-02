@@ -8,6 +8,14 @@ include AuthenticatedTestHelper
 ActionController::Base.class_eval do
   def perform_action
     perform_action_without_rescue
+    # http://gist.github.com/258869
+    # work around a bug in interaction between new Rails perform_action and
+    # webrat, which causes the flash to NEVER make it into the rendered page
+    # in cucumber tests
+    if defined? @_flash
+      @_flash.store(session)
+      remove_instance_variable(:@_flash)
+    end
   end
 end
 Dispatcher.class_eval do
