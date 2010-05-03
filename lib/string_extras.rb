@@ -49,5 +49,12 @@ class String
   def name_capitalize
     self.split(/[\., ]+/).map { |w| w.capitalize_name_word }.join(" ")
   end
+  def first_and_last_from_full_name
+    names = self.split(/\s+/)
+    last = names.pop.to_s
+    last = "#{names.pop} #{last}" while @@name_connectors.include?(names.last)
+    first = names.join(' ')
+    return [first.strip,last.strip]
+  end
 end
 

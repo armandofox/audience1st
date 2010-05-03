@@ -40,6 +40,7 @@ class Customer < ActiveRecord::Base
 
   before_save :trim_whitespace_from_user_entered_strings
 
+  after_create :register_user_to_fb
 
   #----------------------------------------------------------------------
   #  private variables
@@ -557,4 +558,60 @@ class Customer < ActiveRecord::Base
   end
 
 
+  def self.find_by_fb_user(fb_user)
+    Customer.find_by_fb_user_id(fb_user.uid) ||
+      Customer.find_by_email_hash(fb_user.email_hashes)
+  end
+
+  # Take the data returned from facebook and create a new user from it.
+  # We don't get the email from Facebook and because a facebooker can only login through Connect we just generate a unique login name for them.
+  # If you were using username to display to people you might want to get them to select one after registering through Facebook Connect
+  if FACEBOOKER
+    def self.create_from_fb_connect(fb_user)
+      first_name,last_name = fb_user.name.first_and_last_from_full_name
+      new_facebooker = Customer.new(:first_name => first_name,
+        :last_name => last_name,
+        :login => "facebooker_#{fb_user.uid}", :password => "", :email => "")
+      new_facebooker.fb_user_id = fb_user.uid.to_i
+      #We need to save without validations
+      new_facebooker.save(false)
+      new_facebooker.register_user_to_fb
+    end
+
+    #We are going to connect this user object with a facebook id. But only ever one account.
+    def link_fb_connect(fb_user_id)
+      unless fb_user_id.nil?
+        #check for existing account
+        existing_fb_user = Customer.find_by_fb_user_id(fb_user_id)
+        #unlink the existing account
+        unless existing_fb_user.nil?
+          existing_fb_user.fb_user_id = nil
+          existing_fb_user.save(false)
+        end
+        #link the new one
+        self.fb_user_id = fb_user_id
+        save(false)
+      end
+    end
+
+    #The Facebook registers user method is going to send the users email hash and our account id to Facebook
+    #We need this so Facebook can find friends on our local application even if they have not connect through connect
+    #We hen use the email hash in the database to later identify a user from Facebook with a local user
+    def register_user_to_fb
+      users = {:email => email, :account_id => id}
+      Facebooker::User.register([users])
+      self.email_hash = Facebooker::User.hash_email(email)
+      save(false)
+    end
+    def facebook_user?
+      return !fb_user_id.nil? && fb_user_id > 0
+    end
+  else                          # no Facebook integration
+    def self.create_from_fb_connect(fb_user) ; true ; end
+    def link_fb_connect(fb_user_id) ; true ; end
+    def register_user_to_fb ; true ; end
+    def facebook_user? ; nil ; end
+  end
 end
+
+

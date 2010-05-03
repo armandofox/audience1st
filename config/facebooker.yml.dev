@@ -1,0 +1,27 @@
+development:
+  api_key: da8c6d3d76739f7e0c5fcd958434be3f
+  secret_key: ea9eac169a61d605b51b35b22f89485b
+  canvas_page_name:
+  callback_url:
+  pretty_errors: true
+  set_asset_host_to_callback_url: true
+  tunnel:
+    public_host_username: 
+    public_host: 
+    public_port: 4007
+    local_port: 3000
+    server_alive_interval: 0
+
+test:
+  api_key: 
+  secret_key:
+  canvas_page_name: 
+  callback_url:
+  set_asset_host_to_callback_url: true
+  tunnel:
+    public_host_username: 
+    public_host: 
+    public_port: 4007
+    local_port: 3000
+    server_alive_interval: 0
+

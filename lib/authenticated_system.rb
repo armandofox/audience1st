@@ -10,7 +10,8 @@ module AuthenticatedSystem
   # Accesses the current user from the session.
   # Future calls avoid the database because nil is not equal to false.
   def current_user
-    @current_user ||= (login_from_session || login_from_basic_auth || login_from_cookie) unless @current_user == false
+    @current_user ||= (login_from_session || login_from_basic_auth ||
+      login_from_cookie || login_from_facebook) unless @current_user == false
   end
 
   # Store the given user id in the session.
@@ -132,7 +133,17 @@ module AuthenticatedSystem
         self.current_user = Customer.authenticate(login, password)
       end
     end
-    
+
+    # login via Facebook Connect info
+  if FACEBOOKER
+    def login_from_facebook
+      if facebook_session
+        self.current_user = Customer.find_by_fb_user(facebook_session.user)
+      end
+    end
+  else
+    def login_from_facebook ; nil ; end
+  end
     #
     # Logout
     #

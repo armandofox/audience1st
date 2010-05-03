@@ -25,7 +25,17 @@ class ApplicationController < ActionController::Base
   require 'string_extras.rb'
   require 'date_time_extras.rb'
 
+  # for Facebook Connect
+  if FACEBOOKER
+    before_filter :set_facebook_session
+    helper_method :facebook_session
+  end
+
+  # set_globals must happen AFTER Facebook Connect filters, since it will
+  # try to set globals based on current_user, among other things.
   before_filter :set_globals
+
+
   def set_globals
     @gCustomer = current_user
     @gAdmin = current_admin
