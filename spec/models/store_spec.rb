@@ -8,10 +8,7 @@ describe Store, "Purchasing" do
     @success = ActiveMerchant::Billing::Response.new(true, "Success",
       :transaction_id => "999")
     @failure = ActiveMerchant::Billing::Response.new(false, "Failure")
-    @bill_to = Customer.create!(:first_name => "John",
-      :last_name => "Doe", :street => "123 Fake St",
-      :email => "john@yahoo.com", :day_phone => "212-555-5555",
-      :city => "New York", :state => "NY", :zip => "10019")
+    @bill_to = BasicModels.create_generic_customer
     @order_num = "789"
     @cc = CreditCard.new(:first_name => @bill_to.first_name,
       :last_name => @bill_to.last_name,

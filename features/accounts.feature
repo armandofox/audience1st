@@ -26,11 +26,9 @@ Story: Creating an account
     When  she registers an account as the preloaded 'Oona'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  (show me)
-    Then  she should see a notice message 'Account was successfully created'
+    Then  she should see a notice message 'Thanks for setting up an account'
      And  a customer with login: 'oona' should exist
      And  the customer should have login: 'oona', and email: 'unactivated@example.com'
-
      And  oona should be logged in
 
 
@@ -40,18 +38,14 @@ Story: Creating an account
 
 
   Scenario: Anonymous customer can not create an account replacing an activated account
-    Given an anonymous customer
-     And  an activated customer named 'Reggie'
-     And  we try hard to remember the customer's updated_at, and created_at
+    Given  an activated customer named 'Reggie'
+    And    an anonymous customer
     When  she registers an account with login: 'reggie', password: 'monkey', and email: 'reggie@example.com'
     Then  she should be at the 'customers/new' page
      And  she should     see an errorExplanation message 'Login has already been taken'
      And  she should not see an errorExplanation message 'Email has already been taken'
      And  a customer with login: 'reggie' should exist
      And  the customer should have email: 'registered@example.com'
-
-     And  the customer's created_at should stay the same under to_s
-     And  the customer's updated_at should stay the same under to_s
      And  she should not be logged in
 
   #
@@ -60,31 +54,24 @@ Story: Creating an account
   Scenario: Anonymous customer can not create an account with incomplete or incorrect input
     Given an anonymous customer
      And  no customer with login: 'Oona' exists
-    When  she registers an account with login: '',     password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
+    When  she registers an account with login: '', first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
     Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Login can't be blank'
+     And  she should     see an errorExplanation message 'Login is too short'
      And  no customer with login: 'oona' should exist
 
   Scenario: Anonymous customer can not create an account with no password
     Given an anonymous customer
      And  no customer with login: 'Oona' exists
-    When  she registers an account with login: 'oona', password: '',       password_confirmation: 'monkey' and email: 'unactivated@example.com'
+    When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: '',       password_confirmation: 'monkey' and email: 'unactivated@example.com'
     Then  she should be at the 'customers/new' page
      And  she should     see an errorExplanation message 'Password can't be blank'
      And  no customer with login: 'oona' should exist
 
-  Scenario: Anonymous customer can not create an account with no password_confirmation
-    Given an anonymous customer
-     And  no customer with login: 'Oona' exists
-    When  she registers an account with login: 'oona', password: 'monkey', password_confirmation: ''       and email: 'unactivated@example.com'
-    Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Password confirmation can't be blank'
-     And  no customer with login: 'oona' should exist
-
+  @ip
   Scenario: Anonymous customer can not create an account with mismatched password & password_confirmation
     Given an anonymous customer
      And  no customer with login: 'Oona' exists
-    When  she registers an account with login: 'oona', password: 'monkey', password_confirmation: 'monkeY' and email: 'unactivated@example.com'
+    When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkeY' and email: 'unactivated@example.com'
     Then  she should be at the 'customers/new' page
      And  she should     see an errorExplanation message 'Password doesn't match confirmation'
      And  no customer with login: 'oona' should exist
@@ -92,11 +79,11 @@ Story: Creating an account
   Scenario: Anonymous customer can not create an account with bad email
     Given an anonymous customer
      And  no customer with login: 'Oona' exists
-    When  she registers an account with login: 'oona', password: 'monkey', password_confirmation: 'monkey' and email: ''
+    When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: ''
     Then  she should be at the 'customers/new' page
      And  she should     see an errorExplanation message 'Email can't be blank'
      And  no customer with login: 'oona' should exist
-    When  she registers an account with login: 'oona', password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
+    When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
     Then  she should be redirected to the home page
     When  she follows that redirect!
     Then  she should see a notice message 'Thanks for signing up!'

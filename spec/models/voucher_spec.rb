@@ -134,7 +134,7 @@ describe Voucher do
   end
   describe "transferring" do
     before(:each) do
-      @from = Customer.create!(:first_name => "John", :last_name => "Donor")
+      @from = BasicModels.create_generic_customer
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @v.should be_valid
       @from.vouchers << @v
@@ -142,7 +142,7 @@ describe Voucher do
     end
     context "when recipient exists" do
       before(:all) do
-        @to = Customer.create!(:first_name => "Jane", :last_name => "Recipient")
+        @to = BasicModels.create_generic_customer
       end
       it "should add the voucher to the recipient's account" do
         @v.transfer_to_customer(@to)

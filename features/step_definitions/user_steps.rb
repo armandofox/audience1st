@@ -40,9 +40,9 @@ When "$actor logs out" do
 end
 
 When "$actor registers an account as the preloaded '$login'" do |_, login|
-  user = named_user(login)
-  user['password_confirmation'] = user['password']
-  create_user user
+  @user = named_user(login)
+  @user['password_confirmation'] = @user['password']
+  create_user @user
 end
 
 When "$actor registers an account with $attributes" do |_, attributes|
@@ -67,7 +67,6 @@ end
 
 Then "$login should be logged in" do |login|
   controller.logged_in?.should be_true
-  controller.current_user.should === @user
   controller.current_user.login.should == login
 end
 
@@ -91,6 +90,7 @@ end
 
 def log_out
   get '/sessions/destroy'
+  controller.current_user.should be_nil
 end
 
 def log_out!
@@ -102,8 +102,6 @@ end
 def create_user(user_params={})
   @user_params       ||= user_params
   post "/customers/user_create", :customer => user_params
-  @user = Customer.find_by_login(user_params['login'])
-  @user.should_not be_nil
 end
 
 def create_user!(user_type, user_params)

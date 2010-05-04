@@ -4,11 +4,7 @@ describe CustomersController do
   include AuthenticatedSystem
   context "during checkout flow" do
     before(:each) do
-      @customer = Customer.create!(:first_name => "test1",
-        :last_name => "test2",
-        :street => "123 Fake Ave",
-        :city => "New York", :state => "NY", :zip => "10022",
-        :password => "mypass")
+      @customer = BasicModels.create_generic_customer
       login_as @customer
       ApplicationController.stub!(:find_cart).and_return(mock_model(Cart).as_null_object)
       controller.set_checkout_in_progress(true)

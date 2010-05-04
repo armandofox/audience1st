@@ -334,6 +334,7 @@ class CustomersController < ApplicationController
         params[:customer][:password_confirmation] = String.random_string(6)
     end
     @customer = Customer.new(params[:customer])
+    @customer.created_by_admin = true
     @customer.validation_level = 1
     # then must have a password too....
     if @customer.save

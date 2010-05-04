@@ -20,5 +20,4 @@
   #admin_welcome_header
     = Time.now.to_formatted_s(:short)
     %br
-    = h(Session.num_active) 
-    users
+    & {Session.num_active} users

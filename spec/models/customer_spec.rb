@@ -3,11 +3,71 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
   fixtures :customers
+  describe "when created by admin" do
+    before(:each) do
+      @customer = Customer.new(:first_name => "John", :last_name => "Do",
+        :email => "johndoe111@yahoo.com",
+        :login => "johndoe111",
+        :password => "pass", :password_confirmation => "pass")
+      @customer.created_by_admin = true
+    end
+    it "should not require email address" do
+      @customer.email = nil
+      @customer.should be_valid
+      lambda { @customer.save! }.should_not raise_error
+    end
+    it "should not require password" do
+      @customer.password = @customer.password_confirmation = nil
+      @customer.should be_valid
+      lambda { @customer.save! }.should_not raise_error
+    end
+    it "should not require login name" do
+      @customer.login = nil
+      @customer.should be_valid
+      lambda { @customer.save! }.should_not raise_error
+    end
+  end
+  describe "when self-created" do
+    before(:each) do
+      @customer = Customer.new(:first_name => "John", :last_name => "Do",
+        :email => "johndoe111@yahoo.com",
+        :login => "johndoe111",
+        :password => "pass", :password_confirmation => "pass")
+    end
+    it "should require valid email address" do
+      @customer.email = nil
+      @customer.should_not be_valid
+    end
+    it "should reject invalid email address" do
+      @customer.email = "NotValidAddress"
+      @customer.should_not be_valid
+      @customer.errors.on(:email).should_not be_empty
+    end
+    it "should require nonblank login name" do
+      @customer.login = ''
+      @customer.should_not be_valid
+      @customer.errors_on(:login).join(",").should match(/is too short/)
+    end
+    it "should require password" do
+      @customer.password = @customer.password_confirmation = ''
+      @customer.should_not be_valid
+      @customer.errors_on(:password).join(",").should match(/too short/i)
+    end
+    it "should require nonblank password confirmation" do
+      @customer.password_confirmation = ''
+      @customer.should_not be_valid
+      @customer.errors.on(:password).should match(/doesn't match confirmation/i)
+    end
+    it "should require matching password confirmation" do
+      @customer.password_confirmation = "DoesNotMatch"
+      @customer.should_not be_valid
+      @customer.errors.on(:password).should match(/doesn't match confirmation/i)
+    end
+  end
   describe "special customer that cannot fail validation or be destroyed:" do
     %w[walkup_customer generic_customer boxoffice_daemon].each do |c|
       it c.humanize do
         cust = Customer.send(c)
-        cust.should be_valid
         lambda { cust.destroy }.should raise_error
       end
     end
@@ -15,14 +75,16 @@ describe Customer do
   describe "address validations" do
     context "with no mailing address" do
       before(:each) do
-        @customer = Customer.create!(:first_name => "John", :last_name => "Doe")
+        @customer = Customer.create!(:first_name => "John", :last_name => "Doe",
+          :login => 'johndoe', :password => 'xxxx', :password_confirmation => 'xxxx',
+          :email => 'john@doe2.com')
       end
       it "should be valid" do
         @customer.should be_valid
       end
       it "should have a stand-in email address" do
+        @customer.stub!(:email).and_return nil
         Option.stub!(:value).and_return('345')
-        @customer.valid_email_address?.should be_false
         @customer.possibly_synthetic_email.should ==
           "patron-345-#{@customer.id}@audience1st.com"
       end
@@ -38,9 +100,7 @@ describe Customer do
     end
     context "with nonblank address" do
       before(:each) do
-        @customer = Customer.create!(:first_name => "John", :last_name => "Doe",
-                                     :street => "123 Fake St", :city => "Alameda",
-                                     :state => "CA", :zip => "94501")
+        @customer = BasicModels.create_generic_customer
       end
       it "should be valid" do
         @customer.should be_valid
@@ -50,29 +110,11 @@ describe Customer do
         @customer.should_not be_valid
       end
     end
-    describe "email validations" do
-      before(:each) do
-        @customer = Customer.new
-      end
-      it "should have a valid email if email is provided" do
-        @customer.email = "me@you.com"
-        @customer.valid_email_address?.should be_true
-      end
-      it "should not be valid if email is provided but bogus" do
-        @customer.email = "foo"
-        @customer.valid_email_address?.should be_nil
-      end
-      it "may have a blank email" do
-        @customer.email = ''
-        @customer.valid_email?.should be_true
-      end
-    end
-
     describe "eligible as gift recipient" do
       before(:each) do
         @customer = Customer.new(:first_name => "John", :last_name => "Doe",
-                                 :day_phone => "555-1212",
-                                 :eve_phone => "666-2323")
+          :day_phone => "555-1212",
+          :eve_phone => "666-2323")
         @customer.stub!(:invalid_mailing_address?).and_return(false)
         @customer.stub!(:valid_email_address?).and_return(true)
       end
@@ -120,30 +162,25 @@ describe Customer do
   
   describe "managing email subscriptions" do
     before(:each) do
-      @email = "asdf@yahoo.com"
+      @customer = BasicModels.create_generic_customer
+      @email = @customer.email
     end
     context "when changing name only" do
       it "should be updated with new name even if email doesn't change" do
-        @customer = Customer.create!(:first_name => "J", :last_name => "D",
-          :email => @email,
-          :e_blacklist => false)
-        @customer.first_name = "Q"
+        @customer.update_attributes!(:e_blacklist => false)
+        @customer.first_name = "Newfirstname"
         EmailList.should_receive(:update).with(@customer, @email)
         @customer.save!
       end
       it "should not be updated if previously opted out" do
-        @customer = Customer.create!(:first_name => "J", :last_name => "D",
-          :email => @email,
-          :e_blacklist => true)
-        @customer.first_name = "Q"
+        @customer.update_attributes!(:e_blacklist => true)
+        @customer.first_name = "Newfirstname"
         EmailList.should_not_receive(:update)
         @customer.save!
       end
       it "should not be updated if now opting out" do
-        @customer = Customer.create!(:first_name => "J", :last_name => "D",
-          :email => @email,
-          :e_blacklist => false)
-        @customer.first_name = "Q"
+        @customer.update_attributes!(:e_blacklist => false)
+        @customer.first_name = "Newfirstname"
         @customer.e_blacklist = true
         EmailList.should_not_receive(:update)
         @customer.save!
@@ -151,9 +188,9 @@ describe Customer do
     end
     context "when opting out" do
       before(:each) do
-        @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                     :email => @email,
-                                     :e_blacklist => false)
+        @customer = BasicModels.create_generic_customer
+        @customer.update_attributes!(:e_blacklist => false)
+        @email = @customer.email
         @customer.e_blacklist = true # so it's marked dirty
       end
       it "should be unsubscribed using old email" do
@@ -169,36 +206,29 @@ describe Customer do
       end
     end
     context "when opting in" do
-      context "with new email address" do
-        it "should be updated from old to new if old address was nonblank" do
-          @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                       :email => @email,
-                                       :e_blacklist => true)
-          @customer.e_blacklist = false
-          @customer.email = "newjohn@doe.com"
-          EmailList.should_receive(:update).with(@customer, @email)
-          @customer.save!
-        end
-        it "should be subscribed with new email if old email was blank" do
-          @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                       :email => "",
-                                       :e_blacklist => true)
-          @customer.e_blacklist = false
-          EmailList.should_receive(:subscribe).with(@customer)
-          @customer.save!
-        end
+      before(:each) do
+        @customer = BasicModels.create_generic_customer
+        @customer.update_attributes!(:e_blacklist => true)
+        @email = @customer.email
+      end
+      it "with new email address should be updated to new if old address was nonblank" do
+        @customer.e_blacklist = false
+        @customer.email = "newjohn@doe.com"
+        EmailList.should_receive(:update).with(@customer, @email)
+        @customer.save!
+      end
+      it "should be subscribed with new email if old email was blank" do
+        @customer.e_blacklist = false
+        EmailList.should_receive(:subscribe).with(@customer)
+        @customer.save!
       end
       it "with same email address should be subscribed with new email" do
-        @customer = Customer.create!(:first_name => "J", :last_name => "D",
-                                     :email => @email,
-                                     :e_blacklist => true)
         @customer.e_blacklist = false
         EmailList.should_receive(:subscribe).with(@customer)
         @customer.save!
       end
     end
   end
-
   describe "merging" do
     before(:each) do
       # stub out the merge handlers for associated attributes
@@ -234,6 +264,24 @@ describe Customer do
       @c1.should be_valid
       @c2.should be_valid
     end
+    context "when there is Facebook data" do
+      it "should keep facebook ID if first customer had one" do
+        @c1.fb_user_id = 56789
+        @c1.merge_with(@c2,@params).should_not be_nil
+        @c1.fb_user_id.should == 56789
+      end
+      it "should keep facebook ID if second customer had one" do
+        @c2.fb_user_id = 98765
+        @c1.merge_with(@c2,@params).should_not be_nil
+        @c1.fb_user_id.should == 98765
+      end
+      it "should keep first user's facebook ID if both have one" do
+        @c1.fb_user_id = 56789
+        @c2.fb_user_id = 98765
+        @c1.merge_with(@c2,@params)
+        @c1.fb_user_id.should == 56789
+      end
+    end
     context "when result of merge is a valid customer" do
       before(:each) do
         @c1.merge_with(@c2,@params).should_not be_nil
@@ -255,7 +303,7 @@ describe Customer do
         @c1.last_login.should == @now
       end
       it "should keep the most recent login name" do
-        pending
+        @c1.login.should == "bbb"
       end
       it "should keep the higher of the two roles" do
         @c1.role.should == 20
