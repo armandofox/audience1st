@@ -64,7 +64,7 @@ Story: Creating an account
      And  no customer with login: 'Oona' exists
     When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: '',       password_confirmation: 'monkey' and email: 'unactivated@example.com'
     Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Password can't be blank'
+     And  she should     see an errorExplanation message 'Password is too short'
      And  no customer with login: 'oona' should exist
 
   @ip
@@ -81,12 +81,12 @@ Story: Creating an account
      And  no customer with login: 'Oona' exists
     When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: ''
     Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Email can't be blank'
+     And  she should     see an errorExplanation message 'Email is invalid'
      And  no customer with login: 'oona' should exist
     When  she registers an account with login: 'oona', first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Thanks for signing up!'
+    Then  she should see a notice message 'Thanks for setting up an account'
      And  a customer with login: 'oona' should exist
      And  the customer should have login: 'oona', and email: 'unactivated@example.com'
 
