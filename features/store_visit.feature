@@ -4,20 +4,21 @@ Feature: Visit Store Page
   I want to go to the Store page
   So that I can buy tickets for a show
 
-  Scenario: Starting from scratch
+  Scenario: Non-logged-in user can visit the Store page
 
     Given I am not logged in
-    When I visit the store page
-    Then I should see the NonSubscriber message
+    When I go to the store page
+    Then I should see the "storeBannerNonSubscriber" message
 
-  Scenario: Nonsubscriber logs in
+  Scenario: Nonsubscriber can login and visit the Store page
 
     Given I am logged in as a nonsubscriber
-    When I visit the store page
-    Then I should see the NonSubscriber message
+    When I go to the store page
+    Then I should see the "storeBannerNonSubscriber" message
 
-  Scenario: Subscriber logs in
+  Scenario: Subscriber can login and visit the Store page
 
     Given I am logged in as a subscriber
-    When I visit the store page
-    Then I should see the Subscriber message
+    When I go to the store page
+    Then I should see the "storeBannerSubscriber" message
+

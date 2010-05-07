@@ -12,10 +12,12 @@ class ValidVoucher < ActiveRecord::Base
   # A valid_voucher must be associated with exactly 1 showdate and 1 vouchertype
   belongs_to :showdate
   belongs_to :vouchertype
-  validates_associated :showdate, :if => lambda { |v| !v.vouchertype.bundle? }
+  validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type
 
+  validates_time :start_sales
+  validates_time :end_sales
   validate :check_expiration_dates
 
   require 'set'
@@ -31,8 +33,12 @@ class ValidVoucher < ActiveRecord::Base
   # Vouchertype's valid date must not be later than valid_voucher start date
   # Vouchertype expiration date must not be earlier than valid_voucher end date
   def check_expiration_dates
+    if start_sales.blank? || end_sales.blank?
+      errors.add_to_base "Dates and times for start and end sales must be provided"
+      return
+    end
     vt = self.vouchertype
-    if self.start_sales < vt.valid_date
+    if start_sales < vt.valid_date
       errors.add_to_base "Voucher type '#{vt.name}' isn't valid before
         #{vt.valid_date.to_formatted_s(:short)}, but you've indicated
         sales should start earlier (#{self.start_sales.to_formatted_s(:short)})"

@@ -13,10 +13,10 @@ ActionController::Routing::Routes.draw do |map|
 
   
   #map.connect ':controller/:action/:id.:format'
-  map.connect '', :controller => 'customers', :action => 'welcome'
+  map.connect '', {:controller => 'customers', :action => 'welcome'}
   map.root :controller => 'customers', :action => 'welcome'
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id', :defaults => {:controller => :customers, :action => :welcome}
-  map.connect '*path', :controller => 'customers', :action => 'welcome'
+  map.connect '*path', {:controller => 'customers', :action => 'welcome'}
  
 end

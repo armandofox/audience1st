@@ -1,5 +1,5 @@
 module BasicModels
-  @@id = 1
+  @@id = 2001
   def self.gensym
     @@id += 1
     @@id.to_s
@@ -49,6 +49,18 @@ module BasicModels
       :valid_date => Time.now - 1.month,
       :expiration_date => Time.now+1.month)
   end
+  def self.create_subscriber_vouchertype()
+    sym = self.gensym
+    Vouchertype.create!(:fulfillment_needed => false,
+      :name => 'subscription #{sym}',
+      :category => 'bundle',
+      :subscription => true,
+      :account_code => '9999',
+      :price => 20.00,
+      :valid_date => Time.now - 1.month,
+      :expiration_date => Time.now - 1.month + 1.year)
+  end
+      
 end
 
       

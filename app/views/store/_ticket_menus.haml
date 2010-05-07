@@ -3,7 +3,7 @@
       @vouchertypes.map {|av| av.vouchertype.id}, |
      :price, :vouchertype, 'donation', 'submit' |
 
-  %label{:for => "discount_code"} Discount Code
+  %label{:for => "promo_code"} Discount Code
   - if @promo_code.blank?
     = text_field_tag 'promo_code', @promo_code, :size => 10
     = spinner('wait_promo')

@@ -1,5 +1,0 @@
-- form_tag :action => 'enter_promo_code' do
-  %h1 
-    Have a Promo Code? Enter it Here: 
-    = text_field_tag "promo_code", promo_code, :size => 8, :maxlength => 8
-    = submit_tag (promo_code.empty? ? 'Go' : ' Change ')

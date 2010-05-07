@@ -30,7 +30,7 @@ module NavigationHelpers
       @show = Show.find_by_name($1)
       "/showdates/new?show_id=#{@show.id}"
     when /the store page/i
-      "/store"
+      "/store/index"
     when /the subscriptions page/i
       "/store/subscribe"
     else
