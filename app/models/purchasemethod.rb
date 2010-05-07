@@ -4,7 +4,10 @@ class Purchasemethod < ActiveRecord::Base
     (Purchasemethod.find_by_shortdesc(str) || Purchasemethod.find(:first)).id rescue 0
   end
   def self.default
-    Purchasemethod.find(:first)
+    Purchasemethod.find(:first) ||
+      Purchasemethod.create!(:description => 'Other',
+      :shortdesc => '?purch?',
+      :nonrevenue => false)
   end
 end
 

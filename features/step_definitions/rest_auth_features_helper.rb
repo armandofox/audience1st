@@ -48,7 +48,7 @@ module ToFooFromStory
   #   ISBN: '0967539854' and comment: 'I love this book' and Quality rating: '4'
   #   # => {"quality_rating"=>"4", "isbn"=>"0967539854", "comment"=>"I love this book"}
   def to_hash_from_story
-    hsh = self.split(/,? and |, /).inject({}) do |hash_so_far, key_value|
+    hsh = self.split(/,?\s+and\s+|,\s+/).inject({}) do |hash_so_far, key_value|
       key, value = key_value.split(":")
       if !value then warn "Couldn't understand story '#{self}': only understood up to the part '#{hash_so_far.to_yaml}'" end
       hash_so_far.merge(ToFooFromStory::fix_key(key) => ToFooFromStory::fix_value(value))

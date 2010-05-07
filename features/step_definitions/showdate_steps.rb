@@ -21,11 +21,18 @@ end
 
 Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performance/i do |n,vouchertype,price|
   @showdate.should be_an_instance_of(Showdate)
-  n = [n.to_i, 1].max           # in case n=0
-  vt = Vouchertype.find_by_name!(vouchertype)
-  vt.update_attribute(:price, price.to_f)
+  vt = Vouchertype.create!(
+    :name => vouchertype,
+    :category => :revenue,
+    :valid_date => 6.months.ago,
+    :expiration_date => 6.months.from_now,
+    :price => price,
+    :offer_public => Vouchertype::ANYONE
+    )
   @showdate.valid_vouchers.create!(:vouchertype => vt,
-                                   :max_sales_for_type => n)
+    :max_sales_for_type => [n.to_i, 1].max,           # in case n=0
+    :start_sales => 1.day.ago,
+    :end_sales => @showdate.thedate - 5.minutes)
 end
                                    
   
@@ -35,7 +42,9 @@ def setup_show_and_showdate(name,time,args={})
     :opening_date => args[:opening_date] || 1.month.ago,
     :closing_date => args[:closing_date] || 1.month.from_now)
 
-  return show.showdates.create!(:thedate => time,
+  return show.showdates.create!(
+    :thedate => time,
+    :end_advance_sales => time - 5.minutes,
     :max_sales => args[:max_sales] || 100)
 end
 
@@ -46,8 +55,8 @@ def make_valid_tickets(showdate,type,price,qty=nil)
   vt = create_generic_vouchertype(type,price)
   showdate.valid_vouchers.create!(:vouchertype => vt,
     :max_sales_for_type => qty.to_i,
-    :advance_sales_start => 1.day.ago,
-    :advance_sales_stop => 1.day.from_now)
+    :start_sales => 1.day.ago,
+    :end_sales => 1.day.from_now)
 end
     
   

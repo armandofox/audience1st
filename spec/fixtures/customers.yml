@@ -18,6 +18,7 @@ tom:
   day_phone: 510-555-5555
   eve_phone: 510-555-5555
   login: tom@foolery.com
+  email: tom@foolery.com
   last_login: 2006-01-01 00:00:00
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
@@ -34,6 +35,7 @@ tom2:
   day_phone: 510-999-9999
   eve_phone: 510-888-8888
   login: tom2@foolery.com
+  email: tom2@foolery.com
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
@@ -42,6 +44,7 @@ tom3:
   first_name: Another Tom
   last_name: Foolery
   login: tom3@foolery.com
+  email: tom3@foolery.com
 
 cust_with_real_address:
   id: 222

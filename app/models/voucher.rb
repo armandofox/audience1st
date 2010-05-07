@@ -129,6 +129,7 @@ class Voucher < ActiveRecord::Base
 
   def self.new_from_vouchertype(vt,args={})
     vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
+    args[:purchasemethod] ||= Purchasemethod.default
     vt.vouchers.build({:fulfillment_needed => vt.fulfillment_needed,
                        :sold_on => Time.now,
                        :changeable => false,

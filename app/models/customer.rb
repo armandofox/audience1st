@@ -14,32 +14,34 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_length_of :login, :in => 3..40, :allow_nil => true
+  validates_length_of :login, :in => 3..40, :allow_nil => true, :if => :self_created?
+  validates_format_of :login, :with => Authentication.login_regex, :if => :self_created?
   validates_uniqueness_of :login, :allow_nil => true
-  #validates_format_of :login, :with => Authentication.login_regex, :message => Authentication.bad_login_message
 
   #validates_uniqueness_of :email, :allow_nil => true
-  validate :valid_email?
+  validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?
   
   validate :valid_or_blank_address?
 
   validates_length_of :first_name, :within => 1..50
-  #validates_format_of :first_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
+  validates_format_of :first_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
 
   validates_length_of :last_name, :within => 1..50
-  #validates_format_of :last_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
+  validates_format_of :last_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
 
-  validates_length_of :password, :in => 0..20, :allow_nil => true
-  validates_confirmation_of :password
+  validates_length_of :password, :in => 4..20, :allow_nil => true, :if => :self_created?
+  validates_confirmation_of :password, :if => :self_created?
 
   validates_columns :formal_relationship
   validates_columns :member_type
 
-  attr_protected :id, :salt, :role, :validation_level
+  attr_protected :id, :salt, :role, :validation_level, :created_by_admin
   attr_accessor :password
+  attr_accessor :created_by_admin
 
   before_save :trim_whitespace_from_user_entered_strings
 
+  after_create :register_user_to_fb
 
   #----------------------------------------------------------------------
   #  private variables
@@ -63,21 +65,8 @@ class Customer < ActiveRecord::Base
     :e_blacklist => true
   }
 
-  #----------------------------------------------------------------------
-  #  private methods & callbacks
-  #----------------------------------------------------------------------
+  def self_created? ; !created_by_admin ; end
   
-  # before validation, squeeze out any attributes that are whitespace-only,
-  # so the allow_nil validations behave as expected.
-
-  # before_validation :remove_blank_attributes
-  # def remove_blank_attributes
-  #   Customer.columns.each do |c|
-  #     self.send("#{c.name}=", nil) if self.send(c.name).blank?
-  #   end
-  #   self.password = nil if self.password.blank?
-  # end
-
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
     errors.add_to_base "Mailing address must include street, city, state, Zip" unless (valid_mailing_address? || blank_mailing_address?)
@@ -109,7 +98,8 @@ class Customer < ActiveRecord::Base
   # set directly in the create call)
 
   def self.create_with_role!(attrs, role)
-    c = Customer.create!(attrs)
+    c = Customer.new(attrs)
+    c.save(false)               # save without validation
     c.update_attribute(:role, role)
     c
   end
@@ -120,12 +110,6 @@ class Customer < ActiveRecord::Base
 
   public
   
-  def valid_email?
-    return true if email.blank? || valid_email_address?
-    errors.add_to_base("Email address is invalid")
-    false
-  end
-
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email
@@ -179,6 +163,7 @@ class Customer < ActiveRecord::Base
 
   def inspect
     "[#{self.id}] #{first_name.name_capitalize} #{last_name.name_capitalize} " <<
+      "<#{login}> " <<
       (email.blank? ? '' : "<#{email}>") <<
       (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
   end
@@ -265,6 +250,9 @@ class Customer < ActiveRecord::Base
         c0.send("#{attr}=", c1.send(attr))
       end
     end
+    # facebook info (fb_user_id, email_hash): keep whichever found first
+    c0.fb_user_id ||= c1.fb_user_id
+    c0.email_hash ||= c1.email_hash
     # role column keeps the more privileged of the two roles
     c0.role = c1.role if c1.role > c0.role
     # validation_level keeps the higher of the two validation levels
@@ -314,7 +302,7 @@ class Customer < ActiveRecord::Base
   end
 
   # when merging customers, these attributes are automatically merged
-  def self.keep_newer_attributes ;  %w(crypted_password  salt  last_login) ; end
+  def self.keep_newer_attributes ;  %w(crypted_password  salt  last_login login) ; end
 
 
 
@@ -557,4 +545,60 @@ class Customer < ActiveRecord::Base
   end
 
 
+  def self.find_by_fb_user(fb_user)
+    Customer.find_by_fb_user_id(fb_user.uid) ||
+      Customer.find_by_email_hash(fb_user.email_hashes)
+  end
+
+  # Take the data returned from facebook and create a new user from it.
+  # We don't get the email from Facebook and because a facebooker can only login through Connect we just generate a unique login name for them.
+  # If you were using username to display to people you might want to get them to select one after registering through Facebook Connect
+  if FACEBOOKER
+    def self.create_from_fb_connect(fb_user)
+      first_name,last_name = fb_user.name.first_and_last_from_full_name
+      new_facebooker = Customer.new(:first_name => first_name,
+        :last_name => last_name,
+        :login => "facebooker_#{fb_user.uid}", :password => "", :email => "")
+      new_facebooker.fb_user_id = fb_user.uid.to_i
+      #We need to save without validations
+      new_facebooker.save(false)
+      new_facebooker.register_user_to_fb
+    end
+
+    #We are going to connect this user object with a facebook id. But only ever one account.
+    def link_fb_connect(fb_user_id)
+      unless fb_user_id.nil?
+        #check for existing account
+        existing_fb_user = Customer.find_by_fb_user_id(fb_user_id)
+        #unlink the existing account
+        unless existing_fb_user.nil?
+          existing_fb_user.fb_user_id = nil
+          existing_fb_user.save(false)
+        end
+        #link the new one
+        self.fb_user_id = fb_user_id
+        save(false)
+      end
+    end
+
+    #The Facebook registers user method is going to send the users email hash and our account id to Facebook
+    #We need this so Facebook can find friends on our local application even if they have not connect through connect
+    #We hen use the email hash in the database to later identify a user from Facebook with a local user
+    def register_user_to_fb
+      users = {:email => email, :account_id => id}
+      Facebooker::User.register([users])
+      self.email_hash = Facebooker::User.hash_email(email)
+      save(false)
+    end
+    def facebook_user?
+      return !fb_user_id.nil? && fb_user_id > 0
+    end
+  else                          # no Facebook integration
+    def self.create_from_fb_connect(fb_user) ; true ; end
+    def link_fb_connect(fb_user_id) ; true ; end
+    def register_user_to_fb ; true ; end
+    def facebook_user? ; nil ; end
+  end
 end
+
+

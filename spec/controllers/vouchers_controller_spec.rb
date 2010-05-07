@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 include Utils
 
+
 describe VouchersController do
   before(:all) do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
@@ -35,7 +36,7 @@ describe VouchersController do
     end
     context "when recipient exists" do
       before(:all) do
-        @recip = Customer.create!(:first_name => "John", :last_name => "Doe")
+        @recip = BasicModels.create_generic_customer
       end
       context "and all selected vouchers exist" do
         it "should transfer the vouchers" do

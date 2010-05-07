@@ -97,6 +97,18 @@ class CustomersController < ApplicationController
                        :order => "opening_date")
   end
 
+  def link_user_accounts
+    if self.current_user.nil?
+      #register with fb
+      Customer.create_from_fb_connect(facebook_session.user)
+    else
+      #connect accounts
+      self.current_user.link_fb_connect(facebook_session.user.id) unless
+        self.current_user.fb_user_id == facebook_session.user.id
+    end
+    redirect_to_stored
+  end
+  
   def edit
     @customer = current_user
     @is_admin = current_admin.is_staff
@@ -322,6 +334,7 @@ class CustomersController < ApplicationController
         params[:customer][:password_confirmation] = String.random_string(6)
     end
     @customer = Customer.new(params[:customer])
+    @customer.created_by_admin = true
     @customer.validation_level = 1
     # then must have a password too....
     if @customer.save

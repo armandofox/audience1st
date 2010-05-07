@@ -17,7 +17,10 @@ end
 
 Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,name|
   response_body.should have_selector("select[name='#{menu}']") do |elt|
-    debugger
     elt.should have_selector("option", :content => name), elt
   end
+end
+
+Then /^I should see the "(.*)" message$/ do |m|
+  response.should (have_selector("div##{m}") || have_selector("div.#{m}"))
 end

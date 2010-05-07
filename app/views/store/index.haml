@@ -1,7 +1,7 @@
-- if @next_season_subscriber
-  = sanitize_option_text :single_ticket_sales_banner_for_next_season_subscribers, 'div', :id => 'storeBannerNextSeasonSubscriber', :class => 'storeBanner'
-- elsif @subscriber
+- if @subscriber
   = sanitize_option_text :single_ticket_sales_banner_for_current_subscribers, 'div', :id => 'storeBannerSubscriber', :class => 'storeBanner'
+- elsif @next_season_subscriber
+  = sanitize_option_text :single_ticket_sales_banner_for_next_season_subscribers, 'div', :id => 'storeBannerNextSeasonSubscriber', :class => 'storeBanner'
 - else
   = sanitize_option_text :single_ticket_sales_banner_for_nonsubscribers, 'div', :id => 'storeBannerNonSubscriber', :class => 'storeBanner'
 
@@ -13,9 +13,6 @@
 
 #store
   
-  / #promo_entry.pageDiv
-  /  = render :partial =>'promo_entry',:locals=>{:promo_code=>@promo_code.to_s}
-
   %h1.page_heading.center
     Select Tickets
     %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code

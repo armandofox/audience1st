@@ -32,7 +32,7 @@ module ApplicationHelper
 
   def sanitize_option_text(opt, tag, tag_options = {})
     s = Option.value(opt)
-    s.blank? ? '' : content_tag(tag, sanitize(s), tag_options)
+    content_tag(tag, sanitize(s), tag_options)
   end
   
   def link_to_if_option(opt, text, alt='', opts={})
