@@ -1,5 +1,5 @@
 #welcome_header
-  - if FACEBOOKER && current_user.facebook_user?
+  - if USE_FACEBOOK && current_user.facebook_user?
     #welcome.facebook
       & Welcome, #{@gLoggedIn.full_name}
       %fb:profile-pic{:uid => current_user.fb_user_id, :facebook_logo => :true, :size => :thumb}
@@ -8,7 +8,7 @@
     #welcome.regular
       & Welcome, #{@gLoggedIn.full_name}
       = button_to 'Log Out', logout_path
-      - if FACEBOOKER
+      - if USE_FACEBOOK
         %span#link_to_facebook
           &  Link your #{Option.value(:venue_name)} account to Facebook!
           = fb_login_button('window.location = "/customers/link_user_accounts";')

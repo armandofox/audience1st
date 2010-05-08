@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   require 'date_time_extras.rb'
 
   # for Facebook Connect
-  if FACEBOOKER
+  if USE_FACEBOOK
     before_filter :set_facebook_session
     helper_method :facebook_session
   end

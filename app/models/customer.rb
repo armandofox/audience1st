@@ -553,7 +553,7 @@ class Customer < ActiveRecord::Base
   # Take the data returned from facebook and create a new user from it.
   # We don't get the email from Facebook and because a facebooker can only login through Connect we just generate a unique login name for them.
   # If you were using username to display to people you might want to get them to select one after registering through Facebook Connect
-  if FACEBOOKER
+  if USE_FACEBOOK
     def self.create_from_fb_connect(fb_user)
       first_name,last_name = fb_user.name.first_and_last_from_full_name
       new_facebooker = Customer.new(:first_name => first_name,

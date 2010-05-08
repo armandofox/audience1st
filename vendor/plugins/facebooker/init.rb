@@ -1,8 +1,8 @@
 if defined?(DISABLE_FACEBOOK) && DISABLE_FACEBOOK
   puts "Facebook integration disabled!"
-  FACEBOOKER = nil
+  USE_FACEBOOK = nil
 else
-
+  USE_FACEBOOK = true
   # Added support to the Facebooker.yml file for switching to the new profile design..
   # Config parsing needs to happen before files are required.
   facebook_config = "#{RAILS_ROOT}/config/facebooker.yml"

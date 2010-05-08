@@ -15,7 +15,7 @@
     %br/
     = gen_button "Buy Tickets", {:controller => 'store', :action => 'index'}
 
-- if FACEBOOKER
+- if USE_FACEBOOK
   #login_with_facebook
     %h2 Or Login Using Facebook
     = fb_login_button('window.location = "/customers/link_user_accounts";')

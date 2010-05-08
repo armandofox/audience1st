@@ -135,7 +135,7 @@ module AuthenticatedSystem
     end
 
     # login via Facebook Connect info
-  if FACEBOOKER
+  if USE_FACEBOOK
     def login_from_facebook
       if facebook_session
         self.current_user = Customer.find_by_fb_user(facebook_session.user)
