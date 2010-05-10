@@ -17,7 +17,8 @@ module ::ActionController
     class << self
       alias :old_relative_url_root :relative_url_root
       def relative_url_root
-        Facebooker.path_prefix
+        # PATCHED FROM facebooker issue #27 on github
+        Facebooker.path_prefix || old_relative_url_root
       end
     end
   end

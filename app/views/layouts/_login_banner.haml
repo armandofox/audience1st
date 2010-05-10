@@ -10,8 +10,9 @@
       = button_to 'Log Out', logout_path
       - if USE_FACEBOOK
         %span#link_to_facebook
-          &  Link your #{Option.value(:venue_name)} account to Facebook!
-          = fb_login_button('window.location = "/customers/link_user_accounts";')
+          - venue = h(Option.value(:venue_name))
+          &  Link your #{venue} account to Facebook!
+          = fb_login_button("window.location = '/customers/link_user_accounts?venue=#{venue}';")
         
   - if (@gAdmin.is_staff && controller.controller_name=~/customer|store|vouchers/)
     = button_to('Disable Admin', :controller => 'customers', :action => 'disable_admin')

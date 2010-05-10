@@ -4,7 +4,7 @@ development:
   canvas_page_name:
   callback_url:
   pretty_errors: true
-  set_asset_host_to_callback_url: true
+  set_asset_host_to_callback_url: false
   tunnel:
     public_host_username: 
     public_host: 
@@ -17,7 +17,7 @@ test:
   secret_key:
   canvas_page_name: 
   callback_url:
-  set_asset_host_to_callback_url: true
+  set_asset_host_to_callback_url: false
   tunnel:
     public_host_username: 
     public_host: 

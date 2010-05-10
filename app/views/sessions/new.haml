@@ -18,6 +18,6 @@
 - if USE_FACEBOOK
   #login_with_facebook
     %h2 Or Login Using Facebook
-    = fb_login_button('window.location = "/customers/link_user_accounts";')
+    = fb_login_button("window.location = '/customers/link_user_accounts?venue=#{h(Option.value(:venue_name))}';")
 
 .clear
