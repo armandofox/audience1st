@@ -108,7 +108,19 @@ class CustomersController < ApplicationController
     end
     redirect_to_stored
   end
-  
+
+  # We need to alias the above method because Facebook Connect thinks A1st is a single
+  # app (not an app per venue):
+  # - Generated 'login' button will trigger FacebookConnect callback to
+  #   http://www.audience1st.com/customers/link_user_accounts_<venueName>
+  # - Apache will rewrite this (httpd.conf) to
+  #   http://www.audience1st.com/<venueName>/customers/link_user_accounts
+  # - BUT, because Phusion Passenger uses the original (un-rewritten) URL for
+  #   dispatch, it will STILL try to dispatch to the method link_user_accounts_<venueName>
+  # - So we alias that method here.
+
+  alias_method "link_user_accounts_#{Option.value(:venue_shortname)}", :link_user_accounts
+
   def edit
     @customer = current_user
     @is_admin = current_admin.is_staff
