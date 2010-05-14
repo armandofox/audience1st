@@ -10,8 +10,12 @@ module AuthenticatedSystem
   # Accesses the current user from the session.
   # Future calls avoid the database because nil is not equal to false.
   def current_user
-    @current_user ||= (login_from_session || login_from_basic_auth ||
-      login_from_cookie || login_from_facebook) unless @current_user == false
+    unless @current_user == false # false means don't attempt auto login
+      @current_user ||= (login_from_session || login_from_basic_auth ||
+        login_from_cookie || login_from_facebook)
+      possibly_enable_admin(@current_user) 
+    end
+    @current_user
   end
 
   # Store the given user id in the session.
@@ -27,6 +31,17 @@ module AuthenticatedSystem
   # which it is safe to call instance methods of Customer.
   def current_admin
     session[:admin_id].to_i.zero? ? Customer.generic_customer : (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
+  end
+
+  # enable admin ID in session if this user is in fact an admin
+  def possibly_enable_admin(c = Customer.generic_customer)
+    return nil unless c
+    session[:admin_id] = nil
+    if c.is_staff # least privilege level that allows seeing other customer accts
+      (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
+      session[:admin_id] = c.id
+    end
+    c
   end
 
 
@@ -142,7 +157,7 @@ module AuthenticatedSystem
       end
     end
   else
-    def login_from_facebook ; nil ; end
+    def login_from_facebook ; false ; end
   end
     #
     # Logout

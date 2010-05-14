@@ -27,6 +27,9 @@ config.action_controller.perform_caching             = true
 # Enable threaded mode
 # config.threadsafe!
 
+# NewRelic performance monitoring
+config.gem "newrelic_rpm"
+
 # Remote exception notification
 ExceptionNotifier.configure_exception_notifier do |config|
   config[:sender_address] =  %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)

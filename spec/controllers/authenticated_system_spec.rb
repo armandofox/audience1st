@@ -20,7 +20,7 @@ describe SessionsController do
     end
     it 'resets the session'         do should_receive(:reset_session);         logout_killing_session! end
     it 'kills my auth_token cookie' do should_receive(:kill_remember_cookie!); logout_killing_session! end
-    it 'nils the current user'      do logout_killing_session!; current_user.should be_nil end
+    it 'nils the current user'      do logout_killing_session!; current_user.should be_false end
     it 'kills :user_id session' do
       session.stub!(:[]=)
       session.should_receive(:[]=).with(:cid, nil).at_least(:once)
@@ -44,7 +44,7 @@ describe SessionsController do
     end
     it 'does not reset the session' do should_not_receive(:reset_session);   logout_keeping_session! end
     it 'kills my auth_token cookie' do should_receive(:kill_remember_cookie!); logout_keeping_session! end
-    it 'nils the current user'      do logout_keeping_session!; current_user.should be_nil end
+    it 'nils the current user'      do logout_keeping_session!; current_user.should be_false end
     it 'kills :user_id session' do
       session.should_receive(:[]=).with(:cid, nil).at_least(:once).and_return(nil)
       logout_keeping_session!
@@ -103,4 +103,8 @@ describe SessionsController do
     end
   end
   
+  # Login for an admin
+
+  
+
 end

@@ -24,6 +24,7 @@ describe SessionsController do
         describe "my request cookie token is #{has_request_token.to_s}," do
           describe "and ask #{want_remember_me ? 'to' : 'not to'} be remembered" do 
             before do
+              @home_page = {:controller => 'customers', :action => 'welcome'}
               @ccookies = mock('cookies')
               controller.stub!(:cookies).and_return(@ccookies)
               @ccookies.stub!(:[]).with(:auth_token).and_return(token_value)
@@ -47,7 +48,7 @@ describe SessionsController do
             it "greets me nicely"            do do_create; response.flash[:notice].should =~ /success/i   end
             it "sets/resets/expires cookie"  do controller.should_receive(:handle_remember_cookie!).with(want_remember_me); do_create end
             it "sends a cookie"              do controller.should_receive(:send_remember_cookie!);  do_create end
-            it 'redirects to the home page'  do do_create; response.should redirect_to('/')   end
+            it 'redirects to the home page'  do do_create; response.should redirect_to(@home_page)   end
             it "does not reset my session"   do controller.should_not_receive(:reset_session).and_return nil; do_create end # change if you uncomment the reset_session path
             if (has_request_token == :valid)
               it 'does not make new token'   do @user.should_not_receive(:remember_me);   do_create end

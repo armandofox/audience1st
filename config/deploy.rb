@@ -92,14 +92,14 @@ deploy.task :after_update_code do
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
   abort if (config.nil? || config.empty?)
   debugging_ips = variables[:debugging_ips]
-  %w[config/database.yml config/facebooker.yml public/.htaccess support/Makefile].each do |f|
+  %w[config/database.yml config/facebooker.yml config/newrelic.yml public/.htaccess support/Makefile].each do |f|
     file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
     put file, "#{release_path}/#{f}"
     run "rm -f #{release_path}/#{f}.erb"
   end    
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
-  %w[config/venues.yml manual doc spec].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
+  %w[config/venues.yml manual doc spec features].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
   run "chmod -R go-w #{release_path}"
 end
 
