@@ -109,18 +109,6 @@ class CustomersController < ApplicationController
     redirect_to_stored
   end
 
-  # We need to alias the above method because Facebook Connect thinks A1st is a single
-  # app (not an app per venue):
-  # - Generated 'login' button will trigger FacebookConnect callback to
-  #   http://www.audience1st.com/customers/link_user_accounts_<venueName>
-  # - Apache will rewrite this (httpd.conf) to
-  #   http://www.audience1st.com/<venueName>/customers/link_user_accounts
-  # - BUT, because Phusion Passenger uses the original (un-rewritten) URL for
-  #   dispatch, it will STILL try to dispatch to the method link_user_accounts_<venueName>
-  # - So we alias that method here.
-
-  alias_method "link_user_accounts_#{Option.value(:venue_shortname)}", :link_user_accounts
-
   def edit
     @customer = current_user
     @is_admin = current_admin.is_staff
@@ -262,21 +250,6 @@ class CustomersController < ApplicationController
     @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} matching '#{@customers_filter}'"
   end
 
-  def switch_to
-    if (c = Customer.find_by_id(params[:id]))
-      session[:cid] = c.id
-      reset_shopping
-      if params[:target_controller] && params[:target_action]
-        redirect_to :controller => params[:target_controller], :action => params[:target_action]
-      else
-        redirect_to :controller => 'customers',:action => 'welcome'
-      end
-    else
-      flash[:notice] = "No such customer: id# #{params[:id]}"
-      redirect_to :controller => 'customers', :action => 'list'
-    end
-  end
-
   def merge
     if request.get?
       # display info from two records and allow selection
@@ -304,6 +277,20 @@ class CustomersController < ApplicationController
     else                      # failure
       flash[:notice] = c0.errors.full_messages.join(';')
       redirect_to :action => 'list'
+    end
+  end
+
+  def switch_to
+    if (current_user = Customer.find_by_id(params[:id]))
+      reset_shopping
+      if params[:target_controller] && params[:target_action]
+        redirect_to :controller => params[:target_controller], :action => params[:target_action]
+      else
+        redirect_to :controller => 'customers',:action => 'welcome'
+      end
+    else
+      flash[:notice] = "No such customer: id# #{params[:id]}"
+      redirect_to :controller => 'customers', :action => 'list'
     end
   end
 

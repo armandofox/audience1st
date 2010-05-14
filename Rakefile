@@ -9,6 +9,8 @@ require 'rake/rdoctask'
 
 require 'tasks/rails'
 
+require 'metric_fu'
+
 require 'spec/rake/spectask'
 namespace :spec do 
   desc "Run specs with RCov" 

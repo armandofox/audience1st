@@ -103,8 +103,31 @@ describe SessionsController do
     end
   end
   
-  # Login for an admin
-
-  
-
+  describe "admin switching" do
+    before(:each) do
+      @boxoffice_manager = customers(:boxoffice_manager)
+      @quentin = customers(:quentin)
+      login_as(:boxoffice_manager)
+      current_user.id.should == @boxoffice_manager.id
+      current_admin.id.should == @boxoffice_manager.id
+    end
+    context "any switching operation", :shared => true do
+      it "should not change the admin user" do ; current_admin.id.should == @boxoffice_manager.id  ; end
+      it "should not change the Facebook user" do ; pending ; end
+    end
+    context "to an existing user" do
+      before(:each) do ; act_on_behalf_of(@quentin) ; end
+      it "should change the active user" do
+        current_user.id.should == @quentin.id
+      end
+      it_should_behave_like "any switching operation"
+    end
+    context "to a nonexistent user" do
+      before(:each) do ; act_on_behalf_of(nil) ; end
+      it "should not switch the user" do
+        current_user.id.should == @boxoffice_manager.id
+      end
+      it_should_behave_like "any switching operation"
+    end
+  end
 end

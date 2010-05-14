@@ -13,7 +13,7 @@ module AuthenticatedSystem
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_basic_auth ||
         login_from_cookie || login_from_facebook)
-      possibly_enable_admin(@current_user) 
+      possibly_enable_admin(@current_user) unless session[:admin_id]
     end
     @current_user
   end
@@ -24,6 +24,14 @@ module AuthenticatedSystem
     @current_user = new_user || false
   end
 
+  def act_on_behalf_of(new_user)
+    if new_user
+      session[:cid] = new_user.id
+      @current_user = new_user
+    end
+    new_user
+  end
+  
   # current_admin is called from controller actions filtered by is_logged_in,
   # so there might in fact be NO admin logged in.
   # So it returns customer record of current admin, if one is logged in;
@@ -43,7 +51,6 @@ module AuthenticatedSystem
     end
     c
   end
-
 
     # Check if the user is authorized
     #
