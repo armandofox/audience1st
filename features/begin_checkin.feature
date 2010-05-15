@@ -1,3 +1,4 @@
+@wip
 Feature: begin checkin
 
   As a box office worker

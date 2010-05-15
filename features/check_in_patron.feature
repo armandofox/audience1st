@@ -1,3 +1,4 @@
+@wip
 Feature: Check in a patron
 
   As a box office worker

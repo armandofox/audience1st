@@ -90,7 +90,7 @@ end
 
 def log_out
   get '/sessions/destroy'
-  controller.current_user.should be_nil
+  controller.current_user.should be_false
 end
 
 def log_out!
