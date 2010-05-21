@@ -5,7 +5,7 @@ PLUGINS = $(shell find vendor/plugins -name '*.rb' -print -or -name '*.yml')
 all:
 	@echo Must force explicit target: dev, TAGS, doc
 
-dev:
+dev: TAGS
 	-cd config && ln -s database.yml.dev database.yml
 	-cd config && ln -s facebooker.yml.dev facebooker.yml
 	mkdir log

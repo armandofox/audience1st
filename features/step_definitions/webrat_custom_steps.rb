@@ -22,5 +22,5 @@ Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,name|
 end
 
 Then /^I should see the "(.*)" message$/ do |m|
-  response.should (have_selector("div##{m}") || have_selector("div.#{m}"))
+  response.should(have_selector("div##{m}") || have_selector("div.#{m}"))
 end

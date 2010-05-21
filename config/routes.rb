@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :donation_funds
+  map.resources :imports
 
   # just enough RESTful routes for restful_authentication to work
   # map.resources :customers

@@ -9,9 +9,11 @@ end
 Given /^I am logged in as (.*)?$/ do |who|
   is_admin = false
   case who
-  when /nonsubscriber/
+  when /administrator/i
+    @customer = customers(:admin)
+  when /nonsubscriber/i
     @customer = customers(:tom)
-  when /subscriber/
+  when /subscriber/i
     @customer = customers(:tom)
     make_subscriber!(@customer)
   when /box ?office manager/i

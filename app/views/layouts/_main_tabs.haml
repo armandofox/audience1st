@@ -8,6 +8,7 @@
     ['Vouchers', :vouchertypes, :list], |
     ['Reports', :report, :index], |
     ['Box Office', :box_office, :walkup], |
-    ['Donations', :donation, :list], |
-    ['Settings', :options, :edit]] |
+    ['Donations', :donation, :list]] |
+- if @gAdmin.is_boxoffice_manager
+  - tabs << ['Admin', :options, :edit]
 %ul#store_nav= nav_tabs 'store_nav', tabs

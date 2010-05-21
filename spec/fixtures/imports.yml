@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  name: MyString
+  completed: false
+  type: MyString
+  number_of_records: 1
+  filename: MyString
+  content_type: MyString
+
+two:
+  name: MyString
+  completed: false
+  type: MyString
+  number_of_records: 1
+  filename: MyString
+  content_type: MyString
