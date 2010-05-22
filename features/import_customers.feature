@@ -5,17 +5,21 @@ Feature: Import customer list
     info in one place
   I want to import a list of customers
 
-Scenario: Begin import
-
+Background:
   Given I am logged in as the administrator
   And I follow "Admin"
   Then I should be on the Admin:Settings page
   When I follow "Import"
   Then I should be on the Admin:Import page
-  And I should see "Import customer list..."
+  And I should see "What do you want to import"
+  And the "import_type" menu should contain "Customer/mailing list"
 
-Scenario: Stage spreadsheet for upload
+Scenario: Upload customer import list
   
-  Given I am logged in as the administrator      
-  And I go to the Admin:Import page
+  When I select "Customer/mailing list" from "import_type"
+  And I upload customer import list "list_with_2_customers.csv"
+  Then I should be on the Imports page
+  And I should see "list_with_2_customers.csv was successfully uploaded"
+
+
   

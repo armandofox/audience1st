@@ -18,7 +18,7 @@ module NavigationHelpers
     when /the admin:(.*) page/i
       case $1
       when /settings/i ; '/options/edit' 
-      when /import/i   ; '/import/new'
+      when /import/i   ; '/imports/new'
       else ; raise "No mapping for admin:$1"
       end
     # Add more mappings here.
