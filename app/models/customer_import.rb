@@ -1,8 +1,7 @@
 class CustomerImport < Import
 
-  Import.import_types["Customer/mailing list"] = 'CustomerImport'
-
-  MAX_PREVIEW_SIZE = 10
+  Import.add_import_type "Customer/mailing list", 'CustomerImport'
+  MAX_PREVIEW_SIZE = 10 unless defined?(MAX_PREVIEW_SIZE)
 
   def preview
     @customers = []

@@ -19,14 +19,15 @@ class ImportsController < ApplicationController
 
   def edit
     @import = Import.find(params[:id])
-    @collection,klass = Import.preview
-    case klass
-    when Customer
-      @template = 'customer/customer'
-    else
-      flash[:warning] = "Don't know how to preview a collection of #{Inflector.pluralize(klass)}."
-      redirect_to :action => :new
-    end
+    @collection,klass = @import.preview
+    @partial =
+      case klass.to_s
+      when 'Customer' then 'customer/customer'
+      else
+        flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(klass.to_s)}."
+        redirect_to :action => :new
+        nil
+      end
   end
 
 end
