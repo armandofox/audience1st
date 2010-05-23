@@ -27,11 +27,15 @@ class Import < ActiveRecord::Base
     begin
       CSV::Reader.create(self.uploaded_data)
     rescue Exception => e
-      msg = "Opening attachment data for #{self.filename}: #{e.message}"
+      msg = "Getting attachment data for #{self.filename}: #{e.message}"
       errors.add_to_base(msg)
       logger.error msg
       []
     end
+  end
+
+  def preview
+    raise "Must override this abstract method"
   end
 
 end

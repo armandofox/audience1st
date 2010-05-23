@@ -6,12 +6,18 @@ class CustomerImport < Import
   def preview
     @customers = []
     count = 0
-    self.csv_rows.each do |row|
-      if (c = customer_from_csv_row(row))
-        @customers << c
-        count += 1
+    begin
+      self.csv_rows.each do |row|
+        if (c = customer_from_csv_row(row))
+          @customers << c
+          count += 1
+        end
+        break if count == MAX_PREVIEW_SIZE
       end
-      break if count == MAX_PREVIEW_SIZE
+    rescue CSV::IllegalFormatError
+      self.errors.add_to_base "CSV file format is invalid starting at row #{count+1}"
+    rescue Exception => e
+      self.errors.add_to_base e.message
     end
     @customers
   end
