@@ -1,29 +1,37 @@
 class CustomerImport < Import
 
-  Import.add_import_type "Customer/mailing list", 'CustomerImport'
   MAX_PREVIEW_SIZE = 10 unless defined?(MAX_PREVIEW_SIZE)
+  MAX_IMPORT = 100_000 unless defined?(MAX_IMPORT)
 
   def preview
-    @customers = []
-    count = 0
-    begin
-      self.csv_rows.each do |row|
-        if (c = customer_from_csv_row(row))
-          @customers << c
-          count += 1
-        end
-        break if count == MAX_PREVIEW_SIZE
-      end
-    rescue CSV::IllegalFormatError
-      self.errors.add_to_base "CSV file format is invalid starting at row #{count+1}"
-    rescue Exception => e
-      self.errors.add_to_base e.message
-    end
-    @customers
+    return get_customers_to_import(MAX_PREVIEW_SIZE)
+  end
+
+  def num_records
+    return get_customers_to_import(MAX_IMPORT, count_only = true)
   end
 
   private
 
+  def get_customers_to_import(max=MAX_IMPORT,count_only = false)
+    customers = []
+    count = 0
+    begin
+      self.csv_rows.each do |row|
+        if (c = customer_from_csv_row(row))
+          customers << c unless count_only
+          count += 1
+        end
+        break if count == max
+      end
+    rescue CSV::IllegalFormatError
+      self.errors.add_to_base "CSV file format is invalid starting at row #{count+1}.  If you created this CSV file on a Mac, be sure to select 'Windows Comma-Separated' as the file type to save."
+    rescue Exception => e
+      self.errors.add_to_base e.message
+    end
+    return (count_only ? count : customers)
+  end
+  
   def customer_from_csv_row(row)
     return nil if (!row || row.empty? || row[0].to_s.match(/first name/i))
     c = Customer.new(

@@ -1,0 +1,11 @@
+%table.hilite
+  %thead
+    %tr
+      %th Type of import
+      %th Original file name
+      %th Size
+      %th Status
+  %tbody
+    = render :partial => 'import', :collection => @imports
+
+= gen_button 'New Import...', :action => :new
