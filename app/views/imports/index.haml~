@@ -1,3 +1,0 @@
-= render :partial => 'import', :collection => @imports
-
-= gen_button 'New Import...', :action => :new

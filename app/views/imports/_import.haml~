@@ -1,4 +1,0 @@
-%tr
-  %td= humanize(import.type)
-  %td= h(import.file_name)
-  %td= import.completed? ? "Complete" : link_to("Complete Import...", edit_import_path(import))
