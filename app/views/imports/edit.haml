@@ -12,5 +12,5 @@
     %tbody
       = render :partial => @partial, :collection => @collection
 
-= button_to 'Finalize Import', import_path(@import)
+= button_to 'Continue Import', import_path(@import)
 = button_to 'Cancel Import', import_path(@import), {:method => :delete}

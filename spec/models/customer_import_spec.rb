@@ -1,5 +1,5 @@
 require 'spec_helper'
-include ImportTestHelper
+include BasicModels
 
 describe CustomerImport do
 
@@ -51,6 +51,50 @@ describe CustomerImport do
       end
       it "should have Customers as the records" do
         @import.preview[0].should be_a_kind_of(Customer)
+      end
+    end
+  end
+  describe "importing" do
+    describe "a valid customer" do
+      before(:each) do
+        @customer = BasicModels.new_generic_customer
+        @import = CustomerImport.new
+        @import.stub!(:get_customers_to_import).and_return([@customer])
+        @imports,@rejects = @import.import!
+      end
+      it "should be saved" do
+        Customer.find_by_email(@customer.email).should be_a_kind_of(Customer)
+      end
+      it "should be in the imports list" do
+        @imports.should include(@customer)
+      end
+      it "should not be in rejects list" do
+        @rejects.should_not include(@customer)
+      end
+      it "should not have errors" do
+        @customer.errors.should be_empty
+      end
+    end
+    describe "an invalid customer" do
+      before(:each) do
+        @customer = BasicModels.new_generic_customer
+        @customer.last_name = '' # makes invalid
+        @customer.should_not be_valid
+        @import = CustomerImport.new
+        @import.stub!(:get_customers_to_import).and_return([@customer])
+        @imports,@rejects = @import.import!
+      end
+      it "should not be saved" do
+        Customer.find_by_email(@customer.email).should be_nil
+      end
+      it "should not appear in imports list" do
+        @imports.should_not include(@customer)
+      end
+      it "should appear in rejects list" do
+        @rejects.should include(@customer)
+      end
+      it "should have an error message" do
+        @customer.errors_on(:last_name).should include_match_for(/is too short/i)
       end
     end
   end

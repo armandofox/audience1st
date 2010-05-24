@@ -4,9 +4,9 @@ module BasicModels
     @@id += 1
     @@id.to_s
   end
-  def self.create_generic_customer
+  def self.new_generic_customer
     sym = self.gensym
-    Customer.create!(:first_name => "Joe#{sym}",
+    Customer.new(:first_name => "Joe#{sym}",
       :last_name => "Doe#{sym}",
       :login => "joe#{sym}",
       :email => "joe#{sym}@yahoo.com",
@@ -17,6 +17,11 @@ module BasicModels
       :state => "NY",
       :zip => "10019"
       )
+  end
+  def self.create_generic_customer
+    c = self.new_generic_customer
+    c.save!
+    c
   end
   def self.create_customer_by_name_and_email(args)
     c = Customer.create!(:first_name => args[0],

@@ -1,0 +1,4 @@
+First name,Last name,Login name,Email,Street,City,State,Zip,Day/primary phone,Eve/secondary phone,Don't mail,Don't email,Alt ID
+John,Doe,jondo,john.doe@mail.com,123 Fake St,New York,NY,10021,212-555-5555,,1,,9999
+Bob,,,bob@bob.com,,,,,,,,,7777
+Mary Jane,Simmons,,maryjane@mail.com,,,,,,,,1,8888

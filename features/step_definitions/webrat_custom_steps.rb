@@ -38,7 +38,7 @@ When /^I upload (.*) import list "(.*)"$/ do |type,file|
     raise "Unknown import type #{type}; try 'customer list', 'Brown Paper Tickets', or 'Goldstar'"
   end
   attach_file :import_uploaded_data, File.join(RAILS_ROOT, 'spec', 'import_templates', path, file)
-  click_button "Upload"
+  click_button "Preview Import"
 end
 
   

@@ -11,6 +11,16 @@ class CustomerImport < Import
     return get_customers_to_import(MAX_IMPORT, count_only = true)
   end
 
+  def import!
+    customers = get_customers_to_import
+    imports = []
+    rejects = []
+    customers.each do |customer|
+      customer.save ? imports << customer : rejects << customer
+    end
+    return [imports,rejects]
+  end
+  
   private
 
   def get_customers_to_import(max=MAX_IMPORT,count_only = false)

@@ -36,6 +36,11 @@ class ImportsController < ApplicationController
       end
   end
 
+  def update
+    @import = Import.find(params[:id])
+    @imports,@rejects = @import.import!
+  end
+
   def index
     @imports = Import.find(:all)
     if @imports.empty?

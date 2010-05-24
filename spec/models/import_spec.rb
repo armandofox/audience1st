@@ -1,5 +1,4 @@
 require 'spec_helper'
-include ImportTestHelper
 
 describe Import do
   before(:all) do
