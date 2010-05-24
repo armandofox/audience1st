@@ -11,6 +11,14 @@ class CustomerImport < Import
     return get_customers_to_import(MAX_IMPORT, count_only = true)
   end
 
+  def valid_records
+    return get_customers_to_import.collect { |c| c.valid? }
+  end
+
+  def invalid_records
+    return get_customers_to_import.reject { |c| c.valid? }
+  end
+
   def import!
     customers = get_customers_to_import
     imports = []

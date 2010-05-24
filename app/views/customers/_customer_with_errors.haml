@@ -1,0 +1,6 @@
+= render :partial => 'customers/customer', :locals => {:customer => customer_with_errors}
+- if !customer_with_errors.errors.empty?
+  %tr{:class => 'invalid'}
+    %td
+    %td
+    %td{:colspan => 8}= h customer_with_errors.errors.full_messages.join(', ')

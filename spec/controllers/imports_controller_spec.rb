@@ -7,10 +7,10 @@ describe ImportsController do
       Import.stub!(:find).and_return(@import)
     end
     context "valid Customer data" do
-      it "should use customer/customer template for Customer import" do
+      it "should use customer/customer_with_errors template for Customer import" do
         @import.stub!(:preview).and_return([Customer.new])
         get :edit, :id => @import
-        assigns[:partial].should == 'customers/customer'
+        assigns[:partial].should == 'customers/customer_with_errors'
       end
     end
     context "for invalid data" do

@@ -27,18 +27,34 @@ class ImportsController < ApplicationController
       redirect_to(:action => :new) and return
     end
     @num_records = @import.num_records
-    @partial =
-      case @collection.first.class.to_s
-      when 'Customer' then 'customers/customer'
-      else
-        flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@collection.first.class.to_s)}."
-        redirect_to(:action => :new) and return
-      end
+    unless (@partial = partial_for_collection(@collection))
+      flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@collection.first.class.to_s)}."
+      redirect_to(:action => :new) and return
+    end
   end
 
   def update
     @import = Import.find(params[:id])
     @imports,@rejects = @import.import!
+    flash[:notice] = "#{@imports.length} records successfully imported."
+    if @rejects.empty?
+      redirect_to imports_path
+      @import.destroy
+    else
+      flash[:notice] <<
+        "<br/>The #{@rejects.length} records shown below could not be imported due to errors."
+      @collection = @rejects
+      @partial = partial_for_collection(@collection)
+    end
+  end
+
+  def download_invalid
+    import = Import.find(params[:id])
+    rejects = import.invalid_records
+    csv = Customer.to_csv(rejects, :include_errors => true)
+    download_to_excel(csv, 'invalid_customers')
+    import.destroy
+    redirect_to imports_path
   end
 
   def index
@@ -50,7 +66,7 @@ class ImportsController < ApplicationController
   end
     
   def destroy
-    @import = Import.find(params[:id])
+    @import ||= Import.find(params[:id])
     flash[:notice] = "Import of file #{@import.filename} cancelled."
     delete_original_attachment
     @import.destroy
@@ -63,5 +79,11 @@ class ImportsController < ApplicationController
     FileUtils.rm_rf @import.full_filename
     logger.info "Deleting #{@import.full_filename}"
   end
-  
+
+  def partial_for_collection(collection)
+    case collection.first.class.to_s
+    when 'Customer' then 'customers/customer_with_errors'
+    end
+  end
+
 end

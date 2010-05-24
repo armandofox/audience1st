@@ -223,7 +223,7 @@ EOQ1
 
   def unfulfilled_orders_addresses
     sql = <<-EOQ
-     SELECT DISTINCT c.first_name,c.last_name,c.street,c.city,c.state,c.zip
+     SELECT DISTINCT c.*
      FROM customers c,vouchers v
      WHERE c.id=v.customer_id AND v.fulfillment_needed=1
 EOQ
@@ -233,7 +233,8 @@ EOQ
       redirect_to :action => 'index'
       return
     end
-    export_customers_to_excel(@customers)
+    output = Customer.to_csv(@customers)
+    download_to_excel(output, 'customers')
   end
 
   def mark_fulfilled
@@ -295,18 +296,6 @@ EOQ2
 
 
   private
-
-  def export_customers_to_excel(custs)
-    filenm = custs.first.class.to_s.downcase
-    CSV::Writer.generate(output='') do |csv|
-      custs.each do |c|
-        csv << [c.first_name.name_capitalize,
-                c.last_name.name_capitalize,
-                c.street,c.city,c.state,c.zip]
-      end
-      download_to_excel(output,filenm)
-    end
-  end
 
   def get_dates_from_params(from_param,to_param,
                             default_from=Time.now,default_to=Time.now)

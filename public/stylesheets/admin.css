@@ -128,7 +128,18 @@ body.testing {
 #staffButtons {
 	border-top: 1px groove #fff;
 }
-
+/*
+ * Customer list 
+ */
+tr.staff {
+    color: blue;
+}
+tr.invalid {
+    color: red;
+}
+tr.subscriber {
+    background-color: #9f9;
+}
 /*
  * General utility styles
  */

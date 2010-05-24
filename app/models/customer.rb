@@ -2,6 +2,7 @@ class Customer < ActiveRecord::Base
   include Authentication
   include Authentication::ByPassword
   include Authentication::ByCookieToken
+  require 'csv'
 
   has_many :vouchers
   has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
@@ -162,14 +163,13 @@ class Customer < ActiveRecord::Base
   # convenience accessors
 
   def inspect
-    "[#{self.id}] #{first_name.name_capitalize} #{last_name.name_capitalize} " <<
-      "<#{login}> " <<
+    "[#{self.id}] #{self.full_name} <#{login}> " <<
       (email.blank? ? '' : "<#{email}>") <<
       (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
   end
   
   def full_name
-    "#{self.first_name.name_capitalize} #{self.last_name.name_capitalize}"
+    "#{first_name.name_capitalize unless first_name.blank?} #{last_name.name_capitalize unless last_name.blank?}"
   end
 
   def full_name_with_id
@@ -524,9 +524,34 @@ class Customer < ActiveRecord::Base
     }
   end
 
-  # check if mailing address appears valid.
-  # TBD: should use a SOAP service to do this when a cust record is saved, and flag entry if
-  #bad address.
+  # Convert list of customers to CSV.  If with_errors is true, last column is
+  # ActiveRecord error messages for the customer (joined with ';').
+
+  def self.to_csv(custs,opts={})
+    filenm = custs.first.class.to_s.downcase
+    CSV::Writer.generate(output='') do |csv|
+      unless args[:suppress_header]
+        csv << ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
+          'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"]
+      end
+      custs.each do |c|
+        row = [
+          (c.first_name.name_capitalize unless c.first_name.blank?),
+          (c.last_name.name_capitalize unless c.last_name.blank?),
+          c.login,
+          c.email,
+          c.street,c.city,c.state,c.zip,
+          c.day_phone, c.eve_phone,
+          (c.blacklist ? "true" : ""),
+          (c.e_blacklist ? "true" : "")
+        ]
+        row << c.errors.full_messages.join('; ') if opts[:include_errors]
+        csv << row
+      end
+      return output
+    end
+  end
+
 
   def self.find_all_subscribers(order_by='last_name',opts={})
     conds = ['vt.subscription=1',

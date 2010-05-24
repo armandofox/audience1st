@@ -8,9 +8,9 @@
 #import_preview
   %table.hilite.import
     %thead
-      = render :partial => "#{@partial}_header"
+      = render :partial => "#{@partial.gsub('_with_errors', '')}_header"
     %tbody
       = render :partial => @partial, :collection => @collection
 
-= button_to 'Continue Import', import_path(@import)
+= button_to 'Continue Import', import_path(@import), {:method => :put}
 = button_to 'Cancel Import', import_path(@import), {:method => :delete}
