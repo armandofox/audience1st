@@ -1,0 +1,5 @@
+%tr
+  %td= import.humanize_type
+  %td= h(import.filename)
+  %td= number_to_human_size(import.size)
+  %td= import.completed? ? "Complete" : gen_button("Finish Import...", edit_import_path(import)) + gen_button("Cancel Import", import_path(import), :method => :delete)

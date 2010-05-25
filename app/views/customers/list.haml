@@ -9,23 +9,9 @@
   - cols = %w[street city state zip day_phone eve_phone login]
   %table.hilite
     %thead
-      %tr
-        %th
-        %th Name
-        - cols.each do |c|
-          %th= link_to ActiveSupport::Inflector.humanize(c), :action=>'list', :order_by=>c,:filter=>params[:filter]
-    %tbody  
-      - @customers.each do |c|
-        %tr{:valign=>:top,:class=>display_class(c)}
-          %td= check_box_tag "merge[#{c.id}]"
-          %td= link_to c.full_name, {:action => 'switch_to', :id => c }
-          %td= h c.street
-          %td= h c.city
-          %td= h c.state
-          %td= h c.zip
-          %td= number_to_phone_2(c.day_phone)
-          %td= number_to_phone_2(c.eve_phone)
-          %td= h c.login
+      = render :partial => 'customer_header'
+    %tbody
+      = render :partial => 'customer', :collection => @customers
 
   = pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'}
 

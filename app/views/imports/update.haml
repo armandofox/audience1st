@@ -1,0 +1,14 @@
+%p 
+  Download a CSV file containing only the records that could <strong>not</strong> be imported:
+  %br
+  = button_to 'Download', :action => 'download_invalid', :id => @import
+
+%h2 #{@collection.length} records could not be imported:
+
+#import_preview
+  %table.hilite.import
+    %thead
+      = render :partial => "#{@partial.gsub('_with_errors', '')}_header"
+    %tbody
+      = render :partial => @partial, :collection => @collection
+

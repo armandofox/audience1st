@@ -178,9 +178,10 @@ class EmailGoldstar < ActionMailer::Base
     while (rows.next?) do
       row = rows.next
       if (row && !row.empty? && row[4].to_s.match( /^\d+$/ ))
-
+        # starting 5/2010, Goldstar puts an asterisk after the last name of
+        # "red velvet" members, so we must strip it off:
         tix<< ExternalTicketOrder.new(:last_name => row[0].to_s,
-                                      :first_name => row[1].to_s,
+                                      :first_name => row[1].to_s.gsub(/\*+$/,''),
                                       :qty => row[2].to_i,
                                       :ticket_offer => tixtypes[row[3].to_s],
                                       :order_key => row[4].to_s)

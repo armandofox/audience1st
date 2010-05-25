@@ -15,12 +15,30 @@ Then /^I should see a quantity menu for "([^\"]*)"$/ do |name|
   flunk
 end
 
-Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,name|
-  response_body.should have_selector("select[name='#{menu}']") do |elt|
-    elt.should have_selector("option", :content => name), elt
+Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,choice|
+  response.should(have_tag("select[id=#{menu}]") || have_tag("select[name=#{menu}]")) do |m|
+    m.should have_selector("option", :content => choice)
   end
 end
 
 Then /^I should see the "(.*)" message$/ do |m|
-  response.should (have_selector("div##{m}") || have_selector("div.#{m}"))
+  response.should(have_selector("div##{m}") || have_selector("div.#{m}"))
 end
+
+# File uploading
+When /^I upload (.*) import list "(.*)"$/ do |type,file|
+  case type
+  when /customer/i
+    path = "customer_list"
+  when /brown/i
+    path = "brownpapertickets"
+  when /goldstar/i
+    path = "email_goldstar"
+  else
+    raise "Unknown import type #{type}; try 'customer list', 'Brown Paper Tickets', or 'Goldstar'"
+  end
+  attach_file :import_uploaded_data, File.join(RAILS_ROOT, 'spec', 'import_templates', path, file)
+  click_button "Preview Import"
+end
+
+  

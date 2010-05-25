@@ -159,20 +159,14 @@ EJS1
 
   def nav_tabs(klass,ary)
     ary.map do |a|
+      args = {:controller => a[1].to_s, :action => a[2].to_s }
+      args[:id] = a[3].id if a.length > 3
+      args.merge!(a[4]) if a.length > 4
       a[0].insert(0,"<br/>") unless a[0].gsub!( /~/, "<br/>")
-      if a.length > 3
-        if a[3].nil?
-          "<li class='disabled'>#{a[0]}</li>"
-        else
-          "<li class='#{klass}' id=\"t_#{a[1]}_#{a[2]}\">" <<
-            link_to(a[0], {:controller => a[1].to_s,:action => a[2].to_s,
-                      :id => a[3].id}.merge(a[4] || {})) <<
-            "</li>"
-        end
-      else
-        "<li class='#{klass}' id=\"t_#{a[1]}_#{a[2]}\">" <<
-          link_to(a[0], {:controller => a[1].to_s,:action => a[2].to_s}) <<
-          "</li>"
+      content_tag(:li, h(a[0]),
+        :class => (a[3].blank? ? :disabled : klass),
+        :id => "t_#{a[1]}_#{a[2]}") do
+        link_to(a[0], args)
       end
     end.join("\n")
   end

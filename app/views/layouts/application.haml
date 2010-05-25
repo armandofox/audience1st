@@ -4,6 +4,7 @@
  'xml:lang' => 'en',  |
  'lang' => 'en'}  |
   %head
+    = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
     = javascript_include_tag :defaults
 
@@ -34,6 +35,8 @@
               - if controller.controller_name == 'box_office'
                 = render :partial => 'layouts/box_office_tabs'
                 = render :partial => 'box_office/show_stats'
+              - elsif controller.controller_name =~ /import|options/i
+                = render :partial => 'layouts/admin_tabs'
               - elsif @gCustomer
                 = render :partial => 'layouts/main_tabs'
                 - if @gAdmin.is_staff

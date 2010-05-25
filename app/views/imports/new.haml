@@ -1,0 +1,11 @@
+= error_messages_for :import
+
+- form_for :import, :url => imports_path, :html => {:multipart => true} do |f|
+  %p
+    %label{:for => :type} What do you want to import?
+    = f.select :type, options_for_select(Import.import_types)
+  %p
+    %label{:for => :uploaded_data} Select CSV file to import:
+    = f.file_field :uploaded_data
+  %p= submit_tag 'Preview Import'
+  

@@ -1,0 +1,16 @@
+%h1 Preview your imported data
+
+#import_metadata
+  %p Filename: #{h @import.filename}
+  %p Size: #{number_to_human_size @import.size}
+  %p Previewing #{@collection.size} of #{@import.num_records} total records
+
+#import_preview
+  %table.hilite.import
+    %thead
+      = render :partial => "#{@partial.gsub('_with_errors', '')}_header"
+    %tbody
+      = render :partial => @partial, :collection => @collection
+
+= button_to 'Continue Import', import_path(@import), {:method => :put}
+= button_to 'Cancel Import', import_path(@import), {:method => :delete}

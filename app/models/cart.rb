@@ -7,7 +7,7 @@ class Cart
   private
 
   # number of seconds from the epoch to 1/1/2008, used to offset order ID's
-  TIMEBASE = 1230796800
+  TIMEBASE = 1230796800 unless defined?(TIMEBASE)
   def self.generate_order_id
     sprintf("%02d%d%02d", Option.value(:venue_id), Time.now.to_i - TIMEBASE,
            Time.now.usec % 37).to_i
