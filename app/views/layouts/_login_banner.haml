@@ -1,5 +1,5 @@
 #welcome_header
-  - if USE_FACEBOOK && current_user.facebook_user?
+  - if acting_on_own_behalf && USE_FACEBOOK && current_user.facebook_user?
     #welcome.facebook
       & Welcome, #{@gLoggedIn.full_name}
       %fb:profile-pic{:uid => current_user.fb_user_id, :facebook_logo => :true, :size => :thumb}
@@ -8,13 +8,13 @@
     #welcome.regular
       & Welcome, #{@gLoggedIn.full_name}
       = button_to 'Log Out', logout_path
-      - if USE_FACEBOOK
+      - if acting_on_own_behalf && USE_FACEBOOK
         %span#link_to_facebook
           &  Link your #{Option.value(:venue)} account to Facebook!
           = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")
         
   - if (@gAdmin.is_staff && controller.controller_name=~/customer|store|vouchers/)
-    = button_to('Disable Admin', :controller => 'customers', :action => 'disable_admin')
+    = button_to('Temporarily Disable Admin', :controller => 'customers', :action => 'temporarily_disable_admin')
 
 - if @gAdmin.is_admin
   #admin_welcome_header

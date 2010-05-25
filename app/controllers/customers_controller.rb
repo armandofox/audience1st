@@ -416,8 +416,9 @@ class CustomersController < ApplicationController
     end
   end
 
-  def disable_admin
-    session[:admin_id] = nil
+  def temporarily_disable_admin
+    disable_admin
+    flash[:notice] = "You are now logged in <strong>without</strong> admin privileges.  Logout and log back in to reestablish admin privileges."
     redirect_to_stored
   end
 

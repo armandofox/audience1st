@@ -31,6 +31,11 @@ module AuthenticatedSystem
     end
     new_user
   end
+
+  def acting_on_own_behalf
+    session[:admin_id].to_i.zero? ||
+      session[:admin_id] == session[:cid]
+  end
   
   # current_admin is called from controller actions filtered by is_logged_in,
   # so there might in fact be NO admin logged in.
@@ -50,6 +55,10 @@ module AuthenticatedSystem
       session[:admin_id] = c.id
     end
     c
+  end
+
+  def disable_admin
+    session[:admin_id] = nil
   end
 
     # Check if the user is authorized
