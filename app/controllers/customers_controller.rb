@@ -281,12 +281,13 @@ class CustomersController < ApplicationController
   end
 
   def switch_to
-    if (current_user = Customer.find_by_id(params[:id]))
+    if (customer = Customer.find_by_id(params[:id]))
+      act_on_behalf_of customer
       reset_shopping
       if params[:target_controller] && params[:target_action]
-        redirect_to :controller => params[:target_controller], :action => params[:target_action]
+        redirect_to :controller => params[:target_controller], :action => params[:target_action], :id => customer.id
       else
-        redirect_to :controller => 'customers',:action => 'welcome'
+        redirect_to :controller => 'customers',:action => 'welcome',:id => customer.id
       end
     else
       flash[:notice] = "No such customer: id# #{params[:id]}"

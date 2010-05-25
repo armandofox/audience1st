@@ -2,7 +2,24 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe CustomersController do
   include AuthenticatedSystem
-  context "during checkout flow" do
+  describe "admin switching" do
+    before(:each) do
+      @admin = BasicModels.create_customer_by_role(:boxoffice_manager)
+      login_as @admin
+      current_user.id.should == @admin.id
+    end
+    context "to existing user" do
+      before(:each) do
+        @customer = BasicModels.create_generic_customer
+      end
+      it "should switch to new user" do
+        get :switch_to, :id => @customer.id, :target_controller => :customers, :target_action => :welcome
+        current_user.id.should == @customer.id
+      end
+      it "should retain current admin"
+    end
+  end
+  describe "checkout flow" do
     before(:each) do
       @customer = BasicModels.create_generic_customer
       login_as @customer

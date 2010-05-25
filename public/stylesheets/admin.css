@@ -132,7 +132,7 @@ body.testing {
  * Customer list 
  */
 tr.staff {
-    color: blue;
+    font-style: italic;
 }
 tr.invalid {
     color: red;
