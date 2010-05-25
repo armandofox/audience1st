@@ -530,7 +530,7 @@ class Customer < ActiveRecord::Base
   def self.to_csv(custs,opts={})
     filenm = custs.first.class.to_s.downcase
     CSV::Writer.generate(output='') do |csv|
-      unless args[:suppress_header]
+      unless opts[:suppress_header]
         csv << ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
           'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"]
       end

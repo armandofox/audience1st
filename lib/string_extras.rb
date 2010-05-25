@@ -58,3 +58,12 @@ class String
   end
 end
 
+# for safety, extend Object and NilClass etc with the capitalization helpers
+
+class Object
+  def name_capitalize ;  self.nil? ? "" : self.to_s ; end
+end
+
+class NilClass #:nodoc:
+  def name_capitalize ; '' ; end
+end
