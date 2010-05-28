@@ -37,9 +37,8 @@ EmailList.mode = {
   :mailchimp_default_list_name => 'Testing'
 }
 
-DISABLE_FACEBOOK = true
-
 # for testing
 
 config.gem "cucumber", :lib => false, :version => ">= 0.6.4"
 config.gem "webrat", :lib => false, :version => ">= 0.7.1"
+

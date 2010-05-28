@@ -7,6 +7,10 @@ Feature: link with Facebook
 
 Scenario: login from Facebook
 
-  Given I am logged in via Facebook as "Armando Fox"
-  And I am on the home page
+  Given I am logged in with linked Facebook account "armando"
+  And I go to the home page
+  Then I should be on the home page
+  And I should see "Welcome, Armando Fox" within "div[id=welcome][class=facebook]"
+
+Scenario: link existing account 
 

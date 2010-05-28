@@ -141,4 +141,11 @@ old_password_holder:
   crypted_password:          00742970dc9e6319f8019fd54864d3ea740f04b1 # test
   created_at:                <%= 1.days.ago.to_s :db %>
 
+# For Facebook Connect integration tests
 
+armando:
+  id: 11000
+  first_name: Armando
+  last_name:  Fox
+  login:      armandofox@gmail.com 
+  email:      armandofox@gmail.com 

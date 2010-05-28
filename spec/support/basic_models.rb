@@ -4,9 +4,9 @@ module BasicModels
     @@id += 1
     @@id.to_s
   end
-  def self.new_generic_customer
+  def self.new_generic_customer(args={})
     sym = self.gensym
-    Customer.new(:first_name => "Joe#{sym}",
+    Customer.new({:first_name => "Joe#{sym}",
       :last_name => "Doe#{sym}",
       :login => "joe#{sym}",
       :email => "joe#{sym}@yahoo.com",
@@ -15,11 +15,11 @@ module BasicModels
       :street => "123 Fake St",
       :city => "New York",
       :state => "NY",
-      :zip => "10019"
-      )
+        :zip => "10019"
+      }.merge(args))
   end
-  def self.create_generic_customer
-    c = self.new_generic_customer
+  def self.create_generic_customer(args={})
+    c = self.new_generic_customer(args)
     c.save!
     c
   end
@@ -32,8 +32,8 @@ module BasicModels
     c.update_attributes!({:role, (Customer.role_value(args[3] || :patron))})
     c
   end
-  def self.create_customer_by_role(role)
-    c = self.create_generic_customer
+  def self.create_customer_by_role(role,args={})
+    c = self.create_generic_customer(args)
     c.update_attribute(:role, Customer.role_value(role))
     c
   end

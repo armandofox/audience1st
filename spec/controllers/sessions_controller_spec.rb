@@ -159,5 +159,4 @@ describe SessionsController do
       new_session_path().should == "/session/new"
     end
   end
-  
 end
