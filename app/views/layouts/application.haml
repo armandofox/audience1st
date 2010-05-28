@@ -31,7 +31,7 @@
           #left_sidebar
           #right_main
             #nav
-              = render :partial => 'layouts/login_banner' if @gCustomer
+              = render :partial => 'layouts/login_banner' if current_user
               - if controller.controller_name == 'box_office'
                 = render :partial => 'layouts/box_office_tabs'
                 = render :partial => 'box_office/show_stats'
