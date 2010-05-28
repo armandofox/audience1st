@@ -1,22 +1,37 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe CustomersController do
-  include AuthenticatedSystem
+  before do
+    CustomersController.send(:public, :current_user, :current_admin, :set_return_to)
+  end
   describe "admin switching" do
     before(:each) do
-      @admin = BasicModels.create_customer_by_role(:boxoffice_manager)
+      @admin = BasicModels.create_customer_by_role(:boxoffice_manager,
+        :last_name => "Admin" )
+      @customer = BasicModels.create_generic_customer
       login_as @admin
-      current_user.id.should == @admin.id
+      @controller.current_user.id.should == @admin.id
     end
-    context "to existing user" do
-      before(:each) do
-        @customer = BasicModels.create_generic_customer
-      end
-      it "should switch to new user" do
-        get :switch_to, :id => @customer.id, :target_controller => :customers, :target_action => :welcome
-        current_user.id.should == @customer.id
-      end
-      it "should retain current admin"
+    it "should switch to existing user" do
+      get :switch_to, :id => @customer.id
+      @controller.current_user.id.should == @customer.id
+    end
+    it "should retain current admin" do
+      get :switch_to, :id => @customer.id
+      @controller.current_admin.id.should == @admin.id
+    end
+    it "should not switch to nonexistent user" do
+      id = @customer.id
+      @customer.destroy
+      get :switch_to, :id => id
+    end
+    it "should redirect to welcome action by default" do
+      get :switch_to, :id => @customer.id
+      response.should redirect_to(:controller => 'customers', :action => 'welcome')
+    end
+    it "should redirect to specified action if provided" do
+      get :switch_to, :id => @customer.id, :target_controller => 'foo', :target_action => 'bar'
+      response.should redirect_to(:controller => 'foo', :action => 'bar', :id => @customer.id)
     end
   end
   describe "checkout flow" do
@@ -26,7 +41,7 @@ describe CustomersController do
       ApplicationController.stub!(:find_cart).and_return(mock_model(Cart).as_null_object)
       controller.set_checkout_in_progress(true)
       @target = {:controller => 'store', :action => 'checkout'}
-      set_return_to @target
+      @controller.set_return_to @target
     end
     describe "when updating billing info" do
       before(:each) do
@@ -48,6 +63,17 @@ describe CustomersController do
       it "should continue the checkout flow" do
         response.should redirect_to(@target)
       end
+    end
+  end
+
+  describe "legacy routes" do
+    it "should reroute the old /customers/login action" do
+      get :login
+      response.should redirect_to(login_path)
+    end
+    it "should route the old /customers/logout action" do
+      get :logout
+      response.should redirect_to(logout_path)
     end
   end
 end

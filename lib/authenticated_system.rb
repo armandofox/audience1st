@@ -29,7 +29,6 @@ module AuthenticatedSystem
       session[:cid] = new_user.id
       @current_user = new_user
     end
-    new_user
   end
 
   def acting_on_own_behalf

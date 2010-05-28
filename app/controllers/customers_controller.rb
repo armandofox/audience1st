@@ -23,7 +23,7 @@ class CustomersController < ApplicationController
                 :add_to_flash => 'Only super-admin can delete customer; use Merge instead')
 
   # prevent complaints on AJAX autocompletion
-  skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name,:logout]
+  skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name]
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => %w[destroy create user_create], :redirect_to => { :controller => :customers, :action => :welcome, :add_to_flash => "This action requires a POST." }
@@ -45,6 +45,10 @@ class CustomersController < ApplicationController
   # to login if you're not logged in or to subscriber welcome if you're a
   # subscriber.
   def index ; redirect_to :action => 'welcome' ; end
+
+  # DEPRECATED legacy routes:
+  def login ; redirect_to login_path ; end
+  def logout ; redirect_to logout_path ; end
 
   # welcome screen: different for nonsubscribers vs. subscribers
 
