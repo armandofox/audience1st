@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./script/rstakeout.rb "./script/cucumber $*" "app/**/*.rb" "features/**/*" "config/"
+
