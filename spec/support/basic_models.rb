@@ -4,9 +4,9 @@ module BasicModels
     @@id += 1
     @@id.to_s
   end
-  def self.new_generic_customer(args={})
+  def self.new_generic_customer_params(args={})
     sym = self.gensym
-    Customer.new({:first_name => "Joe#{sym}",
+    {:first_name => "Joe#{sym}",
       :last_name => "Doe#{sym}",
       :login => "joe#{sym}",
       :email => "joe#{sym}@yahoo.com",
@@ -16,7 +16,10 @@ module BasicModels
       :city => "New York",
       :state => "NY",
         :zip => "10019"
-      }.merge(args))
+    }.merge(args)
+  end
+  def self.new_generic_customer(args={})
+    Customer.new(self.new_generic_customer_params(args))
   end
   def self.create_generic_customer(args={})
     c = self.new_generic_customer(args)

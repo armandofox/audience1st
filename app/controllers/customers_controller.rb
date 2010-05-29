@@ -161,7 +161,6 @@ class CustomersController < ApplicationController
     # update generic attribs
     # if login is empty - make it nil to avoid failing validation
     params[:customer].delete(:login) if params[:customer][:login].blank?
-    @customer.validation_level = 1 # since editing own info
     if @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
@@ -222,7 +221,6 @@ class CustomersController < ApplicationController
       render :action => 'new'
       return
     end
-    @customer.validation_level = 1
     if @customer.save && @customer.errors.empty?
       @customer.update_attribute(:last_login, Time.now)
       unless temp_password
@@ -273,7 +271,7 @@ class CustomersController < ApplicationController
       flash[:error] = "At least one customer not found. Please try again."
       redirect_to :action => :list and return
     end
-    result = c0.merge_with(c1, params)
+    result = c0.merge_with_params!(c1, params)
     # result is nil if merge failed, else string describing result
     if result
       flash[:notice] = result
@@ -339,7 +337,6 @@ class CustomersController < ApplicationController
     end
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
-    @customer.validation_level = 1
     # then must have a password too....
     if @customer.save
       flash[:notice] <<  'Account was successfully created.'

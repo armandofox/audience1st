@@ -231,10 +231,6 @@ describe Customer do
   end
   describe "merging" do
     before(:each) do
-      # stub out the merge handlers for associated attributes
-      [Donation,Voucher,Txn].each do |klass|
-        klass.stub!(:merge_handler).and_return(0)
-      end
       # remove fractional seconds from time, else date comparisons fail!
       @now = Time.now.change(:usec => 0)
       @c1attrs = {:first_name => "f1", :last_name => "l1",
@@ -264,27 +260,52 @@ describe Customer do
       @c1.should be_valid
       @c2.should be_valid
     end
+    context "in all cases", :shared => true do
+      it "should retain higher role/privilege"
+      it "should set updated-at to the time of the merge"
+      it "should clear created-by-admin flag if at least 1 record was customer-created"
+    end
+    describe "automatically" do
+      context "for all automatic cases", :shared => true do
+        it "should retain most conservative blacklist value"
+        it "should retain most conservative e-blacklist value"
+        it "should retain nonblank staff comment"
+        it "should merge staff comments when both are nonblank"
+        it "should merge tags removing duplicates"
+        it_should_behave_like "in all cases"
+      end
+      context "for 2 customer-created records" do
+        it "should select more recent login if there's login info"
+        it "should select more recently updated_at if no login info"
+        it "should not overwrite blank values with older nonblank values"
+      end
+      context "for 1 customer-created and 1 admin-created record" do
+        it "should select self-created over admin-created, even if staler"
+        it "should overwrite blank with nonblank values"
+      end
+      it_should_behave_like "for all automatic cases"
+    end
     context "when there is Facebook data" do
       it "should keep facebook ID if first customer had one" do
         @c1.fb_user_id = 56789
-        @c1.merge_with(@c2,@params).should_not be_nil
+        @c1.merge_with_params!(@c2,@params).should_not be_nil
         @c1.fb_user_id.should == 56789
       end
       it "should keep facebook ID if second customer had one" do
         @c2.fb_user_id = 98765
-        @c1.merge_with(@c2,@params).should_not be_nil
+        @c1.merge_with_params!(@c2,@params).should_not be_nil
         @c1.fb_user_id.should == 98765
       end
       it "should keep first user's facebook ID if both have one" do
         @c1.fb_user_id = 56789
         @c2.fb_user_id = 98765
-        @c1.merge_with(@c2,@params)
+        @c1.merge_with_params!(@c2,@params)
         @c1.fb_user_id.should == 56789
       end
     end
     context "when result of merge is a valid customer" do
       before(:each) do
-        @c1.merge_with(@c2,@params).should_not be_nil
+        @c1.merge_with_params!(@c2,@params).should_not be_nil, @c1.errors.full_messages.join(',')
       end
       it "should keep selected attributes of the merge" do
         # role & salt wouldn't normally appear in params, but was thrown in to test
@@ -321,7 +342,7 @@ describe Customer do
         # records may predate some validation rules
         @c1.street = ''
         @c1.should_not be_valid
-        @c1.merge_with(@c2,@params).should be_nil
+        @c1.merge_with_params!(@c2,@params).should be_nil
       end
       it "should not delete the redundant customer" do
         Customer.find_by_id(@c2.id).should be_a(Customer)

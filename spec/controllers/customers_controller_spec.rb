@@ -4,6 +4,33 @@ describe CustomersController do
   before do
     CustomersController.send(:public, :current_user, :current_admin, :set_return_to)
   end
+  describe "admin creating valid customer" do
+    fixtures :customers
+    before(:each) do
+      @params = BasicModels.new_generic_customer_params
+      login_as :boxoffice_manager
+      post :create, {:customer => @params}
+    end
+    it "should create the customer" do
+      Customer.find_by_email(@params[:email]).should_not be_nil
+    end
+    it "should set created-by-admin flag" do
+      Customer.find_by_email(@params[:email]).should be_created_by_admin
+    end
+  end
+  describe "user self-creation" do
+    before(:each) do
+      @params = BasicModels.new_generic_customer_params
+      login_as(nil)
+      post :user_create, {:customer => @params}
+    end
+    it "should create the customer" do
+      Customer.find_by_email(@params[:email]).should_not be_nil
+    end
+    it "should not set created-by-admin flag when created by customer" do
+      Customer.find_by_email(@params[:email]).should_not be_created_by_admin
+    end
+  end
   describe "admin switching" do
     before(:each) do
       @admin = BasicModels.create_customer_by_role(:boxoffice_manager,

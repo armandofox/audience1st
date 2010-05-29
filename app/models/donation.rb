@@ -19,11 +19,9 @@ class Donation < ActiveRecord::Base
   # values of processed_by field, which is really a customer id.
   # Returns number of actual donation records transferred.
 
-  def self.merge_handler(old,new)
-    Donation.update_all("processed_by_id = '#{new}'", "processed_by_id = '#{old}'")
-    Donation.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
+  def self.additional_foreign_keys_to_customer
+    [:processed_by_id]
   end
-
 
   def price ; self.amount ; end # why can't I use alias for this?
 

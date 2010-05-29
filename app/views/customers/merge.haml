@@ -18,7 +18,7 @@
       %td= @cust[1].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
     - Customer.mergeable_attributes.each do |c|
       %tr{:class=>cycle(:odd,:even)}
-        %td= h c
+        %td= h c.humanize
         %td
           = radio_button_tag c, 0, :selected=>true
           = h @cust[0].send(c)

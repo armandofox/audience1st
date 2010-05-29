@@ -4,6 +4,11 @@ class Visit < ActiveRecord::Base
   validates_columns :contact_method, :purpose, :result
   include Enumerable
   include Comparable
+
+  def self.additional_foreign_keys_to_customer
+    [:followup_assigned_to_id, :visited_by_id]
+  end
+
   def <=>(other_visit)
     thedate <=> other_visit.thedate
   end

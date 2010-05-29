@@ -5,9 +5,14 @@ describe Cart do
     @cart = Cart.new
   end
   it "should not return same order ID twice" do
-    3.times do
-      @cart.order_number.should_not == @cart.order_number
-    end
+    o1 = Cart.generate_order_id
+    o2 = Cart.generate_order_id
+    o1.should_not == o2
+  end
+  it "should retain order ID once set for cart" do
+    c1 = @cart.order_number
+    c2 = @cart.order_number
+    c1.should == c2
   end
   context "when empty" do
     it "should contain no vouchers" do

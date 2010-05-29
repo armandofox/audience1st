@@ -19,8 +19,8 @@ class Customer < ActiveRecord::Base
   validates_format_of :login, :with => Authentication.login_regex, :if => :self_created?
   validates_uniqueness_of :login, :allow_nil => true
 
-  #validates_uniqueness_of :email, :allow_nil => true
   validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?
+  validates_uniqueness_of :email, :allow_nil => true
   
   validate :valid_or_blank_address?
 
@@ -33,14 +33,29 @@ class Customer < ActiveRecord::Base
   validates_length_of :password, :in => 4..20, :allow_nil => true, :if => :self_created?
   validates_confirmation_of :password, :if => :self_created?
 
-  validates_columns :formal_relationship
-  validates_columns :member_type
-
-  attr_protected :id, :salt, :role, :validation_level, :created_by_admin
+  attr_protected :id, :salt, :role, :created_by_admin
   attr_accessor :password
-  attr_accessor :created_by_admin
+
+  cattr_accessor :mergeable_attributes, :keep_newer_attributes
+  @@keep_newer_attributes =  %w(crypted_password  salt  last_login login)
+  @@mergeable_attributes  =
+    %w(inactive
+        first_name last_name email street city state zip day_phone eve_phone
+        login
+        blacklist e_blacklist
+        comments
+        company title company_address_line_1 company_address_line_2 company_url
+        company_city company_state company_zip work_phone cell_phone work_fax
+        best_way_to_contact
+)
+
+  def fresher_than?(other)
+    (self.last_login > other.last_login) ||
+      ((self.last_login == other.last_login && self.updated_at > other.updated_at) rescue nil)
+  end
 
   before_save :trim_whitespace_from_user_entered_strings
+  after_save :update_email_subscription
 
   after_create :register_user_to_fb
 
@@ -76,7 +91,6 @@ class Customer < ActiveRecord::Base
   # when customer is saved, possibly update their email opt-in status
   # with external mailing list.  
 
-  after_save :update_email_subscription
   def update_email_subscription
     return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
     if e_blacklist      # opting out of email
@@ -147,7 +161,7 @@ class Customer < ActiveRecord::Base
   end
 
   def self.extra_attributes
-    [:referred_by_id, :referred_by_other, :formal_relationship, :member_type,
+    [:referred_by_id, :referred_by_other, 
      :company, :title, :company_address_line_1, :company_address_line_2,
      :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
      :work_fax, :company_url]
@@ -235,76 +249,6 @@ class Customer < ActiveRecord::Base
       self.referred_by_other.to_s[0..maxlen-1]
     end
   end
-
-  # merge myself with another customer.  'params' array indicates which
-  # record (self or other) to retain each field value from.  For
-  # password and salt, the ones corresponding to most recent
-  # last_login are retained.  If those are equal, keep whichever was
-  # most recently updated (updated_at).  IF those are also equal, keep
-  # the first one.
-
-  def merge_with(c1,params)
-    c0 = self
-    Customer.mergeable_attributes.each do |attr|
-      if (params[attr.to_sym].to_i > 0)
-        c0.send("#{attr}=", c1.send(attr))
-      end
-    end
-    # facebook info (fb_user_id, email_hash): keep whichever found first
-    c0.fb_user_id ||= c1.fb_user_id
-    c0.email_hash ||= c1.email_hash
-    # role column keeps the more privileged of the two roles
-    c0.role = c1.role if c1.role > c0.role
-    # validation_level keeps the higher of the two validation levels
-    c0.validation_level = c1.validation_level if c1.validation_level > c0.validation_level
-    # passwd,salt columns are kept based on last_login or updated_at
-    if (((c0.last_login < c1.last_login) ||
-        ((c0.last_login == c1.last_login) && (c0.updated_at <
-                                              c1.updated_at))) rescue nil)
-      Customer.keep_newer_attributes.each do |attr|
-        c0.send("#{attr}=", c1.send(attr))
-      end
-      c0.crypted_password = c1.crypted_password
-      c0.salt = c1.salt
-    end                         # else keep what we have
-    msg = []
-    # oldid: if only one nonzero, keep that one.  otherwise keep
-    # higher-numbered one, and report this fact.
-    c0.oldid = c1.oldid if c0.oldid.zero?
-    new = c0.id
-    old = c1.id
-    ok = nil
-    begin
-      transaction do
-        [Donation, Voucher, Txn].each do |t|
-          howmany = t.merge_handler(old,new)
-          msg << "#{howmany} #{t}s"
-        end
-        c1.destroy
-        c0.save!
-        ok = "Transferred " + msg.join(",") + " to customer id #{new}"
-      end
-    rescue Exception => e
-      c0.errors.add_to_base "Customers NOT merged: #{e.message}"
-    end
-    return ok
-  end
-
-  def self.mergeable_attributes
-    %w(first_name last_name email street city state zip day_phone eve_phone
-        blacklist e_blacklist
-        comments
-        formal_relationship member_type
-        company title company_address_line_1 company_address_line_2 company_url
-        company_city company_state company_zip work_phone cell_phone work_fax
-        best_way_to_contact
-)
-  end
-
-  # when merging customers, these attributes are automatically merged
-  def self.keep_newer_attributes ;  %w(crypted_password  salt  last_login login) ; end
-
-
 
   # add items to a customer's account - could be vouchers, record of a
   # donation, or purchased goods
@@ -608,7 +552,7 @@ class Customer < ActiveRecord::Base
 
     #The Facebook registers user method is going to send the users email hash and our account id to Facebook
     #We need this so Facebook can find friends on our local application even if they have not connect through connect
-    #We hen use the email hash in the database to later identify a user from Facebook with a local user
+    #We then use the email hash in the database to later identify a user from Facebook with a local user
     def register_user_to_fb
       users = {:email => email, :account_id => id}
       Facebooker::User.register([users])
@@ -624,6 +568,81 @@ class Customer < ActiveRecord::Base
     def register_user_to_fb ; true ; end
     def facebook_user? ; nil ; end
   end
+
+  # merge myself with another customer.  'params' array indicates which
+  # record (self or other) to retain each field value from.  For
+  # password and salt, the ones corresponding to most recent
+  # last_login are retained.  If those are equal, keep whichever was
+  # most recently updated (updated_at).  IF those are also equal, keep
+  # the first one.
+
+  def merge_with_params!(c1,params)
+    Customer.mergeable_attributes.each do |attr|
+      if (params[attr.to_sym].to_i > 0)
+        self.send("#{attr}=", c1.send(attr))
+      end
+    end
+    return finish_merge!(c1)
+  end
+  
+  def merge_automatically!(c1)
+    if c1.fresher_than?(self)
+      Customer.mergeable_attributes.each { |attr| self.send("#{attr}=", c1.send(attr)) }
+    end
+    return finish_merge!(c1)
+  end
+        
+
+  private
+
+  def finish_merge!(c1)
+    c0 = self
+    # staff comments are combined and joined by ';'
+    c0.comments = [c0.comments, c1.comments].join('; ')
+    # tags are merged and de-dup'd
+    c0.tags = (c0.tags.to_s.downcase.split(/\s+/) + c1.tags.to_s.downcase.split(/\s+/)).uniq
+    # facebook info (fb_user_id, email_hash): keep whichever found first
+    c0.fb_user_id ||= c1.fb_user_id
+    c0.email_hash ||= c1.email_hash
+    # role column keeps the more privileged of the two roles
+    c0.role = [c0.role,c1.role].max
+    # passwd,salt columns are kept based on last_login or updated_at
+    if c1.fresher_than?(c0)
+      Customer.keep_newer_attributes.each do |attr|
+        c0.send("#{attr}=", c1.send(attr))
+      end
+      c0.crypted_password = c1.crypted_password
+      c0.salt = c1.salt
+    end                         # else keep what we have
+    msg = []
+    # oldid: if only one nonzero, keep that one.  otherwise pick one arbitrarily.
+    c0.oldid ||= c1.oldid
+    new = c0.id
+    old = c1.id
+    ok = nil
+    begin
+      transaction do
+        Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
+        [Donation, Voucher, Txn, Visit].each do |t|
+          howmany = t.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
+          t.additional_foreign_keys_to_customer.each do |field|
+            howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")
+          end
+          msg << "#{howmany} #{t}s"
+        end
+        c1.destroy
+        c0.save!
+        ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
+      end
+    rescue Exception => e
+      c0.errors.add_to_base "Customers NOT merged: #{e.message}"
+    end
+    return ok
+  end
+
+
+  
+
 end
 
 

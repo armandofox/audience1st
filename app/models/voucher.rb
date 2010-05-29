@@ -16,12 +16,10 @@ class Voucher < ActiveRecord::Base
 
   # class methods
 
-  def self.merge_handler(old,new)
-    Voucher.update_all("processed_by_id = '#{new}'", "processed_by_id = '#{old}'")
-    Voucher.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
-    Voucher.update_all("gift_purchaser_id = '#{new}'", "gift_purchaser_id = '#{old}'")
+  def self.additional_foreign_keys_to_customer
+    [:processed_by_id, :gift_purchaser_id]
   end
-
+  
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)
     season_start = Time.now.at_beginning_of_season(year)

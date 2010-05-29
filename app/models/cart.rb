@@ -22,7 +22,7 @@ class Cart
   end
 
   def order_number
-    Cart.generate_order_id
+    @order_number ||= Cart.generate_order_id
   end
 
   def workaround_rails_bug_2298!
