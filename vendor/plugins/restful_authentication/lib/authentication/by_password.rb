@@ -55,7 +55,9 @@ module Authentication
       
       # before filter 
       def encrypt_password
-        return if password.blank?
+        # allow using update_attribute to save crypted_password directly if it
+        # has been changed. Otherwise the before_save will clobber it.
+        return if (password.blank? ||  crypted_password_changed?)
         self.salt = self.class.make_token if new_record?
         self.crypted_password = encrypt(password)
       end

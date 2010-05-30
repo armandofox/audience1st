@@ -36,8 +36,8 @@ class Customer < ActiveRecord::Base
   attr_protected :id, :salt, :role, :created_by_admin
   attr_accessor :password
 
-  cattr_accessor :mergeable_attributes, :keep_newer_attributes
-  @@keep_newer_attributes =  %w(crypted_password  salt  last_login login)
+  cattr_reader :mergeable_attributes, :keep_newer_attributes
+  @@keep_newer_attributes =  %w(salt  last_login login)
   @@mergeable_attributes  =
     %w(inactive
         first_name last_name email street city state zip day_phone eve_phone
@@ -49,15 +49,11 @@ class Customer < ActiveRecord::Base
         best_way_to_contact
 )
 
-  def fresher_than?(other)
-    (self.last_login > other.last_login) ||
-      ((self.last_login == other.last_login && self.updated_at > other.updated_at) rescue nil)
-  end
-
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
 
   after_create :register_user_to_fb
+  before_destroy :cannot_destroy_special_customers
 
   #----------------------------------------------------------------------
   #  private variables
@@ -383,8 +379,7 @@ class Customer < ActiveRecord::Base
        Customer.generic_customer.id].include?(self.id)
   end
 
-
-  def before_destroy
+  def cannot_destroy_special_customers
     raise "Cannot destroy special customer entries" if self.role < 0
   end
 
@@ -582,44 +577,52 @@ class Customer < ActiveRecord::Base
         self.send("#{attr}=", c1.send(attr))
       end
     end
-    return finish_merge!(c1)
+    finish_merge(c1)
+    return Customer.save_and_update_foreign_keys!(self, c1)
   end
   
   def merge_automatically!(c1)
-    if c1.fresher_than?(self)
+    if c1.fresher_than?(self) && !c1.created_by_admin?
       Customer.mergeable_attributes.each { |attr| self.send("#{attr}=", c1.send(attr)) }
     end
-    return finish_merge!(c1)
+    finish_merge(c1)
+    return Customer.save_and_update_foreign_keys!(self, c1)
   end
         
 
+  def fresher_than?(other)
+    (self.last_login > other.last_login) ||
+      ((self.last_login == other.last_login && self.updated_at > other.updated_at) rescue nil)
+  end
+
   private
 
-  def finish_merge!(c1)
+  def finish_merge(c1)
     c0 = self
-    # staff comments are combined and joined by ';'
-    c0.comments = [c0.comments, c1.comments].join('; ')
+    # staff comments are combined
+    c0.comments = merge_comments(c0.comments, c1.comments)
     # tags are merged and de-dup'd
-    c0.tags = (c0.tags.to_s.downcase.split(/\s+/) + c1.tags.to_s.downcase.split(/\s+/)).uniq
+    c0.tags = merge_tags(c0.tags, c1.tags)
     # facebook info (fb_user_id, email_hash): keep whichever found first
     c0.fb_user_id ||= c1.fb_user_id
     c0.email_hash ||= c1.email_hash
     # role column keeps the more privileged of the two roles
-    c0.role = [c0.role,c1.role].max
-    # passwd,salt columns are kept based on last_login or updated_at
+    c0.role = merge_roles(c0.role,c1.role)
+    # some attributes always keep the newer one regardless of manual setting
     if c1.fresher_than?(c0)
       Customer.keep_newer_attributes.each do |attr|
         c0.send("#{attr}=", c1.send(attr))
       end
-      c0.crypted_password = c1.crypted_password
-      c0.salt = c1.salt
     end                         # else keep what we have
-    msg = []
     # oldid: if only one nonzero, keep that one.  otherwise pick one arbitrarily.
     c0.oldid ||= c1.oldid
+  end
+
+  def self.save_and_update_foreign_keys!(c0,c1)
     new = c0.id
     old = c1.id
     ok = nil
+    msg = []
     begin
       transaction do
         Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
@@ -630,8 +633,20 @@ class Customer < ActiveRecord::Base
           end
           msg << "#{howmany} #{t}s"
         end
+        # Crypted_password and salt have to be updated separately,
+        # since crypted_password is automatically set by the before-save
+        # action.
+        if c1.fresher_than?(c0)
+          pass = c1.crypted_password
+          salt = c1.salt
+        else
+          pass = nil
+        end
         c1.destroy
         c0.save!
+        if pass
+          c0.update_attributes!(:crypted_password => pass, :salt => salt)
+        end
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
     rescue Exception => e
@@ -639,10 +654,14 @@ class Customer < ActiveRecord::Base
     end
     return ok
   end
-
-
   
-
+  # merge utility functions
+  def merge_comments(c1, c2) ;  "#{c1}; #{c2}" ; end
+  def merge_tags(t1,t2)
+    (t1.to_s.downcase.split(/\s+/) + t2.to_s.downcase.split(/\s+/)).uniq.
+      join(' ')
+  end
+  def merge_roles(r1,r2) ;  [r1.to_i, r2.to_i].max  ; end
 end
 
 

@@ -229,140 +229,134 @@ describe Customer do
       end
     end
   end
-  describe "merging" do
+  
+  describe "value selection for merging" do
     before(:each) do
-      # remove fractional seconds from time, else date comparisons fail!
-      @now = Time.now.change(:usec => 0)
-      @c1attrs = {:first_name => "f1", :last_name => "l1",
-        :street => "s1", :city => "c1", :state => "s1",
-        :zip => "88888", :day_phone => "p1", :email => "e1@a.com",
-        :last_login => @now.yesterday, :login => "aaa",
-        :updated_at => 2.days.ago,
-        :crypted_password => 'olderpass' }
-      @c1 = Customer.create!(@c1attrs)
-      @c1.update_attribute(:role, 20)
-      @c2attrs = {:first_name => "f2", :last_name => "l2",
-        :street => "s2", :city => "c2", :state => "s2",
-        :zip => "99999", :day_phone => "p2", :email => "e2@a.com",
-        :last_login => @now, :login => "bbb",
-        :updated_at => 1.day.ago,
-        :crypted_password => 'newerpass'}
-      @c2 = Customer.create!(@c2attrs)
-      # role is a protected attribute
-      @c2.update_attribute(:role, 10)
-      # params with value of 1 should be copied , but crypted_password and some other
-      # attribs are automatically kept from record with most recent activity,
-      # and role always keeps the higher one
+      @old = BasicModels.create_generic_customer
+      @new = BasicModels.create_generic_customer
+      @old.stub!(:fresher_than?).and_return(nil)
+      @new.stub!(:fresher_than?).and_return(true)
+      Customer.stub!(:save_and_update_foreign_keys).and_return(true)
+    end
+    def try_merge(param,value_to_keep,value_to_discard)
+      @old.update_attribute(param, value_to_keep)
+      @new.update_attribute(param, value_to_discard)
+      @old.merge_automatically!(@new).should_not be_nil
+      @old.send(param).should == value_to_keep
+    end
+    it "should favor customer with more recent login, even if staler" 
+    describe "for single-value attributes (other than password)" do
+      it "should set e_blacklist to most conservative" do
+        try_merge(:e_blacklist, true, false)
+      end
+      it "should keep last_login based on most recent"
+      it "should clear created-by-admin flag if at least 1 record was customer-created" do
+        # it "should retain most conservative blacklist value"
+        # it "should retain nonblank staff comment"
+        # it "should merge staff comments when both are nonblank"
+        # it "should merge tags removing duplicates"
+        # context "for 2 customer-created records" do
+        #   it "should select newer value even if blank"
+        # end
+        # context "fresh customer-created with stale admin-created" do
+        #   it "should select customer-created field even if blank"
+        # end
+        # context "stale customer-created with fresh admin-created" do
+        #   it "should select customer-created blank over admin nonblank"
+        #   it "should use fresher admin-created data if both nonblank"
+        #end
+      end
+      it "should keep the higher of the two roles" do
+        @old.update_attribute(:role, 20)
+        @new.update_attribute(:role, 10)
+        @old.merge_automatically!(@new).should_not be_nil
+        @old.role.should == 20
+      end
+      describe "for Facebook data" do
+        it "should keep facebook ID if first customer had one" do
+          @old.fb_user_id = 56789
+          @old.merge_automatically!(@new).should_not be_nil
+          @old.fb_user_id.should == 56789
+        end
+        it "should keep facebook ID if second customer had one" do
+          @new.fb_user_id = 98765
+          @old.merge_automatically!(@new).should_not be_nil
+          @old.fb_user_id.should == 98765
+        end
+        it "should keep first user's facebook ID if both have one" do
+          @old.fb_user_id = 56789
+          @new.fb_user_id = 98765
+          @old.merge_automatically!(@new)
+          @old.fb_user_id.should == 56789
+        end
+      end
+    end
+    it "should keep selected attributes when merging manually" do
+      # 0=keep value from @old, 1=keep value from @new
       @params = {:first_name => 0, :last_name => 1,
         :street => 0, :city => 0, :state => 0, :zip => 0,
         :day_phone => 1, :email => 1,
         :role => 1}
-      @c1.should be_valid
-      @c2.should be_valid
-    end
-    context "in all cases", :shared => true do
-      it "should retain higher role/privilege"
-      it "should set updated-at to the time of the merge"
-      it "should clear created-by-admin flag if at least 1 record was customer-created"
-    end
-    describe "automatically" do
-      context "for all automatic cases", :shared => true do
-        it "should retain most conservative blacklist value"
-        it "should retain most conservative e-blacklist value"
-        it "should retain nonblank staff comment"
-        it "should merge staff comments when both are nonblank"
-        it "should merge tags removing duplicates"
-        it_should_behave_like "in all cases"
-      end
-      context "for 2 customer-created records" do
-        it "should select more recent login if there's login info"
-        it "should select more recently updated_at if no login info"
-        it "should not overwrite blank values with older nonblank values"
-      end
-      context "for 1 customer-created and 1 admin-created record" do
-        it "should select self-created over admin-created, even if staler"
-        it "should overwrite blank with nonblank values"
-      end
-      it_should_behave_like "for all automatic cases"
-    end
-    context "when there is Facebook data" do
-      it "should keep facebook ID if first customer had one" do
-        @c1.fb_user_id = 56789
-        @c1.merge_with_params!(@c2,@params).should_not be_nil
-        @c1.fb_user_id.should == 56789
-      end
-      it "should keep facebook ID if second customer had one" do
-        @c2.fb_user_id = 98765
-        @c1.merge_with_params!(@c2,@params).should_not be_nil
-        @c1.fb_user_id.should == 98765
-      end
-      it "should keep first user's facebook ID if both have one" do
-        @c1.fb_user_id = 56789
-        @c2.fb_user_id = 98765
-        @c1.merge_with_params!(@c2,@params)
-        @c1.fb_user_id.should == 56789
-      end
-    end
-    context "when result of merge is a valid customer" do
-      before(:each) do
-        @c1.merge_with_params!(@c2,@params).should_not be_nil, @c1.errors.full_messages.join(',')
-      end
-      it "should keep selected attributes of the merge" do
-        # role & salt wouldn't normally appear in params, but was thrown in to test
-        # the behavior when it is provided anyway - it shouldn't be assigned.
-        @params.delete(:role)
-        @params.each_pair do |attr,keep_new|
-          if keep_new == 1
-            @c1.send(attr).should == @c2.send(attr)
-          else
-            @c1.send("#{attr}_changed?").should be_false
-          end
+      @old.merge_with_params!(@new,@params).should_not be_nil
+      @params.delete(:role)
+      @params.each_pair do |attr,keep_new|
+        if keep_new == 1
+          @old.send(attr).should == @new.send(attr)
+        else
+          @old.send("#{attr}_changed?").should be_false
         end
-      end
-      it "should keep crypted_password and last_login based on most recent" do
-        @c1.crypted_password.should == 'newerpass'
-        @c1.last_login.should == @now
-      end
-      it "should keep the most recent login name" do
-        @c1.login.should == "bbb"
-      end
-      it "should keep the higher of the two roles" do
-        @c1.role.should == 20
-      end
-      it "should delete the redundant customer" do
-        Customer.find_by_id(@c2.id).should be_nil
-        Customer.find_by_id(@c1.id).should be_a(Customer)
-      end
-    end
-    context "when result of merge is NOT a valid customer" do
-      before(:each) do
-        # make c1's mailing address invalid, which is the one that will be kept
-        # note that this would not normally occur if each of the two customers
-        # was validated at save, but we check for it since some customer
-        # records may predate some validation rules
-        @c1.street = ''
-        @c1.should_not be_valid
-        @c1.merge_with_params!(@c2,@params).should be_nil
-      end
-      it "should not delete the redundant customer" do
-        Customer.find_by_id(@c2.id).should be_a(Customer)
-      end
-      it "should not modify either customer" do
-        lambda { @c1 = Customer.find(@c1.id) }.should_not raise_error
-        lambda { @c2 = Customer.find(@c2.id) }.should_not raise_error
-        # compare the attributes using to_s,  because things like
-        # dates are not == or eql even if refer to same date.
-        @c1attrs.keys.reject { |s| s == :updated_at }.each do |attr|
-          @c1.send(attr).should == @c1attrs[attr]
-          @c2.send(attr).should == @c2attrs[attr]
-        end
-      end
-      it "should add the errors to the first customer" do
-        @c1.errors.full_messages.should_not be_empty
       end
     end
   end
-
+  describe "merging" do
+    before(:each) do
+      now = Time.now.change(:usec => 0)
+      @old = BasicModels.create_generic_customer
+      @new = BasicModels.create_generic_customer
+      @old.stub!(:fresher_than?).and_return(nil)
+      @new.stub!(:fresher_than?).and_return(true)
+    end
+    describe "successfully" do
+      it "should keep password based on most recent" do
+        @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
+        @new.update_attributes!(:password => 'newerpass', :password_confirmation => 'newerpass')
+        @old.merge_automatically!(@new).should_not be_nil
+        @old.crypted_password.should == @old.encrypt('newerpass')
+      end
+      it "should delete the redundant customer" do
+        @old.merge_automatically!(@new).should_not be_nil
+        Customer.find_by_id(@new.id).should be_nil
+        Customer.find_by_id(@old.id).should be_a(Customer)
+      end
+    end
+    describe "unsuccessfully" do
+      before(:each) do
+        @new.first_name = ''
+        @new.should_not be_valid
+      end
+      it "should add the errors to the first customer" do
+        @old.merge_automatically!(@new).should be_nil
+        @old.errors.full_messages.should_not be_empty
+      end
+      it "should not delete the redundant customer" do
+        @old.merge_automatically!(@new).should be_nil
+        Customer.find_by_id(@new.id).should be_a(Customer)
+      end
+      it "should not modify the merge target" do
+        @old.merge_automatically!(@new).should be_nil
+        lambda { @post_old = Customer.find(@old.id) }.should_not raise_error
+        @post_old.should == @old
+        # Customer.columns.each do |c|
+        #   col = c.name.to_sym
+        #   @old.send(col).should == @old_clone.send(col) 
+        # end
+      end
+      it "should not destroy the merge source" do
+        @old.merge_automatically!(@new).should be_nil
+        lambda { @new = Customer.find(@new.id) }.should_not raise_error
+      end
+    end
+  end
   
   it 'resets password' do
     customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_false
@@ -464,5 +458,4 @@ describe Customer do
     record
   end
 
-  
 end

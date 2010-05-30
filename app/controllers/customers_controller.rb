@@ -26,7 +26,10 @@ class CustomersController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name]
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => %w[destroy create user_create], :redirect_to => { :controller => :customers, :action => :welcome, :add_to_flash => "This action requires a POST." }
+  verify(:method => :post,
+    :only => %w[merge finalize_merge destroy create user_create],
+    :redirect_to => { :controller => :customers, :action => :welcome},
+    :add_flash => "This action requires a POST." )
 
   # checks for SSL should be last, as they append a before_filter
   ssl_required :change_password, :new, :create, :user_create, :edit, :forgot_password
@@ -253,18 +256,21 @@ class CustomersController < ApplicationController
   end
 
   def merge
-    if request.get?
-      # display info from two records and allow selection
-      if (!params[:merge]) || (params[:merge].keys.length != 2)
-        flash[:notice] = 'You must select exactly 2 records at a time to merge'
-        redirect_to :action => 'list'
-      else
-        @cust = params[:merge].keys.map { |x| Customer.find(x.to_i) }
-        # fall through to merge.rhtml
-      end
-      return
+    if (!params[:merge]) || (params[:merge].keys.length != 2)
+      flash[:notice] = 'You must select exactly 2 records at a time to merge.'
+      redirect_to(:action => :list) and return
     end
-    # post: do the merge
+    # automatic merge?
+    if params[:commit] =~ /automatically/i
+      do_automatic_merge(*params[:merge].keys)
+      redirect_to :action => :list
+    else
+      @cust = params[:merge].keys.map { |x| Customer.find(x.to_i) }
+      # fall through to merge.haml
+    end
+  end
+
+  def finalize_merge
     c0 = Customer.find_by_id(params.delete(:cust0))
     c1 = Customer.find_by_id(params.delete(:cust1))
     unless c0 && c1
@@ -425,7 +431,12 @@ class CustomersController < ApplicationController
 
   private
 
-
+  def do_automatic_merge(id0,id1)
+    c0 = Customer.find_by_id(id0)
+    c1 = Customer.find_by_id(id1)
+    flash[:notice] = c0.merge_automatically!(c1)
+    redirect_to :action => :list
+  end
 
   def forgot_password(login)
     if login.blank?

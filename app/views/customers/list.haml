@@ -5,7 +5,7 @@
 = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
 %br/
 
-- form_tag({:action => 'merge'}, {:method => :get}) do
+- form_tag :action => 'merge' do
   - cols = %w[street city state zip day_phone eve_phone login]
   %table.hilite
     %thead
@@ -17,6 +17,6 @@
 
   %br/
   = submit_tag 'Merge Selected Customers Manually'
-
+  = submit_tag 'Merge Selected Customers Automatically'
 
 
