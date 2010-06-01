@@ -32,8 +32,8 @@ module AuthenticatedSystem
   end
 
   def acting_on_own_behalf
-    session[:admin_id].to_i.zero? ||
-      session[:admin_id] == session[:cid]
+    !session[:admin_id] || 
+      (session[:admin_id] == session[:cid])
   end
   
   # current_admin is called from controller actions filtered by is_logged_in,
@@ -42,12 +42,15 @@ module AuthenticatedSystem
   # otherwise returns a 'generic' customer with no admin privileges but on
   # which it is safe to call instance methods of Customer.
   def current_admin
-    session[:admin_id].to_i.zero? ? Customer.generic_customer : (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
+    (!session[:admin_id] || session[:admin_id].to_i.zero?) ?
+    Customer.generic_customer :
+      (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
   end
 
   # enable admin ID in session if this user is in fact an admin
   def possibly_enable_admin(c = Customer.generic_customer)
     return nil unless c
+    return nil if session[:admin_id] == false # don't try to enable automatically
     session[:admin_id] = nil
     if c.is_staff # least privilege level that allows seeing other customer accts
       (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
@@ -57,7 +60,7 @@ module AuthenticatedSystem
   end
 
   def disable_admin
-    session[:admin_id] = nil
+    session[:admin_id] = false
   end
 
     # Check if the user is authorized
