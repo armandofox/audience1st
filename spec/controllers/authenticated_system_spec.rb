@@ -113,7 +113,6 @@ describe SessionsController do
     end
     context "any switching operation", :shared => true do
       it "should not change the admin user" do ; current_admin.id.should == @boxoffice_manager.id  ; end
-      it "should not change the Facebook user" do ; pending ; end
     end
     context "to an existing user" do
       before(:each) do ; act_on_behalf_of(@quentin) ; end
@@ -121,6 +120,11 @@ describe SessionsController do
         current_user.id.should == @quentin.id
       end
       it_should_behave_like "any switching operation"
+    end
+    it "to existing Facebook user should not link that user's Facebook id to admin user" do
+      current_user.should_not_receive(:link_user_accounts)
+      current_admin.should_not_receive(:link_user_accounts)
+      act_on_behalf_of(@quentin)
     end
     context "to a nonexistent user" do
       before(:each) do ; act_on_behalf_of(nil) ; end

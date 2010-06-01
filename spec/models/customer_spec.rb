@@ -244,27 +244,35 @@ describe Customer do
       @old.merge_automatically!(@new).should_not be_nil
       @old.send(param).should == value_to_keep
     end
-    it "should favor customer with more recent login, even if staler" 
     describe "for single-value attributes (other than password)" do
       it "should set e_blacklist to most conservative" do
         try_merge(:e_blacklist, true, false)
       end
-      it "should keep last_login based on most recent"
+      it "should keep more recent last_login" do
+        try_merge(:last_login, 1.day.ago, 2.days.ago)
+      end
       it "should clear created-by-admin flag if at least 1 record was customer-created" do
-        # it "should retain most conservative blacklist value"
-        # it "should retain nonblank staff comment"
-        # it "should merge staff comments when both are nonblank"
-        # it "should merge tags removing duplicates"
-        # context "for 2 customer-created records" do
-        #   it "should select newer value even if blank"
-        # end
-        # context "fresh customer-created with stale admin-created" do
-        #   it "should select customer-created field even if blank"
-        # end
-        # context "stale customer-created with fresh admin-created" do
-        #   it "should select customer-created blank over admin nonblank"
-        #   it "should use fresher admin-created data if both nonblank"
-        #end
+        try_merge(:created_by_admin, false, true)
+      end
+      it "should keep older creation date" do
+        try_merge(:created_at, 1.month.ago, 1.day.ago)
+      end
+      it "should concatenate comments" do
+        @old.update_attribute(:comments, "foo")
+        @new.update_attribute(:comments, "bar")
+        @old.merge_automatically!(@new)
+        @old.comments.should == "foo; bar"
+      end
+      it "should keep a single nonblank comment" do
+        @new.update_attribute(:comments, "foo")
+        @old.merge_automatically!(@new)
+        @old.comments.should == "foo"
+      end        
+      it "should merge tags removing duplicates" do
+        @old.update_attribute(:tags, "foo  Bar")
+        @new.update_attribute(:tags, "bar baz")
+        @old.merge_automatically!(@new)
+        @old.tags.should == "foo bar baz"
       end
       it "should keep the higher of the two roles" do
         @old.update_attribute(:role, 20)
@@ -320,8 +328,13 @@ describe Customer do
       it "should keep password based on most recent" do
         @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
         @new.update_attributes!(:password => 'newerpass', :password_confirmation => 'newerpass')
+        salt = @new.salt
+        pass = @new.crypted_password
         @old.merge_automatically!(@new).should_not be_nil
+        @old.reload
         @old.crypted_password.should == @old.encrypt('newerpass')
+        @old.salt.should == salt
+        @old.crypted_password.should == pass
       end
       it "should delete the redundant customer" do
         @old.merge_automatically!(@new).should_not be_nil
@@ -343,9 +356,9 @@ describe Customer do
         Customer.find_by_id(@new.id).should be_a(Customer)
       end
       it "should not modify the merge target" do
+        lambda { @premerge = Customer.find(@old.id) }.should_not raise_error
         @old.merge_automatically!(@new).should be_nil
-        lambda { @post_old = Customer.find(@old.id) }.should_not raise_error
-        @post_old.should == @old
+        Customer.find(@premerge.id).should == @premerge
         # Customer.columns.each do |c|
         #   col = c.name.to_sym
         #   @old.send(col).should == @old_clone.send(col) 

@@ -36,14 +36,9 @@ class Customer < ActiveRecord::Base
   attr_protected :id, :salt, :role, :created_by_admin
   attr_accessor :password
 
-  cattr_reader :mergeable_attributes, :keep_newer_attributes
-  @@keep_newer_attributes =  %w(salt  last_login login)
-  @@mergeable_attributes  =
-    %w(inactive
-        first_name last_name email street city state zip day_phone eve_phone
-        login
-        blacklist e_blacklist
-        comments
+  cattr_reader :replaceable_attributes
+  @@replaceable_attributes  =
+    %w(first_name last_name email street city state zip day_phone eve_phone
         company title company_address_line_1 company_address_line_2 company_url
         company_city company_state company_zip work_phone cell_phone work_fax
         best_way_to_contact
@@ -572,7 +567,7 @@ class Customer < ActiveRecord::Base
   # the first one.
 
   def merge_with_params!(c1,params)
-    Customer.mergeable_attributes.each do |attr|
+    Customer.replaceable_attributes.each do |attr|
       if (params[attr.to_sym].to_i > 0)
         self.send("#{attr}=", c1.send(attr))
       end
@@ -583,7 +578,7 @@ class Customer < ActiveRecord::Base
   
   def merge_automatically!(c1)
     if c1.fresher_than?(self) && !c1.created_by_admin?
-      Customer.mergeable_attributes.each { |attr| self.send("#{attr}=", c1.send(attr)) }
+      Customer.replaceable_attributes.each { |attr| self.send("#{attr}=", c1.send(attr)) }
     end
     finish_merge(c1)
     return Customer.save_and_update_foreign_keys!(self, c1)
@@ -598,24 +593,24 @@ class Customer < ActiveRecord::Base
   private
 
   def finish_merge(c1)
-    c0 = self
-    # staff comments are combined
-    c0.comments = merge_comments(c0.comments, c1.comments)
-    # tags are merged and de-dup'd
-    c0.tags = merge_tags(c0.tags, c1.tags)
-    # facebook info (fb_user_id, email_hash): keep whichever found first
-    c0.fb_user_id ||= c1.fb_user_id
-    c0.email_hash ||= c1.email_hash
-    # role column keeps the more privileged of the two roles
-    c0.role = merge_roles(c0.role,c1.role)
-    # some attributes always keep the newer one regardless of manual setting
-    if c1.fresher_than?(c0)
-      Customer.keep_newer_attributes.each do |attr|
-        c0.send("#{attr}=", c1.send(attr))
+    %w(comments tags role blacklist e_blacklist created_by_admin oldid fb_user_id email_hash).each do |attr|
+      newval = merge_attribute(c1, attr)
+      self.send("#{attr}=", newval)
+    end
+  end
+
+  def merge_attribute(other, attr)
+    v1 = self.send(attr)
+    v2 = other.send(attr)
+    newval =
+      case attr.to_sym
+      when :comments then [v1,v2].reject { |c| c.blank? }.join('; ')
+      when :tags then (v1.to_s.downcase.split(/\s+/)+v2.to_s.downcase.split(/\s+/)).uniq.join(' ')
+      when :role then [v1.to_i, v2.to_i].max  
+      when :blacklist, :e_blacklist, :oldid, :fb_user_id, :email_hash then v1 || v2
+      when :created_by_admin, :inactive then v1 && v2
+      else raise "No automatic merge procedure for #{attr.to_s.humanize}"
       end
-    end                         # else keep what we have
-    # oldid: if only one nonzero, keep that one.  otherwise pick one arbitrarily.
-    c0.oldid ||= c1.oldid
   end
 
   def self.save_and_update_foreign_keys!(c0,c1)
@@ -635,7 +630,7 @@ class Customer < ActiveRecord::Base
         end
         # Crypted_password and salt have to be updated separately,
         # since crypted_password is automatically set by the before-save
-        # action.
+        # action to be encrypted with salt.
         if c1.fresher_than?(c0)
           pass = c1.crypted_password
           salt = c1.salt
@@ -645,7 +640,7 @@ class Customer < ActiveRecord::Base
         c1.destroy
         c0.save!
         if pass
-          c0.update_attributes!(:crypted_password => pass, :salt => salt)
+          Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
         end
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
@@ -655,13 +650,6 @@ class Customer < ActiveRecord::Base
     return ok
   end
   
-  # merge utility functions
-  def merge_comments(c1, c2) ;  "#{c1}; #{c2}" ; end
-  def merge_tags(t1,t2)
-    (t1.to_s.downcase.split(/\s+/) + t2.to_s.downcase.split(/\s+/)).uniq.
-      join(' ')
-  end
-  def merge_roles(r1,r2) ;  [r1.to_i, r2.to_i].max  ; end
 end
 
 
