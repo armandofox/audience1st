@@ -67,8 +67,8 @@ namespace :provision do
     run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
     run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
     run "/bin/rm -f #{tmptables}"
-    run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :login => \"admin\", :password => \"admin\""
-    run "cd #{init_release_path} && script/runner -e production 'Customer.find_by_login(:admin).update_attribute(:role, 100)'"
+    run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :email => \"admin\", :password => \"admin\", :created_by_admin => true)"
+    run "cd #{init_release_path} && script/runner -e production 'Customer.find_by_email('admin').update_attribute(:role, 100)'"
     ## need to wipe out Options table values here
   end
 end
@@ -87,6 +87,10 @@ namespace :deploy do
 end
 
 deploy.task :after_update_code do
+  # prepend branch base rev into REVISION file
+  if variables[:branch] =~ /-r([0-9]+)$/
+    put "#{$1}.#{real_revision}", "#{release_path}/REVISION"
+  end
   # create database.yml
   # copy installation-specific files
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]

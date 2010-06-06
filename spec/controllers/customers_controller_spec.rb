@@ -74,7 +74,7 @@ describe CustomersController do
       before(:each) do
         params = {:id => @customer, :customer => {:street => "100 Embarcadero",   :zip => "94100",
             :email => "nobody@noplace.com"}}
-        post :edit, params
+        post :update, params
       end
       it "should not update the password" do
         @customer.crypted_password_changed?.should be_false

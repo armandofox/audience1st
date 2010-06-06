@@ -33,7 +33,7 @@ class ExternalTicketOrder
       return nil
     end
     begin
-      c = Customer.new_or_find({:first_name => @first_name,
+      c = Customer.find_or_create!({:first_name => @first_name,
                                  :last_name => @last_name})
     rescue Exception => e
       @status << "Error creating/finding customer:\n" << e.message
@@ -44,7 +44,7 @@ class ExternalTicketOrder
         v = Voucher.anonymous_voucher_for(ticket_offer.showdate.id,
                                           ticket_offer.vouchertype.id)
         v.external_key = order_key.to_i
-        v.processed_by_id = Customer.nobody_id
+        v.processed_by_id = Customer.boxoffice_daemon.id
         @vouchers << v
       end
       c.vouchers += @vouchers

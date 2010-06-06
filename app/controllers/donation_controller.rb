@@ -73,7 +73,7 @@ class DonationController < ApplicationController
     id = params[:id]
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.now
-      c = Customer.find(logged_in_id).login rescue "(ERROR)"
+      c = Customer.find(logged_in_id).email rescue "(ERROR)"
       t.update_attributes(:letter_sent => now,
                           :processed_by_id => logged_in_id)
       Txn.add_audit_record(:cust_id => t.customer_id,

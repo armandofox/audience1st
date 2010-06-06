@@ -1,4 +1,4 @@
-%p= error_messages_for :customer
+%p= error_messages_for :customer, :header_message => default_validation_error_message
 
 - @customer = customer if defined?(customer)
 - disabled =  defined?(passive) && passive 
@@ -54,7 +54,7 @@
         Please don't send me materials via US Mail
       %br/
 
-    %label{:for=>:customer_email,:class => (:strong unless @gCheckoutInProgress)} Email
+    %label.strong{:for=>:customer_email} Email
     = text_field 'customer', 'email', {:size => 30, :max_length => 40, :readonly => disabled }
     %span.small= link_to "Our Privacy Policy", Option.value(:privacy_policy_url), :target => '_blank'
     

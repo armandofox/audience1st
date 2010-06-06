@@ -18,22 +18,22 @@ class CustomersController < ApplicationController
 
   # only superadmin can destory customers, because that wreaks havoc
   before_filter(:is_admin_filter,
-                :only => ['destroy'],
-                :redirect_to => {:action => :list},
-                :add_to_flash => 'Only super-admin can delete customer; use Merge instead')
+    :only => ['destroy'],
+    :redirect_to => {:action => :list},
+    :add_flash => {:notice => 'Only super-admin can delete customer; use Merge instead'})
 
   # prevent complaints on AJAX autocompletion
   skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name]
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify(:method => :post,
-    :only => %w[merge finalize_merge destroy create user_create],
+    :only => %w[update finalize_merge destroy create user_create send_new_password],
     :redirect_to => { :controller => :customers, :action => :welcome},
-    :add_flash => "This action requires a POST." )
+    :add_flash => {:warning => "This action requires a POST."} )
 
   # checks for SSL should be last, as they append a before_filter
   ssl_required :change_password, :new, :create, :user_create, :edit, :forgot_password
-  ssl_allowed :auto_complete_for_customer_full_name
+  ssl_allowed :auto_complete_for_customer_full_name, :update
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
@@ -123,125 +123,60 @@ class CustomersController < ApplicationController
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     @return_to = session[:return_to]
-    return unless request.post? # fall thru to showing edit screen
-    flash[:notice] = ''
-    # squeeze empty-string params into nils.
-    # params[:customer].each_pair { |k,v| params[:customer][k]=nil if v.blank? }
-    # # this is messy: if this is part of a checkout flow, it's OK for customer
-    # #  not to specify a password.  This will be obsolete when customers are
-    # #  subclassed with different validations on each subclass.
-    # temp_password = nil
-    # if @gCheckoutInProgress && params[:customer][:password].blank?
-    #   temp_password =  params[:customer][:password] = params[:customer][:password_confirmation] =  String.random_string(8)
-    # end
+  end
+
+  def update
+    @customer = current_user
+    @is_admin = current_admin.is_staff
+    @superadmin = current_admin.is_admin
+    # editing contact info may be called from various places. correctly
+    # set the return-to so that form buttons can do the right thing.
+    @return_to = session[:return_to]
     # unless admin, remove "extra contact" fields
-    unless @is_admin
-      Customer.extra_attributes.each { |a| params[:customer].delete(a) }
-      # flash[:notice] << "Warning: Some new attribute values were ignored<br/>"
-    end
-    #
-    #  special case: updating 'role' (privilege) is protected attrib
-    #
-    if ((newrole = params[:customer][:role]) &&
-        (Customer.role_value(newrole) != Customer.role_value(@customer.role)))
-      if Customer.find(logged_in_id).can_grant(newrole)
-        @customer.role = Customer.role_value(params[:customer][:role])
-        unless (@customer.save)
-          flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix this problem and try again."
-          redirect_to(:action => 'edit') and return
-        end
-        confirm = "Role set to #{newrole}<br/>"
-        Txn.add_audit_record(:txn_type => 'edit',
-                             :customer_id => @customer.id,
-                             :logged_in_id => logged_in_id,
-                             :comments => confirm)
-        flash[:notice] << confirm
-      else
-        flash[:notice] << "Change of patron privilege level is disallowed. "
+    params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
+    begin
+      # update generic attribs first
+      @customer.update_attributes!(params[:customer])
+      flash[:notice] = 'Contact information was successfully updated.'
+      if (newrole = params[:customer][:role]  &&
+          newrole != @customer.role_value  &&
+          current_admin.can_grant(newrole))
+        @customer.update_attribute!(:role, Customer.role_value(newrole))
+        flash[:notice] << "  Privilege level set to #{newrole}."
       end
-    end
-    params[:customer].delete(:comments) unless @is_admin
-    # update generic attribs
-    # if login is empty - make it nil to avoid failing validation
-    params[:customer].delete(:login) if params[:customer][:login].blank?
-    if @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => @customer.id,
-                           :logged_in_id => logged_in_id)
-      flash[:notice] << 'Contact information was successfully updated.'
+        :customer_id => @customer.id,
+        :logged_in_id => logged_in_id,
+        :comments => flash[:notice])
       if @customer.email_changed? && @customer.valid_email_address? &&
-          params[:dont_send_email].blank? # && temp_password.blank?
+          params[:dont_send_email].blank? 
         # send confirmation email
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
       end
       redirect_to_stored
-    else                      # update was legal to try, but it failed
-      flash[:notice] << 'Information was NOT updated: ' <<
-        @customer.errors.full_messages.join("; ")
-      redirect_to :action => 'edit'
+    rescue
+      flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
+      redirect_to(:action => 'edit') 
     end
   end
 
   def change_password
     @customer = current_user
-    if (request.post?)
-      pass = params[:customer][:password].to_s.strip
-      @customer.password = pass unless pass.blank?
-      @customer.login = params[:customer][:login].to_s.strip
-      if @customer.login.blank?
-        flash[:notice] = "Login can't be blank. Please choose a login name."
-        render(:action => 'change_password') and return
-      end
-      if (@customer.save)
-        flash[:notice] = pass.blank? ? "New login confirmed (password unchanged)." : "New login and password are confirmed."
-        email_confirmation(:send_new_password,@customer,
-                           pass, "changed your login or password on our system")
-        Txn.add_audit_record(:txn_type => 'edit',
-                             :customer_id => @customer.id,
-                             :comments => 'Change password')
-        redirect_to :action => 'welcome'
-      else
-        render :action => 'change_password'
-      end
-    end
-  end
-
-
-  def user_create
-    # this is messy: if this is part of a checkout flow, it's OK for customer
-    #  not to specify a password.  This will be obsolete when customers are
-    #  subclassed with different validations on each subclass.
-    temp_password = nil
-    if @gCheckoutInProgress && params[:customer][:password].blank?
-      temp_password = params[:customer][:password] = params[:customer][:password_confirmation] =
-        String.random_string(8)
-    end
-    @customer = Customer.new(params[:customer])
-    flash[:notice] = ''
-    if @gCheckoutInProgress && @customer.day_phone.blank?
-      flash[:notice] = "Please provide a contact phone number in case we need to contact you about your order."
-      render :action => 'new'
-      return
-    end
-    if @customer.save && @customer.errors.empty?
-      @customer.update_attribute(:last_login, Time.now)
-      unless temp_password
-        flash[:notice] = "Thanks for setting up an account!<br/>"
-        email_confirmation(:send_new_password,@customer,
-                         params[:customer][:password],"set up an account with us")
-      end
-      self.current_user = @customer
-      logger.info "Session cid set to #{session[:cid]}"
+    return if request.get?
+    if @customer.update_attributes(params[:customer])
+      flash[:notice] = pass.blank? ? "New email confirmed (password unchanged)." : "New email and password are confirmed."
+      email_confirmation(:send_new_password,@customer,
+      pass, "changed your email or password on our system")
       Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => @customer.id,
-                           :comments => 'new customer self-signup')
-      redirect_to_stored
+      :customer_id => @customer.id,
+      :comments => 'Change password')
+      redirect_to :action => 'welcome'
     else
-      flash[:notice] = "There was a problem creating your account.<br/>"
-      render :action => 'new'
+      render :action => 'change_password'
     end
   end
+
 
   # Following actions are for use by admins only:
   # list, switch_to, merge, search, create, destroy
@@ -310,7 +245,7 @@ class CustomersController < ApplicationController
     end
     str = ''
     if params[:match] =~ /any/i
-      conds = %w[first_name last_name street city login].map {|x| "#{x} LIKE '%#{params[:any]}%'"}.join(" OR ")
+      conds = %w[first_name last_name street city email].map {|x| "#{x} LIKE '%#{params[:any]}%'"}.join(" OR ")
     else
       k = params[:customer].keys
       if k.empty?
@@ -332,37 +267,44 @@ class CustomersController < ApplicationController
   
   def create
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
-    flash[:notice] = ''
-    # if neither email address nor password was given, assign a random
-    # password so validation doesn't fail.
-    if params[:customer][:password].blank? && params[:customer][:login].blank?
-      # assign a random password
-      params[:customer][:login] = nil
-      params[:customer][:password] =
-        params[:customer][:password_confirmation] = String.random_string(6)
-    end
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
-    # then must have a password too....
-    if @customer.save
-      flash[:notice] <<  'Account was successfully created.'
+    render(:action => 'new') and return unless @customer.save
+    flash[:notice] <<  'Account was successfully created.'
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => @customer.id,
+      :comments => 'new customer added',
+      :logged_in_id => logged_in_id)
+    # if valid email, send user a welcome message
+    unless params[:dont_send_email]
+      email_confirmation(:send_new_password,@customer,
+        params[:customer][:password],"set up an account with us")
+    end
+    current_user = @customer
+    @gCheckoutInProgress ? redirect_to_stored : redirect_to(:action => 'switch_to', :id => @customer.id)
+  end
+
+  def user_create
+    @customer = Customer.new(params[:customer])
+    if @gCheckoutInProgress && @customer.day_phone.blank?
+      flash[:notice] = "Please provide a contact phone number in case we need to contact you about your order."
+      render :action => 'new'
+      return
+    end
+    begin
+      @customer.save!
+      @customer.update_attribute(:last_login, Time.now)
+      flash[:notice] = "Thanks for setting up an account!<br/>"
+      email_confirmation(:send_new_password,@customer,
+        params[:customer][:password],"set up an account with us")
+      self.current_user = @customer
+      logger.info "Session cid set to #{session[:cid]}"
       Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => @customer.id,
-                           :comments => 'new customer added',
-                           :logged_in_id => logged_in_id)
-      # if valid email, send user a welcome message
-      unless params[:dont_send_email]
-        email_confirmation(:send_new_password,@customer,
-                           params[:customer][:password],"set up an account with us")
-      end
-      session[:cid] = @customer.id
-      if @gCheckoutInProgress
-        redirect_to_stored
-      else
-        redirect_to :action => 'switch_to', :id => @customer.id
-      end
-    else
-      flash[:notice] << 'Errors creating account'
+        :customer_id => @customer.id,
+        :comments => 'new customer self-signup')
+      redirect_to_stored
+    rescue
+      flash[:notice] = "There was a problem creating your account.<br/>"
       render :action => 'new'
     end
   end
@@ -429,6 +371,10 @@ class CustomersController < ApplicationController
     redirect_to_stored
   end
 
+  def send_new_password
+    forgot_password(params[:email])
+  end
+
   private
 
   def do_automatic_merge(id0,id1)
@@ -438,14 +384,14 @@ class CustomersController < ApplicationController
     redirect_to :action => :list
   end
 
-  def forgot_password(login)
-    if login.blank?
-      flash[:notice] = "Please enter the login name with which you originally signed up, and we will email you a new password."
+  def forgot_password(email)
+    if email.blank?
+      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
       redirect_to :action => :login and return
     end
-    @customer = Customer.find_by_login(login)
+    @customer = Customer.find_by_email(email)
     unless @customer
-      flash[:notice] = "Sorry, '#{login}' is not in our database.  You might try under a different login name, or create a new account."
+      flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
       redirect_to :action => :login and return
     end
     # valid email address?
@@ -455,8 +401,7 @@ class CustomersController < ApplicationController
     end
     begin
       newpass = String.random_string(6)
-      @customer.password = newpass
-      @customer.save!
+      @customer.update_attributes!(:password => newpass, :password_confirmation =>  newpass)
       email_confirmation(:send_new_password,@customer, newpass,
                          "requested your password for logging in")
       # will reach this point (and change password) only if mail delivery
@@ -470,4 +415,11 @@ class CustomersController < ApplicationController
     end
     redirect_to :action => :login
   end
+
+  def delete_admin_only_attributes(params)
+    Customer.extra_attributes.each { |a| params.delete(a) }
+    params.delete(:comments)
+    params
+  end
+
 end

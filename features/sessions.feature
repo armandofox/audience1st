@@ -13,7 +13,7 @@ Feature: Logging in
   Scenario: Anonymous customer can get a login form.
     Given an anonymous customer
     When  I go to the login page
-    Then  I should see a <form> containing a textfield: Login Name, password: Password, and submit: 'Login'
+    Then  I should see a <form> containing a textfield: Email, password: Password, and submit: 'Login'
   
   #
   # Log in successfully, but don't remember me
@@ -21,21 +21,21 @@ Feature: Logging in
   Scenario: Anonymous customer can log in
     Given an anonymous customer
      And  an activated customer named 'reggie'
-    When  she creates a singular sessions with login: 'reggie', password: 'monkey', remember me: ''
+    When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: ''
     Then  she should be redirected to the home page
     When  she follows that redirect!
     Then  she should see a notice message 'Logged in successfully'
-     And  reggie should be logged in
+     And  registered@example.com should be logged in
      And  she should not have an auth_token cookie
    
   Scenario: Logged-in customer who logs in should be the new one
     Given an activated customer named 'reggie'
      And  an activated customer logged in as 'oona'
-    When  she creates a singular sessions with login: 'reggie', password: 'monkey', remember me: ''
+    When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: ''
     Then  she should be redirected to the home page
     When  she follows that redirect!
     Then  she should see a notice message 'Logged in successfully'
-     And  reggie should be logged in
+     And  registered@example.com should be logged in
      And  she should not have an auth_token cookie
   
   #
@@ -43,14 +43,14 @@ Feature: Logging in
   #
   Scenario: Anonymous customer can log in and be remembered
     Given an activated customer named 'reggie'
-    When  she creates a singular sessions with login: 'reggie', password: 'monkey', remember me: '1'
+    When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
     Then  she should see a notice message 'Logged in successfully'
-     And  reggie should be logged in
+     And  registered@example.com should be logged in
      And  she should have an auth_token cookie
 	      # assumes fixtures were run sometime
-     And  her session store should remember customer 'reggie'
+     And  her session store should remember customer 'registered@example.com'
    
   #
   # Log in unsuccessfully
@@ -58,53 +58,53 @@ Feature: Logging in
   
   Scenario: Logged-in customer who fails logs in should be logged out
     Given an activated customer named 'oona'
-    When  she creates a singular sessions with login: 'oona', password: '1234oona', remember me: '1'
+    When  she creates a singular sessions with Email: 'unactivated@example.com', password: '1234oona', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
     Then  she should see a notice message 'Logged in successfully'
-     And  oona should be logged in
+     And  unactivated@example.com should be logged in
      And  she should have an auth_token cookie
-    When  she creates a singular sessions with login: 'reggie', password: 'i_haxxor_joo'
+    When  she creates a singular sessions with email: 'registered@example.com', password: 'i_haxxor_joo'
     Then  she should be at the login page
-    Then  she should see a warning message 'Couldn't log you in as 'reggie''
+    Then  she should see a warning message 'Couldn't log you in as 'registered@example.com''
      And  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
   
   Scenario: Log-in with bogus info should fail until it doesn't
     Given an activated customer named 'reggie'
-    When  she creates a singular sessions with login: 'reggie', password: 'i_haxxor_joo'
+    When  she creates a singular sessions with email: 'registered@example.com', password: 'i_haxxor_joo'
     Then  she should be at the login page
-    Then  she should see a warning message 'Couldn't log you in as 'reggie''
+    Then  she should see a warning message 'Couldn't log you in as 'registered@example.com''
      And  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
-    When  she creates a singular sessions with login: 'reggie', password: ''
+    When  she creates a singular sessions with email: 'registered@example.com', password: ''
     Then  she should be at the login page
-    Then  she should see a warning message 'Couldn't log you in as 'reggie''
+    Then  she should see a warning message 'Couldn't log you in as 'registered@example.com''
      And  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
-    When  she creates a singular sessions with login: '', password: 'monkey'
+    When  she creates a singular sessions with email: '', password: 'monkey'
     Then  she should be at the login page
     Then  she should see a warning message 'Couldn't log you in as '''
      And  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
-    When  she creates a singular sessions with login: 'leonard_shelby', password: 'monkey'
+    When  she creates a singular sessions with email: 'leonard_shelby@example.com', password: 'monkey'
     Then  she should be at the login page
-    Then  she should see a warning message 'Couldn't log you in as 'leonard_shelby''
+    Then  she should see a warning message 'Couldn't log you in as 'leonard_shelby@example.com''
      And  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
-    When  she creates a singular sessions with login: 'reggie', password: 'monkey', remember me: '1'
+    When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
     Then  she should see a notice message 'Logged in successfully'
-     And  reggie should be logged in
+     And  registered@example.com should be logged in
      And  she should have an auth_token cookie
 	      # assumes fixtures were run sometime
-     And  her session store should remember customer 'reggie'
+     And  her session store should remember customer 'registered@example.com'
 
 
   #

@@ -6,4 +6,4 @@ std_opts = "#{rerun_opts} --format rerun --out rerun.txt --strict"
 default: --format pretty features
 wip: --tags @wip:3 --wip features
 rerun:  <%= std_opts %>
-
+passing:  --tags ~@wip

@@ -24,12 +24,16 @@ class CustomerImport < Import
     imports = []
     rejects = []
     customers.each do |customer|
-      customer.save ? imports << customer : rejects << customer
+      import(customer) ? imports << customer : rejects << customer
     end
     return [imports,rejects]
   end
   
   private
+
+  def import(customer)
+    return customer.save
+  end
 
   def get_customers_to_import(max=MAX_IMPORT,count_only = false)
     customers = []
@@ -55,7 +59,6 @@ class CustomerImport < Import
     c = Customer.new(
       :first_name       => row[0],
       :last_name        => row[1],
-      :login            => row[2].blank? ? row[3] : row[2],
       :email            => row[3],
       :street           => row[4],
       :city             => row[5],
@@ -65,7 +68,8 @@ class CustomerImport < Import
       :eve_phone        => row[9],
       :blacklist        => !row[10].blank? ,
       :e_blacklist      => !row[11].blank? ,
-      :oldid            => row[12]
+      :oldid            => row[12],
+      :created_by_admin => true
       )
   end
   

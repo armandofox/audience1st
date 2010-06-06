@@ -8,19 +8,18 @@
 
   - if @is_admin
     - form_tag :action => 'create' do
-      = render :partial => 'password' 
       = render :partial => 'form'
+      = render :partial => 'password' 
       = render :partial => 'form_admin'
       = submit_tag "Create New Customer Account"
       = gen_button 'Cancel', :action => :list
   - else
     - form_tag :action => 'user_create' do
       = render :partial => 'form'
+      = render :partial => 'password'
       - if @gCheckoutInProgress
         = submit_tag 'CONTINUE >>'
         = gen_button 'Cancel', :controller => :store, :action => :index
       - else
-        = render :partial => 'password'
         = submit_tag 'Create My Account'
         = gen_button 'Cancel', login_path
-

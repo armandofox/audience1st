@@ -1,8 +1,7 @@
 %div[visit]
 
   - @visit = visit 
-  = error_messages_for :visit
-
+  = error_messages_for :visit, :header_message => default_validation_error_message
   %h2 
     = "Contacted by #{visit.visited_by}"
     = " on #{visit.thedate.to_s(:short)}" unless visit.new_record?

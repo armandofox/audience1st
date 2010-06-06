@@ -7,7 +7,6 @@ describe Customer do
     before(:each) do
       @customer = Customer.new(:first_name => "John", :last_name => "Do",
         :email => "johndoe111@yahoo.com",
-        :login => "johndoe111",
         :password => "pass", :password_confirmation => "pass")
       @customer.created_by_admin = true
     end
@@ -21,17 +20,11 @@ describe Customer do
       @customer.should be_valid
       lambda { @customer.save! }.should_not raise_error
     end
-    it "should not require login name" do
-      @customer.login = nil
-      @customer.should be_valid
-      lambda { @customer.save! }.should_not raise_error
-    end
   end
   describe "when self-created" do
     before(:each) do
       @customer = Customer.new(:first_name => "John", :last_name => "Do",
         :email => "johndoe111@yahoo.com",
-        :login => "johndoe111",
         :password => "pass", :password_confirmation => "pass")
     end
     it "should require valid email address" do
@@ -42,11 +35,6 @@ describe Customer do
       @customer.email = "NotValidAddress"
       @customer.should_not be_valid
       @customer.errors.on(:email).should_not be_empty
-    end
-    it "should require nonblank login name" do
-      @customer.login = ''
-      @customer.should_not be_valid
-      @customer.errors_on(:login).join(",").should match(/is too short/)
     end
     it "should require password" do
       @customer.password = @customer.password_confirmation = ''
@@ -76,7 +64,7 @@ describe Customer do
     context "with no mailing address" do
       before(:each) do
         @customer = Customer.create!(:first_name => "John", :last_name => "Doe",
-          :login => 'johndoe', :password => 'xxxx', :password_confirmation => 'xxxx',
+          :password => 'xxxx', :password_confirmation => 'xxxx',
           :email => 'john@doe2.com')
       end
       it "should be valid" do
@@ -229,7 +217,54 @@ describe Customer do
       end
     end
   end
-  
+  describe "find unique" do
+    def names_match(a,b)
+      our_first,our_last = a.split(/ +/)
+      given_first,given_last = b.split(/ +/)
+      Customer.new(:first_name => our_first, :last_name => our_last).name_matches(given_first,given_last)
+    end
+    context "when email cannot break ties", :shared => true do
+    end
+    context "match on name only", :shared => true do
+      it "should match if first and last name match" do
+        names_match('John Smith', 'john smith').should be_true
+      end
+      it "should match if last name matches and first initial matches" do
+        names_match('J Smith', 'john smith').should be_true
+        names_match('john smith', 'j. smith').should be_true
+      end
+      it "should not match if last name is initial-only but first name matches" do
+        names_match('John S', 'John Smith').should_not be_true
+        names_match('John Smith', "John S.").should_not be_true
+      end
+      it "should not match if all name fields blank" do
+        names_match('','').should_not be_true
+      end
+    end
+    context "when email is given and has unique match" do
+      context "and address isn't given" do
+        it_should_behave_like "match on name only"
+      end
+      context "and address matches" do
+        it_should_behave_like "match on name only"
+      end
+      context "and address doesn't match" do
+        it "should not match even if names match"
+      end
+    end
+    context "when email is given and has no match" do
+      context "and our record has no email" do
+        it_should_behave_like "match on name only"
+      end
+      it "should not match if we have matching name but mismatching email"
+    end
+    context "when email is given and has >1 match" do
+      it_should_behave_like "when email cannot break ties"
+    end
+    context "when email is not given" do
+      it_should_behave_like "when email cannot break ties"
+    end
+  end
   describe "value selection for merging" do
     before(:each) do
       @old = BasicModels.create_generic_customer
@@ -373,12 +408,12 @@ describe Customer do
   
   it 'resets password' do
     customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_false
-    Customer.authenticate('quentin', 'new password').should == customers(:quentin)
+    Customer.authenticate(customers(:quentin).email, 'new password').should == customers(:quentin)
   end
 
   it 'does not rehash password' do
-    customers(:quentin).update_attributes(:login => 'quentin2').should_not be_false
-    Customer.authenticate('quentin2', 'monkey').should == customers(:quentin)
+    customers(:quentin).update_attributes(:email => 'quentin2@email.com').should_not be_false
+    Customer.authenticate('quentin2@email.com', 'monkey').should == customers(:quentin)
   end
 
   #
@@ -386,29 +421,29 @@ describe Customer do
   #
 
   it 'authenticates user' do
-    Customer.authenticate('quentin', 'monkey').should == customers(:quentin)
-    Customer.authenticate('quentin', 'monkey').errors.should be_empty
+    Customer.authenticate(customers(:quentin).email, 'monkey').should == customers(:quentin)
+    Customer.authenticate(customers(:quentin).email, 'monkey').errors.should be_empty
   end
 
   context "invalid login" do
     it "should display a password-incorrect message for bad password" do
-      Customer.authenticate('quentin', 'invalid_password').errors.on(:login_failed).
+      Customer.authenticate(customers(:quentin).email, 'invalid_password').errors.on(:login_failed).
         should match(/password incorrect/i)
     end
     it "should display an unknown-username message for bad username" do
-      Customer.authenticate('asdkfljhadf', 'pass').errors.on(:login_failed).
-        should match(/can't find that login/i)
+      Customer.authenticate('asdkfljhadf@email.com', 'pass').errors.on(:login_failed).
+        should match(/can't find that email/i)
     end
   end
 
   if (!defined?(REST_AUTH_SITE_KEY) || REST_AUTH_SITE_KEY.blank?)
     # old-school passwords
     it "authenticates a user against a hard-coded old-style password" do
-      Customer.authenticate('old_password_holder', 'test').should == customers(:old_password_holder)
+      Customer.authenticate(customers(:old_password_holder).email, 'test').should == customers(:old_password_holder)
     end
   else
     it "doesn't authenticate a user against a hard-coded old-style password" do
-      Customer.authenticate('old_password_holder', 'test').should be_nil
+      Customer.authenticate(customers(:old_password_holder).email, 'test').should be_nil
     end
 
     # New installs should bump this up and set REST_AUTH_DIGEST_STRETCHES to give a 10ms encrypt time or so
@@ -466,7 +501,7 @@ describe Customer do
 
   protected
   def create_user(options = {})
-    record = Customer.new({ :login => 'quire', :email => 'quire@example.com', :password => 'quire69', :password_confirmation => 'quire69' }.merge(options))
+    record = Customer.new({ :email => 'quire@example.com', :password => 'quire69', :password_confirmation => 'quire69' }.merge(options))
     record.save
     record
   end

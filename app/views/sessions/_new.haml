@@ -1,8 +1,7 @@
 - form_tag session_path do
-  = error_messages_for 'customer'
-
-  %label{:for=>:customer_login} Login Name
-  = text_field_tag 'login', @login, :size => 20
+  = error_messages_for 'customer', :header_message => default_validation_error_message
+  %label{:for=>:customer_email} Email
+  = text_field_tag 'email', @email, :size => 20
   %br/
 
   %label{:for=>:customer_password} Password
@@ -13,7 +12,7 @@
     .small
       = check_box_tag 'forgot_password', 1
       %strong Forgot your password?
-      Check this box, enter your email address or login name above,
+      Check this box, enter your email address above,
       and a new password will be emailed to you within 1 minute.
       %br/
       = check_box_tag 'remember_me', '1', @remember_me

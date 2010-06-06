@@ -2,7 +2,7 @@
 
 = error_messages_for :customer
 %br/
-- form_tag :action => 'edit', :id => @customer do
+- form_tag :action => 'update', :id => @customer do
   = render :partial => 'form' 
   - if @is_admin
     = render :partial => 'form_admin'

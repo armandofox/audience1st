@@ -15,12 +15,14 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_length_of :login, :in => 3..40, :allow_nil => true, :if => :self_created?
-  validates_format_of :login, :with => Authentication.login_regex, :if => :self_created?
-  validates_uniqueness_of :login, :allow_nil => true
-
   validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?
-  validates_uniqueness_of :email, :allow_nil => true
+  validates_uniqueness_of :email,
+  :if => :self_created?,
+  :allow_blank => true,
+  :case_sensitive => false,
+  :message => "address {{value}} has already been registered.
+    <a href='/login?email={{value}}'>Sign in with this email address</a>
+    (if you forgot your password, use the 'Forgot My Password' button on sign-in page)."
   
   validate :valid_or_blank_address?
 
@@ -30,19 +32,24 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
 
-  validates_length_of :password, :in => 4..20, :allow_nil => true, :if => :self_created?
-  validates_confirmation_of :password, :if => :self_created?
+  validates_length_of :password, :in => 4..20, :allow_nil => true, :if => :self_created_and_not_linked_to_facebook
+  validates_confirmation_of :password, :if => :self_created_and_not_linked_to_facebook
 
   attr_protected :id, :salt, :role, :created_by_admin
   attr_accessor :password
 
-  cattr_reader :replaceable_attributes
+  cattr_reader :replaceable_attributes, :extra_attributes
   @@replaceable_attributes  =
     %w(first_name last_name email street city state zip day_phone eve_phone
         company title company_address_line_1 company_address_line_2 company_url
         company_city company_state company_zip work_phone cell_phone work_fax
         best_way_to_contact
 )
+  @@extra_attributes =
+    [:referred_by_id, :referred_by_other, 
+     :company, :title, :company_address_line_1, :company_address_line_2,
+     :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
+     :work_fax, :company_url]
 
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
@@ -73,7 +80,11 @@ class Customer < ActiveRecord::Base
   }
 
   def self_created? ; !created_by_admin ; end
-  
+
+  def self_created_and_not_linked_to_facebook
+    self_created? && !facebook_user?
+  end
+
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
     errors.add_to_base "Mailing address must include street, city, state, Zip" unless (valid_mailing_address? || blank_mailing_address?)
@@ -141,7 +152,7 @@ class Customer < ActiveRecord::Base
   end
 
   @@user_entered_strings =
-    %w[first_name last_name street city state zip day_phone eve_phone login email]
+    %w[first_name last_name street city state zip day_phone eve_phone  email]
 
   # strip whitespace before saving
   def trim_whitespace_from_user_entered_strings
@@ -149,13 +160,6 @@ class Customer < ActiveRecord::Base
       c = self.send(col)
       c.send(:strip!) if c.kind_of?(String)
     end
-  end
-
-  def self.extra_attributes
-    [:referred_by_id, :referred_by_other, 
-     :company, :title, :company_address_line_1, :company_address_line_2,
-     :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
-     :work_fax, :company_url]
   end
 
 
@@ -168,7 +172,7 @@ class Customer < ActiveRecord::Base
   # convenience accessors
 
   def inspect
-    "[#{self.id}] #{self.full_name} <#{login}> " <<
+    "[#{self.id}] #{self.full_name} <#{email}> " <<
       (email.blank? ? '' : "<#{email}>") <<
       (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
   end
@@ -282,19 +286,19 @@ class Customer < ActiveRecord::Base
     return status
   end
 
-  def self.authenticate(login, password)
-    if (login.blank? || password.blank?)
+  def self.authenticate(email, password)
+    if (email.blank? || password.blank?)
       u = Customer.new
-      u.errors.add(:login_failed, "Please provide a login name and password.")
+      u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.find(:first, :conditions => ["login LIKE ?", login.downcase])) # need to get the salt
+    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
       u = Customer.new
-      u.errors.add(:login_failed, "Can't find that login name in our database.  Maybe you signed up with a different name?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
+      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
       return u
     end
     unless u.authenticated?(password)
-      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, enter your login name and check 'Forgot Password' and we will email you a new password within 1 minute.")
+      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, enter your email and check 'Forgot Password' and we will email you a new password within 1 minute.")
     end
     return u
   end
@@ -328,6 +332,10 @@ class Customer < ActiveRecord::Base
     Customer.role_name(self.role)
   end
 
+  def role_value
+    Customer.role_value(self.role)
+  end
+  
   # you can grant someone else a particular role as long as it's less
   # than your own.
 
@@ -385,8 +393,7 @@ class Customer < ActiveRecord::Base
   end
 
   # given some customer info, find this customer in the database with
-  # high confidence; but if not found, create new record for this
-  # customer and return that.
+  # high confidence;  if not found or ambiguous, return nil
 
   def self.find_unique(p)
     p.symbolize_keys!
@@ -412,12 +419,30 @@ class Customer < ActiveRecord::Base
     c
   end
 
-  def self.new_or_find(p, loggedin_id=0)
+  # under what circumstances do we consider a customer's name "the same" as a given first/last?
+  def name_word_matches(ours,given)
+    ours == given ||
+      ours[0,1] == given.gsub(/[^A-Za-z]/,'') ||
+      given[0,1] == ours.gsub(/[^A-Za-z]/,'')
+  end
+  def name_matches(first,last)
+    our_first = self.first_name.to_s.downcase
+    our_last = self.last_name.to_s.downcase
+    first.to_s.downcase!
+    last.to_s.downcase!
+    return nil if (first.blank? && last.blank? && our_first.blank? && our_last.blank?)
+    return (our_last == last) &&
+      (name_word_matches(our_first, first) || our_first.blank? || first.blank?)
+  end
+  # If customer can be uniquely identified in DB, return match from DB; else
+  # create new customer.
+
+  def self.find_or_create!(p, loggedin_id=0)
     unless (c = Customer.find_unique(p))
-      c = Customer.new(p)
-      # precaution: make sure login is unique.
-      if c.login
-        c.login = nil if Customer.find(:first,:conditions => ['login like ?',c.login])
+      c = Customer.new(p.merge({:created_by_admin => true}))
+      # precaution: make sure email is unique.
+      if c.email
+        c.email = nil if Customer.find(:first,:conditions => ['email like ?',c.email])
       end
       c.save!
       Txn.add_audit_record(:txn_type => 'edit',
@@ -472,7 +497,6 @@ class Customer < ActiveRecord::Base
         row = [
           (c.first_name.name_capitalize unless c.first_name.blank?),
           (c.last_name.name_capitalize unless c.last_name.blank?),
-          c.login,
           c.email,
           c.street,c.city,c.state,c.zip,
           c.day_phone, c.eve_phone,
@@ -517,7 +541,7 @@ class Customer < ActiveRecord::Base
       first_name,last_name = fb_user.name.first_and_last_from_full_name
       new_facebooker = Customer.new(:first_name => first_name,
         :last_name => last_name,
-        :login => "facebooker_#{fb_user.uid}", :password => "", :email => "")
+        :password => "", :email => "")
       new_facebooker.fb_user_id = fb_user.uid.to_i
       #We need to save without validations
       new_facebooker.save(false)
@@ -544,10 +568,16 @@ class Customer < ActiveRecord::Base
     #We need this so Facebook can find friends on our local application even if they have not connect through connect
     #We then use the email hash in the database to later identify a user from Facebook with a local user
     def register_user_to_fb
-      users = {:email => email, :account_id => id}
-      Facebooker::User.register([users])
-      self.email_hash = Facebooker::User.hash_email(email)
-      save(false)
+      if !email.blank?
+        begin
+          users = {:login => email, :account_id => id}
+          Facebooker::User.register([users])
+          self.email_hash = Facebooker::User.hash_email(email)
+          save(false)
+        rescue Exception => e
+          logger.error "Warning: register_user_to_fb for userid #{id}: #{e.message}"
+        end
+      end
     end
     def facebook_user?
       return !fb_user_id.nil? && fb_user_id > 0

@@ -9,14 +9,16 @@ class SessionsController < ApplicationController
     if (@gCheckoutInProgress)
       @cart = find_cart
     end
+    @remember_me = true
+    @email ||= params[:email]
   end
 
   def create
     logout_keeping_session!
-    @user = Customer.authenticate(params[:login], params[:password])
+    @user = Customer.authenticate(params[:email], params[:password])
     if (@user.nil? || !@user.errors.empty?)
       note_failed_signin
-      @login       = params[:login]
+      @email       = params[:email]
       @remember_me = params[:remember_me]
       render :action => 'new'
     else
@@ -49,9 +51,9 @@ class SessionsController < ApplicationController
 protected
   # Track failed login attempts
   def note_failed_signin
-    flash[:warning] = "Couldn't log you in as '#{params[:login]}'"
+    flash[:warning] = "Couldn't log you in as '#{params[:email]}'"
     flash[:warning] << ": #{@user.errors.on(:login_failed)}" if @user
-    logger.warn "Failed login for '#{params[:login]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:error]}"
+    logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:error]}"
   end
 
 end
