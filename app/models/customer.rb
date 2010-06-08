@@ -24,7 +24,8 @@ class Customer < ActiveRecord::Base
     <a href='/login?email={{value}}'>Sign in with this email address</a>
     (if you forgot your password, use the 'Forgot My Password' button on sign-in page)."
   
-  validate :valid_or_blank_address?
+  validates_format_of :zip, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
+  validate :valid_or_blank_address?, :if => :self_created?
 
   validates_length_of :first_name, :within => 1..50
   validates_format_of :first_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
