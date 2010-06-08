@@ -88,7 +88,7 @@ end
 
 deploy.task :after_update_code do
   # prepend branch base rev into REVISION file
-  if variables[:branch] =~ /-r([0-9]+)$/
+  if variables[:branch] =~ /-r([0-9]+)/
     put "#{$1}.#{real_revision}", "#{release_path}/REVISION"
   end
   # create database.yml

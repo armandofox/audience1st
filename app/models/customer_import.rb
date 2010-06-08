@@ -59,16 +59,16 @@ class CustomerImport < Import
     c = Customer.new(
       :first_name       => row[0],
       :last_name        => row[1],
-      :email            => row[3],
-      :street           => row[4],
-      :city             => row[5],
-      :state            => row[6],
-      :zip              => row[7],
-      :day_phone        => row[8],
-      :eve_phone        => row[9],
-      :blacklist        => !row[10].blank? ,
-      :e_blacklist      => !row[11].blank? ,
-      :oldid            => row[12],
+      :email            => row[2],
+      :street           => row[3],
+      :city             => row[4],
+      :state            => row[5],
+      :zip              => row[6],
+      :day_phone        => row[7],
+      :eve_phone        => row[8],
+      :blacklist        => !row[9].blank? ,
+      :e_blacklist      => !row[10].blank? ,
+      :oldid            => row[11],
       :created_by_admin => true
       )
   end

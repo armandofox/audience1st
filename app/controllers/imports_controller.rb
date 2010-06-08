@@ -11,7 +11,7 @@ class ImportsController < ApplicationController
     @import = (type.constantize).new(params[:import])
     @import.completed = false
     if @import.save
-      flash[:notice] = "File #{@import.filename} was successfully uploaded.  A preview of what will be imported is below.  If it looks good, click Finalize Import to proceed."
+      flash[:notice] = "A preview of what will be imported is below.  Records with errors will not be imported."
       redirect_to edit_import_path(@import)
     else
       render :action => :new
