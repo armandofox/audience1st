@@ -5,14 +5,13 @@
     %td= link_to first, {:action => 'switch_to', :id => customer }
     %td= link_to last, {:action => 'switch_to', :id => customer }
   - else
-    %td= h customer.first
-    %td= h customer.last
+    %td= h customer.first_name
+    %td= h customer.last_name
   %td= h customer.street
   %td= h customer.city
   %td= h customer.state
   %td= h customer.zip
   %td= number_to_phone_2(customer.day_phone)
   %td= number_to_phone_2(customer.eve_phone)
-  %td= h customer.login
   %td= h customer.email
   %td= h customer.company

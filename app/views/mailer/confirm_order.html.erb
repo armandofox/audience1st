@@ -31,7 +31,7 @@ NOTE: The recipient HAS NOT BEEN notified of your gift!
   <%= @recipient.full_name %>
   <%= @recipient.street %>
   <%= @recipient.city %>, <%= @recipient.state %>  <%= @recipient.zip %>
-  <%= [@recipient.day_phone,@recipient.eve_phone,@recipient.login].compact.join(' - ') %>
+  <%= [@recipient.day_phone,@recipient.eve_phone,@recipient.email].compact.join(' - ') %>
 
 <% end %>
 ------------------------------------------------------------
