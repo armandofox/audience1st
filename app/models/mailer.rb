@@ -6,7 +6,7 @@ class Mailer < ActionMailer::Base
     sending_to(customer)
     @subject    << "#{customer.full_name}'s account"
     @body.merge!(
-      :login         => customer.login,
+      :email         => customer.email,
       :newpass       => newpass,
       :greeting      => customer.full_name,
       :whathappened  => whathappened,

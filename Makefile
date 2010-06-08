@@ -1,5 +1,5 @@
 
-FILES = $(shell find app lib features spec config -name '*.rb' -or -name '*.rhtml'  -or -name '*.haml'  -or -name '*.rake' -or -name '*.yml')
+FILES = $(shell find app lib features spec config -name '*.rb' -or -name '*.rhtml'  -or -name '*.haml' -or -name '*.html.erb' -or -name '*.haml.erb'  -or -name '*.rake' -or -name '*.yml')
 PLUGINS = $(shell find vendor/plugins -name '*.rb' -print -or -name '*.yml')
 
 all:

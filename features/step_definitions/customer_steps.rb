@@ -26,7 +26,7 @@ Given /^I am logged in as (.*)?$/ do |who|
     @customer = customers(:generic_customer)
   end
   visit login_path
-  fill_in 'login', :with => @customer.login
+  fill_in 'email', :with => @customer.email
   fill_in 'password', :with => 'pass'
   click_button 'Login'
   response.should contain(Regexp.new("Welcome,.*#{@customer.first_name}"))

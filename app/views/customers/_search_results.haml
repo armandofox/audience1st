@@ -5,7 +5,7 @@
 %table.hilite
   %thead
     %tr
-      - %w[first_name last_name street city login].each do |f|
+      - %w[first_name last_name street city email].each do |f|
       %th= ActiveSupport::Inflector.humanize(f)
       - end
   %tbody
@@ -13,7 +13,7 @@
       %tr
         %td= c.first_name
         %td= c.last_name
-        - %w[street city login].each do |f|
+        - %w[street city email].each do |f|
           %td= c.send(f)
 
 

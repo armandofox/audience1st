@@ -49,8 +49,8 @@ class Visit < ActiveRecord::Base
       # group them by who's responsible
       vs.group_by(&:followup_assigned_to_id).each_pair do |who,visits|
         w = Customer.find(who)
-        logger.info "#{visits.length} for #{w.full_name} <#{w.login}>"
-        Mailer.deliver_pending_followups(w.login, visits) 
+        logger.info "#{visits.length} for #{w.full_name} <#{w.email}>"
+        Mailer.deliver_pending_followups(w.email, visits) 
       end
     end
   end

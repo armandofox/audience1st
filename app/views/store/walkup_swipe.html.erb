@@ -2,7 +2,7 @@
 
 <h1>Walk-up Sale (from <%=h @ip %>)</h1>
 
-<%= error_messages_for 'store' %>
+<%= error_messages_for 'store', :header_message => default_validation_error_message %>
                   
 <%= search_panel('customers', 'list', {
                    :label => "Walk-up subscriber search:",

@@ -91,7 +91,7 @@ Given "$actor session store has no $attrlist" do |_, attrlist|
 end
 
 Then "$actor session store should remember customer '$cust'" do |_,cust|
-  customer = Customer.find_by_login(cust)
+  customer = Customer.find_by_email(cust)
   customer.should_not be_nil
   session[:cid].should == customer.id
 end
@@ -115,7 +115,7 @@ end
 # Flash messages
 #
 
-Then /^she should +see an? (\w+) message '([\w !\']+)'$/ do |notice, message|
+Then /^she should +see an? (\w+) message '([\w !@.\']+)'$/ do |notice, message|
   response.should have_flash(notice, %r{#{message}})
 end
 

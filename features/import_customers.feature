@@ -18,8 +18,7 @@ Scenario: Upload customer import list
   
   When I select "Customer/mailing list" from "import_type"
   And I upload customer import list "list_with_2_customers.csv"
-  Then I should be on the Imports page
-  And I should see "list_with_2_customers.csv was successfully uploaded"
+  Then I should see "A preview of what will be imported is below"
 
 
   

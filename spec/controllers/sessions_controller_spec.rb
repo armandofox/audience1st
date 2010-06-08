@@ -9,8 +9,8 @@ describe SessionsController do
   fixtures        :customers
   before(:each) do 
     @user  = mock_user
-    @login_params = { :login => 'quentin', :password => 'test' }
-    Customer.stub!(:authenticate).with(@login_params[:login], @login_params[:password]).and_return(@user)
+    @login_params = { :email => 'quentin@email.com', :password => 'test' }
+    Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
   end
   def do_create
     post :create, @login_params
@@ -19,9 +19,9 @@ describe SessionsController do
   describe "on successful admin login" do
     before(:each) do
       @boxoffice_manager = customers(:boxoffice_manager)
-      @login_params = {:login => @boxoffice_manager.login,
+      @login_params = {:email => @boxoffice_manager.email,
         :password => 'pass'}
-      Customer.stub!(:authenticate).with(@login_params[:login], @login_params[:password]).and_return(@boxoffice_manager)
+      Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@boxoffice_manager)
       do_create
     end
     it "should set current Admin to logged-in user" do
@@ -97,7 +97,7 @@ describe SessionsController do
       login_as :quentin
     end
     it 'logs out keeping session'   do controller.should_receive(:logout_keeping_session!); do_create end
-    it 'flashes an error'           do do_create; flash[:warning].should =~ /Couldn't log you in as 'quentin'/ end
+    it 'flashes an error'           do do_create; flash[:warning].should =~ /Couldn't log you in as 'quentin@email.com'/ end
     it 'renders the log in page'    do do_create; response.should render_template('new')  end
     it "doesn't log me in"          do do_create; controller.send(:logged_in?).should == false end
     it "doesn't send password back" do 

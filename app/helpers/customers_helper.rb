@@ -127,7 +127,7 @@ module CustomersHelper
     sd1,vt1 = v1
     sd2,vt2 = v2
     if vt1 != vt2
-      vt1.showdates.min <=> vt2.showdates.min
+      (vt1.showdates.min <=> vt2.showdates.min) rescue vt1
     else
       sd1 ? sd1 <=> sd2 : -1
     end

@@ -9,25 +9,25 @@ Given "an anonymous customer" do
   log_out!
 end
 
-Given "$an $user_type custome with $attributes" do |_, user_type, attributes|
+Given "$an $user_type customer with $attributes" do |_, user_type, attributes|
   create_user! user_type, attributes.to_hash_from_story
 end
 
-Given "$an $user_type customer named '$login'" do |_, user_type, login|
-  create_user! user_type, named_user(login)
+Given "$an $user_type customer named '$email'" do |_, user_type, email|
+  create_user! user_type, named_user(email)
 end
 
-Given "$an $user_type customer logged in as '$login'" do |_, user_type, login|
-  create_user! user_type, named_user(login)
+Given "$an $user_type customer logged in as '$email'" do |_, user_type, email|
+  create_user! user_type, named_user(email)
   log_in_user!
 end
 
-Given "$actor is logged in" do |_, login|
-  log_in_user! @user_params || named_user(login)
+Given "$actor is logged in" do |_, email|
+  log_in_user! @user_params || named_user(email)
 end
 
-Given "there is no $user_type customer named '$login'" do |_, login|
-  @user = Customer.find_by_login(login)
+Given "there is no $user_type customer named '$email'" do |_, email|
+  @user = Customer.find_by_email(email)
   @user.destroy! if @user
   @user.should be_nil
 end
@@ -57,6 +57,10 @@ end
 #
 # Result
 #
+Then "show the errors" do
+  puts @user.errors.full_messages.join("\n")
+end
+
 Then "$actor should be invited to sign in" do |_|
   response.should render_template('/sessions/new')
 end
@@ -65,16 +69,16 @@ Then "$actor should not be logged in" do |_|
   controller.logged_in?.should_not be_true
 end
 
-Then "$login should be logged in" do |login|
+Then "$login should be logged in" do |email|
   controller.logged_in?.should be_true
-  controller.current_user.login.should == login
+  controller.current_user.email.should == email
 end
 
 def named_user login
   user_params = {
-    'admin'   => {'id' => 1, 'login' => 'addie', 'password' => '1234addie', 'email' => 'admin@example.com', :first_name => 'Addie', :last_name => 'Admin'    },
-    'oona'    => {          'login' => 'oona',   'password' => '1234oona',  'email' => 'unactivated@example.com', :first_name => 'Oona', :last_name => 'Ooblick' },
-    'reggie'  => {          'login' => 'reggie', 'password' => 'monkey',    'email' => 'registered@example.com', :first_name => 'Reggie', :last_name => 'Registered'},
+    'admin'   => {'id' => 1, 'password' => '1234addie', 'email' => 'admin@example.com', :first_name => 'Addie', :last_name => 'Admin'    },
+    'oona'    => {           'password' => '1234oona',  'password_confirmation' => '1234oona','email' => 'unactivated@example.com', :first_name => 'Oona', :last_name => 'Ooblick' },
+    'reggie'  => {           'password' => 'monkey',    'email' => 'registered@example.com', :first_name => 'Reggie', :last_name => 'Registered'},
     }
   user_params[login.downcase]
 end
@@ -116,7 +120,7 @@ def log_in_user user_params=nil
   @user_params ||= user_params
   user_params  ||= @user_params
   post "/session", user_params
-  @user = Customer.find_by_login(user_params['login'])
+  @user = Customer.find_by_email(user_params['email'])
   controller.current_user
 end
 

@@ -5,8 +5,8 @@ news = 0
 errs = 0
 cs = Customer.find(:all, :conditions => 'phplist_user_id IS NULL or phplist_user_id = 0')
 cs.each do |c|
-  if c.login.valid_email_address?
-    c.phplist_user_id,msg = PhplistUser.find_or_create(c.login)
+  if c.email.valid_email_address?
+    c.phplist_user_id,msg = PhplistUser.find_or_create(c.email)
     if msg.match(/Linked/)
       matched += 1
     elsif msg.match(/Created/)

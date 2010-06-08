@@ -14,7 +14,7 @@
     - s = Customer.find_by_id(t.entered_by_id) 
     %tr
       %td= t.txn_date
-      %td= s ? s.login : "" 
+      %td= s ? s.email : "" 
       - if c.nil? 
         %td{:colspan=>"3"}
       - else 

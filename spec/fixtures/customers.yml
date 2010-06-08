@@ -17,7 +17,6 @@ tom:
   role: 0
   day_phone: 510-555-5555
   eve_phone: 510-555-5555
-  login: tom@foolery.com
   email: tom@foolery.com
   last_login: 2006-01-01 00:00:00
   salt: abcdefghij
@@ -34,7 +33,6 @@ tom2:
   role: 0
   day_phone: 510-999-9999
   eve_phone: 510-888-8888
-  login: tom2@foolery.com
   email: tom2@foolery.com
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
@@ -43,7 +41,6 @@ tom3:
   id: 79
   first_name: Another Tom
   last_name: Foolery
-  login: tom3@foolery.com
   email: tom3@foolery.com
 
 cust_with_real_address:
@@ -52,16 +49,16 @@ cust_with_real_address:
   last_name: Fox
   street: 251 Surrey St
   city: San Francisco
+  email: armando@example.com
   state: ca
   role: 0
-  login: armando-test@nowhere.com
 
 admin:
   id: 1
   first_name: Super
   last_name:  Admin
-  login: admin
   role: 100
+  email: admin
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
@@ -69,17 +66,17 @@ staff_user:
   id: 2
   first_name: Staff
   last_name: User
-  login: staff
   role: 11
   salt: abcdefghij
+  email: staff@example.com
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
 boxoffice_user:
   id: 3
   first_name: Boxoffice
   last_name: User
-  login: boxoffice
   role: 21
+  email: boxoffice@example.com
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
@@ -87,8 +84,8 @@ boxoffice_manager:
   id: 4
   first_name: Boxoffice
   last_name: Manager
-  login: boxofficemanager
   role: 31
+  email: boxoffice_manager@example.com
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
@@ -96,7 +93,6 @@ walkup_sales_user:
   id: 5
   first_name: Walkup
   last_name: Clerk
-  login: walkupsales
   role: 15
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
@@ -105,14 +101,13 @@ customer_with_empty_login:
   id: 6
   first_name: Nobody
   last_name: NoLogin
-
+  
 # fixtures for rspec tests included with restful_authentication plugin
 
 quentin:
   id:                        9991
   first_name: quentin
   last_name:  q
-  login:                     quentin
   email:                     quentin@example.com
   salt:                      'abcdefghij'
   crypted_password:          <%= Customer.password_digest('monkey',  'abcdefghij') %>
@@ -124,7 +119,6 @@ aaron:
   id:                        9992
   first_name: aaron
   last_name:  q
-  login:                     aaron
   email:                     aaron@example.com
   salt:                      'abcdefghij'
   crypted_password:          <%= Customer.password_digest('monkey', 'abcdefghij') %>
@@ -135,7 +129,6 @@ aaron:
 
 old_password_holder:
   id:                        9993
-  login:                     old_password_holder
   email:                     salty_dog@example.com
   salt:                      7e3041ebc2fc05a40c60028e2c4901a81035d3cd
   crypted_password:          00742970dc9e6319f8019fd54864d3ea740f04b1 # test
@@ -147,5 +140,4 @@ armando:
   id: 11000
   first_name: Armando
   last_name:  Fox
-  login:      armandofox@gmail.com 
   email:      armandofox@gmail.com 

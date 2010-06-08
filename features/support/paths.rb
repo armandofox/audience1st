@@ -16,10 +16,11 @@ module NavigationHelpers
     when /the walkup sales page/i
       "/box_office/walkup/#{@showdate.id}"
     when /the admin:(.*) page/i
-      case $1
+      page = $1
+      case page
       when /settings/i ; '/options/edit' 
       when /import/i   ; '/imports/new'
-      else ; raise "No mapping for admin:$1"
+      else ; raise "No mapping for admin:#{page}"
       end
     # Add more mappings here.
     # Here is a more fancy example:
