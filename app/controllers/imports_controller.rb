@@ -11,7 +11,7 @@ class ImportsController < ApplicationController
     @import = (type.constantize).new(params[:import])
     @import.completed = false
     if @import.save
-      flash[:notice] = "A preview of what will be imported is below.  Records with errors will not be imported."
+      flash[:notice] = "A preview of what will be imported is below.  Records with errors will not be imported.  Click Continue Import to import non-error records and ignore records with errors, or click Cancel Import to do nothing."
       redirect_to edit_import_path(@import)
     else
       render :action => :new

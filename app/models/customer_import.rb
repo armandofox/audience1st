@@ -68,9 +68,10 @@ class CustomerImport < Import
       :eve_phone        => row[8],
       :blacklist        => !row[9].blank? ,
       :e_blacklist      => !row[10].blank? ,
-      :oldid            => row[11],
-      :created_by_admin => true
+      :oldid            => row[11]
       )
+    c.created_by_admin = true
+    c
   end
   
 end
