@@ -1,8 +1,4 @@
-%p.adminField Merge Customer Records
-
-%p
-  Select which value will be retained from each record. 
-  Unselected values will be discarded.
+%p.infoMsg  Select which value will be retained from each record.  Unselected values will be discarded.
 
 - form_tag :action=>'finalize_merge' do
   = hidden_field_tag 'cust0', @cust[0].id
@@ -16,7 +12,7 @@
       %td Last activity
       %td= @cust[0].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
       %td= @cust[1].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
-    - Customer.mergeable_attributes.each do |c|
+    - Customer.replaceable_attributes.each do |c|
       %tr{:class=>cycle(:odd,:even)}
         %td= h c.humanize
         %td
@@ -27,5 +23,4 @@
           = h @cust[1].send(c)
 
   = submit_tag 'Merge Records'
-
-= button_to 'Cancel', {:action => 'list',:method => 'get'}
+  = link_to 'Cancel', :back, {:class => 'genButton'}

@@ -393,6 +393,25 @@ class Customer < ActiveRecord::Base
     eval "def is_#{role}; self.role >= #{lvl}; end"
   end
 
+  def self.find_suspected_duplicates(limit=20)
+    limit = 20 if limit.to_i < 2
+    sim = []
+    sim << 'c1.first_name LIKE c2.first_name'
+    
+    # similarity: last names must match, emails must not differ,
+    #  and at least one of first name or street must match.
+    sql = <<EOSQL1
+      SELECT DISTINCT c1.*
+      FROM customers c1 INNER JOIN customers c2 ON c1.last_name=c2.last_name
+      WHERE c1.id != c2.id AND
+        (c1.email LIKE c2.email OR c1.email IS NULL OR c2.email IS NULL) AND
+        (c1.first_name LIKE c2.first_name OR c1.street LIKE c2.street)
+      ORDER BY c1.last_name,c1.first_name
+      LIMIT #{limit}
+EOSQL1
+    possible_dups = Customer.find_by_sql(sql)
+  end
+
   # given some customer info, find this customer in the database with
   # high confidence;  if not found or ambiguous, return nil
 
@@ -472,6 +491,8 @@ class Customer < ActiveRecord::Base
     a = Array.new(cols.size) { "%#{string}%" }
     a.unshift(cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR "))
   end
+
+    
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns

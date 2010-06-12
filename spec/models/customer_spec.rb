@@ -249,7 +249,15 @@ describe Customer do
         it_should_behave_like "match on name only"
       end
       context "and address doesn't match" do
-        it "should not match even if names match"
+        it "should not match even if names match" do
+          attrs = {
+            :first_name => 'Bob', :last_name => 'Jones',
+            :email => 'bobjones@mail.com',
+            :city => 'New York', :state => 'NY', :zip => '99999'
+          }
+          @old = BasicModels.create_generic_customer(attrs.merge({:street => '123 Fake St'}))
+          @new = BasicModels.create_generic_customer(attrs.merge({:street => '234 Main St'}))
+        end
       end
     end
     context "when email is given and has no match" do

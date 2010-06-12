@@ -2,20 +2,22 @@
 
 %br/
 
-= pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
+= pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  }) if @customer_pages
 %br/
 
 - form_tag :action => 'merge' do
+  = hidden_field_tag 'action_name', @controller.action_name
   %table.hilite
     %thead
       = render :partial => 'customer_header'
     %tbody
       = render :partial => 'customer', :collection => @customers
 
-  = pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'}
+  = pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'} if @customer_pages
 
   %br/
-  = submit_tag 'Merge Selected Customers Manually'
-  = submit_tag 'Merge Selected Customers Automatically'
-
-
+  %p
+    Merge 2 selected customers:
+    = submit_tag 'Manually'
+    = submit_tag 'Automatically'
+    = popup_help_for 'merge_customers'

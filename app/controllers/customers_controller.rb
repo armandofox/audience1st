@@ -190,15 +190,22 @@ class CustomersController < ApplicationController
     @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} matching '#{@customers_filter}'"
   end
 
+  def list_duplicates
+    @limit = params[:limit] || 20
+    @customers = Customer.find_suspected_duplicates(@limit)
+    @title = "First #{@limit} Suspected Duplicates"
+    render :action => 'list'
+  end
+
   def merge
     if (!params[:merge]) || (params[:merge].keys.length != 2)
       flash[:notice] = 'You must select exactly 2 records at a time to merge.'
-      redirect_to(:action => :list) and return
+      redirect_to_last_list and return
     end
     # automatic merge?
     if params[:commit] =~ /automatically/i
       do_automatic_merge(*params[:merge].keys)
-      redirect_to :action => :list
+      redirect_to_last_list and return
     else
       @cust = params[:merge].keys.map { |x| Customer.find(x.to_i) }
       # fall through to merge.haml
@@ -210,17 +217,12 @@ class CustomersController < ApplicationController
     c1 = Customer.find_by_id(params.delete(:cust1))
     unless c0 && c1
       flash[:error] = "At least one customer not found. Please try again."
-      redirect_to :action => :list and return
+      redirect_to_last_list and return
     end
     result = c0.merge_with_params!(c1, params)
     # result is nil if merge failed, else string describing result
-    if result
-      flash[:notice] = result
-      redirect_to :action => 'welcome'
-    else                      # failure
-      flash[:notice] = c0.errors.full_messages.join(';')
-      redirect_to :action => 'list'
-    end
+    flash[:notice] = result || c0.errors.full_messages.join(';')
+    redirect_to_last_list
   end
 
   def switch_to
@@ -377,11 +379,14 @@ class CustomersController < ApplicationController
 
   private
 
+  def redirect_to_last_list
+    redirect_to :action => (params[:action_name] || 'list'), :customers_filter => params[:customers_filter]
+  end
+
   def do_automatic_merge(id0,id1)
     c0 = Customer.find_by_id(id0)
     c1 = Customer.find_by_id(id1)
     flash[:notice] = c0.merge_automatically!(c1)
-    redirect_to :action => :list
   end
 
   def forgot_password(email)

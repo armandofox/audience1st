@@ -17,6 +17,12 @@
         = select_date Date.today, :prefix => 'to',  :start_year => 2007
 
 .pageDiv
+  %h1 Database Maintenance
+  #database_maintenance
+    %p= link_to 'Find Possible Duplicates...', {:controller => :customers, :action => :list_duplicates}
+    %p= link_to_function 'Synchronize with Email Database...', 'alert("This function is coming soon.")'
+
+.pageDiv
   %h1 Customer Lists
   #report_body
     - @special_report_names.each do |name|
