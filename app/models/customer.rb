@@ -54,7 +54,6 @@ class Customer < ActiveRecord::Base
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
 
-  after_create :register_user_to_fb
   before_destroy :cannot_destroy_special_customers
 
   #----------------------------------------------------------------------
