@@ -22,7 +22,7 @@ class Customer < ActiveRecord::Base
   :case_sensitive => false,
   :message => "address {{value}} has already been registered.
     <a href='/login?email={{value}}'>Sign in with this email address</a>
-    (if you forgot your password, use the 'Forgot My Password' button on sign-in page)."
+    (if you forgot your password, use the 'Forgot My Password' button on sign-in page)"
   
   validate :valid_or_blank_address?
 

@@ -11,7 +11,7 @@
       Fields
       %span.strong like this
       are required for online reservations and ticket purchase.
-      = link_to "Our privacy policy", Option.value(:privacy_policy_url), :target => '_blank'
+      = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
     %label.strong{:for=>:customer_first_name} First name
     =text_field 'customer', 'first_name', :size => 16, :max_length => 40, :id => 'customer_first_name', :readonly => disabled
     %br/
@@ -57,7 +57,7 @@
 
     %label.strong{:for=>:customer_email} Email
     = text_field 'customer', 'email', {:size => 30, :max_length => 40, :readonly => disabled }
-    %span.small= link_to "Our Privacy Policy", Option.value(:privacy_policy_url), :target => '_blank'
+    %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
     
   /[eoform:customer]
 
