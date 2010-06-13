@@ -74,6 +74,13 @@ namespace :provision do
 end
 
 namespace :deploy do
+  desc "Clear all sessions from DB, in case of change in session schema."
+  task :clear_sessions do
+    run "cd #{deploy_to}/current && RAILS_ENV=production rake db:sessions:clear"
+  end
+end
+
+namespace :deploy do
   namespace :web do
     desc "Protect app by requiring valid-user in htaccess."
     task :protect do
