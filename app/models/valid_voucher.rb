@@ -16,8 +16,6 @@ class ValidVoucher < ActiveRecord::Base
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type
 
-  validates_time :start_sales
-  validates_time :end_sales
   validate :check_expiration_dates
 
   require 'set'
