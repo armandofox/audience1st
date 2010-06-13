@@ -17,9 +17,6 @@ class Vouchertype < ActiveRecord::Base
                          :message => "Zero-price vouchers can only be sold
                                         by box office or external reseller")
 
-  validates_date :valid_date
-  validates_date :expiration_date
-
   # Subscription vouchertypes shouldn't be available for walkup sale,
   # since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
