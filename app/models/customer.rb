@@ -550,6 +550,7 @@ class Customer < ActiveRecord::Base
 
     #We are going to connect this user object with a facebook id. But only ever one account.
     def link_fb_connect(fb_user_id)
+      logger.info "Linking FB userid #{fb_user_id} to current user"
       unless fb_user_id.nil?
         #check for existing account
         existing_fb_user = Customer.find_by_fb_user_id(fb_user_id)

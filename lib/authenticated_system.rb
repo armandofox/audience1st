@@ -13,7 +13,10 @@ module AuthenticatedSystem
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_basic_auth ||
         login_from_cookie || login_from_facebook)
-      possibly_enable_admin(@current_user) unless session[:admin_id]
+      unless session[:admin_id]
+        logger.info "Checking whether to enable admin on #{@current_user}"
+        possibly_enable_admin(@current_user)
+      end
     end
     @current_user
   end
@@ -171,7 +174,9 @@ module AuthenticatedSystem
   if USE_FACEBOOK
     def login_from_facebook
       if facebook_session
+        logger.info "Active Facebook session for #{facebook_session.user}..."
         self.current_user = Customer.find_by_fb_user(facebook_session.user)
+        logger.info("Setting current user to #{self.current_user} via FB login")
       end
     end
   else
