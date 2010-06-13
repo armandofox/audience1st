@@ -203,7 +203,8 @@ module AuthenticatedSystem
       # Kill server-side auth cookie
       @current_user.forget_me if @current_user.is_a? Customer
       @current_user = false     # not logged in, and don't do it for me
-      session[:cid] = nil
+      session[:cid] = session[:admin_id] = nil
+      reset_shopping
       kill_remember_cookie!     # Kill client-side auth cookie
     end
 

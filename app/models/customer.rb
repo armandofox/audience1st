@@ -545,6 +545,7 @@ class Customer < ActiveRecord::Base
       #We need to save without validations
       new_facebooker.save(false)
       new_facebooker.register_user_to_fb
+      new_facebooker
     end
 
     #We are going to connect this user object with a facebook id. But only ever one account.

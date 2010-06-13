@@ -72,8 +72,7 @@ class CustomersController < ApplicationController
       @subscriber = nil
     end
     @admin = current_admin
-    @page_title = sprintf("Welcome, %s#{@customer.full_name.name_capitalize}",
-                          @customer.subscriber? ? 'Subscriber ' : '')
+    @page_title = "Welcome, #{@gLoggedIn.full_name.name_capitalize}"
     @vouchers = (@admin.is_boxoffice ?  @customer.vouchers :  @customer.active_vouchers).sort_by(&:created_on).reverse
     session[:store_customer] = @customer.id
   end
@@ -87,7 +86,7 @@ class CustomersController < ApplicationController
       return
     end
     @admin = current_admin
-    @page_title = "Welcome, Subscriber #{@customer.full_name.name_capitalize}"
+    @page_title = "Welcome, Subscriber #{@gLoggedIn.full_name.name_capitalize}"
     @vouchers = @customer.active_vouchers.sort_by(&:created_on)
     session[:store_customer] = @customer.id
     @subscriber = true
