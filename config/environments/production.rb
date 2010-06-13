@@ -46,4 +46,4 @@ PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway
 EmailList.mode = {:wrapper => :hominid}
 # don't set other login info, instead will be read from DB.
 
-DISABLE_FACEBOOK = true
+# DISABLE_FACEBOOK = true

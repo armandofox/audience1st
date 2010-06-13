@@ -13,7 +13,7 @@ module AuthenticatedSystem
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_basic_auth ||
         login_from_cookie || login_from_facebook)
-      unless session[:admin_id]
+      unless (session[:admin_id] || session[:admin_id] == false)
         logger.info "Checking whether to enable admin on #{@current_user}"
         possibly_enable_admin(@current_user)
       end
@@ -54,7 +54,7 @@ module AuthenticatedSystem
   def possibly_enable_admin(c = Customer.generic_customer)
     return nil unless c
     return nil if session[:admin_id] == false # don't try to enable automatically
-    session[:admin_id] = nil
+    session[:admin_id] = false
     if c.is_staff # least privilege level that allows seeing other customer accts
       (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
       session[:admin_id] = c.id

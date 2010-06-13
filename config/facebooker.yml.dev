@@ -1,8 +1,8 @@
 development: &DEVELOPMENT
-  api_key: da8c6d3d76739f7e0c5fcd958434be3f
-  secret_key: ea9eac169a61d605b51b35b22f89485b
+  api_key: 6c3d3668081574a05e0f4c05da72a686
+  secret_key: 81ac97defa40a064209b4e9ada05def4
   canvas_page_name:
-  callback_url:
+  callback_url:  http://localhost:3000/
   pretty_errors: true
   set_asset_host_to_callback_url: false
   tunnel:

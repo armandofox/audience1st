@@ -32,4 +32,4 @@ EmailList.mode = {
   :mailchimp_default_list_name => 'Test list'
 }
 
-DISABLE_FACEBOOK = true
+# DISABLE_FACEBOOK = true

@@ -104,15 +104,16 @@ class CustomersController < ApplicationController
   end
 
   def link_user_accounts
-    if self.current_user.nil?
+    if current_user.nil?
       #register with fb
-      Customer.create_from_fb_connect(facebook_session.user)
+      current_user = Customer.create_from_fb_connect(facebook_session.user)
+      redirect_to :action => 'edit', :id => current_user
     else
       #connect accounts
       self.current_user.link_fb_connect(facebook_session.user.id) unless
         self.current_user.fb_user_id == facebook_session.user.id
+      redirect_to_stored
     end
-    redirect_to_stored
   end
 
   def edit
