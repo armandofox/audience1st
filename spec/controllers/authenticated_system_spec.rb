@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 # Be sure to include AuthenticatedTestHelper in spec/spec_helper.rb instead
 # Then, you can remove it from this and the units test.
-include AuthenticatedTestHelper
+
 include AuthenticatedSystem
 def action_name() end
 
@@ -12,6 +12,8 @@ describe SessionsController do
   before do
     # FIXME -- sessions controller not testing xml logins 
     stub!(:authenticate_with_http_basic).and_return nil
+    stub!(:reset_shopping)
+    stub!(:logger).and_return(mock('logger',:null_object => true))
   end    
   describe "logout_killing_session!" do
     before do
@@ -45,8 +47,9 @@ describe SessionsController do
     it 'does not reset the session' do should_not_receive(:reset_session);   logout_keeping_session! end
     it 'kills my auth_token cookie' do should_receive(:kill_remember_cookie!); logout_keeping_session! end
     it 'nils the current user'      do logout_keeping_session!; current_user.should be_false end
-    it 'kills :user_id session' do
+    it 'kills :user_id and admin id of session' do
       session.should_receive(:[]=).with(:cid, nil).at_least(:once).and_return(nil)
+      session.should_receive(:[]=).with(:admin_id, nil).at_least(:once).and_return(nil)    
       logout_keeping_session!
     end
     it 'forgets me' do    
