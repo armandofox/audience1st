@@ -66,10 +66,10 @@ module ApplicationHelper
     content_tag(tag, sanitize(s), tag_options)
   end
   
-  def link_to_if_option(opt, text, alt='', opts={})
+  def link_to_if_option(opt, text, opts={})
     ((s = Option.value(opt)).blank? ?
-     alt :
-     content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
+      opts[:alt].to_s :
+      content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
 

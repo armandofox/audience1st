@@ -2,9 +2,11 @@
 class SessionsController < ApplicationController
 
   ssl_required :new, :create
+  ssl_allowed :destroy
 
   # render new.rhtml
   def new
+    redirect_to logout_path if logged_in?
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart

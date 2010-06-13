@@ -1,14 +1,14 @@
 #welcome_header
-  - if acting_on_own_behalf && USE_FACEBOOK && current_user.facebook_user?
+  - if USE_FACEBOOK && @gLoggedIn.facebook_user?
     #welcome.facebook
       & Welcome, #{@gLoggedIn.full_name}
-      %fb:profile-pic{:uid => current_user.fb_user_id, :facebook_logo => :true, :size => :thumb}
+      %fb:profile-pic{:uid => @gLoggedIn.fb_user_id, :facebook_logo => :true, :size => :thumb}
       = button_to_function 'Log Out', "FB.Connect.logoutAndRedirect('#{logout_path}')"
   - else
     #welcome.regular
       & Welcome, #{@gLoggedIn.full_name}
       = button_to 'Log Out', logout_path
-      - if acting_on_own_behalf && USE_FACEBOOK
+      - if USE_FACEBOOK && acting_on_own_behalf
         %span#link_to_facebook
           &  Link your #{Option.value(:venue)} account to Facebook!
           = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")

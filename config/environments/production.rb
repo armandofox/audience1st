@@ -10,7 +10,7 @@ config.action_controller.perform_caching             = true
 #config.action_view.cache_template_loading            = true
 
 # See everything in the log (default is :info)
-# config.log_level = :debug
+config.log_level = :info
 
 # Use a different logger for distributed setups
 # config.logger = SyslogLogger.new
@@ -28,7 +28,7 @@ config.action_controller.perform_caching             = true
 # config.threadsafe!
 
 # NewRelic performance monitoring
-config.gem "newrelic_rpm"
+#config.gem "newrelic_rpm"
 
 # Remote exception notification
 ExceptionNotifier.configure_exception_notifier do |config|
@@ -45,3 +45,5 @@ PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway
 
 EmailList.mode = {:wrapper => :hominid}
 # don't set other login info, instead will be read from DB.
+
+# DISABLE_FACEBOOK = true

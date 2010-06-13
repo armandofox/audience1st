@@ -22,7 +22,7 @@ class Customer < ActiveRecord::Base
   :case_sensitive => false,
   :message => "address {{value}} has already been registered.
     <a href='/login?email={{value}}'>Sign in with this email address</a>
-    (if you forgot your password, use the 'Forgot My Password' button on sign-in page)."
+    (if you forgot your password, use the 'Forgot My Password' button on sign-in page)"
   
   validates_format_of :zip, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
@@ -55,7 +55,6 @@ class Customer < ActiveRecord::Base
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
 
-  after_create :register_user_to_fb
   before_destroy :cannot_destroy_special_customers
 
   #----------------------------------------------------------------------
@@ -568,10 +567,12 @@ EOSQL1
       #We need to save without validations
       new_facebooker.save(false)
       new_facebooker.register_user_to_fb
+      new_facebooker
     end
 
     #We are going to connect this user object with a facebook id. But only ever one account.
     def link_fb_connect(fb_user_id)
+      logger.info "Linking FB userid #{fb_user_id} to current user"
       unless fb_user_id.nil?
         #check for existing account
         existing_fb_user = Customer.find_by_fb_user_id(fb_user_id)

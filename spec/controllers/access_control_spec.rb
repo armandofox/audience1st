@@ -1,7 +1,4 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-  # Be sure to include AuthenticatedTestHelper in spec/spec_helper.rb instead
-# Then, you can remove it from this and the units test.
-include AuthenticatedTestHelper
 
 #
 # A test controller with and without access controls
@@ -49,12 +46,13 @@ describe AccessControlTestController do
     ActionController::Routing::Routes.add_route '/login_is_required',           :controller => 'access_control_test',   :action => 'login_is_required'
     ActionController::Routing::Routes.add_route '/login_not_required',          :controller => 'access_control_test',   :action => 'login_not_required'
   end
-
   ACCESS_CONTROL_FORMATS.each do |format, success_text|
     ACCESS_CONTROL_AM_I_LOGGED_IN.each do |logged_in_status, user_login|
       ACCESS_CONTROL_IS_LOGIN_REQD.each do |login_reqd_status|
         describe "requesting #{format.blank? ? 'html' : format}; #{logged_in_status.to_s.humanize} and #{login_reqd_status.to_s.humanize}" do
           before do
+            self.stub!(:reset_shopping)
+            self.stub!(:logger, :null_object => true)
             logout_keeping_session!
             @user = format.blank? ? login_as(user_login) : authorize_as(user_login)
             get login_reqd_status.to_s, :format => format

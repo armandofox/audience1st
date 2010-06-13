@@ -8,7 +8,7 @@ class Option < ActiveRecord::Base
         value.kind_of?(Fixnum) || value.to_s =~ /^[0-9]+$/
       when :email
       errors.add(name.humanize, "must be an email address") unless
-        value.valid_email_address?
+        value.blank? || value.to_s =~ /^(\S+)@(\S+)$/
       when :float
       errors.add(name.humanize, "must be a decimal number") unless
         value.kind_of?(Float) || value.to_s =~ /^[0-9.]+$/

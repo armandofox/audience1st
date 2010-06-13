@@ -33,7 +33,7 @@ class CustomersController < ApplicationController
 
   # checks for SSL should be last, as they append a before_filter
   ssl_required :change_password, :new, :create, :user_create, :edit, :forgot_password
-  ssl_allowed :auto_complete_for_customer_full_name, :update
+  ssl_allowed :auto_complete_for_customer_full_name, :update, :link_user_accounts
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
@@ -72,8 +72,7 @@ class CustomersController < ApplicationController
       @subscriber = nil
     end
     @admin = current_admin
-    @page_title = sprintf("Welcome, %s#{@customer.full_name.name_capitalize}",
-                          @customer.subscriber? ? 'Subscriber ' : '')
+    @page_title = "Welcome, #{@gLoggedIn.full_name.name_capitalize}"
     @vouchers = (@admin.is_boxoffice ?  @customer.vouchers :  @customer.active_vouchers).sort_by(&:created_on).reverse
     session[:store_customer] = @customer.id
   end
@@ -87,7 +86,7 @@ class CustomersController < ApplicationController
       return
     end
     @admin = current_admin
-    @page_title = "Welcome, Subscriber #{@customer.full_name.name_capitalize}"
+    @page_title = "Welcome, Subscriber #{@gLoggedIn.full_name.name_capitalize}"
     @vouchers = @customer.active_vouchers.sort_by(&:created_on)
     session[:store_customer] = @customer.id
     @subscriber = true
@@ -105,15 +104,16 @@ class CustomersController < ApplicationController
   end
 
   def link_user_accounts
-    if self.current_user.nil?
+    if current_user.nil?
       #register with fb
-      Customer.create_from_fb_connect(facebook_session.user)
+      current_user = Customer.create_from_fb_connect(facebook_session.user)
+      redirect_to :action => 'edit', :id => current_user
     else
       #connect accounts
-      self.current_user.link_fb_connect(facebook_session.user.id) unless
-        self.current_user.fb_user_id == facebook_session.user.id
+      current_user.link_fb_connect(facebook_session.user.id) unless
+        current_user.fb_user_id == facebook_session.user.id
+      redirect_to_stored
     end
-    redirect_to_stored
   end
 
   def edit
