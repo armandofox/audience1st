@@ -140,11 +140,11 @@ class CustomersController < ApplicationController
       # update generic attribs first
       @customer.update_attributes!(params[:customer])
       flash[:notice] = 'Contact information was successfully updated.'
-      if (newrole = params[:customer][:role]  &&
-          newrole != @customer.role_value  &&
+      if ((newrole = params[:customer][:role])  &&
+          newrole != @customer.role_name  &&
           current_admin.can_grant(newrole))
-        @customer.update_attribute!(:role, Customer.role_value(newrole))
-        flash[:notice] << "  Privilege level set to #{newrole}."
+        @customer.update_attribute(:role, Customer.role_value(newrole))
+        flash[:notice] << "  Privilege level set to '#{newrole}.'"
       end
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
@@ -157,9 +157,12 @@ class CustomersController < ApplicationController
                            "updated your email address in our system")
       end
       redirect_to_stored
-    rescue
+    rescue ActiveRecord::RecordInvalid
       flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
-      redirect_to(:action => 'edit') 
+      redirect_to :action => 'edit'
+    rescue Exception => e
+      flash[:notice] = "Update failed: #{e.message}"
+      redirect_to :action => 'edit'
     end
   end
 

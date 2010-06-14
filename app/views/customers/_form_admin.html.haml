@@ -5,7 +5,7 @@
   - if @superadmin
     %p.adminField
       %label{:for=>:customer_role} Role
-      =select('customer', 'role',Customer.roles,{:selected => @customer.role_name })
+      =select('customer', 'role',  roles_with_names, {:selected => @customer.role_name })
       %br/ 
 
 

@@ -68,6 +68,11 @@ module CustomersHelper
 
   #--- end stuff from restful_authentication
 
+  def roles_with_names
+    Customer.roles.map { |r| [r.humanize, r] }
+  end
+
+
   def number_to_phone_2(s)
     (!s.blank? && s.strip.match(/^([-0-9.()\/ ]{10,})([EXText.0-9]+)?$/) ?
      number_to_phone($1.gsub(/[^0-9]/,'').to_i, :delimiter=>'.') << h($2.to_s) :
