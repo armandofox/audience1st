@@ -53,6 +53,7 @@ popup_help:
   filter_by_zip: "Patterns that match the start of a zip code, separated by commas. '945,946'  matches anything starting with 945 or 946.  '94' matches anything starting with 94.  '94,925' matches anything starting with 94 or anything starting with 925, etc."
   merge_customers: "To merge duplicates, select exactly 2 customer records.  Merging manually lets you choose which field values are retained; merging automatically retains all nonblank field values, breaking ties by preferring the customer record that has had the most recent activity."
   delete_customers: "When you delete a customer, all their transactions, donations, etc. are transferred to the 'Anonymous Customer' and the customer record is expunged.  This action cannot be undone."
+  show_or_showdate_description: 'You can add an optional short description to a show (e.g. "Not included in subscription") or a performance (e.g. "Preview") which will appear in the customer-facing dropdown menus.'
 
 # Confirmation dialogs.  Trailing digit is # of string args expected.
   

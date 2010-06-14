@@ -20,6 +20,11 @@
   = date_select 'show', 'listing_date'
 
 %p
+  %label{:for => :show_description} Description (optional)
+  = text_field 'show', 'description', :size => 20
+  = popup_help_for :show_or_showdate_description
+
+%p
   %label{:for=>:landing_page_url} Landing page URL (optional)
   = text_field 'show', 'landing_page_url'
 

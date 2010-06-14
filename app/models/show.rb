@@ -8,6 +8,7 @@ class Show < ActiveRecord::Base
   validates_presence_of :opening_date, :closing_date, :listing_date
   validates_length_of :name, :within => 3..40, :message =>
     "Show name must be between 3 and 40 characters"
+  validates_length_of :description, :maximum => 20
   validates_numericality_of :house_capacity, :greater_than_or_equal_to => 0
 
   # current_or_next returns the Show object corresponding to either the
@@ -54,7 +55,11 @@ class Show < ActiveRecord::Base
   end
 
 
-  def menu_selection_name ; name ; end
+  def menu_selection_name ; name_with_description ; end
+
+  def name_with_description
+    description.blank? ? name : "#{name} (#{description})"
+  end
 
   def name_with_run_dates
     "#{name} - #{opening_date.to_formatted_s(:month_day_only)}-#{closing_date.to_formatted_s(:month_day_only)}"
