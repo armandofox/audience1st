@@ -39,6 +39,7 @@ class ApplicationController < ActionController::Base
   def set_globals
     @gCustomer = current_user
     @gAdmin = current_admin
+    @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
     @gCart = find_cart
     @gCheckoutInProgress = session[:checkout_in_progress]
     @gLoggedIn = (admin=Customer.find_by_id(session[:admin_id])) ? admin : (@gCustomer || Customer.walkup_customer)

@@ -1,7 +1,7 @@
 module PopupHelpHelper
 
   def popup_help_for(item)
-    unless (m = APP_CONFIG[:popup_help][item.to_s]).blank?
+    unless (m = POPUP_HELP[item.to_sym]).blank?
       link_to_function "What's this?", "alert('#{escape_javascript(m)}')", {:class => 'popupHelpLink'}
     end
   end

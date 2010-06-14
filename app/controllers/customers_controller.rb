@@ -4,6 +4,8 @@ class CustomersController < ApplicationController
   require 'net/http'
   require 'uri'
 
+  helper CustomersHelper
+
   include Enumerable
 
   # must be validly logged in before doing anything except login or create acct
@@ -202,14 +204,17 @@ class CustomersController < ApplicationController
       flash[:notice] = 'You must select exactly 2 records at a time to merge.'
       redirect_to_last_list and return
     end
+    @cust = params[:merge].keys.map { |x| Customer.find_by_id(x.to_i) }
+    if @cust[0].nil? || @cust[1].nil?
+      flash[:error] = "At least one customer not found. Please try again."
+      redirect_to_last_list and return
+    end
     # automatic merge?
     if params[:commit] =~ /automatically/i
       do_automatic_merge(*params[:merge].keys)
       redirect_to_last_list and return
-    else
-      @cust = params[:merge].keys.map { |x| Customer.find(x.to_i) }
-      # fall through to merge.haml
     end
+    # else fall through to merge.haml
   end
 
   def finalize_merge
@@ -386,9 +391,13 @@ class CustomersController < ApplicationController
   def do_automatic_merge(id0,id1)
     c0 = Customer.find_by_id(id0)
     c1 = Customer.find_by_id(id1)
-    flash[:notice] = c0.merge_automatically!(c1)
+    if c0.merge_automatically!(c1)
+      flash[:notice] += "Successful merge"
+    else
+      flash[:notice] = "Automatic merge failed, try merging manually to resolve the following errors:<br/>" + c0.errors.full_messages.join('; ')
+    end
   end
-
+  
   def forgot_password(email)
     if email.blank?
       flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."

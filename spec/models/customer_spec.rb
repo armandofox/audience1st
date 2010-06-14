@@ -261,7 +261,9 @@ describe Customer do
           @attrs.merge(:email => @old_email))
         @new = @attrs.merge(:email => @new_email)
       end
-      it "should match if first, last and address all match" 
+      it "should match if first, last and address all match" do
+        Customer.find_unique(@new).should == @old
+      end
       [:first_name, :last_name, :street].each do |attr|
         it "should not match if #{attr} is blank in database" do
           @old.send("#{attr}=", nil)

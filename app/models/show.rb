@@ -8,7 +8,7 @@ class Show < ActiveRecord::Base
   validates_presence_of :opening_date, :closing_date, :listing_date
   validates_length_of :name, :within => 3..40, :message =>
     "Show name must be between 3 and 40 characters"
-  validates_length_of :description, :maximum => 20
+  validates_length_of :description, :maximum => 20, :allow_nil => true
   validates_numericality_of :house_capacity, :greater_than_or_equal_to => 0
 
   # current_or_next returns the Show object corresponding to either the
