@@ -22,6 +22,7 @@ module BasicModels
   end
   def self.create_generic_customer(args={})
     c = self.new_generic_customer(args)
+    c.created_by_admin = true if args[:created_by_admin]
     c.save!
     c
   end

@@ -223,54 +223,95 @@ describe Customer do
       given_first,given_last = b.split(/ +/)
       Customer.new(:first_name => our_first, :last_name => our_last).name_matches(given_first,given_last)
     end
-    context "when email cannot break ties", :shared => true do
-    end
-    context "match on name only", :shared => true do
-      it "should match if first and last name match" do
-        names_match('John Smith', 'john smith').should be_true
+    context "when email matches" do
+      before(:each) do
+        @attrs = {:first_name => 'Bob', :last_name => 'Jones',
+          :email => 'bobjones@mail.com',
+          :street => '1234 Fake St',
+          :city => 'New York', :state => 'NY', :zip => '99999'
+        }
+        @old = BasicModels.create_generic_customer(@attrs)
       end
-      it "should match if last name matches and first initial matches" do
-        names_match('J Smith', 'john smith').should be_true
-        names_match('john smith', 'j. smith').should be_true
+      context "and last name matches" do
+        it "should match without an address" do
+          [:street,:city,:state,:zip].each { |e| @attrs.delete(e) }
+          Customer.find_unique(@attrs).should == @old
+        end
+        it "should match even if addresses differ" do
+          Customer.find_unique(@attrs.merge({:street => '999 New St'})).should == @old
+        end
+        it "should match even if first names differ" do
+          Customer.find_unique(@attrs.merge({:first_name => 'Bill'})).should == @old
+        end
       end
-      it "should not match if last name is initial-only but first name matches" do
-        names_match('John S', 'John Smith').should_not be_true
-        names_match('John Smith', "John S.").should_not be_true
-      end
-      it "should not match if all name fields blank" do
-        names_match('','').should_not be_true
-      end
-    end
-    context "when email is given and has unique match" do
-      context "and address isn't given" do
-        it_should_behave_like "match on name only"
-      end
-      context "and address matches" do
-        it_should_behave_like "match on name only"
-      end
-      context "and address doesn't match" do
-        it "should not match even if names match" do
-          attrs = {
-            :first_name => 'Bob', :last_name => 'Jones',
-            :email => 'bobjones@mail.com',
-            :city => 'New York', :state => 'NY', :zip => '99999'
-          }
-          @old = BasicModels.create_generic_customer(attrs.merge({:street => '123 Fake St'}))
-          @new = BasicModels.create_generic_customer(attrs.merge({:street => '234 Main St'}))
+      context "but last name differs" do
+        it "should not match if first name also differs" do
+          @attrs[:first_name] = 'Bill' ; @attrs[:last_name] = 'Smith'
+          Customer.find_unique(@attrs).should be_nil
         end
       end
     end
-    context "when email is given and has no match" do
-      context "and our record has no email" do
-        it_should_behave_like "match on name only"
+    context "when email cannot break ties", :shared => true do
+      before(:each) do
+        @attrs = {:first_name => 'Bob', :last_name => 'Smith',
+          :street => '99 Fake Blvd', :city => 'New York',
+          :state => 'NY', :zip => '99999',
+        :created_by_admin => true}
+        @old = BasicModels.create_generic_customer(
+          @attrs.merge(:email => @old_email))
+        @new = @attrs.merge(:email => @new_email)
       end
-      it "should not match if we have matching name but mismatching email"
+      it "should match if first, last and address all match" 
+      [:first_name, :last_name, :street].each do |attr|
+        it "should not match if #{attr} is blank in database" do
+          @old.send("#{attr}=", nil)
+          if @old.valid?
+            @old.save
+            Customer.find_unique(@new).should be_nil
+          else
+            true
+          end
+        end
+        it "should not match if #{attr} is different in database" do
+          @old.update_attribute(attr, @old.send(attr) << "XXX")
+          Customer.find_unique(@new).should be_nil
+        end
+      end
     end
-    context "when email is given and has >1 match" do
+    context "when email isn't in our database" do
+      before(:each) do
+        @old_email = "nonexistent@here.com"
+        @new_email = 'different@here.com'
+      end
+      it_should_behave_like "when email cannot break ties"
+    end
+    context "when email has >1 match" do
+      before(:each) do
+        @old_email = 'old1@here.com'
+        @old2 = BasicModels.create_generic_customer(
+          :email => 'old1@here.com', :created_by_admin => true)
+      end
       it_should_behave_like "when email cannot break ties"
     end
     context "when email is not given" do
+      before(:each) do
+        @old_email = 'old_email@here.com'
+        @new_email = nil
+      end
       it_should_behave_like "when email cannot break ties"
+    end
+    context "when we have only a name" do
+      # one could argue that if all we have is a name, even if it matches
+      # uniquely, it could  be a very common name.  But if all we have
+      # is a name and no other info on either side, it doesn't matter much.
+      it "should match if first & last name match uniquely and exactly" do
+        @old = BasicModels.create_generic_customer(:first_name => 'Joe', :last_name => 'Jones')
+        Customer.find_unique(:first_name => 'Joe', :last_name => 'Jones').should  == @old
+      end
+      it "should not match if first & last match exactly but not uniquely" do
+        2.times { BasicModels.create_generic_customer(:first_name => 'Joe', :last_name => 'Jones') }
+        Customer.find_unique(:first_name => 'Joe', :last_name => 'Jones').should be_nil
+      end
     end
   end
   describe "value selection for merging" do

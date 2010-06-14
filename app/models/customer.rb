@@ -416,26 +416,11 @@ EOSQL1
 
   def self.find_unique(p)
     p.symbolize_keys!
-    c = nil
-    # attempt 0: try exact match on email; first/last name must ALSO match
-    if (!p[:email].blank?) &&
-        (m = Customer.find(:first, :conditions => ['email LIKE ? AND first_name LIKE ? and last_name LIKE ?', p[:email].strip, p[:first_name], p[:last_name]]))
-      return m
-    end
-    # either email didn't match, or email matched but names didn't.
-    # so, attempt 1: try exact match on last name and first name
-    if (!(p[:last_name].blank?) && !(p[:first_name].blank?) &&
-        (matches = Customer.find(:all, :conditions => ['last_name LIKE ? AND first_name LIKE ?', p[:last_name], p[:first_name]])))
-      if (matches.to_a.length == 1)  # exactly 1 match - victory
-        c = matches.first
-      elsif (!p[:email].blank? &&
-             p[:email].valid_email_address? &&
-             (m = matches.find_all { |cust| cust.email.casecmp(p[:email]).zero? }) &&
-             m.length == 1)  # multiple names, but exact hit on email
-        c = m.first
-      end
-    end
-    c
+    return (
+      match_email_and_last_name(p[:email],p[:last_name]) ||
+      match_first_last_and_address(p[:first_name], p[:last_name], p[:street]) ||
+      (p[:street].blank? ? match_uniquely_on_names_only(p[:first_name], p[:last_name]) : nil)
+      )
   end
 
   # under what circumstances do we consider a customer's name "the same" as a given first/last?
@@ -702,7 +687,29 @@ EOSQL1
     end
     return ok
   end
-  
+
+  # support for find_unique
+
+  def self.match_email_and_last_name(email,last_name)
+    !email.blank? && !last_name.blank? &&
+      Customer.find(:first,:conditions => ['email LIKE ? AND last_name LIKE ?',
+        email.strip, last_name.strip])
+  end
+
+  def self.match_first_last_and_address(first_name,last_name,street)
+    !first_name.blank? && !last_name.blank? && !street.blank? &&
+      Customer.find(:first,
+      :conditions => ['first_name LIKE ? AND last_name LIKE ? AND street like ?',
+        first_name, last_name, street])
+  end
+
+  def self.match_uniquely_on_names_only(first_name, last_name)
+    return nil if first_name.blank? || last_name.blank?
+    m = Customer.find(:all, 
+      :conditions => ['last_name LIKE ? AND first_name LIKE ?',
+        last_name, first_name])
+    m && m.length == 1 ?  m.first : nil
+  end
 end
 
 
