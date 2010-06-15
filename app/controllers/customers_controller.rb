@@ -109,8 +109,9 @@ class CustomersController < ApplicationController
   def link_user_accounts
     if current_user
       #connect accounts
-      current_user.link_fb_connect(facebook_session.user.id) unless
-        current_user.fb_user_id == facebook_session.user.id
+      fbuid = facebook_session.user.id 
+      current_user.link_fb_connect(fbuid) unless
+        current_user.fb_user_id == fbuid
       redirect_to_stored
     else
       #register with fb

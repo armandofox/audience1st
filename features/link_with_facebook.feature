@@ -1,3 +1,4 @@
+@cur
 Feature: link with Facebook
 
   As a patron who has a Facebook account
@@ -8,9 +9,21 @@ Feature: link with Facebook
 Scenario: login from Facebook
 
   Given I am logged in with linked Facebook account "armando"
-  And I go to the home page
+  When I go to the home page
   Then I should be on the home page
   And I should see "Welcome, Armando Fox" within "div[id=welcome][class=facebook]"
 
-Scenario: link existing account 
+Scenario: link existing account to Facebook
+
+  Given I am logged in as customer 'armando'
+  When I go to the home page
+  Then I should see /Link your (.*) account to Facebook/
+  When I link with Facebook user "A Fox" id "99999"
+  Then a customer with fb_user_id: 99999 should exist
+  And armandofox@gmail.com should be logged in
+  When I go to the home page
+  Then I should not see /Link your (.*) account to Facebook/
+  And I should see "Welcome, Armando Fox" within "div[class=facebook]"
+  
+
 

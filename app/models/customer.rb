@@ -15,7 +15,7 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?, :message => "email {{value}} is invalid"
+  validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?
   validates_uniqueness_of :email,
   :if => :self_created?,
   :allow_blank => true,

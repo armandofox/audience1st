@@ -141,3 +141,6 @@ armando:
   first_name: Armando
   last_name:  Fox
   email:      armandofox@gmail.com 
+  crypted_password:  <%= Customer.password_digest('pass', 'abcdefghij')
+  %>
+  salt:       abcdefghij

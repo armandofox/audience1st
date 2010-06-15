@@ -22,6 +22,8 @@ Given /^I am logged in as (.*)?$/ do |who|
   when /box ?office/i
     @customer = customers(:boxoffice_user)
     is_admin = true
+  when /customer ["'](.*)['"]/
+    @customer = customers($1.to_sym)
   else
     @customer = customers(:generic_customer)
   end
