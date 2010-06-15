@@ -377,9 +377,15 @@ describe Customer do
           @old.merge_automatically!(@new).should_not be_nil
           @old.fb_user_id.should == 98765
         end
-        it "should keep first user's facebook ID if both have one" do
+        it "should keep fresher user's facebook ID if both have one" do
           @old.fb_user_id = 56789
           @new.fb_user_id = 98765
+          @old.merge_automatically!(@new)
+          @old.fb_user_id.should == 98765
+        end
+        it "should keep older user's facebook ID if fresher's is blank" do
+          @old.fb_user_id = 56789
+          @new.fb_user_id = nil
           @old.merge_automatically!(@new)
           @old.fb_user_id.should == 56789
         end

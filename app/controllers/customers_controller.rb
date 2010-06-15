@@ -29,13 +29,14 @@ class CustomersController < ApplicationController
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify(:method => :post,
-    :only => %w[update finalize_merge destroy create user_create send_new_password],
+    :only => %w[update finalize_merge destroy create user_create
+        send_new_password link_existing_account],
     :redirect_to => { :controller => :customers, :action => :welcome},
     :add_flash => {:warning => "This action requires a POST."} )
 
   # checks for SSL should be last, as they append a before_filter
   ssl_required :change_password, :new, :create, :user_create, :edit, :forgot_password
-  ssl_allowed :auto_complete_for_customer_full_name, :update, :link_user_accounts
+  ssl_allowed :auto_complete_for_customer_full_name, :update, :link_user_accounts, :link_existing_account
 
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
@@ -106,15 +107,29 @@ class CustomersController < ApplicationController
   end
 
   def link_user_accounts
-    if current_user.nil?
-      #register with fb
-      current_user = Customer.create_from_fb_connect(facebook_session.user)
-      redirect_to :action => 'edit', :id => current_user
-    else
+    if current_user
       #connect accounts
       current_user.link_fb_connect(facebook_session.user.id) unless
         current_user.fb_user_id == facebook_session.user.id
       redirect_to_stored
+    else
+      #register with fb
+      current_user = Customer.create_from_fb_connect(facebook_session.user)
+      @customer = current_user
+      redirect_to :action => 'edit', :id => @customer
+    end
+  end
+
+  def link_existing_account
+    if other = Customer.authenticate(params[:email], params[:password])
+      @customer = current_user
+      if @customer.merge_automatically!(other)
+        flash[:notice] = "Congratulations!  Your accounts are now linked.  You can login either via Facebook or using your email and password."
+        redirect_to :action => :welcome, :id => @customer
+      else
+        flash[:notice] = "Merge failed: #{@customer.errors.full_messages.join(', ')}"
+        redirect_to :action => :edit, :id => current_user.id
+      end
     end
   end
 
@@ -170,9 +185,10 @@ class CustomersController < ApplicationController
     @customer = current_user
     return if request.get?
     if @customer.update_attributes(params[:customer])
-      flash[:notice] = pass.blank? ? "New email confirmed (password unchanged)." : "New email and password are confirmed."
+      password = params[:customer][:password]
+      flash[:notice] = password.blank? ? "New email confirmed (password unchanged)." : "New email and password are confirmed."
       email_confirmation(:send_new_password,@customer,
-      pass, "changed your email or password on our system")
+        password, "changed your email or password on our system")
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
@@ -381,8 +397,16 @@ class CustomersController < ApplicationController
     redirect_to_stored
   end
 
-  def send_new_password
-    forgot_password(params[:email])
+  def forgot_password
+    if request.get?
+      set_return_to(params[:redirect_to] || login_path)
+    else
+      if send_new_password(params[:email])
+        redirect_to_stored
+      else
+        redirect_to :action => 'forgot_password'
+      end
+    end
   end
 
   private
@@ -401,20 +425,15 @@ class CustomersController < ApplicationController
     end
   end
   
-  def forgot_password(email)
+  def send_new_password(email)
     if email.blank?
       flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
-      redirect_to :action => :login and return
+      return nil
     end
     @customer = Customer.find_by_email(email)
     unless @customer
       flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
-      redirect_to :action => :login and return
-    end
-    # valid email address?
-    unless @customer.valid_email_address?
-      flash[:notice] = "You're in our database but we don't have an email address for you.  Please set up a new account with an email address."
-      redirect_to :action => :new and return
+      return nil
     end
     begin
       newpass = String.random_string(6)
@@ -426,11 +445,12 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit',
                            :customer_id => @customer.id,
                            :comments => 'Password has been reset')
+      return true
     rescue Exception => e
       flash[:notice] = e.message +
         "<br/>Please contact #{Option.value(:help_email)} if you need help."
+      return nil
     end
-    redirect_to :action => :login
   end
 
   def delete_admin_only_attributes(params)

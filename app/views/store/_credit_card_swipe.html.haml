@@ -4,7 +4,7 @@
   %legend Credit Card Payment
   - fields_for :credit_card, credit_card do |cc|
 
-    = label :credit_card, :verification_value, 'Enter CVV code manually', :class => 'strong'
+    = label :credit_card, :verification_value, 'Enter CVV code manually FIRST!', :class => 'strong'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
     %br
     %div Then type in card data, or

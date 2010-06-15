@@ -13,7 +13,7 @@ module AuthenticatedSystem
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_basic_auth ||
         login_from_cookie || login_from_facebook)
-      unless (session[:admin_id] || session[:admin_id] == false)
+      if @current_user && !session[:admin_id] && session[:admin_id] != false
         logger.info "Checking whether to enable admin on #{@current_user}"
         possibly_enable_admin(@current_user)
       end

@@ -15,14 +15,14 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?
+  validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?, :message => "email {{value}} is invalid"
   validates_uniqueness_of :email,
   :if => :self_created?,
   :allow_blank => true,
   :case_sensitive => false,
   :message => "address {{value}} has already been registered.
     <a href='/login?email={{value}}'>Sign in with this email address</a>
-    (if you forgot your password, use the 'Forgot My Password' button on sign-in page)"
+    (if you forgot your password, use the 'Forgot your password?' link on sign-in page)"
   
   validates_format_of :zip, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
@@ -298,7 +298,7 @@ class Customer < ActiveRecord::Base
       return u
     end
     unless u.authenticated?(password)
-      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, enter your email and check 'Forgot Password' and we will email you a new password within 1 minute.")
+      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, click 'Forgot your password?' and we will email you a new password within 1 minute.")
     end
     return u
   end
@@ -615,8 +615,9 @@ EOSQL1
   end
   
   def merge_automatically!(c1)
-    if c1.fresher_than?(self) && !c1.created_by_admin?
-      Customer.replaceable_attributes.each { |attr| self.send("#{attr}=", c1.send(attr)) }
+    replace = c1.fresher_than?(self) && !c1.created_by_admin?
+    Customer.replaceable_attributes.each do |attr|
+      self.send("#{attr}=", c1.send(attr)) if replace || self.send(attr).blank?
     end
     finish_merge(c1)
     return Customer.save_and_update_foreign_keys!(self, c1)
@@ -624,8 +625,13 @@ EOSQL1
         
 
   def fresher_than?(other)
-    (self.last_login > other.last_login) ||
-      ((self.last_login == other.last_login && self.updated_at > other.updated_at) rescue nil)
+    begin
+      (self.updated_at > other.updated_at) ||
+        (self.updated_at == other.updated_at &&
+        self.last_login > other.last_login)
+    rescue
+      nil
+    end
   end
 
   private
@@ -645,7 +651,13 @@ EOSQL1
       when :comments then [v1,v2].reject { |c| c.blank? }.join('; ')
       when :tags then (v1.to_s.downcase.split(/\s+/)+v2.to_s.downcase.split(/\s+/)).uniq.join(' ')
       when :role then [v1.to_i, v2.to_i].max  
-      when :blacklist, :e_blacklist, :oldid, :fb_user_id, :email_hash then v1 || v2
+      when :blacklist, :e_blacklist  then v1 || v2
+      when :oldid, :fb_user_id, :email_hash
+        if self.fresher_than?(other)
+          v1.blank? ? v2 : v1
+        else
+          v2.blank? ? v1 : v2
+        end
       when :created_by_admin, :inactive then v1 && v2
       else raise "No automatic merge procedure for #{attr.to_s.humanize}"
       end

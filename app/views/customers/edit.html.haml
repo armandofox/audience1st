@@ -1,6 +1,12 @@
 %h1.page_heading.center Contact Info for #{h @customer.full_name}
 
 = error_messages_for :customer
+
+- if USE_FACEBOOK && @customer.facebook_user? && @customer.email.blank?
+  #link_existing_account
+    = render :partial => 'customers/link_existing_account'
+    %p.strong Otherwise, please complete the information below:
+
 %br/
 - form_tag :action => 'update', :id => @customer do
   = render :partial => 'form' 

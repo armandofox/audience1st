@@ -38,7 +38,6 @@ class SessionsController < ApplicationController
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
-      #redirect_to_stored if (@gCheckoutInProgress || stored_action)
       redirect_to_stored
       flash[:notice] = "Logged in successfully"
     end
@@ -46,6 +45,7 @@ class SessionsController < ApplicationController
 
   def destroy
     logout_killing_session!
+    clear_facebook_session_information if USE_FACEBOOK
     flash[:notice] = "You have been logged out."
     redirect_to login_path
   end
