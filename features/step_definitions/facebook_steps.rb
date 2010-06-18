@@ -1,16 +1,16 @@
 Given /^I am logged in with linked Facebook account "(.*)"$/ do |cust|
+  get '/logout'
   @customer = customers(cust.to_sym)
   AuthenticatedSystem.set_fake_facebook_user!(@customer)
   @customer.stub!(:facebook_user?).and_return(true)
-  current_user = @customer
 end
 
-Given /^"(.*)" is logged in with unlinked Facebook account "(.*) +(.*)"$/ do |cust,first,last|
-  @customer = customers(cust.to_sym)
-  current_user = @customer
+When /^I login with unlinked Facebook account "(.*)"$/ do |name|
+  When "I link with Facebook user \"#{name}\" id \"8888\""
+  @customer = controller.send(:current_user)
 end
   
-When /^I link with Facebook user "(.*)" id "(.*)"/ do |name,id|
+When /^I link with Facebook user "(.*)" id "([0-9]+)"$/ do |name,id|
   facebooker = create_facebook_user name, id
   fake_session = stub('fake_fb_session', :user => facebooker)
   controller.set_fake_facebook_session!(fake_session)

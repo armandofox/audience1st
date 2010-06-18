@@ -7,6 +7,13 @@ module AuthenticatedSystem
     !!current_user
   end
 
+  # Store the given user id in the session.
+  def current_user=(new_user)
+    session[:cid] = new_user ? new_user.id : nil
+    @current_user = new_user || false
+    logger.info "**** setting current user to #{@current_user}"
+  end
+
   # Accesses the current user from the session.
   # Future calls avoid the database because nil is not equal to false.
   def current_user
@@ -21,12 +28,6 @@ module AuthenticatedSystem
     @current_user
   end
 
-  # Store the given user id in the session.
-  def current_user=(new_user)
-    session[:cid] = new_user ? new_user.id : nil
-    @current_user = new_user || false
-  end
-
   def act_on_behalf_of(new_user)
     if new_user
       session[:cid] = new_user.id
@@ -37,6 +38,10 @@ module AuthenticatedSystem
   def acting_on_own_behalf
     !session[:admin_id] || 
       (session[:admin_id] == session[:cid])
+  end
+
+  def logged_in_user
+    session[:admin_id] ? current_admin : current_user
   end
   
   # current_admin is called from controller actions filtered by is_logged_in,

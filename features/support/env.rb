@@ -51,17 +51,19 @@ ActionController::Base.allow_rescue = false
 # block that will explicitly put your database in a known state.
 Cucumber::Rails::World.use_transactional_fixtures = true
 
-# Use a limited number of fixtures from spec directory
-# (from http://wiki.github.com/aslakhellesoy/cucumber/fixtures)
-# NOTE: this code relies on using transactional fixtures!
-Fixtures.reset_cache  
-fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
-fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-Fixtures.create_fixtures(fixtures_folder, fixtures)
-
-
 # How to clean your database when transactions are turned off. See
 # http://github.com/bmabey/database_cleaner for more info.
 require 'database_cleaner'
 DatabaseCleaner.strategy = :truncation
+
+
+Before do
+  Fixtures.reset_cache
+  fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
+  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
+  Fixtures.create_fixtures(fixtures_folder, fixtures)
+  require File.join(RAILS_ROOT, 'spec', 'support', 'facebooker_stubs_for_restful_auth.rb')
+  # Make visible for testing
+  #ApplicationController.send(:public, :logged_in?, :current_user, :current_user=, :current_admin, :authorized?)
+end
 

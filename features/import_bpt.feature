@@ -1,4 +1,3 @@
-@imp
 Feature: import Brown Paper Tickets will-call lists
 
   As a box office manager

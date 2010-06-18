@@ -1,11 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-# Be sure to include AuthenticatedTestHelper in spec/spec_helper.rb instead
-# Then, you can remove it from this and the units test.
-
 include AuthenticatedSystem
-def action_name() end
-
 describe SessionsController do
   fixtures :customers
   
@@ -66,6 +61,7 @@ describe SessionsController do
   
   describe 'When logged out' do 
     it "should not be authorized?" do
+      stub!(:action_name).and_return('')
       authorized?().should be_false
     end    
   end

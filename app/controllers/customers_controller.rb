@@ -10,7 +10,7 @@ class CustomersController < ApplicationController
 
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
-                :only=>%w[welcome welcome_subscriber change_password edit],
+                :only=>%w[welcome welcome_subscriber change_password edit link_existing_account],
                 :add_to_flash => 'Please log in or create an account to view this page.')
   before_filter :reset_shopping, :only => %w[welcome welcome_subscriber]
 
@@ -107,6 +107,7 @@ class CustomersController < ApplicationController
   end
 
   def link_user_accounts
+    #redirect_to login_path unless facebook_session.user
     if current_user
       #connect accounts
       fbuid = facebook_session.user.id 
@@ -115,8 +116,8 @@ class CustomersController < ApplicationController
       redirect_to_stored
     else
       #register with fb
-      current_user = Customer.create_from_fb_connect(facebook_session.user)
-      @customer = current_user
+      @customer = Customer.create_from_fb_connect(facebook_session.user)
+      current_user = @customer
       redirect_to :action => 'edit', :id => @customer
     end
   end

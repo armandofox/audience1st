@@ -535,8 +535,8 @@ EOSQL1
 
 
   def self.find_by_fb_user(fb_user)
-    Customer.find_by_fb_user_id(fb_user.uid) ||
-      Customer.find_by_email_hash(fb_user.email_hashes)
+    ((!fb_user.uid.blank? && Customer.find_by_fb_user_id(fb_user.uid)) ||
+      (!fb_user.email_hashes.blank? && Customer.find_by_email_hash(fb_user.email_hashes)))
   end
 
   # Take the data returned from facebook and create a new user from it.
@@ -545,6 +545,7 @@ EOSQL1
   if USE_FACEBOOK
     def self.create_from_fb_connect(fb_user)
       first_name,last_name = fb_user.name.first_and_last_from_full_name
+      logger.info "Creating new '#{first_name} #{last_name}' for FB id #{fb_user.id}"
       new_facebooker = Customer.new(:first_name => first_name,
         :last_name => last_name,
         :password => "", :email => "")

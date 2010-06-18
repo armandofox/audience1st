@@ -66,12 +66,12 @@ Then "$actor should be invited to sign in" do |_|
 end
 
 Then "$actor should not be logged in" do |_|
-  controller.logged_in?.should_not be_true
+  controller.send(:logged_in?).should_not be_true
 end
 
 Then "$login should be logged in" do |email|
-  controller.logged_in?.should be_true
-  controller.current_user.email.should == email
+  controller.send(:logged_in?).should be_true
+  controller.send(:current_user).email.should == email
 end
 
 def named_user login
@@ -94,7 +94,7 @@ end
 
 def log_out
   get '/sessions/destroy'
-  controller.current_user.should be_false
+  controller.send(:current_user).should be_false
 end
 
 def log_out!
@@ -121,7 +121,7 @@ def log_in_user user_params=nil
   user_params  ||= @user_params
   post "/session", user_params
   @user = Customer.find_by_email(user_params['email'])
-  controller.current_user
+  controller.send(:current_user)
 end
 
 def log_in_user! *args

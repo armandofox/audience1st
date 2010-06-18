@@ -2,12 +2,11 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 # Be sure to include AuthenticatedTestHelper in spec/spec_helper.rb instead
 # Then, you can remove it from this and the units test.
-include AuthenticatedTestHelper
-include AuthenticatedSystem
 
 describe SessionsController do
   fixtures        :customers
   before(:each) do 
+    ApplicationController.send(:public, :current_user, :current_admin)
     @user  = mock_user
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
     Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
@@ -25,13 +24,13 @@ describe SessionsController do
       do_create
     end
     it "should set current Admin to logged-in user" do
-      current_admin.id.should == @boxoffice_manager.id
+      controller.send(:current_admin).id.should == @boxoffice_manager.id
     end
     it "should result in Admin priv for logged-in user" do
-      current_admin.is_boxoffice.should be_true
+      controller.send(:current_admin).is_boxoffice.should be_true
     end
     it "should set the current user to the logged-in Admin" do
-      current_user.id.should == @boxoffice_manager.id
+      controller.send(:current_user).id.should == @boxoffice_manager.id
     end
   end
   describe "on successful login," do

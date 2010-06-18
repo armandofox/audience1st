@@ -12,7 +12,6 @@ class ApplicationController < ActionController::Base
 
   filter_parameter_logging :credit_card,:password
 
-
   if (RAILS_ENV == 'production' && !SANDBOX)
     include SslRequirement
   else
@@ -29,6 +28,20 @@ class ApplicationController < ActionController::Base
   if USE_FACEBOOK
     before_filter :set_facebook_session
     helper_method :facebook_session
+
+    rescue_from Facebooker::Session::SessionExpired, :with => :facebook_session_expired
+
+    def facebook_session_expired
+      clear_fb_cookies!
+      clear_facebook_session_information
+      reset_session
+      flash[:notice] = "Please login to Facebook again."
+      redirect_to login_path
+    end
+  end
+
+  def reset_session # work around session reset bug in rails 2.3.5
+    ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE session_id = '#{request.session_options[:id]}'")
   end
 
   # set_globals must happen AFTER Facebook Connect filters, since it will
@@ -42,7 +55,7 @@ class ApplicationController < ActionController::Base
     @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
     @gCart = find_cart
     @gCheckoutInProgress = session[:checkout_in_progress]
-    @gLoggedIn = (admin=Customer.find_by_id(session[:admin_id])) ? admin : (@gCustomer || Customer.walkup_customer)
+    @gLoggedIn = logged_in_user || Customer.walkup_customer
     true
   end
 

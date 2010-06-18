@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
 
   # render new.rhtml
   def new
-    redirect_to logout_path if logged_in?
+    redirect_to :controller => 'customers', :action => 'welcome' if logged_in?
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
