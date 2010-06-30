@@ -108,16 +108,16 @@ class CustomersController < ApplicationController
 
   def link_user_accounts
     #redirect_to login_path unless facebook_session.user
-    if current_user
+    if self.current_user
       #connect accounts
       fbuid = facebook_session.user.id 
-      current_user.link_fb_connect(fbuid) unless
-        current_user.fb_user_id == fbuid
+      self.current_user.link_fb_connect(fbuid) unless
+        self.current_user.fb_user_id == fbuid
       redirect_to_stored
     else
       #register with fb
       @customer = Customer.create_from_fb_connect(facebook_session.user)
-      current_user = @customer
+      self.current_user = @customer
       redirect_to :action => 'edit', :id => @customer
     end
   end
@@ -156,6 +156,9 @@ class CustomersController < ApplicationController
     begin
       # update generic attribs first
       @customer.update_attributes!(params[:customer])
+      # if success, and the update is NOT being performed by an admin,
+      # clear the created-by-admin flag
+      @customer.update_attribute(:created_by_admin, false) if @gLoggedIn == @customer
       flash[:notice] = 'Contact information was successfully updated.'
       if ((newrole = params[:customer][:role])  &&
           newrole != @customer.role_name  &&

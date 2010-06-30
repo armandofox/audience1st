@@ -61,6 +61,13 @@ describe SessionsController do
                 @login_params[:remember_me] = '0'
               end
             end
+            it "updates my last_login" do
+              @user.should_receive(:update_attribute) do |meth,arg|
+                meth.should == :last_login
+                arg.should be_a_kind_of(Time)
+              end
+              do_create
+            end
             it "kills existing login"        do controller.should_receive(:logout_keeping_session!); do_create; end    
             it "authorizes me"               do do_create; controller.send(:authorized?).should be_true;   end    
             it "logs me in"                  do do_create; controller.send(:logged_in?).should  be_true  end    

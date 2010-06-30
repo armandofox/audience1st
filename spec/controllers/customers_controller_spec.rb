@@ -4,7 +4,7 @@ describe CustomersController do
   before do
     CustomersController.send(:public, :current_user, :current_admin, :set_return_to)
   end
-  describe "admin creating valid customer" do
+  describe "admin creating or updating valid customer" do
     fixtures :customers
     before(:each) do
       @params = BasicModels.new_generic_customer_params
@@ -17,8 +17,12 @@ describe CustomersController do
     it "should set created-by-admin flag" do
       Customer.find_by_email(@params[:email]).should be_created_by_admin
     end
+    it "should not clear created-by-admin flag if admin updates record" do
+      post :update, {:customer => {:first_name => 'Bobby'}}
+      Customer.find_by_email(@params[:email]).should be_created_by_admin
+    end
   end
-  describe "user self-creation" do
+  describe "user self-creation or self-update" do
     before(:each) do
       @params = BasicModels.new_generic_customer_params
       login_as(nil)
@@ -29,6 +33,22 @@ describe CustomersController do
     end
     it "should not set created-by-admin flag when created by customer" do
       Customer.find_by_email(@params[:email]).should_not be_created_by_admin
+    end
+    describe "created-by-admin flag" do
+      before(:each) do
+        @customer = Customer.find_by_email(@params[:email])
+        @customer.update_attribute(:created_by_admin, true)
+      end
+      it "should be cleared on successful update" do
+        post :update, {:customer => {:first_name => "Bobby"}}
+        @customer.reload
+        @customer.should_not be_created_by_admin
+      end
+      it "should not be cleared if update fails" do
+        post :update, {:customer => {:first_name => ''}}
+        @customer.reload
+        @customer.should be_created_by_admin
+      end
     end
   end
   describe "admin switching" do
