@@ -111,6 +111,7 @@ class Vouchertype < ActiveRecord::Base
 
   def bundle? ; category == :bundle ; end
   def comp? ; category == :comp ; end
+  def subscriber_voucher? ; category == :subscriber ; end
 
   def visibility
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
