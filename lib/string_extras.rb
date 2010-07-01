@@ -19,6 +19,8 @@ class String
     self.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/, "\\1\\3\n") 
   end
 
+  def capitalize_each_word ; self.to_s.split.map(&:capitalize).join(' ') ; end
+
   def boldify(s, tag=:strong, tag_opts = {})
     tag_opts_str = tag_opts.each_pair { |k,v| "#{k}=\"#{v}\"" }.join " "
     tagstart,tagend = "<#{tag.to_s} #{tag_opts_str}>", "</#{tag.to_s}>"

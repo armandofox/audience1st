@@ -1,6 +1,7 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module ApplicationHelper
+  include ActiveSupport::Inflector # so individual views don't need to reference explicitly
 
   def default_validation_error_message ; "Please correct the following errors:" ; end
 
@@ -72,6 +73,11 @@ module ApplicationHelper
       content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
+  def link_to_if_option_text(opt, opts={}, html_opts={})
+    (s = Option.value(opt)).blank? ?
+    opts.delete(:alt).to_s :
+      content_tag(:span, link_to(s, opts, html_opts), :id => opt, :class => opt)
+  end
 
   # return a checkbox that "protects" another form element by hiding/showing it
   # when checked/unchecked, given initial state.  It's the caller's responsibility

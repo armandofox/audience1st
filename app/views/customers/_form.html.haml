@@ -51,13 +51,19 @@
     - unless (defined?(hide_opt_out))
       %label US Mail preferences
       = check_box 'customer', 'blacklist'
-      %label.no_float{:for=>:customer_blacklist} 
-        Please don't send me materials via US Mail
-      %br/
+      %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
+      %br
 
     %label.strong{:for=>:customer_email} Email
     = text_field 'customer', 'email', {:size => 30, :max_length => 40, :readonly => disabled }
     %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
-    
+    %br
+
+    - if Option.value(:display_email_opt_out).to_i != 0
+      %label Email preferences
+      = check_box 'customer', 'e_blacklist'
+      %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
+      %br
+
   /[eoform:customer]
 

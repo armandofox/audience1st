@@ -48,6 +48,10 @@ class ApplicationController < ActionController::Base
   # try to set globals based on current_user, among other things.
   before_filter :set_globals
 
+  # message that will appear in flash[:notice] once only, at login
+  def login_message
+    encourage_opt_in_message if self.current_user.has_opted_out_of_email? 
+  end
 
   def set_globals
     @gCustomer = current_user
@@ -187,6 +191,15 @@ class ApplicationController < ActionController::Base
       return true
     end
 EOEVAL
+  end
+
+  def encourage_opt_in_message
+    if !(m = Option.value(:encourage_email_opt_in)).blank?
+      m << '.' unless m =~ /[.!?:;,]$/
+      m << ' Click the Billing Address tab (above) to update your preferences.'
+      m
+    else nil
+    end
   end
 
   def download_to_excel(output,filename="data",timestamp=true)

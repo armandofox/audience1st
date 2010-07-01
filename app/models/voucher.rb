@@ -174,7 +174,7 @@ class Voucher < ActiveRecord::Base
             c.vouchers <<
               Voucher.new_from_vouchertype(type,
               :purchasemethod_id => purch_bundle,
-              :processed_by_id => logged_in_id)
+              :processed_by_id => self.processed_by_id)
           end
         end
       end

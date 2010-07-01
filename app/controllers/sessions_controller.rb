@@ -39,7 +39,7 @@ class SessionsController < ApplicationController
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
       redirect_to_stored
-      flash[:notice] = "Logged in successfully"
+      flash[:notice] = login_message || "Logged in successfully"
     end
   end
 

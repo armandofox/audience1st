@@ -11,10 +11,13 @@
     = gen_button "Enter Billing Information",  :controller => 'customers', :action => 'new'
   - else
     = gen_button "Create Account", :controller => 'customers', :action => 'new'
-    %br/
-    %br/
-    = gen_button "Buy Tickets", {:controller => 'store', :action => 'index'}
-
+    %br
+    %br
+    = link_to_if_option_text :homepage_ticket_sales_text, {:controller => :store, :action => :index}, {:class => 'genButton'}
+    %br
+    = link_to_if_option_text :homepage_subscription_sales_text, {:controller => 'store', :action => 'subscribe'}, {:class => 'genButton'}
+    %br
+    
 - if USE_FACEBOOK
   #login_with_facebook
     %h2 Or Login Using Facebook

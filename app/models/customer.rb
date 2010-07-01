@@ -171,9 +171,14 @@ class Customer < ActiveRecord::Base
 
   # convenience accessors
 
+  def to_s
+    "[#{id}] #{full_name} " <<
+      (email.blank? ? '' : "<#{email}> ") <<
+      (fb_user_id.blank? ? '' : "{#{fb_user_id}}")
+  end
+
   def inspect
-    "[#{self.id}] #{self.full_name} <#{email}> " <<
-      (email.blank? ? '' : "<#{email}>") <<
+    self.to_s <<
       (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
   end
   
@@ -194,6 +199,9 @@ class Customer < ActiveRecord::Base
       self.email.match(Authentication.email_regex)
   end
   def invalid_email_address? ; !valid_email_address? ; end
+
+  def has_opted_out_of_email? ;  e_blacklist? && valid_email_address?  end
+
   def valid_mailing_address?
     !street.blank? &&
       !city.blank?  &&
