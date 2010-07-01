@@ -9,7 +9,7 @@ class MessageCustomizations < ActiveRecord::Migration
     :homepage_subscription_sales_text,
     'Homepage message that will take customer to Buy Subscriptions page; if blank, link to Subscriptions page won\'t be displayed',
     'Subscribe Now!',
-    :text,
+    :string,
     
     :subscription_purchase_email_notes,
     'Additional text included in purchase confirmation screen and email when a new or renewal subscription is PURCHASED.  Can include basic HTML tags and CSS information. It is automatically rendered inside <div id="subscription_purchase_notices"> and converted to plain text for confirmation email.',
