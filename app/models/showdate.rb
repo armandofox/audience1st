@@ -170,7 +170,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def printable_name
-    self.show.name + " - " + self.printable_date
+    self.show.name + " - " + self.printable_date_with_description
   end
 
   def printable_date

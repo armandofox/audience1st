@@ -59,7 +59,7 @@ class AvailableSeat
   end
 
   def date_with_explanation
-    @howmany > 0 ? showdate.printable_date : "#{showdate.printable_date} (#{@explanation})"
+    @howmany > 0 ? showdate.menu_selection_name : "#{showdate.menu_selection_name} (#{@explanation})"
   end
 
   def vouchertype_id;  @vouchertype.id;  end
