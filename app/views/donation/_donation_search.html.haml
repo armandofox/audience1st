@@ -33,7 +33,9 @@
         \.00
     %tr
       %td= check_box_tag 'use_ltr_sent', 1, @params[:use_ltr_sent]
-      %td  Only if letter not yet sent
+      %td  
+        Only if letter not yet sent
+        = popup_help_for :donation_search_by_letter_sent
     %tr
       %td= check_box_tag 'use_repeat_donor', 1, @params[:use_repeat_donor]
       %td Only donors who have made at least
