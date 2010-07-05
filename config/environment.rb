@@ -41,7 +41,7 @@ Rails::Initializer.run do |config|
   config.load_paths += %W( #{RAILS_ROOT}/app/models/reports )
 
   config.gem "activemerchant", :lib => "active_merchant"
-  config.gem "haml", :version => '2.2.2'
+  config.gem "haml"
   # config.gem "rack", :version => '1.1.0'
 
   config.active_record.timestamped_migrations = false
