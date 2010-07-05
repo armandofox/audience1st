@@ -23,7 +23,8 @@ module AuthenticatedTestHelper
       :to_xml => "Customer-in-XML", :to_json => "Customer-in-JSON", 
       :errors => [],
       :is_staff => nil,
-      :subscriber? => nil)
+      :subscriber? => nil,
+      :has_opted_out_of_email? => nil)
     user.stub(:update_attribute)
     user
   end  
