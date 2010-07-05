@@ -10,6 +10,7 @@
       ["Regular revenue voucher", :revenue], |
       ["Nonticket product", :nonticket]], |
       {:selected => @vouchertype.category.to_sym}) |
+  = popup_help_for :vouchertype_type
 
 %p
   %label{:for=>:vouchertype_name} Name
@@ -22,10 +23,12 @@
 %p
   %label{:for=>:vouchertype_account_code} Account Code
   = text_field 'vouchertype', 'account_code', :size => 8
+  = popup_help_for :vouchertype_account_code
 
 %p
   %label{:for=>:vouchertype_offer_public} Availability
   = select "vouchertype", "offer_public", Vouchertype.offer_to
+  = popup_help_for :vouchertype_availability
 
 %p
   %label{:for=>:vouchertype_valid_date} Not valid before midnight on
@@ -38,10 +41,12 @@
 %p.clear
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
   = check_box 'vouchertype', 'fulfillment_needed'
+  = popup_help_for :vouchertype_fulfillment_needed
 
 %p
   %label{:for=>:vouchertype_walkup_sale_allowed} Walkup sales allowed
   = check_box 'vouchertype', 'walkup_sale_allowed'
+  = popup_help_for :vouchertype_walkup_sale_allowed
 
 /This part of form is for bundle vouchers
 

@@ -1,9 +1,4 @@
-- if @subscriber
-  = sanitize_option_text :single_ticket_sales_banner_for_current_subscribers, 'div', :id => 'storeBannerSubscriber', :class => 'storeBanner'
-- elsif @next_season_subscriber
-  = sanitize_option_text :single_ticket_sales_banner_for_next_season_subscribers, 'div', :id => 'storeBannerNextSeasonSubscriber', :class => 'storeBanner'
-- else
-  = sanitize_option_text :single_ticket_sales_banner_for_nonsubscribers, 'div', :id => 'storeBannerNonSubscriber', :class => 'storeBanner'
+= sales_banners_for(:single_ticket, @subscriber, @next_season_subscriber)
 
 - if @gNobodyReallyLoggedIn
   %p.subscription_msg2
@@ -17,10 +12,6 @@
     Select Tickets
     %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
 
-  = sanitize_option_text((@next_season_subscriber ? :next_season_subscriber_store_message : @subscriber ? :subscriber_store_message : :nonsubscriber_store_message), 'p', :class => 'storeText')
-  = sanitize_option_text(:store_message, 'p', :class => 'storeText')
-  = sanitize_option_text(:single_ticket_purchase_message, 'p', :class => 'storeText')
-  
   #ticket_menus
     - form_tag :action => 'shipping_address' do
       = render :partial => 'ticket_menus'

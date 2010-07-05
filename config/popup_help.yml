@@ -37,7 +37,79 @@ delete_customers: >
   etc. are transferred to the 'Anonymous Customer' and the customer
   record is expunged.  This action cannot be undone. 
 
+# Editing shows and showdates
+
 show_or_showdate_description: >
+
   You can add an optional short description to a show (e.g. 
   "Not included in subscription") or a performance (e.g. "Preview") 
   which will appear in the customer-facing dropdown menus.
+
+show_house_capacity: >
+
+  The physical capacity of the house for this production, which is used
+  to help box office staff keep track of the number of open seats
+  remaining during front-of-house (pre-show).  The actual number of
+  seats you offer for sale can be different: for each performance, if
+  you enter a value for Max Sales, it will override this number.  Note
+  that you MUST enter a nonzero number here or all performances will
+  appear to be sold out.
+
+show_listing_date: >
+ 
+  The date the show will appear on any customer-facing screens.  Note
+  that you also need to set the "Start Sales" and "End Sales" dates for
+  each performance.
+
+show_landing_page_url: >
+
+  The URL of a page on your theater's Web site that has more information
+  about the show.
+
+# Vouchers and voucher types
+
+vouchertype_type: >
+
+  A Bundle is a container for a collection of vouchers (e.g. a
+  subscription).  A Single Subscriber Voucher is a voucher valid for a
+  particular production included as part of a subscription (although
+  Bundles can contain both Single Subscriber Vouchers and comps).  All
+  other types of tickets that aren't comps are Revenue Vouchers.
+  Nonticket Product can be used for things like ticket exchange fees,
+  ticket add-ons ("A glass of wine at intermission"), etc.
+
+vouchertype_account_code: >
+
+  If you use accounting software such as QuickBooks, sales of each
+  voucher type can be associated with a particular account code when you
+  generate reports.  If you don't use such software, you can leave this
+  blank.
+
+vouchertype_availability: >
+
+  Use "External Reseller" for tickets that will be sold through other
+  channels such as TBA, Goldstar, etc.  Use "Box Office Use Only" for
+  tickets that cannot be self-purchased online by customer (for example,
+  special group sales).
+
+vouchertype_fulfillment_needed: >
+
+  If purchasing this ticket type requires physically mailing something
+  to the customer (e.g., mailing a subscription package or free gift),
+  check this box.  This will cause all such orders to appear in the
+  "Show Orders Needing Fulfillment" report (Reports tab).
+
+vouchertype_walkup_sale_allowed: >
+
+  If this box is checked, this ticket type will appear on the Walk-up
+  Sales screen.  Leave unchecked for any ticket types that require
+  advance purchase.
+
+# Donations
+
+donation_search_by_letter_sent: >
+
+  When viewing donations, you can mark off all the ones for which you
+  have sent an acknowledgment letter.  Checking this box restricts your
+  search to donations not yet acknowledged, making it easy to export a
+  list of all the donation letters you have to send.

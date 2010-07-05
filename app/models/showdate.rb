@@ -105,6 +105,10 @@ class Showdate < ActiveRecord::Base
     self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
   end
 
+  def percent_max_allowed_sales
+    house_capacity.zero? ? 100.0 : 100.0 * max_allowed_sales / house_capacity
+  end
+
   # release unsold seats from an external channel back to general inventory.
   # if show cap == house cap, this has no effect.
   # otherwise, show cap is boosted back up by the number of unsold seats,
@@ -170,7 +174,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def printable_name
-    self.show.name + " - " + self.printable_date
+    self.show.name + " - " + self.printable_date_with_description
   end
 
   def printable_date

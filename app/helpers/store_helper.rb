@@ -1,5 +1,17 @@
 module StoreHelper
 
+  def sales_banners_for(for_what,subscriber,next_season_subscriber)
+    if next_season_subscriber
+      option, id = 'sales_banner_for_next_season_subscribers', 'BannerNextSeasonSubscriber'
+    elsif subscriber
+      option, id = 'sales_banner_for_current_subscribers', 'BannerSubscriber'
+    else
+      option, id = 'sales_banner_for_nonsubscribers', 'BannerNonSubscriber'
+    end
+    sanitize_option_text("#{for_what}_#{option}",
+      'div', :id => "#{for_what.to_s.camelize(:lower)}#{id}", :class => 'storeBanner')
+  end
+      
   def options_for_credit_card
     opts = [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover']]
     opts << ['AmEx', 'american_express'] unless Option.value(:accept_amex).to_i.zero?

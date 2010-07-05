@@ -6,8 +6,6 @@ class DonationController < ApplicationController
          :add_to_flash => "System error: method should only be called via POST",
          :redirect_to => {:action => 'list'})
 
-  #scaffold :donation
-
   def list
     unless params[:commit]
       # first time visiting page: don't do "null search"

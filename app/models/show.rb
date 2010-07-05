@@ -9,7 +9,7 @@ class Show < ActiveRecord::Base
   validates_length_of :name, :within => 3..40, :message =>
     "Show name must be between 3 and 40 characters"
   validates_length_of :description, :maximum => 20, :allow_nil => true
-  validates_numericality_of :house_capacity, :greater_than_or_equal_to => 0
+  validates_numericality_of :house_capacity, :greater_than => 0
 
   # current_or_next returns the Show object corresponding to either the
   # currently running show, or the one with the next soonest opening date.

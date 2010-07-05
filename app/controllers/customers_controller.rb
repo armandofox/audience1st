@@ -423,8 +423,9 @@ class CustomersController < ApplicationController
   def do_automatic_merge(id0,id1)
     c0 = Customer.find_by_id(id0)
     c1 = Customer.find_by_id(id1)
+    flash[:notice] ||= ''
     if c0.merge_automatically!(c1)
-      flash[:notice] += "Successful merge"
+      flash[:notice] << "Successful merge"
     else
       flash[:notice] = "Automatic merge failed, try merging manually to resolve the following errors:<br/>" + c0.errors.full_messages.join('; ')
     end

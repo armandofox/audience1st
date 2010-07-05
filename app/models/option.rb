@@ -42,4 +42,8 @@ class Option < ActiveRecord::Base
     end
   end
 
+  def description
+    OPTION_DESCRIPTIONS[self.name.to_sym].to_s
+  end
+  
 end

@@ -238,10 +238,7 @@ class Voucher < ActiveRecord::Base
   def reserved_for_show?(s) ; reserved && (showdate.show == s) ;  end
   def reserved_for_showdate?(sd) ;  reserved && (showdate == sd) ;  end
 
-  def part_of_subscription?
-    self.purchasemethod.shortdesc =~ /bundle/i
-  end
-
+  def part_of_subscription? ;  vouchertype.subscriber_voucher? ;  end
 
   # operations on vouchers:
   #

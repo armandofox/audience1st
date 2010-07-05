@@ -1,0 +1,265 @@
+sold_out_threshold: >
+
+  Performance is listed as 'sold out' when this percentage of the house
+  is sold.
+
+nearly_sold_out_threshold: >
+
+  Performance is listed as 'nearly sold out' when this percentage of the
+  house is sold.
+
+allow_gift_tickets: >
+
+  Set to any non-blank value to allow tickets to be purchased as a
+  gift. Leave blank to disable.
+
+allow_gift_subscriptions: >
+
+  Set to any non-blank value to allow subscriptions to be purchased as a
+  gift. Leave blank to disable.
+
+season_start_month: >
+
+  This is used to determine what ticket vouchers to show in customers'
+  accounts and default dates for season-rollup reports.
+
+season_start_day: >
+
+  This is used to determine what ticket vouchers to show in customers'
+  accounts and default dates for season-rollup reports.
+
+cancel_grace_period: >
+
+  Latest a patron can self-cancel a reservation (minutes before curtain)
+
+default_donation_account_code: >
+
+  Default account code applied to donations made online either
+  standalone or in conjunction with single-ticket purchases. If empty,
+  no account code will be assigned to those donations.
+
+default_donation_account_code_with_subscriptions: >
+
+  Default account code for donations accompanying subscription purchases
+  (as opposed to single-ticket purchases).
+
+accept_amex: >
+
+  Set to zero if you DON'T accept the AmEx card. Set to any non-zero
+  value to accept AmEx.
+
+venue: >
+
+  Venue name as it will appear in confirmation emails, banners, etc.
+
+venue_address: >
+
+  Mailing address of venue
+
+venue_city_state_zip: >
+
+  Venue city, state, zip
+
+venue_telephone: >
+
+  General information phone number for the venue
+
+venue_homepage_url: >
+
+  URL of venue home page; if provided, page banners will be clickable
+  links to this URL.
+
+boxoffice_telephone: >
+
+  Box office telephone number
+
+donation_ack_from: >
+
+  Auto-generated confirmation emails for online donations appear to be
+  signed by this person.
+
+boxoffice_daemon_notify: >
+
+  Whenever the box office does automatic background processing, such as
+  when a third-party ticket list is received and parsed, an email report
+  will be sent to this address.
+
+help_email: >
+
+  Email address where patrons can get help; shown in confirmation emails
+  for online orders
+
+followup_visit_reminder_lead_time: >
+
+  Number of days lead time for reminding a staff member that a followup
+  visit is pending with a prospect. For example, if you enter 2, any
+  staff member who has a followup visit pending will receive a reminder
+  email 2 days before the "Follow up on" date of the visit record. If
+  0, no reminders will be emailed.
+
+session_timeout: >
+
+  Number of minutes of inactivity after which a user is automatically
+  logged out.
+
+force_classic_view: >
+
+  If set to any nonempty value, subscribers will always see the same
+  view as nonsubscribers when viewing their purchased tickets and
+  reservations and when reserving tickets for a show. If left blank,
+  subscribers will see the alternate "per-show" reservations interface
+  for their subscriptions. See the user's manual for details. If unsure,
+  leave this blank.
+
+subscription_sales_banner_for_current_subscribers: >
+
+  Banner text shown on Buy Subscriptions page to patrons who are CURRENT
+  subscribers.  It is placed inside a DIV whose ID and class are
+  subscriptionBannerSubscriber.  The DIV can contain basic HTML tags but
+  no JavaScript.
+
+subscription_sales_banner_for_next_season_subscribers: >
+
+  Banner text shown on Buy Subscriptions page to patrons who have
+  purchased subscriptions for next season, whether or not they are
+  current subscribers.  It is placed inside a DIV with ID 
+  subscriptionBannerNextSeasonSubscriber and class storeBanner.
+  The DIV can contain basic
+  HTML tags but no JavaScript.
+
+subscription_sales_banner_for_nonsubscribers: >
+
+  Banner text shown on Buy Subscriptions page to NONSUBSCRIBERS.  It is
+  placed inside a DIV with ID subscriptionBannerNonsubscriber and class 
+  storeBanner.  The DIV can contain basic HTML tags
+  but no JavaScript.
+
+single_ticket_sales_banner_for_current_subscribers: >
+
+  Banner text shown on Buy Single Tickets page to CURRENT subscribers.
+  It is placed inside a DIV with ID singleTicketBannerCurrentSubscriber
+  and class storeBanner.  The DIV can contain basic HTML tags but no
+  JavaScript.
+
+single_ticket_sales_banner_for_next_season_subscribers: >
+
+  Banner text shown on Buy Single Tickets page to patrons who have
+  purchased a subscription for next season, whether or not they are
+  current subscribers. It is placed inside a DIV with ID
+  singleTicketBannerNextSeasonSubscriber and class storeBanner.
+  The DIV can contain basic HTML tags but no JavaScript.
+
+single_ticket_sales_banner_for_nonsubscribers: >
+
+  Banner text shown on Buy Single Tickets page to NONSUBSCRIBERS.  It is
+  placed inside a DIV with ID singleTicketBannerNonsubscriber and class
+  storeBanner.
+  The DIV can contain basic HTML tags but no JavaScript.
+
+top_level_banner_text: >
+
+  Text to be displayed, if any, in top-level header (div#header).
+
+homepage_ticket_sales_text: >
+
+  Homepage message that will take customer to Buy Tickets page; if
+  blank, link to Tickets page won't be displayed
+
+homepage_subscription_sales_text: >
+
+  Homepage message that will take customer to Buy Subscriptions page; if
+  blank, link to Subscriptions page won't be displayed
+
+subscription_purchase_email_notes: >
+
+  Additional text included in purchase confirmation screen and email
+  when a new or renewal subscription is PURCHASED.  Can include basic
+  HTML tags and CSS information. It is automatically rendered inside
+  <div id="subscription_purchase_notices"> and converted to plain text
+  for confirmation email.
+
+display_email_opt_out: >
+
+  If set to any nonzero value, an email opt-out box will appear whenever
+  customers edit their contact info.  If set to zero, this opt-out box
+  will not appear.  NOTE: if set to zero, you MUST ensure that you
+  provide your customers some other way to opt out of email in order to
+  comply with CAN-SPAM.
+
+encourage_email_opt_in: >
+
+  Brief message encouraging customers who have opted out of email to opt
+  back in.  Use plain text only.  If present, will be displayed along
+  with a link to an opt-back-in page for customers who have a valid
+  email address on file but have opted out.  If blank, or if customer
+  has no email address on file, no message or link will be displayed.
+
+checkout_notices: >
+
+  Notices to customer that appear on checkout screen after successful
+  payment is processed. Can include basic HTML tags and CSS
+  information. It is automatically rendered inside <div
+  id='checkout_notices'>.
+
+accessible_seating_notices: >
+
+  Message included in checkout confirmation and email confirmation if
+  customer has indicated special seating needs. It can include basic
+  HTML tags and will be wrapped in <div
+  id='accessible_seating_notices'>.
+
+general_confirmation_email_notes: >
+
+  General instructions to ALL CUSTOMERS that appear in order
+  confirmation emails, for both single-ticket purchases and subscription
+  reservation confirmations. Use plain text (no HTML) and use a blank
+  line to separate paragraphs; text will be automatically word-wrapped
+  preserving your paragraph breaks.
+
+subscriber_confirmation_email_notes: >
+
+  Specific instructions to subscribers that appear in order confirmation
+  emails, for both single-ticket purchases and subscription reservation
+  confirmations. Use plain text (no HTML) and use a blank line to
+  separate paragraphs; text will be automatically word-wrapped
+  preserving your paragraph breaks.
+
+nonsubscriber_confirmation_email_notes: >
+
+  Specific instructions to NON-subscribers that appear in order
+  confirmation emails, for both single-ticket purchases and subscription
+  reservation confirmations. Use plain text (no HTML) and use a blank
+  line to separate paragraphs; text will be automatically word-wrapped
+  preserving your paragraph breaks.
+
+terms_of_sale: >
+
+  Terms of sale, which appear in a popup window if user clicks on
+  "Terms of Sale" link during checkout. Use plain text (no HTML) and
+  separate paragraphs with a blank line.
+
+privacy_policy_url: >
+
+  URL of page describing the Privacy Policy regarding Venue's collection
+  and use of patron information. This page should be hosted at the
+  venue's web site and may include the following text: "[Our venue's]
+  credit card transactions are handled by the Audience1st system, which
+  processes payments through Authorize.net. Audience1st does not retain
+  credit card numbers nor share any information used in processing the
+  transactions except as required by law."
+
+mailchimp_api_key: >
+
+  API key for MailChimp integration, if you use MailChimp
+
+mailchimp_default_list_name: >
+
+  Name of your main email list, if you use MailChimp
+
+enable_facebook_connect: >
+
+  Set to zero (0) to COMPLETELY DISABLE Facebook integration, including
+  "Login with your Facebook account" and Facebook-related social
+  features.  Set to any nonzero value to ENABLE Facebook integration.
+  NOTE: This change may take up to an hour to take effect.
+
