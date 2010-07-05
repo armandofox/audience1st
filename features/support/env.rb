@@ -62,8 +62,19 @@ Before do
   fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
   fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
   Fixtures.create_fixtures(fixtures_folder, fixtures)
+  # make rspec mocks/stubs work
+  $rspec_mocks ||= Spec::Mocks::Space.new
   require File.join(RAILS_ROOT, 'spec', 'support', 'facebooker_stubs_for_restful_auth.rb')
   # Make visible for testing
   #ApplicationController.send(:public, :logged_in?, :current_user, :current_user=, :current_admin, :authorized?)
 end
 
+After do
+  begin
+    $rspec_mocks.verify_all
+  ensure
+    $rspec_mocks.reset_all
+  end
+end
+
+    

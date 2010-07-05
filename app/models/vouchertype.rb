@@ -248,4 +248,16 @@ class Vouchertype < ActiveRecord::Base
     c
   end
 
+  # BUG: this duplicates functionality 
+
+end
+
+# For convenience, we define using_promo_code as an instance method of Enumerable so that
+# we can write subs = Vouchertype.subscriptions_available_to(...).using_promo_code('foo')
+
+module Enumerable
+  def using_promo_code(p = '')
+    p = p.to_s.strip
+    self.select { |vt| p.contained_in_or_blank(vt.bundle_promo_code) }
+  end
 end

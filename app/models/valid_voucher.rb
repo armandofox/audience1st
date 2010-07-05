@@ -57,23 +57,23 @@ class ValidVoucher < ActiveRecord::Base
   def to_s
     sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
     start_sales.strftime('%c'), end_sales.strftime('%c'),
-    password
+    promo_code
   end
   
   def printable_name ;  self.showdate.printable_name ;  end
   def vouchertype_name ; self.vouchertype.name ; end
   def price ; self.vouchertype.price ; end
 
-  def self.for_advance_sales(passwords = [])
+  def self.for_advance_sales(promo_codes = [])
     general_conds = "? BETWEEN start_sales AND end_sales"
     general_opts = [Time.now]
-    password_conds = "password IS NULL OR password = ''"
-    password_opts = []
-    unless passwords.empty?
-      password_conds += " OR password LIKE ? " * passwords.length
+    promo_code_conds = "promo_code IS NULL OR promo_code = ''"
+    promo_code_opts = []
+    unless promo_codes.empty?
+      promo_code_conds += " OR promo_code LIKE ? " * promo_codes.length
     end
     v = ValidVoucher.find(:all,
-                          :conditions => ["#{general_conds} AND (#{password_conds})", general_opts + passwords])
+                          :conditions => ["#{general_conds} AND (#{promo_code_conds})", general_opts + promo_codes])
     v.to_set.classify( &:showdate_id )
   end
 
@@ -90,7 +90,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   # is this valid-voucher redeemable by a Box Office agent?
-  def self.advance_sale_seats_for(showdate,customer,password='')
+  def self.advance_sale_seats_for(showdate,customer,promo_code='')
     @@no_seats_explanation = ''
     if customer.is_boxoffice
       vv = showdate.valid_vouchers.find(:all, :joins => :vouchertype,
@@ -120,9 +120,9 @@ class ValidVoucher < ActiveRecord::Base
         AND (? BETWEEN start_sales AND end_sales)
 EOCONDS1
     bind_variables =  [[:revenue,:nonticket], avail_to, Time.now]
-    if !password.blank?
+    if !promo_code.blank?
       conds << " AND (LOWER(promo_code) IN (?))"
-      bind_variables << password.downcase.split(',').unshift('')
+      bind_variables << promo_code.downcase.split(',').unshift('')
     end
     vv = showdate.valid_vouchers.find(:all, :joins => :vouchertype,
       :conditions => [conds, *bind_variables])
@@ -154,7 +154,7 @@ EOCONDS1
 
   # get number of seats available for a showdate, given a customer
   # (different customers have different purchasing rights), a list of
-  # passwords (some voucher types are password protected), and whether
+  # promo_codes (some voucher types are promo_code protected), and whether
   # to ignore time-based sales cutoffs (default: false).
   # Returns an AvailableSeat object encapsulating the result of htis
   # computation along with an English explanation if appropriate.
@@ -180,7 +180,7 @@ EOCONDS1
     #vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
     vv  = vtype.valid_vouchers.select do |v|
       v.showdate_id == sd.id &&
-        v.password_matches(opts[:promo_code])
+        v.promo_code_matches(opts[:promo_code])
     end
     if vv.empty?
       av.howmany = 0
@@ -198,7 +198,7 @@ EOCONDS1
   def self.numseats_for_showdate(sd,cust,opts={})
     sd = Showdate.find(sd) unless (sd.kind_of?(Showdate))
     sd.vouchertypes.map { |v| numseats_for_showdate_by_vouchertype(sd,cust,v,opts) }
-     # BUG: retrieve passwords from opts
+     # BUG: retrieve promo_codes from opts
      # BUG: need to consider somewhere whether voucher is expired
   end
 
@@ -218,15 +218,13 @@ EOCONDS1
                                         :purchasemethod => purchasemethod)
   end
 
-  def password_matches(str)
-    str ||= ''
-    return true if self.password.blank?
-    return (self.password.upcase.split(/\s*,\s*/).include?(str.strip.upcase))
+  def promo_code_matches(str = nil)
+    str.to_s.contained_in_or_blank(self.promo_code)
   end
 
   private
 
-  # return true if this valid_voucher should be displayed based on password.
+  # return true if this valid_voucher should be displayed based on promo_code.
   # that is, if it has no associated promo code, OR if the supplied string
   # matches one of the associated promo codes.
   

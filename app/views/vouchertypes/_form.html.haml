@@ -66,6 +66,11 @@
   %p
     %label{:for=>:vouchertype_bundle_sales_start} Sales end
     = datetime_select 'vouchertype', 'bundle_sales_end'
+    
+  %p
+    %label{:for => :vouchertype_bundle_promo_code} Promo code(s)
+    = text_field 'vouchertype', 'bundle_promo_code', :size => 40
+    = popup_help_for 'vouchertype_bundle_promo_code'
 
   %p
     %label{:for=>:voucher_included_vouchers}Included vouchers:

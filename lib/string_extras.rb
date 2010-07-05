@@ -14,6 +14,13 @@ class String
     return newpass
   end
 
+  # true if target is blank, or target when split on commas contains self,
+  # case-insensitively.  used for checking promo codes and tags.
+  def contained_in_or_blank(target)
+    target.blank? ||
+      target.upcase.split(/\s*,\s*/).include?(self.strip.upcase)
+  end
+  
   def wrap(col = 80)
     # from blog.macromates.com/2006/wrapping-text-with-regular-expressions
     self.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/, "\\1\\3\n") 

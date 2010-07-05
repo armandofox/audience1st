@@ -137,7 +137,7 @@ module AuthenticatedSystem
       true
     end
 
-    def stored_action ; !session[:return_to].nil? ; end
+    def stored_action ; session[:return_to] ; end
 
     # Redirect to the URI stored by the most recent store_location call or
     # to the passed default.  Set an appropriately modified

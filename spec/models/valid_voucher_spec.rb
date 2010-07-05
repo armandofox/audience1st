@@ -177,16 +177,16 @@ describe ValidVoucher do
           it "should be empty when capacity not reached"
         end
       end
-      describe "password-protected seats", :shared => true do
+      describe "promo-code-protected seats", :shared => true do
       end
-      describe "non-password, non-capacity-controlled seats" do
+      describe "non-promo-code, non-capacity-controlled seats" do
         #it_should_behave_like "capacity-controlled seats"
       end
-      describe "password-protected, non-cap-controlled seats" do
-        #it_should_behave_like "password-protected seats"
+      describe "promo-code-protected, non-cap-controlled seats" do
+        #it_should_behave_like "promo-code-protected seats"
       end
-      describe "password-protected, capacity-controlled seats" do
-        # it_should_behave_like "password-protected seats"
+      describe "promo-code-protected, capacity-controlled seats" do
+        # it_should_behave_like "promo-code-protected seats"
         # it_should_behave_like "capacity-controlled seats"
       end
     end
@@ -207,40 +207,40 @@ describe ValidVoucher do
     before(:each) do
       @v = ValidVoucher.new
     end
-    context "with no password" do
+    context "with no promo-code" do
       before(:each) do
-        @v.password = nil
+        @v.promo_code = nil
       end
-      it "should succeed if password is blank and promo code is empty string" do
-        @v.password_matches(nil).should be_true
+      it "should succeed if promo_code is blank and promo code is empty string" do
+        @v.promo_code_matches(nil).should be_true
       end
-      it "should succeed if password is blank and promo code is not" do
-        @v.password_matches('foo!').should be_true
+      it "should succeed if promo_code is blank and promo code is not" do
+        @v.promo_code_matches('foo!').should be_true
       end
       it "should succeed if promo code is nil (not empty)" do
-        @v.password_matches(nil).should be_true
+        @v.promo_code_matches(nil).should be_true
       end
     end
     describe "with nonblank", :shared => true do
-      it "should succeed if password matches exactly" do
-        @v.password_matches('foo').should be_true
+      it "should succeed if promo_code matches exactly" do
+        @v.promo_code_matches('foo').should be_true
       end
       it "should match case-insensitively" do
-        @v.password_matches('FoO').should be_true
+        @v.promo_code_matches('FoO').should be_true
       end
-      it "should succeed if supplied password is not blank-stripped" do
-        @v.password_matches(' Foo ').should be_true
+      it "should succeed if supplied promo_code is not blank-stripped" do
+        @v.promo_code_matches(' Foo ').should be_true
       end
       it "should fail if only partial word match" do
-        @v.password_matches('fo').should be_false
+        @v.promo_code_matches('fo').should be_false
       end
     end
-    context "with a single password" do
-      before(:each) do ; @v.password = 'foo' ; end
+    context "with a single promo_code" do
+      before(:each) do ; @v.promo_code = 'foo' ; end
       it_should_behave_like "with nonblank"
     end
-    context "with multiple passwords" do
-      before(:each) do ; @v.password = 'bAr,Foo,BAZ' ; end
+    context "with multiple promo_codes" do
+      before(:each) do ; @v.promo_code = 'bAr,Foo,BAZ' ; end
       it_should_behave_like "with nonblank"
     end
   end

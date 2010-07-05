@@ -14,10 +14,14 @@ class ApplicationController < ActionController::Base
   def facebook_session ; @@fake_facebook_session ; end
   def set_fake_facebook_session!(ses) ; @@fake_facebook_session = ses ; end
   def reset_fake_facebook_session! ; @@fake_facebook_session = nil ; end
+  def stub_facebook_session_with(user_object)
+    @@fake_facebook_session = mock("fake_session_for_#{user_object}", :user => user_object)
+  end
 end
 
 
-# class SessionsController < ApplicationController
-#   after_filter :reset_stubbed_facebook_user!, :only => :destroy
-# end
+class SessionsController < ApplicationController
+  before_filter :reset_fake_facebook_session!, :only => :create
+end
+
   

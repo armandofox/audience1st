@@ -33,27 +33,7 @@ class StoreController < ApplicationController
   def index
     @customer = store_customer
     @is_admin = current_admin.is_boxoffice
-    if params[:commit] =~ /redeem/i
-      enter_promo_code
-      params.delete(:commit)
-    else
-      reset_shopping
-      set_return_to :controller => 'store', :action => 'index'
-      # if this is initial visit to page, reset ticket choice info
-      params.delete(:show_id)
-      reset_current_show_and_showdate
-      if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
-        set_current_showdate(s)
-      elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
-        set_current_show(s)
-      else                        # neither: pick earliest show
-        s = get_all_showdates(@is_admin)
-        unless (s.nil? || s.empty?)
-          #set_current_showdate(s.sort.detect { |sd| sd.thedate >= Time.now } || s.first)
-          set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
-        end
-      end
-    end
+    setup_for_initial_visit unless (@promo_code = redeeming_promo_code)
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
     setup_ticket_menus
@@ -61,14 +41,16 @@ class StoreController < ApplicationController
 
   def subscribe
     reset_shopping
-    session[:redirect_to] = :subscribe
+    set_return_to :controller => 'store', :action => 'subscribe'
     @customer = store_customer
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
     @cart = find_cart
     # this uses the temporary hack of adding bundle sales start/end
     #   to bundle voucher record directly...ugh
-    @subs_to_offer = Vouchertype.subscriptions_available_to(store_customer, @gAdmin.is_boxoffice)
+    @promo_code = redeeming_promo_code
+    @subs_to_offer =
+      Vouchertype.subscriptions_available_to(store_customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code)
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to_index
@@ -83,7 +65,7 @@ class StoreController < ApplicationController
   end
 
   def shipping_address
-    redirect_to(:action => 'index', :commit => 'redeem', :promo_code => params[:promo_code]) and return if params[:commit] =~ /redeem/i
+    redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]})) and return if params[:commit] =~ /redeem/i
     # if this is a post, add items to cart first (since we're coming from
     #  ticket selection page).  If a get, buyer just wants to modify
     #  gift recipient info.
@@ -178,12 +160,16 @@ class StoreController < ApplicationController
     render :nothing => true
   end
 
-  def enter_promo_code
-    @promo_code = (params[:promo_code] || '').upcase
-    if !@promo_code.blank?
-      session[:promo_code] = @promo_code
-      logger.info "Accepted promo code #{@promo_code}"
+  def redeeming_promo_code
+    return session[:promo_code] unless session[:promo_code].blank?
+    return nil unless params[:commit] =~ /redeem/i
+    promo_code = (params[:promo_code] || '').upcase
+    if !promo_code.blank?
+      session[:promo_code] = promo_code
+      logger.info "Accepted promo code #{promo_code}"
     end
+    params.delete(:commit)
+    promo_code
   end
 
   def checkout
@@ -434,10 +420,6 @@ EON
     end
   end
 
-  def get_all_subs(cust = Customer.generic_customer)
-    return Vouchertype.find(:all, :conditions => ["bundle = 1 AND offer_public > ?", (cust.kind_of?(Customer) && cust.subscriber? ? 0 : 1)])
-  end
-
   def process_ticket_request
     unless (showdate = Showdate.find_by_id(params[:showdate])) ||
         params[:donation].to_i > 0
@@ -561,6 +543,25 @@ EON
     end
   end
 
+  def setup_for_initial_visit
+    # first visit to store/index
+    reset_shopping
+    set_return_to :controller => 'store', :action => 'index'
+    # if this is initial visit to page, reset ticket choice info
+    params.delete(:show_id)
+    reset_current_show_and_showdate
+    if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
+      set_current_showdate(s)
+    elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
+      set_current_show(s)
+    else                        # neither: pick earliest show
+      s = get_all_showdates(@is_admin)
+      unless (s.nil? || s.empty?)
+        set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
+      end
+    end
+  end
+  
   def redirect_to_checkout
     redirect_to(:action => 'checkout',
       :sales_final => params[:sales_final],

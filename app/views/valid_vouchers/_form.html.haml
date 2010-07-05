@@ -5,14 +5,14 @@
 = text_field 'valid_voucher', 'max_sales_for_type', :size=>5 
 %br
 
-%label{:for=>:valid_voucher_password} Redemption password, if any
-= text_field 'valid_voucher', 'password', 'size'=>40
+%label{:for=>:valid_voucher_promo_code} Redemption ("promo") code, if any
+= text_field 'valid_voucher', 'promo_code', 'size'=>40
 %br
 
 %p
-  If multiple passwords are allowed, separate them by commas. 
-  Passwords are not case-sensitive and redemption is tracked separately 
-  for each password. 
+  If multiple promo codes are allowed, separate them by commas. 
+  Promo_codes are not case-sensitive and redemption is tracked separately 
+  for each promo code. 
 
 %label{:for=>:valid_voucher_start_sales}  Start sales on
 = datetime_select 'valid_voucher', 'start_sales'

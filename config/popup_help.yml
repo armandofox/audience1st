@@ -105,6 +105,14 @@ vouchertype_walkup_sale_allowed: >
   Sales screen.  Leave unchecked for any ticket types that require
   advance purchase.
 
+vouchertype_bundle_promo_code:  >
+
+  A promo code (password) required to purchase; this bundle type
+  won't be visible as a choice in dropdown menu until customer enters the
+  promo code.  To specify multiple allowable promo codes, separate them
+  by commas.  If blank, no promo code is required to purchase this
+  bundle. 
+
 # Donations
 
 donation_search_by_letter_sent: >

@@ -3,14 +3,7 @@
       @vouchertypes.map {|av| av.vouchertype.id}, |
      :price, :vouchertype, 'donation', 'submit' |
 
-  %label{:for => "promo_code"} Discount Code
-  - if @promo_code.blank?
-    = text_field_tag 'promo_code', @promo_code, :size => 10
-    = spinner('wait_promo')
-    = submit_tag 'Redeem'
-  - else
-    %span.strong= h(@promo_code)
-    (Discounted price appears below <b>only</b> if discount still available)
+  = render :partial => 'enter_promo_code'
   %br/
 
   %label{:for => "show"} Show

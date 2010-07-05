@@ -37,7 +37,7 @@
             %td= (max = v.max_sales_for_type).zero? ? '' : max
             %td
               = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
-              = "(#{h(v.password)})" unless v.password.blank?
+              = "(#{h(v.promo_code)})" unless v.promo_code.blank?
               %td= time_in_words_relative_to(v.start_sales,showdate.thedate)
               %td= time_in_words_relative_to(v.end_sales,showdate.thedate)
               %td

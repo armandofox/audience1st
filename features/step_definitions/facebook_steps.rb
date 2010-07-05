@@ -26,8 +26,7 @@ Given /^I have a Facebook friend "(.*)"$/ do |name|
 end
 
 def mock_fb_session_with_user(fb)
-  fake_session = stub('fake_facebook_session', 'user' => fb)
-  controller.set_fake_facebook_session!(fake_session)
+  controller.stub_facebook_session_with(fb)
 end
 
 def create_generic_user_with_facebook_id

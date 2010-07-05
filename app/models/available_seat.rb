@@ -66,7 +66,7 @@ class AvailableSeat
 
   def promo_codes
     codes = @vouchertype.valid_vouchers.map do
-      |v| v.password ? v.password.split(',') : nil
+      |v| v.promo_code ? v.promo_code.split(',') : nil
     end.flatten.compact
     codes.empty? ? nil : codes.map {|s| s.upcase }
   end
