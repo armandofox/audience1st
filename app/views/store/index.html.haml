@@ -10,7 +10,7 @@
   
   %h1.page_heading.center
     Select Tickets
-    %span.small= "(Using Promo Code: #{h(@promo_code)}" if @promo_code
+    %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #ticket_menus
     - form_tag :action => 'shipping_address' do

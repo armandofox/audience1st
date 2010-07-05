@@ -301,7 +301,7 @@ class CustomersController < ApplicationController
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
     render(:action => 'new') and return unless @customer.save
-    flash[:notice] <<  'Account was successfully created.'
+    (flash[:notice] ||= '') <<  'Account was successfully created.'
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'new customer added',

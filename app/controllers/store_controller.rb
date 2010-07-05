@@ -27,8 +27,7 @@ class StoreController < ApplicationController
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
-                 :not_me, :edit_billing_address,
-                 :enter_promo_code)
+                 :not_me, :edit_billing_address)
   
   def index
     @customer = store_customer
@@ -158,18 +157,6 @@ class StoreController < ApplicationController
     cart = find_cart
     cart.comments = params[:comments]
     render :nothing => true
-  end
-
-  def redeeming_promo_code
-    return session[:promo_code] unless session[:promo_code].blank?
-    return nil unless params[:commit] =~ /redeem/i
-    promo_code = (params[:promo_code] || '').upcase
-    if !promo_code.blank?
-      session[:promo_code] = promo_code
-      logger.info "Accepted promo code #{promo_code}"
-    end
-    params.delete(:commit)
-    promo_code
   end
 
   def checkout
@@ -308,6 +295,24 @@ EON
   end
     
   private
+
+  def redeeming_promo_code
+    clear_promo_code and return nil if params[:commit] =~ /clear/i
+    params[:commit] =~ /redeem/i ? set_promo_code(params[:promo_code]) : nil
+  end
+
+  def clear_promo_code
+    session.delete(:promo_code)
+    logger.info("Clearing promo code")
+  end
+
+  def set_promo_code(str)
+    promo_code = (str || '').upcase
+    params.delete(:commit)
+    session[:promo_code] = promo_code
+    logger.info "Accepted promo code #{promo_code}"
+    promo_code
+  end
 
   def setup_ticket_menus
     @customer = store_customer
