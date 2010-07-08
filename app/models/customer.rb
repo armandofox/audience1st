@@ -613,6 +613,9 @@ EOSQL1
   # most recently updated (updated_at).  IF those are also equal, keep
   # the first one.
 
+  def self.destroy_by_merging_with_anonymous(c)
+  end
+  
   def merge_with_params!(c1,params)
     Customer.replaceable_attributes.each do |attr|
       if (params[attr.to_sym].to_i > 0)
@@ -697,7 +700,15 @@ EOSQL1
           pass = nil
         end
         c1.destroy
+        # Corner case. If a third record contains a duplicate email of either
+        # of these, the merge will fail, and there will be nothing that can be
+        # done about it!  So, temporarily set the created_by_admin bit on
+        # the record to be preserved (which bypasses email uniqueness check)
+        # and then reset afterward.
+        old_created_by_admin = c0.created_by_admin
+        c0.created_by_admin = true
         c0.save!
+        c0.update_attribute(:created_by_admin, false) if !old_created_by_admin
         if pass
           Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
         end

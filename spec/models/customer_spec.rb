@@ -416,6 +416,17 @@ describe Customer do
       @old.stub!(:fresher_than?).and_return(nil)
       @new.stub!(:fresher_than?).and_return(true)
     end
+    it "should work when a third record has a duplicate email" do
+      @triplicate = BasicModels.create_generic_customer
+      [@old, @new, @triplicate].each { |c| c.email = 'dupe@email.com' ; c.save(false) }
+      # Since the 'triplicate' workaround relies on temporarily setting
+      # the created-by-admin bit, make sure that bit gets properly reset.
+      @old.update_attribute(:created_by_admin, false)
+      @old.merge_automatically!(@new).should_not be_nil
+      @old.reload
+      @old.email.should == 'dupe@email.com'
+      @old.created_by_admin.should be_false
+    end
     describe "successfully" do
       it "should keep password based on most recent" do
         @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
