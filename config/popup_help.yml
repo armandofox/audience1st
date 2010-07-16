@@ -1,3 +1,15 @@
+# Logging in
+
+login_using_facebook: >
+
+  This feature lets you use your existing Facebook username and password
+  to login rather than remembering a separate username and password.  Your
+  Facebook password is never revealed to us, and we only use your Facebook
+  information to log you in and tell you which of your friends are
+  attending shows and who has "Liked" shows.  If you already have a
+  username and password with us, login with those and then click "Link
+  my account to Facebook" on the welcome page after logging in.
+
 # Store pages
 
 credit_card_verification_value: >

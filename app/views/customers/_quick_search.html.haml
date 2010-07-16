@@ -1,10 +1,11 @@
 #customer_quick_search.adminField
   %p
-    %span.strong Customer: 
-    %span#onBehalfOfName= h @gCustomer.full_name
-    (last login:
-    = h @gCustomer.last_login.to_formatted_s(:month_day_year)
-    )
+    #on_behalf_of_customer
+      %span.strong Customer: 
+      %span#onBehalfOfName= h @gCustomer.full_name
+      (last login:
+      = h @gCustomer.last_login.to_formatted_s(:month_day_year)
+      )
     - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get, :id => 'quick_search'}) do
       - if controller.controller_name =~ /store|customers/i
         = hidden_field_tag 'target_controller', controller.controller_name
