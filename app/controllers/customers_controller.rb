@@ -155,6 +155,7 @@ class CustomersController < ApplicationController
     params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
     begin
       # update generic attribs first
+      @customer.created_by_admin = @is_admin # to skip validations if admin is editing
       @customer.update_attributes!(params[:customer])
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag

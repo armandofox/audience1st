@@ -6,5 +6,6 @@
     = popup_help_for 'merge_customers'
     - if @customer_pages
       = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
+      = link_to 'Find Duplicates', {:action => :list_duplicates}, {:class => 'genButton'}
     - else
       = link_to 'More Duplicates...', {:action => :list_duplicates, :offset => @offset+@limit}, {:class => 'genButton'}
