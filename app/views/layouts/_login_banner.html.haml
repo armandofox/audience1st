@@ -2,7 +2,7 @@
   - if USE_FACEBOOK && @gLoggedIn.facebook_user?
     #welcome.facebook
       & Welcome, #{@gLoggedIn.full_name}
-      %fb:profile-pic{:uid => @gLoggedIn.fb_user_id, :facebook_logo => :true, :size => :thumb}
+      %fb:profile-pic{:uid => @gLoggedIn.fb_user_id, :facebook_logo => :false, :size => :thumb}
       = button_to_function 'Log Out', "FB.Connect.logoutAndRedirect('#{logout_path}')"
   - else
     #welcome.regular
