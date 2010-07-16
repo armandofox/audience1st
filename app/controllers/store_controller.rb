@@ -352,15 +352,10 @@ EON
       @all_showdates = []
       @vouchertypes = []
     end
-    # filtering:
-    # remove any showdates that are sold out (which could cause showdate menu
-    #   to become empty)
-    # remove any vouchertypes tht customer should not even see the existence
-    #  of (unless "customer" is actually an admin)
-    @vouchertypes.reject! { |av| av.staff_only } unless is_admin
-    @vouchertypes.reject! { |av| av.howmany.zero? }
-    # BUG: must filter vouchertypes by promo code!!
-    # @vouchertypes.reject!
+    # filtering: unless "customer" is an admin,
+    # remove vouchertypes that are sold out (which could cause showdate menu
+    #   to become empty) or that customer should not even see 
+    @vouchertypes.reject! { |av| (av.staff_only || av.howmany.zero?) } unless is_admin
   end
 
   # Customer on whose behalf the store displays are based (for special
@@ -553,7 +548,6 @@ EON
     reset_shopping
     set_return_to :controller => 'store', :action => 'index'
     # if this is initial visit to page, reset ticket choice info
-    params.delete(:show_id)
     reset_current_show_and_showdate
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
       set_current_showdate(s)

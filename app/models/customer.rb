@@ -374,7 +374,7 @@ class Customer < ActiveRecord::Base
   def can_grant(newrole)
     # TBD should really check that the two are
     # in different role-equivalence classes
-    self.role > Customer.role_value(newrole)
+    self.role >= Customer.role_value(newrole)
   end
 
   def self.can_ignore_cutoff?(id)
