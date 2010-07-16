@@ -15,28 +15,35 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :with => Authentication.email_regex, :if => :self_created?
-  validates_uniqueness_of :email,
-  :if => :self_created?,
+  validates_format_of :email, :if => :self_created?, :with => Authentication.email_regex
+  validates_uniqueness_of :email, :if => :self_created?,
   :allow_blank => true,
   :case_sensitive => false,
   :message => "address {{value}} has already been registered.
     <a href='/login?email={{value}}'>Sign in with this email address</a>
     (if you forgot your password, use the 'Forgot your password?' link on sign-in page)"
   
-  validates_format_of :zip, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
+  validates_format_of :zip, :if => :self_created?, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
 
+  NAME_REGEX = /^[-A-Za-z0-9_#\@'":;,.%\ ()&]+$/
+  NAME_FORBIDDEN_CHARS = /[^A-Za-z0-9_#\@'":;,.%\ ()&]/
+  
+  BAD_NAME_MSG = "must not include special characters like <, >, !, etc."
+
   validates_length_of :first_name, :within => 1..50
-  validates_format_of :first_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
+  validates_format_of :first_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
   validates_length_of :last_name, :within => 1..50
-  validates_format_of :last_name, :with => Authentication.name_regex,  :message => Authentication.bad_name_message
+  validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
-  validates_length_of :password, :in => 4..20, :allow_nil => true, :if => :self_created_and_not_linked_to_facebook
+  validates_length_of :password, :if => :self_created_and_not_linked_to_facebook, :in => 4..20, :allow_nil => true
   validates_confirmation_of :password, :if => :self_created_and_not_linked_to_facebook
 
   attr_protected :id, :salt, :role, :created_by_admin
+  attr_accessor :force_valid
+  attr_protected :force_valid
+  
   attr_accessor :password
 
   cattr_reader :replaceable_attributes, :extra_attributes
@@ -52,6 +59,7 @@ class Customer < ActiveRecord::Base
      :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
      :work_fax, :company_url]
 
+  before_validation_on_create :force_valid_fields
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
 
@@ -84,6 +92,22 @@ class Customer < ActiveRecord::Base
   def self_created_and_not_linked_to_facebook
     self_created? && !facebook_user?
   end
+
+  # for things like daemon-created customers, the force_valid flag will cause a customer
+  # to be created with minimal valid fields so that saving cannot possibly fail validations.
+
+  def force_valid_fields
+    if self.force_valid
+      self.created_by_admin = true # will skip most validations
+      self.first_name = '_' if first_name.blank?
+      self.first_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
+      self.last_name = '_' if last_name.blank?
+      self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
+      self.email = nil unless self.email.match Authentication.email_regex
+    end
+    true
+  end
+    
 
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
@@ -451,7 +475,8 @@ EOSQL1
 
   def self.find_or_create!(p, loggedin_id=0)
     unless (c = Customer.find_unique(p))
-      c = Customer.new(p.merge({:created_by_admin => true}))
+      c = Customer.new(p)
+      c.force_valid = true      # make sure will pass validation checks, if necessary by mutating some fields
       # precaution: make sure email is unique.
       if c.email
         c.email = nil if Customer.find(:first,:conditions => ['email like ?',c.email])

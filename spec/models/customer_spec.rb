@@ -4,11 +4,14 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe Customer do
   fixtures :customers
   describe "when created by admin" do
+    def new_by_admin(args={})
+      (c = Customer.new(args)).created_by_admin = true
+      c
+    end
     before(:each) do
-      @customer = Customer.new(:first_name => "John", :last_name => "Do",
+      @customer = new_by_admin(:first_name => "John", :last_name => "Do",
         :email => "johndoe111@yahoo.com",
         :password => "pass", :password_confirmation => "pass")
-      @customer.created_by_admin = true
     end
     it "should not require email address" do
       @customer.email = nil
@@ -20,12 +23,36 @@ describe Customer do
       @customer.should be_valid
       lambda { @customer.save! }.should_not raise_error
     end
+    it "should be valid if only first initial and last name provided" do
+      @customer = new_by_admin(:first_name => 'A', :last_name => 'Fox')
+      @customer.should be_valid
+    end
+    it "should be forced to valid if force_valid is true" do
+      @customer = Customer.new(:first_name => "<bad", :last_name => '', :email => 'Bad Email')
+      @customer.force_valid = true
+      lambda { @customer.save! }.should_not raise_error
+      @customer.first_name.should_not be_blank
+      @customer.last_name.should_not be_blank
+      @customer.email.should be_blank
+    end
   end
   describe "when self-created" do
     before(:each) do
       @customer = Customer.new(:first_name => "John", :last_name => "Do",
         :email => "johndoe111@yahoo.com",
         :password => "pass", :password_confirmation => "pass")
+    end
+    it "should allow &" do
+      @customer.first_name = "John & Mary"
+      @customer.should be_valid
+    end
+    it "should allow lists" do
+      @customer.first_name = "John, Mary, & Joan"
+      @customer.should be_valid
+    end
+    it "should disallow potential HTML/Javascript tags" do
+      @customer.last_name = "<Doe>"
+      @customer.should_not be_valid
     end
     it "should require valid email address" do
       @customer.email = nil
