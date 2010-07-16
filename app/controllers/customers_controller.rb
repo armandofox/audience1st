@@ -221,7 +221,7 @@ class CustomersController < ApplicationController
     @offset = (params[:offset] || 0).to_i
     @customers = Customer.find_suspected_duplicates(@limit,@offset)
     @limit = @customers.length
-    @title = "First #{@limit} Suspected Duplicates"
+    @title = "Suspected Duplicates #{@offset+1} - #{@offset+@limit}"
     render :action => 'list'
   end
 

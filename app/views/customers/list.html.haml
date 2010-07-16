@@ -2,14 +2,8 @@
 
 %br/
 
-- if @customer_pages
-  = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
-- else
-  %p= link_to 'Show More Duplicates...', {:action => :list_duplicates, :offset => @offset+@limit}, {:class => 'genButton'}
-
-%br/
-
 - form_tag :action => 'merge' do
+  = render :partial => 'merge_bar'
   = hidden_field_tag 'action_name', @controller.action_name
   = hidden_field_tag 'offset', @offset
   %table.hilite
@@ -17,15 +11,5 @@
       = render :partial => 'customer_header'
     %tbody
       = render :partial => 'customer', :collection => @customers
-
-  - if @customer_pages
-    = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
-  - else
-    %p= link_to 'Show More Duplicates...', {:action => :list_duplicates, :offset => @offset+@limit}, {:class => 'genButton'}
-
+  = render :partial => 'merge_bar'
   %br/
-  %p
-    Merge 2 selected customers:
-    = submit_tag 'Manually'
-    = submit_tag 'Automatically'
-    = popup_help_for 'merge_customers'
