@@ -217,8 +217,10 @@ class CustomersController < ApplicationController
   end
 
   def list_duplicates
-    @limit = params[:limit] || 20
-    @customers = Customer.find_suspected_duplicates(@limit)
+    @limit = (params[:limit] || 20).to_i
+    @offset = (params[:offset] || 0).to_i
+    @customers = Customer.find_suspected_duplicates(@limit,@offset)
+    @limit = @customers.length
     @title = "First #{@limit} Suspected Duplicates"
     render :action => 'list'
   end
@@ -417,7 +419,7 @@ class CustomersController < ApplicationController
   private
 
   def redirect_to_last_list
-    redirect_to :action => (params[:action_name] || 'list'), :customers_filter => params[:customers_filter]
+    redirect_to :action => (params[:action_name] || 'list'), :customers_filter => params[:customers_filter], :offset => params[:offset]
   end
 
   def do_automatic_merge(id0,id1)

@@ -424,7 +424,7 @@ class Customer < ActiveRecord::Base
     eval "def is_#{role}; self.role >= #{lvl}; end"
   end
 
-  def self.find_suspected_duplicates(limit=20)
+  def self.find_suspected_duplicates(limit=20,offset=0)
     limit = 20 if limit.to_i < 2
     sim = []
     sim << 'c1.first_name LIKE c2.first_name'
@@ -439,6 +439,7 @@ class Customer < ActiveRecord::Base
         (c1.first_name LIKE c2.first_name OR c1.street LIKE c2.street)
       ORDER BY c1.last_name,c1.first_name
       LIMIT #{limit}
+      OFFSET #{offset}
 EOSQL1
     possible_dups = Customer.find_by_sql(sql)
   end

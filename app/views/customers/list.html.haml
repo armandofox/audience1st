@@ -2,18 +2,26 @@
 
 %br/
 
-= pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  }) if @customer_pages
+- if @customer_pages
+  = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
+- else
+  %p= link_to 'Show More Duplicates...', {:action => :list_duplicates, :offset => @offset+@limit}, {:class => 'genButton'}
+
 %br/
 
 - form_tag :action => 'merge' do
   = hidden_field_tag 'action_name', @controller.action_name
+  = hidden_field_tag 'offset', @offset
   %table.hilite
     %thead
       = render :partial => 'customer_header'
     %tbody
       = render :partial => 'customer', :collection => @customers
 
-  = pagination_bar @customer_pages.current, :customers_filter, @count, {:class => 'navButton'} if @customer_pages
+  - if @customer_pages
+    = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
+  - else
+    %p= link_to 'Show More Duplicates...', {:action => :list_duplicates, :offset => @offset+@limit}, {:class => 'genButton'}
 
   %br/
   %p
