@@ -240,7 +240,9 @@ class CustomersController < ApplicationController
       do_automatic_merge(*params[:merge].keys)
       redirect_to_last_list and return
     end
-    # else fall through to merge.haml
+    @offset = params[:offset]
+    @last_action_name = params[:action_name]
+    # fall through to merge.html.haml
   end
 
   def finalize_merge

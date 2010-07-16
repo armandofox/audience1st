@@ -1,6 +1,8 @@
 %p.infoMsg  Select which value will be retained from each record.  Unselected values will be discarded.
 
 - form_tag :action=>'finalize_merge' do
+  = hidden_field_tag 'action_name', @last_action_name
+  = hidden_field_tag 'offset', @offset
   = hidden_field_tag 'cust0', @cust[0].id
   = hidden_field_tag 'cust1', @cust[1].id
   %table.hilite
