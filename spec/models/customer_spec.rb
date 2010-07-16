@@ -27,7 +27,9 @@ describe Customer do
       @customer = new_by_admin(:first_name => 'A', :last_name => 'Fox')
       @customer.should be_valid
     end
-    it "should be forced to valid if force_valid is true" do
+  end
+  describe "when created/imported by daemon using force_valid" do
+    it "should be forced to valid" do
       @customer = Customer.new(:first_name => "<bad", :last_name => '', :email => 'Bad Email')
       @customer.force_valid = true
       lambda { @customer.save! }.should_not raise_error
@@ -44,6 +46,10 @@ describe Customer do
     end
     it "should allow &" do
       @customer.first_name = "John & Mary"
+      @customer.should be_valid
+    end
+    it "should allow /" do
+      @customer.last_name = "Smith/Jones"
       @customer.should be_valid
     end
     it "should allow lists" do

@@ -26,8 +26,8 @@ class Customer < ActiveRecord::Base
   validates_format_of :zip, :if => :self_created?, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
 
-  NAME_REGEX = /^[-A-Za-z0-9_#\@'":;,.%\ ()&]+$/
-  NAME_FORBIDDEN_CHARS = /[^A-Za-z0-9_#\@'":;,.%\ ()&]/
+  NAME_REGEX = /^[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+$/
+  NAME_FORBIDDEN_CHARS = /[^A-Za-z0-9_\/#\@'":;,.%\ ()&]/
   
   BAD_NAME_MSG = "must not include special characters like <, >, !, etc."
 
@@ -103,7 +103,7 @@ class Customer < ActiveRecord::Base
       self.first_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
       self.last_name = '_' if last_name.blank?
       self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
-      self.email = nil unless self.email.match Authentication.email_regex
+      self.email = nil unless (email.blank? || email.match(Authentication.email_regex))
     end
     true
   end

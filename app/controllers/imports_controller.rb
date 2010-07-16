@@ -54,7 +54,6 @@ class ImportsController < ApplicationController
     csv = Customer.to_csv(rejects, :include_errors => true)
     download_to_excel(csv, 'invalid_customers')
     import.destroy
-    redirect_to imports_path
   end
 
   def index
