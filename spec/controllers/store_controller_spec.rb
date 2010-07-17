@@ -76,6 +76,47 @@ describe StoreController do
   describe "completing billing address" do
   end
 
+  describe "identifying gift recipient" do
+    describe "from session" do
+      before :each do
+        StoreController.send(:public, :recipient_from_session)
+        @rec = BasicModels.create_generic_customer
+        session[:recipient_id] = @rec.id.to_s
+      end
+      it "should find valid recipient" do
+        @controller.recipient_from_session.should == @rec
+      end
+      it "should update valid recipient's attributes" do
+        attrs = {:street => '999 Broadway', :city => 'San Francisco'}
+        @controller.params[:customer] = attrs
+        r = @controller.recipient_from_session
+        r.street.should == attrs[:street]
+        r.city.should == attrs[:city]
+      end
+      it "should be nil if recipient from session doesn't exist" do
+        session[:recipient_id] = 7979797979
+        @controller.recipient_from_session.should be_nil
+      end
+    end
+    describe "from supplied customer info" do
+      before :all do ; StoreController.send(:public, :recipient_from_params) ; end
+      it "should return customer if unique & valid gift recipient" do
+        m = mock_model(Customer, :valid_as_gift_recipient? => true)
+        Customer.should_receive(:find_unique).and_return(m)
+        @controller.recipient_from_params.should == m
+      end
+      it "should not return customer if no unique match" do
+        Customer.should_receive(:find_unique).and_return nil
+        @controller.recipient_from_params.should be_nil
+      end
+      it "should not return customer if not valid gift recipient" do
+        m = mock_model(Customer, :valid_as_gift_recipient? => nil)
+        Customer.should_receive(:find_unique).and_return(m)
+        @controller.recipient_from_params.should be_nil
+      end
+    end
+  end
+
   describe "online purchase" do
     describe "generally", :shared => true do
     end

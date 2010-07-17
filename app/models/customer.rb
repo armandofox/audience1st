@@ -448,11 +448,10 @@ EOSQL1
   # high confidence;  if not found or ambiguous, return nil
 
   def self.find_unique(p)
-    p.symbolize_keys!
     return (
-      match_email_and_last_name(p[:email],p[:last_name]) ||
-      match_first_last_and_address(p[:first_name], p[:last_name], p[:street]) ||
-      (p[:street].blank? ? match_uniquely_on_names_only(p[:first_name], p[:last_name]) : nil)
+      match_email_and_last_name(p.email, p.last_name) ||
+      match_first_last_and_address(p.first_name, p.last_name, p.street) ||
+      (p.street.blank? ? match_uniquely_on_names_only(p.first_name, p.last_name) : nil)
       )
   end
 
@@ -474,20 +473,19 @@ EOSQL1
   # If customer can be uniquely identified in DB, return match from DB; else
   # create new customer.
 
-  def self.find_or_create!(p, loggedin_id=0)
-    unless (c = Customer.find_unique(p))
-      c = Customer.new(p)
-      c.force_valid = true      # make sure will pass validation checks, if necessary by mutating some fields
-      # precaution: make sure email is unique.
-      if c.email
-        c.email = nil if Customer.find(:first,:conditions => ['email like ?',c.email])
-      end
-      c.save!
-      Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => c.id,
-                           :comments => 'customer not found, so created',
-                           :logged_in_id => loggedin_id)
+  def self.find_or_create!(c, loggedin_id=0)
+    if (cust = Customer.find_unique(c))
+      return cust
     end
+    c.force_valid = true      # make sure will pass validation checks, if necessary by mutating some fields
+    # precaution: make sure email is unique.
+    c.email = nil if (!c.email.blank? &&
+      Customer.find(:first,:conditions => ['email like ?',c.email]))
+    c.save!
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => c.id,
+      :comments => 'customer not found, so created',
+      :logged_in_id => loggedin_id)
     c
   end
 
