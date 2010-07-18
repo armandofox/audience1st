@@ -27,6 +27,15 @@ class Showdate < ActiveRecord::Base
 
   public
 
+  # create new showdate (for use by imports/daemons)
+
+  def self.placeholder(thedate)
+    Showdate.new(:thedate => thedate,
+      :end_advance_sales => thedate,
+      :max_sales => 0)
+  end
+      
+
   # finders
   
   def self.current_and_future

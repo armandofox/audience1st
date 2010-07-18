@@ -76,4 +76,34 @@ class Show < ActiveRecord::Base
     end
     "#{self.name} (#{dt})"
   end
+
+  def self.find_unique(name)
+    Show.find(:first, :conditions => ['name LIKE ?', name.strip])
+  end
+
+  # return placeholder entity that will pass basic validations if saved
+  
+  def self.placeholder(name)
+    name = name.to_s
+    name << "___" if name.length < 3
+    Show.new(:name => name,
+      :opening_date => Date.today,
+      :closing_date => Date.today + 1.day,
+      :house_capacity => 1
+      )
+  end
+  
+  def set_metadata_from_showdates!
+    return if showdates.empty?
+    dates = showdates.map(&:thedate)
+    min = dates.min
+    maxcap = showdates.map { |s| s.vouchers.size }.max
+    self.update_attributes(
+      :opening_date => min,
+      :listing_date => min,
+      :closing_date => dates.max,
+      :house_capacity => [maxcap, 1].max
+      )
+  end
+      
 end

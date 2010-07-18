@@ -470,21 +470,33 @@ EOSQL1
     return (our_last == last) &&
       (name_word_matches(our_first, first) || our_first.blank? || first.blank?)
   end
-  # If customer can be uniquely identified in DB, return match from DB; else
-  # create new customer.
 
-  def self.find_or_create!(c, loggedin_id=0)
-    if (cust = Customer.find_unique(c))
-      return cust
+  def copy_nonblank_attributes(from)
+    Customer.replaceable_attributes.each do |attr|
+      self.send("#{attr}=", from.attr) if self.send(attr).blank?
     end
-    c.force_valid = true      # make sure will pass validation checks, if necessary by mutating some fields
+  end
+
+  # If customer can be uniquely identified in DB, return match from DB
+  # and fill in blank attributes with nonblank values from provided attrs.
+  # Otherwise, create new customer.
+
+  def self.find_or_create!(cust, loggedin_id=0)
+    if (c = Customer.find_unique(cust))
+      c.copy_nonblank_attributes(cust)
+      txn = "Customer found and possibly updated"
+    else
+      c = cust
+      txn = "Customer not found, so created"
+    end
+    c.force_valid = true      # make sure will pass validation checks
     # precaution: make sure email is unique.
     c.email = nil if (!c.email.blank? &&
       Customer.find(:first,:conditions => ['email like ?',c.email]))
     c.save!
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => c.id,
-      :comments => 'customer not found, so created',
+      :comments => txn,
       :logged_in_id => loggedin_id)
     c
   end
