@@ -226,9 +226,9 @@ class Vouchertype < ActiveRecord::Base
       valid_date > Time.now.at_beginning_of_season(season - 1)
   end
   
-  def self.new_external_voucher_for_season(name,price,year=Time.now.year)
+  def self.create_external_voucher_for_season!(name,price,year=Time.now.year)
     name = Vouchertype.ensure_valid_name(name)
-    return Vouchertype.new(:name => name,
+    return Vouchertype.create!(:name => name,
       :price => price,
       :offer_public => Vouchertype::EXTERNAL,
       :category => (price.zero? ? :comp : :revenue),

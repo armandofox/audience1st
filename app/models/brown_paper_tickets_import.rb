@@ -3,6 +3,7 @@ class BrownPaperTicketsImport < Import
   attr_accessor :show, :created_customers, :created_showdates, :created_vouchertypes
 
   class BrownPaperTicketsImport::ShowNotFound < Exception ; end
+  class BrownPaperTicketsImport::PreviewOnly  < Exception ; end
   
   def initialize_import
     @created_customers = 0
@@ -19,7 +20,12 @@ class BrownPaperTicketsImport < Import
     initialize_import
     self.pretend = true
     begin
-      get_ticket_orders
+      transaction do
+        get_ticket_orders
+        # all is well!
+        raise BrownPaperTicketsImport::PreviewOnly
+      end
+    rescue BrownPaperTicketsImport::PreviewOnly
       self.messages << "#{@vouchers.length} orders found in import list"
       self.messages << "of which #{@existing_vouchers} are already in your database and won't be re-imported" if @existing_vouchers > 0
       self.messages << "#{@matched_customers} customers were found and/or updated" if @matched_customers > 0
@@ -28,6 +34,8 @@ class BrownPaperTicketsImport < Import
       self.messages << "#{@created_vouchertypes} new vouchertypes will be created" if @created_vouchertypes > 0
     rescue BrownPaperTicketsImport::ShowNotFound
       self.errors.add_to_base("Couldn't find production name in spreadsheet")
+    rescue Exception => e
+      self.errors.add_to_base("Unexpected error: #{e.message}")
     end
     return @vouchers
   end
@@ -59,7 +67,7 @@ class BrownPaperTicketsImport < Import
       @show = s
       self.messages << "Show '#{name}' already exists (id=#{s.id})"
     else
-      @show = Show.placeholder(name) 
+      @show = Show.create_placeholder!(name) 
       self.messages << "Show '#{name}' will be created"
     end
   end
@@ -91,7 +99,7 @@ class BrownPaperTicketsImport < Import
     price = row[19].to_f
     unless (vt = Vouchertype.find_by_name_and_price_and_category(name, price, [:comp,:revenue]))
       @created_vouchertypes += 1
-      vt = Vouchertype.new_external_voucher_for_season(name, price, year.to_i) 
+      vt = Vouchertype.create_external_voucher_for_season!(name, price, year.to_i) 
     end
     vt
   end
@@ -110,7 +118,7 @@ class BrownPaperTicketsImport < Import
     customer.force_valid = true
     if !Customer.find_unique(customer)  
       @created_customers += 1 
-      customer = Customer.find_or_create!(customer) unless @pretend
+      customer = Customer.find_or_create!(customer)
     else
       @matched_customers += 1
     end

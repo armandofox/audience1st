@@ -83,10 +83,10 @@ class Show < ActiveRecord::Base
 
   # return placeholder entity that will pass basic validations if saved
   
-  def self.placeholder(name)
+  def self.create_placeholder!(name)
     name = name.to_s
     name << "___" if name.length < 3
-    Show.new(:name => name,
+    Show.create!(:name => name,
       :opening_date => Date.today,
       :closing_date => Date.today + 1.day,
       :house_capacity => 1
