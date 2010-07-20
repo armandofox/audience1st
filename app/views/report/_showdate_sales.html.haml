@@ -2,7 +2,11 @@
   - vouchers.each_pair do |vt,v|
     %tr
       %td.showSalesVoucherType= vt.name
-      %td.showSalesQty= v.size
+      %td.showSalesQty 
+        = v.size
+        (
+        = number_to_percentage(100 * v.size / entity.total_offered_for_sale, :precision => 0)
+        )
       %td.currency.showSalesRevenue= number_to_currency(vt.price * v.size)
       %td
   %tr

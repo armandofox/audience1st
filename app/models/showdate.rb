@@ -105,6 +105,8 @@ class Showdate < ActiveRecord::Base
     self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
   end
 
+  def total_offered_for_sale ; house_capacity ; end
+
   def percent_max_allowed_sales
     house_capacity.zero? ? 100.0 : 100.0 * max_allowed_sales / house_capacity
   end

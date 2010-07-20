@@ -54,6 +54,7 @@ class Show < ActiveRecord::Base
     showdates.inject(0) { |t,s| t+s.max_allowed_sales }
   end
 
+  def total_offered_for_sale ; showdates.length * house_capacity ; end
 
   def menu_selection_name ; name_with_description ; end
 

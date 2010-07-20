@@ -75,7 +75,8 @@ class ReportController < ApplicationController
       :total_vouchers => vouchers.size,
       :vouchers => by_vtype,
       :categories => categories,
-      :revenue_per_seat => revenue_per_seat
+      :revenue_per_seat => revenue_per_seat,
+      :entity => entity
     }
   end
 
