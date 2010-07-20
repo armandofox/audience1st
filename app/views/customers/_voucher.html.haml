@@ -1,6 +1,8 @@
 - remove_voucher = ['Destroy',  {:controller => 'vouchers',:action => 'remove_voucher',:id => voucher.id },  {:confirm => (voucher.bundle? ?  MESSAGES[:remove_bundle_0] :  MESSAGES[:remove_voucher_0])}]
-- cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => customer}, {:confirm => MESSAGES[:release_reservation_0]} ]
-- cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
+- cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => voucher.customer}, {:confirm => MESSAGES[:release_reservation_0]} ]
+- cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => voucher.customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
+- is_boxoffice = nil unless defined?(is_boxoffice)
+- is_subscriber = nil unless defined?(is_subscriber)
 
 %tr
   - if is_boxoffice
@@ -16,7 +18,7 @@
       %td.adminField= button_to(*remove_voucher) if voucher.price.zero?
   - elsif voucher.unreserved?
     -# regular voucher, unreserved
-    %td= button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => customer },:method=>:get )
+    %td= button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => voucher.customer },:method=>:get )
     - if is_boxoffice_manager 
       %td.adminField= button_to(*remove_voucher) if voucher.price.zero?
   - else

@@ -3,10 +3,10 @@ class Showdate < ActiveRecord::Base
   include Comparable
 
   belongs_to :show
-  has_many :vouchers, :conditions => "category != 'nonticket'"
+  has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
+  has_many :vouchertypes, :through => :vouchers, :uniq => true
   has_many :all_vouchers, :class_name => 'Voucher'
   has_many :valid_vouchers, :dependent => :destroy
-  has_many :vouchertypes, :through => :valid_vouchers
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
   validates_associated :show

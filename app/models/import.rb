@@ -26,13 +26,10 @@ class Import < ActiveRecord::Base
   end
 
   attr_accessor :messages, :pretend
-
-  def initialize(*args)
-    @messages = []
-    @pretend = false            # if true, don't mutate database
-    super
+  def messages
+    @messages ||= []
   end
-  
+
   def csv_rows
     begin
       CSV::Reader.create(IO.read(self.public_filename))
@@ -42,10 +39,6 @@ class Import < ActiveRecord::Base
       logger.error msg
       []
     end
-  end
-
-  def preview
-    raise "Must override this abstract method"
   end
 
 end
