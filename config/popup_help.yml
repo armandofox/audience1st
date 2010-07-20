@@ -49,6 +49,16 @@ delete_customers: >
   etc. are transferred to the 'Anonymous Customer' and the customer
   record is expunged.  This action cannot be undone. 
 
+check_for_duplicates_after_import: >
+  
+  When automatically importing customers (such as from an external
+  will-call list or spreadsheet), Audience1st cannot always tell for
+  sure if two customers with similar names are duplicates.  After doing
+  any kind of import, you should check for duplicates (Reports tab, under
+  Database Maintenance reports) and use your judgment in merging them.
+  It's best to do duplicate elimination as soon as possible, since
+  duplicate records sometimes prevent customers from being able to login.
+
 # Editing shows and showdates
 
 show_or_showdate_description: >

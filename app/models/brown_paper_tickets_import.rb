@@ -1,31 +1,45 @@
 class BrownPaperTicketsImport < Import
 
-  attr_accessor :show, :created_customers, :created_showdates, :created_vouchertypes
+  attr_accessor :show, :vouchers, :created_customers, :matched_customers, :created_showdates, :created_vouchertypes, :existing_vouchers
 
   class BrownPaperTicketsImport::ShowNotFound < Exception ; end
   class BrownPaperTicketsImport::PreviewOnly  < Exception ; end
   
   def initialize_import
-    @created_customers = 0
-    @matched_customers = 0
-    @created_showdates = 0
-    @created_vouchertypes = 0
     @show = nil
+    @show_was_created = nil
     @vouchers = []
+    @created_customers = []
+    @matched_customers = []
+    @created_showdates = []
+    @created_vouchertypes = []
     @existing_vouchers = 0
     @num_records = nil
   end
 
-  def preview
+  def preview ; do_import(false) ; end
+
+  def import! ; do_import(true) ; end
+
+  def do_import(really_import=false)
     initialize_import
     begin
       transaction do
         get_ticket_orders
         # all is well!  Roll back the transaction and report results.
-        raise BrownPaperTicketsImport::PreviewOnly
+        if !really_import
+          raise BrownPaperTicketsImport::PreviewOnly 
+        else
+          # finalize other changes
+          @created_customers.each do |customer|
+            customer.save!
+          end # saves vouchers too
+          @show.save!             # saves new showdates too
+          @show.set_metadata_from_showdates! if @show_was_created
+        end
       end
     rescue BrownPaperTicketsImport::PreviewOnly
-
+      ;
     rescue BrownPaperTicketsImport::ShowNotFound
       self.errors.add_to_base("Couldn't find production name in spreadsheet")
     rescue Exception => e
@@ -33,7 +47,7 @@ class BrownPaperTicketsImport < Import
     end
     return @vouchers
   end
-    
+  
   def num_records
     (@vouchers.empty? ?
       @num_records ||= self.csv_rows.count { |row| content_row?(row) } :
@@ -44,15 +58,6 @@ class BrownPaperTicketsImport < Import
   def invalid_records ; 0 ; end
   
   private
-
-  def add_messages(verb="will be")
-    self.messages << "#{@vouchers.length} orders found"
-    self.messages << "of which #{@vouchers.length - @existing_vouchers} #{verb} imported (the others are already in your database)" if @existing_vouchers > 0
-    self.messages << "#{@matched_customers} customers were found and/or updated" if @matched_customers > 0
-    self.messages << "#{@created_customers} new customers #{verb} created" if @created_customers > 0
-    self.messages << "#{@created_showdates} show dates #{verb} added" if @created_showdates > 0
-    self.messages << "#{@created_vouchertypes} new vouchertypes #{verb} created" if @created_vouchertypes > 0
-  end
 
   def get_ticket_orders
     # production name is in cell A2; be sure "All Dates" is B2
@@ -70,7 +75,8 @@ class BrownPaperTicketsImport < Import
       @show = s
       self.messages << "Show '#{name}' already exists (id=#{s.id})"
     else
-      @show = Show.create_placeholder!(name) 
+      @show = Show.create_placeholder!(name)
+      @show_was_created = true
       self.messages << "Show '#{name}' will be created"
     end
   end
@@ -101,8 +107,8 @@ class BrownPaperTicketsImport < Import
     name = row[18].to_s
     price = row[19].to_f
     unless (vt = Vouchertype.find_by_name_and_price_and_category(name, price, [:comp,:revenue]))
-      @created_vouchertypes += 1
       vt = Vouchertype.create_external_voucher_for_season!(name, price, year.to_i) 
+      @created_vouchertypes << vt
     end
     vt
   end
@@ -110,20 +116,21 @@ class BrownPaperTicketsImport < Import
     
   def customer_from_row(row)
     # customer info columns:
-    last_name,first_name = 4,5
+    last_name,first_name = 6,7
     street,city,state,zip = 8,9,10,11
     day_phone,email = 13,14
-    #  not used: shipping last/first name = 6,7 ; shipping country = 12
+    #  not used: purchaser last/first name = 4,5 ; shipping country = 12
     customer = Customer.new(
       :first_name => row[first_name].to_s, :last_name => row[last_name].to_s,
       :street => row[street].to_s, :city => row[city].to_s, :state => row[state].to_s,
       :zip => row[zip].to_s,:day_phone => row[day_phone].to_s,:email => row[email].to_s)
-    customer.force_valid = true
-    if !Customer.find_unique(customer)  
-      @created_customers += 1 
-      customer = Customer.find_or_create!(customer)
+    customer.force_valid = customer.created_by_admin = true
+    if (existing = Customer.find_unique(customer))
+      customer = Customer.find_or_create!(customer) # to update other attribs
+      @matched_customers << customer unless (@matched_customers.include?(customer) || @created_customers.include?(customer))
     else
-      @matched_customers += 1
+      customer = Customer.find_or_create!(customer)
+      @created_customers << customer
     end
     customer
   end
@@ -132,8 +139,8 @@ class BrownPaperTicketsImport < Import
     event_date = Time.parse(row[2].to_s)
     unless (self.show.showdates &&
         sd = self.show.showdates.detect { |sd| sd.thedate == event_date })
-      @created_showdates += 1
       sd = Showdate.placeholder(event_date)
+      @created_showdates << sd
       self.show.showdates << sd
     end
     sd

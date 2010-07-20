@@ -1,12 +1,12 @@
 %tr{:valign=>:top,:class=>display_class(customer)}
-  %td= check_box_tag "merge[#{customer.id}]" if customer.id
+  %td= check_box_tag "merge[#{customer.id}]" if customer.id && !read_only
   - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize
-  - if customer.id
+  - if customer.id && !read_only
     %td= link_to first, {:action => 'switch_to', :id => customer }
     %td= link_to last, {:action => 'switch_to', :id => customer }
   - else
-    %td= h customer.first_name
-    %td= h customer.last_name
+    %td= h customer.first_name.name_capitalize
+    %td= h customer.last_name.name_capitalize
   %td= h customer.street
   %td= h customer.city
   %td= h customer.state

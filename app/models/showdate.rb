@@ -190,6 +190,10 @@ class Showdate < ActiveRecord::Base
     self.thedate.to_formatted_s(:showtime)
   end
 
+  def full_date
+    self.thedate.to_formatted_s(:showtime_including_year)
+  end
+
   def printable_date_with_description
     description.blank? ? printable_date : "#{printable_date} (#{description})"
   end

@@ -27,7 +27,7 @@ class Customer < ActiveRecord::Base
   validate :valid_or_blank_address?, :if => :self_created?
 
   NAME_REGEX = /^[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+$/
-  NAME_FORBIDDEN_CHARS = /[^A-Za-z0-9_\/#\@'":;,.%\ ()&]/
+  NAME_FORBIDDEN_CHARS = /[^-A-Za-z0-9_\/#\@'":;,.%\ ()&]/
   
   BAD_NAME_MSG = "must not include special characters like <, >, !, etc."
 
@@ -473,7 +473,7 @@ EOSQL1
 
   def copy_nonblank_attributes(from)
     Customer.replaceable_attributes.each do |attr|
-      self.send("#{attr}=", from.attr) if self.send(attr).blank?
+      self.send("#{attr}=", from.send(attr)) if self.send(attr).blank?
     end
   end
 
@@ -484,6 +484,7 @@ EOSQL1
   def self.find_or_create!(cust, loggedin_id=0)
     if (c = Customer.find_unique(cust))
       c.copy_nonblank_attributes(cust)
+      c.created_by_admin = true # ensure some validations are skipped
       txn = "Customer found and possibly updated"
     else
       c = cust

@@ -18,23 +18,22 @@ describe "BPT import" do
       @imp.showdate_from_row(@row).should == showdate
     end
     context "when no match" do
+      before :each do ; @new_showdate = Showdate.new ; end
       it "should build the new showdate" do
-        @new_showdate = mock_model(Showdate)
         Showdate.should_receive(:placeholder).with(Time.parse(@row[2].to_s)).and_return(@new_showdate)
         @imp.show.stub!(:showdates).and_return([])
         @imp.showdate_from_row(@row).should == @new_showdate
       end
       it "should add the showdate to the show" do
-        @new_showdate = Showdate.new
         Showdate.stub!(:placeholder).and_return(@new_showdate)
         @imp.showdate_from_row(@row)
         @imp.show.showdates.should include(@new_showdate)
       end
       it "should increment the number of created showdates" do
-        @imp.created_showdates.should be_zero
-        Showdate.stub!(:showdate_from_row)
+        @imp.created_showdates.should be_empty
+        Showdate.stub!(:placeholder).and_return(@new_showdate)
         @imp.showdate_from_row(@row)
-        @imp.created_showdates.should == 1
+        @imp.created_showdates.should include(@new_showdate)
       end
     end
   end
@@ -49,18 +48,16 @@ describe "BPT import" do
         Customer.should_receive(:new).and_return(@new)
       end
       it "should create new customer" do
-        @imp.pretend = nil
         Customer.should_receive(:find_or_create!).with(@new).and_return("new")
         @imp.customer_from_row([]).should == "new"
       end
       it "should force new customer to be valid" do
-        @imp.pretend = nil
         @imp.customer_from_row([]).force_valid.should be_true
       end
       it "should increment count of created customers" do
-        @imp.created_customers.should be_zero
+        @imp.created_customers.should be_empty
         @imp.customer_from_row([])
-        @imp.created_customers.should == 1
+        @imp.created_customers.should == [@new]
       end
     end
     describe "extracting vouchertype" do
@@ -88,9 +85,9 @@ describe "BPT import" do
           @imp.vouchertype_from_row(make_row('Xx',1),2010).should be_a_kind_of(Vouchertype)
         end
         it "should instantiate a new vouchertype" do
-          @imp.instance_variable_get('@created_vouchertypes').should be_zero
+          @imp.created_vouchertypes.should be_empty
           @imp.vouchertype_from_row(make_row('Nonexistent',1),2010)
-          @imp.instance_variable_get('@created_vouchertypes').should == 1
+          @imp.created_vouchertypes.should have(1).vouchertype
         end
         it "should have the correct name and price" do
           v = @imp.vouchertype_from_row(make_row('Voucher', 13.0),2010)
