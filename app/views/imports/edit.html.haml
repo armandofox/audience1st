@@ -7,8 +7,8 @@
 
 #import_preview
   #import_messages
-    - @import.messages.each do |msg|
-      %p= h msg
+    - if @import.messages
+      = render :partial => "#{@partial.gsub('_with_errors', '')}_messages", :locals => {:import => @import}
   %table.hilite.import
     %thead
       = render :partial => "#{@partial.gsub('_with_errors', '')}_header"

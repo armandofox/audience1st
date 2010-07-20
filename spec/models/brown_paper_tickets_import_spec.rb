@@ -8,7 +8,7 @@ describe "BPT import" do
   end
   describe "extracting showdate" do
     before :each do
-      @imp.show = Show.placeholder("Xyz")
+      @imp.show = Show.create_placeholder!("Xyz")
       @row = [nil,nil,"5/21/09 20:00"]
       BrownPaperTicketsImport.send(:public, :showdate_from_row)
     end
@@ -18,17 +18,14 @@ describe "BPT import" do
       @imp.showdate_from_row(@row).should == showdate
     end
     context "when no match" do
-      before :each do
-        @imp.show.showdates << mock_model(Showdate, :thedate => Time.parse("31 Dec 2015 2:00pm"))
-        #@imp.show.stub!(:showdates).and_return([])
-      end
-      it "should create the new showdate" do
+      it "should build the new showdate" do
         @new_showdate = mock_model(Showdate)
         Showdate.should_receive(:placeholder).with(Time.parse(@row[2].to_s)).and_return(@new_showdate)
+        @imp.show.stub!(:showdates).and_return([])
         @imp.showdate_from_row(@row).should == @new_showdate
       end
       it "should add the showdate to the show" do
-        @new_showdate = mock_model(Showdate)
+        @new_showdate = Showdate.new
         Showdate.stub!(:placeholder).and_return(@new_showdate)
         @imp.showdate_from_row(@row)
         @imp.show.showdates.should include(@new_showdate)

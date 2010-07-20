@@ -25,7 +25,7 @@ class Import < ActiveRecord::Base
     end
   end
 
-  attr_accessor :messages, :pretend
+  attr_accessor :messages
   def messages
     @messages ||= []
   end

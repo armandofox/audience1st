@@ -82,7 +82,7 @@ class ImportsController < ApplicationController
   def partial_for_collection(collection)
     case collection.first.class.to_s
     when 'Customer' then 'customers/customer_with_errors'
-    when 'Voucher' then 'external_ticket_orders/external_ticket_order'
+    when 'Voucher' then 'external_ticket_order'
     end
   end
 

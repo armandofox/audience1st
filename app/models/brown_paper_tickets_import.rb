@@ -18,20 +18,14 @@ class BrownPaperTicketsImport < Import
 
   def preview
     initialize_import
-    self.pretend = true
     begin
       transaction do
         get_ticket_orders
-        # all is well!
+        # all is well!  Roll back the transaction and report results.
         raise BrownPaperTicketsImport::PreviewOnly
       end
     rescue BrownPaperTicketsImport::PreviewOnly
-      self.messages << "#{@vouchers.length} orders found in import list"
-      self.messages << "of which #{@existing_vouchers} are already in your database and won't be re-imported" if @existing_vouchers > 0
-      self.messages << "#{@matched_customers} customers were found and/or updated" if @matched_customers > 0
-      self.messages << "#{@created_customers} new customers will be created" if @created_customers > 0
-      self.messages << "#{@created_showdates} show dates will be added" if @created_showdates > 0
-      self.messages << "#{@created_vouchertypes} new vouchertypes will be created" if @created_vouchertypes > 0
+
     rescue BrownPaperTicketsImport::ShowNotFound
       self.errors.add_to_base("Couldn't find production name in spreadsheet")
     rescue Exception => e
@@ -50,6 +44,15 @@ class BrownPaperTicketsImport < Import
   def invalid_records ; 0 ; end
   
   private
+
+  def add_messages(verb="will be")
+    self.messages << "#{@vouchers.length} orders found"
+    self.messages << "of which #{@vouchers.length - @existing_vouchers} #{verb} imported (the others are already in your database)" if @existing_vouchers > 0
+    self.messages << "#{@matched_customers} customers were found and/or updated" if @matched_customers > 0
+    self.messages << "#{@created_customers} new customers #{verb} created" if @created_customers > 0
+    self.messages << "#{@created_showdates} show dates #{verb} added" if @created_showdates > 0
+    self.messages << "#{@created_vouchertypes} new vouchertypes #{verb} created" if @created_vouchertypes > 0
+  end
 
   def get_ticket_orders
     # production name is in cell A2; be sure "All Dates" is B2
