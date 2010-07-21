@@ -44,7 +44,7 @@ class BrownPaperTicketsImport < Import
     rescue BrownPaperTicketsImport::ShowNotFound
       self.errors.add_to_base("Couldn't find production name in spreadsheet")
     rescue Exception => e
-      self.errors.add_to_base("Unexpected error: #{e.message}")
+      self.errors.add_to_base("Unexpected error: #{e.message} - #{e.backtrace}")
       RAILS_DEFAULT_LOGGER.info "Importing id #{self.id}: #{e.message}"
     end
     @vouchers
