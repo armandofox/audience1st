@@ -63,6 +63,7 @@ class BrownPaperTicketsImport < Import
         @num_records += 1 
         if (voucher = ticket_order_from_row(row))
           @vouchers << voucher
+        end
         next
       end
     end
