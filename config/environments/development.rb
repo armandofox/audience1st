@@ -26,8 +26,6 @@ ActiveMerchant::Billing::Base.mode = :test
 
 EmailList.mode = {
   :wrapper => :test,
-  :mailchimp_api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
-  :mailchimp_default_list_name => 'Test list'
 }
 
 # DISABLE_FACEBOOK = true

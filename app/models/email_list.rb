@@ -28,7 +28,8 @@ class EmailList
   end
 
   def self.init_hominid
-    return nil if @@settings[:wrapper] == :test
+    RAILS_DEFAULT_LOGGER.info("NOT initializing mailchimp") and return nil if
+      @@settings[:wrapper] == :test || RAILS_ENV != 'production'
     return true if @@hominid
     apikey = Option.value(:mailchimp_api_key)
     @@list = Option.value(:mailchimp_default_list_name)

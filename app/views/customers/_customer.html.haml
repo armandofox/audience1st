@@ -1,3 +1,4 @@
+- read_only = false unless defined?(read_only)
 %tr{:valign=>:top,:class=>display_class(customer)}
   %td= check_box_tag "merge[#{customer.id}]" if customer.id && !read_only
   - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize

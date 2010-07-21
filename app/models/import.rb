@@ -8,7 +8,7 @@ class Import < ActiveRecord::Base
     }
   cattr_accessor :import_types
   def humanize_type
-    @@import_types.index(self.type)
+    @@import_types.index(self.type.to_s)
   end
 
   has_attachment(:storage => :file_system,

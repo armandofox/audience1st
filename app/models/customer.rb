@@ -117,8 +117,12 @@ class Customer < ActiveRecord::Base
   # when customer is saved, possibly update their email opt-in status
   # with external mailing list.  
 
+  @@email_sync_disabled = nil
+  def self.enable_email_sync ;  @@email_sync_disabled = nil ; end
+  def self.disable_email_sync ; @@email_sync_disabled = true  ; end
+
   def update_email_subscription
-    return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    return unless (@@email_sync_disabled || e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
     if e_blacklist      # opting out of email
       EmailList.unsubscribe(self, email_was)
     else                        # opt in
@@ -473,7 +477,9 @@ EOSQL1
 
   def copy_nonblank_attributes(from)
     Customer.replaceable_attributes.each do |attr|
-      self.send("#{attr}=", from.send(attr)) if self.send(attr).blank?
+      if !(val = from.send(attr)).blank?
+        self.send("#{attr}=", val)
+      end
     end
   end
 
@@ -483,11 +489,13 @@ EOSQL1
 
   def self.find_or_create!(cust, loggedin_id=0)
     if (c = Customer.find_unique(cust))
+      logger.info "Copying nonblank attribs for unique #{cust}\n from #{c}"
       c.copy_nonblank_attributes(cust)
       c.created_by_admin = true # ensure some validations are skipped
       txn = "Customer found and possibly updated"
     else
       c = cust
+      logger.info "Creating customer #{cust}"
       txn = "Customer not found, so created"
     end
     c.force_valid = true      # make sure will pass validation checks

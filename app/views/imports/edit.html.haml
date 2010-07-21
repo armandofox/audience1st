@@ -17,7 +17,8 @@
         %thead
           = render :partial => "#{@partial.gsub('_with_errors', '')}_header"
         %tbody
-          -#- = render :partial => @partial, :collection => @collection
+          = render :partial => @partial, :collection => @collection
 
-= button_to 'Continue Import', import_path(@import), {:method => :put}
-= button_to 'Cancel Import', import_path(@import), {:method => :delete}
+%p
+  = button_to 'Continue Import', import_path(@import), {:method => :put}
+  = button_to 'Cancel Import', import_path(@import), {:method => :delete}

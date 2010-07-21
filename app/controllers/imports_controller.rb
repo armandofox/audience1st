@@ -21,14 +21,9 @@ class ImportsController < ApplicationController
   def edit
     @import = Import.find(params[:id])
     @collection = @import.preview
-    if @collection.empty?
-      flash[:warning] = "Couldn't find any valid data to import: #{@import.errors.full_messages.join(', ')}.  Try uploading a different file."
-      logger.info "Attachment error on #{@import.full_filename}"
-      redirect_to(:action => :new) and return
-    end
     @num_records = @import.num_records
-    unless (@partial = partial_for_collection(@collection))
-      flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@collection.first.class.to_s)}."
+    if (@partial = partial_for_import(@import)).nil?
+      flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}."
       redirect_to(:action => :new) and return
     end
   end
@@ -36,6 +31,7 @@ class ImportsController < ApplicationController
   def update
     @import = Import.find(params[:id])
     @imports,@rejects = @import.import!
+    render(:action => :new) and return if @import.errors
     flash[:notice] = "#{@imports.length} records successfully imported."
     if @rejects.empty?
       redirect_to imports_path
@@ -44,7 +40,7 @@ class ImportsController < ApplicationController
       flash[:notice] <<
         "<br/>The #{@rejects.length} records shown below could not be imported due to errors."
       @collection = @rejects
-      @partial = partial_for_collection(@collection)
+      @partial = partial_for_import(@import)
     end
   end
 
@@ -79,10 +75,10 @@ class ImportsController < ApplicationController
     logger.info "Deleting #{@import.full_filename}"
   end
 
-  def partial_for_collection(collection)
-    case collection.first.class.to_s
-    when 'Customer' then 'customers/customer_with_errors'
-    when 'Voucher' then 'external_ticket_orders/external_ticket_order'
+  def partial_for_import(import)
+    case import.class.to_s
+    when 'CustomerImport' then 'customers/customer_with_errors'
+    when 'BrownPaperTicketsImport' then 'external_ticket_orders/external_ticket_order'
     end
   end
 

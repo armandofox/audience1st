@@ -1,6 +1,7 @@
 class BrownPaperTicketsImport < Import
 
   attr_accessor :show, :vouchers, :created_customers, :matched_customers, :created_showdates, :created_vouchertypes, :existing_vouchers
+  attr_reader :num_records
 
   class BrownPaperTicketsImport::ShowNotFound < Exception ; end
   class BrownPaperTicketsImport::PreviewOnly  < Exception ; end
@@ -14,12 +15,17 @@ class BrownPaperTicketsImport < Import
     @created_showdates = []
     @created_vouchertypes = []
     @existing_vouchers = 0
-    @num_records = nil
+    @num_records = 0
   end
 
-  def preview ; do_import(false) ; end
+  def preview
+    Customer.disable_email_sync
+    do_import(false)
+    Customer.enable_email_sync
+    []
+  end
 
-  def import! ; do_import(true) ; end
+  def import! ; return [do_import(true), []] ; end
 
   def do_import(really_import=false)
     initialize_import
@@ -27,16 +33,11 @@ class BrownPaperTicketsImport < Import
       transaction do
         get_ticket_orders
         # all is well!  Roll back the transaction and report results.
-        if !really_import
-          raise BrownPaperTicketsImport::PreviewOnly 
-        else
-          # finalize other changes
-          @created_customers.each do |customer|
-            customer.save!
-          end # saves vouchers too
-          @show.save!             # saves new showdates too
-          @show.set_metadata_from_showdates! if @show_was_created
-        end
+        raise BrownPaperTicketsImport::PreviewOnly unless really_import
+        # finalize other changes
+        @created_customers.each { |customer| customer.save! }
+        @show.save!             # saves new showdates too
+        @show.set_metadata_from_showdates! if @show_was_created
       end
     rescue BrownPaperTicketsImport::PreviewOnly
       ;
@@ -45,15 +46,9 @@ class BrownPaperTicketsImport < Import
     rescue Exception => e
       self.errors.add_to_base("Unexpected error: #{e.message}")
     end
-    return @vouchers
+    @vouchers
   end
   
-  def num_records
-    (@vouchers.empty? ?
-      @num_records ||= self.csv_rows.count { |row| content_row?(row) } :
-      @vouchers.length)
-  end
-
   def valid_records ; num_records ; end
   def invalid_records ; 0 ; end
   
@@ -63,8 +58,9 @@ class BrownPaperTicketsImport < Import
     # production name is in cell A2; be sure "All Dates" is B2
     self.csv_rows.each do |row|
       find_or_create_show(row[0].to_s) and next if row[1].to_s == 'All Dates'
-      if (content_row?(row) && (voucher = ticket_order_from_row(row)))
-        @vouchers << voucher
+      if (content_row?(row))
+        @num_records += 1
+        @vouchers << voucher if   (voucher = ticket_order_from_row(row))
         next
       end
     end
