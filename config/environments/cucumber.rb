@@ -31,11 +31,7 @@ config.gem 'rspec-rails',      :lib => false, :version => '>=1.3.2' unless File.
 PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 
-EmailList.mode = {
-  :wrapper => :test,
-  :mailchimp_api_key =>  '',
-  :mailchimp_default_list_name => 'Testing'
-}
+DISABLE_EMAIL_LIST_INTEGRATION = true
 
 # for testing
 

@@ -1,7 +1,7 @@
 class Import < ActiveRecord::Base
   require 'csv'
 
-  belongs_to :completed_by, :class_name => :customer
+  belongs_to :completed_by, :class_name => 'Customer'
   def self.foreign_keys_to_customer ;  [:completed_by_id] ;  end
 
   def completed? ; !completed_at.nil? ; end

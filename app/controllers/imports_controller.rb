@@ -30,7 +30,7 @@ class ImportsController < ApplicationController
   def update
     @import = Import.find(params[:id])
     @imports,@rejects = @import.import!
-    render(:action => :new) and return if @import.errors
+    render(:action => :new) and return if !@import.errors.empty?
     flash[:notice] = "#{@imports.length} records successfully imported."
     @import.update_attributes(
       :completed_at => Time.now,

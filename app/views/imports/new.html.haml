@@ -6,5 +6,5 @@
   %p
     %label{:for => :uploaded_data} Select CSV file to import:
     = f.file_field :uploaded_data
-  %p= submit_tag 'Preview Import'
+  %p= submit_tag 'Preview Import', :disable_with => 'Working...'
   

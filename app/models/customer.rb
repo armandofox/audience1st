@@ -11,6 +11,7 @@ class Customer < ActiveRecord::Base
   has_many :txns
   has_one  :most_recent_txn, :class_name=>'Txn', :order=>'txn_date DESC'
   has_many :donations
+
   has_many :visits
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'

@@ -16,7 +16,6 @@ describe CustomerImport do
   it "should create a new instance given valid attributes" do
     @valid_attributes = {
       :name => "value for name",
-      :completed => false,
       :number_of_records => 1,
       :filename => "value for filename",
       :content_type => "text/csv",

@@ -7,5 +7,5 @@ if SANDBOX
   ActionMailer::Base.delivery_method = :test
   PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
   ActiveMerchant::Billing::Base.mode = :test
-  EmailList.mode = { :wrapper => :test }
+  DISABLE_EMAIL_LIST_INTEGRATION = true
 end

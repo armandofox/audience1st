@@ -30,13 +30,8 @@ config.active_record.schema_format = :sql
 PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 
-EmailList.mode = {
-  :wrapper => :test,
-  :mailchimp_api_key =>  '',
-  :mailchimp_default_list_name => 'Testing'
-}
-
 DISABLE_FACEBOOK = true
+DISABLE_EMAIL_LIST_INTEGRATION = true
 
 # for testing
 
