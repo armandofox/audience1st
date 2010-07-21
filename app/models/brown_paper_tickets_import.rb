@@ -60,8 +60,8 @@ class BrownPaperTicketsImport < Import
     self.csv_rows.each do |row|
       find_or_create_show(row[0].to_s) and next if row[1].to_s == 'All Dates'
       if (content_row?(row))
-        @num_records += 1
-        @vouchers << voucher if   (voucher = ticket_order_from_row(row))
+        @num_records += 1 
+        (@vouchers << voucher) if (voucher = ticket_order_from_row(row))
         next
       end
     end
