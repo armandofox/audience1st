@@ -12,8 +12,8 @@ class Txn < ActiveRecord::Base
   # values of entered_by_id field, which is really a customer id.
   # Returns number of actual txns transferred.
 
-  def self.additional_foreign_keys_to_customer
-    [:entered_by_id]
+  def self.foreign_keys_to_customer
+    [:entered_by_id, :customer_id]
   end
 
   # since the audit record schema is generic, not all fields are

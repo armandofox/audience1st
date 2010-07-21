@@ -1,6 +1,10 @@
 class Import < ActiveRecord::Base
   require 'csv'
 
+  belongs_to :completed_by, :class_name => :customer
+  def self.foreign_keys_to_customer ;  [:completed_by_id] ;  end
+
+  def completed? ; !completed_at.nil? ; end
 
   @@import_types = {
     'Customer/mailing list' => 'CustomerImport',

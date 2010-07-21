@@ -20,5 +20,5 @@
           = render :partial => @partial, :collection => @collection
 
 %p
-  = button_to 'Continue Import', import_path(@import), {:method => :put}
+  = button_to 'Continue Import', import_path(@import), {:confirm => 'Importing cannot in general be undone.  OK to continue?', :method => :put}
   = button_to 'Cancel Import', import_path(@import), {:method => :delete}

@@ -728,9 +728,9 @@ EOSQL1
     begin
       transaction do
         Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
-        [Donation, Voucher, Txn, Visit].each do |t|
-          howmany = t.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
-          t.additional_foreign_keys_to_customer.each do |field|
+        [Donation, Voucher, Txn, Visit, Import].each do |t|
+          howmany = 0
+          t.foreign_keys_to_customer.each do |field|
             howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")
           end
           msg << "#{howmany} #{t}s"

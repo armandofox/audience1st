@@ -9,7 +9,6 @@ class ImportsController < ApplicationController
   def create
     type = params[:import][:type]
     @import = (type.constantize).new(params[:import])
-    @import.completed = false
     if @import.save
       flash[:notice] = "A preview of what will be imported is below.  Records with errors will not be imported.  Click Continue Import to import non-error records and ignore records with errors, or click Cancel Import to do nothing."
       redirect_to edit_import_path(@import)
@@ -33,9 +32,12 @@ class ImportsController < ApplicationController
     @imports,@rejects = @import.import!
     render(:action => :new) and return if @import.errors
     flash[:notice] = "#{@imports.length} records successfully imported."
+    @import.update_attributes(
+      :completed_at => Time.now,
+      :number_of_records => @imports.length,
+      :completed_by_id => logged_in_id)
     if @rejects.empty?
       redirect_to imports_path
-      @import.destroy
     else
       flash[:notice] <<
         "<br/>The #{@rejects.length} records shown below could not be imported due to errors."
