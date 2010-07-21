@@ -68,6 +68,14 @@ module BasicModels
       :expiration_date => Time.now - 1.month + 1.year)
   end
       
+  def self.create_generic_show(name)
+    Show.create!(:name => name,
+      :house_capacity => 1,
+      :opening_date => Date.today,
+      :closing_date => Date.today + 1.day,
+      :listing_date => Date.today)
+  end
+
 end
 
       

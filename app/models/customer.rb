@@ -11,6 +11,7 @@ class Customer < ActiveRecord::Base
   has_many :txns
   has_one  :most_recent_txn, :class_name=>'Txn', :order=>'txn_date DESC'
   has_many :donations
+
   has_many :visits
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
@@ -27,7 +28,7 @@ class Customer < ActiveRecord::Base
   validate :valid_or_blank_address?, :if => :self_created?
 
   NAME_REGEX = /^[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+$/
-  NAME_FORBIDDEN_CHARS = /[^A-Za-z0-9_\/#\@'":;,.%\ ()&]/
+  NAME_FORBIDDEN_CHARS = /[^-A-Za-z0-9_\/#\@'":;,.%\ ()&]/
   
   BAD_NAME_MSG = "must not include special characters like <, >, !, etc."
 
@@ -117,8 +118,12 @@ class Customer < ActiveRecord::Base
   # when customer is saved, possibly update their email opt-in status
   # with external mailing list.  
 
+  @@email_sync_disabled = nil
+  def self.enable_email_sync ;  @@email_sync_disabled = nil ; end
+  def self.disable_email_sync ; @@email_sync_disabled = true  ; end
+
   def update_email_subscription
-    return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    return unless (@@email_sync_disabled || e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
     if e_blacklist      # opting out of email
       EmailList.unsubscribe(self, email_was)
     else                        # opt in
@@ -448,11 +453,10 @@ EOSQL1
   # high confidence;  if not found or ambiguous, return nil
 
   def self.find_unique(p)
-    p.symbolize_keys!
     return (
-      match_email_and_last_name(p[:email],p[:last_name]) ||
-      match_first_last_and_address(p[:first_name], p[:last_name], p[:street]) ||
-      (p[:street].blank? ? match_uniquely_on_names_only(p[:first_name], p[:last_name]) : nil)
+      match_email_and_last_name(p.email, p.last_name) ||
+      match_first_last_and_address(p.first_name, p.last_name, p.street) ||
+      (p.street.blank? ? match_uniquely_on_names_only(p.first_name, p.last_name) : nil)
       )
   end
 
@@ -471,23 +475,39 @@ EOSQL1
     return (our_last == last) &&
       (name_word_matches(our_first, first) || our_first.blank? || first.blank?)
   end
-  # If customer can be uniquely identified in DB, return match from DB; else
-  # create new customer.
 
-  def self.find_or_create!(p, loggedin_id=0)
-    unless (c = Customer.find_unique(p))
-      c = Customer.new(p)
-      c.force_valid = true      # make sure will pass validation checks, if necessary by mutating some fields
-      # precaution: make sure email is unique.
-      if c.email
-        c.email = nil if Customer.find(:first,:conditions => ['email like ?',c.email])
+  def copy_nonblank_attributes(from)
+    Customer.replaceable_attributes.each do |attr|
+      if !(val = from.send(attr)).blank?
+        self.send("#{attr}=", val)
       end
-      c.save!
-      Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => c.id,
-                           :comments => 'customer not found, so created',
-                           :logged_in_id => loggedin_id)
     end
+  end
+
+  # If customer can be uniquely identified in DB, return match from DB
+  # and fill in blank attributes with nonblank values from provided attrs.
+  # Otherwise, create new customer.
+
+  def self.find_or_create!(cust, loggedin_id=0)
+    if (c = Customer.find_unique(cust))
+      logger.info "Copying nonblank attribs for unique #{cust}\n from #{c}"
+      c.copy_nonblank_attributes(cust)
+      c.created_by_admin = true # ensure some validations are skipped
+      txn = "Customer found and possibly updated"
+    else
+      c = cust
+      logger.info "Creating customer #{cust}"
+      txn = "Customer not found, so created"
+    end
+    c.force_valid = true      # make sure will pass validation checks
+    # precaution: make sure email is unique.
+    c.email = nil if (!c.email.blank? &&
+      Customer.find(:first,:conditions => ['email like ?',c.email]))
+    c.save!
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => c.id,
+      :comments => txn,
+      :logged_in_id => loggedin_id)
     c
   end
 
@@ -709,9 +729,9 @@ EOSQL1
     begin
       transaction do
         Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
-        [Donation, Voucher, Txn, Visit].each do |t|
-          howmany = t.update_all("customer_id = '#{new}'", "customer_id = '#{old}'")
-          t.additional_foreign_keys_to_customer.each do |field|
+        [Donation, Voucher, Txn, Visit, Import].each do |t|
+          howmany = 0
+          t.foreign_keys_to_customer.each do |field|
             howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")
           end
           msg << "#{howmany} #{t}s"

@@ -5,7 +5,7 @@ class Vouchertype < ActiveRecord::Base
   serialize :included_vouchers, Hash
 
   validates_length_of :name, :within => 3..40, :message => "Voucher type name must be between 3 and 40 characters"
-  validates_numericality_of :price
+  validates_numericality_of :price, :greater_than_or_equal_to => 0
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
@@ -28,6 +28,14 @@ class Vouchertype < ActiveRecord::Base
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
   protected
+
+  def self.ensure_valid_name(name)
+    # make name valid if it isn't already
+    name = name.to_s
+    name += '___' if name.length < 3
+    name[0,39]
+  end
+  
   def subscriptions_shouldnt_be_walkups
     if walkup_sale_allowed?
       errors.add_to_base "Subscription vouchers can't be sold via
@@ -218,6 +226,17 @@ class Vouchertype < ActiveRecord::Base
       valid_date > Time.now.at_beginning_of_season(season - 1)
   end
   
+  def self.create_external_voucher_for_season!(name,price,year=Time.now.year)
+    name = Vouchertype.ensure_valid_name(name)
+    return Vouchertype.create!(:name => name,
+      :price => price,
+      :offer_public => Vouchertype::EXTERNAL,
+      :category => (price.zero? ? :comp : :revenue),
+      :subscription => false,
+      :valid_date => Time.now.at_beginning_of_season(year),
+      :expiration_date => Time.now.at_beginning_of_season(year+1) - 1.day)
+  end
+
   def get_included_vouchers
     if self.bundle?
       hsh = self.included_vouchers

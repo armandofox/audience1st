@@ -1,11 +1,18 @@
 class Import < ActiveRecord::Base
   require 'csv'
-  
-  @@import_types = { 'Customer/mailing list' => 'CustomerImport',
+
+  belongs_to :completed_by, :class_name => 'Customer'
+  def self.foreign_keys_to_customer ;  [:completed_by_id] ;  end
+
+  def completed? ; !completed_at.nil? ; end
+
+  @@import_types = {
+    'Customer/mailing list' => 'CustomerImport',
+    'Brown Paper Tickets sales list (all dates for 1 production)' => 'BrownPaperTicketsImport'
     }
   cattr_accessor :import_types
   def humanize_type
-    @@import_types.index(self.type)
+    @@import_types.index(self.type.to_s)
   end
 
   has_attachment(:storage => :file_system,
@@ -21,7 +28,12 @@ class Import < ActiveRecord::Base
       errors.add_to_base "I don't understand what you're trying to import (possibilities are #{allowed_types.join(',')})"
     end
   end
-  
+
+  attr_accessor :messages
+  def messages
+    @messages ||= []
+  end
+
   def csv_rows
     begin
       CSV::Reader.create(IO.read(self.public_filename))
@@ -31,10 +43,6 @@ class Import < ActiveRecord::Base
       logger.error msg
       []
     end
-  end
-
-  def preview
-    raise "Must override this abstract method"
   end
 
 end

@@ -22,12 +22,10 @@ config.log_level = :info
 PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 
-# Mailchimp integration: use my test account
+# Mailchimp integration: is disabled in non-production mode.
+# test account:
+# :api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
+#  :default_list_name => 'Test list'
 
-EmailList.mode = {
-  :wrapper => :test,
-  :mailchimp_api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
-  :mailchimp_default_list_name => 'Test list'
-}
-
+DISABLE_EMAIL_LIST_INTEGRATION = true
 # DISABLE_FACEBOOK = true

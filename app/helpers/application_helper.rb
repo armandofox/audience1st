@@ -21,7 +21,7 @@ module ApplicationHelper
         end
       end
       header_message = options[:header_message] ||
-        "#{pluralize(count, 'error')} prohibited this #{(options[:object_name] || params.first).to_s.gsub('_', ' ')} from being saved"
+        "#{count.to_i} error(s) prevented this #{(options[:object_name] || params.first).to_s.gsub('_', ' ')} from being processed"
       error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, msg) } }
       content_tag(:div,
         content_tag(options[:header_tag] || :h2, header_message) <<

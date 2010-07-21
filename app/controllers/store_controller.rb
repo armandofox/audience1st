@@ -106,16 +106,8 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    if session[:recipient_id]
-      @recipient = Customer.find_by_id(session[:recipient_id])
-      @recipient.update_attributes(params[:customer])
-    elsif ((@recipient = Customer.find_unique(params[:customer])) && # exact match
-        @recipient.valid_as_gift_recipient?)                    # valid contact info
-      # we're good; unique match, and already valid contact info.
-    else
-      # assume we'll have to create a new customer record.
-      @recipient = Customer.new(params[:customer])
-    end
+    @recipient = recipient_from_session || recipient_from_params ||
+      Customer.new(params[:customer])
     # make sure minimal info for gift receipient was specified.
     unless  @recipient.valid_as_gift_recipient?
       flash[:warning] = @recipient.errors.full_messages.join "<br/>"
@@ -458,6 +450,21 @@ EON
         qty.to_i.times { @cart.add(Voucher.anonymous_bundle_for(vtype)) }
       end
     end
+  end
+
+  def recipient_from_session
+    if ((s = session[:recipient_id]) &&
+        (recipient = Customer.find_by_id(s)))
+      recipient.update_attributes(params[:customer])
+      recipient
+    else
+      nil
+    end
+  end
+
+  def recipient_from_params
+    recipient = Customer.find_unique(Customer.new(params[:customer]))
+    recipient && recipient.valid_as_gift_recipient? ? recipient : nil
   end
 
   def verify_valid_recipient

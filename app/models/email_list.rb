@@ -4,8 +4,7 @@ class EmailList
   #  script/plugin install git://github.com/bgetting/hominid.git
 
   private
-  
-  @@settings = {}
+
   @@hominid = nil
   @@list = nil
   @@listid = nil
@@ -23,12 +22,8 @@ class EmailList
 
   public
 
-  def self.mode=(args={:wrapper=>:test})
-    @@settings.merge!(args)
-  end
-
   def self.init_hominid
-    return nil if @@settings[:wrapper] == :test
+    RAILS_DEFAULT_LOGGER.info("NOT initializing mailchimp") and return nil if defined?(DISABLE_EMAIL_LIST_INTEGRATION) && DISABLE_EMAIL_LIST_INTEGRATION
     return true if @@hominid
     apikey = Option.value(:mailchimp_api_key)
     @@list = Option.value(:mailchimp_default_list_name)

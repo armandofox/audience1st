@@ -5,8 +5,8 @@ class Visit < ActiveRecord::Base
   include Enumerable
   include Comparable
 
-  def self.additional_foreign_keys_to_customer
-    [:followup_assigned_to_id, :visited_by_id]
+  def self.foreign_keys_to_customer
+    [:customer_id, :followup_assigned_to_id, :visited_by_id]
   end
 
   def <=>(other_visit)

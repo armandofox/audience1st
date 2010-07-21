@@ -264,23 +264,26 @@ describe Customer do
           :city => 'New York', :state => 'NY', :zip => '99999'
         }
         @old = BasicModels.create_generic_customer(@attrs)
+        @cust = Customer.new(@attrs)
       end
       context "and last name matches" do
         it "should match without an address" do
           [:street,:city,:state,:zip].each { |e| @attrs.delete(e) }
-          Customer.find_unique(@attrs).should == @old
+          Customer.find_unique(@cust).should == @old
         end
         it "should match even if addresses differ" do
-          Customer.find_unique(@attrs.merge({:street => '999 New St'})).should == @old
+          @cust.street = '999 New St'
+          Customer.find_unique(@cust).should == @old
         end
         it "should match even if first names differ" do
-          Customer.find_unique(@attrs.merge({:first_name => 'Bill'})).should == @old
+          @cust.first_name = 'Bill'
+          Customer.find_unique(@cust).should == @old
         end
       end
       context "but last name differs" do
         it "should not match if first name also differs" do
-          @attrs[:first_name] = 'Bill' ; @attrs[:last_name] = 'Smith'
-          Customer.find_unique(@attrs).should be_nil
+          @cust.first_name = 'Bill' ; @cust.last_name = 'Smith'
+          Customer.find_unique(@cust).should be_nil
         end
       end
     end
@@ -292,7 +295,7 @@ describe Customer do
         :created_by_admin => true}
         @old = BasicModels.create_generic_customer(
           @attrs.merge(:email => @old_email))
-        @new = @attrs.merge(:email => @new_email)
+        @new = Customer.new(@attrs.merge(:email => @new_email))
       end
       it "should match if first, last and address all match" do
         Customer.find_unique(@new).should == @old
@@ -341,11 +344,11 @@ describe Customer do
       # is a name and no other info on either side, it doesn't matter much.
       it "should match if first & last name match uniquely and exactly" do
         @old = BasicModels.create_generic_customer(:first_name => 'Joe', :last_name => 'Jones')
-        Customer.find_unique(:first_name => 'Joe', :last_name => 'Jones').should  == @old
+        Customer.find_unique(Customer.new(:first_name => 'Joe', :last_name => 'Jones')).should  == @old
       end
       it "should not match if first & last match exactly but not uniquely" do
         2.times { BasicModels.create_generic_customer(:first_name => 'Joe', :last_name => 'Jones') }
-        Customer.find_unique(:first_name => 'Joe', :last_name => 'Jones').should be_nil
+        Customer.find_unique(Customer.new(:first_name => 'Joe', :last_name => 'Jones')).should be_nil
       end
     end
   end

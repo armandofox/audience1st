@@ -9,7 +9,6 @@ class ImportsController < ApplicationController
   def create
     type = params[:import][:type]
     @import = (type.constantize).new(params[:import])
-    @import.completed = false
     if @import.save
       flash[:notice] = "A preview of what will be imported is below.  Records with errors will not be imported.  Click Continue Import to import non-error records and ignore records with errors, or click Cancel Import to do nothing."
       redirect_to edit_import_path(@import)
@@ -21,14 +20,9 @@ class ImportsController < ApplicationController
   def edit
     @import = Import.find(params[:id])
     @collection = @import.preview
-    if @collection.empty?
-      flash[:warning] = "Couldn't find any valid data to import: #{@import.errors.full_messages.join(', ')}.  Try uploading a different file."
-      logger.info "Attachment error on #{@import.full_filename}"
-      redirect_to(:action => :new) and return
-    end
     @num_records = @import.num_records
-    unless (@partial = partial_for_collection(@collection))
-      flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@collection.first.class.to_s)}."
+    if (@partial = partial_for_import(@import)).nil?
+      flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}."
       redirect_to(:action => :new) and return
     end
   end
@@ -36,15 +30,19 @@ class ImportsController < ApplicationController
   def update
     @import = Import.find(params[:id])
     @imports,@rejects = @import.import!
+    render(:action => :new) and return if !@import.errors.empty?
     flash[:notice] = "#{@imports.length} records successfully imported."
+    @import.update_attributes(
+      :completed_at => Time.now,
+      :number_of_records => @imports.length,
+      :completed_by_id => logged_in_id)
     if @rejects.empty?
       redirect_to imports_path
-      @import.destroy
     else
       flash[:notice] <<
         "<br/>The #{@rejects.length} records shown below could not be imported due to errors."
       @collection = @rejects
-      @partial = partial_for_collection(@collection)
+      @partial = partial_for_import(@import)
     end
   end
 
@@ -79,9 +77,10 @@ class ImportsController < ApplicationController
     logger.info "Deleting #{@import.full_filename}"
   end
 
-  def partial_for_collection(collection)
-    case collection.first.class.to_s
-    when 'Customer' then 'customers/customer_with_errors'
+  def partial_for_import(import)
+    case import.class.to_s
+    when 'CustomerImport' then 'customers/customer_with_errors'
+    when 'BrownPaperTicketsImport' then 'external_ticket_orders/external_ticket_order'
     end
   end
 

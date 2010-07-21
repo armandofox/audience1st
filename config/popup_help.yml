@@ -49,6 +49,16 @@ delete_customers: >
   etc. are transferred to the 'Anonymous Customer' and the customer
   record is expunged.  This action cannot be undone. 
 
+check_for_duplicates_after_import: >
+  
+  When automatically importing customers (such as from an external
+  will-call list or spreadsheet), Audience1st cannot always tell for
+  sure if two customers with similar names are duplicates.  After doing
+  any kind of import, you should check for duplicates (Reports tab, under
+  Database Maintenance reports) and use your judgment in merging them.
+  It's best to do duplicate elimination as soon as possible, since
+  duplicate records sometimes prevent customers from being able to login.
+
 # Editing shows and showdates
 
 show_or_showdate_description: >
@@ -61,11 +71,16 @@ show_house_capacity: >
 
   The physical capacity of the house for this production, which is used
   to help box office staff keep track of the number of open seats
-  remaining during front-of-house (pre-show).  The actual number of
-  seats you offer for sale can be different: for each performance, if
-  you enter a value for Max Sales, it will override this number.  Note
-  that you MUST enter a nonzero number here or all performances will
-  appear to be sold out.
+  remaining during front-of-house (pre-show).  This number is also used
+  to report percentage of total seats offered for sale, so it should
+  reflect the total number of seats you could possibly offer for sale
+  (as would be reported, e.g., to a licensing agency for a show
+  contract). 
+  Note that you can selectively sell fewer seats for some performances
+  by setting a Max Allowed Sales value for each performance.  But
+  you MUST enter a nonzero number here or all performances will
+  appear to be sold out, and reporting will believe that you are
+  offering zero seats for sale.
 
 show_listing_date: >
  

@@ -5,6 +5,7 @@
 ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
   :date_only => "%e %B %Y",
   :showtime => '%A, %b %e, %l:%M %p',
+  :showtime_including_year => '%A, %b %e, %Y, %l:%M %p',
   :month_day_only => "%b %e",
   :month_day_year => "%b %e, %Y"
 })

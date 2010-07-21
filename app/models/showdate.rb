@@ -3,10 +3,10 @@ class Showdate < ActiveRecord::Base
   include Comparable
 
   belongs_to :show
-  has_many :vouchers, :conditions => "category != 'nonticket'"
+  has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
+  has_many :vouchertypes, :through => :vouchers, :uniq => true
   has_many :all_vouchers, :class_name => 'Voucher'
   has_many :valid_vouchers, :dependent => :destroy
-  has_many :vouchertypes, :through => :valid_vouchers
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
   validates_associated :show
@@ -26,6 +26,15 @@ class Showdate < ActiveRecord::Base
   end
 
   public
+
+  # create new showdate (for use by imports/daemons)
+
+  def self.placeholder(thedate)
+    Showdate.new(:thedate => thedate,
+      :end_advance_sales => thedate,
+      :max_sales => 0)
+  end
+      
 
   # finders
   
@@ -105,6 +114,8 @@ class Showdate < ActiveRecord::Base
     self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
   end
 
+  def total_offered_for_sale ; house_capacity ; end
+
   def percent_max_allowed_sales
     house_capacity.zero? ? 100.0 : 100.0 * max_allowed_sales / house_capacity
   end
@@ -179,6 +190,10 @@ class Showdate < ActiveRecord::Base
 
   def printable_date
     self.thedate.to_formatted_s(:showtime)
+  end
+
+  def full_date
+    self.thedate.to_formatted_s(:showtime_including_year)
   end
 
   def printable_date_with_description

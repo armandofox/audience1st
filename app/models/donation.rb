@@ -19,8 +19,8 @@ class Donation < ActiveRecord::Base
   # values of processed_by field, which is really a customer id.
   # Returns number of actual donation records transferred.
 
-  def self.additional_foreign_keys_to_customer
-    [:processed_by_id]
+  def self.foreign_keys_to_customer
+    [:customer_id, :processed_by_id]
   end
 
   def price ; self.amount ; end # why can't I use alias for this?

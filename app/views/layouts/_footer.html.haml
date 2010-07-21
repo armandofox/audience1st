@@ -1,11 +1,24 @@
 #footer.center
-  \&copy; 2010
-  Secure ticketing by
-  = link_to 'A1 Patron Systems', 'http://www.a1patronsystems.com'
-  = " - Version #{APP_VERSION} - "
-  - unless (s = sanitize_option_text(:privacy_policy_url, 'span')).blank?
-    = link_to "Terms of Use & Privacy Policy", s
+  %p
+    \&copy; 2010
+    Secure ticketing by
+    = link_to 'A1 Patron Systems', 'http://www.a1patronsystems.com'
+    = " - Version #{APP_VERSION} - "
+    - unless (s = sanitize_option_text(:privacy_policy_url, 'span')).blank?
+      = link_to "Terms of Use & Privacy Policy", s
+  %p.small
+    Seeing 
+    = link_to 'security warnings in Internet Explorer?', 'http://www.microsoft.com/windows/ie/ie6/using/howto/security/settings.mspx', :target => '_blank'
+    This site is best viewed with 
+    = link_to 'Firefox', 'http://www.mozilla.com/firefox/', :target => '_blank'
+    ,
+    = link_to 'Safari', 'http://www.apple.com/safari/download', :target => '_blank'
+    ,
+    = link_to 'Chrome', 'http://www.google.com/chrome', :target => '_blank'
+    or 
+    = link_to 'Opera', 'http://www.opera.com/download', :target => '_blank'
 
+    
 
 
 

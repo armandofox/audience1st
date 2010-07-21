@@ -33,8 +33,8 @@ class ExternalTicketOrder
       return nil
     end
     begin
-      c = Customer.find_or_create!({:first_name => @first_name,
-                                 :last_name => @last_name})
+      c = Customer.find_or_create!(
+        Customer.new(:first_name => @first_name,:last_name => @last_name))
     rescue Exception => e
       @status << "Error creating/finding customer:\n" << e.message
       return nil

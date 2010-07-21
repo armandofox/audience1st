@@ -16,8 +16,8 @@ class Voucher < ActiveRecord::Base
 
   # class methods
 
-  def self.additional_foreign_keys_to_customer
-    [:processed_by_id, :gift_purchaser_id]
+  def self.foreign_keys_to_customer
+    [:customer_id, :processed_by_id, :gift_purchaser_id]
   end
   
   # count the number of subscriptions for a given season

@@ -54,6 +54,7 @@ class Show < ActiveRecord::Base
     showdates.inject(0) { |t,s| t+s.max_allowed_sales }
   end
 
+  def total_offered_for_sale ; showdates.length * house_capacity ; end
 
   def menu_selection_name ; name_with_description ; end
 
@@ -76,4 +77,34 @@ class Show < ActiveRecord::Base
     end
     "#{self.name} (#{dt})"
   end
+
+  def self.find_unique(name)
+    Show.find(:first, :conditions => ['name LIKE ?', name.strip])
+  end
+
+  # return placeholder entity that will pass basic validations if saved
+  
+  def self.create_placeholder!(name)
+    name = name.to_s
+    name << "___" if name.length < 3
+    Show.create!(:name => name,
+      :opening_date => Date.today,
+      :closing_date => Date.today + 1.day,
+      :house_capacity => 1
+      )
+  end
+  
+  def set_metadata_from_showdates!
+    return if showdates.empty?
+    dates = showdates.map(&:thedate)
+    min = dates.min
+    maxcap = showdates.map { |s| s.vouchers.size }.max
+    self.update_attributes(
+      :opening_date => min,
+      :listing_date => min,
+      :closing_date => dates.max,
+      :house_capacity => [maxcap, 1].max
+      )
+  end
+      
 end
