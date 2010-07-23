@@ -1,7 +1,7 @@
 # Be sure to restart your server when you modify this file
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.3.3'
+RAILS_GEM_VERSION = '2.3.5'
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
@@ -42,6 +42,8 @@ Rails::Initializer.run do |config|
 
   config.gem "activemerchant", :lib => "active_merchant"
   config.gem "haml"
+  config.gem "dbf"
+  
   # config.gem "rack", :version => '1.1.0'
 
   config.active_record.timestamped_migrations = false

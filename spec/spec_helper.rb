@@ -6,11 +6,14 @@ require 'spec/autorun'
 require 'spec/rails'
 require 'webrat'
 
-include AuthenticatedTestHelper
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
+
+include AuthenticatedTestHelper
+include BasicModels
+
 
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these

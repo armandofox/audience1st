@@ -28,14 +28,28 @@ describe Customer do
       @customer.should be_valid
     end
   end
-  describe "when created/imported by daemon using force_valid" do
-    it "should be forced to valid" do
-      @customer = Customer.new(:first_name => "<bad", :last_name => '', :email => 'Bad Email')
+  describe "when created using force_valid" do
+    before :each do 
+      @customer = BasicModels.new_generic_customer
       @customer.force_valid = true
-      lambda { @customer.save! }.should_not raise_error
-      @customer.first_name.should_not be_blank
-      @customer.last_name.should_not be_blank
-      @customer.email.should be_blank
+    end
+    attrs = [
+      :first_name, '<bad',
+      :email, 'N/A',
+      :email, nil,
+      :last_name, '',
+      :first_name, 'A',
+      :zip, 'N/A',
+      :street, nil,
+      :city, 'N/A',
+      :state, ' ',
+    ]
+    attrs.each_slice(2) do |attr|
+      it "should survive invalid #{attr[0]}" do
+        @customer.send("#{attr[0]}=", attr[1])
+        lambda { @customer.save! }.should_not raise_error
+        @customer.should be_valid
+      end
     end
   end
   describe "when self-created" do

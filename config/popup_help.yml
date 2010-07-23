@@ -49,6 +49,21 @@ delete_customers: >
   etc. are transferred to the 'Anonymous Customer' and the customer
   record is expunged.  This action cannot be undone. 
 
+# Importing
+
+import_show_name:  >
+ 
+  Because the format of will-call lists varies, you have to specify
+  which show this is for.  If it doesn't exist, click Create New Show to
+  set it up, then return here.  (You don't need to explicitly add show
+  dates or valid voucher types -- they'll be automatically created during the import.)
+
+import_choose_file:  >
+
+  Each kind of import expects a specific file type and layout.  If these
+  files are CSV (comma-separated values), be sure they have been saved
+  as "Windows CSV".  Some imports also accept other file types.
+
 check_for_duplicates_after_import: >
   
   When automatically importing customers (such as from an external

@@ -345,8 +345,16 @@ body#door_list h1, body#door_list h2 {
  */
  
 table.import {
+    height: 2ex;
 }
 table.import td {
 	border-width: 1px;
 	border-style: dotted;
+}
+
+#import_help p {
+    margin-left: 200px;
+    margin-right: 200px;
+    border: 2px solid grey;
+    padding: 2px 4px;
 }

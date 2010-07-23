@@ -8,7 +8,8 @@ class Import < ActiveRecord::Base
 
   @@import_types = {
     'Customer/mailing list' => 'CustomerImport',
-    'Brown Paper Tickets sales list (all dates for 1 production)' => 'BrownPaperTicketsImport'
+    'Brown Paper Tickets sales list (all dates for 1 production)' => 'BrownPaperTicketsImport',
+    'TBA (Webtix .dbf) sales list (Report for Run of a Show)' => 'TBAWebtixImport'
     }
   cattr_accessor :import_types
   def humanize_type

@@ -1,9 +1,10 @@
 class ImportsController < ApplicationController
-
+  include ActiveSupport::Inflector
   before_filter :is_admin
 
   def new
     @import ||= Import.new
+    @shows = Show.all.sort_by(&:opening_date).reverse
   end
 
   def create
@@ -19,6 +20,7 @@ class ImportsController < ApplicationController
 
   def edit
     @import = Import.find(params[:id])
+    @import.show_id = params[:show_id].to_i
     @collection = @import.preview
     @num_records = @import.num_records
     if (@partial = partial_for_import(@import)).nil?
@@ -61,7 +63,12 @@ class ImportsController < ApplicationController
       redirect_to :action => :new
     end
   end
-    
+
+  def help
+    # return a partial displaying help for the selected import type
+    render :partial => ['imports/', singularize(tableize(params[:value])), '_help'].join
+  end
+  
   def destroy
     @import ||= Import.find(params[:id])
     flash[:notice] = "Import of file #{@import.filename} cancelled."
