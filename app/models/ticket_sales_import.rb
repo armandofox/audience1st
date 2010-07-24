@@ -2,78 +2,76 @@ class TicketSalesImport < Import
 
   belongs_to :show
   validates_associated :show
+  validate :show_exists?
 
   class TicketSalesImport::ShowNotFound < Exception ; end
   class TicketSalesImport::PreviewOnly  < Exception ; end
+  class TicketSalesImport::ImportError < Exception ; end
 
-  attr_accessor :show, :vouchers, :existing_vouchers, :num_records
+  attr_accessor :show, :vouchers, :existing_vouchers
   attr_accessor :created_customers, :matched_customers
   attr_accessor :created_showdates, :created_vouchertypes
 
   public
 
+  def show_exists?
+    errors.add_to_base('You must specify an existing show.') unless
+      self.show_id && Show.find_by_id(show_id)
+  end
+  
   def preview
-    return [] unless show_valid?
     Customer.disable_email_sync
     do_import(false)
     Customer.enable_email_sync
     []
   end
 
-  def import!
-    show_valid? ? [do_import(true), []] : [ [],[] ]
-  end
+  def import! ;  [do_import(true), []] ;   end
 
-  def valid_records ; num_records ; end
+  def valid_records ; number_of_records ; end
   def invalid_records ; 0 ; end
 
   protected
 
-  def show_valid?
-    if show && Show.find_by_id(show)
-      return true
-    else
-      errors.add_to_base 'You must specify a show.'
-      return nil
-    end
-  end
-
-  def initialize_import
-    @show = nil
-    @show_was_created = nil
-    @vouchers = []
-    @created_customers = []
-    @matched_customers = []
-    @created_showdates = []
-    @created_vouchertypes = []
-    @existing_vouchers = 0
-    @num_records = 0
+  def after_initialize          # called after AR::Base makes a new obj
+    self.messages ||= []
+    self.messages << "Show: #{show.name}" if show
+    self.vouchers = []
+    self.created_customers = []
+    self.matched_customers = []
+    self.created_showdates = []
+    self.created_vouchertypes = []
+    self.existing_vouchers = 0
   end
 
   def do_import(really_import=false)
-    initialize_import
     begin
       transaction do
         get_ticket_orders
+        if show.adjust_opening_and_closing_from_showdates
+          self.messages <<
+            "Show info may be adjusted: house capacity #{show.house_capacity}, run dates #{show.opening_date.to_formatted_s(:month_day_only)} - #{show.closing_date.to_formatted_s(:month_day_only)}"
+        end
         # all is well!  Roll back the transaction and report results.
         raise TicketSalesImport::PreviewOnly unless really_import
         # finalize other changes
         @created_customers.each { |customer| customer.save! }
-        @show.save!             # saves new showdates too
-        @show.set_metadata_from_showdates! if @show_was_created
+        show.save!             # saves new showdates too
       end
+    rescue CSV::IllegalFormatError
+      self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
     rescue TicketSalesImport::PreviewOnly
       ;
     rescue TicketSalesImport::ShowNotFound
       self.errors.add_to_base("Couldn't find production name in uploaded file")
+    rescue TicketSalesImport::ImportError => e
+      self.errors.add_to_base(e.message)
     rescue Exception => e
       self.errors.add_to_base("Unexpected error: #{e.message} - #{e.backtrace}")
       RAILS_DEFAULT_LOGGER.info "Importing id #{self.id}: #{e.message}"
     end
     @vouchers
   end
-  
-  
   
   def import_customer(row,args)
     attribs = {}
@@ -105,16 +103,12 @@ class TicketSalesImport < Import
     sd
   end
 
-  def find_or_create_show(name)
-    if (s = Show.find_unique(name))
-      self.show = s
-      self.messages << "Show '#{name}' already exists (id=#{s.id})"
-    else
-      self.show = Show.create_placeholder!(name)
-      @show_was_created = true
-      self.messages << "Show '#{name}' will be created"
-    end
+  def already_entered?(order_id)
+    return nil unless (v = Voucher.find_by_external_key(order_id))
+    # this voucher's already been entered.  make sure show name matches!!
+    raise(TicketSalesImport::ImportError,
+      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if v.show != self.show
+    true
   end
-  
-  
+
 end

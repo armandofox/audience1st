@@ -1,6 +1,7 @@
 %p= h(import.messages.join('<br/>'))
 %p 
-  #{import.num_records - import.existing_vouchers} vouchers will be entered
+  - if import.number_of_records
+    #{import.number_of_records - import.existing_vouchers} vouchers will be entered
   - if import.existing_vouchers > 0
     (#{import.existing_vouchers} have been previously imported or entered)
 

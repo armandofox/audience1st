@@ -5,9 +5,8 @@ class BrownPaperTicketsImport < TicketSalesImport
   def get_ticket_orders
     # production name is in cell A2; be sure "All Dates" is B2
     self.csv_rows.each do |row|
-      find_or_create_show(row[0].to_s) and next if row[1].to_s == 'All Dates'
       if (content_row?(row))
-        @num_records += 1 
+        self.number_of_records += 1 
         if (voucher = ticket_order_from_row(row))
           @vouchers << voucher
         end
@@ -19,10 +18,7 @@ class BrownPaperTicketsImport < TicketSalesImport
   def content_row?(row) ; row[0].to_s =~ /^\s*[0-9]{7,}$/ ; end
 
   def ticket_order_from_row(row)
-    raise(TicketSalesImport::ShowNotFound, "Invalid spreadsheet: no show name found, or spreadsheet may be correupted") unless @show
-
-    bpt_order_id = row[0].to_s
-    @existing_vouchers += 1 and return nil if Voucher.find_by_external_key(bpt_order_id)
+    self.existing_vouchers += 1 and return if already_entered?(row[0].to_s)
     
     customer = customer_from_row(row)
     showdate = showdate_from_row(row)

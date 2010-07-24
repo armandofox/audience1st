@@ -4,7 +4,6 @@ class ImportsController < ApplicationController
 
   def new
     @import ||= Import.new
-    @shows = Show.all.sort_by(&:opening_date).reverse
   end
 
   def create
@@ -20,9 +19,7 @@ class ImportsController < ApplicationController
 
   def edit
     @import = Import.find(params[:id])
-    @import.show_id = params[:show_id].to_i
     @collection = @import.preview
-    @num_records = @import.num_records
     if (@partial = partial_for_import(@import)).nil?
       flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}."
       redirect_to(:action => :new) and return

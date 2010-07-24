@@ -12,9 +12,9 @@ describe Show do
     end
   end
 
-  describe "setting metadata post-hoc" do
+  describe "adjusting showdates post-hoc" do
     before :each do
-      @now = Time.now.change(:minute => 0)
+      @now = Time.now.to_date
       dates_and_tix = [
         [@now+1.day,  100],
         [@now,        50],
@@ -29,7 +29,7 @@ describe Show do
           :vouchers => Array.new(params[1]))
       end
       @s.stub!(:showdates).and_return(@showdates)
-      @s.set_metadata_from_showdates!
+      @s.adjust_metadata_from_showdates
     end
     it "should set maximum house cap" do
       @s.house_capacity.should == 125

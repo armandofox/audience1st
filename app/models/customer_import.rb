@@ -7,10 +7,6 @@ class CustomerImport < Import
     return get_customers_to_import(MAX_PREVIEW_SIZE)
   end
 
-  def num_records
-    return get_customers_to_import(MAX_IMPORT, count_only = true)
-  end
-
   def valid_records
     return get_customers_to_import.collect { |c| c.valid? }
   end
@@ -35,23 +31,23 @@ class CustomerImport < Import
     return customer.save
   end
 
-  def get_customers_to_import(max=MAX_IMPORT,count_only = false)
+  def get_customers_to_import(max=MAX_IMPORT)
     customers = []
-    count = 0
+    self.number_of_records = 0
     begin
       self.csv_rows.each do |row|
         if (c = customer_from_csv_row(row))
-          customers << c unless count_only
-          count += 1
+          customers << c
+          self.number_of_records += 1
         end
-        break if count == max
+        break if number_of_records == max
       end
     rescue CSV::IllegalFormatError
-      self.errors.add_to_base "CSV file format is invalid starting at row #{count+1}.  If you created this CSV file on a Mac, be sure to select 'Windows Comma-Separated' as the file type to save."
+      self.errors.add_to_base "CSV file format is invalid starting at row #{number_of_records+1}.  If you created this CSV file on a Mac, be sure to select 'Windows Comma-Separated' as the file type to save."
     rescue Exception => e
       self.errors.add_to_base e.message
     end
-    return (count_only ? count : customers)
+    return customers
   end
   
   def customer_from_csv_row(row)

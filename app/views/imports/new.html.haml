@@ -2,17 +2,19 @@
 - form_for :import, :url => imports_path, :html => {:multipart => true} do |f|
   %p
     %label{:for => :type} What do you want to import?
-    = f.select :type, options_for_select(Import.import_types), :id => 'import_type'
+    = f.select :type, options_for_select(Import.import_types, @import.type.to_s), :id => 'import_type'
   #import_help
   = observe_field :import_type, :url => {:action => :help}, :with => 'value', :update => 'import_help'
   %p
-    %label{:for => :show} For will-call lists: which show is this for?
-    = f.select :show_id, options_from_collection_for_select(@shows, :id, :name)
+    %label{:for => :show_id} For will-call lists: which show is this for?
+    = f.select :show_id, options_from_collection_for_select(Show.all.sort_by(&:opening_date).reverse, :id, :name, @import.show_id)
     = link_to 'Create new show...', {:controller => :shows, :action => :new}, {:class => 'genButton'}
     = popup_help_for :import_show_name
 
-  %p
-    %label{:for => :uploaded_data} Select file to upload:
-    = f.file_field :uploaded_data
-    = popup_help_for :import_choose_file
+  - unless @import.size.to_i > 0
+    %p
+      %label{:for => :uploaded_data} Select file to upload:
+      = f.file_field :uploaded_data
+      = popup_help_for :import_choose_file
+
   %p= submit_tag 'Preview Import', :disable_with => 'Working...'

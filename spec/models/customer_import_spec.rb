@@ -16,7 +16,6 @@ describe CustomerImport do
   it "should create a new instance given valid attributes" do
     @valid_attributes = {
       :name => "value for name",
-      :number_of_records => 1,
       :filename => "value for filename",
       :content_type => "text/csv",
       :size => 1_000_000
@@ -46,7 +45,8 @@ describe CustomerImport do
         @import.preview.should have(2).records
       end
       it "should not count header line in total number of records" do
-        @import.num_records.should == 2
+        @import.preview
+        @import.number_of_records.should == 2
       end
       it "should have Customers as the records" do
         @import.preview[0].should be_a_kind_of(Customer)

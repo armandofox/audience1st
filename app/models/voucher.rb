@@ -57,7 +57,7 @@ class Voucher < ActiveRecord::Base
   # return the "show" associated with a voucher.  If a regular voucher,
   # it's the show the voucher is associated with. If a bundle voucher,
   # it's the name of the bundle.
-  def show ;  showdate.show ; end
+  def show ;  showdate ? showdate.show : nil ; end
   def show_or_bundle_name
     show.kind_of?(Show)  ? show.name :
       (vouchertype_id > 0 && vouchertype.bundle? ? vouchertype.name : "??")

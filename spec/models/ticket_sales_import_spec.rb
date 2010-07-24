@@ -2,6 +2,24 @@ require 'spec_helper'
 
 describe TicketSalesImport do
 
+  describe "checking duplicate order" do
+    before :all do ; TicketSalesImport.send(:public, :already_entered?) ; end
+    before :each do
+      @imp = TicketSalesImport.new(:show => mock_model(Show, :name => 'XXX'))
+      @existing_order_id = '12345678'
+    end
+    it "should raise error if already entered for different show" do
+      Voucher.should_receive(:find_by_external_key).with(@existing_order_id).
+        and_return(mock_model(Voucher, :show => mock_model(Show, :name => "New")))
+      lambda { @imp.already_entered?(@existing_order_id) }.should raise_error(TicketSalesImport::ImportError)
+    end
+    it "should not raise error if already entered for same show" do
+      Voucher.should_receive(:find_by_external_key).with(@existing_order_id).
+        and_return(mock_model(Voucher, :show => @imp.show))
+      lambda { @imp.already_entered?(@existing_order_id) }.should_not raise_error
+    end
+  end
+
   describe "preview" do
     describe "should bail out with errors" do
       before :each do ; @imp = TicketSalesImport.new ; end
@@ -15,6 +33,17 @@ describe TicketSalesImport do
         @imp.preview
         @imp.errors.full_messages.should include('You must specify a show.')
       end
+    end
+  end
+  
+  describe "when an error happens during import or preview process" do
+    before :all do
+      @imp = TicketSalesImport.new(:show => mock_model(Show, :name => 'XXX'))
+      @imp.stub!(:get_ticket_orders).and_raise "Error"
+    end
+    it "should indicate number of good records processed" do
+      @imp.preview
+      @imp.number_of_records.should be_a(Fixnum)
     end
   end
 

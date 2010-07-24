@@ -94,17 +94,15 @@ class Show < ActiveRecord::Base
       )
   end
   
-  def set_metadata_from_showdates!
+  def adjust_metadata_from_showdates
     return if showdates.empty?
     dates = showdates.map(&:thedate)
-    min = dates.min
+    first,last = dates.min.to_date, dates.max.to_date
     maxcap = showdates.map { |s| s.vouchers.size }.max
-    self.update_attributes(
-      :opening_date => min,
-      :listing_date => min,
-      :closing_date => dates.max,
-      :house_capacity => [maxcap, 1].max
-      )
+    self.opening_date = first if opening_date > first
+    self.closing_date = last if closing_date < last
+    self.house_capacity = maxcap if house_capacity < maxcap
+    return self.changed?
   end
       
 end

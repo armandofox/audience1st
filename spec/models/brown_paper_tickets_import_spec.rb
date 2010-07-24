@@ -3,9 +3,7 @@ include BasicModels
 
 describe "BPT import" do
   before :each do
-    @imp = BrownPaperTicketsImport.new
-    TicketSalesImport.send(:public, :initialize_import)
-    @imp.initialize_import
+    @imp = BrownPaperTicketsImport.new(:show => BasicModels.create_generic_show)
   end
   describe "extracting showdate" do
     before :each do
