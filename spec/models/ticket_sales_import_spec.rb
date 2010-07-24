@@ -22,7 +22,7 @@ describe TicketSalesImport do
 
   describe "preview" do
     describe "should bail out with errors" do
-      before :each do ; @imp = TicketSalesImport.new ; end
+      before :each do ; @imp = BrownPaperTicketsImport.new ; end
       it "if no show specified" do
         @imp.preview
         @imp.errors.full_messages.should include('You must specify a show.')
@@ -38,7 +38,7 @@ describe TicketSalesImport do
   
   describe "when an error happens during import or preview process" do
     before :all do
-      @imp = TicketSalesImport.new(:show => mock_model(Show, :name => 'XXX'))
+      @imp = BrownPaperTicketsImport.new(:show => mock_model(Show, :name => 'XXX'))
       @imp.stub!(:get_ticket_orders).and_raise "Error"
     end
     it "should indicate number of good records processed" do

@@ -17,6 +17,8 @@ class ImportsController < ApplicationController
     end
   end
 
+  def show ; redirect_to :action => :index ; end
+
   def edit
     @import = Import.find(params[:id])
     @collection = @import.preview

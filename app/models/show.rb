@@ -4,6 +4,7 @@ class Show < ActiveRecord::Base
   #  may not be the same as the appserver's timezone.
   #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
   has_many :vouchers, :through => :showdates
+  has_many :imports
 
   validates_presence_of :opening_date, :closing_date, :listing_date
   validates_length_of :name, :within => 3..40, :message =>

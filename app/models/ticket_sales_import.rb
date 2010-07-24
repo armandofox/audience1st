@@ -8,7 +8,7 @@ class TicketSalesImport < Import
   class TicketSalesImport::PreviewOnly  < Exception ; end
   class TicketSalesImport::ImportError < Exception ; end
 
-  attr_accessor :show, :vouchers, :existing_vouchers
+  attr_accessor :vouchers, :existing_vouchers
   attr_accessor :created_customers, :matched_customers
   attr_accessor :created_showdates, :created_vouchertypes
 
@@ -48,15 +48,15 @@ class TicketSalesImport < Import
     begin
       transaction do
         get_ticket_orders
-        if show.adjust_opening_and_closing_from_showdates
+        if self.show.adjust_metadata_from_showdates
           self.messages <<
-            "Show info may be adjusted: house capacity #{show.house_capacity}, run dates #{show.opening_date.to_formatted_s(:month_day_only)} - #{show.closing_date.to_formatted_s(:month_day_only)}"
+            "Show info may be adjusted: house capacity #{self.show.house_capacity}, run dates #{self.show.opening_date.to_formatted_s(:month_day_only)} - #{self.show.closing_date.to_formatted_s(:month_day_only)}"
         end
         # all is well!  Roll back the transaction and report results.
         raise TicketSalesImport::PreviewOnly unless really_import
         # finalize other changes
         @created_customers.each { |customer| customer.save! }
-        show.save!             # saves new showdates too
+        self.save!             # saves new show and showdates too
       end
     rescue CSV::IllegalFormatError
       self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
@@ -107,7 +107,7 @@ class TicketSalesImport < Import
     return nil unless (v = Voucher.find_by_external_key(order_id))
     # this voucher's already been entered.  make sure show name matches!!
     raise(TicketSalesImport::ImportError,
-      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if v.show != self.show
+      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if v.show.id != self.show_id
     true
   end
 
