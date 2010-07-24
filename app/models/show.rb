@@ -63,9 +63,11 @@ class Show < ActiveRecord::Base
     description.blank? ? name : "#{name} (#{description})"
   end
 
-  def name_with_run_dates
-    "#{name} - #{opening_date.to_formatted_s(:month_day_only)}-#{closing_date.to_formatted_s(:month_day_only)}"
+  def run_dates
+    "#{opening_date.to_formatted_s(:month_day_only)} - #{closing_date.to_formatted_s(:month_day_only)}"
   end
+
+  def name_with_run_dates ; "#{name} - #{run_dates}" ; end
 
   def name_with_run_dates_short
     s = self.opening_date

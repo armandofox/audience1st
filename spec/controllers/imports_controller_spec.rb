@@ -9,11 +9,6 @@ describe ImportsController do
       @import = TicketSalesImport.new
       Import.stub!(:find).and_return(@import)
     end
-    it "should pass the show ID" do
-      show = BasicModels.create_generic_show
-      get :edit, :id => @import, :show_id => show.id
-      @import.show_id.should == show.id
-    end
     context "valid Customer data" do
       it "should use customer/customer_with_errors template for Customer import" do
         @import.stub!(:class).and_return(CustomerImport)

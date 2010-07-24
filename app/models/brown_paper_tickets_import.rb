@@ -1,10 +1,27 @@
 class BrownPaperTicketsImport < TicketSalesImport
 
+  protected
+  
+  def sanity_check
+    @format_looks_ok &&
+      (vouchers.length + existing_vouchers > 0) &&
+      number_of_records > 0
+  end
+
+  def each_row
+    self.csv_rows.each do |row|
+      yield row.map(&:to_s)
+    end
+  end
+
   private
 
   def get_ticket_orders
     # production name is in cell A2; be sure "All Dates" is B2
-    self.csv_rows.each do |row|
+    @format_looks_ok = nil
+    self.each_row do |row|
+      @format_looks_ok = true and next if
+        row[0].to_s =~ /^Will Call Tickets$/ || row[1].to_s =~ /^All Dates$/
       if (content_row?(row))
         self.number_of_records += 1 
         if (voucher = ticket_order_from_row(row))
@@ -15,10 +32,11 @@ class BrownPaperTicketsImport < TicketSalesImport
     end
   end
 
-  def content_row?(row) ; row[0].to_s =~ /^\s*[0-9]{7,}$/ ; end
+  def content_row?(row) ; row[0].to_s =~ /^\s*[0-9]{6,}$/ ; end
 
   def ticket_order_from_row(row)
-    self.existing_vouchers += 1 and return if already_entered?(row[0].to_s)
+    bpt_order_id = row[0].to_s
+    self.existing_vouchers += 1 and return if already_entered?(bpt_order_id)
     
     customer = customer_from_row(row)
     showdate = showdate_from_row(row)
@@ -36,9 +54,9 @@ class BrownPaperTicketsImport < TicketSalesImport
 
   def vouchertype_from_row(row, year)
     name = row[18].to_s
-    price = row[19].to_f
+    price = row[19].gsub(/[^0-9.]/,'').to_f
     unless (vt = Vouchertype.find_by_name_and_price_and_category(name, price, [:comp,:revenue]))
-      vt = Vouchertype.create_external_voucher_for_season!("#{name} (BPT)", price, year.to_i) 
+      vt = Vouchertype.create_external_voucher_for_season!(name, price, year.to_i) 
       @created_vouchertypes << vt
     end
     vt

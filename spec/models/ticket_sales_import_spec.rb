@@ -25,13 +25,13 @@ describe TicketSalesImport do
       before :each do ; @imp = BrownPaperTicketsImport.new ; end
       it "if no show specified" do
         @imp.preview
-        @imp.errors.full_messages.should include('You must specify a show.')
+        @imp.errors.full_messages.should include('You must specify an existing show.')
       end
       it "if nonexistent show specified" do
         @imp.show_id = 99999
         Show.find_by_id(99999).should be_nil
         @imp.preview
-        @imp.errors.full_messages.should include('You must specify a show.')
+        @imp.errors.full_messages.should include('You must specify an existing show.')
       end
     end
   end

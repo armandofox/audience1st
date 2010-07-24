@@ -3,8 +3,12 @@ class TBAWebtixImport < Import
 
   private
 
+  def sanity_check
+    nil
+  end
+  
   # iterator that yields each row of a DBF as an array of strings, like csv_rows
-  def dbf_rows
+  def each_row
     DBF::Table.new(self.public_filename).each do |row|
       next if row.nil?
       yield row.to_a
@@ -13,12 +17,12 @@ class TBAWebtixImport < Import
 
   def get_ticket_orders
     check_columns = nil
-    self.dbf_rows.each do |row|
+    self.each_row do |row|
       # first row should contain all headers
     end
   end
 
-  def content_row?(row) ; row[0].to_s =~ /^[0-9]{6,}$/ ; end
+  def content_row?(row) ; row[0] =~ /^[0-9]{6,}$/ ; end
 
   def customer_from_row(row)
     # customer info:

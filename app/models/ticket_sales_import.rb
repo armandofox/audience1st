@@ -15,14 +15,15 @@ class TicketSalesImport < Import
   public
 
   def show_exists?
-    errors.add_to_base('You must specify an existing show.') unless
-      self.show_id && Show.find_by_id(show_id)
-  end
+    errors.add_to_base('You must specify an existing show.')  and return nil unless  self.show_id && Show.find_by_id(show_id)
+    true
+  end    
   
   def preview
     Customer.disable_email_sync
     do_import(false)
     Customer.enable_email_sync
+    messages << "This result doesn't seem right.  You may want to cancel the import unless you're sure this is what you expect." unless sanity_check
     []
   end
 
@@ -33,6 +34,8 @@ class TicketSalesImport < Import
 
   protected
 
+  def sanity_check ; nil ; end
+  
   def after_initialize          # called after AR::Base makes a new obj
     self.messages ||= []
     self.messages << "Show: #{show.name}" if show
@@ -46,11 +49,14 @@ class TicketSalesImport < Import
 
   def do_import(really_import=false)
     begin
+      return [] unless show_exists?
       transaction do
         get_ticket_orders
-        if self.show.adjust_metadata_from_showdates
-          self.messages <<
-            "Show info may be adjusted: house capacity #{self.show.house_capacity}, run dates #{self.show.opening_date.to_formatted_s(:month_day_only)} - #{self.show.closing_date.to_formatted_s(:month_day_only)}"
+        if show.adjust_metadata_from_showdates
+          messages << "House capacity adjusted to #{show.house_capacity} (was #{show.house_capacity_was})" if
+            show.house_capacity_changed?
+          messages << "Run dates adjusted to #{show.run_dates}" if
+            (show.opening_date_changed? || show.closing_date_changed?)
         end
         # all is well!  Roll back the transaction and report results.
         raise TicketSalesImport::PreviewOnly unless really_import

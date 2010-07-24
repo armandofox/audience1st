@@ -88,10 +88,10 @@ describe "BPT import" do
           @imp.vouchertype_from_row(make_row('Nonexistent',1),2010)
           @imp.created_vouchertypes.should have(1).vouchertype
         end
-        it "should have the correct price, and name with (BPT) appended" do
+        it "should have the correct price and name" do
           v = @imp.vouchertype_from_row(make_row('Voucher', 13.0),2010)
           v.price.should == 13
-          v.name.should == 'Voucher (BPT)'
+          v.name.should == 'Voucher'
         end
       end
     end

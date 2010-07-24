@@ -1,4 +1,8 @@
-%p= h(import.messages.join('<br/>'))
+%p
+  - import.messages.each do |msg|
+    = h msg
+    %br
+
 %p 
   - if import.number_of_records
     #{import.number_of_records - import.existing_vouchers} vouchers will be entered
