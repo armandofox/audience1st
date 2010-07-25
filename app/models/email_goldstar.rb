@@ -3,24 +3,6 @@ require 'application_controller.rb'
 require 'parseexcel'
 require 'generator'
 
-# There is a problem with Spreadsheet::ParseExcel wherein some of the strings
-# parsed from recent Excel files have embedded nulls, which screws everything
-# up.  Here's a method that overrides to_i, to_s, and to_f to fix this up.
-
-class String
-  def sqz ; self.gsub("\x00",'') ; end
-end
-module Spreadsheet
-  module ParseExcel
-    class Worksheet
-      class Cell
-        def to_s ; @value.to_s.sqz ; end
-        def to_i ; @value.to_s.sqz.to_i ; end
-        def to_f ; @value.to_s.sqz.to_f ; end
-      end
-    end
-  end
-end
 
 class EmailGoldstar < ActionMailer::Base
   @@verbose = false

@@ -1,5 +1,7 @@
 class BrownPaperTicketsImport < TicketSalesImport
 
+  require 'parseexcel'          # in case .xls file
+
   protected
   
   def sanity_check
