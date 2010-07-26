@@ -35,9 +35,9 @@ class Import < ActiveRecord::Base
     @messages ||= []
   end
 
-  def csv_rows
+  def csv_rows(fs=',')
     begin
-      CSV::Reader.create(IO.read(self.public_filename))
+      CSV::Reader.create(IO.read(self.public_filename), fs)
     rescue Exception => e
       msg = "Getting attachment data for #{self.filename}: #{e.message}"
       errors.add_to_base(msg)

@@ -1,7 +1,6 @@
 class BrownPaperTicketsImport < TicketSalesImport
-
-  require 'parseexcel'          # in case .xls file
-
+  require 'digest'
+  
   protected
   
   def sanity_check
@@ -11,12 +10,15 @@ class BrownPaperTicketsImport < TicketSalesImport
   end
 
   def each_row
-    self.csv_rows.each do |row|
+    delim = (public_filename =~ /\.csv$/i ?  "," : "\t")
+    self.csv_rows(delim).each do |row|
       yield row.map(&:to_s)
     end
   end
 
   private
+
+  def digest_from_string(str) ;  Digest::SHA1.hexdigest(str)[-3,3].hex ; end
 
   def get_ticket_orders
     # production name is in cell A2; be sure "All Dates" is B2
@@ -24,6 +26,7 @@ class BrownPaperTicketsImport < TicketSalesImport
     self.each_row do |row|
       @format_looks_ok = true and next if
         row[0].to_s =~ /^Will Call Tickets$/ || row[1].to_s =~ /^All Dates$/
+      @uniquify_key = digest_from_string(row[0]) and next if row[0] =~ /^Sales list for/
       if (content_row?(row))
         self.number_of_records += 1 
         if (voucher = ticket_order_from_row(row))
@@ -37,7 +40,10 @@ class BrownPaperTicketsImport < TicketSalesImport
   def content_row?(row) ; row[0].to_s =~ /^\s*[0-9]{6,}$/ ; end
 
   def ticket_order_from_row(row)
-    bpt_order_id = row[0].to_s
+    bpt_order_id =  row[0].to_s
+    # NEW-STYLE (6 digit) BPT order id's are not unique across shows, only within shows!!
+    # so we prepend our own show ID here to make it unique.
+    bpt_order_id = "#{@uniquify_key}#{bpt_order_id}" if bpt_order_id.length < 7
     self.existing_vouchers += 1 and return if already_entered?(bpt_order_id)
     
     customer = customer_from_row(row)
