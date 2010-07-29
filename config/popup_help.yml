@@ -54,9 +54,10 @@ delete_customers: >
 import_show_name:  >
  
   Because the format of will-call lists varies, you have to specify
-  which show this is for.  If it doesn't exist, click Create New Show to
-  set it up, then return here.  (You don't need to explicitly add show
-  dates or valid voucher types -- they'll be automatically created during the import.)
+  which show this is for.  If it doesn't exist, enter the name of a new
+  show, which will be automatically created in order to import the
+  list.  NOTE!  If you enter a new show name, that show will be created 
+  even if the import is aborted or fails.
 
 import_choose_file:  >
 

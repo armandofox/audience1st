@@ -4,6 +4,45 @@ describe ImportsController do
   before :each do
     ImportsController.send(:public, :partial_for_import)
   end
+  describe "creating new" do
+    before :each do ; @params = {:import => {:type => 'BrownPaperTicketsImport'}} ; end
+    it "should simply redirect if import type is not given" do
+      lambda { post :create }.should_not raise_error
+      response.should redirect_to new_import_path
+    end
+    context "when new show name is given" do
+      it "should create new show with valid name" do
+        Show.should_receive(:create_placeholder!).with('New Show')
+        post :create, {:new_show_name => 'New Show'}.merge(@params)
+      end
+      it "should create valid new show by making an invalid name valid" do
+        old  = Show.count(:all)
+        post :create, {:new_show_name => 'X'}.merge(@params)
+        Show.count(:all).should == 1+old
+        Show.find(:first, :order => 'created_on DESC').should be_valid
+      end
+      context "if new show name exactly matches existing show" do
+        before :all do ; @existing = Show.create_placeholder!('Existing Show') ; end
+        it "should not create a new show" do
+          Show.should_not_receive(:create_placeholder!)
+          post :create, {:new_show_name => 'Existing Show'}.merge(@params)
+        end
+        it "should display a warning message" do
+          post :create, {:new_show_name => 'Existing Show'}.merge(@params)
+          flash[:warning].should == 'Show "Existing Show" already exists.'
+        end
+        it "should redirect to new import" do
+          post :create, {:new_show_name => 'Existing Show'}.merge(@params)
+          response.should redirect_to :action => :new
+        end
+      end
+    end
+    it "should not try to create a new show if no new show name is given" do
+      @params[:show_id] = mock_model(Show).id.to_s
+      Show.should_not_receive(:create_placeholder!)
+      post :create, @params
+    end        
+  end
   describe "preview" do
     before(:each) do
       @import = TicketSalesImport.new
@@ -30,6 +69,4 @@ describe ImportsController do
       end
     end
   end
-
-
 end

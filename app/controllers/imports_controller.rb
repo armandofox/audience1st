@@ -1,14 +1,23 @@
 class ImportsController < ApplicationController
   include ActiveSupport::Inflector
   before_filter :is_admin
+  verify :method => :post, :only => %w[create update destroy]
 
   def new
     @import ||= Import.new
   end
 
   def create
+    redirect_to :action => :new and return unless params[:import]
     type = params[:import][:type]
     @import = (type.constantize).new(params[:import])
+    if !(new = params[:new_show_name]).blank?
+      if Show.find_by_name(new)
+        flash[:warning] = "Show \"#{new}\" already exists."
+        redirect_to :action => :new and return
+      end
+      @import.show = Show.create_placeholder!(new)
+    end
     if @import.save
       flash[:notice] = "A preview of what will be imported is below.  Records with errors will not be imported.  Click Continue Import to import non-error records and ignore records with errors, or click Cancel Import to do nothing."
       redirect_to edit_import_path(@import)

@@ -8,7 +8,9 @@
   %p
     %label{:for => :show_id} For will-call lists: which show is this for?
     = f.select :show_id, options_from_collection_for_select(Show.all.sort_by(&:opening_date).reverse, :id, :name, @import.show_id)
-    = link_to 'Create new show...', {:controller => :shows, :action => :new}, {:class => 'genButton'}
+    %br
+    %label{:for => :new_show_name} Or create new show named:
+    = text_field_tag :new_show_name, '', :size => 40, :maxlength => 40
     = popup_help_for :import_show_name
 
   - unless @import.size.to_i > 0
