@@ -78,6 +78,6 @@ class BrownPaperTicketsImport < TicketSalesImport
     #  not used: purchaser last/first name = 4,5 ; shipping country = 12
   end
 
-  def showdate_from_row(row) ;  import_showdate(row, 2) ;  end
+  def showdate_from_row(row) ;  import_showdate(row[2]) ;  end
       
 end

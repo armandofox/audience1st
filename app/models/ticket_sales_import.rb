@@ -35,6 +35,14 @@ class TicketSalesImport < Import
   protected
 
   def sanity_check ; nil ; end
+
+  def col_index(letters)
+    letters = letters.to_s.downcase.split('')
+    letters.length == 1 ?
+    letters[0].ord - 97 :
+      26 * (letters[0].ord - 96) + (letters[1].ord - 97)
+  end
+      
   
   def after_initialize          # called after AR::Base makes a new obj
     self.messages ||= []
@@ -52,12 +60,10 @@ class TicketSalesImport < Import
       return [] unless show_exists?
       transaction do
         get_ticket_orders
-        if show.adjust_metadata_from_showdates
-          messages << "House capacity adjusted to #{show.house_capacity} (was #{show.house_capacity_was})" if
-            show.house_capacity_changed?
-          messages << "Run dates adjusted to #{show.run_dates}" if
+        show.adjust_metadata_from_showdates
+        messages << "House capacity adjusted to #{show.house_capacity} (was #{show.house_capacity_was})" if show.house_capacity_changed?
+        messages << "Run dates adjusted to #{show.run_dates}" if
             (show.opening_date_changed? || show.closing_date_changed?)
-        end
         # all is well!  Roll back the transaction and report results.
         raise TicketSalesImport::PreviewOnly unless really_import
         # finalize other changes
@@ -69,7 +75,7 @@ class TicketSalesImport < Import
     rescue TicketSalesImport::PreviewOnly
       ;
     rescue TicketSalesImport::ShowNotFound
-      self.errors.add_to_base("Couldn't find production name in uploaded file")
+      self.errors.add_to_base("Couldn't find production name to associate with import")
     rescue TicketSalesImport::ImportError => e
       self.errors.add_to_base(e.message)
     rescue Exception => e
@@ -98,8 +104,8 @@ class TicketSalesImport < Import
     customer
   end
 
-  def import_showdate(row,pos)
-    event_date = Time.parse(row[pos].to_s)
+  def import_showdate(time_as_str)
+    event_date = Time.parse(time_as_str)
     unless (self.show.showdates &&
         sd = self.show.showdates.detect { |sd| sd.thedate == event_date })
       sd = Showdate.placeholder(event_date)

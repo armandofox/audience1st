@@ -1,7 +1,9 @@
 class ImportsController < ApplicationController
   include ActiveSupport::Inflector
   before_filter :is_admin
-  verify :method => :post, :only => %w[create update destroy]
+  verify :method => :post, :only => :create
+  verify :method => :put, :only => :update
+  verify :method => :delete, :only => :destroy
 
   def new
     @import ||= Import.new
@@ -95,7 +97,7 @@ class ImportsController < ApplicationController
   def partial_for_import(import)
     case import.class.to_s
     when 'CustomerImport' then 'customers/customer_with_errors'
-    when 'BrownPaperTicketsImport' then 'external_ticket_orders/external_ticket_order'
+    when 'BrownPaperTicketsImport', 'TBAWebtixImport' then 'external_ticket_orders/external_ticket_order'
     end
   end
 
