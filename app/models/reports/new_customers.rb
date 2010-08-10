@@ -1,6 +1,6 @@
 class NewCustomers < Report
 
-  def initialize
+  def initialize(options={})
   end
 
   def generate(params=[])

@@ -68,7 +68,8 @@ class TicketSalesImport < Import
         raise TicketSalesImport::PreviewOnly unless really_import
         # finalize other changes
         @created_customers.each { |customer| customer.save! }
-        self.save!             # saves new show and showdates too
+        self.show.save!             # save new show and showdates too
+        self.save!
       end
     rescue CSV::IllegalFormatError
       self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")

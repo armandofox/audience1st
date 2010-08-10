@@ -24,8 +24,8 @@ class TBAWebtixImport < TicketSalesImport
     verify_table_format
     self.each_row do |row|
       next unless content_row?(row)
-      self.number_of_records += 1
       if (vouchers = ticket_order_from_row(row))
+        self.number_of_records += 1
         @vouchers += vouchers
       end
     end
@@ -85,17 +85,14 @@ class TBAWebtixImport < TicketSalesImport
   def showdate_from_row(row) ;  import_showdate "#{row[2]} #{row[3]}" ; end
 
   def get_or_create_vouchertype(price,valid_year)
-    if @vouchertype # already found a vouchertype for this production
-      raise(TicketSalesImport::ImportError, "More than one price point found: 
-#{@vouchertype.price} and #{price}, at line #{number_of_records+1}") if @vouchertype.price != price
-    elsif (v = Vouchertype.find(:first,
+    if (v = Vouchertype.find(:first,
           :conditions => "price = #{price} AND name LIKE '#{TBA_VOUCHERTYPE_NAME}%'"))
       @vouchertype = v
     else
-      existing_tba_vouchertypes =
+      count_existing_tba_vouchertypes =
         Vouchertype.count(:conditions => "name LIKE '#{TBA_VOUCHERTYPE_NAME}%'")
       new_vouchertype_name =
-        "#{TBA_VOUCHERTYPE_NAME} #{existing_tba_vouchertypes+1}"
+        "#{TBA_VOUCHERTYPE_NAME} #{count_existing_tba_vouchertypes+1}"
       @vouchertype =
         Vouchertype.create_external_voucher_for_season!(new_vouchertype_name, price, valid_year)
       @created_vouchertypes << @vouchertype

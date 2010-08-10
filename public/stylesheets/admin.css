@@ -352,9 +352,13 @@ table.import td {
 	border-style: dotted;
 }
 
-#import_help p {
+#import_help div {
     margin-left: 200px;
     margin-right: 200px;
     border: 2px solid grey;
     padding: 2px 4px;
+}
+#import_help ul, #import_help ol {
+    list-style: square;
+    margin-left: 2em;
 }

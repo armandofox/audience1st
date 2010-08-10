@@ -1,9 +1,15 @@
-%p
-  To import from Tix Bay Area: Log in to your TBA account.  Click on
-  <strong>Report for the run of a show</strong>.  Select the desired
-  show, and 
-  <strong>check all of the checkboxes</strong>
-  for what to include in the report; then click Run the Report.  When
-  the report appears, at the top of the screen click <strong>Save Report
-  as DBF File</strong>.  This DBF file is the file you should select for
-  upload below.
+%div
+  To import from Tix Bay Area: 
+  %ul
+    %li Log in to your TBA account.  
+    %li Click on <strong>Report for the run of a show</strong>.  
+    %li Select desired show, and <strong>check all of the checkboxes</strong> for what to include in the report.
+    %li Click Run the Report.  
+    %li 
+      When the report appears, at the top of the screen click <strong>Save Report
+      as DBF File</strong>.  This DBF file is the file you should select for
+      upload below.
+  %strong Note:
+  For existing voucher types to be matched to price points in the imported file,
+  the voucher type names <strong>must</strong> begin with 
+  %strong= TBAWebtixImport::TBA_VOUCHERTYPE_NAME
