@@ -1,0 +1,26 @@
+%h1 Bulk Download
+
+%p
+  This is an experimental feature that will attempt to download multiple
+  will-call lists from a single vendor at one time, and set up each one as 
+  a new import.
+
+%p
+  This feature only downloads the lists; you must then preview and approve 
+  each list to finalize the import of that list.
+
+- form_for :bulk_download, :url => bulk_downloads_path do |f|
+  %p
+    %label{:for => :vendor} Which vendor:
+    = f.select :vendor, options_for_select(BulkDownload.vendors)
+
+  %p
+    %label{:for => :username} Username:
+    = f.text_field :username
+    = popup_help_for :bulk_download_login
+
+  %p
+    %label{:for => :password} Password:
+    = f.text_field :password
+
+  = f.submit "Find Sales Reports"

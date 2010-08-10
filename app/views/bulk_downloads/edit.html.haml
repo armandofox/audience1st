@@ -1,0 +1,29 @@
+%h1 Specify Shows
+
+%p
+  For each sales report identified, you must either select an existing show 
+  to import to, or type the name of a new show.
+
+%p
+  If you can't tell from the file name what show the report is for, 
+  uncheck the box next to it and that report won't be downloaded, 
+  and you can import it manually later.
+
+- shows = options_from_collection_for_select(Show.all.sort_by(&:opening_date), :id, :name)
+- form_tag :action => 'create_all', :method => :post do 
+  %table
+    %thead
+      %tr
+        %th Import?
+        %th Name on vendor site
+        %th Import to existing show
+        %th Or type name of new show
+    %tbody
+      - @download.report_names.each_pair do |production,key|
+        %tr
+          %td.c= check_box_tag "import_#{key}", 1, true
+          %td= truncate_with_hovering(h(production), :length => 40)
+          %td= select_tag "show_#{key}", shows
+          %td= text_field_tag "new_#{key}", '', :size => 40, :maxlength => 40
+        
+ 

@@ -21,6 +21,7 @@ module NavigationHelpers
       page = $1
       case page
       when /settings/i ; '/options/edit' 
+      when /bulk import/i ; '/bulk_downloads/new'
       when /import/i   ; '/imports/new'
       else ; raise "No mapping for admin:#{page}"
       end

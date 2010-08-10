@@ -43,6 +43,7 @@ Rails::Initializer.run do |config|
   config.gem "activemerchant", :lib => "active_merchant"
   config.gem "haml"
   config.gem "dbf"
+  config.gem "hpricot"
   
   # config.gem "rack", :version => '1.1.0'
 

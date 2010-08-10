@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :bulk_downloads
+
   map.resources :donation_funds
   map.resources :imports
 
