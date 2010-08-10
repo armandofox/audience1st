@@ -1,11 +1,12 @@
-%table.hilite
+%table#imports_list.hilite
   %thead
     %tr
       %th Type of import
+      %th Show
       %th Uploaded file name
-      %th File Size
-      %th Completed by
-      %th 
+      %th Size
+      %th Completed?
+      %th # Records
   %tbody
     = render :partial => 'import', :collection => @imports
 

@@ -18,6 +18,8 @@ class TicketSalesImport < Import
     errors.add_to_base('You must specify an existing show.')  and return nil unless  self.show_id && Show.find_by_id(show_id)
     true
   end    
+
+  def show_name ;   show_exists? ? show.name : '???'  ;  end
   
   def preview
     Customer.disable_email_sync

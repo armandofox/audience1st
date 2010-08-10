@@ -1,109 +1,50 @@
+/* @override http://localhost:3000/stylesheets/admin.css?1281415932 */
+
 /* @override http://localhost:3000/stylesheets/admin.css?1274661090 */
 
-/*
-  Eric Meyer's CSS Reset Reloaded
-  http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
-*/
-
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, font, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        outline: 0;
-        font-weight: inherit;
-        font-style: inherit;
-        font-size: 100%;
-        font-family: inherit;
-        vertical-align: baseline;
-}
-/* remember to define focus styles! */
-:focus {
-        outline: 0;
-}
 /* in testing or sandbox mode, body should look different */
 body.testing {
   border: 4px solid red;
   margin: 4px;
 }
 
-
-/*
- * Generic classes for admin-only visible elements
- */
-.infoMsg {
-  color: red;
-  margin: 5px 5px;
-  padding: 5px 5px;
-  font-size: 125%;
-  border: 2px solid red;
- }
-
-.admin {
-   background-color:  #eff19e;
-   color: black;
-}
-.adminDiv {
-   background-color:  #eff19e;
-   display: block;
-}
-.adminField {
-   clear: both;
-   padding: 2px 10px;
-   background-color: #eff19e;
-   color: black;
-}
-.adminButton {
-   color: black;
-   background-color: whitesmoke;
-   border:  1px solid black;
-   margin: 1px;
-   padding: 2px;
-   line-height: 1.5em;
-}
-
-.adminButton:hover {
-   background-color:  #eff19e;
-   color: maroon;
-   border:  1px solid maroon;
-   text-decoration: none;
-}
-
-/* Additional field qualifiers for errors etc */
-
-.validatedAddress {
-  background-color: #1f1;
- }
-.validationError {
-  color: red;
- }
-
-.highlighted {
-  background-color: #9f9;
-}
-
-.fieldWithErrors {
-  padding: 2px;
-  background-color: red;
-  display: table;
-}
-
-.disabledField {
-	background-color: #e6e6e6;
-	border: none;
-	color: #000;
-	font-weight: bold;
-}
-
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
+
+/* General tabular styles */
+
+table.hilite tr {
+	padding: 2px 0;
+	line-height: 1.2;
+}
+/*
+ * Tooltip styles (http://psacake.com/web/jl.asp)
+ */
+
+/* Styling of the popup tooltip */
+span.tooltip {
+    position:relative; /*this is the key*/
+    z-index:24; 
+    }
+
+span.tooltip:hover{
+	z-index:25; 
+	background-color:#ff0
+	}
+
+span.tooltip span{
+	display: none  
+}
+span.tooltip:hover span { /* will display just on :hover state*/
+    display:block;
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 20em;
+    background-color:#cff; 
+    color:#000;
+}
 
 /*
  * Quick search customer panel
@@ -362,3 +303,4 @@ table.import td {
     list-style: square;
     margin-left: 2em;
 }
+
