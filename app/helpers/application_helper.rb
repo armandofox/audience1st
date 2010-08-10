@@ -34,6 +34,12 @@ module ApplicationHelper
     end
   end
 
+  def truncate_with_hovering(str, opts={})
+    str = h(str)
+    content_tag(:span, truncate(str,opts) + content_tag(:span, str),
+      :class => 'tooltip') 
+  end
+
   # gracefully show a range of dates
   def humanize_date_range(d1,d2,separator=" - ")
     d2,d1 = d1,d2 if d1 > d2
