@@ -1,6 +1,6 @@
-class BulkDownload
-
+class BulkDownload < ActiveRecord::Base
   require 'mechanize'
+  serialize :report_names, Hash
 
   attr_accessor :report_names
   cattr_reader :vendors
@@ -13,7 +13,11 @@ class BulkDownload
             when 'Tix Bay Area' then TBADownload
             else raise "Don't know how to bulk download from #{type}"
             end
-    return klass.send(:new, args[:username], args[:password])
+    return klass.send(:new, :username => args[:username], :password => args[:password])
   end
+
+  def import_class ; raise "Must override this method in subclasses" ; end
+
+  
 
 end

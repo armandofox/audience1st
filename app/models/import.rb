@@ -1,6 +1,8 @@
 class Import < ActiveRecord::Base
   require 'csv'
 
+  UPLOADED_FILES_PATH = File.join(RAILS_ROOT, 'tmp', Option.value(:venue_shortname) || 'default')
+
   belongs_to :completed_by, :class_name => 'Customer'
   def self.foreign_keys_to_customer ;  [:completed_by_id] ;  end
 
@@ -16,8 +18,9 @@ class Import < ActiveRecord::Base
     @@import_types.index(self.type.to_s)
   end
 
-  has_attachment(:storage => :file_system,
-    :path_prefix => File.join(RAILS_ROOT, 'tmp', Option.value(:venue_shortname) || 'default'),
+  has_attachment(
+    :storage => :file_system,
+    :path_prefix => UPLOADED_FILES_PATH,
     :max_size => 10.megabytes)
 
   validates_as_attachment
@@ -33,6 +36,20 @@ class Import < ActiveRecord::Base
   attr_accessor :messages
   def messages
     @messages ||= []
+  end
+
+  # allow already-downloaded file to serve as attachment data for a has_attachment model
+  def source_data=(data,content_type='application/octet-stream')
+    file = Tempfile.new("upload_", UPLOADED_FILES_PATH)
+    file.write(data)
+    filename = file.path
+    io = open(filename)
+    (class << io; self; end;).class_eval do
+      define_method(:original_filename) { filename.split('/').last }
+      define_method(:content_type) { content_type }
+      define_method(:size) { File.size(filename)}
+    end
+    self.uploaded_data = io
   end
 
   def csv_rows(fs=',')

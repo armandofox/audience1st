@@ -41,7 +41,7 @@ span.tooltip:hover span { /* will display just on :hover state*/
     position:absolute;
     top: 0;
     left: 0;
-    width: 20em;
+    width: inherit;
     background-color:#cff; 
     color:#000;
 }

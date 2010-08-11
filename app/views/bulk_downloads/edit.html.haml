@@ -10,7 +10,7 @@
   and you can import it manually later.
 
 - shows = options_from_collection_for_select(Show.all.sort_by(&:opening_date), :id, :name)
-- form_tag :action => 'create_all', :method => :post do 
+- form_tag :url => bulk_download_path(@download) do 
   %table
     %thead
       %tr
@@ -21,9 +21,12 @@
     %tbody
       - @download.report_names.each_pair do |production,key|
         %tr
-          %td.c= check_box_tag "import_#{key}", 1, true
-          %td= truncate_with_hovering(h(production), :length => 40)
-          %td= select_tag "show_#{key}", shows
-          %td= text_field_tag "new_#{key}", '', :size => 40, :maxlength => 40
-        
+          %td.c= check_box_tag "import[#{key}]", 1, true
+          %td= truncate_with_hovering(production, :length => 40)
+          %td= select_tag "show[#{key}]", shows
+          %td= text_field_tag "new[#{key}]", '', :size => 40, :maxlength => 40
+
+  = hidden_field_tag 'import_class', @download.import_class
+  = submit_tag 'Stage Imports'
+  = link_to 'Cancel', {:action => :new}, {:class => 'genButton'}
  
