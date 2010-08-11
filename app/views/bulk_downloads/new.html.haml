@@ -10,17 +10,5 @@
   each list to finalize the import of that list.
 
 - form_for :bulk_download, :url => bulk_downloads_path do |f|
-  %p
-    %label{:for => :vendor} Which vendor:
-    = f.select :vendor, options_for_select(BulkDownload.vendors)
-
-  %p
-    %label{:for => :username} Username:
-    = f.text_field :username
-    = popup_help_for :bulk_download_login
-
-  %p
-    %label{:for => :password} Password:
-    = f.text_field :password
-
+  = render :partial => 'bulk_download', :locals => {:f => f}
   = f.submit "Find Sales Reports"

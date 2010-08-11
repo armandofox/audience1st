@@ -9,24 +9,34 @@
   uncheck the box next to it and that report won't be downloaded, 
   and you can import it manually later.
 
-- shows = options_from_collection_for_select(Show.all.sort_by(&:opening_date), :id, :name)
-- form_tag :url => bulk_download_path(@download) do 
+
+- shows = options_for_select({'' => 0}) + options_from_collection_for_select(Show.all.sort_by(&:name), :id, :name)
+- form_for @download.becomes(BulkDownload) do |f|
+  = render :partial => 'bulk_download', :locals => {:bulk_download => @download, :f => f}
   %table
     %thead
       %tr
         %th Import?
         %th Name on vendor site
         %th Import to existing show
-        %th Or type name of new show
+        %th Or enter name of new show
     %tbody
-      - @download.report_names.each_pair do |production,key|
-        %tr
-          %td.c= check_box_tag "import[#{key}]", 1, true
-          %td= truncate_with_hovering(production, :length => 40)
-          %td= select_tag "show[#{key}]", shows
-          %td= text_field_tag "new[#{key}]", '', :size => 40, :maxlength => 40
-
-  = hidden_field_tag 'import_class', @download.import_class
-  = submit_tag 'Stage Imports'
-  = link_to 'Cancel', {:action => :new}, {:class => 'genButton'}
+      %tr
+        %td.c
+          = link_to_function 'All', check_all('chk')
+          \|
+          = link_to_function 'None', uncheck_all('chk')
+        %td
+        %td
+        %td
+      - if @download.report_names
+        - @download.report_names.each_pair do |production,key|
+          %tr
+            %td.c= check_box_tag "import[#{key}]", 1, true, {:class => 'chk'}
+            %td= truncate_with_hovering(production, :length => 40)
+            %td= select_tag "show[#{key}]", shows
+            %td= text_field_tag "new[#{key}]", '', :size => 40, :maxlength => 40
+            
+  = f.submit 'Stage Imports'
+= button_to 'Cancel', bulk_download_path(@download), {:method => :delete}
  

@@ -83,15 +83,19 @@ class ImportsController < ApplicationController
     @import ||= Import.find(params[:id])
     flash[:notice] = "Import of file #{@import.filename} cancelled."
     delete_original_attachment
-    @import.destroy
+    @import.destroy rescue nil
     redirect_to :action => :index
   end
 
   private
 
   def delete_original_attachment
-    FileUtils.rm_rf @import.full_filename
-    logger.info "Deleting #{@import.full_filename}"
+    begin
+      FileUtils.rm_rf @import.full_filename
+      logger.info "Deleting #{@import.full_filename}"
+    rescue Exception => e
+      logger.info "Deleting original attachment for import ID #{@import.id}: #{e.message}"
+    end
   end
 
   def partial_for_import(import)

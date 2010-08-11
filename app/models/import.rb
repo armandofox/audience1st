@@ -23,13 +23,13 @@ class Import < ActiveRecord::Base
     :path_prefix => UPLOADED_FILES_PATH,
     :max_size => 10.megabytes)
 
-  validates_as_attachment
+  #validates_as_attachment
   validate :valid_type?
 
   def valid_type?
     allowed_types = Import.import_types.values
-    unless allowed_types.include?(self.type)
-      errors.add_to_base "I don't understand what you're trying to import (possibilities are #{allowed_types.join(',')})"
+    unless allowed_types.include?(self.type.to_s)
+      errors.add_to_base "I don't understand how to import '#{self.type}' (possibilities are #{allowed_types.join(',')})"
     end
   end
 
@@ -39,17 +39,24 @@ class Import < ActiveRecord::Base
   end
 
   # allow already-downloaded file to serve as attachment data for a has_attachment model
-  def source_data=(data,content_type='application/octet-stream')
-    file = Tempfile.new("upload_", UPLOADED_FILES_PATH)
-    file.write(data)
-    filename = file.path
-    io = open(filename)
+  def set_source_data(data,content_type='application/octet-stream')
+    length = 0
+    full_filename = short_filename = ''
+    f = Tempfile.new("upload_", UPLOADED_FILES_PATH) 
+    full_filename = f.path
+    short_filename = full_filename.split('/').last
+    length = f.write(data)
+    logger.info "Wrote #{length} of #{data.size} bytes to #{full_filename}"
+    logger.info data
+    f.close
+    io = open(full_filename)
     (class << io; self; end;).class_eval do
-      define_method(:original_filename) { filename.split('/').last }
+      define_method(:original_filename) { short_filename }
       define_method(:content_type) { content_type }
-      define_method(:size) { File.size(filename)}
+      define_method(:size) { length }
     end
     self.uploaded_data = io
+    self.filename = short_filename
   end
 
   def csv_rows(fs=',')

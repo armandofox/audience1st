@@ -2,7 +2,12 @@ class BulkDownload < ActiveRecord::Base
   require 'mechanize'
   serialize :report_names, Hash
 
-  attr_accessor :report_names
+  validate :report_names_retrieved
+
+  def report_names_retrieved
+    errors.add_to_base "No report names could be retrieved.  Make sure your login and password are correct." unless report_names && report_names.is_a?(Hash)
+  end
+
   cattr_reader :vendors
   @@vendors = ['Brown Paper Tickets', 'Tix Bay Area']
 
@@ -13,7 +18,8 @@ class BulkDownload < ActiveRecord::Base
             when 'Tix Bay Area' then TBADownload
             else raise "Don't know how to bulk download from #{type}"
             end
-    return klass.send(:new, :username => args[:username], :password => args[:password])
+    return klass.send(:new, :username => args[:username], :password => args[:password],
+      :vendor => args[:vendor])
   end
 
   def import_class ; raise "Must override this method in subclasses" ; end

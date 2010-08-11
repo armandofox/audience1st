@@ -85,6 +85,24 @@ module ApplicationHelper
       content_tag(:span, link_to(s, opts, html_opts), :id => opt, :class => opt)
   end
 
+  # return javascript that will do check-all/uncheck-all for checkboxes that have
+  # a given CSS class
+
+  def apply_to_each(selector,javascript)
+    "\$\$('#{selector}').each( #{javascript} ); return false;"
+  end
+
+  def check_all(css_class,form_id=nil)
+    selector = form_id.blank? ? "input.#{css_class}" : "##{form_id} input.#{css_class}"
+    apply_to_each(selector, "function(box) { box.checked=true }")
+  end
+
+  def uncheck_all(css_class,form_id=nil)
+    selector = form_id.blank? ? "input.#{css_class}" : "##{form_id} input.#{css_class}"
+    apply_to_each(selector, "function(box) { box.checked=false }")
+  end
+
+
   # return a checkbox that "protects" another form element by hiding/showing it
   # when checked/unchecked, given initial state.  It's the caller's responsibility
   # to ensure the initial state matches the actual display state of the
