@@ -32,5 +32,10 @@ class BrownPaperTicketsDownload < BulkDownload
     end
     report_names
   end
-  
+
+  def get_one_file(key)
+    init_session
+    result = @session.get "#{BASE_URL}/downloadreports.xls?e_id=#{key}&d_id=&report=names&report_type=complete"
+    return [result.body, 'application/vnd.ms-excel']
+  end
 end

@@ -4,7 +4,7 @@
   %p Filename: #{h @import.filename}
   %p Size: #{number_to_human_size @import.size}
   - if @collection.empty?
-    %p Import source contains #{@import.number_of_records} total records
+    %p #{@import.number_of_records} were successfully read from import source
   - else
     %p Previewing #{@collection.size} of #{@import.number_of_records} total records
 

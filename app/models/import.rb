@@ -42,7 +42,7 @@ class Import < ActiveRecord::Base
   def set_source_data(data,content_type='application/octet-stream')
     length = 0
     full_filename = short_filename = ''
-    f = Tempfile.new("upload_", UPLOADED_FILES_PATH) 
+    f = File.new(File.join(UPLOADED_FILES_PATH,"upload_#{Time.now.usec}"),"w+",0600)
     full_filename = f.path
     short_filename = full_filename.split('/').last
     length = f.write(data)
