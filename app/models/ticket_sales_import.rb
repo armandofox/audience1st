@@ -38,13 +38,13 @@ class TicketSalesImport < Import
 
   def sanity_check ; nil ; end
 
-  def col_index(letters)
+  def self.col_index(letters)
     letters = letters.to_s.downcase.split('')
     letters.length == 1 ?
     letters[0].ord - 97 :
       26 * (letters[0].ord - 96) + (letters[1].ord - 97)
   end
-      
+  def col_index(letters) ; TicketSalesImport.col_index(letters) ; end
   
   def after_initialize          # called after AR::Base makes a new obj
     self.messages ||= []
@@ -82,8 +82,8 @@ class TicketSalesImport < Import
     rescue TicketSalesImport::ImportError => e
       self.errors.add_to_base(e.message)
     rescue Exception => e
-      self.errors.add_to_base("Unexpected error: #{e.message} - #{e.backtrace}")
-      RAILS_DEFAULT_LOGGER.info "Importing id #{self.id}: #{e.message}"
+      self.errors.add_to_base("Unexpected error: #{e.message}")
+      RAILS_DEFAULT_LOGGER.info "Importing id #{self.id} at record #{self.number_of_records}: #{e.message}\n#{e.backtrace}"
     end
     @vouchers
   end
@@ -91,7 +91,8 @@ class TicketSalesImport < Import
   def import_customer(row,args)
     attribs = {}
     [:first_name, :last_name, :street, :city, :state, :zip, :day_phone, :email].each do |attr|
-      attribs[attr] = row[args[attr]].to_s if args.has_key?(attr)
+      # special case: "N/A" is same as blank
+      attribs[attr] = row[args[attr]] if (args.has_key?(attr)  && row[args[attr]] != 'N/A')
     end
     customer = Customer.new(attribs)
     customer.force_valid = customer.created_by_admin = true

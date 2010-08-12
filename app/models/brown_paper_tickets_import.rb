@@ -2,6 +2,23 @@ class BrownPaperTicketsImport < TicketSalesImport
   require 'digest'
   
   protected
+
+  # column indices - BPT keeps changing these
+  ORDER_DATE = self.col_index :c
+  ORDER_NOTES = self.col_index :s
+  VOUCHERTYPE_NAME = self.col_index :t
+  PRICE = self.col_index :u
+
+  SHOWDATE = self.col_index :d
+
+  LAST_NAME = self.col_index :h
+  FIRST_NAME = self.col_index :i
+  STREET = self.col_index :j
+  CITY = self.col_index :k
+  STATE = self.col_index :l
+  ZIP = self.col_index :m
+  PHONE = self.col_index :o
+  EMAIL = self.col_index :p
   
   def sanity_check
     @format_looks_ok &&
@@ -10,8 +27,7 @@ class BrownPaperTicketsImport < TicketSalesImport
   end
 
   def each_row
-    delim = (public_filename =~ /\.csv$/i ?  "," : "\t")
-    self.csv_rows(delim).each do |row|
+    self.csv_rows("\t").each do |row|
       yield row.map(&:to_s)
     end
   end
@@ -25,8 +41,7 @@ class BrownPaperTicketsImport < TicketSalesImport
     @format_looks_ok = nil
     self.each_row do |row|
       @format_looks_ok = true and next if
-        row[0].to_s =~ /^Will Call Tickets$/ || row[1].to_s =~ /^All Dates$/
-      @uniquify_key = digest_from_string(row[0]) and next if row[0] =~ /^Sales list for/
+        row[0] =~ /^Will Call Tickets$/ || row[1] =~ /^All Dates$/
       if (content_row?(row))
         self.number_of_records += 1 
         if (voucher = ticket_order_from_row(row))
@@ -39,18 +54,19 @@ class BrownPaperTicketsImport < TicketSalesImport
 
   def content_row?(row) ; row[0].to_s =~ /^\s*[0-9]{6,}$/ ; end
 
+  def get_unique_order_id_from_row(row)
+    (row[0].to_i + row[1].to_i).to_s
+  end
+
   def ticket_order_from_row(row)
-    bpt_order_id =  row[0].to_s
-    # NEW-STYLE (6 digit) BPT order id's are not unique across shows, only within shows!!
-    # so we prepend our own show ID here to make it unique.
-    bpt_order_id = "#{@uniquify_key}#{bpt_order_id}" if bpt_order_id.length < 7
+    bpt_order_id = get_unique_order_id_from_row(row)
     self.existing_vouchers += 1 and return if already_entered?(bpt_order_id)
     
     customer = customer_from_row(row)
     showdate = showdate_from_row(row)
     vouchertype = vouchertype_from_row(row, showdate.thedate.year)
-    order_date = Time.parse(row[1].to_s)
-    order_notes = row[17].to_s
+    order_date = Time.parse(row[ORDER_DATE])
+    order_notes = row[ORDER_NOTES].to_s
 
     voucher = Voucher.new_from_vouchertype(vouchertype, :showdate => showdate,
       :sold_on => order_date,
@@ -61,8 +77,8 @@ class BrownPaperTicketsImport < TicketSalesImport
   end
 
   def vouchertype_from_row(row, year)
-    name = row[18].to_s
-    price = row[19].gsub(/[^0-9.]/,'').to_f
+    name = row[VOUCHERTYPE_NAME].to_s
+    price = row[PRICE].gsub(/[^0-9.]/,'').to_f
     unless (vt = Vouchertype.find_by_name_and_price_and_category(name, price, [:comp,:revenue]))
       vt = Vouchertype.create_external_voucher_for_season!(name, price, year.to_i) 
       @created_vouchertypes << vt
@@ -72,12 +88,12 @@ class BrownPaperTicketsImport < TicketSalesImport
     
   def customer_from_row(row)
     return import_customer(row,
-      :last_name => 6, :first_name => 7,
-      :street => 8, :city => 9, :state => 10, :zip => 11,
-      :day_phone => 13, :email => 14)
+      :last_name => LAST_NAME, :first_name => FIRST_NAME,
+      :street => STREET, :city => CITY, :state => STATE, :zip => ZIP,
+      :day_phone => PHONE, :email => EMAIL)
     #  not used: purchaser last/first name = 4,5 ; shipping country = 12
   end
 
-  def showdate_from_row(row) ;  import_showdate(row[2]) ;  end
+  def showdate_from_row(row) ;  import_showdate(row[SHOWDATE]) ;  end
       
 end

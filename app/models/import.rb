@@ -61,7 +61,8 @@ class Import < ActiveRecord::Base
 
   def csv_rows(fs=',')
     begin
-      CSV::Reader.create(IO.read(self.public_filename), fs)
+      # strip stray ^M's from DOS files
+      CSV::Reader.create(IO.read(self.public_filename).gsub(/\r\n/,' '), fs)
     rescue Exception => e
       msg = "Getting attachment data for #{self.filename}: #{e.message}"
       errors.add_to_base(msg)
