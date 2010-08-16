@@ -90,7 +90,8 @@ class BrownPaperTicketsImport < TicketSalesImport
     return import_customer(row,
       :last_name => LAST_NAME, :first_name => FIRST_NAME,
       :street => STREET, :city => CITY, :state => STATE, :zip => ZIP,
-      :day_phone => PHONE, :email => EMAIL)
+      :day_phone => PHONE, :email => EMAIL,
+      :last_login => ORDER_DATE, :updated_at => ORDER_DATE)
     #  not used: purchaser last/first name = 4,5 ; shipping country = 12
   end
 

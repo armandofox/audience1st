@@ -79,7 +79,10 @@ class TBAWebtixImport < TicketSalesImport
       :state => col_index(:cb),
       :zip => col_index(:cc),
       :day_phone => col_index(:ci),
-      :email => col_index(:cj))
+      :email => col_index(:cj),
+      :last_login => col_index(:j),
+      :updated_at => col_index(:j)
+      )
   end
 
   def showdate_from_row(row) ;  import_showdate "#{row[2]} #{row[3]}" ; end

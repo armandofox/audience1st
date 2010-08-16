@@ -90,7 +90,7 @@ class TicketSalesImport < Import
   
   def import_customer(row,args)
     attribs = {}
-    [:first_name, :last_name, :street, :city, :state, :zip, :day_phone, :email].each do |attr|
+    [:first_name, :last_name, :street, :city, :state, :zip, :day_phone, :email, :last_login, :updated_at].each do |attr|
       # special case: "N/A" is same as blank
       attribs[attr] = row[args[attr]] if (args.has_key?(attr)  && row[args[attr]] != 'N/A')
     end
