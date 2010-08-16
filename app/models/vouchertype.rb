@@ -4,7 +4,9 @@ class Vouchertype < ActiveRecord::Base
   has_many :showdates, :through => :valid_vouchers
   serialize :included_vouchers, Hash
 
-  validates_length_of :name, :within => 3..40, :message => "Voucher type name must be between 3 and 40 characters"
+  NAME_LIMIT = 40
+
+  validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
   validates_numericality_of :price, :greater_than_or_equal_to => 0
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")

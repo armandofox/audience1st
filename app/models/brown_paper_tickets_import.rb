@@ -77,7 +77,7 @@ class BrownPaperTicketsImport < TicketSalesImport
   end
 
   def vouchertype_from_row(row, year)
-    name = row[VOUCHERTYPE_NAME].to_s
+    name = row[VOUCHERTYPE_NAME].to_s[0,Vouchertype::NAME_LIMIT]
     price = row[PRICE].gsub(/[^0-9.]/,'').to_f
     unless (vt = Vouchertype.find_by_name_and_price_and_category(name, price, [:comp,:revenue]))
       vt = Vouchertype.create_external_voucher_for_season!(name, price, year.to_i) 
