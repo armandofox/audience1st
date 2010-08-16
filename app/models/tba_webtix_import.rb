@@ -32,7 +32,8 @@ class TBAWebtixImport < TicketSalesImport
   end
 
   def verify_table_format
-    @table = DBF::Table.new(self.public_filename)
+    filename = File.join(UPLOADED_FILES_PATH, self.filename)
+    @table = DBF::Table.new(filename)
     raise(TicketSalesImport::ImportError, "Unable to convert exported table") unless @table
     raise(TicketSalesImport::ImportError, "Wrong number of columns in exported table (expected 96, got #{@table.columns.length})") unless
       @table.columns.length == 96
