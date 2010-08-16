@@ -1,7 +1,7 @@
 class Import < ActiveRecord::Base
   require 'csv'
 
-  UPLOADED_FILES_PATH = File.join(RAILS_ROOT, 'tmp', Option.value(:venue_shortname) || 'default')
+  UPLOADED_FILES_PATH = File.join(RAILS_ROOT, 'tmp')
 
   belongs_to :completed_by, :class_name => 'Customer'
   def self.foreign_keys_to_customer ;  [:completed_by_id] ;  end

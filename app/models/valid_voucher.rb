@@ -197,7 +197,7 @@ EOCONDS1
 
   def self.numseats_for_showdate(sd,cust,opts={})
     sd = Showdate.find(sd) unless (sd.kind_of?(Showdate))
-    sd.vouchertypes.map { |v| numseats_for_showdate_by_vouchertype(sd,cust,v,opts) }
+    sd.available_vouchertypes.map { |v| numseats_for_showdate_by_vouchertype(sd,cust,v,opts) }
      # BUG: retrieve promo_codes from opts
      # BUG: need to consider somewhere whether voucher is expired
   end
