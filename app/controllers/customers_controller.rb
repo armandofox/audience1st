@@ -227,30 +227,39 @@ class CustomersController < ApplicationController
   end
 
   def merge
-    if (!params[:merge]) || (params[:merge].keys.length != 2)
+    if (params[:commit] =~ /merge/i) &&
+        (!params[:merge] || (params[:merge].keys.length != 2))
       flash[:notice] = 'You must select exactly 2 records at a time to merge.'
       redirect_to_last_list and return
     end
     @cust = params[:merge].keys.map { |x| Customer.find_by_id(x.to_i) }
-    if @cust[0].nil? || @cust[1].nil?
-      flash[:error] = "At least one customer not found. Please try again."
-      redirect_to_last_list and return
-    end
-    # automatic merge?
-    if params[:commit] =~ /automatically/i
-      do_automatic_merge(*params[:merge].keys)
+    if @cust.any? { |c| c.nil? }
+      flash[:warning] = "At least one customer not found. Please try again."
       redirect_to_last_list and return
     end
     @offset = params[:offset]
     @last_action_name = params[:action_name]
-    # fall through to merge.html.haml
+    # automatic merge?
+    case params[:commit]
+    when /forget/i, /expunge/i
+      flash[:warning] = "Forget and expunge will be implemented soon"
+      redirect_to_last_list and return
+    when /auto/i
+      do_automatic_merge(*params[:merge].keys)
+      redirect_to_last_list and return
+    when /manual/i
+      # fall through to merge.html.haml
+    else
+      flash[:warning] = "Unrecognized action: #{params[:commit]}"
+      redirect_to_last_list and return
+    end
   end
 
   def finalize_merge
     c0 = Customer.find_by_id(params.delete(:cust0))
     c1 = Customer.find_by_id(params.delete(:cust1))
     unless c0 && c1
-      flash[:error] = "At least one customer not found. Please try again."
+      flash[:warning] = "At least one customer not found. Please try again."
       redirect_to_last_list and return
     end
     result = c0.merge_with_params!(c1, params)

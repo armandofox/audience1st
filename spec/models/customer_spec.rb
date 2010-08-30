@@ -99,9 +99,9 @@ describe Customer do
       @customer.errors.on(:password).should match(/doesn't match confirmation/i)
     end
   end
-  describe "special customer that cannot fail validation or be destroyed:" do
-    %w[walkup_customer generic_customer boxoffice_daemon].each do |c|
-      it c.humanize do
+  describe "special" do
+    %w[walkup_customer generic_customer anonymous_customer boxoffice_daemon].each do |c|
+      it "#{c.humanize} cannot be destroyed" do
         cust = Customer.send(c)
         lambda { cust.destroy }.should raise_error
       end
@@ -458,6 +458,28 @@ describe Customer do
       end
     end
   end
+
+  describe "merging with Anonymous" do
+    before :each do
+      @cust = BasicModels.create_generic_customer
+    end
+    it "should not change any of special customer's attribute values"
+    it "should delete the record for the original customer"
+    [Donation, Voucher, Txn, Visit, Import].each do |t|
+      it "should preserve old customer's #{t}s"
+    end
+  end
+  
+  describe "expunging" do
+    before :each do
+      @cust = BasicModels.create_generic_customer
+    end
+    it "should delete the customer"
+    [Donation, Voucher, Txn, Visit, Import].each do |t|
+      it "should delete the old customer's #{t}s"
+    end
+  end
+
   describe "merging" do
     before(:each) do
       now = Time.now.change(:usec => 0)

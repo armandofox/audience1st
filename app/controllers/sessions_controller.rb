@@ -55,7 +55,7 @@ protected
   def note_failed_signin
     flash[:warning] = "Couldn't log you in as '#{params[:email]}'"
     flash[:warning] << ": #{@user.errors.on(:login_failed)}" if @user
-    logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:error]}"
+    logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:warning]}"
   end
 
 end

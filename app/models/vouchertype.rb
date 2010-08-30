@@ -35,7 +35,7 @@ class Vouchertype < ActiveRecord::Base
     # make name valid if it isn't already
     name = name.to_s
     name += '___' if name.length < 3
-    name[0,39]
+    name[0,NAME_LIMIT]
   end
   
   def subscriptions_shouldnt_be_walkups

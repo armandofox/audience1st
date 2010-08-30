@@ -8,32 +8,13 @@ describe "BPT import" do
   describe "extracting showdate" do
     before :each do
       @imp.show = Show.create_placeholder!("Xyz")
-      @row = [nil,nil,"5/21/09 20:00"]
+      @row = [nil,nil,nil,"5/21/09 20:00"]
       BrownPaperTicketsImport.send(:public, :showdate_from_row)
     end
     it "should match existing showdate if one exists" do
       showdate = mock_model(Showdate, :thedate => Time.parse("21 May 2009 8:00pm"))
       @imp.show.stub!(:showdates).and_return([showdate])
       @imp.showdate_from_row(@row).should == showdate
-    end
-    context "when no match" do
-      before :each do ; @new_showdate = Showdate.new ; end
-      it "should build the new showdate" do
-        Showdate.should_receive(:placeholder).with(Time.parse(@row[2].to_s)).and_return(@new_showdate)
-        @imp.show.stub!(:showdates).and_return([])
-        @imp.showdate_from_row(@row).should == @new_showdate
-      end
-      it "should add the showdate to the show" do
-        Showdate.stub!(:placeholder).and_return(@new_showdate)
-        @imp.showdate_from_row(@row)
-        @imp.show.showdates.should include(@new_showdate)
-      end
-      it "should increment the number of created showdates" do
-        @imp.created_showdates.should be_empty
-        Showdate.stub!(:placeholder).and_return(@new_showdate)
-        @imp.showdate_from_row(@row)
-        @imp.created_showdates.should include(@new_showdate)
-      end
     end
   end
   describe "extracting customer" do
@@ -66,7 +47,7 @@ describe "BPT import" do
       end
       def make_row(name,price)
         row = Array.new(20)
-        row[18],row[19] = name,price.to_s
+        row[19],row[20] = name,price.to_s
         row
       end
       it "should return first match if more than one match" do

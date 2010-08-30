@@ -242,9 +242,9 @@ EJS1
   def pagination_bar(thispage, f, count, htmlopts={})
     s = ""
     curval = eval("@"+ f.to_s)  # value of the filter isntance variable
-    s += link_to('<< Previous', { :page => thispage.previous, f => curval}, htmlopts) if thispage.previous
+    s += link_to('<< ', { :page => thispage.previous, f => curval}, htmlopts) if thispage.previous
     s += sprintf(" %d - %d of %d ", thispage.first_item, thispage.last_item, count)
-    s += link_to('Next >>', { :page => thispage.next, f => curval}, htmlopts) if thispage.next
+    s += link_to(' >>', { :page => thispage.next, f => curval}, htmlopts) if thispage.next
     s
   end
 

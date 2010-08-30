@@ -61,6 +61,7 @@ class Import < ActiveRecord::Base
 
   def csv_rows(fs=',')
     filename = File.join(UPLOADED_FILES_PATH, self.filename)
+    filename = self.public_filename unless File.readable?(filename)
     begin
       # strip stray ^M's from DOS files
       CSV::Reader.create(IO.read(filename).gsub(/\r\n/,' '), fs)

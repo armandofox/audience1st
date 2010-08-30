@@ -72,22 +72,6 @@ class Customer < ActiveRecord::Base
 
   private
 
-  WALKUP_CUSTOMER_ROLE = -1
-  WALKUP_CUSTOMER_ATTRIBUTES = {
-    :first_name => 'WALKUP',
-    :last_name => 'CUSTOMER',
-    :blacklist => true,
-    :e_blacklist => true
-  }
-  GENERIC_CUSTOMER_ATTRIBUTES = WALKUP_CUSTOMER_ATTRIBUTES.merge({:first_name => 'GENERIC'})
-  BOXOFFICE_DAEMON_ROLE = -2
-  BOXOFFICE_DAEMON_ATTRIBUTES = {
-    :first_name => 'BoxOffice',
-    :last_name => 'Daemon',
-    :blacklist => true,
-    :e_blacklist => true
-  }
-
   def self_created? ; !created_by_admin ; end
 
   def self_created_and_not_linked_to_facebook
@@ -139,16 +123,6 @@ class Customer < ActiveRecord::Base
     end
   end
 
-  # helper method used to create 'special' customers and immediately set
-  # the Role attribute (since that attribute is protected and can't be
-  # set directly in the create call)
-
-  def self.create_with_role!(attrs, role)
-    c = Customer.new(attrs)
-    c.save(false)               # save without validation
-    c.update_attribute(:role, role)
-    c
-  end
   
   #----------------------------------------------------------------------
   #  public methods
@@ -401,27 +375,87 @@ class Customer < ActiveRecord::Base
     # for now, same as the 'walkup customer'
   end
 
-  # a dummy customer that is cannot be deleted from the database
-  def self.walkup_customer
-    Customer.find_by_role(WALKUP_CUSTOMER_ROLE) ||
-      Customer.create_with_role!(WALKUP_CUSTOMER_ATTRIBUTES, WALKUP_CUSTOMER_ROLE)
+  #  Special customers that must exist, cannot be deleted, and are created
+  # on demand if they don't exist:
+
+  @@special_customers = {
+    :walkup => {
+      :role => -1, 
+      :first_name => 'WALKUP',
+      :last_name => 'CUSTOMER',
+      :blacklist => true,
+      :e_blacklist => true
+    },
+    :generic => {
+      :role => -1,
+      :first_name => 'GENERIC',
+      :last_name => 'CUSTOMER',
+      :blacklist => true,
+      :e_blacklist => true
+    },
+    :boxoffice_daemon => {
+      :role => -2,
+      :first_name => 'BoxOffice',
+      :last_name => 'Daemon',
+      :blacklist => true,
+      :e_blacklist => true
+    },
+    :anonymous => {
+      :role => -3,
+      :first_name => 'ANONYMOUS',
+      :last_name => 'CUSTOMER',
+      :blacklist => true,
+      :e_blacklist => true
+    }
+  }
+
+  private
+
+  # helper method used to create 'special' customers and immediately set
+  # the Role attribute (since that attribute is protected and can't be
+  # set directly in the create call)
+
+  def self.create_with_role!(which)
+    attrs = @@special_customers[which]
+    c = Customer.new(attrs)
+    c.save(false)               # save without validation
+    c.update_attribute(:role, attrs[:role])
+    c
   end
 
+  def self.special_customer(which)
+    Customer.find_by_role(@@special_customers[which][:role]) ||
+      Customer.create_with_role!(which)
+  end
+
+  public
+
+  # The "customer" to whom all walkup tickets are sold
+  
+  def self.walkup_customer ; special_customer(:walkup) ; end
   def is_walkup_customer? ;  self.role == WALKUP_CUSTOMER_ROLE;   end
 
-  def self.boxoffice_daemon
-    Customer.find_by_role(BOXOFFICE_DAEMON_ROLE) ||
-      Customer.create_with_role!(BOXOFFICE_DAEMON_ATTRIBUTES, BOXOFFICE_DAEMON_ROLE)
-  end
+  # The box office daemon that handles background imports, etc.
 
-  def real_customer?
-    ! [Customer.nobody_id, Customer.walkup_customer.id,
-       Customer.generic_customer.id].include?(self.id)
-  end
+  def self.boxoffice_daemon ; special_customer(:boxoffice_daemon) ; end
+
+  # The anonymous customer (for deleting customers while preserving
+  # their transactions)
+
+  def self.anonymous_customer ; special_customer(:anonymous) ; end
 
   def cannot_destroy_special_customers
-    raise "Cannot destroy special customer entries" if self.role < 0
+    raise "Cannot destroy special customer entries" if special_customer?
   end
+
+  def special_customer?
+    self.role < 0  ||
+      [Customer.nobody_id,
+      Customer.walkup_customer.id,
+      Customer.generic_customer.id].include?(self.id)
+  end
+  
+  def real_customer? ; !special_customer? ; end
 
   @@roles.each do |r|
     role = r.first

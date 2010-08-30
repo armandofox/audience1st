@@ -2,6 +2,25 @@ require 'spec_helper'
 
 describe TicketSalesImport do
 
+  describe "importing showdate" do
+    before :all do ; TicketSalesImport.send(:public, :import_showdate) ; end
+    before(:each) do
+      @imp = TicketSalesImport.new(:show => BasicModels.create_generic_show)
+      @date = "Tue, Oct 31, 8:00pm"
+    end
+    context "when no match" do
+      it "should build the new showdate" do
+        @imp.import_showdate(@date)
+        @imp.show.showdates.find_by_thedate(Time.parse(@date)).should_not be_nil
+      end
+      it "should note the created showdate" do
+        l = @imp.created_showdates.length
+        @imp.import_showdate(@date)
+        @imp.created_showdates.length.should == l+1
+      end
+    end
+  end
+
   describe "checking duplicate order" do
     before :all do ; TicketSalesImport.send(:public, :already_entered?) ; end
     before :each do

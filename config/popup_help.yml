@@ -45,9 +45,11 @@ merge_customers: >
 
 delete_customers: > 
 
-  When you delete a customer, all their transactions, donations,
-  etc. are transferred to the 'Anonymous Customer' and the customer
-  record is expunged.  This action cannot be undone. 
+  When you Forget a customer, all their transactions (donations, purchases,
+  etc.) are transferred to the 'Anonymous Customer', so sales reporting is
+  unaffected.  If you Expunge a customer, their transactions are also
+  deleted: you are re-writing history as if this customer had never
+  existed, making them an un-person.  Neither action can be undone.
 
 # Importing
 

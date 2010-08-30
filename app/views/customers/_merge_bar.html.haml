@@ -1,9 +1,12 @@
 .merge_bar
   %p
-    Merge 2 selected customers:
-    = submit_tag 'Manually'
-    = submit_tag 'Automatically'
+    Select customers to:
+    = submit_tag 'Manual Merge'
+    = submit_tag 'Auto Merge'
     = popup_help_for 'merge_customers'
+    = submit_tag 'Forget'
+    = submit_tag 'Expunge'
+    = popup_help_for 'delete_customers'
     - if @customer_pages
       = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
       = link_to 'Find Duplicates', {:action => :list_duplicates}, {:class => 'genButton'}
