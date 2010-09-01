@@ -45,8 +45,15 @@ default_donation_account_code_with_subscriptions: >
 
 accept_amex: >
 
-  Set to zero if you DON'T accept the AmEx card. Set to any non-zero
-  value to accept AmEx.
+  Set to any nonzero value if your payment gateway and merchant account
+  are set up to accept the American Express Card.  Leave blank or set to zero if
+  you don't accept Amex. 
+
+accept_discover: >
+
+  Set to any nonzero value if your payment gateway and merchant account
+  are set up to accept the Discover Card.  Leave blank or set to zero if
+  you don't accept Discover. 
 
 venue: >
 

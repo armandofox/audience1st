@@ -13,7 +13,8 @@ module StoreHelper
   end
       
   def options_for_credit_card
-    opts = [['Visa', 'visa'], ['MasterCard','master'], ['Discover','discover']]
+    opts = [['Visa', 'visa'], ['MasterCard','master']]
+    opts << ['Discover','discover'] unless  Option.value(:accept_discover).to_i.zero?
     opts << ['AmEx', 'american_express'] unless Option.value(:accept_amex).to_i.zero?
     opts
   end

@@ -445,7 +445,7 @@ class Customer < ActiveRecord::Base
   def self.anonymous_customer ; special_customer(:anonymous) ; end
 
   def cannot_destroy_special_customers
-    raise "Cannot destroy special customer entries" if special_customer?
+    raise "Cannot destroy special customer entries" if self.special_customer?
   end
 
   def special_customer?
@@ -693,9 +693,22 @@ EOSQL1
   # most recently updated (updated_at).  IF those are also equal, keep
   # the first one.
 
-  def self.destroy_by_merging_with_anonymous(c)
+  # merge with Anonymous customer, keeping all transactions
+
+  def forget!
+    return nil unless deletable?
+    begin
+      transaction do
+        Customer.update_foreign_keys_from_to(self.id, Customer.anonymous_customer.id)
+        self.destroy
+      end
+    rescue Exception => e
+      self.errors.add_to_base "Cannot forget customer ID #{id}: #{e.message}"
+    end
+    return self.errors.empty?
   end
-  
+
+      
   def merge_with_params!(c1,params)
     Customer.replaceable_attributes.each do |attr|
       if (params[attr.to_sym].to_i > 0)
@@ -728,6 +741,8 @@ EOSQL1
 
   private
 
+  def deletable? ; !self.special_customer? ; end
+
   def finish_merge(c1)
     %w(comments tags role blacklist e_blacklist created_by_admin oldid fb_user_id email_hash).each do |attr|
       newval = merge_attribute(c1, attr)
@@ -755,6 +770,33 @@ EOSQL1
       end
   end
 
+  # Note: This method should only be called inside a transaction block!
+  def self.update_foreign_keys_from_to(old,new)
+    msg = []
+    Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
+    [Donation, Voucher, Txn, Visit, Import].each do |t|
+      howmany = 0
+      t.foreign_keys_to_customer.each do |field|
+        howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")
+      end
+      msg << "#{howmany} #{t}s"
+    end
+    msg
+  end
+
+  def self.delete_with_foreign_key(old)
+    # Getting ready to expunge a customer.
+    # Donations, vouchers, visits and txns related to this customer are DELETED.
+    [Donation,Voucher,Visit,Txn].each do |t|
+      t.delete_all "customer_id = #{old}"
+    end
+    # Imports done by this customer are now done by Anonymous.
+    anon_id = Customer.anonymous_customer.id
+    Import.update_all("customer_id = #{anon_id}", "customer_id = #{old}")
+    # Customers referred by this customer are now referred by Anonymous.
+    Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
+  end
+  
   def self.save_and_update_foreign_keys!(c0,c1)
     new = c0.id
     old = c1.id
@@ -762,14 +804,7 @@ EOSQL1
     msg = []
     begin
       transaction do
-        Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
-        [Donation, Voucher, Txn, Visit, Import].each do |t|
-          howmany = 0
-          t.foreign_keys_to_customer.each do |field|
-            howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")
-          end
-          msg << "#{howmany} #{t}s"
-        end
+        msg = Customer.update_foreign_keys_from_to(old, new)
         # Crypted_password and salt have to be updated separately,
         # since crypted_password is automatically set by the before-save
         # action to be encrypted with salt.

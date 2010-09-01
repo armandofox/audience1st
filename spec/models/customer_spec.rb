@@ -459,24 +459,42 @@ describe Customer do
     end
   end
 
-  describe "merging with Anonymous" do
-    before :each do
-      @cust = BasicModels.create_generic_customer
+  describe "deleting" do
+    before :each do ;  @cust = BasicModels.create_generic_customer ;  end
+    context ",", :shared => true do
+      it "should delete the record for the original customer" do
+        old_id = @cust.id
+        @cust.forget!
+        Customer.find_by_id(old_id).should be_nil
+      end
+      it "should do nothing if customer is a special customer" do
+        Customer.boxoffice_daemon.forget!.should be_nil
+      end
+      it "should not change any of special customer's attribute values" do
+        @cust.update_attributes!(:blacklist => false, :e_blacklist => false)
+        @cust.forget!
+        Customer.anonymous_customer.blacklist.should be_true
+        Customer.anonymous_customer.e_blacklist.should be_true
+      end
     end
-    it "should not change any of special customer's attribute values"
-    it "should delete the record for the original customer"
-    [Donation, Voucher, Txn, Visit, Import].each do |t|
-      it "should preserve old customer's #{t}s"
+    context "using forget!" do
+      it_should_behave_like ","
+      [Donation, Voucher, Txn, Visit, Import].each do |t|
+        it "should preserve old customer's #{t}s" do
+          num = 1 + rand(4)
+          num.times do
+            e = t.new(:customer_id => @cust.id)
+            e.save(false)
+          end
+          t.count(:conditions => "customer_id = #{@cust.id}").should == num
+        end
+      end
     end
-  end
-  
-  describe "expunging" do
-    before :each do
-      @cust = BasicModels.create_generic_customer
-    end
-    it "should delete the customer"
-    [Donation, Voucher, Txn, Visit, Import].each do |t|
-      it "should delete the old customer's #{t}s"
+    context "using expunge!" do
+      it_should_behave_like ","
+      [Donation, Voucher, Txn, Visit, Import].each do |t|
+        it "should delete the old customer's #{t}s"
+      end
     end
   end
 
