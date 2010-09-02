@@ -11,6 +11,7 @@ class Showdate < ActiveRecord::Base
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
   validates_associated :show
+  validates_presence_of :thedate
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 20, :allow_nil => true
   

@@ -12,12 +12,8 @@ class Donation < ActiveRecord::Base
   has_one :processed_by, :class_name => 'Customer'
   validates_associated :donation_fund, :customer
   validates_numericality_of :amount
+  validates_presence_of :date
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
-
-  # provide a handler to be called when customers are merged.
-  # Transfers the donations from old to new id, and also changes the
-  # values of processed_by field, which is really a customer id.
-  # Returns number of actual donation records transferred.
 
   def self.foreign_keys_to_customer
     [:customer_id, :processed_by_id]
