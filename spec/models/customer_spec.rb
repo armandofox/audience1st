@@ -476,11 +476,6 @@ describe Customer do
       end
     end        
     context ",", :shared => true do
-      it "should delete the record for the original customer" do
-        old_id = @cust.id
-        @cust.forget!
-        Customer.find_by_id(old_id).should be_nil
-      end
       it "should do nothing if customer is a special customer" do
         Customer.boxoffice_daemon.forget!.should be_nil
       end
@@ -493,6 +488,11 @@ describe Customer do
     end
     context "using forget!" do
       it_should_behave_like ","
+      it "should delete the record for the original customer" do
+        old_id = @cust.id
+        @cust.forget!
+        Customer.find_by_id(old_id).should be_nil
+      end
       [Donation, Voucher, Txn, Visit, Import].each do |t|
         it "should preserve old customer's #{t}s" do
           objs = create_records(t, @cust)
@@ -506,6 +506,11 @@ describe Customer do
     end
     context "using expunge!" do
       it_should_behave_like ","
+      it "should delete the record for the original customer" do
+        old_id = @cust.id
+        @cust.expunge!
+        Customer.find_by_id(old_id).should be_nil
+      end
       [Donation, Voucher, Txn, Visit].each do |t|
         it "should delete the old customer's #{t}s" do
           objs = create_records(t, @cust)

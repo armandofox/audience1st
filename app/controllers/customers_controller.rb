@@ -227,12 +227,16 @@ class CustomersController < ApplicationController
   end
 
   def merge
-    if (params[:commit] =~ /merge/i) &&
-        (!params[:merge] || (params[:merge].keys.length != 2))
+    if !params[:merge] || params[:merge].keys.length < 1
+      flash[:notice] = 'You have not selected any customers.'
+      redirect_to_last_list and return
+    end
+    ids = params[:merge].keys
+    if (params[:commit] =~ /merge/i) && (ids.length != 2)
       flash[:notice] = 'You must select exactly 2 records at a time to merge.'
       redirect_to_last_list and return
     end
-    @cust = params[:merge].keys.map { |x| Customer.find_by_id(x.to_i) }
+    @cust = ids.map { |x| Customer.find_by_id(x.to_i) }
     if @cust.any? { |c| c.nil? }
       flash[:warning] = "At least one customer not found. Please try again."
       redirect_to_last_list and return
@@ -241,8 +245,13 @@ class CustomersController < ApplicationController
     @last_action_name = params[:action_name]
     # automatic merge?
     case params[:commit]
-    when /forget/i, /expunge/i
-      flash[:warning] = "Forget and expunge will be implemented soon"
+    when /forget/i
+      count = do_deletions(@cust, :forget!)
+      flash[:warning] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:warning]}"
+      redirect_to_last_list and return
+    when /expunge/i
+      count = do_deletions(@cust, :expunge!)
+      flash[:warning] = "#{count} customers (and their transactions) expunged<br/> #{flash[:warning]}"
       redirect_to_last_list and return
     when /auto/i
       do_automatic_merge(*params[:merge].keys)
@@ -429,6 +438,20 @@ class CustomersController < ApplicationController
   end
 
   private
+
+  def do_deletions(customers, method)
+    count = 0
+    flash[:warning] = ''
+    customers.each do |c|
+      c.send(method)
+      if c.errors.empty?
+        count += 1
+      else
+        flash[:warning] << c.errors.full_messages.join("<br/>")
+      end
+    end
+    count
+  end
 
   def redirect_to_last_list
     redirect_to :action => (params[:action_name] || 'list'), :customers_filter => params[:customers_filter], :offset => params[:offset]

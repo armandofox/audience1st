@@ -703,7 +703,7 @@ EOSQL1
         self.destroy
       end
     rescue Exception => e
-      self.errors.add_to_base "Cannot forget customer ID #{id}: #{e.message}"
+      self.errors.add_to_base "Cannot forget customer #{id} (#{full_name}): #{e.message}"
     end
     return self.errors.empty?
   end
@@ -716,9 +716,10 @@ EOSQL1
     begin
       transaction do
         Customer.delete_with_foreign_key(self.id)
+        self.destroy
       end
     rescue Exception => e
-      self.errors.add_to_base "Cannot expunge customer ID #{id}: #{e.message}"
+      self.errors.add_to_base "Cannot expunge customer #{id} (#{full_name}): #{e.message}"
     end
   end
 

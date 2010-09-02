@@ -4,8 +4,9 @@
     = submit_tag 'Manual Merge'
     = submit_tag 'Auto Merge'
     = popup_help_for 'merge_customers'
-    = submit_tag 'Forget'
-    = submit_tag 'Expunge'
+    - confirm_delete_warning = confirm_javascript_function("Selected customer(s) will be PERMANENTLY deleted.  This action CANNOT BE UNDONE.  OK to proceed?")
+    = submit_tag 'Forget',  :onclick => "return #{confirm_delete_warning}"
+    = submit_tag 'Expunge', :onclick => "return #{confirm_delete_warning}"
     = popup_help_for 'delete_customers'
     - if @customer_pages
       = pagination_bar(@customer_pages.current, :customers_filter, @count, {:class => 'navButton'  })
