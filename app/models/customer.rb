@@ -708,6 +708,20 @@ EOSQL1
     return self.errors.empty?
   end
 
+  # expunge and rewrite history.  ALL other relations connected to this
+  # customer are blown away with prejudice.
+
+  def expunge!
+    return nil unless deletable?
+    begin
+      transaction do
+        Customer.delete_with_foreign_key(self.id)
+      end
+    rescue Exception => e
+      self.errors.add_to_base "Cannot expunge customer ID #{id}: #{e.message}"
+    end
+  end
+
       
   def merge_with_params!(c1,params)
     Customer.replaceable_attributes.each do |attr|

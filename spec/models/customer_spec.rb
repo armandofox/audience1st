@@ -461,6 +461,20 @@ describe Customer do
 
   describe "deleting" do
     before :each do ;  @cust = BasicModels.create_generic_customer ;  end
+    def create_records(type,cust)
+      Array.new(1+rand(4)) do |idx|
+        e = type.new(:customer_id => cust.id)
+        e.save(false)
+        e.id
+      end
+    end
+    def check_exists_and_linked_to_anonymous(t,objs)
+      objs.each do |id|
+        obj = t.find_by_id(id)
+        obj.should_not be_nil
+        obj.customer_id.should == Customer.anonymous_customer.id
+      end
+    end        
     context ",", :shared => true do
       it "should delete the record for the original customer" do
         old_id = @cust.id
@@ -481,28 +495,30 @@ describe Customer do
       it_should_behave_like ","
       [Donation, Voucher, Txn, Visit, Import].each do |t|
         it "should preserve old customer's #{t}s" do
-          anon_id = Customer.anonymous_customer.id
-          num = 1 + rand(4)
-          objs = Array.new(num) do |idx|
-            e = t.new(:customer_id => @cust.id)
-            e.save(false)
-            e.id
-          end
-          t.count(:conditions => "customer_id = #{@cust.id}").should == num
+          objs = create_records(t, @cust)
+          t.count(:conditions => "customer_id = #{@cust.id}").should == objs.length
           @cust.forget!
-          objs.each do |id|
-            obj = t.find_by_id(id)
-            obj.should_not be_nil
-            obj.customer_id.should == anon_id
-          end
+          @cust.errors.should be_empty
+          t.count(:conditions => "customer_id = #{@cust.id}").should be_zero
+          check_exists_and_linked_to_anonymous(t,objs)
         end
       end
     end
     context "using expunge!" do
       it_should_behave_like ","
-      [Donation, Voucher, Txn, Visit, Import].each do |t|
-        it "should delete the old customer's #{t}s"
+      [Donation, Voucher, Txn, Visit].each do |t|
+        it "should delete the old customer's #{t}s" do
+          objs = create_records(t, @cust)
+          t.count(:conditions => "customer_id = #{@cust.id}").should == objs.length
+          @cust.expunge!
+          @cust.errors.should be_empty
+          objs.each { |id| t.find_by_id(id).should be_nil }
+        end
       end
+      it "should not delete customers referred by this customer"
+      it "should link customers referred by this customer to Anonymous"
+      it "should not delete imports done by this customer"
+      it "should link imports done by this customer to Anonymous"
     end
   end
 
