@@ -3,8 +3,8 @@ class Import < ActiveRecord::Base
 
   UPLOADED_FILES_PATH = File.join(RAILS_ROOT, 'tmp')
 
-  belongs_to :completed_by, :class_name => 'Customer'
-  def self.foreign_keys_to_customer ;  [:completed_by_id] ;  end
+  belongs_to :customer
+  def self.foreign_keys_to_customer ;  [:customer_id] ;  end
 
   def completed? ; !completed_at.nil? ; end
 

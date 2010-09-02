@@ -47,7 +47,7 @@ class ImportsController < ApplicationController
     @import.update_attributes(
       :completed_at => Time.now,
       :number_of_records => @imports.length,
-      :completed_by_id => logged_in_id)
+      :customer_id => logged_in_id)
     if @rejects.empty?
       redirect_to imports_path
     else

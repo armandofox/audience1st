@@ -377,7 +377,7 @@ describe Customer do
     def try_merge(param,value_to_keep,value_to_discard)
       @old.update_attribute(param, value_to_keep)
       @new.update_attribute(param, value_to_discard)
-      @old.merge_automatically!(@new).should_not be_nil
+      @old.merge_automatically!(@new).should_not be_nil, @old.errors.full_messages.join(';')
       @old.send(param).should == value_to_keep
     end
     describe "for single-value attributes (other than password)" do
@@ -481,12 +481,20 @@ describe Customer do
       it_should_behave_like ","
       [Donation, Voucher, Txn, Visit, Import].each do |t|
         it "should preserve old customer's #{t}s" do
+          anon_id = Customer.anonymous_customer.id
           num = 1 + rand(4)
-          num.times do
+          objs = Array.new(num) do |idx|
             e = t.new(:customer_id => @cust.id)
             e.save(false)
+            e.id
           end
           t.count(:conditions => "customer_id = #{@cust.id}").should == num
+          @cust.forget!
+          objs.each do |id|
+            obj = t.find_by_id(id)
+            obj.should_not be_nil
+            obj.customer_id.should == anon_id
+          end
         end
       end
     end

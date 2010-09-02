@@ -2,6 +2,7 @@ class Visit < ActiveRecord::Base
   belongs_to :customer
   validates_associated :customer
   validates_columns :contact_method, :purpose, :result
+  validates_presence_of :thedate
   include Enumerable
   include Comparable
 
