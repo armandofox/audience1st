@@ -26,4 +26,9 @@
     = label :credit_card, :verification_value, 'Security (CVV) code'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4
     = popup_help_for 'credit_card_verification_value'
+    - if defined?(@is_admin) && @is_admin
+      %br
+      %label.adminField Skip prevalidation
+      = check_box_tag 'skip_validation', 1, false
+      = popup_help_for :skip_validation
   %br

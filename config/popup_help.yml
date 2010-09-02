@@ -18,6 +18,14 @@ credit_card_verification_value: >
   number printed on the BACK of your card, toward the right edge of the
   signature panel. 
 
+skip_validation: >
+
+  Checking this box, which is invisible to regular customers, skips
+  certain credit card prevalidations (including CVV checking) 
+  normally performed
+  before sending the transaction to Authorize.net.  Check this box at
+  your own risk!
+
 # Show/showdate setup pages
 
 max_advance_sales: >

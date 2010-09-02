@@ -515,12 +515,14 @@ EON
     cc = CreditCard.new(cc_info)
     # prevalidations: CC# and address appear valid, amount >0,
     # billing address appears to be a well-formed address
-    if (RAILS_ENV == 'production' && !cc.valid?) # format check on credit card number
-      flash[:checkout_error] =
-        "<p>Please provide valid credit card information:</p> <ul><li>" <<
-        cc.errors.full_messages.join("</li><li>") <<
-        "</li></ul>"
-      return nil
+    unless (current_admin.is_boxoffice && params[:skip_validation])
+      if (RAILS_ENV == 'production' && !cc.valid?) # format check on credit card number, UNLESS admin
+        flash[:checkout_error] =
+          "<p>Please provide valid credit card information:</p> <ul><li>" <<
+          cc.errors.full_messages.join("</li><li>") <<
+          "</li></ul>"
+        return nil
+      end
     end
     return {:credit_card => cc, :bill_to => bill_to}
   end
