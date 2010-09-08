@@ -11,7 +11,7 @@ class NewCustomers < Report
     conds << " AND email LIKE '%@%'" if params[:require_valid_email]
     conds << ' AND street IS NOT NULL' if params[:require_valid_address]
     @customers = Customer.find(:all, :conditions => [conds, from, to],
-                               :order => 'created_on')
+                               :order => 'created_at')
   end
 
 end
