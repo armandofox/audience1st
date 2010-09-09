@@ -248,17 +248,20 @@ class CustomersController < ApplicationController
     when /forget/i
       count = do_deletions(@cust, :forget!)
       flash[:warning] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:warning]}"
+      redirect_to_last_list and return
     when /expunge/i
       count = do_deletions(@cust, :expunge!)
       flash[:warning] = "#{count} customers (and their transactions) expunged<br/> #{flash[:warning]}"
+      redirect_to_last_list and return
     when /auto/i
       do_automatic_merge(*params[:merge].keys)
+      redirect_to_last_list and return
     when /manual/i
       render :action => :merge
     else
       flash[:warning] = "Unrecognized action: #{params[:commit]}"
+      redirect_to_last_list and return
     end
-    redirect_to_last_list and return
   end
 
   def finalize_merge
