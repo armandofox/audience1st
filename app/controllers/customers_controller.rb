@@ -15,7 +15,7 @@ class CustomersController < ApplicationController
   before_filter :reset_shopping, :only => %w[welcome welcome_subscriber]
 
   # must be boxoffice to view other customer records or adding/removing vouchers
-  before_filter :is_staff_filter, :only => %w[list switch_to search]
+  before_filter :is_staff_filter, :only => %w[list list_duplicates switch_to search]
   before_filter :is_boxoffice_filter, :only=>%w[merge create]
 
   # only superadmin can destory customers, because that wreaks havoc
@@ -209,20 +209,32 @@ class CustomersController < ApplicationController
   # list, switch_to, merge, search, create, destroy
 
   def list
+    @offset,@limit = get_list_params
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
-    @customer_pages, @customers = paginate :customers, :per_page => 100, :order => 'last_name,first_name', :conditions => conds
-    @count = Customer.count(:conditions => conds)
-    curpage = @customer_pages.current_page
-    @title = "#{curpage.first_item} - #{curpage.last_item} of #{@count} matching '#{@customers_filter}'"
+    get_list_params
+    @offset = [params[:offset].to_i, 1].max
+    @customers = Customer.find(:all,
+      :conditions => conds,
+      :offset => @offset,
+      :limit => @limit,
+      :order => 'last_name,first_name'
+      )
+    @count = @customers.length
+    count_all = Customer.count(:conditions => conds)
+    @previous = (@offset <= 1 ? nil : [@offset - @limit, 0].max)
+    @next = (@offset + @limit - 1 < count_all ? @offset + @limit : nil)
+    @title = "#{@offset} - #{@offset+@count-1} of #{count_all}"
+    @title += "matching '#{@customers_filter}'" unless @customers_filter.empty?
   end
 
   def list_duplicates
-    @limit = (params[:limit] || 20).to_i
-    @offset = (params[:offset] || 0).to_i
+    @offset,@limit = get_list_params
     @customers = Customer.find_suspected_duplicates(@limit,@offset)
-    @limit = @customers.length
-    @title = "Suspected Duplicates #{@offset+1} - #{@offset+@limit}"
+    @count = @customers.length
+    @previous = [@offset - @limit, 0].max
+    @next = @offset + [@limit,@count].min
+    @title = "Suspected Duplicates #{@offset} - #{@offset+@count-1}"
     render :action => 'list'
   end
 
@@ -438,6 +450,12 @@ class CustomersController < ApplicationController
   end
 
   private
+
+  def get_list_params
+    offset = [params[:offset].to_i, 1].max
+    limit = [params[:limit].to_i, 20].max
+    return [offset,limit]
+  end
 
   def do_deletions(customers, method)
     count = 0

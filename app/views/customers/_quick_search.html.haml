@@ -13,7 +13,7 @@
       - else
         = hidden_field_tag 'target_controller', 'customers'
         = hidden_field_tag 'target_action', 'welcome'
-      Quick search by first or last name:
+      Quick search first or last name:
       = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}
       = hidden_field_tag 'id'
       = submit_tag 'Go'
@@ -21,6 +21,7 @@
       Search any field:
       = text_field_tag 'customers_filter', '', :size => 12
       = submit_tag 'Go'
+      = submit_tag 'List All', :onclick => "window.location = '#{url_for :controller => :customers, :action => :list}'"
     - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do
       = submit_tag 'Add New...'
           
