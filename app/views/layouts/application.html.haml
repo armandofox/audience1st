@@ -41,7 +41,7 @@
                 = render :partial => 'layouts/main_tabs'
                 - if @gAdmin.is_staff
                   = render :partial => 'customers/quick_search'
-                  = render :partial => 'messages/staff_buttons' if controller.controller_name == 'customers'
+                  = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^list/)
             #content.clear
               = render :partial => 'messages/notice' unless flash[:notice].blank?
               = render :partial => 'messages/warning' unless flash[:warning].blank?

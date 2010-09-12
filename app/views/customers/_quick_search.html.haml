@@ -2,7 +2,7 @@
   %p
     #on_behalf_of_customer
       %span.strong Customer: 
-      %span#onBehalfOfName= h @gCustomer.full_name
+      %span#onBehalfOfName= link_to @gCustomer.full_name, :controller => :customers, :action => :welcome, :id => @gCustomer.id
       (last login:
       = h @gCustomer.last_login.to_formatted_s(:month_day_year)
       )
@@ -19,7 +19,7 @@
       = submit_tag 'Go'
     - form_tag({:controller => 'customers',:action =>'list'},{:method =>:get, :id => 'search_on_any_field'}) do
       Search any field:
-      = text_field_tag 'customers_filter', '', :size => 12
+      = text_field_tag 'customers_filter', @customers_filter, :size => 12
       = submit_tag 'Go'
       = submit_tag 'List All', :onclick => "window.location = '#{url_for :controller => :customers, :action => :list}'"
     - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do

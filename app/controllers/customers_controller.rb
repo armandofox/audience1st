@@ -209,11 +209,9 @@ class CustomersController < ApplicationController
   # list, switch_to, merge, search, create, destroy
 
   def list
-    @offset,@limit = get_list_params
+    @offset,@limit = get_list_params 
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
-    get_list_params
-    @offset = [params[:offset].to_i, 1].max
     @customers = Customer.find(:all,
       :conditions => conds,
       :offset => @offset,
@@ -222,10 +220,11 @@ class CustomersController < ApplicationController
       )
     @count = @customers.length
     count_all = Customer.count(:conditions => conds)
-    @previous = (@offset <= 1 ? nil : [@offset - @limit, 0].max)
-    @next = (@offset + @limit - 1 < count_all ? @offset + @limit : nil)
-    @title = "#{@offset} - #{@offset+@count-1} of #{count_all}"
-    @title += "matching '#{@customers_filter}'" unless @customers_filter.empty?
+    @previous = (@offset <= 0 ? nil : [@offset - @limit, 0].max)
+    @next = (@offset + @count < count_all ? @offset + @count : nil)
+    @title = (@count.zero? ? "No matches" : @count == 1 ? "1 record" :
+      "Matches #{@offset+1} - #{@offset+@count} of #{count_all}")
+    @title += " for '#{@customers_filter}'" unless @customers_filter.empty?
   end
 
   def list_duplicates
@@ -234,7 +233,7 @@ class CustomersController < ApplicationController
     @count = @customers.length
     @previous = [@offset - @limit, 0].max
     @next = @offset + [@limit,@count].min
-    @title = "Suspected Duplicates #{@offset} - #{@offset+@count-1}"
+    @title = "Suspected Duplicates #{@offset+1} - #{@offset+@count}"
     render :action => 'list'
   end
 
@@ -452,7 +451,7 @@ class CustomersController < ApplicationController
   private
 
   def get_list_params
-    offset = [params[:offset].to_i, 1].max
+    offset = [params[:offset].to_i, 0].max
     limit = [params[:limit].to_i, 20].max
     return [offset,limit]
   end

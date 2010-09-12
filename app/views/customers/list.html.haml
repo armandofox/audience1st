@@ -8,9 +8,9 @@
   - if @customers.empty?
     No matches
   - else
-    = link_to('<<', {:action => @controller.action_name, :offset => @previous, :limit => @limit}, {:class => 'genButton'}) if @previous
+    = link_to('<<', {:action => @controller.action_name, :offset => @previous, :limit => @limit, :customers_filter => @customers_filter}, {:class => 'genButton'}) if @previous
     %span.customer_list_header= h(@title)
-    = link_to('>>', {:action => @controller.action_name, :offset => @next, :limit => @limit}, {:class => 'genButton'}) if @next
+    = link_to('>>', {:action => @controller.action_name, :offset => @next, :limit => @limit, :customers_filter => @customers_filter}, {:class => 'genButton'}) if @next
 
 %br/
 
@@ -20,6 +20,7 @@
     = hidden_field_tag 'action_name', @controller.action_name
     = hidden_field_tag 'offset', @offset
     = hidden_field_tag 'limit', @limit
+    = hidden_field_tag 'customers_filter', @customers_filter
     %table.hilite
       %thead
         = render :partial => 'customer_header'
