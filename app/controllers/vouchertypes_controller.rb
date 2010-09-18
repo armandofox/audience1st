@@ -118,7 +118,14 @@ class VouchertypesController < ApplicationController
     if ((c = v.vouchers.count) > 0)
       flash[:notice] = "Can't destroy this voucher type, because there are
                         #{c} issued vouchers of this type."
-      redirect_to :action => 'list'
+      redirect_to :action => :list
+      return
+    end
+    if !(vv = v.valid_vouchers).empty?
+      # helpfully tell which shows use this vouchertype
+      shows = vv.map { |v| v.showdate.show.name }.uniq.join(', ')
+      flash[:notice] = "Can't destroy this voucher type because it's listed as valid for purchase for the following shows: #{shows}"
+      redirect_to :action => :list
       return
     end
     name = v.name
