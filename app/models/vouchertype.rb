@@ -185,7 +185,7 @@ class Vouchertype < ActiveRecord::Base
     str = "(category = ?) AND (subscription = ?) AND #{str}"
     str += " AND '#{Time.now.to_formatted_s(:db)}' BETWEEN bundle_sales_start AND bundle_sales_end" unless admin
     vals.unshift(str, :bundle, true)
-    Vouchertype.find(:all, :conditions => vals, :order => "price DESC")
+    Vouchertype.find(:all, :conditions => vals, :order => "expiration_date DESC,price DESC")
   end
 
   def self.find_products(args={})
