@@ -30,7 +30,7 @@ class ShowsController < ApplicationController
   end
 
   def new
-    @show = Show.new
+    @show = Show.new(:listing_date => Date.today)
   end
 
   def create

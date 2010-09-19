@@ -23,9 +23,10 @@ describe VouchertypesController do
       response.should redirect_to(:action => 'list')
       flash[:notice].should =~ /1 issued voucher/
     end
-    it "should succeed if vouchertype has no associated vouchers" do
+    it "should succeed if vouchertype has no associated vouchers or vouchertypes" do
       controller.stub!(:is_admin).and_return(true)
       @vtype.stub_chain(:vouchers, :count).and_return(0)
+      @vtype.stub(:valid_vouchers).and_return([])
       @vtype.should_receive(:destroy)
       post :destroy, :id => 1
     end
