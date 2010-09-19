@@ -41,7 +41,7 @@
         - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
           %td
           %td= vouchertype.name
-          %td{:colspan=>3} None of your vouchers are valid for this show
+          %td{:colspan=>3} Reservations unavailable for this show
         - else
           - form_tag :controller => 'vouchers', :action => 'confirm_multiple' do
             = hidden_field_tag 'voucher_ids', voucherlist

@@ -42,6 +42,8 @@
       - if @cust.valid_email_address?
         = check_box_tag('email_confirmation', 1, true)
         Send email confirmation
+  - elsif @cust.valid_email_address?
+    = hidden_field_tag 'email_confirmation', 1
 = observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
 = observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'
 = observe_field 'sales_final', :function => 'checkPlaceOrderForm()'

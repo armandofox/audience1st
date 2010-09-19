@@ -2,6 +2,7 @@
   ['My Tickets', :customers, :welcome], |
   ['Billing Address', :customers, :edit], |
   ['Change Password', :customers, :change_password]] |
+- tabs.insert(1, ['Subscribe', :store, :subscribe]) unless Vouchertype.subscriptions_available_to(@gCustomer).empty?
 - if @gAdmin.is_staff
   - tabs +=    |
     [['Shows', :shows, :list], |

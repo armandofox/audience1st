@@ -1,4 +1,16 @@
-%h1.page_heading.center= @customers.empty? ? 'No matches' : h(@title)
+#customer_list_header
+  Showing
+  = radio_button_tag 'show', 'all', (@controller.action_name == 'list'), :onclick => "window.location='#{url_for(:action => :list, :offset => @offset, :limit => @limit)}'"
+  All
+  = radio_button_tag 'show', 'dup', (@controller.action_name == 'list_duplicates'), :onclick => "window.location='#{url_for(:action => :list_duplicates, :offset => @offset, :limit => @limit)}'"
+  Dups
+
+  - if @customers.empty?
+    No matches
+  - else
+    = link_to('<<', {:action => @controller.action_name, :offset => @previous, :limit => @limit, :customers_filter => @customers_filter}, {:class => 'genButton'}) if @previous
+    %span.customer_list_header= h(@title)
+    = link_to('>>', {:action => @controller.action_name, :offset => @next, :limit => @limit, :customers_filter => @customers_filter}, {:class => 'genButton'}) if @next
 
 %br/
 
@@ -7,6 +19,8 @@
     = render :partial => 'merge_bar'
     = hidden_field_tag 'action_name', @controller.action_name
     = hidden_field_tag 'offset', @offset
+    = hidden_field_tag 'limit', @limit
+    = hidden_field_tag 'customers_filter', @customers_filter
     %table.hilite
       %thead
         = render :partial => 'customer_header'

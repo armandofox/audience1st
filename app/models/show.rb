@@ -1,5 +1,6 @@
 class Show < ActiveRecord::Base
   has_many :showdates, :dependent => :destroy, :order => 'thedate'
+  has_one :latest_showdate, :class_name => 'Showdate', :order => 'thedate DESC'
   # NOTE: We can't do the trick below because the database's timezone
   #  may not be the same as the appserver's timezone.
   #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
@@ -21,6 +22,11 @@ class Show < ActiveRecord::Base
 
   def self.all
     Show.find(:all) 
+  end
+
+  def season
+    # latest season that contains opening date
+    self.opening_date.at_beginning_of_season.year
   end
 
   def future_showdates

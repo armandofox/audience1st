@@ -47,6 +47,16 @@ span.tooltip:hover span { /* will display just on :hover state*/
 }
 
 /*
+ * Welcome panel:  needs to be statically sized (height) if FB is in use,
+ * otherwise late load of FB image makes page jittery 
+ */
+#welcome.facebook {
+    height: 55px;
+    vertical-align: bottom;
+}
+
+
+/*
  * Quick search customer panel
  */
 #customer_quick_search {
@@ -72,6 +82,19 @@ span.tooltip:hover span { /* will display just on :hover state*/
 /*
  * Customer list 
  */
+#customer_list_header {
+    margin-top: 0.5ex;
+    margin-bottom: 0;
+    padding-top: 2px;
+    padding-bottom: 0;
+    text-align: center;
+}
+
+#customer_list_header span.customer_list_header {
+    font-size: 110%;
+    font-weight: bold;
+}
+
 tr.staff {
     font-style: italic;
 }

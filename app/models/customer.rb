@@ -463,7 +463,7 @@ class Customer < ActiveRecord::Base
     eval "def is_#{role}; self.role >= #{lvl}; end"
   end
 
-  def self.find_suspected_duplicates(limit=20,offset=0)
+  def self.find_suspected_duplicates(limit=20,offset=1)
     limit = 20 if limit.to_i < 2
     sim = []
     sim << 'c1.first_name LIKE c2.first_name'

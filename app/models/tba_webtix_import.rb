@@ -53,7 +53,7 @@ class TBAWebtixImport < TicketSalesImport
     self.existing_vouchers += total_tix and return if already_entered?(order_id)
     customer = customer_from_row(row)
     showdate = showdate_from_row(row)
-    order_date = Time.parse "#{row[col_index :j]} #{row[col_index :k]}"
+    order_date = Time.parse("#{row[col_index(:j)]} #{row[col_index(:k)]}")
     comments = row[col_index(:ce)]
     total_paid = row[col_index(:g)].to_f
     service_charge = row[col_index(:n)].to_f

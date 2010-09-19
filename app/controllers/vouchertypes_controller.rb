@@ -29,23 +29,24 @@ class VouchertypesController < ApplicationController
     latest = Vouchertype.find(:first, :order => 'expiration_date DESC')
     @years = (earliest.expiration_date.year .. latest.expiration_date.year)
     @filter = params[:filter].to_s
+    @season = params[:season]
+    limit_to_season = @season ? @season.to_i : nil
     case @filter
     when "Bundles"
-      @vouchertypes = Vouchertype.bundle_vouchertypes
+      @vouchertypes = Vouchertype.bundle_vouchertypes(limit_to_season)
     when "Subscriptions"
-      @vouchertypes = Vouchertype.subscription_vouchertypes
+      @vouchertypes = Vouchertype.subscription_vouchertypes(limit_to_season)
     when "Single Tickets (Comp)"
-      @vouchertypes = Vouchertype.comp_vouchertypes
+      @vouchertypes = Vouchertype.comp_vouchertypes(limit_to_season)
     when "Single Tickets (Revenue)"
-      @vouchertypes = Vouchertype.revenue_vouchertypes
+      @vouchertypes = Vouchertype.revenue_vouchertypes(limit_to_season)
     when "Nonticket Products"
-      @vouchertypes = Vouchertype.nonticket_vouchertypes
+      @vouchertypes = Vouchertype.nonticket_vouchertypes(limit_to_season)
     else # ALL
       @vouchertypes = Vouchertype.find(:all)
-    end
-    @season = params[:season] || "All"
-    if (@season != "All")
-      @vouchertypes.reject! { |vt| !(vt.expiration_date.between?(Time.now.at_beginning_of_season(@season), Time.now.at_end_of_season(@season))) }
+      if (limit_to_season)
+        @vouchertypes.reject! { |vt| !(vt.expiration_date.between?(Time.now.at_beginning_of_season(limit_to_season), Time.now.at_end_of_season(limit_to_season))) }
+      end
     end
     @vouchertypes = @vouchertypes.sort_by(&:expiration_date).reverse
     if @vouchertypes.empty?
@@ -118,7 +119,14 @@ class VouchertypesController < ApplicationController
     if ((c = v.vouchers.count) > 0)
       flash[:notice] = "Can't destroy this voucher type, because there are
                         #{c} issued vouchers of this type."
-      redirect_to :action => 'list'
+      redirect_to :action => :list
+      return
+    end
+    if !(vv = v.valid_vouchers).empty?
+      # helpfully tell which shows use this vouchertype
+      shows = vv.map { |v| v.showdate.show.name }.uniq.join(', ')
+      flash[:notice] = "Can't destroy this voucher type because it's listed as valid for purchase for the following shows: #{shows}"
+      redirect_to :action => :list
       return
     end
     name = v.name

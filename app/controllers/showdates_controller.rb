@@ -50,14 +50,21 @@ class ShowdatesController < ApplicationController
 
   def new
     show = Show.find(params[:show_id])
-    if show.showdates.length > 0
-      latest_showdate = show.showdates.map {|x| x.thedate}.max
+    if (most_recent = show.showdates.find(:first, :order => 'updated_at DESC'))
+      opts = {
+        :thedate => most_recent.thedate + 1.day,
+        :end_advance_sales => most_recent.end_advance_sales + 1.day,
+        :max_sales => most_recent.max_sales
+      }
     else
-      latest_showdate = Time.parse(show.opening_date.to_s).change(:hour => 20)
+      thedate = show.opening_date.to_time.change(:hour => 20)
+      opts = {
+        :thedate => thedate,
+        :end_advance_sales => thedate - 3.hours,
+        :max_sales => 0
+      }
     end
-    @showdate = show.showdates.build(:thedate => latest_showdate + 1.day,
-                                     :max_sales => show.house_capacity,
-                                     :end_advance_sales => latest_showdate + 21.hours)
+    @showdate = show.showdates.build(opts)
   end
 
   def edit
