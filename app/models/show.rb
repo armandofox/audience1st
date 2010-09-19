@@ -24,6 +24,11 @@ class Show < ActiveRecord::Base
     Show.find(:all) 
   end
 
+  def season
+    # latest season that contains opening date
+    self.opening_date.at_beginning_of_season.year
+  end
+
   def future_showdates
     self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now])
   end

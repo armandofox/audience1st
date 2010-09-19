@@ -18,7 +18,7 @@ class ValidVouchersController < ApplicationController
       flash[:notice] = "New voucher must be associated with a showdate"
       redirect_to :controller => 'shows', :action => 'index'
     end
-    @vouchertypes = Vouchertype.nonbundle_vouchertypes
+    @vouchertypes = Vouchertype.nonbundle_vouchertypes(@showdate.season)
     @valid_voucher = ValidVoucher.new
     # set some convenient defaults for new valid_voucher
     @valid_voucher.start_sales = @showdate.show.listing_date

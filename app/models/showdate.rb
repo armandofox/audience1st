@@ -78,6 +78,10 @@ class Showdate < ActiveRecord::Base
     other_showdate ? thedate <=> other_showdate.thedate : 1
   end
 
+  def season
+    show.season
+  end
+  
   def sales_by_type(vouchertype_id)
     return self.vouchers.count(:conditions => ['vouchertype_id = ?', vouchertype_id])
   end
