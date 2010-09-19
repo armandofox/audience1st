@@ -183,8 +183,8 @@ class Vouchertype < ActiveRecord::Base
       vals = [Vouchertype::ANYONE, Time.now]
     end
     str = "(category = ?) AND (subscription = ?) AND #{str}"
-    vals.unshift(str, :bundle, true)
     str += " AND '#{Time.now.to_formatted_s(:db)}' BETWEEN bundle_sales_start AND bundle_sales_end" unless admin
+    vals.unshift(str, :bundle, true)
     Vouchertype.find(:all, :conditions => vals, :order => "price DESC")
   end
 
