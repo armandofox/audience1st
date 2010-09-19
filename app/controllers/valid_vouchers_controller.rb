@@ -18,6 +18,7 @@ class ValidVouchersController < ApplicationController
       flash[:notice] = "New voucher must be associated with a showdate"
       redirect_to :controller => 'shows', :action => 'index'
     end
+    @add_to_all = params[:add_to_all]
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@showdate.season)
     @valid_voucher = ValidVoucher.new
     # set some convenient defaults for new valid_voucher
@@ -64,8 +65,11 @@ class ValidVouchersController < ApplicationController
       end
     end
     flash[:notice] = msgs
-    redirect_to :controller => 'shows', :action => 'edit', :id => showdate.show.id
-
+    if params[:commit] =~ /another/i
+      redirect_to :action => :new, :showdate_id => showdate, :add_to_all => addtojustone.zero?
+    else
+      redirect_to :controller => 'shows', :action => 'edit', :id => showdate.show.id
+    end
   end
 
   def edit
