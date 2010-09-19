@@ -22,11 +22,15 @@ season_start_month: >
 
   This is used to determine what ticket vouchers to show in customers'
   accounts and default dates for season-rollup reports.
+  The "2010 Season" refers to the season whose opening night is in 2010,
+  which you might refer to as the "2010-2011 Season".
 
 season_start_day: >
 
   This is used to determine what ticket vouchers to show in customers'
   accounts and default dates for season-rollup reports.
+  The "2010 Season" refers to the season whose opening night is in 2010,
+  which you might refer to as the "2010-2011 Season".
 
 cancel_grace_period: >
 

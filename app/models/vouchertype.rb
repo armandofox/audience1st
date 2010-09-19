@@ -146,9 +146,14 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.subscription_vouchertypes(season=nil)
-    Vouchertype.find(:all,
+    vv = Vouchertype.find(:all,
       :conditions => ["category = ? AND subscription = ?", :bundle, true], :order => 'expiration_date DESC').
       select { |v| v.valid_for_season?(season) }
+    # HACK: Subscriptions for different seasons may overlap in time, so for subscriptions
+    # we ALSO enforce that the expiration date be BEFORE the season start date of the
+    # current season.  Ick.
+    vv.reject! { |v| v.expiration_date < Time.now.at_beginning_of_season(season) }
+    vv
   end
 
   def self.revenue_vouchertypes(season=nil)

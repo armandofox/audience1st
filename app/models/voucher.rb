@@ -23,7 +23,7 @@ class Voucher < ActiveRecord::Base
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)
     season_start = Time.now.at_beginning_of_season(year)
-    v = Vouchertype.find(:all, :conditions =>"category = 'bundle' AND subscription=1").select { |vt| vt.valid_for_season?(year) }
+    v = Vouchertype.subscription_vouchertypes(year)
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
   end
 
