@@ -94,12 +94,21 @@ class Mailer < ActionMailer::Base
   
   @@from_addr = "AutoConfirm-#{Option.value(:venue_shortname)}@audience1st.com"
 
+  @@contact = []
+  @@contact << "email #{Option.value(:help_email)}" unless Option.value(:help_email).blank?
+  @@contact << "call #{Option.value(:boxoffice_telephone)}" unless Option.value(:boxoffice_telephone).blank?
+  @@contact = @@contact.join(" or ")
+  
   @@contact_string = <<EOS
 If this isn't correct, or if you have questions about your order or
 any problems using our Web site, PLEASE DO NOT REPLY to this email
 as it was generated automatically.
 
-Instead, please email #{Option.value(:help_email)} or call #{Option.value(:boxoffice_telephone)}.
+Instead, please #{@@contact}.
+Please include your name and login (as shown above), and if you're
+experiencing technical problems, a description of the problem and the
+type of browser and operating system you're using (Internet Explorer on
+Windows, Safari or Firefox on Mac, etc.)
 
 Thanks for your patronage!
 
