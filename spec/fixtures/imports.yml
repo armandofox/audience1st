@@ -2,7 +2,6 @@
 
 one:
   name: MyString
-  completed: false
   type: MyString
   number_of_records: 1
   filename: MyString
@@ -10,7 +9,6 @@ one:
 
 two:
   name: MyString
-  completed: false
   type: MyString
   number_of_records: 1
   filename: MyString

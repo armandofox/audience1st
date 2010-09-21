@@ -30,7 +30,7 @@ class VouchertypesController < ApplicationController
     @years = (earliest.expiration_date.year .. latest.expiration_date.year)
     @filter = params[:filter].to_s
     @season = params[:season]
-    limit_to_season = @season ? @season.to_i : nil
+    limit_to_season = (@season.to_i > 0) ? @season.to_i : nil
     case @filter
     when "Bundles"
       @vouchertypes = Vouchertype.bundle_vouchertypes(limit_to_season)
