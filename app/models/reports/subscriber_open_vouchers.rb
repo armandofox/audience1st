@@ -11,7 +11,7 @@ class SubscriberOpenVouchers < Report
   end
 
   def generate(params = [])
-    @errors = "Please specify one or more subscriber voucher types." and return if
+    @errors = ["Please specify one or more subscriber voucher types."] and return if
       (vouchertypes = params[:vouchertypes]).blank?
     vouchertypes.reject! { |x| x.to_i < 1 }
     self.log =   %{

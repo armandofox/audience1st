@@ -237,6 +237,7 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def valid_for_season?(season = nil)
+    return true
     season ||= Time.now.year
     expiration_date <= Time.now.at_end_of_season(season)  &&
       valid_date > Time.now.at_beginning_of_season(season - 1)
