@@ -95,7 +95,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def revenue_per_seat
-    revenue / (comp_seats + nonsubscriber_revenue_seats)
+    (revenue / (comp_seats + nonsubscriber_revenue_seats)) rescue 0.0
   end
 
   def comp_seats
