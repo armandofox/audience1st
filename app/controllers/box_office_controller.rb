@@ -13,6 +13,7 @@ class BoxOfficeController < ApplicationController
   ssl_required(:walkup, :do_walkup_sale)
   ssl_allowed :change_showdate
   filter_parameter_logging :swipe_data
+  filter_parameter_logging :number, :type, :verification_value, :year, :month
   
   private
 
