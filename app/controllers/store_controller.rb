@@ -425,8 +425,8 @@ EON
   def get_all_showdates(ignore_cutoff = false)
     if ignore_cutoff
       showdates = Showdate.find(:all,
-        :include => :shows,
-        :conditions => ['showdates.thedate >= ? AND shows.special = ?',
+        :include => :show,
+        :conditions => ['showdates.thedate >= ? AND show.special = ?',
           Time.now.at_beginning_of_season - 1.year, @special_shows_only],
         :order => "thedate ASC")
     else
