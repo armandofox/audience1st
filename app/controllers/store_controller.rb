@@ -426,9 +426,8 @@ EON
     if ignore_cutoff
       showdates = Showdate.find(:all,
         :include => :show,
-        :conditions => ['showdates.thedate >= ? AND show.special = ?',
-          Time.now.at_beginning_of_season - 1.year, @special_shows_only],
-        :order => "thedate ASC")
+        :conditions => ['showdates.thedate >= ?' ,Time.now.at_beginning_of_season - 1.year],
+        :order => "thedate ASC").reject { |sd| !sd.show.special? != !@special_shows_only }
     else
       showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).reject { |sd| (sd.thedate < Date.today || !sd.show.special? != !@special_shows_only)}.sort_by(&:thedate)
     end
