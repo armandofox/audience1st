@@ -47,7 +47,7 @@ Rails::Initializer.run do |config|
   
   # config.gem "rack", :version => '1.1.0'
 
-  config.active_record.timestamped_migrations = false
+  config.active_record.timestamped_migrations = true
 end
 
 require 'active_merchant'
