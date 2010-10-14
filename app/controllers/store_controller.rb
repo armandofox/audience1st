@@ -23,7 +23,7 @@ class StoreController < ApplicationController
   # this should be the last declarative spec since it will append another
   # before_filter
   ssl_required(:checkout, :place_order, :direct_transaction,
-                 :index, :subscribe,
+                 :index, :subscribe, :special,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
@@ -142,9 +142,6 @@ class StoreController < ApplicationController
     if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       @special_shows_only = s.special?
       set_current_show(s)
-      sd = s.future_showdates
-      # set_current_showdate(sd.empty? ? nil : sd.first)
-      # set_current_showdate(nil)
     end
     setup_ticket_menus
     render :partial => 'ticket_menus'
@@ -375,9 +372,8 @@ EON
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
   def set_current_show(s)
     session[:store] ||= {}
-    sd = (@gAdmin.is_boxoffice ? s.showdates : s.future_showdates)
-    if (sd = sd.sort_by(&:thedate).first)
-      set_current_showdate(sd)
+    if !(sd = (@gAdmin.is_boxoffice ? s.showdates : s.future_showdates)).empty?
+      set_current_showdate(sd.first)
     else
       session[:store][:show] = session[:store][:showdate] = nil
     end

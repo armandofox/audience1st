@@ -30,7 +30,7 @@ class Show < ActiveRecord::Base
   end
 
   def future_showdates
-    self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now])
+    self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now],:order => 'thedate')
   end
 
   def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.price} ; end
