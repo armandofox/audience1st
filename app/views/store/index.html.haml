@@ -1,4 +1,4 @@
-= sales_banners_for(:single_ticket, @subscriber, @next_season_subscriber)
+= sales_banners_for((@special_shows_only ? :special_event : :single_ticket), @subscriber, @next_season_subscriber)
 
 - if @gNobodyReallyLoggedIn
   %p.subscription_msg2
@@ -9,7 +9,7 @@
 #store
   
   %h1.page_heading.center
-    Select Tickets
+    = @special_shows_only ? 'Select Event' : 'Select Tickets'
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #ticket_menus
