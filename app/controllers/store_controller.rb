@@ -23,7 +23,7 @@ class StoreController < ApplicationController
   # this should be the last declarative spec since it will append another
   # before_filter
   ssl_required(:checkout, :place_order, :direct_transaction,
-                 :index, :subscribe,
+                 :index, :subscribe, :special,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
@@ -36,6 +36,18 @@ class StoreController < ApplicationController
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
     setup_ticket_menus
+  end
+
+  def special
+    @customer = store_customer
+    @is_admin = current_admin.is_boxoffice
+    @special_shows_only = true
+    setup_for_initial_visit unless (@promo_code = redeeming_promo_code)
+    @subscriber = @customer.subscriber?
+    @next_season_subscriber = @customer.next_season_subscriber?
+    setup_ticket_menus
+    set_return_to :controller => 'store', :action => 'special'
+    render :action => 'index'
   end
 
   def subscribe
@@ -128,10 +140,8 @@ class StoreController < ApplicationController
 
   def show_changed
     if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
+      @special_shows_only = s.special?
       set_current_show(s)
-      sd = s.future_showdates
-      # set_current_showdate(sd.empty? ? nil : sd.first)
-      # set_current_showdate(nil)
     end
     setup_ticket_menus
     render :partial => 'ticket_menus'
@@ -139,6 +149,7 @@ class StoreController < ApplicationController
 
   def showdate_changed
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
+      @special_shows_only = s.show.special?
       set_current_showdate(s)
     end
     setup_ticket_menus
@@ -324,7 +335,7 @@ EON
       @sh = @sd.show
       @all_showdates = (is_admin ? @sh.showdates :
         @sh.future_showdates)
-      #@all_showdates = (is_admin ? @sh.showdates :
+      # @all_showdates = (is_admin ? @sh.showdates :
       #  @sh.future_showdates.select { |s| s.saleable_seats_left > 0 })
       # make sure originally-selected showdate is included among those
       #  to be displayed.
@@ -361,9 +372,8 @@ EON
   def reset_current_show_and_showdate ;  session[:store] = {} ;  end
   def set_current_show(s)
     session[:store] ||= {}
-    sd = (@gAdmin.is_boxoffice ? s.showdates : s.future_showdates)
-    if (sd = sd.sort_by(&:thedate).first)
-      set_current_showdate(sd)
+    if !(sd = (@gAdmin.is_boxoffice ? s.showdates : s.future_showdates)).empty?
+      set_current_showdate(sd.first)
     else
       session[:store][:show] = session[:store][:showdate] = nil
     end
@@ -379,14 +389,16 @@ EON
   end
   def current_showdate
     if session[:store] && session[:store][:showdate]
-      Showdate.find_by_id(session[:store][:showdate].to_i)
+      s = Showdate.find_by_id(session[:store][:showdate].to_i)
+      !s.show.special? == !@special_shows_only ? s : nil
     else
       nil
     end
   end
   def current_show
     if session[:store] && session[:store][:show]
-      Show.find_by_id(session[:store][:show].to_i)
+      s = Show.find_by_id(session[:store][:show].to_i)
+      !s.special? == !@special_shows_only ? s : nil
     else
       nil
     end
@@ -401,14 +413,19 @@ EON
     unless @gAdmin.is_boxoffice
       s.reject! { |sh| sh.listing_date > Date.today }
     end
+    # display only regular shows, or only special shows
+    s.reject! { |sh| !(sh.special?) != !(@special_shows_only) }
     s
   end
 
   def get_all_showdates(ignore_cutoff = false)
     if ignore_cutoff
-      showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season - 1.year], :order => "thedate ASC")
+      showdates = Showdate.find(:all,
+        :include => :show,
+        :conditions => ['showdates.thedate >= ?' ,Time.now.at_beginning_of_season - 1.year],
+        :order => "thedate ASC").reject { |sd| !sd.show.special? != !@special_shows_only }
     else
-      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).sort_by(&:thedate).reject { |sd| sd.thedate < Date.today }
+      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).reject { |sd| (sd.thedate < Date.today || !sd.show.special? != !@special_shows_only)}.sort_by(&:thedate)
     end
   end
 

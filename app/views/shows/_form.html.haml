@@ -32,6 +32,11 @@
   = popup_help_for :show_landing_page_url
 
 %p
+  %label{:for=>:show_special} This is a special event
+  = check_box 'show', 'special'
+  = popup_help_for :show_is_special
+
+%p
   %label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); leave blank if none
   = text_area :show, :patron_notes, :cols =>60,:rows => 3,:maxlength => 254
 

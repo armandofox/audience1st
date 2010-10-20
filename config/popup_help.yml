@@ -127,6 +127,14 @@ show_landing_page_url: >
   The URL of a page on your theater's Web site that has more information
   about the show.
 
+show_is_special: >
+
+  Check this box if this event isn't really a regular show but is some
+  other product (acting class, sponsorship opportunity, etc.)  Shows
+  marked this way will NOT appear on the regular ticket sales page, but
+  will appear only on the Special Products page
+  (https://www.audience1st.com/your_venue_name/store/special).  
+
 # Vouchers and voucher types
 
 vouchertype_type: >

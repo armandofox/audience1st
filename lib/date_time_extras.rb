@@ -3,6 +3,7 @@
 
 # add a couple of useful formats to ActiveSupport to_formatted_s conversion
 ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
+  :compact => "%m/%d/%y",
   :date_only => "%e %B %Y",
   :showtime => '%A, %b %e, %l:%M %p',
   :showtime_including_year => '%A, %b %e, %Y, %l:%M %p',

@@ -1,7 +1,7 @@
 %h1= "#{@vouchers.length} unfulfilled orders (#{@total} tickets) as of #{Time.now.to_s(:short)}"
 
 %p{:align=>:top}
-  = button_to 'Export Addresses to Excel', :action => 'unfulfilled_orders_addresses', :method => :get
+  = button_to 'Download to Excel', :action => 'unfulfilled_orders_addresses', :method => :get
   = button_to_function 'Check All', "checkBoxes('uf',true)"
   = button_to_function 'Clear All', "checkBoxes('uf',false)"
 
@@ -16,6 +16,7 @@
       %th City
       %th State
       %th Zip
+      %th Order Date
       %th Product
       %th Completed
 
@@ -26,6 +27,7 @@
       %tr{:class => (gift.zero? ? nil : 'highlighted')}
         - [:first_name,:last_name,:street,:city,:state,:zip].each do |c|
           %td= h cust.send(c)
+        %td= h v.sold_on.to_formatted_s(:compact)
         %td= h v.vouchertype.name 
         %td= check_box 'voucher', v.id, :class=>'check'
       - unless gift.zero?
