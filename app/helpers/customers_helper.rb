@@ -68,6 +68,10 @@ module CustomersHelper
 
   #--- end stuff from restful_authentication
 
+  def rollover_with_contact_info(customer, attrib=:full_name)
+    content_tag :span, h(customer.send attrib), :class => 'customer_rollover', :title => ( [customer.email, customer.day_phone, customer.eve_phone].join(' ') rescue '')
+  end
+
   def roles_with_names
     Customer.roles.map { |r| [r.humanize, r] }
   end

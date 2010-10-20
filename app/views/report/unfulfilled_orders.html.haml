@@ -10,8 +10,8 @@
 
   %table.hilite.ordersTable
     %tr{:class=>cycle(:even,:odd)}
-      %th First name
-      %th Last name
+      %th First name<br/>(Hover for
+      %th Last name<br/> contact info)
       %th Street
       %th City
       %th State
@@ -25,7 +25,9 @@
       - gift = v.gift_purchaser_id.to_i
       - cust =  (gift.zero? ? v.customer : Customer.find(gift))
       %tr{:class => (gift.zero? ? nil : 'highlighted')}
-        - [:first_name,:last_name,:street,:city,:state,:zip].each do |c|
+        %td= rollover_with_contact_info(cust, :first_name)
+        %td= rollover_with_contact_info(cust, :last_name)
+        - [:street,:city,:state,:zip].each do |c|
           %td= h cust.send(c)
         %td= h v.sold_on.to_formatted_s(:compact)
         %td= h v.vouchertype.name 
