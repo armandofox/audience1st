@@ -68,7 +68,22 @@ module Hominid
       call("listInterestGroupAdd", list_id, group)
     end
     alias :interest_group_add :create_group
+
+    def add_static_segment(list_id, segment_name)
+      # Add a static list segment
+      # Parameters:
+      # list_id (String) = The mailing list ID value.
+      # segment_name (String) = The name of the static segment to add.
+      call("listAddStaticSegment", list_id, segment_name)
+    end
     
+    def static_segments(list_id)
+      # Get names of existing static list segments
+      # Parameters:
+      # list_id (String) = The mailing list ID value.
+      call("listStaticSegments", list_id)
+    end
+
     def create_tag(list_id, tag, name, required = false)
       # Add a new merge tag to a given list
       #
@@ -317,7 +332,7 @@ module Hominid
       call("listBatchSubscribe", list_id, subscribers, *options.values_at(:double_opt_in, :update_existing, :replace_interests))
     end
     alias :batch_subscribe :subscribe_many
-    
+
     def unsubscribe(list_id, current_email, options = {})
       # Unsubscribe the given email address from the list.
       #
@@ -353,7 +368,8 @@ module Hominid
       call("listBatchUnsubscribe", list_id, emails, *options.values_at(:delete_member, :send_goodbye, :send_notify))
     end
     alias :batch_unsubscribe :unsubscribe_many
-    
+
+
     def update_group(list_id, old_name, new_name)
       # Change the name of an Interest Group.
       #

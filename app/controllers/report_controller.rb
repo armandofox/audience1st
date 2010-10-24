@@ -169,8 +169,16 @@ EOQ1
       report_subclass = n.camelize.constantize
       @report = report_subclass.__send__(:new)
       @args = @report.view_params
+      @sublists = EmailList.get_sublists unless EmailList.disabled?
       render :partial => "report/special_report", :locals => {:name => n}
     end
+  end
+
+  def create_sublist
+    name = params[:sublist_name]
+    @error_messages = EmailList.errors unless EmailList.create_sublist(name)
+    @sublists = EmailList.get_sublists
+    render :partial => 'sublist'
   end
 
   def run_special_report

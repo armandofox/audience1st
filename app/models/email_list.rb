@@ -3,6 +3,8 @@ class EmailList
   # this version works with Brian Getting's Hominid gem:
   #  script/plugin install git://github.com/bgetting/hominid.git
 
+  cattr_accessor :errors
+
   private
 
   @@hominid = nil
@@ -22,8 +24,14 @@ class EmailList
 
   public
 
+  def self.disabled?
+    defined?(DISABLE_EMAIL_LIST_INTEGRATION) && DISABLE_EMAIL_LIST_INTEGRATION
+  end
+
+  def self.enabled? ; !self.disabled? ; end
+
   def self.init_hominid
-    RAILS_DEFAULT_LOGGER.info("NOT initializing mailchimp") and return nil if defined?(DISABLE_EMAIL_LIST_INTEGRATION) && DISABLE_EMAIL_LIST_INTEGRATION
+    RAILS_DEFAULT_LOGGER.info("NOT initializing mailchimp") and return nil if self.disabled?
     return true if @@hominid
     apikey = Option.value(:mailchimp_api_key)
     @@list = Option.value(:mailchimp_default_list_name)
@@ -101,6 +109,31 @@ class EmailList
       RAILS_DEFAULT_LOGGER.info msg
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.info [msg,e.message].join(': ')
+    end
+  end
+
+  def self.create_sublist(name)
+    self.init_hominid || return
+    begin
+      @@hominid.add_static_segment(@@listid, name)
+      return true
+    rescue Exception => e
+      RAILS_DEFAULT_LOGGER.info "Adding sublist '#{name}': #{e.message}"
+      self.errors = "Error: sublist '#{name}' could not be created"
+      return nil
+    end
+  end
+
+  def self.get_sublists
+    # returns array of 2-element arrays, each of which is [name,count] for static segments
+    self.init_hominid || (return([]))
+    begin
+      segs = @@hominid.static_segments(@@listid).map { |seg| [seg['name'], seg['member_count']] }
+      puts "Returning static segments: #{segs}"
+      segs
+    rescue Exception => e
+      RAILS_DEFAULT_LOGGER.info "Getting sublists: #{e.message}"
+      []
     end
   end
 

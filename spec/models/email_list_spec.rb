@@ -16,6 +16,9 @@ describe EmailList do
   before(:each) do
     EmailList.stub!(:init_hominid).and_return(true)
   end
+  describe "segments" do
+    it "should return empty segm
+  end
   describe "bulk comparison" do
     before(:each) do
       @l1 = BasicModels::create_customer_by_name_and_email %w[John Doe john@doe.com]
