@@ -181,6 +181,9 @@ EOQ1
     render :partial => 'sublist'
   end
 
+  def add_to_sublist
+  end
+
   def run_special_report
     n = params[:_report]
     @report = n.camelize.constantize.__send__(:new, params[:output])
@@ -190,15 +193,32 @@ EOQ1
       return
     end
     result = @report.generate(params) # error!
-    respond_to do |wants|
-      wants.html {
-        if result # ok
-          @report.create_csv
-          download_to_excel(@report.output, @report.filename, false)
-        else
+    unless result
+      respond_to do |wants|
+        wants.html {
           flash[:warning] = "Errors generating report: #{@report.errors}"
           redirect_to :action => 'index'
-          return
+        }
+        wants.js {
+          render :text => "Error: #{@report.errors}"
+        }
+      end
+      return
+    end
+    # success
+    respond_to do |wants|
+      wants.html {
+        case params[:commit]
+        when /download/i
+          @report.create_csv
+          download_to_excel(@report.output, @report.filename, false)
+        when /add/i
+          l = @report.customers.length
+          seg = params[:sublist]
+          result = EmailList.add_to_sublist(seg, @report.customers)
+          flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
+            EmailList.errors.to_s
+          redirect_to :action => :index
         end
       }
       wants.js {
@@ -206,7 +226,6 @@ EOQ1
           # just render the number of results that would be returned
           render :text => "#{@report.customers.length} matches"
         else # error
-          render :text => "Error: #{@report.errors}"
         end
       }
     end

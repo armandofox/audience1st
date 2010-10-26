@@ -84,6 +84,10 @@ module Hominid
       call("listStaticSegments", list_id)
     end
 
+    def static_segment_add_members(list_id, seg_id, emails)
+      call("listStaticSegmentAddMembers", list_id, seg_id, emails)
+    end
+
     def create_tag(list_id, tag, name, required = false)
       # Add a new merge tag to a given list
       #

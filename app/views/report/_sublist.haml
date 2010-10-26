@@ -2,6 +2,7 @@
   - unless @sublists.empty?
     Add to sublist:
     = select_tag 'sublist', options_for_sublists(@sublists)
+    = submit_tag 'Add'
   Create new sublist:
   = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
   = submit_to_remote "create_sublist", "Create", :url => {:controller => 'report', :action => 'create_sublist'}, :update => "sublists"

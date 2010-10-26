@@ -11,15 +11,22 @@ class EmailList
   @@list = nil
   @@listid = nil
 
+  def self.hominid ; @@hominid ; end
+  
   def self.members(what)
     begin
-      res = @@hominid.members(@@listid, what, "2006-01-01", 0, 10000)
+      res = hominid.members(@@listid, what, "2006-01-01", 0, 10000)
       RAILS_DEFAULT_LOGGER.info "Retrieved #{res.size} #{what} members of #{@@list}"
     rescue Exception => e
       res = []
       RAILS_DEFAULT_LOGGER.warn "Mailchimp error: #{e.message}"
     end
     res
+  end
+
+  def self.segment_id_from_name(name)
+    self.init_hominid || return
+    hominid.static_segments(@@listid).detect { |s| s['name'] == name }['id']
   end
 
   public
@@ -32,7 +39,7 @@ class EmailList
 
   def self.init_hominid
     RAILS_DEFAULT_LOGGER.info("NOT initializing mailchimp") and return nil if self.disabled?
-    return true if @@hominid
+    return true if hominid
     apikey = Option.value(:mailchimp_api_key)
     @@list = Option.value(:mailchimp_default_list_name)
     if (apikey.blank? || @@list.blank?)
@@ -42,7 +49,7 @@ class EmailList
     begin
       @@hominid = Hominid::Base.new :api_key => apikey
       raise "'#{@@list}' not found" unless
-        (@@listid = @@hominid.find_list_id_by_name(@@list))
+        (@@listid = hominid.find_list_id_by_name(@@list))
       RAILS_DEFAULT_LOGGER.info "Init Mailchimp with default list '#{@@list}'"
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.info "Init Mailchimp failed: <#{e.message}>"
@@ -56,7 +63,7 @@ class EmailList
     RAILS_DEFAULT_LOGGER.info "Subscribe #{cust.full_name} as #{email}"
     msg = "Subscribing #{cust.full_name} <#{email}> to '#{@@list}'"
     begin
-      @@hominid.subscribe(
+      hominid.subscribe(
         @@listid,
         email,
         {:FNAME => cust.first_name, :LNAME => cust.last_name},
@@ -74,7 +81,7 @@ class EmailList
       # update existing entry
       msg = "Changing <#{old_email}> to <#{cust.email}> " <<
         "for #{cust.full_name} in  '#{@@list}'"
-      @@hominid.update_member(
+      hominid.update_member(
         @@listid,
         old_email,
         {:FNAME => cust.first_name, :LNAME => cust.last_name,
@@ -86,7 +93,7 @@ class EmailList
         begin
           # was not on list previously
           msg = "Adding #{cust.email} to list #{@@list}"
-          @@hominid.subscribe(@@listid, cust.email,
+          hominid.subscribe(@@listid, cust.email,
             {:FNAME => cust.first_name, :LNAME => cust.last_name},
             {:email_type => 'html'})
         rescue Exception => e
@@ -105,7 +112,7 @@ class EmailList
     RAILS_DEFAULT_LOGGER.info "Unsubscribe #{cust.full_name} as #{email}"
     msg = "Unsubscribing #{cust.full_name} <#{email}> from '#{@@list}'"
     begin
-      @@hominid.unsubscribe(@@listid, email)
+      hominid.unsubscribe(@@listid, email)
       RAILS_DEFAULT_LOGGER.info msg
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.info [msg,e.message].join(': ')
@@ -115,7 +122,7 @@ class EmailList
   def self.create_sublist(name)
     self.init_hominid || return
     begin
-      @@hominid.add_static_segment(@@listid, name)
+      hominid.add_static_segment(@@listid, name)
       return true
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.info "Adding sublist '#{name}': #{e.message}"
@@ -128,12 +135,33 @@ class EmailList
     # returns array of 2-element arrays, each of which is [name,count] for static segments
     self.init_hominid || (return([]))
     begin
-      segs = @@hominid.static_segments(@@listid).map { |seg| [seg['name'], seg['member_count']] }
+      segs = hominid.static_segments(@@listid).map { |seg| [seg['name'], seg['member_count']] }
       puts "Returning static segments: #{segs}"
       segs
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.info "Getting sublists: #{e.message}"
       []
+    end
+  end
+
+  def self.add_to_sublist(sublist,customers=[])
+    self.init_hominid || return
+    begin
+      seg_id = segment_id_from_name(sublist)
+      emails = customers.select { |c| c.valid_email_address? }.map { |c| c.email }
+      if emails.empty?
+        self.errors = "None of the matching customers had valid email addresses."
+        return 0
+      end
+      result = hominid.static_segment_add_members(@@listid, seg_id, emails)
+      if !result['errors'].blank?
+        self.errors = "MailChimp reported #{result['errors'].length} problems (usually customers who aren't subscribed to the master list."
+      end
+      return result['success'].to_i
+    rescue Exception => e
+      self.errors = e.message
+      RAILS_DEFAULT_LOGGER.info "Adding #{customers.length} customers to sublist '#{sublist}': #{e.message}"
+      return 0
     end
   end
 

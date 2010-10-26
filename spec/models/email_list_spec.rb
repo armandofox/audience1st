@@ -17,7 +17,6 @@ describe EmailList do
     EmailList.stub!(:init_hominid).and_return(true)
   end
   describe "segments" do
-    it "should return empty segm
   end
   describe "bulk comparison" do
     before(:each) do
