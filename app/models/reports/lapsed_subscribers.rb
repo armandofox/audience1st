@@ -27,6 +27,6 @@ class LapsedSubscribers < Report
       prev_subscribers.add_constraint('vouchertype.id IN (?)', have_not)
       customers -= prev_subscribers.execute_query
     end
-    customers
+    @customers = customers
   end
 end

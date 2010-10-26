@@ -152,9 +152,7 @@ EJS1
 
   # spinner
   def spinner(id='wait')
-    content_tag('div', :style => 'display: inline; width: 18px; visibility: hidden;') do
-      image_tag('wait16trans.gif', :id => id, :style => 'display: none;')
-    end
+    image_tag('wait16trans.gif', :id => id, :class => 'spinner', :style => 'display: none;')
   end
 
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})

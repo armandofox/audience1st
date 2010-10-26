@@ -40,6 +40,6 @@ class AttendanceByShow < Report
       notseen.add_constraint('voucher.showdate_id IN (?)', showdates_not)
       seen -= notseen.execute_query
     end
-    return seen
+    @customers = seen
   end
 end
