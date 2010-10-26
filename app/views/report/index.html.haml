@@ -24,10 +24,15 @@
 
 .pageDiv
   %h1 Customer Lists
+  = select_tag 'report_name', options_for_select(['Select report...',''] + @special_report_names.map { |n| [n.humanize,n] })
+  = spinner('report_type')
+  = observe_field 'report_name', |
+    :url => {:action => 'show_special_report'}, |
+    :with => :report_name, |
+    :update => 'report_body', |
+    :before => "Element.show('report_type')", |
+    :complete => "Element.hide('report_type')" |
   #report_body
-    - @special_report_names.each do |name|
-      %p= link_to_remote "#{name.humanize}...", :url => {:action => 'show_special_report', :report_name => name}, :update => name
-      %div{:id => name, :style => {:display => :none}}
 
 .pageDiv
   %h1

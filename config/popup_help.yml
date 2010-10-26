@@ -190,3 +190,12 @@ donation_search_by_letter_sent: >
   have sent an acknowledgment letter.  Checking this box restricts your
   search to donations not yet acknowledged, making it easy to export a
   list of all the donation letters you have to send.
+
+# Reports
+
+sublists: >
+
+  Sublists are named subsets of your master email list as maintained by
+  Mailchimp or ConstantContact.  By saving the result of a report as a
+  sublist, you can then send an email campaign to just those patrons.
+

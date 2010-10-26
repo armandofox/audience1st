@@ -1,15 +1,16 @@
 - form_tag :action => 'run_special_report' do
-  %fieldset
-    %legend= h(name.humanize)
-    = render :partial => "report/special/#{name}"
-    = render :partial => 'output_options'
-    = hidden_field_tag '_report', name
+  = render :partial => "report/special/#{name}"
+  = render :partial => 'output_options'
+  = hidden_field_tag '_report', name
+  %fieldset.generate_report
+    %legend What to do with the results
     = submit_tag 'Download to Excel'
-    = submit_to_remote 'count', 'Calculate number of matching customers', |
+    = submit_to_remote 'count', 'Estimate number of matches', |
       :url => {:action => 'run_special_report'},  |
-      :before => "Element.show('#{name}_spinner')", |
-      :complete => "Element.hide('#{name}_spinner')", |
-      :update => "#{name}_preview" |
-    = spinner("#{name}_spinner")
-    %span{:id => "#{name}_preview"}
+      :before => "Element.show('report_spinner')", |
+      :complete => "Element.hide('report_spinner')", |
+      :update => 'report_preview' |
+    = spinner('report_spinner')
+    %span#report_preview
+    = render :partial => 'sublist' if @sublists
 

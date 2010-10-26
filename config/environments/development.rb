@@ -27,5 +27,5 @@ ActiveMerchant::Billing::Base.mode = :test
 # :api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
 #  :default_list_name => 'Test list'
 
-DISABLE_EMAIL_LIST_INTEGRATION = true
+# DISABLE_EMAIL_LIST_INTEGRATION = true
 # DISABLE_FACEBOOK = true
