@@ -204,6 +204,16 @@ homepage_subscription_sales_text: >
   Homepage message that will take customer to Buy Subscriptions page; if
   blank, link to Subscriptions page won't be displayed
 
+welcome_page_subscriber_message: >
+
+  Banner message that will appear on post-login (welcome) screen for
+  subscribers, including next-season subscribers.
+
+welcome_page_nonsubscriber_message: >
+
+  Banner message that will appear on post-login (welcome) screen for
+  non-subscribers.
+
 subscription_purchase_email_notes: >
 
   Additional text included in purchase confirmation screen and email
