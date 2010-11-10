@@ -51,7 +51,10 @@ class ApplicationController < ActionController::Base
 
   # message that will appear in flash[:notice] once only, at login
   def login_message
-    encourage_opt_in_message if self.current_user.has_opted_out_of_email? 
+    msg = ''
+    msg << encourage_opt_in_message if self.current_user.has_opted_out_of_email?
+    msg << welcome_message_for(self.current_user)
+    msg
   end
 
   def set_globals
@@ -199,10 +202,15 @@ EOEVAL
       m << '.' unless m =~ /[.!?:;,]$/
       m << ' Click the Billing Address tab (above) to update your preferences.'
       m
-    else nil
+    else ''
     end
   end
 
+  def welcome_message_for(customer)
+    customer.subscriber? ? Option.value(:welcome_page_subscriber_message) :
+      Option.value(:welcome_page_nonsubscriber_message)
+  end
+  
   def download_to_excel(output,filename="data",timestamp=true)
     (filename << "_" << Time.now.strftime("%Y_%m_%d")) if timestamp
     send_data(output,:type => (request.user_agent =~ /windows/i ?
