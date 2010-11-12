@@ -11,7 +11,8 @@ class Import < ActiveRecord::Base
   @@import_types = {
     'Customer/mailing list' => 'CustomerImport',
     'Brown Paper Tickets sales for 1 production' => 'BrownPaperTicketsImport',
-    'TBA sales list for Run of Show' => 'TBAWebtixImport'
+    'TBA sales list for Run of Show' => 'TBAWebtixImport',
+    'Goldstar sales for one performance' => 'GoldstarXMLImport'
     }
   cattr_accessor :import_types
   def humanize_type
@@ -59,18 +60,18 @@ class Import < ActiveRecord::Base
     self.filename = short_filename
   end
 
-  def csv_rows(fs=',')
-    filename = File.join(UPLOADED_FILES_PATH, self.filename)
-    filename = self.public_filename unless File.readable?(filename)
+  def with_attachment_data
+    fn = File.join(UPLOADED_FILES_PATH, self.filename.to_s)
+    fn = self.public_filename unless File.readable?(fn) && !File.directory?(fn)
     begin
-      # strip stray ^M's from DOS files
-      CSV::Reader.create(IO.read(filename).gsub(/\r\n/,' '), fs)
+      fh = File.open(fn)
+      yield fh
     rescue Exception => e
-      msg = "Getting attachment data for #{filename}: #{e.message}"
-      errors.add_to_base(msg)
+      msg = "Getting/parsing attachment data for #{fn}: #{e.message}"
+      self.errors.add_to_base(msg)
       logger.error msg
       []
     end
   end
-
+  
 end

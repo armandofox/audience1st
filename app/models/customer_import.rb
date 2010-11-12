@@ -27,6 +27,12 @@ class CustomerImport < Import
   
   private
 
+  def csv_rows
+    with_attachment_data do |fh|
+      CSV::Reader.create(fh.read, ',')
+    end
+  end
+  
   def import(customer)
     return customer.save
   end

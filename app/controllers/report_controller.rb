@@ -256,46 +256,6 @@ EOQ
     redirect_to :action => 'index'
   end
 
-  def invoice
-    start = (Time.now - 1.month).at_beginning_of_month
-    @from,@to =
-      get_dates_from_params(:from,:to, start, start + 1.month - 1.second)
-    @bill = Option.values_hash(:monthly_fee, :cc_fee_markup, :per_ticket_fee, :per_ticket_commission,:customer_service_per_hour,:venue)
-    @page_title = "Invoice for #{@bill[:venue]} : " <<
-      "#{@from.to_formatted_s(:date_only)} - #{@to.to_formatted_s(:date_only)}"
-    # following calc doesn't handle per-ticket commissions, only fixed fees
-    raise "Can't invoice based on nonzero per-ticket commission" if
-      @bill[:per_ticket_commission] > 0
-    sql = <<EOQ2
-        SELECT DISTINCT COUNT(*) AS count,
-                        SUM(vt.price) AS totalprice,
-                        vt.account_code,
-                        vt.price,
-                        vt.name AS vouchertype_name,
-                        s.name AS show_name
-        FROM (((vouchers v
-                JOIN vouchertypes vt on v.vouchertype_id=vt.id)
-                JOIN showdates sd on v.showdate_id=sd.id)
-                JOIN shows s on sd.show_id=s.id)
-        WHERE (v.sold_on BETWEEN ? AND ?) and vt.price > 0
-        GROUP BY vt.account_code,s.id
-EOQ2
-    @vouchers = Voucher.find_by_sql([sql,@from,@to])
-    @total = 0.0
-    @subtotal = {}
-    @vouchers.each do |vgrp|
-      @total +=
-        (@subtotal[vgrp.attributes.values_at('show_name','account_code').join(',')] =
-         vgrp.attributes['count'].to_f * @bill[:per_ticket_fee])
-    end
-    @nmonths = ((@to-@from)/1.year) * 12
-    @monthly_fee =  @nmonths * @bill[:monthly_fee]
-    @customer_service_charges = 0.0 # must compute
-    @total += @customer_service_charges + @monthly_fee
-    render :action => :invoice
-  end
-
-
   private
 
   def get_dates_from_params(from_param,to_param,

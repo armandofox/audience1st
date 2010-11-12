@@ -1,9 +1,18 @@
 require 'spec_helper'
 include BasicModels
 
+TESTFILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files', 'brownpapertickets')
+
 describe "BPT import" do
   before :each do
     @imp = BrownPaperTicketsImport.new(:show => BasicModels.create_generic_show)
+  end
+  describe "parsing attachment with embedded CR's" do
+    it "should have 18 records" do
+      @imp.stub!(:public_filename).and_return(File.join(TESTFILES_DIR, "tabsep_with_embedded_cr.xls"))
+      @imp.preview
+      @imp.number_of_records.should == 18
+    end
   end
   describe "extracting showdate" do
     before :each do

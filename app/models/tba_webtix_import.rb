@@ -72,7 +72,7 @@ class TBAWebtixImport < TicketSalesImport
   
   def customer_from_row(row)
     # customer info:
-    import_customer(row,
+    import_customer_from_csv(row,
       :last_name => col_index(:bx),
       :first_name => col_index(:bw),
       :street => col_index(:bz),

@@ -88,12 +88,16 @@ class TicketSalesImport < Import
     @vouchers
   end
   
-  def import_customer(row,args)
+  def import_customer_from_csv(row,args)
     attribs = {}
     [:first_name, :last_name, :street, :city, :state, :zip, :day_phone, :email, :last_login, :updated_at].each do |attr|
       # special case: "N/A" is same as blank
       attribs[attr] = row[args[attr]] if (args.has_key?(attr)  && row[args[attr]] != 'N/A')
     end
+    import_customer(attribs)
+  end
+
+  def import_customer(attribs)
     customer = Customer.new(attribs)
     customer.force_valid = customer.created_by_admin = true
     if (existing = Customer.find_unique(customer))
