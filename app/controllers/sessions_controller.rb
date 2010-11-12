@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
 
   # render new.rhtml
   def new
-    redirect_to :controller => 'customers', :action => 'welcome' if logged_in?
+    redirect_to(:controller => 'customers', :action => 'welcome') and return if logged_in?
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
@@ -39,7 +39,6 @@ class SessionsController < ApplicationController
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
       redirect_to_stored
-      flash[:notice] = login_message || "Logged in successfully"
     end
   end
 

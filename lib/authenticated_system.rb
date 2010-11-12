@@ -20,7 +20,7 @@ module AuthenticatedSystem
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_basic_auth ||
         login_from_cookie || login_from_facebook)
-      if @current_user && !session[:admin_id] && session[:admin_id] != false
+      if @current_user && !session[:admin_id] && (session[:admin_id] != false)
         logger.info "Checking whether to enable admin on #{@current_user}"
         possibly_enable_admin(@current_user)
       end
@@ -28,6 +28,14 @@ module AuthenticatedSystem
     @current_user
   end
 
+  def new_session?
+    # returns true the FIRST time it's called on a session.  Used for
+    # displaying login-time messages, etc.
+    retval = !session[:exists]
+    session[:exists] = true
+    retval
+  end
+  
   def act_on_behalf_of(new_user)
     if new_user
       session[:cid] = new_user.id

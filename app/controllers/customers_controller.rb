@@ -10,9 +10,9 @@ class CustomersController < ApplicationController
 
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
-                :only=>%w[welcome welcome_subscriber change_password edit link_existing_account],
+                :only=>%w[welcome change_password edit link_existing_account],
                 :add_to_flash => 'Please log in or create an account to view this page.')
-  before_filter :reset_shopping, :only => %w[welcome welcome_subscriber]
+  before_filter :reset_shopping, :only => %w[welcome]
 
   # must be boxoffice to view other customer records or adding/removing vouchers
   before_filter :is_staff_filter, :only => %w[list list_duplicates switch_to search]
@@ -56,54 +56,28 @@ class CustomersController < ApplicationController
   def login ; redirect_to login_path ; end
   def logout ; redirect_to logout_path ; end
 
-  # welcome screen: different for nonsubscribers vs. subscribers
-
-  def welcome                   # for nonsubscribers
+  def welcome
     @customer = @gCustomer
-    # if customer is a subscriber, AND force_classic is not indicated,
-    # redirect to correct page
-    if (@customer.subscriber?)
-      @subscriber = true
-      unless ((params[:force_classic] && @gAdmin.is_boxoffice) ||
-              !(Option.value(:force_classic_view).blank?))
-        flash.keep :notice
-        flash.keep :warning
-        redirect_to :action=>'welcome_subscriber'
-        return
-      end
-    else
-      @subscriber = nil
-    end
     @admin = current_admin
-    @page_title = "Welcome, #{@gLoggedIn.full_name.name_capitalize}"
-    @vouchers = (@admin.is_boxoffice ?  @customer.vouchers :  @customer.active_vouchers).sort_by(&:created_on).reverse
-    session[:store_customer] = @customer.id
-  end
-
-  def welcome_subscriber        # for subscribers
-    @customer = @gCustomer
-    unless @customer.subscriber?
-      flash.keep :notice
-      flash.keep :warning
-      redirect_to :action=>'welcome'
-      return
-    end
-    @admin = current_admin
-    @page_title = "Welcome, Subscriber #{@gLoggedIn.full_name.name_capitalize}"
     @vouchers = @customer.active_vouchers.sort_by(&:created_on)
     session[:store_customer] = @customer.id
-    @subscriber = true
-    # separate vouchers into these categories:
-    # unreserved subscriber vouchers, reserved subscriber vouchers, others
-    @subscriber_vouchers, @other_vouchers = @vouchers.partition { |v| v.part_of_subscription? }
-    @reserved_vouchers,@unreserved_vouchers = @subscriber_vouchers.partition { |v| v.reserved? }
-    # find all shows whose run dates overlap the validity period of any voucher.
 
-    # BUG this should be computed from voucher validity period...
-    @mindate = Time.now
-    @maxdate = (@mindate + 1.year).at_beginning_of_year
-    @shows = Show.find(:all, :conditions => ["opening_date > ? OR closing_date < ?",@mindate,@maxdate],
-                       :order => "opening_date")
+    name = @gLoggedIn.full_name.name_capitalize
+    if @customer.subscriber?
+      @subscriber = true
+      @page_title = "Welcome, Subscriber #{name}"
+      # separate vouchers into these categories:
+      # unreserved subscriber vouchers, reserved subscriber vouchers, others
+      @subscriber_vouchers, @other_vouchers =
+        @vouchers.partition { |v| v.part_of_subscription? }
+      @reserved_vouchers,@unreserved_vouchers =
+        @subscriber_vouchers.partition { |v| v.reserved? }
+    else
+      @subscriber = nil
+      @page_title = "Welcome, #{name}"
+    end
+    flash[:notice] = (@current_user.login_message || "Logged in successfully") if new_session?
+    render :action => (@subscriber ? :welcome_subscriber : :welcome)
   end
 
   def link_user_accounts

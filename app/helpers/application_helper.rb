@@ -40,6 +40,12 @@ module ApplicationHelper
       :class => 'tooltip') 
   end
 
+  def render_multiline_message(m,container=nil)
+    m.respond_to?(:each) ?
+    m.map { |line| content_tag(:span, line) }.join("<br/>\n") :
+      m
+  end
+  
   # gracefully show a range of dates
   def humanize_date_range(d1,d2,separator=" - ")
     d2,d1 = d1,d2 if d1 > d2

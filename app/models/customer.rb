@@ -123,6 +123,20 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  def encourage_opt_in_message
+    if !(m = Option.value(:encourage_email_opt_in)).blank?
+      m << '.' unless m =~ /[.!?:;,]$/
+      m << ' Click the Billing Address tab (above) to update your preferences.'
+      m
+    else ''
+    end
+  end
+
+  def welcome_message
+    subscriber? ? Option.value(:welcome_page_subscriber_message).to_s :
+      Option.value(:welcome_page_nonsubscriber_message).to_s
+  end
+  
   
   #----------------------------------------------------------------------
   #  public methods
@@ -130,6 +144,14 @@ class Customer < ActiveRecord::Base
 
   public
   
+  # message that will appear in flash[:notice] once only, at login
+  def login_message
+    msg = ["Welcome, #{full_name.name_capitalize}"]
+    msg << encourage_opt_in_message if has_opted_out_of_email?
+    msg << welcome_message
+    msg
+  end
+
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email

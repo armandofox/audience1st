@@ -12,7 +12,7 @@ module NavigationHelpers
     when /the home ?page/i
       '/customers/welcome'
     when /the subscriber home ?page/i
-      '/customers/welcome_subscriber'
+      '/customers/welcome'
     when /the edit contact info page/i
       "/customers/edit/#{@customer.id}"
     when /the walkup sales page/i

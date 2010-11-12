@@ -113,15 +113,6 @@ session_timeout: >
   Number of minutes of inactivity after which a user is automatically
   logged out.
 
-force_classic_view: >
-
-  If set to any nonempty value, subscribers will always see the same
-  view as nonsubscribers when viewing their purchased tickets and
-  reservations and when reserving tickets for a show. If left blank,
-  subscribers will see the alternate "per-show" reservations interface
-  for their subscriptions. See the user's manual for details. If unsure,
-  leave this blank.
-
 subscription_sales_banner_for_current_subscribers: >
 
   Banner text shown on Buy Subscriptions page to patrons who are CURRENT
