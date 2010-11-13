@@ -4,7 +4,10 @@ class TicketSalesImport < Import
   validates_associated :show
   validate :show_exists?
 
+  class TicketSalesImport::DateTimeNotFound < Exception ; end
   class TicketSalesImport::ShowNotFound < Exception ; end
+  class TicketSalesImport::CustomerNameNotFound < Exception ; end
+  class TicketSalesImport::MultipleShowMatches < Exception ; end
   class TicketSalesImport::PreviewOnly  < Exception ; end
   class TicketSalesImport::ImportError < Exception ; end
 
@@ -77,8 +80,14 @@ class TicketSalesImport < Import
       self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
     rescue TicketSalesImport::PreviewOnly
       ;
+    rescue TicketSalesImport::CustomerNameNotFound => e
+      self.errors.add_to_base("Customer name not found for #{e.message}")
     rescue TicketSalesImport::ShowNotFound
-      self.errors.add_to_base("Couldn't find production name to associate with import")
+      self.errors.add_to_base("Couldn't find production name/date to associate with import")
+    rescue TicketSalesImport::DateTimeNotFound
+      self.errors.add_to_base("Couldn't find valid date and time in import document (#{e.message})")
+    rescue TicketSalesImport::MultipleShowMatches => e
+      self.errors.add_to_base("Multiple showdates match import file: #{e.message}")
     rescue TicketSalesImport::ImportError => e
       self.errors.add_to_base(e.message)
     rescue Exception => e
@@ -130,5 +139,22 @@ class TicketSalesImport < Import
       "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if v.show.id != self.show_id
     true
   end
+
+    def get_or_create_vouchertype(price,name,valid_year=Time.now.year)
+    if (v = Vouchertype.find(:first,
+          :conditions => "price = #{price} AND name LIKE '#{name}%'"))
+      @vouchertype = v
+    else
+      count_existing_vouchertypes =
+        Vouchertype.count(:conditions => "name LIKE '#{name}%'")
+      new_vouchertype_name =
+        "#{name} #{count_existing_vouchertypes+1}"
+      @vouchertype =
+        Vouchertype.create_external_voucher_for_season!(new_vouchertype_name, price, valid_year)
+      @created_vouchertypes << @vouchertype
+    end
+    @vouchertype
+  end
+
 
 end

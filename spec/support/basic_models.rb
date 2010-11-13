@@ -47,25 +47,33 @@ module BasicModels
     sd = s.showdates.create!(:thedate => dt,
       :end_advance_sales => dt - 1.minute)
   end
-  def self.create_revenue_vouchertype()
-    Vouchertype.create!(:fulfillment_needed => false,
+  def self.create_comp_vouchertype(args={})
+    Vouchertype.create!({:fulfillment_needed => false,
+        :name => 'comp voucher',
+        :category => 'comp',
+        :price => 0,
+        :valid_date => Time.now - 1.month,
+        :expiration_date => Time.now+1.month}.merge(args))
+  end
+  def self.create_revenue_vouchertype(args={})
+    Vouchertype.create!({:fulfillment_needed => false,
       :name => 'regular voucher',
       :category => 'revenue',
       :account_code => '9999',
       :price => 10.00,
       :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now+1.month)
+        :expiration_date => Time.now+1.month}.merge(args))
   end
-  def self.create_subscriber_vouchertype()
+  def self.create_subscriber_vouchertype(args={})
     sym = self.gensym
-    Vouchertype.create!(:fulfillment_needed => false,
+    Vouchertype.create!({:fulfillment_needed => false,
       :name => 'subscription #{sym}',
       :category => 'bundle',
       :subscription => true,
       :account_code => '9999',
       :price => 20.00,
       :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now - 1.month + 1.year)
+        :expiration_date => Time.now - 1.month + 1.year}.merge(args))
   end
       
   def self.create_generic_show(name="Some Show",opts={})

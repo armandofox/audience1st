@@ -227,6 +227,14 @@ class Vouchertype < ActiveRecord::Base
     Vouchertype.find(:all, :conditions => arglist)
   end
 
+  def numseats_for_showdate(showdate)
+    if (vv = self.valid_vouchers.detect { |v| v.showdate_id = showdate.id })
+      vv.seats_remaining
+    else
+      0
+    end
+  end
+  
   def valid_as_of?(date)
     d = date.to_time
     d >= valid_date && d <= expiration_date
