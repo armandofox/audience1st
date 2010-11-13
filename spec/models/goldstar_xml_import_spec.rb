@@ -62,6 +62,24 @@ EOSoffers
           </purchase>
 EOSpurchase
       end
+      describe "vouchertypes" do
+        before(:each) do
+          GoldstarXmlImport.send(:public, :vouchertypes_from_purchase)
+          @import.offers = {
+            '603630' => (@v1 = mock_model(Vouchertype)),
+            '603640' => (@v2 = mock_model(Vouchertype))
+          }
+        end
+        it "should return correct vouchertypes" do
+          v = @import.vouchertypes_from_purchase(@purchase)
+          v[@v1].should == 2
+          v.should_not have_key(@v2)
+        end
+        it "should barf if offer ID doesn't exist" do
+          @import.offers.delete('603630')
+          lambda { @import.vouchertypes_from_purchase(@purchase) }.should raise_error(TicketSalesImport::BadOrderFormat)
+        end
+      end
       it "should parse the customer" do
         GoldstarXmlImport.send(:public, :customer_attribs_from_purchase)
         attr = @import.customer_attribs_from_purchase(@purchase)

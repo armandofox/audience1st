@@ -10,6 +10,7 @@ class TicketSalesImport < Import
   class TicketSalesImport::MultipleShowMatches < Exception ; end
   class TicketSalesImport::PreviewOnly  < Exception ; end
   class TicketSalesImport::ImportError < Exception ; end
+  class TicketSalesImport::BadOrderFormat < Exception ; end
 
   attr_accessor :vouchers, :existing_vouchers
   attr_accessor :created_customers, :matched_customers
@@ -80,6 +81,8 @@ class TicketSalesImport < Import
       self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
     rescue TicketSalesImport::PreviewOnly
       ;
+    rescue TicketSalesImport::BadOrderFormat => e
+      self.errors.add_to_base("Malformed individual order: #{e.message}")
     rescue TicketSalesImport::CustomerNameNotFound => e
       self.errors.add_to_base("Customer name not found for #{e.message}")
     rescue TicketSalesImport::ShowNotFound

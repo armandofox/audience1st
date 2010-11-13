@@ -13,10 +13,11 @@ class GoldstarXmlImport < TicketSalesImport
   def get_ticket_orders
     @xml ||= self.as_xml
     @showdate = get_showdate
+    self.show = @showdate.show
     @vouchers = []
     @offers = parse_offers(xml.xpath("//willcall/inventories/inventory/offers"))
     xml.xpath("//willcall/inventories/inventory/purchases/purchase").each do |purchase|
-      if (vouchers = ticket_order_from_purchase(purchase))
+      if (vouchers = ticket_order_from_purchase(purchase,showdate))
         self.number_of_records += 1
         @vouchers += vouchers
       end
@@ -44,11 +45,10 @@ class GoldstarXmlImport < TicketSalesImport
   def ticket_order_from_purchase(purchase)
     customer_attribs = customer_attribs_from_purchase(purchase)
     customer = import_customer(customer_attribs)
-    vouchertypes = vouchertypes_from_purchase(purchase)
     comment = comment_from_purchase(purchase)
-    qty = qty_from_purchase(purchase)
     order_date = Time.now     # we really don't get a better estimate
     external_key = purchase_id(purchase)
+    vouchertypes = vouchertypes_from_purchase(purchase)
     vouchers = []
     vouchertypes.each_pair do |vouchertype, qty|
       vouchers += Array.new(qty) do |ticket_number|
@@ -64,6 +64,21 @@ class GoldstarXmlImport < TicketSalesImport
   end
 
   private
+
+  def vouchertypes_from_purchase(purchase)
+    vtypes = {}
+    begin
+      purchase.xpath("//claims/claim").each do |claim|
+        qty = claim.xpath("//quantity").text.to_i
+        offer_id = claim.xpath("//offer-id").text
+        raise(TicketSalesImport::BadOrderFormat, "Offer id #{offer_id} doesn't appear in header") unless @offers[offer_id]
+        vtypes[ @offers[offer_id] ] = qty
+      end
+    rescue Exception => e
+      raise TicketSalesImport::BadOrderFormat, e.message
+    end
+    vtypes
+  end
 
   def extract_date_and_time
     begin
