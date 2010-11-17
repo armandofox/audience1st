@@ -1,7 +1,7 @@
 class GoldstarXmlImport < TicketSalesImport
 
   require 'nokogiri'
-  attr_reader :xml
+  attr_accessor :xml
   attr_accessor :offers
   
   public
@@ -11,13 +11,13 @@ class GoldstarXmlImport < TicketSalesImport
   protected
   
   def get_ticket_orders
-    @xml ||= self.as_xml
+    self.xml ||= self.as_xml
     @showdate = get_showdate
     self.show = @showdate.show
     @vouchers = []
     @offers = parse_offers(xml.xpath("//willcall/inventories/inventory/offers"))
     xml.xpath("//willcall/inventories/inventory/purchases/purchase").each do |purchase|
-      if (vouchers = ticket_order_from_purchase(purchase,showdate))
+      if (vouchers = ticket_order_from_purchase(purchase,@showdate))
         self.number_of_records += 1
         @vouchers += vouchers
       end
@@ -26,11 +26,11 @@ class GoldstarXmlImport < TicketSalesImport
 
   private
 
-  def parse_offers(offers)
+  def parse_offers(offers_xml)
     offer_hash = {}
-    raise TicketSalesImport::ImportError, "No offers found" if offers.nil?
+    raise TicketSalesImport::ImportError, "No offers found" if offers_xml.nil?
     begin
-      offers.xpath("//offer").each do |offer|
+      offers_xml.xpath("//offer").each do |offer|
         id = offer.xpath("offer-id").text
         price = offer.xpath("our-price").text.to_f
         vtype = get_or_create_vouchertype(price, GOLDSTAR_VOUCHERTYPE_NAME)
@@ -42,7 +42,7 @@ class GoldstarXmlImport < TicketSalesImport
     offer_hash
   end
 
-  def ticket_order_from_purchase(purchase)
+  def ticket_order_from_purchase(purchase,showdate)
     customer_attribs = customer_attribs_from_purchase(purchase)
     customer = import_customer(customer_attribs)
     comment = comment_from_purchase(purchase)
@@ -63,19 +63,14 @@ class GoldstarXmlImport < TicketSalesImport
     vouchers
   end
 
-  private
-
   def vouchertypes_from_purchase(purchase)
     vtypes = {}
-    begin
-      purchase.xpath("//claims/claim").each do |claim|
-        qty = claim.xpath("//quantity").text.to_i
-        offer_id = claim.xpath("//offer-id").text
-        raise(TicketSalesImport::BadOrderFormat, "Offer id #{offer_id} doesn't appear in header") unless @offers[offer_id]
-        vtypes[ @offers[offer_id] ] = qty
-      end
-    rescue Exception => e
-      raise TicketSalesImport::BadOrderFormat, e.message
+    purchase.xpath("claims/claim").each do |claim|
+      qty = claim.xpath("quantity").text.to_i
+      offer_id = claim.xpath("offer-id").text
+      raise(TicketSalesImport::BadOrderFormat, "Offer id #{offer_id} doesn't appear in header") unless
+        offers[offer_id]
+      vtypes[ offers[offer_id] ] = qty
     end
     vtypes
   end

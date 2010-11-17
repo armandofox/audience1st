@@ -10,6 +10,12 @@
           <full-price type="decimal">22.0</full-price>
           <name>General Admission</name>
         </offer>
+        <offer>
+          <offer-id type="integer">605050</offer-id>
+          <our-price type="decimal">0.0</our-price>
+          <full-price type="decimal">22.0</full-price>
+          <name>Comp (Limit 2)</name>
+        </offer>
       </offers>
       <inventory-id type="integer">591601</inventory-id>
       <quantity type="integer">30</quantity>
@@ -26,32 +32,6 @@
           <first-name>Fay</first-name>
           <red-velvet type="boolean">true</red-velvet>
           <purchase-id type="integer">1803883</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Irwin</last-name>
-          <first-name>Jessica</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1804351</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Anguita</last-name>
-          <first-name>Tanya</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1810236</purchase-id>
         </purchase>
         <purchase>
           <note nil="true"></note>
@@ -83,98 +63,7 @@
           <note nil="true"></note>
           <claims type="array">
             <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Chovanes</last-name>
-          <first-name>John</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1822488</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Quan</last-name>
-          <first-name>Colette</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1824719</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Ingalls</last-name>
-          <first-name>Nan</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1828409</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">4</quantity>
-            </claim>
-          </claims>
-          <last-name>Maheshwari</last-name>
-          <first-name>Rachit</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1828728</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Rietbrock</last-name>
-          <first-name>Clay</first-name>
-          <red-velvet type="boolean">true</red-velvet>
-          <purchase-id type="integer">1829059</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">2</quantity>
-            </claim>
-          </claims>
-          <last-name>Dobrovolskis</last-name>
-          <first-name>Anthony R.</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1829335</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
-              <quantity type="integer">4</quantity>
-            </claim>
-          </claims>
-          <last-name>Dines</last-name>
-          <first-name>Marlene</first-name>
-          <red-velvet type="boolean">false</red-velvet>
-          <purchase-id type="integer">1830909</purchase-id>
-        </purchase>
-        <purchase>
-          <note nil="true"></note>
-          <claims type="array">
-            <claim>
-              <offer-id type="integer">603630</offer-id>
+              <offer-id type="integer">605050</offer-id>
               <quantity type="integer">2</quantity>
             </claim>
           </claims>

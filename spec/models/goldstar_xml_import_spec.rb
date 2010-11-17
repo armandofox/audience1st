@@ -2,11 +2,16 @@ require 'spec_helper'
 require 'builder'
 
 def xml(str) ; Nokogiri::XML::Document.parse(str) ; end
+def xml_from_file(file) ; Nokogiri::XML::Document.parse(IO.read("#{RAILS_ROOT}/spec/import_test_files/goldstar_xml/#{file}.xml")) ; end
 
 describe GoldstarXmlImport do
+  before(:each) do
+    @vt1 = BasicModels.create_revenue_vouchertype(:price => 11.0, :name => "Goldstar 1/2 price")
+    @vt2 = BasicModels.create_comp_vouchertype(:name => "Goldstar Comp")
+    @import = GoldstarXmlImport.new
+  end
   describe "valid import" do
     before(:each) do
-      @import = GoldstarXmlImport.new
       @import.stub!(:public_filename).and_return(File.join(TEST_FILES_DIR,
           'goldstar_xml', 'goldstar-valid.xml'))
     end
@@ -18,25 +23,7 @@ describe GoldstarXmlImport do
     describe "parsing offers" do
       before(:each) do
         GoldstarXmlImport.send(:public, :parse_offers)
-        @import = GoldstarXmlImport.new
-        @offers = xml(<<EOSoffers)
-          <offers type="array">
-            <offer>
-              <offer-id type="integer">603630</offer-id>
-              <our-price type="decimal">11.0</our-price>
-              <full-price type="decimal">22.0</full-price>
-              <name>General Admission</name>
-            </offer>
-            <offer>
-              <offer-id type="integer">603640</offer-id>
-              <our-price type="decimal">0.0</our-price>
-              <full-price type="decimal">21.0</full-price>
-              <name>Comp</name>
-            </offer>
-          </offers>
-EOSoffers
-        @vt1 = BasicModels.create_revenue_vouchertype(:price => 11.0, :name => "Goldstar 1/2 price")
-        @vt2 = BasicModels.create_comp_vouchertype(:name => "Goldstar Comp")
+        @offers = xml_from_file('fragments/valid-offers')
       end
       it "should parse valid offers" do
         o = @import.parse_offers(@offers)
@@ -45,39 +32,21 @@ EOSoffers
       end
     end
     describe "parsing valid purchase" do
-      before(:each) do
-        @purchase = xml( <<EOSpurchase )
-          <purchase>
-            <note nil="true">A comment</note>
-            <claims type="array">
-              <claim>
-                <offer-id type="integer">603630</offer-id>
-                <quantity type="integer">2</quantity>
-              </claim>
-            </claims>
-            <last-name>Gou</last-name>
-            <first-name>Fay</first-name>
-            <red-velvet type="boolean">true</red-velvet>
-            <purchase-id type="integer">1803883</purchase-id>
-          </purchase>
-EOSpurchase
-      end
+      before(:each) do ; @purchase = xml_from_file('fragments/valid-purchase-1').xpath("/purchase") ;  end
       describe "vouchertypes" do
         before(:each) do
           GoldstarXmlImport.send(:public, :vouchertypes_from_purchase)
-          @import.offers = {
-            '603630' => (@v1 = mock_model(Vouchertype)),
-            '603640' => (@v2 = mock_model(Vouchertype))
-          }
+          @import.offers = { '603630' => @vt1, '603640' => @vt2 }
         end
         it "should return correct vouchertypes" do
           v = @import.vouchertypes_from_purchase(@purchase)
-          v[@v1].should == 2
-          v.should_not have_key(@v2)
+          v[@vt1].should == 2
+          v.should_not have_key(@vt2)
         end
         it "should barf if offer ID doesn't exist" do
           @import.offers.delete('603630')
-          lambda { @import.vouchertypes_from_purchase(@purchase) }.should raise_error(TicketSalesImport::BadOrderFormat)
+          lambda { @import.vouchertypes_from_purchase(@purchase) }.
+            should raise_error(TicketSalesImport::BadOrderFormat)
         end
       end
       it "should parse the customer" do
@@ -97,7 +66,6 @@ EOSpurchase
     end
   end
   describe "getting date and time" do
-    before(:each) do ; @import = GoldstarXmlImport.new ; end
     GoldstarXmlImport.send(:public, :extract_date_and_time)
     it "should raise error if no showdate" do
       @import.stub!(:xml).and_return( xml("<x></x>"))
@@ -124,34 +92,25 @@ EOS2
     end
     describe "should ignore spurious Time that is a child of Inventory" do
       it "when Time appears properly" do
-        @import.stub!(:xml).and_return xml( <<EOS3
-      <willcall>
-        <inventories>
-          <inventory>
-            <time-note>Saturday, January 2</time-note>
-          </inventory>
-        </inventories>
-        <on-date>Friday, January 21, 2011</on-date>
-        <time-note>8:00 pm</time-note>
-      </willcall>
-EOS3
-          )
+        @import.stub!(:xml).and_return xml_from_file('fragments/inventory-with-time')
         @import.extract_date_and_time.should == Time.parse("1/21/11 8:00pm")
       end
       it "when Time is otherwise missing" do
-        @import.stub!(:xml).and_return xml( <<EOS4
-      <willcall>
-        <inventories>
-          <inventory>
-            <time-note>Saturday, January 2</time-note>
-          </inventory>
-        </inventories>
-        <on-date>Friday, January 21, 2011</on-date>
-      </willcall>
-EOS4
-          )
-        lambda { @import.extract_date_and_time }.should raise_error(TicketSalesImport::DateTimeNotFound)
+        @import.stub!(:xml).and_return xml_from_file('fragments/inventory-without-time')
+        lambda { @import.extract_date_and_time }.
+          should raise_error(TicketSalesImport::DateTimeNotFound)
       end
+    end
+  end
+  describe "parsing valid order" do
+    before :each do
+      @import.stub!(:xml).and_return(xml_from_file('goldstar-valid'))
+      @import.stub!(:get_showdate).and_return(mock_model(Showdate, :show => mock_model(Show)))
+      GoldstarXmlImport.send(:public, :get_ticket_orders)
+      @import.get_ticket_orders
+    end
+    it "should include 8 vouchers" do
+      @import.should have(8).vouchers
     end
   end
 end
