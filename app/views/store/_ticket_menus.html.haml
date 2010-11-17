@@ -1,7 +1,7 @@
 #ticket_menus_inner
   = javascript_recalc_function :total, |
       @vouchertypes.map {|av| av.vouchertype.id}, |
-     :price, :vouchertype, 'donation', 'submit' |
+     :price, :vouchertype, 'donation', (@gAdmin.is_boxoffice ? '' : 'submit') |
 
   = render :partial => 'enter_promo_code'
   %br/

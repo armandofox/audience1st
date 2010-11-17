@@ -13,7 +13,7 @@
       %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
     - form_tag :action => 'shipping_address' do
-      = javascript_recalc_function :total, @subs_to_offer.map {|s| s.id}, :price, :vouchertype, :donation, :submit
+      = javascript_recalc_function :total, @subs_to_offer.map {|s| s.id}, :price, :vouchertype, :donation, (@gAdmin.is_boxoffice ? '' : 'submit')
 
       %br
       = render :partial => 'enter_promo_code'
@@ -37,6 +37,6 @@
       %br
       %label.wide_label &nbsp;
       = hidden_field_tag 'redirect_to', 'subscribe'
-      = submit_tag 'CONTINUE >>', {:disabled => true, :id => 'submit'}
+      = submit_tag 'CONTINUE >>', {:disabled => !(@gAdmin.is_boxoffice), :id => 'submit'}
       %span#nextstep to Billing Information
 
