@@ -19,7 +19,7 @@
       %tr{:class=>cycle(:even,:odd)}
         %td.r= show.id
         %td= link_to show.name, :action => 'edit', :id => show
-        %td= purchase_link_popup "[Link]", link_to_show_tickets(show.id), show.name
+        %td= purchase_link_popup "[Link]", link_to_show_tickets(show), show.name
         %td.c= humanize_date_range(show.opening_date, show.closing_date)
         %td= show.listing_date.to_formatted_s(:showtime)
         - if (n = show.showdates.length) > 0

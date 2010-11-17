@@ -14,7 +14,7 @@
     = "|"
     = link_to 'Box Office', {:controller => 'box_office', :id => showdate }
     = "|"
-    = purchase_link_popup "Link", link_to_showdate_tickets(showdate.id), showdate.printable_name
+    = purchase_link_popup "Link", link_to_showdate_tickets(showdate), showdate.printable_name
     = "|"
     = link_to_if showdate.compute_total_sales.zero?, 'Delete', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :post,:confirm => MESSAGES[:delete_performance_0] }
     = "|"
