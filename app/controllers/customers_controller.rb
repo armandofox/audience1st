@@ -89,10 +89,8 @@ class CustomersController < ApplicationController
         self.current_user.fb_user_id == fbuid
       redirect_to_stored
     else
-      #register with fb
-      @customer = Customer.create_from_fb_connect(facebook_session.user)
-      self.current_user = @customer
-      redirect_to :action => 'edit', :id => @customer
+      flash[:warning] = "To use this feature, you must have an existing Facebook account."
+      redirect_to login_path
     end
   end
 
@@ -259,6 +257,7 @@ class CustomersController < ApplicationController
     result = c0.merge_with_params!(c1, params)
     # result is nil if merge failed, else string describing result
     flash[:notice] = result || c0.errors.full_messages.join(';')
+    logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
     redirect_to_last_list
   end
 

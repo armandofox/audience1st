@@ -263,7 +263,6 @@ class Voucher < ActiveRecord::Base
     if (avail.available? || ignore_cutoff)
       self.showdate = Showdate.find(showdate_id)
       self.comments = comments.to_s || ''
-      self.sold_on = Time.now
       self.save!
       a = Txn.add_audit_record(:txn_type => 'res_made',
         :customer_id => self.customer.id,
