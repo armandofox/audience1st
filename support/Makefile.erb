@@ -11,6 +11,7 @@ NAME	   = audienc
 HOME	   = /home/$(NAME)
 BACKUPDIR = $(HOME)/backup/$(VENUE)
 TODAY	   = $(shell date +\%d)
+YEARMONTHDAY = $(shell date +\%Y-\%m-\%d)
 APPROOT     = <%= release_path %>
 
 #  IMPORTANT:  Binary path names below refer to the binary's path ON THE
@@ -35,14 +36,20 @@ SESSION_CLEANOUT = 86400
 # see error messages.  if you uncomment this, you'll get those emails.
 # QUIET      =  >/dev/null 2>&1
 
-.PHONY: all nightly monthly clean_sessions backup_db backup_wp backup_svn run_sql dump_static_data rotate_logs kill_zombies receive_goldstar receive_goldstar_test
+.PHONY: all nightly monthly clean_sessions backup_db backup_db_monthly backup_svn run_sql dump_static_data rotate_logs receive_goldstar receive_goldstar_test
 
 all: nightly
 nightly: clean_sessions notify_pending_followups backup_db backup_svn
-monthly: rotate_logs
+#monthly: rotate_logs
+monthly: backup_db_monthly
 
 clean_sessions:
 	@$(MYSQL) $(DBOPTS) '-D$(DBNAME)' -e 'delete from sessions where now() - updated_at > $(SESSION_CLEANOUT)' $(QUIET)
+
+backup_db_monthly:
+	@$(MYSQLDUMP) $(DBOPTS) $(DBNAME) | $(GZIP) > $(BACKUPDIR)/$(YEARMONTHDAY).gz
+	@$(S3CMD) put a1_$(VENUE):$(YEARMONTHDAY).gz  $(BACKUPDIR)/$(YEARMONTHDAY).gz
+
 
 backup_db:
 	@$(MYSQLDUMP) $(DBOPTS) $(DBNAME) | $(GZIP) > $(BACKUPDIR)/db-$(TODAY).gz
