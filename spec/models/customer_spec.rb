@@ -546,6 +546,17 @@ describe Customer do
       @old.email.should == 'dupe@email.com'
       @old.created_by_admin.should be_false
     end
+    describe "disallowed cases" do
+      it "should refuse if RHS is any Special customer" do
+        flunk
+      end
+      it "should allow if LHS is Anonymous customer" do
+        flunk
+      end
+      it "should refuse if LHS is any special customer other than Anonymous" do
+        flunk
+      end
+    end
     describe "successfully" do
       it "should keep password based on most recent" do
         @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
