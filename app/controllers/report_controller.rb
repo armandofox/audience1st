@@ -240,13 +240,8 @@ EOQ1
       flash[:notice] = 'No unfulfilled orders at this time.'
       redirect_to :action => 'index'
     end
-    @total = v.length
-    # @vouchers = group_and_count(v) do |v1,v2|
-    #   v1.customer_id == v2.customer_id &&
-    #     v1.vouchertype_id == v2.vouchertype_id &&
-    #     v1.gift_purchaser_id ==  v2.gift_purchaser_id
-    # end
     @vouchers = v
+    @unique_addresses = v.group_by { |vc| vc.customer.street }.keys.length
   end
 
   def unfulfilled_orders_addresses
