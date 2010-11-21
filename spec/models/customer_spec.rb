@@ -547,14 +547,24 @@ describe Customer do
       @old.created_by_admin.should be_false
     end
     describe "disallowed cases" do
+      before :each do
+        @c0 = BasicModels.create_generic_customer
+        @c1 = BasicModels.create_generic_customer
+      end
       it "should refuse if RHS is any Special customer" do
-        flunk
+        @c1.stub!(:special_customer?).and_return true
+        @c0.merge_automatically!(@c1).should be_nil
+        @c0.errors.full_messages.should include_match_for(/special customers cannot be merged/i)
       end
       it "should allow if LHS is Anonymous customer" do
-        flunk
+        c0 = Customer.anonymous_customer
+        c0.merge_automatically!(@c1).should be_true
+        lambda { Customer.find(@c1.id) }.should raise_error(ActiveRecord::RecordNotFound)
       end
       it "should refuse if LHS is any special customer other than Anonymous" do
-        flunk
+        c0 = Customer.boxoffice_daemon
+        c0.merge_automatically!(@c1).should be_nil
+        c0.errors.full_messages.should include_match_for(/merges disallowed.*except anonymous/i)
       end
     end
     describe "successfully" do

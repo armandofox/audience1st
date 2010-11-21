@@ -647,6 +647,7 @@ EOSQL1
 
       
   def merge_with_params!(c1,params)
+    return nil unless self.mergeable_with?(c1)
     Customer.replaceable_attributes.each do |attr|
       if (params[attr.to_sym].to_i > 0)
         self.send("#{attr}=", c1.send(attr))
@@ -657,6 +658,7 @@ EOSQL1
   end
   
   def merge_automatically!(c1)
+    return nil unless self.mergeable_with?(c1)
     replace = c1.fresher_than?(self) && !c1.created_by_admin?
     Customer.replaceable_attributes.each do |attr|
       self.send("#{attr}=", c1.send(attr)) if replace || self.send(attr).blank?
@@ -665,7 +667,15 @@ EOSQL1
     return Customer.save_and_update_foreign_keys!(self, c1)
   end
         
-
+  def mergeable_with?(other)
+    if other.special_customer?
+      self.errors.add_to_base "Special customers cannot be merged away"
+    elsif (self.special_customer? && self != Customer.anonymous_customer)
+      self.errors.add_to_base "Merges disallowed into all special customers except Anonymous customer"
+    end
+    self.errors.empty?
+  end
+  
   def fresher_than?(other)
     begin
       (self.updated_at > other.updated_at) ||

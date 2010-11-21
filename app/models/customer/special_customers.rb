@@ -20,12 +20,7 @@ class Customer < ActiveRecord::Base
     raise "Cannot destroy special customer entries" if self.special_customer?
   end
 
-  def special_customer?
-    self.role < 0  ||
-      [Customer.nobody_id,
-      Customer.walkup_customer.id,
-      Customer.generic_customer.id].include?(self.id)
-  end
+  def special_customer? ;  self.role < 0 ;  end
   
   def real_customer? ; !special_customer? ; end
 
