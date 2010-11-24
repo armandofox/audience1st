@@ -1,6 +1,9 @@
 class DonorAppeal < Report
 
   def initialize(options={})
+    @view_params = {
+      :name => "Donor appeal"
+    }
   end
 
   def generate(params=[])

@@ -3,6 +3,7 @@ class LapsedSubscribers < Report
   def initialize(output_options = {})
     sub_vouchers =  Vouchertype.find_products :type => :subscription, :ignore_cutoff => true
     @view_params = {
+      :name => "Lapsed subscribers report",
       :have_vouchertypes => sub_vouchers,
       :dont_have_vouchertypes => sub_vouchers
     }
@@ -12,8 +13,8 @@ class LapsedSubscribers < Report
   def generate(params=[])
     have = (params[:have_vouchertypes] ||= []).reject { |x| x.to_i < 1 }
     have_not = (params[:dont_have_vouchertypes] ||= []).reject { |x| x.to_i < 1 }
-    unless have.size > 0 && have_not.size > 0
-      add_error "You  must specify at least one type of voucher from each list."
+    unless have.size > 0
+      add_error "You  must specify at least one type of voucher from the left-hand list."
       return nil
     end
     self.output_options = params[:output]

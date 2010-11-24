@@ -25,5 +25,5 @@
         %td
         %td.currency= number_to_currency tprice  
 
-  = button_to('Download to Excel', {:action=>'subscriber_details', :id=>year, :download=>true},{:method=>:get})
+  = gen_button('Download to Excel', {:action=>'subscriber_details', :id=>year, :download=>true})
 
