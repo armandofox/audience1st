@@ -164,7 +164,7 @@ EOQ1
 
   def show_special_report
     n = params[:report_name]
-    unless n.blank?
+    unless (n.blank? || n =~ /select report/i)
       # setup any parameters needed to render the report's partial
       report_subclass = n.camelize.constantize
       @report = report_subclass.__send__(:new)
