@@ -139,17 +139,19 @@ class TicketSalesImport < Import
     return nil unless (v = Voucher.find_by_external_key(order_id))
     # this voucher's already been entered.  make sure show name matches!!
     raise(TicketSalesImport::ImportError,
-      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if v.show.id != self.show_id
+      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if
+      v.show != self.show
     true
   end
 
-    def get_or_create_vouchertype(price,name,valid_year=Time.now.year)
+  def get_or_create_vouchertype(price,name,valid_year=Time.now.year)
+    name_match = "%#{name}%"
     if (v = Vouchertype.find(:first,
-          :conditions => "price = #{price} AND name LIKE '#{name}%'"))
+          :conditions => ["price = #{price} AND name LIKE ?", name_match]))
       @vouchertype = v
     else
       count_existing_vouchertypes =
-        Vouchertype.count(:conditions => "name LIKE '#{name}%'")
+        Vouchertype.count(:conditions => ["name LIKE ?", name_match])
       new_vouchertype_name =
         "#{name} #{count_existing_vouchertypes+1}"
       @vouchertype =

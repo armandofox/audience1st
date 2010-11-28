@@ -4,12 +4,14 @@ class GoldstarXmlImport < TicketSalesImport
   attr_accessor :xml
   attr_accessor :offers
   
-  public
+  private
 
   GOLDSTAR_VOUCHERTYPE_NAME = 'Goldstar' # Voucher types must start with this
 
-  protected
-  
+  def sanity_check
+    offers && offers.length >= 1 && @showdate.kind_of?(Showdate)
+  end
+
   def get_ticket_orders
     self.xml ||= self.as_xml
     @showdate = get_showdate
@@ -19,12 +21,16 @@ class GoldstarXmlImport < TicketSalesImport
     xml.xpath("//willcall/inventories/inventory/purchases/purchase").each do |purchase|
       if (vouchers = ticket_order_from_purchase(purchase,@showdate))
         self.number_of_records += 1
-        @vouchers += vouchers
+        vouchers.each do |voucher|
+          if already_entered?(voucher.external_key)
+            self.existing_vouchers += 1
+          else
+            @vouchers << voucher
+          end
+        end
       end
     end
   end
-
-  private
 
   def parse_offers(offers_xml)
     offer_hash = {}
@@ -115,12 +121,6 @@ class GoldstarXmlImport < TicketSalesImport
     raise TicketSalesImport::ShowNotFound if showdates.empty?
     raise(TicketSalesImport::MultipleShowMatches, showdates.map { |s| s.printable_name }.join(', ')) if showdates.length > 1
     showdates.first
-  end
-
-  def as_xml
-    with_attachment_data do |fh|
-      return Nokogiri::XML::Document.parse(fh)
-    end
   end
 
 end

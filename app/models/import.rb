@@ -12,7 +12,7 @@ class Import < ActiveRecord::Base
     'Customer/mailing list' => 'CustomerImport',
     'Brown Paper Tickets sales for 1 production' => 'BrownPaperTicketsImport',
     'TBA sales list for Run of Show' => 'TBAWebtixImport',
-    'Goldstar sales for one performance' => 'GoldstarXMLImport'
+    'Goldstar sales for one performance' => 'GoldstarXmlImport'
     }
   cattr_accessor :import_types
   def humanize_type
@@ -60,6 +60,7 @@ class Import < ActiveRecord::Base
     self.filename = short_filename
   end
 
+  
   def with_attachment_data
     fn = File.join(UPLOADED_FILES_PATH, self.filename.to_s)
     fn = self.public_filename unless File.readable?(fn) && !File.directory?(fn)
@@ -73,5 +74,11 @@ class Import < ActiveRecord::Base
       []
     end
   end
-  
+
+  def as_xml
+    with_attachment_data do |fh|
+      return Nokogiri::XML::Document.parse(fh)
+    end
+  end
+
 end

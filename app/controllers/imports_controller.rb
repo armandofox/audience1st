@@ -101,7 +101,7 @@ class ImportsController < ApplicationController
   def partial_for_import(import)
     case import.class.to_s
     when 'CustomerImport' then 'customers/customer_with_errors'
-    when 'BrownPaperTicketsImport', 'TBAWebtixImport' then 'external_ticket_orders/external_ticket_order'
+    when 'BrownPaperTicketsImport', 'TBAWebtixImport', 'GoldstarXmlImport' then 'external_ticket_orders/external_ticket_order'
     end
   end
 

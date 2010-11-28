@@ -106,10 +106,11 @@ EOS2
       end
     end
   end
-  describe "parsing valid will-call list" do
+  describe "parsing valid will-call list (without already-entered orders)" do
     before :each do
       @import.stub!(:xml).and_return(xml_from_file('goldstar-valid'))
       @import.stub!(:get_showdate).and_return(mock_model(Showdate, :show => mock_model(Show)))
+      @import.stub!(:already_entered?).and_return(nil)
       GoldstarXmlImport.send(:public, :get_ticket_orders)
       @import.get_ticket_orders
     end
