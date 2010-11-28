@@ -31,8 +31,12 @@ describe GoldstarXmlImport do
         o['603640'].should == @vt2
       end
     end
-    describe "parsing valid purchase" do
-      before(:each) do ; @purchase = xml_from_file('fragments/valid-purchase-1').xpath("/purchase") ;  end
+    describe "parsing 2 valid purchases" do
+      before(:each) do
+        @purchases = xml_from_file('fragments/valid-purchase-1').xpath("/willcall/inventories/inventory/purchase")
+        @purchase = @purchases[0]
+      end
+      it "should find 2 purchases" do ; @purchases.length.should == 2 ; end
       describe "vouchertypes" do
         before(:each) do
           GoldstarXmlImport.send(:public, :vouchertypes_from_purchase)
@@ -102,7 +106,7 @@ EOS2
       end
     end
   end
-  describe "parsing valid order" do
+  describe "parsing valid will-call list" do
     before :each do
       @import.stub!(:xml).and_return(xml_from_file('goldstar-valid'))
       @import.stub!(:get_showdate).and_return(mock_model(Showdate, :show => mock_model(Show)))
@@ -111,6 +115,18 @@ EOS2
     end
     it "should include 8 vouchers" do
       @import.should have(8).vouchers
+    end
+    it "should associate each voucher with a valid customer" do
+      @import.vouchers.each do |v|
+        v.customer.should be_a_kind_of(Customer)
+      end
+    end
+    it "should give each voucher a unique external key" do
+      keys = {}
+      @import.vouchers.each do |v|
+        keys.should_not have_key(v.external_key)
+        keys[v.external_key] = 1
+      end
     end
   end
 end

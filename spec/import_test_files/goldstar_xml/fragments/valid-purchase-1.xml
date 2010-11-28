@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <purchase>
-    <note nil="true">A comment</note>
-    <claims type="array">
-      <claim>
-        <offer-id type="integer">603630</offer-id>
-        <quantity type="integer">2</quantity>
-      </claim>
-    </claims>
-    <last-name>Gou</last-name>
-    <first-name>Fay</first-name>
-    <red-velvet type="boolean">true</red-velvet>
-    <purchase-id type="integer">1803883</purchase-id>
-  </purchase>
+<willcall>
+  <inventories type="array">
+    <inventory>
+      <purchase>
+        <note nil="true">A comment</note>
+        <claims type="array">
+          <claim>
+            <offer-id type="integer">603630</offer-id>
+            <quantity type="integer">2</quantity>
+          </claim>
+        </claims>
+        <last-name>Gou</last-name>
+        <first-name>Fay</first-name>
+        <red-velvet type="boolean">true</red-velvet>
+        <purchase-id type="integer">1803883</purchase-id>
+      </purchase>
+      <purchase>
+        <note nil="true">Another note</note>
+        <claims type="array">
+          <claim>
+            <offer-id type="integer">603630</offer-id>
+            <quantity type="integer">3</quantity>
+          </claim>
+        </claims>
+        <last-name>Jencuyah</last-name>
+        <first-name>Joi</first-name>
+        <red-velvet type="boolean">false</red-velvet>
+        <purchase-id type="integer">1811224</purchase-id>
+      </purchase>
+    </inventory>
+  </inventories>
+</willcall>
 </xml>
 

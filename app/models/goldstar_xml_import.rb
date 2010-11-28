@@ -88,7 +88,7 @@ class GoldstarXmlImport < TicketSalesImport
 
   def purchase_id(purchase)
     begin
-      purchase.xpath("//purchase-id").text
+      purchase.xpath("purchase-id").text
     rescue
       raise TicketSalesImport::ImportError, "No purchase/order ID found for: #{purchase.to_s}"
     end
@@ -97,8 +97,8 @@ class GoldstarXmlImport < TicketSalesImport
   def customer_attribs_from_purchase(purchase)
     begin
       id = purchase_id(purchase) rescue "???"
-      first = purchase.xpath("//first-name").text
-      last = purchase.xpath("//last-name").text
+      first = purchase.xpath("first-name").text
+      last = purchase.xpath("last-name").text
     rescue
       raise TicketSalesImport::CustomerNameNotFound, "purchase ID #{id}"
     end
@@ -106,7 +106,7 @@ class GoldstarXmlImport < TicketSalesImport
   end
   
   def comment_from_purchase(purchase)
-    purchase.xpath("//note").text rescue ''
+    purchase.xpath("note").text rescue ''
   end
 
   def get_showdate
