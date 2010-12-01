@@ -27,8 +27,12 @@ class BrownPaperTicketsImport < TicketSalesImport
   end
 
   def each_row
-    self.csv_rows("\t").each do |row|
-      yield row.map(&:to_s)
+    with_attachment_data do |fh|
+      # strip stray ^M's from DOS files
+      rows = CSV::Reader.create(fh.read.gsub(/\r\n/,' '), "\t")
+      rows.each do |row|
+        yield row.map(&:to_s)
+      end
     end
   end
 
@@ -87,7 +91,7 @@ class BrownPaperTicketsImport < TicketSalesImport
   end
     
   def customer_from_row(row)
-    return import_customer(row,
+    return import_customer_from_csv(row,
       :last_name => LAST_NAME, :first_name => FIRST_NAME,
       :street => STREET, :city => CITY, :state => STATE, :zip => ZIP,
       :day_phone => PHONE, :email => EMAIL,

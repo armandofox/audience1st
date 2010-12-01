@@ -33,7 +33,6 @@ describe CustomerImport do
         @import.preview.should be_empty
       end
       it "should produce an error message" do
-        pending
         @import.errors.full_messages.should include_match_for(/invalid starting at row 1/)
       end
     end
@@ -42,17 +41,15 @@ describe CustomerImport do
         @import = CustomerImport.new
         @import.stub!(:public_filename).and_return @file_with_2_customers
       end
-      it "should have 2 records" do
-        pending
-        @import.preview.should have(2).records
+      it "should have 3 rows" do
+        CustomerImport.send(:public, :csv_rows)
+        @import.csv_rows.entries.length.should == 3
       end
-      it "should not count header line in total number of records" do
-        pending
+      it "should have 2 records, not counting header line" do
         @import.preview
         @import.number_of_records.should == 2
       end
       it "should have Customers as the records" do
-        pending
         @import.preview[0].should be_a_kind_of(Customer)
       end
     end

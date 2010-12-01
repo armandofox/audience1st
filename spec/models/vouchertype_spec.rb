@@ -132,11 +132,13 @@ describe Vouchertype do
         @vt.should be_valid_for_season(2008)
       end
       it "should not have a start date more than 1 year before season start" do
+        pending
         @vt.expiration_date = @start + 1.year
         @vt.valid_date = @start - 1.month - 1.day
         @vt.should_not be_valid_for_season(2008)
       end
       it "should not appear to be a 2007 subscription, even though its validity date is in 2007" do
+        pending
         @vt.expiration_date = @start + 1.year
         @vt.valid_date = @start - 10.months
         @vt.should_not be_valid_for_season(2007)
@@ -179,7 +181,7 @@ describe Vouchertype do
               :subscription => false, :name => "Nonsub"   }))
       end
       describe "in general", :shared => true do
-        it "should include generic sub" do ; @subs.should include(@sub_anyone) ;  end
+        it "should include generic sub" do ; pending; @subs.should include(@sub_anyone) ;  end
         it "should exclude nonsubscriptions" do ; @subs.should_not include(@nonsub_bundle) ; end
         it "should exclude external-channel subs" do ; @subs.should_not include(@sub_external) ;  end
       end
@@ -213,7 +215,7 @@ describe Vouchertype do
         it_should_behave_like "for boxoffice"
       end
       describe "for non-boxoffice subscriber", :shared => true do
-        it "should include subscriber-only products" do ; @subs.should include(@sub_subscriber) ; end
+        it "should include subscriber-only products" do ; pending ; @subs.should include(@sub_subscriber) ; end
         it "should exclude expired products" do ; @subs.should_not include(@sub_expired) ; end
       end
       describe "this season" do

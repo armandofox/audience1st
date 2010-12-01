@@ -128,7 +128,7 @@ class Customer < ActiveRecord::Base
   def encourage_opt_in_message
     if !(m = Option.value(:encourage_email_opt_in)).blank?
       m << '.' unless m =~ /[.!?:;,]$/
-      m << ' Click the Billing Address tab (above) to update your preferences.'
+      m << ' Click the Billing/Contact tab (above) to update your preferences.'
       m
     else ''
     end

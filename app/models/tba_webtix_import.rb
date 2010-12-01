@@ -58,7 +58,7 @@ class TBAWebtixImport < TicketSalesImport
     total_paid = row[col_index(:g)].to_f
     service_charge = row[col_index(:n)].to_f
     price_each = (total_paid - service_charge) / total_tix
-    vouchertype = get_or_create_vouchertype(price_each, showdate.thedate.year)
+    vouchertype = get_or_create_vouchertype(price_each, TBA_VOUCHERTYPE_NAME, showdate.thedate.year)
     vouchers = Array.new(total_tix) do |ticket_number|
       Voucher.new_from_vouchertype(vouchertype,
         :showdate => showdate,
@@ -72,7 +72,7 @@ class TBAWebtixImport < TicketSalesImport
   
   def customer_from_row(row)
     # customer info:
-    import_customer(row,
+    import_customer_from_csv(row,
       :last_name => col_index(:bx),
       :first_name => col_index(:bw),
       :street => col_index(:bz),
@@ -87,22 +87,6 @@ class TBAWebtixImport < TicketSalesImport
   end
 
   def showdate_from_row(row) ;  import_showdate "#{row[2]} #{row[3]}" ; end
-
-  def get_or_create_vouchertype(price,valid_year)
-    if (v = Vouchertype.find(:first,
-          :conditions => "price = #{price} AND name LIKE '#{TBA_VOUCHERTYPE_NAME}%'"))
-      @vouchertype = v
-    else
-      count_existing_tba_vouchertypes =
-        Vouchertype.count(:conditions => "name LIKE '#{TBA_VOUCHERTYPE_NAME}%'")
-      new_vouchertype_name =
-        "#{TBA_VOUCHERTYPE_NAME} #{count_existing_tba_vouchertypes+1}"
-      @vouchertype =
-        Vouchertype.create_external_voucher_for_season!(new_vouchertype_name, price, valid_year)
-      @created_vouchertypes << @vouchertype
-    end
-    @vouchertype
-  end
 
 end
 

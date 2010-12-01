@@ -1,0 +1,14 @@
+<offers type="array">
+  <offer>
+    <offer-id type="integer">603630</offer-id>
+    <our-price type="decimal">11.0</our-price>
+    <full-price type="decimal">22.0</full-price>
+    <name>General Admission</name>
+  </offer>
+  <offer>
+    <offer-id type="integer">603640</offer-id>
+    <our-price type="decimal">0.0</our-price>
+    <full-price type="decimal">21.0</full-price>
+    <name>Comp</name>
+  </offer>
+</offers>

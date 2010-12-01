@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<willcall>
+  <inventories type="array">
+    <inventory>
+      <time-note nil="true"></time-note>
+      <offers type="array">
+        <offer>
+          <offer-id type="integer">603630</offer-id>
+          <our-price type="decimal">11.0</our-price>
+          <full-price type="decimal">22.0</full-price>
+          <name>General Admission</name>
+        </offer>
+        <offer>
+          <offer-id type="integer">605050</offer-id>
+          <our-price type="decimal">0.0</our-price>
+          <full-price type="decimal">22.0</full-price>
+          <name>Comp (Limit 2)</name>
+        </offer>
+      </offers>
+      <inventory-id type="integer">591601</inventory-id>
+      <quantity type="integer">30</quantity>
+      <purchases type="array">
+        <purchase>
+          <note nil="true"></note>
+          <claims type="array">
+            <claim>
+              <offer-id type="integer">603630</offer-id>
+              <quantity type="integer">2</quantity>
+            </claim>
+          </claims>
+          <last-name>Gou</last-name>
+          <first-name>Fay</first-name>
+          <red-velvet type="boolean">true</red-velvet>
+          <purchase-id type="integer">1803883</purchase-id>
+        </purchase>
+        <purchase>
+          <note nil="true"></note>
+          <claims type="array">
+            <claim>
+              <offer-id type="integer">603630</offer-id>
+              <quantity type="integer">3</quantity>
+            </claim>
+          </claims>
+          <last-name>Jencuyah</last-name>
+          <first-name>Joi</first-name>
+          <red-velvet type="boolean">false</red-velvet>
+          <purchase-id type="integer">1811224</purchase-id>
+        </purchase>
+        <purchase>
+          <note nil="true"></note>
+          <claims type="array">
+            <claim>
+              <offer-id type="integer">603630</offer-id>
+              <quantity type="integer">1</quantity>
+            </claim>
+          </claims>
+          <last-name>Dlugosh</last-name>
+          <first-name>Jennifer</first-name>
+          <red-velvet type="boolean">false</red-velvet>
+          <purchase-id type="integer">1813430</purchase-id>
+        </purchase>
+        <purchase>
+          <note nil="true"></note>
+          <claims type="array">
+            <claim>
+              <offer-id type="integer">605050</offer-id>
+              <quantity type="integer">2</quantity>
+            </claim>
+          </claims>
+          <last-name>Dines</last-name>
+          <first-name>Marlene</first-name>
+          <red-velvet type="boolean">false</red-velvet>
+          <purchase-id type="integer">1830912</purchase-id>
+        </purchase>
+      </purchases>
+    </inventory>
+  </inventories>
+  <time-note>8:00pm</time-note>
+  <show-id type="integer">364386</show-id>
+  <venue>
+    <address>
+      <region>CA</region>
+      <street-address>1409 High Street</street-address>
+      <postal-code>94501</postal-code>
+      <extended-address nil="true"></extended-address>
+      <locality>Alameda</locality>
+      <country-name>United States</country-name>
+    </address>
+    <venue-id type="integer">1173</venue-id>
+    <name>Altarena Playhouse</name>
+  </venue>
+  <event>
+    <title>&quot;I Love You, You're Perfect, Now Change&quot;</title>
+  </event>
+  <on-date type="date">2010-10-14</on-date>
+</willcall>

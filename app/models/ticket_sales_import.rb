@@ -4,9 +4,13 @@ class TicketSalesImport < Import
   validates_associated :show
   validate :show_exists?
 
+  class TicketSalesImport::DateTimeNotFound < Exception ; end
   class TicketSalesImport::ShowNotFound < Exception ; end
+  class TicketSalesImport::CustomerNameNotFound < Exception ; end
+  class TicketSalesImport::MultipleShowMatches < Exception ; end
   class TicketSalesImport::PreviewOnly  < Exception ; end
   class TicketSalesImport::ImportError < Exception ; end
+  class TicketSalesImport::BadOrderFormat < Exception ; end
 
   attr_accessor :vouchers, :existing_vouchers
   attr_accessor :created_customers, :matched_customers
@@ -77,8 +81,16 @@ class TicketSalesImport < Import
       self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
     rescue TicketSalesImport::PreviewOnly
       ;
+    rescue TicketSalesImport::BadOrderFormat => e
+      self.errors.add_to_base("Malformed individual order: #{e.message}")
+    rescue TicketSalesImport::CustomerNameNotFound => e
+      self.errors.add_to_base("Customer name not found for #{e.message}")
     rescue TicketSalesImport::ShowNotFound
-      self.errors.add_to_base("Couldn't find production name to associate with import")
+      self.errors.add_to_base("Couldn't find production name/date to associate with import")
+    rescue TicketSalesImport::DateTimeNotFound
+      self.errors.add_to_base("Couldn't find valid date and time in import document (#{e.message})")
+    rescue TicketSalesImport::MultipleShowMatches => e
+      self.errors.add_to_base("Multiple showdates match import file: #{e.message}")
     rescue TicketSalesImport::ImportError => e
       self.errors.add_to_base(e.message)
     rescue Exception => e
@@ -88,12 +100,16 @@ class TicketSalesImport < Import
     @vouchers
   end
   
-  def import_customer(row,args)
+  def import_customer_from_csv(row,args)
     attribs = {}
     [:first_name, :last_name, :street, :city, :state, :zip, :day_phone, :email, :last_login, :updated_at].each do |attr|
       # special case: "N/A" is same as blank
       attribs[attr] = row[args[attr]] if (args.has_key?(attr)  && row[args[attr]] != 'N/A')
     end
+    import_customer(attribs)
+  end
+
+  def import_customer(attribs)
     customer = Customer.new(attribs)
     customer.force_valid = customer.created_by_admin = true
     if (existing = Customer.find_unique(customer))
@@ -123,8 +139,27 @@ class TicketSalesImport < Import
     return nil unless (v = Voucher.find_by_external_key(order_id))
     # this voucher's already been entered.  make sure show name matches!!
     raise(TicketSalesImport::ImportError,
-      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if v.show.id != self.show_id
+      "Existing order #{order_id} was already entered, but for a different show (#{v.show.name}, show ID #{v.show.id})") if
+      v.show != self.show
     true
   end
+
+  def get_or_create_vouchertype(price,name,valid_year=Time.now.year)
+    name_match = "%#{name}%"
+    if (v = Vouchertype.find(:first,
+          :conditions => ["price = #{price} AND name LIKE ?", name_match]))
+      @vouchertype = v
+    else
+      count_existing_vouchertypes =
+        Vouchertype.count(:conditions => ["name LIKE ?", name_match])
+      new_vouchertype_name =
+        "#{name} #{count_existing_vouchertypes+1}"
+      @vouchertype =
+        Vouchertype.create_external_voucher_for_season!(new_vouchertype_name, price, valid_year)
+      @created_vouchertypes << @vouchertype
+    end
+    @vouchertype
+  end
+
 
 end
