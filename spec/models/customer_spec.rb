@@ -27,6 +27,20 @@ describe Customer do
       @c.labels.should_not include(@l1)
       @c.labels.should_not include(@l2)
     end
+    it "should not have a label after label is deleted" do
+      @c.labels = [@l1, @l2] ;  @c.save!
+      @l2.destroy 
+      @c.reload
+      @c.labels.should_not include(@l2)
+    end
+    it "should move the labels to the customer surviving a merge" do
+      @c2 = BasicModels.create_generic_customer
+      @c2.update_labels!({@l1.id => "1"})
+      @c2.labels.should include(@l1)
+      @c.merge_automatically!(@c2)
+      @c.reload
+      @c.labels.should include(@l1)
+    end
   end
       
   describe "when created by admin" do

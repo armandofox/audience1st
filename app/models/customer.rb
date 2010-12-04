@@ -754,6 +754,8 @@ EOSQL1
   def self.update_foreign_keys_from_to(old,new)
     msg = []
     Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
+    l = Label.rename_customer(old, new)
+    msg << "#{l} labels"
     [Donation, Voucher, Txn, Visit, Import].each do |t|
       howmany = 0
       t.foreign_keys_to_customer.each do |field|
