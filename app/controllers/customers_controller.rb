@@ -130,6 +130,7 @@ class CustomersController < ApplicationController
       # update generic attribs first
       @customer.created_by_admin = @is_admin # to skip validations if admin is editing
       @customer.update_attributes!(params[:customer])
+      @customer.update_labels!(params[:label])
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
       @customer.update_attribute(:created_by_admin, false) if @gLoggedIn == @customer

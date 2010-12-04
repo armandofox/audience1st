@@ -3,6 +3,32 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
   fixtures :customers
+  describe "labels" do
+    before(:each) do
+      @c = BasicModels.create_generic_customer
+      @l1 = Label.create!(:name => "L1")
+      @l2 = Label.create!(:name => "L2")
+    end
+    it "should update label ID's" do
+      labels = {@l2.id.to_s => "1"}
+      @c.set_labels(labels)
+      @c.labels.should include(@l2)
+      @c.labels.should_not include(@l1)
+    end
+    it "should remove labels it previously had" do
+      @c.labels = [@l1]
+      @c.set_labels({@l2.id.to_s => "1"})
+      @c.labels.should_not include(@l1)
+      @c.labels.should include(@l2)
+    end
+    it "should remove ALL labels if nothing checked" do
+      @c.labels = [@l1,@l2]
+      @c.set_labels(nil)
+      @c.labels.should_not include(@l1)
+      @c.labels.should_not include(@l2)
+    end
+  end
+      
   describe "when created by admin" do
     def new_by_admin(args={})
       (c = Customer.new(args)).created_by_admin = true

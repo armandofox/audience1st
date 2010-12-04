@@ -7,7 +7,6 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  
   has_many :vouchers
   has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
   has_many :showdates, :through => :vouchers
@@ -156,6 +155,17 @@ class Customer < ActiveRecord::Base
     msg
   end
 
+  def set_labels(hash)
+    self.labels = (hash.nil? || hash.empty?) ?
+    [] :
+      Label.all_labels.reject { |l| hash[l.id.to_s].to_i.zero? }
+  end
+
+  def update_labels!(hash)
+    self.set_labels(hash)
+    self.save! 
+  end
+  
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email

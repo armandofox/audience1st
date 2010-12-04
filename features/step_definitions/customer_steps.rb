@@ -39,6 +39,6 @@ Given /^I am logged in as (.*)?$/ do |who|
 end
 
 Then /customer "(.*)" should have label "(.*)"/i do |cust,label|
-  c = customers(cust.to_sym)
+  c = Customer.find(customers(cust.to_sym).id)
   c.labels.map { |l| l.name }.should include(label)
 end
