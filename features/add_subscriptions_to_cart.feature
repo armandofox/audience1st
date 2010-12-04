@@ -1,4 +1,3 @@
-@wip
 Feature: Add subscriptions to cart
 
   As a patron

@@ -13,6 +13,9 @@ module NavigationHelpers
       '/customers/welcome'
     when /the subscriber home ?page/i
       '/customers/welcome'
+    when /the edit contact info page for customer "(.*)"/i
+      @customer = customers($1.to_sym)
+      "/customers/edit/#{@customer.id}"
     when /the edit contact info page/i
       "/customers/edit/#{@customer.id}"
     when /the walkup sales page/i

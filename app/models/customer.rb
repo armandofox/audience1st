@@ -6,6 +6,8 @@ class Customer < ActiveRecord::Base
   include Authentication::ByCookieToken
   require 'csv'
 
+  has_and_belongs_to_many :labels
+  
   has_many :vouchers
   has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
   has_many :showdates, :through => :vouchers

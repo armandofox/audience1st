@@ -6,8 +6,8 @@ Feature: import Brown Paper Tickets will-call lists
 
 Background:
   Given I am logged in as boxoffice manager
-  And I follow "Box Office"
-  Then I should see "Import Will-Call List"
-  When I follow "Import Will-Call List"
-  Then I should see "Brown Paper Tickets" within "select[name=vendor]"
+  And I am on the Admin:Import page
+  When I follow "Import"
+  Then I should see "What do you want to import?"
+  And I should see "Brown Paper Tickets sales for 1 production" within "select[name=vendor]"
 

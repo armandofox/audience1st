@@ -1,0 +1,5 @@
+#customer_labels
+  #current_labels
+    = in_rows_of(4,@all_labels) do |l|
+      - content_tag('label', l.name, :for => "label_#{l.id}", :class => 'no_float') + check_box_tag("label[#{l.id}]", 1, @customer.labels.include?(l))
+      

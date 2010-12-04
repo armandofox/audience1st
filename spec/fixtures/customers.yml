@@ -73,8 +73,8 @@ staff_user:
 
 boxoffice_user:
   id: 3
-  first_name: Boxoffice
-  last_name: User
+  first_name: Barbara
+  last_name: Boxoffice
   role: 21
   email: boxoffice@example.com
   salt: abcdefghij
@@ -82,12 +82,22 @@ boxoffice_user:
 
 boxoffice_manager:
   id: 4
-  first_name: Boxoffice
+  first_name: Mary
   last_name: Manager
   role: 31
   email: boxoffice_manager@example.com
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
+
+staff:
+  id: 75
+  first_name: Sally
+  last_name: Staffer
+  role: 31
+  email: staffer@example.com
+  salt: abcdefghij
+  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
+        
 
 walkup_sales_user:
   id: 5

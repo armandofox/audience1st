@@ -4,8 +4,8 @@ rerun = File.file?('rerun.txt') ? IO.read('rerun.txt') : ""
 rerun_opts = rerun.to_s.strip.empty? ? "--format pretty features" : "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
 std_opts = "#{rerun_opts} --format rerun --out rerun.txt --strict"
 %>
-default: <%= format %> features
-wip: --tags @wip:3 --wip features <%= format %> 
+default: <%= format %> 
+autotest: <%= format %> --tags @ip 
 rerun:  <%= std_opts %>
 passing:  --tags ~@wip <%= format %> 
 cur:  --tags @cur <%= format %>

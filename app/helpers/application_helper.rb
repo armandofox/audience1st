@@ -34,6 +34,18 @@ module ApplicationHelper
     end
   end
 
+  def in_rows_of(n,collection)
+    rows = ''
+    collection.each_slice(n) do |things|
+      row = ''
+      things.each { |l|  row << content_tag('td', yield(l)) }
+      rows << content_tag('tr', row)
+    end
+    content_tag('table') do
+      content_tag('tbody', rows)
+    end
+  end
+
   def truncate_with_hovering(str, opts={})
     str = h(str)
     content_tag(:span, truncate(str,opts) + content_tag(:span, str),
