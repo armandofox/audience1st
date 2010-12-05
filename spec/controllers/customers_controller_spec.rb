@@ -105,7 +105,7 @@ describe CustomersController do
         @customer.zip.should == "94100"
       end
       it "should display a message confirming the update" do
-        flash[:notice].should contain("Contact information was successfully updated")
+        flash[:notice].should match(/Contact information.*successfully updated/i)
       end
       it "should continue the checkout flow" do
         response.should redirect_to(@target)

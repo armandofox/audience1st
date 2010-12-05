@@ -26,7 +26,7 @@ Story: Creating an account
     When  she registers an account as the preloaded 'Oona'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Thanks for setting up an account'
+    Then  she should see a notice message 'Welcome, Oona'
      And  a customer with first_name: 'Oona' should exist
      And  the customer should have first_name: 'Oona', and email: 'unactivated@example.com'
      And  unactivated@example.com should be logged in
@@ -85,7 +85,7 @@ Story: Creating an account
     When  she registers an account with first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Thanks for setting up an account'
+    Then  she should see a notice message 'Welcome, Oona'
      And  a customer with first_name: 'Oona' should exist
      And  the customer should have first_name: 'Oona', and email: 'unactivated@example.com'
      And  unactivated@example.com should be logged in

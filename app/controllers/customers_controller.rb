@@ -151,12 +151,14 @@ class CustomersController < ApplicationController
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
       end
+      redirect_to_stored
     rescue ActiveRecord::RecordInvalid
       flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
+      redirect_to :action => 'edit'
     rescue Exception => e
       flash[:notice] = "Update failed: #{e.message}"
+      redirect_to :action => 'edit'
     end
-    redirect_to :action => 'edit'
   end
 
   def change_password
@@ -332,7 +334,6 @@ class CustomersController < ApplicationController
     begin
       @customer.save!
       @customer.update_attribute(:last_login, Time.now)
-      flash[:notice] = "Thanks for setting up an account!<br/>"
       email_confirmation(:send_new_password,@customer,
         params[:customer][:password],"set up an account with us")
       self.current_user = @customer

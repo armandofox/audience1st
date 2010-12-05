@@ -3,4 +3,6 @@
     = in_rows_of(4,@all_labels) do |l|
       - checkbox_for_label(l, @customer.labels.include?(l))
   %label &nbsp;
-  %p= gen_button 'Create new label names...', labels_path
+  %p
+    = gen_button 'Create new label names...', labels_path
+    = popup_help_for 'customer_labels'

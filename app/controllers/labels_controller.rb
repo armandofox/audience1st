@@ -34,7 +34,7 @@ class LabelsController < ApplicationController
     respond_to do |format|
       if @label.save
         flash[:notice] = 'Label was successfully created.'
-        format.html { redirect_to (params[:commit] =~ /another/i ?
+        format.html { redirect_to(params[:commit] =~ /another/i ?
             new_label_path : labels_path) }
         format.xml  { render :xml => @label, :status => :created, :location => @label }
       else

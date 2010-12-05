@@ -21,7 +21,6 @@ Scenario: add label to customer
   And I press "Save Changes"
   Then I should see "Contact information for Tom Foolery successfully updated"
   And customer "Tom Foolery" should have label "Volunteer"
-  And the "Volunteer" checkbox should be checked
 
 Scenario: remove label from customer
 
