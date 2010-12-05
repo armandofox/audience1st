@@ -5,5 +5,5 @@ Feature: Bulk download will-call lists
   I want to bulk download my will-calls all at once for importing
 
 Background:
-  Given I am logged in as admin
+  Given I am logged in as administrator
   And I go to the Admin:Bulk Import page

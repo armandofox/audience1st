@@ -3,11 +3,13 @@
 %fieldset#admin_form
   %legend Administrator Preferences
   - if @superadmin
-    %p.adminField
+    %p
       %label{:for=>:customer_role} Role
       =select('customer', 'role',  roles_with_names, {:selected => @customer.role_name })
       %br/ 
 
+  %label{:for=>:customer_labels} Labels
+  = render :partial => 'labels'
 
   %label{:for=>:customer_comments} Staff Comments <br />(not seen by customer):
   =text_area :customer, :comments, :cols => 60, :rows => 5

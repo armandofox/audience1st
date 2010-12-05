@@ -1,0 +1,16 @@
+<h1>New label</h1>
+
+<% form_for(@label) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.submit 'Save' %>
+    <%= f.submit 'Save & Add Another' %>
+  </p>
+<% end %>
+
+<%= gen_button 'Back', labels_path %>

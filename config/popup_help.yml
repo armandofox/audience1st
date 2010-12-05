@@ -37,6 +37,11 @@ max_advance_sales: >
 
 # Customers and customer lists
 
+customer_labels: >
+
+  You can 'tag' customers with labels of your choice, such as Volunteer,
+  Merchant Partner, etc.  Labels can then be used in report generation.
+
 filter_by_zip: >
 
   Patterns that match the start of a zip code, separated by

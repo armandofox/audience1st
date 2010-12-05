@@ -13,7 +13,9 @@ module NavigationHelpers
       '/customers/welcome'
     when /the subscriber home ?page/i
       '/customers/welcome'
-    when /the edit contact info page/i
+    when /the edit contact info page for customer "(.*) +(.*)"/i
+      @customer = Customer.find_by_first_name_and_last_name($1, $2) or raise ActiveRecord::RecordNotFound
+      get "/customers/switch_to/#{@customer.id}"
       "/customers/edit/#{@customer.id}"
     when /the walkup sales page/i
       "/box_office/walkup/#{@showdate.id}"

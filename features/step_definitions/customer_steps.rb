@@ -22,6 +22,9 @@ Given /^I am logged in as (.*)?$/ do |who|
   when /box ?office/i
     @customer = customers(:boxoffice_user)
     is_admin = true
+  when /staff/i
+    @customer = customers(:staff)
+    is_admin = true
   when /customer ["'](.*)['"]/
     @customer = customers($1.to_sym)
   else
@@ -34,3 +37,4 @@ Given /^I am logged in as (.*)?$/ do |who|
   response.should contain(Regexp.new("Welcome,.*#{@customer.first_name}"))
   response.should have_selector('div[id=customer_quick_search].adminField') if is_admin
 end
+

@@ -6,6 +6,7 @@ class Customer < ActiveRecord::Base
   include Authentication::ByCookieToken
   require 'csv'
 
+  has_and_belongs_to_many :labels
   has_many :vouchers
   has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
   has_many :showdates, :through => :vouchers
@@ -154,6 +155,18 @@ class Customer < ActiveRecord::Base
     msg
   end
 
+  def set_labels(labels_list)
+    self.labels = (
+      labels_list.respond_to?(:each) ?
+      Label.all_labels.select { |l| labels_list.include?(l.id) } :
+      [])
+  end
+
+  def update_labels!(hash)
+    self.set_labels(hash)
+    self.save! 
+  end
+  
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email
@@ -742,6 +755,8 @@ EOSQL1
   def self.update_foreign_keys_from_to(old,new)
     msg = []
     Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
+    l = Label.rename_customer(old, new)
+    msg << "#{l} labels"
     [Donation, Voucher, Txn, Visit, Import].each do |t|
       howmany = 0
       t.foreign_keys_to_customer.each do |field|

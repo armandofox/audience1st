@@ -114,6 +114,7 @@ class CustomersController < ApplicationController
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     @return_to = session[:return_to]
+    @all_labels = Label.all_labels
   end
 
   def update
@@ -129,10 +130,11 @@ class CustomersController < ApplicationController
       # update generic attribs first
       @customer.created_by_admin = @is_admin # to skip validations if admin is editing
       @customer.update_attributes!(params[:customer])
+      @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
       @customer.update_attribute(:created_by_admin, false) if @gLoggedIn == @customer
-      flash[:notice] = 'Contact information was successfully updated.'
+      flash[:notice] = "Contact information for #{@customer.full_name} successfully updated."
       if ((newrole = params[:customer][:role])  &&
           newrole != @customer.role_name  &&
           current_admin.can_grant(newrole))
@@ -332,7 +334,6 @@ class CustomersController < ApplicationController
     begin
       @customer.save!
       @customer.update_attribute(:last_login, Time.now)
-      flash[:notice] = "Thanks for setting up an account!<br/>"
       email_confirmation(:send_new_password,@customer,
         params[:customer][:password],"set up an account with us")
       self.current_user = @customer

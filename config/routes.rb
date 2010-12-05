@@ -1,9 +1,14 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :labels
+
+  map.resources :labels
+
 
   map.resources :bulk_downloads
   map.resources :donation_funds
   map.resources :imports
-
+  map.resources :labels
+  
   # just enough RESTful routes for restful_authentication to work
   # map.resources :customers
   map.connect "/customers/link_user_accounts_#{Option.value(:venue_shortname)}", :controller => 'customers', :action => 'link_user_accounts'

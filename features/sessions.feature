@@ -24,7 +24,7 @@ Feature: Logging in
     When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: ''
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Logged in successfully'
+    Then  she should see a notice message 'Welcome, Reggie'
      And  registered@example.com should be logged in
      And  she should not have an auth_token cookie
    
@@ -34,8 +34,7 @@ Feature: Logging in
     When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: ''
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Logged in successfully'
-     And  registered@example.com should be logged in
+    Then  registered@example.com should be logged in
      And  she should not have an auth_token cookie
   
   #
@@ -46,7 +45,7 @@ Feature: Logging in
     When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Logged in successfully'
+    Then  she should see a notice message 'Welcome, Reggie'
      And  registered@example.com should be logged in
      And  she should have an auth_token cookie
 	      # assumes fixtures were run sometime
@@ -61,7 +60,7 @@ Feature: Logging in
     When  she creates a singular sessions with Email: 'unactivated@example.com', password: '1234oona', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Logged in successfully'
+    Then  she should see a notice message 'Welcome, Oona'
      And  unactivated@example.com should be logged in
      And  she should have an auth_token cookie
     When  she creates a singular sessions with email: 'registered@example.com', password: 'i_haxxor_joo'
@@ -93,14 +92,14 @@ Feature: Logging in
      And  her session store should not have customer_id
     When  she creates a singular sessions with email: 'leonard_shelby@example.com', password: 'monkey'
     Then  she should be at the login page
-    Then  she should see a warning message 'Couldn't log you in as 'leonard_shelby@example.com''
+     And  she should see a warning message 'Couldn't log you in as 'leonard_shelby@example.com''
      And  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
     When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Logged in successfully'
+    Then  she should see a notice message 'Welcome, Reggie'
      And  registered@example.com should be logged in
      And  she should have an auth_token cookie
 	      # assumes fixtures were run sometime
@@ -125,8 +124,7 @@ Feature: Logging in
     When  she goes to /logout
     Then  she should be redirected to the login page
     When  she follows that redirect!
-    Then  she should see a notice message 'You have been logged out'
-     And  she should not be logged in
+    Then  she should not be logged in
      And  she should not have an auth_token cookie
      And  her session store should not have customer_id
 
