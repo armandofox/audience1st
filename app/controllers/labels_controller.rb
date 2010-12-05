@@ -1,4 +1,5 @@
 class LabelsController < ApplicationController
+  before_filter :is_staff_filter
   # GET /labels
   # GET /labels.xml
   def index

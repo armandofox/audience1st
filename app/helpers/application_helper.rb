@@ -35,6 +35,7 @@ module ApplicationHelper
   end
 
   def in_rows_of(n,collection)
+    return '' if (collection.nil? || collection.empty?)
     rows = ''
     collection.each_slice(n) do |things|
       row = ''

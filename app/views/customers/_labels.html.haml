@@ -1,6 +1,6 @@
 #customer_labels
   #current_labels
-    = in_rows_of(4,@all_labels) do |l|
+    = in_rows_of(4, Label.all_labels) do |l|
       - checkbox_for_label(l, @customer.labels.include?(l))
   %label &nbsp;
   %p

@@ -114,7 +114,6 @@ class CustomersController < ApplicationController
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     @return_to = session[:return_to]
-    @all_labels = Label.all_labels
   end
 
   def update
