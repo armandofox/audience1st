@@ -130,11 +130,11 @@ class CustomersController < ApplicationController
       # update generic attribs first
       @customer.created_by_admin = @is_admin # to skip validations if admin is editing
       @customer.update_attributes!(params[:customer])
-      @customer.update_labels!(params[:label])
+      @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
       @customer.update_attribute(:created_by_admin, false) if @gLoggedIn == @customer
-      flash[:notice] = 'Contact information was successfully updated.'
+      flash[:notice] = "Contact information for #{@customer.full_name} successfully updated."
       if ((newrole = params[:customer][:role])  &&
           newrole != @customer.role_name  &&
           current_admin.can_grant(newrole))
@@ -151,14 +151,12 @@ class CustomersController < ApplicationController
         email_confirmation(:send_new_password,@customer, nil,
                            "updated your email address in our system")
       end
-      redirect_to_stored
     rescue ActiveRecord::RecordInvalid
       flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
-      redirect_to :action => 'edit'
     rescue Exception => e
       flash[:notice] = "Update failed: #{e.message}"
-      redirect_to :action => 'edit'
     end
+    redirect_to :action => 'edit'
   end
 
   def change_password

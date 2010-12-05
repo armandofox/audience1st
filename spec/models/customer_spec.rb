@@ -10,14 +10,14 @@ describe Customer do
       @l2 = Label.create!(:name => "L2")
     end
     it "should update label ID's" do
-      labels = {@l2.id.to_s => "1"}
+      labels = [@l2.id]
       @c.set_labels(labels)
       @c.labels.should include(@l2)
       @c.labels.should_not include(@l1)
     end
     it "should remove labels it previously had" do
       @c.labels = [@l1]
-      @c.set_labels({@l2.id.to_s => "1"})
+      @c.set_labels([@l2.id])
       @c.labels.should_not include(@l1)
       @c.labels.should include(@l2)
     end
@@ -35,9 +35,9 @@ describe Customer do
     end
     it "should move the labels to the customer surviving a merge" do
       @c2 = BasicModels.create_generic_customer
-      @c2.update_labels!({@l1.id => "1"})
+      @c2.update_labels!([@l1.id])
       @c2.labels.should include(@l1)
-      @c.merge_automatically!(@c2)
+      @c.merge_automatically!(@c2).should be_true
       @c.reload
       @c.labels.should include(@l1)
     end

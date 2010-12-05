@@ -38,7 +38,3 @@ Given /^I am logged in as (.*)?$/ do |who|
   response.should have_selector('div[id=customer_quick_search].adminField') if is_admin
 end
 
-Then /customer "(.*)" should have label "(.*)"/i do |cust,label|
-  c = Customer.find(customers(cust.to_sym).id)
-  c.labels.map { |l| l.name }.should include(label)
-end

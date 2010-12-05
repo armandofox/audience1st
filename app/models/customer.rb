@@ -155,10 +155,11 @@ class Customer < ActiveRecord::Base
     msg
   end
 
-  def set_labels(hash)
-    self.labels = (hash.nil? || hash.empty?) ?
-    [] :
-      Label.all_labels.reject { |l| hash[l.id.to_s].to_i.zero? }
+  def set_labels(labels_list)
+    self.labels = (
+      labels_list.respond_to?(:each) ?
+      Label.all_labels.select { |l| labels_list.include?(l.id) } :
+      [])
   end
 
   def update_labels!(hash)

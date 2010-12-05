@@ -1,6 +1,6 @@
 class Label < ActiveRecord::Base
 
-  validates_uniqueness_of :name
+  validates_uniqueness_of :name, :case_sensitive => false
   validates_length_of :name, :in => 1..20
   has_and_belongs_to_many :customers
 
