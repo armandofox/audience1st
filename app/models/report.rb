@@ -56,20 +56,41 @@ class Report
   end
 
   def create_csv
+    multicolumn = (@output_options['multi_column_address'].to_i > 0)
+    header_row = (@output_options['header_row'].to_i > 0)
     CSV::Writer.generate(@output='') do |csv|
-      self.customers.each do |c|
-        begin
-          csv << [c.first_name.name_capitalize,
-            c.last_name.name_capitalize,
-            c.email,
-            c.day_phone,
-            c.eve_phone,
-            c.street,c.city,c.state,c.zip,
-            (c.created_at.to_formatted_s(:db) rescue nil)
-          ]
-        rescue Exception => e
-          logger.error "Error in create_csv: #{e.message}"
+      begin
+        if multicolumn
+          csv << %w[first_name last_name email day_phone eve_phone street city state zip created_at] if header_row
+          self.customers.each do |c|
+            csv << [c.first_name.name_capitalize,
+              c.last_name.name_capitalize,
+              c.email,
+              c.day_phone,
+              c.eve_phone,
+              c.street,c.city,c.state,c.zip,
+              (c.created_at.to_formatted_s(:db) rescue nil)
+            ]
+          end
+        else
+          csv << %w[first_name last_name email day_phone eve_phone address created_at] if header_row
+          self.customers.each do |c|
+            addr = [c.street, c.city, c.state, c.zip].map { |str| str.to_s.gsub(/,/, ' ') }
+            addr = addr[0,3].join(', ') << ' ' << addr[3]
+            csv << [c.first_name.name_capitalize,
+              c.last_name.name_capitalize,
+              c.email,
+              c.day_phone,
+              c.eve_phone,
+              addr,
+              (c.created_at.to_formatted_s(:db) rescue nil)
+            ]
+          end
         end
+      rescue Exception => e
+        err = "Error in create_csv: #{e.message}"
+        add_error(err)
+        logger.error err
       end
     end
     @filename = self.class.to_s.downcase + Time.now.strftime("%Y_%m_%d")
