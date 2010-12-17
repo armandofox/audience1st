@@ -1,5 +1,5 @@
 %fieldset#output_options
-  %legend Output options
+  %legend Report options
   %p
     = check_box_tag 'output[subscribers_only]', '1', true
     Limit to subscribers only
@@ -33,12 +33,7 @@
     Only those who
     = select_tag 'output[login_since_test]', options_for_select(['have','have not'])
     logged in since
-    = select_date_shortcuts Time.now.year, 'output[login_from]', 'output[login_to]'
-    %br
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or custom dates:
-    = select_date Date.today, :prefix => 'output[login_from]', :start_year => 2007
-    to
-    = select_date Date.today, :prefix => 'output[login_to]', :start_year => 2007
+    = select_date Time.now.at_beginning_of_season, :prefix => 'output[login_from]', :start_year => 2007
   %p.fieldgroup Spreadsheet options:
   %p
     Display mailing address in:

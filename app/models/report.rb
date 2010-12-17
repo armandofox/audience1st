@@ -33,7 +33,7 @@ class Report
 
   def execute_query
     res = Customer.find_by_sql(query)
-    logger.info "Report Query:\n  #{query} \n   => #{@customers.length} results"
+    logger.info "Report Query:\n  #{query.join("\n>> ")} \n==> #{@customers.length} results"
     @customers = postprocess(res)
   end
 
@@ -106,14 +106,22 @@ class Report
     joins = @joins.join("\nLEFT OUTER JOIN ")
     # don't want to modify instance variables of these, lest this method
     # become non-idempotent
-    wheres = @wheres
-    bind_variables = @bind_variables
+    wheres = @wheres.clone
+    bind_variables = @bind_variables.clone
     @output_options.each_pair do |key, val|
       case key.to_sym
       when :exclude_blacklist
         wheres << "c.blacklist = #{val ? 0 : 1}"
       when :exclude_e_blacklist
         wheres << "c.e_blacklist = #{val ? 0 : 1}"
+      when :require_valid_email
+        (wheres << "c.email LIKE '%@%'") if val
+      when :login_from
+        if @output_options[:login_since]
+          op = (@output_options[:login_since_test] =~ /not/ ?  '<=' : '>=')
+          wheres << "c.last_login #{op} ?"
+          bind_variables << Date::civil(val[:year].to_i, val[:month].to_i, val[:day].to_i)
+        end
       when :require_valid_address
         wheres << "c.street != '' AND c.street IS NOT NULL" if !val.to_i.zero?
       when :filter_by_zip

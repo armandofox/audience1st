@@ -3,7 +3,7 @@
   - form_tag({:controller => 'box_office',:action => 'walkup_report'}, {:method => :get}) do
     %p 
       Walkup Sales Summary by Ticket Type for
-      = select_tag ('showdate_id', options_from_collection_for_select(@all_showdates, :id,:printable_name,@next_showdate.id)) 
+      = select_tag('showdate_id', options_from_collection_for_select(@all_showdates, :id,:printable_name,@next_showdate.id)) 
       = submit_tag 'Go' 
       
   - form_tag({:action => 'advance_sales'}, {:method => :get}) do

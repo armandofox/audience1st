@@ -29,6 +29,8 @@ class Customer < ActiveRecord::Base
   
   def real_customer? ; !special_customer? ; end
 
+  def self.all_customers ; Customer.find(:all, :conditions => 'role >= 0') ; end
+  
   private
 
   def deletable? ; !self.special_customer? ; end
