@@ -31,7 +31,7 @@
         - else
           = select_tag(fieldname, options_for_select(qty), :onChange => 'recalc_total()', :class => 'itemQty')
         %br/
-        = hidden_field_tag "#{fieldname}_price", price
+        = hidden_field_tag "price[#{vid}]", price, {:id => "vouchertype_#{vid}_price"}
 
     - unless @vouchertypes.empty?
       %label.emphasis ADA-accessible seating required?
