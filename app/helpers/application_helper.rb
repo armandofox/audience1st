@@ -512,15 +512,4 @@ EOS3
             :vouchertype_id => vouchertype_id)
   end
 
-  # return a recalc function that can be embedded in a page and used
-  #  as the target of an onChange handler for a form
-
-  def javascript_recalc_function(target,fields,price_fields,qty_fields,extra_field='',field_to_enable_if_nonzero='',decimal_places=2)
-    javascript_tag <<-EOJS
-       recalc_#{target} = function() {
-          recalculate('#{target}', #{to_js_array(fields)}, '#{price_fields}',           '#{qty_fields}', '#{extra_field}', '#{field_to_enable_if_nonzero}', #{decimal_places})
-       }
-EOJS
-  end
-
 end

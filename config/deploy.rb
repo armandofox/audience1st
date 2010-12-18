@@ -110,6 +110,8 @@ deploy.task :after_update_code do
   end    
   # make public/stylesheets/venue point to venue's style assets
   run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
+  # similarly, link favicon.ico
+  run "rm -f #{release_path}/public/favicon.ico && ln -s #{stylesheet_dir}/#{venue}/favicon.ico #{release_path}/public/"
   %w[config/venues.yml manual doc spec features].each { |dir|  run "rm -rf #{release_path}/#{dir}" }
   run "chmod -R go-w #{release_path}"
 end

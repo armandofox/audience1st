@@ -17,7 +17,7 @@
       = render :partial => 'ticket_menus'
 
       %label{:for => :donation} Additional tax-deductible donation
-      = text_field_tag 'donation', '', :size => 5, :onBlur => 'recalc_total()'
+      = text_field_tag 'donation', '', :size => 5, :onChange => 'recalc_total()', :class => 'itemQty'
       \.00
       %br
       #orderTotal

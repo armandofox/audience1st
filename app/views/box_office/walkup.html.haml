@@ -1,7 +1,6 @@
 - form_tag :action => 'do_walkup_sale',:id => @showdate do
-  - vtypes = @valid_vouchers.map { |v| v.id }
-  = javascript_recalc_function 'total', vtypes, 'price','qty','donation'
-  = javascript_recalc_function 'totaltix', vtypes, '', 'qty', '', '', 0
+  = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty') }"
+  = javascript_tag "recalc_totaltix = function() { recalculate('totaltix', '.tktQty', null, 0, true) }"
 
   %table#walkup_tickets
     %thead
@@ -27,7 +26,7 @@
             %tr
               %td.label{:colspan => 2} Additional donation:
               %td= text_field_tag 'donation', @donation, :maxlength => 7, :size => 5, |
-                :onChange => 'recalc_total(); recalc_totaltix()'  |
+                :class => 'itemQty', :onChange => 'recalc_total(); recalc_totaltix()'  |
             - @valid_vouchers.each do |v|
               %tr
                 %td.label
@@ -36,8 +35,8 @@
                     %span.emphasis= "(#{v.seats_remaining} left)" 
                 %td= text_field_tag "price[#{v.id}]", |
                   number_to_currency(v.price, :unit => ''), :disabled => true, |
-                  :size => 6, :class => 'disabledField currency' |
-                %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:onChange => "recalc_total(); recalc_totaltix()"})  
+                  :size => 6, :id => "qty_#{v.id}_price", :class => 'disabledField currency' |
+                %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'itemQty tktQty', :onChange => "recalc_total(); recalc_totaltix()"})  
         %td.c.t
           %br
           = submit_tag 'Record Cash Payment'
@@ -51,6 +50,3 @@
           %br
           #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
           = submit_tag 'Record Credit Card Payment', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
-
-= javascript_tag 'recalc_total(); recalc_totaltix();'
-            

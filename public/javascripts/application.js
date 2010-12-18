@@ -69,43 +69,34 @@ function showEltOnCondition(menu,elt,cond) {
 
 // walkup sales - calculator
 
-function recalculate(target,elts,price_field_name,qty_field_name,
-                     addl_field_name,field_to_enable_if_nonzero,decplaces) {
+function recalculate(target,selector,field_to_enable_if_nonzero,decplaces,no_price) {
     $(target).value = '';
     var tot = 0.0;
-    var priceEach;
-    for (i=0; i<elts.length; i++) {
-        e = elts[i].toString();
-        if (price_field_name != '') {
-            price_field = $(price_field_name+'_'+e);
-            price = parseFloat(price_field.value);
+    var elts = $$(selector);
+    for (var i = 0; i < elts.length; i++) {
+        elt = elts[i];
+        if (!no_price) {
+            pricefield = $(elt.id + '_price');
+            var price = pricefield ? parseFloat(pricefield.value) : 1;
         } else {
-            price = 1.0;
+            var price = 1;
         }
-        qty = $(qty_field_name+'_'+e);
-        if (qty.tagName == "SELECT" || qty.tagName == "select") {
-            qty = qty.options[qty.selectedIndex];
-        } 
-        qty = parseInt(qty.value);
+        var qty   = (elt.tagName.match( /^select$/i ) ?
+                 parseInt(elt.options[elt.selectedIndex].value)  :
+                 parseInt(elt.value)) ;
         if (isNaN(qty)) { qty = 0; }
         tot += (price * qty);
     }
-    if (addl_field_name != '') {
-        if ($(addl_field_name).value != '') {
-            tot += parseFloat($(addl_field_name).value);
-        }
-    }
-    if (field_to_enable_if_nonzero != '') {
+    if (field_to_enable_if_nonzero) {
         if (tot > 0.0) {
             $(field_to_enable_if_nonzero).disabled = false;
         } else {
             $(field_to_enable_if_nonzero).disabled = true;
         }
     }
+    if (!decplaces && decplaces != 0) { decplaces = 2; }
     $(target).value = tot.toFixed(decplaces);
 }
-
-
 
 // Enable chaining of onLoad handlers.
 
