@@ -4,11 +4,10 @@ include Utils
 describe VouchersController do
   before(:all) do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-                                      :name => 'regular voucher',
-                                      :category => 'revenue',
-                                      :account_code => '9999',
-                                      :price => 10.00,
-      :valid_date => Time.now - 1.month,
+      :name => 'regular voucher',
+      :category => 'revenue',
+      :account_code => '9999',
+      :price => 10.00,
       :season => Time.now.year)
   end
   before(:each) do

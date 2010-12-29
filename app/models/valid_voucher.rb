@@ -36,15 +36,11 @@ class ValidVoucher < ActiveRecord::Base
       return
     end
     vt = self.vouchertype
-    if start_sales < vt.valid_date
-      errors.add_to_base "Voucher type '#{vt.name}' isn't valid before
-        #{vt.valid_date.to_formatted_s(:short)}, but you've indicated
-        sales should start earlier (#{self.start_sales.to_formatted_s(:short)})"
-    end
-    if self.end_sales > vt.expiration_date
-      errors.add_to_base "Voucher type '#{vt.name}' expires on
-        #{vt.expiration_date.to_formatted_s(:short)}, but you've indicated
-        sales should continue until #{self.end_sales.to_formatted_s(:short)})"
+    if self.end_sales > (end_of_season = Time.now.at_end_of_season(vt.season))
+      errors.add_to_base "Voucher type '#{vt.name}' is valid for the
+        season ending #{end_of_season.to_formatted_s(:month_day_year)},
+        but you've indicated sales should continue later than that
+        (until #{end_sales.to_formatted_s(:month_day_year)})."
     end
   end
   

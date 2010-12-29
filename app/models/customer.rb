@@ -568,8 +568,10 @@ EOSQL1
 
 
   def self.find_all_subscribers(order_by='last_name',opts={})
+    from = Time.now.at_beginning_of_season.to_formatted_s(:db)
+    to = Time.now.at_end_of_season.to_formatted_s(:db)
     conds = ['vt.subscription=1',
-             "#{Time.db_now} BETWEEN vt.valid_date AND vt.expiration_date "]
+      "#{Time.db_now} BETWEEN '#{from}' AND '#{to}'"]
     conds.push('(c.e_blacklist IS NULL OR c.e_blacklist=0)') if
       opts[:exclude_e_blacklist]
     conds.push('(c.blacklist IS NULL OR c.blacklist=0)') if

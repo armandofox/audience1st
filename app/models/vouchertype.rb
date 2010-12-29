@@ -8,6 +8,7 @@ class Vouchertype < ActiveRecord::Base
 
   validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
   validates_numericality_of :price, :greater_than_or_equal_to => 0
+  validates_numericality_of :season, :in => 1900..2100
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
@@ -23,8 +24,6 @@ class Vouchertype < ActiveRecord::Base
   # since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
   # Subscription vouchertypes' validity period must be < 2 years
-  validate :subscriptions_valid_at_most_2_years, :if => :subscription?
-  # Free vouchers must not be subscriber vouchers or offered to public
   validate :restrict_if_free, :if => lambda { |v| v.price.zero? }
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
@@ -45,17 +44,6 @@ class Vouchertype < ActiveRecord::Base
     end
   end
   
-  def subscriptions_valid_at_most_2_years
-    if (expiration_date - valid_date >= 2.years)
-      end_date = Time.local(Time.now.year, Option.value(:season_start_month),
-                            Option.value(:season_start_day)) - 1.day
-      errors.add_to_base "Maximum validity period of subscription vouchers
-        is 2 years minus 1 day. It's suggested you make the expiration date
-        the same as your season end date, which you set in Options
-        as #{end_date.to_formatted_s(:month_day_only)}."
-    end
-  end
-
   def restrict_if_free
     if offer_public == ANYONE
       errors.add_to_base "Free vouchers can't be available to public"
@@ -242,8 +230,7 @@ class Vouchertype < ActiveRecord::Base
   end
   
   def valid_as_of?(date)
-    d = date.to_time
-    d >= valid_date && d <= expiration_date
+    date.to_time <= Time.now.at_end_of_season(self.season)
   end
 
   def valid_now?
@@ -263,7 +250,6 @@ class Vouchertype < ActiveRecord::Base
       :offer_public => Vouchertype::EXTERNAL,
       :category => (price.zero? ? :comp : :revenue),
       :subscription => false,
-      :valid_date => Time.now.at_beginning_of_season(year),
       :season => year)
   end
 

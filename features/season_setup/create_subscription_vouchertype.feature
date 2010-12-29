@@ -11,18 +11,15 @@ Background:
 Scenario: Create new subscription vouchertype
 
   When I visit the New Vouchertype page
-  And I fill in "<field>" with "<value>"
-  And I select "<choice>" from "<menu>"
   And I select "Bundle" from "Type"
+  And I fill in "Name" with "NewSub"
+  And I fill in "Price" with "15"
+  And I fill in "Account Code" with "9999"
   And I select "Anyone may purchase" from "Availability"
   And I select "2011" from "Season"
   And I check "Mail fulfillment needed"
   And I check "Qualifies buyer as a Subscriber"
   And I press "Create"
+  Then I should be redirected to the Vouchertypes page
+  And I should see "Vouchertype successfully created"
 
-  Examples:
-    | field                 | value           |
-    | Name                  | NewSub          |
-    | Price                 | 15              |
-    | Account Code          | 9999            |
-    | Comments/description  | My new sub      |

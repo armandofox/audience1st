@@ -14,7 +14,6 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => "9997",
-        :valid_date => NOW.yesterday,
         :season => NOW.year
         )
       @vtn.should be_valid
@@ -30,7 +29,6 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => "9999",
-        :valid_date => NOW.yesterday,
         :season => NOW.year
         )
     end
@@ -84,7 +82,6 @@ describe Vouchertype do
           :walkup_sale_allowed => true,
           :comments => "A comment",
           :account_code => "9999",
-          :valid_date => NOW.yesterday,
           :season => NOW.year
         }
         @vtb = Vouchertype.new(args.merge({
@@ -108,18 +105,6 @@ describe Vouchertype do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
       end
     end
-    describe "subscription" do
-      before(:each) do
-        @vt.subscription = true
-        @vt.walkup_sale_allowed = false
-      end
-      it "should not be valid for more than (2 years - 1 day)" do
-        stub_month_and_day(5, 3)
-        @vt.valid_date = @vt.expiration_date - 2.years - 1.day
-        @vt.should_not be_valid
-        @vt.errors[:base].should match(/May +2/)
-      end
-    end
   end
 
   describe "selecting" do
@@ -130,7 +115,6 @@ describe Vouchertype do
         :walkup_sale_allowed => false,
         :comments => "A comment",
         :account_code => "9997",
-        :valid_date => 1.day.ago,
         :season => NOW.year
         }
         @sub_anyone = Vouchertype.create!(generic_args.merge({
@@ -151,7 +135,7 @@ describe Vouchertype do
         @sub_expired = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :offer_public => Vouchertype::ANYONE,
               :subscription => true, :name => "Expired sub",
-              :valid_date => 1.year.ago, :season => NOW.year - 1     }))
+              :season => NOW.year - 1     }))
         @nonsub_bundle = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :offer_public => Vouchertype::ANYONE,
               :subscription => false, :name => "Nonsub"   }))

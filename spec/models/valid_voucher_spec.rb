@@ -98,8 +98,7 @@ describe ValidVoucher do
       @sd = BasicModels.create_one_showdate(2.days.from_now)
       @vt_regular = BasicModels.create_revenue_vouchertype(
         :offer_public => Vouchertype::ANYONE,
-        :price => 10.00,
-        :valid_date => Time.now - 1.month)
+        :price => 10.00)
     end
     context "for boxoffice when advance sales have ended" do
       it "should still show seats"

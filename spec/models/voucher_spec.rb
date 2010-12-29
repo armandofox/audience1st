@@ -7,7 +7,6 @@ describe Voucher do
     #  some Vouchertype objects for these tests
     args = {
       :fulfillment_needed => false,
-      :valid_date => Time.now - 1.month,
       :season => Time.now.year
     }
     @vt_regular = Vouchertype.create!(args.merge({

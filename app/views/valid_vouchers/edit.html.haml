@@ -7,9 +7,7 @@
 %p
   %strong Ticket type:
   =  link_to vt.name, :controller => 'vouchertypes', :action => 'edit', :id =>vt
-  (valid 
-  = humanize_date_range(vt.valid_date, vt.expiration_date)
-  )
+  (valid #{humanize_season(vt.season)})
 
 %br
 
