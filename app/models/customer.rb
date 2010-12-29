@@ -1,5 +1,6 @@
 class Customer < ActiveRecord::Base
   require_dependency 'customer/special_customers'
+  require_dependency '../lib/date_time_extras'
 
   include Authentication
   include Authentication::ByPassword
@@ -8,7 +9,6 @@ class Customer < ActiveRecord::Base
 
   has_and_belongs_to_many :labels
   has_many :vouchers
-  has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
   has_many :showdates, :through => :vouchers
   has_many :shows, :through => :showdates
   has_many :txns
@@ -69,6 +69,11 @@ class Customer < ActiveRecord::Base
 
   before_destroy :cannot_destroy_special_customers
 
+  def active_vouchers
+    now = Time.this_season
+    self.vouchers.select { |v| v.season == now || v.season == now+1 }
+  end
+  
   #----------------------------------------------------------------------
   #  private variables
   #----------------------------------------------------------------------

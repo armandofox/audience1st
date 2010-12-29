@@ -5,14 +5,9 @@ describe ValidVoucher do
   describe "for regular voucher" do
     before :all do
       #  some Vouchertype objects for these tests
-      @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-        :name => 'regular voucher',
-        :category => 'revenue',
-        :account_code => '9999',
+      @vt_regular = BasicModels.create_revenue_vouchertype(
         :price => 10.00,
-        :offer_public => Vouchertype::ANYONE,
-        :valid_date => Time.now - 1.month,
-        :expiration_date => Time.now+1.month)
+        :offer_public => Vouchertype::ANYONE)
     end
     describe "when instantiated" do
       context "successfully" do
@@ -20,11 +15,12 @@ describe ValidVoucher do
           @showdate = mock_model(Showdate, :valid? => true)
           @logged_in_customer = Customer.boxoffice_daemon
           @purchasemethod = mock_model(Purchasemethod)
+          @now = @vt_regular.expiration_date - 2.months
           @valid_voucher =
             ValidVoucher.create!(:vouchertype => @vt_regular,
             :showdate => @showdate,
-            :start_sales => Time.now - 1.month + 1.day,
-            :end_sales => Time.now + 1.month - 1.day,
+            :start_sales => @now - 1.month + 1.day,
+            :end_sales => @now + 1.month - 1.day,
             :max_sales_for_type => 10)
           @valid_voucher.should be_valid
           @num = 3
@@ -57,13 +53,7 @@ describe ValidVoucher do
 
   describe "for bundle voucher" do
     before :all do
-      @vt_bundle = Vouchertype.create!(:fulfillment_needed => false,
-                                       :name => 'bundle voucher',
-                                       :category => 'bundle',
-                                       :price => 25.00,
-                                       :account_code => '8888',
-                                       :valid_date => Time.now - 1.month,
-                                       :expiration_date => Time.now+1.month)
+      @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25)
     end
     it "should return all vouchers if success"
     it "should create no vouchers if any instantiation fails"
@@ -106,14 +96,10 @@ describe ValidVoucher do
     before(:each) do
       #  some Vouchertype objects for these tests
       @sd = BasicModels.create_one_showdate(2.days.from_now)
-      @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-        :name => 'regular voucher',
-        :category => 'revenue',
-        :account_code => '9999',
+      @vt_regular = BasicModels.create_revenue_vouchertype(
         :offer_public => Vouchertype::ANYONE,
         :price => 10.00,
-        :valid_date => Time.now - 1.month,
-        :expiration_date => Time.now+1.month)
+        :valid_date => Time.now - 1.month)
     end
     context "for boxoffice when advance sales have ended" do
       it "should still show seats"

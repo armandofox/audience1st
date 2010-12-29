@@ -14,8 +14,8 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => "9997",
-        :valid_date => Time.now.yesterday,
-        :expiration_date => Time.now.tomorrow
+        :valid_date => NOW.yesterday,
+        :season => NOW.year
         )
       @vtn.should be_valid
     end
@@ -30,8 +30,8 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => "9999",
-        :valid_date => Time.now.yesterday,
-        :expiration_date => Time.now.tomorrow
+        :valid_date => NOW.yesterday,
+        :season => NOW.year
         )
     end
     describe "vouchertypes in general" do
@@ -84,8 +84,8 @@ describe Vouchertype do
           :walkup_sale_allowed => true,
           :comments => "A comment",
           :account_code => "9999",
-          :valid_date => Time.now.yesterday,
-          :expiration_date => Time.now.tomorrow
+          :valid_date => NOW.yesterday,
+          :season => NOW.year
         }
         @vtb = Vouchertype.new(args.merge({
               :category => :bundle,
@@ -120,30 +120,6 @@ describe Vouchertype do
         @vt.errors[:base].should match(/May +2/)
       end
     end
-     
-    describe "a subscription vouchertype valid for 2008" do
-      before(:each) do
-        @start = Time.parse("Feb 5, 2008")
-        stub_month_and_day(@start.month, @start.day)
-      end
-      it "should have an end date no later than end of 2008 season" do
-        @vt.valid_date = @start - 3.months
-        @vt.expiration_date = @start.at_end_of_season(2008)
-        @vt.should be_valid_for_season(2008)
-      end
-      it "should not have a start date more than 1 year before season start" do
-        pending
-        @vt.expiration_date = @start + 1.year
-        @vt.valid_date = @start - 1.month - 1.day
-        @vt.should_not be_valid_for_season(2008)
-      end
-      it "should not appear to be a 2007 subscription, even though its validity date is in 2007" do
-        pending
-        @vt.expiration_date = @start + 1.year
-        @vt.valid_date = @start - 10.months
-        @vt.should_not be_valid_for_season(2007)
-      end
-    end
   end
 
   describe "selecting" do
@@ -155,7 +131,7 @@ describe Vouchertype do
         :comments => "A comment",
         :account_code => "9997",
         :valid_date => 1.day.ago,
-        :expiration_date => 1.day.from_now
+        :season => NOW.year
         }
         @sub_anyone = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :subscription => true, :name => "Sub for anyone",
@@ -175,7 +151,7 @@ describe Vouchertype do
         @sub_expired = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :offer_public => Vouchertype::ANYONE,
               :subscription => true, :name => "Expired sub",
-              :valid_date => 1.year.ago, :expiration_date => 1.month.ago     }))
+              :valid_date => 1.year.ago, :season => NOW.year - 1     }))
         @nonsub_bundle = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :offer_public => Vouchertype::ANYONE,
               :subscription => false, :name => "Nonsub"   }))

@@ -26,8 +26,8 @@ class VouchertypesController < ApplicationController
     @superadmin = is_admin
     # possibly limit pagination to only bundles or only subs
     earliest = Vouchertype.find(:first, :order => 'valid_date')
-    latest = Vouchertype.find(:first, :order => 'expiration_date DESC')
-    @years = (earliest.expiration_date.year .. latest.expiration_date.year)
+    latest = Vouchertype.find(:first, :order => 'season DESC')
+    @years = (earliest.season .. latest.season)
     @filter = params[:filter].to_s
     @season = params[:season]
     limit_to_season = (@season.to_i > 0) ? @season.to_i : nil
@@ -45,10 +45,10 @@ class VouchertypesController < ApplicationController
     else # ALL
       @vouchertypes = Vouchertype.find(:all)
       if (limit_to_season)
-        @vouchertypes.reject! { |vt| !(vt.expiration_date.between?(Time.now.at_beginning_of_season(limit_to_season), Time.now.at_end_of_season(limit_to_season))) }
+        @vouchertypes.reject! { |vt| vt.season && (vt.season != limit_to_season) }
       end
     end
-    @vouchertypes = @vouchertypes.sort_by(&:expiration_date).reverse
+    @vouchertypes = @vouchertypes.sort_by(&:season).reverse
     if @vouchertypes.empty?
       flash[:warning] = "No vouchertypes matched your criteria."
     end

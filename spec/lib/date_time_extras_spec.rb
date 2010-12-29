@@ -28,6 +28,9 @@ describe "Date/time extras" do
       it "should NOT include a date in past season" do
         Date.civil(2008,1,1).within_season?(2009).should be_false
       end
+      it "should compute current season year" do
+        @now.this_season.should == 2009
+      end
     end
     context "for previous seasons" do
       before(:each) do
