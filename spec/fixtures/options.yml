@@ -1,0 +1,11 @@
+# Basic options for running features
+
+season_start_month:
+  name: season_start_month
+  value: 1
+  typ: int
+
+season_start_day:
+  name: season_start_day
+  value: 1
+  typ: int

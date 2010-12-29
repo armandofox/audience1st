@@ -20,6 +20,8 @@ Scenario: Create new subscription vouchertype
   And I check "Mail fulfillment needed"
   And I check "Qualifies buyer as a Subscriber"
   And I press "Create"
-  Then I should be redirected to the Vouchertypes page
-  And I should see "Vouchertype successfully created"
-
+  Then I should see "Please specify bundle quantities now"
+  And a Vouchertype with name "NewSub" should exist
+  And it should have a price of 15
+  And it should have a season of 2011
+  And it should be a Bundle voucher
