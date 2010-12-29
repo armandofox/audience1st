@@ -27,6 +27,8 @@ module NavigationHelpers
       when /import/i   ; '/imports/new'
       else ; raise "No mapping for admin:#{page}"
       end
+    when /the new vouchertypes? page/i
+      '/vouchertypes/new'
     # Add more mappings here.
     # Here is a more fancy example:
     #
