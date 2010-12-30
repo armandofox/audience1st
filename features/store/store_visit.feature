@@ -4,6 +4,10 @@ Feature: Visit Store Page
   I want to go to the Store page
   So that I can buy tickets for a show
 
+  Background:
+
+    Given a show "Chicago" with "General" tickets for $17.00 on "April 15, 2010"
+
   Scenario: Non-logged-in user can visit the Store page
 
     Given I am not logged in

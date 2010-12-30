@@ -24,7 +24,7 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performa
   vt = Vouchertype.create!(
     :name => vouchertype,
     :category => :revenue,
-    :expiration_date => 6.months.from_now,
+    :season => @showdate.thedate.year,
     :price => price,
     :offer_public => Vouchertype::ANYONE
     )

@@ -8,7 +8,8 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  has_many :vouchers
+  has_many :vouchers, :include => :vouchertype
+
   has_many :showdates, :through => :vouchers
   has_many :shows, :through => :showdates
   has_many :txns
@@ -70,10 +71,11 @@ class Customer < ActiveRecord::Base
   before_destroy :cannot_destroy_special_customers
 
   def active_vouchers
-    now = Time.this_season
-    self.vouchers.select { |v| v.season == now || v.season == now+1 }
+    now = Time.now
+    vouchers.select { |v| now <= Time.at_end_of_season(v.season) }
   end
   
+
   #----------------------------------------------------------------------
   #  private variables
   #----------------------------------------------------------------------

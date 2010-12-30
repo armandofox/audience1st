@@ -6,6 +6,8 @@ class AddSeason < ActiveRecord::Migration
         season = Regexp.last_match(0)
       elsif v.expiration_date.year <= 2011
         season = v.expiration_date.year
+      elsif v.sold_on.year <= 2011
+        season = v.sold_on.year
       else
         season = 2011
       end
