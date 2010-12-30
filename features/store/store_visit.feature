@@ -4,25 +4,14 @@ Feature: Visit Store Page
   I want to go to the Store page
   So that I can buy tickets for a show
 
-  Background:
+  Scenario: Non-logged-in user adds tickets to cart
 
     Given a show "Chicago" with "General" tickets for $17.00 on "April 15, 2010"
+    And I am not logged in
+    And today is April 1, 2010
 
-  Scenario: Non-logged-in user can visit the Store page
-
-    Given I am not logged in
     When I go to the store page
-    Then I should see the "storeBannerNonSubscriber" message
+    Then I should see /Chicago/ within "select[name=show]"
+    And I should see /Apr 15/ within "select[name=showdate]"
 
-  Scenario: Nonsubscriber can login and visit the Store page
-
-    Given I am logged in as a nonsubscriber
-    When I go to the store page
-    Then I should see the "storeBannerNonSubscriber" message
-
-  Scenario: Subscriber can login and visit the Store page
-
-    Given I am logged in as a subscriber
-    When I go to the store page
-    Then I should see the "storeBannerSubscriber" message
 

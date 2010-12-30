@@ -16,7 +16,7 @@ end
 Given /^today is (.*)$/i do |date|
   t = Time.parse(date)
   Time.stub!(:now).and_return(t)
-  Date.stub!(:today).and_return(t)
+  Date.stub!(:today).and_return(t.to_date)
 end
 
 Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performance/i do |n,vouchertype,price|
@@ -30,7 +30,7 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performa
     )
   @showdate.valid_vouchers.create!(:vouchertype => vt,
     :max_sales_for_type => [n.to_i, 1].max,           # in case n=0
-    :start_sales => 1.day.ago,
+    :start_sales => @showdate.thedate - 1.month,
     :end_sales => @showdate.thedate - 5.minutes)
 end
                                    

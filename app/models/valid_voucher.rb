@@ -15,8 +15,10 @@ class ValidVoucher < ActiveRecord::Base
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type
+  validates_presence_of :start_sales
+  validates_presence_of :end_sales
 
-  validate :check_expiration_dates
+  validate :check_dates
 
   require 'set'
 
@@ -30,11 +32,9 @@ class ValidVoucher < ActiveRecord::Base
 
   # Vouchertype's valid date must not be later than valid_voucher start date
   # Vouchertype expiration date must not be earlier than valid_voucher end date
-  def check_expiration_dates
-    if start_sales.blank? || end_sales.blank?
-      errors.add_to_base "Dates and times for start and end sales must be provided"
-      return
-    end
+  def check_dates
+    errors.add_to_base("Dates and times for start and end sales must be provided") and return if (start_sales.blank? || end_sales.blank?)
+    errors.add_to_base("Start sales time cannot be later than end sales time") and return if start_sales > end_sales
     vt = self.vouchertype
     if self.end_sales > (end_of_season = Time.now.at_end_of_season(vt.season))
       errors.add_to_base "Voucher type '#{vt.name}' is valid for the
