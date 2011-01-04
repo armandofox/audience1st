@@ -1,6 +1,6 @@
 class AddSeason < ActiveRecord::Migration
   def self.up
-    add_column :vouchertypes, :season, :integer, :limit => 4, :null => true, :default => nil
+    add_column :vouchertypes, :season, :integer, :limit => 4, :null => false, :default => 2011
     Vouchertype.find(:all).each do |v|
       if (name =~ /20??/)
         season = Regexp.last_match(0)
