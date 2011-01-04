@@ -43,15 +43,16 @@ class Voucher < ActiveRecord::Base
 
   def price ; vouchertype.price ;  end
   def amount ; vouchertype.price ; end
+  def season ; vouchertype.season ; end
 
   def reserved? ;   !showdate_id.to_i.zero? ;  end
   def unreserved? ; showdate_id.to_i.zero?  ;  end
 
-  def bundle? ; self.vouchertype.bundle? ; end
-  def subscription? ; self.vouchertype.subscription? ; end
+  def bundle? ; vouchertype.bundle? ; end
+  def subscription? ; vouchertype.subscription? ; end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
-  def reserved_show ; (self.showdate.show.name if self.reserved?).to_s ;  end
-  def reserved_date ; (self.showdate.printable_name if self.reserved?).to_s ; end
+  def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
+  def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
   def date ; self.showdate.thedate if self.reserved? ; end
 
   # return the "show" associated with a voucher.  If a regular voucher,
@@ -63,7 +64,7 @@ class Voucher < ActiveRecord::Base
       (vouchertype_id > 0 && vouchertype.bundle? ? vouchertype.name : "??")
   end
 
-  def account_code ; self.vouchertype.account_code ; end
+  def account_code ; vouchertype.account_code ; end
 
   def processed_by_name
     if self.processed_by_id.to_i.zero?
@@ -80,33 +81,6 @@ class Voucher < ActiveRecord::Base
     self.showdate_id == other.showdate_id ?
     self.vouchertype_id <=> other.vouchertype_id :
       self.showdate <=> other.showdate
-  end
-
-  # every time a voucher is saved that belongs to a customer, that customer's
-  # subscriber? attribute must be recomputed
-
-  def compute_customer_is_subscriber
-    return unless customer_id > 0
-    begin
-      if (c = Customer.find_by_id(customer_id)).kind_of?(Customer)
-        old = c.is_current_subscriber
-        new = c.role >= 0 &&
-          c.vouchers.detect do |f|
-          f.vouchertype && f.vouchertype.subscription? &&
-            f.vouchertype.valid_now?
-        end
-        unless (old == new)
-          logger.info("Customer #{c.full_name} (#{c.id}) " <<
-                      "subscriber status change from #{old} to #{new} " <<
-                      "while saving voucher #{id}")
-        end
-        c.update_attribute(:is_current_subscriber, new)
-      else
-        logger.error("Voucher #{id} owned by nonexistent cust #{customer_id}")
-      end
-    rescue Exception => e
-      logger.error("Updating voucher #{id}: #{e.message}")
-    end
   end
 
   def to_s

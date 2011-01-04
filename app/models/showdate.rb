@@ -207,5 +207,7 @@ class Showdate < ActiveRecord::Base
   end
   
   def menu_selection_name ; printable_date_with_description ; end
-    
+
+  def show_name ; show.name ; end
+  
 end

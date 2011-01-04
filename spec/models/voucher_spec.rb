@@ -7,8 +7,7 @@ describe Voucher do
     #  some Vouchertype objects for these tests
     args = {
       :fulfillment_needed => false,
-      :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now+1.month
+      :season => Time.now.year
     }
     @vt_regular = Vouchertype.create!(args.merge({
           :name => 'regular voucher',
@@ -36,6 +35,9 @@ describe Voucher do
     context "when templated from vouchertype", :shared => true do
       it "should not be reserved" do  @v.should_not be_reserved  end
       it "should not belong to anyone" do @v.customer.should be_nil end
+      it "should take on the vouchertype's season validity" do
+        @v.season.should == @v.vouchertype.season
+      end
       it "should take on the vouchertype's category" do
         @v.category.should == @v.vouchertype.category
       end

@@ -159,6 +159,11 @@ vouchertype_account_code: >
   generate reports.  If you don't use such software, you can leave this
   blank.
 
+vouchertype_season: >
+
+  The season during which this voucher type is valid.  The season start
+  date is based on the value you provide under the Admin options.
+
 vouchertype_availability: >
 
   Use "External Reseller" for tickets that will be sold through other

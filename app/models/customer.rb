@@ -1,5 +1,6 @@
 class Customer < ActiveRecord::Base
   require_dependency 'customer/special_customers'
+  require_dependency '../lib/date_time_extras'
 
   include Authentication
   include Authentication::ByPassword
@@ -7,8 +8,8 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  has_many :vouchers
-  has_many :active_vouchers, :class_name => 'Voucher', :conditions => 'expiration_date >= NOW()'
+  has_many :vouchers, :include => :vouchertype
+
   has_many :showdates, :through => :vouchers
   has_many :shows, :through => :showdates
   has_many :txns
@@ -68,6 +69,12 @@ class Customer < ActiveRecord::Base
   after_save :update_email_subscription
 
   before_destroy :cannot_destroy_special_customers
+
+  def active_vouchers
+    now = Time.now
+    vouchers.select { |v| now <= Time.at_end_of_season(v.season) }
+  end
+  
 
   #----------------------------------------------------------------------
   #  private variables
@@ -563,8 +570,10 @@ EOSQL1
 
 
   def self.find_all_subscribers(order_by='last_name',opts={})
+    from = Time.now.at_beginning_of_season.to_formatted_s(:db)
+    to = Time.now.at_end_of_season.to_formatted_s(:db)
     conds = ['vt.subscription=1',
-             "#{Time.db_now} BETWEEN vt.valid_date AND vt.expiration_date "]
+      "#{Time.db_now} BETWEEN '#{from}' AND '#{to}'"]
     conds.push('(c.e_blacklist IS NULL OR c.e_blacklist=0)') if
       opts[:exclude_e_blacklist]
     conds.push('(c.blacklist IS NULL OR c.blacklist=0)') if

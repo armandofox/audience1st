@@ -52,8 +52,16 @@ module BasicModels
         :name => 'comp voucher',
         :category => 'comp',
         :price => 0,
-        :valid_date => Time.now - 1.month,
-        :expiration_date => Time.now+1.month}.merge(args))
+        :season => Time.now.year
+        }.merge(args))
+  end
+  def self.create_nonticket_vouchertype(args={})
+    Vouchertype.create!({:fulfillment_needed => false,
+      :name => 'nonticket product',
+      :category => 'nonticket',
+      :account_code => '9999',
+      :price => 10.00,
+      :season => Time.now.year}.merge(args))
   end
   def self.create_revenue_vouchertype(args={})
     Vouchertype.create!({:fulfillment_needed => false,
@@ -61,8 +69,7 @@ module BasicModels
       :category => 'revenue',
       :account_code => '9999',
       :price => 10.00,
-      :valid_date => Time.now - 1.month,
-        :expiration_date => Time.now+1.month}.merge(args))
+      :season => Time.now.year}.merge(args))
   end
   def self.create_subscriber_vouchertype(args={})
     sym = self.gensym
@@ -72,8 +79,7 @@ module BasicModels
       :subscription => true,
       :account_code => '9999',
       :price => 20.00,
-      :valid_date => Time.now - 1.month,
-        :expiration_date => Time.now - 1.month + 1.year}.merge(args))
+      :season => Time.now.year}.merge(args))
   end
       
   def self.create_generic_show(name="Some Show",opts={})

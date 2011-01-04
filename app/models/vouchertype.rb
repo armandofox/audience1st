@@ -8,6 +8,7 @@ class Vouchertype < ActiveRecord::Base
 
   validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
   validates_numericality_of :price, :greater_than_or_equal_to => 0
+  validates_numericality_of :season, :in => 1900..2100
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
@@ -23,8 +24,6 @@ class Vouchertype < ActiveRecord::Base
   # since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
   # Subscription vouchertypes' validity period must be < 2 years
-  validate :subscriptions_valid_at_most_2_years, :if => :subscription?
-  # Free vouchers must not be subscriber vouchers or offered to public
   validate :restrict_if_free, :if => lambda { |v| v.price.zero? }
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
@@ -45,17 +44,6 @@ class Vouchertype < ActiveRecord::Base
     end
   end
   
-  def subscriptions_valid_at_most_2_years
-    if (expiration_date - valid_date >= 2.years)
-      end_date = Time.local(Time.now.year, Option.value(:season_start_month),
-                            Option.value(:season_start_day)) - 1.day
-      errors.add_to_base "Maximum validity period of subscription vouchers
-        is 2 years minus 1 day. It's suggested you make the expiration date
-        the same as your season end date, which you set in Options
-        as #{end_date.to_formatted_s(:month_day_only)}."
-    end
-  end
-
   def restrict_if_free
     if offer_public == ANYONE
       errors.add_to_base "Free vouchers can't be available to public"
@@ -128,47 +116,53 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.comp_vouchertypes(season=nil)
-    Vouchertype.find(:all, :conditions => ['category = ?', :comp],
-      :order => 'name').
-      select { |v| v.valid_for_season?(season) }
+    if season 
+      Vouchertype.find_all_by_category_and_season(:comp, season, :order => 'created_at')
+    else
+      Vouchertype.find_all_by_category(:comp, :order => 'created_at')
+    end
   end
 
   def self.nonbundle_vouchertypes(season=nil)
-    Vouchertype.find(:all, :conditions => ["category != ?", :bundle],
-      :order => 'price', :order => 'expiration_date DESC').
-      select { |v| v.valid_for_season?(season) }
+    season_constraint = season ? " AND season = #{season.to_i}" : ""
+    Vouchertype.find(:all, :conditions => ["category != ?  #{season_constraint}", :bundle],
+      :order => 'season DESC,created_at')
   end
 
   def self.bundle_vouchertypes(season=nil)
-    Vouchertype.find(:all, :conditions => ["category = ?", :bundle],
-      :order => 'price', :order => 'expiration_date DESC').
-      select { |v| v.valid_for_season?(season) }
+    if season
+      Vouchertype.find_all_by_category_and_season(:bundle, season, :order => 'created_at')
+    else
+      Vouchertype.find_all_by_category(:bundle, :order => 'season DESC, created_at')
+    end
   end
 
   def self.subscription_vouchertypes(season=nil)
-    vv = Vouchertype.find(:all,
-      :conditions => ["category = ? AND subscription = ?", :bundle, true], :order => 'expiration_date DESC').
-      select { |v| v.valid_for_season?(season) }
-    # HACK: Subscriptions for different seasons may overlap in time, so for subscriptions
-    # we ALSO enforce that the expiration date be BEFORE the season start date of the
-    # current season.  Ick.
-    vv.reject! { |v| v.expiration_date < Time.now.at_beginning_of_season(season) }
-    vv
+    if season
+      Vouchertype.find_all_by_category_and_subscription_and_season(:bundle, true, season, :order => 'created_at')
+    else
+      Vouchertype.find_all_by_category_and_subscription(:bundle, true, :order => 'season DESC,created_at')
+    end
   end
 
   def self.revenue_vouchertypes(season=nil)
-    Vouchertype.find(:all, :conditions => ["category = ?", :revenue], :order => 'expiration_date DESC').
-      select { |v| v.valid_for_season?(season) }
+    if season
+      Vouchertype.find_all_by_category_and_season(:revenue, season, :order => 'created_at')
+    else
+      Vouchertype.find_all_by_category(:revenue, season, :order => 'season DESC,created_at')
+    end
   end
-
+  
   def self.nonticket_vouchertypes(season=nil)
-    Vouchertype.find(:all, :conditions => ["category = ?", :nonticket], :order => 'expiration_date DESC').
-      select { |v| v.valid_for_season?(season) }
+    if season
+      Vouchertype.find_all_by_category_and_season(:nonticket, season, :order => 'created_at')
+    else
+      Vouchertype.find_all_by_category(:nonticket, :order => 'season DESC,created_at')
+    end
   end
 
   def self.zero_cost_vouchertypes(season=nil)
-    Vouchertype.find(:all, :conditions => ["price = ?", 0.0], :order => 'expiration_date DESC').
-      select { |v| v.valid_for_season?(season) }
+    Vouchertype.find_all_by_price(0.0, :order => 'season DESC,created_at')
   end
 
   def self.subscriptions_available_to(customer = Customer.generic_customer, admin = nil)
@@ -176,16 +170,16 @@ class Vouchertype < ActiveRecord::Base
       str = "offer_public != ?"
       vals = [Vouchertype::EXTERNAL]
     elsif (customer.subscriber? || customer.next_season_subscriber?)
-      str = "offer_public IN (?) AND (? BETWEEN valid_date AND expiration_date)"
-      vals = [[Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE], Time.now]
+      str = "offer_public IN (?) AND season IN (#{Time.now.year}, #{Time.now.year + 1})"
+      vals = [[Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE]]
     else                      # generic customer
-      str = "(offer_public = ?) AND (? BETWEEN valid_date AND expiration_date)"
-      vals = [Vouchertype::ANYONE, Time.now]
+      str = "(offer_public = ?) AND season IN  (#{Time.now.year}, #{Time.now.year + 1})"
+      vals = [Vouchertype::ANYONE]
     end
     str = "(category = ?) AND (subscription = ?) AND #{str}"
     str += " AND '#{Time.now.to_formatted_s(:db)}' BETWEEN bundle_sales_start AND bundle_sales_end" unless admin
     vals.unshift(str, :bundle, true)
-    Vouchertype.find(:all, :conditions => vals, :order => "expiration_date DESC,price DESC")
+    Vouchertype.find(:all, :conditions => vals, :order => "season DESC,price DESC")
   end
 
   def self.find_products(args={})
@@ -236,20 +230,18 @@ class Vouchertype < ActiveRecord::Base
   end
   
   def valid_as_of?(date)
-    d = date.to_time
-    d >= valid_date && d <= expiration_date
+    date.to_time <= Time.now.at_end_of_season(self.season)
   end
 
   def valid_now?
     valid_as_of?(Time.now)
   end
 
-  def valid_for_season?(season = nil)
-    return true
-    season ||= Time.now.year
-    expiration_date <= Time.now.at_end_of_season(season)  &&
-      valid_date > Time.now.at_beginning_of_season(season - 1)
+  def valid_for_season?(which_season = Time.now.year)
+    season == which_season
   end
+
+  def expiration_date ; Time.local(season, 12, 31) ;  end
   
   def self.create_external_voucher_for_season!(name,price,year=Time.now.year)
     name = Vouchertype.ensure_valid_name(name)
@@ -258,8 +250,7 @@ class Vouchertype < ActiveRecord::Base
       :offer_public => Vouchertype::EXTERNAL,
       :category => (price.zero? ? :comp : :revenue),
       :subscription => false,
-      :valid_date => Time.now.at_beginning_of_season(year),
-      :expiration_date => Time.now.at_beginning_of_season(year+1) - 1.day)
+      :season => year)
   end
 
   def get_included_vouchers

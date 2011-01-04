@@ -6,6 +6,7 @@ std_opts = "#{rerun_opts} --format rerun --out rerun.txt --strict"
 %>
 default: <%= format %> 
 autotest: <%= format %> --tags @ip 
+selenium: <%= format %> --tags @selenium
 rerun:  <%= std_opts %>
 passing:  --tags ~@wip <%= format %> 
 cur:  --tags @cur <%= format %>

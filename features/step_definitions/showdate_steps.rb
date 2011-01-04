@@ -16,7 +16,7 @@ end
 Given /^today is (.*)$/i do |date|
   t = Time.parse(date)
   Time.stub!(:now).and_return(t)
-  Date.stub!(:today).and_return(t)
+  Date.stub!(:today).and_return(t.to_date)
 end
 
 Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performance/i do |n,vouchertype,price|
@@ -24,14 +24,13 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performa
   vt = Vouchertype.create!(
     :name => vouchertype,
     :category => :revenue,
-    :valid_date => 6.months.ago,
-    :expiration_date => 6.months.from_now,
+    :season => @showdate.thedate.year,
     :price => price,
     :offer_public => Vouchertype::ANYONE
     )
   @showdate.valid_vouchers.create!(:vouchertype => vt,
     :max_sales_for_type => [n.to_i, 1].max,           # in case n=0
-    :start_sales => 1.day.ago,
+    :start_sales => @showdate.thedate - 1.month,
     :end_sales => @showdate.thedate - 5.minutes)
 end
                                    
@@ -67,6 +66,5 @@ def create_generic_vouchertype(type,price)
     :account_code => '9999',
     :offer_public => Vouchertype::ANYONE,
     :price => price.to_f,
-    :valid_date => 1.month.ago,
-    :expiration_date => 1.month.from_now)
+    :season => Time.this_season)
 end

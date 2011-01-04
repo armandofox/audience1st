@@ -2,7 +2,7 @@
 /[form:vouchertype]
 
 %p
-  %label{:for => :vouchertype_type} Type
+  %label{:for => :vouchertype_category} Type
   = select 'vouchertype', 'category', options_for_select( |
       [["Bundle", :bundle], |
       ["Comp (single ticket)", :comp], |
@@ -31,12 +31,9 @@
   = popup_help_for :vouchertype_availability
 
 %p
-  %label{:for=>:vouchertype_valid_date} Not valid before midnight on
-  = datetime_select 'vouchertype', 'valid_date', :discard_hour => true, :discard_minute => true
-
-%p
-  %label{:for=>:vouchertype_expiration_date} Not valid after midnight on
-  = datetime_select 'vouchertype', 'expiration_date', :discard_hour => true, :discard_minute => true
+  %label{:for=>:vouchertype_season} Season
+  = select "vouchertype", "season", seasons(-1,2)
+  = popup_help_for :vouchertype_season
 
 %p.clear
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed

@@ -1,16 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 include Utils
 
-
 describe VouchersController do
   before(:all) do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
-                                      :name => 'regular voucher',
-                                      :category => 'revenue',
-                                      :account_code => '9999',
-                                      :price => 10.00,
-                                      :valid_date => Time.now - 1.month,
-      :expiration_date => Time.now+1.month)
+      :name => 'regular voucher',
+      :category => 'revenue',
+      :account_code => '9999',
+      :price => 10.00,
+      :season => Time.now.year)
   end
   before(:each) do
     stub_globals_and_userlevel(:boxoffice_manager, :boxoffice)

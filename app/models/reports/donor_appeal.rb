@@ -22,9 +22,11 @@ class DonorAppeal < Report
     if params[:include_subscribers]
       joins << ' JOIN vouchers v on v.customer_id = c.id ' <<
         'JOIN vouchertypes vt on v.vouchertype_id = vt.id '
+      from = Time.now.at_beginning_of_season.to_formatted_s(:db)
+      to = Time.now.at_end_of_season.to_formatted_s(:db)
       where =
         "(#{where}) OR (vt.subscription = 1 AND
-                          '#{Time.now.to_formatted_s(:db)}' BETWEEN vt.valid_date AND vt.expiration_date)"
+                          '#{Time.db_now}' BETWEEN '#{from}' AND '#{to}')"
     end
     sql =  <<eoq
         SELECT DISTINCT c.*

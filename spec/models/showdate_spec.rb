@@ -114,11 +114,7 @@ describe Showdate do
         @showdate.revenue.should == 99.00
       end
       it "should not include nonticket revenue" do
-        @v = Voucher.new_from_vouchertype(
-          Vouchertype.create!(:category => :nonticket, :price => 22,
-            :name => 'fee', :account_code => '8888',
-            :valid_date => Time.now - 1.month,
-            :expiration_date => Time.now + 1.month))
+        @v = Voucher.new_from_vouchertype(BasicModels.create_nonticket_vouchertype(:price => 22))
         @v.purchasemethod = mock_model(Purchasemethod)
         @v.reserve(@showdate, mock_model(Customer))
         @v.save!
@@ -146,10 +142,7 @@ describe Showdate do
         end
         it "should not be affected by nonticket vouchers" do
           @v = Voucher.new_from_vouchertype(
-            Vouchertype.create!(:category => :nonticket, :price => 99,
-              :name => 'fee', :account_code => '8888',
-              :valid_date => Time.now - 1.month,
-              :expiration_date => Time.now + 1.month))
+            BasicModels.create_nonticket_vouchertype(:price => 99))
           @v.purchasemethod = mock_model(Purchasemethod)
           @v.reserve(@showdate, mock_model(Customer))
           @v.save!

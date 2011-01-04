@@ -15,8 +15,7 @@ Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |
     :category => :bundle,
     :subscription => true,
     :account_code => "9999",
-    :valid_date => Time.now.yesterday,
-    :expiration_date => Time.now.tomorrow
+    :season => Time.this_season
     )
 end
 

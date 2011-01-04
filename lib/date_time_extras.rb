@@ -57,6 +57,12 @@ class Time
     end
   end
 
+  def this_season ; self.at_beginning_of_season.year ;  end
+
+  def self.at_beginning_of_season(arg=nil) ; Time.now.at_beginning_of_season(arg) ; end
+  def self.at_end_of_season(arg=nil) ; Time.now.at_end_of_season(arg) ; end
+  def self.this_season ; Time.now.this_season ; end
+
   def within_season?(year)
     year = year.year unless year.kind_of?(Numeric)
     start = Time.local(year,Option.value(:season_start_month),

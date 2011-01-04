@@ -20,11 +20,6 @@ require 'webrat/core/matchers'
 require 'spec/stubs/cucumber'
 require 'spec/mocks'
 
-Webrat.configure do |config|
-  config.mode = :rails
-  config.open_error_files = false # Set to true if you want error pages to pop up in the browser
-end
-
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere
@@ -49,13 +44,41 @@ ActionController::Base.allow_rescue = false
 # after each scenario, which can lead to hard-to-debug failures in 
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
-Cucumber::Rails::World.use_transactional_fixtures = true
 
-# How to clean your database when transactions are turned off. See
-# http://github.com/bmabey/database_cleaner for more info.
-require 'database_cleaner'
-DatabaseCleaner.strategy = :truncation
+if ENV['SELENIUM']
+  # for Selenium only:
+  require 'webrat/selenium'
+  config.gem "selenium-client", :lib => "selenium/client"
+  Cucumber::Rails::World.use_transactional_fixtures = false
+  # How to clean your database when transactions are turned off. See
+  # http://github.com/bmabey/database_cleaner for more info.
+  require 'database_cleaner'
+  require 'database_cleaner/cucumber'
+  DatabaseCleaner.strategy = :truncation
 
+  class ActiveSupport::TestCase
+    self.use_transactional_fixtures = false
+    setup do |session|
+      session.host! "localhost:3001"
+    end
+  end
+
+  Webrat.configure do |config|
+    config.mode = :selenium
+    config.application_environment = :test
+    config.application_framework = :rails
+  end
+
+else
+
+  Webrat.configure do |config|
+    config.mode = :rails
+    config.open_error_files = false # Set to true if you want error pages to pop up in the browser
+  end
+
+  Cucumber::Rails::World.use_transactional_fixtures = true
+
+end
 
 Before do
   Fixtures.reset_cache

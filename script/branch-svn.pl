@@ -1,11 +1,11 @@
 #!/opt/local/bin/perl
 
 $no = 1, shift @ARGV if $ARGV[0] =~ /^-n/;
-die "Usage: $0 branchname 'commit message'" unless ($#ARGV == 1);
+die "Usage: $0 branchname" unless length(@ARGV)==1;
 die "Must be in trunk directory to branch" unless (`pwd` =~ m!/trunk$!);
 
 $branch = shift @ARGV;
-$msg = shift @ARGV;
+$msg = "New branch for $branch";
 
 $repo = `svn info|sed -ne 's/Repository Root: //p'`;
 chomp $repo;
