@@ -54,6 +54,12 @@ class Showdate < ActiveRecord::Base
     Showdate.current_or_next || Showdate.find(:first, :order => "thedate DESC")
   end
 
+  def self.find_by_date(dt)
+    Showdate.find_by_thedate(dt) ||
+      Showdate.find(:first, :conditions =>
+      ['thedate BETWEEN ? AND ?', dt.midnight, dt + 1.day])
+  end
+
   def self.all_shows_this_season
     Showdate.find(:all, :order => 'thedate ASC',
                   :conditions => ['thedate BETWEEN ? and ?',

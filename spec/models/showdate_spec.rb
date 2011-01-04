@@ -2,6 +2,15 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 include BasicModels
 
 describe Showdate do
+  describe "lookup" do
+    context "by date" do
+      it "should return existing showdate" do
+        dt = "2008-02-01"
+        sd = BasicModels.create_one_showdate(Time.parse(dt))
+        Showdate.find_by_date(dt).should == sd
+      end
+    end
+  end
   describe "displaying on tickets page" do
     before(:each) do
       @boxoffice = mock_model(Customer, :is_boxoffice => true)

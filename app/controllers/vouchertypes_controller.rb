@@ -25,11 +25,10 @@ class VouchertypesController < ApplicationController
   def list
     @superadmin = is_admin
     # possibly limit pagination to only bundles or only subs
-    earliest = Vouchertype.find(:first, :order => 'season')
-    latest = Vouchertype.find(:first, :order => 'season DESC')
-    @years = (earliest.season .. latest.season)
+    @earliest = Vouchertype.find(:first, :order => 'season').season
+    @latest = Vouchertype.find(:first, :order => 'season DESC').season
     @filter = params[:filter].to_s
-    @season = params[:season]
+    @season = params[:season] || Time.this_season
     limit_to_season = (@season.to_i > 0) ? @season.to_i : nil
     case @filter
     when "Bundles"
