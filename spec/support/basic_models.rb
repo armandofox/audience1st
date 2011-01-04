@@ -39,8 +39,8 @@ module BasicModels
     c.update_attribute(:role, Customer.role_value(role))
     c
   end
-  def self.create_one_showdate(dt,cap=100)
-    s = Show.create!(:name => "Show 1",
+  def self.create_one_showdate(dt,cap=100,s=nil)
+    s ||= Show.create!(:name => "Show 1",
       :house_capacity => cap,
       :opening_date => dt - 1.week,
       :closing_date => dt + 1.week)

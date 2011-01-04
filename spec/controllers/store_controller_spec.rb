@@ -117,6 +117,27 @@ describe StoreController do
     end
   end
 
+  describe "landing page" do
+    before(:all) do
+      @dt1 = "Jan 27, 2009, 8:00pm"
+      @sd1 = BasicModels.create_one_showdate(Time.parse(@dt1))
+      @dt2 = "Jan 29, 2009, 8:00pm"
+      @sd2 = BasicModels.create_one_showdate(Time.parse(@dt2),100,@sd1.show)
+    end
+    it "should select showdate when valid date given" do
+      @controller.should_receive(:set_current_showdate).with(@sd2)
+      get :index, :date => @dt2
+    end
+    it "should override valid date if showdate_id given" do
+      @controller.should_receive(:set_current_showdate).with(@sd1)
+      get :index, :showdate_id => @sd1.id, :date => @dt2
+    end
+    it "should default to earliest showdate if neither valid" do
+      @controller.should_not_receive(:set_current_showdate)
+      get :index, :showdate_id => 99999, :date => Date.today.to_s
+    end
+  end
+
   describe "online purchase" do
     describe "generally", :shared => true do
     end

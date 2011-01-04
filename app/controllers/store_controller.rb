@@ -577,6 +577,8 @@ EON
     reset_current_show_and_showdate
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
       set_current_showdate(s)
+    elsif (!(params[:date].blank?) && (s = Showdate.find_by_date(Time.parse(params[:date]))))
+      set_current_showdate(s)
     elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
     else                        # neither: pick earliest show
