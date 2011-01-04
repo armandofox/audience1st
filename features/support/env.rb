@@ -98,6 +98,8 @@ After do
   ensure
     $rspec_mocks.reset_all
   end
+  # clear out stubbed Facebook session between features
+  @controller.reset_fake_facebook_session!
 end
 
     
