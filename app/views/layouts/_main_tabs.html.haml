@@ -5,7 +5,7 @@
 - tabs.insert(1, ['Subscribe', :store, :subscribe]) unless Vouchertype.subscriptions_available_to(@gCustomer).empty?
 - if @gAdmin.is_staff
   - tabs +=    |
-    [['Shows', :shows, :list], |
+    [['Season', :shows, :list], |
     ['Vouchers', :vouchertypes, :list], |
     ['Reports', :report, :index], |
     ['Box Office', :box_office, :walkup], |
