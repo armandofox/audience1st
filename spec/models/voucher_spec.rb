@@ -82,8 +82,8 @@ describe Voucher do
 
   describe "expired voucher" do
     before(:all) do
+      @vt_regular.update_attribute(:season, Time.now.year - 2)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
-      @v.expiration_date = 1.month.ago
       @v.should be_valid
     end
     it "should not be valid today" do
