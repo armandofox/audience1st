@@ -1,8 +1,7 @@
 - form_tag({:action => 'list'},{:method=>:get}) do
   %h1 
     Listing shows for season:
-    = select_tag 'season',options_for_select(@years.to_a.map(&:to_s) << "All", |
-      @season.to_s), :onChange => 'this.form.submit();'  |
+    = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onChange => 'this.form.submit();'
 
 %table.hilite
   %thead
