@@ -30,6 +30,7 @@ class Customer < ActiveRecord::Base
   
   validates_format_of :zip, :if => :self_created?, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
+  validate :valid_as_gift_recipient?, :if => :gift_recipient_only
 
   NAME_REGEX = /^[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+$/
   NAME_FORBIDDEN_CHARS = /[^-A-Za-z0-9_\/#\@'":;,.%\ ()&]/
@@ -46,9 +47,8 @@ class Customer < ActiveRecord::Base
   validates_confirmation_of :password, :if => :self_created_and_not_linked_to_facebook
 
   attr_protected :id, :salt, :role, :created_by_admin
-  attr_accessor :force_valid
-  attr_protected :force_valid
-  
+  attr_accessor :force_valid          ;  attr_protected :force_valid
+  attr_accessor :gift_recipient_only  ;  attr_protected :gift_recipient_only
   attr_accessor :password
 
   cattr_reader :replaceable_attributes, :extra_attributes
@@ -82,7 +82,7 @@ class Customer < ActiveRecord::Base
 
   private
 
-  def self_created? ; !created_by_admin ; end
+  def self_created? ; !created_by_admin && !gift_recipient_only ; end
 
   def self_created_and_not_linked_to_facebook
     self_created? && !facebook_user?

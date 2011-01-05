@@ -43,6 +43,33 @@ describe Customer do
     end
   end
       
+  describe "when created as gift recipient only" do
+    class Customer
+      def without(attr)
+        self.send("#{attr}=", '')
+        self
+      end
+    end
+    before(:each) do
+      @c = Customer.new({
+          :first_name => "Tom", :last_name => "Turkey",
+          :street => "742 Evergreen Terr", :city => "Springfield",
+          :state => "MA", :zip => "02222",
+          :day_phone => "999-999-9999",
+          :email => "tom@turkey.com"
+        })
+      @c.created_by_admin = nil
+      @c.gift_recipient_only = true
+    end
+    it "should require first name" do ; @c.without(:first_name).should_not be_valid ;  end
+    it "should require last name" do ;  @c.without(:last_name).should_not be_valid;    end
+    it "should be valid if email but no phone" do ; @c.without(:day_phone).should be_valid ; end
+    it "should be valid if phone but no email" do ; @c.without(:email).should be_valid ; end
+    it "should be invalid if neither phone nor email" do
+      @c.without(:email).without(:day_phone).should_not be_valid
+    end
+  end
+  
   describe "when created by admin" do
     def new_by_admin(args={})
       (c = Customer.new(args)).created_by_admin = true

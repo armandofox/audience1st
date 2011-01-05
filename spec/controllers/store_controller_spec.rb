@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe StoreController do
+  fixtures :customers
 
   describe "trying to proceed with empty cart" do
     context "and no donation" do
@@ -138,10 +139,10 @@ describe StoreController do
     end
   end
 
-  describe "online purchase" do
+  describe "online self-purchase" do
     describe "generally", :shared => true do
     end
-    describe "for self" do
+    describe "for myself" do
       it_should_behave_like "generally"
       it "should associate the ticket with the buyer"
     end
@@ -152,4 +153,33 @@ describe StoreController do
     end
   end
 
+  describe "user-created gift recipient" do
+    before(:each) do
+      login_as(:tom)
+      @controller.stub!(:recipient_from_params).and_return(nil)
+      @controller.stub!(:find_cart_not_empty).and_return(true)
+      @customer = {:first_name => "John", :last_name => "Bob",
+        :street => "742 Evergreen Terrace", :city => "Springfield",
+        :state => "IL", :zip => "09091"}
+      session[:recipient_id] = nil
+    end
+    it "should be valid with only a phone number" do
+      @customer[:day_phone] = "999-999-9999"
+      post :set_shipping_address, :customer => @customer
+      flash[:warning].should be_blank, flash[:warning]
+      session[:recipient_id].should_not be_nil
+    end
+    it "should be valid with only an email address" do
+      @customer[:email] = "me@example.com"
+      post :set_shipping_address, :customer => @customer
+      flash[:warning].should be_blank
+      session[:recipient_id].should_not be_nil
+    end
+    it "should not be valid if neither phone nor email given" do
+      post :set_shipping_address, :customer => @customer
+      flash[:warning].join(',').should match(/at least one phone number or email/i)
+      response.should render_template(:shipping_address)
+      response.should_not redirect_to(:action => :checkout)
+    end
+  end
 end
