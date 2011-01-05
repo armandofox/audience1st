@@ -121,13 +121,9 @@ class StoreController < ApplicationController
     @recipient = recipient_from_session || recipient_from_params ||
       Customer.new(params[:customer])
     # make sure minimal info for gift receipient was specified.
-    unless  @recipient.valid_as_gift_recipient?
-      flash[:warning] = @recipient.errors.full_messages.join "<br/>"
-      render :action => :shipping_address
-      return
-    end
-    # try to match customer in DB, or create.
+    @recipient.gift_recipient_only = true
     if @recipient.new_record?
+      @recipient.created_by_admin = true if current_admin.is_boxoffice
       unless @recipient.save
         flash[:warning] = @recipient.errors.full_messages
         render :action => :shipping_address

@@ -4,6 +4,8 @@ Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |
   @sub = Vouchertype.create!(
     :name => name,
     :price => price,
+    :bundle_sales_start => Time.now - 1.day,
+    :bundle_sales_end   => Time.now + 1.day,
     :walkup_sale_allowed => false,
     :offer_public => case to_whom
                  when /anyone/ ;     Vouchertype::ANYONE ;

@@ -87,7 +87,7 @@ Before do
   Fixtures.create_fixtures(fixtures_folder, fixtures)
   # make rspec mocks/stubs work
   $rspec_mocks ||= Spec::Mocks::Space.new
-  require File.join(RAILS_ROOT, 'spec', 'support', 'facebooker_stubs_for_restful_auth.rb')
+  #require File.join(RAILS_ROOT, 'spec', 'support', 'facebooker_stubs_for_restful_auth.rb')
   # Make visible for testing
   #ApplicationController.send(:public, :logged_in?, :current_user, :current_user=, :current_admin, :authorized?)
 end
@@ -98,8 +98,6 @@ After do
   ensure
     $rspec_mocks.reset_all
   end
-  # clear out stubbed Facebook session between features
-  @controller.reset_fake_facebook_session!
 end
 
     

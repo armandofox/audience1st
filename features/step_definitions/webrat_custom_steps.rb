@@ -12,7 +12,8 @@ end
 # Capture the vouchertype label so we can refer to it later.
 
 Then /^I should see a quantity menu for "([^\"]*)"$/ do |name|
-  flunk
+  vtype = Vouchertype.find_by_name(name)
+  response.should have_tag("select.itemQty[name='vouchertype[#{vtype.id}]']")
 end
 
 Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,choice|

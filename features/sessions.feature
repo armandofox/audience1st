@@ -99,7 +99,7 @@ Feature: Logging in
     When  she creates a singular sessions with email: 'registered@example.com', password: 'monkey', remember me: '1'
     Then  she should be redirected to the home page
     When  she follows that redirect!
-    Then  she should see a notice message 'Welcome, Reggie'
+    Then  she should see a regular message 'Welcome, Reggie'
      And  registered@example.com should be logged in
      And  she should have an auth_token cookie
 	      # assumes fixtures were run sometime

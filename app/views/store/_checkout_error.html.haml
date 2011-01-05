@@ -1,5 +1,6 @@
 #checkout_error.checkout_error.clear
-  %p Sorry, there was a problem with your order. Tickets have NOT been purchased.
+  %p Sorry, there was a problem with your order. Tickets have NOT been purchased:
   = flash[:checkout_error]
+= javascript_tag("addLoadEvent(function() { $('checkout_error').highlight({startcolor: '#ff0000', duration: 3}); })")
 
 
