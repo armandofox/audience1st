@@ -1,9 +1,11 @@
 = error_messages_for 'showdate', :header_message => default_validation_error_message
+- show = @showdate.show
+- args = {:start_year => show.opening_date.year, :end_year => show.closing_date.year, :minute_step => 15, :date => @showdate.thedate }
 %table
   %tr
     %td
       %label{:for => :showdate_thedate} Date and time
-    %td= parent_datetime_select 'showdate', 'thedate', 'showdate_end_advance_sales', {:start_year => Time.now.year, :end_year => Time.now.year + 3, :minute_step => 15, :date => @showdate.thedate}
+    %td= parent_datetime_select 'showdate', 'thedate', 'showdate_end_advance_sales', args
   %tr
     %td
       %label{:for => :showdate_description} Description (optional)
@@ -13,7 +15,7 @@
   %tr
     %td 
       %label{:for => :showdate_end_advance_sales} Advance sales stop
-    %td= child_datetime_select 'showdate', 'end_advance_sales',  {:start_year => Time.now.year, :end_year => Time.now.year + 3,  :minute_step => 15 }
+    %td= child_datetime_select 'showdate', 'end_advance_sales', args
   %tr
     %td 
       %label{:for => :showdate_max_sales} Max advance sales
