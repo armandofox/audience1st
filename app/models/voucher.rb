@@ -16,6 +16,8 @@ class Voucher < ActiveRecord::Base
 
   # class methods
 
+  def expiration_date ; Time.at_end_of_season(self.season) ; end
+
   def self.foreign_keys_to_customer
     [:customer_id, :processed_by_id, :gift_purchaser_id]
   end
@@ -102,11 +104,11 @@ class Voucher < ActiveRecord::Base
   def self.new_from_vouchertype(vt,args={})
     vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
     args[:purchasemethod] ||= Purchasemethod.default
-    vt.vouchers.build({:fulfillment_needed => vt.fulfillment_needed,
-                       :sold_on => Time.now,
-                       :changeable => false,
-                       :category => vt.category,
-                       :expiration_date => vt.expiration_date}.merge(args))
+    vt.vouchers.build({
+        :fulfillment_needed => vt.fulfillment_needed,
+        :sold_on => Time.now,
+        :changeable => false,
+        :category => vt.category}.merge(args))
   end
 
 

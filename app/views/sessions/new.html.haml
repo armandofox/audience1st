@@ -17,7 +17,7 @@
     = link_to_if_option_text :homepage_subscription_sales_text, {:controller => 'store', :action => 'subscribe'}, {:class => 'genButton'}
     %br
     
-- if USE_FACEBOOK
+- if USE_FACEBOOK && !ie8
   #login_with_facebook
     %h2 Or Login Using Facebook
     = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")

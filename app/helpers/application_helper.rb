@@ -3,6 +3,8 @@
 module ApplicationHelper
   include ActiveSupport::Inflector # so individual views don't need to reference explicitly
 
+  def ie8 ; request.user_agent =~ /IE 8/ ; end
+
   def default_validation_error_message ; "Please correct the following errors:" ; end
 
   # override standard helper so we can supply our own embedded error msg strings
@@ -200,15 +202,6 @@ EJS1
       javascript_tag(complete_func) << "\n" <<
       content_tag("div", nil, {:id => field_id + "_auto_complete", :class => :auto_complete}) <<
       auto_complete_field(field_id, select_opts)
-  end
-
-  # workaround an IE problem: if a nonsecure CSS file is pulled in by a
-  # secure page, IE puts up a complaint dialog.  Workaround is to rewrite
-  # the URL of the CSS file to make it secure. Ugh.
-
-  def possibly_https(url)
-    request.user_agent.to_s.match( /MSIE ([0-9]{1,}[\.0-9]{0,})/ ) &&
-      request.protocol == 'https://' ? url.gsub( /^http:/, 'https:' ) : url
   end
 
   def to_js_array(arr)

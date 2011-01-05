@@ -111,6 +111,8 @@ class Vouchertype < ActiveRecord::Base
   def comp? ; category == :comp ; end
   def subscriber_voucher? ; category == :subscriber ; end
 
+  def expiration_date ; Time.at_end_of_season(self.season) ; end
+
   def visibility
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
   end
@@ -241,8 +243,6 @@ class Vouchertype < ActiveRecord::Base
     season == which_season
   end
 
-  def expiration_date ; Time.local(season, 12, 31) ;  end
-  
   def self.create_external_voucher_for_season!(name,price,year=Time.now.year)
     name = Vouchertype.ensure_valid_name(name)
     return Vouchertype.create!(:name => name,
