@@ -30,7 +30,7 @@ class CustomersController < ApplicationController
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify(:method => :post,
     :only => %w[update finalize_merge destroy create user_create
-        send_new_password link_existing_account],
+        send_new_password link_existing_account disable_admin reenable_admin],
     :redirect_to => { :controller => :customers, :action => :welcome},
     :add_flash => {:warning => "This action requires a POST."} )
 
@@ -405,10 +405,22 @@ class CustomersController < ApplicationController
 
   def temporarily_disable_admin
     disable_admin
-    flash[:notice] = "You are now logged in <strong>without</strong> admin privileges.  Logout and log back in to reestablish admin privileges."
+    flash[:notice] = "Switched to non-admin user view."
     redirect_to_stored
   end
 
+  def reenable_admin
+    session[:admin_id] = nil    # fail-safe, will remain this way if reenable fails
+    if session[:can_restore_admin] &&
+        (c = Customer.find_by_id(session[:can_restore_admin])) &&
+        possibly_enable_admin(c)
+      flash[:notice] = "Admin view reestablished."
+    else
+      flash[:notice] = "Could not reinstate admin privileges.  Try logging out and back in."
+    end
+    redirect_to_stored
+  end
+  
   def forgot_password
     if request.get?
       set_return_to(params[:redirect_to] || login_path)

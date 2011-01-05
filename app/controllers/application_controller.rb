@@ -53,6 +53,7 @@ class ApplicationController < ActionController::Base
     @gCustomer = current_user
     @gAdmin = current_admin
     @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
+    @enableAdmin = session[:can_restore_admin]
     @gCart = find_cart
     @gCheckoutInProgress = session[:checkout_in_progress]
     @gLoggedIn = logged_in_user || Customer.walkup_customer
@@ -62,6 +63,7 @@ class ApplicationController < ActionController::Base
   def clear_session_state_preserving_auth_token
     session[:cid] = nil   # keeps the session but kill our variable
     session[:admin_id] = nil
+    session[:can_restore_admin] = nil
     reset_shopping
   end
 

@@ -71,11 +71,13 @@ module AuthenticatedSystem
     if c.is_staff # least privilege level that allows seeing other customer accts
       (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
       session[:admin_id] = c.id
+      session.delete(:can_restore_admin)
     end
     c
   end
 
   def disable_admin
+    session[:can_restore_admin] = session[:admin_id]
     session[:admin_id] = false
   end
 
