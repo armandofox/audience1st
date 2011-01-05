@@ -129,7 +129,7 @@ module ApplicationHelper
 
   def checkbox_guard_for(elt_name, visible=false)
     check_box_tag("show_" << elt_name.to_s, '1', visible,
-                  :onClick => visual_effect(:toggle_appear, elt_name))
+                  :onclick => visual_effect(:toggle_appear, elt_name))
   end
 
   # yield a checkbox-guarded element
@@ -142,7 +142,7 @@ module ApplicationHelper
 
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
-    check_box_tag name, 1, checked, :onClick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
+    check_box_tag name, 1, checked, :onclick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
   end
 
   # helper that generates a javascript function that submits a form 
@@ -313,7 +313,7 @@ EJS1
   end
 
   # given an array each of whose elements is an array [parent, [child1,...childN]],
-  # generate dynamic Javascript menus where the parent menu's onChange handler
+  # generate dynamic Javascript menus where the parent menu's onchange handler
   # constrains the child menu's choices.  id_method and text_method should be
   # methods the parent and child respond to that yield an id and name suitable for
   # options_ helpers.
@@ -369,7 +369,7 @@ EJS1
       "// -->\n</script>\n"
     #onchange_cmd = "v=this.options[this.selectedIndex].value; setOptions(\"#{child_name}_select\", #{child_name}_text[v], #{child_name}_value[v])"
     onchange_cmd = "setOptionsFrom('#{parent_name}','#{child_name}')"
-    parent_select = "<select name=\"#{parent_name}_select\" id=\"#{parent_name}_select\" onChange=\"#{onchange_cmd}\" #{args[:parent_html_options]}>\n"
+    parent_select = "<select name=\"#{parent_name}_select\" id=\"#{parent_name}_select\" onchange=\"#{onchange_cmd}\" #{args[:parent_html_options]}>\n"
     parent_select << options_for_select(array_of_parents.map { |p| [p.first.send(parent_text_method), p.first.send(parent_id_method)] }, par.first.send(parent_id_method))
     parent_select << "\n</select>"
     child_select = "<select name='#{child_name}_select' id='#{child_name}_select' #{args[:child_html_options]}>"
@@ -398,8 +398,8 @@ EJS1
   def select_menu_or_freeform(name, choices)
     lastidx = choices.length
     # should allow freeform entry as well as a menu of choices
-    #select_tag = "<select name='#{name}_sel' onChange=\"t=document.getElementById('#{name}'); if this.selectedIndex==#{lastidx} { t.value=''; t.style.display='block'; } else { t.value=this.options[this.selectedIndex].value; t.style.display='none'; }\">"
-    select_tag = "<select name='#{name}_sel' onChange=\"document.getElementById('#{name}').value=(this.selectedIndex==#{lastidx}? '':this.options[this.selectedIndex].value)\"\n"
+    #select_tag = "<select name='#{name}_sel' onchange=\"t=document.getElementById('#{name}'); if this.selectedIndex==#{lastidx} { t.value=''; t.style.display='block'; } else { t.value=this.options[this.selectedIndex].value; t.style.display='none'; }\">"
+    select_tag = "<select name='#{name}_sel' onchange=\"document.getElementById('#{name}').value=(this.selectedIndex==#{lastidx}? '':this.options[this.selectedIndex].value)\"\n"
     select_tag << options_for_select([""]+choices, "")
     select_tag << "\n</select>"
     select_tag << text_field_tag(name, '', {:size => 30, :maxlength => 30})
@@ -424,7 +424,7 @@ EJS1
     i = 0
     ds.gsub!(/<select/) do |m|
       i=i+1
-      "<select onChange='$(\"#{child}_#{i}i\").selectedIndex=this.selectedIndex'"
+      "<select onchange='$(\"#{child}_#{i}i\").selectedIndex=this.selectedIndex'"
     end
   end
 
@@ -497,7 +497,7 @@ EOS3
     javascript_tag(onsel) <<
       select_tag("shortcut_#{from_prefix}_#{to_prefix}",
                  options_for_select(shortcuts.each { |e| e.first }, selected_shortcut.to_s),
-                 :onChange => "setShortcut('#{from_prefix}','#{to_prefix}',this.selectedIndex)")
+                 :onchange => "setShortcut('#{from_prefix}','#{to_prefix}',this.selectedIndex)")
   end
 
   def purchase_link_popup(text,url,name=nil)

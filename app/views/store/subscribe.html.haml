@@ -21,11 +21,11 @@
 
       - @subs_to_offer.each do |s|
         %label.wide_label{:for => "vouchertype[#{s.id}]"}= s.name_with_price
-        = select_tag("vouchertype[#{s.id}]", options_for_select((0..20).to_a), :onChange => 'recalc_total()', :class => 'itemQty')
+        = select_tag("vouchertype[#{s.id}]", options_for_select((0..20).to_a), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
         = hidden_field_tag "vouchertype_#{s.id}_price", s.price
       %label.wide_label{:for => :donation} Additional tax-deductible donation
-      = text_field_tag 'donation', '', :size => 5, :onChange => 'recalc_total()', :class => 'itemQty'
+      = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'
       \.00
       %br
       #orderTotal

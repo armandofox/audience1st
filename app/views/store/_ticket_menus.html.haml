@@ -25,11 +25,11 @@
 
       - ticket_menus(@vouchertypes) do |vid,name,qty,price|
         - fieldname = "vouchertype[#{vid}]"
-        %label{:for => name}= name
+        %label{:for => fieldname.gsub(/[\[\]]/, '_')}= name
         - if @gAdmin.is_boxoffice
-          = text_field_tag fieldname, '', :size => 3, :onChange => 'recalc_total()', :class => 'itemQty'
+          = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
         - else
-          = select_tag(fieldname, options_for_select(qty), :onChange => 'recalc_total()', :class => 'itemQty')
+          = select_tag(fieldname, options_for_select(qty), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
         = hidden_field_tag "price[#{vid}]", price, {:id => "vouchertype_#{vid}_price"}
 
@@ -40,6 +40,5 @@
         %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
         = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
 
-  = hidden_field_tag 'redirect_to', 'index'
   = watch_show_and_showdate_fields
   = watch_comment_field
