@@ -3,7 +3,7 @@
 module ApplicationHelper
   include ActiveSupport::Inflector # so individual views don't need to reference explicitly
 
-  def ie8 ; request.env['HTTP_USER_AGENT'] =~ /IE [78]/ ; end
+  def ie8 ; request.env['HTTP_USER_AGENT'] =~ /Trident\/4.0/ ; end
 
   def default_validation_error_message ; "Please correct the following errors:" ; end
 
