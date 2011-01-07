@@ -1,6 +1,8 @@
 = error_messages_for 'vouchertype', :header_message => default_validation_error_message
 /[form:vouchertype]
 
+- existing_bundle = @vouchertype.bundle? && !@vouchertype.new_record?
+
 %p
   %label{:for => :vouchertype_category} Type
   = select 'vouchertype', 'category', options_for_select( |
@@ -33,8 +35,14 @@
 
 %p#p_vouchertype_season.vtform
   %label{:for=>:vouchertype_season} Season
-  = select "vouchertype", "season", options_for_seasons_range(-1,2)
+  - if existing_bundle
+    = select "vouchertype", "season", options_for_seasons_range(-1,2), {}, {:onchange => "$$('input.bundle_component').map(Element.clear); $('included_vouchers').hide(); "}
+  - else
+    = select "vouchertype", "season", options_for_seasons_range(-1,2)
   = popup_help_for :vouchertype_season
+  - if existing_bundle
+    %p.feedback If you change the season of a bundle, first save the change, then edit the bundle again to add vouchers for the new season.
+
 
 %p#p_vouchertype_fulfillment_needed.clear.vtform
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
@@ -59,7 +67,7 @@
   %label{:for=>:vouchertype_comments} Comments/description
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
-- if @vouchertype.bundle?
+- if existing_bundle
   /This part of form is for bundle vouchers
 
   #for_bundles
@@ -80,13 +88,7 @@
       %label{:for=>:vouchertype_included_vouchers} Included vouchers:
       %br/
 
-    %table.hilite
-      - Vouchertype.zero_cost_vouchertypes.each do |v|
-        - unless v.bundle?
-          %tr
-            %td.r= h(v.name)
-            %td.l
-              %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
+    #included_vouchers= render :partial => 'included_vouchers', :locals => {:season => @vouchertype.season }
 
 - else
 
