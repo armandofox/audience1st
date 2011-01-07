@@ -46,6 +46,8 @@ class Voucher < ActiveRecord::Base
   def price ; vouchertype.price ;  end
   def amount ; vouchertype.price ; end
   def season ; vouchertype.season ; end
+  def changeable? ; vouchertype.changeable? ; end
+  def valid_now?  ; vouchertype.valid_now?  ; end
 
   def reserved? ;   !showdate_id.to_i.zero? ;  end
   def unreserved? ; showdate_id.to_i.zero?  ;  end
@@ -107,7 +109,6 @@ class Voucher < ActiveRecord::Base
     vt.vouchers.build({
         :fulfillment_needed => vt.fulfillment_needed,
         :sold_on => Time.now,
-        :changeable => false,
         :category => vt.category}.merge(args))
   end
 
@@ -201,18 +202,17 @@ class Voucher < ActiveRecord::Base
     unless who.kind_of?(Customer)
       who = Customer.find(who) rescue Customer.generic_customer
     end
-    if (who.is_walkup)          # admin ?
-      return true
-    else
-      return (changeable? &&
-              (expiration_date > Time.now) &&
-              (unreserved? ||
-               (Time.now < (showdate.thedate - Option.value(:cancel_grace_period).minutes))))
-    end
+    return (who.is_walkup) ||
+      (changeable? && valid_now? && within_grace_period?)
   end
 
   def reserved_for_show?(s) ; reserved && (showdate.show == s) ;  end
   def reserved_for_showdate?(sd) ;  reserved && (showdate == sd) ;  end
+  def within_grace_period?
+    unreserved? ||
+      (Time.now < (showdate.thedate - Option.value(:cancel_grace_period).minutes))
+  end
+
 
   def part_of_subscription? ;  vouchertype.subscriber_voucher? ;  end
 

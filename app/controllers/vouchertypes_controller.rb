@@ -70,7 +70,7 @@ class VouchertypesController < ApplicationController
         redirect_to :action => 'edit', :id => @vouchertype
       else
         flash[:notice] = 'Vouchertype was successfully created.'
-        redirect_to :action => 'list'
+        redirect_to :action => (params[:commit] =~ /another/i ? 'new' : 'list')
       end
     else
       render :action => 'new'

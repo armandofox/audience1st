@@ -18,5 +18,4 @@ module VouchertypesHelper
     options_for_select(list.map { |y| [humanize_season(y), y.to_s] }, selected.to_s)
   end
 
-  
 end

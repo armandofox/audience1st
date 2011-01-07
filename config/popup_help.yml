@@ -184,6 +184,15 @@ vouchertype_walkup_sale_allowed: >
   Sales screen.  Leave unchecked for any ticket types that require
   advance purchase.
 
+vouchertype_changeable: >
+
+  If checked, customer can change/cancel a reservation associated with
+  this voucher type online WITH NO FEE.  If you want to allow
+  changes/cancellations for a fee, leave this box UNCHECKED and create a
+  separate Nonticket Product voucher for box office use only
+  corresponding to the change fee.  (At this time, the box office must
+  handle such transactions.)
+
 vouchertype_bundle_promo_code:  >
 
   A promo code (password) required to purchase; this bundle type

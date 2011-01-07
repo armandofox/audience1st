@@ -11,75 +11,82 @@
       ["Nonticket product", :nonticket]], |
       {:selected => @vouchertype.category.to_sym}) |
   = popup_help_for :vouchertype_type
+  = observe_field 'vouchertype_category', :function => 'reset_vouchertype_fields(value)'
 
 %p
   %label{:for=>:vouchertype_name} Name
   = text_field 'vouchertype', 'name'
 
-%p
+%p#p_vouchertype_price.vtform
   %label{:for=>:vouchertype_price} Price
   = text_field 'vouchertype', 'price', :size => 6
 
-%p
+%p#p_vouchertype_account_code.vtform
   %label{:for=>:vouchertype_account_code} Account Code
   = text_field 'vouchertype', 'account_code', :size => 8
   = popup_help_for :vouchertype_account_code
 
-%p
+%p#p_vouchertype_offer_public.vtform
   %label{:for=>:vouchertype_offer_public} Availability
   = select "vouchertype", "offer_public", Vouchertype.offer_to
   = popup_help_for :vouchertype_availability
 
-%p
+%p#p_vouchertype_season.vtform
   %label{:for=>:vouchertype_season} Season
   = select "vouchertype", "season", options_for_seasons_range(-1,2)
   = popup_help_for :vouchertype_season
 
-%p.clear
+%p#p_vouchertype_fulfillment_needed.clear.vtform
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
   = check_box 'vouchertype', 'fulfillment_needed'
   = popup_help_for :vouchertype_fulfillment_needed
 
-%p
+%p#p_vouchertype_walkup_sale_allowed.vtform
   %label{:for=>:vouchertype_walkup_sale_allowed} Walkup sales allowed
-  = check_box 'vouchertype', 'walkup_sale_allowed'
+  = check_box 'vouchertype', 'walkup_sale_allowed', :disabled => (@vouchertype.bundle? || @vouchertype.subscriber_voucher?)
   = popup_help_for :vouchertype_walkup_sale_allowed
 
-/This part of form is for bundle vouchers
+%p#p_vouchertype_changeable.vtform
+  %label{:for=>:vouchertype_changeable} Customer can self-change/self-cancel
+  = check_box 'vouchertype', 'changeable', :disabled => @vouchertype.bundle?
+  = popup_help_for :vouchertype_changeable
 
-%p
+%p#p_vouchertype_subscription.vtform
   %label{:for=>:vouchertype_subscription} Qualifies buyer as a Subscriber
   = check_box 'vouchertype', 'subscription'
 
-%p
+%p#p_vouchertype_comments.vtform
   %label{:for=>:vouchertype_comments} Comments/description
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
 - if @vouchertype.bundle?
-  %p
-    %label{:for=>:vouchertype_bundle_sales_start} Sales start
-    = datetime_select 'vouchertype', 'bundle_sales_start'
+  /This part of form is for bundle vouchers
 
-  %p
-    %label{:for=>:vouchertype_bundle_sales_start} Sales end
-    = datetime_select 'vouchertype', 'bundle_sales_end'
-    
-  %p
-    %label{:for => :vouchertype_bundle_promo_code} Promo code(s)
-    = text_field 'vouchertype', 'bundle_promo_code', :size => 40
-    = popup_help_for 'vouchertype_bundle_promo_code'
+  #for_bundles
+    %p#p_vouchertype_bundle_sales_start
+      %label{:for=>:vouchertype_bundle_sales_start} Sales start
+      = datetime_select 'vouchertype', 'bundle_sales_start'
 
-  %p
-    %label{:for=>:voucher_included_vouchers}Included vouchers:
-    %br/
+    %p#p_vouchertype_bundle_sales_end
+      %label{:for=>:vouchertype_bundle_sales_end} Sales end
+      = datetime_select 'vouchertype', 'bundle_sales_end'
 
-  %table.hilite
-    - Vouchertype.zero_cost_vouchertypes.each do |v|
-      - unless v.bundle?
-        %tr
-          %td.r= h(v.name)
-          %td.l
-            %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
+    %p#p_vouchertype_bundle_promo_code
+      %label{:for => :vouchertype_bundle_promo_code} Promo code(s)
+      = text_field 'vouchertype', 'bundle_promo_code', :size => 40
+      = popup_help_for 'vouchertype_bundle_promo_code'
+
+    %p#p_vouchertype_vouchertype_included_vouchers
+      %label{:for=>:vouchertype_included_vouchers} Included vouchers:
+      %br/
+
+    %table.hilite
+      - Vouchertype.zero_cost_vouchertypes.each do |v|
+        - unless v.bundle?
+          %tr
+            %td.r= h(v.name)
+            %td.l
+              %input{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
 
 - else
 

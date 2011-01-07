@@ -5,6 +5,14 @@ module ApplicationHelper
 
   def default_validation_error_message ; "Please correct the following errors:" ; end
 
+  def container_for(id,label,prefix='container')
+    content_tag(:p, :id => "#{prefix}_#{id}") do
+      content_tag(:label, label, :for => id) do
+        yield
+      end
+    end
+  end
+  
   # override standard helper so we can supply our own embedded error msg strings
   def error_messages_for(*params)
     options = params.last.is_a?(Hash) ? params.pop.symbolize_keys : {}
