@@ -16,15 +16,14 @@ class Vouchertype < ActiveRecord::Base
   # Vouchertypes whose price is zero must NOT be available
   # to subscribers or general public
   validates_exclusion_of(:offer_public, :in => [1,2],
-                         :if => lambda { |v| v.price.zero? },
+                         :if => lambda { |v| v.price.to_i.zero? },
                          :message => "Zero-price vouchers can only be sold
                                         by box office or external reseller")
 
   # Subscription vouchertypes shouldn't be available for walkup sale,
   # since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
-  # Subscription vouchertypes' validity period must be < 2 years
-  validate :restrict_if_free, :if => lambda { |v| v.price.zero? }
+  validate :restrict_if_free, :if => lambda { |v| v.price.to_i.zero? }
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
@@ -59,7 +58,7 @@ class Vouchertype < ActiveRecord::Base
       unless v = Vouchertype.find_by_id(id)
         errors.add_to_base "Vouchertype #{id} doesn't exist"
       else
-        unless v.price.zero?
+        unless v.price.to_i.zero?
           errors.add_to_base "Bundle can't include revenue voucher #{id} (#{v.name})"
         end
       end
@@ -164,7 +163,11 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.zero_cost_vouchertypes(season=nil)
-    Vouchertype.find_all_by_price(0.0, :order => 'season DESC,created_at')
+    if season
+      Vouchertype.find_all_by_price_and_season(0.0, season, :order => 'created_at')
+    else
+      Vouchertype.find_all_by_price(0.0, :order => 'season DESC,created_at')
+    end
   end
 
   def self.subscriptions_available_to(customer = Customer.generic_customer, admin = nil)
@@ -248,7 +251,7 @@ class Vouchertype < ActiveRecord::Base
     return Vouchertype.create!(:name => name,
       :price => price,
       :offer_public => Vouchertype::EXTERNAL,
-      :category => (price.zero? ? :comp : :revenue),
+      :category => (price.to_i.zero? ? :comp : :revenue),
       :subscription => false,
       :season => year)
   end

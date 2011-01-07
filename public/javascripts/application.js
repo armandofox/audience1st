@@ -1,6 +1,37 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
 
+function reset_vouchertype_fields(category) {
+    function hide_price() {
+        $('p_vouchertype_price').hide();   $('vouchertype_price').value = '0'; }
+    function hide_walkup_sale()  {
+        $('p_vouchertype_walkup_sale_allowed').hide(); $('vouchertype_walkup_sale_allowed').checked = false;  }
+    function hide_changeable() {
+        $('vouchertype_changeable').checked = false;  $('p_vouchertype_changeable').hide(); }
+    function hide_account_code() {   $('p_vouchertype_account_code').hide();  }
+    function hide_availability() {   $('p_vouchertype_offer_public').hide();  }
+    function hide_subscriber()   {   
+        $('vouchertype_subscription').checked = false ; $('p_vouchertype_subscription').hide();  }
+    $$('.vtform').map(Element.show);
+    switch(category)  {
+    case 'bundle':
+        hide_walkup_sale(); hide_changeable();
+        break;
+    case 'subscriber':
+        hide_price(); hide_walkup_sale(); hide_account_code(); hide_availability();
+        break;
+    case 'comp':
+        hide_price(); hide_account_code(); hide_subscriber();
+        break;
+    case 'nonticket':
+        hide_changeable();
+        break;
+    case 'revenue':
+        break;
+    }
+
+}
+
 // Check place-order form before it's submitted.
 
 function checkPlaceOrderForm() {

@@ -207,7 +207,7 @@ class VouchersController < ApplicationController
     # the fact that it was sold.  Its ID number will still be referred
     # to in the audit log.
     @v = Voucher.find(params[:id])
-    try_again("Please cancel this reservation before removing the voucher.") and return if @v.changeable
+    try_again("Please cancel this reservation before removing the voucher.") and return if @v.reserved?
     save_showdate = @v.showdate.id
     save_show = @v.showdate.show.id
     save_customer = @v.customer.id
