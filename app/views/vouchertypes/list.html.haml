@@ -20,23 +20,22 @@
       %th Walkup?
   %tbody
     - for vouchertype in @vouchertypes.sort_by { |v| v.bundle? ? 0 : 1 }
-      %span{:class => (vouchertype.subscription? ? 'subscriberVouchertype' : '')}
-        %tr{:class => cycle(:odd,:even)}
-          %td
-            - if @superadmin
-              = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
-            = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
-          %td.r= number_to_currency(vouchertype.price)   
-          %td.r= h(vouchertype.account_code)
-          %td.c= vouchertype.subscription? ? "Yes" : ""
-          %td= h(vouchertype.visibility)  
-          %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
-          %td.c= humanize_season(vouchertype.season)
-          %td 
-            -if vouchertype.bundle? 
-              - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
-                = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name) if qty>0 
-          %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
+      %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
+        %td
+          - if @superadmin
+            = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
+          = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
+        %td.r= number_to_currency(vouchertype.price)   
+        %td.r= h(vouchertype.account_code)
+        %td.c= vouchertype.subscription? ? "Yes" : ""
+        %td= h(vouchertype.visibility)  
+        %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
+        %td.c= humanize_season(vouchertype.season)
+        %td 
+          -if vouchertype.bundle? 
+            - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
+              = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name) if qty>0 
+        %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
 
 %br/
 = gen_button  'New vouchertype', {:action => 'new'} 

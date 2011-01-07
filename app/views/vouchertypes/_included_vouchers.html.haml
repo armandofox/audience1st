@@ -1,0 +1,6 @@
+%table.hilite
+  - Vouchertype.zero_cost_vouchertypes(season).reject { |v| v.bundle? }.each do |v|
+    %tr
+      %td.r= h(v.name)
+      %td.l
+        %input.bundle_component{:type=>:text, :id=>"vouchertype_included_vouchers[#{v.id}]", :name=>"vouchertype[included_vouchers][#{v.id}]", :size=>4, :value=>"#{@vouchertype.included_vouchers[v.id.to_s]}" }
