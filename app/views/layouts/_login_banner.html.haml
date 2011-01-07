@@ -12,8 +12,12 @@
         %span#link_to_facebook
           &  Link your #{Option.value(:venue)} account to Facebook!
           = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")
-  = button_to('Temporarily Disable Admin', :controller => 'customers', :action => 'temporarily_disable_admin') if @disableAdmin
-  = button_to('Reenable Admin', :controller => 'customers', :action => 'reenable_admin') if @enableAdmin
+  - if @disableAdmin
+    = button_to('Regular Patron View', :controller => 'customers', :action => 'temporarily_disable_admin') 
+    = popup_help_for :disable_admin
+  - elsif @enable_admin
+    = button_to('Admin View', :controller => 'customers', :action => 'reenable_admin') 
+    = popup_help_for :disable_admin
 
 - if @gAdmin.is_admin
   #admin_welcome_header

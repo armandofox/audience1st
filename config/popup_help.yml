@@ -1,3 +1,10 @@
+# General
+
+disable_admin: >
+  
+  Lets you switch between viewing the site with admin privileges vs. how
+  a regular patron would see it.  
+
 # Logging in
 
 login_using_facebook: >
