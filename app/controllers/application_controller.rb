@@ -204,8 +204,7 @@ EOEVAL
     if customer.valid_email_address?
       begin
         Mailer.send("deliver_"<< method.to_s,*args)
-        flash[:notice] << " An email confirmation was sent to #{addr}, BUT some technical problems are currently affecting our email sending and it's possible you may not receive it.  We're working to resolve the email issue as quickly as possible, but you can always check your online account to see your purchased tickets and reservations."
-        # flash[:notice] << " An email confirmation was sent to #{addr}, BUT some technical problems are currently affecting our email sending and it's possible you may not receive it.  We're working to resolve the email issue as quickly as possible, but you can always check your online account to see your purchased tickets and reservations.  Please make sure 'audience1st.com' is on your trusted senders list, or the confirmation email may end up in your Junk Mail or Spam folder."
+        flash[:notice] << " An email confirmation was sent to #{addr}.  If you don't receive it in a few minutes, please make sure 'audience1st.com' is on your trusted senders list, or the confirmation email may end up in your Junk Mail or Spam folder."
         logger.info("Confirmation email sent to #{addr}")
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "

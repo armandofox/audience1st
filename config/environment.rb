@@ -36,6 +36,8 @@ Rails::Initializer.run do |config|
   config.gem "haml"
   config.gem "dbf"
   config.gem "hpricot"
+  config.gem "dbf", :version => '>= 1.2.9'
+  config.gem "builder", :version => '>= 2.1.2'
   
   # config.gem "rack", :version => '1.1.0'
 
