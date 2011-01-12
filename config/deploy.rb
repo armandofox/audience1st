@@ -44,7 +44,8 @@ namespace :provision do
     abort "Need MySQL root password" unless (pass = variables[:password])
     mysql = "mysql -uroot '-p#{pass}' -e \"%s;\""
     run (mysql % "create database #{venue}")
-    run (mysql % "grant select,insert,update,delete,lock on #{venue}.* to '#{venue}'@'localhost'identified by '#{venuepass}'")
+    run (mysql % "create user '#{venue}'@'localhost' identified by '#{venuepass}'")
+    run (mysql % "grant select,insert,update,delete,lock on #{venue}.* to '#{venue}'@'localhost'")
     run "ln -s #{home}/rails/#{venue}/current/public #{home}/public_html"
     # still need to link stylesheets
   end
