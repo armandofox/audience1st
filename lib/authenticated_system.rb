@@ -44,7 +44,7 @@ module AuthenticatedSystem
   end
 
   def acting_on_own_behalf
-    !session[:admin_id] || 
+    (!session[:admin_id] && !session[:can_restore_admin]) || 
       (session[:admin_id] == session[:cid])
   end
 

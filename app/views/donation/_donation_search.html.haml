@@ -1,7 +1,7 @@
 %table 
   %tbody 
     %tr 
-      %td= check_box_tag 'use_cid', 1, @params[:use_cid], {:onClick => "if (!(this.checked)) {$$('show_vouchers').checked=false;}"} 
+      %td= check_box_tag 'use_cid', 1, @params[:use_cid], {:onclick => "if (!(this.checked)) {$$('show_vouchers').checked=false;}"} 
       %td Only for this customer (type first or last name):
       %td
         = customer_search_field 'donor_name', @full_name, {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {:cid => :id, :use_cid => {:checked => 'true'}}, :select_opts => {:indicator => :wait}

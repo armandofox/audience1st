@@ -1,7 +1,7 @@
 - form_tag :action => 'mini_verify_billing' do
   = render :partial => 'ticket_menus', :locals => {:donation_field => 'donation', :submit_button => 'submit'}
   %label{:for => :donation} Additional tax-deductible donation
-  = text_field_tag 'donation', '', :size => 5, :onChange => 'recalc_total()'
+  = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()'
   \.00
     
   %br

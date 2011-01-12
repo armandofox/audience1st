@@ -10,8 +10,7 @@ class ApplicationController < ActionController::Base
   include ExceptionNotifiable
   include ActiveMerchant::Billing
 
-  filter_parameter_logging :credit_card,:password
-  filter_parameter_logging :number, :type, :verification_value, :year, :month
+  filter_parameter_logging :credit_card,:password, :number, :type, :verification_value, :year, :month, :swipe_data
 
   if (RAILS_ENV == 'production' && !SANDBOX)
     include SslRequirement
@@ -205,7 +204,7 @@ EOEVAL
     if customer.valid_email_address?
       begin
         Mailer.send("deliver_"<< method.to_s,*args)
-        flash[:notice] << " An email confirmation was sent to #{addr}"
+        flash[:notice] << " An email confirmation was sent to #{addr}.  If you don't receive it in a few minutes, please make sure 'audience1st.com' is on your trusted senders list, or the confirmation email may end up in your Junk Mail or Spam folder."
         logger.info("Confirmation email sent to #{addr}")
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "

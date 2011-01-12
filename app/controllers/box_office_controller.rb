@@ -12,8 +12,6 @@ class BoxOfficeController < ApplicationController
 
   ssl_required(:walkup, :do_walkup_sale)
   ssl_allowed :change_showdate
-  filter_parameter_logging :swipe_data
-  filter_parameter_logging :number, :type, :verification_value, :year, :month
   
   private
 
@@ -29,6 +27,15 @@ class BoxOfficeController < ApplicationController
     else
       flash[:notice] = "There are no shows listed.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'
+    end
+  end
+
+  def at_least_1_ticket_or_donation
+    if (@qty.values.map(&:to_i).sum.zero?  &&  @donation.zero?)
+      logger.info(flash[:warning] = "No tickets or donation to process")
+      nil
+    else
+      true
     end
   end
 
@@ -125,10 +132,7 @@ class BoxOfficeController < ApplicationController
   def do_walkup_sale
     @qty = params[:qty]
     @donation = params[:donation].to_f
-    if (@qty.values.map(&:to_i).sum.zero?  &&  @donation.zero?)
-      logger.info(flash[:warning] = "No tickets or donation to process")
-      redirect_to(:action => 'walkup', :id => @showdate) and return
-    end
+    redirect_to :action => 'walkup', :id => @showdate and return unless at_least_1_ticket_or_donation
     begin
       total = compute_price(@qty, @donation) 
     rescue Exception => e

@@ -1,9 +1,9 @@
 - form_tag({:action => 'list'},{:method=>:get}) do
   %h1 
     Listing
-    = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)", "Nonticket Products"],@filter), :onChange => 'this.form.submit();'
+    = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)", "Nonticket Products"],@filter), :onchange => 'this.form.submit();'
     voucher types valid during
-    = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onChange => 'this.form.submit();'
+    = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onchange => 'this.form.submit();'
     season
 
 %table.hilite

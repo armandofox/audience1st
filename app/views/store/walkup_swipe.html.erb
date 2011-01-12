@@ -48,7 +48,7 @@
           </td>
           <td>
             <%= text_field_tag 'donation', '0', :maxlength => 7, :size => 5,
-            :id => 'donation', :onChange => onChg %>
+            :id => 'donation', :onchange => onChg %>
           </td>
         </tr>
 
@@ -61,7 +61,7 @@
           </td>
           <td>
             <%= select_tag "qty[#{v.id}]", options_for_select((0..8),0),
-                {:id => "select#{v.id}", :onChange => onChg} %>
+                {:id => "select#{v.id}", :onchange => onChg} %>
           </td>
         </tr>
         <% end %>    
@@ -110,7 +110,7 @@
 -->
 
 <%= text_field_tag 'swipe_data', '', :size => 1, :maxlength => 128 %>
-<%= submit_tag '', :onClick => 'resetSwipe();' %>
+<%= submit_tag '', :onclick => 'resetSwipe();' %>
 <%= end_form_tag %>
 
 </div>

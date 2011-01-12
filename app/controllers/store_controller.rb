@@ -4,6 +4,8 @@ class StoreController < ApplicationController
 
   require "money.rb"
 
+  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed comment_changed redeeming_promo_code set_promo_code clear_promo_code)
+
   before_filter :is_logged_in, :only => %w[edit_billing_address]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
   

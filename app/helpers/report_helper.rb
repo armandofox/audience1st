@@ -14,7 +14,7 @@ module ReportHelper
     choices = ["Today", "This week", "This month", "Last month",
                "This year", "Last year", custom]
     select_tag(select_name, options_for_select(choices,choices.first),
-               :onChange => "if (this.options[this.selectedIndex].value=='#{custom}') { Element.show('#{div_name}'); } else { Element.hide('#{div_name}'); }")
+               :onchange => "if (this.options[this.selectedIndex].value=='#{custom}') { Element.show('#{div_name}'); } else { Element.hide('#{div_name}'); }")
   end
 
   def account_code_with_links(kode)

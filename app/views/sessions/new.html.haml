@@ -19,8 +19,12 @@
     
 - if USE_FACEBOOK
   #login_with_facebook
-    %h2 Or Login Using Facebook
-    = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")
-    = popup_help_for 'login_using_facebook'
+    - if ie8
+      = image_tag 'connect_disabled.png'
+      %p Sorry, Facebook Connect features don't work properly with Internet Explorer 8.
+    - else
+      %h2 Or Login Using Facebook
+      = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")
+      = popup_help_for 'login_using_facebook'
 
 .clear
