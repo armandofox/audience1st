@@ -4,6 +4,7 @@
   - if @cart.items.empty?
     %p#empty_cart No items in your order.
   - else
+    %h2#check_dates Please double check performance dates
     %ul#cart_items
       - @cart.items.each_with_index do |i,index|
         %li.cart_item{:class=>cycle(:even,:odd)}

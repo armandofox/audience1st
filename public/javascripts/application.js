@@ -53,6 +53,21 @@ function checkPlaceOrderForm() {
     return alrt;
 }
 
+// Last chance to check dates before placing order
+
+function confirmCheckDates(str,submitBtn,cancelBtnName,cancelUrl) {
+    if (confirm(str))  {
+        Element.hide(cancelBtnName);
+        submitBtn.disabled = true;
+        submitBtn.value = 'Processing, Please Wait...';
+        submitBtn.form.submit();
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
 
 Ajax.Autocompleter.extract_value =
   function (value, className) {

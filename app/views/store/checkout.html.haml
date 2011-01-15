@@ -6,6 +6,8 @@
 - form_tag :action => 'place_order' do
   %h2.floatleft Please Review Billing Information
   .floatright.h2
+    %strong= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
+    |
     %strong= gen_button "This Isn't Me", :action => 'not_me'
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
@@ -31,7 +33,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :disable_with => "Processing, Please Wait...", :onclick => "Element.hide('cancel');"
+    = submit_tag 'Charge Credit Card', :name => 'commit', :onclick => confirm_dates_dialog(@double_check_dates)
     = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv

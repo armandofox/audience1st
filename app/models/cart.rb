@@ -42,6 +42,14 @@ class Cart
     end
   end
 
+  def double_check_dates
+    items.
+      select { |i| i.respond_to?(:showdate) }.
+      map { |s| s.showdate.printable_date }.
+      uniq.
+      to_sentence
+  end
+
   def empty!
     @items = []
     @total_price = 0.0
@@ -110,8 +118,10 @@ class Cart
         b.class.to_s <=> a.class.to_s
       elsif a.kind_of?(Voucher) 
         a <=> b
-      else
+      elsif a.kind_of?(Donation)
         a.donation_fund_id <=> b.donation_fund_id
+      else
+        a.object_id <=> b.object_id
       end
     end
     self.total_price += itm.price

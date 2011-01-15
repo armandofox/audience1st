@@ -4,6 +4,33 @@ describe Cart do
   before(:each) do
     @cart = Cart.new
   end
+  describe "performance dates info" do
+    before(:each) do
+      @date1 = Time.parse("January 3, 2011, 7:30pm")
+      @date2 = Time.parse("March 1, 2012, 6:00pm")
+      @sd1 = BasicModels.create_one_showdate(@date1)
+      @sd2 = BasicModels.create_one_showdate(@date2)
+    end
+    it "should show date of performance if only one performance" do
+      @cart.add(mock("fake_voucher", :showdate => @sd1, :price => 15))
+      @cart.double_check_dates.should == @date1.to_formatted_s(:showtime)
+    end
+    it "should show date of performance if multiple items with same date" do
+      @cart.add(mock("fake_voucher1", :showdate => @sd1, :price => 15))
+      @cart.add(mock("fake_voucher2", :showdate => @sd1, :price => 15))
+      @cart.double_check_dates.should == @date1.to_formatted_s(:showtime)
+    end
+    it "should be empty if no items with dates in cart" do
+      @cart.double_check_dates.should == ''
+    end
+    it "should show multiple dates if items with different dates" do
+      @cart.add(mock("fake_voucher1", :showdate => @sd1, :price => 15))
+      @cart.add(mock("fake_voucher2", :showdate => @sd2, :price => 15))
+      @cart.add(mock("fake_voucher3", :showdate => @sd1, :price => 15))
+      @cart.double_check_dates.should ==
+        "#{@date1.to_formatted_s(:showtime)} and #{@date2.to_formatted_s(:showtime)}"
+    end
+  end
   it "should not return same order ID twice" do
     o1 = Cart.generate_order_id
     o2 = Cart.generate_order_id

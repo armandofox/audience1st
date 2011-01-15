@@ -179,6 +179,7 @@ class StoreController < ApplicationController
       return
     end
     @credit_card = ActiveMerchant::Billing::CreditCard.new
+    @double_check_dates = @cart.double_check_dates
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
@@ -208,14 +209,9 @@ class StoreController < ApplicationController
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
     howpurchase = Purchasemethod.default
-    if (params[:commit] =~ /credit/i || !@is_admin)
-      verify_valid_credit_card_purchaser or return
-      method = :credit_card
-      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
-      redirect_to_checkout and return unless args = collect_credit_card_info
-      args.merge({:order_number => @cart.order_number})
-      @payment="credit card #{args[:credit_card].display_number}"
-    elsif params[:commit] =~ /check/i
+    # regular customers can only purchase with credit card
+    params[:commit] = 'credit' if !@is_admin
+    if params[:commit] =~ /check/i
       method = :check
       howpurchased = Purchasemethod.get_type_by_name('box_chk')
       args = {:check_number => params[:check_number]}
@@ -225,6 +221,13 @@ class StoreController < ApplicationController
       howpurchased = Purchasemethod.get_type_by_name('box_cash')
       args = {}
       @payment = "cash"
+    else                        # credit card
+      verify_valid_credit_card_purchaser or return
+      method = :credit_card
+      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
+      redirect_to_checkout and return unless args = collect_credit_card_info
+      args.merge({:order_number => @cart.order_number})
+      @payment="credit card #{args[:credit_card].display_number}"
     end
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account

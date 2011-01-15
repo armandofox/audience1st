@@ -1,5 +1,11 @@
 module StoreHelper
 
+  def confirm_dates_dialog(dates_string)
+    return nil if dates_string.blank?
+    dates_string = escape_javascript("PLEASE DOUBLE CHECK DATES:  You are purchasing ticket(s) for #{dates_string}.  If this is correct, click OK.  If not, click Cancel to start over.")
+    "return confirmCheckDates('#{dates_string}', this, 'cancel');"
+  end
+
   def sales_banners_for(for_what,subscriber,next_season_subscriber)
     if next_season_subscriber
       option, id = 'sales_banner_for_next_season_subscribers', 'BannerNextSeasonSubscriber'
