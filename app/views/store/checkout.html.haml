@@ -21,15 +21,15 @@
 
   = render :partial => 'credit_card'
   
-  %label{:for => 'sales_final'} TERMS OF SALE:
-  = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
-  %strong 
-    I understand and agree to the
-    = link_to_unless Option.value(:terms_of_sale).blank?, |
-        "sales final policy.", |
-        "javascript:alert('#{escape_javascript(Option.value(:terms_of_sale))}')" |
-  %br
-  %br
+  - unless Option.value(:terms_of_sale).blank?
+    #terms_of_sale
+      %label{:for => 'sales_final'} TERMS OF SALE:
+      = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
+      %strong 
+        I understand and agree to the
+        = link_to_function "terms of sale.", "alert('#{escape_javascript(Option.value(:terms_of_sale))}')"
+      %br
+      %br
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
