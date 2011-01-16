@@ -30,7 +30,7 @@ class CustomersController < ApplicationController
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify(:method => :post,
     :only => %w[update finalize_merge destroy create user_create
-        send_new_password link_existing_account disable_admin reenable_admin],
+        send_new_password link_existing_account],
     :redirect_to => { :controller => :customers, :action => :welcome},
     :add_flash => {:warning => "This action requires a POST."} )
 

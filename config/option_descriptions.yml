@@ -20,21 +20,25 @@ allow_gift_subscriptions: >
 
 season_start_month: >
 
-  This is used to determine what ticket vouchers to show in customers'
-  accounts and default dates for season-rollup reports.
-  The "2010 Season" refers to the season whose opening night is in 2010,
-  which you might refer to as the "2010-2011 Season".
+  The month and day that your season starts.  Pick a date that is the
+  same from year to year and will always be earlier than your opening
+  night.  This information is used to determine validity of seasonal
+  vouchers: a voucher designated as valid for 2010-2011 season will not
+  be redeemable by patron before opening day of that season.
 
 season_start_day: >
 
-  This is used to determine what ticket vouchers to show in customers'
-  accounts and default dates for season-rollup reports.
-  The "2010 Season" refers to the season whose opening night is in 2010,
-  which you might refer to as the "2010-2011 Season".
+  The month and day that your season starts.  Pick a date that is the
+  same from year to year and will always be earlier than your opening
+  night.  This information is used to determine validity of seasonal
+  vouchers: a voucher designated as valid for 2010-2011 season will not
+  be redeemable by patron before opening day of that season.
 
 cancel_grace_period: >
 
-  Latest a patron can self-cancel a reservation (minutes before curtain)
+  Latest a patron can self-cancel a reservation (minutes before
+  curtain), if the ticket type being used has been designated as one for
+  which a patron can make their own changes online for free.
 
 default_donation_account_code: >
 
@@ -50,22 +54,22 @@ default_donation_account_code_with_subscriptions: >
 accept_amex: >
 
   Set to any nonzero value if your payment gateway and merchant account
-  are set up to accept the American Express Card.  Leave blank or set to zero if
+  are set up to accept the American Express Card.  Leave blank if
   you don't accept Amex. 
 
 accept_discover: >
 
   Set to any nonzero value if your payment gateway and merchant account
-  are set up to accept the Discover Card.  Leave blank or set to zero if
+  are set up to accept the Discover Card.  Leave blank if
   you don't accept Discover. 
 
 venue: >
 
-  Venue name as it will appear in confirmation emails, banners, etc.
+  Venue's full name as it will appear in confirmation emails, banners, etc.
 
 venue_address: >
 
-  Mailing address of venue
+  Mailing address of venue (number and street)
 
 venue_city_state_zip: >
 
@@ -77,8 +81,8 @@ venue_telephone: >
 
 venue_homepage_url: >
 
-  URL of venue home page; if provided, page banners will be clickable
-  links to this URL.
+  URL of venue home page; if provided, top-of-page banner will be a clickable
+  link to this page.
 
 boxoffice_telephone: >
 
@@ -86,19 +90,20 @@ boxoffice_telephone: >
 
 donation_ack_from: >
 
-  Auto-generated confirmation emails for online donations appear to be
-  signed by this person.
+  Auto-generated confirmation emails for online donations will appear to be
+  signed by this person.  Example: "Bob Jones, Development Chair"
 
 boxoffice_daemon_notify: >
 
   Whenever the box office does automatic background processing, such as
   when a third-party ticket list is received and parsed, an email report
-  will be sent to this address.
+  will be sent to this address.  If blank, no reports will be emailed.
 
 help_email: >
 
   Email address where patrons can get help; shown in confirmation emails
-  for online orders
+  for online orders.  If blank, this info will be omitted from
+  confirmations, but we strongly suggest you provide an email address.
 
 followup_visit_reminder_lead_time: >
 
@@ -111,7 +116,9 @@ followup_visit_reminder_lead_time: >
 session_timeout: >
 
   Number of minutes of inactivity after which a user is automatically
-  logged out.
+  logged out.  Setting it to a longer value is more convenient for most
+  users; for example, set to 1440 for auto-logout after 1 day, or 10000
+  for logout after 1 week.
 
 subscription_sales_banner_for_current_subscribers: >
 
@@ -285,11 +292,13 @@ privacy_policy_url: >
 
 mailchimp_api_key: >
 
-  API key for MailChimp integration, if you use MailChimp
+  API key for MailChimp integration, if you use MailChimp.  
+  If you don't use MailChimp, leave blank.
 
 mailchimp_default_list_name: >
 
   Name of your main email list, if you use MailChimp
+  If you don't use MailChimp, leave blank.
 
 enable_facebook_connect: >
 
