@@ -215,19 +215,19 @@ class StoreController < ApplicationController
       method = :check
       howpurchased = Purchasemethod.get_type_by_name('box_chk')
       args = {:check_number => params[:check_number]}
-      @payment = "check number #{params[:check_number]}"
+      @payment = params[:check_number].blank? ? "by check" : "with check number #{params[:check_number]}"
     elsif params[:commit] =~ /cash/i
       method = :cash
       howpurchased = Purchasemethod.get_type_by_name('box_cash')
       args = {}
-      @payment = "cash"
+      @payment = "in cash"
     else                        # credit card
       verify_valid_credit_card_purchaser or return
       method = :credit_card
       howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
       redirect_to_checkout and return unless args = collect_credit_card_info
       args.merge({:order_number => @cart.order_number})
-      @payment="credit card #{args[:credit_card].display_number}"
+      @payment="with credit card #{args[:credit_card].display_number}"
     end
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
