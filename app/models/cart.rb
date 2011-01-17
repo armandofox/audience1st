@@ -44,7 +44,7 @@ class Cart
 
   def double_check_dates
     items.
-      select { |i| i.respond_to?(:showdate) }.
+      select { |i| i.respond_to?(:showdate) && i.showdate }.
       map { |s| s.showdate.printable_date }.
       uniq.
       to_sentence

@@ -105,7 +105,7 @@ class StoreController < ApplicationController
     # continue to checkout.
     # in case it's a gift, customer should know donation is made in their name.
     @includes_donation = @cart.include_donation?
-    set_checkout_in_progress
+    set_checkout_in_progress(true)
     if params[:gift] && @cart.include_vouchers?
       @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
     else
@@ -161,6 +161,7 @@ class StoreController < ApplicationController
   end
 
   def checkout
+    set_return_to :controller => 'store', :action => 'checkout'
     @cust = store_customer
     @is_admin = current_admin.is_boxoffice
     if session[:recipient_id]
@@ -561,6 +562,7 @@ EON
   end
 
   def verify_sales_final
+    return true if Option.value(:terms_of_sale).blank?
     if (sales_final = params[:sales_final].to_i).zero?
       flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
       redirect_to_checkout

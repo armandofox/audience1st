@@ -34,7 +34,7 @@
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
     = submit_tag 'Charge Credit Card', :name => 'commit', :onclick => confirm_dates_dialog(@double_check_dates)
-    = link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
+    = link_to "Cancel", {:controller => 'store',:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv
       Or pay with check number: 
