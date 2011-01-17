@@ -30,6 +30,11 @@ describe Cart do
       @cart.double_check_dates.should ==
         "#{@date1.to_formatted_s(:showtime)} and #{@date2.to_formatted_s(:showtime)}"
     end
+    it "should not barf for vouchers with no showdate" do
+      @cart.add(mock("sub_voucher", :showdate => nil, :price => 88))
+      lambda { @cart.double_check_dates }.should_not raise_error
+      @cart.double_check_dates.should be_blank
+    end
   end
   it "should not return same order ID twice" do
     o1 = Cart.generate_order_id
