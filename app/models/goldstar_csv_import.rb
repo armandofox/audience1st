@@ -19,6 +19,7 @@ class GoldstarCsvImport < TicketSalesImport
   def get_ticket_orders
     unless (@showdate = Showdate.find_by_id(self.showdate_id))
       errors.add_to_base "Invalid showdate ID #{showdate_id}"
+      return []
     end
     messages << "Date: #{@showdate.printable_date}"
     @format_looks_ok = nil

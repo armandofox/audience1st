@@ -13,6 +13,7 @@ describe "Goldstar new CSV format importing" do
   describe "format sanity checks" do
     it "should reject if column headers invalid" do
       use_file('no_headers.csv')
+      @imp.showdate_id = BasicModels.create_one_showdate(Time.now).id
       @imp.preview
       @imp.sanity_check.should be_nil
       @imp.errors.full_messages.should include("Expected header row not found")
