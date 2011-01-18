@@ -47,9 +47,9 @@ class BrownPaperTicketsImport < TicketSalesImport
       @format_looks_ok = true and next if
         row[0] =~ /^Will Call Tickets$/ || row[1] =~ /^All Dates$/
       if (content_row?(row))
+        self.number_of_records += 1 
         if (voucher = ticket_order_from_row(row))
           @vouchers << voucher
-          self.number_of_records += 1 
         end
         next
       end
