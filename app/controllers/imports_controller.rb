@@ -7,6 +7,15 @@ class ImportsController < ApplicationController
 
   def new
     @import ||= Import.new
+    yr = Time.now.this_season
+    @shows = (Show.all_for_season(yr-1) + Show.all_for_season(yr)).reverse
+    if @shows.include?(curr = Show.current_or_next) && curr
+      show = curr
+    else
+      show = @shows.first
+    end
+    @import.show_id = show.id
+    @showdates = show.showdates
   end
 
   def create
@@ -29,6 +38,7 @@ class ImportsController < ApplicationController
   end
 
   def show ; redirect_to :action => :index ; end
+
 
   def edit
     @import = Import.find(params[:id])
@@ -101,7 +111,7 @@ class ImportsController < ApplicationController
   def partial_for_import(import)
     case import.class.to_s
     when 'CustomerImport' then 'customers/customer_with_errors'
-    when 'BrownPaperTicketsImport', 'TBAWebtixImport', 'GoldstarXmlImport' then 'external_ticket_orders/external_ticket_order'
+    when 'BrownPaperTicketsImport', 'TBAWebtixImport', 'GoldstarXmlImport', 'GoldstarCsvImport' then 'external_ticket_orders/external_ticket_order'
     end
   end
 

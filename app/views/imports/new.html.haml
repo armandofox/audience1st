@@ -6,12 +6,18 @@
   #import_help
   = observe_field :import_type, :url => {:action => :help}, :with => 'value', :update => 'import_help'
   %p
+    = javascript_arrays_for @shows, :showdates, :printable_date, :id
     %label{:for => :show_id} For will-call lists: which show is this for?
-    = f.select :show_id, options_from_collection_for_select(Show.all.sort_by(&:opening_date).reverse, :id, :name, @import.show_id)
+    = f.select :show_id, options_from_collection_for_select(@shows, :id, :name, @import.show_id)
+    = observe_field 'import_show_id', :function => "var s = Show[element.options[element.selectedIndex].value]; var n = s.length; $('import_showdate_id').options.length = n; for (i=0 ; i < n; i++) { $('import_showdate_id').options[i] = s[i]; }"
     %br
     %label{:for => :new_show_name} Or create new show named:
     = text_field_tag :new_show_name, '', :size => 40, :maxlength => 40
     = popup_help_for :import_show_name
+
+  %p
+    %label.emphasis{:for => :showdate_id} For Goldstar lists ONLY: what show date?
+    = f.select :showdate_id, options_from_collection_for_select(@showdates, :id, :printable_date)
 
   - unless @import.size.to_i > 0
     %p

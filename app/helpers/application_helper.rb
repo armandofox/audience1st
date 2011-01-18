@@ -270,6 +270,21 @@ EJS1
     o.kind_of?(Fixnum) ? o: "'#{o}'"
   end
 
+  def javascript_arrays_for(objects, child_method, child_name, child_value)
+    arrays_of_children = objects.map { |o| o.send(child_method) }.map do |showdates|
+      showdates.map { |sd|  }.join(', ')
+    end
+    arrayname = objects.first.class
+    js = "#{arrayname} = new Array;\n"
+    objects.each do |o|
+      children = o.send(child_method).map do |elt|
+        "new Option('#{elt.send(child_name)}', '#{elt.send(child_value)}', false, false)"
+      end.join(",\n   ")
+      js += "#{arrayname}[#{o.id}] = new Array(\n   #{children}\n);"
+    end
+    javascript_tag js
+  end
+  
   def option_arrays(name, array_of_parents, key_method, vals_method,
                     text_method, args={})
     empty_val = (args[:empty_value] || -1).to_s

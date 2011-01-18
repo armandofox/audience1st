@@ -47,9 +47,9 @@ class BrownPaperTicketsImport < TicketSalesImport
       @format_looks_ok = true and next if
         row[0] =~ /^Will Call Tickets$/ || row[1] =~ /^All Dates$/
       if (content_row?(row))
-        self.number_of_records += 1 
         if (voucher = ticket_order_from_row(row))
           @vouchers << voucher
+          self.number_of_records += 1 
         end
         next
       end
@@ -94,8 +94,7 @@ class BrownPaperTicketsImport < TicketSalesImport
     return import_customer_from_csv(row,
       :last_name => LAST_NAME, :first_name => FIRST_NAME,
       :street => STREET, :city => CITY, :state => STATE, :zip => ZIP,
-      :day_phone => PHONE, :email => EMAIL,
-      :last_login => ORDER_DATE, :updated_at => ORDER_DATE)
+      :day_phone => PHONE, :email => EMAIL)
     #  not used: purchaser last/first name = 4,5 ; shipping country = 12
   end
 
