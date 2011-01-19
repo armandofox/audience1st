@@ -6,10 +6,10 @@ module VouchertypesHelper
       year.to_s
   end
 
-  def options_for_seasons_range(from=0,to=0,selected = 0)
+  def options_for_seasons_range(from=0,to=0,selected = Time.this_season)
     from,to = to,from if from > to
     now = Time.this_season
-    options_for_seasons(now + from, now + to, now + selected)
+    options_for_seasons(now + from, now + to, selected)
   end
 
   def options_for_seasons(from,to,selected=Time.this_season)
