@@ -11,7 +11,7 @@ describe VouchertypesHelper do
           helper.options_for_seasons(2007, 2010)
       end
       it "with explicit nondefault selection" do
-        helper.options_for_seasons_range(-2,1,-1).should ==
+        helper.options_for_seasons_range(-2,1,2008).should ==
           helper.options_for_seasons(2007, 2010, 2008)
       end
     end

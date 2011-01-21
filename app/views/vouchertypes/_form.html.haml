@@ -36,9 +36,9 @@
 %p#p_vouchertype_season.vtform
   %label{:for=>:vouchertype_season} Season
   - if existing_bundle
-    = select "vouchertype", "season", options_for_seasons_range(-1,2), {}, {:onchange => "$$('input.bundle_component').map(Element.clear); $('included_vouchers').hide(); "}
+    = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season), {}, {:onchange => "$$('input.bundle_component').map(Element.clear); $('included_vouchers').hide(); "}
   - else
-    = select "vouchertype", "season", options_for_seasons_range(-1,2)
+    = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season)
   = popup_help_for :vouchertype_season
   - if existing_bundle
     %p.feedback If you change the season of a bundle, first save the change, then edit the bundle again to add vouchers for the new season.
