@@ -24,7 +24,7 @@
 
 .pageDiv
   %h1 Customer Lists
-  = select_tag 'report_name', options_for_select(['Select report...',''] + @special_report_names.map { |n| [n.humanize,n] })
+  = select_tag 'report_name', options_for_select(@special_report_names.map { |n| [n.humanize,n] }.unshift(['Select report...','']), '')
   = spinner('report_type')
   = observe_field 'report_name', |
     :url => {:action => 'show_special_report'}, |
