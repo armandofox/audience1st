@@ -32,7 +32,7 @@ describe "Goldstar new CSV format importing" do
   describe "previewing a valid file" do
     before(:each) do
       @imp.showdate_id = @showdate.id
-      use_file('valid.csv')
+      use_file('valid_with_halfprice_only.csv')
     end
     context "when Goldstar vouchertypes exist" do
       before(:each) do

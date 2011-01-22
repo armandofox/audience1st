@@ -4,6 +4,7 @@ class Showdate < ActiveRecord::Base
 
   belongs_to :show
   has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
+  has_many :customers, :through => :vouchers, :uniq => true, :conditions => 'customers.role >= 0'
   has_many :vouchertypes, :through => :vouchers, :uniq => true
   has_many :available_vouchertypes, :source => :vouchertype, :through => :valid_vouchers, :uniq => true
   has_many :all_vouchers, :class_name => 'Voucher'

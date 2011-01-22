@@ -8,7 +8,7 @@ class AttendanceByShow < Report
     super
   end
 
-  def generate(params = [])
+  def generate(params = {})
     if (shows = params[:shows]).blank?
       shows = []
     else
@@ -40,6 +40,6 @@ class AttendanceByShow < Report
       notseen.add_constraint('voucher.showdate_id IN (?)', showdates_not)
       seen -= notseen.execute_query
     end
-    @customers = seen
+    seen
   end
 end

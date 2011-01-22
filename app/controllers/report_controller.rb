@@ -189,7 +189,7 @@ EOQ1
       redirect_to(:action => 'index')
       return
     end
-    result = @report.generate(params) # error!
+    result = @report.generate_and_postprocess(params) # error!
     unless result
       respond_to do |wants|
         wants.html {

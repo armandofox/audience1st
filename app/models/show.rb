@@ -30,6 +30,13 @@ class Show < ActiveRecord::Base
     Show.find(:all, :order => 'opening_date',
       :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate])
   end
+
+  def self.all_for_seasons(from,to)
+    startdate = Time.at_beginning_of_season(from)
+    enddate = Time.at_end_of_season(to)
+    Show.find(:all, :order => 'opening_date',
+      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate])
+  end
   
   def season
     # latest season that contains opening date

@@ -23,6 +23,7 @@ class GoldstarCsvImport < TicketSalesImport
     end
     messages << "Date: #{@showdate.printable_date}"
     @format_looks_ok = nil
+    @comp_vouchers = @half_price_vouchers = 0
     self.each_row do |row|
       @format_looks_ok = true and next if
         row[0,9] == ['Red Velvet', ' Last Name', ' First Name', ' Qty', ' Date', ' Time Note', ' Offer', ' Purchase #', ' Note']
@@ -37,8 +38,10 @@ class GoldstarCsvImport < TicketSalesImport
     unless @format_looks_ok
       errors.add_to_base "Expected header row not found"
     end
+    messages << "#{@comp_vouchers} comp and #{@half_price_vouchers} half-price vouchers will be entered"
+    vouchers
   end
-
+    
   private
 
   def ticket_order_from_row(row)
@@ -57,6 +60,11 @@ class GoldstarCsvImport < TicketSalesImport
         :sold_on => order_date,
         :external_key => order_id,
         :comments => order_notes)
+    end
+    if vouchertype.comp?
+      @comp_vouchers += qty
+    else
+      @half_price_vouchers += qty
     end
     customer.vouchers += vouchers
     vouchers

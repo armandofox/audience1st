@@ -10,7 +10,7 @@ class LapsedSubscribers < Report
     super
   end
 
-  def generate(params=[])
+  def generate(params={})
     have = (params[:have_vouchertypes] ||= []).reject { |x| x.to_i < 1 }
     have_not = (params[:dont_have_vouchertypes] ||= []).reject { |x| x.to_i < 1 }
     unless have.size + have_not.size > 0
@@ -32,6 +32,6 @@ class LapsedSubscribers < Report
       prev_subscribers.add_constraint('vouchertype.id IN (?)', have_not)
       customers -= prev_subscribers.execute_query
     end
-    @customers = customers
+    customers
   end
 end

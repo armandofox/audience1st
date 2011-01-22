@@ -280,8 +280,18 @@ EJS1
       children = o.send(child_method).map do |elt|
         "new Option('#{elt.send(child_name)}', '#{elt.send(child_value)}', false, false)"
       end.join(",\n   ")
-      js += "#{arrayname}[#{o.id}] = new Array(\n   #{children}\n);"
+      js += "\n#{arrayname}[#{o.id}] = new Array(\n   #{children}\n);"
     end
+    js += <<EOJS
+    document.update_#{child_method} = function(element,value,target) {
+        var s = #{arrayname}[element.options[element.selectedIndex].value];
+        var n = s.length;
+        $(target).options.length = n;
+        for (var i=0 ; i < n; i++) {
+           $(target).options[i] = s[i];
+        }
+    }
+EOJS
     javascript_tag js
   end
   

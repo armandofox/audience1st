@@ -10,7 +10,7 @@ class SubscriberOpenVouchers < Report
     super
   end
 
-  def generate(params = [])
+  def generate(params = {})
     @errors = ["Please specify one or more subscriber voucher types."] and return if
       (vouchertypes = params[:vouchertypes]).blank?
     vouchertypes.reject! { |x| x.to_i < 1 }
@@ -21,7 +21,7 @@ class SubscriberOpenVouchers < Report
         AND v.vouchertype_id IN (#{vouchertypes.join(',')})
         AND c.e_blacklist=0
 }
-    @customers = Customer.find_by_sql(self.log)
+    Customer.find_by_sql(self.log)
   end
 
 end

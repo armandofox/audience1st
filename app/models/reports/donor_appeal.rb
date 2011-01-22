@@ -6,7 +6,7 @@ class DonorAppeal < Report
     }
   end
 
-  def generate(params=[])
+  def generate(params={})
     # if subscribers included, need to join to vouchertypes table
     joins = 'customers c LEFT OUTER JOIN donations d ON d.customer_id = c.id '
     from = Time.from_param(params[:newFrom])
@@ -34,6 +34,6 @@ class DonorAppeal < Report
         WHERE #{where}
         ORDER BY c.last_name, c.first_name
 eoq
-    @customers = Customer.find_by_sql(sql)
+    Customer.find_by_sql(sql)
   end
 end

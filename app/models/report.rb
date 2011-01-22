@@ -26,11 +26,17 @@ class Report
     @wheres = []
     @bind_variables = []
     @output_options = output_options
+    @output_options_processed = {}
     @order = 'last_name,zip'
     @filename = self.class.to_s.downcase + Time.now.strftime("%Y_%m_%d")
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
 
+  def generate_and_postprocess(params)
+    res = self.generate(params)
+    @customers = self.postprocess(res)
+  end
+  
   def execute_query
     res = Customer.find_by_sql(query)
     logger.info "Report Query:\n  #{query.join("\n>> ")} \n==> #{@customers.length} results"
@@ -109,6 +115,7 @@ class Report
     wheres = @wheres.clone
     bind_variables = @bind_variables.clone
     @output_options.each_pair do |key, val|
+      @output_options_processed[key] = true
       case key.to_sym
       when :exclude_blacklist
         wheres << "c.blacklist = #{val ? 0 : 1}"
@@ -157,8 +164,38 @@ class Report
     (@errors ||= []) << itm.to_s
   end
 
+  protected
+
   def postprocess(arr)
     # if output options include stuff like duplicate elimination, do that here
+    reject = []
+    @output_options.each_pair do |key,val|
+      next if val.nil? || @output_options_processed[key]
+      case key.to_sym
+      when :exclude_blacklist
+        reject << 'c.blacklist'
+      when :exclude_e_blacklist
+        reject << 'c.e_blacklist'
+      when :require_valid_email
+        reject << '!c.valid_email_address?'
+      when :require_valid_address
+        reject << '!c.valid_mailing_address?'
+      when :filter_by_zip
+        zips = val.split(/\s*,\s*/).join('|')
+        reject << "(!c.zip.blank? && c.zip !~ /^(#{zips})/ )"
+      when :login_from
+        if @output_options[:login_since]
+          date = "Date::civil(#{val[:year].to_i},#{val[:month].to_i},#{val[:day].to_i})"
+          if @output_options[:login_since_test] =~ /not/
+            reject << 'c.last_login >= #{date}'
+          else
+            reject << 'c.last_login <= #{date}'
+          end
+        end
+      end
+    end
+    conds = reject.join(' | ')
+    eval("arr.reject! { |c| #{conds} }")
     if @output_options[:remove_dups]
       # remove duplicate mailing addresses
       hshtemp = Hash.new
