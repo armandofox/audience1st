@@ -1,6 +1,6 @@
 class ImportsController < ApplicationController
   include ActiveSupport::Inflector
-  before_filter :is_admin
+  before_filter :is_boxoffice_manager
   verify :method => :post, :only => :create
   verify :method => :put, :only => :update
   verify :method => :delete, :only => :destroy

@@ -63,7 +63,7 @@ def create_generic_vouchertype(type,price)
   Vouchertype.create!(:fulfillment_needed => false,
     :name => type,
     :category => 'revenue',
-    :account_code => '9999',
+    :account_code => AccountCode.default_account_code,
     :offer_public => Vouchertype::ANYONE,
     :price => price.to_f,
     :season => Time.this_season)

@@ -11,9 +11,9 @@
   = text_field 'donation', 'amount', 'size' => 8
 
 %p
-  %label{:for=>:donation_donation_fund} Donation fund
-  = collection_select 'donation', 'donation_fund_id', DonationFund.find(:all), 'id', 'name'
-  = gen_button 'Add new...', {:controller => 'donation_fund', :action => 'new'}
+  %label{:for=>:donation_account_code} Donation fund
+  = collection_select 'donation', 'account_code_id', AccountCode.find(:all), 'id', 'name'
+  = gen_button 'Add new...', {:controller => 'account_code', :action => 'new'}
 
 %p
   %label{:for=>:donation_purchasemethod} How effected

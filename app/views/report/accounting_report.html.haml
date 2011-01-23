@@ -1,5 +1,5 @@
 .pageDiv
-  %h1= h(@page_title + humanize_date_range(@from,@to))
+  %h1= h @report.title
   - total = 0.0
   - totalunits = 0
   %table.hilite

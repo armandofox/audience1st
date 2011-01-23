@@ -151,8 +151,8 @@ class DonationController < ApplicationController
                 d.customer.email,
                 d.amount,
                 d.date.to_formatted_s(:db),
-                d.account_code,
-                d.donation_fund.name,
+                d.account_code.code,
+                d.account_code.name,
                 d.letter_sent]
       end
       send_data(output, :type => content_type,

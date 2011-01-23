@@ -1,0 +1,16 @@
+%h1 Listing donation funds (click name to edit)
+
+%table.hilite
+  %tr
+    %th Name
+    %th Description
+    %th Acc Code
+  - @account_codes.each do |account_code|
+    %tr
+      %td= link_to account_code.name, edit_account_code_path(account_code)
+      %td= h(account_code.description)
+      %td= h(account_code.code)
+
+%br
+
+= gen_button 'Add New Donation Fund', new_account_code_path 
