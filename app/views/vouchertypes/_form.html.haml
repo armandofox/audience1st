@@ -25,7 +25,7 @@
 
 %p#p_vouchertype_account_code.vtform
   %label{:for=>:vouchertype_account_code} Account Code
-  = select 'vouchertype', 'account_code', options_from_collection_for_select(AccountCode.find(:all), :id, :name, @vouchertype.account_code.id)
+  = collection_select 'vouchertype', 'account_code_id', AccountCode.find(:all), :id, :name_with_code
   = popup_help_for :vouchertype_account_code
 
 %p#p_vouchertype_offer_public.vtform

@@ -1,5 +1,4 @@
-#require 'facebooker_stubs_for_restful_auth'
-require 'facebooker/rails/cucumber'
+# require 'facebooker/rails/cucumber'
 
 Given /^I am logged in with linked Facebook account "(.*)"$/ do |cust|
   # Initializer facebooker session

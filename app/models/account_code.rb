@@ -1,6 +1,15 @@
 class AccountCode < ActiveRecord::Base
   has_many :donations
+  has_many :vouchertypes
 
+  validates_length_of :name, :maximum => 30, :allow_nil => true
+  validates_uniqueness_of :name, :allow_nil => true
+  validates :name_or_code_given
+
+  def name_or_code_given
+    !name.blank? || !code.blank?
+  end
+  
   def self.default_account_code_id
     self.default_account_code.id
   end
@@ -12,8 +21,12 @@ class AccountCode < ActiveRecord::Base
       :description => "General Fund")
   end
 
-  # convenience accessor
+  # convenience accessors
 
+  def name_with_code
+    code.blank? ? name : [code,name].join(': ')
+  end
+  
   def fund_with_account_code
     self.account_code.blank? ? self.name : "#{self.name} (#{self.account_code})"
   end

@@ -2,18 +2,15 @@ class AccountingReport
 
   attr_accessor :from, :to, :title
   
-# CREDIT CARD REVENUE:
-# AccCode		 	Show/Event	Units		Subtotal
-# -----------------------------------------------------------------
-# 4100		Spalding Gray		200		$4500.00
-# 		Book of Liz		250		$4800.00
-# 4200		Donations (Gen Fund)	  8		$ 850.00
-# 		Donations (Capital Fund)  2		$ 500.00
-# 4300		Acting is fun, dammit	 10		$2000.00
-# (none) 	Intro to Directing	  6		$1200.00
-
-  @@credit_card_report =
-    Voucher.
+  # CREDIT CARD REVENUE:
+  # AccCode		 	Show/Event	Units		Subtotal
+  # -----------------------------------------------------------------
+  # 4100		Spalding Gray		200		$4500.00
+  # 		Book of Liz		250		$4800.00
+  # 4200		Donations (Gen Fund)	  8		$ 850.00
+  # 		Donations (Capital Fund)  2		$ 500.00
+  # 4300		Acting is fun, dammit	 10		$2000.00
+  # (none) 	Intro to Directing	  6		$1200.00
 
   @@sql_query = <<EOQ1
       SELECT v.purchasemethod_id,vt.account_code,s.name,
@@ -30,7 +27,7 @@ EOQ1
   
   def initialize(from,to)
     @from,@to = from,to
-    @title = "Revenue by category: #{@from.to_formatted_s(:month_day_year)} - #{to.to_formatted_s(:month_day_year)"
+    @title = "Revenue by category: #{@from.to_formatted_s(:month_day_year)} - #{to.to_formatted_s(:month_day_year)}"
   end
 
   def generate
@@ -64,6 +61,6 @@ EOQ1
            "GROUP BY d.purchasemethod_id",
            @from, @to]
     @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
-
+  end
 
 end

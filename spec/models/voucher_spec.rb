@@ -12,23 +12,23 @@ describe Voucher do
     @vt_regular = Vouchertype.create!(args.merge({
           :name => 'regular voucher',
           :category => 'revenue',
-          :account_code => '9999',
+          :account_code => AccountCode.default_account_code,
           :price => 10.00}))
     @vt_subscriber = Vouchertype.create!(args.merge({
           :name => 'subscriber voucher',
           :category => :subscriber,
-          :account_code => '0'}))
+          :account_code => AccountCode.default_account_code}))
     @vt_bundle = Vouchertype.create!(args.merge({
           :name => 'bundle voucher',
           :category => 'bundle',
           :price => 25.00,
-          :account_code => '8888',
+          :account_code => AccountCode.default_account_code,
           :included_vouchers => {@vt_subscriber.id => 2}}))
     @vt_nonticket = Vouchertype.create!(args.merge({
           :name => 'fee',
           :category => 'nonticket',
           :price => 5.00,
-          :account_code => 9997}))
+          :account_code => AccountCode.default_account_code}))
   end
 
   describe "regular voucher" do

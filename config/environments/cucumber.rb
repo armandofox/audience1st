@@ -32,7 +32,7 @@ PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 
 DISABLE_EMAIL_LIST_INTEGRATION = true
-USE_FACEBOOK = nil
+DISABLE_FACEBOOK = true
 
 # for testing
 

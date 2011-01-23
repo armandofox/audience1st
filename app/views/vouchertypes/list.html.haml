@@ -26,7 +26,7 @@
             = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
           = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
         %td.r= number_to_currency(vouchertype.price)   
-        %td.r= h(vouchertype.account_code)
+        %td.r= account_code_with_popup_link(vouchertype.account_code)
         %td.c= vouchertype.subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
         %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)

@@ -13,7 +13,7 @@ describe Vouchertype do
         :subscription => false,
         :walkup_sale_allowed => true,
         :comments => "A comment",
-        :account_code => "9997",
+        :account_code => AccountCode.default_account_code,
         :season => NOW.year
         )
       @vtn.should be_valid
@@ -28,7 +28,7 @@ describe Vouchertype do
         :subscription => false,
         :walkup_sale_allowed => true,
         :comments => "A comment",
-        :account_code => "9999",
+        :account_code => AccountCode.default_account_code,
         :season => NOW.year
         )
     end
@@ -81,7 +81,7 @@ describe Vouchertype do
           :subscription => false,
           :walkup_sale_allowed => true,
           :comments => "A comment",
-          :account_code => "9999",
+          :account_code => AccountCode.default_account_code,
           :season => NOW.year
         }
         @vtb = Vouchertype.new(args.merge({
@@ -114,7 +114,7 @@ describe Vouchertype do
           :price => 5.0,
         :walkup_sale_allowed => false,
         :comments => "A comment",
-        :account_code => "9997",
+        :account_code => AccountCode.default_account_code,
         :season => NOW.year
         }
         @sub_anyone = Vouchertype.create!(generic_args.merge({
