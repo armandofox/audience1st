@@ -33,13 +33,32 @@ describe Customer do
       @c.reload
       @c.labels.should_not include(@l2)
     end
-    it "should move the labels to the customer surviving a merge" do
-      @c2 = BasicModels.create_generic_customer
-      @c2.update_labels!([@l1.id])
-      @c2.labels.should include(@l1)
-      @c.merge_automatically!(@c2).should be_true
-      @c.reload
-      @c.labels.should include(@l1)
+    describe "when merging" do
+      before(:each) do
+        @c2 = BasicModels.create_generic_customer
+      end
+      it "should keep union of labels when merging automatically" do
+        @c2.labels = [@l1] ; @c2.save!
+        @c.labels =  [@l2] ; @c.save!
+        @c.merge_automatically!(@c2).should be_true
+        @c.reload
+        @c.labels.should include(@l1)
+        @c.labels.should include(@l2)
+      end
+      it "should not barf if dupes already have overlapping label" do
+        @c2.labels = [@l1] ; @c2.save!
+        @c.labels  = [@l1] ; @c.save!
+        @c2.merge_automatically!(@c).should be_true
+        @c2.reload
+        @c2.labels.should include(@l1)
+      end
+      it "should move the labels to the customer surviving a merge" do
+        @c2.update_labels!([@l1.id])
+        @c2.labels.should include(@l1)
+        @c.merge_automatically!(@c2).should be_true
+        @c.reload
+        @c.labels.should include(@l1)
+      end
     end
   end
       
