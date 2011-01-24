@@ -4,6 +4,7 @@ class DonorAppeal < Report
     @view_params = {
       :name => "Donor appeal"
     }
+    super
   end
 
   def generate(params={})

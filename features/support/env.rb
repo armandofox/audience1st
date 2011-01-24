@@ -48,7 +48,6 @@ ActionController::Base.allow_rescue = false
 if ENV['SELENIUM']
   # for Selenium only:
   require 'webrat/selenium'
-  config.gem "selenium-client", :lib => "selenium/client"
   Cucumber::Rails::World.use_transactional_fixtures = false
   # How to clean your database when transactions are turned off. See
   # http://github.com/bmabey/database_cleaner for more info.
@@ -68,6 +67,8 @@ if ENV['SELENIUM']
     config.application_environment = :test
     config.application_framework = :rails
   end
+
+  World(Webrat::Selenium::Matchers)
 
 else
 

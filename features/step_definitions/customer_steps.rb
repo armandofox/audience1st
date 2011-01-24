@@ -28,8 +28,9 @@ Given /^I am logged in as (.*)?$/ do |who|
   when /customer ["'](.*)['"]/
     @customer = customers($1.to_sym)
   else
-    @customer = customers(:generic_customer)
+    raise "No such user '#{who}'"
   end
+  visit logout_path
   visit login_path
   fill_in 'email', :with => @customer.email
   fill_in 'password', :with => 'pass'

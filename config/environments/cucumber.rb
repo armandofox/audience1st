@@ -28,6 +28,10 @@ config.gem 'rspec-rails',      :lib => false, :version => '>=1.3.2' unless File.
 config.gem "cucumber", :lib => false, :version => ">= 0.6.4"
 config.gem "webrat", :lib => false, :version => ">= 0.7.1"
 
+if ENV["SELENIUM"]
+  config.gem "selenium-client", :lib => "selenium/client"
+end
+
 PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 
