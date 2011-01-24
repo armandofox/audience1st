@@ -1,4 +1,4 @@
-class ReportController < ApplicationController
+class ReportsController < ApplicationController
 
   include Enumerable
   include Utils
@@ -125,7 +125,7 @@ class ReportController < ApplicationController
       @report = report_subclass.__send__(:new)
       @args = @report.view_params
       @sublists = EmailList.get_sublists unless EmailList.disabled?
-      render :partial => "report/special_report", :locals => {:name => n}
+      render :partial => "reports/special_report", :locals => {:name => n}
     end
   end
 

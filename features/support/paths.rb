@@ -17,7 +17,7 @@ module NavigationHelpers
 
     when /the store page/i              then '/store/index'
     when /the subscriptions page/i      then '/store/subscribe'
-
+    when /the donations page/i          then '/donations'
     when /the walkup sales page/i       then "/box_office/walkup/#{@showdate.id}"
     when /the checkin page/i            then "/box_office/checkin/#{@showdate.id}"
 

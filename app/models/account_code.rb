@@ -4,7 +4,7 @@ class AccountCode < ActiveRecord::Base
 
   validates_length_of :name, :maximum => 30, :allow_nil => true
   validates_uniqueness_of :name, :allow_nil => true
-  validates :name_or_code_given
+  validate :name_or_code_given
 
   def name_or_code_given
     !name.blank? || !code.blank?
@@ -24,7 +24,7 @@ class AccountCode < ActiveRecord::Base
   # convenience accessors
 
   def name_with_code
-    code.blank? ? name : [code,name].join(': ')
+    code.blank? ? name : (name.blank? ? "(#{code})" : "(#{code}) #{name}")
   end
   
   def fund_with_account_code
