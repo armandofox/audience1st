@@ -87,6 +87,28 @@ describe "Date/time extras" do
         (@end - 1.day).within_season?(2009).should be_true
       end
     end
+    describe "should give same result for date or time object" do
+      before(:each) do
+        stub_month_and_day(9,1)
+        @time = Time.parse("2011-01-21")
+        @date = Date.civil(2011, 1, 21)
+      end
+      it "if different year" do
+        @time.at_beginning_of_season.to_date.should == @date.at_beginning_of_season
+      end
+      it "if year given explicitly" do
+        @time.at_beginning_of_season(2008).to_date.should ==
+          @date.at_beginning_of_season(2008)
+      end
+      it "going the other way - different year" do
+        @date.at_beginning_of_season.to_time.should ==
+          @time.at_beginning_of_season
+      end
+      it "going the other way - explicit year" do
+        @date.at_beginning_of_season(2008).to_time.should ==
+          @time.at_beginning_of_season(2008)
+      end
+    end
   end
 
   describe "creating a date or time from params[]" do

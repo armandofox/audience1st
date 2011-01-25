@@ -92,10 +92,10 @@ class Time
 end
 
 class Date
-  def at_beginning_of_season(arg=self.year)
+  def at_beginning_of_season(arg=nil)
     self.to_time.at_beginning_of_season(arg).to_date
   end
-  def at_end_of_season(arg=self.year)
+  def at_end_of_season(arg=nil)
     self.to_time.at_end_of_season(arg).to_date
   end
   def within_season?(arg)
