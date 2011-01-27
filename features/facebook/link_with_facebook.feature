@@ -1,3 +1,4 @@
+@facebook
 Feature: link with Facebook
 
   As a patron who has a Facebook account

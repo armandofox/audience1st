@@ -23,11 +23,7 @@ class AccountCode < ActiveRecord::Base
 
   # convenience accessors
 
-  def name_with_code
-    code.blank? ? name : (name.blank? ? "(#{code})" : "(#{code}) #{name}")
-  end
+  def name_or_code ;    name.blank? ? code : name        ; end
+  def name_with_code ;  sprintf("%-6.6s #{name}", code)  ; end
   
-  def fund_with_account_code
-    self.account_code.blank? ? self.name : "#{self.name} (#{self.account_code})"
-  end
 end

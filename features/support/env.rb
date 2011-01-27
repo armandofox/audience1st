@@ -9,8 +9,12 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
 require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
 require 'cucumber/rails/rspec'
+
 require 'cucumber/rails/world'
-# require 'facebooker/rails/cucumber'
+# #require 'facebooker/rails/cucumber'
+# Facebooker::MockService.fixture_path = File.join(RAILS_ROOT, 'spec', 'fixtures', 'facebook')
+# Facebooker::Session.current = Facebooker::MockSession.create
+
 require 'cucumber/rails/active_record'
 require 'cucumber/web/tableish'
 
@@ -64,7 +68,7 @@ if ENV['SELENIUM']
 
   Webrat.configure do |config|
     config.mode = :selenium
-    config.application_environment = :test
+    config.application_environment = :cucumber
     config.application_framework = :rails
   end
 

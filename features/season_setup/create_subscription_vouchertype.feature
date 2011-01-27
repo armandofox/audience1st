@@ -14,6 +14,7 @@ Scenario: Create new subscription vouchertype
   And I select "Bundle" from "Type"
   And I fill in "Name" with "NewSub"
   And I fill in "Price" with "15"
+  And I select "General Fund" from "Account Code"
   And I select "Anyone may purchase" from "Availability"
   And I select "2011" from "Season"
   And I check "Mail fulfillment needed"
