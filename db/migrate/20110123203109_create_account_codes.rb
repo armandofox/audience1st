@@ -14,15 +14,19 @@ class CreateAccountCodes < ActiveRecord::Migration
       Vouchertype.find_by_sql(
       'select distinct account_code from vouchertypes
         where account_code is not null and account_code != ""').
-      map(&:account_code) +
+      map { |v| v.attributes['account_code'] } +
       Donation.find_by_sql(
       'select distinct account_code from donations
         where account_code is not null and account_code != ""').
-      map(&:account_code) 
+      map { |v| v.attributes['account_code'] }
       
     codes.each do |code|
-      unless (ac = AccountCode.find_by_code(code))
+      ac = AccountCode.find_by_code(code)
+      if ac.nil?
+        puts "Creating account code for '#{code}'"
         ac = AccountCode.create!(:code => code, :name => "Account code #{code}")
+      else
+        puts "Using account code #{ac.id} for '#{code}'"
       end
       Vouchertype.update_all("account_code_id = #{ac.id}", "account_code = '#{code}'")
       Donation.update_all("account_code_id = #{ac.id}", "account_code = '#{code}'")

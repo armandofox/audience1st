@@ -99,7 +99,8 @@ class ReportsController < ApplicationController
 
   def accounting_report
     from,to = get_dates_from_params(:from,:to)
-    @report = AccountingReport.new(from,to)
+    @rep = AccountingReport.new(from,to)
+    render :action => 'accounting_report'
   end
 
   def subscriber_details
