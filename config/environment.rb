@@ -40,6 +40,7 @@ Rails::Initializer.run do |config|
 
   # for reporting
   config.gem "ruport"
+  config.gem "acts_as_reportable", :lib => "ruport"
 
   # config.gem "rack", :version => '1.1.0'
 

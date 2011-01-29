@@ -1,4 +1,7 @@
-%h1= h @rep.title
+#download
+  = gen_button 'Download to Excel', :action => 'accounting_report', :from => @from, :to => @to, :format => 'csv'
+  / = gen_button 'Download as PDF', :action => 'accounting_report', :from => @from, :to => @to, :format => 'pdf'
 
-#accountingReport
-  = @rep.groups.as(:html, :column_order => [:code, :name, :num_units, :total_amount])
+#pageDiv
+  = @report
+

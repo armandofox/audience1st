@@ -98,9 +98,16 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
-    from,to = get_dates_from_params(:from,:to)
-    @rep = AccountingReport.new(from,to)
-    render :action => 'accounting_report'
+    @from,@to = get_dates_from_params(:from,:to)
+    if params[:format] =~ /csv/i
+      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
+      send_data AccountingReport.render_csv(:from => @from, :to => @to), :type => content_type
+    elsif params[:format] =~ /pdf/i
+      send_data AccountingReport.render_pdf(:from => @from, :to => @to), :type => 'application/pdf'
+    else
+      @report = AccountingReport.render_html(:from => @from, :to => @to)
+      render :action => 'accounting_report'
+    end
   end
 
   def subscriber_details

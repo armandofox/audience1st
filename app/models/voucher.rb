@@ -74,7 +74,16 @@ class Voucher < ActiveRecord::Base
   # delegations
   def account_code ; vouchertype.account_code ; end
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end
-  def show_name ; showdate.kind_of?(Showdate) ? showdate.show_name : "" ; end
+  def voucher_description
+    if showdate.kind_of?(Showdate)
+      showdate.show_name
+    elsif vouchertype.bundle?
+      vouchertype.name
+    else
+      ''
+    end
+  end
+  
   def purchasemethod_reportable ; purchasemethod.description ; end
 
   def processed_by_name
