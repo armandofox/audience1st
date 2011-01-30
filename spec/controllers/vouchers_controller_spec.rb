@@ -6,7 +6,7 @@ describe VouchersController do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
       :name => 'regular voucher',
       :category => 'revenue',
-      :account_code => '9999',
+      :account_code => AccountCode.default_account_code,
       :price => 10.00,
       :season => Time.now.year)
   end

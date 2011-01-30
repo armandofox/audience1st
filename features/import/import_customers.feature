@@ -7,12 +7,9 @@ Feature: Import customer list
 
 Background:
   Given I am logged in as the administrator
-  And I follow "Admin"
-  Then I should be on the Admin:Settings page
-  When I follow "Import"
-  Then I should be on the Admin:Import page
-  And I should see "What do you want to import"
-  And the "import_type" menu should contain "Customer/mailing list"
+  And I go to the Admin:Import page
+  Then I should see "What do you want to import"
+  And I should see "Customer/mailing list" within "select[id=import_type]"
 
 Scenario: Upload customer import list
   

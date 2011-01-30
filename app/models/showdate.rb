@@ -2,6 +2,8 @@ class Showdate < ActiveRecord::Base
 
   include Comparable
 
+  acts_as_reportable
+  
   belongs_to :show
   has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
   has_many :customers, :through => :vouchers, :uniq => true, :conditions => 'customers.role >= 0'

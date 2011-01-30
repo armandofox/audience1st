@@ -1,5 +1,6 @@
 class Report
-
+  include FilenameUtils
+  
   attr_accessor :output_options, :filename, :query
   attr_reader :view_params, :customers, :output
   attr_accessor :fields, :log
@@ -28,7 +29,7 @@ class Report
     @output_options = output_options
     @output_options_processed = {}
     @order = 'last_name,zip'
-    @filename = self.class.to_s.downcase + Time.now.strftime("%Y_%m_%d")
+    @filename = filename_from_object(self)
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
 
@@ -99,7 +100,7 @@ class Report
         logger.error err
       end
     end
-    @filename = self.class.to_s.downcase + Time.now.strftime("%Y_%m_%d")
+    @filename = filename_from_object(self)
   end
 
   def errors

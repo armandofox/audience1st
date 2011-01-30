@@ -1,4 +1,4 @@
-class ReportController < ApplicationController
+class ReportsController < ApplicationController
 
   include Enumerable
   include Utils
@@ -29,10 +29,11 @@ class ReportController < ApplicationController
     case params[:rep]
     when /transaction/i
       sales_detail
-    when /revenue/i
+    when /unearned/i
+      flash[:warning] = "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."
+      redirect_to :action => 'index' and return
+    when /earned/i
       accounting_report
-    when /invoice/i
-      invoice
     else
       flash[:notice] = "Please select a valid report."
       redirect_to(:action => 'index') and return
@@ -101,50 +102,19 @@ class ReportController < ApplicationController
 
   def accounting_report
     @from,@to = get_dates_from_params(:from,:to)
-    @page_title =  "Revenue by Category: "
-    # get all vouchers sold between these dates where:
-    #  - NOT walkup sales
-    #  - purchasemethod is some credit card transaction
-    #  - vouchertype has a price > 0
-    # run report for all vouchertypes such that:
-    # - account code is not null
-    # - price > 0
-    sql_query = <<EOQ1
-      SELECT v.purchasemethod_id,vt.account_code,s.name,
-                SUM(vt.price) AS totalprice,COUNT(*) AS numunits
-        FROM vouchers v
-          INNER JOIN vouchertypes vt ON v.vouchertype_id=vt.id
-          INNER JOIN showdates sd ON sd.id = v.showdate_id
-          INNER JOIN shows s ON s.id = sd.show_id
-        WHERE
-          v.showdate_id != 0
-          AND (v.sold_on BETWEEN ? and ?)
-          AND v.customer_id NOT IN (0,?)
-        GROUP BY v.purchasemethod_id,vt.account_code,s.name
-        ORDER BY v.purchasemethod_id
-EOQ1
-    sql = [sql_query, @from, @to, Customer.walkup_customer.id]
-    @show_txns = Voucher.find_by_sql(sql)
-    # next, all the Bundle Vouchers - regardless of purchase method
-    sql = ["SELECT vt.name,vt.account_code,SUM(vt.price) " <<
-           "FROM vouchers v " <<
-           "  INNER JOIN vouchertypes vt ON v.vouchertype_id = vt.id " <<
-           "WHERE " <<
-           " vt.price > 0" <<
-           " AND (v.sold_on BETWEEN ? AND ?)" <<
-           " AND v.customer_id NOT IN (0,?)" <<
-           " AND vt.category='bundle'" <<
-           "GROUP BY vt.account_code,vt.name",
-           @from, @to, Customer.walkup_customer.id]
-    @subs_txns = sort_and_filter(Voucher.find_by_sql(sql),"vt.price")
-    # last, all the Donations
-    sql = ["SELECT df.name,d.account_code,SUM(d.amount) " <<
-           "FROM donations d, donation_funds df " <<
-           "WHERE d.date BETWEEN ? AND ? " <<
-           "GROUP BY d.purchasemethod_id",
-           @from, @to]
-    @donation_txns = sort_and_filter(Voucher.find_by_sql(sql),"d.amount")
-    render :action => 'accounting_report'
+    if params[:format] =~ /csv/i
+      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
+      send_data(AccountingReport.render_csv(:from => @from, :to => @to),
+        :type => content_type,
+        :filename => filename_from_dates('revenue', @from, @to, 'csv'))
+    elsif params[:format] =~ /pdf/i
+      send_data(AccountingReport.render_pdf(:from => @from, :to => @to),
+        :type => 'application/pdf',
+        :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
+    else
+      @report = AccountingReport.render_html(:from => @from, :to => @to)
+      render :action => 'accounting_report'
+    end
   end
 
   def subscriber_details
@@ -170,7 +140,7 @@ EOQ1
       @report = report_subclass.__send__(:new)
       @args = @report.view_params
       @sublists = EmailList.get_sublists unless EmailList.disabled?
-      render :partial => "report/special_report", :locals => {:name => n}
+      render :partial => "reports/special_report", :locals => {:name => n}
     end
   end
 

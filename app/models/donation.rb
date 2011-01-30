@@ -6,11 +6,18 @@ class Donation < ActiveRecord::Base
 
   @@default_code = Option.value(:default_donation_account_code)
 
-  belongs_to :donation_fund
-  #belongs_to :purchasemethod
+  belongs_to :account_code
+  validates_associated :account_code
+  validates_presence_of :account_code_id
+  
+  belongs_to :purchasemethod
+  validates_presence_of :purchasemethod_id
+  
   belongs_to :customer
+  validates_associated :customer
+  
   has_one :processed_by, :class_name => 'Customer'
-  validates_associated :donation_fund, :customer
+
   validates_numericality_of :amount
   validates_presence_of :date
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
@@ -25,19 +32,18 @@ class Donation < ActiveRecord::Base
     Donation.create(:date => Date.today,
                     :amount => amount,
                     :customer_id => Customer.walkup_customer.id,
-                    :donation_fund_id => DonationFund.default_fund_id,
+                    :account_code_id => AccountCode.default_account_code_id,
                     :purchasemethod_id => purch.id,
                     :account_code => @@default_code,
                     :letter_sent => false,
                     :processed_by_id => logged_in_id)
   end
 
-  def self.online_donation(amount,cid,logged_in_id,purch=nil)
-    purch ||= Purchasemethod.get_type_by_name('web_cc')
+  def self.online_donation(amount,cid,logged_in_id,purch=Purchasemethod.get_type_by_name('web_cc'))
     Donation.new(:date => Time.now,
                  :amount => amount,
                  :customer_id => cid,
-                 :donation_fund_id => DonationFund.default_fund_id,
+                 :account_code_id => AccountCode.default_account_code_id,
                  :account_code => @@default_code,
                  :purchasemethod_id => purch.id,
                  :letter_sent => false,

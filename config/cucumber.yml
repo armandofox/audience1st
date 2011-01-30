@@ -1,12 +1,8 @@
 <%
-format = '--format pretty --color'
-rerun = File.file?('rerun.txt') ? IO.read('rerun.txt') : ""
-rerun_opts = rerun.to_s.strip.empty? ? "--format pretty features" : "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
-std_opts = "#{rerun_opts} --format rerun --out rerun.txt --strict"
+format = '--require features --format pretty --color'
 %>
-default: <%= format %> 
 autotest: <%= format %> --tags @ip 
+default: <%= format %> --tags ~@selenium --tags ~@facebook
 selenium: <%= format %> --tags @selenium
-rerun:  <%= std_opts %>
-passing:  --tags ~@wip <%= format %> 
+passing:  <%= format %> --tags ~@wip  
 cur:  --tags @cur <%= format %>

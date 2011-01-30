@@ -119,7 +119,7 @@ class Cart
       elsif a.kind_of?(Voucher) 
         a <=> b
       elsif a.kind_of?(Donation)
-        a.donation_fund_id <=> b.donation_fund_id
+        a.account_code_id <=> b.account_code_id
       else
         a.object_id <=> b.object_id
       end

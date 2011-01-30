@@ -209,7 +209,7 @@ class StoreController < ApplicationController
       @recipient = verify_valid_recipient 
     @cart.gift_from(@customer) unless @recipient == @customer
     # OK, we have a customer record to tie the transaction to
-    howpurchase = Purchasemethod.default
+    howpurchased = Purchasemethod.default
     # regular customers can only purchase with credit card
     params[:commit] = 'credit' if !@is_admin
     if params[:commit] =~ /check/i

@@ -1,0 +1,13 @@
+= f.error_messages 
+%fieldset
+  %legend Account Code
+  %label{:for => 'account_code_name'} Name
+  = f.text_field 'name', :size => 20
+  %br
+  %label{:for => 'account_code_code'} Code
+  = f.text_field 'code', :size => 6
+  %br
+  %label{:for => 'account_code_description'} Brief Description
+  = f.text_field 'description', :size => 40
+  %br
+

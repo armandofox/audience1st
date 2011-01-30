@@ -1,0 +1,6 @@
+%h1 Add New Account Code
+
+- form_for(@account_code) do |f|
+  = render :partial => 'form', :locals => {:f => f}
+  = f.submit 'Create'
+  = gen_button 'Cancel', account_codes_path

@@ -37,7 +37,11 @@ Rails::Initializer.run do |config|
   config.gem "hpricot"
   config.gem "dbf", :version => '>= 1.2.8'
   config.gem "builder", :version => '>= 2.1.2'
-  
+
+  # for reporting
+  config.gem "ruport"
+  config.gem "acts_as_reportable", :lib => "ruport"
+
   # config.gem "rack", :version => '1.1.0'
 
   config.active_record.timestamped_migrations = true

@@ -151,12 +151,12 @@ class DonationController < ApplicationController
                 d.customer.email,
                 d.amount,
                 d.date.to_formatted_s(:db),
-                d.account_code,
-                d.donation_fund.name,
+                d.account_code.code,
+                d.account_code.name,
                 d.letter_sent]
       end
       send_data(output, :type => content_type,
-                :filename => "donations_#{Time.now.strftime('%Y_%m_%d')}.csv")
+                :filename => filename_from_date('donations', Time.now, 'csv'))
     end
   end
 

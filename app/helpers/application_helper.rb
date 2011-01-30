@@ -489,6 +489,8 @@ EOJS
                  ["Month to date", t.at_beginning_of_month, t],
                  ["Last month", (t-1.month).at_beginning_of_month,
                   t.at_beginning_of_month - 1.day],
+                 ["Season to date", t.at_beginning_of_season, t],
+                 ["Last season", t.at_beginning_of_season - 1.year, t.at_end_of_season - 1.year],
                  ["Year to date", t.at_beginning_of_year, t],
                  ["Last year", (t-1.year).at_beginning_of_year,
                   t.at_beginning_of_year - 1.day],

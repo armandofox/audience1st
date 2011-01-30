@@ -26,7 +26,7 @@
                 %span.promo_code= "(Promo #{h(i.promo_code)})"
             - elsif i.kind_of?(Donation)
               - price = i.amount
-              %span.donation_name= "Donation to #{h(i.donation_fund.name)}"
+              %span.donation_name= "Donation to #{h(i.account_code.name)}"
               
     #cart_total
       #total_price= number_to_currency(@cart.total_price)

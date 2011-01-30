@@ -7,7 +7,7 @@
 
     - form_tag({:action => 'do_report'}, {:method => :get}) do
       %p
-        = select_tag 'rep', options_for_select(["Transaction details", "Categorized Revenue", "Invoice"])
+        = select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue"])
         = select_date_shortcuts 2007, 'from', 'to'
         = submit_tag 'Go'
       %p

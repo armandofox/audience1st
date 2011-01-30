@@ -2,6 +2,9 @@ World()
 
 DEFAULT_HOUSE_CAPACITY = 100
 
+Given /^there are no shows set up$/ do
+  Show.delete_all
+end
 
 Given /^there is no show named "(.*)"$/ do |name|
   Show.find_by_name(name).should be_nil

@@ -1,4 +1,10 @@
 class Vouchertype < ActiveRecord::Base
+
+  acts_as_reportable :only => [:name, :price]
+
+  belongs_to :account_code
+  validates_associated :account_code
+
   has_many :valid_vouchers
   has_many :vouchers
   has_many :showdates, :through => :valid_vouchers

@@ -1,5 +1,5 @@
 - form_tag :action => 'run_special_report' do
-  = render :partial => "report/special/#{name}"
+  = render :partial => "reports/special/#{name}"
   = render :partial => 'output_options'
   = hidden_field_tag '_report', name
   %fieldset.generate_report

@@ -1,4 +1,7 @@
 class Voucher < ActiveRecord::Base
+
+  acts_as_reportable
+  
   belongs_to :customer
   belongs_to :showdate
   belongs_to :vouchertype
@@ -6,8 +9,8 @@ class Voucher < ActiveRecord::Base
   belongs_to :processed_by, :class_name => 'Customer'
   belongs_to :gift_purchaser, :class_name => 'Customer'
 
-  validates_presence_of :vouchertype
-  validates_presence_of :purchasemethod
+  validates_presence_of :vouchertype_id
+  validates_presence_of :purchasemethod_id
   validates_presence_of :processed_by_id
   # provide a handler to be called when customers are merged.
   # Transfers the vouchers from old to new id, and also changes the
@@ -68,7 +71,20 @@ class Voucher < ActiveRecord::Base
       (vouchertype_id > 0 && vouchertype.bundle? ? vouchertype.name : "??")
   end
 
+  # delegations
   def account_code ; vouchertype.account_code ; end
+  def account_code_reportable ; vouchertype.account_code.name_with_code ; end
+  def voucher_description
+    if showdate.kind_of?(Showdate)
+      showdate.show_name
+    elsif vouchertype.bundle?
+      vouchertype.name
+    else
+      ''
+    end
+  end
+  
+  def purchasemethod_reportable ; purchasemethod.description ; end
 
   def processed_by_name
     if self.processed_by_id.to_i.zero?

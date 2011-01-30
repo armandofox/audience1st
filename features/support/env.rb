@@ -9,8 +9,12 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
 require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
 require 'cucumber/rails/rspec'
+
 require 'cucumber/rails/world'
-# require 'facebooker/rails/cucumber'
+# #require 'facebooker/rails/cucumber'
+# Facebooker::MockService.fixture_path = File.join(RAILS_ROOT, 'spec', 'fixtures', 'facebook')
+# Facebooker::Session.current = Facebooker::MockSession.create
+
 require 'cucumber/rails/active_record'
 require 'cucumber/web/tableish'
 
@@ -48,7 +52,6 @@ ActionController::Base.allow_rescue = false
 if ENV['SELENIUM']
   # for Selenium only:
   require 'webrat/selenium'
-  config.gem "selenium-client", :lib => "selenium/client"
   Cucumber::Rails::World.use_transactional_fixtures = false
   # How to clean your database when transactions are turned off. See
   # http://github.com/bmabey/database_cleaner for more info.
@@ -65,9 +68,11 @@ if ENV['SELENIUM']
 
   Webrat.configure do |config|
     config.mode = :selenium
-    config.application_environment = :test
+    config.application_environment = :cucumber
     config.application_framework = :rails
   end
+
+  World(Webrat::Selenium::Matchers)
 
 else
 
@@ -87,9 +92,6 @@ Before do
   Fixtures.create_fixtures(fixtures_folder, fixtures)
   # make rspec mocks/stubs work
   $rspec_mocks ||= Spec::Mocks::Space.new
-  #require File.join(RAILS_ROOT, 'spec', 'support', 'facebooker_stubs_for_restful_auth.rb')
-  # Make visible for testing
-  #ApplicationController.send(:public, :logged_in?, :current_user, :current_user=, :current_admin, :authorized?)
 end
 
 After do

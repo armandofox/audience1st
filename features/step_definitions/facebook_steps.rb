@@ -1,6 +1,3 @@
-#require 'facebooker_stubs_for_restful_auth'
-require 'facebooker/rails/cucumber'
-
 Given /^I am logged in with linked Facebook account "(.*)"$/ do |cust|
   # Initializer facebooker session
   @integration_session = open_session

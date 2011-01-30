@@ -1,0 +1,7 @@
+#download
+  = gen_button 'Download to Excel', :action => 'accounting_report', :from => @from, :to => @to, :format => 'csv'
+  / = gen_button 'Download as PDF', :action => 'accounting_report', :from => @from, :to => @to, :format => 'pdf'
+
+#pageDiv
+  = @report
+

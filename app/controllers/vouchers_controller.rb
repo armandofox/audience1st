@@ -258,28 +258,35 @@ class VouchersController < ApplicationController
 
   def cancel_reservation
     @v = Voucher.find(params[:id])
+    flash[:notice] ||= ""
     unless @v.can_be_changed?(logged_in_id)
-      (flash[:notice] ||= "") << "This reservation is not changeable"
-    else
-      showdate = @v.showdate
-      old_showdate = showdate.clone
-      showdate_id = showdate.id
-      show_id = showdate.show.id
-      if @v.cancel(logged_in_id)
-        a= Txn.add_audit_record(:txn_type => 'res_cancl',
-                                :customer_id => @gCustomer.id,
-                                :logged_in_id => logged_in_id,
-                                :showdate_id => showdate_id,
-                                :show_id => show_id,
-                                :voucher_id => @v.id)
-        flash[:notice] = "Your reservation has been cancelled. " <<
-          "Your cancellation confirmation number is #{a}. "
-        unless is_boxoffice
-          email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
-        end
-      else
-        flash[:notice] = 'Error - reservation could not be cancelled'
+      flash[:notice] << "This reservation is not changeable"
+      redirect_to(:controller => 'customers', :action => 'welcome')
+      return
+    end
+    if !@v.reserved?
+      flash[:notice] << "This voucher is not currently reserved for any performance."
+      redirect_to(:controller => 'customers', :action => 'welcome')
+      return
+    end
+    showdate = @v.showdate
+    old_showdate = showdate.clone
+    showdate_id = showdate.id
+    show_id = showdate.show.id
+    if @v.cancel(logged_in_id)
+      a= Txn.add_audit_record(:txn_type => 'res_cancl',
+        :customer_id => @gCustomer.id,
+        :logged_in_id => logged_in_id,
+        :showdate_id => showdate_id,
+        :show_id => show_id,
+        :voucher_id => @v.id)
+      flash[:notice] = "Your reservation has been cancelled. " <<
+        "Your cancellation confirmation number is #{a}. "
+      unless is_boxoffice
+        email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
       end
+    else
+      flash[:notice] = 'Error - reservation could not be cancelled'
     end
     redirect_to :controller => 'customers', :action => 'welcome'
   end

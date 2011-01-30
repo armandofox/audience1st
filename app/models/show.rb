@@ -1,4 +1,7 @@
 class Show < ActiveRecord::Base
+
+  acts_as_reportable
+  
   has_many :showdates, :dependent => :destroy, :order => 'thedate'
   has_one :latest_showdate, :class_name => 'Showdate', :order => 'thedate DESC'
   # NOTE: We can't do the trick below because the database's timezone
