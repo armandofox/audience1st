@@ -156,7 +156,7 @@ class DonationController < ApplicationController
                 d.letter_sent]
       end
       send_data(output, :type => content_type,
-                :filename => "donations_#{Time.now.strftime('%Y_%m_%d')}.csv")
+                :filename => filename_from_date('donations', Time.now, 'csv')
     end
   end
 

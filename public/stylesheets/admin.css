@@ -14,10 +14,18 @@ body.testing {
 
 /* General tabular styles */
 
+/* easier to navigate if tabular rows hilited on hover */
 table.hilite tr {
 	padding: 2px 0;
 	line-height: 1.2;
 }
+table.hilite tr:hover {
+	background-color: #fcfe69;
+}
+/* To make alternating table rows different colors, set the styles here  */
+.even { background-color: inherit; }
+.odd { background-color: #eee; }
+
 /*
  * Tooltip styles (http://psacake.com/web/jl.asp)
  */

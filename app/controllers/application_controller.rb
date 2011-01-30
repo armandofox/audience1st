@@ -9,7 +9,8 @@ class ApplicationController < ActionController::Base
   include Enumerable
   include ExceptionNotifiable
   include ActiveMerchant::Billing
-
+  include FilenameUtils
+  
   filter_parameter_logging :credit_card,:password, :number, :type, :verification_value, :year, :month, :swipe_data
 
   if (RAILS_ENV == 'production' && !SANDBOX)

@@ -3,29 +3,34 @@ class AccountingReport < Ruport::Controller
   include ApplicationHelper
   attr_accessor :from, :to, :title
 
-  stage :itemized_groups
+  stage :itemized_groups, :subtotal_by_purchasemethod
 
   def setup
-    @from = options[:from]
-    @to = options[:to]
-    @title = "Categorized revenue #{humanize_date_range(@from,@to)}"
+    @from,@to = options[:from],options[:to]
+    options[:title] = "Categorized revenue #{humanize_date_range(@from,@to)}"
     @exclude_purchasemethods = Purchasemethod.find_all_by_nonrevenue(true).map(&:id)
     @exclude_categories = [:comp,:subscriber]
-    @report = self.generate
+    @report = self.generate()
     @report.reorder("description", "code", "name", "show_name", "num_units", "total_amount")
-    # cols = @report.column_names
-    # newcols = cols.map { |c| ActiveSupport::Inflector.titleize(c) }
-    # @report.rename_columns(cols, newcols)
-    self.data = Grouping(@report, :by => 'description')
+    cols = @report.column_names
+    newcols = cols.map { |c| ActiveSupport::Inflector.titleize(c) }
+    @report.rename_columns(cols, newcols)
+    self.data = Grouping(@report, :by => 'Description')
   end
 
   formatter :html do
+    def html_table
+      "\n<table class='hilite revenue_report'>\n" << yield << "</table>"
+    end
     build :itemized_groups do
-      output << "<h1>#{@title}</h1>"
+      output << "<h1>#{options[:title]}</h1>"
       output << data.to_html(:style => :justified)
-      g = data.summary(:description,
-        :subtotal => lambda { |g| g.sigma(:total_amount) },
-        :order => [:description, :subtotal])
+    end
+    build :subtotal_by_purchasemethod do
+      g = data.summary('Description',
+        'Subtotals' => lambda { |g| g.sigma('Total Amount') },
+        :order => ['Description', 'Subtotals'])
+      output << "\n<h1>Subtotals by payment type</h1>\n"
       output << g.to_html
     end
   end
@@ -34,12 +39,16 @@ class AccountingReport < Ruport::Controller
     build :itemized_groups do
       output << data.to_csv
     end
+    build :subtotal_by_purchasemethods do
+    end
   end
 
   formatter :pdf do
     build :itemized_groups do
-      pad(10) { add_text @title }
+      pad(10) { add_text options[:title] }
       draw_table data
+    end
+    build :subtotal_by_purchasemethods do
     end
   end
   
@@ -63,6 +72,7 @@ class AccountingReport < Ruport::Controller
           vouchers.sold_on BETWEEN ? AND ?
           AND vouchers.category  NOT IN (?)
           AND vouchers.purchasemethod_id  NOT IN (?)
+          AND vouchertypes.price != 0
         GROUP BY purchasemethods.description, account_codes.code, show_name
         ORDER BY account_codes.code,shows.opening_date
 EOQ1
