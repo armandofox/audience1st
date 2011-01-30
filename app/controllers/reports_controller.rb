@@ -29,7 +29,10 @@ class ReportsController < ApplicationController
     case params[:rep]
     when /transaction/i
       sales_detail
-    when /revenue/i
+    when /unearned/i
+      flash[:warning] = "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."
+      redirect_to :action => 'index' and return
+    when /earned/i
       accounting_report
     else
       flash[:notice] = "Please select a valid report."

@@ -1,5 +1,6 @@
 class Report
-
+  include FilenameUtils
+  
   attr_accessor :output_options, :filename, :query
   attr_reader :view_params, :customers, :output
   attr_accessor :fields, :log

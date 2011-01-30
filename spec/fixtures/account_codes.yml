@@ -1,5 +1,5 @@
 default:
   id: 1
   name: General Fund
-  code: 0000
+  code: 9999
 
