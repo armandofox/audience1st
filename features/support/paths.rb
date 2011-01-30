@@ -1,5 +1,5 @@
 module NavigationHelpers
-  def underscorize(str) ;  str.downcase.gsub!(/ /,'_') ;  end
+  def underscorize(str) ;  str.downcase.gsub(/ /,'_') ; end
   # Maps a name to a path. Used by the
   #
   #   When /^I go to (.+)$/ do |page_name|
@@ -32,9 +32,6 @@ module NavigationHelpers
       else                raise "No mapping for admin:#{page}"
       end
 
-    when /the vouchertypes page/i       then '/vouchertypes/list'
-
-
     when /the show details page for "(.*)"/i
       @show = Show.find_by_name($1)
       @show.should_not be_nil
@@ -46,8 +43,8 @@ module NavigationHelpers
       # create new RESTful resource (non-nested associations)
 
     when /the new show page/i           then '/shows/new'
+    when /the new vouchertypes? page/i  then '/vouchertypes/new'
     when /^the new (.*)s? page$/i       then eval("new_#{underscorize($1)}_path")
-    #when /the new vouchertypes? page/i  then '/vouchertypes/new'
 
       # RESTful index
       
