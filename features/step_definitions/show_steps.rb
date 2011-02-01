@@ -19,7 +19,8 @@ Given /^there is a show named "(.*)" opening (.*)$/ do |name,opening|
 end
 
 Given /^there is a show named "(.*)"$/ do |name|
-  @show = Show.create!(:name => name,
+  @show =  Show.find_by_name(name) ||
+    Show.create!(:name => name,
     :opening_date => Date.today,
     :closing_date => 1.week.from_now,
     :house_capacity => DEFAULT_HOUSE_CAPACITY,
@@ -32,4 +33,5 @@ When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(
   select_date(eval(closes), :from => "Closes")
   fill_in "Actual house capacity", :with => cap
   select_date(eval(list), :from => "List starting")
+
 end
