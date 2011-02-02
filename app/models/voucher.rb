@@ -57,6 +57,7 @@ class Voucher < ActiveRecord::Base
 
   def bundle? ; vouchertype.bundle? ; end
   def subscription? ; vouchertype.subscription? ; end
+  def vouchertype_name ; vouchertype.name ; end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end

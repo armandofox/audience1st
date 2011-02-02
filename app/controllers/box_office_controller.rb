@@ -102,22 +102,16 @@ class BoxOfficeController < ApplicationController
   end
 
   def checkin
-    flash[:warning] = "Interactive checkin not yet implemented (coming soon)"
-    redirect_to :action => 'walkup', :id => @showdate
+    @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
   end
 
   def door_list
-    perf_vouchers = @showdate.vouchers
-    unless perf_vouchers.empty?
-      @total = perf_vouchers.size
-      @num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
-      @vouchers = perf_vouchers.group_by do |v|
-        "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
-      end
-      render :layout => 'door_list'
-    else
+    @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
+    if @vouchers.empty?
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
       redirect_to :action => 'walkup', :id => @showdate
+    else
+      render :layout => 'door_list'
     end
   end
 
@@ -213,5 +207,18 @@ class BoxOfficeController < ApplicationController
       @chk_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_chk')])
     end
   end
+
+  private
+
+  def vouchers_for_showdate(showdate)
+    perf_vouchers = @showdate.vouchers
+    total = perf_vouchers.size
+    num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
+    vouchers = perf_vouchers.group_by do |v|
+      "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
+    end
+    return [total,num_subscribers,vouchers]
+  end
+    
 
 end

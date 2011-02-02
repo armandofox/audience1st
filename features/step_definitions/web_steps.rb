@@ -162,7 +162,7 @@ Then /^(?:|I )should see "([^\"]*)" within "([^\"]*)"$/ do |text, selector|
   end
 end
 
-Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
+Then /^(?:|I )should see \/([^\/]*)\/[xin]*$/ do |regexp|
   regexp = Regexp.new(regexp)
   if defined?(Spec::Rails::Matchers)
     response.should contain(regexp)
