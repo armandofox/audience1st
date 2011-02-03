@@ -174,6 +174,19 @@ table.showdates_summary td {
   color: red;
  }
  
+/*
+ * Online check-in
+ */
+
+span.checkin_button {
+  text-align: left;
+  font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
+  margin: 0;
+  padding: 2px;
+}
+span.checkin_button:hover, span.checked_in {
+  background-color: green;
+}
 
 /*
  * Settings

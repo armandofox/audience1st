@@ -39,7 +39,7 @@
                 %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'itemQty tktQty', :onchange => "recalc_total(); recalc_totaltix()"})  
         %td.c.t
           %br
-          = submit_tag 'Record Cash Payment'
+          = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
           = submit_tag 'Record Check Payment'
           %br
           %br

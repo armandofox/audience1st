@@ -183,12 +183,23 @@ class Showdate < ActiveRecord::Base
     self.vouchers.count
   end
 
+  def advance_sales_vouchers
+    self.vouchers.find(:all,:conditions => ['customer_id != ?', Customer.walkup_customer.id])
+  end
   def compute_advance_sales
     self.vouchers.count(:conditions => ['customer_id != ?', Customer.walkup_customer.id])
   end
+  def compute_walkup_sales
+    self.vouchers.count(:conditions => ['customer_id = ?', Customer.walkup_customer.id])
+  end
 
+  def really_sold_out? ; compute_total_sales >= house_capacity ; end
+  
   def checked_in
-    self.vouchers.count(:conditions => ['used = ?', true])
+    self.vouchers.count(:conditions => ['checked_in = ?', true])
+  end
+  def waiting_for
+    compute_advance_sales - checked_in
   end
 
   def spoken_name

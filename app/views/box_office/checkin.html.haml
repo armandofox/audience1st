@@ -10,12 +10,13 @@
     %th Checkin
     %th Notes
   - @vouchers.keys.sort_by(&:downcase).each do |entry|
+    - vouchers = @vouchers[entry]
+    - c = vouchers.first.customer
     %tr
-      - c = @vouchers[entry].first.customer
       %td.maincolumn= letter_header_for(c.last_name)
       %td= link_to_customer c, :content_text => c.last_name.name_capitalize
       %td= link_to_customer c, :content_text => c.first_name.name_capitalize
-      %td= h @vouchers[entry].first.vouchertype_name
-      %td.c= @vouchers[entry].size
-      %td
-      %td= h comments_for_voucherlist(@vouchers[entry])
+      %td= h vouchers.first.vouchertype_name
+      %td.c= vouchers.size
+      %td= render :partial => 'checkin_buttons', :locals => {:vouchers => vouchers}
+      %td= h comments_for_voucherlist(vouchers)

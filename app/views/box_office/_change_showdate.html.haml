@@ -1,0 +1,13 @@
+#change_showdate.clear
+  %h1.floatleft= h(@showdate.printable_name)
+  .floatleft.h1= link_to_function 'Change', |
+    visual_effect(:toggle_slide, 'select_show', :duration => 0.5), |
+    {:class => 'genButton'} |
+  .clear
+
+  #select_show{:style => "display: none;"}
+    - form_tag :action => :change_showdate, :method => :get do
+      %label{:for=>:showdate_thedate} Show and Date:
+      = select_tag 'id', options_from_collection_for_select(@showdates,:id, :printable_name, @showdate.id), :onchange => 'this.form.submit();'
+      %label
+
