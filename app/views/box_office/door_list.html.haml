@@ -18,20 +18,19 @@
             %th Qty
             %th Notes
         %tbody
-          - cur_ltr = ''
           - @vouchers.keys.sort_by(&:downcase).each do |k|
             - v = @vouchers[k].first
             - c = v.customer
             - c_lnk = {:controller => 'customers', :action =>'welcome', :id => c.id }
             %tr{:class=>(c.subscriber? ? 'subscriber' : nil)}
               - ln,fn=c.last_name.name_capitalize, c.first_name.name_capitalize
-              %td.maincolumn= (ln[0,1].upcase==cur_ltr ? '' : cur_ltr=ln[0,1].upcase)
+              %td.maincolumn= letter_header_for(ln) 
               %td= ln
               %td= fn
               %td= h v.vouchertype.name
               %td.c= h @vouchers[k].size
               / concatenate all nonempty comments
-              %td= h(@vouchers[k].map { |v| v.comments unless v.comments.blank? }.compact.uniq.join(";"))
+              %td= h comments_for_voucherlist(@vouchers[k])
 
       %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
       %p

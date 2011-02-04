@@ -91,6 +91,12 @@ module BasicModels
         :listing_date => Date.today}.merge(opts))
   end
 
+  def self.new_voucher_for_showdate(showdate, vtype, opts={})
+    vt = vtype.kind_of?(Vouchertype) ? vtype :
+      (Vouchertype.find_by_name(vtype) || self.create_revenue_vouchertype(:name => vtype))
+    Voucher.new_from_vouchertype(vt).reserve(showdate,
+      (opts[:logged_in] || customers(:boxoffice)))
+  end
 end
 
       

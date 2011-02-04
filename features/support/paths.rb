@@ -20,8 +20,13 @@ module NavigationHelpers
     when /the subscriptions page/i      then '/store/subscribe'
     when /the donations page/i          then '/donations'
     when /the reports page/i            then '/reports'
+
     when /the walkup sales page/i       then "/box_office/walkup/#{@showdate.id}"
-    when /the checkin page/i            then "/box_office/checkin/#{@showdate.id}"
+    when /the checkin page for "?(.*)"?$/ then "/box_office/checkin/#{(@showdate = Showdate.find_by_thedate(Time.parse($1))).id}"
+    when /the checkin page$/i            then "/box_office/checkin/#{@showdate.id}"
+
+    when /the door list for "?(.*)"?$/ then "/box_office/door_list/#{(@showdate = Showdate.find_by_thedate(Time.parse($1))).id}"
+    when /the door list$/i            then "/box_office/door_list/#{@showdate.id}"
 
     when /the admin:(.*) page/i
       page = $1

@@ -5,7 +5,7 @@ class Customer < ActiveRecord::Base
   # The "customer" to whom all walkup tickets are sold
   
   def self.walkup_customer ; special_customer(:walkup) ; end
-  def is_walkup_customer? ;  self.role == WALKUP_CUSTOMER_ROLE;   end
+  def is_walkup_customer? ;  self.role == -1 && self.first_name =~ /^walkup$/i;   end
 
   # The box office daemon that handles background imports, etc.
 

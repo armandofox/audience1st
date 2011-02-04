@@ -39,13 +39,8 @@
                 %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'itemQty tktQty', :onchange => "recalc_total(); recalc_totaltix()"})  
         %td.c.t
           %br
-          = submit_tag 'Record Cash Payment'
+          = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
           = submit_tag 'Record Check Payment'
-          %br
-          %br
-          = javascript_tag submit_if_zero('checkZero', 'total', |
-            'This option may only be used when no payment needs to be collected.') |
-          = button_to_function 'Record Zero-Revenue Order', 'checkZero()'
           %br
           %br
           #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}

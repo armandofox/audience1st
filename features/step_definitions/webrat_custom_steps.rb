@@ -26,6 +26,29 @@ Then /^I should see the "(.*)" message$/ do |m|
   response.should(have_selector("div##{m}") || have_selector("div.#{m}"))
 end
 
+# tabular data
+Then /^I should see a row "(.*)" within "(.*)"$/ do |row, table|
+  response.should have_selector(table)
+  @html ||= Nokogiri::HTML(response.body)
+  @rows ||= @html.xpath('//table//tr').collect { |r| r.xpath('.//th|td') }
+  col_regexps = row.split('|').map { |s| Regexp.new(s) }
+  @rows.any? do |table_row|
+    match = true
+    col_regexps.each_with_index do |regexp,index|
+      match &&= table_row[index].content.match(regexp)
+    end
+    match
+  end.should be_true, "Expected #{table} to contain a row matching <#{row}>"
+end
+    
+
+Then /^I should see a table "(.*)" with rows? (.*)$/ do |table,all_rows|
+  response.should have_selector(table)
+  all_rows.split(/, ?/).each do |row|
+    Then "I should see a row #{row} within \"#{table}\""
+  end
+end      
+
 # File uploading
 When /^I upload (.*) import list "(.*)"$/ do |type,file|
   case type

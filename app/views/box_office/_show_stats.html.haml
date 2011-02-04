@@ -1,33 +1,36 @@
-.clear
 #show_stats
-  %h1.floatleft= h(@showdate.printable_name)
-  .floatleft.h1= link_to_function 'Change', |
-    visual_effect(:toggle_slide, 'select_show', :duration => 0.5), |
-    {:class => 'genButton'} |
-  .clear
-
-  #select_show{:style => "display: none;"}
-    - form_tag :action => :change_showdate, :method => :get do
-      %label{:for=>:showdate_thedate} Show and Date:
-      = select_tag 'id', options_from_collection_for_select(@showdates,:id, :printable_name, @showdate.id), :onchange => 'this.form.submit();'
-      %label
-
   %table#showdate_info
     %tr
+      %td.header= link_to 'Cap:', :controller => 'shows', :action => 'edit', :id => showdate.show
+      %td.value
+        %span#cap= showdate.house_capacity
       %td
-        House cap:
-        %span#show_capacity= cap = @showdate.house_capacity
       %td
-        Sold:
-        - tsales = @showdate.compute_total_sales
-        %span#sold{:class => (tsales>cap ? 'strong' : nil)}= @showdate.compute_total_sales
+    %tr
+      %td.header= link_to 'Advance sales:', :action => 'checkin', :id => showdate
+      %td.value
+        %span#advance_sales{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
       %td
-        Checked in:
-        %span#checked_in= @showdate.checked_in
+        ( Checked in:
+        %span#checked_in= showdate.checked_in
       %td
-        Available:
-        - if (avail = @showdate.total_seats_left).zero?
+        Waiting for:
+        %span#waiting_for= showdate.waiting_for
+        )
+    %tr 
+      %td.header= link_to 'Walkup sales:', :action => 'walkup', :id => showdate
+      %td.value
+        %span#walkup_sales= showdate.compute_walkup_sales
+      %td
+      %td
+    %tr
+      %td.header Available:
+      %td.value
+        - if showdate.really_sold_out?
           %span#available.strong 0
         - else
-          %span#available.highlighted= avail
+          %span#available.highlighted= showdate.house_capacity - showdate.compute_total_sales
+      %td
+      %td
+
 .clear

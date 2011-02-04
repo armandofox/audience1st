@@ -13,3 +13,8 @@
       %td.strong{:colspan => 4} Cash Sales
       = render :partial => 'walkup_transaction', |
       :locals => {:buckets => @cash_tix_types, :label => 'Cash'} |
+    %tr
+      %td.strong{:colspan => 4} Comps
+      = render :partial => 'walkup_transaction', |
+      :locals => {:buckets => @comp_tix_types, :label => 'Comp'} |
+      

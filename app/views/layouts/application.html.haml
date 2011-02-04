@@ -35,7 +35,8 @@
               = render :partial => 'layouts/login_banner' if current_user
               - if controller.controller_name == 'box_office'
                 = render :partial => 'layouts/box_office_tabs'
-                = render :partial => 'box_office/show_stats'
+                = render :partial => 'box_office/change_showdate'
+                = render :partial => 'box_office/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'layouts/admin_tabs'
               - elsif @gCustomer

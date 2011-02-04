@@ -57,6 +57,7 @@ class Voucher < ActiveRecord::Base
 
   def bundle? ; vouchertype.bundle? ; end
   def subscription? ; vouchertype.subscription? ; end
+  def vouchertype_name ; vouchertype.name ; end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
@@ -229,7 +230,10 @@ class Voucher < ActiveRecord::Base
       (Time.now < (showdate.thedate - Option.value(:cancel_grace_period).minutes))
   end
 
-
+  # Checked in?
+  def check_in! ; update_attribute(:checked_in, true) ; self ; end
+  def un_check_in! ; update_attribute(:checked_in, false) ; self ; end
+  
   def part_of_subscription? ;  vouchertype.subscriber_voucher? ;  end
 
   # operations on vouchers:
@@ -237,14 +241,14 @@ class Voucher < ActiveRecord::Base
   # reserve(showdate_id, logged_in)
   #  reservation binds it to a showdate and fills in who processed it
   # 
+  def unreserve
+    update_attributes!(:showdate_id => 0, :checked_in => nil)
+  end
   def reserve(showdate, logged_in_customer)
     self.showdate = showdate
     self.processed_by_id = logged_in_customer.id
     self
   end
-
-    
-
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
     if reserved?

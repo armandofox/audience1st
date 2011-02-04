@@ -4,12 +4,12 @@ class BoxOfficeController < ApplicationController
                 :redirect_to => { :controller => :customers, :action => :login})
 
   # sets  instance variable @showdate and others for every method.
-  before_filter :get_showdate
+  before_filter :get_showdate, :except => :mark_checked_in
   verify(:method => :post,
-         :only => :do_walkup_sale,
+         :only => %w(do_walkup_sale),
          :redirect_to => { :action => :walkup, :id => @showdate },
     :add_to_flash => {:warning => "Warning: action only callable as POST, no transactions were recorded! "})
-
+  verify :method => :post, :only => :mark_checked_in
   ssl_required(:walkup, :do_walkup_sale)
   ssl_allowed :change_showdate
   
@@ -102,22 +102,35 @@ class BoxOfficeController < ApplicationController
   end
 
   def checkin
-    flash[:warning] = "Interactive checkin not yet implemented (coming soon)"
-    redirect_to :action => 'walkup', :id => @showdate
+    @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
+  end
+
+  def mark_checked_in
+    render :nothing => false and return unless params[:vouchers]
+    vouchers = params[:vouchers].split(/,/).map { |v| Voucher.find_by_id(v) }.compact
+    if params[:uncheck]
+      vouchers.map { |v| v.un_check_in! }
+    else
+      vouchers.map { |v| v.check_in! }
+    end
+    render :update do |page|
+      showdate = vouchers.first.showdate
+      page.replace_html 'show_stats', :partial => 'show_stats', :locals => {:showdate => showdate}
+      if params[:uncheck]
+        vouchers.each { |v| page[v.id.to_s].removeClassName('checked_in') }
+      else
+        vouchers.each { |v| page[v.id.to_s].addClassName('checked_in') }
+      end
+    end
   end
 
   def door_list
-    perf_vouchers = @showdate.vouchers
-    unless perf_vouchers.empty?
-      @total = perf_vouchers.size
-      @num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
-      @vouchers = perf_vouchers.group_by do |v|
-        "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
-      end
-      render :layout => 'door_list'
-    else
+    @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
+    if @vouchers.empty?
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
       redirect_to :action => 'walkup', :id => @showdate
+    else
+      render :layout => 'door_list'
     end
   end
 
@@ -207,11 +220,26 @@ class BoxOfficeController < ApplicationController
     @cash_tix_types = Hash.new(0)
     @cc_tix_types = Hash.new(0)
     @chk_tix_types = Hash.new(0)
+    @comp_tix_types = Hash.new(0)
     @showdate.vouchertypes.each do |v|
+      @comp_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('none')])
       @cash_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cash')])
       @cc_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cc')])
       @chk_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_chk')])
     end
   end
+
+  private
+
+  def vouchers_for_showdate(showdate)
+    perf_vouchers = @showdate.advance_sales_vouchers
+    total = perf_vouchers.size
+    num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
+    vouchers = perf_vouchers.group_by do |v|
+      "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
+    end
+    return [total,num_subscribers,vouchers]
+  end
+    
 
 end
