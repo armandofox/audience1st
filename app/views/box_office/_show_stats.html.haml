@@ -1,13 +1,13 @@
 #show_stats
   %table#showdate_info
     %tr
-      %td.header Cap:
+      %td.header= link_to 'Cap:', :controller => 'shows', :action => 'edit', :id => showdate.show
       %td.value
         %span#cap= showdate.house_capacity
       %td
       %td
     %tr
-      %td.header Advance sales:
+      %td.header= link_to 'Advance sales:', :action => 'checkin', :id => showdate
       %td.value
         %span#advance_sales{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
       %td
@@ -18,7 +18,7 @@
         %span#waiting_for= showdate.waiting_for
         )
     %tr 
-      %td.header Walkup sales:
+      %td.header= link_to 'Walkup sales:', :action => 'walkup', :id => showdate
       %td.value
         %span#walkup_sales= showdate.compute_walkup_sales
       %td

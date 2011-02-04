@@ -12,7 +12,7 @@
   - @vouchers.keys.sort_by(&:downcase).each do |entry|
     - vouchers = @vouchers[entry]
     - c = vouchers.first.customer
-    %tr
+    %tr{:class => ('subscriber' if c.subscriber?)}
       %td.maincolumn= letter_header_for(c.last_name)
       %td= link_to_customer c, :content_text => c.last_name.name_capitalize
       %td= link_to_customer c, :content_text => c.first_name.name_capitalize

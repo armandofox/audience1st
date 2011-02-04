@@ -208,7 +208,7 @@ span.checkin_button {
   padding: 2px;
 }
 span.checkin_button:hover, span.checked_in {
-  background-color: #7efa12;
+  background-color: yellow;
 }
 
 /*
