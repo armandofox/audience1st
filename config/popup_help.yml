@@ -225,3 +225,12 @@ sublists: >
   Mailchimp or ConstantContact.  By saving the result of a report as a
   sublist, you can then send an email campaign to just those patrons.
 
+# Box office
+
+checkin: >
+
+  Click a number in this column to "check in" that many people in the 
+  customer's party as they arrive.  
+  A highlighted number indicates people who have
+  checked in.  
+  Click the X to "un-check-in" everyone in that customer's party.

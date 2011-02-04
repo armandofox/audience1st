@@ -23,7 +23,7 @@
       %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
         %td
           - if @superadmin
-            = link_to(image_tag('delete.gif',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
+            = link_to(image_tag('delete.png',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
           = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
         %td.r= number_to_currency(vouchertype.price)   
         %td.r= account_code_with_popup_link(vouchertype.account_code)

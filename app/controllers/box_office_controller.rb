@@ -220,7 +220,9 @@ class BoxOfficeController < ApplicationController
     @cash_tix_types = Hash.new(0)
     @cc_tix_types = Hash.new(0)
     @chk_tix_types = Hash.new(0)
+    @comp_tix_types = Hash.new(0)
     @showdate.vouchertypes.each do |v|
+      @comp_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('none')])
       @cash_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cash')])
       @cc_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cc')])
       @chk_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_chk')])

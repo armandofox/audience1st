@@ -32,7 +32,17 @@ table.hilite tr:hover {
  * Tooltip styles (http://psacake.com/web/jl.asp)
  */
 
-/* Styling of the popup tooltip */
+/* Styling of the popup help */
+.popupHelpLink {
+	background-color: #fcfe17;
+	font-size: smaller;
+        font-weight: regular;
+        display: inline;
+	color: #1c05fd;
+	padding: 2px;
+}
+
+
 span.tooltip {
     position:relative; /*this is the key*/
     z-index:24; 
