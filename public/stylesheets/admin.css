@@ -1,3 +1,5 @@
+/* @override http://localhost:3000/stylesheets/admin.css?1296771185 */
+
 /* @override http://localhost:3000/stylesheets/admin.css?1281415932 */
 
 /* @override http://localhost:3000/stylesheets/admin.css?1274661090 */
@@ -152,11 +154,18 @@ table.showdates_summary td {
  * Box office functions header ("stats for this show")
  */
  
- table#showdate_info, table#showdate_info td {
+ table#showdate_info {
 	border: 0;
 	font-size: larger;
 	width: 600px;
 	text-align: center;
+}
+table#showdate_info td.header {
+	text-align: right;
+}
+table#showdate_info td.value {
+	text-align: right;
+	width: 10em;
 }
 /*
  * Walkup sales
@@ -177,15 +186,29 @@ table.showdates_summary td {
 /*
  * Online check-in
  */
-
+table#checkin {
+	border: 1px solid grey;
+}
+table#checkin tr {
+	line-height: 1.2;
+}
+table#checkin td.checkin_column {
+	width: 8em;
+}
+table#checkin td {
+	border-bottom: 1px solid #ddd;
+	vertical-align: middle;
+}
+span.un_check_in {
+}
 span.checkin_button {
-  text-align: left;
+  text-align: center;
   font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
   margin: 0;
   padding: 2px;
 }
 span.checkin_button:hover, span.checked_in {
-  background-color: green;
+  background-color: #7efa12;
 }
 
 /*

@@ -1,12 +1,14 @@
 #show_stats
   %table#showdate_info
     %tr
-      %td Cap:
-      %td
+      %td.header Cap:
+      %td.value
         %span#cap= showdate.house_capacity
-    %tr
-      %td Advance sales:
       %td
+      %td
+    %tr
+      %td.header Advance sales:
+      %td.value
         %span#advance_sales{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
       %td
         ( Checked in:
@@ -16,15 +18,19 @@
         %span#waiting_for= showdate.waiting_for
         )
     %tr 
-      %td Walkup sales:
-      %td
+      %td.header Walkup sales:
+      %td.value
         %span#walkup_sales= showdate.compute_walkup_sales
-    %tr
-      %td Available:
       %td
+      %td
+    %tr
+      %td.header Available:
+      %td.value
         - if showdate.really_sold_out?
           %span#available.strong 0
         - else
           %span#available.highlighted= showdate.house_capacity - showdate.compute_total_sales
+      %td
+      %td
 
 .clear

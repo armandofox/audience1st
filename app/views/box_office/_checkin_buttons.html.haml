@@ -1,15 +1,8 @@
-= link_to_remote image_tag('delete.png'), |
-  :url => {:action => 'mark_checked_in', :uncheck => 1, :vouchers => vouchers.map(&:id).join(',')}, |
-  :method => :post, |
-  :failure => 'alert("Couldn\'t communicate with server.  Un-checkin NOT recorded.")' | 
-
-- if vouchers.length <= 6
-
-  - vouchers.each_with_index do |voucher,i|
-    - here = vouchers[0..i].map(&:id).join(',')
-    %span.checkin_button{:id => voucher.id, :class => ('checked_in' if voucher.checked_in?)}
-      = link_to_remote i+1, |
-        :url => {:action => 'mark_checked_in', :vouchers => here}, |
-        :method => :post,                                                 |
-        :failure => "alert(\"Couldn't communicate with server.  Checkin NOT recorded.\")"  |
-
+%span
+- vouchers.each_with_index do |voucher,i|
+  - here = vouchers[0..i].map(&:id).join(',')
+  %span.checkin_button{:id => voucher.id, :class => ('checked_in' if voucher.checked_in?)}
+    = link_to_remote i+1, |
+      :url => {:action => 'mark_checked_in', :vouchers => here}, |
+      :method => :post,                                                 |
+      :failure => "alert(\"Couldn't communicate with server.  Checkin NOT recorded.\")"  |
