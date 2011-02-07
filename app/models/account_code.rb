@@ -9,6 +9,11 @@ class AccountCode < ActiveRecord::Base
   def name_or_code_given
     !name.blank? || !code.blank?
   end
+
+  def self.create_by_code(code,name=nil)
+    name ||= "Account code #{code}"
+    AccountCode.create(:name => name, :code => code)
+  end
   
   def self.default_account_code_id
     self.default_account_code.id

@@ -4,8 +4,16 @@
 
 class Donation < ActiveRecord::Base
 
-  @@default_code = Option.value(:default_donation_account_code)
-
+  def self.default_code
+    if (code = Option.value(:default_donation_account_code)).blank?
+      AccountCode.default_account_code
+    else
+      AccountCode.find_by_code(code) ||
+        AccountCode.create_by_code(code, "Default donation account") ||
+        AccountCode.default_account_code
+    end
+  end
+  
   belongs_to :account_code
   validates_associated :account_code
   validates_presence_of :account_code_id
@@ -32,9 +40,8 @@ class Donation < ActiveRecord::Base
     Donation.create(:date => Date.today,
                     :amount => amount,
                     :customer_id => Customer.walkup_customer.id,
-                    :account_code_id => AccountCode.default_account_code_id,
+                    :account_code => self.default_code,
                     :purchasemethod_id => purch.id,
-                    :account_code => @@default_code,
                     :letter_sent => false,
                     :processed_by_id => logged_in_id)
   end
@@ -43,8 +50,7 @@ class Donation < ActiveRecord::Base
     Donation.new(:date => Time.now,
                  :amount => amount,
                  :customer_id => cid,
-                 :account_code_id => AccountCode.default_account_code_id,
-                 :account_code => @@default_code,
+                 :account_code => self.default_code,
                  :purchasemethod_id => purch.id,
                  :letter_sent => false,
                  :processed_by_id => logged_in_id)

@@ -230,6 +230,7 @@ class VouchersController < ApplicationController
     vchs = Voucher.find(params[:voucher_ids].split(","))
     old_showdate = vchs.first.showdate.clone
     a = nil
+    flash[:notice] = ''
     vchs.each do |v|
       if v.can_be_changed?(logged_in_id)
         showdate = v.showdate
@@ -243,12 +244,12 @@ class VouchersController < ApplicationController
                                  :show_id => show_id,
                                  :voucher_id => v.id)
       else
-        flash[:notice] ||= "Some reservations could NOT be cancelled. " <<
+        flash[:notice] << "Some reservations could NOT be cancelled. " <<
           "Please review your reservations below and contact a " <<
           "box office agent if you need assistance."
       end
     end
-    flash[:notice] ||= "Your reservations have been cancelled. "
+    flash[:notice] << "Your reservations have been cancelled. "
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
     email_confirmation(:cancel_reservation, @gCustomer, old_showdate,
                        vchs.length, a)
@@ -282,9 +283,7 @@ class VouchersController < ApplicationController
         :voucher_id => @v.id)
       flash[:notice] = "Your reservation has been cancelled. " <<
         "Your cancellation confirmation number is #{a}. "
-      unless is_boxoffice
-        email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
-      end
+      email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
     else
       flash[:notice] = 'Error - reservation could not be cancelled'
     end

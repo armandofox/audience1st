@@ -26,7 +26,7 @@ class GoldstarCsvImport < TicketSalesImport
     @comp_vouchers = @half_price_vouchers = 0
     self.each_row do |row|
       @format_looks_ok = true and next if
-        row[0,9] == ['Red Velvet', ' Last Name', ' First Name', ' Qty', ' Date', ' Time Note', ' Offer', ' Purchase #', ' Note']
+        row[1..9] == [' Last Name', ' First Name', ' Qty', ' Date', ' Time Note', ' Offer', ' Purchase #', ' Note']
       if content_row?(row)
         self.number_of_records += 1
         if (vouchers = ticket_order_from_row(row))
