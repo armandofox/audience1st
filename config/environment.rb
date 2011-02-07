@@ -42,8 +42,6 @@ Rails::Initializer.run do |config|
   config.gem "ruport"
   config.gem "acts_as_reportable", :lib => "ruport"
 
-  # config.gem "rack", :version => '1.1.0'
-
   config.active_record.timestamped_migrations = true
 end
 
