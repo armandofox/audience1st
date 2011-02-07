@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 def parse_file(f)
-  TMail::Mail.parse(IO.read(File.join(@testdir, f)))
+  TMail::Mail.parse(IO.read(File.join("#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer", f)))
 end
+
 
 describe GoldstarAutoImporter do
   before(:each) do
@@ -26,6 +27,13 @@ describe GoldstarAutoImporter do
       @e.stub!(:fetch_xml).and_return("This is not valid XML")
       @e.execute!.should be_nil
       @e.errors.should include_match_for(/malformed xml/i)
+    end
+    it "should get through prep step with no errors if happy path" do
+      @e.email = parse_file("valid.eml")
+      @e.stub!(:fetch_xml).and_return(IO.read(File.join("#{RAILS_ROOT}/spec/import_test_files/goldstar_xml/goldstar-valid.xml")))
+      GoldstarAutoImporter.send(:public, :prepare_import)
+      lambda { @e.prepare_import }.should_not raise_error
+      @e.errors.should be_empty
     end
   end
 end
