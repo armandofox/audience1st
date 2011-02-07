@@ -15,6 +15,8 @@ class GoldstarAutoImporter < AutoImporter
     validate_url
     self.import = GoldstarXmlImport.new
     import.xml = Nokogiri::XML::Document.parse(fetch_xml)
+    raise ArgumentError, "Malformed XML:\n#{import.xml.to_s}" unless
+      import.xml.errors.empty?
   end
     
   private

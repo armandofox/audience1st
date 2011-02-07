@@ -21,6 +21,12 @@ describe GoldstarAutoImporter do
       @e.execute!.should be_nil
       @e.errors.should include_match_for(/will-call url for xml not found/i)
     end
+    it "should raise error if XML is malformed" do
+      @e.email = parse_file("valid.eml")
+      @e.stub!(:fetch_xml).and_return("This is not valid XML")
+      @e.execute!.should be_nil
+      @e.errors.should include_match_for(/malformed xml/i)
+    end
   end
 end
 
