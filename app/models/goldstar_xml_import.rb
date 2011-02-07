@@ -37,8 +37,8 @@ class GoldstarXmlImport < TicketSalesImport
     raise TicketSalesImport::ImportError, "No offers found" if offers_xml.nil?
     begin
       offers_xml.xpath("//offer").each do |offer|
-        id = offer.xpath("offer-id").text
-        price = offer.xpath("our-price").text.to_f
+        id = offer.xpath("offer_id").text
+        price = offer.xpath("our_price").text.to_f
         vtype = get_or_create_vouchertype(price, GOLDSTAR_VOUCHERTYPE_NAME)
         offer_hash[id.to_s] = vtype
       end
@@ -73,7 +73,7 @@ class GoldstarXmlImport < TicketSalesImport
     vtypes = {}
     purchase.xpath("claims/claim").each do |claim|
       qty = claim.xpath("quantity").text.to_i
-      offer_id = claim.xpath("offer-id").text
+      offer_id = claim.xpath("offer_id").text
       raise(TicketSalesImport::BadOrderFormat, "Offer id #{offer_id} doesn't appear in header") unless
         offers[offer_id]
       vtypes[ offers[offer_id] ] = qty
@@ -83,8 +83,8 @@ class GoldstarXmlImport < TicketSalesImport
 
   def extract_date_and_time
     begin
-      date = xml.xpath("//willcall/on-date").first.text 
-      time = xml.xpath("//willcall/time-note").first.text 
+      date = xml.xpath("//willcall/on_date").first.text 
+      time = xml.xpath("//willcall/time_note").first.text 
       datetime = Time.parse "#{date} #{time}"
     rescue Exception => e
       raise TicketSalesImport::DateTimeNotFound, e.message
@@ -94,7 +94,7 @@ class GoldstarXmlImport < TicketSalesImport
 
   def purchase_id(purchase)
     begin
-      purchase.xpath("purchase-id").text
+      purchase.xpath("purchase_id").text
     rescue
       raise TicketSalesImport::ImportError, "No purchase/order ID found for: #{purchase.to_s}"
     end
@@ -103,8 +103,8 @@ class GoldstarXmlImport < TicketSalesImport
   def customer_attribs_from_purchase(purchase)
     begin
       id = purchase_id(purchase) rescue "???"
-      first = purchase.xpath("first-name").text
-      last = purchase.xpath("last-name").text
+      first = purchase.xpath("first_name").text
+      last = purchase.xpath("last_name").text
     rescue
       raise TicketSalesImport::CustomerNameNotFound, "purchase ID #{id}"
     end
