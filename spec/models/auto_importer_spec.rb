@@ -14,7 +14,7 @@ describe AutoImporter do
       @e = AutoImporter.new
       @e.stub!(:prepare_import).and_raise("Boom!")
     end
-    it "should include the error messages" do
+    it "should include error messages" do
       @e.execute!
       email_body.should include("Boom!")
     end

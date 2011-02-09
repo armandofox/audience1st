@@ -1,5 +1,10 @@
 class AutoImporter
 
+  class AutoImporter::Error < Exception ; end
+  class AutoImporter::Error::Ignoring < Exception ; end
+  class AutoImporter::Error::BadSender < Exception ; end
+  class AutoImporter::Error::MalformedEmail < Exception ; end
+  
   class AutoImporterMailer < ActionMailer::Base
     def auto_importer_error_report(messages)
       @subject = "AutoImporter ERROR"
@@ -41,11 +46,11 @@ class AutoImporter
       prepare_import
       self.testing? ? import.preview : import.import!
       AutoImporterMailer.deliver_auto_importer_report(all_messages)
-      true
+      return true
     rescue Exception => e
       @errors << e.message
       AutoImporterMailer.deliver_auto_importer_error_report(all_messages)
-      nil
+      return nil
     end
   end
     
