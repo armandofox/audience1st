@@ -25,7 +25,13 @@ begin
       t.fork = true # You may get faster startup if you set this to false
       t.profile = 'wip'
     end
-
+      Cucumber::Rake::Task.new({:selenium => 'db:test:prepare'}, 'Run features tagged @selenium') do |t|
+      t.binary = vendored_cucumber_bin
+      t.fork = true # You may get faster startup if you set this to false
+      t.profile = 'selenium'
+      ENV['SELENIUM']='1'
+    end
+          
     desc 'Run all features'
     task :all => [:ok, :wip]
   end

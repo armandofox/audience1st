@@ -1,7 +1,10 @@
 require 'spec_helper'
+require 'fakeweb'
+
+@@testdir = "#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer"
 
 def parse_file(f)
-  TMail::Mail.parse(IO.read(File.join("#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer", f)))
+  TMail::Mail.parse(IO.read(File.join(@@testdir,f)))
 end
 
 
@@ -10,6 +13,12 @@ describe GoldstarAutoImporter do
     @testdir = "#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer"
     @e = GoldstarAutoImporter.new
     ActionMailer::Base.deliveries = []
+    FakeWeb.allow_net_connect = false
+    FakeWeb.clean_registry
+  end
+  after(:all) do
+    FakeWeb.allow_net_connect = true
+    FakeWeb.clean_registry
   end
   describe "prechecks" do
     it "should raise error if email is not a will-call" do
@@ -37,6 +46,36 @@ describe GoldstarAutoImporter do
       @e.email = parse_file("valid.eml")
       @e.stub!(:fetch_xml).and_return(IO.read(File.join("#{RAILS_ROOT}/spec/import_test_files/goldstar_xml/goldstar-valid.xml")))
       GoldstarAutoImporter.send(:public, :prepare_import)
+      lambda { @e.prepare_import }.should_not raise_error
+      @e.errors.should be_empty
+    end
+  end
+  describe "fetching" do
+    before(:each) do
+      @url = 'http://www.goldstar.com/shows/404518/willcall/ec5bc90870030a5560574001db73feb9.xml'
+      @e.email = parse_file("valid.eml")
+    end
+    it "should raise error if XML can't be fetched" do
+      FakeWeb.register_uri(:get, @url, {:status => ['404', 'Not Found'], :body => 'Not found'})
+      @e.execute!.should be_nil
+      @e.errors.should include_match_for(/couldn't retrieve xml/i)
+      @e.errors.should include_match_for(/HTTP error 404/i)
+    end
+    it "should follow a redirect" do
+      FakeWeb.register_uri(:get, @url,
+        [{:status => "302", :body => "Redirected", :location => @url},
+          {:status => "200", :body => IO.read("#{@@testdir}/xml-for-valid.xml")}])
+      lambda { @e.prepare_import }.should_not raise_error
+      @e.errors.should be_empty
+    end
+    it "should raise error if too many redirects" do
+      FakeWeb.register_uri(:get, @url,
+        :status => '302', :body => 'Redirected', :location => @url)
+      @e.execute!.should be_nil
+      @e.errors.should include_match_for(/too many HTTP redirects/i)
+    end
+    it "should succeed if happy path" do
+      FakeWeb.register_uri(:get,@url,:body => IO.read("#{@@testdir}/xml-for-valid.xml"))
       lambda { @e.prepare_import }.should_not raise_error
       @e.errors.should be_empty
     end

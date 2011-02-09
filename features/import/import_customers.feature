@@ -6,6 +6,7 @@ Feature: Import customer list
   I want to import a list of customers
 
 Background:
+
   Given I am logged in as the administrator
   And I go to the Admin:Import page
   Then I should see "What do you want to import"

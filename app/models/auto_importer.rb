@@ -4,6 +4,7 @@ class AutoImporter
   class AutoImporter::Error::Ignoring < Exception ; end
   class AutoImporter::Error::BadSender < Exception ; end
   class AutoImporter::Error::MalformedEmail < Exception ; end
+  class AutoImporter::Error::HTTPError < Exception ; end
   
   class AutoImporterMailer < ActionMailer::Base
     def auto_importer_error_report(messages)

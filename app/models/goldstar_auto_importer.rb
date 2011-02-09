@@ -15,7 +15,8 @@ class GoldstarAutoImporter < AutoImporter
     validate_is_willcall_list
     validate_url
     self.import = GoldstarXmlImport.new
-    import.xml = Nokogiri::XML::Document.parse(fetch_xml)
+    raw_xml = fetch_xml()
+    import.xml = Nokogiri::XML::Document.parse(raw_xml)
     raise "Malformed XML:\n#{import.xml.to_s}" unless
       import.xml.errors.empty?
   end
@@ -23,12 +24,17 @@ class GoldstarAutoImporter < AutoImporter
   private
 
   def fetch_xml(redirect_limit = 4)
-    raise ArgumentError, "Too many HTTP redirects for #{@url}" if limit.zero?
-    resp = Net::HTTP.get(URI.parse(@url))
+    raise AutoImporter::Error::HTTPError, "Too many HTTP redirects for #{@url}" if
+      redirect_limit == 0
+    resp = Net::HTTP.get_response(URI.parse(@url))
     case resp
-    when Net::HTTPSuccess     then @xmlcontent = resp.body
-    when Net::HTTPRedirection then fetch_xml(redirect_limit - 1)
-    else                      raise AutoImporter::Error, "HTTP error #{resp.code} on #{@url}"
+    when Net::HTTPSuccess
+      @xmlcontent = resp.body
+    when Net::HTTPRedirection
+      @url = resp['location']
+      fetch_xml(redirect_limit - 1)
+    else
+      raise AutoImporter::Error::HTTPError, "Couldn't retrieve XML will-call from Goldstar:\nHTTP error #{resp.code} on #{@url}"
     end
   end
 
