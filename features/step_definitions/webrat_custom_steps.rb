@@ -30,7 +30,7 @@ end
 Then /^I should see a row "(.*)" within "(.*)"$/ do |row, table|
   response.should have_selector(table)
   @html ||= Nokogiri::HTML(response.body)
-  @rows ||= @html.xpath('//table//tr').collect { |r| r.xpath('.//th|td') }
+  @rows ||= @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
   @rows.any? do |table_row|
     match = true

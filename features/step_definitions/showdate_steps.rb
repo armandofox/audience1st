@@ -13,12 +13,6 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   @showdate = setup_show_and_showdate(name,time)
 end
   
-Given /^today is (.*)$/i do |date|
-  t = Time.parse(date)
-  Time.stub!(:now).and_return(t)
-  Date.stub!(:today).and_return(t.to_date)
-end
-
 Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performance/i do |n,vouchertype,price|
   @showdate.should be_an_instance_of(Showdate)
   vt = Vouchertype.create!(

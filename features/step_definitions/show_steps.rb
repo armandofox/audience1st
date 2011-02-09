@@ -22,7 +22,7 @@ Given /^there is a show named "(.*)"$/ do |name|
   @show =  Show.find_by_name(name) ||
     Show.create!(:name => name,
     :opening_date => Date.today,
-    :closing_date => 1.week.from_now,
+    :closing_date => Date.today + 1.week,
     :house_capacity => DEFAULT_HOUSE_CAPACITY,
     :listing_date => Date.today)
 end
