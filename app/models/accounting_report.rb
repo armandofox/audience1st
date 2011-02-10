@@ -11,6 +11,10 @@ class AccountingReport < Ruport::Controller
     @exclude_purchasemethods = Purchasemethod.find_all_by_nonrevenue(true).map(&:id)
     @exclude_categories = [:comp,:subscriber]
     @report = self.generate()
+    if @report.empty?
+      @report.column_names = %w(description code name show_name num_units total_amount)
+      @report << ['','','','',0,0]
+    end
     @report.reorder("description", "code", "name", "show_name", "num_units", "total_amount")
     cols = @report.column_names
     newcols = cols.map { |c| ActiveSupport::Inflector.titleize(c) }
