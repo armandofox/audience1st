@@ -67,7 +67,7 @@ class TicketSalesImport < Import
   def get_ticket_orders ; raise RuntimeError, "Must override this method" ; end
 
   def do_import(really_import=false)
-    unless (show_exists? || show_is_part_of_import?)
+    unless (show_is_part_of_import? || show_exists?)
       self.errors.add_to_base "No show name given, or show does not exist"
       return []
     end

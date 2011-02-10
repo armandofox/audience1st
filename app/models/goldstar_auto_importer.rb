@@ -34,7 +34,7 @@ class GoldstarAutoImporter < AutoImporter
       @url = resp['location']
       fetch_xml(redirect_limit - 1)
     else
-      raise AutoImporter::Error::HTTPError, "Couldn't retrieve XML will-call from Goldstar:\nHTTP error #{resp.code} on #{@url}"
+      raise AutoImporter::Error::HTTPError, "Couldn't retrieve XML will-call from Goldstar:\nHTTP error #{resp.code} on #{@url} (after #{4-redirect_limit} redirects)"
     end
   end
 

@@ -1,4 +1,20 @@
-class AutoImporter
+require 'date_time_extras'
+require 'string_extras'
+
+class AutoImporter < ActionMailer::Base
+
+  attr_accessor :import, :messages, :email
+
+  def initialize
+    super
+    @messages = []
+    @email = nil
+    @import = nil
+  end
+
+
+  helper :customers
+  helper :popup_help
 
   class AutoImporter::Error < Exception ; end
   class AutoImporter::Error::Ignoring < Exception ; end
@@ -6,24 +22,12 @@ class AutoImporter
   class AutoImporter::Error::MalformedEmail < Exception ; end
   class AutoImporter::Error::HTTPError < Exception ; end
   
-  class AutoImporterMailer < ActionMailer::Base
-    helper :customers
-    helper :popup_help
-    def auto_importer_report(msgs, import)
-      @subject = "Audience1st AutoImporter report"
-      @body = {:messages => msgs, :venue => Option.value(:venue_name), :import => import}
-      @recipients = Option.value(:boxoffice_daemon_notify)
-      @from       = APP_CONFIG[:boxoffice_daemon_address]
-      @content_type = 'text/html'
-    end
-  end
-
-  attr_accessor :import, :messages, :email
-
-  def initialize
-    @messages = []
-    @email = nil
-    @import = nil
+  def auto_importer_report(msgs, import)
+    @subject = "Audience1st AutoImporter report"
+    @body = {:messages => msgs, :venue => Option.value(:venue_name), :import => import}
+    @recipients = Option.value(:boxoffice_daemon_notify)
+    @from       = APP_CONFIG[:boxoffice_daemon_address]
+    @content_type = 'text/html'
   end
 
   # This is the method ultimately called by script/runner, passed a TMail::Mail object
@@ -54,7 +58,7 @@ class AutoImporter
       @messages << e.message
       success = nil
     ensure
-      AutoImporterMailer.deliver_auto_importer_report(messages, import)
+      AutoImporter.deliver_auto_importer_report(@messages, import)
       return success
     end
   end
