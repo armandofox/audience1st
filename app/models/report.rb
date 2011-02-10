@@ -168,6 +168,7 @@ class Report
   protected
 
   def postprocess(arr)
+    arr ||= []
     # if output options include stuff like duplicate elimination, do that here
     reject = []
     @output_options.each_pair do |key,val|

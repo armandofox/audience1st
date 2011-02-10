@@ -14,7 +14,7 @@ Scenario Outline: browse reports
 
   When I select "<report_type>" from "report_name"
   Then I should see "<a_report_option>"
-  When I press 'Estimate number of matches'
+  When I press "Estimate number of matches"
   Then I should see /[0-9]+ matches/
 
   Examples: customer report fields
