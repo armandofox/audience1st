@@ -11,7 +11,7 @@ end
 describe GoldstarAutoImporter do
   before(:each) do
     @testdir = "#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer"
-    @e = GoldstarAutoImporter.initialize!
+    @e = GoldstarAutoImporter.new
     ActionMailer::Base.deliveries = []
     FakeWeb.allow_net_connect = false
     FakeWeb.clean_registry
