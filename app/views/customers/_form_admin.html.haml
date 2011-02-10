@@ -3,8 +3,8 @@
 %fieldset#admin_form
   %legend Administrator Preferences
   %p
-    %label{:for => :customer_last_login}
-    Last login: #{@customer.last_login.to_formatted_s(:long)}
+    %label{:for => :customer_last_login} Last login
+    %span= @customer.last_login.to_formatted_s(:showtime_including_year)
 
   - if @superadmin
     %p
