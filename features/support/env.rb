@@ -59,13 +59,6 @@ if ENV['SELENIUM']
   require 'database_cleaner/cucumber'
   DatabaseCleaner.strategy = :truncation
 
-  class ActiveSupport::TestCase
-    self.use_transactional_fixtures = false
-    setup do |session|
-      session.host! "localhost:3001"
-    end
-  end
-
   Webrat.configure do |config|
     config.mode = :selenium
     config.application_environment = :cucumber
@@ -84,6 +77,7 @@ else
   Cucumber::Rails::World.use_transactional_fixtures = true
 
 end
+
 
 Before do
   Fixtures.reset_cache

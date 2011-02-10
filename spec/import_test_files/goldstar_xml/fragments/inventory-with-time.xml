@@ -1,9 +1,9 @@
 <willcall>
   <inventories>
     <inventory>
-      <time-note>Saturday, January 2</time-note>
+      <time_note>Saturday, January 2</time_note>
     </inventory>
   </inventories>
-  <on-date>Friday, January 21, 2011</on-date>
-  <time-note>8:00 pm</time-note>
+  <on_date>Friday, January 21, 2011</on_date>
+  <time_note>8:00 pm</time_note>
 </willcall>

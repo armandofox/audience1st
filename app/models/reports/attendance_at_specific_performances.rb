@@ -6,7 +6,7 @@ class AttendanceAtSpecificPerformances < Report
       :name => "Attendance at specific performances",
       :shows => Show.all_for_seasons(Time.this_season-2, Time.this_season+1),
       :current_show => current_show,
-      :showdates => current_show.showdates
+      :showdates => (current_show ? current_show.showdates : [])
     }
     super
   end

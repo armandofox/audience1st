@@ -1,3 +1,7 @@
+Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,price,season|
+  BasicModels.create_revenue_vouchertype(:name => name, :price => price, :season => season)
+end
+
 Then /a vouchertype with name "(.*)" should exist/i do |name|
   @it = Vouchertype.find_by_name(name)
   @it.should be_a_kind_of(Vouchertype)

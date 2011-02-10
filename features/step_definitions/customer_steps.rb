@@ -39,7 +39,7 @@ Given /^I am logged in as (.*)?$/ do |who|
   response.should have_selector('div[id=customer_quick_search].adminField') if is_admin
 end
 
-Given /^customer "(.*) (.*)" exists$/ do |first,last|
+Given /^customer "(.*) (.*)" (should )?exists?$/ do |first,last,flag|
   @customer = Customer.find_by_first_name_and_last_name(first,last)
   @customer.should_not be_nil
 end

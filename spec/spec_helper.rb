@@ -61,4 +61,3 @@ end
 
 ActiveRecord::Base.colorize_logging = false
 
-NOW = Time.now.at_end_of_season - 6.months

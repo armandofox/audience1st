@@ -2,7 +2,7 @@ class TicketSalesImport < Import
 
   belongs_to :show
   validates_associated :show
-  validate :show_exists?
+  validate :show_exists?, :unless => :show_is_part_of_import?
 
   class TicketSalesImport::DateTimeNotFound < Exception ; end
   class TicketSalesImport::ShowNotFound < Exception ; end
@@ -17,6 +17,9 @@ class TicketSalesImport < Import
   attr_accessor :created_showdates, :created_vouchertypes
 
   public
+
+  # Override in subclasses whose import files are self-contained to include show/date info
+  def show_is_part_of_import? ; nil ; end
 
   def show_exists?
     errors.add_to_base('You must specify an existing show.')  and return nil unless  self.show_id && Show.find_by_id(show_id)
@@ -61,9 +64,14 @@ class TicketSalesImport < Import
     self.existing_vouchers = 0
   end
 
+  def get_ticket_orders ; raise RuntimeError, "Must override this method" ; end
+
   def do_import(really_import=false)
+    unless (show_is_part_of_import? || show_exists?)
+      self.errors.add_to_base "No show name given, or show does not exist"
+      return []
+    end
     begin
-      return [] unless show_exists?
       transaction do
         get_ticket_orders
         show.adjust_metadata_from_showdates
@@ -85,9 +93,9 @@ class TicketSalesImport < Import
       self.errors.add_to_base("Malformed individual order: #{e.message}")
     rescue TicketSalesImport::CustomerNameNotFound => e
       self.errors.add_to_base("Customer name not found for #{e.message}")
-    rescue TicketSalesImport::ShowNotFound
-      self.errors.add_to_base("Couldn't find production name/date to associate with import")
-    rescue TicketSalesImport::DateTimeNotFound
+    rescue TicketSalesImport::ShowNotFound => e
+      self.errors.add_to_base("Couldn't find production name/date matching '#{e.message}'")
+    rescue TicketSalesImport::DateTimeNotFound => e
       self.errors.add_to_base("Couldn't find valid date and time in import document (#{e.message})")
     rescue TicketSalesImport::MultipleShowMatches => e
       self.errors.add_to_base("Multiple showdates match import file: #{e.message}")
@@ -95,7 +103,7 @@ class TicketSalesImport < Import
       self.errors.add_to_base(e.message)
     rescue Exception => e
       self.errors.add_to_base("Unexpected error: #{e.message}")
-      RAILS_DEFAULT_LOGGER.info "Importing id #{self.id} at record #{self.number_of_records}: #{e.message}\n#{e.backtrace}"
+      RAILS_DEFAULT_LOGGER.info "Importing id #{self.id || '<none>'} at record #{self.number_of_records}: #{e.message}\n#{e.backtrace}"
     end
     @vouchers
   end
@@ -136,6 +144,7 @@ class TicketSalesImport < Import
   end
 
   def already_entered?(order_id)
+    raise "External key is null - cannot check for duplicates" if order_id.blank?
     return nil unless (v = Voucher.find_by_external_key(order_id))
     # this voucher's already been entered.  make sure show name matches!!
     raise(TicketSalesImport::ImportError,

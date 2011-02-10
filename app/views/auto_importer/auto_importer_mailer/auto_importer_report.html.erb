@@ -1,0 +1,33 @@
+<!DOCTYPE html 
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head></head>
+  <body>
+    <p>
+      Hi there,
+    </p>
+
+    <p>
+      The Audience1st automatic importer <%= "for #{@venue}" if @venue %>
+      has this to report:
+    </p>
+
+    <div id="messages">
+      <% unless @messages.empty? %>
+      <ul>
+        <% @messages.each do |m| %>
+        <li> <%= h(m) %> </li>
+        <% end %>
+      </ul>
+      <% end %>
+    </div>
+
+    <div id="import_info">
+
+      <%= render :partial => 'external_ticket_orders/external_ticket_order_messages', 
+                :locals => {:for_email => true, :import => @import}  if @import %>
+
+    </div>
+  </body>
+</html>

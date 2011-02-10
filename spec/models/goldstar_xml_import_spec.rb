@@ -78,7 +78,7 @@ describe GoldstarXmlImport do
     it "should raise error if no time" do
       @import.stub!(:xml).and_return xml( <<EOS1
         <willcall>
-          <on-date>Thursday, April 25</on_date>
+          <on_date>Thursday, April 25</on_date>
         </willcall>
 EOS1
         )
@@ -87,8 +87,8 @@ EOS1
     it "should parse into a Time when time appears as child of willcall" do
       @import.stub!(:xml).and_return xml( <<EOS2
       <willcall>
-        <on-date>Friday, January 21, 2011</on-date>
-        <time-note>8:00 pm</time-note>
+        <on_date>Friday, January 21, 2011</on_date>
+        <time_note>8:00 pm</time_note>
       </willcall>
 EOS2
         )

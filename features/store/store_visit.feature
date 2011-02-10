@@ -6,7 +6,7 @@ Feature: Visit Store Page
 
   Scenario: Non-logged-in user adds tickets to cart
 
-    Given a show "Chicago" with "General" tickets for $17.00 on "April 15, 2010"
+    Given a show "Chicago" with "General" tickets for $17.00 on "April 15, 2010, 8:00pm"
     And I am not logged in
     And today is April 1, 2010
 

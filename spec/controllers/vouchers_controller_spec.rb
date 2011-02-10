@@ -76,7 +76,7 @@ describe VouchersController do
         flash[:notice].should match("Recipient isn't in customer list")
       end
       it "should redirect to the page to create a new customer" do
-        response.should redirect_to :controller => 'customers', :action => 'new'
+        response.should redirect_to(:controller => 'customers', :action => 'new')
       end
     end
   end

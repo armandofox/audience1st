@@ -3,7 +3,7 @@
 %p 
   List customers attending this specific performance/event date:
   %br
-  = select_tag 'attendance_show_id', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short, @args[:current_show].id)
+  = select_tag 'attendance_show_id', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short, (@args[:current_show] ? @args[:current_show].id : nil))
   = select_tag 'attendance_showdate_id', options_from_collection_for_select(@args[:showdates], :id, :printable_date)
 
 = observe_field 'attendance_show_id', :function => "document.update_showdates(element,value,'attendance_showdate_id')"

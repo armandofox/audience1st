@@ -6,27 +6,27 @@
         <note nil="true">A comment</note>
         <claims type="array">
           <claim>
-            <offer-id type="integer">603630</offer-id>
+            <offer_id type="integer">603630</offer_id>
             <quantity type="integer">2</quantity>
           </claim>
         </claims>
-        <last-name>Gou</last-name>
-        <first-name>Fay</first-name>
-        <red-velvet type="boolean">true</red-velvet>
-        <purchase-id type="integer">1803883</purchase-id>
+        <last_name>Gou</last_name>
+        <first_name>Fay</first_name>
+        <red_velvet type="boolean">true</red_velvet>
+        <purchase_id type="integer">1803883</purchase_id>
       </purchase>
       <purchase>
         <note nil="true">Another note</note>
         <claims type="array">
           <claim>
-            <offer-id type="integer">603630</offer-id>
+            <offer_id type="integer">603630</offer_id>
             <quantity type="integer">3</quantity>
           </claim>
         </claims>
-        <last-name>Jencuyah</last-name>
-        <first-name>Joi</first-name>
-        <red-velvet type="boolean">false</red-velvet>
-        <purchase-id type="integer">1811224</purchase-id>
+        <last_name>Jencuyah</last_name>
+        <first_name>Joi</first_name>
+        <red_velvet type="boolean">false</red_velvet>
+        <purchase_id type="integer">1811224</purchase_id>
       </purchase>
     </inventory>
   </inventories>

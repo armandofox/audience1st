@@ -13,7 +13,7 @@ class Import < ActiveRecord::Base
     'Brown Paper Tickets sales for 1 production' => 'BrownPaperTicketsImport',
     'TBA sales list for Run of Show' => 'TBAWebtixImport',
     'Goldstar sales for one performance (CSV format)' => 'GoldstarCsvImport',
-    # 'Goldstar sales for one performance (XML format)' => 'GoldstarXmlImport'
+    'Goldstar sales for one performance (XML format)' => 'GoldstarXmlImport'
     }
   cattr_accessor :import_types
   def humanize_type

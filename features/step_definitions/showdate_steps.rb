@@ -13,20 +13,11 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   @showdate = setup_show_and_showdate(name,time)
 end
   
-Given /^today is (.*)$/i do |date|
-  t = Time.parse(date)
-  Time.stub!(:now).and_return(t)
-  Date.stub!(:today).and_return(t.to_date)
-end
-
 Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performance/i do |n,vouchertype,price|
   @showdate.should be_an_instance_of(Showdate)
-  vt = Vouchertype.create!(
-    :name => vouchertype,
-    :category => :revenue,
+  vt = BasicModels.create_revenue_vouchertype(:name => vouchertype,
     :season => @showdate.thedate.year,
-    :price => price,
-    :offer_public => Vouchertype::ANYONE
+    :price => price
     )
   @showdate.valid_vouchers.create!(:vouchertype => vt,
     :max_sales_for_type => [n.to_i, 1].max,           # in case n=0
@@ -36,12 +27,14 @@ end
                                    
   
 def setup_show_and_showdate(name,time,args={})
-  show = Show.create!(:name => name,
+  show = Show.find_by_name(name) ||
+    Show.create!(:name => name,
     :house_capacity => args[:house_capacity] || 10,
     :opening_date => args[:opening_date] || 1.month.ago,
     :closing_date => args[:closing_date] || 1.month.from_now)
 
-  return show.showdates.create!(
+  return Showdate.find_by_show_id_and_thedate(show.id, time) ||
+    show.showdates.create!(
     :thedate => time,
     :end_advance_sales => time - 5.minutes,
     :max_sales => args[:max_sales] || 100)

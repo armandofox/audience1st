@@ -14,7 +14,7 @@ describe ShowdatesController do
       get :new, :show_id => @show.id
       response.should be_success
       @showdate = assigns[:showdate]
-      @showdate.should be_a_kind_of Showdate
+      @showdate.should be_a_kind_of(Showdate)
     end
     context "when no showdates exist" do
       it "should set date to opening night, 8pm" do

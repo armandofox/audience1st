@@ -1,6 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 include Utils
 
+@@now = Time.now.at_end_of_season - 6.months
+
 describe Vouchertype do
 
   describe "nonticket vouchertypes" do
@@ -14,7 +16,7 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => AccountCode.default_account_code,
-        :season => NOW.year
+        :season => @@now.year
         )
       @vtn.should be_valid
     end
@@ -29,7 +31,7 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => AccountCode.default_account_code,
-        :season => NOW.year
+        :season => @@now.year
         )
     end
     describe "vouchertypes in general" do
@@ -82,7 +84,7 @@ describe Vouchertype do
           :walkup_sale_allowed => true,
           :comments => "A comment",
           :account_code => AccountCode.default_account_code,
-          :season => NOW.year
+          :season => @@now.year
         }
         @vtb = Vouchertype.new(args.merge({
               :category => :bundle,
@@ -115,7 +117,7 @@ describe Vouchertype do
         :walkup_sale_allowed => false,
         :comments => "A comment",
         :account_code => AccountCode.default_account_code,
-        :season => NOW.year
+        :season => @@now.year
         }
         @sub_anyone = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :subscription => true, :name => "Sub for anyone",
@@ -135,7 +137,7 @@ describe Vouchertype do
         @sub_expired = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :offer_public => Vouchertype::ANYONE,
               :subscription => true, :name => "Expired sub",
-              :season => NOW.year - 1     }))
+              :season => @@now.year - 1     }))
         @nonsub_bundle = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :offer_public => Vouchertype::ANYONE,
               :subscription => false, :name => "Nonsub"   }))

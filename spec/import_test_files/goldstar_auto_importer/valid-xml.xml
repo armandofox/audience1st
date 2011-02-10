@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<willcall>
+  <time_note>2:00pm</time_note>
+  <event>
+    <title>&quot;Of Mice and Men&quot;</title>
+  </event>
+  <on_date type="date">2011-02-06</on_date>
+  <show_id type="integer">404518</show_id>
+  <inventories type="array">
+    <inventory>
+      <time_note nil="true"></time_note>
+      <inventory_id type="integer">645272</inventory_id>
+      <offers type="array">
+        <offer>
+          <offer_id type="integer">663706</offer_id>
+          <full_price type="decimal">22.0</full_price>
+          <our_price type="decimal">11.0</our_price>
+          <name>General Admission</name>
+        </offer>
+      </offers>
+      <quantity type="integer">10</quantity>
+      <purchases type="array">
+        <purchase>
+          <red_velvet type="boolean">false</red_velvet>
+          <note nil="true"></note>
+          <last_name>Park</last_name>
+          <created_at type="datetime">2011-02-01T09:24:38-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <offer_id type="integer">663706</offer_id>
+              <quantity type="integer">2</quantity>
+            </claim>
+          </claims>
+          <purchase_id type="integer">2027504</purchase_id>
+          <first_name>Heebok</first_name>
+        </purchase>
+        <purchase>
+          <red_velvet type="boolean">false</red_velvet>
+          <note nil="true"></note>
+          <last_name>Pierce</last_name>
+          <created_at type="datetime">2011-02-03T11:41:51-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <offer_id type="integer">663706</offer_id>
+              <quantity type="integer">2</quantity>
+            </claim>
+          </claims>
+          <purchase_id type="integer">2032988</purchase_id>
+          <first_name>Marvel</first_name>
+        </purchase>
+      </purchases>
+    </inventory>
+  </inventories>
+  <venue>
+    <address>
+      <extended_address nil="true"></extended_address>
+      <locality>Alameda</locality>
+      <country_name>United States</country_name>
+      <region>CA</region>
+      <street_address>1409 High Street</street_address>
+      <postal_code>94501</postal_code>
+    </address>
+    <name>Altarena Playhouse</name>
+    <venue_id type="integer">1173</venue_id>
+  </venue>
+</willcall>
