@@ -47,7 +47,7 @@ class GoldstarAutoImporter < AutoImporter
 
   def validate_sender
     unless ((sender = email['from'].to_s) =~ @@from_goldstar)
-      raise AutoImporter::Error::BadSender, "Email does not appear to be from Goldstar, but from #{sender}"
+      raise AutoImporter::Error::BadSender, "Email does not appear to be from Goldstar, but from #{sender}.  So I ignored it."
     end
   end
 
