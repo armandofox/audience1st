@@ -8,7 +8,7 @@ describe ImportsController do
     before :each do ; @params = {:import => {:type => 'BrownPaperTicketsImport'}} ; end
     it "should simply redirect if import type is not given" do
       lambda { post :create }.should_not raise_error
-      response.should redirect_to new_import_path
+      response.should redirect_to(new_import_path)
     end
     context "when new show name is given" do
       it "should create new show with valid name" do
@@ -33,7 +33,7 @@ describe ImportsController do
         end
         it "should redirect to new import" do
           post :create, {:new_show_name => 'Existing Show'}.merge(@params)
-          response.should redirect_to :action => :new
+          response.should redirect_to(:action => :new)
         end
       end
     end

@@ -8,6 +8,18 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
   end
 end
 
+Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
+  (@customer = Customer.find_by_first_name_and_last_name(first,last)).should_not be_nil
+  Then %Q{he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
+end
+
+Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,type,show,date|
+  (@showdate = Showdate.find_by_thedate(Time.parse date)).should_not be_nil
+  @showdate.show.name.should == show
+  (@vouchertype = Vouchertype.find_by_name(type)).should_not be_nil
+  @customer.vouchers.find_all_by_vouchertype_id_and_showdate_id(@vouchertype.id,@showdate.id).length.should == num.to_i
+end
+
 Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |name, to_whom, price| 
   @sub = Vouchertype.create!(
     :name => name,

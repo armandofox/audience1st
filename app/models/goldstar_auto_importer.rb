@@ -20,7 +20,7 @@ class GoldstarAutoImporter < AutoImporter
     raise "Malformed XML:\n#{import.xml.to_s}" unless
       import.xml.errors.empty?
   end
-    
+
   private
 
   def fetch_xml(redirect_limit = 4)

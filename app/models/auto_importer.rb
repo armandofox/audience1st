@@ -7,17 +7,11 @@ class AutoImporter
   class AutoImporter::Error::HTTPError < Exception ; end
   
   class AutoImporterMailer < ActionMailer::Base
-    def auto_importer_error_report(messages)
-      @subject = "AutoImporter ERROR"
-      @body = {:messages => messages, :venue => Option.value(:venue_name)}
-      @recipients = Option.value(:boxoffice_daemon_notify)
-      @from       = APP_CONFIG[:boxoffice_daemon_address]
-      @headers    = {}
-    end    
-
-    def auto_importer_report(messages)
-      @subject = "AutoImporter ran successfully"
-      @body = {:messages => messages, :venue => Option.value(:venue_name)}
+    helper :customers
+    helper :popup_help
+    def auto_importer_report(messages, import)
+      @subject = "Audience1st AutoImporter report"
+      @body = {:messages => messages, :venue => Option.value(:venue_name), :import => import}
       @recipients = Option.value(:boxoffice_daemon_notify)
       @from       = APP_CONFIG[:boxoffice_daemon_address]
       @headers    = {}
@@ -32,32 +26,42 @@ class AutoImporter
     @import = nil
   end
 
+  # This is the method ultimately called by script/runner, passed a TMail::Mail object
+  def receive(tmail)
+    @email = tmail
+    self.execute!
+  end
+
+  # This constructor is more useful for testing
   def self.import_from_email(raw_email)
-    obj = self.class.new
+    obj = self.send(:new)
     obj.email = TMail::Mail.parse(raw_email)
     obj.execute!
   end
 
-  def self.testing?
-    true
+  def testing?
+    nil
   end
 
   def execute!
+    success = nil
     begin
       prepare_import
       self.testing? ? import.preview : import.import!
-      AutoImporterMailer.deliver_auto_importer_report(all_messages)
-      return true
+      prepare_summary_messages
+      success = true
     rescue Exception => e
       @errors << e.message
-      AutoImporterMailer.deliver_auto_importer_error_report(all_messages)
-      return nil
+      success = nil
+    ensure
+      AutoImporterMailer.deliver_auto_importer_report(all_messages, import)
+      return success
     end
   end
     
-  def prepare_import
-    raise "Must override this method"
-  end
+  def prepare_import ; raise "Must override this method" ;  end
+
+  def prepare_summary_messages ; end
 
   protected
 
@@ -65,7 +69,7 @@ class AutoImporter
     messages = ["Importer: #{self.class}"] + @errors
     if @import
       messages << "Import type: #{@import.class}"
-      messages += @import.messages
+      messages += @import.errors.full_messages
     end
     messages.join("\n")
   end

@@ -52,7 +52,7 @@ describe GoldstarAutoImporter do
   end
   describe "fetching" do
     before(:each) do
-      @url = 'http://www.goldstar.com/shows/404518/willcall/ec5bc90870030a5560574001db73feb9.xml'
+      @url = 'http://www.goldstar.com/valid.xml'
       @e.email = parse_file("valid.eml")
     end
     it "should raise error if XML can't be fetched" do
@@ -64,7 +64,7 @@ describe GoldstarAutoImporter do
     it "should follow a redirect" do
       FakeWeb.register_uri(:get, @url,
         [{:status => "302", :body => "Redirected", :location => @url},
-          {:status => "200", :body => IO.read("#{@@testdir}/xml-for-valid.xml")}])
+          {:status => "200", :body => IO.read("#{@@testdir}/valid-xml.xml")}])
       lambda { @e.prepare_import }.should_not raise_error
       @e.errors.should be_empty
     end
@@ -75,7 +75,7 @@ describe GoldstarAutoImporter do
       @e.errors.should include_match_for(/too many HTTP redirects/i)
     end
     it "should succeed if happy path" do
-      FakeWeb.register_uri(:get,@url,:body => IO.read("#{@@testdir}/xml-for-valid.xml"))
+      FakeWeb.register_uri(:get,@url,:body => IO.read("#{@@testdir}/valid-xml.xml"))
       lambda { @e.prepare_import }.should_not raise_error
       @e.errors.should be_empty
     end

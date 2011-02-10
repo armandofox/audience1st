@@ -8,6 +8,8 @@ class GoldstarXmlImport < TicketSalesImport
 
   GOLDSTAR_VOUCHERTYPE_NAME = 'Goldstar' # Voucher types must start with this
 
+  def show_is_part_of_import? ; true ; end
+  
   def sanity_check
     offers && offers.length >= 1 && @showdate.kind_of?(Showdate)
   end
@@ -30,6 +32,7 @@ class GoldstarXmlImport < TicketSalesImport
         end
       end
     end
+    @vouchers
   end
 
   def parse_offers(offers_xml)
@@ -118,7 +121,7 @@ class GoldstarXmlImport < TicketSalesImport
   def get_showdate
     datetime = extract_date_and_time
     showdates = Showdate.find_all_by_thedate(datetime)
-    raise TicketSalesImport::ShowNotFound if showdates.empty?
+    raise(TicketSalesImport::ShowNotFound, datetime.to_formatted_s) if showdates.empty?
     raise(TicketSalesImport::MultipleShowMatches, showdates.map { |s| s.printable_name }.join(', ')) if showdates.length > 1
     showdates.first
   end
