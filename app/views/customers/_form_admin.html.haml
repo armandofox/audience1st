@@ -2,6 +2,10 @@
 
 %fieldset#admin_form
   %legend Administrator Preferences
+  %p
+    %label{:for => :customer_last_login}
+    Last login: #{@customer.last_login.to_formatted_s(:long)}
+
   - if @superadmin
     %p
       %label{:for=>:customer_role} Role

@@ -3,11 +3,12 @@
   %td= check_box_tag "merge[#{customer.id}]" if customer.id && !read_only
   - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize
   - if customer.id && !read_only
-    %td= link_to first, {:action => 'switch_to', :id => customer }
-    %td= link_to last, {:action => 'switch_to', :id => customer }
+    - last_login = "Last login: " << h(customer.last_login.to_formatted_s(:long))
+    %td= link_to first, {:action => 'switch_to', :id => customer }, {:title => last_login}
+    %td= link_to last, {:action => 'switch_to', :id => customer }, {:title => last_login}
   - else
-    %td= h customer.first_name.name_capitalize
-    %td= h customer.last_name.name_capitalize
+    %td= h first
+    %td= h last
   %td= h customer.street
   %td= h customer.city
   %td= h customer.state
