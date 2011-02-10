@@ -9,19 +9,19 @@ class AutoImporter
   class AutoImporterMailer < ActionMailer::Base
     helper :customers
     helper :popup_help
-    def auto_importer_report(messages, import)
+    def auto_importer_report(msgs, import)
       @subject = "Audience1st AutoImporter report"
-      @body = {:messages => messages, :venue => Option.value(:venue_name), :import => import}
+      @body = {:messages => msgs, :venue => Option.value(:venue_name), :import => import}
       @recipients = Option.value(:boxoffice_daemon_notify)
       @from       = APP_CONFIG[:boxoffice_daemon_address]
-      @headers    = {}
+      @content_type = 'text/html'
     end
   end
 
-  attr_accessor :import, :errors, :email
+  attr_accessor :import, :messages, :email
 
   def initialize
-    @errors = []
+    @messages = []
     @email = nil
     @import = nil
   end
@@ -51,27 +51,25 @@ class AutoImporter
       prepare_summary_messages
       success = true
     rescue Exception => e
-      @errors << e.message
+      @messages << e.message
       success = nil
     ensure
-      AutoImporterMailer.deliver_auto_importer_report(all_messages, import)
+      AutoImporterMailer.deliver_auto_importer_report(messages, import)
       return success
     end
   end
     
   def prepare_import ; raise "Must override this method" ;  end
 
-  def prepare_summary_messages ; end
-
-  protected
-
-  def all_messages
-    messages = ["Importer: #{self.class}"] + @errors
-    if @import
-      messages << "Import type: #{@import.class}"
-      messages += @import.errors.full_messages
+  def prepare_summary_messages
+    @messages.unshift("Importer: #{self.class}")
+    if import
+      @messages << "Import type: #{@import.class}"
+      @messages += import.errors.full_messages
+      @messages << "Show date: #{import.showdate.printable_name}"
+      @messages << "Number of tickets ADDED to will-call list: #{import.vouchers ? import.vouchers.length : 0}"
+      @messages << "Number of tickets that ALREADY existed in will-call: #{import.existing_vouchers}"
     end
-    messages.join("\n")
   end
 
 end

@@ -11,7 +11,6 @@ Feature: Visit Store Page
     And today is April 1, 2010
 
     When I go to the store page
-    Then show me the page
     Then I should see /Chicago/ within "select[name=show]"
     And I should see /Apr 15/ within "select[name=showdate]"
 

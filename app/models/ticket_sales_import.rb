@@ -144,6 +144,7 @@ class TicketSalesImport < Import
   end
 
   def already_entered?(order_id)
+    raise "External key is null - cannot check for duplicates" if order_id.blank?
     return nil unless (v = Voucher.find_by_external_key(order_id))
     # this voucher's already been entered.  make sure show name matches!!
     raise(TicketSalesImport::ImportError,

@@ -13,11 +13,7 @@
       has this to report:
     </p>
 
-    <div id="import_info">
-
-      <%= render :partial => 'external_ticket_orders/external_ticket_order_messages', 
-                :locals => {:import => @import}  if @import %>
-
+    <div id="messages">
       <% unless @messages.empty? %>
       <ul>
         <% @messages.each do |m| %>
@@ -25,6 +21,13 @@
         <% end %>
       </ul>
       <% end %>
+    </div>
+
+    <div id="import_info">
+
+      <%= render :partial => 'external_ticket_orders/external_ticket_order_messages', 
+                :locals => {:for_email => true, :import => @import}  if @import %>
+
     </div>
   </body>
 </html>

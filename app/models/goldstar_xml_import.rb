@@ -3,6 +3,7 @@ class GoldstarXmlImport < TicketSalesImport
   require 'nokogiri'
   attr_accessor :xml
   attr_accessor :offers
+  attr_accessor :showdate
   
   private
 
@@ -23,13 +24,7 @@ class GoldstarXmlImport < TicketSalesImport
     xml.xpath("//willcall/inventories/inventory/purchases/purchase").each do |purchase|
       if (vouchers = ticket_order_from_purchase(purchase,@showdate))
         self.number_of_records += 1
-        vouchers.each do |voucher|
-          if already_entered?(voucher.external_key)
-            self.existing_vouchers += 1
-          else
-            @vouchers << voucher
-          end
-        end
+        @vouchers += vouchers
       end
     end
     @vouchers
@@ -55,20 +50,27 @@ class GoldstarXmlImport < TicketSalesImport
     customer_attribs = customer_attribs_from_purchase(purchase)
     customer = import_customer(customer_attribs)
     comment = comment_from_purchase(purchase)
-    order_date = Time.now     # we really don't get a better estimate
+    order_date = order_date_from_purchase(purchase)
     external_key = purchase_id(purchase)
     vouchertypes = vouchertypes_from_purchase(purchase)
     vouchers = []
     vouchertypes.each_pair do |vouchertype, qty|
-      vouchers += Array.new(qty) do |ticket_number|
-        Voucher.new_from_vouchertype(vouchertype,
-          :showdate => showdate,
-          :sold_on => order_date,
-          :comments => comment,
-          :external_key => external_key + sprintf("%02d", ticket_number))
+      0.upto(qty-1) do |ticket_number|
+        real_ext_key = external_key + sprintf("%02d%", ticket_number)
+        if already_entered?(real_ext_key)
+          self.existing_vouchers += 1
+        else
+          voucher = Voucher.new_from_vouchertype(vouchertype,
+            :purchasemethod => Purchasemethod.get_type_by_name('ext'),
+            :showdate => showdate,
+            :sold_on => order_date,
+            :comments => comment,
+            :external_key => real_ext_key)
+          vouchers << voucher
+          customer.vouchers << voucher
+        end
       end
     end
-    customer.vouchers += vouchers
     vouchers
   end
 
@@ -116,6 +118,14 @@ class GoldstarXmlImport < TicketSalesImport
   
   def comment_from_purchase(purchase)
     purchase.xpath("note").text rescue ''
+  end
+
+  def order_date_from_purchase(purchase)
+    if (dt = purchase.xpath("created_at"))
+      Time.parse(dt.text)
+    else
+      Time.now
+    end
   end
 
   def get_showdate

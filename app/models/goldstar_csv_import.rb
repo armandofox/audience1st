@@ -57,6 +57,7 @@ class GoldstarCsvImport < TicketSalesImport
     1.upto(qty) do |i|
       vouchers << Voucher.new_from_vouchertype(vouchertype,
         :showdate => @showdate,
+        :purchasemethod => Purchasemethod.get_type_by_name('ext'),
         :sold_on => order_date,
         :external_key => order_id,
         :comments => order_notes)
