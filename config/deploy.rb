@@ -99,6 +99,9 @@ deploy.task :after_update_code do
   if variables[:branch] =~ /-r([0-9]+)/
     put "#{$1}.#{real_revision}", "#{release_path}/REVISION"
   end
+  # make logfile publicly writable, for use by daemons
+  run "touch #{release_path}/log/production.log"
+  run "chmod 0666 #{release_path}/log/production.log"
   # create database.yml
   # copy installation-specific files
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
