@@ -350,8 +350,6 @@ EON
     elsif @sh = current_show    # show selected, but not showdate
       @all_showdates = (is_admin ? @sh.showdates :
         @sh.future_showdates)
-      #@all_showdates = (is_admin ? @sh.showdates :
-      #  @sh.future_showdates.select { |s| s.saleable_seats_left > 0 })
       @vouchertypes = []
     else                      # not even show is selected
       @all_showdates = []

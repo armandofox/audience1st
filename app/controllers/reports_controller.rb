@@ -41,27 +41,10 @@ class ReportsController < ApplicationController
   end
 
   def advance_sales
-    @shows = []
-    case params[:showdate_id]
-    when /^(\d+)$/
-      if (show = Show.find_by_id($1))
-        @shows << show
-      end
-    when /future/i
-      @shows = Show.find(:all,
-                         :conditions => ['closing_date >= ?', Date.today],
-                         :order => 'opening_date')
-    when /current/i
-      if (show = Show.current_or_next)
-        @shows << show
-      end
-    else
-      @shows = Show.find(:all,:order => 'opening_date')
-    end
-    if (@shows.empty? rescue nil)
-      flash[:notice] = "No shows match your criteria"
-      redirect_to :action => 'index'
-      return
+    if (params[:shows].blank? ||
+        (@shows = params[:shows].map { |s| Show.find_by_id(s) }.flatten).empty?)
+      flash[:warning] = "Please select one or more shows."
+      redirect_to :action => :index
     end
   end
 

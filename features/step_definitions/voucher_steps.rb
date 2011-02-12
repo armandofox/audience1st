@@ -14,7 +14,7 @@ Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)
 end
 
 Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,type,show,date|
-  (@showdate = Showdate.find_by_thedate(Time.parse date)).should_not be_nil
+  (@showdate = Showdate.find_by_thedate(Time.parse(date))).should_not be_nil
   @showdate.show.name.should == show
   (@vouchertype = Vouchertype.find_by_name(type)).should_not be_nil
   @customer.vouchers.find_all_by_vouchertype_id_and_showdate_id(@vouchertype.id,@showdate.id).length.should == num.to_i
