@@ -1,6 +1,6 @@
-Feature: add label to customer
+Feature: Box office manager can associate labels with customers
 
-  As a staff user
+  As a box office manager
   So that I can mark which customers are interested in volunteering
   I want to label a customer with "Volunteer"
 

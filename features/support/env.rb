@@ -63,6 +63,7 @@ if ENV['SELENIUM']
     config.mode = :selenium
     config.application_environment = :cucumber
     config.application_framework = :rails
+    config.selenium_browser_startup_timeout = 30
   end
 
   World(Webrat::Selenium::Matchers)

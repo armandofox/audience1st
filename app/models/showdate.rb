@@ -199,7 +199,7 @@ class Showdate < ActiveRecord::Base
     self.vouchers.count(:conditions => ['checked_in = ?', true])
   end
   def waiting_for
-    compute_advance_sales - checked_in
+    [0, compute_advance_sales - checked_in].max
   end
 
   def spoken_name
@@ -226,7 +226,15 @@ class Showdate < ActiveRecord::Base
     description.blank? ? printable_date : "#{printable_date} (#{description})"
   end
   
-  def menu_selection_name ; printable_date_with_description ; end
+  def menu_selection_name
+    name = printable_date_with_description
+    if sold_out?
+      name << " (Sold Out)"
+    elsif nearly_sold_out?
+      name << " (Nearly Sold Out)"
+    end
+    name
+  end
 
   def show_name ; show.name ; end
   

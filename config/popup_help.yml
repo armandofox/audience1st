@@ -38,9 +38,14 @@ skip_validation: >
 max_advance_sales: >
 
   The maximum allowed advance sales/reservations for this performance,
-  which may be less than the show's house capacity.  If this number is
-  zero (or is greater than the house capacity), the actual house
-  capacity will be used.
+  which may be less than the show's house capacity (specified
+  as part of the overall show information).  If this number is
+  zero, or is greater than the actual house capacity, the actual house
+  capacity will be used.  The ticket availability shown to customers
+  (when they self-purchase/reserve, or via the RSS feed) is based on
+  this number, so a show whose max advance sales is 100 will report
+  "sold out" when 100 tickets are sold, even if the physical house
+  capacity has been set higher than 100.
 
 # Customers and customer lists
 
@@ -115,18 +120,13 @@ show_or_showdate_description: >
 
 show_house_capacity: >
 
-  The physical capacity of the house for this production, which is used
-  to help box office staff keep track of the number of open seats
-  remaining during front-of-house (pre-show).  This number is also used
-  to report percentage of total seats offered for sale, so it should
-  reflect the total number of seats you could possibly offer for sale
-  (as would be reported, e.g., to a licensing agency for a show
-  contract). 
-  Note that you can selectively sell fewer seats for some performances
-  by setting a Max Allowed Sales value for each performance.  But
-  you MUST enter a nonzero number here or all performances will
-  appear to be sold out, and reporting will believe that you are
-  offering zero seats for sale.
+  The true (physical) capacity of the house for this production, used
+  for reporting purposes to answer questions like "What fraction of all
+  seats available were actually filled", useful when applying for
+  royalty licenses.  You MUST enter a number greater than zero
+  here, or all performances will appear to be sold out.
+  You can separately set the  maximum advance sales allowed for each
+  performance.
 
 show_listing_date: >
  
