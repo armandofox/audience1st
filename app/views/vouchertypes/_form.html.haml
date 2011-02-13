@@ -44,6 +44,9 @@
   - if existing_bundle
     %p.feedback If you change the season of a bundle, first save the change, then edit the bundle again to add vouchers for the new season.
 
+%p#p_vouchertype_display_order.vtform
+  %label{:for => :vouchertype_display_order} Display order
+  = text_field 'vouchertype', 'display_order', :size => 3, :max => 3
 
 %p#p_vouchertype_fulfillment_needed.clear.vtform
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed

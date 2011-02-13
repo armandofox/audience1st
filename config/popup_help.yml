@@ -149,6 +149,15 @@ show_is_special: >
 
 # Vouchers and voucher types
 
+vouchertype_display_order: >
+
+  Controls the order in which voucher types are displayed to customers
+  (on self-purchase screen).  Lower numbers appear earlier in the list.
+  Numbers don't have to be consecutive, so you can add a vouchertype
+  later and position it between two existing vouchertypes.  In case of a
+  tie, or if you don't specify, the vouchertype created earlier appears
+  earlier in the list.
+
 vouchertype_type: >
 
   A Bundle is a container for a collection of vouchers (e.g. a

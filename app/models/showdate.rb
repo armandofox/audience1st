@@ -88,7 +88,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def season
-    show.season
+    thedate.this_season
   end
   
   def sales_by_type(vouchertype_id)

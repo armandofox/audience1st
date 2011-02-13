@@ -1,5 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 
+World(ModelAccess)
+
 # Select from menu using a regexp instead of exact string match
 When /^I select \/([^\/]+)\/ from "(.*)"$/ do |rxp, field|
   select(Regexp.new(rxp), :from => field)
@@ -7,10 +9,22 @@ end
 
 # 'I should see' within divs corresponding to named entities
 Then /^(?:|I )should see "([^\"]*)" within the (.*) for(?: the) (.*) with (.*) "(.*)"$/ do |text,tag_type,entity_type,attribute,value|
-  entity = entity_type.capitalize.constantize.send("find_by_#{attribute}",value)
-  raise "#{entity_type.capitalize} with #{attribute} #{value} not found" unless entity
+  entity = get_model_instance(entity_type, attribute, value)
   selector_id = "#{entity_type}_#{entity.id}"
   Then %Q{I should see "#{text}" within "#{tag_type}\##{selector_id}"}
+end
+
+# 'should come before/should come after' for verifying orderings of things
+Then /^(.*):"(.*)" should come (before|after) (.*):"(.*)" within "(.*)"$/ do |tag1,val1,order,tag2,val2,sel|
+  @html ||= Nokogiri::HTML(response.body)
+  elt1 = @html.xpath("//#{sel}//#{tag1}[contains(.,'#{val1}')]").first
+  elt2 = @html.xpath("//#{sel}//#{tag2}[contains(.,'#{val2}')]").first
+  sequence = elt1 <=> elt2
+  if order =~ /before/
+    assert sequence == -1
+  else
+    assert sequence == 1
+  end
 end
 
 # For debugging help - dump actual HTML of a page to a file

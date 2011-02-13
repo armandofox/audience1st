@@ -1,7 +1,3 @@
-World()
-
-
-
 Given /^(\d+) "(.*)" tickets available at \$(.*) each$/i do |qty,type,price|
   @showdate.should be_an_instance_of(Showdate)
   make_valid_tickets(@showdate, type, price.to_f, qty.to_i)
@@ -13,14 +9,11 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   @showdate = setup_show_and_showdate(name,time)
 end
   
-Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for this performance/i do |n,vouchertype,price|
+Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that) performance/i do |n,vouchertype,price|
   @showdate.should be_an_instance_of(Showdate)
-  vt = BasicModels.create_revenue_vouchertype(:name => vouchertype,
-    :season => @showdate.thedate.year,
-    :price => price
-    )
-  @showdate.valid_vouchers.create!(:vouchertype => vt,
-    :max_sales_for_type => [n.to_i, 1].max,           # in case n=0
+  Given %Q{a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
+  @showdate.valid_vouchers.create!(:vouchertype => @vouchertype,
+    :max_sales_for_type => n.to_i,
     :start_sales => @showdate.thedate - 1.month,
     :end_sales => @showdate.thedate - 5.minutes)
 end

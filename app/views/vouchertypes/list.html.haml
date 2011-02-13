@@ -6,9 +6,11 @@
     = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onchange => 'this.form.submit();'
     season
 
-%table.hilite
+%table.hilite#vouchertypes
   %thead
     %tr 
+      %th
+      %th Sort
       %th Name
       %th Price
       %th Acc#
@@ -22,9 +24,10 @@
     - for vouchertype in @vouchertypes.sort_by { |v| v.bundle? ? 0 : 1 }
       %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
         %td
-          - if @superadmin
+          - if @superadmin && vouchertype.vouchers.count == 0
             = link_to(image_tag('delete.png',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype },{ :method =>:post, :confirm => sprintf(MESSAGES[:remove_vouchertype_1],vouchertype.name) } ) 
-          = link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
+        %td= vouchertype.display_order
+        %td= link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
         %td.r= number_to_currency(vouchertype.price)   
         %td.r= account_code_with_popup_link(vouchertype.account_code)
         %td.c= vouchertype.subscription? ? "Yes" : ""

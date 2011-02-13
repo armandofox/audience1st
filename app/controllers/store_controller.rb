@@ -346,7 +346,11 @@ EON
       end
       @vouchertypes = (@sd ?
                        ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin, :promo_code => @promo_code) :
-                       [] )
+        [] )
+      @vouchertypes = @vouchertypes.sort do |a,b|
+        ord = (a.vouchertype.display_order <=> b.vouchertype.display_order)
+        ord == 0 ? a.vouchertype.price <=> b.vouchertype.price : ord
+      end
     elsif @sh = current_show    # show selected, but not showdate
       @all_showdates = (is_admin ? @sh.showdates :
         @sh.future_showdates)
