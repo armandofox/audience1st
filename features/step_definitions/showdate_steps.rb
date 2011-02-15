@@ -52,5 +52,5 @@ def create_generic_vouchertype(type,price)
     :account_code => AccountCode.default_account_code,
     :offer_public => Vouchertype::ANYONE,
     :price => price.to_f,
-    :season => Time.this_season)
+    :season => Time.now.at_beginning_of_season.year)
 end

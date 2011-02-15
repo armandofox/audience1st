@@ -1,3 +1,4 @@
+@selenium
 Feature: Add tickets to cart
 
   As a patron
@@ -6,10 +7,12 @@ Feature: Add tickets to cart
 
 Background:
 
-  Given a show "Bus Stop" with "General" tickets for $15.00 on "January 10, 2013, 8:00pm"
-  And today is January 9, 2013
-  When I go to the store page
-  Then the "show" menu should contain "Bus Stop"
-  And the "showdate" menu should contain "Thursday, Jan 10,  8:00 PM"
+  Given today is May 9, 2011
+  And   a show "Bus Stop" with 8 "General" tickets for $15.00 on "May 10, 2011, 8:00pm"
+  When  I go to the store page
 
 Scenario:  Add regular tickets to order when not logged in  
+
+  When I select "3" from "General"
+  Then the "Order Total" field should contain "45.00"
+    

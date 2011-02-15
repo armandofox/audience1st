@@ -1,6 +1,7 @@
 module AccountCodesHelper
 
   def account_code_with_popup_link(account_code)
+    return '(none)' if account_code.blank?
     if account_code.name.blank?
       account_code.code.to_s
     else

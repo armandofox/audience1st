@@ -116,28 +116,33 @@ class Report
     wheres = @wheres.clone
     bind_variables = @bind_variables.clone
     @output_options.each_pair do |key, val|
-      @output_options_processed[key] = true
       case key.to_sym
       when :exclude_blacklist
         wheres << "c.blacklist = #{val ? 0 : 1}"
+        @output_options_processed[key] = true
       when :exclude_e_blacklist
         wheres << "c.e_blacklist = #{val ? 0 : 1}"
+        @output_options_processed[key] = true
       when :require_valid_email
         (wheres << "c.email LIKE '%@%'") if val
+        @output_options_processed[key] = true
       when :login_from
         if @output_options[:login_since]
           op = (@output_options[:login_since_test] =~ /not/ ?  '<=' : '>=')
           wheres << "c.last_login #{op} ?"
           bind_variables << Date::civil(val[:year].to_i, val[:month].to_i, val[:day].to_i)
         end
+        @output_options_processed[key] = true
       when :require_valid_address
         wheres << "c.street != '' AND c.street IS NOT NULL" if !val.to_i.zero?
+        @output_options_processed[key] = true
       when :filter_by_zip
         zips = @output_options[:zip_glob].split(/\s*,\s*/).map(&:to_i).reject { |zip| zip.zero? } # sanitize
         if !zips.empty?
           wheres << ('(c.zip = \'\' OR ' + Array.new(zips.length, "c.zip LIKE ?").join(' OR ') + ')')
           bind_variables += zips.map { |z| "#{z}%" }
         end
+        @output_options_processed[key] = true
       end
     end
     wheres.uniq!
@@ -174,6 +179,8 @@ class Report
     @output_options.each_pair do |key,val|
       next if val.nil? || @output_options_processed[key]
       case key.to_sym
+      when :subscribers_only
+        reject << '!c.subscriber?'
       when :exclude_blacklist
         reject << 'c.blacklist'
       when :exclude_e_blacklist
@@ -196,7 +203,7 @@ class Report
         end
       end
     end
-    conds = reject.join(' | ')
+    conds = reject.join(' || ')
     eval("arr.reject! { |c| #{conds} }")
     if @output_options[:remove_dups]
       # remove duplicate mailing addresses

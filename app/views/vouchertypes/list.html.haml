@@ -21,7 +21,7 @@
       %th Description
       %th Walkup?
   %tbody
-    - for vouchertype in @vouchertypes.sort_by { |v| v.bundle? ? 0 : 1 }
+    - for vouchertype in @vouchertypes
       %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
         %td
           - if @superadmin && vouchertype.vouchers.count == 0

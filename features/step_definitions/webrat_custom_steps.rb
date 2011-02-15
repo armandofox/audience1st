@@ -2,6 +2,15 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 World(ModelAccess)
 
+# Wrapper around 'I should see ... within ...' steps
+Then /^I should see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
+  Then %Q{I should see #{string} within "#{tag}[@id='#{id}']"}
+end
+Then /^I should not see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
+  Then %Q{I should not see #{string} within "#{tag}[@id='#{id}']"}
+end
+
+
 # Select from menu using a regexp instead of exact string match
 When /^I select \/([^\/]+)\/ from "(.*)"$/ do |rxp, field|
   select(Regexp.new(rxp), :from => field)
@@ -16,10 +25,10 @@ end
 
 # 'should come before/should come after' for verifying orderings of things
 Then /^(.*):"(.*)" should come (before|after) (.*):"(.*)" within "(.*)"$/ do |tag1,val1,order,tag2,val2,sel|
-  @html ||= Nokogiri::HTML(response.body)
+  @html = Nokogiri::HTML(response.body)
   elt1 = @html.xpath("//#{sel}//#{tag1}[contains(.,'#{val1}')]").first
   elt2 = @html.xpath("//#{sel}//#{tag2}[contains(.,'#{val2}')]").first
-  sequence = elt1 <=> elt2
+  sequence = (elt1 <=> elt2)
   if order =~ /before/
     assert sequence == -1
   else
@@ -56,8 +65,8 @@ end
 # tabular data
 Then /^I should see a row "(.*)" within "(.*)"$/ do |row, table|
   response.should have_selector(table)
-  @html ||= Nokogiri::HTML(response.body)
-  @rows ||= @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
+  @html = Nokogiri::HTML(response.body)
+  @rows = @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
   @rows.any? do |table_row|
     match = true

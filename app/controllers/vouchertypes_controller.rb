@@ -47,7 +47,9 @@ class VouchertypesController < ApplicationController
         @vouchertypes.reject! { |vt| vt.season && (vt.season != limit_to_season) }
       end
     end
-    @vouchertypes = @vouchertypes.sort_by(&:season).reverse
+    @vouchertypes = @vouchertypes.sort_by do |v|
+      (v.bundle? ? 0 : 1e6) + v.season*1000 + v.display_order
+    end
     if @vouchertypes.empty?
       flash[:warning] = "No vouchertypes matched your criteria."
     end

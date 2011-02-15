@@ -28,7 +28,7 @@
       \.00
       %br
       #orderTotal
-        %label.strong{:for=>:total} Order Total:
+        %label.strong{:for=>:total} Order Total
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true
       - unless Option.value(:allow_gift_tickets).blank?
         %label.emphasis{:for=>:gift} Is this order a <strong>gift?</strong>
