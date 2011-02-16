@@ -121,18 +121,17 @@ show_or_showdate_description: >
 show_house_capacity: >
 
   The true (physical) capacity of the house for this production, used
-  for reporting purposes to answer questions like "What fraction of all
-  seats available were actually filled", useful when applying for
-  royalty licenses.  You MUST enter a number greater than zero
+  for reporting purposes and for keeping track of how many seats are 
+  available while checking in customers during Front of House
+  operations.  You MUST enter a number greater than zero
   here, or all performances will appear to be sold out.
-  You can separately set the  maximum advance sales allowed for each
-  performance.
+  To set the maximum allowed advance sales for a given performance, 
+  click on the Edit link next to the performance date below.
 
 show_listing_date: >
  
-  The date the show will appear on any customer-facing screens.  Note
-  that you also need to set the "Start Sales" and "End Sales" dates for
-  each performance.
+  The date the show will first appear on any customer-facing screens.
+  Before this date, the show will appear not to exist.
 
 show_landing_page_url: >
 
@@ -144,8 +143,8 @@ show_is_special: >
   Check this box if this event isn't really a regular show but is some
   other product (acting class, sponsorship opportunity, etc.)  Shows
   marked this way will NOT appear on the regular ticket sales page, but
-  will appear only on the Special Products page
-  (https://www.audience1st.com/your_venue_name/store/special).  
+  will appear only on the Special Events page,
+  http://www.audience1st.com/your_venue_name/store/special
 
 # Vouchers and voucher types
 
@@ -243,3 +242,10 @@ checkin: >
   A highlighted number indicates people who have
   checked in.  
   Click the X to "un-check-in" everyone in that customer's party.
+
+checkin_house_capacity: >
+
+  This is the ACTUAL (physical) capacity of the house, not the max sales
+  cap for this performance.  Advance Sales is the number of advance
+  tickets actually sold; Walkup Sales is the number of walkup tickets
+  sold; Available is the number of actual physical seats remaining.

@@ -30,5 +30,6 @@
   = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
   = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
   = gen_button 'Hide all details', :action => 'edit', :id => @show
+  = gen_button 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true
   = gen_button 'Back to List of Shows', :action => 'list'
 

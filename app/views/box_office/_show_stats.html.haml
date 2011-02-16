@@ -1,10 +1,10 @@
 #show_stats
   %table#showdate_info
     %tr
-      %td.header= link_to 'Cap:', :controller => 'shows', :action => 'edit', :id => showdate.show
+      %td.header= link_to 'True Cap:', :controller => 'shows', :action => 'edit', :id => showdate.show
       %td.value
         %span#cap= showdate.house_capacity
-      %td
+      %td= popup_help_for 'checkin_house_capacity'
       %td
     %tr
       %td.header= link_to 'Advance sales:', :action => 'checkin', :id => showdate

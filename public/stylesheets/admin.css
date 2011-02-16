@@ -1,3 +1,5 @@
+/* @override http://localhost:3000/stylesheets/admin.css?1297815632 */
+
 /* @override http://localhost:3000/stylesheets/admin.css?1296771185 */
 
 /* @override http://localhost:3000/stylesheets/admin.css?1281415932 */
@@ -302,6 +304,10 @@ div.show .showSalesRevenue {
 
 
 /* output options for customer lists */
+
+#report_body ul	 {
+	list-style: disc;
+}
 
 #output_options p {
 	margin-left: 2ex;

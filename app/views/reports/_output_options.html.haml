@@ -1,35 +1,35 @@
 %fieldset#output_options
   %legend Report options
   %p
-    = check_box_tag 'output[subscribers_only]', '1', true
+    = check_box_tag 'output[subscribers_only]', '1'
     Limit to subscribers only
   %p.fieldgroup US Mail options
   %p
-    = check_box_tag 'output[require_valid_address]', '1', true
+    = check_box_tag 'output[require_valid_address]', '1'
     Require apparently-valid mailing address (takes longer)
     %br
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    = check_box_tag 'output[remove_dups]', '1', false
+    = check_box_tag 'output[remove_dups]', '1'
     One entry per mailing address: remove similar addresses associated with distinct names (takes even longer)
     %br
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    = check_box_tag 'output[filter_by_zip]', '1', false
+    = check_box_tag 'output[filter_by_zip]', '1'
     Limit to zip codes starting with 
     = text_field_tag 'output[zip_glob]', '', :size => 12
     = popup_help_for 'filter_by_zip'
     %br
-    = check_box_tag 'output[exclude_blacklist]', '1', true
+    = check_box_tag 'output[exclude_blacklist]', '1'
     Exclude patrons who have opted out of US Mail mailings
   %p.fieldgroup Email/web options
   %p
     %br
-    = check_box_tag 'output[require_valid_email]', '1', false
+    = check_box_tag 'output[require_valid_email]', '1'
     Require valid email address
     %br
-    = check_box_tag 'output[exclude_e_blacklist]', '1', true
+    = check_box_tag 'output[exclude_e_blacklist]', '1'
     Exclude patrons who have opted out of email
     %br
-    = check_box_tag 'output[login_since]', '1', false
+    = check_box_tag 'output[login_since]', '1'
     Only those who
     = select_tag 'output[login_since_test]', options_for_select(['have','have not'])
     logged in since

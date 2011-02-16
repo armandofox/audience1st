@@ -1,0 +1,24 @@
+%fieldset{:legend => @args[:name]}
+
+%p Include subscribers for the following season(s) (shift-click to select multiple):
+
+= select_tag 'seasons[]', options_for_seasons_range(-5, 1), :multiple => true
+= hidden_field_tag '_report', 'AllSubscribers'
+
+%ul
+  %li 
+    Listing will not identify which season(s) a particular subscriber 
+    belonged to; if you need that, run a report for each season separately.
+  %li
+    Remember this returns the list of <em>subscribers</em>, not 
+    <em>subscriptions</em>.  A subscriber who purchased 3 subscriptions
+    of the same type (e.g. for family members) is only counted once.
+  %li
+    Subscribers with same address and name who purchased <emph>different</emph>
+    subscription types will appear separately.  To eliminate these 
+    duplicates, check the "One entry per mailing address" box below.
+  %li 
+    You can speed up this report somewhat by unchecking "Limit to Subscribers
+    Only".
+
+
