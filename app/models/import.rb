@@ -61,10 +61,14 @@ class Import < ActiveRecord::Base
     self.filename = short_filename
   end
 
-  
-  def with_attachment_data
+  def attachment_filename
     fn = File.join(UPLOADED_FILES_PATH, self.filename.to_s)
     fn = self.public_filename unless File.readable?(fn) && !File.directory?(fn)
+    fn
+  end
+  
+  def with_attachment_data
+    fn = self.attachment_filename
     begin
       fh = File.open(fn)
       yield fh

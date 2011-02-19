@@ -3,10 +3,12 @@
 
 %label{:for=>:valid_voucher_max_sales_for_type} Max sales for this type (0=unlimited)
 = text_field 'valid_voucher', 'max_sales_for_type', :size=>5 
+= popup_help_for :valid_voucher_max_sales_for_type
 %br
 
 %label{:for=>:valid_voucher_promo_code} Redemption ("promo") code, if any
 = text_field 'valid_voucher', 'promo_code', 'size'=>40
+= popup_help_for :valid_voucher_promo_code
 %br
 
 %p
@@ -16,6 +18,7 @@
 
 %label{:for=>:valid_voucher_start_sales}  Start sales on
 = datetime_select 'valid_voucher', 'start_sales'
+= popup_help_for :valid_voucher_sales_dates
 %br
 
 %label{:for=>:valid_voucher_end_sales}  End sales:

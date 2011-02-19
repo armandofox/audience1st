@@ -216,6 +216,30 @@ vouchertype_bundle_promo_code:  >
   by commas.  If blank, no promo code is required to purchase this
   bundle. 
 
+# Valid_vouchers
+
+valid_voucher_max_sales_for_type:  >
+
+  The maximum advance sales for this ticket type for this performance 
+  (for per-ticket-type capacity controls).  
+  A box office agent can always sell 
+  beyond this limit either in advance or at walkup sales time; the limit 
+  applies ONLY to customer self-purchase.
+
+valid_voucher_promo_code: >
+
+  If you enter a promo code here, customers (but not box office staff) 
+  will have to enter it in order to purchase this type of ticket for 
+  this show.  You can associated multiple promo codes with the same
+  offer, since their sales are reported separately.
+
+valid_voucher_sales_dates: >
+
+  The start and end sales times apply to customer self-purchase only.
+  Box office staff can start selling before the "Start sales" time
+  and can continue selling beyond the "End sales" time and even
+  after the performance has started.
+
 # Donations
 
 donation_search_by_letter_sent: >

@@ -176,7 +176,7 @@ EOCONDS1
     #vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
     vv  = vtype.valid_vouchers.select do |v|
       v.showdate_id == sd.id &&
-        v.promo_code_matches(opts[:promo_code])
+        (redeeming || v.promo_code_matches(opts[:promo_code]))
     end
     if vv.empty?
       av.howmany = 0
