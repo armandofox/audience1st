@@ -10,6 +10,22 @@ Then /^I should not see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag
   Then %Q{I should not see #{string} within "#{tag}[@id='#{id}']"}
 end
 
+# Check if menu option selected
+Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
+  html = Nokogiri::HTML(response.body)
+  menu_id = if html.xpath("//select[@id='#{menu}']") then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
+  html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank
+end
+
+# Variant for dates
+Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
+  date = Time.parse(date)
+  html = Nokogiri::HTML(response.body)
+  menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
+  Then %Q{"#{date.year}" should be selected in the "#{menu_id}_1i" menu}
+  Then %Q{"#{Date::MONTHNAMES[date.month]}" should be selected in the "#{menu_id}_2i" menu}
+  Then %Q{"#{date.day}" should be selected in the "#{menu_id}_3i" menu}
+end
 
 # Select from menu using a regexp instead of exact string match
 When /^I select \/([^\/]+)\/ from "(.*)"$/ do |rxp, field|

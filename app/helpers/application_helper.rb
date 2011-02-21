@@ -469,10 +469,12 @@ EOJS
   # return a SELECT with shortcuts for "today", "this week", etc. that has onSelect
   # code to set the menus with the given prefix for the shortcuts.
 
-  def select_date_with_shortcuts(default_from_date = Date.today,
-                                 default_to_date = Date.today,
-                                 sy = Date.today.year, basename="",
-                                 selected_shortcut = "Custom")
+  def select_date_with_shortcuts(opts={})
+    default_from_date = opts[:from] || Date.today
+    default_to_date = opts[:to] || Date.today
+    sy = opts[:start_year] || Date.today.year
+    basename = opts[:prefix] || ""
+    selected_shortcut = opts[:selected] || "Custom"
     from,to = "#{basename}_from","#{basename}_to"
     oc = "$('shortcut_#{from}_#{to}').selectedIndex=7;"
     [select_date_shortcuts(sy, from, to, selected_shortcut),
@@ -480,7 +482,12 @@ EOJS
      select_date(default_to_date, :prefix => to, :start_year => sy)]
   end
 
-  def select_date_shortcuts(start_year=Date.today.year,from_prefix="from",to_prefix="to", selected_shortcut = "Today")
+  def select_date_shortcuts(opts={})
+    start_year = opts[:start_year] || Time.this_season
+    from_prefix = opts[:from_prefix] || "from"
+    to_prefix = opts[:to_prefix] ||"to"
+    selected_shortcut = opts[:selected_shortcut] || "Today"
+    include_time = opts[:include_time]
     # shortcut dates
     t = Time.now
     shortcuts = [["Today", t,t],

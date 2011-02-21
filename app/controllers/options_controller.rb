@@ -12,11 +12,8 @@ class OptionsController < ApplicationController
     # update config variables
     msgs = []
     params[:values].each_pair do |var,val|
-      o = Option.find_by_name(var)
-      next if o.grp == 'Config'
       begin
-        o.value = val
-        o.save!                 # don't use update_attribute since we want validation
+        o.set_value!(var,val)
       rescue Exception => e
         msgs << "Error: #{e.message}"
       end

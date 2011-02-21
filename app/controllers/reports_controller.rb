@@ -235,7 +235,7 @@ EOQ
     from = Time.from_param(params[from_param],default_from)
     to = Time.from_param(params[to_param],default_to)
     from,to = to,from if from > to
-    return from.at_beginning_of_day, to.at_end_of_day
+    return from, to
   end
 
 

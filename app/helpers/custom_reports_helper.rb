@@ -20,7 +20,7 @@ module CustomReportsHelper
     when :date
       select_date Date.today, :prefix => c.name.to_s
     when :date_range
-      s = select_date_with_shortcuts(Date.today, Date.today, Date.today.year - 2, c.name.to_s)
+      s = select_date_with_shortcuts(:from => Date.today, :to => Date.today, :start_year => Date.today.year - 2, :prefix => c.name.to_s)
       "#{s[0]}<br/>From #{s[1]}<br/>to #{s[2]}"
     when :text
       text_field_tag c.name, '', :size => 20

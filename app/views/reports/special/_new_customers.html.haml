@@ -1,6 +1,6 @@
 %p
   List customers who were <strong>added</strong> to the database
-  = select_date_shortcuts 2007, 'newFrom', 'newTo'
+  = select_date_shortcuts :start_year => 2007, :from_prefix => 'newFrom', :to_prefix => 'newTo'
   %br
   Custom dates:
   = select_date Date.today, :prefix => 'newFrom', :start_year => 2007

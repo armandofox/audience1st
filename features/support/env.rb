@@ -49,14 +49,14 @@ ActionController::Base.allow_rescue = false
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
 
+
 if ENV['SELENIUM']
-  # for Selenium only:
+  require 'database_cleaner'
+  require 'database_cleaner/cucumber'
   require 'webrat/selenium'
   Cucumber::Rails::World.use_transactional_fixtures = false
   # How to clean your database when transactions are turned off. See
   # http://github.com/bmabey/database_cleaner for more info.
-  require 'database_cleaner'
-  require 'database_cleaner/cucumber'
   DatabaseCleaner.strategy = :truncation
 
   Webrat.configure do |config|

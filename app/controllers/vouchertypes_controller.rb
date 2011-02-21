@@ -69,6 +69,9 @@ class VouchertypesController < ApplicationController
                            :commments => "Create voucher type #{@vouchertype.name}")
       if @vouchertype.bundle?
         flash[:notice] = 'Please specify bundle quantities now.'
+        @vouchertype.update_attributes(
+          :bundle_sales_start => Time.at_beginning_of_season(@vouchertype.season),
+          :bundle_sales_end => Time.at_end_of_season(@vouchertype.season))
         redirect_to :action => 'edit', :id => @vouchertype
       else
         flash[:notice] = 'Vouchertype was successfully created.'

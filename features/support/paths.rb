@@ -46,6 +46,10 @@ module NavigationHelpers
       @show = Show.find_by_name($1)
       "/showdates/new?show_id=#{@show.id}"
 
+      # edit RESTful resource
+
+    when /the edit page for the "(.*)" vouchertype/ then "/vouchertypes/edit/#{Vouchertype.find_by_name($1).id}"
+
       # create new RESTful resource (non-nested associations)
 
     when /the new show page/i           then '/shows/new'

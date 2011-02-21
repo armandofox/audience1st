@@ -22,6 +22,15 @@ class Option < ActiveRecord::Base
       nil
   end
 
+  def self.set_value!(opt,val)
+    o = Option.find_by_name(opt) or raise "Option '#{o}' doesn't exist"
+    unless o.grp == 'Config'
+      o.value = val.to_s
+      o.save!
+    end
+    # don't use update_attribute since we want validation
+  end
+
   def self.values_hash(*ary)
     Hash[*(ary.map { |p| [p, Option.value(p)] }.flatten)]
   end

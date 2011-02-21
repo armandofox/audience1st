@@ -4,7 +4,7 @@
   or more
   %br
   since
-  = select_date_shortcuts 2007, 'newFrom', 'newTo'
+  = select_date_shortcuts :start_year => 2007, :from_prefix => 'newFrom', :to_prefix => 'newTo'
   or custom dates:
   = select_date Date.today, :prefix => 'newFrom', :start_year => 2007
   to

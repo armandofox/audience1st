@@ -7,7 +7,7 @@ class AccountingReport < Ruport::Controller
 
   def setup
     @from,@to = options[:from],options[:to]
-    options[:title] = "Earned revenue #{humanize_date_range(@from,@to)}"
+    options[:title] = "Earned revenue:<br/> #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}"
     @exclude_purchasemethods = Purchasemethod.find_all_by_nonrevenue(true).map(&:id)
     @exclude_categories = [:comp,:subscriber]
     @report = self.generate()

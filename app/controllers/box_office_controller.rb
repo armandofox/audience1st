@@ -21,9 +21,9 @@ class BoxOfficeController < ApplicationController
     @showdates = Showdate.find(:all, :conditions => ['thedate >= ?', Time.now.at_beginning_of_season - 1.year], :order => "thedate ASC")
     return true if (!params[:id].blank?) &&
       (@showdate = Showdate.find_by_id(params[:id].to_i))
-    if (showdate = (Showdate.current_or_next ||
+    if (@showdate = (Showdate.current_or_next ||
                     Showdate.find(:first, :order => "thedate DESC")))
-      redirect_to :action => action_name, :id => showdate
+      redirect_to :action => action_name, :id => @showdate
     else
       flash[:notice] = "There are no shows listed.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'
@@ -106,7 +106,7 @@ class BoxOfficeController < ApplicationController
   end
 
   def mark_checked_in
-    render :nothing => false and return unless params[:vouchers]
+    render :nothing => true and return unless params[:vouchers]
     vouchers = params[:vouchers].split(/,/).map { |v| Voucher.find_by_id(v) }.compact
     if params[:uncheck]
       vouchers.map { |v| v.un_check_in! }

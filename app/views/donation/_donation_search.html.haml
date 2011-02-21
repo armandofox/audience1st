@@ -4,7 +4,10 @@
       %td= check_box_tag 'use_cid', 1, @params[:use_cid], {:onclick => "if (!(this.checked)) {$$('show_vouchers').checked=false;}"} 
       %td Only for this customer (type first or last name):
       %td
-        = customer_search_field 'donor_name', @full_name, {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {:cid => :id, :use_cid => {:checked => 'true'}}, :select_opts => {:indicator => :wait}
+        = customer_search_field 'donor_name', @full_name, |
+         {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, |
+         :also_update => {:cid => :id, :use_cid => {:checked => 'true'}}, |
+         :select_opts => {:indicator => :wait} |
         = spinner('wait')
         or customer ID number: 
         = text_field_tag 'cid', @params[:cid], :size => 14
@@ -17,7 +20,10 @@
       %td= check_box_tag 'use_date', 1, @params[:use_date] 
       %td Date is in the range:
       %td
-        - d1,d2,d3 = select_date_with_shortcuts(@params[:donation_date_from]||Date.today, @params[:donation_date_to]||Date.today, Date.today.year - 10, 'donation_date', @params[:date_shortcut]||'Custom')
+        - d1,d2,d3 = select_date_with_shortcuts( |
+          :from => @params[:donation_date_from], :to =>  @params[:donation_date_to], |
+          :start_year => Date.today.year - 10, :prefix => 'donation_date', |
+          :selected => @params[:date_shortcut]) |
         = d1
         %br
         or
