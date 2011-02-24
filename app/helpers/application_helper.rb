@@ -477,7 +477,7 @@ EOJS
     selected_shortcut = opts[:selected] || "Custom"
     from,to = "#{basename}_from","#{basename}_to"
     oc = "$('shortcut_#{from}_#{to}').selectedIndex=7;"
-    [select_date_shortcuts(sy, from, to, selected_shortcut),
+    [select_date_shortcuts(:start_year => sy, :from_prefix => from, :to_prefix => to, :selected_shortcut => selected_shortcut),
      select_date(default_from_date, :prefix => from, :start_year => sy),
      select_date(default_to_date, :prefix => to, :start_year => sy)]
   end
