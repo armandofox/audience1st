@@ -301,6 +301,17 @@ EON
     
   private
 
+  def too_many_tickets_for(showdate)
+    # if a donation only, skip this check
+    return nil unless showdate
+    total = params[:vouchertype].values.inject(0) { |t,qty| t+qty.to_i }
+    if total > showdate.saleable_seats_left
+      flash[:warning] = "You've requested #{total} tickets, but only #{showdate.saleable_seats_left} are available for this performance."
+    else
+      nil
+    end
+  end
+
   def redeeming_promo_code
     clear_promo_code and return nil if params[:commit] =~ /clear/i
     params[:commit] =~ /redeem/i ? set_promo_code(params[:promo_code]) : nil
@@ -441,10 +452,13 @@ EON
     end
     msgs = []
     comments = params[:comments]
-    (params[:vouchertype] ||= {}).each_pair do |vtype, qty|
+    params[:vouchertype] ||= {}
+    admin = @gAdmin.is_boxoffice
+    # pre-check whether the total number of tickets exceeds availability
+    return if (!admin && too_many_tickets_for(showdate))
+    params[:vouchertype].each_pair do |vtype, qty|
       qty = qty.to_i
       unless qty.zero?
-        admin = @gAdmin.is_boxoffice
         av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => admin, :promo_code => session[:promo_code])
         if (!admin && av.howmany.zero?)
           msgs << "Sorry, no '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance."

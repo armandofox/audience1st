@@ -177,14 +177,16 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.subscriptions_available_to(customer = Customer.generic_customer, admin = nil)
+    this_season = Time.this_season
+    next_season = this_season + 1
     if admin
       str = "offer_public != ?"
       vals = [Vouchertype::EXTERNAL]
     elsif (customer.subscriber? || customer.next_season_subscriber?)
-      str = "offer_public IN (?) AND season IN (#{Time.now.year}, #{Time.now.year + 1})"
+      str = "offer_public IN (?) AND season IN (#{this_season}, #{next_season})"
       vals = [[Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE]]
     else                      # generic customer
-      str = "(offer_public = ?) AND season IN  (#{Time.now.year}, #{Time.now.year + 1})"
+      str = "(offer_public = ?) AND season IN  (#{this_season}, #{next_season})"
       vals = [Vouchertype::ANYONE]
     end
     str = "(category = ?) AND (subscription = ?) AND #{str}"

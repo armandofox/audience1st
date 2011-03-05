@@ -13,7 +13,7 @@ class OptionsController < ApplicationController
     msgs = []
     params[:values].each_pair do |var,val|
       begin
-        o.set_value!(var,val)
+        Option.set_value!(var,val)
       rescue Exception => e
         msgs << "Error: #{e.message}"
       end
