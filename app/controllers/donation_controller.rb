@@ -28,6 +28,8 @@ class DonationController < ApplicationController
     end
     mindate,maxdate = Time.range_from_params(params[:donation_date_from],
                                              params[:donation_date_to])
+    mindate = mindate.at_beginning_of_day
+    maxate = maxdate.at_end_of_day
     params[:donation_date_from] = mindate
     params[:donation_date_to] = maxdate
     if params[:use_date]

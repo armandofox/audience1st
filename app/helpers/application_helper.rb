@@ -490,17 +490,15 @@ EOJS
     include_time = opts[:include_time]
     # shortcut dates
     t = Time.now
-    shortcuts = [["Today", t,t],
-                 ["Yesterday", t-1.day, t-1.day],
-                 ["Past 7 days", t-7.days, t],
-                 ["Month to date", t.at_beginning_of_month, t],
-                 ["Last month", (t-1.month).at_beginning_of_month,
-                  t.at_beginning_of_month - 1.day],
-                 ["Season to date", t.at_beginning_of_season, t],
+    shortcuts = [["Today", t.at_beginning_of_day, t.at_end_of_day],
+                 ["Yesterday", t.yesterday.at_beginning_of_day, t.yesterday.at_end_of_day],
+                 ["Past 7 days", (t - 7.days).at_beginning_of_day, t.at_end_of_day],
+                 ["Month to date", t.at_beginning_of_month, t.at_end_of_day],
+                 ["Last month", (t-1.month).at_beginning_of_month, (t-1.month).at_end_of_month],
+                 ["Season to date", t.at_beginning_of_season, t.at_end_of_day],
                  ["Last season", t.at_beginning_of_season - 1.year, t.at_end_of_season - 1.year],
-                 ["Year to date", t.at_beginning_of_year, t],
-                 ["Last year", (t-1.year).at_beginning_of_year,
-                  t.at_beginning_of_year - 1.day],
+                 ["Year to date", t.at_beginning_of_year, t.at_end_of_day],
+                 ["Last year", (t-1.year).at_beginning_of_year, (t-1.year).at_end_of_year],
                  ["Custom",t,t ]]
     onsel = <<EOS1
       function setShortcut(from,to,v) {
@@ -511,8 +509,9 @@ EOS1
       onsel << <<EOS2
           case #{indx}:
              fy=#{f.year-start_year};  fm=#{f.month-1}; fd=#{f.day-1};
+                fH=#{f.hour}; fM=#{f.min}; fS=#{f.sec};
              ty=#{t.year-start_year};  tm=#{t.month-1}; td=#{t.day-1};
-             break;
+                tH=#{f.hour}; tM=#{f.min}; tS=#{f.sec};
 EOS2
     end
     onsel << <<EOS3
@@ -526,9 +525,16 @@ EOS2
           $(to+'_year').selectedIndex=ty;
           $(to+'_month').selectedIndex=tm;
           $(to+'_day').selectedIndex=td;
+EOS3
+    onsel << <<EOS33 if include_time
+          $(from+'_hour').selectedIndex=fH;
+          $(from+'_minute').selectedIndex=fM;
+          $(from+'_second').selectedIndex=fS;
+EOS33
+    onsel << <<EOS4
         }
       }
-EOS3
+EOS4
     javascript_tag(onsel) <<
       select_tag("shortcut_#{from_prefix}_#{to_prefix}",
                  options_for_select(shortcuts.each { |e| e.first }, selected_shortcut.to_s),

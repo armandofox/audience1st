@@ -65,7 +65,7 @@ class ReportsController < ApplicationController
   end
 
   def sales_detail
-    from,to = get_dates_from_params(:from,:to)
+    from,to = Time.range_from_params(params[:from],params[:to])
     sales = Voucher.sold_between(from, to)
     @nsales = sales.size
     @page_title = "#{@nsales} Transactions: #{from.strftime('%a %b %e')} " <<
@@ -84,7 +84,7 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
-    @from,@to = get_dates_from_params(:from,:to)
+    @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
       send_data(AccountingReport.render_csv(:from => @from, :to => @to),
@@ -229,16 +229,6 @@ EOQ
   end
 
   private
-
-  def get_dates_from_params(from_param,to_param,
-                            default_from=Time.now,default_to=Time.now)
-    from = Time.from_param(params[from_param],default_from)
-    to = Time.from_param(params[to_param],default_to)
-    from,to = to,from if from > to
-    return from, to
-  end
-
-
 
   # given a list of AR records returned from the GROUP BY sql queries of the
   # accounting report, squeeze out the ones with a zero total, and sort
