@@ -470,9 +470,9 @@ EOJS
   # code to set the menus with the given prefix for the shortcuts.
 
   def select_date_with_shortcuts(opts={})
-    default_from_date = opts[:from] || Date.today
-    default_to_date = opts[:to] || Date.today
-    sy = opts[:start_year] || Date.today.year
+    default_from_date = opts[:from] || Time.now
+    default_to_date = opts[:to] || Time.now
+    sy = opts[:start_year] || Time.this_season
     basename = opts[:prefix] || ""
     selected_shortcut = opts[:selected] || "Custom"
     from,to = "#{basename}_from","#{basename}_to"
@@ -490,46 +490,49 @@ EOJS
     include_time = opts[:include_time]
     # shortcut dates
     t = Time.now
-    shortcuts = [["Today", t.at_beginning_of_day, t.at_end_of_day],
-                 ["Yesterday", t.yesterday.at_beginning_of_day, t.yesterday.at_end_of_day],
-                 ["Past 7 days", (t - 7.days).at_beginning_of_day, t.at_end_of_day],
-                 ["Month to date", t.at_beginning_of_month, t.at_end_of_day],
+    shortcuts = [["Today", t, t],
+                 ["Yesterday", t.yesterday, t.yesterday],
+                 ["Past 7 days", (t - 7.days), t],
+                 ["Month to date", t.at_beginning_of_month, t],
                  ["Last month", (t-1.month).at_beginning_of_month, (t-1.month).at_end_of_month],
-                 ["Season to date", t.at_beginning_of_season, t.at_end_of_day],
-                 ["Last season", t.at_beginning_of_season - 1.year, t.at_end_of_season - 1.year],
-                 ["Year to date", t.at_beginning_of_year, t.at_end_of_day],
+                 ["Season to date", t.at_beginning_of_season, t],
+                 ["Last season", (t-1.year).at_beginning_of_season, (t-1.year).at_end_of_season],
+                 ["Year to date", t.at_beginning_of_year, t],
                  ["Last year", (t-1.year).at_beginning_of_year, (t-1.year).at_end_of_year],
                  ["Custom",t,t ]]
     onsel = <<EOS1
       function setShortcut(from,to,v) {
+        var fy,fm,fd,fH,fM,ty,tm,td,tH,tM;
         switch(v) {
 EOS1
     shortcuts.each_with_index do |e,indx|
       s,f,t = e
+      f = f.at_beginning_of_day
+      t = t.at_end_of_day
       onsel << <<EOS2
           case #{indx}:
-             fy=#{f.year-start_year};  fm=#{f.month-1}; fd=#{f.day-1};
-                fH=#{f.hour}; fM=#{f.min}; fS=#{f.sec};
-             ty=#{t.year-start_year};  tm=#{t.month-1}; td=#{t.day-1};
-                tH=#{f.hour}; tM=#{f.min}; tS=#{f.sec};
+             fy=#{f.year-start_year};  fm=#{f.month-1}; fd=#{f.day-1}; fH=#{f.hour}; fM=#{f.min};
+             ty=#{t.year-start_year};  tm=#{t.month-1}; td=#{t.day-1}; tH=#{t.hour}; tM=#{t.min};
+             break;
 EOS2
     end
     onsel << <<EOS3
           default:
              fy=-1;
-          }
+        }
         if (fy>=0) {
-          $(from+'_year').selectedIndex=fy;
-          $(from+'_month').selectedIndex=fm;
-          $(from+'_day').selectedIndex=fd;
-          $(to+'_year').selectedIndex=ty;
-          $(to+'_month').selectedIndex=tm;
-          $(to+'_day').selectedIndex=td;
+          $('#{from_prefix}_year').selectedIndex=fy;
+          $('#{from_prefix}_month').selectedIndex=fm;
+          $('#{from_prefix}_day').selectedIndex=fd;
+          $('#{to_prefix}_year').selectedIndex=ty;
+          $('#{to_prefix}_month').selectedIndex=tm;
+          $('#{to_prefix}_day').selectedIndex=td;
 EOS3
     onsel << <<EOS33 if include_time
-          $(from+'_hour').selectedIndex=fH;
-          $(from+'_minute').selectedIndex=fM;
-          $(from+'_second').selectedIndex=fS;
+          $('#{from_prefix}_hour').selectedIndex=fH;
+          $('#{from_prefix}_minute').selectedIndex=fM;
+          $('#{to_prefix}_hour').selectedIndex=tH;
+          $('#{to_prefix}_minute').selectedIndex=tM;
 EOS33
     onsel << <<EOS4
         }

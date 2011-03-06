@@ -12,14 +12,14 @@
           %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue"])
         %tr
           %td.r Date shortcuts:
-          %td= select_date_shortcuts :start_year => 2007, :from_prefix => 'from', :to_prefix => 'to'
+          %td= select_date_shortcuts :start_year => 2007, :from_prefix => 'from', :to_prefix => 'to', :include_time => true
         %tr
           %td.r Or custom dates from:
-          %td= select_datetime Date.today, :prefix => 'from', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+          %td= select_datetime Time.now.at_beginning_of_day, :prefix => 'from', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
         %tr
           %td.r To:
           %td
-            = select_datetime Date.today, :prefix => 'to',  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+            = select_datetime Time.now.at_end_of_day, :prefix => 'to',  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
             = submit_tag 'Go'
 
 .pageDiv
