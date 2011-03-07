@@ -19,9 +19,9 @@ APPROOT     = <%= release_path %>
 #   commands are run from a cron job (which runs in an uncertain
 #   environment) so it's best to fully qualify the path name (you can't
 #   rely on /usr/bin/env in these cases).
-GZIP	   = /bin/gzip
-RUBY	   = /usr/local/bin/ruby
-PERL	   = /usr/local/bin/perl
+GZIP	   = /usr/bin/gzip
+RUBY	   = /usr/bin/ruby
+PERL	   = /usr/bin/perl
 MYSQL      = /usr/bin/mysql
 MYSQLDUMP  = /usr/bin/mysqldump
 S3CMD	   = S3CONF=$(HOME)/.s3conf /home/audienc/s3sync/s3cmd.rb
