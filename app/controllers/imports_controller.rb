@@ -81,7 +81,7 @@ class ImportsController < ApplicationController
   end
 
   def index
-    @imports = Import.find(:all)
+    @imports = Import.all
     if @imports.empty?
       flash.keep
       redirect_to :action => :new
