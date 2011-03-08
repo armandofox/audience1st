@@ -23,7 +23,7 @@ Scenario: Upload customer import list
   Then I should see "2 records successfully imported"
   And customer "John Doe" should exist
   And customer "Mary Jane Simmons" should exist
-
+  
 
 
   
