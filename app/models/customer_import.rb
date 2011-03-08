@@ -25,14 +25,14 @@ class CustomerImport < Import
     return [imports,rejects]
   end
   
-  private
-
   def csv_rows
     with_attachment_data do |fh|
       CSV::Reader.create(fh.read, ',')
     end
   end
   
+  protected
+
   def import(customer)
     return customer.save
   end
@@ -52,6 +52,7 @@ class CustomerImport < Import
       self.errors.add_to_base "CSV file format is invalid starting at row #{number_of_records+1}.  If you created this CSV file on a Mac, be sure to select 'Windows Comma-Separated' as the file type to save."
     rescue Exception => e
       self.errors.add_to_base e.message
+      logger.info e.backtrace
     end
     return customers
   end

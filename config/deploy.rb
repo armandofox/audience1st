@@ -124,6 +124,6 @@ end
 deploy.task :restart do
   run "touch #{release_path}/tmp/restart.txt"
   # touch the server to spin it up
-  run "wget http://www.audience1st.com/#{venue}/store > /dev/null 2>&1"
+  run "wget -o /dev/null -O /dev/null http://www.audience1st.com/#{venue}/store"
 end
 
