@@ -1,23 +1,28 @@
 - if @next_showdate.kind_of?(Showdate)
   = render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
 
-- if Voucher.find(:first)
+- if Voucher.count > 0 || Donation.count > 0
   .pageDiv
     %h1 Accounting Reports
     
     - form_tag({:action => 'do_report'}, {:method => :get}) do
       %table
         %tr
-          %td.r Report type
+          %td.r 
+            %label{:for => 'rep'} Report type
           %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue"])
         %tr
           %td.r Date shortcuts:
           %td= select_date_shortcuts :start_year => 2007, :from_prefix => 'from', :to_prefix => 'to', :include_time => true
         %tr
-          %td.r Or custom dates from:
+          %td.r 
+            Or custom dates:
+            %br
+            %label{:for => 'from'} From:
           %td= select_datetime Time.now.at_beginning_of_day, :prefix => 'from', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
         %tr
-          %td.r To:
+          %td.r
+            %label{:for => 'to'} To:
           %td
             = select_datetime Time.now.at_end_of_day, :prefix => 'to',  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
             = submit_tag 'Go'

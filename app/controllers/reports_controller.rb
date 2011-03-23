@@ -26,6 +26,7 @@ class ReportsController < ApplicationController
   def do_report
     # this is a dispatcher that just redirects to the correct report
     # based on a dropdown menu.
+    @from,@to = Time.range_from_params(params[:from],params[:to])
     case params[:rep]
     when /transaction/i
       sales_detail
@@ -65,11 +66,10 @@ class ReportsController < ApplicationController
   end
 
   def sales_detail
-    from,to = Time.range_from_params(params[:from],params[:to])
-    sales = Voucher.sold_between(from, to)
+    sales = Voucher.sold_between(@from, @to)
     @nsales = sales.size
-    @page_title = "#{@nsales} Transactions: #{from.strftime('%a %b %e')} " <<
-      (to - from > 1.day ? (" - " << to.strftime('%a %b %e')) : '')
+    @page_title = "#{@nsales} Transactions: #{@from.strftime('%a %b %e')} " <<
+      (@to - @from > 1.day ? (" - " << @to.strftime('%a %b %e')) : '')
     @daily_sales = sales.group_by do |v|
       u = v.sold_on
       "#{u.change(:min => u.min - u.min.modulo(3))},#{v.customer.last_name},#{v.customer.first_name},#{v.vouchertype_id},#{v.processed_by_id}"
@@ -84,7 +84,6 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
-    @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
       send_data(AccountingReport.render_csv(:from => @from, :to => @to),
