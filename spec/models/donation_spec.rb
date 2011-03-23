@@ -4,6 +4,7 @@ describe Donation do
   describe "default account code" do
     before(:each) do
       Option.stub!(:value).with(:default_donation_account_code).and_return '9999'
+      AccountCode.delete_all
     end
     it "should find default account code if it exists" do
       a = AccountCode.create!(:name => "Gen", :code => '9999')

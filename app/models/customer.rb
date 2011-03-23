@@ -1,5 +1,6 @@
 class Customer < ActiveRecord::Base
   require_dependency 'customer/special_customers'
+  require_dependency 'customer/secret_question'
   require_dependency '../lib/date_time_extras'
 
   include Authentication

@@ -24,7 +24,7 @@ tom:
 
 tom2:
   id: 78
-  first_name: Tom Duplicate
+  first_name: Tomduplicate
   last_name: Foolery
   street: 123 Duplicate St
   city: Oakland
@@ -39,7 +39,7 @@ tom2:
 
 tom3:
   id: 79
-  first_name: Another Tom
+  first_name: AnotherTom
   last_name: Foolery
   email: tom3@foolery.com
 

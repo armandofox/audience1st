@@ -25,8 +25,8 @@ Given /^I am logged in as (.*)?$/ do |who|
   when /staff/i
     @customer = customers(:staff)
     is_admin = true
-  when /customer ["'](.*)['"]/
-    @customer = customers($1.to_sym)
+  when /customer "(.*) (.*)"/
+    @customer = Customer.find_by_first_name_and_last_name!($1,$2)
   else
     raise "No such user '#{who}'"
   end

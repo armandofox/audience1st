@@ -3,6 +3,55 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
   fixtures :customers
+  describe 'secret question' do
+    before(:each) do
+      @c = BasicModels.create_generic_customer
+    end
+    it 'should be the empty question by default' do
+      @c.secret_question.should == 0
+      @c.should be_valid
+    end
+    it 'should be invalid with too-large secret question index' do
+      @c.secret_question = 9999
+      @c.should_not be_valid
+    end
+    it 'should be invalid if question selected but no answer' do
+      @c.secret_question = 1
+      @c.should_not be_valid
+      @c.errors.full_messages.should include_match_for(/must be given if you specify a question/)
+    end
+  end
+  describe 'secret answer' do
+    before(:each) do
+      @c = BasicModels.create_generic_customer
+    end
+    it 'should be valid if blank' do
+      @c.secret_answer.should be_blank
+      @c.should be_valid
+    end
+    it 'should be invalid if too long' do
+      @c.secret_answer = 'foo' * 30
+      @c.should_not be_valid
+      @c.errors.full_messages.should include_match_for(/too long/)
+    end
+    describe 'verifying' do
+      before(:each) do
+        @c.update_attribute(:secret_answer, 'The Foo   bar')
+      end
+      it 'should always be wrong if blank' do
+        @c.check_secret_answer('').should be_nil
+      end
+      it 'should match case-insensitively' do
+        @c.check_secret_answer('the foo bar').should be_true
+      end
+      it 'should match if whitespace collapsed' do
+        @c.check_secret_answer('The Foo bar').should be_true
+      end
+      it 'should match if whitespace expanded' do
+        @c.check_secret_answer('The Foo bar').should be_true
+      end
+    end
+  end
   describe "labels" do
     before(:each) do
       @c = BasicModels.create_generic_customer
