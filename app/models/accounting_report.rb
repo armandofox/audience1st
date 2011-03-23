@@ -3,14 +3,14 @@ class AccountingReport < Ruport::Controller
   include ApplicationHelper
   attr_accessor :from, :to, :title
 
-  stage :itemized_groups, :subtotal_by_purchasemethod
+  stage :itemized_groups, :donations, :subtotal_by_purchasemethod
 
   def setup
     @from,@to = options[:from],options[:to]
-    options[:title] = "Earned revenue:<br/> #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}"
+    options[:title] = "Earned and unearned revenue:<br/> #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}"
     @exclude_purchasemethods = Purchasemethod.find_all_by_nonrevenue(true).map(&:id)
     @exclude_categories = [:comp,:subscriber]
-    @report = self.generate()
+    @report = self.generate_vouchers_report()
     if @report.empty?
       @report.column_names = %w(description code name show_name num_units total_amount)
       @report << ['','','','',0,0]
@@ -58,7 +58,7 @@ class AccountingReport < Ruport::Controller
   
   protected
   
-  def generate
+  def generate_vouchers_report
     q = <<EOQ1
         SELECT purchasemethods.description,
                account_codes.code,
