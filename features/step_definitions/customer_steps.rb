@@ -2,7 +2,7 @@ World(FixtureAccess)
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 
 Given /^I am not logged in$/ do
-  visit '/logout'
+  visit logout_path
   response.should contain(/logged out/i)
 end
 
@@ -43,10 +43,21 @@ Given /^customer "(.*) (.*)" (should )?exists?$/ do |first,last,flag|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
 end
 
+Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  @customer.update_attributes(
+    :secret_question => get_secret_question_index(question),
+    :secret_answer => answer)
+end
+
 Then /^customer "(.*) (.*)" should have secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  @customer.secret_question.should == get_secret_question_index(question)
+  @customer.secret_answer.should == answer
+end
+
+def get_secret_question_index(question)
   indx = APP_CONFIG[:secret_questions].index(question)
   indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
-  @customer.secret_question.should == indx
-  @customer.secret_answer.should == answer
+  indx
 end

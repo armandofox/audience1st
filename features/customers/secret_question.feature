@@ -19,6 +19,16 @@ Scenario: customer can establish a secret question
 
 Scenario: customer can login by answering secret question correctly
 
+  Given I am not logged in
+  And customer "Tom Foolery" has secret question "In what city were you born?" with answer "New York"
+  When I visit the Login With Secret Question page
+  And I fill in "Email" with "tom@foolery.com"
+  And I select "In what city were you born?" from "Secret Question"
+  And I fill in "Your Answer" with "New York"
+  And I press "Verify"
+  Then tom@foolery.com should be logged in
+  And I should be on the change password page
+
 Scenario: customer cannot login if secret question answered incorrectly
 
 Scenario: customer cannot login if secret question hasn't been selected

@@ -1,7 +1,7 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
 
-  ssl_required :new, :create
+  ssl_required :new, :create, :new_from_secret_question, :create_from_secret_question
   ssl_allowed :destroy
 
   # render new.rhtml
@@ -16,8 +16,35 @@ class SessionsController < ApplicationController
   end
 
   def create
+    create_session do |params|
+      Customer.authenticate(params[:email], params[:password])
+    end
+  end
+
+  def new_from_secret_question
+    redirect_to_stored and return if logged_in?
+  end
+
+  def create_from_secret_question
+    create_session do |params|
+    # If customer logged in using this mechanism, force them to change password.
+      set_return_to :controller => 'customers', :action => 'change_password'
+      Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
+    end
+  end
+
+  def destroy
+    logout_killing_session!
+    clear_facebook_session_information if USE_FACEBOOK
+    flash[:notice] = "You have been logged out."
+    redirect_to login_path
+  end
+
+  protected
+  
+  def create_session
     logout_keeping_session!
-    @user = Customer.authenticate(params[:email], params[:password])
+    @user = yield(params)
     if (@user.nil? || !@user.errors.empty?)
       note_failed_signin
       @email       = params[:email]
@@ -42,14 +69,6 @@ class SessionsController < ApplicationController
     end
   end
 
-  def destroy
-    logout_killing_session!
-    clear_facebook_session_information if USE_FACEBOOK
-    flash[:notice] = "You have been logged out."
-    redirect_to login_path
-  end
-
-protected
   # Track failed login attempts
   def note_failed_signin
     flash[:warning] = "Couldn't log you in as '#{params[:email]}'"

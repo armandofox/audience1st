@@ -342,6 +342,19 @@ class Customer < ActiveRecord::Base
     return status
   end
 
+  def self.find_by_email_for_authentication(email)
+    if email.blank?
+      u = Customer.new
+      u.errors.add(:login_failed, "Please provide your email and password.")
+      return u
+    end
+    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
+      u = Customer.new
+      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
+      return u
+    end
+  end
+
   def self.authenticate(email, password)
     if (email.blank? || password.blank?)
       u = Customer.new

@@ -16,6 +16,7 @@ ActionController::Routing::Routes.draw do |map|
   
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new'
+  map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.resource :session # other session actions
 
