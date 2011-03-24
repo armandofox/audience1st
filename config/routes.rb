@@ -16,8 +16,10 @@ ActionController::Routing::Routes.draw do |map|
   
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new'
+  map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
   map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
+  map.home '/customers/welcome', :controller => 'customers', :action => 'welcome'
   map.resource :session # other session actions
 
   map.connect 'subscribe', :controller => 'store', :action => 'subscribe'

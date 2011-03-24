@@ -15,7 +15,7 @@ class Customer < ActiveRecord::Base
   def has_secret_question? ; !self.secret_question.zero? ; end
   
   def check_secret_answer(str)
-    (str.blank? || secret_question.zero?) ? nil :
+    (str.blank? || !self.has_secret_question?) ? nil :
       self.secret_answer.gsub(/\s+/,' ').downcase == str.gsub(/\s+/,' ').downcase
   end
 
@@ -26,7 +26,9 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, 'Please provide your email and the answer to your chosen secret question.')
     elsif (u = Customer.find(:first, :conditions => ['email LIKE ?', email.downcase])).nil?
       u.errors.add(:login_failed,
-        "Can't find that email address.  Maybe you registered with a different one?")
+        'Can\'t find that email address.  Maybe you registered with a different one?')
+    elsif !u.has_secret_question?
+      u.errors.add(:login_failed, "Sorry, but '#{email}' never set up a secret question.")
     elsif !(u.check_secret_answer(answer))
       u.errors.add(:login_failed, "Sorry, that isn't the answer you provided when you selected your secret question.")
     end

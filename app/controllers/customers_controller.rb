@@ -10,7 +10,7 @@ class CustomersController < ApplicationController
 
   # must be validly logged in before doing anything except login or create acct
   before_filter(:is_logged_in,
-                :only=>%w[welcome change_password edit link_existing_account],
+                :only=>%w[welcome change_password change_secret_question edit link_existing_account],
                 :add_to_flash => 'Please log in or create an account to view this page.')
   before_filter :reset_shopping, :only => %w[welcome]
 
@@ -35,7 +35,7 @@ class CustomersController < ApplicationController
     :add_flash => {:warning => "This action requires a POST."} )
 
   # checks for SSL should be last, as they append a before_filter
-  ssl_required :change_password, :new, :create, :user_create, :edit, :forgot_password
+  ssl_required :change_password, :change_secret_question, :new, :create, :user_create, :edit, :forgot_password
   ssl_allowed :auto_complete_for_customer_full_name, :update, :link_user_accounts, :link_existing_account
 
   # auto-completion for customer search
@@ -167,7 +167,7 @@ class CustomersController < ApplicationController
       password = params[:customer][:password]
       flash[:notice] = "Changes confirmed."
       email_confirmation(:send_new_password,@customer,
-        password, "changed your email, password or secret question on our system")
+        password, "changed your password on our system")
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
@@ -177,6 +177,18 @@ class CustomersController < ApplicationController
     end
   end
 
+  def change_secret_question
+    @customer = current_user
+    return if request.get?
+    if @customer.update_attributes(params[:customer])
+      Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
+        :comments => 'Change secret question or answer')
+      flash[:notice] = 'Secret question change confirmed.'
+      redirect_to home_path
+    else
+      render :action => :change_secret_question
+    end
+  end
 
   # Following actions are for use by admins only:
   # list, switch_to, merge, search, create, destroy

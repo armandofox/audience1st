@@ -10,6 +10,7 @@ module NavigationHelpers
     case page_name
     when /the login page/i              then login_path
     when /the login with secret question page/i then secret_question_path
+    when /the change secret question page/i then '/customers/change_secret_question'
     when /the home ?page/i              then '/customers/welcome'
     when /the subscriber home ?page/i   then '/customers/welcome'
     when /the edit contact info page for customer "(.*) +(.*)"/i

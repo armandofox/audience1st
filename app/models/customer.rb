@@ -143,6 +143,10 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  def setup_secret_question_message
+    'You can now setup a secret question to verify your identity in case you forget your password.  Click Change Password above to setup your secret question.'
+  end
+
   def welcome_message
     subscriber? ? Option.value(:welcome_page_subscriber_message).to_s :
       Option.value(:welcome_page_nonsubscriber_message).to_s
@@ -159,6 +163,7 @@ class Customer < ActiveRecord::Base
   def login_message
     msg = ["Welcome, #{full_name.name_capitalize}"]
     msg << encourage_opt_in_message if has_opted_out_of_email?
+    msg << setup_secret_question_message unless has_secret_question?
     msg << welcome_message
     msg
   end

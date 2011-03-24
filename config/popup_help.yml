@@ -17,6 +17,11 @@ login_using_facebook: >
   username and password with us, login with those and then click "Link
   my account to Facebook" on the welcome page after logging in.
 
+secret_question: >
+
+  If you set up a secret question and answer, you can use it to log in
+  if you ever forget your password.
+
 # Store pages
 
 credit_card_verification_value: >

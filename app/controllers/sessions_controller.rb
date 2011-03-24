@@ -17,7 +17,14 @@ class SessionsController < ApplicationController
 
   def create
     create_session do |params|
-      Customer.authenticate(params[:email], params[:password])
+      u = Customer.authenticate(params[:email], params[:password])
+      if u.nil? || !u.errors.empty?
+        note_failed_signin(u)
+        @email = params[:email]
+        @remember_me = params[:remember_me]
+        render :action => :new
+      end
+      u
     end
   end
 
@@ -29,7 +36,16 @@ class SessionsController < ApplicationController
     create_session do |params|
     # If customer logged in using this mechanism, force them to change password.
       set_return_to :controller => 'customers', :action => 'change_password'
-      Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
+      u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
+      if u.nil? || !u.errors.empty?
+        note_failed_signin(u)
+        if u.errors.on(:login_failed) =~ /never set up a secret question/i
+          redirect_to login_path
+        else
+          redirect_to secret_question_path
+        end
+      end
+      u
     end
   end
 
@@ -45,12 +61,7 @@ class SessionsController < ApplicationController
   def create_session
     logout_keeping_session!
     @user = yield(params)
-    if (@user.nil? || !@user.errors.empty?)
-      note_failed_signin
-      @email       = params[:email]
-      @remember_me = params[:remember_me]
-      render :action => 'new'
-    else
+    if @user && @user.errors.empty?
       # Protects against session fixation attacks, causes request forgery
       # protection if user resubmits an earlier form using back
       # button. Uncomment if you understand the tradeoffs.
@@ -70,9 +81,9 @@ class SessionsController < ApplicationController
   end
 
   # Track failed login attempts
-  def note_failed_signin
+  def note_failed_signin(user)
     flash[:warning] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:warning] << ": #{@user.errors.on(:login_failed)}" if @user
+    flash[:warning] << ": #{user.errors.on(:login_failed)}" if user
     logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:warning]}"
   end
 
