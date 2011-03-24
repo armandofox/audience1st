@@ -40,6 +40,13 @@ Given /^I am logged in as (.*)?$/ do |who|
 end
 
 Given /^customer "(.*) (.*)" (should )?exists?$/ do |first,last,flag|
-  @customer = Customer.find_by_first_name_and_last_name(first,last)
-  @customer.should_not be_nil
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+end
+
+Then /^customer "(.*) (.*)" should have secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  indx = APP_CONFIG[:secret_questions].index(question)
+  indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
+  @customer.secret_question.should == indx
+  @customer.secret_answer.should == answer
 end

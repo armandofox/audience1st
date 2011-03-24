@@ -15,7 +15,7 @@ describe Customer do
       @c.secret_question = 9999
       @c.should_not be_valid
     end
-    it 'should be invalid if question selected but no answer' do
+    it 'should make customer invalid if question selected but no answer' do
       @c.secret_question = 1
       @c.should_not be_valid
       @c.errors.full_messages.should include_match_for(/must be given if you specify a question/)
@@ -34,9 +34,9 @@ describe Customer do
       @c.should_not be_valid
       @c.errors.full_messages.should include_match_for(/too long/)
     end
-    describe 'verifying' do
+    context 'when there is a secret question' do
       before(:each) do
-        @c.update_attribute(:secret_answer, 'The Foo   bar')
+        @c.update_attributes(:secret_answer => 'The Foo   bar', :secret_question => 1)
       end
       it 'should always be wrong if blank' do
         @c.check_secret_answer('').should be_nil
@@ -49,6 +49,19 @@ describe Customer do
       end
       it 'should match if whitespace expanded' do
         @c.check_secret_answer('The Foo bar').should be_true
+      end
+    end
+    context 'when there is no secret question' do
+      before(:each) do
+        @c.update_attributes(:secret_answer => 'foo', :secret_question => 0)
+      end
+      it 'should always be wrong' do
+        @c.check_secret_answer('foo').should be_nil
+      end
+      it 'should make customer invalid if secret answer provided' do
+        @c.secret_answer = 'foo'
+        @c.should_not be_valid
+        @c.errors.full_messages.should include_match_for(/specify a question/i)
       end
     end
   end

@@ -165,9 +165,9 @@ class CustomersController < ApplicationController
     return if request.get?
     if @customer.update_attributes(params[:customer])
       password = params[:customer][:password]
-      flash[:notice] = password.blank? ? "Email confirmed (password unchanged)." : "Email and password are confirmed."
+      flash[:notice] = "Changes confirmed."
       email_confirmation(:send_new_password,@customer,
-        password, "changed your email or password on our system")
+        password, "changed your email, password or secret question on our system")
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')

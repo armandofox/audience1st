@@ -13,7 +13,7 @@ end
 # Check if menu option selected
 Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
   html = Nokogiri::HTML(response.body)
-  menu_id = if html.xpath("//select[@id='#{menu}']") then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
+  menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
   html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank
 end
 

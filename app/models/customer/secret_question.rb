@@ -7,9 +7,15 @@ class Customer < ActiveRecord::Base
   validates_presence_of(:secret_answer,
     :if => Proc.new { |c| c.secret_question > 0 },
     :message => 'must be given if you specify a question')
+  validates_length_of(:secret_answer,
+    :if => Proc.new { |c| c.secret_question == 0 },
+    :is => 0, :allow_nil => true,
+    :message => 'cannot be given unless you specify a question')
 
+  def has_secret_question? ; !self.secret_question.zero? ; end
+  
   def check_secret_answer(str)
-    str.blank? ? nil :
+    (str.blank? || secret_question.zero?) ? nil :
       self.secret_answer.gsub(/\s+/,' ').downcase == str.gsub(/\s+/,' ').downcase
   end
 
