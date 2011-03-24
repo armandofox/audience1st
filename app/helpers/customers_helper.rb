@@ -98,6 +98,18 @@ module CustomersHelper
     klass.join ' '
   end
 
+  def secret_question_select(customer=Customer.generic_customer)
+    ques = APP_CONFIG[:secret_questions]
+    max = ques.length - 1
+    idx = [max, customer.secret_question].min
+    options_for_select(ques.zip((0..max).to_a), idx)
+  end
+      
+  def secret_question_text(indx)
+    (indx < 1 || indx > APP_CONFIG[:secret_questions].length) ? '' :
+      APP_CONFIG[:secret_questions][indx]
+  end
+
   def group_subscriber_vouchers(v1,v2)
     # each of v1 and v2 is an array of [showdate,vouchertype].
     # showdate is nil for open voucher.

@@ -1,5 +1,6 @@
 class Customer < ActiveRecord::Base
   require_dependency 'customer/special_customers'
+  require_dependency 'customer/secret_question'
   require_dependency '../lib/date_time_extras'
 
   include Authentication
@@ -142,6 +143,10 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  def setup_secret_question_message
+    'You can now setup a secret question to verify your identity in case you forget your password.  Click Change Password above to setup your secret question.'
+  end
+
   def welcome_message
     subscriber? ? Option.value(:welcome_page_subscriber_message).to_s :
       Option.value(:welcome_page_nonsubscriber_message).to_s
@@ -158,6 +163,7 @@ class Customer < ActiveRecord::Base
   def login_message
     msg = ["Welcome, #{full_name.name_capitalize}"]
     msg << encourage_opt_in_message if has_opted_out_of_email?
+    msg << setup_secret_question_message unless has_secret_question?
     msg << welcome_message
     msg
   end
@@ -339,6 +345,19 @@ class Customer < ActiveRecord::Base
       end
     end
     return status
+  end
+
+  def self.find_by_email_for_authentication(email)
+    if email.blank?
+      u = Customer.new
+      u.errors.add(:login_failed, "Please provide your email and password.")
+      return u
+    end
+    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
+      u = Customer.new
+      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
+      return u
+    end
   end
 
   def self.authenticate(email, password)

@@ -8,6 +8,14 @@ timezone: 'PST8PDT'
 
 # Special seating needs or requests
 
+secret_questions:
+ - (No question selected)
+ - What is your maternal grandfather's first name?
+ - In what city were you born?
+ - What is your mother's maiden name?
+ - What was the name of your first pet?
+ - What was the last name of your childhood best friend?
+
 voucher_comments:
  - Wheelchair (manual)
  - Wheelchair (electric/oversized)

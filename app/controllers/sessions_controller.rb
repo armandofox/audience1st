@@ -1,7 +1,7 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
 
-  ssl_required :new, :create
+  ssl_required :new, :create, :new_from_secret_question, :create_from_secret_question
   ssl_allowed :destroy
 
   # render new.rhtml
@@ -16,14 +16,52 @@ class SessionsController < ApplicationController
   end
 
   def create
+    create_session do |params|
+      u = Customer.authenticate(params[:email], params[:password])
+      if u.nil? || !u.errors.empty?
+        note_failed_signin(u)
+        @email = params[:email]
+        @remember_me = params[:remember_me]
+        render :action => :new
+      end
+      u
+    end
+  end
+
+  def new_from_secret_question
+    redirect_to_stored and return if logged_in?
+  end
+
+  def create_from_secret_question
+    create_session do |params|
+    # If customer logged in using this mechanism, force them to change password.
+      set_return_to :controller => 'customers', :action => 'change_password'
+      u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
+      if u.nil? || !u.errors.empty?
+        note_failed_signin(u)
+        if u.errors.on(:login_failed) =~ /never set up a secret question/i
+          redirect_to login_path
+        else
+          redirect_to secret_question_path
+        end
+      end
+      u
+    end
+  end
+
+  def destroy
+    logout_killing_session!
+    clear_facebook_session_information if USE_FACEBOOK
+    flash[:notice] = "You have been logged out."
+    redirect_to login_path
+  end
+
+  protected
+  
+  def create_session
     logout_keeping_session!
-    @user = Customer.authenticate(params[:email], params[:password])
-    if (@user.nil? || !@user.errors.empty?)
-      note_failed_signin
-      @email       = params[:email]
-      @remember_me = params[:remember_me]
-      render :action => 'new'
-    else
+    @user = yield(params)
+    if @user && @user.errors.empty?
       # Protects against session fixation attacks, causes request forgery
       # protection if user resubmits an earlier form using back
       # button. Uncomment if you understand the tradeoffs.
@@ -42,18 +80,10 @@ class SessionsController < ApplicationController
     end
   end
 
-  def destroy
-    logout_killing_session!
-    clear_facebook_session_information if USE_FACEBOOK
-    flash[:notice] = "You have been logged out."
-    redirect_to login_path
-  end
-
-protected
   # Track failed login attempts
-  def note_failed_signin
+  def note_failed_signin(user)
     flash[:warning] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:warning] << ": #{@user.errors.on(:login_failed)}" if @user
+    flash[:warning] << ": #{user.errors.on(:login_failed)}" if user
     logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:warning]}"
   end
 

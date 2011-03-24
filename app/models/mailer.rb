@@ -1,6 +1,7 @@
 class Mailer < ActionMailer::Base
 
   helper :application
+  helper :customers
   
   def send_new_password(customer, newpass, whathappened)
     sending_to(customer)
@@ -8,6 +9,8 @@ class Mailer < ActionMailer::Base
     @body.merge!(
       :email         => customer.email,
       :newpass       => newpass,
+      :question      => secret_question_text(customer.secret_question),
+      :answer        => customer.secret_answer,
       :greeting      => customer.full_name,
       :whathappened  => whathappened,
       :provide_logout_url => true

@@ -97,7 +97,6 @@ class ApplicationController < ActionController::Base
       session[:checkout_in_progress] = val
     else
       session.delete(:checkout_in_progress)
-      session.delete(:return_to)
     end
     @gCheckoutInProgress = val
   end
