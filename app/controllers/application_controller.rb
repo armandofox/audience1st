@@ -1,7 +1,9 @@
 class ApplicationController < ActionController::Base
 
   helper :all
+
   protect_from_forgery
+  rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 
   require 'cart'                # since not an ActiveRecord model
   
@@ -39,6 +41,11 @@ class ApplicationController < ActionController::Base
       flash[:notice] = "Please login to Facebook again."
       redirect_to login_path
     end
+  end
+
+  def session_expired
+    render :template => 'messages/session_expired', :layout => 'application', :status => 400
+    true
   end
 
   def reset_session # work around session reset bug in rails 2.3.5

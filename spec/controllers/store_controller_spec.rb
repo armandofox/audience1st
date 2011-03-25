@@ -3,6 +3,20 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe StoreController do
   fixtures :customers
 
+  describe "on InvalidAuthenticityToken exception" do
+    before(:each) do
+      @controller.allow_forgery_protection = true
+    end
+    it 'should check the authenticity token' do
+      @controller.should_receive(:verify_authenticity_token)
+      post :place_order, :authenticity_token => 'wrong'
+    end
+    it "should show the Session Expired page rather than throwing error" do
+      @controller.should_receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
+      post :place_order, :authenticity_token => 'wrong'
+      response.should render_template 'messages/session_expired'
+    end
+  end
   describe "trying to proceed with empty cart" do
     context "and no donation" do
       describe "all cases", :shared => true do

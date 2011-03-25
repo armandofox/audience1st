@@ -1,9 +1,4 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :labels
-
-  map.resources :labels
-
-
   map.resources :bulk_downloads
   map.resources :account_codes
   map.resources :imports
@@ -19,6 +14,7 @@ ActionController::Routing::Routes.draw do |map|
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
   map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
+  map.store '/store', :controller => 'store', :action => 'index'
   map.home '/customers/welcome', :controller => 'customers', :action => 'welcome'
   map.resource :session # other session actions
 

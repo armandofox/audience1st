@@ -1,0 +1,16 @@
+%h1 Session Expired
+
+#restart_session
+  %p.warning
+    Sorry, your session has expired because it's been more than 
+    = h(Option.value(:session_timeout))
+    minutes since you left this page.
+
+  %p#restart_session
+    To resume with a new session, you can go to the
+    = gen_button 'Buy Tickets', store_path
+    page, or visit
+    = gen_button 'My Account', home_path
+    to check on the status of a purchase or reservation.
+
+  %p Sorry for the inconvenience!
