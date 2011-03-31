@@ -3,6 +3,8 @@ class Mailer < ActionMailer::Base
   helper :application
   helper :customers
   
+  include CustomersHelper
+
   def send_new_password(customer, newpass, whathappened)
     sending_to(customer)
     @subject    << "#{customer.full_name}'s account"
