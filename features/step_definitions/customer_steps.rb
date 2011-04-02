@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 Given /^I am not logged in$/ do
   visit logout_path
-  response.should contain(/logged out/i)
+  page.should have_content("logged out")
 end
 
 Given /^I am logged in as (.*)?$/ do |who|
@@ -35,8 +35,8 @@ Given /^I am logged in as (.*)?$/ do |who|
   fill_in 'email', :with => @customer.email
   fill_in 'password', :with => 'pass'
   click_button 'Login'
-  response.should contain(Regexp.new("Welcome,.*#{@customer.first_name}"))
-  response.should have_selector('div[id=customer_quick_search].adminField') if is_admin
+  page.should have_content("Welcome, #{@customer.first_name}")
+  page.should have_css('#customer_quick_search') if is_admin
 end
 
 Given /^customer "(.*) (.*)" (should )?exists?$/ do |first,last,flag|

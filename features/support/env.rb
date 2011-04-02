@@ -9,21 +9,19 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
 require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
 require 'cucumber/rails/rspec'
-
 require 'cucumber/rails/world'
-# #require 'facebooker/rails/cucumber'
-# Facebooker::MockService.fixture_path = File.join(RAILS_ROOT, 'spec', 'fixtures', 'facebook')
-# Facebooker::Session.current = Facebooker::MockSession.create
-
 require 'cucumber/rails/active_record'
 require 'cucumber/web/tableish'
 
-require 'webrat'
-require 'webrat/core/matchers'
-
-require 'spec/stubs/cucumber'
-require 'spec/mocks'
-
+require 'capybara/rails'
+require 'capybara/cucumber'
+require 'capybara/session'
+# require 'cucumber/rails/capybara_javascript_emulation' # Lets you click links with onclick javascript handlers without using @culerity or @javascript
+# Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
+# order to ease the transition to Capybara we set the default here. If you'd
+# prefer to use XPath just remove this line and adjust any selectors in your
+# steps to use the XPath syntax.
+Capybara.default_selector = :css
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere
@@ -48,35 +46,16 @@ ActionController::Base.allow_rescue = false
 # after each scenario, which can lead to hard-to-debug failures in 
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
+Cucumber::Rails::World.use_transactional_fixtures = true
 
-
-if ENV['SELENIUM']
-  require 'database_cleaner'
-  require 'database_cleaner/cucumber'
-  require 'webrat/selenium'
-  Cucumber::Rails::World.use_transactional_fixtures = false
-  # How to clean your database when transactions are turned off. See
-  # http://github.com/bmabey/database_cleaner for more info.
-  DatabaseCleaner.strategy = :truncation
-
-  Webrat.configure do |config|
-    config.mode = :selenium
-    config.application_environment = :cucumber
-    config.application_framework = :rails
-    config.selenium_browser_startup_timeout = 30
+# How to clean your database when transactions are turned off. See
+# http://github.com/bmabey/database_cleaner for more info.
+if defined?(ActiveRecord::Base)
+  begin
+    require 'database_cleaner'
+    DatabaseCleaner.strategy = :truncation
+  rescue LoadError => ignore_if_database_cleaner_not_present
   end
-
-  World(Webrat::Selenium::Matchers)
-
-else
-
-  Webrat.configure do |config|
-    config.mode = :rails
-    config.open_error_files = false # Set to true if you want error pages to pop up in the browser
-  end
-
-  Cucumber::Rails::World.use_transactional_fixtures = true
-
 end
 
 
@@ -97,4 +76,3 @@ After do
   end
 end
 
-    

@@ -21,9 +21,9 @@ Then "$actor should be redirected to $path" do |_, path|
 end
 
 Then "the page should look AWESOME" do
-  response.should have_tag('head>title')
-  response.should have_tag('h1')
-  # response.should be_valid_xhtml
+  page.should have_tag('head>title')
+  page.should have_tag('h1')
+  # page.should be_valid_xhtml
 end
 
 #
@@ -31,13 +31,13 @@ end
 #
 
 Then "the page should contain '$text'" do |_, text|
-  response.should have_text(/#{text}/)
+  page.should have_text(/#{text}/)
 end
 
 # please note: this enforces the use of a <label> field
 Then "$actor should see a <$container> containing a $attributes" do |_, container, attributes|
   attributes = attributes.to_hash_from_story
-  response.should have_tag(container) do
+  page.should have_tag(container) do
     attributes.each do |tag, label|
       case tag
       when "textfield" then with_tag "input[type='text']";     with_tag("label", label)
@@ -116,25 +116,25 @@ end
 #
 
 Then /^she should +see an? (\w+) message '([\w ,!@.\']+)'$/ do |notice, message|
-  response.should have_flash(notice, %r{#{message}})
+  page.should have_flash(notice, %r{#{message}})
 end
 
 Then "$actor should not see $an $notice message '$message'" do |_, _, notice, message|
-  response.should_not have_flash(notice, %r{#{message}})
+  page.should_not have_flash(notice, %r{#{message}})
 end
 
 Then "$actor should see no messages" do |_|
   ['error', 'warning', 'notice'].each do |notice|
-    response.should_not have_flash(notice)
+    page.should_not have_flash(notice)
   end
 end
 
 RE_POLITENESS = /(?:please|sorry|thank(?:s| you))/i
 Then %r{we should be polite about it} do
-  response.should have_tag("div.error,div.notice", RE_POLITENESS)
+  page.should have_tag("div.error,div.notice", RE_POLITENESS)
 end
 Then %r{we should not even be polite about it} do
-  response.should_not have_tag("div.error,div.notice", RE_POLITENESS)
+  page.should_not have_tag("div.error,div.notice", RE_POLITENESS)
 end
 
 #

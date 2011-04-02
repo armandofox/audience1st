@@ -127,5 +127,5 @@ end
 def log_in_user! *args
   log_in_user *args
   follow_redirect!
-  response.should contain("Welcome,")
+  page.should have_content("Welcome,")
 end
