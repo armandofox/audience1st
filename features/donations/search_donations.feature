@@ -13,5 +13,5 @@ Scenario: list all donations
 
   Given a donation of $10.00 on April 22, 2011 from Tom Foolery
   When I go to the donations page
-  And I press 'Search'
+  And I press "Search"
 

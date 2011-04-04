@@ -2,7 +2,7 @@
 format = '--require features --format pretty --color'
 %>
 autotest: <%= format %> --tags @ip 
-default: <%= format %> --tags ~@selenium --tags ~@facebook
+default: <%= format %> --tags ~@selenium --tags ~@facebook --tags ~@wip
 selenium: <%= format %> --tags @selenium SELENIUM=1
 passing:  <%= format %> --tags ~@wip  
 cur:  --tags @cur <%= format %>

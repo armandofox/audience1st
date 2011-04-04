@@ -1,9 +1,6 @@
-Visitors should be in control of creating an account and of proving their
-essential humanity/accountability or whatever it is people think the
-id-validation does.  We should be fairly skeptical about this process, as the
-identity+trust chain starts here.
+@wip
 
-Story: Creating an account
+Feature: Creating an account
   As an anonymous customer
   I want to be able to create an account
   So that I can be one of the cool kids

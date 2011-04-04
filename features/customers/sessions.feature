@@ -1,7 +1,4 @@
-Customers want to know that nobody can masquerade as them.  We want to extend trust
-only to visitors who present the appropriate credentials.  Everyone wants this
-identity verification to be as secure and convenient as possible.
-
+@wip
 Feature: Logging in
   As an anonymous customer with an account
   I want to log in to my account
