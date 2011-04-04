@@ -32,7 +32,7 @@ end
 When /^I link with Facebook user "(.*)" id "([0-9]+)"$/ do |name,id|
   facebooker = create_facebook_user name, id
   controller.stub_facebook_session_with(mock("fake_session_for_#{facebooker}", :user => facebooker))
-  get '/customers/link_user_accounts'
+  visit '/customers/link_user_accounts'
 end
 
 Given /^I have a Facebook friend "(.*)"$/ do |name|

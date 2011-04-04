@@ -30,8 +30,8 @@ Given /^I am logged in as (.*)?$/ do |who|
   else
     raise "No such user '#{who}'"
   end
-  visit logout_path
-  visit login_path
+  visit '/logout'
+  visit '/sessions/new'
   fill_in 'email', :with => @customer.email
   fill_in 'password', :with => 'pass'
   click_button 'Login'

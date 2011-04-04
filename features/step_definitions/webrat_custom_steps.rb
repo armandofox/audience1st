@@ -65,11 +65,11 @@ end
 
 Then /^I should see a quantity menu for "([^\"]*)"$/ do |name|
   vtype = Vouchertype.find_by_name(name)
-  page.should have_tag("select.itemQty[name='vouchertype[#{vtype.id}]']")
+  page.should have_css("select.itemQty[name='vouchertype[#{vtype.id}]']")
 end
 
 Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,choice|
-  page.should(have_tag("select[id=#{menu}]") || have_tag("select[name=#{menu}]")) do |m|
+  page.should(have_css("select[id=#{menu}]") || have_css("select[name=#{menu}]")) do |m|
     m.should have_css("option", :content => choice)
   end
 end

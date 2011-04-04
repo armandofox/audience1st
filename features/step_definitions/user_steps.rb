@@ -97,7 +97,7 @@ end
 #
 
 def log_out
-  get '/sessions/destroy'
+  visit '/sessions/destroy'
   controller.send(:current_user).should be_false
 end
 
