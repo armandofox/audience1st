@@ -21,8 +21,8 @@ class Customer < ActiveRecord::Base
 
   def self.authenticate_from_secret_question(email, question, answer)
     # we don't actually check the question, just the answer...
-    u = Customer.new
     if email.blank? || answer.blank?
+      u = Customer.new
       u.errors.add(:login_failed, 'Please provide your email and the answer to your chosen secret question.')
     elsif (u = Customer.find(:first, :conditions => ['email LIKE ?', email.downcase])).nil?
       u = Customer.new
