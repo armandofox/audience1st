@@ -21,7 +21,7 @@ module NavigationHelpers
     when /the forgot password page/i    then '/customers/forgot_password'
     when /the store page/i              then '/store/index'
     when /the subscriptions page/i      then '/store/subscribe'
-    when /the donations page/i          then '/donations'
+    when /the donations page/i          then '/donations/list'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes/list?season=$1"

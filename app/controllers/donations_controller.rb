@@ -1,4 +1,4 @@
-class DonationController < ApplicationController
+class DonationsController < ApplicationController
 
   before_filter :is_staff_filter, :only => %w[new create], :redirect_to => {:controller => 'customers', :action => 'login' }
   before_filter :is_boxoffice_manager_filter, :except => %w[new create]
@@ -14,7 +14,6 @@ class DonationController < ApplicationController
       render :action => 'list'
       return
     end
-    #query = QueryBuilder.new("SELECT DISTINCT d.* FROM Donations d, Customers c WHERE ")
     conds = {}
     if (params[:use_cid] &&
         (cid = params[:cid].to_i) != 0) &&
