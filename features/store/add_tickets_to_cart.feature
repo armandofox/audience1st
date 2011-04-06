@@ -1,4 +1,4 @@
-@selenium
+@javascript
 Feature: Add tickets to cart
 
   As a patron

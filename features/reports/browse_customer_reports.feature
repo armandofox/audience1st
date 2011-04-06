@@ -1,4 +1,4 @@
-@selenium
+@javascript
 Feature: browse customer reports
 
   As an administrator

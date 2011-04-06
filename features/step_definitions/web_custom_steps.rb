@@ -81,7 +81,7 @@ end
 # tabular data
 Then /^I should see a row "(.*)" within "(.*)"$/ do |row, table|
   page.should have_css(table)
-  @html = Nokogiri::HTML(response.body)
+  @html = Nokogiri::HTML(page.body)
   @rows = @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
   @rows.any? do |table_row|
