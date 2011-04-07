@@ -19,6 +19,7 @@ module NavigationHelpers
       "/customers/edit/#{@customer.id}"
     when /the change password page/i    then '/customers/change_password'
     when /the forgot password page/i    then '/customers/forgot_password'
+    when /the new customer page/i       then '/customers/new'
     when /the store page/i              then '/store/index'
     when /the subscriptions page/i      then '/store/subscribe'
     when /the donations page/i          then '/donations/list'

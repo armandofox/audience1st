@@ -1,6 +1,12 @@
 World(FixtureAccess)
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 
+Then /^account creation should fail with "(.*)"$/ do |msg|
+  When %Q{I press "Create My Account"}
+  Then %Q{I should see "#{msg}"}
+  And %Q{I should see "Create Your Account"}
+end
+
 Given /^I am not logged in$/ do
   visit logout_path
   page.should have_content("logged out")

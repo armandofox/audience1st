@@ -1,91 +1,66 @@
-@wip
-
 Feature: Creating an account
   As an anonymous customer
   I want to be able to create an account
   So that I can be one of the cool kids
 
-  #
-  # Account Creation: Get entry form
-  #
-  Scenario: Anonymous customer can start creating an account
-    Given an anonymous customer
-    When  she goes to /customers/new
-    Then  she should be at the 'customers/new' page
-     And  she should see a <form> containing a textfield: 'Email', password: Password, password: 'Confirm Password', submit: 'Create My Account'
+  Background: 
 
-  #
-  # Account Creation
-  #
-  Scenario: Anonymous customer can create an account
-    Given an anonymous customer
-     And  no customer with first_name: 'Oona' exists
-    When  she registers an account as the preloaded 'Oona'
-    Then  she should be redirected to the home page
-    When  she follows that redirect!
-    Then  she should see a notice message 'Welcome, Oona'
-     And  a customer with first_name: 'Oona' should exist
-     And  the customer should have first_name: 'Oona', and email: 'unactivated@example.com'
-     And  unactivated@example.com should be logged in
+    Given I am not logged in
+    And I am on the new customer page
+    And I fill in the following:
+      | First name       | John          |
+      | Last name        | Doe           |
+      | Street           | 123 Fake St   |
+      | City             | San Francisco |
+      | State            | CA            |
+      | Zip              | 94131         |
+      | Preferred phone  | 415-555-2222  |
+    
+  Scenario: New customer can create an account
 
+    When I fill in the following:
+      | Email            | john@doe.com  |
+      | Password         | johndoe       |
+      | Confirm Password | johndoe       |
+    And I press "Create My Account"
+    Then I should be on the home page  
+    And I should see "Welcome, John"
 
-  #
-  # Account Creation Failure: Account exists
-  #
+  Scenario: New customer cannot create account without providing email address
 
+    When I fill in the following:
+      | Password         | johndoe       |
+      | Confirm Password | johndoe       |
+    Then account creation should fail with "Email is invalid"
 
-  Scenario: Anonymous customer can not create an account replacing an activated account
-    Given  an activated customer named 'Reggie'
-    And    an anonymous customer
-    When  she registers an account with first_name: 'foobar', last_name: 'foobar', password: 'monkey', and email: 'registered@example.com'
-    Then  she should be at the 'customers/new' page
-     And  she should see an errorExplanation message 'Email address registered@example.com has already been registered'
-     And  a customer with first_name: 'Reggie' should exist
-     And  the customer should have email: 'registered@example.com'
-     And  she should not be logged in
+  Scenario: New customer cannot create account with invalid email
 
-  #
-  # Account Creation Failure: Incomplete input
-  #
-  Scenario: Anonymous customer can not create an account with incomplete or incorrect input
-    Given an anonymous customer
-     And  no customer with first_name: 'Oona' exists
-    When  she registers an account with first_name: '',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
-    Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'First name is too short'
-     And  no customer with first_name: 'Oona' should exist
+    When I fill in the following:
+    | Email            | invalid.address |
+    | Password         | johndoe         |
+    | Confirm Password | johndoe         |
+    Then account creation should fail with "Email is invalid"
 
-  Scenario: Anonymous customer can not create an account with no password
-    Given an anonymous customer
-     And  no customer with first_name: 'Oona' exists
-    When  she registers an account with first_name: 'Oona',  last_name: 'Ooblick',  password: '',       password_confirmation: 'monkey' and email: 'unactivated@example.com'
-    Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Password is too short'
-     And  no customer with first_name: 'Oona' should exist
+  Scenario: New customer cannot create account with duplicate email
 
-  @ip
-  Scenario: Anonymous customer can not create an account with mismatched password & password_confirmation
-    Given an anonymous customer
-     And  no customer with first_name: 'Oona' exists
-    When  she registers an account with first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkeY' and email: 'unactivated@example.com'
-    Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Password doesn't match confirmation'
-     And  no customer with first_name: 'Oona' should exist
+    Given customer "Tom Foolery" exists
+    When I fill in the following:
+    | Email            | tom@foolery.com |
+    | Password         | tom             |
+    | Confirm Password | tom             |
+    Then account creation should fail with "address tom@foolery.com has already been registered"
 
-  Scenario: Anonymous customer can not create an account with bad email
-    Given an anonymous customer
-     And  no customer with first_name: 'Oona' exists
-    When  she registers an account with first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: ''
-    Then  she should be at the 'customers/new' page
-     And  she should     see an errorExplanation message 'Email is invalid'
-     And  no customer with first_name: 'Oona' should exist
-    When  she registers an account with first_name: 'Oona',  last_name: 'Ooblick',  password: 'monkey', password_confirmation: 'monkey' and email: 'unactivated@example.com'
-    Then  she should be redirected to the home page
-    When  she follows that redirect!
-    Then  she should see a notice message 'Welcome, Oona'
-     And  a customer with first_name: 'Oona' should exist
-     And  the customer should have first_name: 'Oona', and email: 'unactivated@example.com'
-     And  unactivated@example.com should be logged in
+  Scenario: New customer cannot create account without providing password
 
+    When I fill in the following:
+    | Email | john@doe.com |
+    Then account creation should fail with "Password is too short"
+    
+  Scenario: New customer cannot create account with mismatched password confirmation
 
+    When I fill in the following:
+      | Email            | john@doe.com  |
+      | Password         | johndoe       |
+      | Confirm Password | johndo        |
+    Then account creation should fail with "Password doesn't match confirmation"
 

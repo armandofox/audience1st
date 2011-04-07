@@ -72,10 +72,9 @@ Then "$actor should not be logged in" do |email|
 end
 
 Then "$login should be logged in" do |email|
+  save_and_open_page
   customer = Customer.find_by_email!(email)
   page.should have_content("Welcome, #{customer.full_name}")
-  #controller.send(:logged_in?).should be_true
-  #controller.send(:current_user).email.should == email
 end
 
 def named_user login
@@ -97,15 +96,11 @@ end
 #
 
 def log_out
-  visit '/sessions/destroy'
-  controller.send(:current_user).should be_false
+  visit logout_path
+  #controller.send(:current_user).should be_false
 end
 
-def log_out!
-  log_out
-  response.should redirect_to(login_path)
-  follow_redirect!
-end
+def log_out! ; log_out ; end
 
 def create_user(user_params={})
   @user_params       ||= user_params
