@@ -1,5 +1,3 @@
-World()
-
 DEFAULT_HOUSE_CAPACITY = 100
 
 Given /^there are no shows set up$/ do

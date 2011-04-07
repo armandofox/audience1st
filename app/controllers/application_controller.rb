@@ -187,7 +187,7 @@ class ApplicationController < ActionController::Base
     end
     def is_#{r}_filter
       unless current_admin.is_#{r}
-        flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
+          flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
         redirect_to login_path
         return nil

@@ -117,7 +117,7 @@ end
 Then "page should have the $resource's $attributes" do |resource, attributes|
   actual_resource = instantize(resource)
   attributes.split(/, and |, /).each do |attribute|
-    response.should have_text(/#{actual_resource.send(attribute.strip.gsub(" ","_"))}/)
+    page.should have_text(/#{actual_resource.send(attribute.strip.gsub(" ","_"))}/)
   end
 end
 

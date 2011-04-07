@@ -22,7 +22,7 @@
 
   - unless @import.size.to_i > 0
     %p
-      %label{:for => :uploaded_data} Select file to upload:
+      %label{:for => :import_uploaded_data} Select file to upload:
       = f.file_field :uploaded_data
       = popup_help_for :import_choose_file
 

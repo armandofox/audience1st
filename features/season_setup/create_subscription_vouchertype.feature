@@ -16,7 +16,7 @@ Scenario: Create new subscription vouchertype
   And I fill in "Name" with "NewSub"
   And I fill in "Price" with "15"
   And I fill in "Display order" with "8"
-  And I select "9999   General Fund" from "Account Code"
+  And I select "9999 General Fund" from "Account Code"
   And I select "Anyone may purchase" from "Availability"
   And I select "2011-2012" from "Season"
   And I check "Mail fulfillment needed"

@@ -15,13 +15,14 @@ module NavigationHelpers
     when /the subscriber home ?page/i   then '/customers/welcome'
     when /the edit contact info page for customer "(.*) +(.*)"/i
       @customer = Customer.find_by_first_name_and_last_name!($1, $2)
-      get "/customers/switch_to/#{@customer.id}"
+      visit "/customers/switch_to/#{@customer.id}"
       "/customers/edit/#{@customer.id}"
     when /the change password page/i    then '/customers/change_password'
     when /the forgot password page/i    then '/customers/forgot_password'
+    when /the new customer page/i       then '/customers/new'
     when /the store page/i              then '/store/index'
     when /the subscriptions page/i      then '/store/subscribe'
-    when /the donations page/i          then '/donations'
+    when /the donations page/i          then '/donations/list'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes/list?season=$1"

@@ -12,7 +12,7 @@ end
 
 # Check if menu option selected
 Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
-  html = Nokogiri::HTML(response.body)
+  html = Nokogiri::HTML(page.body)
   menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
   html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank
 end
@@ -20,7 +20,7 @@ end
 # Variant for dates
 Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
   date = Time.parse(date)
-  html = Nokogiri::HTML(response.body)
+  html = Nokogiri::HTML(page.body)
   menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
   Then %Q{"#{date.year}" should be selected in the "#{menu_id}_1i" menu}
   Then %Q{"#{Date::MONTHNAMES[date.month]}" should be selected in the "#{menu_id}_2i" menu}
@@ -41,9 +41,9 @@ end
 
 # 'should come before/should come after' for verifying orderings of things
 Then /^(.*):"(.*)" should come (before|after) (.*):"(.*)" within "(.*)"$/ do |tag1,val1,order,tag2,val2,sel|
-  @html = Nokogiri::HTML(response.body)
-  elt1 = @html.xpath("//#{sel}//#{tag1}[contains(.,'#{val1}')]").first
-  elt2 = @html.xpath("//#{sel}//#{tag2}[contains(.,'#{val2}')]").first
+  html = Nokogiri::HTML(page.body)
+  elt1 = html.xpath("//#{sel}//#{tag1}[contains(.,'#{val1}')]").first
+  elt2 = html.xpath("//#{sel}//#{tag2}[contains(.,'#{val2}')]").first
   sequence = (elt1 <=> elt2)
   if order =~ /before/
     assert sequence == -1
@@ -65,23 +65,23 @@ end
 
 Then /^I should see a quantity menu for "([^\"]*)"$/ do |name|
   vtype = Vouchertype.find_by_name(name)
-  response.should have_tag("select.itemQty[name='vouchertype[#{vtype.id}]']")
+  page.should have_css("select.itemQty[name='vouchertype[#{vtype.id}]']")
 end
 
 Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,choice|
-  response.should(have_tag("select[id=#{menu}]") || have_tag("select[name=#{menu}]")) do |m|
-    m.should have_selector("option", :content => choice)
+  page.should(have_css("select[id=#{menu}]") || have_css("select[name=#{menu}]")) do |m|
+    m.should have_css("option", :content => choice)
   end
 end
 
 Then /^I should see the "(.*)" message$/ do |m|
-  response.should(have_selector("div##{m}") || have_selector("div.#{m}"))
+  page.should(have_css("div##{m}") || have_css("div.#{m}"))
 end
 
 # tabular data
 Then /^I should see a row "(.*)" within "(.*)"$/ do |row, table|
-  response.should have_selector(table)
-  @html = Nokogiri::HTML(response.body)
+  page.should have_css(table)
+  @html = Nokogiri::HTML(page.body)
   @rows = @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
   @rows.any? do |table_row|
@@ -95,7 +95,7 @@ end
     
 
 Then /^I should see a table "(.*)" with rows? (.*)$/ do |table,all_rows|
-  response.should have_selector(table)
+  page.should have_css(table)
   all_rows.split(/, ?/).each do |row|
     Then "I should see a row #{row} within \"#{table}\""
   end

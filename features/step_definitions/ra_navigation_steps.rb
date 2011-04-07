@@ -6,7 +6,7 @@
 # GET
 # Go to a given page.
 When "$actor goes to $path" do |actor, path|
-  get path
+  visit path
 end
 
 # POST -- Ex:

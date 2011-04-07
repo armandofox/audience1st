@@ -14,12 +14,12 @@ Background:
 
 Scenario: add new showdate
 
-  When I select "April 2, 2010 8:00pm" as the "Date and Time" date and time
-  And I select "April 2, 2010 6:00pm" as the "Advance sales stop" date and time
+  When I select "April 7, 2010 8:00pm" as the "Date and time" date
+  And I select "April 7, 2010 6:00pm" as the "Advance sales stop" date
   And I fill in "Max advance sales" with "100"
   And I press "Save"
   Then I should be on the Show Details page for "Chicago"
-  And I should see /Apr +2, +8:00 *PM/
-  And I should see /6:00PM +day of show/
+  And I should see "Apr 7, 8:00 PM"
+  And I should see "6:00PM day of show"
 
   
