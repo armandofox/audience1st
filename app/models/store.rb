@@ -120,7 +120,7 @@ class Store
                                               :transaction_id => "CASH")
       rescue Exception => e
         ActiveMerchant::Billing::Response.new(success=false,
-                                              message=e.message)
+          message=e.message)
       end
     end
   end

@@ -3,7 +3,7 @@ class Purchasemethod < ActiveRecord::Base
   acts_as_reportable
 
   def purchase_medium
-    case self.shortdesc
+    case self.shortdesc.to_sym
     when :web_cc, :box_cc then :credit_card 
     when :box_cash then :cash 
     when :box_chk then :chk

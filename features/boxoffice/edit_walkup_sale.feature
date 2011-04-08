@@ -13,9 +13,8 @@ Background:
   |   1 | Discount | $10.00 | April 8, 2010, 8:00pm |
   |   1 | General  | $15.00 | April 8, 2010, 8:00pm |
   And the following walkup tickets have been sold for "April 7, 2010, 8:00pm":
-  | qty | type    | payment     |
-  |   1 | General | Cash        |
-  |   3 | General | Credit Card |
+  | qty | type     | payment  |
+  |   2 | General  | box_cash |
   And I am on the walkup sales report for "April 7, 2010, 8:00pm"
 
 Scenario: box office can change walkup to same ticket type for another performance

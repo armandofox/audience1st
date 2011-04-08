@@ -10,19 +10,20 @@ describe ValidVoucher do
         :offer_public => Vouchertype::ANYONE)
     end
     describe "when instantiated" do
+      before(:each) do
+        @customer = BasicModels.create_generic_customer
+        @purch = mock_model(Purchasemethod, :purchase_medium => :cash)
+        @showdate = mock_model(Showdate, :valid? => true)
+        @logged_in_customer = Customer.boxoffice_daemon
+        @now = @vt_regular.expiration_date - 2.months
+        @valid_voucher =
+          ValidVoucher.create!(:vouchertype => @vt_regular,
+          :showdate => @showdate,
+          :start_sales => @now - 1.month + 1.day,
+          :end_sales => @now + 1.month - 1.day,
+          :max_sales_for_type => 10)
+      end
       context "successfully" do
-        before :each do
-          @showdate = mock_model(Showdate, :valid? => true)
-          @logged_in_customer = Customer.boxoffice_daemon
-          @now = @vt_regular.expiration_date - 2.months
-          @valid_voucher =
-            ValidVoucher.create!(:vouchertype => @vt_regular,
-            :showdate => @showdate,
-            :start_sales => @now - 1.month + 1.day,
-            :end_sales => @now + 1.month - 1.day,
-            :max_sales_for_type => 10)
-          @valid_voucher.should be_valid
-        end
         describe "instantiation", :shared => true do
           it "should return valid vouchers" do
             @vouchers.each { |v| v.should be_valid }
@@ -51,19 +52,23 @@ describe ValidVoucher do
         end
         context "with successful payment" do
           before(:each) do
-            @customer = BasicModels.create_generic_customer
-            @purch = mock_model(Purchasemethod, :purchase_medium => :cash)
             @num = 3
             @vouchers = @valid_voucher.sell!(@num, @customer, @purch, @logged_in_customer)
           end
           it_should_behave_like "instantiation"
           it "should associate vouchers with the customer" do
-            @vouchers.should_not be_empty, @valid_voucher.errors.full_messages.join("\n")
+            @vouchers.should_not be_empty
             @customer.should have(@num).vouchers
           end
         end
       end
       context "unsuccessfully" do
+        it "should fail if purchasing fails" do
+          Store.stub!(:purchase!).and_return(ActiveMerchant::Billing::Response.new(false, "Forced failure"))
+          @vouchers = @valid_voucher.sell!(3, @customer, @purch, @logged_in_customer)
+          @vouchers.should be_empty
+          @customer.should have(0).vouchers
+        end
         it "should fail if max sales reached or exceeded"
         it "should fail if show is sold out"
       end

@@ -105,7 +105,7 @@ class Voucher < ActiveRecord::Base
   end
 
   def to_s
-    sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10d",
+    sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10s",
             id,
             (showdate_id.zero? ? "OPEN" : (showdate.printable_name[-15..-1] rescue "--")),
             (customer_id.zero? ? "NONE" :

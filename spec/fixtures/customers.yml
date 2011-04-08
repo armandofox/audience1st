@@ -1,11 +1,5 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-generic_customer:
-  id: 1111
-  first_name: Generic
-  last_name: Customer
-  role: -1
-
 tom:
   id: 77
   first_name: Tom

@@ -1,5 +1,6 @@
 Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,price,season|
-  @vouchertype = BasicModels.create_revenue_vouchertype(
+  @vouchertype = Vouchertype.find_by_name_and_price_and_season(name,price,season) ||
+    BasicModels.create_revenue_vouchertype(
     :name => name,
     :price => price,
     :season => season,
