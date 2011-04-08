@@ -6,10 +6,11 @@ class Showdate < ActiveRecord::Base
   
   belongs_to :show
   has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
+  has_many :all_vouchers, :class_name => 'Voucher'
+  has_many :walkup_vouchers, :class_name => 'Voucher', :conditions => ["vouchers.category != ? AND vouchers.purchasemethod_id IN (?)", :nonticket, Purchasemethod.walkup_purchasemethods]
   has_many :customers, :through => :vouchers, :uniq => true, :conditions => 'customers.role >= 0'
   has_many :vouchertypes, :through => :vouchers, :uniq => true
   has_many :available_vouchertypes, :source => :vouchertype, :through => :valid_vouchers, :uniq => true
-  has_many :all_vouchers, :class_name => 'Voucher'
   has_many :valid_vouchers, :dependent => :destroy
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0

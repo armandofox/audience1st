@@ -6,7 +6,7 @@ class BoxOfficeController < ApplicationController
   # sets  instance variable @showdate and others for every method.
   before_filter :get_showdate, :except => :mark_checked_in
   verify(:method => :post,
-         :only => %w(do_walkup_sale),
+         :only => %w(do_walkup_sale modify_walkup_vouchers),
          :redirect_to => { :action => :walkup, :id => @showdate },
     :add_to_flash => {:warning => "Warning: action only callable as POST, no transactions were recorded! "})
   verify :method => :post, :only => :mark_checked_in
@@ -32,6 +32,16 @@ class BoxOfficeController < ApplicationController
     end
   end
 
+  def vouchers_for_showdate(showdate)
+    perf_vouchers = @showdate.advance_sales_vouchers
+    total = perf_vouchers.size
+    num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
+    vouchers = perf_vouchers.group_by do |v|
+      "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
+    end
+    return [total,num_subscribers,vouchers]
+  end
+
   def at_least_1_ticket_or_donation
     if (@qty.values.map(&:to_i).sum.zero?  &&  @donation.zero?)
       logger.info(flash[:warning] = "No tickets or donation to process")
@@ -51,6 +61,34 @@ class BoxOfficeController < ApplicationController
     end
     total += donation.to_f
     total
+  end
+
+
+
+  def destroy_vouchers(voucher_ids)
+    begin
+      Voucher.transaction do 
+        voucher_ids.each { |v| Voucher.find(v).destroy }
+      end
+      flash[:notice] = "Vouchers #{voucher_ids.join(', ')} destroyed."
+    rescue Exception => e
+      flash[:warning] = "Error (NO changes have been made): #{e.message}"
+    end
+  end
+
+  def transfer_vouchers(voucher_ids, showdate_id)
+    unless sd = Showdate.find_by_id(showdate_id)
+      flash[:warning] = "Couldn't transfer vouchers: showdate id #{showdate_id} doesn't exist."
+      return
+    end
+    begin
+      Voucher.transaction do
+        voucher_ids.each { |v| v.unreserve; v.reserve(sd, logged_in) }
+      end
+      flash[:notice] = "Vouchers #{voucher_ids.join(', ')} transferred to #{sd.printable_name}."
+    rescue Exception => e
+      flash[:warning] = "Error (NO changes have been made): #{e.message}"
+    end
   end
 
   # process a sale of walkup vouchers by linking them to the walkup customer
@@ -214,34 +252,24 @@ class BoxOfficeController < ApplicationController
   end
 
   def walkup_report
-    unless (@showdate = Showdate.find_by_id(params[:id]))
-      flash[:notice] = "Walkup sales report requires valid showdate ID"
-      redirect_to :action => 'index'
-      return
-    end
-    @cash_tix_types = Hash.new(0)
-    @cc_tix_types = Hash.new(0)
-    @chk_tix_types = Hash.new(0)
-    @comp_tix_types = Hash.new(0)
-    @showdate.vouchertypes.each do |v|
-      @comp_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('none')])
-      @cash_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cash')])
-      @cc_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_cc')])
-      @chk_tix_types[v] += @showdate.vouchers.count(:conditions => ['vouchertype_id = ? AND purchasemethod_id = ?', v.id, Purchasemethod.get_type_by_name('box_chk')])
-    end
+    @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
+    @other_showdates = @showdate.show.showdates
   end
 
-  private
-
-  def vouchers_for_showdate(showdate)
-    perf_vouchers = @showdate.advance_sales_vouchers
-    total = perf_vouchers.size
-    num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
-    vouchers = perf_vouchers.group_by do |v|
-      "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
+  # process a change of walkup vouchers by either destroying them or moving them
+  # to another showdate, as directed
+  def modify_walkup_vouchers
+    voucher_ids = params[:vouchers]
+    if voucher_ids.blank?
+      flash[:warning] = "You didn't select any vouchers to remove or transfer."
+    elsif params[:commit] =~ /destroy/i
+      destroy_vouchers(voucher_ids)
+    else
+      transfer_vouchers(voucher_ids, params[:to_showdate])
     end
-    return [total,num_subscribers,vouchers]
+    redirect_to :action => :index
   end
+
     
 
 end
