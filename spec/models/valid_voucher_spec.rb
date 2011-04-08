@@ -14,7 +14,6 @@ describe ValidVoucher do
         before :each do
           @showdate = mock_model(Showdate, :valid? => true)
           @logged_in_customer = Customer.boxoffice_daemon
-          @purchasemethod = mock_model(Purchasemethod)
           @now = @vt_regular.expiration_date - 2.months
           @valid_voucher =
             ValidVoucher.create!(:vouchertype => @vt_regular,
@@ -23,25 +22,45 @@ describe ValidVoucher do
             :end_sales => @now + 1.month - 1.day,
             :max_sales_for_type => 10)
           @valid_voucher.should be_valid
-          @num = 3
-          @vouchers =
-            @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,@num)
         end
-        it "should return valid vouchers" do
-          @vouchers.each { |v| v.should be_valid }
+        describe "instantiation", :shared => true do
+          it "should return valid vouchers" do
+            @vouchers.each { |v| v.should be_valid }
+          end
+          it "should be of the specified vouchertype" do
+            @vouchers.each { |v| v.vouchertype.should == @vt_regular }
+          end
+          it "should be marked processed by the logged-in customer" do
+            @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
+          end
+          it "should belong to the showdate" do
+            @valid_voucher.showdate_id.should == @showdate.id
+            @vouchers.each { |v| v.showdate_id.should == @showdate.id }
+          end
         end
-        it "should be of the specified vouchertype" do
-          @vouchers.each { |v| v.vouchertype.should == @vt_regular }
+        context "without payment" do
+          before(:each) do
+            @num = 3
+            @vouchers =
+              @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,@num)
+          end
+          it_should_behave_like "instantiation"
+          it "should instantiate but not yet save the vouchers" do
+            @vouchers.each { |v| v.should be_a_new_record  }
+          end
         end
-        it "should be marked processed by the logged-in customer" do
-          @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
-        end
-        it "should belong to the showdate" do
-          @valid_voucher.showdate_id.should == @showdate.id
-          @vouchers.each { |v| v.showdate_id.should == @showdate.id }
-        end
-        it "should instantiate but not yet save the vouchers" do
-          @vouchers.each { |v| v.should be_a_new_record  }
+        context "with successful payment" do
+          before(:each) do
+            @customer = BasicModels.create_generic_customer
+            @purch = mock_model(Purchasemethod, :purchase_medium => :cash)
+            @num = 3
+            @vouchers = @valid_voucher.sell!(@num, @customer, @purch, @logged_in_customer)
+          end
+          it_should_behave_like "instantiation"
+          it "should associate vouchers with the customer" do
+            @vouchers.should_not be_empty, @valid_voucher.errors.full_messages.join("\n")
+            @customer.should have(@num).vouchers
+          end
         end
       end
       context "unsuccessfully" do

@@ -314,7 +314,7 @@ class Customer < ActiveRecord::Base
     items.each do |v|
       if v.kind_of?(Voucher)
         v.processed_by_id = logged_in
-        v.purchasemethod_id = howpurchased
+        v.purchasemethod_id = howpurchased.id
         success,msg = v.add_to_customer(self)
         if success
           Txn.add_audit_record(:txn_type => 'tkt_purch',
@@ -325,7 +325,7 @@ class Customer < ActiveRecord::Base
                                :showdate_id => (v.showdate.id rescue 0),
                                :show_id => (v.showdate.show.id rescue 0),
                                :dollar_amount => v.vouchertype.price,
-                               :purchasemethod_id => howpurchased)
+                               :purchasemethod_id => howpurchased.id)
         else
           status = nil
           logger.error "Error adding voucher #{v} to customer #{self.full_name_with_id}:  #{msg}"
