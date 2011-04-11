@@ -1,5 +1,4 @@
 class Voucher < ActiveRecord::Base
-
   acts_as_reportable
   
   belongs_to :customer
@@ -242,12 +241,15 @@ class Voucher < ActiveRecord::Base
   #  reservation binds it to a showdate and fills in who processed it
   # 
   def unreserve
-    update_attributes!(:showdate_id => 0, :checked_in => nil)
-  end
-  def reserve(showdate, logged_in_customer)
-    self.showdate = showdate
-    self.processed_by_id = logged_in_customer.id
+    update_attributes!(:showdate_id => 0, :checked_in => false)
     self
+  end
+  def reserve(showdate,logged_in_customer)
+    update_attributes!(:showdate => showdate, :processed_by => logged_in_customer)
+    self
+  end
+  def self.transfer_multiple(vouchers, showdate, logged_in_customer)
+    vouchers.each { |v| v.unreserve ; v.reserve(showdate, logged_in_customer) }
   end
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil

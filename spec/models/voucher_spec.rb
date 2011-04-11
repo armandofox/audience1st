@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 include BasicModels
 
 describe Voucher do
@@ -31,6 +31,24 @@ describe Voucher do
           :account_code => AccountCode.default_account_code}))
   end
 
+  describe "transferring multiple vouchers" do
+    before(:each) do
+      @vouchers = Array.new(2) do |i|
+        @from = mock_model(Showdate)
+        @to = BasicModels.create_one_showdate(Time.now.tomorrow)
+        @logged_in = mock_model(Customer)
+        @customer = BasicModels.create_generic_customer
+        v = Voucher.new_from_vouchertype(@vt_regular)
+        v.reserve(@from,@logged_in).update_attribute(:customer_id, @customer.id)
+        v
+      end
+    end
+    it "should transfer to the new showdate" do
+      Voucher.transfer_multiple(@vouchers, @to, @logged_in)
+      @vouchers.each { |v| @to.vouchers.should include(v) }
+    end
+  end
+      
   describe "regular voucher" do
     context "when templated from vouchertype", :shared => true do
       it "should not be reserved" do  @v.should_not be_reserved  end
@@ -115,7 +133,7 @@ describe Voucher do
             @c,
             @vt_regular,
             {:redeeming => true, :ignore_cutoff => true}).and_return(mock('AvailableSeat', :available? => nil))
-          av = @v.reserve_for(@sd.id, @b.id, '', :ignore_cutoff => @b.is_boxoffice)
+          av = @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @b.is_boxoffice)
         end
         it "should succeed" do
           @v.should be_reserved
@@ -140,7 +158,7 @@ describe Voucher do
           ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
             with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
             and_return(as)
-          @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @c.is_boxoffice)
+          @v.reserve_for(@sd.id,@c.id, '', :ignore_cutoff => @c.is_boxoffice)
         end
       end
     end

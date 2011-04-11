@@ -65,32 +65,6 @@ class BoxOfficeController < ApplicationController
 
 
 
-  def destroy_vouchers(voucher_ids)
-    begin
-      Voucher.transaction do 
-        voucher_ids.each { |v| Voucher.find(v).destroy }
-      end
-      flash[:notice] = "Vouchers #{voucher_ids.join(', ')} destroyed."
-    rescue Exception => e
-      flash[:warning] = "Error (NO changes have been made): #{e.message}"
-    end
-  end
-
-  def transfer_vouchers(voucher_ids, showdate_id)
-    unless sd = Showdate.find_by_id(showdate_id)
-      flash[:warning] = "Couldn't transfer vouchers: showdate id #{showdate_id} doesn't exist."
-      return
-    end
-    begin
-      Voucher.transaction do
-        voucher_ids.each { |v| v.unreserve; v.reserve(sd, logged_in) }
-      end
-      flash[:notice] = "Vouchers #{voucher_ids.join(', ')} transferred to #{sd.printable_name}."
-    rescue Exception => e
-      flash[:warning] = "Error (NO changes have been made): #{e.message}"
-    end
-  end
-
   # process a sale of walkup vouchers by linking them to the walkup customer
   # pass a hash of {ValidVoucher ID => quantity} pairs
   
@@ -259,17 +233,24 @@ class BoxOfficeController < ApplicationController
   # process a change of walkup vouchers by either destroying them or moving them
   # to another showdate, as directed
   def modify_walkup_vouchers
-    voucher_ids = params[:vouchers]
-    if voucher_ids.blank?
+    if params[:vouchers].blank?
       flash[:warning] = "You didn't select any vouchers to remove or transfer."
-    elsif params[:commit] =~ /destroy/i
-      destroy_vouchers(voucher_ids)
-    else
-      transfer_vouchers(voucher_ids, params[:to_showdate])
+      return
+    end
+    begin
+      vouchers = Voucher.find(voucher_ids = params[:vouchers])
+      if params[:commit] =~ /destroy/i
+        Voucher.destroy_multiple(vouchers)
+        flash[:notice] = "Vouchers #{voucher_ids.join(', ')} destroyed."
+      else # transfer vouchers to another showdate
+        showdate = Showdate.find(params[:showdate_id])
+        Voucher.transfer_multiple(vouchers, showdate)
+        flash[:notice] = "Vouchers #{voucher_ids.join(', ')} transferred to #{showdate.printable_name}."
+      end
+    rescue Exception => e
+      flash[:warning] = "Error (NO changes were made): #{e.message}"
     end
     redirect_to :action => :index
   end
-
-    
 
 end

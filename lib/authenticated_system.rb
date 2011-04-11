@@ -51,6 +51,17 @@ module AuthenticatedSystem
   def logged_in_user
     session[:admin_id] ? current_admin : current_user
   end
+
+  def logged_in_id
+    # Return the "effective logged-in ID" for audit purposes (ie to track
+    # who did what).
+    # if NO ADMIN is logged in, this is the logged-in customer's ID, or the
+    #   id of the 'nobody' fake customer if not set.
+    # if an admin IS logged in, it's that admin's ID.
+    return (session[:admin_id] || session[:cid] || Customer.nobody_id).to_i
+  end
+
+
   
   # current_admin is called from controller actions filtered by is_logged_in,
   # so there might in fact be NO admin logged in.

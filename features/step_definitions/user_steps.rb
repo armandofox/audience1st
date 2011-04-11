@@ -72,7 +72,6 @@ Then "$actor should not be logged in" do |email|
 end
 
 Then "$login should be logged in" do |email|
-  save_and_open_page
   customer = Customer.find_by_email!(email)
   page.should have_content("Welcome, #{customer.full_name}")
 end
