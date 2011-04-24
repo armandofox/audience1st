@@ -31,8 +31,8 @@ describe Show do
       @s.stub!(:showdates).and_return(@showdates)
       @s.adjust_metadata_from_showdates
     end
-    it "should set maximum house cap" do
-      @s.house_capacity.should == 125
+    it "should not change house cap" do
+      @s.house_capacity_changed?.should_not be_true
     end
     it "should set opening date" do
       @s.opening_date.should == @now

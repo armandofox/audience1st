@@ -21,7 +21,8 @@ class GoldstarXmlImport < TicketSalesImport
     self.show = @showdate.show
     @vouchers = []
     @offers = parse_offers(xml.xpath("//willcall/inventories/inventory/offers"))
-    xml.xpath("//willcall/inventories/inventory/purchases/purchase").each do |purchase|
+    purchases =  xml.xpath("//willcall/inventories/inventory/purchases/purchase")
+    purchases.each do |purchase|
       if (vouchers = ticket_order_from_purchase(purchase,@showdate))
         self.number_of_records += 1
         @vouchers += vouchers

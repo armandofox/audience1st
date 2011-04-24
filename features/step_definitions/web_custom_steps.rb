@@ -52,14 +52,6 @@ Then /^(.*):"(.*)" should come (before|after) (.*):"(.*)" within "(.*)"$/ do |ta
   end
 end
 
-# For debugging help - dump actual HTML of a page to a file
-Then /^\(?show me\)?$/ do
-  save_and_open_page
-  # name = response.request.request_uri.gsub(/[\/\#\?]/,'-')
-  # File.open("/tmp/cucumber-#{name}.html", "w"){ |f| f.puts response.body }
-  # system "open /tmp/cucumber-#{name}.html" 
-end
-
 # A dropdown menu of quantities associated with a particular voucher type.
 # Capture the vouchertype label so we can refer to it later.
 

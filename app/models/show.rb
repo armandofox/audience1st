@@ -128,10 +128,8 @@ class Show < ActiveRecord::Base
     return if showdates.empty?
     dates = showdates.map(&:thedate)
     first,last = dates.min.to_date, dates.max.to_date
-    maxcap = showdates.map { |s| s.vouchers.size }.max
     self.opening_date = first if opening_date > first
     self.closing_date = last if closing_date < last
-    self.house_capacity = maxcap if house_capacity < maxcap
     return self.changed?
   end
       

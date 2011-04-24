@@ -75,7 +75,6 @@ class TicketSalesImport < Import
       transaction do
         get_ticket_orders
         show.adjust_metadata_from_showdates
-        messages << "House capacity adjusted to #{show.house_capacity} (was #{show.house_capacity_was})" if show.house_capacity_changed?
         messages << "Run dates adjusted to #{show.run_dates}" if
             (show.opening_date_changed? || show.closing_date_changed?)
         # all is well!  Roll back the transaction and report results.

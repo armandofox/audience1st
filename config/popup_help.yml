@@ -151,6 +151,14 @@ show_is_special: >
   will appear only on the Special Events page,
   http://www.audience1st.com/your_venue_name/store/special
 
+show_also_notify: >
+ 
+  An additional email address to notify whenever someone PURCHASES a
+  ticket to this show.  (Subscriber or comp reservations do NOT result
+  in an email notification.)  Note that this is in addition to the
+  regular confirmation email that gets sent to the customer.  If blank,
+  no separate notification will be generated.
+
 # Vouchers and voucher types
 
 vouchertype_display_order: >
