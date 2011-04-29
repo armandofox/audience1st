@@ -4,7 +4,7 @@ class BoxOfficeController < ApplicationController
                 :redirect_to => { :controller => :customers, :action => :login})
 
   # sets  instance variable @showdate and others for every method.
-  before_filter :get_showdate, :except => :mark_checked_in
+  before_filter :get_showdate, :except => [:mark_checked_in, :modify_walkup_vouchers]
   verify(:method => :post,
          :only => %w(do_walkup_sale modify_walkup_vouchers),
          :redirect_to => { :action => :walkup, :id => @showdate },
@@ -241,17 +241,20 @@ class BoxOfficeController < ApplicationController
   def modify_walkup_vouchers
     if params[:vouchers].blank?
       flash[:warning] = "You didn't select any vouchers to remove or transfer."
-      return
+      redirect_to(:action => :index) and return
     end
+    action = params[:commit].to_s
     begin
       vouchers = Voucher.find(voucher_ids = params[:vouchers])
-      if params[:commit] =~ /destroy/i
+      if action =~ /destroy/i
         Voucher.destroy_multiple(vouchers)
         flash[:notice] = "Vouchers #{voucher_ids.join(', ')} destroyed."
-      else # transfer vouchers to another showdate
+      elsif action =~ /transfer/i # transfer vouchers to another showdate
         showdate = Showdate.find(params[:showdate_id])
         Voucher.transfer_multiple(vouchers, showdate)
         flash[:notice] = "Vouchers #{voucher_ids.join(', ')} transferred to #{showdate.printable_name}."
+      else
+        flash[:warning] = "Unrecognized action: '#{action}'"
       end
     rescue Exception => e
       flash[:warning] = "Error (NO changes were made): #{e.message}"

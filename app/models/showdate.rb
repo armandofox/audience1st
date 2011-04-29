@@ -169,9 +169,9 @@ class Showdate < ActiveRecord::Base
     percent_of(house_capacity)
   end
 
-  def sold_out? ; percent_sold.to_i >= Option.value(:sold_out_threshold).to_i ; end
+  def sold_out? ; percent_sold.to_i >= Option.nonzero_value_or_default(:sold_out_threshold, 100) ; end
 
-  def nearly_sold_out? ; percent_sold.to_i >= Option.value(:nearly_sold_out_threshold).to_i ; end
+  def nearly_sold_out? ; percent_sold.to_i >= Option.nonzero_value_or_default(:nearly_sold_out_threshold, 100) ; end
 
   def availability_in_words
     pct = percent_sold

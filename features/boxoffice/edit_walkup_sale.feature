@@ -14,12 +14,17 @@ Background:
   |   1 | General  | $15.00 | April 8, 2010, 8:00pm |
   And the following walkup tickets have been sold for "April 7, 2010, 8:00pm":
   | qty | type     | payment  |
-  |   2 | General  | box_cash |
+  |   1 | General  | box_cash |
   And I am on the walkup sales report for "April 7, 2010, 8:00pm"
-  Then show me the page
   Then I should see "General" within "#box_cash"
 
 Scenario: box office can change walkup to same ticket type for another performance
+
+  When I check "General" within "#box_cash"
+  Then show me the page
+  And I select "Thursday, Apr 8, 8:00 PM" from "to_showdate"
+  And I press "Transfer"
+
 
 Scenario: box office cannot change walkup if insufficient capacity in other performance
 

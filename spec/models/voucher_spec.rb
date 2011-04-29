@@ -48,8 +48,10 @@ describe Voucher do
       @vouchers.each { |v| @to.vouchers.should include(v) }
     end
     it "should do nothing if any of the vouchers is invalid" do
+      invalid_voucher = Voucher.new
+      invalid_voucher.stub!(:valid?).and_return(nil)
       lambda do
-        Voucher.transfer_multiple(@vouchers.push(Voucher.new),@to,@logged_in)
+        Voucher.transfer_multiple(@vouchers.push(invalid_voucher),@to,@logged_in)
       end.should raise_error(ActiveRecord::RecordInvalid)
       @vouchers.each { |v| @to.vouchers.should_not include(v) }
     end

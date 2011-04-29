@@ -47,7 +47,49 @@ describe BoxOfficeController do
   end
 
   describe "transferring already-sold walkup vouchers" do
-    
+    context "no transfer occurs", :shared => true do
+      it "should not attempt to transfer" do
+        Voucher.should_not_receive(:destroy_multiple)
+        Voucher.should_not_receive(:transfer_multiple)
+        post :modify_walkup_vouchers, @params
+      end
+      it "should redirect" do
+        post :modify_walkup_vouchers, @params
+        response.should redirect_to(:action => :index)
+      end
+    end
+    context "when no vouchers are checked" do
+      before(:each) do ;  @params = {} ; end
+      it_should_behave_like "no transfer occurs"
+      it "should display appropriate error" do
+        post :modify_walkup_vouchers, @params
+        flash[:warning].should match(/you didn't select any vouchers/i)
+      end
+    end
+    context "when at least one voucher is not found" do
+      before(:each) do
+        found_voucher_id = Voucher.create!.id
+        not_found_id = found_voucher_id + 1
+        @params = {:vouchers => [found_voucher_id, not_found_id] }
+      end
+      it_should_behave_like "no transfer occurs"
+      it "should display appropriate error" do
+        post :modify_walkup_vouchers, @params
+        flash[:warning].should match(/no changes were made/i)
+      end
+    end
+    context "when neither Transfer nor Destroy is pressed" do
+      before(:each) do
+        @params = {:vouchers => [Voucher.create!.id], :commit => 'nothing'}
+      end
+      it_should_behave_like "no transfer occurs"
+      it "should display appropriate error" do
+        post :modify_walkup_vouchers, @params
+        flash[:warning].should match(/unrecognized action/i)
+      end
+    end
+    context "when target showdate is not found"
+    context "when all checked vouchers exist"
   end
 
   describe "walkup sale" do
