@@ -21,9 +21,12 @@ Background:
 Scenario: box office can change walkup to same ticket type for another performance
 
   When I check "General" within "#box_cash"
-  Then show me the page
   And I select "Thursday, Apr 8, 8:00 PM" from "to_showdate"
   And I press "Transfer"
+  Then I should be on the walkup sales page for "April 7, 2010, 8:00pm"
+  And I should see /vouchers (.*) transferred to Chicago - Thurday, April 8, 8:00 PM/i
+  And there should be 0 "General" tickets sold for "April 7, 2010, 8:00pm"
+  And there should be 1 "General" tickets sold for "April 8, 2010, 8:00pm"
 
 
 Scenario: box office cannot change walkup if insufficient capacity in other performance

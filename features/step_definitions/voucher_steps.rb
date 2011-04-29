@@ -20,6 +20,12 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,typ
   @customer.vouchers.find_all_by_vouchertype_id_and_showdate_id(@vouchertype.id,@showdate.id).length.should == num.to_i
 end
 
+Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype,date|
+  vtype = Vouchertype.find_by_name!(vtype)
+  showdate = Showdate.find_by_thedate!(Time.parse(date))
+  showdate.vouchers.count(:conditions => ['vouchertype_id == ?', vtype_id]).length.should == qty.to_i
+end
+
 Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |name, to_whom, price| 
   @sub = Vouchertype.create!(
     :name => name,

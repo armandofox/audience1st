@@ -244,14 +244,16 @@ class BoxOfficeController < ApplicationController
       redirect_to(:action => :index) and return
     end
     action = params[:commit].to_s
+    showdate_id = 0
     begin
       vouchers = Voucher.find(voucher_ids = params[:vouchers])
+      showdate_id = vouchers.first.showdate_id
       if action =~ /destroy/i
-        Voucher.destroy_multiple(vouchers)
+        Voucher.destroy_multiple(vouchers, logged_in_id)
         flash[:notice] = "Vouchers #{voucher_ids.join(', ')} destroyed."
       elsif action =~ /transfer/i # transfer vouchers to another showdate
-        showdate = Showdate.find(params[:showdate_id])
-        Voucher.transfer_multiple(vouchers, showdate)
+        showdate = Showdate.find(params[:to_showdate])
+        Voucher.transfer_multiple(vouchers, showdate, logged_in_id)
         flash[:notice] = "Vouchers #{voucher_ids.join(', ')} transferred to #{showdate.printable_name}."
       else
         flash[:warning] = "Unrecognized action: '#{action}'"
@@ -259,7 +261,7 @@ class BoxOfficeController < ApplicationController
     rescue Exception => e
       flash[:warning] = "Error (NO changes were made): #{e.message}"
     end
-    redirect_to :action => :index
+    redirect_to :action => :index, :id => showdate_id
   end
 
 end
