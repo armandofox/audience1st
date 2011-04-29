@@ -1,24 +1,21 @@
 .pageDiv
   %h1  Walkup Sales Summary 
   - form_tag :action => 'modify_walkup_vouchers' do
-    %table.hilite
-      - total = 0
-      - @vouchers.each_pair do |purchasemethod, vouchers|
-        - subttl = 0
-        %tr
-          %td.strong{:colspan => 3}= purchasemethod.description
+    - @vouchers.each_pair do |howpurchased, vouchers|
+      %div{:id => howpurchased.shortdesc}
+        %h3= howpurchased.description
+        %table.hilite
           - vouchers.each do |voucher|
             %tr
               %td= check_box_tag "voucher[#{voucher.id}]"
               %td
                 %label{:for => "voucher_#{voucher.id}"}= h(voucher.vouchertype.name)
               %td.currency= number_to_currency voucher.price
-              - subttl += voucher.price
           %tr
             %td
             %td.strong Subtotal 
-            %td.currency= number_to_currency subttl
-            - total += subttl
+            %td.currency= number_to_currency @subtotal[howpurchased]
+    %p#walkup_total Total: #{number_to_currency @total}
     %p
       With checked vouchers:
       = submit_tag 'Destroy', :confirm => 'If you destroy tickets purchased with a credit card, the credit card will NOT be automatically refunded.  Click OK to proceed or Cancel to leave things as they are.'

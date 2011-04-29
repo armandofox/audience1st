@@ -245,11 +245,18 @@ class Voucher < ActiveRecord::Base
     self
   end
   def reserve(showdate,logged_in_customer)
-    update_attributes!(:showdate => showdate, :processed_by => logged_in_customer)
+    self.showdate = showdate
+    self.processed_by = logged_in_customer
     self
   end
   def self.transfer_multiple(vouchers, showdate, logged_in_customer)
-    vouchers.each { |v| v.unreserve ; v.reserve(showdate, logged_in_customer) }
+    Voucher.transaction do
+      vouchers.each do |v|
+        v.unreserve
+        v.reserve(showdate, logged_in_customer)
+        v.save! unless v.new_record?
+      end
+    end
   end
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil

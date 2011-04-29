@@ -46,6 +46,10 @@ describe BoxOfficeController do
     it_should_behave_like "visiting boxoffice page with bad showdate"
   end
 
+  describe "transferring already-sold walkup vouchers" do
+    
+  end
+
   describe "walkup sale" do
     it "should associate the correct showdate with the voucher"
     it "should associate the ticket with Walkup Customer"

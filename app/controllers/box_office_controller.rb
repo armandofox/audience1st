@@ -227,6 +227,12 @@ class BoxOfficeController < ApplicationController
 
   def walkup_report
     @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
+    @subtotal = {}
+    @total = 0
+    @vouchers.each_pair do |purch,vouchers|
+      @subtotal[purch] = vouchers.map(&:price).sum
+      @total += @subtotal[purch]
+    end
     @other_showdates = @showdate.show.showdates
   end
 

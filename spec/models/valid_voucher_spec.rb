@@ -3,7 +3,7 @@ include BasicModels
 
 describe ValidVoucher do
   describe "for regular voucher" do
-    before :all do
+    before :each do
       #  some Vouchertype objects for these tests
       @vt_regular = BasicModels.create_revenue_vouchertype(
         :price => 10.00,
