@@ -26,6 +26,12 @@ Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype_name
   showdate.vouchers.count(:conditions => ['vouchertype_id = ?', vtype.id]).should == qty.to_i
 end
 
+Then /^ticket sales should be as follows:$/ do |tickets|
+  tickets.hashes.each do |t|
+    Then %Q{there should be #{t[:qty]} "#{t[:type]}" tickets sold for "#{t[:showdate]}"}
+  end
+end
+
 Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |name, to_whom, price| 
   @sub = Vouchertype.create!(
     :name => name,

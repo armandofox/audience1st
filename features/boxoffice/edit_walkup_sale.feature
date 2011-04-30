@@ -25,8 +25,19 @@ Scenario: box office can change walkup to same ticket type for another performan
   And I press "Transfer"
   Then I should be on the walkup sales page for "April 7, 2010, 8:00pm"
   And I should see "1 vouchers transferred to Chicago - Thursday, Apr 8, 8:00 PM."
-  And there should be 0 "General" tickets sold for "April 7, 2010, 8:00pm"
-  And there should be 1 "General" tickets sold for "April 8, 2010, 8:00pm"
+  And ticket sales should be as follows:
+  | qty | type    | showdate              |
+  |   0 | General | April 7, 2010, 8:00pm |
+  |   1 | General | April 8, 2010, 8:00pm |
+
+Scenario: transferring doesn't work if you don't check any vouchers
+
+  When I press "Transfer"
+  Then I should see "You didn't select any vouchers"
+  And ticket sales should be as follows:
+  | qty | type    | showdate              |
+  |   1 | General | April 7, 2010, 8:00pm |
+  |   0 | General | April 8, 2010, 8:00pm |
 
 Scenario: box office can delete walkup vouchers
 
@@ -34,8 +45,9 @@ Scenario: box office can delete walkup vouchers
   And I press "Destroy"
   Then I should be on the walkup sales page for "April 7, 2010, 8:00pm"
   And I should see "1 vouchers destroyed."
-  And there should be 0 "General" tickets sold for "April 7, 2010, 8:00pm"
-  And there should be 0 "General" tickets sold for "April 8, 2010, 8:00pm"
-
-Scenario: box office cannot change walkup if insufficient capacity in other performance
+  And ticket sales should be as follows:
+  | qty | type    | showdate              |
+  |   0 | General | April 7, 2010, 8:00pm |
+  |   0 | General | April 8, 2010, 8:00pm |
+  
 
