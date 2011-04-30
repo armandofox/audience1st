@@ -106,14 +106,14 @@ describe BoxOfficeController do
         end
         context "when no errors occur" do
           before(:each) do
-            Voucher.should_receive(:transfer_multiple).with(kind_of(Array), kind_of(Showdate), kind_of(Customer))
+            Voucher.should_receive(:transfer_multiple).with(kind_of(Array), kind_of(Showdate), anything())
           end
           it "should do the transfer" do
             post :modify_walkup_vouchers, @params
           end
           it "should display confirmation" do
             post :modify_walkup_vouchers, @params
-            flash[:notice].should == "Vouchers #{@v1.id}, #{@v2.id} transferred to #{@showdate.printable_name}."
+            flash[:notice].should == "2 vouchers transferred to #{@showdate.printable_name}."
           end
         end
         it "when errors occur should display a message" do
@@ -127,14 +127,14 @@ describe BoxOfficeController do
         before(:each) do ; @params[:commit] = 'Destroy' ; end
         context "when no errors occur" do
           before(:each) do
-            Voucher.should_receive(:destroy_multiple).with(kind_of(Array), kind_of(Customer))
+            Voucher.should_receive(:destroy_multiple).with(kind_of(Array), anything())
           end
           it "should attempt to destroy the vouchers" do
             post :modify_walkup_vouchers, @params
           end
           it "should display confirmation" do
             post :modify_walkup_vouchers, @params
-            flash[:notice].should == "Vouchers #{@v1.id}, #{@v2.id} destroyed."
+            flash[:notice].should == "2 vouchers destroyed."
           end
         end
         it "should display error message when errors occur" do

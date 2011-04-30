@@ -31,32 +31,41 @@ describe Voucher do
           :account_code => AccountCode.default_account_code}))
   end
 
-  describe "transferring multiple vouchers" do
+  describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|
         @from = mock_model(Showdate)
         @to = BasicModels.create_one_showdate(Time.now.tomorrow)
         @logged_in = mock_model(Customer)
         @customer = BasicModels.create_generic_customer
+        @invalid_voucher = Voucher.new
+        @invalid_voucher.stub!(:valid?).and_return(nil)
         v = Voucher.new_from_vouchertype(@vt_regular)
         v.reserve(@from,@logged_in).update_attribute(:customer_id, @customer.id)
         v
       end
     end
-    it "should transfer to the new showdate" do
-      Voucher.transfer_multiple(@vouchers, @to, @logged_in)
-      @vouchers.each { |v| @to.vouchers.should include(v) }
+    describe "transferring" do
+      it "should transfer to the new showdate" do
+        Voucher.transfer_multiple(@vouchers, @to, @logged_in)
+        @vouchers.each { |v| @to.vouchers.should include(v) }
+      end
+      it "should do nothing if any of the vouchers is invalid" do
+        lambda do
+          Voucher.transfer_multiple(@vouchers.push(@invalid_voucher),@to,@logged_in)
+        end.should raise_error(ActiveRecord::RecordInvalid)
+        @vouchers.each { |v| @to.vouchers.should_not include(v) }
+      end
     end
-    it "should do nothing if any of the vouchers is invalid" do
-      invalid_voucher = Voucher.new
-      invalid_voucher.stub!(:valid?).and_return(nil)
-      lambda do
-        Voucher.transfer_multiple(@vouchers.push(invalid_voucher),@to,@logged_in)
-      end.should raise_error(ActiveRecord::RecordInvalid)
-      @vouchers.each { |v| @to.vouchers.should_not include(v) }
+    describe "deletion" do
+      it "should destroy the vouchers" do
+        ids = @vouchers.map(&:id)
+        Voucher.destroy_multiple(@vouchers, @logged_in)
+        ids.each { |id| Voucher.find_by_id(id).should be_nil }
+      end
     end
   end
-      
+
   describe "regular voucher" do
     context "when templated from vouchertype", :shared => true do
       it "should not be reserved" do  @v.should_not be_reserved  end

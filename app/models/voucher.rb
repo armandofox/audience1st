@@ -258,6 +258,11 @@ class Voucher < ActiveRecord::Base
       end
     end
   end
+  def self.destroy_multiple(vouchers, logged_in_customer)
+    Voucher.transaction do
+      vouchers.each { |v| v.destroy }
+    end
+  end
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
     if reserved?
