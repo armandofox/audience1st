@@ -9,15 +9,27 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
 end
 
 Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
-  (@customer = Customer.find_by_first_name_and_last_name(first,last)).should_not be_nil
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
   Then %Q{he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
 
 Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,type,show,date|
-  (@showdate = Showdate.find_by_thedate(Time.parse(date))).should_not be_nil
+  @showdate = Showdate.find_by_thedate!(Time.parse(date))
   @showdate.show.name.should == show
-  (@vouchertype = Vouchertype.find_by_name(type)).should_not be_nil
+  @vouchertype = Vouchertype.find_by_name!(type)
   @customer.vouchers.find_all_by_vouchertype_id_and_showdate_id(@vouchertype.id,@showdate.id).length.should == num.to_i
+end
+
+Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype_name,date|
+  vtype = Vouchertype.find_by_name!(vtype_name)
+  showdate = Showdate.find_by_thedate!(Time.parse(date))
+  showdate.vouchers.count(:conditions => ['vouchertype_id = ?', vtype.id]).should == qty.to_i
+end
+
+Then /^ticket sales should be as follows:$/ do |tickets|
+  tickets.hashes.each do |t|
+    Then %Q{there should be #{t[:qty]} "#{t[:type]}" tickets sold for "#{t[:showdate]}"}
+  end
 end
 
 Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |name, to_whom, price| 

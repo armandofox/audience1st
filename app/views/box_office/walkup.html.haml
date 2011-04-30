@@ -42,6 +42,8 @@
           = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
           = submit_tag 'Record Check Payment'
           %br
+          = gen_button 'Whoops, I Made a Mistake', :controller => 'box_office', :action => 'walkup_report', :id => @showdate
+          %br
           %br
           #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
           = submit_tag 'Record Credit Card Payment', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'

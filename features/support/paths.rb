@@ -27,6 +27,7 @@ module NavigationHelpers
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes/list?season=$1"
     when /the walkup sales page/i       then "/box_office/walkup/#{@showdate.id}"
+    when /the walkup sales report for "?(.*)?"$/ then "/box_office/walkup_report/#{(@showdate = Showdate.find_by_thedate!(Time.parse($1))).id}"
     when /the checkin page for "?(.*)"?$/ then "/box_office/checkin/#{(@showdate = Showdate.find_by_thedate(Time.parse($1))).id}"
     when /the checkin page$/i            then "/box_office/checkin/#{@showdate.id}"
 

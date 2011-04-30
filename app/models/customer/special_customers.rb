@@ -48,11 +48,11 @@ class Customer < ActiveRecord::Base
       :e_blacklist => true
     },
     :generic => {
-      :role => -1,
+      :role => -4,
       :first_name => 'GENERIC',
       :last_name => 'CUSTOMER',
       :blacklist => true,
-      :e_blacklist => true
+      :e_blacklist => true,
     },
     :boxoffice_daemon => {
       :role => -2,
@@ -77,8 +77,9 @@ class Customer < ActiveRecord::Base
   def self.create_with_role!(which)
     attrs = @@special_customers[which]
     c = Customer.new(attrs)
-    c.save(false)               # save without validation
-    c.update_attribute(:role, attrs[:role])
+    c.role = attrs[:role]
+    c.created_by_admin = true
+    c.save!
     c
   end
 

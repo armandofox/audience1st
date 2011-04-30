@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 include BasicModels
 
 describe Voucher do
@@ -29,6 +29,41 @@ describe Voucher do
           :category => 'nonticket',
           :price => 5.00,
           :account_code => AccountCode.default_account_code}))
+  end
+
+  describe "multiple voucher" do
+    before(:each) do
+      @vouchers = Array.new(2) do |i|
+        @from = mock_model(Showdate)
+        @to = BasicModels.create_one_showdate(Time.now.tomorrow)
+        @logged_in = mock_model(Customer)
+        @customer = BasicModels.create_generic_customer
+        @invalid_voucher = Voucher.new
+        @invalid_voucher.stub!(:valid?).and_return(nil)
+        v = Voucher.new_from_vouchertype(@vt_regular)
+        v.reserve(@from,@logged_in).update_attribute(:customer_id, @customer.id)
+        v
+      end
+    end
+    describe "transferring" do
+      it "should transfer to the new showdate" do
+        Voucher.transfer_multiple(@vouchers, @to, @logged_in)
+        @vouchers.each { |v| @to.vouchers.should include(v) }
+      end
+      it "should do nothing if any of the vouchers is invalid" do
+        lambda do
+          Voucher.transfer_multiple(@vouchers.push(@invalid_voucher),@to,@logged_in)
+        end.should raise_error(ActiveRecord::RecordInvalid)
+        @vouchers.each { |v| @to.vouchers.should_not include(v) }
+      end
+    end
+    describe "deletion" do
+      it "should destroy the vouchers" do
+        ids = @vouchers.map(&:id)
+        Voucher.destroy_multiple(@vouchers, @logged_in)
+        ids.each { |id| Voucher.find_by_id(id).should be_nil }
+      end
+    end
   end
 
   describe "regular voucher" do
@@ -115,7 +150,7 @@ describe Voucher do
             @c,
             @vt_regular,
             {:redeeming => true, :ignore_cutoff => true}).and_return(mock('AvailableSeat', :available? => nil))
-          av = @v.reserve_for(@sd.id, @b.id, '', :ignore_cutoff => @b.is_boxoffice)
+          av = @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @b.is_boxoffice)
         end
         it "should succeed" do
           @v.should be_reserved
@@ -140,7 +175,7 @@ describe Voucher do
           ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
             with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
             and_return(as)
-          @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @c.is_boxoffice)
+          @v.reserve_for(@sd.id,@c.id, '', :ignore_cutoff => @c.is_boxoffice)
         end
       end
     end

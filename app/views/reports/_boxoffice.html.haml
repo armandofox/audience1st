@@ -1,18 +1,11 @@
 .pageDiv
-  %h1 Ticket Sales and Box Office Reports
-  - form_tag({:controller => 'box_office',:action => 'walkup_report'}, {:method => :get}) do
-    %p 
-      Walkup Sales Summary for
-      = select_tag('showdate_id', options_from_collection_for_select(@all_showdates, :id,:printable_name,@next_showdate.id)) 
-      = submit_tag 'Go' 
-      
+  %h1 Ticket Sales Reports
   - form_tag({:action => 'advance_sales'}, {:method => :get}) do
     %p 
       All Sales Summary (Advance + Walkup) for: (shift-click to select multiple)
       %br
       = select_tag('shows', |
-        options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short), |
-        :multiple => true) |
+        options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true) 
       = submit_tag 'Go', :id => 'advance_sales'
 
   - form_tag({:action => 'unfulfilled_orders'},:method => :get) do

@@ -1,0 +1,62 @@
+web_cc:
+  id: 1
+  description: Web - Credit Card
+  shortdesc: web_cc
+  nonrevenue: false
+
+none:
+  id: 2
+  description: No payment required
+  shortdesc: none
+  nonrevenue: true
+
+box_cc:
+  id: 3
+  description: Box office - Credit Card
+  shortdesc: box_cc
+  nonrevenue: false
+
+box_cash:
+  id: 4
+  description: Box office - Cash
+  shortdesc: box_cash
+  nonrevenue: false
+
+box_chk:
+  id: 5
+  description: Box office - Check
+  shortdesc: box_chk
+  nonrevenue: false
+
+pmt_due:
+  id: 6
+  description: Payment Due
+  shortdesc: pmt_due
+  nonrevenue: false
+
+ext:
+  id: 7
+  description: External Vendor
+  shortdesc: ext
+  nonrevenue: false
+
+bundle:
+  id: 8
+  description: Part of a package
+  shortdesc: bundle
+  nonrevenue: true
+
+other:
+  id: 9
+  description: Other
+  shortdesc: ?purch?
+  nonrevenue: false
+
+  id: 10
+  description: In-Kind Goods or Services
+  shortdesc: in_kind
+  nonrevenue: true
+
+
+
+

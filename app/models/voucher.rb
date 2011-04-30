@@ -1,5 +1,4 @@
 class Voucher < ActiveRecord::Base
-
   acts_as_reportable
   
   belongs_to :customer
@@ -105,7 +104,7 @@ class Voucher < ActiveRecord::Base
   end
 
   def to_s
-    sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10d",
+    sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10s",
             id,
             (showdate_id.zero? ? "OPEN" : (showdate.printable_name[-15..-1] rescue "--")),
             (customer_id.zero? ? "NONE" :
@@ -242,12 +241,27 @@ class Voucher < ActiveRecord::Base
   #  reservation binds it to a showdate and fills in who processed it
   # 
   def unreserve
-    update_attributes!(:showdate_id => 0, :checked_in => nil)
-  end
-  def reserve(showdate, logged_in_customer)
-    self.showdate = showdate
-    self.processed_by_id = logged_in_customer.id
+    update_attributes!(:showdate_id => 0, :checked_in => false)
     self
+  end
+  def reserve(showdate,logged_in_customer)
+    self.showdate = showdate
+    self.processed_by = logged_in_customer
+    self
+  end
+  def self.transfer_multiple(vouchers, showdate, logged_in_customer)
+    Voucher.transaction do
+      vouchers.each do |v|
+        v.unreserve
+        v.reserve(showdate, logged_in_customer)
+        v.save! unless v.new_record?
+      end
+    end
+  end
+  def self.destroy_multiple(vouchers, logged_in_customer)
+    Voucher.transaction do
+      vouchers.each { |v| v.destroy }
+    end
   end
   def reserve_for(showdate_id, logged_in, comments='', opts={})
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil

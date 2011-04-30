@@ -6,10 +6,11 @@ class Showdate < ActiveRecord::Base
   
   belongs_to :show
   has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
+  has_many :all_vouchers, :class_name => 'Voucher'
+  has_many :walkup_vouchers, :class_name => 'Voucher', :conditions => ["vouchers.category != ? AND vouchers.purchasemethod_id IN (?)", :nonticket, Purchasemethod.walkup_purchasemethods]
   has_many :customers, :through => :vouchers, :uniq => true, :conditions => 'customers.role >= 0'
   has_many :vouchertypes, :through => :vouchers, :uniq => true
   has_many :available_vouchertypes, :source => :vouchertype, :through => :valid_vouchers, :uniq => true
-  has_many :all_vouchers, :class_name => 'Voucher'
   has_many :valid_vouchers, :dependent => :destroy
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
@@ -168,9 +169,9 @@ class Showdate < ActiveRecord::Base
     percent_of(house_capacity)
   end
 
-  def sold_out? ; percent_sold.to_i >= Option.value(:sold_out_threshold).to_i ; end
+  def sold_out? ; percent_sold.to_i >= Option.nonzero_value_or_default(:sold_out_threshold, 100) ; end
 
-  def nearly_sold_out? ; percent_sold.to_i >= Option.value(:nearly_sold_out_threshold).to_i ; end
+  def nearly_sold_out? ; percent_sold.to_i >= Option.nonzero_value_or_default(:nearly_sold_out_threshold, 100) ; end
 
   def availability_in_words
     pct = percent_sold

@@ -14,14 +14,8 @@ Background:
 
 Scenario: generate sales report for two shows
 
-  When  I select "Hamlet (Mar - May 2011" from "shows"
+  When  I select "Hamlet (Mar - May 2011)" from "shows"
   And   I select "King Lear (Mar - May 2011)" from "shows"
   And   I press "advance_sales"
   Then  I should see "1 performance" within the div for the show with name "Hamlet"
   And   I should see "2 performances" within the div for the show with name "King Lear"
-
-Scenario: don't select any shows
-  
-  When  I press "advance_sales"
-  Then  I should see "Please select one or more shows"
-  And   I should be on the reports page

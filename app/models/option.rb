@@ -22,6 +22,11 @@ class Option < ActiveRecord::Base
       nil
   end
 
+  def self.nonzero_value_or_default(name, default)
+    v = self.value(name).to_i
+    v > 0 ? v : default.to_i
+  end
+
   def self.set_value!(opt,val)
     o = Option.find_by_name(opt) or raise "Option '#{o}' doesn't exist"
     unless o.grp == 'Config'
