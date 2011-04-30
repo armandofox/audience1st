@@ -7,7 +7,7 @@
         %table.hilite
           - vouchers.each do |voucher|
             %tr
-              %td= check_box_tag "voucher[]", voucher.id, false, :id => "voucher_#{voucher.id}"
+              %td= check_box_tag "vouchers[]", voucher.id, false, :id => "voucher_#{voucher.id}"
               %td
                 %label{:for => "voucher_#{voucher.id}"}= h(voucher.vouchertype.name)
               %td.currency= number_to_currency voucher.price

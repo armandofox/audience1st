@@ -104,7 +104,7 @@ class BoxOfficeController < ApplicationController
   public
 
   def index
-    redirect_to :action => :walkup
+    redirect_to :action => :walkup, :id => params[:id]
   end
 
   def change_showdate
@@ -249,17 +249,18 @@ class BoxOfficeController < ApplicationController
       vouchers = Voucher.find(voucher_ids = params[:vouchers])
       showdate_id = vouchers.first.showdate_id
       if action =~ /destroy/i
-        Voucher.destroy_multiple(vouchers, logged_in_id)
-        flash[:notice] = "Vouchers #{voucher_ids.join(', ')} destroyed."
+        Voucher.destroy_multiple(vouchers, logged_in_user)
+        flash[:notice] = "#{vouchers.length} vouchers destroyed."
       elsif action =~ /transfer/i # transfer vouchers to another showdate
         showdate = Showdate.find(params[:to_showdate])
-        Voucher.transfer_multiple(vouchers, showdate, logged_in_id)
-        flash[:notice] = "Vouchers #{voucher_ids.join(', ')} transferred to #{showdate.printable_name}."
+        Voucher.transfer_multiple(vouchers, showdate, logged_in_user)
+        flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
       else
         flash[:warning] = "Unrecognized action: '#{action}'"
       end
     rescue Exception => e
       flash[:warning] = "Error (NO changes were made): #{e.message}"
+      RAILS_DEFAULT_LOGGER.warn(e.backtrace)
     end
     redirect_to :action => :index, :id => showdate_id
   end

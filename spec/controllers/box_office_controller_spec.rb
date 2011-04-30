@@ -106,7 +106,7 @@ describe BoxOfficeController do
         end
         context "when no errors occur" do
           before(:each) do
-            Voucher.should_receive(:transfer_multiple).with(kind_of(Array), kind_of(Showdate), 1)
+            Voucher.should_receive(:transfer_multiple).with(kind_of(Array), kind_of(Showdate), kind_of(Customer))
           end
           it "should do the transfer" do
             post :modify_walkup_vouchers, @params
@@ -127,7 +127,7 @@ describe BoxOfficeController do
         before(:each) do ; @params[:commit] = 'Destroy' ; end
         context "when no errors occur" do
           before(:each) do
-            Voucher.should_receive(:destroy_multiple).with(kind_of(Array), 1)
+            Voucher.should_receive(:destroy_multiple).with(kind_of(Array), kind_of(Customer))
           end
           it "should attempt to destroy the vouchers" do
             post :modify_walkup_vouchers, @params
