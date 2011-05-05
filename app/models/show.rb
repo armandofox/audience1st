@@ -53,7 +53,7 @@ class Show < ActiveRecord::Base
   def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.price} ; end
 
   def revenue_per_seat
-    self.revenue / self.vouchers.count("category != 'comp'")
+    self.revenue / self.vouchers.count("category NOT IN ('comp','subscriber')")
   end
 
   def revenue_by_type(vouchertype_id)
