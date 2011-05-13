@@ -6,13 +6,13 @@
        ['Prospecting Activities', :visits, :list_by_prospector, {}], |
        ['Database Transactions',:txn, :list, |
           {:params => {:txns_filter => @gCustomer.id}}], |
-       ['Donation & Purchase History', :donation, :list, |
+       ['Donation & Purchase History', :donations, :list, |
           {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
           :show_vouchers => true}]) |
   %p
     %span.strong Actions:
     = button_bar( |
-       ['Record Donation',:donation,:new, {}],  |
+       ['Record Donation',:donations,:new, {}],  |
        ['Add Comps',:vouchers, :addvoucher, {}], |
        ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}] ) |
 .clear
