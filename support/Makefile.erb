@@ -6,6 +6,7 @@ DBUSER	   = <%= config['username'] || venue %>
 DBPASS	   = <%= config['password'] %>
 DBNAME	   = <%= config['db'] || venue %>
 DBOPTS	   = '-u$(DBUSER)' '-p$(DBPASS)' 
+MIGRATION_OPTS = -umigration -pm1Gr4ti0N
 
 NAME	   = audienc
 HOME	   = /home/$(NAME)
@@ -39,7 +40,8 @@ SESSION_CLEANOUT = 86400
 .PHONY: all nightly monthly clean_sessions backup_db backup_db_monthly backup_svn run_sql dump_static_data rotate_logs receive_goldstar receive_goldstar_test
 
 all: nightly
-nightly: clean_sessions notify_pending_followups backup_db backup_svn
+#nightly: clean_sessions notify_pending_followups backup_db backup_svn
+nightly:  backup_db backup_svn
 #monthly: rotate_logs
 monthly: backup_db_monthly
 
@@ -55,8 +57,12 @@ backup_db:
 	@$(MYSQLDUMP) $(DBOPTS) $(DBNAME) | $(GZIP) > $(BACKUPDIR)/db-$(TODAY).gz
 	@$(S3CMD) put a1_$(VENUE):db-$(TODAY).gz  $(BACKUPDIR)/db-$(TODAY).gz
 
+backup_svn:
+	@tar -zcf $(HOME)/backup/svn/svn-$(TODAY).gz $(HOME)/svn
+	@$(S3CMD) put a1_svn:svn-$(TODAY).gz $(HOME)/backup/svn/svn-$(TODAY).gz
+
 restore_db:
-	$(MYSQL) $(DBOPTS) '-D$(DBNAME)' < $(FILE)
+	$(MYSQL) $(MIGRATION_OPTS) '-D$(DBNAME)' < $(FILE)
 
 dump_static_data:
 	@$(MYSQLDUMP) $(MYSQL_OPTS) $(A1_DB) $(STATIC_TABLES) > static.sql

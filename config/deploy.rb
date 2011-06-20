@@ -5,7 +5,7 @@ set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
 set :config, (:venue ? (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue] : {} )
 
-set :debugging_ips, %w[67.169.93.204]
+set :debugging_ips, %w[67.169.94.28]
 
 set :application,     "vbo"
 set :user,            "audienc"
