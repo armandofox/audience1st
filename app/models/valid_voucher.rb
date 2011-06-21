@@ -164,7 +164,7 @@ EOCONDS1
     if (res = sold_out_or_date_invalid(sd,ignore_cutoff))
       av.howmany = 0
       av.explanation = res
-      av.staff_only = true
+      av.staff_only = false
       return av
     end
     # Find the valid_vouchers, if any, that make this vouchertype eligible
