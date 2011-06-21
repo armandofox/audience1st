@@ -1,4 +1,5 @@
 require 'spec_helper'
+include Utils
 
 describe ShowdatesController do
   fixtures :customers
@@ -11,6 +12,8 @@ describe ShowdatesController do
 
   describe "creating" do
     before(:each) do
+      @hours_cutoff = 3
+      stub_option!(:advance_sales_cutoff, @hours_cutoff * 60)
       get :new, :show_id => @show.id
       response.should be_success
       @showdate = assigns[:showdate]
@@ -23,8 +26,8 @@ describe ShowdatesController do
       it "should set max sales to zero" do
         @showdate.max_sales.should == 0
       end
-      it "should set advance sales stop to 3 hours before showtime" do
-        @showdate.end_advance_sales.should == Time.parse("January 2, 2013, 5:00pm")
+      it "should set advance sales stop to #{@hours_cutoff} hours before showtime" do
+        @showdate.end_advance_sales.should == @showdate.thedate - @hours_cutoff.hours
       end
     end
     context "when showdates exist" do

@@ -1,3 +1,8 @@
+advance_sales_cutoff: >
+
+  Default time that online sales close (minutes before
+  curtain) -- can be overridden for specific performances.
+
 sold_out_threshold: >
 
   Performance is listed as 'sold out' when this percentage of the house
