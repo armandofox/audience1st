@@ -40,6 +40,12 @@ skip_validation: >
 
 # Show/showdate setup pages
 
+advance_sales_cutoff: >
+
+  The time after which customers cannot self-purchase tickets online for
+  this performance.  (You can set a default value for this in Admin >
+  Options.) 
+
 max_advance_sales: >
 
   The maximum allowed advance sales/reservations for this performance,
