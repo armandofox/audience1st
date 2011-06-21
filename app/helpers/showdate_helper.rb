@@ -8,4 +8,17 @@ module ShowdateHelper
     end
   end
 
+  def day_of_week_checkboxes(prefix)
+    dow = %w[Mon Tue Wed Thu Fri Sat Sun]
+    tag = ''
+    dow.each_with_index do |day,idx|
+      tag <<
+        (content_tag('span', :class => 'hilite') do
+          check_box_tag(prefix, idx) +  "#{day}\n"
+        end)
+    end
+    tag
+  end
+
+
 end

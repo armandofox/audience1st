@@ -80,4 +80,11 @@ class ShowdatesController < ApplicationController
     end
     redirect_to :controller => 'shows', :action => 'edit', :id => @showdate.show.id
   end
+
+  def num_showdates
+    new_dates = datetimes_from_range(params).size
+    total_dates = new_dates + Show.find(params[:show_id]).showdates.count
+    render :text => "#{new_dates} performances will be added, giving #{total_dates} total performances"
+  end
+
 end
