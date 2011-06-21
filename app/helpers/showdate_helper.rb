@@ -14,7 +14,8 @@ module ShowdateHelper
     dow.each_with_index do |day,idx|
       tag <<
         (content_tag('span', :class => 'hilite') do
-          check_box_tag(prefix, idx) +  "#{day}\n"
+          check_box_tag(prefix, idx, :name => "#{prefix}[]", :id => "#{prefix}_#{idx}") +
+            "#{day}\n"
         end)
     end
     tag

@@ -22,9 +22,11 @@ Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
   date = Time.parse(date)
   html = Nokogiri::HTML(page.body)
   menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
-  Then %Q{"#{date.year}" should be selected in the "#{menu_id}_1i" menu}
-  Then %Q{"#{Date::MONTHNAMES[date.month]}" should be selected in the "#{menu_id}_2i" menu}
-  Then %Q{"#{date.day}" should be selected in the "#{menu_id}_3i" menu}
+  year, month, day =
+    html.xpath("//select[@id='#{menu_id}_1i']").empty? ? %w[year month day] : %w[1i 2i 3i]
+  Then %Q{"#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
+  Then %Q{"#{Date::MONTHNAMES[date.month]}" should be selected in the "#{menu_id}_#{month}" menu}
+  Then %Q{"#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
 end
 
 # Select from menu using a regexp instead of exact string match

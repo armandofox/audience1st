@@ -20,6 +20,11 @@ class ShowdatesController < ApplicationController
   end
 
   def create
+    show = Show.find(params[:show_id])
+    description = params[:description]
+    sales_cutoff = params[:sales_cutoff]
+    max_sales = params[:max_sales].to_i
+    start_date = 
     args = params[:showdate]
     sid = args[:show_id]
     unless Show.find_by_id(sid)
@@ -49,22 +54,9 @@ class ShowdatesController < ApplicationController
   end
 
   def new
-    show = Show.find(params[:show_id])
-    if (most_recent = show.showdates.find(:first, :order => 'updated_at DESC'))
-      opts = {
-        :thedate => most_recent.thedate + 1.day,
-        :end_advance_sales => most_recent.end_advance_sales + 1.day,
-        :max_sales => most_recent.max_sales
-      }
-    else
-      thedate = show.opening_date.to_time.change(:hour => 20)
-      opts = {
-        :thedate => thedate,
-        :end_advance_sales => thedate - Option.nonzero_value_or_default(:advance_sales_cutoff, 0).minutes,
-        :max_sales => 0
-      }
-    end
-    @showdate = show.showdates.build(opts)
+    @show = Show.find(params[:show_id])
+    @advance_sales_cutoff = Option.nonzero_value_or_default(:advance_sales_cutoff, 0)
+    @max_sales_default = @show.house_capacity
   end
 
   def edit

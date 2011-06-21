@@ -1,5 +1,4 @@
-- show = @showdate.show
-%h1 Add dates for #{show.name}
+%h1 Add dates for #{@show.name}
 
 %p.infoMsg
   The following options will be used for
@@ -30,26 +29,25 @@
       %td
         = text_field_tag 'max_sales', '', :size => 5
         = popup_help_for(:max_advance_sales)
-        = hidden_field_tag "show_id", @showdate.show.id
+        = hidden_field_tag "show_id", @show.id
 
   %p.infoMsg Enter recurring dates (you can add more later, or delete exceptions later):
 
   %label Every
-  = day_of_week_checkboxes('day[]')
+  = day_of_week_checkboxes('day')
   %br
-  %label At
-  = select_time(Time.parse("8:00pm"), :time_separator => ':')
+  %label{:for => 'time'} At
+  = select_time(Time.parse("8:00pm"), :time_separator => ':', :prefix => 'time')
   %br
-  %label From
-  = select_date(show.opening_date, :order => [:month,:day,:year])
+  %label{:for => 'start'} From
+  = select_date(@show.opening_date, :order => [:month,:day,:year], :prefix => 'start')
   %br
-  %label Until
-  = select_date(show.closing_date, :order => [:month,:day,:year])
+  %label{:for => 'end'} Until
+  = select_date(@show.closing_date, :order => [:month,:day,:year], :prefix => 'end')
   %br
-  %label
   %p.feedback
     
-  = submit_tag 'Save & Back to Shows' 
-  = submit_tag 'Save & Add More' 
-  = gen_button 'Cancel', {:controller => :shows, :action => :index}
+  = submit_tag 'Save & Back to List of Shows' 
+  = submit_tag 'Save & Add More Dates for This Show' 
+  = gen_button 'Cancel', {:controller => :shows, :action => :edit, :id => @show}
 
