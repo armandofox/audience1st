@@ -60,7 +60,7 @@ class ShowdatesController < ApplicationController
       thedate = show.opening_date.to_time.change(:hour => 20)
       opts = {
         :thedate => thedate,
-        :end_advance_sales => thedate - [Option.value(:advance_sales_cutoff), 0].max.minutes,
+        :end_advance_sales => thedate - Option.nonzero_value_or_default(:advance_sales_cutoff, 0).minutes,
         :max_sales => 0
       }
     end
