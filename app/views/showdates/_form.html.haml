@@ -14,8 +14,10 @@
       = popup_help_for :show_or_showdate_description
   %tr
     %td 
-      %label{:for => :showdate_end_advance_sales} Advance sales stop
-    %td= child_datetime_select 'showdate', 'end_advance_sales', args
+      %label{:for => :showdate_end_advance_sales} Advance sales cutoff
+    %td
+      = child_datetime_select 'showdate', 'end_advance_sales', args
+      = popup_help_for :advance_sales_cutoff
   %tr
     %td 
       %label{:for => :showdate_max_sales} Max advance sales
