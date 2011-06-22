@@ -3,7 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 include Utils
 
 describe "Date/time extras" do
-
   describe "season calculations" do
     context "for season 1/1/09 - 12/31/09" do
       before(:each) do

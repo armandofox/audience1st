@@ -21,30 +21,31 @@ class ShowdatesController < ApplicationController
 
   def create
     show = Show.find(params[:show_id])
-    description = params[:description]
-    sales_cutoff = params[:sales_cutoff]
+    description = params[:description].to_s
+    sales_cutoff = params[:sales_cutoff].to_i
     max_sales = params[:max_sales].to_i
-    start_date = 
-    args = params[:showdate]
-    sid = args[:show_id]
-    unless Show.find_by_id(sid)
-      flash[:warning] = "New showdate must be associated with an existing show" 
-      render :action => 'new'
-      return
-    end
-    @showdate = Showdate.new(args)
-    if @showdate.save
-      flash[:notice] = 'Show date was successfully created.'
-      if params[:commit] =~ /add another/i
-        redirect_to :action => 'new', :show_id => sid
-      else
-        redirect_to :controller => 'shows', :action => 'edit', :id => sid
+    start_date,end_date = Time.range_from_params(params[:start], params[:end])
+    days = params[:day]
+    all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => days,
+      :time => Time.from_param(params[:time])).dates
+
+    new_showdates = showdates_from_date_list(all_dates, max_sales, sales_cutoff, description)
+    redirect_to(:action => :new, :show_id => show) and return unless flash[:warning].blank?
+    new_showdates.each do |showdate|
+      unless showdate.save
+        flash[:warning] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: " <<
+          showdate.errors.full_messages.join('<br/>')
+        redirect_to(:action => :new, :show_id => show) and return
       end
+    end
+    flash[:notice] = "#{new_showdates.size} showdates were successfully added."
+    if params[:commit] =~ /back to list/
+      redirect_to :controller => :shows
     else
-      render :action => 'new'
+      redirect_to(:action => :new, :show_id => show)
     end
   end
-
+    
   def destroy
     showdate = Showdate.find(params[:id])
     show_id = showdate.show_id
@@ -79,4 +80,20 @@ class ShowdatesController < ApplicationController
     render :text => "#{new_dates} performances will be added, giving #{total_dates} total performances"
   end
 
+  private
+
+  def showdates_from_date_list(dates, max_sales, sales_cutoff, description)
+    dates.map do |date|
+      s = show.showdates.build(:thedate => date,
+        :max_sales => max_sales,
+        :end_advance_sales => date - sales_cutoff.minutes,
+        :description => description)
+      unless s.valid?
+        flash[:warning] =
+          "NO showdates were created, because the #{thedate.to_formatted_s(:showtime)} showdate had errors: " <<
+          s.errors.full_messages.join('<br/>')
+      end
+      s
+    end
+  end
 end
