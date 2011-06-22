@@ -24,7 +24,13 @@ Scenario: set up multiple valid showdates
   And I fill in "Max advance sales" with "50"
   And I press "Save & Back to List of Shows"
   Then I should be on the list of shows page
-  And I should see "5 showdates were successfully created"
-  Then "Hamlet" should have 5 showdates
+  Then I should see "5 showdates were successfully added"
+  And "Hamlet" should have 5 showdates
   And the following showdates for "Hamlet" should exist:
-  | date | max_sales | sales_cutoff |
+  | date              | max_sales | sales_cutoff      |
+  | 12/23/2011 7:00pm |        50 | 12/23/2011 6:00pm |
+  | 12/25/2011 7:00pm |        50 | 12/25/2011 6:00pm |
+  | 12/29/2011 7:00pm |        50 | 12/29/2011 6:00pm |
+  | 12/30/2011 7:00pm |        50 | 12/30/2011 6:00pm |
+  | 1/1/2012 7:00pm   |        50 | 1/1/2012 6:00pm   |
+

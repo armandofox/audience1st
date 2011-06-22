@@ -22,8 +22,13 @@ def select_date(date_to_select, options ={})
 end
 
 def select_if(id_prefix, thing, val)
-  id = [id_prefix,DATE_TIME_SUFFIXES[thing]].join('_')
-  select(val.to_s, :from => id) if page.has_xpath?("//select[@id='#{id}']")
+  id1 = [id_prefix, DATE_TIME_SUFFIXES[thing]].join('_')
+  id2 = [id_prefix, thing].join('_')
+  if page.has_xpath?("//select[@id='#{id1}']")
+    select(val.to_s, :from => id1)
+  elsif page.has_xpath?("//select[@id='#{id2}']")
+    select(val.to_s, :from => id2)
+  end
 end
 
 

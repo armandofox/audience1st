@@ -20,29 +20,25 @@ class ShowdatesController < ApplicationController
   end
 
   def create
-    show = Show.find(params[:show_id])
-    description = params[:description].to_s
-    sales_cutoff = params[:sales_cutoff].to_i
-    max_sales = params[:max_sales].to_i
+    @show = Show.find(params[:show_id])
     start_date,end_date = Time.range_from_params(params[:start], params[:end])
     days = params[:day]
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => days,
       :time => Time.from_param(params[:time])).dates
-
-    new_showdates = showdates_from_date_list(all_dates, max_sales, sales_cutoff, description)
+    new_showdates = showdates_from_date_list(all_dates, params)
     redirect_to(:action => :new, :show_id => show) and return unless flash[:warning].blank?
     new_showdates.each do |showdate|
       unless showdate.save
         flash[:warning] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: " <<
           showdate.errors.full_messages.join('<br/>')
-        redirect_to(:action => :new, :show_id => show) and return
+        redirect_to(:action => :new, :show_id => @show) and return
       end
     end
     flash[:notice] = "#{new_showdates.size} showdates were successfully added."
-    if params[:commit] =~ /back to list/
+    if params[:commit] =~ /back to list/i
       redirect_to :controller => :shows
     else
-      redirect_to(:action => :new, :show_id => show)
+      redirect_to(:action => :new, :show_id => @show)
     end
   end
     
@@ -82,9 +78,13 @@ class ShowdatesController < ApplicationController
 
   private
 
-  def showdates_from_date_list(dates, max_sales, sales_cutoff, description)
+  def showdates_from_date_list(dates, params)
+    sales_cutoff = params[:advance_sales_cutoff].to_i
+    max_sales = params[:max_sales].to_i
+    description = params[:description].to_s
+
     dates.map do |date|
-      s = show.showdates.build(:thedate => date,
+      s = @show.showdates.build(:thedate => date,
         :max_sales => max_sales,
         :end_advance_sales => date - sales_cutoff.minutes,
         :description => description)

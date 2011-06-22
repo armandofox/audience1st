@@ -17,14 +17,22 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
 end
 
 Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
-  Show.find_by_name!(show).should have(num).showdates
+  Show.find_by_name!(show).showdates.count.should == num.to_i
 end
 
-Then /^the following showdates should exist for "(.*)":$/ do |show,dates|
-  showdates = Show.find_by_name!(show).showdates
+Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|
+  show = Show.find_by_name!(showname)
+  showdates = show.showdates
   dates.hashes.each do |date|
-    sd = Showdate.find_by_thedate(Time.parse(date[:time]))
+    sd = Showdate.find_by_thedate(Time.parse(date[:date]))
     sd.should_not be_nil
+    sd.show.should == show
+    if date[:max_sales]
+      sd.max_sales.should == date[:max_sales].to_i
+    end
+    if date[:sales_cutoff]
+      sd.end_advance_sales.should == Time.parse(date[:sales_cutoff])
+    end
   end
 end
   
