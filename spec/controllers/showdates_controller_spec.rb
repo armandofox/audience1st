@@ -22,8 +22,8 @@ describe ShowdatesController do
       }
     end
     it "should set up date list correctly" do
-      controller.should_receive(:showdates_from_date_list).with(
-        [Time.parse("12/23/2011 3:00pm"), Time.parse("12/24/2011 3:00pm")], 55, 44, '').
+      controller.should_receive(:showdates_from_date_list).
+        with([Time.parse("12/23/2011 3:00pm"), Time.parse("12/24/2011 3:00pm")], anything()).
         and_return([])
       post :create, @params
     end
