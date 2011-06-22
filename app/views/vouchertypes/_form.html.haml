@@ -47,6 +47,7 @@
 %p#p_vouchertype_display_order.vtform
   %label{:for => :vouchertype_display_order} Display order
   = text_field 'vouchertype', 'display_order', :size => 3, :max => 3
+  = popup_help_for :vouchertype_display_order
 
 %p#p_vouchertype_fulfillment_needed.clear.vtform
   %label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
