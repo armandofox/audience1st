@@ -4,19 +4,11 @@ Given /^there are no shows set up$/ do
   Show.delete_all
 end
 
-Given /^there is no show named "(.*)"$/ do |name|
+Given /^there is no show named "([^\"]+)"$/ do |name|
   Show.find_by_name(name).should be_nil
 end
 
-Given /^there is a show named "(.*)" opening (.*)$/ do |name,opening|
-  @show = Show.create!(:name => name,
-    :opening_date => Date.parse(opening),
-    :closing_date => Date.parse(opening) + 1.month,
-    :house_capacity => DEFAULT_HOUSE_CAPACITY,
-    :listing_date => Date.today)
-end
-
-Given /^there is a show named "(.*)"$/ do |name|
+Given /^there is a show named "([^\"]+)"$/ do |name|
   @show =  Show.find_by_name(name) ||
     Show.create!(:name => name,
     :opening_date => Date.today,
@@ -24,6 +16,23 @@ Given /^there is a show named "(.*)"$/ do |name|
     :house_capacity => DEFAULT_HOUSE_CAPACITY,
     :listing_date => Date.today)
 end
+
+Given /^there is a show named "([^\"]+)" opening "([^\"]+)"$/ do |name,opening|
+  @show = Show.create!(:name => name,
+    :opening_date => Date.parse(opening),
+    :closing_date => Date.parse(opening) + 1.month,
+    :house_capacity => DEFAULT_HOUSE_CAPACITY,
+    :listing_date => Date.today)
+end
+
+Given /^there is a show named "([^\"]+)" opening "([^\"]+)" and closing "([^\"]+)"$/ do |name,opening,closing|
+  @show = Show.create!(:name => name,
+    :opening_date => Date.parse(opening),
+    :closing_date => Date.parse(closing),
+    :house_capacity => DEFAULT_HOUSE_CAPACITY,
+    :listing_date => Date.today)
+end
+
 
 When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,cap,list|
   fill_in "Show Name", :with => name

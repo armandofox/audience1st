@@ -74,13 +74,13 @@ class Time
   def self.from_param(param,default=Time.now)
     return default if param.blank?
     return Time.parse(param) unless param.kind_of?(Hash)
-    if param.has_key?(:hour)
-      Time.local(param[:year].to_i,param[:month].to_i,param[:day].to_i,param[:hour].to_i,
-                 (param[:minute] || "00").to_i,
-                 (param[:second] || "00").to_i)
-    else
-      Time.local(param[:year].to_i,param[:month].to_i,param[:day].to_i)
+    t = Time.local(0,1,1,0,0,0)
+    [:year,:month,:day,:hour].each do |component|
+      t = t.change(component => param[component].to_i) if param.has_key?(component)
     end
+    t = t.change(:min => param[:minute].to_i) if param.has_key?(:minute)
+    t = t.change(:sec => param[:second].to_i) if param.has_key?(:second)
+    t
   end
 
   def self.range_from_params(minp,maxp,default=Time.now)

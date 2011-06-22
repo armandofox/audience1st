@@ -7,7 +7,7 @@ Feature: set up new showdate
 Background:
 
   Given I am logged in as a box office manager
-  And there is a show named "Chicago" opening April 1, 2010
+  And there is a show named "Chicago" opening "April 1, 2010"
   And I go to the Show Details page for "Chicago"
   When I follow "Add a Performance"
   Then I should be on the on the New Showdate page for "Chicago"
