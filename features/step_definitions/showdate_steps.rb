@@ -15,7 +15,20 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
 end
+
+Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
+  Show.find_by_name!(show).should have(num).showdates
+end
+
+Then /^the following showdates should exist for "(.*)":$/ do |show,dates|
+  showdates = Show.find_by_name!(show).showdates
+  dates.hashes.each do |date|
+    sd = Showdate.find_by_thedate(Time.parse(date[:time]))
+    sd.should_not be_nil
+  end
+end
   
+
   
 def setup_show_and_showdate(name,time,args={})
   show = Show.find_by_name(name) ||

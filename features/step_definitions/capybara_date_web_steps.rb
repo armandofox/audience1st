@@ -33,7 +33,7 @@ def id_prefix_for(options = {})
 end
 
 
-When /^(?:|I )select "([^\"]*)" as the "([^\"]*)" date$/ do |date, date_label|
+When /^(?:|I )select "([^\"]*)" as the "([^\"]*)" (date|time)$/ do |date, date_label, _|
   select_date(date, :from => date_label)
 end
 
