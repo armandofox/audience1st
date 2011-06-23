@@ -68,7 +68,6 @@ Feature: Creating an account
       | Password         | johndoe       |
       | Confirm Password | johndo        |
     And I press "Create My Account"
-    Then show me the page
     Then account creation should fail with "Password doesn't match confirmation"
 
                                             
