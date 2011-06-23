@@ -153,7 +153,9 @@ describe StoreController do
     end
   end
 
-  describe "online self-purchase" do
+  describe "successful order placement" do
+    before(:each) do
+    end
     describe "generally", :shared => true do
     end
     describe "for myself" do

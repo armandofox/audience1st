@@ -212,6 +212,7 @@ class StoreController < ApplicationController
     howpurchased = Purchasemethod.default
     # regular customers can only purchase with credit card
     params[:commit] = 'credit' if !@is_admin
+    debugger
     if params[:commit] =~ /check/i
       method = :check
       howpurchased = Purchasemethod.get_type_by_name('box_chk')

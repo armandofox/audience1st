@@ -15,7 +15,7 @@ class ImportsController < ApplicationController
       show = @shows.first
     end
     if show
-      @import.show_id = show.id
+      @import.show = show
       @showdates = show.showdates
     else
       flash[:warning] = "You have not set up any shows, so you won't be able to import will-call lists yet."

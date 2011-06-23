@@ -235,7 +235,7 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def numseats_for_showdate(showdate)
-    if (vv = self.valid_vouchers.detect { |v| v.showdate_id = showdate.id })
+    if (vv = self.valid_vouchers.detect { |v| v.showdate_id == showdate.id })
       vv.seats_remaining
     else
       0
