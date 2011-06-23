@@ -1,4 +1,5 @@
 Feature: Creating an account
+
   As an anonymous customer
   I want to be able to create an account
   So that I can be one of the cool kids
@@ -31,6 +32,7 @@ Feature: Creating an account
     When I fill in the following:
       | Password         | johndoe       |
       | Confirm Password | johndoe       |
+    And I press "Create My Account"
     Then account creation should fail with "Email is invalid"
 
   Scenario: New customer cannot create account with invalid email
@@ -39,6 +41,7 @@ Feature: Creating an account
     | Email            | invalid.address |
     | Password         | johndoe         |
     | Confirm Password | johndoe         |
+    And I press "Create My Account"
     Then account creation should fail with "Email is invalid"
 
   Scenario: New customer cannot create account with duplicate email
@@ -48,12 +51,14 @@ Feature: Creating an account
     | Email            | tom@foolery.com |
     | Password         | tom             |
     | Confirm Password | tom             |
+    And I press "Create My Account"
     Then account creation should fail with "address tom@foolery.com has already been registered"
 
   Scenario: New customer cannot create account without providing password
 
     When I fill in the following:
     | Email | john@doe.com |
+    And I press "Create My Account"
     Then account creation should fail with "Password is too short"
     
   Scenario: New customer cannot create account with mismatched password confirmation
@@ -62,5 +67,8 @@ Feature: Creating an account
       | Email            | john@doe.com  |
       | Password         | johndoe       |
       | Confirm Password | johndo        |
+    And I press "Create My Account"
+    Then show me the page
     Then account creation should fail with "Password doesn't match confirmation"
 
+                                            
