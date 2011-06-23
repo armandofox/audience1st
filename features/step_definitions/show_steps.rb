@@ -33,6 +33,11 @@ Given /^there is a show named "([^\"]+)" opening "([^\"]+)" and closing "([^\"]+
     :listing_date => Date.today)
 end
 
+# Given /^the following shows exist:$/ do |shows|
+#   shows.hashes.each do |show|
+#     %Q{Given there is a show named "#{show[:name]}" opening "#{show[:opens]}" and closing "#{show[:closes]}"}
+#   end
+# end
 
 When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,cap,list|
   fill_in "Show Name", :with => name
