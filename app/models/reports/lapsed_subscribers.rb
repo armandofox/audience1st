@@ -1,7 +1,7 @@
 class LapsedSubscribers < Report
 
   def initialize(output_options = {})
-    sub_vouchers =  Vouchertype.find_products :type => :subscription, :ignore_cutoff => true
+    sub_vouchers =  Vouchertype.subscription_vouchertypes
     @view_params = {
       :name => "Lapsed subscribers report",
       :have_vouchertypes => sub_vouchers,
