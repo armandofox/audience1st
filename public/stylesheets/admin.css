@@ -1,3 +1,5 @@
+/* @override http://localhost:3000/stylesheets/admin.css?1310749819 */
+
 /* @override http://localhost:3000/stylesheets/admin.css?1297815632 */
 
 /* @override http://localhost:3000/stylesheets/admin.css?1296771185 */
@@ -182,6 +184,19 @@ table#showdate_info td.value {
 /*
  * Walkup sales
  */
+
+#walkup_tickets .column {
+	float: left;
+} 
+#walkup_tickets .column p {
+	font-size: larger;
+	text-align: center;
+	font-weight: bold;
+	color: #fff;
+	background-color: red;
+	margin: 4px;
+	padding: 4px;
+}
 #ccWaiting {
   background-color: white;
   color: red;

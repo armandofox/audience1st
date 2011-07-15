@@ -1,49 +1,16 @@
 - form_tag :action => 'do_walkup_sale',:id => @showdate do
-  = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty') }"
-  = javascript_tag "recalc_totaltix = function() { recalculate('totaltix', '.tktQty', null, 0, true) }"
-
-  %table#walkup_tickets
-    %thead
-      %tr
-        %th{:valign=>:top}
-          %p 1. Select tickets & donation amount
-        %th{:valign=>:top}
-          %p 2. Collect & record payment
-    %tbody
-      %tr
-        %td{:valign=>:top}
-          %table.hilite
-            %tr
-              %td{:colspan=>2}
-                %strong Tickets to be issued
-              %td= text_field_tag 'totaltix', 0, :id => 'totaltix',  |
-                :size => 4, :disabled => true, :class => 'disabledField'  |
-            %tr
-              %td{:colspan=>2}
-                %strong TOTAL TO COLLECT
-              %td= text_field_tag 'total', '0.00', :id => 'total', :size => 6, |
-                :disabled => true, :class => 'disabledField strong' |
-            %tr
-              %td.label{:colspan => 2} Additional donation:
-              %td= text_field_tag 'donation', @donation, :maxlength => 7, :size => 5, |
-                :class => 'itemQty', :onchange => 'recalc_total(); recalc_totaltix()'  |
-            - @valid_vouchers.each do |v|
-              %tr
-                %td.label
-                  %label{:for => "qty_#{v.id}"}= v.vouchertype_name
-                  - unless v.max_sales_for_type.zero?
-                    %span.emphasis= "(#{v.seats_remaining} left)" 
-                %td= text_field_tag "price[#{v.id}]", |
-                  number_to_currency(v.price, :unit => ''), :disabled => true, |
-                  :size => 6, :id => "qty_#{v.id}_price", :class => 'disabledField currency' |
-                %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'itemQty tktQty', :onchange => "recalc_total(); recalc_totaltix()"})  
-        %td.c.t
-          %br
-          = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
-          = submit_tag 'Record Check Payment'
-          %br
-          = gen_button 'Whoops, I Made a Mistake', :controller => 'box_office', :action => 'walkup_report', :id => @showdate
-          %br
-          %br
-          #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
-          = submit_tag 'Record Credit Card Payment', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
+  #walkup_tickets
+    .column
+      %p 1. Select tickets & donation amount
+      = render :partial => 'walkup_sales_tickets'
+    .column
+      %p 2. Collect & record payment
+      %br
+      = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
+      = submit_tag 'Record Check Payment'
+      %br
+      = gen_button 'Whoops, I Made a Mistake', :controller => 'box_office', :action => 'walkup_report', :id => @showdate
+      %br
+      %br
+      #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
+      = submit_tag 'Record Credit Card Payment', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
