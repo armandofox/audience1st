@@ -10,6 +10,7 @@ dev: TAGS
 	-cd config && ln -s facebooker.yml.dev facebooker.yml
 	mkdir log
 	touch log/development.log
+	-rake db:migrate
 	-ln -s ~/Documents/fox/projects/stylesheets/sandbox public/stylesheets/venue
 
 #TAGS: $(FILES) $(PLUGINS)

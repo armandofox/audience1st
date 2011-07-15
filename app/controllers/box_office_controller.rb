@@ -90,9 +90,11 @@ class BoxOfficeController < ApplicationController
       cc.verification_value = params[:credit_card][:verification_value]
     end
     # allow testing using bogus credit card types
-    return("Invalid credit card information: " <<
-      cc.errors.full_messages.join(', ') <<
-      (s.blank? ? '' : '(try entering manually)')) unless cc.valid?
+    unless ActiveMerchant::Billing::Base.mode == :test # ugh, this whole method belongs in Store or in its own class for credit card handling
+      return("Invalid credit card information: " <<
+        cc.errors.full_messages.join(', ') <<
+        (s.blank? ? '' : '(try entering manually)')) unless cc.valid?
+    end
     args[:credit_card] = cc
     # generate bill_to argument
     args[:bill_to] = Customer.new(:first_name => cc.first_name, :last_name => cc.last_name)
@@ -151,7 +153,7 @@ class BoxOfficeController < ApplicationController
   def walkup
     @showdate = (Showdate.find_by_id(params[:id]) ||
       Showdate.current_or_next(2.hours))
-    @valid_vouchers = @showdate.valid_vouchers
+    @valid_vouchers = @showdate.valid_vouchers_for_walkup
     @credit_card = CreditCard.new # needed by credit-card swipe functions
     @qty = params[:qty] || {}     # voucher quantities
   end
