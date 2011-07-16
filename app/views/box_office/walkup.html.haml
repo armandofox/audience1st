@@ -1,16 +1,31 @@
+= javascript_tag "function show_only(div) { $('credit_card').hide(); $('cash').hide(); $('check').hide(); $(div).show(); }"
 - form_tag :action => 'do_walkup_sale',:id => @showdate do
   #walkup_tickets
     .column
       %p 1. Select tickets & donation amount
       = render :partial => 'walkup_sales_tickets'
-    .column
+    #payment.column
       %p 2. Collect & record payment
-      %br
-      = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
-      = submit_tag 'Record Check Payment'
-      %br
-      = gen_button 'Whoops, I Made a Mistake', :controller => 'box_office', :action => 'walkup_report', :id => @showdate
-      %br
-      %br
-      #credit_card= render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
-      = submit_tag 'Record Credit Card Payment', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
+      = gen_button 'Whoops, I Made a Mistake', {:controller => 'box_office', :action => 'walkup_report', :id => @showdate}, {:id => 'whoops_button'}
+      #payment_types
+        %label.no_float{:for => 'payment_type'} Credit Card
+        = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "$('credit_card').show(); $('cash').hide(); $('check').hide();"
+        %label.no_float{:for => 'payment_type'} Cash or Zero-Revenue
+        = radio_button_tag 'payment_type', 'cash', false, :onclick => "$('credit_card').hide(); $('cash').show(); $('check').hide();"
+        %label.no_float{:for => 'payment_type'} Check
+        = radio_button_tag 'payment_type', 'check', false, :onclick => "$('credit_card').hide(); $('cash').hide(); $('check').show();"
+      #payment_form
+        #credit_card
+          = render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
+          = submit_tag 'Submit Credit Card Charge', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
+        #cash{:style => 'display: none;'}
+          %fieldset
+            %legend Cash Payment
+            %p Collect Cash, Then Click Below to Record
+          = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
+        #check{:style => 'display: none;'}
+          %fieldset
+            %legend Check Payment
+            %label{:for => 'check_number'} Check Number (required)
+            = text_field_tag 'check_number', '', :size => 6
+          = submit_tag 'Record Check Payment'

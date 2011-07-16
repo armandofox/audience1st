@@ -39,9 +39,28 @@ Feature: Sell walkup tickets
     | Expiration Month   | select "12"         |
     | Expiration Year    | select "2015"       |
     And I fill in "Enter CVV code manually FIRST!" with "111"
-    And I press "Record Credit Card Payment"
+    And I press "Submit Credit Card Charge"
     Then I should see "Successfully added 2 vouchers purchased via Box office - Credit Card"
     And I should see "General (1 left)"
 
+  Scenario: attempt purchase with invalid credit card
 
+    When I select "2" from "General"
+    And I fill in the "Credit Card Payment" fields as follows:
+    | field              | value               |
+    | First Name         | John                |
+    | Last Name          | Doe                 |
+    | Type               | select "MasterCard" |
+    | Number (no spaces) | 3                   |
+    | Expiration Month   | select "12"         |
+    | Expiration Year    | select "2015"       |
+    And I press "Submit Credit Card Charge"
+    Then I should see "Transaction NOT processed"
+    And I should see "General (3 left)"
+
+  Scenario: attempt zero-revenue purchase by check
+
+    When I press "Record Check Payment"
+    Then I should see "No tickets or donation to process"
+    And I should see "General (3 left)"
 
