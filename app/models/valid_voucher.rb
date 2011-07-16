@@ -202,10 +202,13 @@ EOCONDS1
   #  n vouchers of given vouchertype and for given showdate are created
   #  voucher is bound to customer
   # returns the list of newly-instantiated vouchers
-  def instantiate(logged_in_customer, purchasemethod, howmany=1)
+  def instantiate(logged_in_customer, purchasemethod, howmany=1, comment='')
     Array.new(howmany) do |i|
-      self.new_voucher(purchasemethod).reserve(self.showdate,
-                                               logged_in_customer)
+      Voucher.new_from_vouchertype(
+        self.vouchertype,
+        :purchasemethod => purchasemethod,
+        :comments => comment).
+        reserve(self.showdate, logged_in_customer)
     end
   end
 
@@ -213,7 +216,7 @@ EOCONDS1
   def sell!(qty, customer, purchasemethod, logged_in, opts={})
     vouchers = []
     resp = Store.purchase!(purchasemethod.purchase_medium, qty * price, opts) do
-      vouchers = self.instantiate(logged_in, purchasemethod, qty)
+      vouchers = self.instantiate(logged_in, purchasemethod, qty, opts[:comments].to_s)
       customer.add_items(vouchers, logged_in.id, purchasemethod)
     end
     if resp.success?
@@ -224,12 +227,6 @@ EOCONDS1
     end
   end
   
-
-  def new_voucher(purchasemethod = Purchasemethod.default)
-    return Voucher.new_from_vouchertype(self.vouchertype,
-                                        :purchasemethod => purchasemethod)
-  end
-
   def promo_code_matches(str = nil)
     str.to_s.contained_in_or_blank(self.promo_code)
   end
