@@ -1,10 +1,11 @@
-/* @override http://localhost:3000/stylesheets/admin.css?1297815632 */
-
-/* @override http://localhost:3000/stylesheets/admin.css?1296771185 */
-
-/* @override http://localhost:3000/stylesheets/admin.css?1281415932 */
-
-/* @override http://localhost:3000/stylesheets/admin.css?1274661090 */
+/* @override 
+	http://localhost:3000/stylesheets/admin.css?1310749819
+	http://localhost:3000/stylesheets/admin.css?1297815632
+	http://localhost:3000/stylesheets/admin.css?1296771185
+	http://localhost:3000/stylesheets/admin.css?1281415932
+	http://localhost:3000/stylesheets/admin.css?1274661090
+	http://localhost:3000/stylesheets/admin.css?1310771128
+*/
 
 /* in testing or sandbox mode, body should look different */
 body.testing {
@@ -182,6 +183,42 @@ table#showdate_info td.value {
 /*
  * Walkup sales
  */
+
+#walkup_tickets {
+	width: 100%;
+}
+#walkup_tickets .column {
+	float: left;
+	padding: 0;
+	margin: 4px;
+	width: 45%;
+} 
+#walkup_tickets .column:hover {
+	border: 1px solid red;
+	margin: 3px;
+}
+#walkup_tickets .column p {
+	font-size: larger;
+	text-align: center;
+	font-weight: bold;
+	color: #fff;
+	background-color: red;
+    padding: 4px 0;
+    margin: 0;
+}
+#whoops_button {
+	line-height: 2.5;
+}
+#payment_types {
+	text-align: center;
+	font-size: medium;
+	font-weight: bold;
+	margin-top: 10px;
+}
+#payment_types input[type="radio"] {
+	margin-right: 4ex;
+	margin-left: -5px;
+}
 #ccWaiting {
   background-color: white;
   color: red;

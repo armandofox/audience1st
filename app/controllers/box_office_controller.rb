@@ -68,11 +68,11 @@ class BoxOfficeController < ApplicationController
   # process a sale of walkup vouchers by linking them to the walkup customer
   # pass a hash of {ValidVoucher ID => quantity} pairs
   
-  def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'))
+  def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'), comment = '')
     vouchers = []
     qtys.each_pair do |vtype,q|
       vv = ValidVoucher.find(vtype)
-      vouchers += vv.instantiate(Customer.find(logged_in_id), howpurchased, q.to_i)
+      vouchers += vv.instantiate(Customer.find(logged_in_id), howpurchased, q.to_i, comment)
     end
     Customer.walkup_customer.vouchers += vouchers
     (flash[:notice] ||= "") << "Successfully added #{vouchers.size} vouchers"
@@ -90,9 +90,11 @@ class BoxOfficeController < ApplicationController
       cc.verification_value = params[:credit_card][:verification_value]
     end
     # allow testing using bogus credit card types
-    return("Invalid credit card information: " <<
-      cc.errors.full_messages.join(', ') <<
-      (s.blank? ? '' : '(try entering manually)')) unless cc.valid?
+    unless ActiveMerchant::Billing::Base.mode == :test # ugh, this whole method belongs in Store or in its own class for credit card handling
+      return("Invalid credit card information: " <<
+        cc.errors.full_messages.join(', ') <<
+        (s.blank? ? '' : '(try entering manually)')) unless cc.valid?
+    end
     args[:credit_card] = cc
     # generate bill_to argument
     args[:bill_to] = Customer.new(:first_name => cc.first_name, :last_name => cc.last_name)
@@ -151,7 +153,7 @@ class BoxOfficeController < ApplicationController
   def walkup
     @showdate = (Showdate.find_by_id(params[:id]) ||
       Showdate.current_or_next(2.hours))
-    @valid_vouchers = @showdate.valid_vouchers
+    @valid_vouchers = @showdate.valid_vouchers_for_walkup
     @credit_card = CreditCard.new # needed by credit-card swipe functions
     @qty = params[:qty] || {}     # voucher quantities
   end
@@ -168,7 +170,7 @@ class BoxOfficeController < ApplicationController
       redirect_to(:action => 'walkup', :id => @showdate) and return
     end
     if total == 0.0 # zero-cost purchase
-      process_walkup_vouchers(@qty, p=Purchasemethod.find_by_shortdesc('none'))
+      process_walkup_vouchers(@qty, p=Purchasemethod.find_by_shortdesc('none'), 'Zero revenue transaction')
       Txn.add_audit_record(:txn_type => 'tkt_purch',
                            :customer_id => Customer.walkup_customer.id,
                            :comments => 'walkup',
@@ -188,6 +190,7 @@ class BoxOfficeController < ApplicationController
     case params[:commit]
     when /credit/i
       method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
+      comment = ''
       unless (args = collect_brief_credit_card_info).kind_of?(Hash)
         flash[:notice] = args
         logger.info "Credit card validation failed: #{args}"
@@ -196,16 +199,18 @@ class BoxOfficeController < ApplicationController
       end
     when /cash|zero/i
       method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
+      comment = ''
       args = {}
     when /check/i
       method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
+      comment = params[:check_number].blank? ? '' : "Check #: #{params[:check_number]}"
       args = {}
     else
       logger.info(flash[:notice] = "Unrecognized purchase type: #{params[:commit]}")
       redirect_to(:action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation) and return
     end
     resp = Store.purchase!(method,total,args) do
-      process_walkup_vouchers(@qty, how)
+      process_walkup_vouchers(@qty, how, comment)
       Donation.walkup_donation(@donation,logged_in_id) if @donation > 0.0
       Txn.add_audit_record(:txn_type => 'tkt_purch',
         :customer_id => Customer.walkup_customer.id,

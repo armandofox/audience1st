@@ -6,8 +6,7 @@ Feature: edit walkup sales after the fact
 
 Background:
 
-  Given I am logged in as boxoffice
-  And a show "Chicago" with the following tickets available:
+  Given a show "Chicago" with the following tickets available:
   | qty | type     | price  | showdate              |
   |   5 | General  | $15.00 | April 7, 2010, 8:00pm |
   |   1 | Discount | $10.00 | April 8, 2010, 8:00pm |
@@ -15,6 +14,7 @@ Background:
   And the following walkup tickets have been sold for "April 7, 2010, 8:00pm":
   | qty | type     | payment  |
   |   1 | General  | box_cash |
+  And I am logged in as boxoffice
   And I am on the walkup sales report for "April 7, 2010, 8:00pm"
   Then I should see "General" within "#box_cash"
 

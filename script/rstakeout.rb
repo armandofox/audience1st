@@ -38,10 +38,11 @@ def self.growl_pass(output)
   growl "Pass", "#{output}", "pass.png"
 end
 
-command = ARGV.shift
+command = "script/cucumber #{ARGV.shift}"
 files = {}
+dirs = ['**/*.rb', '**/*.feature']
 
-ARGV.each do |arg|
+dirs.each do |arg|
   Dir[arg].each { |file|
     files[file] = File.mtime(file)
   }

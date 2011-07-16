@@ -16,6 +16,7 @@ describe ValidVoucher do
         @showdate = mock_model(Showdate, :valid? => true)
         @logged_in_customer = Customer.boxoffice_daemon
         @now = @vt_regular.expiration_date - 2.months
+        @comment = 'A comment'
         @valid_voucher =
           ValidVoucher.create!(:vouchertype => @vt_regular,
           :showdate => @showdate,
@@ -31,6 +32,9 @@ describe ValidVoucher do
           it "should be of the specified vouchertype" do
             @vouchers.each { |v| v.vouchertype.should == @vt_regular }
           end
+          it "should include the comment" do
+            @vouchers.each { |v| v.comments.to_s.should == @comment }
+          end
           it "should be marked processed by the logged-in customer" do
             @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
           end
@@ -43,7 +47,7 @@ describe ValidVoucher do
           before(:each) do
             @num = 3
             @vouchers =
-              @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,@num)
+              @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,@num,@comment)
           end
           it_should_behave_like "instantiation"
           it "should instantiate but not yet save the vouchers" do
@@ -53,7 +57,7 @@ describe ValidVoucher do
         context "with successful payment" do
           before(:each) do
             @num = 3
-            @vouchers = @valid_voucher.sell!(@num, @customer, @purch, @logged_in_customer)
+            @vouchers = @valid_voucher.sell!(@num, @customer, @purch, @logged_in_customer, :comments => @comment)
           end
           it_should_behave_like "instantiation"
           it "should associate vouchers with the customer" do
@@ -65,7 +69,7 @@ describe ValidVoucher do
       context "unsuccessfully" do
         it "should fail if purchasing fails" do
           Store.stub!(:purchase!).and_return(ActiveMerchant::Billing::Response.new(false, "Forced failure"))
-          @vouchers = @valid_voucher.sell!(3, @customer, @purch, @logged_in_customer)
+          @vouchers = @valid_voucher.sell!(3, @customer, @purch, @logged_in_customer, :comments => @comment)
           @vouchers.should be_empty
           @customer.should have(0).vouchers
         end

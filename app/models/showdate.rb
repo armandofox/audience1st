@@ -40,7 +40,10 @@ class Showdate < ActiveRecord::Base
       :end_advance_sales => thedate,
       :max_sales => 0)
   end
-      
+
+  def valid_vouchers_for_walkup
+    self.valid_vouchers.select { |vv| vv.vouchertype.walkup_sale_allowed? }
+  end
 
   # finders
   
