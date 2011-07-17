@@ -1,4 +1,4 @@
-= javascript_tag "function show_only(div) { $('credit_card').hide(); $('cash').hide(); $('check').hide(); $(div).show(); }"
+= javascript_tag "function show_only(div) { $('credit_card').hide(); $('submit_credit_card').disabled = true; $('cash').hide(); $('submit_cash').disabled = true; $('check').hide(); $('submit_check').disabled = true; $(div).show(); $('submit_' + div).disabled = false; }"
 - form_tag :action => 'do_walkup_sale',:id => @showdate do
   #walkup_tickets
     .column
@@ -22,10 +22,10 @@
           %fieldset
             %legend Cash Payment
             %p Collect Cash, Then Click Below to Record
-          = submit_tag 'Record Cash Payment or Zero Revenue Transaction'
+          = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash'}
         #check{:style => 'display: none;'}
           %fieldset
             %legend Check Payment
             %label{:for => 'check_number'} Check Number (optional)
             = text_field_tag 'check_number', '', :size => 6
-          = submit_tag 'Record Check Payment'
+          = submit_tag 'Record Check Payment', {:id => 'submit_check'}
