@@ -90,7 +90,7 @@ class ShowdatesController < ApplicationController
         :description => description)
       unless s.valid?
         flash[:warning] =
-          "NO showdates were created, because the #{thedate.to_formatted_s(:showtime)} showdate had errors: " <<
+          "NO showdates were created, because the #{date.to_formatted_s(:showtime)} showdate had errors: " <<
           s.errors.full_messages.join('<br/>')
       end
       s
