@@ -37,7 +37,7 @@ class VouchersController < ApplicationController
       @available_seats = Showdate.current_and_future.map do |s|
         ValidVoucher.numseats_for_showdate_by_vouchertype(s,@gAdmin, @vouchers.first,
           :redeeming => true, :ignore_cutoff => true)
-      end.reject { |av| av.howmany.zero? }
+      end
       return
     end
     # post: add the actual comps, and possibly reserve
