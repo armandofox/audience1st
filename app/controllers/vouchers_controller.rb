@@ -16,7 +16,7 @@ class VouchersController < ApplicationController
   def update_shows
     @available_seats = Showdate.current_and_future.map do |s|
       ValidVoucher.numseats_for_showdate_by_vouchertype(s,@gAdmin,Vouchertype.find(params[:vouchertype_id]), :redeeming => true,:ignore_cutoff => true)
-    end.reject { |av| av.howmany < params[:howmany].to_i }
+    end
     render :partial => 'reserve_for', :locals => {:seats => @available_seats, :none => 'None (leave open)'}
   end
 
