@@ -62,8 +62,7 @@ class VouchersController < ApplicationController
         :ignore_cutoff => true, :redeeming => true)
       unless av.howmany >= thenumtoadd
         flash[:warning] =
-          "Can't reserve #{howmany} comps, since only #{av.howmany} seats left for this performance."
-        redirect_to(:action => 'addvoucher', :method => :get) and return
+          "WARNING: You added #{thenumtoadd} comps, but only #{av.howmany} seats were left for this performance."
       end
     end
 
