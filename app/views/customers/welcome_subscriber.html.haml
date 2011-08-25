@@ -1,6 +1,6 @@
 = error_messages_for :customer, :header_message => default_validation_error_message
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
-  %h1.page_heading.center Season Subscription Reservations (#{season})
+  %h1.page_heading.center Season Subscription Reservations (#{humanize_season(season)})
   %br/
   = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
   %br/
