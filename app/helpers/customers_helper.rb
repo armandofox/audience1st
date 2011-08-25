@@ -119,10 +119,15 @@ module CustomersHelper
     # Within a show category, OPEN VOUCHERS are listed last, others
     # are shown by order of showdate
     # vouchers for DIFFERENT SHOWS are ordered by opening date of the show
+    # vouchers NOT VALID FOR any show are ordered by their vouchertype's display_order
     sd1,vt1 = v1
     sd2,vt2 = v2
     if vt1 != vt2
-      (vt1.showdates.min <=> vt2.showdates.min) rescue -1
+      if vt1.showdates.empty? && vt2.showdates.empty?
+        (vt1.display_order <=> vt2.display_order) rescue -1
+      else
+        (vt1.showdates.min <=> vt2.showdates.min) rescue -1
+      end
     else
       (sd1 <=> sd2) rescue -1
     end
