@@ -26,7 +26,7 @@ class ShowdatesController < ApplicationController
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => days,
       :time => Time.from_param(params[:time])).dates
     new_showdates = showdates_from_date_list(all_dates, params)
-    redirect_to(:action => :new, :show_id => show) and return unless flash[:warning].blank?
+    redirect_to(:action => :new, :show_id => @show) and return unless flash[:warning].blank?
     new_showdates.each do |showdate|
       unless showdate.save
         flash[:warning] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: " <<

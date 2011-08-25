@@ -55,6 +55,7 @@ class ShowsController < ApplicationController
 
   def update
     @show = Show.find(params[:id])
+    @showdates = @show.showdates.sort_by { |s| s.thedate }
     if @show.update_attributes(params[:show])
       flash[:notice] = 'Show details successfully updated.'
       redirect_to :action => 'edit', :id => @show
