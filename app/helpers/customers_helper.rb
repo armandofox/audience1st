@@ -123,9 +123,14 @@ module CustomersHelper
     sd1,vt1 = v1
     sd2,vt2 = v2
     if vt1 != vt2
-      if vt1.showdates.empty? && vt2.showdates.empty?
+      # vouchertypes WITH assigned showdates always go first
+      if vt1.showdates.empty? && ! vt2.showdates.empty?
+        -1
+      elsif !vt1.showdates.empty? && vt2.showdates.empty?
+        1
+      elsif vt1.showdates.empty? && vt2.showdates.empty? # both empty, break ties with display order
         (vt1.display_order <=> vt2.display_order) rescue -1
-      else
+      else                      # both have showdates, break ties with that
         (vt1.showdates.min <=> vt2.showdates.min) rescue -1
       end
     else
