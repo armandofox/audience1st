@@ -1,0 +1,11 @@
+rerun.txt
+tmp
+TAGS
+log
+svn-commit*
+public/stylesheets/venue
+*.sql
+*.log
+db/schema.rb
+*~
+#*

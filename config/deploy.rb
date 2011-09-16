@@ -17,20 +17,13 @@ set :host,            "audience1st.com"
 role :app,            "#{host}"
 role :web,            "#{host}"
 role :db,             "#{host}", :primary => true
-set :base_repository, "svn+ssh://#{user}@#{host}/#{home}/svn/#{application}"
 
-
-
-if variables[:tag]
-  # to deploy from a tag, run 'cap -Stag=tagname -Svenue=venuename deploy'
-  set :repository,    "#{base_repository}/tags/#{variables[:tag]}"
-elsif variables[:branch]
-  # to deploy from branch, 'cap -Sbranch=branchname -Svenue=venuename deploy'
-  set :repository,    "#{base_repository}/branches/#{variables[:branch]}"
-else
-  set :repository,    "#{base_repository}/trunk"
-end
+set :repository, 'git@github.com:armandofox/vbo.git'
+set :scm, :git
+set :deploy_via, :remote_cache
+set :branch, (variables[:branch] || 'master')
 ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
+ssh_options[:forward_agent] = true
 
 # run migrations in a separate environment, so they can use a different
 # DB user
@@ -95,11 +88,8 @@ namespace :deploy do
 end
 
 deploy.task :after_update_code do
-  # prepend branch base rev into REVISION file
-  if variables[:branch] =~ /-r([0-9]+)/
-    put "#{$1}.#{real_revision}", "#{release_path}/REVISION"
-  end
-  # create database.yml
+  # truncate REVISION to 4-hex-digit prefix
+  run "perl -pi -e 's/^(....).*\$/\\1/g' #{release_path}/REVISION"
   # copy installation-specific files
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
   abort if (config.nil? || config.empty?)
