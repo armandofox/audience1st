@@ -48,8 +48,8 @@
 .pageDiv
   %h1
     Subscription Counts for
-    - y = Time.now.year
-    = select_tag('year', options_for_select((y-2..y+1).to_a, y))
+    - y = Time.this_season
+    = select_tag('year', options_for_seasons(y-5, y+1))
     = spinner('wait_subs')
   = observe_field('year', :with=>'id', |
     :update=>'subscriber_stats',      |
