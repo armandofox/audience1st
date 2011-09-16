@@ -17,7 +17,7 @@ class ShowsController < ApplicationController
   def list
     @superadmin = Customer.find(logged_in_id).is_admin rescue false
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @shows = Show.find(:all, :conditions => ['opening_date BETWEEN ? AND ?', Time.now.at_beginning_of_season(@season), Time.now.at_end_of_season(@season)])
+    @shows = Show.find(:all, :order => 'opening_date', :conditions => ['opening_date BETWEEN ? AND ?', Time.now.at_beginning_of_season(@season), Time.now.at_end_of_season(@season)])
     if @shows.empty?
       @shows = Show.find(:all, :order => 'opening_date')
       if @shows.empty?
