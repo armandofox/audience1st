@@ -6,6 +6,7 @@ function stripeResponseHandler(status, response) {
   if (response.error) {
     // re-enable submit button
     $('_stripe_submit').disabled = false;
+    $('payment_errors').innerHTML = '';
     // TBD - show errors on form
   } else {
     $('_stripe_payment_form')['credit_card_token'].setValue(response['id']);

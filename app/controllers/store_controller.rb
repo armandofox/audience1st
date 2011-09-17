@@ -269,39 +269,6 @@ class StoreController < ApplicationController
     redirect_to_checkout
   end
 
-  def direct_transaction
-    unless request.post?
-      @credit_card = CreditCard.new
-      @customer = Customer.new
-      if RAILS_ENV == 'production'
-        flash[:warning] = <<EOM1
-WARNING: These are real transactions that will be submitted to the payment
-gateway.  Credit cards will really be charged.  Error messages from the
-gateway will be returned verbatim.
-EOM1
-      else
-        flash[:warning] = <<EOM2
-Because this deployment is in sandbox mode, transactions will NOT be processed.
-EOM2
-      end
-      return
-    end
-    # send request
-    args = collect_credit_card_info
-    amount = params[:amount].to_f
-    args[:order_number] = Time.now.to_i
-    resp = Store.purchase!(:credit_card, amount, args) do
-      # nothing to do
-    end
-    flash[:notice] = <<EON
-Success: #{resp.success?} <br/>
-Message: #{resp.message} <br/>
-Txn ID:  #{resp.params["transaction_id"]} <br/>
-Response details: <br/> #{resp.params.to_yaml}
-EON
-    redirect_to :action => 'direct_transaction'
-  end
-    
   private
 
   def too_many_tickets_for(showdate)
@@ -540,20 +507,6 @@ EON
     result
   end
     
-
-  def collect_credit_card_info
-    bill_to = Customer.new(params[:customer])
-    cc_info = params[:credit_card].symbolize_keys
-    cc_info[:first_name] = bill_to.first_name
-    cc_info[:last_name] = bill_to.last_name
-    # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
-    # called rather than to_i to convert month and year to ints.
-    cc_info[:month] = cc_info[:month].to_i
-    cc_info[:year] = cc_info[:year].to_i
-    cc = CreditCard.new(cc_info)
-    return {:credit_card => cc, :bill_to => bill_to}
-  end
-
   def find_cart_not_empty
     cart = find_cart
     logger.info "Cart: #{cart.to_s}"

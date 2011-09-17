@@ -2,6 +2,7 @@
 %fieldset#credit_card
   %legend= defined?(legend) ? legend : 'Credit Card Information'
   - fields_for :credit_card, credit_card do |cc|
+    %p#payment_errors
     - if defined?(name_needed) && name_needed
       = label :credit_card, :first_name, 'First Name'
       = cc.text_field :first_name, :size => 20
@@ -12,8 +13,11 @@
     %br
     = hidden_field_tag 'credit_card_token'
     = label :credit_card, :number, 'Number (no spaces)'
-    = cc.text_field :number, :size => 16, :max_length => 16, :autocomplete => :off
+    = cc.text_field :number, :size => 24, :max_length => 16, :autocomplete => :off
     = make_unsubmitted 'credit_card_number'
+    %br
+    %label We accept
+    = image_tag 'credit_card_logos_horizontal.png'
     %br
     = label :credit_card, :month, 'Expiration Month'
     = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card'
@@ -28,9 +32,4 @@
     = cc.text_field 'verification_value', :size => 4, :max_length => 4
     = make_unsubmitted 'credit_card_verification_value'
     = popup_help_for 'credit_card_verification_value'
-    - if defined?(@is_admin) && @is_admin
-      %br
-      %label.adminField Skip prevalidation
-      = check_box_tag 'skip_validation', 1, false
-      = popup_help_for :skip_validation
   %br

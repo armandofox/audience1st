@@ -27,9 +27,6 @@ config.action_mailer.delivery_method = :test
 # like if you have constraints or database-specific column types
 config.active_record.schema_format = :sql
 
-PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
-ActiveMerchant::Billing::Base.mode = :test
-
 DISABLE_FACEBOOK = true
 DISABLE_EMAIL_LIST_INTEGRATION = true
 
