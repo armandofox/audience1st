@@ -4,12 +4,31 @@ class Store
   
   private
 
-  def self.pay_via_gateway(amount, cc, params)
+  def self.pay_via_authnet_gateway(amount, cc, params)
     amount = Money.us_dollar((100 * amount).to_i)
     login = Option.value(:pgw_id)
     pwd = Option.value(:pgw_txn_key)
     gw = PAYMENT_GATEWAY.new(:login => login, :password => pwd)
     return gw.purchase(amount,cc,params)
+  end
+
+  def self.pay_via_gateway(amount, cc, params)
+    amount = Money.us_dollar((100 * amount).to_i)
+    Stripe.api_key = Option.value(:stripe_secret_key)
+    begin
+      result = Stripe::Charge.create(
+        :amount => amount,
+        :currency => 'usd',
+        :card => cc[:token],
+        :description => params[:order_number])
+      return ActiveMerchant::Billing::Response.new(true,
+        'Credit card successfully charged',
+        {:transaction_id => result.id})
+    rescue StripeError => e
+      return ActiveMerchant::Billing::Response.new(false,
+        'Stripe error: ' + e.message,
+        {} )
+    end
   end
 
   public

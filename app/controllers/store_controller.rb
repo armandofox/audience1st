@@ -201,7 +201,6 @@ class StoreController < ApplicationController
   end
 
   def place_order
-    debugger
     @cart = find_cart_not_empty or return
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
@@ -227,9 +226,12 @@ class StoreController < ApplicationController
       verify_valid_credit_card_purchaser or return
       method = :credit_card
       howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
-      redirect_to_checkout and return unless args = collect_credit_card_info
-      args.merge({:order_number => @cart.order_number})
-      @payment="with credit card #{args[:credit_card].display_number}"
+      args = {
+        :bill_to => Customer.new(params[:customer]),
+        :credit_card => {:token => params[:credit_card_token]},
+        :order_number => @cart.order_number
+      }
+      @payment="with credit card"
     end
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
@@ -549,17 +551,6 @@ EON
     cc_info[:month] = cc_info[:month].to_i
     cc_info[:year] = cc_info[:year].to_i
     cc = CreditCard.new(cc_info)
-    # prevalidations: CC# and address appear valid, amount >0,
-    # billing address appears to be a well-formed address
-    unless (current_admin.is_boxoffice && params[:skip_validation])
-      if (RAILS_ENV == 'production' && !cc.valid?) # format check on credit card number, UNLESS admin
-        flash[:checkout_error] =
-          "<p>Please provide valid credit card information:</p> <ul><li>" <<
-          cc.errors.full_messages.join("</li><li>") <<
-          "</li></ul>"
-        return nil
-      end
-    end
     return {:credit_card => cc, :bill_to => bill_to}
   end
 
