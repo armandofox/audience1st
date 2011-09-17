@@ -9,22 +9,24 @@
       = label :credit_card, :last_name, 'Last Name'
       = cc.text_field :last_name, :size => 20
       %br
-    = label :credit_card, :type, 'Type'
-    = select 'credit_card','type',options_for_credit_card, {:id=>'credit_card_type'}
     %br
+    = hidden_field_tag 'credit_card_token'
     = label :credit_card, :number, 'Number (no spaces)'
     = cc.text_field :number, :size => 16, :max_length => 16, :autocomplete => :off
+    = make_unsubmitted 'credit_card_number'
     %br
-    - dt = Date.civil(credit_card.year || Date.today.year, |
-      credit_card.month || Date.today.month) |
     = label :credit_card, :month, 'Expiration Month'
-    = select_month dt, :add_month_numbers => true,:prefix => 'credit_card', :id => 'credit_card_month'
+    = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card'
+    = make_unsubmitted 'credit_card_month'
     %br
     = label :credit_card, :year, 'Expiration Year'
-    = select_year dt, :start_year => dt.year, :end_year => dt.year + 6, :prefix => 'credit_card'
+    - y = Time.now.year
+    = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card'
+    = make_unsubmitted 'credit_card_year'
     %br
     = label :credit_card, :verification_value, 'Security (CVV) code'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4
+    = make_unsubmitted 'credit_card_verification_value'
     = popup_help_for 'credit_card_verification_value'
     - if defined?(@is_admin) && @is_admin
       %br

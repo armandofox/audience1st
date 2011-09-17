@@ -1,5 +1,5 @@
 = javascript_tag "function show_only(div) { $('credit_card').hide(); $('submit_credit_card').disabled = true; $('cash').hide(); $('submit_cash').disabled = true; $('check').hide(); $('submit_check').disabled = true; $(div).show(); $('submit_' + div).disabled = false; }"
-- form_tag :action => 'do_walkup_sale',:id => @showdate do
+- form_tag({:action => 'do_walkup_sale',:id => @showdate}, {:class => '_stripe_payment_form'}) do
   #walkup_tickets
     .column
       %p 1. Select tickets & donation amount

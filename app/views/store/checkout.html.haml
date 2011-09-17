@@ -1,9 +1,12 @@
+%script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
+= javascript_tag "Stripe.setPublishableKey('#{Option.value :stripe_publishable_key}');"
+
 - if @recipient.id != @cust.id
   %h2 This Order is a Gift For...
   = render :partial => 'customers/form', :locals => {:customer => @recipient, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
   = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
-- form_tag :action => 'place_order' do
+- form_tag({:action => 'place_order'}, {:class => '_stripe_payment_form'}) do
   %h2.floatleft Please Review Billing Information
   .floatright.h2
     %strong= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
@@ -17,7 +20,7 @@
   %p.notice
     We do not store your card number after completing your purchase.
     %br/
-    Our transactions are securely processed through Authorize.net.
+    Our transactions are securely processed through #{link_to 'http://stripe.com', 'Stripe'}.
 
   = render :partial => 'credit_card'
   
@@ -33,7 +36,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :name => 'commit', :onclick => confirm_dates_dialog(@double_check_dates)
+    = submit_tag 'Charge Credit Card', :name => 'commit', :class => '_stripe_submit', :onclick => confirm_dates_dialog(@double_check_dates)
     = link_to "Cancel", {:controller => 'store',:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv

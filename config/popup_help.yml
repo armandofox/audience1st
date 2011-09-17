@@ -26,16 +26,16 @@ secret_question: >
 
 credit_card_verification_value: >
 
-  The CVV (security) code consists of the last three digits of the
-  number printed on the BACK of your card, toward the right edge of the
-  signature panel. 
+  The CVV (security) code is the last three digits of the
+  number printed on the BACK of your card, or for AmEx, the FOUR
+  digits printed in small type on the FRONT of your card.
 
 skip_validation: >
 
   Checking this box, which is invisible to regular customers, skips
   certain credit card prevalidations (including CVV checking) 
   normally performed
-  before sending the transaction to Authorize.net.  Check this box at
+  before submitting the charge transaction.  Check this box at
   your own risk!
 
 # Show/showdate setup pages

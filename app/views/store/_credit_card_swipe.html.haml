@@ -6,6 +6,7 @@
 
     = label :credit_card, :verification_value, 'Enter CVV code manually FIRST!', :class => 'strong'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
+    = make_unsubmitted 'credit_card_verification_value'
     %br
     %div Then type in card data, or
     %br
@@ -20,18 +21,18 @@
     = label :credit_card, :last_name, 'Last Name'
     = cc.text_field :last_name, :size => 20
     %br
-    = label :credit_card, :type, 'Type'
-    = select 'credit_card','type',options_for_credit_card, {:id=>'credit_card_type'}
-    %br
     = label :credit_card, :number, 'Number (no spaces)'
     = cc.text_field :number, :size => 20, :max_length => 16, :autocomplete => :off
+    = make_unsubmitted 'credit_card_number'
     %br
     - dt = Date.civil(credit_card.year || Date.today.year, |
       credit_card.month || Date.today.month) |
     = label :credit_card, :month, 'Expiration Month'
     = select_month dt, :add_month_numbers => true,:prefix => 'credit_card', :id => 'credit_card_month'
+    = make_unsubmitted 'credit_card_month'
     %br
     = label :credit_card, :year, 'Expiration Year'
     = select_year dt, :start_year => dt.year, :end_year => dt.year + 6, :prefix => 'credit_card'
+    = make_unsubmitted 'credit_card_year'
     %br
   %br
