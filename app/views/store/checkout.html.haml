@@ -1,12 +1,19 @@
 %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
-= javascript_tag "Stripe.setPublishableKey('#{Option.value :stripe_publishable_key}');"
+= javascript_include_tag 'stripe'
 
+:javascript
+  function whenReady() {
+     alert("PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.");
+     Stripe.setPublishableKey('#{Option.value :stripe_publishable_key}');
+  }
+  jQuery(document).ready(whenReady);
+  
 - if @recipient.id != @cust.id
   %h2 This Order is a Gift For...
   = render :partial => 'customers/form', :locals => {:customer => @recipient, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
   = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
-- form_tag({:action => 'place_order'}, {:class => '_stripe_payment_form'}) do
+- form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
   %h2.floatleft Please Review Billing Information
   .floatright.h2
     %strong= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
@@ -18,9 +25,9 @@
   = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
 
   %p.notice
-    We do not store your card number after completing your purchase.
-    %br/
-    Our transactions are securely processed through #{link_to 'http://stripe.com', 'Stripe'}.
+    We do not store or access your card number.
+    Our transactions are securely processed 
+    through #{link_to 'Stripe', 'http://stripe.com'}.
 
   = render :partial => 'credit_card'
   
@@ -36,7 +43,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :name => 'commit', :class => '_stripe_submit', :onclick => confirm_dates_dialog(@double_check_dates)
+    = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
     = link_to "Cancel", {:controller => 'store',:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv

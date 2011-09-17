@@ -201,6 +201,7 @@ class StoreController < ApplicationController
   end
 
   def place_order
+    debugger
     @cart = find_cart_not_empty or return
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
