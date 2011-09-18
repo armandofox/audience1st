@@ -1,3 +1,5 @@
+/* @override http://localhost:3000/stylesheets/admin.css?1316117557 */
+
 /* @override 
 	http://localhost:3000/stylesheets/admin.css?1310749819
 	http://localhost:3000/stylesheets/admin.css?1297815632
@@ -161,7 +163,16 @@ table.showdates_summary td {
 	padding-left: 5px;
 }
 
-
+/*
+ * Credit card payment error message
+ */
+#payment_errors {
+	background-color: red;
+	color: white;
+	font-size: larger;
+	font-weight: bold;
+	padding-left: 4em;
+}
 
 /*
  * Box office functions header ("stats for this show")

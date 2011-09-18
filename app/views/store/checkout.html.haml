@@ -22,7 +22,7 @@
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   .clear
-  = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
+  #billing= render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
 
   %p.notice
     We do not store or access your card number.

@@ -8,18 +8,21 @@ class Store
   def self.pay_via_gateway(amount, cc, params)
     amount = 100 * amount.to_i
     Stripe.api_key = Option.value(:stripe_secret_key)
+    # use Stripe's description field to make charges searchable by name or email
+    description =
+      [params[:order_id], params[:billing_address][:name], params[:email]].join(' ')
     begin
       result = Stripe::Charge.create(
         :amount => amount,
         :currency => 'usd',
         :card => cc[:token],
-        :description => params[:order_number])
+        :description => description)
       return ActiveMerchant::Billing::Response.new(true,
         'Credit card successfully charged',
         {:transaction_id => result.id})
     rescue Stripe::StripeError => e
       return ActiveMerchant::Billing::Response.new(false,
-        'Stripe error: ' + e.message,
+        'Payment gateway error: ' + e.message,
         {} )
     end
   end
