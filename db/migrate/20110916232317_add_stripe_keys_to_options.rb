@@ -1,4 +1,4 @@
-class AddStripePublishableKey < ActiveRecord::Migration
+class AddStripeKeysToOptions < ActiveRecord::Migration
   require 'add_option_helper'
   def self.up
     AddOptionHelper.add_new_option(
