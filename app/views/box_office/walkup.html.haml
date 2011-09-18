@@ -1,3 +1,6 @@
+= javascript_include_tag 'swipe'
+= javascript_include_tag 'stripe'
+
 = javascript_tag "function show_only(div) { $('credit_card').hide(); $('submit_credit_card').disabled = true; $('cash').hide(); $('submit_cash').disabled = true; $('check').hide(); $('submit_check').disabled = true; $(div).show(); $('submit_' + div).disabled = false; }"
 - form_tag({:action => 'do_walkup_sale',:id => @showdate}, {:id => '_stripe_payment_form'}) do
   #walkup_tickets

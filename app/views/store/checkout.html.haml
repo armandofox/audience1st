@@ -4,7 +4,6 @@
 :javascript
   function whenReady() {
      alert("PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.");
-     Stripe.setPublishableKey('#{Option.value :stripe_publishable_key}');
   }
   jQuery(document).ready(whenReady);
   

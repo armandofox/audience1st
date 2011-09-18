@@ -12,6 +12,7 @@
       %br
     %br
     = hidden_field_tag 'credit_card_token'
+    = hidden_field_tag '_stripe_api_key', Option.value(:stripe_publishable_key)
     = label :credit_card, :number, 'Number (no spaces)'
     = cc.text_field :number, :size => 24, :max_length => 16, :autocomplete => :off
     = make_unsubmitted 'credit_card_number'
