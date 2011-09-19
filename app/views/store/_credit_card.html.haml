@@ -1,18 +1,17 @@
-- credit_card = @credit_card
+- credit_card = @credit_card unless defined?(credit_card)
 %fieldset#credit_card
   %legend= defined?(legend) ? legend : 'Credit Card Information'
   - fields_for :credit_card, credit_card do |cc|
     %p#payment_errors
-    - if defined?(name_needed) && name_needed
-      = label :credit_card, :first_name, 'First Name'
-      = cc.text_field :first_name, :size => 20
-      %br
-      = label :credit_card, :last_name, 'Last Name'
-      = cc.text_field :last_name, :size => 20
-      %br
+    = label :credit_card, :first_name, 'First Name'
+    = cc.text_field :first_name, :size => 20
+    %br
+    = label :credit_card, :last_name, 'Last Name'
+    = cc.text_field :last_name, :size => 20
     %br
     = hidden_field_tag 'credit_card_token'
     = hidden_field_tag '_stripe_api_key', Option.value(:stripe_publishable_key)
+    = make_unsubmitted '_stripe_api_key'
     = label :credit_card, :number, 'Number (no spaces)'
     = cc.text_field :number, :size => 24, :max_length => 16, :autocomplete => :off
     = make_unsubmitted 'credit_card_number'

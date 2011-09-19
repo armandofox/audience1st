@@ -11,7 +11,7 @@
   %label{:for => "showdate"} Date
   = select_tag('showdate', options_with_default(@sd, @all_showdates))
   = spinner('wait_showdate')
-  - content_for :staff do
+  - privileged_content_for :staff do
     - if (@sd.kind_of?(Showdate))
       %span.admin= "Available: #{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} total"
   %br/

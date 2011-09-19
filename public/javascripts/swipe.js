@@ -26,7 +26,7 @@ function collectKeys(evt) {
     var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
     if (evt.keyCode == 13)  { 
         parseSwipeData();
-        return false; 
+        stripeSubmit(evt);
     }
 }
 

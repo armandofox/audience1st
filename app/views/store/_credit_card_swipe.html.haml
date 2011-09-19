@@ -1,11 +1,10 @@
-%script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
-
 %fieldset#credit_card_swipe
   %legend Credit Card Payment
   - fields_for :credit_card, credit_card do |cc|
+    %p#payment_errors
     = hidden_field_tag 'credit_card_token'
     = hidden_field_tag '_stripe_api_key', Option.value(:stripe_publishable_key)
-
+    = make_unsubmitted '_stripe_api_key'
     = label :credit_card, :verification_value, 'Enter CVV code manually FIRST!', :class => 'strong'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
     = make_unsubmitted 'credit_card_verification_value'
@@ -15,6 +14,7 @@
     #ccReady= link_to_function 'Click Here to Swipe Card', 'waitForSwipe()', {:class => 'genButton'}
     #ccWaiting{:style => 'display: none;'}= link_to_function 'Swipe Card or Click Here to Cancel', 'resetSwipe()', {:class => 'genButton'}
     = text_field_tag 'swipe_data', '', {:style => 'position: absolute; left: -10000px; top: auto; overflow: hidden;'}
+    = make_unsubmitted 'swipe_data'
     %br
     %br
     = label :credit_card, :first_name, 'First Name'
@@ -27,14 +27,14 @@
     = cc.text_field :number, :size => 20, :max_length => 16, :autocomplete => :off
     = make_unsubmitted 'credit_card_number'
     %br
-    - dt = Date.civil(credit_card.year || Date.today.year, |
-      credit_card.month || Date.today.month) |
     = label :credit_card, :month, 'Expiration Month'
-    = select_month dt, :add_month_numbers => true,:prefix => 'credit_card', :id => 'credit_card_month'
+    = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card'
     = make_unsubmitted 'credit_card_month'
     %br
     = label :credit_card, :year, 'Expiration Year'
-    = select_year dt, :start_year => dt.year, :end_year => dt.year + 6, :prefix => 'credit_card'
+    - y = Time.now.year
+    = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card'
     = make_unsubmitted 'credit_card_year'
     %br
+    = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
   %br

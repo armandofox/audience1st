@@ -228,7 +228,7 @@ class StoreController < ApplicationController
       howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
       args = {
         :bill_to => Customer.new(params[:customer]),
-        :credit_card => {:token => params[:credit_card_token]},
+        :credit_card_token => params[:credit_card_token],
         :order_number => @cart.order_number
       }
       @payment="with credit card"

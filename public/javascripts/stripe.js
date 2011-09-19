@@ -31,7 +31,7 @@ function stripeResponseHandler(status, response) {
 // Submit button's ID is _stripe_submit
 
 function stripeSubmit(event) {
-  Stripe.setPublishableKey($('_stripe_api_key').getValue());
+  var key = $('_stripe_api_key').getValue();
   $('payment_errors').innerHTML = '';  //  clear out errors field
   $('_stripe_submit').disabled = true; // disable submit button
   var total = getStripeTotal();
@@ -39,15 +39,16 @@ function stripeSubmit(event) {
         number: $('credit_card_number').getValue(),
         cvc: $('credit_card_verification_value').getValue(),
         exp_month: $('credit_card_month').getValue(),
-        exp_year: $('credit_card_year').getValue()
+        exp_year: $('credit_card_year').getValue(),
+        name: ($('credit_card_first_name').getValue() + ' ' + $('credit_card_last_name').getValue())
   };
+  console.log("Card: " + card + "\nKey: " + key);
   if ($('billing')) {             // billing name/addr available on form?
-      card.name = $$('#billing #customer_first_name')[0].getValue() + ' ' + 
-        $$('#billing #customer_last_name')[0].getValue();
       card.address_line1 = $$('#billing #customer_street')[0].getValue();
       card.address_zip = $$('#billing #customer_zip')[0].getValue();
       card.address_state = $$('#billing #customer_state')[0].getValue();
   }
+  Stripe.setPublishableKey(key);
   Stripe.createToken(card, total, stripeResponseHandler);
   return(false);
 }

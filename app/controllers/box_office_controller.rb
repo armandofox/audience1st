@@ -78,31 +78,6 @@ class BoxOfficeController < ApplicationController
     (flash[:notice] ||= "") << "Successfully added #{vouchers.size} vouchers"
   end
 
-  # collect credit card info: if there is a swipe_data field, parse it and
-  # return a CreditCard object; otherwise collect data from actual form fields
-
-  def collect_brief_credit_card_info
-    args = {}
-    if (s = params[:swipe_data]).blank?
-      cc = CreditCard.new(params[:credit_card])
-    else
-      cc = Store.process_swipe_data(s)
-      cc.verification_value = params[:credit_card][:verification_value]
-    end
-    # allow testing using bogus credit card types
-    unless ActiveMerchant::Billing::Base.mode == :test # ugh, this whole method belongs in Store or in its own class for credit card handling
-      return("Invalid credit card information: " <<
-        cc.errors.full_messages.join(', ') <<
-        (s.blank? ? '' : '(try entering manually)')) unless cc.valid?
-    end
-    args[:credit_card] = cc
-    # generate bill_to argument
-    args[:bill_to] = Customer.new(:first_name => cc.first_name, :last_name => cc.last_name)
-    # generate order number
-    args[:order_num] = Cart.generate_order_id
-    args
-  end
-
   public
 
   def index
@@ -184,19 +159,18 @@ class BoxOfficeController < ApplicationController
     # if there was a swipe_data field, a credit card was swiped, so
     # assume it was a credit card purchase; otherwise depends on which
     # submit button was used.
-    params[:commit] = 'credit' unless
-      params[:swipe_data].blank? &&
-      [:first_name,:last_name,:number,:verification_value].each { |f| params[:credit_card][f].blank? }
+    params[:commit] ||= 'credit' # Stripe form-resubmit from Javascript doesn't pass name of submit button
     case params[:commit]
     when /credit/i
       method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
       comment = ''
-      unless (args = collect_brief_credit_card_info).kind_of?(Hash)
-        flash[:notice] = args
-        logger.info "Credit card validation failed: #{args}"
-        redirect_to(:action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation)
-        return
-      end
+      args = {
+        :bill_to => Customer.new(:first_name => params[:credit_card][:first_name],
+          :last_name => params[:credit_card][:last_name]),
+        :comment => '(walkup)',
+        :credit_card_token => params[:credit_card_token],
+        :order_number => Cart.generate_order_id
+      }
     when /cash|zero/i
       method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
       comment = ''

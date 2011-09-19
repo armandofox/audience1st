@@ -3,6 +3,8 @@
 
 :javascript
   function whenReady() {
+     $('credit_card_first_name').setValue($$('#billing #customer_first_name')[0].getValue());
+     $('credit_card_last_name').setValue($$('#billing #customer_last_name')[0].getValue());
      alert("PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.");
   }
   jQuery(document).ready(whenReady);

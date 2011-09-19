@@ -203,15 +203,6 @@ describe Customer do
       it "should be valid" do
         @customer.should be_valid
       end
-      it "should have a stand-in email address" do
-        @customer.stub!(:email).and_return nil
-        Option.stub!(:value).and_return('345')
-        @customer.possibly_synthetic_email.should ==
-          "patron-345-#{@customer.id}@audience1st.com"
-      end
-      it "should have a stand-in phone number" do
-        @customer.possibly_synthetic_phone.should == "555-555-5555"
-      end
       it "should not be able to do credit card purchases" do
         @customer.should_not be_valid_as_purchaser
       end
