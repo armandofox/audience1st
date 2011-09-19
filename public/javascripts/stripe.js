@@ -42,7 +42,6 @@ function stripeSubmit(event) {
         exp_year: $('credit_card_year').getValue(),
         name: ($('credit_card_first_name').getValue() + ' ' + $('credit_card_last_name').getValue())
   };
-  console.log("Card: " + card + "\nKey: " + key);
   if ($('billing')) {             // billing name/addr available on form?
       card.address_line1 = $$('#billing #customer_street')[0].getValue();
       card.address_zip = $$('#billing #customer_zip')[0].getValue();
