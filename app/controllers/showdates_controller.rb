@@ -5,7 +5,7 @@ class ShowdatesController < ApplicationController
 
 
   def index
-    redirect_to :controller => 'shows', :action => 'list'
+    redirect_to :controller => 'shows', :action => 'list', :season => params[:season]
   end
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
@@ -36,7 +36,7 @@ class ShowdatesController < ApplicationController
     end
     flash[:notice] = "#{new_showdates.size} showdates were successfully added."
     if params[:commit] =~ /back to list/i
-      redirect_to :controller => :shows
+      redirect_to :controller => :shows, :action => :index, :season => @show.season
     else
       redirect_to(:action => :new, :show_id => @show)
     end
