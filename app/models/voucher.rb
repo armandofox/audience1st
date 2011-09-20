@@ -297,5 +297,4 @@ class Voucher < ActiveRecord::Base
     end
   end
 
-  
 end

@@ -7,7 +7,7 @@
   %br
 
   %label{:for => 'vouchertype_id'} What type:
-  = select_tag('vouchertype_id', options_from_collection_for_select(@vouchers,'id','name'))
+  = select_tag('vouchertype_id', options_from_collection_for_select(@vouchers,'id','name_with_season'))
   = spinner('wait_showdate')
   %br
     

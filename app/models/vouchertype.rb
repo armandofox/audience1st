@@ -1,5 +1,6 @@
 class Vouchertype < ActiveRecord::Base
-
+  include VouchertypesHelper
+  
   acts_as_reportable :only => [:name, :price]
 
   belongs_to :account_code
@@ -277,9 +278,11 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def name_with_price
-    self.name + sprintf(" - $%0.2f", self.price)
-  end
+  # display methods
+
+  def name_with_price ;  sprintf("%s - $%0.2f", name, price) ;  end
+
+  def name_with_season ; "#{name} (#{humanize_season(season)})" ; end
 
   def self.walkup_vouchertypes
     Vouchertype.find(:all, :conditions => ['subscription = ? AND walkup_sale_allowed = ?', false, true])

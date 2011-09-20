@@ -32,5 +32,5 @@
         %td= check_box_tag('restrict_by_voucher')
         %td= select_tag('restrict_by_voucher_how', select_have_or_have_not("Do not have"))
         %td  unreserved vouchers of these types
-        %td= select_tag('voucher_types', options_from_collection_for_select(@vouchertypes, :id, :name), {:multiple=>true})
+        %td= select_tag('voucher_types', options_from_collection_for_select(@vouchertypes, :id, :name_with_season), {:multiple=>true})
     = submit_tag "Search"
