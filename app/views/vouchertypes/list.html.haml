@@ -17,9 +17,9 @@
       %th Sub?
       %th Who can purchase?
       %th Link
-      %th Valid Season
       %th Description
       %th Walkup?
+      %th
   %tbody
     - for vouchertype in @vouchertypes
       %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
@@ -33,12 +33,12 @@
         %td.c= vouchertype.subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
         %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
-        %td.c= humanize_season(vouchertype.season)
         %td 
           -if vouchertype.bundle? 
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
               = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name) if qty>0 
         %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
+        %td= gen_button 'Clone', :action => :clone, :id => vouchertype.id
 
 %br/
 = gen_button  'New vouchertype', {:action => 'new'} 

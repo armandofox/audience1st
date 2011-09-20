@@ -59,6 +59,12 @@ class VouchertypesController < ApplicationController
     @vouchertype = Vouchertype.new(:category => :revenue)
   end
 
+  def clone
+    @vouchertype = Vouchertype.find(params[:id])
+    @vouchertype.name[0,0] = 'Copy of '
+    render :action => :new
+  end
+
   def create
     unless params[:vouchertype][:included_vouchers].is_a?(Hash)
       params[:vouchertype][:included_vouchers] = Hash.new
@@ -67,7 +73,7 @@ class VouchertypesController < ApplicationController
     if @vouchertype.save
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                            :commments => "Create voucher type #{@vouchertype.name}")
-      if @vouchertype.bundle?
+      if @vouchertype.bundle? && @vouchertype.included_vouchers.empty?
         flash[:notice] = 'Please specify bundle quantities now.'
         @vouchertype.update_attributes(
           :bundle_sales_start => Time.at_beginning_of_season(@vouchertype.season),
