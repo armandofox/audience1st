@@ -89,7 +89,7 @@ end
 
 deploy.task :after_update_code do
   # truncate REVISION to 4-hex-digit prefix
-  run "perl -pi -e 's/^(....).*\$/\\1/g' #{release_path}/REVISION"
+  run "perl -pi -e 's/^(......).*\$/\\1/g' #{release_path}/REVISION"
   # copy installation-specific files
   config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
   abort if (config.nil? || config.empty?)
