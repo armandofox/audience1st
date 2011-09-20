@@ -6,8 +6,7 @@
   =  h(@valid_voucher.printable_name)
 %p
   %strong Ticket type:
-  =  link_to vt.name, :controller => 'vouchertypes', :action => 'edit', :id =>vt
-  (valid #{humanize_season(vt.season)})
+  =  link_to vt.name_with_season_and_price, :controller => 'vouchertypes', :action => 'edit', :id =>vt
 
 %br
 

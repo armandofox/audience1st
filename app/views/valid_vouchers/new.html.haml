@@ -4,7 +4,7 @@
 
 - form_tag :action => 'create' do
   %label{:for=>:valid_voucher_vouchertype_id} Voucher/ticket type
-  = select_tag 'valid_voucher[vouchertype_id]', options_from_collection_for_select(@vouchertypes, :id, :name_with_price)
+  = select_tag 'valid_voucher[vouchertype_id]', options_from_collection_for_select(@vouchertypes, :id, :name_with_season_and_price)
   %br/
   = render :partial => 'form'
   %table

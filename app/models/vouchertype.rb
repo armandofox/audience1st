@@ -284,6 +284,8 @@ class Vouchertype < ActiveRecord::Base
 
   def name_with_season ; "#{name} (#{humanize_season(season)})" ; end
 
+  def name_with_season_and_price; sprintf("%s - $%0.2f", name_with_season, price) ; end
+
   def self.walkup_vouchertypes
     Vouchertype.find(:all, :conditions => ['subscription = ? AND walkup_sale_allowed = ?', false, true])
   end
