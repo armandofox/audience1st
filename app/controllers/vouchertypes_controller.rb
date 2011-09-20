@@ -81,7 +81,11 @@ class VouchertypesController < ApplicationController
         redirect_to :action => 'edit', :id => @vouchertype
       else
         flash[:notice] = 'Vouchertype was successfully created.'
-        redirect_to :action => (params[:commit] =~ /another/i ? 'new' : 'list')
+        if params[:commit] =~ /another/i
+          redirect_to :action => :new
+        else
+          redirect_to :action => :list, :season => @vouchertype.season
+        end
       end
     else
       render :action => 'new'
@@ -111,7 +115,7 @@ class VouchertypesController < ApplicationController
         redirect_to :action => 'edit', :id => @vouchertype
       else
         flash[:notice] = 'Vouchertype was successfully updated.'
-        redirect_to :action => 'list'
+        redirect_to :action => 'list', :season => @vouchertype.season
       end
     else
       flash[:notice] = 'Update failed, please re-check information and try again'
@@ -129,20 +133,21 @@ class VouchertypesController < ApplicationController
     if ((c = v.vouchers.count) > 0)
       flash[:notice] = "Can't destroy this voucher type, because there are
                         #{c} issued vouchers of this type."
-      redirect_to :action => :list
+      redirect_to :action => :list, :season => v.season
       return
     end
     if !(vv = v.valid_vouchers).empty?
       # helpfully tell which shows use this vouchertype
       shows = vv.map { |v| v.showdate.show.name }.uniq.join(', ')
       flash[:notice] = "Can't destroy this voucher type because it's listed as valid for purchase for the following shows: #{shows}"
-      redirect_to :action => :list
+      redirect_to :action => :list, :season => v.season
       return
     end
     name = v.name
+    season = v.season
     v.destroy
     Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                          :comments => "Destroy voucher type #{name}")
-    redirect_to :action => 'list'
+    redirect_to :action => 'list', :season => season
   end
 end
