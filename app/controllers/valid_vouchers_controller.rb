@@ -29,6 +29,7 @@ class ValidVouchersController < ApplicationController
 
   def create
     msgs = ''
+    vouchertypes = params[:valid_voucher].delete(:vouchertypes)
     args = params[:valid_voucher]
     hours_before = (params[:end_is_relative].to_i > 0 ?
                     params[:hours_before].to_f.hours :
@@ -40,29 +41,35 @@ class ValidVouchersController < ApplicationController
       # add voucher type to all dates
       showdate.show.showdates.each do |dt|
         args[:showdate_id] = dt.id
-        vv = ValidVoucher.new(args)
-        if hours_before
-          vv.end_sales = dt.thedate - hours_before
-        end
-        unless vv.save
-          msgs << %{Voucher type NOT added to
+        vouchertypes.each do |vt_id| 
+          args[:vouchertype_id] = vt_id
+          vv = ValidVoucher.new(args)
+          if hours_before
+            vv.end_sales = dt.thedate - hours_before
+          end
+          unless vv.save
+            msgs << %{Voucher type #{Vouchertype.find(vt_id).name} NOT added to
                 #{dt.thedate.to_formatted_s(:date_only)}:
                 #{vv.errors.full_messages.join("<br/>")}} << "<br/>"
+          end
         end
       end
       if (msgs == '')
-        msgs = 'Ticket type added to all dates'
+        msgs = 'Ticket type(s) added to all dates'
       end
     else
       # add to just one date
-      @validvoucher = ValidVoucher.new(params[:valid_voucher])
-      if hours_before
-        @validvoucher.end_sales = showdate.thedate - hours_before
-      end
-      if @validvoucher.save
-        msgs = 'Added to performance on ' << showdate.printable_date 
-      else
-        msgs = @validvoucher.errors.full_messages.join("<br/>")
+      vouchertypes.each do |vt_id|
+        args[:vouchertype_id] = vt_id
+        @validvoucher = ValidVoucher.new(args)
+        if hours_before
+          @validvoucher.end_sales = showdate.thedate - hours_before
+        end
+        if @validvoucher.save
+          msgs << 'Added to performance on ' << showdate.printable_date 
+        else
+          msgs << @validvoucher.errors.full_messages.join("<br/>")
+        end
       end
     end
     flash[:notice] = msgs
