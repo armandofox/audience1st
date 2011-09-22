@@ -171,7 +171,7 @@ table.showdates_summary td {
 	color: white;
 	font-size: larger;
 	font-weight: bold;
-	padding: 4em 0;
+	padding: 0 2em;
 }
 
 /*
@@ -208,7 +208,7 @@ table#showdate_info td.value {
 	border: 1px solid red;
 	margin: 3px;
 }
-#walkup_tickets .column p {
+#walkup_tickets p.column_header {
 	font-size: larger;
 	text-align: center;
 	font-weight: bold;
