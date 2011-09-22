@@ -341,9 +341,11 @@ class StoreController < ApplicationController
       @vouchertypes = []
     end
     # filtering: unless "customer" is an admin,
+    #  remove vouchertypes that customer shouldn't see
+    @vouchertypes.reject! { |av| av.staff_only } unless is_admin
     # remove vouchertypes that are sold out (which could cause showdate menu
-    #   to become empty) or that customer should not even see 
-    @vouchertypes.reject! { |av| (av.staff_only || (av.howmany.zero? && !(av.explanation.to_s =~ /sold out/i))) } unless is_admin
+    #   to become empty) 
+    @vouchertypes.reject! { |av|  av.howmany.zero? } unless is_admin
   end
 
   # Customer on whose behalf the store displays are based (for special
