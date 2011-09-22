@@ -1,9 +1,20 @@
+%script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
+= javascript_include_tag 'stripe'
+
+:javascript
+  function whenReady() {
+     $('credit_card_first_name').setValue($$('#billing #customer_first_name')[0].getValue());
+     $('credit_card_last_name').setValue($$('#billing #customer_last_name')[0].getValue());
+     alert("PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.");
+  }
+  jQuery(document).ready(whenReady);
+  
 - if @recipient.id != @cust.id
   %h2 This Order is a Gift For...
   = render :partial => 'customers/form', :locals => {:customer => @recipient, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
   = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
-- form_tag :action => 'place_order' do
+- form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
   %h2.floatleft Please Review Billing Information
   .floatright.h2
     %strong= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
@@ -12,12 +23,12 @@
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   .clear
-  = render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
+  #billing= render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
 
   %p.notice
-    We do not store your card number after completing your purchase.
-    %br/
-    Our transactions are securely processed through Authorize.net.
+    We do not store or access your card number.
+    Our transactions are securely processed 
+    through #{link_to 'Stripe', 'http://stripe.com'}.
 
   = render :partial => 'credit_card'
   
@@ -33,7 +44,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :name => 'commit', :onclick => confirm_dates_dialog(@double_check_dates)
+    = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
     = link_to "Cancel", {:controller => 'store',:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv

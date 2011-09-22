@@ -1,5 +1,8 @@
-= javascript_tag "recalc_total = function() { recalculate('total', '.itemQty') }"
-= javascript_tag "recalc_totaltix = function() { recalculate('totaltix', '.tktQty', null, 0, true) }"
+:javascript
+  recalc_total = function() { recalculate('total', '.itemQty') }
+  recalc_totaltix = function() { recalculate('totaltix', '.tktQty', null, 0, true) }
+  recalc_all = function() { recalc_total(); recalc_totaltix(); }
+  jQuery(document).ready(recalc_all);
 
 %table.hilite
   %tr
@@ -12,7 +15,7 @@
     %td{:colspan=>2}
       %strong TOTAL TO COLLECT
     %td= text_field_tag 'total', '0.00', :id => 'total', :size => 6, |
-      :disabled => true, :class => 'disabledField strong' |
+      :disabled => true, :class => 'disabledField strong _stripe_total' |
   %tr
     %td.label{:colspan => 2} Additional donation:
     %td= text_field_tag 'donation', @donation, :maxlength => 7, :size => 5, |

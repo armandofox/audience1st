@@ -1,11 +1,21 @@
-= javascript_tag "function show_only(div) { $('credit_card').hide(); $('submit_credit_card').disabled = true; $('cash').hide(); $('submit_cash').disabled = true; $('check').hide(); $('submit_check').disabled = true; $(div).show(); $('submit_' + div).disabled = false; }"
-- form_tag :action => 'do_walkup_sale',:id => @showdate do
+%script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
+= javascript_include_tag 'stripe'
+= javascript_include_tag 'swipe'
+:javascript
+  function show_only(div) { 
+    $('credit_card').hide(); 
+    $('cash').hide();        
+    $('check').hide();       
+    $(div).show();           
+  }
+
+- form_tag({:action => 'do_walkup_sale',:id => @showdate}, {:id => '_stripe_payment_form'}) do
   #walkup_tickets
     .column
-      %p 1. Select tickets & donation amount
+      %p.column_header 1. Select tickets & donation amount
       = render :partial => 'walkup_sales_tickets'
     #payment.column
-      %p 2. Collect & record payment
+      %p.column_header 2. Collect & record payment
       = gen_button 'Whoops, I Made a Mistake', {:controller => 'box_office', :action => 'walkup_report', :id => @showdate}, {:id => 'whoops_button'}
       #payment_types
         %label.no_float{:for => 'payment_type'} Credit Card
@@ -17,7 +27,6 @@
       #payment_form
         #credit_card
           = render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
-          = submit_tag 'Submit Credit Card Charge', :disable_with => 'Processing, Please Wait...', :id => 'submit_credit_card'
         #cash{:style => 'display: none;'}
           %fieldset
             %legend Cash Payment

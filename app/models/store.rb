@@ -1,15 +1,30 @@
 class Store
   include ActiveMerchant::Billing
   require 'money'
+  require 'stripe'
   
   private
 
-  def self.pay_via_gateway(amount, cc, params)
-    amount = Money.us_dollar((100 * amount).to_i)
-    login = Option.value(:pgw_id)
-    pwd = Option.value(:pgw_txn_key)
-    gw = PAYMENT_GATEWAY.new(:login => login, :password => pwd)
-    return gw.purchase(amount,cc,params)
+  def self.pay_via_gateway(amount, token, params)
+    amount = 100 * amount.to_i
+    Stripe.api_key = Option.value(:stripe_secret_key)
+    # use Stripe's description field to make charges searchable by name or email
+    description =
+      [params[:order_id], params[:billing_address][:name], params[:email], params[:comment]].join(' ')
+    begin
+      result = Stripe::Charge.create(
+        :amount => amount,
+        :currency => 'usd',
+        :card => token,
+        :description => description)
+      return ActiveMerchant::Billing::Response.new(true,
+        'Credit card successfully charged',
+        {:transaction_id => result.id})
+    rescue Stripe::StripeError => e
+      return ActiveMerchant::Billing::Response.new(false,
+        'Payment gateway error: ' + e.message,
+        {} )
+    end
   end
 
   public
@@ -20,9 +35,7 @@ class Store
     case method.to_sym
     when :credit_card
       raise "Zero transaction amount" if amount.zero?
-      self.purchase_with_credit_card!(amount, params[:credit_card],
-                                      params[:bill_to], params[:order_number],
-                                      blk)
+      self.purchase_with_credit_card!(amount, params, blk)
     when :check
       self.purchase_with_check!(amount, params[:check_number], blk)
     when :cash
@@ -74,28 +87,33 @@ class Store
 
   private
   
-  def self.purchase_with_credit_card!(amount, cc, bill_to, order_num, proc)
-    params = {
-      :order_id => order_num,
-      :email => bill_to.possibly_synthetic_email,
-      :billing_address =>  {
-        :name => bill_to.full_name,
-        :address1 => bill_to.street,
-        :city => bill_to.city,
-        :state => bill_to.state,
-        :zip => bill_to.zip,
-        :phone => bill_to.possibly_synthetic_phone,
-        :country => 'US'
-      }
-    }
+  def self.purchase_with_credit_card!(amount, params, proc)
+    description = [
+      params[:order_number],
+      params[:bill_to].full_name,
+      params[:bill_to].day_phone,
+      params[:bill_to].email,
+      params[:comment]].compact.join(' ')
     purch = nil
     begin
       ActiveRecord::Base.transaction do
         proc.call
         # here if block didn't raise error
-        purch = Store.pay_via_gateway(amount, cc, params)
-        raise purch.message unless purch.success?
+        amount = 100 * amount.to_i
+        Stripe.api_key = Option.value(:stripe_secret_key)
+        result = Stripe::Charge.create(
+          :amount => amount,
+          :currency => 'usd',
+          :card => params[:credit_card_token],
+          :description => description)
+        return ActiveMerchant::Billing::Response.new(true,
+            'Credit card successfully charged',
+            {:transaction_id => result.id})
       end
+    rescue Stripe::StripeError => e
+      return ActiveMerchant::Billing::Response.new(false,
+        'Payment gateway error: ' + e.message,
+        {} )
     rescue Exception => e
       message = purch.nil? ? e.message :
         case purch.message
@@ -106,9 +124,8 @@ class Store
         else
           purch.message
         end
-      purch = ActiveMerchant::Billing::Response.new(false, message)
+      return  ActiveMerchant::Billing::Response.new(false, message)
     end
-    return purch
   end
 
   def self.purchase_with_cash!(amount, proc)

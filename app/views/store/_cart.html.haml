@@ -29,7 +29,7 @@
               %span.donation_name= "Donation to #{h(i.account_code.name)}"
               
     #cart_total
-      #total_price= number_to_currency(@cart.total_price)
+      #total_price._stripe_total= number_to_currency(@cart.total_price)
       %div &nbsp;
 
     - unless @cart.comments.blank?

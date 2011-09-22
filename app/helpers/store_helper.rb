@@ -1,5 +1,10 @@
 module StoreHelper
 
+  # make a form field not be submitted, by removing its name attribute
+  def make_unsubmitted(id)
+    javascript_tag "\$('#{id}').removeAttribute('name')"
+  end
+
   def confirm_dates_dialog(dates_string)
     return nil if dates_string.blank?
     dates_string = escape_javascript("PLEASE DOUBLE CHECK DATES:  You are purchasing ticket(s) for #{dates_string}.  If this is correct, click OK.  If not, click Cancel to start over.")
@@ -18,13 +23,6 @@ module StoreHelper
       'div', :id => "#{for_what.to_s.camelize(:lower)}#{id}", :class => 'storeBanner')
   end
       
-  def options_for_credit_card
-    opts = [['Visa', 'visa'], ['MasterCard','master']]
-    opts << ['Discover','discover'] unless  Option.value(:accept_discover).to_i.zero?
-    opts << ['AmEx', 'american_express'] unless Option.value(:accept_amex).to_i.zero?
-    opts
-  end
-
   def options_with_default(default_item, collection, name=nil)
     name ||= collection.empty? ? '' : collection.first.class.name.humanize
     choose = default_item ? "" :

@@ -18,9 +18,9 @@ config.action_mailer.raise_delivery_errors = false
 
 config.log_level = :debug
 
-# Payment gateway: use bogus (test) gateway
-PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
-ActiveMerchant::Billing::Base.mode = :test
+# Stripe payments: disable SSL verification for local testing
+require 'stripe'
+Stripe.verify_ssl_certs = false
 
 # Mailchimp integration: is disabled in non-production mode.
 # test account:

@@ -14,6 +14,11 @@ class String
     return newpass
   end
 
+  # Stripe gem relies on end_with? which isn't defined in 1.8.6 libs
+  unless "0".respond_to?(:end_with?)
+    def end_with?(arg) ; self.match( /#{arg}$/ ) ; end
+  end
+
   # true if target is blank, or target when split on commas contains self,
   # case-insensitively.  used for checking promo codes and tags.
   def contained_in_or_blank(target)

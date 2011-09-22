@@ -1,6 +1,7 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
 
+jQuery.noConflict(); // call Prototype's $ rather than Jquery's, temporary for compatibility
 function reset_vouchertype_fields(category) {
     function hide_price() {
         $('p_vouchertype_price').hide();   $('vouchertype_price').value = '0'; }
@@ -43,12 +44,12 @@ function checkPlaceOrderForm() {
         alrt += "Credit card security code appears to be too short.\n";
     }
     if (! ($('sales_final').checked)) {
-        alrt += "Please indicate your acceptance of our Sales Final policy by checking the TERMS OF SALE box.\n";
+        alrt += "Please indicate your acceptance of our Terms of Sale by checking the TERMS OF SALE box.\n";
     }
     if (alrt != '') {
         alrt = "Please correct the following errors:\n\n" + alrt;
     } else {
-        $('commit').disabled = false;
+        $('_stripe_submit').disabled = false;
     }
     return alrt;
 }

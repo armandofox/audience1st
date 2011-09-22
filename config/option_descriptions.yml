@@ -290,8 +290,8 @@ privacy_policy_url: >
   URL of page describing the Privacy Policy regarding Venue's collection
   and use of patron information. This page should be hosted at the
   venue's web site and may include the following text: "[Our venue's]
-  credit card transactions are handled by the Audience1st system, which
-  processes payments through Authorize.net. Audience1st does not retain
+  credit card transactions are handled by Stripe, a secure payment processor.
+  Audience1st does not retain
   credit card numbers nor share any information used in processing the
   transactions except as required by law."
 

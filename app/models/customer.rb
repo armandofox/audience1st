@@ -267,21 +267,6 @@ class Customer < ActiveRecord::Base
     street.blank? && city.blank? && zip.blank?
   end
 
-  def possibly_synthetic_email
-    self.valid_email_address? ? self.email :
-      "patron-#{Option.value(:venue_id)}-#{self.id}@audience1st.com"
-  end
-
-  def possibly_synthetic_phone
-    if !day_phone.blank?
-      day_phone
-    elsif !eve_phone.blank?
-      eve_phone
-    else
-      "555-555-5555"
-    end
-  end
-
   def subscriber?
     self.role >= 0 &&
       self.vouchers.detect do |f|

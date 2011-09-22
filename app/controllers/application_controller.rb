@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   include ActiveMerchant::Billing
   include FilenameUtils
   
-  filter_parameter_logging :credit_card,:password, :number, :type, :verification_value, :year, :month, :swipe_data
+  filter_parameter_logging :password
 
   if (RAILS_ENV == 'production' && !SANDBOX)
     include SslRequirement

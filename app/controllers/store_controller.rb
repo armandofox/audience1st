@@ -226,9 +226,12 @@ class StoreController < ApplicationController
       verify_valid_credit_card_purchaser or return
       method = :credit_card
       howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
-      redirect_to_checkout and return unless args = collect_credit_card_info
-      args.merge({:order_number => @cart.order_number})
-      @payment="with credit card #{args[:credit_card].display_number}"
+      args = {
+        :bill_to => Customer.new(params[:customer]),
+        :credit_card_token => params[:credit_card_token],
+        :order_number => @cart.order_number
+      }
+      @payment="with credit card"
     end
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
@@ -266,39 +269,6 @@ class StoreController < ApplicationController
     redirect_to_checkout
   end
 
-  def direct_transaction
-    unless request.post?
-      @credit_card = CreditCard.new
-      @customer = Customer.new
-      if RAILS_ENV == 'production'
-        flash[:warning] = <<EOM1
-WARNING: These are real transactions that will be submitted to the payment
-gateway.  Credit cards will really be charged.  Error messages from the
-gateway will be returned verbatim.
-EOM1
-      else
-        flash[:warning] = <<EOM2
-Because this deployment is in sandbox mode, transactions will NOT be processed.
-EOM2
-      end
-      return
-    end
-    # send request
-    args = collect_credit_card_info
-    amount = params[:amount].to_f
-    args[:order_number] = Time.now.to_i
-    resp = Store.purchase!(:credit_card, amount, args) do
-      # nothing to do
-    end
-    flash[:notice] = <<EON
-Success: #{resp.success?} <br/>
-Message: #{resp.message} <br/>
-Txn ID:  #{resp.params["transaction_id"]} <br/>
-Response details: <br/> #{resp.params.to_yaml}
-EON
-    redirect_to :action => 'direct_transaction'
-  end
-    
   private
 
   def too_many_tickets_for(showdate)
@@ -537,31 +507,6 @@ EON
     result
   end
     
-
-  def collect_credit_card_info
-    bill_to = Customer.new(params[:customer])
-    cc_info = params[:credit_card].symbolize_keys
-    cc_info[:first_name] = bill_to.first_name
-    cc_info[:last_name] = bill_to.last_name
-    # BUG: workaround bug in xmlbase.rb where to_int (nonexistent) is
-    # called rather than to_i to convert month and year to ints.
-    cc_info[:month] = cc_info[:month].to_i
-    cc_info[:year] = cc_info[:year].to_i
-    cc = CreditCard.new(cc_info)
-    # prevalidations: CC# and address appear valid, amount >0,
-    # billing address appears to be a well-formed address
-    unless (current_admin.is_boxoffice && params[:skip_validation])
-      if (RAILS_ENV == 'production' && !cc.valid?) # format check on credit card number, UNLESS admin
-        flash[:checkout_error] =
-          "<p>Please provide valid credit card information:</p> <ul><li>" <<
-          cc.errors.full_messages.join("</li><li>") <<
-          "</li></ul>"
-        return nil
-      end
-    end
-    return {:credit_card => cc, :bill_to => bill_to}
-  end
-
   def find_cart_not_empty
     cart = find_cart
     logger.info "Cart: #{cart.to_s}"
