@@ -12,10 +12,10 @@
 - form_tag({:action => 'do_walkup_sale',:id => @showdate}, {:id => '_stripe_payment_form'}) do
   #walkup_tickets
     .column
-      %p 1. Select tickets & donation amount
+      %p.column_header 1. Select tickets & donation amount
       = render :partial => 'walkup_sales_tickets'
     #payment.column
-      %p 2. Collect & record payment
+      %p.column_header 2. Collect & record payment
       = gen_button 'Whoops, I Made a Mistake', {:controller => 'box_office', :action => 'walkup_report', :id => @showdate}, {:id => 'whoops_button'}
       #payment_types
         %label.no_float{:for => 'payment_type'} Credit Card
