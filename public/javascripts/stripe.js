@@ -31,6 +31,10 @@ function stripeResponseHandler(status, response) {
 // Submit button's ID is _stripe_submit
 
 function stripeSubmit(event) {
+  if ($('swipe_data')  && $('swipe_data').getValue() != '') {
+    // populate credit card info fields from magstripe swipe hidden field
+    parseSwipeData();
+  }
   var key = $('_stripe_api_key').getValue();
   $('payment_errors').innerHTML = '';  //  clear out errors field
   $('_stripe_submit').disabled = true; // disable submit button
@@ -51,8 +55,3 @@ function stripeSubmit(event) {
   Stripe.createToken(card, total, stripeResponseHandler);
   return(false);
 }
-
-
-
-
-                

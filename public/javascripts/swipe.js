@@ -10,15 +10,11 @@ function waitForSwipe() {
     $('swipe_data').value = '';
     $('swipe_data').focus();
     setTimeout('resetSwipe()', 1000*timeout);
-    console.log("Swipe times out in " + timeout + " seconds");
-    jQuery('#_stripe_payment_form').submit(parseSwipeData);
 }
 function resetSwipe() {
-    console.log("Swipe timed out and reset");
     $('ccWaiting').style.display = 'none';
     $('ccReady').style.display = 'block';
     $('credit_card_verification_value').focus();
-    jQuery('#_stripe_payment_form').submit(stripeSubmit);
 }
 // Ignore Enter/CR (which would normally sbmit form)
 function collectKeys(evt) {
@@ -33,37 +29,35 @@ function collectKeys(evt) {
 
 // convert swipe data to form fields
 function parseSwipeData() {
-    trk1 = new RegExp('^%B(\d{1,19})\^([^/]+)/([^/^]+)\^(\d\d)(\d\d)');
-    trk2 = new RegExp(';(\d{1,19})=(\d\d)(\d\d).{3,12}\?');
     swipe = $('swipe_data').getValue();
-    console.log("Parsing swipe data: " + swipe);
-    var elts = trk1.match(swipe);
-    if (elts != null) {
-        console.log("Parsing track 1");
-        console.log(elts.toString());
-        $('credit_card_number').value = elts[1];
-        $('credit_card_last_name').value = elts[2];
-        $('credit_card_first_name').value = elts[3];
-        $('credit_card_year').value = (elts[4].toInt+2000).toString;
-        $('credit_card_month').value = elts[5];
-        stripeSubmit();
-    } else if ((elts = trk2.match(swipe)) != null) {
-        console.log("Parsing track 2");
-        console.log(elts.toString());
-        $('credit_card_number').value = elts[1];
-        $('credit_card_year').value = (elts[2].toInt+2000).toString;
-        $('credit_card_month').value = elts[3];
-        $('credit_card_last_name').value = "";
-        $('credit_card_first_name').value = "";
-        stripeSubmit();
+    var trk1 = /^%B(\d{1,19})\^([^/]+)\/([^/^]+)\^(\d\d)(\d\d)/;
+    var trk2 = /;(\d{1,19})=(\d\d)(\d\d).{3,12}\?/;
+    var elts;
+    if (elts = swipe.match(trk1)) {
+        $('credit_card_number').setValue(elts[1]);
+        $('credit_card_last_name').setValue(elts[2]);
+        $('credit_card_first_name').setValue(elts[3]);
+        setSelectedYear('credit_card_year', 2000+Number(elts[4]));
+        $('credit_card_month').selectedIndex = Number(elts[5]) - 1;
+    } else if (elts = swipe.match(trk2)) {
+        $('credit_card_number').setValue(elts[1]);
+        setSelectedYear('credit_card_year', 2000+Number(elts[2]));
+        $('credit_card_month').selectedIndex = Number(elts[3]) - 1;
+        $('credit_card_last_name').setValue('');
+        $('credit_card_first_name').setValue('');
     } else {
-        console.log("Couldn't match track 1 or track 2");
-        $('credit_card_number').value = 'ERROR';
-        $('credit_card_year').value =  'ERROR';
-        $('credit_card_month').value =  'ERROR';
-        $('credit_card_last_name').value = 'ERROR';
-        $('credit_card_first_name').value =  'ERROR';
+        $('credit_card_number').setValue('ERROR');
+        $('credit_card_last_name').setValue('ERROR');
+        $('credit_card_first_name').setValue('ERROR');
     }
     resetSwipe();
     return false;
+}
+
+function setSelectedYear(elt_id, val) {
+  elt = $(elt_id);
+  for (var i=0; i < elt.length ; i++) {
+    if (val == Number(elt[i].value))
+      elt.selectedIndex = i;
+  }
 }
