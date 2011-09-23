@@ -13,7 +13,7 @@
   = spinner('wait_showdate')
   - privileged_content_for :staff do
     - if (@sd.kind_of?(Showdate))
-      %span.admin= "Available: #{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} total"
+      %span.admin= "Available: #{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
   %br/
 
   #voucher_menus
