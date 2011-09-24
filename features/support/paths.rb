@@ -57,7 +57,7 @@ module NavigationHelpers
 
       # create new RESTful resource (non-nested associations)
 
-    when /the list of shows page/i      then '/shows'
+    when /the list of shows page for "(.*)"/i      then "/shows?season=#{$1}"
     when /the new show page/i           then '/shows/new'
     when /the new vouchertypes? page/i  then '/vouchertypes/new'
     when /^the new (.*)s? page$/i       then eval("new_#{underscorize($1)}_path")

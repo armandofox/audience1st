@@ -23,7 +23,7 @@ Scenario: set up multiple valid showdates
   And I fill in "Advance sales stop" with "60"
   And I fill in "Max advance sales" with "50"
   And I press "Save & Back to List of Shows"
-  Then I should be on the list of shows page
+  Then I should be on the list of shows page for "2011"
   Then I should see "5 showdates were successfully added"
   And "Hamlet" should have 5 showdates
   And the following showdates for "Hamlet" should exist:

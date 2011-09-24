@@ -10,16 +10,9 @@ describe Store, "Purchasing" do
     @failure = ActiveMerchant::Billing::Response.new(false, "Failure")
     @bill_to = BasicModels.create_generic_customer
     @order_num = "789"
-    @cc = CreditCard.new(:first_name => @bill_to.first_name,
-      :last_name => @bill_to.last_name,
-      :month => "12", :year => "2020", :verification_value => "999")
-    @cc_params = {:credit_card => @cc,
+    @cc = 'DummyCreditCardToken'
+    @cc_params = {:credit_card_token => 'dummy',
       :bill_to => @bill_to, :order_number => @order_num}
-    @params = {:order_id => @order_num, :email => @bill_to.email,
-      :billing_address => {:name => @bill_to.full_name,
-        :address1 => @bill_to.street, :city => @bill_to.city,
-        :state => @bill_to.state, :zip => @bill_to.zip,
-        :phone => @bill_to.day_phone, :country => 'US'}}
   end
   after(:each) do
     @bill_to.destroy
@@ -53,16 +46,16 @@ describe Store, "Purchasing" do
       end
     end
     it "should call the gateway with correct payment info" do
-      Store.should_receive(:pay_via_gateway).with(@amount,@cc, @params).
-        and_return(@success)
+      Stripe::Charge.should_receive(:create).
+        with(hash_including(:amount => 100*@amount)).
+        and_return(@success) 
       Store.purchase!(:credit_card, @amount, @cc_params) do
       end
     end
 
     context "successfully" do
-      before(:each) do
-        Store.should_receive(:pay_via_gateway).with(@amount,@cc, @params).
-          and_return(@success)
+      before :each do
+        Stripe::Charge.should_receive(:create).once.and_return(@success)
       end
       it "should record side effects to the database"  do
         Store.purchase!(:credit_card, @amount, @cc_params) do
@@ -81,8 +74,7 @@ describe Store, "Purchasing" do
     context "unsuccessfully" do
       it "should not perform side effects if purchase fails"  do
         old_email = @bill_to.email
-        Store.should_receive(:pay_via_gateway).with(@amount,@cc,@params).
-          and_return(@failure)
+        Stripe::Charge.should_receive(:create).and_raise(Stripe::StripeError)
         @resp = Store.purchase!(:credit_card, @amount, @cc_params) do
           @bill_to.email = "Change@email.com"
         end
@@ -92,7 +84,7 @@ describe Store, "Purchasing" do
         @resp.should_not be_success
       end
       it "should not do purchase if side effects fail" do
-        Store.should_not_receive(:pay_via_gateway)
+        Stripe::Charge.should_not_receive(:create)
         @resp = Store.purchase!(:credit_card, @amount, @cc_params) do
           raise "Boom!"
         end

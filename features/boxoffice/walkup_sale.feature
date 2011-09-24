@@ -27,6 +27,7 @@ Feature: Sell walkup tickets
     Then I should see "Successfully added 2 vouchers purchased via Box office - Check"
     And I should see "General (1 left)"
 
+  @javascript
   Scenario: purchase 2 tickets with valid credit card info
 
     When I select "2" from "General"
@@ -34,12 +35,11 @@ Feature: Sell walkup tickets
     | field              | value               |
     | First Name         | John                |
     | Last Name          | Doe                 |
-    | Type               | select "MasterCard" |
     | Number (no spaces) | 1                   |
     | Expiration Month   | select "12"         |
     | Expiration Year    | select "2015"       |
     And I fill in "Enter CVV code manually FIRST!" with "111"
-    And I press "Submit Credit Card Charge"
+    And I press "Charge Credit Card"
     Then I should see "Successfully added 2 vouchers purchased via Box office - Credit Card"
     And I should see "General (1 left)"
 
@@ -50,11 +50,9 @@ Feature: Sell walkup tickets
     | field              | value               |
     | First Name         | John                |
     | Last Name          | Doe                 |
-    | Type               | select "MasterCard" |
-    | Number (no spaces) | 3                   |
     | Expiration Month   | select "12"         |
     | Expiration Year    | select "2015"       |
-    And I press "Submit Credit Card Charge"
+    And I press "Charge Credit Card"
     Then I should see "Transaction NOT processed"
     And I should see "General (3 left)"
 
