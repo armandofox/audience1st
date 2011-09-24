@@ -19,6 +19,7 @@ function stripeResponseHandler(status, response) {
     // re-enable submit button
     $('_stripe_submit').disabled = false;
     $('payment_errors').innerHTML = 'Please correct the following problems:<br/>' +   response.error.message;
+    console.log("Stripe error: " + response.error.message);
   } else {
     $('credit_card_token').setValue(response['id']);
     $('_stripe_payment_form').submit();

@@ -6,6 +6,10 @@ class Store
   private
 
   def self.pay_via_gateway(amount, token, params)
+    if token.blank?
+      return ActiveMerchant::Billing::Response.new(false,
+        'Credit card information could not be read from form submission', {})
+    end
     amount = 100 * amount.to_i
     Stripe.api_key = Option.value(:stripe_secret_key)
     # use Stripe's description field to make charges searchable by name or email
