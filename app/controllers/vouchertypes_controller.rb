@@ -124,12 +124,12 @@ class VouchertypesController < ApplicationController
   end
 
   def destroy
+    v = Vouchertype.find(params[:id])
     unless is_admin
       flash[:notice] = "Only superadmin can destroy vouchertypes."
-      redirect_to :action => 'list'
+      redirect_to :action => 'list', :season => v.season
       return
     end
-    v = Vouchertype.find(params[:id])
     if ((c = v.vouchers.count) > 0)
       flash[:notice] = "Can't destroy this voucher type, because there are
                         #{c} issued vouchers of this type."
