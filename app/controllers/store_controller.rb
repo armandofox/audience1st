@@ -201,6 +201,12 @@ class StoreController < ApplicationController
   end
 
   def place_order
+    if (params[:credit_card_token].blank? || params[:credit_card_token] =~ /dummy/i)
+      flash[:warning] = "Credit card info could not be read successfully.  Please retry."
+      logger.info "Failed token read: #{params.inspect}"
+      redirect_to_checkout
+      return
+    end
     @cart = find_cart_not_empty or return
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice

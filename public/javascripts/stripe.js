@@ -21,7 +21,9 @@ function stripeResponseHandler(status, response) {
     $('payment_errors').innerHTML = 'Please correct the following problems:<br/>' +   response.error.message;
     console.log("Stripe error: " + response.error.message);
   } else {
-    $('credit_card_token').setValue(response['id']);
+    var theToken = response['id'];
+    console.log("Token: " + theToken);
+    $('credit_card_token').value = theToken;
     $('_stripe_payment_form').submit();
   }
 }
@@ -32,6 +34,7 @@ function stripeResponseHandler(status, response) {
 // Submit button's ID is _stripe_submit
 
 function stripeSubmit(event) {
+  console.log("Submitting to Stripe");
   if ($('swipe_data')  && $('swipe_data').getValue() != '') {
     // populate credit card info fields from magstripe swipe hidden field
     parseSwipeData();
