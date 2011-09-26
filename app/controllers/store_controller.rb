@@ -201,12 +201,6 @@ class StoreController < ApplicationController
   end
 
   def place_order
-    if (params[:credit_card_token].blank? || params[:credit_card_token] =~ /dummy/i)
-      flash[:warning] = "Credit card info could not be read successfully.  Please retry."
-      logger.info "Failed token read: #{params.inspect}"
-      redirect_to_checkout
-      return
-    end
     @cart = find_cart_not_empty or return
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
@@ -229,6 +223,12 @@ class StoreController < ApplicationController
       args = {}
       @payment = "in cash"
     else                        # credit card
+      if (params[:credit_card_token].blank? || params[:credit_card_token] =~ /dummy/i)
+        flash[:warning] = "Credit card info could not be read successfully.  Please retry."
+        logger.info "Failed token read: #{params.inspect}"
+        redirect_to_checkout
+        return
+      end
       verify_valid_credit_card_purchaser or return
       method = :credit_card
       howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
