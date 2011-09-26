@@ -216,8 +216,13 @@ table#showdate_info td.value {
     padding: 4px 0;
     margin: 0;
 }
+#walkup_tickets #payment_types {
+    font-size: 100%;
+    
+}
 #whoops_button {
-	line-height: 2.5;
+    text-align: center;
+    line-height: 2.5;
 }
 #payment_types {
 	text-align: center;
