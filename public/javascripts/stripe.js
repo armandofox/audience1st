@@ -8,6 +8,10 @@
 //  #credit_card_token    hidden field that will carry token returned by Stripe
 //  #payment_errors        element in which to display errors from API call
 
+function disableRegularFormSubmit() {
+  $('_stripe_payment_form').onsubmit = function(evt) { return false };
+}
+
 function getStripeTotal() {
   var total = $$('._stripe_total')[0].innerHTML;
   total = total.replace(/[^0-9.]+/g, '');
@@ -32,6 +36,8 @@ function stripeResponseHandler(status, response) {
 // Submit button's ID is _stripe_submit
 
 function stripeSubmit(event) {
+  // disable regular form submit action (needed for Firefox <4)
+  disableRegularFormSubmit();
   console.log("Submitting to Stripe");
   if ($('swipe_data')  && $('swipe_data').getValue() != '') {
     // populate credit card info fields from magstripe swipe hidden field

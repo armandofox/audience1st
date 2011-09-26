@@ -44,7 +44,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'stripeSubmit()', :onsubmit => 'return(false);'
+    = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
     = link_to "Cancel", {:controller => 'store',:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv

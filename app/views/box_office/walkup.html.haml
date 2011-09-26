@@ -3,6 +3,10 @@
 = javascript_include_tag 'swipe'
 :javascript
   function show_only(div) { 
+    // force re-enabling regular form submission.  (b/c if a txn was submitted 
+    // via Stripe JS and it failed, the form submit handler will still be 
+    // set to block "real" submission of the form.)
+    $('_stripe_payment_form').onsubmit = function(evt) { return true };
     $('credit_card').hide(); 
     $('cash').hide();        
     $('check').hide();       
