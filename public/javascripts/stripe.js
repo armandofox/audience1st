@@ -10,7 +10,7 @@
 
 function checkForStripe() {
   if (typeof(Stripe) == 'undefined') {
-    alert("Your browser appears to be blocking JavaScript connections to Stripe.com, which are necessary for processing your credit card payment.  Please add https://stripe.com to your Trusted Sites list, then retry your purchase.");
+    alert("Your browser appears to be blocking JavaScript connections to Stripe.com, which are necessary for processing your credit card payment.  Please add https://js.stripe.com to your Trusted Sites list, then retry your purchase.");
     return false;
   } else {
     return true;
