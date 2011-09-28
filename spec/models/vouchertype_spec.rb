@@ -162,35 +162,18 @@ describe Vouchertype do
         end
         it_should_behave_like "in general"
         it "should include boxoffice-only products" do ; @subs.should include(@sub_boxoffice) ;end
-        it "should include expired products" do ; @subs.should include(@sub_expired) ; end
       end
       describe "for subscriber" do
         before do
           @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => true, :next_season_subscriber? => false), admin = true)
         end
-        it_should_behave_like "for boxoffice"
+        it_should_behave_like "in general"
       end
       describe "for nonsubscriber" do
         before do
           @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
         end
-        it_should_behave_like "for boxoffice"
-      end
-      describe "for non-boxoffice subscriber", :shared => true do
-        it "should include subscriber-only products" do ; pending ; @subs.should include(@sub_subscriber) ; end
-        it "should exclude expired products" do ; @subs.should_not include(@sub_expired) ; end
-      end
-      describe "this season" do
-        before do
-          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => true, :next_season_subscriber? => false), admin = false)
-        end
-        it_should_behave_like "for non-boxoffice subscriber"
-      end
-      describe "next season" do
-        before do
-          @subs = Vouchertype.subscriptions_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => true), admin = false)
-        end
-        it_should_behave_like "for non-boxoffice subscriber"
+        it_should_behave_like "in general"
       end
       describe "with promo codes" do
         before(:each) do ; @available_subs = @all_subs = [@sub_anyone, @sub_anyone_2] ; end

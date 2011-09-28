@@ -1,3 +1,4 @@
+= render :partial => 'store/check_javascript'
 %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
 = javascript_include_tag 'stripe'
 = javascript_include_tag 'swipe'
@@ -29,8 +30,7 @@
         %label.no_float{:for => 'payment_type'} Check
         = radio_button_tag 'payment_type', 'check', false, :onclick => "show_only('check')"
       #payment_form
-        #credit_card
-          = render :partial => 'store/credit_card_swipe', :locals => {:credit_card => @credit_card}
+        #credit_card= render :partial => 'store/credit_card_swipe'
         #cash{:style => 'display: none;'}
           %fieldset
             %legend Cash Payment

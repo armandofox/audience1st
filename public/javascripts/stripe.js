@@ -8,6 +8,15 @@
 //  #credit_card_token    hidden field that will carry token returned by Stripe
 //  #payment_errors        element in which to display errors from API call
 
+function checkForStripe() {
+  if (typeof(Stripe) == 'undefined') {
+    alert("Your browser appears to be blocking JavaScript connections to Stripe.com, which are necessary for processing your credit card payment.  Please add https://stripe.com to your Trusted Sites list, then retry your purchase.");
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function disableRegularFormSubmit() {
   $('_stripe_payment_form').onsubmit = function(evt) { return false };
 }

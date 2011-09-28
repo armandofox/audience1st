@@ -179,7 +179,6 @@ class StoreController < ApplicationController
       redirect_to_index
       return
     end
-    @credit_card = ActiveMerchant::Billing::CreditCard.new
     @double_check_dates = @cart.double_check_dates
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the

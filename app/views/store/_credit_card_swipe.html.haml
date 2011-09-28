@@ -1,6 +1,6 @@
 %fieldset#credit_card_swipe
   %legend Credit Card Payment
-  - fields_for :credit_card, credit_card do |cc|
+  - fields_for :credit_card, ActiveMerchant::Billing::CreditCard.new do |cc|
     %p#payment_errors
     = hidden_field_tag 'credit_card_token', 'DUMMY'
     = hidden_field_tag '_stripe_api_key', Option.value(:stripe_publishable_key)

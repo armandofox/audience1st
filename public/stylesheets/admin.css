@@ -163,6 +163,19 @@ table.showdates_summary td {
 }
 
 /*
+ * "No javascript!" error messag
+ */
+div.large_warning {
+    background-color: red;
+    padding: 1em;
+    font-size: large;
+    color: yellow;
+    text-align: center;
+    margin: 5ex 0;
+    border: 3px solid yellow;
+}
+
+/*
  * Credit card payment error message
  */
 #payment_errors {

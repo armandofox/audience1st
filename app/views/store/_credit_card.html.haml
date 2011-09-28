@@ -1,7 +1,6 @@
-- credit_card = @credit_card unless defined?(credit_card)
 %fieldset#credit_card
   %legend= defined?(legend) ? legend : 'Credit Card Information'
-  - fields_for :credit_card, credit_card do |cc|
+  - fields_for :credit_card, ActiveMerchant::Billing::CreditCard.new do |cc|
     %p#payment_errors
     = label :credit_card, :first_name, 'First Name'
     = cc.text_field :first_name, :size => 20

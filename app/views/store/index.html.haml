@@ -1,3 +1,4 @@
+= render :partial => 'store/check_javascript'
 = sales_banners_for((@special_shows_only ? :special_event : :single_ticket), @subscriber, @next_season_subscriber)
 
 - if @gNobodyReallyLoggedIn
@@ -7,7 +8,6 @@
     to manage your reservations and get your Subscriber benefits.
 
 #store
-  
   - if @special_shows_only
     %h1.page_heading.center
       Select Event

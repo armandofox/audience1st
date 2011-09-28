@@ -181,7 +181,7 @@ class Vouchertype < ActiveRecord::Base
     this_season = Time.this_season
     next_season = this_season + 1
     if admin
-      str = "offer_public != ?"
+      str = "offer_public != ? AND season IN (#{this_season}, #{next_season})"
       vals = [Vouchertype::EXTERNAL]
     elsif (customer.subscriber? || customer.next_season_subscriber?)
       str = "offer_public IN (?) AND season IN (#{this_season}, #{next_season})"

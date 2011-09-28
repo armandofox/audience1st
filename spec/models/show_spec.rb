@@ -12,6 +12,14 @@ describe Show do
     end
   end
 
+  describe "revenue" do
+    it "per seat should be zero (not exception) if zero vouchers sold" do
+      @s = BasicModels.create_generic_show("Show")
+      lambda { @s.revenue_per_seat }.should_not raise_error
+      @s.revenue_per_seat.should be_zero
+    end
+  end
+  
   describe "adjusting showdates post-hoc" do
     before :each do
       @now = Time.now.to_date
