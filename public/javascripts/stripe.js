@@ -8,9 +8,11 @@
 //  #credit_card_token    hidden field that will carry token returned by Stripe
 //  #payment_errors        element in which to display errors from API call
 
-function checkForStripe() {
+function checkForStripe(eltIdToDisable) {
   if (typeof(Stripe) == 'undefined') {
-    alert("Your browser appears to be blocking JavaScript connections to Stripe.com, which are necessary for processing your credit card payment.  Please add https://js.stripe.com to your Trusted Sites list, then retry your purchase.");
+    alert("Your browser appears to be blocking JavaScript connections to Stripe.com, which are necessary for processing credit card transactions.  Please add https://js.stripe.com to your Trusted Sites list to perform credit card purchases.");
+    // disable purchase button
+    document.getElementById(eltIdToDisable).disabled = true;
     return false;
   } else {
     return true;

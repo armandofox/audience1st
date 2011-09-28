@@ -3,6 +3,8 @@
 = javascript_include_tag 'stripe'
 = javascript_include_tag 'swipe'
 :javascript
+  function whenReady() { checkForStripe('_stripe_submit'); }
+  jQuery(document).ready(whenReady);
   function show_only(div) { 
     // force re-enabling regular form submission.  (b/c if a txn was submitted 
     // via Stripe JS and it failed, the form submit handler will still be 

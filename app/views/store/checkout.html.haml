@@ -5,7 +5,7 @@
   function whenReady() {
      $('credit_card_first_name').setValue($$('#billing #customer_first_name')[0].getValue());
      $('credit_card_last_name').setValue($$('#billing #customer_last_name')[0].getValue());
-     if (checkForStripe()) {
+     if (checkForStripe('_stripe_submit')) {
        alert("PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.");
      }
   }
