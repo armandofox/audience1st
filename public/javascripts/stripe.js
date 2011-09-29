@@ -34,7 +34,7 @@ function stripeResponseHandler(status, response) {
     // re-enable submit button
     $('_stripe_submit').disabled = false;
     $('payment_errors').innerHTML = 'Please correct the following problems:<br/>' +   response.error.message;
-    console.log("Stripe error: " + response.error.message);
+    //console.log("Stripe error: " + response.error.message);
   } else {
     document.getElementById('credit_card_token').value = response['id'];
     document.getElementById('_stripe_payment_form').submit();
@@ -49,7 +49,7 @@ function stripeResponseHandler(status, response) {
 function stripeSubmit(event) {
   // disable regular form submit action (needed for Firefox <4)
   disableRegularFormSubmit();
-  console.log("Submitting to Stripe");
+  //console.log("Submitting to Stripe");
   if ($('swipe_data')  && $('swipe_data').getValue() != '') {
     // populate credit card info fields from magstripe swipe hidden field
     parseSwipeData();
