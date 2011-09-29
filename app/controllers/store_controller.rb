@@ -161,6 +161,7 @@ class StoreController < ApplicationController
   end
 
   def checkout
+    logger.info "User-agent: #{request.user_agent}"
     set_return_to :controller => 'store', :action => 'checkout'
     @cust = store_customer
     @is_admin = current_admin.is_boxoffice
@@ -172,7 +173,6 @@ class StoreController < ApplicationController
     @cart = find_cart_not_empty or return
     # Work around Rails bug 2298 here
     @cart.workaround_rails_bug_2298!
-    logger.info "Checkout:\n#{@cart}"
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     if @cart.empty?
       logger.warn "Cart empty, redirecting from checkout back to store"
@@ -224,7 +224,7 @@ class StoreController < ApplicationController
     else                        # credit card
       if (params[:credit_card_token].blank? || params[:credit_card_token] =~ /dummy/i)
         flash[:warning] = "Credit card info could not be read successfully.  Please retry."
-        logger.info "Failed token read: #{params.inspect}"
+        logger.error "Failed token read: #{params.inspect}"
         redirect_to_checkout
         return
       end
