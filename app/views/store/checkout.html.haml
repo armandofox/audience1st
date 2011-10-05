@@ -21,7 +21,7 @@
   .floatright.h2
     %strong= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
     |
-    %strong= gen_button "This Isn't Me", :action => 'not_me'
+    %strong= gen_button "This Isn't Me", change_user_path
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   .clear

@@ -49,6 +49,16 @@ class SessionsController < ApplicationController
     end
   end
 
+  def not_me
+    logout_keeping_session!
+    clear_facebook_session_information if USE_FACEBOOK
+    set_return_to :controller => 'store', :action => 'checkout'
+    set_checkout_in_progress(true)
+    flash[:notice] = "Please sign in, or if you don't have an account, please enter your billing information."
+    @cust = Customer.new
+    redirect_to login_path
+  end
+  
   def destroy
     logout_killing_session!
     clear_facebook_session_information if USE_FACEBOOK

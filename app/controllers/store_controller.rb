@@ -11,7 +11,7 @@ class StoreController < ApplicationController
   
   before_filter(:find_cart_not_empty,
     :only => %w[edit_billing_address set_shipping_address
-                 place_order not_me],
+                 place_order],
     :add_to_flash => {:warning => "Your order appears to be empty. Please select some tickets."},
     :redirect_to => {:action => 'index'})
     
@@ -29,7 +29,7 @@ class StoreController < ApplicationController
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
-                 :not_me, :edit_billing_address)
+                 :edit_billing_address)
   
   def index
     @customer = store_customer
@@ -183,14 +183,7 @@ class StoreController < ApplicationController
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
-    redirect_to :action => 'not_me' and return unless logged_in?
-  end
-
-  def not_me
-    @cust = Customer.new
-    set_return_to :controller => 'store', :action => 'checkout'
-    flash[:warning] = "Please sign in, or if you don't have an account, please enter your credit card billing address."
-    redirect_to login_path
+    redirect_to change_user_path and return unless logged_in?
   end
 
   def edit_billing_address
