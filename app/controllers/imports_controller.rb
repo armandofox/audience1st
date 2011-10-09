@@ -58,10 +58,7 @@ class ImportsController < ApplicationController
     @imports,@rejects = @import.import!
     render(:action => :new) and return if !@import.errors.empty?
     flash[:notice] = "#{@imports.length} records successfully imported."
-    @import.update_attributes(
-      :completed_at => Time.now,
-      :number_of_records => @imports.length,
-      :customer_id => logged_in_id)
+    @import.finalize(logged_in_id)
     if @rejects.empty?
       redirect_to imports_path
     else

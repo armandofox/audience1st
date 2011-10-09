@@ -27,5 +27,13 @@ describe AutoImporter do
       email_header('to').should == "help@eatcake.org"
     end
   end
+  describe "finalizing" do
+    it "should happen for successful import" do
+      pending
+    end
+    it "should not happen for unsuccessful import" do
+      pending
+    end
+  end
 end
 

@@ -6,6 +6,12 @@ class Import < ActiveRecord::Base
   belongs_to :customer
   def self.foreign_keys_to_customer ;  [:customer_id] ;  end
 
+  def import! ; raise "Must override this method" ; end
+
+  def finalize(bywhom_id = Customer.special_customer(:boxoffice_daemon).id)
+    self.update_attributes(:completed_at => Time.now, :customer => bywhom_id)
+  end
+
   def completed? ; !completed_at.nil? ; end
 
   @@import_types = {

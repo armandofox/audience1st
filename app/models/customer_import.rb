@@ -22,6 +22,7 @@ class CustomerImport < Import
     customers.each do |customer|
       import(customer) ? imports << customer : rejects << customer
     end
+    self.number_of_records = imports.length
     return [imports,rejects]
   end
   

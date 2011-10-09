@@ -38,16 +38,13 @@ class AutoImporter
     obj.execute!
   end
 
-  def testing?
-    nil
-  end
-
   def execute!
     success = nil
     begin
       prepare_import
-      self.testing? ? import.preview : import.import!
+      import.import!
       prepare_summary_messages
+      import.finalize(Customer.special_customer(:boxoffice_daemon))
       success = true
     rescue Exception => e
       @messages << e.message

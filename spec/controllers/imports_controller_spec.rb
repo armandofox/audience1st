@@ -48,6 +48,10 @@ describe ImportsController do
       @import = TicketSalesImport.new
       Import.stub!(:find).and_return(@import)
     end
+    it "should not mark import as completed" do
+      get :edit, :id => @import
+      @import.should_not be_completed
+    end
     context "valid Customer data" do
       it "should use customer/customer_with_errors template for Customer import" do
         @import.stub!(:class).and_return(CustomerImport)
@@ -67,6 +71,23 @@ describe ImportsController do
         response.should redirect_to(:action => :new)
         flash[:warning].should match(/Don't know how to preview/)
       end
+    end
+  end
+  describe "import" do
+    before(:each) do
+      @import = TicketSalesImport.new
+      @import.stub(:import!).and_return([[:a,:b],[:c]])
+      Import.stub(:find).and_return(@import)
+    end
+    it "should get finalized if successful" do
+      controller.stub(:logged_in).and_return(mock_model(Customer).id)
+      @import.should_receive(:finalize)
+      put :update, :id => @import
+    end
+    it "should not get finalized if unsuccessful" do
+      @import.stub(:errors).and_return(["An error"])
+      @import.should_not_receive(:finalize)
+      put :update, :id => @import
     end
   end
 end

@@ -36,7 +36,11 @@ class TicketSalesImport < Import
     []
   end
 
-  def import! ;  [do_import(true), []] ;   end
+  def import!
+    result = do_import(true)
+    self.number_of_records = result.length
+    [result, []]
+  end
 
   def valid_records ; number_of_records ; end
   def invalid_records ; 0 ; end
