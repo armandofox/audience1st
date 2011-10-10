@@ -20,7 +20,7 @@ describe VouchersController do
         v.save!
         Voucher.find(v)
       end
-      @vouchers_hash = {'voucher' => Hash[*(@vouchers.map { |v| [v.id.to_s,""] }.flatten)]}
+      @vouchers_list = @vouchers.map { |v| v.id.to_s }
     end
     describe "redirect to welcome", :shared => true do
       it "should redirect to the welcome page" do
@@ -41,17 +41,14 @@ describe VouchersController do
           @vouchers.each do |v|
             Voucher.should_receive(:find_by_id).with(v.id.to_s).and_return(v)
           end
-          post :manage, :commit => "Transfer", :select => @vouchers_hash,
-          :xfer_id => @recip.id.to_s
+          post :manage, :commit => "Transfer", :vouchers => @vouchers_list, :xfer_id => @recip.id.to_s
         end
         it "should display success message" do
-          post :manage, :commit => "Transfer", :select => @vouchers_hash,
-          :xfer_id => @recip.id.to_s
-          flash[:notice].should == "Vouchers #{@vouchers_hash['voucher'].keys.sort.join(',')} were transferred to #{@recip.full_name}'s account."
+          post :manage, :commit => "Transfer", :vouchers => @vouchers_list, :xfer_id => @recip.id.to_s
+          flash[:notice].should == "Vouchers #{@vouchers_list.sort.join(',')} were transferred to #{@recip.full_name}'s account."
         end
         it "should redirect to the welcome page" do
-          post :manage, :commit => "Transfer", :select => @vouchers_hash,
-          :xfer_id => @recip.id.to_s
+          post :manage, :commit => "Transfer", :vouchers => @vouchers_list, :xfer_id => @recip.id.to_s
           response.should redirect_to(:controller => 'customers', :action => 'welcome')
         end
       end
@@ -69,7 +66,7 @@ describe VouchersController do
     context "when recipient doesn't exist" do
       before(:each) do
         post :manage, :commit => "Transfer", :xfer_id => "99999",
-        :select => @vouchers_hash
+        :vouchers => @vouchers_list
       end
       it_should_behave_like "no transfers"
       it "should display an error message" do
