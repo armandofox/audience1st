@@ -221,10 +221,11 @@ class BoxOfficeController < ApplicationController
       flash[:warning] = "You didn't select any vouchers to remove or transfer."
       redirect_to(:action => :index) and return
     end
+    voucher_ids = params[:vouchers]
     action = params[:commit].to_s
     showdate_id = 0
     begin
-      vouchers = Voucher.find(voucher_ids = params[:vouchers])
+      vouchers = Voucher.find(voucher_ids)
       showdate_id = vouchers.first.showdate_id
       if action =~ /destroy/i
         Voucher.destroy_multiple(vouchers, logged_in_user)

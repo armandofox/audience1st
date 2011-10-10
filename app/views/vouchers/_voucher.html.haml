@@ -1,10 +1,13 @@
 .browsable[voucher]
   %tr{:class => cycle(:even,:odd)}
-    %td= check_box_tag "select[voucher][#{voucher.id}]", ''
+    %td= check_box_tag "vouchers[]", voucher.id, false, :id => "voucher_#{voucher.id}"
     %td= voucher.id
-    %td= h voucher.vouchertype.name
-    %td= h(voucher.customer.full_name) if voucher.customer
+    %td
+      %label{:for => "voucher_#{voucher.id}"}= voucher.vouchertype.name
+    %td= voucher.customer.full_name if voucher.customer
+    %td= number_to_currency voucher.price
     %td= voucher.purchasemethod.description if voucher.purchasemethod
     %td= voucher.sold_on.to_formatted_s(:long) if voucher.sold_on
     %td= voucher.showdate.printable_name if voucher.showdate
+    %td= staff_name(voucher.processed_by)
     %td= voucher.comments

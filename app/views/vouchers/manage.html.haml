@@ -11,15 +11,6 @@
   %p= submit_tag 'Destroy Permanently', :confirm => 'Destroying prepaid vouchers DOES NOT cause a refund to be issued and may cause the transaction totals reported by Audience1st to disagree with your credit card transaction reports unless you reconcile them manually.  If this is OK, click OK to PERMANENTLY DESTROY the selected vouchers, or Cancel to leave things as they are.'
 
   %table#manageVouchers.full_width.hilite
-    %thead
-      %th
-      %th #
-      %th Type
-      %th Owner
-      %th How acquired
-      %th When acquired
-      %th Reservation
-      %th Comments
-    %tbody
-      = render :partial => 'voucher', :collection => @vouchers
+    %thead= render :partial => 'detail_header'
+    %tbody= render :partial => 'voucher', :collection => @vouchers
 

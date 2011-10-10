@@ -303,7 +303,7 @@ class VouchersController < ApplicationController
       return
     end
     # post: transfer vouchers
-    @ids = (params[:select][:voucher].keys.sort) rescue nil
+    @ids = (params[:vouchers].sort) rescue nil
     if (@ids.nil? || @ids.empty?)
       flash[:notice] = "No vouchers were selected."
       redirect_to(:controller => 'customers', :action => 'welcome') and return

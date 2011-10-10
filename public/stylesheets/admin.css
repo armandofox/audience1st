@@ -428,6 +428,10 @@ body#door_list h1, body#door_list h2 {
 .subscriber {
   background-color: #9f9;
 }
+/* Attention - something's not right here */
+.attention {
+  color: red;
+}
 
 /*
  *  Importing

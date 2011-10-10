@@ -1,25 +1,30 @@
 .pageDiv
   %h1  Walkup Sales Summary 
+  %table.hilite
+    - @vouchers.each_key do |howpurchased|
+      %tr
+        %td.r= @vouchers[howpurchased].length
+        %td= howpurchased.description
+        %td.r= number_to_currency @subtotal[howpurchased]
+    %tr.strong
+      %td
+      %td.r.strong Total
+      %td= number_to_currency @total
+
+  %h1 Walkup Sales Detail
   - form_tag :action => 'modify_walkup_vouchers' do
-    - @vouchers.each_pair do |howpurchased, vouchers|
-      %div{:id => howpurchased.shortdesc}
-        %h3= howpurchased.description
-        %table.hilite
-          - vouchers.each do |voucher|
-            %tr
-              %td= check_box_tag "vouchers[]", voucher.id, false, :id => "voucher_#{voucher.id}"
-              %td
-                %label{:for => "voucher_#{voucher.id}"}= h(voucher.vouchertype.name)
-              %td.currency= number_to_currency voucher.price
-          %tr
-            %td
-            %td.strong Subtotal 
-            %td.currency= number_to_currency @subtotal[howpurchased]
-    %p#walkup_total Total: #{number_to_currency @total}
     %p
       With checked vouchers:
       = submit_tag 'Destroy', :confirm => 'If you destroy tickets purchased with a credit card, the credit card will NOT be automatically refunded.  Click OK to proceed or Cancel to leave things as they are.'
       or transfer to another performance:
       = select_tag 'to_showdate', options_from_collection_for_select(@other_showdates, :id, :menu_selection_name)
       = submit_tag 'Transfer'
+    - @vouchers.each_pair do |howpurchased, vouchers|
+      %div{:id => howpurchased.shortdesc}
+        %h3= howpurchased.description
+        %table.hilite
+          %thead= render :partial => 'vouchers/detail_header'
+          %tbody
+            = render :partial => 'vouchers/voucher', :collection => vouchers
+
 

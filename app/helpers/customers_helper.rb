@@ -76,6 +76,13 @@ module CustomersHelper
     Customer.roles.map { |r| [r.humanize, r] }
   end
 
+  # staff person's name shown as "Armando F."
+
+  def staff_name(cust)
+    name = cust.special_customer? ? cust.first_name :
+      "#{cust.first_name.name_capitalize} #{cust.last_name[0,1].upcase}."
+    cust.is_staff ?  name : content_tag('span', name, :class => 'attention')
+  end
 
   def number_to_phone_2(s)
     (!s.blank? && s.strip.match(/^([-0-9.()\/ ]{10,})([EXText.0-9]+)?$/) ?
