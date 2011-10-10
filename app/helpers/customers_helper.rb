@@ -79,6 +79,7 @@ module CustomersHelper
   # staff person's name shown as "Armando F."
 
   def staff_name(cust)
+    return content_tag('span', '???', :class => 'attention') if cust.nil?
     name = cust.special_customer? ? cust.first_name :
       "#{cust.first_name.name_capitalize} #{cust.last_name[0,1].upcase}."
     cust.is_staff ?  name : content_tag('span', name, :class => 'attention')

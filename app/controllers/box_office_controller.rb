@@ -72,7 +72,9 @@ class BoxOfficeController < ApplicationController
     vouchers = []
     qtys.each_pair do |vtype,q|
       vv = ValidVoucher.find(vtype)
-      vouchers += vv.instantiate(Customer.find(logged_in_id), howpurchased, q.to_i, comment)
+      newvoucher = vv.instantiate(Customer.find(logged_in_id), howpurchased, q.to_i, comment)
+      newvoucher.walkup = true
+      vouchers += newvoucher
     end
     Customer.walkup_customer.vouchers += vouchers
     (flash[:notice] ||= "") << "Successfully added #{vouchers.size} vouchers"
