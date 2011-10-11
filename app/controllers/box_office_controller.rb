@@ -71,9 +71,10 @@ class BoxOfficeController < ApplicationController
   def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'), comment = '')
     vouchers = []
     qtys.each_pair do |vtype,q|
+      next if q.to_i.zero?
       vv = ValidVoucher.find(vtype)
       newvoucher = vv.instantiate(Customer.find(logged_in_id), howpurchased, q.to_i, comment)
-      newvoucher.walkup = true
+      newvoucher.each { |v| v.walkup = true }
       vouchers += newvoucher
     end
     Customer.walkup_customer.vouchers += vouchers
