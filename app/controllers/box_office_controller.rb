@@ -131,7 +131,9 @@ class BoxOfficeController < ApplicationController
   def walkup
     @showdate = (Showdate.find_by_id(params[:id]) ||
       Showdate.current_or_next(2.hours))
-    @valid_vouchers = @showdate.valid_vouchers_for_walkup
+    @valid_vouchers = @showdate.valid_vouchers_for_walkup(@gAdmin)
+    @admin = @gAdmin
+    @credit_card = CreditCard.new # needed by credit-card swipe functions
     @qty = params[:qty] || {}     # voucher quantities
   end
 

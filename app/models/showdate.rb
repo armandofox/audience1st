@@ -1,7 +1,7 @@
 class Showdate < ActiveRecord::Base
 
   include Comparable
-
+  
   acts_as_reportable
   
   belongs_to :show
@@ -41,7 +41,7 @@ class Showdate < ActiveRecord::Base
       :max_sales => 0)
   end
 
-  def valid_vouchers_for_walkup
+  def valid_vouchers_for_walkup(clerk)
     self.valid_vouchers.select { |vv| vv.vouchertype.walkup_sale_allowed? }
   end
 

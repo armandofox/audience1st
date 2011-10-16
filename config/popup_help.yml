@@ -292,3 +292,8 @@ checkin_house_capacity: >
   cap for this performance.  Advance Sales is the number of advance
   tickets actually sold; Walkup Sales is the number of walkup tickets
   sold; Available is the number of actual physical seats remaining.
+
+boxoffice_manager_only: >
+
+  Issuing this ticket type in this situation requires Box Office Manager
+  privilege. 
