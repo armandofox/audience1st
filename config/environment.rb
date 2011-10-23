@@ -32,17 +32,6 @@ Rails::Initializer.run do |config|
   # Add additional load paths for your own custom dirs
   config.load_paths += %W( #{RAILS_ROOT}/app/models/reports )
 
-  config.gem "activemerchant", :lib => "active_merchant"
-  config.gem "haml"
-  config.gem "hpricot"
-  config.gem "dbf", :version => '>= 1.2.8'
-  config.gem "builder", :version => '>= 2.1.2'
-
-  # for reporting
-  config.gem "ruport"
-  config.gem "acts_as_reportable", :lib => "ruport"
-
   config.active_record.timestamped_migrations = true
 end
 
-require 'active_merchant'

@@ -1,3 +1,5 @@
+require 'active_merchant'
+
 # are we operating in 'sandbox' mode?  if so, some features like
 # "real" CC purchases and email sending are turned off or
 # handled differently.
