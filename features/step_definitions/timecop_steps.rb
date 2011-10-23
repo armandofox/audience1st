@@ -1,5 +1,5 @@
-require 'chronic'
 require 'timecop'
+require 'chronic'
 
 module TemporalHelpers
 
