@@ -4,6 +4,7 @@ gem 'capistrano'
 gem 'mysql'
 
 gem 'rails', '2.3.5'
+gem 'i18n', '~> 0.4.0'          # can remove once upgrade to 2.3.11
 gem 'activemerchant'
 gem 'haml'
 gem 'nokogiri'
@@ -23,6 +24,7 @@ end
 group :test do
   gem 'cucumber-rails', '0.3.2'
   gem 'rspec-rails', '1.3.4'
+  gem 'launchy'
   gem 'webrat', '>= 0.7.1'
   gem 'capybara'
   gem 'fakeweb'
