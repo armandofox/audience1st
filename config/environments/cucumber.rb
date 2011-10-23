@@ -21,17 +21,7 @@ config.action_controller.allow_forgery_protection    = false
 # ActionMailer::Base.deliveries array.
 config.action_mailer.delivery_method = :test
 
-config.gem 'cucumber-rails',   :lib => false, :version => '>=0.2.4'
-config.gem 'database_cleaner', :lib => false, :version => '>=0.4.3'
-config.gem 'rspec',            :lib => false, :version => '>=1.3.0'
-config.gem 'rspec-rails',      :lib => false, :version => '>=1.3.2'
-config.gem "cucumber", :lib => false, :version => ">= 0.6.4"
-config.gem "webrat", :lib => false, :version => ">= 0.7.1"
-
-if ENV["SELENIUM"]
-  config.gem "selenium-client", :lib => "selenium/client"
-end
-
+require 'active_merchant'
 PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
 ActiveMerchant::Billing::Base.mode = :test
 

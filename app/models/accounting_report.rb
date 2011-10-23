@@ -1,3 +1,4 @@
+require 'ruport'
 class AccountingReport < Ruport::Controller
 
   include ApplicationHelper
