@@ -13,7 +13,11 @@ class Customer < ActiveRecord::Base
   has_many :vouchers, :include => :vouchertype
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :shows, :through => :showdates
+
+  # nested has_many :through doesn't work in Rails 2, so we define a method instead
+  # has_many :shows, :through => :showdates
+  def shows ; self.showdates.map(&:show).uniq ; end
+
   has_many :txns
   has_one  :most_recent_txn, :class_name=>'Txn', :order=>'txn_date DESC'
   has_many :donations

@@ -18,7 +18,10 @@ class LapsedSubscribers < Report
       return nil
     end
     self.output_options = params[:output]
-    return Customer.purchased_any_vouchertypes(have) -
-      Customer.purchased_no_vouchertypes(have_not)
+    purchased_any = if have.empty? then Customer.all_customers else
+                      Customer.purchased_any_vouchertypes(have) end
+    purchased_none = if have_not.empty? then [] else
+                       Customer.purchased_no_vouchertypes(have_not) end
+    return purchased_any - purchased_none
   end
 end
