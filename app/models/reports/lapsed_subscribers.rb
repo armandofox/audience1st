@@ -18,20 +18,7 @@ class LapsedSubscribers < Report
       return nil
     end
     self.output_options = params[:output]
-    # first find customers who have ANY of the given vouchertypes
-    if have.empty?
-      customers = Customer.all_customers
-    else
-      self.add_constraint('vouchertype.id IN (?)', have)
-      customers = self.execute_query
-    end
-    unless have_not.empty?
-      # now identify those who ALSO have ANY of the new vouchertypes, and
-      # subtract the sets
-      prev_subscribers = Report.new(params[:output])
-      prev_subscribers.add_constraint('vouchertype.id IN (?)', have_not)
-      customers -= prev_subscribers.execute_query
-    end
-    customers
+    return Customer.purchased_any_vouchertypes(have) -
+      Customer.purchased_no_vouchertypes(have_not)
   end
 end
