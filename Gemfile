@@ -7,7 +7,7 @@ gem 'rails', '2.3.5'
 gem 'i18n', '~> 0.4.0'          # can remove once upgrade to 2.3.11
 gem 'activemerchant'
 gem 'haml'
-gem 'nokogiri'
+gem 'nokogiri', '1.3.3'
 gem 'dbf',  '>= 1.2.8'
 gem 'builder',  '>= 2.1.2'
 gem 'mechanize'
@@ -22,8 +22,8 @@ group :development do
 end
 
 group :test do
-  gem 'cucumber-rails', '0.3.2'
-  gem 'rspec-rails', '1.3.4'
+  gem 'cucumber-rails', '>= 0.3.0'
+  gem 'rspec-rails', '>= 1.3.2'
   gem 'launchy'
   gem 'webrat', '>= 0.7.1'
   gem 'capybara'
