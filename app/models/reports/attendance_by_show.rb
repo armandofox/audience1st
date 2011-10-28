@@ -9,11 +9,7 @@ class AttendanceByShow < Report
   end
 
   def generate(params = {})
-    if (shows = params[:shows]).blank?
-      shows = []
-    else
-      shows.map! { |s| s.to_i }.reject { |s| s.zero? }
-    end
+    shows = (params[:shows] || []).map(&:to_i).reject(&:zero?)
     # do default search for OR. if it's AND, winnow the list afterward.
     if (shows_not = params[:shows_not]).blank?
       shows_not = []

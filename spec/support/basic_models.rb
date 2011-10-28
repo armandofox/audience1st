@@ -95,7 +95,7 @@ module BasicModels
     vt = vtype.kind_of?(Vouchertype) ? vtype :
       (Vouchertype.find_by_name(vtype) || self.create_revenue_vouchertype(:name => vtype))
     Voucher.new_from_vouchertype(vt).reserve(showdate,
-      (opts[:logged_in] || customers(:boxoffice)))
+      (opts[:logged_in] || self.create_generic_customer(:created_by_admin => true, :role => 100, :first_name => 'MockBoxOfficeManager')))
   end
 end
 
