@@ -48,11 +48,11 @@ class Report
   def query ; make_query(count=false) ; end
 
   def add_constraint(clause,*bind_vars)
-    if clause.gsub!(/voucher\./, 'v.')
+    if clause.gsub!(/voucher\./, 'i.')
       add_join(:vouchers)
     elsif clause.gsub!(/vouchertype\./, 'vt.')
       add_join(:vouchertypes)
-    elsif clause.gsub!(/donation\./, 'd.')
+    elsif clause.gsub!(/donation\./, 'i.')
       add_join(:donations)
     else
       clause.gsub!(/customer\./, 'c.')
@@ -154,12 +154,14 @@ class Report
   
   def add_join(sym)
     if sym == :vouchers
-      @joins << 'vouchers v on v.customer_id = c.id'
+      @joins << 'items i on i.customer_id = c.id'
+      @wheres << "i.type = 'Voucher'"
     elsif sym == :donations
-      @joins << 'donations d on d.customer_id = c.id'
+      @joins << 'items i on i.customer_id = c.id'
+      @wheres << "i.type = 'Donation'"
     elsif sym == :vouchertypes
       add_join(:vouchers)
-      @joins << 'vouchertypes vt on v.vouchertype_id = vt.id'
+      @joins << 'vouchertypes vt on i.vouchertype_id = vt.id'
     else
       raise 'Invalid call to add_join with #{sym}'
     end

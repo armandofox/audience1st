@@ -30,6 +30,7 @@ class CreateItems < ActiveRecord::Migration
     end
     rename_table :vouchers, :items
     drop_table :donations
+    add_index :items, :type
   end
 
   def self.down
@@ -60,6 +61,7 @@ class CreateItems < ActiveRecord::Migration
         :purchasemethod_id => d.purchasemethod_id
         )
     end
+    remove_index :items, :type
     remove_column :items, :type
     rename_table :items, :vouchers
   end
