@@ -26,9 +26,10 @@ class CreateItems < ActiveRecord::Migration
         :processed_by_id => d.processed_by_id,
         :purchasemethod_id => d.purchasemethod_id
         )
-    puts "#{d.id} / #{count}" if d.id % 100 == 0
+      puts "#{d.id} / #{count}" if d.id % 100 == 0
     end
     rename_table :vouchers, :items
+    connection.execute("UPDATE items SET type='Donation' WHERE category IS NULL AND type IS NULL")
     drop_table :donations
     add_index :items, :type
   end

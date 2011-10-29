@@ -20,35 +20,39 @@ describe 'scoping Customers' do
     end
     context 'when selecting based on having seen a show' do
       it 'should select customer who has seen it' do
-        Customer.seen_any_shows(@s1).should include(@c1)
+        Customer.seen_any_of(@s1).should include(@c1)
       end
       it 'should exclude customer who has not seen it' do
-        Customer.seen_any_shows(@s1).should_not include(@c2)
+        Customer.seen_any_of(@s1).should_not include(@c2)
       end
       it 'should select customers who have seen union of shows' do
-        c = Customer.seen_any_shows([@s1,@s2])
+        c = Customer.seen_any_of([@s1,@s2])
         c.should include(@c1)
         c.should include(@c2)
       end
       it 'should not select a customer who has seen nothing' do
-        Customer.seen_any_shows([@s1,@s2]).should_not include(@new)
+        Customer.seen_any_of([@s1,@s2]).should_not include(@new)
       end
     end
     context 'when selecting based on NOT having seen a show' do
       it 'should select customer who has not seen it' do
-        Customer.seen_no_shows(@s1).should include(@c2)
+        Customer.seen_none_of(@s1).should include(@c2)
       end
       it 'should exclude customer who HAS seen it' do
-        Customer.seen_no_shows(@s1).should_not include(@c1)
+        Customer.seen_none_of(@s1).should_not include(@c1)
       end
       it 'should include customer who has seen nothing' do
-        Customer.seen_no_shows([@s1,@s2]).should include(@new)
+        Customer.seen_none_of([@s1,@s2]).should include(@new)
       end
       it 'should exclude customers who have seen anything in union of shows' do
-        c = Customer.seen_no_shows([@s1,@s2])
+        c = Customer.seen_none_of([@s1,@s2])
         c.should_not include(@c1)
         c.should_not include(@c2)
       end
+    end
+    it 'should select zero customers if conditions are contradictory' do
+      intersection = (Customer.seen_any_of([@s1,@s2]) & Customer.seen_none_of([@s1,@s2]))
+      intersection.should be_empty
     end
   end
   describe 'based on purchases' do

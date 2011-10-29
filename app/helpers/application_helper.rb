@@ -521,18 +521,18 @@ EOS2
              fy=-1;
         }
         if (fy>=0) {
-          $('#{from_prefix}_year').selectedIndex=fy;
-          $('#{from_prefix}_month').selectedIndex=fm;
-          $('#{from_prefix}_day').selectedIndex=fd;
-          $('#{to_prefix}_year').selectedIndex=ty;
-          $('#{to_prefix}_month').selectedIndex=tm;
-          $('#{to_prefix}_day').selectedIndex=td;
+          $(from + '_year').selectedIndex=fy;
+          $(from + '_month').selectedIndex=fm;
+          $(from + '_day').selectedIndex=fd;
+          $(to + '_year').selectedIndex=ty;
+          $(to + '_month').selectedIndex=tm;
+          $(to + '_day').selectedIndex=td;
 EOS3
     onsel << <<EOS33 if include_time
-          $('#{from_prefix}_hour').selectedIndex=fH;
-          $('#{from_prefix}_minute').selectedIndex=fM;
-          $('#{to_prefix}_hour').selectedIndex=tH;
-          $('#{to_prefix}_minute').selectedIndex=tM;
+          $(from + '_hour').selectedIndex=fH;
+          $(from + '_minute').selectedIndex=fM;
+          $(to + '_hour').selectedIndex=tH;
+          $(to + '_minute').selectedIndex=tM;
 EOS33
     onsel << <<EOS4
         }
