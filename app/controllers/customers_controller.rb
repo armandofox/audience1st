@@ -74,6 +74,11 @@ class CustomersController < ApplicationController
       @reserved_vouchers,@unreserved_vouchers =
         @subscriber_vouchers.partition { |v| v.reserved? }
     else
+      @vouchers_by_season = {}
+      @subscriber_vouchers = []
+      @other_vouchers = []
+      @reserved_vouchers = []
+      @unreserved_vouchers = []
       @subscriber = nil
       @page_title = "Welcome, #{name}"
     end
