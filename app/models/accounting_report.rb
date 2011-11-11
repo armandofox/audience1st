@@ -67,17 +67,18 @@ class AccountingReport < Ruport::Controller
                shows.name AS show_name,
                COUNT(*) as num_units,
                SUM(vouchertypes.price) AS total_amount
-        FROM vouchers
-          LEFT OUTER JOIN purchasemethods ON vouchers.purchasemethod_id=purchasemethods.id
-          LEFT OUTER JOIN vouchertypes ON vouchers.vouchertype_id=vouchertypes.id
+        FROM items
+          LEFT OUTER JOIN purchasemethods ON items.purchasemethod_id=purchasemethods.id
+          LEFT OUTER JOIN vouchertypes ON items.vouchertype_id=vouchertypes.id
           LEFT OUTER JOIN account_codes ON vouchertypes.account_code_id=account_codes.id
-          LEFT OUTER JOIN showdates ON showdates.id=vouchers.showdate_id
+          LEFT OUTER JOIN showdates ON showdates.id=items.showdate_id
           LEFT OUTER JOIN shows ON shows.id=showdates.show_id
         WHERE
-          vouchers.sold_on BETWEEN ? AND ?
-          AND vouchers.category  NOT IN (?)
-          AND vouchers.purchasemethod_id  NOT IN (?)
-          AND vouchertypes.price != 0
+          (items.type = 'Voucher' 
+            AND items.sold_on BETWEEN ? AND ?
+            AND items.category  NOT IN (?)
+            AND items.purchasemethod_id  NOT IN (?)
+            AND vouchertypes.price != 0)
         GROUP BY purchasemethods.description, account_codes.code, show_name
         ORDER BY account_codes.code,shows.opening_date
 EOQ1
