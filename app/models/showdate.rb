@@ -5,7 +5,7 @@ class Showdate < ActiveRecord::Base
   acts_as_reportable
   
   belongs_to :show
-  has_many :vouchers, :conditions => "vouchers.category != 'nonticket'"
+  has_many :vouchers, :conditions => "category != 'nonticket'"
   has_many :all_vouchers, :class_name => 'Voucher'
   has_many :walkup_vouchers, :class_name => 'Voucher', :conditions => ['walkup = ?', true]
   has_many :customers, :through => :vouchers, :uniq => true, :conditions => 'customers.role >= 0'

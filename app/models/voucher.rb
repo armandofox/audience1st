@@ -1,16 +1,11 @@
-class Voucher < ActiveRecord::Base
+class Voucher < Item
   acts_as_reportable
   
-  belongs_to :customer
   belongs_to :showdate
   belongs_to :vouchertype
-  belongs_to :purchasemethod
-  belongs_to :processed_by, :class_name => 'Customer'
   belongs_to :gift_purchaser, :class_name => 'Customer'
 
   validates_presence_of :vouchertype_id
-  validates_presence_of :purchasemethod_id
-  validates_presence_of :processed_by_id
   # provide a handler to be called when customers are merged.
   # Transfers the vouchers from old to new id, and also changes the
   # values of processed_by field, which is really a customer id.
@@ -35,7 +30,7 @@ class Voucher < ActiveRecord::Base
   def self.sold_between(from,to)
     sql = %{
         SELECT DISTINCT v.*
-        FROM vouchers v JOIN vouchertypes vt ON v.vouchertype_id=vt.id WHERE
+        FROM items v JOIN vouchertypes vt ON v.vouchertype_id=vt.id WHERE
         (v.sold_on BETWEEN ? AND ?) AND 
         v.customer_id !=0 AND 
         (v.showdate_id > 0 OR (vt.category='bundle' AND vt.subscription=1))

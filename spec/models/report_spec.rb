@@ -17,7 +17,7 @@ describe Report do
         @r.add_constraint('vouchertype.price = 1')
       end
       it "should include JOIN with constrained table" do
-        @r.query.first.should match(/join vouchers/i)
+        @r.query.first.should match(/join items/i)
       end
     end
     describe "with 1 bind variable" do
@@ -30,7 +30,7 @@ describe Report do
         @r.query.first.should match(/join vouchertypes/i)
       end
       it "should include the through-join" do
-        @r.query.first.should match(/join vouchers/i)
+        @r.query.first.should match(/join items/i)
       end
     end
     describe "with 2 bind variables from table A and 1 from table B" do

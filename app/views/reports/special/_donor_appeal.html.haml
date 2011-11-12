@@ -11,4 +11,4 @@
   = select_date Date.today, :prefix => 'newTo', :start_year => 2007
 %p
   = check_box_tag 'include_subscribers', 1, true
-  Include all subscribers, even if they haven't made a donation
+  Include current (#{humanize_season}) subscribers, even if they haven't made a donation

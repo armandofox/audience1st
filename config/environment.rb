@@ -6,6 +6,7 @@ RAILS_GEM_VERSION = '2.3.5'
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+
 Rails::Initializer.run do |config|
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
@@ -82,5 +83,3 @@ end
 #   gem 'timecop'
 #   gem 'chronic'
 # end
-
-

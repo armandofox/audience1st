@@ -2,7 +2,7 @@
 #  add logic to init new donation with correct default account_code (from options)
 
 
-class Donation < ActiveRecord::Base
+class Donation < Item
 
   def self.default_code
     if (code = Option.value(:default_donation_account_code)).blank?
@@ -18,13 +18,6 @@ class Donation < ActiveRecord::Base
   validates_associated :account_code
   validates_presence_of :account_code_id
   
-  belongs_to :purchasemethod
-  validates_presence_of :purchasemethod_id
-  
-  belongs_to :customer
-  validates_associated :customer
-  
-  has_one :processed_by, :class_name => 'Customer'
 
   validates_numericality_of :amount
   validates_presence_of :date
