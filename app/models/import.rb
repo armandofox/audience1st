@@ -17,7 +17,7 @@ class Import < ActiveRecord::Base
   @@import_types = {
     'Customer/mailing list' => 'CustomerImport',
     'Brown Paper Tickets sales for 1 production' => 'BrownPaperTicketsImport',
-    'TBA sales list for Run of Show' => 'TBAWebtixImport',
+    'TBA sales list for Run of Show' => 'TbaWebtixImport',
     'Goldstar sales for one performance (CSV format)' => 'GoldstarCsvImport',
     'Goldstar sales for one performance (XML format)' => 'GoldstarXmlImport'
     }

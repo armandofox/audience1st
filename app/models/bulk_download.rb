@@ -15,7 +15,7 @@ class BulkDownload < ActiveRecord::Base
     args.symbolize_keys!
     klass = case args[:vendor]
             when 'Brown Paper Tickets' then BrownPaperTicketsDownload
-            when 'Tix Bay Area' then TBADownload
+            when 'Tix Bay Area' then TbaDownload
             else raise "Don't know how to bulk download from #{type}"
             end
     return klass.send(:new, :username => args[:username], :password => args[:password],
