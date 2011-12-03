@@ -1,4 +1,4 @@
-class TBADownload < BulkDownload
+class TbaDownload < BulkDownload
 
   private
 
@@ -18,7 +18,7 @@ class TBADownload < BulkDownload
     self
   end
 
-  def import_class ; TBAWebtixImport ; end
+  def import_class ; TbaWebtixImport ; end
 
   def get_report_names
     init_session

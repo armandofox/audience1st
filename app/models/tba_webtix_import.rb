@@ -1,4 +1,4 @@
-class TBAWebtixImport < TicketSalesImport
+class TbaWebtixImport < TicketSalesImport
   require 'dbf' # for parsing DBase II exported files from Webtix
 
   TBA_VOUCHERTYPE_NAME = "TBA Half Price"
