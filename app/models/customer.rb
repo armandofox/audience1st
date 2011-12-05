@@ -27,7 +27,7 @@ class Customer < ActiveRecord::Base
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
   validates_format_of :email, :if => :self_created?, :with => Authentication.email_regex
-  validates_uniqueness_of :email, :if => :self_created?,
+  validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
   :message => "address {{value}} has already been registered.
@@ -104,11 +104,20 @@ class Customer < ActiveRecord::Base
       self.first_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
       self.last_name = '_' if last_name.blank?
       self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
-      self.email = nil unless (email.blank? || email.match(Authentication.email_regex))
+      self.email = nil unless valid_and_unique(email)
     end
     true
   end
     
+  def valid_and_unique(email)
+    if email.blank?
+      true 
+    elsif !email.match(Authentication.email_regex) 
+      false
+    else
+      !(Customer.find_by_email email)
+    end
+  end
 
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
