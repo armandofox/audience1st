@@ -177,7 +177,7 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def self.subscriptions_available_to(customer = Customer.generic_customer, admin = nil)
+  def self.bundles_available_to(customer = Customer.generic_customer, admin = nil)
     this_season = Time.this_season
     next_season = this_season + 1
     if admin
@@ -190,9 +190,9 @@ class Vouchertype < ActiveRecord::Base
       str = "(offer_public = ?) AND season IN  (#{this_season}, #{next_season})"
       vals = [Vouchertype::ANYONE]
     end
-    str = "(category = ?) AND (subscription = ?) AND #{str}"
+    str = "(category = ?) AND #{str}"
     str += " AND '#{Time.now.to_formatted_s(:db)}' BETWEEN bundle_sales_start AND bundle_sales_end" unless admin
-    vals.unshift(str, :bundle, true)
+    vals.unshift(str, :bundle)
     Vouchertype.find(:all, :conditions => vals, :order => "season DESC,display_order,price DESC")
   end
 
@@ -304,7 +304,7 @@ class Vouchertype < ActiveRecord::Base
 end
 
 # For convenience, we define using_promo_code as an instance method of Enumerable so that
-# we can write subs = Vouchertype.subscriptions_available_to(...).using_promo_code('foo')
+# we can write subs = Vouchertype.bundles_available_to(...).using_promo_code('foo')
 
 module Enumerable
   def using_promo_code(p = '')

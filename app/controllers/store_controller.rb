@@ -63,7 +63,7 @@ class StoreController < ApplicationController
     #   to bundle voucher record directly...ugh
     @promo_code = redeeming_promo_code
     @subs_to_offer =
-      Vouchertype.subscriptions_available_to(store_customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code)
+      Vouchertype.bundles_available_to(store_customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code)
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to_index
