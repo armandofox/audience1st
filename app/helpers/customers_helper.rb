@@ -118,7 +118,7 @@ module CustomersHelper
       APP_CONFIG[:secret_questions][indx]
   end
 
-  def group_subscriber_vouchers(v1,v2)
+  def group_bundle_vouchers(v1,v2)
     # each of v1 and v2 is an array of [showdate,vouchertype].
     # showdate is nil for open voucher.
     # this function is used to "sort" them for presenting on customer

@@ -8,7 +8,7 @@
       - if @gAdmin.is_boxoffice
         %th.admin Comments
   %tbody
-    - vouchertypes.keys.sort { |a,b| group_subscriber_vouchers(a,b) }.each do |v|
+    - vouchertypes.keys.sort { |a,b| group_bundle_vouchers(a,b) }.each do |v|
       - showdate,vouchertype = v
       - voucherset = vouchertypes[v]
       - vouchers = voucherset.to_a

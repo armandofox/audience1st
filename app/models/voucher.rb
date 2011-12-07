@@ -42,12 +42,17 @@ class Voucher < Item
 
   # many are delegated to Vouchertype
 
-  delegate :name, :price, :season, :changeable?, :valid_now?, :bundle?, :subscription?, :to => :vouchertype
+  delegate(
+    :name, :price, :season, :account_code,
+    :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
+    :to => :vouchertype)
   def amount ; vouchertype.price ; end
+  # delegations
+  def account_code_reportable ; vouchertype.account_code.name_with_code ; end
 
-  def reserved? ;   !showdate_id.to_i.zero? ;  end
-  def unreserved? ; showdate_id.to_i.zero?  ;  end
-
+    def unreserved? ; showdate_id.to_i.zero?  ;  end
+  def reserved? ; !(unreserved?) ; end
+  
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
@@ -62,9 +67,6 @@ class Voucher < Item
       (vouchertype_id > 0 && vouchertype.bundle? ? vouchertype.name : "??")
   end
 
-  # delegations
-  def account_code ; vouchertype.account_code ; end
-  def account_code_reportable ; vouchertype.account_code.name_with_code ; end
   def voucher_description
     if showdate.kind_of?(Showdate)
       showdate.show_name
@@ -224,8 +226,6 @@ class Voucher < Item
   def check_in! ; update_attribute(:checked_in, true) ; self ; end
   def un_check_in! ; update_attribute(:checked_in, false) ; self ; end
   
-  def part_of_subscription? ;  vouchertype.subscriber_voucher? ;  end
-
   # operations on vouchers:
   #
   # reserve(showdate_id, logged_in)

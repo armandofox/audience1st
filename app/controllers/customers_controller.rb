@@ -69,7 +69,7 @@ class CustomersController < ApplicationController
       # separate vouchers into these categories:
       # unreserved subscriber vouchers, reserved subscriber vouchers, others
       @subscriber_vouchers, @other_vouchers =
-        @vouchers.partition { |v| v.part_of_subscription? }
+        @vouchers.partition { |v| v.subscriber_voucher? }
       @vouchers_by_season = @subscriber_vouchers.group_by(&:season)
       @reserved_vouchers,@unreserved_vouchers =
         @subscriber_vouchers.partition { |v| v.reserved? }
