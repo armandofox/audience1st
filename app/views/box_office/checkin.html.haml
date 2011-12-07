@@ -14,7 +14,7 @@
       %td.maincolumn= letter_header_for(c.last_name)
       %td= link_to_customer c, :content_text => c.last_name.name_capitalize
       %td= link_to_customer c, :content_text => c.first_name.name_capitalize
-      %td= h vouchers.first.vouchertype_name
+      %td= h vouchers.first.name
       %td
         %span.un_check_in= link_to_remote image_tag('delete.png'), |
           :url => {:action => 'mark_checked_in', :uncheck => 1, :vouchers => vouchers.map(&:id).join(',')}, |

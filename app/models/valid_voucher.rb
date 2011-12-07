@@ -57,8 +57,8 @@ class ValidVoucher < ActiveRecord::Base
   end
   
   def printable_name ;  self.showdate.printable_name ;  end
-  def vouchertype_name ; self.vouchertype.name ; end
-  def price ; self.vouchertype.price ; end
+
+  delegate :name, :price, :to => :vouchertype
 
   def self.for_advance_sales(promo_codes = [])
     general_conds = "? BETWEEN start_sales AND end_sales"

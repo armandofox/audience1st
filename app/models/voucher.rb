@@ -40,18 +40,14 @@ class Voucher < Item
 
   # accessors and convenience methods
 
-  def price ; vouchertype.price ;  end
+  # many are delegated to Vouchertype
+
+  delegate :name, :price, :season, :changeable?, :valid_now?, :bundle?, :subscription?, :to => :vouchertype
   def amount ; vouchertype.price ; end
-  def season ; vouchertype.season ; end
-  def changeable? ; vouchertype.changeable? ; end
-  def valid_now?  ; vouchertype.valid_now?  ; end
 
   def reserved? ;   !showdate_id.to_i.zero? ;  end
   def unreserved? ; showdate_id.to_i.zero?  ;  end
 
-  def bundle? ; vouchertype.bundle? ; end
-  def subscription? ; vouchertype.subscription? ; end
-  def vouchertype_name ; vouchertype.name ; end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
