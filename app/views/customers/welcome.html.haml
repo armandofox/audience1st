@@ -1,21 +1,21 @@
 = error_messages_for :customer, :header_message => default_validation_error_message
-%h1.page_heading.center= "#{h @customer.first_name.name_capitalize}'s Tickets and Reservations"
+- @vouchers_by_season.each_pair do |season,subscriber_vouchers|
+  %h1.page_heading.center #{@package_type} Reservations (#{humanize_season(season)})
+  %br/
+  = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
+  %br/
+
+%h1.page_heading.center Regular Tickets
 %br/
+
 - if @vouchers.empty?
   %p There are no tickets in your account.
 - else
   %table#customerVoucherList.full_width.hilite
     %thead
-      %tr
-        - if @admin.is_boxoffice
-          %th.adminField Tkt #
-        %th Type
-        %th Reservation
-        - if @admin.is_boxoffice
-          %th.adminField Admin
-          %th.adminField Comment
+      = render :partial => 'voucher_header', :locals => {:is_boxoffice => @admin.is_boxoffice}
     %tbody
-      = render :partial => "voucher", :collection => @vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
+      = render :partial => 'voucher', :collection => @other_vouchers.sort_by  {|v| v.showdate_id.zero? ? -1.0e15 : -(v.showdate.thedate.to_i)}, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
 
 %br/
 = button_to 'Buy More Tickets', {:controller => 'store', :action => 'index'}, {:method => :get}

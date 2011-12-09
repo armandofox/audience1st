@@ -63,27 +63,22 @@ class CustomersController < ApplicationController
     session[:store_customer] = @customer.id
 
     name = @gLoggedIn.full_name.name_capitalize
-    if @customer.subscriber?
-      @subscriber = true
+    @subscriber = @customer.subscriber?
+    if @subscriber
+      @package_type =  'Season Subscription'
       @page_title = "Welcome, Subscriber #{name}"
-      # separate vouchers into these categories:
-      # unreserved subscriber vouchers, reserved subscriber vouchers, others
-      @subscriber_vouchers, @other_vouchers =
-        @vouchers.partition { |v| v.subscriber_voucher? }
-      @vouchers_by_season = @subscriber_vouchers.group_by(&:season)
-      @reserved_vouchers,@unreserved_vouchers =
-        @subscriber_vouchers.partition { |v| v.reserved? }
     else
-      @vouchers_by_season = {}
-      @subscriber_vouchers = []
-      @other_vouchers = []
-      @reserved_vouchers = []
-      @unreserved_vouchers = []
-      @subscriber = nil
+      @package_type = 'Ticket Package'
       @page_title = "Welcome, #{name}"
     end
+    # separate vouchers into these categories:
+    # unreserved subscriber vouchers, reserved subscriber vouchers, others
+    @subscriber_vouchers, @other_vouchers =
+      @vouchers.partition { |v| v.subscriber_voucher? }
+    @vouchers_by_season = @subscriber_vouchers.group_by(&:season)
+    @reserved_vouchers,@unreserved_vouchers =
+      @subscriber_vouchers.partition { |v| v.reserved? }
     flash[:notice] = (@current_user.login_message || "Logged in successfully") if new_session?
-    render :action => (@subscriber ? :welcome_subscriber : :welcome)
   end
 
   def link_user_accounts
