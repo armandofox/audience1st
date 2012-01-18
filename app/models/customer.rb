@@ -598,9 +598,9 @@ EOSQL1
       opts[:exclude_blacklist]
 
     Customer.find_by_sql("SELECT DISTINCT c.* " <<
-                         " FROM customers c JOIN vouchers v ON v.customer_id=c.id " <<
+                         " FROM customers c JOIN items v ON v.customer_id=c.id " <<
                          " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
-                         " WHERE " <<
+                         " WHERE v.type='Voucher' AND " <<
                          conds.join(' AND ') <<
                          " ORDER BY #{order_by}")
   end

@@ -12,8 +12,8 @@ class AllSubscribers < Report
     if (seasons = params[:seasons]).empty?
       vtypes = Vouchertype.subscription_vouchertypes
     else
-      vtypes = params[:seasons].map do |season|
-        Vouchertype.subscription_vouchertypes(season)
+      vtypes = params[:seasons].first.split(',').map do |season|
+        Vouchertype.subscription_vouchertypes(season.to_i)
       end.flatten
     end
     n = LapsedSubscribers.new
