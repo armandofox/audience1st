@@ -18,17 +18,17 @@ describe LapsedSubscribers do
     it 'should not call purchased_any if have[] is empty' do
       Customer.should_not_receive(:purchased_any_vouchertypes)
       Customer.should_receive(:purchased_no_vouchertypes).with([1,2]).and_return([])
-      @report.generate(:have_vouchertypes => [-1,0], :dont_have_vouchertypes => [0,1,2])
+      @report.generate(:have_vouchertypes => '-1,0', :dont_have_vouchertypes => '0,1,2')
     end
     it 'should not call purchased_none if dont_have[] empty' do
       Customer.should_receive(:purchased_any_vouchertypes).and_return([])
       Customer.should_not_receive(:purchased_no_vouchertypes).with([1,2])
-      @report.generate(:dont_have_vouchertypes => [-1,0], :have_vouchertypes => [0,1,2])
+      @report.generate(:dont_have_vouchertypes => '-1,0', :have_vouchertypes => '0,1,2')
     end
     it 'should call both scopes if both arrays nonempty' do
       Customer.should_receive(:purchased_any_vouchertypes).and_return([])
       Customer.should_receive(:purchased_no_vouchertypes).and_return([])
-      @report.generate(:dont_have_vouchertypes => [1,0], :have_vouchertypes => [0,1,2]).should be_empty
+      @report.generate(:dont_have_vouchertypes => '1,0', :have_vouchertypes => '0,1,2').should be_empty
     end
   end
 end

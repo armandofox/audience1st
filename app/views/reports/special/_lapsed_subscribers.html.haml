@@ -5,7 +5,7 @@
     %td
       (Optional) But <strong>NONE</strong> of these:
   %tr
-    %td= select_tag 'have_vouchertypes[]', options_from_collection_for_select(@args[:have_vouchertypes], :id, :name_with_season), :multiple => true
-    %td= select_tag 'dont_have_vouchertypes[]', options_from_collection_for_select(@args[:dont_have_vouchertypes], :id, :name_with_season), :multiple => true
+    %td= select_tag 'have_vouchertypes', options_from_collection_for_select(@args[:have_vouchertypes], :id, :name_with_season), :multiple => true
+    %td= select_tag 'dont_have_vouchertypes', options_from_collection_for_select(@args[:dont_have_vouchertypes], :id, :name_with_season), :multiple => true
     
 

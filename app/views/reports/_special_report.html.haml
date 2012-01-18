@@ -1,4 +1,4 @@
-- form_tag :action => 'run_special_report' do
+- form_tag({:action => 'run_special_report'}, {:method => :get}) do
   = render :partial => "reports/special/#{name}"
   = render :partial => 'output_options'
   = hidden_field_tag '_report', name
@@ -7,6 +7,7 @@
     = submit_tag 'Download to Excel'
     = submit_to_remote 'count', 'Estimate number of matches', |
       :url => {:action => 'run_special_report'},  |
+      :method => :get, |
       :before => "Element.show('report_spinner')", |
       :complete => "Element.hide('report_spinner')", |
       :update => 'report_preview' |

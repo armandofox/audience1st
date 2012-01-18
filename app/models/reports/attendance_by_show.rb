@@ -9,9 +9,9 @@ class AttendanceByShow < Report
   end
 
   def generate(params = {})
-    shows = (params[:shows] || []).map(&:to_i).reject(&:zero?)
+    shows = (params[:shows] || '').split(',').map(&:to_i).reject(&:zero?)
     # do default search for OR. if it's AND, winnow the list afterward.
-    shows_not = (params[:shows_not] || []).map(&:to_i).reject(&:zero?)
+    shows_not = (params[:shows_not] || '').split(',').map(&:to_i).reject(&:zero?)
     if (shows.empty? && shows_not.empty?)
       add_error "Please specify one or more productions that have one or more performances."
       return nil

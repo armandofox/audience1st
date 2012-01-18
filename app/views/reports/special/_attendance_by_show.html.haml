@@ -6,8 +6,8 @@
       <strong>ANY</strong>
       of these:
       %br
-      = select_tag 'shows[]', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
+      = select_tag 'shows', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
     %td 
       But <strong>NONE</strong> of these:
       %br
-      = select_tag 'shows_not[]', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
+      = select_tag 'shows_not', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true

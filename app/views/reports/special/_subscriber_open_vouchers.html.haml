@@ -1,3 +1,3 @@
 %p List customers who have open (unreserved) vouchers for ANY of these:
-= select_tag 'vouchertypes[]', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season), :multiple => true
+= select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season), :multiple => true
 = hidden_field_tag '_report', 'SubscriberOpenVouchers'

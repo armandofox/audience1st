@@ -135,6 +135,7 @@ class ReportsController < ApplicationController
 
   def run_special_report
     n = params[:_report]
+    logger.debug request.request_uri
     @report = n.camelize.constantize.__send__(:new, params[:output])
     if (n.blank? || @report.nil? || !@report.kind_of?(Report))
       flash[:warning] = "Error: unknown report name."
