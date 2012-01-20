@@ -9,7 +9,7 @@ class AttendanceByShow < Report
   end
 
   def generate(params = {})
-    shows = (params[:shows] || '').split(',').map(&:to_i).reject(&:zero?)
+    shows = (params[:shows] || '').first.split(',').map(&:to_i).reject(&:zero?)
     # do default search for OR. if it's AND, winnow the list afterward.
     shows_not = (params[:shows_not] || '').split(',').map(&:to_i).reject(&:zero?)
     if (shows.empty? && shows_not.empty?)

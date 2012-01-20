@@ -13,7 +13,7 @@ class SubscriberOpenVouchers < Report
   def generate(params = {})
     @errors = ["Please specify one or more subscriber voucher types."] and return if
       (vouchertypes = params[:vouchertypes]).blank?
-    vouchertypes = params[:vouchertypes].split(',').reject { |x| x.to_i < 1 }
+    vouchertypes = params[:vouchertypes].first.split(',').reject { |x| x.to_i < 1 }
     self.log =   %{
         SELECT DISTINCT c.*
         FROM customers c LEFT OUTER JOIN items v ON v.customer_id = c.id
