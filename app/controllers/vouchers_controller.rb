@@ -29,7 +29,7 @@ class VouchersController < ApplicationController
       return
     end
     if request.get?
-      @vouchers = Vouchertype.comp_vouchertypes.reject { |v| v.offer_public == Vouchertype::EXTERNAL }
+      @vouchers = Vouchertype.comp_vouchertypes(Time.this_season).reject { |v| v.offer_public == Vouchertype::EXTERNAL }
       if @vouchers.empty?
         flash[:notice] = "You must define some vouchertypes first"
         redirect_to(:controller => 'vouchertypes', :action => 'list')
