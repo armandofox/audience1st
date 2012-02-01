@@ -22,6 +22,6 @@ class LapsedSubscribers < Report
                       Customer.purchased_any_vouchertypes(have) end
     purchased_none = if have_not.empty? then [] else
                        Customer.purchased_no_vouchertypes(have_not) end
-    return purchased_any & purchased_none
+    return purchased_any - purchased_none
   end
 end
