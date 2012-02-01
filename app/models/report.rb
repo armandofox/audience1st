@@ -192,7 +192,7 @@ class Report
       when :require_valid_address
         reject << '!c.valid_mailing_address?'
       when :filter_by_zip
-        zips = val.split(/\s*,\s*/).join('|')
+        zips = @output_options[:zip_glob].split(/\s*,\s*/).join('|')
         reject << "(!c.zip.blank? && c.zip !~ /^(#{zips})/ )"
       when :login_from
         if @output_options[:login_since]
