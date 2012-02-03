@@ -17,7 +17,7 @@ class AttendanceByShow < Report
       return nil
     end
     seen = if shows.empty? then Customer.all else Customer.seen_any_of(shows) end
-    not_seen = if shows_not.empty? then [] else Customer.seen_none_of(shows_not) end
+    not_seen = if shows_not.empty? then [] else Customer.seen_any_of(shows_not) end
     return seen - not_seen
   end
 end
