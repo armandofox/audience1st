@@ -211,7 +211,7 @@ class Report
       # remove duplicate mailing addresses
       hshtemp = Hash.new
       arr.each_index do |i|
-        canonical = arr[i].street.downcase.tr_s(' ', ' ')
+        canonical = arr[i].street.to_s.downcase.tr_s(' ', ' ')
         if hshtemp.has_key?(canonical)
           arr.delete_at(i)
         else
