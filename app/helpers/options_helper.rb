@@ -1,5 +1,9 @@
 module OptionsHelper
 
+  def contact_info
+    [Option.value(:help_email), Option.value(:venue_telephone)].flatten.join(' or ')
+  end
+
   def edit_field_for(v)
     name = "values[#{v.name}]"
     case v.typ

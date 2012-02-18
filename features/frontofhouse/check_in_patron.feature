@@ -12,7 +12,6 @@ Background:
   And customer Bob Jones has 8 "General" tickets
   And  I am logged in as boxoffice
   And  I am on the checkin page for April 15, 2010, 8:00pm
-  Then show me the page
   Then I should see "Chicago - Thursday, Apr 15, 8:00 PM"
   And  I should see a table "table[@id='checkin']" with rows "|Smith|Joe|General||2", "|Smith|Joe|Senior||3", "|Jones|Bob|General||8"
 
