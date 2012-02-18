@@ -5,12 +5,11 @@ class Mailer < ActionMailer::Base
   
   include CustomersHelper
 
-  def send_new_password(customer, newpass, whathappened)
+  def confirm_account_change(customer, whathappened)
     sending_to(customer)
     @subject    << "#{customer.full_name}'s account"
     @body.merge!(
       :email         => customer.email,
-      :newpass       => newpass,
       :question      => secret_question_text(customer.secret_question),
       :answer        => customer.secret_answer,
       :greeting      => customer.full_name,

@@ -148,7 +148,7 @@ class CustomersController < ApplicationController
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank? 
         # send confirmation email
-        email_confirmation(:send_new_password,@customer, nil,
+        email_confirmation(:confirm_account_change,@customer, 
                            "updated your email address in our system")
       end
       redirect_to_stored
@@ -327,8 +327,7 @@ class CustomersController < ApplicationController
       :logged_in_id => logged_in_id)
     # if valid email, send user a welcome message
     unless params[:dont_send_email]
-      email_confirmation(:send_new_password,@customer,
-        params[:customer][:password],"set up an account with us")
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
     end
     current_user = @customer
     @gCheckoutInProgress ? redirect_to_stored : redirect_to(:action => 'switch_to', :id => @customer.id)
@@ -344,8 +343,7 @@ class CustomersController < ApplicationController
     begin
       @customer.save!
       @customer.update_attribute(:last_login, Time.now)
-      email_confirmation(:send_new_password,@customer,
-        params[:customer][:password],"set up an account with us")
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
       self.current_user = @customer
       logger.info "Session cid set to #{session[:cid]}"
       Txn.add_audit_record(:txn_type => 'edit',
