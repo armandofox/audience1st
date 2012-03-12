@@ -84,6 +84,7 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
+    @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
       send_data(AccountingReport.render_csv(:from => @from, :to => @to),
