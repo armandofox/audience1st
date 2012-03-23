@@ -44,7 +44,7 @@ class AutoImporter
       prepare_import
       import.import!
       prepare_summary_messages
-      import.finalize(Customer.special_customer(:boxoffice_daemon))
+      import.finalize(Customer.boxoffice_daemon)
       success = true
     rescue Exception => e
       @messages << e.message

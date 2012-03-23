@@ -58,7 +58,7 @@ class ImportsController < ApplicationController
     @imports,@rejects = @import.import!
     render(:action => :new) and return if !@import.errors.empty?
     flash[:notice] = "#{@imports.length} records successfully imported."
-    @import.finalize(logged_in_id)
+    @import.finalize(logged_in_user)
     if @rejects.empty?
       redirect_to imports_path
     else
@@ -78,7 +78,7 @@ class ImportsController < ApplicationController
   end
 
   def index
-    @imports = Import.all
+    @imports = Import.all_by_date
     if @imports.empty?
       flash.keep
       redirect_to :action => :new

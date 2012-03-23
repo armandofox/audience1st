@@ -80,8 +80,9 @@ describe ImportsController do
       Import.stub(:find).and_return(@import)
     end
     it "should get finalized if successful" do
-      controller.stub(:logged_in).and_return(mock_model(Customer).id)
-      @import.should_receive(:finalize)
+      admin = BasicModels.create_customer_by_role('boxoffice')
+      controller.stub(:logged_in_user).and_return(admin)
+      @import.should_receive(:finalize).with(admin)
       put :update, :id => @import
     end
     it "should not get finalized if unsuccessful" do

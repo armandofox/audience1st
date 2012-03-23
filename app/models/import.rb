@@ -1,15 +1,25 @@
 class Import < ActiveRecord::Base
   require 'csv'
-
+  include Comparable
+  
   UPLOADED_FILES_PATH = File.join(RAILS_ROOT, 'tmp')
 
   belongs_to :customer
   def self.foreign_keys_to_customer ;  [:customer_id] ;  end
 
+  def <=>(other)
+    (self.completed_at || self.updated_at || self.created_at || Time.now) <=>
+      (other.completed_at || other.updated_at || other.created_at || Time.now)
+  end
+  
+  def self.all_by_date
+    Import.all.sort.reverse
+  end
+
   def import! ; raise "Must override this method" ; end
 
-  def finalize(bywhom_id = Customer.special_customer(:boxoffice_daemon).id)
-    self.update_attributes(:completed_at => Time.now, :customer_id => bywhom_id)
+  def finalize(bywhom = Customer.boxoffice_daemon)
+    self.update_attributes(:completed_at => Time.now, :customer => bywhom)
   end
 
   def completed? ; !completed_at.nil? ; end
