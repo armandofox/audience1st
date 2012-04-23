@@ -37,6 +37,7 @@ class StoreController < ApplicationController
     setup_for_initial_visit unless (@promo_code = redeeming_promo_code)
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
+    set_return_to :action => :index
     setup_ticket_menus
   end
 
