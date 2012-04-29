@@ -3,6 +3,7 @@ module ReportHelper
   def checkbox_for(attr)
     check_box_tag("use_#{attr.to_s}", "1", params["use_#{attr.to_s}".to_sym])
   end
+    
 
   def vouchertypes_for_account_code(acc_code)
     "Account code #{acc_code} includes:\n" <<

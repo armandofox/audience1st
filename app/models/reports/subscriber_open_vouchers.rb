@@ -13,7 +13,7 @@ class SubscriberOpenVouchers < Report
   def generate(params = {})
     @errors = ["Please specify one or more subscriber voucher types."] and return if
       (vouchertypes = params[:vouchertypes]).blank?
-    vouchertypes = params[:vouchertypes].first.split(',').reject { |x| x.to_i < 1 }
+    vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
     Customer.with_open_subscriber_vouchers(vouchertypes)
   end
 

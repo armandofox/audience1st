@@ -174,6 +174,20 @@ class Report
 
   protected
 
+  # there's a weirdness in Rails 2.3.x or else in Rack, where the
+  # results of a multi-select box are returned in params[] as
+  # ["3,4,5"] rather than ["3","4","5"].  strangely, the right thing
+  # happens when submitted via an AJAX helper in Prototype, but the
+  # wrong thing happens when submitted via form submit.  This method
+  # handles either one until we figure out what the problem is.
+  def self.list_of_ints_from_multiselect(ary)
+    ary ||= []
+    if (ary.length == 1 && ary[0] =~ /^[0-9,]+$/)
+      ary = ary[0].split(',')
+    end
+    ary.map(&:to_i).reject(&:zero?)
+  end
+
   def postprocess(arr)
     arr ||= []
     # if output options include stuff like duplicate elimination, do that here

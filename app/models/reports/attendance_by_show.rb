@@ -1,5 +1,5 @@
 class AttendanceByShow < Report
-
+  
   def initialize(output_options={})
     @view_params = {
       :name => "Attendance by show",
@@ -9,9 +9,9 @@ class AttendanceByShow < Report
   end
 
   def generate(params = {})
-    shows = (params[:shows] || '').first.split(',').map(&:to_i).reject(&:zero?)
+    shows = Report.list_of_ints_from_multiselect(params[:shows])
     # do default search for OR. if it's AND, winnow the list afterward.
-    shows_not = (params[:shows_not] || '').first.split(',').map(&:to_i).reject(&:zero?)
+    shows_not = Report.list_of_ints_from_multiselect(params[:shows_not])
     if (shows.empty? && shows_not.empty?)
       add_error "Please specify one or more productions that have one or more performances."
       return nil

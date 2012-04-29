@@ -11,8 +11,8 @@ class LapsedSubscribers < Report
   end
 
   def generate(params={})
-    have = (params[:have_vouchertypes] || '').first.split(',').map(&:to_i).reject { |x| x < 1 }
-    have_not = (params[:dont_have_vouchertypes] || '').first.split(',').map(&:to_i).reject { |x| x < 1 }
+    have = Report.list_of_ints_from_multiselect(params[:have_vouchertypes])
+    have_not = Report.list_of_ints_from_multiselect(params[:dont_have_vouchertypes])
     unless have.size + have_not.size > 0
       add_error "You  must specify at least one type of voucher from at least one list."
       return nil
