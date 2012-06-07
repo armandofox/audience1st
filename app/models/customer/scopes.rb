@@ -10,14 +10,16 @@ class Customer < ActiveRecord::Base
 
   named_scope :purchased_any_vouchertypes, lambda { |vouchertype_ids|
     { :joins => :vouchertypes,
-      :conditions => ['vouchertypes.id IN (?)', vouchertype_ids] }}
+      :conditions => ['vouchertypes.id IN (?)', vouchertype_ids],
+      :select => 'DISTINCT customers.*'}}
+  
   def self.purchased_no_vouchertypes(vouchertype_ids)
     Customer.all - Customer.purchased_any_vouchertypes(vouchertype_ids)
   end
 
 
   named_scope :seen_any_of, lambda { |show_ids|
-    { :joins => ',items, showdates',
+    { :joins => [:vouchers,:showdates],
       :conditions => ['items.customer_id = customers.id AND
                       items.showdate_id = showdates.id AND
                       items.type = "Voucher" AND

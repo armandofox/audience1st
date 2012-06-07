@@ -11,3 +11,9 @@
       But <strong>NONE</strong> of these:
       %br
       = select_tag 'shows_not', options_from_collection_for_select(@args[:shows], :id, :name_with_run_dates_short), :multiple => true
+  %tr
+    %td
+      = check_box_tag 'restrict_by_vouchertype'
+      Only if they used any of these:
+      %br
+      = select_tag 'vouchertypes', options_from_collection_for_select((Vouchertype.find_all_by_season(Time.now.this_season) + Vouchertype.find_all_by_season(Time.now.this_season - 1)), :id, :name_with_season_and_price), :multiple => true
