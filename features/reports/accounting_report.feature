@@ -14,7 +14,7 @@ Background:
     | Capital  | 3333 | Donations to capital campaign |
   And the following purchasemethods exist:
     | description | shortdesc | nonrevenue |
-    | Credit card | box_cc    | nil        |
+    | Credit Card | box_cc    | nil        |
     | Cash        | box_cash  | nil        |
 
 Scenario: View breakdown of donations by date and account code
