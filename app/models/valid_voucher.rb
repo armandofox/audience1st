@@ -46,6 +46,8 @@ class ValidVoucher < ActiveRecord::Base
   
   public
 
+  def season ; vouchertype.season ; end
+
   def visible_to(cust)
     Vouchertype.find(self.vouchertype_id).visible_to(cust)
   end
