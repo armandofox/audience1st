@@ -25,7 +25,7 @@ module CustomersHelper
   def link_to_customer(customer, options={})
     raise "Invalid user" unless customer
     content_text      = options.delete(:content_text) || customer.full_name
-    link_to h(content_text), {:controller => 'customers', :action => 'welcome'}, options
+    link_to h(content_text), {:controller => 'customers', :action => 'switch_to', :id => customer}, options
   end
 
   #
