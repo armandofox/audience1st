@@ -11,7 +11,7 @@ class Cart
   def self.generate_order_id
     @@serial ||= 0
     @@serial += 1
-    sprintf("%02d%05d%03d", Option.value(:venue_id), self.object_id, @@serial)
+    sprintf("%06d%03d", self.object_id, @@serial)
   end
 
   public

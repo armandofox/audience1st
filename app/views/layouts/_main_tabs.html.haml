@@ -3,13 +3,14 @@
   ['Billing/Contact', :customers, :edit], |
   ['Change Password', :customers, :change_password]] |
 - tabs.insert(1, ['Subscribe', :store, :subscribe]) unless Vouchertype.bundles_available_to(@gCustomer).empty?
+%ul.nav= nav_tabs 'store_nav', tabs
 - if @gAdmin.is_staff
-  - tabs +=    |
+  - tabs =    |
     [['Season', :shows, :list], |
     ['Vouchers', :vouchertypes, :list], |
     ['Reports', :reports, :index], |
     ['Box Office', :box_office, :walkup], |
     ['Donations', :donations, :list]] |
-- if @gAdmin.is_boxoffice_manager
-  - tabs << ['Admin', :options, :edit]
-%ul#store_nav= nav_tabs 'store_nav', tabs
+  - if @gAdmin.is_boxoffice_manager
+    - tabs << ['Admin', :options, :edit]
+    %ul.nav= nav_tabs 'admin_nav', tabs
