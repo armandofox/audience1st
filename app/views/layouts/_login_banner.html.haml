@@ -1,26 +1,9 @@
 #welcome_header
-  - if USE_FACEBOOK && !ie8 && @gLoggedIn.facebook_user?
-    #welcome.facebook
-      & Welcome, #{@gLoggedIn.full_name}
-      %fb:profile-pic{:uid => @gLoggedIn.fb_user_id, :facebook_logo => :false, :size => :thumb}
-      = button_to_function 'Log Out', "FB.Connect.logoutAndRedirect('#{logout_path}')"
-  - else
-    #welcome.regular
-      & Welcome, #{@gLoggedIn.full_name}
-      = button_to 'Log Out', logout_path
-      - if USE_FACEBOOK && !ie8 && acting_on_own_behalf
-        %span#link_to_facebook
-          &  Link your #{Option.value(:venue)} account to Facebook!
-          = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")
+  Welcome, #{@gLoggedIn.full_name}
+  = gen_button 'Log Out', logout_path
   - if @disableAdmin
     = gen_button('Regular Patron View', :controller => 'customers', :action => 'temporarily_disable_admin') 
     = popup_help_for :disable_admin
   - elsif @enableAdmin
     = gen_button('Admin View', :controller => 'customers', :action => 'reenable_admin') 
     = popup_help_for :disable_admin
-
-- if @gAdmin.is_admin
-  #admin_welcome_header
-    = Time.now.to_formatted_s(:short)
-    %br
-    & #{Session.num_active} users
