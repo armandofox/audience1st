@@ -35,14 +35,17 @@ namespace :provision do
   task :create_database do
     "For new venue, create new database and user, and grant migration privileges to migration user.  Set venue password in venues.yml first."
     abort "Need MySQL root password" unless (pass = variables[:password])
-    config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
-    abort "Need to set venue password in venues.yaml" if (venuepass = config['password']).to_s == ''
+    venuepass = config['password']
+    abort "Need to set venue password in venues.yaml" unless venuepass.to_s != ''
     mysql = "mysql -uroot '-p#{pass}' -e \"%s;\""
     run (mysql % "create database #{venue}")
     run (mysql % "create user '#{venue}'@'localhost' identified by '#{venuepass}'")
     run (mysql % "grant select,insert,update,delete,lock tables on #{venue}.* to '#{venue}'@'localhost'")
+  end
+
+  task :initial_deploy do
+    "Setup symlinks etc for initial deployment of new venue"
     run "ln -s #{home}/rails/#{venue}/current/public #{home}/public_html"
-    # still need to link stylesheets
   end
 
   #  NEED A TASK TO SETUP THE VIRTUAL SERVER ENTRIES FOR PHUSION PASSENGER
@@ -63,10 +66,9 @@ namespace :provision do
     run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
     run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
     run "/bin/rm -f #{tmptables}"
-    run "cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => \"Administrator\", :last_name => \"Administrator\", :email => \"admin\", :password => \"admin\", :created_by_admin => true)"
-    run "cd #{init_release_path} && script/runner -e production 'Customer.find_by_email('admin').update_attribute(:role, 100)'"
+    run %Q{cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => "Administrator", :last_name => "Administrator", :email => "admin@#{venue}.org", :password => "admin", :created_by_admin => true).update_attribute(:role, 100)'}
     ## need to wipe out Options table values here
-    run "cd #{init_release_path} && script/runner -e production 'Option.set_value!(\"venue_shortname\", \"#{venue}\")'"
+    run %Q{cd #{init_release_path} && script/runner -e production 'Option.set_value!("venue_shortname", "#{venue}")'}
   end
 end
 
