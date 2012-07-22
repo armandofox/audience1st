@@ -18,8 +18,7 @@ module AuthenticatedSystem
   # Future calls avoid the database because nil is not equal to false.
   def current_user
     unless @current_user == false # false means don't attempt auto login
-      @current_user ||= (login_from_session || login_from_basic_auth ||
-        login_from_cookie || login_from_facebook)
+      @current_user ||= (login_from_session || login_from_cookie)
       if @current_user && !session[:admin_id] && (session[:admin_id] != false)
         logger.info "Checking whether to enable admin on #{@current_user}"
         possibly_enable_admin(@current_user)
