@@ -25,12 +25,6 @@ set :branch, (variables[:branch] || 'master')
 ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
 ssh_options[:forward_agent] = true
 
-# run migrations in a separate environment, so they can use a different
-# DB user
-deploy.task :migrate, :roles => [:db] do
-  run "cd #{release_path} && rake db:migrate RAILS_ENV=migration"
-end
-
 namespace :provision do
   task :create_database do
     "For new venue, create new database and user, and grant migration privileges to migration user.  Set venue password in venues.yml first."
@@ -47,10 +41,20 @@ namespace :provision do
     "Setup symlinks etc for initial deployment of new venue"
     run "ln -s #{home}/rails/#{venue}/current/public #{home}/public_html"
   end
-
   #  NEED A TASK TO SETUP THE VIRTUAL SERVER ENTRIES FOR PHUSION PASSENGER
   #  add to end of  /usr/local/apache/conf/httpd.conf:  RailsBaseURI /venuename
   #  then restart apache
+
+  task :truncate_database, :roles => [:db] do
+    "Truncate all non-static DB tables and wipe out sensitive Options"
+    drop_all = %w(bulk_downloads customers customers_labels imports items labels sessions showdates shows txns valid_vouchers visits vouchertypes).map do |tbl|
+      "truncate table #{tbl}"
+    end.join("; ")
+    run  "mysql -umigration -pm1Gr4ti0N -D#{venue} -e \"#{drop_all};\""
+    init_release_path = "#{home}/rails/#{venue}/current"
+    run %Q{cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => "Administrator", :last_name => "Administrator", :email => "admin@#{venue}.org", :password => "admin", :created_by_admin => true).update_attribute(:role, 100)'}
+    run %Q{cd #{init_release_path} && script/runner -e production 'Option.update_all(:value => ""); Option.set_value!(:venue_shortname, "#{venue}")'}
+  end
   
   # initialize DB by copying schema and static content from a (production)
   # source  DB
@@ -66,11 +70,17 @@ namespace :provision do
     run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
     run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
     run "/bin/rm -f #{tmptables}"
-    run %Q{cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => "Administrator", :last_name => "Administrator", :email => "admin@#{venue}.org", :password => "admin", :created_by_admin => true).update_attribute(:role, 100)'}
-    ## need to wipe out Options table values here
-    run %Q{cd #{init_release_path} && script/runner -e production 'Option.set_value!("venue_shortname", "#{venue}")'}
+    Rake::Task['provision:truncate_database'].execute
   end
 end
+
+
+# run migrations in a separate environment, so they can use a different
+# DB user
+deploy.task :migrate, :roles => [:db] do
+  run "cd #{release_path} && rake db:migrate RAILS_ENV=migration"
+end
+
 
 namespace :deploy do
   desc "Clear all sessions from DB, in case of change in session schema."
