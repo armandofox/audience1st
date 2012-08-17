@@ -5,7 +5,7 @@
 # Make sure the secret is at least 30 characters and all random, 
 # no regular words or you'll be exposed to dictionary attacks.
 ActionController::Base.session = {
-  :key         => '_trunk_session_' + Option.value(:venue_shortname),
+  :key         => '_trunk_session_' + Option.value(:venue_shortname).to_s,
   :secret      => 'b6f7065cfaf7af10e429231efa4d33d55dca47265fc48eaf24338db4991bcaa7139e6c7266a7626253ecfff845618deaa75cb6c7ad2d2af845992e896825a110'
 }
 

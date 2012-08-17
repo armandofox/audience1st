@@ -35,7 +35,7 @@ class CustomersController < ApplicationController
     :add_flash => {:warning => "This action requires a POST."} )
 
   # checks for SSL should be last, as they append a before_filter
-  ssl_required :change_password, :change_secret_question, :new, :create, :user_create, :edit
+  ssl_required :change_password, :change_secret_question, :new, :create, :user_create, :edit, :forgot_password
   ssl_allowed :auto_complete_for_customer_full_name, :update, :link_user_accounts, :link_existing_account
 
   # auto-completion for customer search
@@ -173,6 +173,49 @@ class CustomersController < ApplicationController
       redirect_to :action => 'welcome'
     else
       render :action => 'change_password'
+    end
+  end
+  
+  def forgot_password
+    if request.get?
+      set_return_to(params[:redirect_to] || login_path)
+    else
+      if send_new_password(params[:email])
+        redirect_to_stored
+      else
+        redirect_to :action => 'forgot_password'
+      end
+    end
+  end
+
+  def send_new_password(email)
+    if email.blank?
+      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
+      return nil
+    end
+    @customer = Customer.find_by_email(email)
+    unless @customer
+      flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
+      return nil
+    end
+    begin
+      newpass = String.random_string(6)
+      @customer.password = @customer.password_confirmation = newpass
+      # Save without validations here, because if there is a dup email address,
+      # that will cause save-with-validations to fail!
+      @customer.save(false)
+      email_confirmation(:send_new_password,@customer, newpass,
+        "requested your password for logging in")
+      # will reach this point (and change password) only if mail delivery
+      # doesn't raise any exceptions
+      Txn.add_audit_record(:txn_type => 'edit',
+        :customer_id => @customer.id,
+        :comments => 'Password has been reset')
+      return true
+    rescue Exception => e
+      flash[:notice] = e.message +
+        "<br/>Please contact #{Option.value(:help_email)} if you need help."
+      return nil
     end
   end
 

@@ -44,6 +44,20 @@ Given /^I am logged in as (.*)?$/ do |who|
   page.should have_css('#customer_quick_search') if is_admin
 end
 
+Then /^I should be able to login with username "(.*)" and that password$/ do |username|
+  Then %Q{I should be able to login with username "#{username}" and password "#{@password}"}
+end
+
+Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |username,password|
+  visit '/logout'
+  visit '/sessions/new'
+  customer = Customer.find_by_email(username)
+  fill_in 'email', :with => username
+  fill_in 'password', :with => password
+  click_button 'Login'
+  page.should have_content("Welcome, #{customer.first_name}")
+end
+
 Given /^customer "(.*) (.*)" (should )?exists?$/ do |first,last,flag|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
 end

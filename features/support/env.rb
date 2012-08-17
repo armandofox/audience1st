@@ -66,6 +66,10 @@ Before do
   Fixtures.create_fixtures(fixtures_folder, fixtures)
   # make rspec mocks/stubs work
   $rspec_mocks ||= Spec::Mocks::Space.new
+  # Allow testing of emails
+  ActionMailer::Base.delivery_method = :test
+  ActionMailer::Base.perform_deliveries = true
+  ActionMailer::Base.deliveries.clear
 end
 
 After do
