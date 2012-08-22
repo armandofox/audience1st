@@ -23,12 +23,6 @@ function disableRegularFormSubmit() {
   $('_stripe_payment_form').onsubmit = function(evt) { return false };
 }
 
-function getStripeTotal() {
-  var total = $$('._stripe_total')[0].innerHTML;
-  total = total.replace(/[^0-9.]+/g, '');
-  return(100 * Number(total));
-}
-
 function stripeResponseHandler(status, response) {
   if (response.error) {
     // re-enable submit button
@@ -42,8 +36,6 @@ function stripeResponseHandler(status, response) {
 }
 
 // Submit the cc info in the form whose id is _stripe_payment_form
-// Total is a floating-point number in field whose CLASS is _stripe_total
-//   (convert to cents before submitting)
 // Submit button's ID is _stripe_submit
 
 function stripeSubmit(event) {
@@ -57,7 +49,6 @@ function stripeSubmit(event) {
   var key = $('_stripe_api_key').getValue();
   $('payment_errors').innerHTML = '';  //  clear out errors field
   $('_stripe_submit').disabled = true; // disable submit button
-  var total = getStripeTotal();
   var card = {
         number: $('credit_card_number').getValue(),
         cvc: $('credit_card_verification_value').getValue(),
@@ -71,6 +62,6 @@ function stripeSubmit(event) {
       card.address_state = $$('#billing #customer_state')[0].getValue();
   }
   Stripe.setPublishableKey(key);
-  Stripe.createToken(card, total, stripeResponseHandler);
+  Stripe.createToken(card, stripeResponseHandler);
   return(false);
 }
