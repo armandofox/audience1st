@@ -197,17 +197,18 @@ class ReportsController < ApplicationController
 
   def unfulfilled_orders_addresses
     sql = <<-EOQ
-     SELECT DISTINCT c.*
-     FROM customers c,items v
-     WHERE c.id=v.customer_id AND v.fulfillment_needed=1
+     SELECT  c.*, vt.name AS product, count(*) AS count
+     FROM customers c,items v,vouchertypes vt
+     WHERE c.id=v.customer_id AND v.fulfillment_needed=1 AND v.vouchertype_id=vt.id
+     GROUP BY c.street,vt.id
+     ORDER BY c.last_name
 EOQ
     @customers = Customer.find_by_sql(sql)
     if @customers.empty?
       flash[:notice] = 'No unfulfilled orders at this time.'
-      redirect_to :action => 'index'
-      return
+      redirect_to :action => 'index' and return
     end
-    output = Customer.to_csv(@customers)
+    output = Customer.to_csv(@customers, :extra => %w(product count))
     download_to_excel(output, 'customers')
   end
 

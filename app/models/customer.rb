@@ -566,8 +566,10 @@ EOSQL1
     filenm = custs.first.class.to_s.downcase
     CSV::Writer.generate(output='') do |csv|
       unless opts[:suppress_header]
-        csv << ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
+        header = ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
           'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"]
+        header += opts[:extra] if opts[:extra]
+        csv << header
       end
       custs.each do |c|
         row = [
@@ -579,6 +581,7 @@ EOSQL1
           (c.blacklist ? "true" : ""),
           (c.e_blacklist ? "true" : "")
         ]
+        opts[:extra].each { |attrib|  row << c.send(attrib) }
         row << c.errors.full_messages.join('; ') if opts[:include_errors]
         csv << row
       end
