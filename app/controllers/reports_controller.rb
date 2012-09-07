@@ -198,7 +198,7 @@ class ReportsController < ApplicationController
   def unfulfilled_orders_addresses
     sql = <<-EOQ
      SELECT DISTINCT c.*
-     FROM customers c,vouchers v
+     FROM customers c,items v
      WHERE c.id=v.customer_id AND v.fulfillment_needed=1
 EOQ
     @customers = Customer.find_by_sql(sql)
