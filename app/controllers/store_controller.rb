@@ -315,7 +315,7 @@ class StoreController < ApplicationController
     @all_shows = get_all_shows(get_all_showdates(is_admin))
     if @sd = current_showdate   # everything keys off of selected showdate
       @sh = @sd.show
-      @all_showdates = (is_admin ? @sh.showdates :
+      @all_showdates = ((is_admin || @sh.special?) ? @sh.showdates :
         @sh.future_showdates)
       # @all_showdates = (is_admin ? @sh.showdates :
       #  @sh.future_showdates.select { |s| s.saleable_seats_left > 0 })
@@ -411,7 +411,7 @@ class StoreController < ApplicationController
         :conditions => ['showdates.thedate >= ?' ,Time.now.at_beginning_of_season - 1.year],
         :order => "thedate ASC").reject { |sd| !sd.show.special? != !@special_shows_only }
     else
-      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).reject { |sd| (sd.thedate < Date.today || !sd.show.special? != !@special_shows_only)}.sort_by(&:thedate)
+      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).reject { |sd| (!sd.show.special? && sd.thedate < Date.today || !sd.show.special? != !@special_shows_only)}.sort_by(&:thedate)
     end
   end
 
