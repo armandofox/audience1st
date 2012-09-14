@@ -265,7 +265,7 @@ EOCONDS1
     now = Time.now
     if sd.saleable_seats_left < 1
       "Performance is sold out"
-    elsif  sd.thedate < now && !ignore_cutoff
+    elsif  sd.thedate < now && !sd.show.special && !ignore_cutoff
       "Performance date has already passed"
     elsif sd.end_advance_sales < now && !ignore_cutoff
       "Advance reservations for this performance are closed"
