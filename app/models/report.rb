@@ -212,9 +212,9 @@ class Report
         if @output_options[:login_since]
           date = "Date::civil(#{val[:year].to_i},#{val[:month].to_i},#{val[:day].to_i})"
           if @output_options[:login_since_test] =~ /not/
-            reject << 'c.last_login >= #{date}'
+            reject << "c.last_login >= '#{date}'"
           else
-            reject << 'c.last_login <= #{date}'
+            reject << "c.last_login <= '#{date}'"
           end
         end
       end
