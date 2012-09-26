@@ -17,7 +17,7 @@ class Showdate < ActiveRecord::Base
   validates_associated :show
   validates_presence_of :thedate
   validates_presence_of :end_advance_sales
-  validates_length_of :description, :maximum => 20, :allow_nil => true
+  validates_length_of :description, :maximum => 32, :allow_nil => true
   
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
