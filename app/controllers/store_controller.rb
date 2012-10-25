@@ -91,7 +91,7 @@ class StoreController < ApplicationController
     # add items to cart
     @cart = find_cart
     if request.post?
-      @redirect_to == :subscribe ? process_subscription_request : process_ticket_request
+      params[:redirect_to] == 'subscribe' ? process_subscription_request : process_ticket_request
       # did anything go wrong?
       redirect_to_index and return unless flash[:warning].blank?
       if params[:donation].to_i > 0
