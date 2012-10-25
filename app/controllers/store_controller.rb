@@ -25,7 +25,7 @@ class StoreController < ApplicationController
   # this should be the last declarative spec since it will append another
   # before_filter
   ssl_required(:checkout, :place_order, :direct_transaction,
-                 :index, :subscribe, :special,
+                 :index, :subscribe, :special, :donate,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
@@ -99,7 +99,7 @@ class StoreController < ApplicationController
         @cart.add(d)
       end
     end
-    # did anything get added to cart?
+    # did anything get added to cart
     if @cart.empty?
       flash[:warning] = "Nothing was added to your order. Please try again."
       redirect_to_index
