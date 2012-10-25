@@ -1,0 +1,15 @@
+#store
+  #donation_panel
+    %h1.page_heading.center Donation to #{@account_code.name}
+    - if @account_code.description
+      %p.center= @account_code.description
+    - form_tag :action => 'shipping_address' do
+      %label{:for => :donation} Your tax-deductible donation
+      = text_field_tag 'donation', '', :size => 5
+      \.00
+      %br
+      = hidden_field_tag 'redirect_to', "/store/donate/#{@account_code.id}"
+      = hidden_field_tag 'account_code_id', @account_code.id
+      = submit_tag 'CONTINUE >>', {:id => 'submit'}
+      %span#nextstep to Billing Information
+

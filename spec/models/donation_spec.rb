@@ -29,13 +29,13 @@ describe Donation do
     end  
     describe "during self-purchase" do
       it "should be valid" do
-        @donation = Donation.online_donation(5.00, @cust.id, @cust.id)
+        @donation = Donation.online_donation(5.00, nil, @cust.id, @cust.id)
         @donation.should be_valid
       end
     end
     describe "during admin purchase" do
       it "should be valid" do
-        @donation = Donation.online_donation(5.00, @cust.id, @admin.id)
+        @donation = Donation.online_donation(5.00, nil, @cust.id, @admin.id)
         @donation.should be_valid
       end
     end

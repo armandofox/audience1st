@@ -54,7 +54,7 @@ describe StoreController do
         response.should redirect_to(:action => 'checkout')
       end
       it "should create the donation" do
-        Donation.should_receive(:online_donation).with(13, @c.id, @l.id).and_return(@d)
+        Donation.should_receive(:online_donation).with(13, nil, @c.id, @l.id).and_return(@d)
         post 'shipping_address', @params
       end
       it "should add the donation to the cart" do

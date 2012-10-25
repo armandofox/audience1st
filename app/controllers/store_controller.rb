@@ -78,6 +78,11 @@ class StoreController < ApplicationController
     end
   end
 
+  def donate
+    @account_code = AccountCode.find_by_id(params[:fund]) ||
+      AccountCode.default_account_code
+  end
+
   def shipping_address
     redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]})) and return if params[:commit] =~ /redeem/i
     # if this is a post, add items to cart first (since we're coming from
@@ -85,13 +90,12 @@ class StoreController < ApplicationController
     #  gift recipient info.
     # add items to cart
     @cart = find_cart
-    @redirect_to = params[:redirect_to] == 'subscribe' ? :subscribe : :index
     if request.post?
       @redirect_to == :subscribe ? process_subscription_request : process_ticket_request
       # did anything go wrong?
       redirect_to_index and return unless flash[:warning].blank?
       if params[:donation].to_i > 0
-        d = Donation.online_donation(params[:donation].to_i, store_customer.id,logged_in_id)
+        d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
         @cart.add(d)
       end
     end
@@ -562,7 +566,13 @@ class StoreController < ApplicationController
   end
 
   def redirect_to_index
-    redirect_to :action => (params[:redirect_to] == 'subscribe' ? 'subscribe' : 'index')
-    true
+    url_or_path = params[:redirect_to]
+    if url_or_path.empty?
+      redirect_to :action => 'index'
+    elsif url_or_path =~ /\//
+      redirect_to url_or_path
+    else
+      redirect_to :action => url_or_path
+    end
   end
 end

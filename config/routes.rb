@@ -7,7 +7,9 @@ ActionController::Routing::Routes.draw do |map|
   # just enough RESTful routes for restful_authentication to work
   # map.resources :customers
   map.connect '/customers/:id/show', :controller => 'customers', :action => 'welcome'
-  
+
+  map.connect '/store/donate/:fund', :controller => 'store', :action => 'donate'
+
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new'
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'

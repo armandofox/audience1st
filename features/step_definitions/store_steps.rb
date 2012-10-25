@@ -25,4 +25,12 @@ Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, ticket
   end
 end
 
-  
+Then /^the cart should contain a donation of \$(.*) to "(.*)"$/ do |amount,account|
+  # This should really check internal state of the cart, but due to current poor design
+  #  that state's not externally grabbable because it's buried in the session.
+  cart = controller.send(:find_cart)
+  donation = cart.donations_only.first
+  donation.should be_a_kind_of Donation
+  donation.amount.should == amount
+  donation.account_code.should == Account.find_by_name!(account)
+end

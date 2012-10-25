@@ -39,11 +39,11 @@ class Donation < Item
                     :processed_by_id => logged_in_id)
   end
 
-  def self.online_donation(amount,cid,logged_in_id,purch=Purchasemethod.get_type_by_name('web_cc'))
+  def self.online_donation(amount,account_code_id,cid,logged_in_id,purch=Purchasemethod.get_type_by_name('web_cc'))
     Donation.new(:date => Time.now,
                  :amount => amount,
                  :customer_id => cid,
-                 :account_code => self.default_code,
+                 :account_code => AccountCode.find_by_id(account_code_id) || self.default_code,
                  :purchasemethod_id => purch.id,
                  :letter_sent => false,
                  :processed_by_id => logged_in_id)

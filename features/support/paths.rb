@@ -22,6 +22,8 @@ module NavigationHelpers
     when /the new customer page/i       then '/customers/new'
     when /the store page/i              then '/store/index'
     when /the subscriptions page/i      then '/store/subscribe'
+    when /the shipping info page/i      then '/store/shipping_address'
+    when /the checkout page/i           then '/store/checkout'
     when /the donations page/i          then '/donations/list'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
@@ -53,6 +55,9 @@ module NavigationHelpers
     when /the new showdate page for "(.*)"/i
       @show = Show.find_by_name($1)
       "/showdates/new?show_id=#{@show.id}"
+
+    when /the donation landing page coded for fund (.*)/i
+      "/store/donate/#{AccountCode.find_by_code($1).try(:id)}"
 
       # edit RESTful resource
 
