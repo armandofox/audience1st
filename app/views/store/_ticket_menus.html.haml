@@ -3,6 +3,9 @@
   = render :partial => 'enter_promo_code'
   %br/
 
+  - unless @sh.description.blank?
+    #show_description.explanation= @sh.description
+
   %label{:for => "show"}= @special_shows_only ? 'Event' : 'Show'
   = select_tag('show', options_with_default(@sh, @all_shows))
   = spinner('wait_show')

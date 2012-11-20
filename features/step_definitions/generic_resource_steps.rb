@@ -10,3 +10,14 @@ Given /^the following (.*)s exist:/ do |thing, instances|
     klass.send(:create!, hash)
   end
 end
+
+
+# Then /^the (.*) with (.*) "(.*)" should have an? (.*) of "(.*)"$/ do |model, finder_attribute, finder_value, attribute, value|
+#   model.constantize.send("find_by_#{finder_attribute}", finder_value).
+#     send(attribute).should == value
+# end
+
+# Given  /^the (.*) with (.*) "(.*)" has an? (.*) of "(.*)"$/ do |model, finder_attribute, finder_value, attribute, value|
+#   model.constantize.send("find_by_#{finder_attribute}", finder_value).
+#     send("#{attribute}=", value)
+# end

@@ -8,6 +8,14 @@ Given /^there is no show named "([^\"]+)"$/ do |name|
   Show.find_by_name(name).should be_nil
 end
 
+Given /^a show "(.*)" with tickets on sale for today$/ do |name|
+  steps %Q{
+    Given a performance of "#{name}" at #{Time.now + 8.hours}
+    Given 10 General vouchers costing $20 are available for that performance
+  }
+end
+  
+
 Given /^there is a show named "([^\"]+)"$/ do |name|
   @show =  Show.find_by_name(name) ||
     Show.create!(:name => name,

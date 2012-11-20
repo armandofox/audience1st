@@ -123,11 +123,20 @@ bulk_download_login: >
 
 # Editing shows and showdates
 
-show_or_showdate_description: >
+show_description: >
 
-  You can add an optional short description to a show (e.g. 
-  "Not included in subscription") or a performance (e.g. "Preview") 
-  which will appear in the customer-facing dropdown menus.
+  You can add an optional short description to a show or event (e.g. 
+  "This show contains strong language") or explanations of special
+  ticket prices (e.g. "VIP Ticket price includes a free glass of wine")
+  that will appear whenever the customer selects that show or event for
+  ticket purchase from the Buy Tickets page.
+
+showdate_description: >
+
+  You can add an optional short description to a specific performance of
+  a show (e.g. "Preview") that will appear next to that performance's
+  date in the dropdown menu when the customer is purchasing tickets for that
+  show.
 
 show_house_capacity: >
 

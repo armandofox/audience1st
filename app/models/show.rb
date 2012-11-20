@@ -85,7 +85,7 @@ class Show < ActiveRecord::Base
 
   def total_offered_for_sale ; showdates.length * house_capacity ; end
 
-  def menu_selection_name ; name_with_description ; end
+  def menu_selection_name ; name ; end
 
   def name_with_description
     description.blank? ? name : "#{name} (#{description})"
