@@ -185,6 +185,8 @@ class StoreController < ApplicationController
       return
     end
     @double_check_dates = @cart.double_check_dates
+    @checkout_message = Option.value(:precheckout_popup) ||
+      "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.

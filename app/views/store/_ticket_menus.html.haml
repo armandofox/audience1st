@@ -3,7 +3,7 @@
   = render :partial => 'enter_promo_code'
   %br/
 
-  - unless @sh.description.blank?
+  - if @sh && !@sh.description.blank?
     #show_description.explanation= @sh.description
 
   %label{:for => "show"}= @special_shows_only ? 'Event' : 'Show'
