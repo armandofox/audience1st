@@ -285,6 +285,13 @@ terms_of_sale: >
   "Terms of Sale" link during checkout. Use plain text (no HTML) and
   separate paragraphs with a blank line.
 
+precheckout_popup: >
+
+  A popup message that customers see immediately BEFORE entering their
+  payment information.  You can use it to remind them of a no-refunds
+  policy, double-check performance dates, and so on.  If blank, a
+  default message to double-check show dates will be displayed.
+
 privacy_policy_url: >
 
   URL of page describing the Privacy Policy regarding Venue's collection
