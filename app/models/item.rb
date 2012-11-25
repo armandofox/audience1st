@@ -1,7 +1,8 @@
 class Item < ActiveRecord::Base
 
   belongs_to :customer
-
+  belongs_to :order
+  
   belongs_to :purchasemethod
   validates_presence_of :purchasemethod_id
 

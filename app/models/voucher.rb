@@ -11,6 +11,13 @@ class Voucher < Item
   # values of processed_by field, which is really a customer id.
   # Returns number of actual voucher records transferred.
 
+  # after destroying a bundle voucher, destroy its constituents
+  after_destroy do |voucher|
+    if voucher.bundle? && voucher.id != 0
+      Voucher.delete_all("bundle_id = #{voucher.id}")
+    end
+  end
+
   # class methods
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
@@ -159,6 +166,7 @@ class Voucher < Item
           1.upto qty do
             c.vouchers <<
               Voucher.new_from_vouchertype(type,
+              :bundle_id => self.id,
               :purchasemethod_id => purch_bundle,
               :processed_by_id => self.processed_by_id)
           end

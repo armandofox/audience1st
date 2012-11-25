@@ -21,6 +21,11 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session # other session actions
 
   map.connect 'subscribe', :controller => 'store', :action => 'subscribe'
+
+  # Routes for viewing and refunding orders
+  map.order '/orders/:id', :controller => 'orders', :action => 'show'
+  map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund'
+
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id'
   map.connect '*anything', :controller => 'customers', :action => 'welcome'

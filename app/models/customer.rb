@@ -13,7 +13,8 @@ class Customer < ActiveRecord::Base
   has_many :vouchers, :include => :vouchertype
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-
+  has_many :orders
+  
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
   def shows ; self.showdates.map(&:show).uniq ; end
@@ -310,7 +311,7 @@ class Customer < ActiveRecord::Base
 
   def add_items(items, logged_in, howpurchased=Purchasemethod.get_type_by_name('web_cc'), comment='')
     status = true
-    items.each do |v|
+    items.map do |v|
       if v.kind_of?(Voucher)
         v.processed_by_id = logged_in
         v.purchasemethod = howpurchased
@@ -342,6 +343,7 @@ class Customer < ActiveRecord::Base
         logger.error "Can't add this product type to customer record: #{v}"
         raise "Can't add this product type to customer record"
       end
+      v.id
     end
     return status
   end

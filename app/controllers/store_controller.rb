@@ -238,6 +238,10 @@ class StoreController < ApplicationController
       }
       @payment="with credit card"
     end
+    @order = @customer.orders.create(
+      :purchasemethod => howpurchased,
+      :sold_on => Time.now,
+      :processed_by_id => logged_in_id)
     resp = Store.purchase!(method, @cart.total_price, args) do
       # add non-donation items to recipient's account
       @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)
@@ -256,8 +260,12 @@ class StoreController < ApplicationController
       @special_instructions = @cart.comments
     end
     if resp.success?
-      @payment << " (transaction ID: #{resp.params["transaction_id"]})" if
-        @payment =~ /credit/i
+      @cart.items.map { |i| i.update_attribute('order_id', @order.id) }
+      if @payment =~ /credit/i
+        auth = resp.params[:transaction_id]
+        @order.update_attribute('authorization', auth)
+        @payment << " (transaction ID: #{auth})"
+      end
       logger.info("SUCCESS purchase #{@customer.id} [#{@customer.full_name}] by #{@payment}; Cart summary: #{@cart}")
       if params[:email_confirmation]
         email_confirmation(:confirm_order, @customer,@recipient,@order_summary,

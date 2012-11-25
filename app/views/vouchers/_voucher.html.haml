@@ -2,6 +2,7 @@
   %tr{:class => cycle(:even,:odd)}
     %td= check_box_tag "vouchers[]", voucher.id, false, :id => "voucher_#{voucher.id}"
     %td= voucher.id
+    %td= link_to_unless voucher.order_id.nil?,  voucher.order_id, order_path(voucher.order_id)
     %td
       %label{:for => "voucher_#{voucher.id}"}= voucher.vouchertype.name
     %td= voucher.customer.full_name if voucher.customer

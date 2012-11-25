@@ -6,7 +6,7 @@ class Purchasemethod < ActiveRecord::Base
     case self.shortdesc.to_sym
     when :web_cc, :box_cc then :credit_card 
     when :box_cash then :cash 
-    when :box_chk then :chk
+    when :box_chk then :check
     else raise "Purchase method '#{self.description}' does not allow accepting payment"
     end
   end
