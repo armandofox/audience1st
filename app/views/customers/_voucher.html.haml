@@ -10,7 +10,7 @@
       = h voucher.id
       %br
       = voucher.processed_by_name unless voucher.processed_by_id == voucher.customer.id
-    %td.adminField= link_to voucher.order_id, order_path(voucher.order_id)
+    %td.adminField= link_to_if voucher.order_id, voucher.order_id, order_path(voucher.order_id)
   %td= h voucher.vouchertype.name
   - if voucher.bundle?
     / voucher bundle - not reservable
