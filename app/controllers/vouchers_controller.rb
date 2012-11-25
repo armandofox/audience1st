@@ -292,7 +292,7 @@ class VouchersController < ApplicationController
   def manage
     if request.get?
       if params[:vouchers]
-        @vouchers = Voucher.find(params[:vouchers].split(','))
+        @vouchers = Voucher.find(params[:vouchers].split(','), :order => 'sold_on DESC')
       elsif params[:customer]
         @vouchers = Customer.find(params[:customer]).vouchers
       end

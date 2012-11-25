@@ -11,7 +11,7 @@ class OrdersController < ApplicationController
     @total = @order.items.inject(0) { |sum,p| sum+p.amount }
     @refund_msg = "Upon refund, the customer's credit card charge will be reversed and all of these items will be permanently destroyed, which cannot be undone.  If the refund fails, all items will stay exactly as they are.  Do you want to proceed with the refund?" # "
     @printable = params[:printable]
-    render :layout => false if @printable
+    render :layout => 'layouts/receipt' if @printable
   end
 
 end

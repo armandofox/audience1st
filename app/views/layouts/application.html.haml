@@ -10,7 +10,7 @@
     %meta{'http-equiv'=>:imagetoolbar, :content=>:no}/
     %meta{:name=>:description, :content=>''}/
 
-  %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(SANDBOX ? :testing : nil)}
+  %body{:id=>"#{h(controller.controller_name)}_#{h(controller.action_name)}", :class=>(SANDBOX ? 'testing.default' : 'default')}
     
     #outer_header
     #outer_wrapper
