@@ -1,0 +1,40 @@
+%h1.center Order ##{@order.id}
+
+.order_info
+  %p 
+    %span.label Purchaser: 
+    = @order.customer.full_name
+  %p
+    %span.label Sold on:
+    = @order.sold_on.strftime('%c')
+  %p
+    %span.label Order total:
+    = number_to_currency @total
+  %p
+    %span.label Payment method:
+    = humanize(@order.purchasemethod.purchase_medium)
+  
+%table#order_items.hilite
+  %thead
+    %tr
+      %th Amount
+      %th Show or Acct Code
+      %th Comment
+  %tbody
+    - @order.items.each do |item|
+      %tr
+        %td= number_to_currency(item.amount)
+        - if item.kind_of?(Voucher)
+          %td= item.showdate.printable_name
+        - else
+          %td Donation to #{item.account_code.name_or_code}
+        %td= item.comment
+
+- if @printable
+  %h2.center #{Option.value(:venue)} thanks you for your order!
+- else
+  = gen_button 'Printable Receipt', {:action => :show, :id => @order, :printable => 1}, {:target => '_blank'}
+
+  - if @order.refundable_to_credit_card?
+    - form_tag :action => 'refund', :id => @order.id do
+      = submit_tag 'Refund'
