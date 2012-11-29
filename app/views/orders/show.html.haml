@@ -25,7 +25,7 @@
       %tr
         %td= number_to_currency(item.amount)
         - if item.kind_of?(Voucher)
-          %td= item.showdate.printable_name
+          %td= item.showdate ? item.showdate.printable_name : item.vouchertype.name
         - else
           %td Donation to #{item.account_code.name_or_code}
         %td= item.comment
