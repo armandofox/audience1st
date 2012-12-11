@@ -16,7 +16,6 @@ Background:
   | qty | type     | payment  |
   |   1 | General  | box_cash |
   And I am on the walkup sales report for "April 7, 2012, 8:00pm"
-  Then show me the page
   Then I should see "General" within "#box_cash"
 
 Scenario: box office can change walkup to same ticket type for another performance

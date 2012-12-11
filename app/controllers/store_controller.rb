@@ -207,7 +207,6 @@ class StoreController < ApplicationController
     redirect_to_index and return unless
       @recipient = verify_valid_recipient 
     if @recipient == @customer
-      debugger
       # record 'who will pickup' field if necessary
       @cart.add_comment("(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})") unless params[:pickup].blank?
     else
