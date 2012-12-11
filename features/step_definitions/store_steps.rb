@@ -33,6 +33,7 @@ Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, ticket
       Vouchertype.find_by_name!(t[:type]).id,
       showdate.id)
     vouchers = offer.sell!(qty, Customer.walkup_customer, Purchasemethod.find_by_shortdesc!(t[:payment]), Customer.boxoffice_daemon)
+    vouchers.map { |v| v.walkup = true ; v.save! }
     vouchers.length.should == qty
   end
 end
