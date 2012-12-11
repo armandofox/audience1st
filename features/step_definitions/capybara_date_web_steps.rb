@@ -9,10 +9,23 @@ DATE_TIME_SUFFIXES = {
   :minute => '5i'
 }
 
-def select_date(date_to_select, options ={})
-  date = date_to_select.kind_of?(Date) || date_to_select.kind_of?(Time) ?
-  date_to_select : Time.parse(date_to_select)
+def to_date(date_to_select)
+  date_to_select.kind_of?(Date) || date_to_select.kind_of?(Time) ?
+  date_to_select :
+    Time.parse(date_to_select)
+end
 
+def select_date_matching(date_to_select, options={})
+  date = to_date(date_to_select)
+  menu = find_field(options[:from] || raise(":from => 'field' is required"))
+  choice = menu.all('option').detect do |opt|
+    date == Time.parse(opt.text)
+  end
+  choice.select_option
+end
+
+def select_date(date_to_select, options ={})
+  date = to_date(date_to_select)
   id_prefix = id_prefix_for(options)
   select_if id_prefix, :year, date.year
   select_if id_prefix, :month, date.strftime('%B')

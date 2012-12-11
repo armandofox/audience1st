@@ -58,6 +58,6 @@ def make_valid_tickets(showdate,vtype,qty=nil)
   qty ||= showdate.max_allowed_sales
   showdate.valid_vouchers.create!(:vouchertype => vtype,
     :max_sales_for_type => qty.to_i,
-    :start_sales => showdate.thedate - 1.month,
+    :start_sales => Time.now - 1.day,
     :end_sales => showdate.thedate + 5.minutes)
 end

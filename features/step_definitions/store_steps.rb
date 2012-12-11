@@ -13,6 +13,18 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+Given /^my cart contains the following tickets:/ do |tickets|
+  tickets.hashes.each do |t|
+    show,qty,type,price,showdate = t.values_at(:show, :qty, :type,:price,:showdate)
+    Given %Q{a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for #{price} on "#{showdate}"}
+    visit path_to %Q{the store page for "#{show}"}
+    select show, :from => 'Show'
+    select_date_matching showdate, :from => 'Date'
+    select qty, :from => "#{type} - #{price}"
+    click_button 'CONTINUE >>'
+  end
+end
+
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
   showdate = Showdate.find_by_thedate!(Time.parse(dt))
   tickets.hashes.each do |t|
@@ -24,6 +36,7 @@ Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, ticket
     vouchers.length.should == qty
   end
 end
+
 
 Then /^the cart should contain a donation of \$(.*) to "(.*)"$/ do |amount,account|
   # This should really check internal state of the cart, but due to current poor design
