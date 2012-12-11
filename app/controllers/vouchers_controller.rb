@@ -66,7 +66,7 @@ class VouchersController < ApplicationController
       end
     end
 
-    thecomment = params[:comment] || ""
+    thecomment = params[:comments] || ""
     custid = @customer.id
     begin
       Voucher.transaction do

@@ -111,6 +111,11 @@ class Cart
     txt
   end
 
+  def add_comment(str)
+    vouchers_only.each { |v| (v.comments ||= '') << str }
+    @comments << str
+  end
+
   def add(itm,qty=1)
     self.items << itm
     self.items.sort! do |a,b|

@@ -4,6 +4,30 @@ describe Cart do
   before(:each) do
     @cart = Cart.new
   end
+  describe 'adding comment' do
+    before :each do
+      sd = BasicModels.create_one_showdate(Time.now)
+      vt = BasicModels.create_revenue_vouchertype
+      @vouchers = Array.new(2) { BasicModels.new_voucher_for_showdate(sd,vt) }
+      @vouchers.each { |v| @cart.add(v) }
+    end
+    it 'should add comments to all vouchers' do
+      @cart.add_comment("Hello world")
+      @cart.vouchers_only.each do |v|
+        v.comments.should == "Hello world"
+      end
+    end
+    it 'should not add comments to donations' do
+      @cart.add(d = Donation.new(:amount => 1))
+      @cart.add_comment("Hello world")
+      d.comments.should be_blank
+    end
+    it 'should append rather than replace' do
+      @vouchers.first.comments = "Comment"
+      @cart.add_comment "Hello world"
+      @vouchers.first.comments.should == "CommentHello world"
+    end
+  end
   describe "performance dates info" do
     before(:each) do
       @date1 = Time.parse("January 3, 2011, 7:30pm")

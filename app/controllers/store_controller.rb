@@ -206,7 +206,13 @@ class StoreController < ApplicationController
     sales_final = verify_sales_final or return
     redirect_to_index and return unless
       @recipient = verify_valid_recipient 
-    @cart.gift_from(@customer) unless @recipient == @customer
+    if @recipient == @customer
+      debugger
+      # record 'who will pickup' field if necessary
+      @cart.add_comment("(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})") unless params[:pickup].blank?
+    else
+      @cart.gift_from(@customer)
+    end
     # OK, we have a customer record to tie the transaction to
     howpurchased = Purchasemethod.default
     # regular customers can only purchase with credit card
