@@ -7,7 +7,18 @@ Feature: search donations
 Background:
 
   Given I am logged in as staff
-  And customer "Tom Foolery" exists
+  And the following donations:
+   | donor       | amount  | fund              | date     |
+   | Tom Foolery | $100.00 | 9999 General Fund | 1/3/2012 |
+   | Joe Mallon  | $500.00 | 9998 History Fund | 1/4/2012 |
+   | Armando Fox | $600.00 | 9999 General Fund | 3/5/2012 |
+   | Diana Moore | $900.00 | 9998 History Fund | 7/1/2012 |
+
+Scenario: filter donations by fund
+  
+  When I visit the donations page
+  And I select "9998 History Fund" from "donation_funds"
+  And I press "Search"
 
 Scenario: list all donations
 

@@ -38,6 +38,10 @@
         = text_field_tag 'donation_max', @params[:donation_max], :size => 4 
         \.00
     %tr
+      %td= check_box_tag 'use_fund', 1, @params[:use_fund]
+      %td.top  Only donations to these funds:
+      %td= select_tag 'donation_funds', options_from_collection_for_select(AccountCode.all, :id, :name_with_code), :multiple => true
+    %tr
       %td= check_box_tag 'use_ltr_sent', 1, @params[:use_ltr_sent]
       %td  
         Only if letter not yet sent

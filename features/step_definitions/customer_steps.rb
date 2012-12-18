@@ -58,8 +58,15 @@ Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |
   page.should have_content("Welcome, #{customer.first_name}")
 end
 
-Given /^customer "(.*) (.*)" (should )?exists?$/ do |first,last,flag|
+Given /^customer "(.*) (.*)" should exist$/ do |first,last|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
+end
+
+Given /^customer "(.*) (.*)" exists$/ do |first,last|
+  @customer =
+    Customer.find_by_first_name_and_last_name(first,last) ||
+    Customer.create!(:first_name => first, :last_name => last,
+    :email => "#{first}_#{last}_#{rand(1000)}@yahoo.com")
 end
 
 Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
