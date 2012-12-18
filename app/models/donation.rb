@@ -20,7 +20,7 @@ class Donation < Item
   
 
   validates_numericality_of :amount
-  validates_presence_of :date
+  validates_presence_of :sold_on
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
 
   def self.foreign_keys_to_customer
@@ -30,7 +30,7 @@ class Donation < Item
   def price ; self.amount ; end # why can't I use alias for this?
 
   def self.walkup_donation(amount,logged_in_id,purch=Purchasemethod.get_type_by_name('box_cash'))
-    Donation.create(:date => Date.today,
+    Donation.create(:sold_on => Date.today,
                     :amount => amount,
                     :customer_id => Customer.walkup_customer.id,
                     :account_code => self.default_code,
@@ -40,7 +40,7 @@ class Donation < Item
   end
 
   def self.online_donation(amount,account_code_id,cid,logged_in_id,purch=Purchasemethod.get_type_by_name('web_cc'))
-    Donation.new(:date => Time.now,
+    Donation.new(:sold_on => Time.now,
                  :amount => amount,
                  :customer_id => cid,
                  :account_code => AccountCode.find_by_id(account_code_id) || self.default_code,

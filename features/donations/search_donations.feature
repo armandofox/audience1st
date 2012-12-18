@@ -1,4 +1,4 @@
-5oFeature: search donations
+Feature: search donations
 
   As a development manager
   So that I can find our best donors to help grow the theater
@@ -20,6 +20,7 @@ Scenario: filter donations by fund
   When I visit the donations page
   And I select "9998 History Fund" from "donation_funds"
   And I select "9997 Misc Fund" from "donation_funds"
+  And I check "use_fund"
   And I press "Search"
   Then I should see the following donations:
   | donor         | amount |

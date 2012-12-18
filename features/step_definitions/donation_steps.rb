@@ -18,7 +18,7 @@ Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"$/ do |amou
   account_code = fund.blank? ? AccountCode.default_account_code : find_or_create_account_code(fund)
   @customer.donations.create!(
     :amount => amount,
-    :date => date,
+    :sold_on => date,
     :account_code => account_code
     )
 end

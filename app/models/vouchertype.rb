@@ -209,9 +209,9 @@ class Vouchertype < ActiveRecord::Base
     else
       restrict << "offer_public = #{ANYONE}"
     end
-    if (created_on = args[:since])
-      restrict << "created_on >= ?"
-      arglist << created_on
+    if (created_at = args[:since])
+      restrict << "created_at >= ?"
+      arglist << created_at
     end
     case args[:type]
     when :subscription

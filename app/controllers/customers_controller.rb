@@ -59,7 +59,7 @@ class CustomersController < ApplicationController
   def welcome
     @customer = @gCustomer
     @admin = current_admin
-    @vouchers = @customer.active_vouchers.sort_by(&:created_on)
+    @vouchers = @customer.active_vouchers.sort_by(&:created_at)
     session[:store_customer] = @customer.id
 
     name = @gLoggedIn.full_name.name_capitalize
