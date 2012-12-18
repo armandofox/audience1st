@@ -20,7 +20,7 @@ Background:
 Scenario: View breakdown of donations by date and account code
 
   Given the following donations exist:
-    | date            | amount | account_code  | customer_id | purchasemethod          |
+    | sold_on         | amount | account_code  | customer_id | purchasemethod          |
     | 3/10/11 11:00am |  25.00 | name:Donation |          77 | description:Credit Card |
     | 3/12/11 1:00pm  |     20 | name:Donation |          77 | description:Cash        |
     | 3/12/11 1:15PM  |     15 | name:Capital  |          78 | description:Credit Card |
