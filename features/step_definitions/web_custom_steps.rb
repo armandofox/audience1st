@@ -73,18 +73,23 @@ Then /^I should see the "(.*)" message$/ do |m|
 end
 
 # tabular data
-Then /^I should see a row "(.*)" within "(.*)"$/ do |row, table|
+Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
   page.should have_css(table)
   @html = Nokogiri::HTML(page.body)
   @rows = @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
-  @rows.any? do |table_row|
+  matched = @rows.any? do |table_row|
     match = true
     col_regexps.each_with_index do |regexp,index|
       match &&= table_row[index].content.match(regexp)
     end
     match
-  end.should be_true, "Expected #{table} to contain a row matching <#{row}>"
+  end
+  if flag =~ /not/
+    matched.should be_false, "Expected #{table} NOT to contain a row matching <#{row}>"
+  else
+    matched.should be_true, "Expected #{table} to contain a row matching <#{row}>"
+  end
 end
     
 

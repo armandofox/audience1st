@@ -19,6 +19,14 @@ Scenario: filter donations by fund
   When I visit the donations page
   And I select "9998 History Fund" from "donation_funds"
   And I press "Search"
+  Then I should see the following donations:
+  | donor       | amount |
+  | Joe Mallon  |    500 |
+  | Diana Moore |    900 |
+  But I should not see the following donations:
+  | donor       | amount |
+  | Armando Fox |    600 |
+  | Tom Foolery |    100 |
 
 Scenario: list all donations
 

@@ -22,3 +22,10 @@ Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"$/ do |amou
     :account_code => account_code
     )
 end
+
+Then /^I should (not )?see the following donations:$/ do |no,donations|
+  donations.hashes.each do |donation|
+    regexp = "#{donation[:donor]}||#{donation[:amount].to_i}|||||"
+    Then %Q[I should #{no}see a row "#{regexp}" within "table[@id='donations']"]
+  end
+end
