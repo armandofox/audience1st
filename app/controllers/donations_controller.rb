@@ -43,7 +43,7 @@ class DonationsController < ApplicationController
     if params[:use_ltr_sent]
       conds.merge!("letter_sent IS NULL" => nil)
     end
-    if params[:use_fund]
+    if params[:use_fund] && !params[:donation_funds].blank?
       conds.merge!("account_code_id IN (?)" => params[:donation_funds])
     end
     keys = conds.keys
