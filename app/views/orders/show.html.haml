@@ -28,7 +28,7 @@
           %td= item.showdate ? item.showdate.printable_name : item.vouchertype.name
         - else
           %td Donation to #{item.account_code.name_or_code}
-        %td= item.comment
+        %td= item.comments
 
 - if @printable
   %h2.center #{Option.value(:venue)} thanks you for your order!
