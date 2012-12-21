@@ -97,6 +97,10 @@ module BasicModels
     Voucher.new_from_vouchertype(vt).reserve(showdate,
       (opts[:logged_in] || self.create_generic_customer(:created_by_admin => true, :role => 100, :first_name => 'MockBoxOfficeManager')))
   end
+
+  def self.donation(amount=25, code=Donation.default_code)
+    Donation.new(:amount => amount, :sold_on => Time.now, :account_code => code)
+  end
 end
 
       

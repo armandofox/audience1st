@@ -57,11 +57,11 @@ class Voucher < Item
   # delegations
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end
 
-    def unreserved? ; showdate_id.to_i.zero?  ;  end
+  def unreserved? ; showdate_id.to_i.zero?  ;  end
   def reserved? ; !(unreserved?) ; end
   
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
-  def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
+  def reserved_show ; (showdate.name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
   def date ; self.showdate.thedate if self.reserved? ; end
 
@@ -76,7 +76,7 @@ class Voucher < Item
 
   def voucher_description
     if showdate.kind_of?(Showdate)
-      showdate.show_name
+      showdate.name
     elsif vouchertype.bundle?
       vouchertype.name
     else
@@ -101,6 +101,17 @@ class Voucher < Item
     self.showdate_id == other.showdate_id ?
     self.vouchertype_id <=> other.vouchertype_id :
       self.showdate <=> other.showdate
+  end
+
+  def one_line_description
+    if reserved?
+      s = sprintf("$%6.2f  %s\n         %s - ticket \##{id}",
+        price, showdate.printable_name, name)
+      s << "\n         Notes: #{comments}" unless comments.blank?
+    else
+      s = sprintf("$%6.2f  %s - voucher \##{id}", price, name)
+    end
+    s
   end
 
   def to_s
@@ -146,6 +157,10 @@ class Voucher < Item
   def self.anonymous_bundle_for(vouchertype)
     v = Voucher.new_from_vouchertype(vouchertype,
                                      :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
+  end
+
+  def add_comment(comment)
+    self.comments = (self.comments.blank? ? comment : [self.comments,comment].join('; '))
   end
 
   def transfer_to_customer(c)

@@ -19,7 +19,7 @@
             - if i.kind_of?(Voucher)
               - price = i.vouchertype.price
               - if i.showdate_id.to_i > 0 
-                %span.voucher_show_name= h i.showdate.show.name
+                %span.voucher_show_name= h i.showdate.name
                 %span.voucher_show_date= h i.showdate.thedate.to_formatted_s(:showtime)
               %span.voucher_type= h i.vouchertype.name
               - if i.promo_code

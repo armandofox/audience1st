@@ -29,8 +29,15 @@ describe Voucher do
           :category => 'nonticket',
           :price => 5.00,
           :account_code => AccountCode.default_account_code}))
+    @basic_showdate = BasicModels.create_one_showdate(Time.now.tomorrow)
   end
 
+  describe "one-line description" do
+    before :all do ; @v = Voucher.anonymous_voucher_for(@basic_showdate, @vt_regular) ; end
+    it 'should include vouchertype' do
+      @v.one_line_description.should match Regexp.new(@vt_regular.name)
+    end
+  end
   describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|

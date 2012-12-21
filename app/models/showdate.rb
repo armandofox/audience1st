@@ -5,6 +5,9 @@ class Showdate < ActiveRecord::Base
   acts_as_reportable
   
   belongs_to :show
+
+  delegate :house_capacity, :patron_notes, :name, :to => :show
+
   has_many :vouchers, :conditions => "category != 'nonticket'"
   has_many :all_vouchers, :class_name => 'Voucher'
   has_many :walkup_vouchers, :class_name => 'Voucher', :conditions => ['walkup = ?', true]
@@ -127,8 +130,6 @@ class Showdate < ActiveRecord::Base
     (self.end_advance_sales - 5.minutes) > Time.now
   end
 
-  def house_capacity ;   self.show.house_capacity ;  end
-
   def max_allowed_sales
     self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
   end
@@ -240,6 +241,5 @@ class Showdate < ActiveRecord::Base
     name
   end
 
-  def show_name ; show.name ; end
-  
 end
+
