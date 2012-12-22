@@ -133,7 +133,7 @@ describe StoreController do
   end
 
   describe "landing page" do
-    before(:all) do
+    before(:each) do
       @dt1 = "Jan 27, 2009, 8:00pm"
       @sd1 = BasicModels.create_one_showdate(Time.parse(@dt1))
       @dt2 = "Jan 29, 2009, 8:00pm"
@@ -149,7 +149,7 @@ describe StoreController do
     end
     it "should default to earliest showdate if neither valid" do
       @controller.should_not_receive(:set_current_showdate)
-      get :index, :showdate_id => 99999, :date => Date.today.to_s
+      get :index, :showdate_id => 9999999, :date => Date.today.to_s
     end
   end
 
