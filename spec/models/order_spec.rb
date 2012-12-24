@@ -1,12 +1,15 @@
 require 'spec_helper'
 describe Order do
-  before :each do ; @order = Order.new ; end
+  before :each do ; @order = Order.new(:processed_by => Customer.generic_customer) ; end
   
-  def add_a_voucher_to(order)
+  def add_a_voucher_to(order,howmany=1)
     @vt ||= BasicModels.create_revenue_vouchertype
     @sd ||= BasicModels.create_one_showdate(1.day.from_now)
-    v = Voucher.anonymous_voucher_for(@sd,@vt)
-    order.add_item(v)
+    v = nil
+    howmany.times do
+      v = Voucher.anonymous_voucher_for(@sd,@vt)
+      order.add_item(v)
+    end
     v
   end
 
@@ -43,6 +46,12 @@ describe Order do
         @order.empty_cart!
         @order.should have(0).cart_items
       end
+    end
+    it 'should serialize a large cart' do
+      add_a_voucher_to @order, 10
+      @new_order = Order.find_by_id(@order.id)
+      debugger
+      @new_order.should have(10).cart_items
     end
   end
 

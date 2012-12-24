@@ -5,13 +5,8 @@ class Order < ActiveRecord::Base
   belongs_to :purchasemethod
   has_many :items
 
-  validates_presence_of :sold_on
   validates_presence_of :processed_by_id
-  validates_presence_of :purchasemethod_id
-  validates_presence_of :customer_id
-  validates_presence_of :purchaser_id
 
-  attr_reader :cart_items
   attr_accessor :purchase_args
 
   class Order::NotReadyError < StandardError ; end
@@ -19,10 +14,12 @@ class Order < ActiveRecord::Base
   class Order::PaymentFailedError < StandardError; end
   
   def initialize(*args)
-    @cart_items = []
     @purchase_args = {}
     super
   end
+
+  serialize :cart_items, Array
+  def after_initialize(*args) ;     self.cart_items = [] ;   end
 
   def workaround_rails_bug_2298!
     # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
@@ -41,27 +38,27 @@ class Order < ActiveRecord::Base
   end
 
 
-  def empty_cart! ;     @cart_items = [] ;    end
-  def cart_empty? ;     @cart_items.empty? ;  end   
-  def add_item(item) ;  @cart_items << item ; end
+  def empty_cart! ;     update_attribute(:cart_items, []) ;    end
+  def cart_empty? ;     cart_items.empty? ;  end   
+  def add_item(item) ;  self.cart_items << item ; save! ; end
 
-  def include_vouchers? ; @cart_items.any? { |v| v.kind_of? Voucher } ; end
-  def include_donation? ; @cart_items.any? { |v| v.kind_of? Donation } ; end
-  def cart_vouchers ;     @cart_items.select { |i| i.kind_of? Voucher } ; end
-  def cart_donations ;    @cart_items.select { |i| i.kind_of? Donation } ; end
+  def include_vouchers? ; cart_items.any? { |v| v.kind_of? Voucher } ; end
+  def include_donation? ; cart_items.any? { |v| v.kind_of? Donation } ; end
+  def cart_vouchers ;     cart_items.select { |i| i.kind_of? Voucher } ; end
+  def cart_donations ;    cart_items.select { |i| i.kind_of? Donation } ; end
 
   def gift?
     ready_for_purchase? &&  include_vouchers?  &&  customer != purchaser
   end
 
-  def total_price ;     @cart_items.sum(&:amount) ; end
+  def total_price ;     cart_items.sum(&:amount) ; end
 
   def summary
-    item_list = completed? ? items : @cart_items
+    item_list = completed? ? items : cart_items
     (item_list.map(&:one_line_description) + all_comments).join("\n")
   end
 
-  def completed? ;   !new_record?  &&  !sold_on.blank? ; end
+  def completed? ;  !new_record?  &&  !sold_on.blank? ; end
 
 
   def add_comment(comment)
@@ -71,7 +68,7 @@ class Order < ActiveRecord::Base
 
   def ready_for_purchase?
     errors.clear
-    errors.add_to_base 'Shopping cart is empty' if @cart_items.empty?
+    errors.add_to_base 'Shopping cart is empty' if cart_items.empty?
     errors.add_to_base 'No purchaser information' unless purchaser.kind_of?(Customer)
     errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
     errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
@@ -125,7 +122,7 @@ class Order < ActiveRecord::Base
   protected
 
   def all_comments
-    (completed? ? items : @cart_items).map(&:comments).uniq
+    (completed? ? items : cart_items).map(&:comments).uniq
   end
 
 end
