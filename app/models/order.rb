@@ -21,11 +21,39 @@ class Order < ActiveRecord::Base
     super
   end
 
-  def empty_cart! ;  @cart_items = [] ;             end
-  def add_item(item) ;  @cart_items << item ;       end
+  def workaround_rails_bug_2298!
+    # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
+    # that were not saved are NOT reset to nil, which causes problems when they are
+    # successfully saved later on (eg when transaction is rerun).  Also, new_record is
+    # not correctly reset to true.
+    # the fix is based on a patch shown here:
+    # http://s3.amazonaws.com/activereload-lighthouse/assets/fe67deaf98bb15d58218acdbbdf7d4f166255ad3/after_transaction.diff?AWSAccessKeyId=1AJ9W2TX1B2Z7C2KYB82&Expires=1263784877&Signature=ZxQebT1e9lG8hqexXb6IMvlfw4Q%3D
+    self.items.each do |i|
+      i.instance_eval {
+        @attributes.delete(self.class.primary_key)
+        @attributes_cache.delete(self.class.primary_key)
+        @new_record = true
+      }
+    end
+  end
 
-  def cart_vouchers ; @cart_items.select { |i| i.kind_of? Voucher } ; end
-  def cart_donations ;@cart_items.select { |i| i.kind_of? Donation } ; end
+
+  def empty_cart! ;     @cart_items = [] ;    end
+  def cart_empty? ;     @cart_items.empty? ;  end   
+  def add_item(item) ;  @cart_items << item ; end
+
+  def include_vouchers? ; @cart_items.any? { |v| v.kind_of? Voucher } ; end
+  def include_donation? ; @cart_items.any? { |v| v.kind_of? Donation } ; end
+  def cart_vouchers ;     @cart_items.select { |i| i.kind_of? Voucher } ; end
+  def cart_donations ;    @cart_items.select { |i| i.kind_of? Donation } ; end
+
+  def gift?
+    ready_for_purchase? &&  include_vouchers?  &&  customer != purchaser
+  end
+
+  def extract_showdates
+    cart_vouchers.map { |v| v.showdate.try(:printable_date) }.uniq.compact
+  end
 
   def total_price ;     @cart_items.sum(&:amount) ; end
 
