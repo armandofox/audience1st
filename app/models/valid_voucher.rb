@@ -214,21 +214,6 @@ EOCONDS1
     end
   end
 
-  # sell! calls instantiate but also uses the Store to consummate the purchase, atomically
-  def sell!(qty, customer, purchasemethod, logged_in, opts={})
-    vouchers = []
-    resp = Store.purchase!(purchasemethod.purchase_medium, qty * price, opts) do
-      vouchers = self.instantiate(logged_in, purchasemethod, qty, opts[:comments].to_s)
-      customer.add_items(vouchers, logged_in.id, purchasemethod)
-    end
-    if resp.success?
-      return vouchers
-    else
-      self.errors.add_to_base(resp.message)
-      return []
-    end
-  end
-  
   def promo_code_matches(str = nil)
     str.to_s.contained_in_or_blank(self.promo_code)
   end

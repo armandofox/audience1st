@@ -1,8 +1,4 @@
 class StoreController < ApplicationController
-  include ActiveMerchant::Billing
-  include Enumerable
-
-  require "money.rb"
 
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed comment_changed redeeming_promo_code set_promo_code clear_promo_code)
 
@@ -83,39 +79,37 @@ class StoreController < ApplicationController
       AccountCode.default_account_code
   end
 
-  def shipping_address
-    redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]})) and return if params[:commit] =~ /redeem/i
-    # if this is a post, add items to cart first (since we're coming from
-    #  ticket selection page).  If a get, buyer just wants to modify
-    #  gift recipient info.
-    # add items to cart
-    @cart = find_cart
-    if request.post?
-      params[:redirect_to] == 'subscribe' ? process_subscription_request : process_ticket_request
-      # did anything go wrong?
-      redirect_to_index and return unless flash[:warning].blank?
-      if params[:donation].to_i > 0
-        d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
-        @cart.add(d)
-      end
-    end
-    # did anything get added to cart
-    if @cart.empty?
-      flash[:warning] = "Nothing was added to your order. Please try again."
-      redirect_to_index
+  def process_cart
+    if params[:commit] =~ /redeem/i # customer entered promo code, redisplay prices
+      redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]}))
       return
     end
-    # all is well. if this is a gift order, fall through to get Recipient info.
-    # if NOT a gift, or if donation only, set recipient to same as current customer, and
-    # continue to checkout.
-    # in case it's a gift, customer should know donation is made in their name.
-    @includes_donation = @cart.include_donation?
-    set_checkout_in_progress(true)
-    if params[:gift] && @cart.include_vouchers?
-      @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
+    @cart = find_cart
+    if params[:redirect_to] == 'subscribe' 
+      process_subscription_request
     else
+      process_ticket_request
+    end
+    redirect_to_index and return if flash[:warning]
+    # all well with cart, try to process donation if any
+    if params[:donation].to_i > 0
+      d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
+      @cart.add_item(d)
+    end
+    @cart.purchaser = store_customer
+    if params[:gift] && @cart.include_vouchers?
+      redirect_to :action => 'shipping_address'
+    else
+      @cart.customer = @cart.purchaser
       redirect_to_checkout
     end
+  end
+
+  def shipping_address
+    #  collect gift recipient info
+    @cart = find_cart
+    set_checkout_in_progress true
+    @recipient = @cart.customer || Customer.new
   end
 
   def set_shipping_address
@@ -125,19 +119,19 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    @recipient = recipient_from_session || recipient_from_params ||
+    recipient = recipient_from_session || recipient_from_params ||
       Customer.new(params[:customer])
     # make sure minimal info for gift receipient was specified.
-    @recipient.gift_recipient_only = true
-    if @recipient.new_record?
-      @recipient.created_by_admin = true if current_admin.is_boxoffice
-      unless @recipient.save
-        flash[:warning] = @recipient.errors.full_messages
+    recipient.gift_recipient_only = true
+    if recipient.new_record?
+      recipient.created_by_admin = true if current_admin.is_boxoffice
+      unless recipient.save
+        flash[:warning] = recipient.errors.full_messages
         render :action => :shipping_address
         return
       end
     end
-    session[:recipient_id] = @recipient.id
+    @cart.customer = recipient
     redirect_to_checkout
   end
 
@@ -166,28 +160,13 @@ class StoreController < ApplicationController
   end
 
   def checkout
-    logger.info "User-agent: #{request.user_agent}"
     set_return_to :controller => 'store', :action => 'checkout'
-    @cust = store_customer
-    @is_admin = current_admin.is_boxoffice
-    if session[:recipient_id]
-      @recipient = Customer.find( session[:recipient_id] )
-    else
-      @recipient = @cust
-    end
-    @cart = find_cart_not_empty or return
+    @cart = find_cart
     # Work around Rails bug 2298 here
     @cart.workaround_rails_bug_2298!
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    if @cart.empty?
-      logger.warn "Cart empty, redirecting from checkout back to store"
-      redirect_to_index
-      return
-    end
-    @double_check_dates = @cart.double_check_dates
     @checkout_message = Option.value(:precheckout_popup) ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
-    set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
     redirect_to change_user_path and return unless logged_in?
@@ -200,91 +179,44 @@ class StoreController < ApplicationController
   end
 
   def place_order
-    @cart = find_cart_not_empty or return
-    @customer = verify_valid_customer or return
+    @cart = find_cart
     @is_admin = current_admin.is_boxoffice
-    sales_final = verify_sales_final or return
-    redirect_to_index and return unless
-      @recipient = verify_valid_recipient 
-    if @recipient == @customer
-      # record 'who will pickup' field if necessary
-      @cart.add_comment("(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})") unless params[:pickup].blank?
-    else
-      @cart.gift_from(@customer)
-    end
-    # OK, we have a customer record to tie the transaction to
-    howpurchased = Purchasemethod.default
-    # regular customers can only purchase with credit card
-    params[:commit] = 'credit' if !@is_admin
-    if params[:commit] =~ /check/i
-      method = :check
-      howpurchased = Purchasemethod.get_type_by_name('box_chk')
-      args = {:check_number => params[:check_number]}
-      @payment = params[:check_number].blank? ? "by check" : "with check number #{params[:check_number]}"
-    elsif params[:commit] =~ /cash/i
-      method = :cash
-      howpurchased = Purchasemethod.get_type_by_name('box_cash')
-      args = {}
-      @payment = "in cash"
-    else                        # credit card
-      if (params[:credit_card_token].blank? || params[:credit_card_token] =~ /dummy/i)
-        flash[:warning] = "Credit card info could not be read successfully.  Please retry."
-        logger.error "Failed token read: #{params.inspect}"
-        redirect_to_checkout
-        return
-      end
-      verify_valid_credit_card_purchaser or return
-      method = :credit_card
-      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
-      args = {
-        :bill_to => Customer.new(params[:customer]),
-        :credit_card_token => params[:credit_card_token],
-        :order_number => @cart.order_number
-      }
-      @payment="with credit card"
-    end
-    @order = @customer.orders.create(
-      :purchasemethod => howpurchased,
-      :sold_on => Time.now,
-      :processed_by_id => logged_in_id)
-    resp = Store.purchase!(method, @cart.total_price, args) do
-      # add non-donation items to recipient's account
-      @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)
-      unless (@recipient.save)
-        s = @recipient.errors.full_messages.join(', ')
-        logger.error "Save failed, re-raising exception! #{s}"
-        raise s
-      end
-      # add donation items to payer's account
-      unless  @customer.add_items(@cart.donations_only, logged_in_id, howpurchased)
-        logger.error "Add items for #{@customer.full_name_with_id} of #{@cart} failed!"
-        raise "Add items failed!"
-      end
-      @amount = @cart.total_price
-      @order_summary = @cart.to_s
-      @special_instructions = @cart.comments
-    end
-    if resp.success?
-      @cart.items.map { |i| i.update_attribute('order_id', @order.id) }
-      if @payment =~ /credit/i
-        auth = resp.params[:transaction_id]
-        @order.update_attribute('authorization', auth)
-        @payment << " (transaction ID: #{auth})"
-      end
-      logger.info("SUCCESS purchase #{@customer.id} [#{@customer.full_name}] by #{@payment}; Cart summary: #{@cart}")
-      if params[:email_confirmation]
-        email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
-          @amount, @payment,
-          @special_instructions)
-      end
-      reset_shopping
-      set_return_to
+    # what payment type?
+    @cart.purchasemethod,@cart.purchase_args = purchasemethod_from_params
+    unless @cart.ready_for_purchase?
+      flash[:warning] = @cart.errors.full_messages.join(', ')
+      redirect_to_checkout
       return
     end
-    # failure....
-    flash[:checkout_error] = resp.message
-    logger.info("FAILED purchase for #{@customer.id} [#{@customer.full_name}] by #{@payment}:\n #{resp.message}") rescue nil
-    redirect_to_checkout
+    @recipient = @cart.purchaser
+    sales_final = verify_sales_final or return
+    if ! @cart.gift?
+      # record 'who will pickup' field if necessary
+      @cart.add_comment("(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})") unless params[:pickup].blank?
+    end
+
+    if @cart.purchasemethod.purchase_medium == :credit_card
+      @cart.finalize_by_paying_with_credit_card!
+    else
+      @cart.finalize!
+    end
+
+    if ! @cart.errors.empty?
+      flash[:checkout_error] = @cart.errors.full_messages.join(', ')
+      logger.info("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
+      redirect_to_checkout
+      return
+    end
+
+    logger.info("SUCCESS purchase #{@cart.customer}; Cart summary: #{@cart.summary}")
+    if params[:email_confirmation]
+      email_confirmation(:confirm_order,
+        @cart.customer,@cart.purchaser,@cart.summary,
+        @cart.total_price, @cart.payment_description,
+        @cart.all_comments)
+    end
+    reset_shopping
+    set_return_to
   end
 
   private
@@ -457,14 +389,13 @@ class StoreController < ApplicationController
         else # either admin, or there's enough seats
           @cart.comments ||= comments
           qty.times  do
-            @cart.add(Voucher.anonymous_voucher_for(showdate,vtype,nil,comments))
+            @cart.add_item(Voucher.anonymous_voucher_for(showdate,vtype,nil,comments))
             comments = nil      # HACK - only add to first voucher
           end
         end
       end
     end
     flash[:warning] = msgs.join("<br/>") unless msgs.empty?
-    logger.info "Added to cart: #{@cart}"
   end
 
   def process_subscription_request
@@ -472,7 +403,7 @@ class StoreController < ApplicationController
     # BUG should check eligibility here
     params[:vouchertype].each_pair do |vtype, qty|
       unless qty.to_i.zero?
-        qty.to_i.times { @cart.add(Voucher.anonymous_bundle_for(vtype)) }
+        qty.to_i.times { @cart.add_item(Voucher.anonymous_bundle_for(vtype)) }
       end
     end
   end
@@ -492,47 +423,11 @@ class StoreController < ApplicationController
     recipient && recipient.valid_as_gift_recipient? ? recipient : nil
   end
 
-  def verify_valid_recipient
-    if session[:recipient_id]
-      # buyer is different from recipient
-      unless recipient = Customer.find_by_id(session[:recipient_id])
-        flash[:warning] = 'Gift recipient is invalid'
-        logger.error "Gift order, but invalid recipient; id=#{session[:recipient_id]}"
-        return nil
-      end
-    else
-      recipient = @customer
-    end
-    recipient
-  end
-
-  def verify_valid_customer
-    @customer = current_user
-    unless @customer.kind_of?(Customer)
-      flash[:warning] = "SYSTEM ERROR: Invalid purchaser (id=#{@customer.id})"
-      logger.error "Reached place_order with invalid customer: #{@customer}"
-      redirect_to_index
-      return nil
-    end
-    @customer
-  end
-
-  def verify_valid_credit_card_purchaser
-    result = @customer.valid_as_purchaser?
-    unless result
-      flash[:warning] = "Customer address/contact data insufficient for credit card purchase"
-      logger.error "Reached place_order with customer who is invalid as purchaser: #{@customer}"
-      redirect_to_checkout
-    end
-    result
-  end
-    
   def find_cart_not_empty
     cart = find_cart
-    logger.info "Cart: #{cart.to_s}"
     # regular custonmers must have a total order > $0.00, but admins can
     # have zero-cost order as long as has zero items
-    if ((@gAdmin.is_staff && cart.items.length > 0) ||
+    if ((@gAdmin.is_staff && cart.cart_items.length > 0) ||
         cart.total_price > 0)
       return cart
     else
@@ -561,8 +456,6 @@ class StoreController < ApplicationController
     reset_current_show_and_showdate
     if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
       set_current_showdate(s)
-    elsif (!(params[:date].blank?) && (s = Showdate.find_by_date(Time.parse(params[:date]))))
-      set_current_showdate(s)
     elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
       set_current_show(s)
     else                        # neither: pick earliest show
@@ -589,5 +482,25 @@ class StoreController < ApplicationController
     else
       redirect_to :action => url_or_path
     end
+  end
+
+  def purchasemethod_from_params
+    if ( !@is_admin || params[:commit] =~ /credit/ ) 
+      meth = Purchasemethod.get_type_by_name(@cart.customer.id == logged_in_id ? 'web_cc' : 'box_cc')
+      args = {
+        :bill_to => @cart.purchaser,
+        :credit_card_token => params[:credit_card_token]
+      }
+    elsif params[:commit] =~ /check/
+      meth = Purchasemethod.get_type_by_name('box_chk')
+      args = {:check_number => params[:check_number] }
+    elsif params[:commit] =~ /cash/
+      meth = Purchasemethod.get_type_by_name('box_cash')
+      args = {}
+    else
+      flash[:warning] = "Invalid form of payment."
+      redirect_to_checkout
+    end
+    return meth,args
   end
 end

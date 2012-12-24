@@ -9,7 +9,7 @@
     %strong not
     notify the recipient of this purchase.
 
-  - if @includes_donation
+  - if @cart.include_donation?
     %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
   - form_tag :action => 'set_shipping_address' do

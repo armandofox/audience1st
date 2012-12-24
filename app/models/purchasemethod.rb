@@ -20,9 +20,9 @@ class Purchasemethod < ActiveRecord::Base
     Purchasemethod.find_by_shortdesc(str) || Purchasemethod.default
   end
   def self.default
-    Purchasemethod.find(:first) ||
-      Purchasemethod.create!(:description => 'Other',
-      :shortdesc => '?purch?',
+    Purchasemethod.find_by_shortdesc('box_cash') ||
+      Purchasemethod.create!(:description => 'Box office - cash',
+      :shortdesc => 'box_cash',
       :nonrevenue => false)
   end
 end

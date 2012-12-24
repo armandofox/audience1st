@@ -5,8 +5,6 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 
-  require 'cart'                # since not an ActiveRecord model
-  
   include AuthenticatedSystem
   include Enumerable
   include ExceptionNotifiable
@@ -76,7 +74,7 @@ class ApplicationController < ActionController::Base
 
   def reset_shopping           # called as a filter
     @cart = find_cart
-    @cart.empty!
+    @cart.empty_cart!
     session.delete(:promo_code)
     session.delete(:recipient_id)
     session.delete(:store)
@@ -109,7 +107,7 @@ class ApplicationController < ActionController::Base
   end
 
   def find_cart
-    session[:cart] ||= Cart.new
+    session[:cart] ||= Order.new
   end
 
   def get_filter_info(params,modelname,default=nil,descending=nil)

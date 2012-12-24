@@ -12,12 +12,15 @@ class Order < ActiveRecord::Base
   validates_presence_of :purchaser_id
 
   attr_reader :cart_items
+  attr_accessor :purchase_args
 
   class Order::NotReadyError < StandardError ; end
   class Order::SaveRecipientError < StandardError; end
+  class Order::PaymentFailedError < StandardError; end
   
   def initialize(*args)
     @cart_items = []
+    @purchase_args = {}
     super
   end
 
@@ -51,18 +54,14 @@ class Order < ActiveRecord::Base
     ready_for_purchase? &&  include_vouchers?  &&  customer != purchaser
   end
 
-  def extract_showdates
-    cart_vouchers.map { |v| v.showdate.try(:printable_date) }.uniq.compact
-  end
-
   def total_price ;     @cart_items.sum(&:amount) ; end
 
   def summary
-    item_list = purchased? ? items : @cart_items
+    item_list = completed? ? items : @cart_items
     (item_list.map(&:one_line_description) + all_comments).join("\n")
   end
 
-  def purchased? ;    !sold_on.blank? ; end
+  def completed? ;    !sold_on.blank? ; end
 
 
   def add_comment(comment)
@@ -77,33 +76,55 @@ class Order < ActiveRecord::Base
     errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
     errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
     errors.add(:customer, customer.errors.full_messages.join(',')) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
-    errors.add(:purchasemethod, 'No payment method specified') unless purchasemethod.kind_of?(Purchasemethod)
+    if purchasemethod.kind_of?(Purchasemethod)
+      errors.add(:purchasemethod, 'Invalid credit card transaction') if
+        purchase_args[:credit_card_token].blank?       &&
+        purchasemethod.purchase_medium == :credit_card 
+      errors.add(:purchasemethod, 'Zero amount') if
+        total_price.zero? && purchasemethod.purchase_medium != :cash
+    else
+      errors.add(:purchasemethod, 'No payment method specified')
+    end
     errors.add_to_base 'No information on who processed order' unless processed_by.kind_of?(Customer)
     errors.empty?
   end
 
   def finalize!
     raise Order::NotReadyError unless ready_for_purchase?
-    self.sold_on = Time.now
-    self.items += cart_items
-    self.items.each { |i| i.update_attribute(:purchasemethod, purchasemethod) }
-    self.save!
-    # add non-donation items to recipient's account
-    customer.add_items(cart_vouchers, processed_by.id, purchasemethod)
-    raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
-    # add donation items to purchaser's account
-    purchaser.add_items(cart_donations, processed_by.id, purchasemethod)
-    raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
+    transaction do
+      # add non-donation items to recipient's account
+      customer.add_items(cart_vouchers, processed_by.id, purchasemethod)
+      raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
+      # add donation items to purchaser's account
+      purchaser.add_items(cart_donations, processed_by.id, purchasemethod)
+      unless purchaser.save
+        raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) 
+      end
+      self.sold_on = Time.now
+      self.items += cart_items
+      self.items.each do |i|
+        i.update_attributes(
+          :purchasemethod => purchasemethod,
+          :sold_on => sold_on)
+      end
+      self.save!
+      if gift?
+        self.items.each { |i| i.update_attribute(:gift_purchaser_id, purchaser.id) }
+      end
+      if purchasemethod.purchase_medium == :credit_card
+        raise Order::PaymentFailedError unless Store.pay_with_credit_card(self)
+      end
+    end
   end
 
   def refundable_to_credit_card?
-    purchased? && purchasemethod.purchase_medium == :credit_card  && !authorization.blank?
+    completed? && purchasemethod.purchase_medium == :credit_card  && !authorization.blank?
   end
 
   protected
 
   def all_comments
-    (purchased? ? items : @cart_items).map(&:comments).uniq
+    (completed? ? items : @cart_items).map(&:comments).uniq
   end
 
 end

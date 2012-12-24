@@ -54,27 +54,6 @@ describe ValidVoucher do
             @vouchers.each { |v| v.should be_a_new_record  }
           end
         end
-        context "with successful payment" do
-          before(:each) do
-            @num = 3
-            @vouchers = @valid_voucher.sell!(@num, @customer, @purch, @logged_in_customer, :comments => @comment)
-          end
-          it_should_behave_like "instantiation"
-          it "should associate vouchers with the customer" do
-            @vouchers.should_not be_empty
-            @customer.should have(@num).vouchers
-          end
-        end
-      end
-      context "unsuccessfully" do
-        it "should fail if purchasing fails" do
-          Store.stub!(:purchase!).and_return(ActiveMerchant::Billing::Response.new(false, "Forced failure"))
-          @vouchers = @valid_voucher.sell!(3, @customer, @purch, @logged_in_customer, :comments => @comment)
-          @vouchers.should be_empty
-          @customer.should have(0).vouchers
-        end
-        it "should fail if max sales reached or exceeded"
-        it "should fail if show is sold out"
       end
     end
   end

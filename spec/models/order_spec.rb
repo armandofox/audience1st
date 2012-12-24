@@ -4,7 +4,7 @@ describe Order do
   
   def add_a_voucher_to(order)
     @vt ||= BasicModels.create_revenue_vouchertype
-    @sd ||= BasicModels.create_one_showdate(Time.now.tomorrow)
+    @sd ||= BasicModels.create_one_showdate(1.day.from_now)
     v = Voucher.anonymous_voucher_for(@sd,@vt)
     order.add_item(v)
     v
@@ -18,10 +18,11 @@ describe Order do
 
   describe 'new order' do
     subject { Order.new }
+    it { should_not be_a_gift }
+    it { should_not be_completed }
     its(:items) { should be_empty }
     its(:cart_items) { should be_empty }
     its(:total_price) { should be_zero }
-    its(:purchased?) { should be_false }
     its(:refundable_to_credit_card?) { should be_false }
     its(:errors) { should be_empty }
   end
@@ -32,7 +33,7 @@ describe Order do
       @order.add_item(@i)
       @order.cart_items.should include(@i)
     end
-    describe 'emptying cart' do
+    describe 'emptying' do
       it 'should work when cart contains items' do
         3.times { @order.add_item(Item.new) }
         @order.empty_cart!
@@ -110,6 +111,21 @@ describe Order do
       @order.customer = nil
       verify_error /No recipient information/
     end
+    it 'should fail if zero amount for purchasemethod other than cash' do
+      @order.stub(:total_price).and_return(0.0)
+      @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :check)
+      verify_error /Zero amount/i
+    end
+    it 'should fail for credit card purchase with null token' do
+      @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
+      @order.purchase_args = {:credit_card_token => nil}
+      verify_error /Invalid credit card transaction/i
+    end
+    it 'should fail for credit card purchase with no token' do
+      @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
+      @order.purchase_args = {}
+      verify_error /Invalid credit card transaction/i
+    end
     it 'should fail if recipient not a valid recipient' do
       @order.customer.stub(:valid_as_gift_recipient?).and_return(nil)
       @order.customer.stub_chain(:errors, :full_messages).and_return(['Recipient error'])
@@ -126,10 +142,35 @@ describe Order do
   end
 
   describe 'finalizing' do
-    it 'should fail if order is not ready for purchase' do
-      @order.stub(:ready_for_purchase?).and_return(nil)
-      lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
+
+    context 'when failure' do
+      it 'should fail if order is not ready for purchase' do
+        @order.stub(:ready_for_purchase?).and_return(nil)
+        lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
+      end
+      describe 'should not update' do
+        before(:each) do
+          @order.stub(:ready_for_purchase?).and_return(true)
+          @order.customer.stub(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
+        end
+        it "completion status" do
+          lambda { @order.finalize! }.should raise_error
+          @order.should_not be_completed
+        end
+        it "items' properties" do
+          v = add_a_voucher_to @order
+          lambda { @order.finalize! }.should raise_error
+          v.order_id.should be_nil
+        end
+      end
+      context 'with credit card payment' do
+        it 'should leave authorization field blank'
+        it 'should record the error'
+        it 'should leave the ids of unsaved objects blank (Rails bug 2298)'
+        it 'should reset new_record? to true (Rails bug 2298)'
+      end
     end
+
     context 'a ready order' do
       before :each do
         @cust = BasicModels.create_generic_customer
@@ -145,7 +186,10 @@ describe Order do
         @d1 = add_a_donation_to @order
       end
       shared_examples_for 'valid order processed' do
-        before :each do ; @order.finalize! ; end
+        before :each do
+          Store.should_not_receive(:pay_with_credit_card) # stub this out, it has its own tests
+          @order.finalize!
+        end
         it 'should be saved' do ; @order.should_not be_a_new_record ; end
         it 'should include the items' do ; @order.should have(3).items ; end
         it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
@@ -154,6 +198,9 @@ describe Order do
         end
         it 'should set order ID on its items' do
           @order.items.each { |i| i.order_id.should == @order.id }
+        end
+        it 'should set sold-on time on its items' do
+          @order.items.each { |i| i.sold_on.should be_a_kind_of(Time) }
         end
         it 'should add vouchers to customer account' do
           @cust.vouchers.should include(@v1)
@@ -165,6 +212,9 @@ describe Order do
         it 'should add donations to customer account' do
           @cust.donations.should include(@d1)
         end
+        it 'should leave gift_purchaser nil on all vouchers' do
+          [@v1,@v2].each { |v| v.gift_purchaser.should be_nil }
+        end
       end
       context 'when purchaser!=recipient' do
         before :each do
@@ -172,12 +222,28 @@ describe Order do
           @order.purchaser = @purch
         end
         it_should_behave_like 'valid order processed'
+        it 'should set gift_purchaser_id on all vouchers' do
+          [@v1,@v2].each { |v| v.gift_purchaser_id.should == @purch.id }
+        end
         it 'should add donations to purchaser account' do ; @purch.donations.should include(@d1) ; end
         it 'should NOT add donations to recipient account' do ; @cust.donations.should_not include(@d1) ; end
         it 'should NOT add vouchers to purchaser account' do
           [@v1,@v2].each { |v| @purch.vouchers.should_not include(v) }
         end
-
+      end
+      context 'when paying with credit card' do
+        before :each do
+          @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
+          @order.stub!(:ready_for_purchase?).and_return(true)
+        end
+        it 'should process a successful charge' do
+          Store.should_receive(:pay_with_credit_card).and_return(true)
+          @order.finalize!
+        end
+        it 'should raise an error if unsuccessful charge' do
+          Store.stub(:pay_with_credit_card).and_return(nil)
+          lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
+        end
       end
     end
   end
