@@ -85,6 +85,7 @@ class StoreController < ApplicationController
       return
     end
     @cart = find_cart
+    @cart.purchaser = store_customer
     if params[:redirect_to] == 'subscribe' 
       process_subscription_request
     else
@@ -96,7 +97,6 @@ class StoreController < ApplicationController
       d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
       @cart.add_item(d)
     end
-    @cart.purchaser = store_customer
     if params[:gift] && @cart.include_vouchers?
       redirect_to :action => 'shipping_address'
     else

@@ -143,7 +143,7 @@ describe Order do
 
   describe 'finalizing' do
 
-    context 'when failure' do
+    context 'when order is not ready' do
       it 'should fail if order is not ready for purchase' do
         @order.stub(:ready_for_purchase?).and_return(nil)
         lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
@@ -163,15 +163,9 @@ describe Order do
           v.order_id.should be_nil
         end
       end
-      context 'with credit card payment' do
-        it 'should leave authorization field blank'
-        it 'should record the error'
-        it 'should leave the ids of unsaved objects blank (Rails bug 2298)'
-        it 'should reset new_record? to true (Rails bug 2298)'
-      end
     end
 
-    context 'a ready order' do
+    context 'when order is ready' do
       before :each do
         @cust = BasicModels.create_generic_customer
         @cust.vouchers.should be_empty
@@ -231,18 +225,35 @@ describe Order do
           [@v1,@v2].each { |v| @purch.vouchers.should_not include(v) }
         end
       end
-      context 'when paying with credit card' do
+      context 'with credit card payment' do
         before :each do
           @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
           @order.stub!(:ready_for_purchase?).and_return(true)
         end
-        it 'should process a successful charge' do
+        it 'succeeds' do
           Store.should_receive(:pay_with_credit_card).and_return(true)
           @order.finalize!
         end
-        it 'should raise an error if unsuccessful charge' do
-          Store.stub(:pay_with_credit_card).and_return(nil)
-          lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
+        describe 'that fails' do
+          before :each do
+            Store.stub(:pay_with_credit_card).and_return(nil)
+            lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
+          end
+          it 'should leave authorization field blank' do
+            @order.authorization.should be_blank
+          end
+          it 'should leave the ids of unsaved objects blank (Rails bug 2298)' do
+            @order.cart_items.each { |e| e.id.should be_nil }
+          end
+          it 'should not save the items' do
+            lambda { Voucher.find(@v1.id) }.should raise_error(ActiveRecord::RecordNotFound)
+            lambda { Voucher.find(@v2.id) }.should raise_error(ActiveRecord::RecordNotFound)
+          end
+          it 'should reset new_record? to true (Rails bug 2298)' do
+            @order.cart_items.each { |e| e.should be_a_new_record }
+          end
+          it 'should not add vouchers to customer' do ; @cust.should have(0).vouchers ; end
+          it 'should not complete the order' do ; @order.should_not be_completed ; end
         end
       end
     end

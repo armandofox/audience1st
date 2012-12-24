@@ -61,7 +61,7 @@ class Order < ActiveRecord::Base
     (item_list.map(&:one_line_description) + all_comments).join("\n")
   end
 
-  def completed? ;    !sold_on.blank? ; end
+  def completed? ;   !new_record?  &&  !sold_on.blank? ; end
 
 
   def add_comment(comment)
@@ -97,9 +97,7 @@ class Order < ActiveRecord::Base
       raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
       # add donation items to purchaser's account
       purchaser.add_items(cart_donations, processed_by.id, purchasemethod)
-      unless purchaser.save
-        raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) 
-      end
+      raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
       self.sold_on = Time.now
       self.items += cart_items
       self.items.each do |i|
@@ -112,7 +110,10 @@ class Order < ActiveRecord::Base
         self.items.each { |i| i.update_attribute(:gift_purchaser_id, purchaser.id) }
       end
       if purchasemethod.purchase_medium == :credit_card
-        raise Order::PaymentFailedError unless Store.pay_with_credit_card(self)
+        unless Store.pay_with_credit_card(self)
+          workaround_rails_bug_2298!
+          raise Order::PaymentFailedError
+        end
       end
     end
   end
