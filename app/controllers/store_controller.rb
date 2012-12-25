@@ -86,17 +86,16 @@ class StoreController < ApplicationController
     end
     @cart = find_cart
     @cart.purchaser = store_customer
-    if params[:redirect_to] == 'subscribe' 
-      process_subscription_request
-    else
-      process_ticket_request
-    end
+    @cart.comments = params[:comments]
+    @cart.processed_by_id = logged_in_id
+    process_ticket_request
     redirect_to_index and return if flash[:warning]
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
       d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
-      @cart.add_item(d)
+      @cart.add_donation(d)
     end
+    remember_cart_in_session(@cart)
     if params[:gift] && @cart.include_vouchers?
       redirect_to :action => 'shipping_address'
     else
@@ -192,7 +191,7 @@ class StoreController < ApplicationController
     sales_final = verify_sales_final or return
     if ! @cart.gift?
       # record 'who will pickup' field if necessary
-      @cart.add_comment("(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})") unless params[:pickup].blank?
+      @cart.comments << "(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})" unless params[:pickup].blank?
     end
 
     if @cart.purchasemethod.purchase_medium == :credit_card
@@ -220,17 +219,6 @@ class StoreController < ApplicationController
   end
 
   private
-
-  def too_many_tickets_for(showdate)
-    # if a donation only, skip this check
-    return nil unless showdate
-    total = params[:vouchertype].values.inject(0) { |t,qty| t+qty.to_i }
-    if total > showdate.saleable_seats_left
-      flash[:warning] = "You've requested #{total} tickets, but only #{showdate.saleable_seats_left} are available for this performance."
-    else
-      nil
-    end
-  end
 
   def redeeming_promo_code
     clear_promo_code and return nil if params[:commit] =~ /clear/i
@@ -372,38 +360,15 @@ class StoreController < ApplicationController
       flash[:warning] = "Please select a show date and tickets, or enter a donation amount."
       return
     end
-    msgs = []
-    comments = params[:comments]
-    params[:vouchertype] ||= {}
+    params[:valid_voucher] ||= {}
     admin = @gAdmin.is_boxoffice
     # pre-check whether the total number of tickets exceeds availability
-    return if (!admin && too_many_tickets_for(showdate))
-    params[:vouchertype].each_pair do |vtype, qty|
-      qty = qty.to_i
-      unless qty.zero?
-        av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => admin, :promo_code => session[:promo_code])
-        if (!admin && av.howmany.zero?)
-          msgs << "Sorry, no '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance."
-        elsif (!admin && (av.howmany < qty))
-          msgs << "Only #{av.howmany} '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance (you requested #{qty})."
-        else # either admin, or there's enough seats
-          @cart.comments ||= comments
-          qty.times  do
-            @cart.add_item(Voucher.anonymous_voucher_for(showdate,vtype,nil,comments))
-            comments = nil      # HACK - only add to first voucher
-          end
-        end
-      end
-    end
-    flash[:warning] = msgs.join("<br/>") unless msgs.empty?
-  end
-
-  def process_subscription_request
-    # subscription tickets
-    # BUG should check eligibility here
-    params[:vouchertype].each_pair do |vtype, qty|
-      unless qty.to_i.zero?
-        qty.to_i.times { @cart.add_item(Voucher.anonymous_bundle_for(vtype)) }
+    total = params[:valid_voucher].values.sum
+    if showdate && total > showdate.saleable_seats_left  &&  !admin
+      flash[:warning] = "You've requested #{total} tickets, but only #{showdate.saleable_seats_left} are available for this performance."
+    else
+      params[:valid_voucher].each_pair do |valid_voucher_id, qty|
+        @cart.add_tickets(valid_voucher_id, qty)
       end
     end
   end
@@ -423,6 +388,14 @@ class StoreController < ApplicationController
     recipient && recipient.valid_as_gift_recipient? ? recipient : nil
   end
 
+  def remember_cart_in_session(cart)
+    if cart.save
+      session[:cart] = cart.id
+    else
+      logger.warn "Couldn't save cart in session: #{cart.errors.full_messages.join(', ')}"
+    end
+  end
+  
   def find_cart_not_empty
     cart = find_cart
     # regular custonmers must have a total order > $0.00, but admins can

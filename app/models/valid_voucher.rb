@@ -87,55 +87,6 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
-  # is this valid-voucher redeemable by a Box Office agent?
-  def self.advance_sale_seats_for(showdate,customer,promo_code='')
-    @@no_seats_explanation = ''
-    if customer.is_boxoffice
-      vv = showdate.valid_vouchers.find(:all, :joins => :vouchertype,
-        :conditions => ['vouchertypes.category IN (?)', [:revenue,:nonticket]])
-      # no date checks or anything like that.  Number available for each
-      # seat is based on actual house capacity (vs. max sales).
-      return vv.map do |v|
-        av = AvailableSeat.new(showdate,customer,v.vouchertype,
-          showdate.total_seats_left)
-      end
-    end
-    # not boxoffice.  Subscribers vs nonsubscribers differ only as
-    # far as the vouchertype availability.  If the show itself is not
-    # available for advance sales, we're done.
-    unless Time.now < showdate.end_advance_sales
-      @@no_seats_explanation = 'Advance sales for performance have ended'
-      return []
-    end
-    avail_to = (customer.is_subscriber? ?
-      [Vouchertype::SUBSCRIBERS,Vouchertype::ANYONE] :
-      [Vouchertype::ANYONE])
-    # make sure advance sales start/end are respected, as well
-    # as vouchertype
-    conds = <<EOCONDS1
-        (vouchertypes.category IN (?))
-        AND (vouchertypes.offer_public IN (?))
-        AND (? BETWEEN start_sales AND end_sales)
-EOCONDS1
-    bind_variables =  [[:revenue,:nonticket], avail_to, Time.now]
-    if !promo_code.blank?
-      conds << " AND (LOWER(promo_code) IN (?))"
-      bind_variables << promo_code.downcase.split(',').unshift('')
-    end
-    vv = showdate.valid_vouchers.find(:all, :joins => :vouchertype,
-      :conditions => [conds, *bind_variables])
-    if vv.empty?
-      @@no_seats_explanation = "No seats matching criteria: #{ValidVoucher.sanitize_sql([conds,*bind_variables])}.  Available types:\n" << showdate.valid_vouchers.map(&:to_s).join("\n")
-      return []
-    end
-    # remove those for which the max number of seats available
-    # (if specified) has already been reached in current sales
-    av = vv.map do |v|
-      a = AvailableSeat.new(showdate,customer,v.vouchertype,v.seats_left)
-    end
-    av
-  end
-
   def seats_left
     saleable_seats_left = showdate.saleable_seats_left
     if (max_sales_for_type.zero? || saleable_seats_left.zero?)
@@ -148,7 +99,6 @@ EOCONDS1
       [inventory_left_for_type, saleable_seats_left].min
     end
   end
-        
 
   # get number of seats available for a showdate, given a customer
   # (different customers have different purchasing rights), a list of
@@ -158,11 +108,10 @@ EOCONDS1
   # computation along with an English explanation if appropriate.
 
   def self.numseats_for_showdate_by_vouchertype(sd,cust,vtype,opts={})
-    av = AvailableSeat.new(sd,cust,vtype,0) # fail safe: 0 available
+    av = AvailableSeat.new(self,cust,0) # fail safe: 0 available
     ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : cust.is_boxoffice
     redeeming = opts.has_key?(:redeeming) ? opts[:redeeming] : false
     # Basic checks: is show sold out? have advance sales ended?
-    sd = Showdate.find(sd) unless (sd.kind_of?(Showdate))
     if (res = sold_out_or_date_invalid(sd,ignore_cutoff))
       av.howmany = 0
       av.explanation = res
@@ -170,12 +119,9 @@ EOCONDS1
       return av
     end
     # Find the valid_vouchers, if any, that make this vouchertype eligible
-    vtype = Vouchertype.find(vtype, :include => :valid_vouchers) unless
-      vtype.kind_of?(Vouchertype)
     unless redeeming
       return av unless  check_visible_to(av,ignore_cutoff)
     end
-    #vv = vtype.valid_vouchers.find_all_by_showdate_id(sd.id)
     vv  = vtype.valid_vouchers.select do |v|
       v.showdate_id == sd.id &&
         (redeeming || v.promo_code_matches(opts[:promo_code]))
@@ -194,7 +140,6 @@ EOCONDS1
   end
 
   def self.numseats_for_showdate(sd,cust,opts={})
-    sd = Showdate.find(sd) unless (sd.kind_of?(Showdate))
     sd.available_vouchertypes.map { |v| numseats_for_showdate_by_vouchertype(sd,cust,v,opts) }
      # BUG: retrieve promo_codes from opts
      # BUG: need to consider somewhere whether voucher is expired

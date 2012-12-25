@@ -3,7 +3,7 @@
   = render :partial => 'enter_promo_code'
   %br/
 
-  - if @sh && !@sh.description.blank?
+  - if !(@sh.try(:description).blank?)
     #show_description.explanation= @sh.description
 
   %label{:for => "show"}= @special_shows_only ? 'Event' : 'Show'
@@ -27,17 +27,17 @@
     - else
 
       - ticket_menus(@vouchertypes) do |vid,name,qty,price|
-        - fieldname = "vouchertype[#{vid}]"
-        %label{:for => "vouchertype_#{vid}"}= name
+        - fieldname = "valid_voucher[#{vid}]"
+        %label{:for => "valid_voucher_#{vid}"}= name
         - if @gAdmin.is_boxoffice
           = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
         - else
           = select_tag(fieldname, options_for_select(qty), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
-        = hidden_field_tag "price[#{vid}]", price, {:id => "vouchertype_#{vid}_price"}
+        = hidden_field_tag "price[#{vid}]", price, {:id => "valid_voucher_#{vid}_price"}
 
     - unless @vouchertypes.empty?
-      %label.emphasis ADA-accessible seating required?
+      %label.emphasis Accessible seating requested?
       = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
       #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}
         %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)

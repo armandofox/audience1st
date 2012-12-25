@@ -107,7 +107,7 @@ class ApplicationController < ActionController::Base
   end
 
   def find_cart
-    session[:cart] ||= Order.new
+    Order.find_by_id(session[:cart]) || Order.new
   end
 
   def get_filter_info(params,modelname,default=nil,descending=nil)

@@ -6,20 +6,17 @@
 
 class AvailableSeat
 
-  attr_accessor :customer, :showdate, :vouchertype, :howmany,
-  :explanation, :staff_only
-
+  attr_accessor :customer, :howmany, :explanation, :staff_only
+  attr_reader :valid_voucher, :vouchertype, :showdate
+  
   def <=>(other)
     self.showdate <=> other.showdate
   end
   
-  def initialize(showdate,customer,vouchertype,howmany=0,explanation='',staff_only=nil)
+  def initialize(valid_voucher,customer,howmany=0,explanation='',staff_only=nil)
     @customer = customer.kind_of?(Customer) ? customer: Customer.find(customer)
-    raise "Invalid customer" unless @customer.kind_of?(Customer)
-    @showdate = showdate.kind_of?(Showdate) ? showdate: Showdate.find(showdate)
-    raise "Invalid showdate" unless @showdate.kind_of?(Showdate)
-    @vouchertype = vouchertype.kind_of?(Vouchertype) ? vouchertype: Vouchertype.find(vouchertype)
-    raise "Invalid vouchertype" unless @vouchertype.kind_of?(Vouchertype)
+    @showdate = valid_voucher.showdate
+    @vouchertype = valid_voucher.vouchertype
     @howmany = howmany.to_i
     @explanation = explanation.to_s
     @staff_only = staff_only

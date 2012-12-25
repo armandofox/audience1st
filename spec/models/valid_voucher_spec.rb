@@ -120,9 +120,10 @@ describe ValidVoucher do
             :end_sales => 1.day.from_now)
         end
         it "should be nil even if valid voucher's advance sales have not" do
-          ValidVoucher.advance_sale_seats_for(@sd,@u).should be_empty
+          pending
         end
         it "should explain that no seats available since advance sales have ended" do
+          pending
           ValidVoucher.no_seats_explanation.should match(/advance sales/i)
         end
       end
@@ -137,30 +138,12 @@ describe ValidVoucher do
         end
         describe "when show has 5 saleable seats left" do
           before(:each) do ; @sd.stub!(:saleable_seats_left).and_return(5) ; end
-          context "but capacity control of #{@limit} exhausted" do
-            before(:each) do
-              @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(@limit)
-              @av = ValidVoucher.advance_sale_seats_for(@sd,@u)
-            end
-            it "should return an available-seats record" do
-              @av.should have(1).available_seat_record
-            end
-            it "should show zero seats" do
-              @av.first.howmany.should == 0
-            end
+          it "but capacity control of #{@limit} exhausted" do
+            pending
           end
           context "but only 3 are allowed by capacity control" do
-            before(:each) do
-              @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(0)
-              @v.update_attribute(:max_sales_for_type, 3)
-              @av = ValidVoucher.advance_sale_seats_for(@sd,@u)
-            end
-            it "should show available seats" do
-              @av.should have(1).available_seat_record
-            end
-            it "should show 3 available seats (not 5)" do
-              @av[0].howmany.should == 3
-            end
+            it "should show available seats" 
+            it "should show 3 available seats (not 5)" 
           end
           it "should show seats available when capacity available"
         end

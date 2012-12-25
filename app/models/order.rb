@@ -17,9 +17,10 @@ class Order < ActiveRecord::Base
     @purchase_args = {}
     super
   end
-
-  serialize :cart_items, Array
-  def after_initialize(*args) ;     self.cart_items = [] ;   end
+  def after_initialize ; self.valid_vouchers = {} ; end
+  
+  serialize :valid_vouchers, Hash
+  serialize :donation
 
   def workaround_rails_bug_2298!
     # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
@@ -38,21 +39,42 @@ class Order < ActiveRecord::Base
   end
 
 
-  def empty_cart! ;     update_attribute(:cart_items, []) ;    end
-  def cart_empty? ;     cart_items.empty? ;  end   
-  def add_item(item) ;  self.cart_items << item ; save! ; end
+  def empty_cart!
+    self.valid_vouchers = {}
+    self.donation = nil
+  end
 
-  def include_vouchers? ; cart_items.any? { |v| v.kind_of? Voucher } ; end
-  def include_donation? ; cart_items.any? { |v| v.kind_of? Donation } ; end
-  def cart_vouchers ;     cart_items.select { |i| i.kind_of? Voucher } ; end
-  def cart_donations ;    cart_items.select { |i| i.kind_of? Donation } ; end
+  def cart_empty?
+    valid_vouchers.empty? && donation.nil?
+  end
+
+  def add_tickets(valid_voucher, number)
+    key = valid_voucher.id
+    valid_vouchers[key] ||= 0
+    valid_vouchers[key] += number
+  end
+
+  def add_donation(d)
+    self.donation = d
+  end
+    
+  def ticket_count ; valid_vouchers.values.map(&:to_i).sum ; end
+
+  def include_vouchers? ; ticket_count > 0 ; end
+  def include_donation? ; !donation.nil?   ; end
 
   def gift?
     ready_for_purchase? &&  include_vouchers?  &&  customer != purchaser
   end
 
-  def total_price ;     cart_items.sum(&:amount) ; end
-
+  def total_price
+    total = donation.try(:amount).to_f
+    valid_vouchers.each_pair do |vv_id, qty| 
+      total += ValidVoucher.find(vv_id).price * qty
+    end
+    total
+  end
+  
   def summary
     item_list = completed? ? items : cart_items
     (item_list.map(&:one_line_description) + all_comments).join("\n")
@@ -60,15 +82,9 @@ class Order < ActiveRecord::Base
 
   def completed? ;  !new_record?  &&  !sold_on.blank? ; end
 
-
-  def add_comment(comment)
-    cart_vouchers.each { |v| v.add_comment comment }
-  end
-
-
   def ready_for_purchase?
     errors.clear
-    errors.add_to_base 'Shopping cart is empty' if cart_items.empty?
+    errors.add_to_base 'Shopping cart is empty' if cart_empty?
     errors.add_to_base 'No purchaser information' unless purchaser.kind_of?(Customer)
     errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
     errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
@@ -88,26 +104,28 @@ class Order < ActiveRecord::Base
 
   def finalize!
     raise Order::NotReadyError unless ready_for_purchase?
+    vouchers = valid_vouchers.keys.map do |valid_voucher_id|
+      ValidVoucher.find(valid_voucher_id).instantiate(processed_by, purchasemethod, valid_vouchers[valid_voucher_id])
+      end.flatten
     transaction do
       # add non-donation items to recipient's account
-      customer.add_items(cart_vouchers, processed_by.id, purchasemethod)
+      customer.add_items(vouchers, processed_by.id, purchasemethod)
       raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
       # add donation items to purchaser's account
-      purchaser.add_items(cart_donations, processed_by.id, purchasemethod)
+      purchaser.add_items([donation], processed_by.id, purchasemethod) if donation
       raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
       self.sold_on = Time.now
-      self.items += cart_items
+      self.items += vouchers
+      self.items += [ donation ] if donation
       self.items.each do |i|
-        i.update_attributes(
-          :purchasemethod => purchasemethod,
-          :sold_on => sold_on)
+        i.purchasemethod = purchasemethod
+        i.sold_on = sold_on
+        i.gift_purchaser_id = purchaser.id if self.gift?
       end
       self.save!
-      if gift?
-        self.items.each { |i| i.update_attribute(:gift_purchaser_id, purchaser.id) }
-      end
       if purchasemethod.purchase_medium == :credit_card
         unless Store.pay_with_credit_card(self)
+          self.reload unless new_record?
           workaround_rails_bug_2298!
           raise Order::PaymentFailedError
         end

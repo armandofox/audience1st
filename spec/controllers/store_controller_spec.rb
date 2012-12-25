@@ -60,7 +60,7 @@ describe StoreController do
       it "should add the donation to the cart" do
         controller.stub!(:find_cart).and_return(@cart = Order.new)
         Donation.stub!(:online_donation).and_return(@d)
-        @cart.should_receive(:add_item).with(@d)
+        @cart.should_receive(:add_donation).with(@d)
         post 'process_cart', @params
       end
     end
