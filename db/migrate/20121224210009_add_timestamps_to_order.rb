@@ -1,7 +1,7 @@
 class AddTimestampsToOrder < ActiveRecord::Migration
   def self.up
     add_column :orders, :valid_vouchers, :string, :null => true
-    add_column :orders, :donation, :string, :null => true
+    add_column :orders, :donation_data, :string, :null => true
     add_column :order, :comments, :string, :null => true
     add_column :orders, :created_at, :datetime, :null => true
     add_column :orders, :updated_at, :datetime, :null => true

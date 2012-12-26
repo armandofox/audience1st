@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 include BasicModels
 
 describe ValidVoucher do
@@ -59,7 +59,7 @@ describe ValidVoucher do
   end
 
   describe "for bundle voucher" do
-    before :all do
+    before :each do
       @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25)
     end
     it "should return all vouchers if success"

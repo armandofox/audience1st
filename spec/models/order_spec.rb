@@ -7,9 +7,9 @@ class Customer < ActiveRecord::Base
   end
 end
 
+
 describe Order do
-  before :each do
-    @order = Order.new(:processed_by => Customer.generic_customer)
+  before :all do                # set these up so they're not rolled back by transaction around each example, since we test transactions in credit-card-failure case
     @vt = BasicModels.create_revenue_vouchertype(:price => 7)
     @sd = BasicModels.create_one_showdate(1.day.from_now)
     @vv = ValidVoucher.create!(
@@ -20,9 +20,20 @@ describe Order do
     @vv2 = ValidVoucher.create!(
       :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => Time.now,
       :max_sales_for_type => 100)
+    @the_processed_by = BasicModels.create_generic_customer
+  end
+
+  after :all do
+    [@vt, @sd, @vv, @vt2, @sd2, @vv2, @the_processed_by].each { |m| m.destroy rescue nil }
+  end
+
+  before :each do
+    @order = Order.new(:processed_by => @the_processed_by)
+    @the_customer = BasicModels.create_generic_customer
+    @the_purchaser = BasicModels.create_generic_customer
     @donation = BasicModels.donation(17)
   end
-  
+
   describe 'new order' do
     subject { Order.new }
     it { should_not be_a_gift }
@@ -38,49 +49,50 @@ describe Order do
   describe 'cart' do
     describe 'adding tickets' do
       before :each do ; @order.add_tickets(@vv, 3) ; end
-      it 'should work when cart is empty' do
-        @order.ticket_count.should == 3
-      end
+      it 'should work when cart is empty' do ; @order.ticket_count.should == 3  ; end
       it 'should add to existing tickets' do
-        @order.add_tickets(@vv, 2)
-        @order.ticket_count.should == 5
+        expect { @order.add_tickets(@vv, 2) }.to change { @order.ticket_count }.by(2)
       end
       it 'should empty cart' do
-        @order.empty_cart!
-        @order.ticket_count.should be_zero
+        expect { @order.empty_cart! }.to change { @order.ticket_count}.to(0)
       end
     end
-    it 'should add donation' do
-      @order.add_donation(@donation)
-      @order.donation.should be_a_kind_of(Donation)
+    describe 'adding donations' do
+      it 'should add donation' do
+        @order.add_donation(@donation)
+        @order.donation.should be_a_kind_of(Donation)
+      end
+      it 'should serialize donation' do
+        @order.donation = @donation
+        @order.save!
+        @order.reload
+        @order.donation.amount.should == @donation.amount
+        @order.donation.account_code_id.should == @donation.account_code_id
+      end
     end
-  end
-
-  describe 'total price' do
-    it 'without donation' do
-      @order.add_tickets(@vv, 2) # at $7 each
-      @order.add_tickets(@vv2, 3) # at $3 each
-      @order.total_price.should == 23.0
-    end
-    it 'with donation and tickets' do
-      @order.add_tickets(@vv, 2)
-      @order.add_donation(@donation)   # at $17
-      @order.total_price.should == 31.0
-    end
-    it 'with donation only' do
-      @order.add_donation(@donation)
-      @order.add_donation(@donation)   # should be idempotent
-      @order.total_price.should == 17.0
+    describe 'total price' do
+      it 'without donation' do
+        expect { @order.add_tickets(@vv, 2) ; @order.add_tickets(@vv2, 3) }.to change { @order.total_price }.to(23.0)
+      end
+      it 'with donation and tickets' do
+        @order.add_tickets(@vv, 2)
+        @order.add_donation(@donation)   # at $17
+        @order.total_price.should == 31.0
+      end
+      it 'with donation only' do
+        @order.add_donation(@donation)
+        @order.add_donation(@donation)   # should be idempotent
+        @order.total_price.should == 17.0
+      end
     end
   end
 
   describe 'pre-purchase checks' do
     before :each do
       @order.add_tickets(@vv, 2)
-      @order.add_donation(@donation)
-      @order.customer = BasicModels.create_generic_customer
-      @order.purchaser = BasicModels.create_generic_customer
-      @order.processed_by = BasicModels.create_generic_customer
+      @order.customer = @the_customer
+      @order.purchaser = @the_purchaser
+      @order.processed_by = @the_processed_by
       @order.purchasemethod = Purchasemethod.default
     end
     it 'should pass if all attributes valid' do
@@ -158,12 +170,12 @@ describe Order do
 
     context 'when order is ready' do
       before :each do
-        @cust = BasicModels.create_generic_customer
+        @cust = @the_customer
         @cust.vouchers.should be_empty
         @cust.donations.should be_empty
         @order = Order.new(
           :purchasemethod => Purchasemethod.default,
-          :processed_by   => BasicModels.create_generic_customer,
+          :processed_by   => @the_processed_by,
           :customer       => @cust,
           :purchaser      => @cust
           )
@@ -204,7 +216,7 @@ describe Order do
       end
       context 'when purchaser!=recipient' do
         before :each do
-          @purch = BasicModels.create_generic_customer
+          @purch = @the_purchaser
           @order.purchaser = @purch
         end
         it_should_behave_like 'valid order processed'
@@ -227,27 +239,38 @@ describe Order do
           Store.should_receive(:pay_with_credit_card).and_return(true)
           @order.finalize!
         end
-        describe 'that fails' do
-          before :each do
-            @previous_vouchers_count = Voucher.count
-            @previous_donations_count = Donation.count
-            Store.stub(:pay_with_credit_card).and_return(nil)
-            lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
-          end
-          it 'should leave authorization field blank' do
-            @order.authorization.should be_blank
-          end
-          it 'should leave the ids of unsaved objects blank (Rails bug 2298)' do
-            @order.donation.should be_a_new_record
-          end
-          it 'should not save the items' do
-            Voucher.count.should == @previous_vouchers_count
-            Donation.count.should == @previous_donations_count
-          end
-          it 'should not add vouchers to customer' do ; @cust.should have(0).vouchers ; end
-          it 'should not complete the order' do ; @order.should_not be_completed ; end
-        end
       end
-   end
+    end
+  end
+  describe 'with FAILED credit card payment' do
+    before :each do
+      @the_customer.vouchers.should be_empty
+      @the_customer.donations.should be_empty
+      @order = Order.new(
+        :purchasemethod => mock_model(Purchasemethod, :purchase_medium => :credit_card),
+        :processed_by   => @the_customer,
+        :customer       => @the_customer,
+        :purchaser      => @the_customer
+        )
+      @order.stub!(:ready_for_purchase?).and_return(true)
+      @order.add_tickets(@vv,2)
+      @order.add_tickets(@vv2,1)
+      @order.add_donation(@donation)
+      @previous_vouchers_count = Voucher.count
+      @previous_donations_count = Donation.count
+      @order.should be_a_new_record
+      @the_customer.should have(0).vouchers
+      Store.stub(:pay_with_credit_card).and_return(nil)
+      lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
+    end
+    it 'should leave authorization field blank' do
+      @order.authorization.should be_blank
+    end
+    it 'should not save the items' do
+      Voucher.count.should == @previous_vouchers_count
+      Donation.count.should == @previous_donations_count
+    end
+    it 'should not add vouchers to customer' do ; @the_customer.reload.should have(0).vouchers ; end
+    it 'should not complete the order' do ; @order.should_not be_completed ; end
   end
 end

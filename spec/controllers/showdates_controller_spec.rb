@@ -6,7 +6,7 @@ describe ShowdatesController do
   before :each do
     login_as :boxoffice_manager
   end
-  before :all do
+  before :each do
     @show = BasicModels.create_generic_show("A Show", :opening_date => Time.parse("January 2, 2013"))
   end
   describe "creating multiple" do

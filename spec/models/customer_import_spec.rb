@@ -25,7 +25,7 @@ describe CustomerImport do
   
   describe "preview" do
     describe "of file with CSV formatting error at row 1" do
-      before(:all) do
+      before(:each) do
         @import = CustomerImport.new
         @import.stub!(:public_filename).and_return @file_with_errors
       end
@@ -33,6 +33,7 @@ describe CustomerImport do
         @import.preview.should be_empty
       end
       it "should produce an error message" do
+        @import.preview
         @import.errors.full_messages.should include_match_for(/invalid starting at row 1/)
       end
     end

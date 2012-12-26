@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe ImportsController do
   before :each do
@@ -22,7 +22,7 @@ describe ImportsController do
         Show.find(:first, :order => 'created_on DESC').should be_valid
       end
       context "if new show name exactly matches existing show" do
-        before :all do ; @existing = Show.create_placeholder!('Existing Show') ; end
+        before :each do ; @existing = Show.create_placeholder!('Existing Show') ; end
         it "should not create a new show" do
           Show.should_not_receive(:create_placeholder!)
           post :create, {:new_show_name => 'Existing Show'}.merge(@params)

@@ -11,16 +11,20 @@ class Order < ActiveRecord::Base
 
   class Order::NotReadyError < StandardError ; end
   class Order::SaveRecipientError < StandardError; end
+  class Order::SavePurchaserError < StandardError ; end
   class Order::PaymentFailedError < StandardError; end
   
+  serialize :valid_vouchers, Hash
+  serialize :donation_data, Hash
+
   def initialize(*args)
     @purchase_args = {}
     super
   end
-  def after_initialize ; self.valid_vouchers = {} ; end
+
+  def after_initialize ; empty_cart! ; end
   
-  serialize :valid_vouchers, Hash
-  serialize :donation
+  private
 
   def workaround_rails_bug_2298!
     # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
@@ -29,19 +33,32 @@ class Order < ActiveRecord::Base
     # not correctly reset to true.
     # the fix is based on a patch shown here:
     # http://s3.amazonaws.com/activereload-lighthouse/assets/fe67deaf98bb15d58218acdbbdf7d4f166255ad3/after_transaction.diff?AWSAccessKeyId=1AJ9W2TX1B2Z7C2KYB82&Expires=1263784877&Signature=ZxQebT1e9lG8hqexXb6IMvlfw4Q%3D
-    self.items.each do |i|
-      i.instance_eval {
+    # If any of the saves was on a record that had already been saved previously,
+    #   we can just reload it instead; but we have to force trying this since we can't
+    #   trust @new_record to tell us this fact.
+    # If reload fails, and it really was a new record, we have to apply the fix.
+    reset_primary_key_and_new_record_on(self)
+    reset_primary_key_and_new_record_on(self.purchaser)
+    reset_primary_key_and_new_record_on(self.customer)
+    self.items.each { |i| reset_primary_key_and_new_record_on(i) }
+  end
+
+  def reset_primary_key_and_new_record_on(thing)
+    begin
+      thing.reload
+    rescue ActiveRecord::RecordNotFound
+      thing.instance_eval do
         @attributes.delete(self.class.primary_key)
         @attributes_cache.delete(self.class.primary_key)
         @new_record = true
-      }
+      end
     end
   end
-
-
+  
+  public
   def empty_cart!
     self.valid_vouchers = {}
-    self.donation = nil
+    self.donation_data = {}
   end
 
   def cart_empty?
@@ -50,14 +67,19 @@ class Order < ActiveRecord::Base
 
   def add_tickets(valid_voucher, number)
     key = valid_voucher.id
-    valid_vouchers[key] ||= 0
-    valid_vouchers[key] += number
+    self.valid_vouchers[key] ||= 0
+    self.valid_vouchers[key] += number
   end
 
-  def add_donation(d)
-    self.donation = d
+  def add_donation(d) ; self.donation = d ; end
+  def donation=(d)
+    donation_data[:amount] = d.amount
+    donation_data[:account_code_id] = d.account_code_id
+    @donation = d
   end
-    
+
+  attr_reader :donation
+  
   def ticket_count ; valid_vouchers.values.map(&:to_i).sum ; end
 
   def include_vouchers? ; ticket_count > 0 ; end
@@ -68,7 +90,7 @@ class Order < ActiveRecord::Base
   end
 
   def total_price
-    total = donation.try(:amount).to_f
+    total = self.donation.try(:amount).to_f
     valid_vouchers.each_pair do |vv_id, qty| 
       total += ValidVoucher.find(vv_id).price * qty
     end
@@ -106,30 +128,31 @@ class Order < ActiveRecord::Base
     raise Order::NotReadyError unless ready_for_purchase?
     vouchers = valid_vouchers.keys.map do |valid_voucher_id|
       ValidVoucher.find(valid_voucher_id).instantiate(processed_by, purchasemethod, valid_vouchers[valid_voucher_id])
-      end.flatten
-    transaction do
-      # add non-donation items to recipient's account
-      customer.add_items(vouchers, processed_by.id, purchasemethod)
-      raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
-      # add donation items to purchaser's account
-      purchaser.add_items([donation], processed_by.id, purchasemethod) if donation
-      raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
-      self.sold_on = Time.now
-      self.items += vouchers
-      self.items += [ donation ] if donation
-      self.items.each do |i|
-        i.purchasemethod = purchasemethod
-        i.sold_on = sold_on
-        i.gift_purchaser_id = purchaser.id if self.gift?
-      end
-      self.save!
-      if purchasemethod.purchase_medium == :credit_card
-        unless Store.pay_with_credit_card(self)
-          self.reload unless new_record?
-          workaround_rails_bug_2298!
-          raise Order::PaymentFailedError
+    end.flatten
+    begin
+      transaction do
+        # add non-donation items to recipient's account
+        customer.add_items(vouchers, processed_by.id, purchasemethod)
+        raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
+        # add donation items to purchaser's account
+        purchaser.add_items([donation], processed_by.id, purchasemethod) if donation
+        raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
+        self.sold_on = Time.now
+        self.items += vouchers
+        self.items += [ donation ] if donation
+        self.items.each do |i|
+          i.purchasemethod = purchasemethod
+          i.sold_on = sold_on
+          i.gift_purchaser_id = purchaser.id if self.gift?
+        end
+        self.save!
+        if purchasemethod.purchase_medium == :credit_card
+          raise Order::PaymentFailedError unless Store.pay_with_credit_card(self)
         end
       end
+    rescue Exception => e
+      workaround_rails_bug_2298!
+      raise e                 # re-raise exception
     end
   end
 

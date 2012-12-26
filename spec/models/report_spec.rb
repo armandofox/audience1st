@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe Report do
   describe 'workaround parsing bug in Rack or Rails for multi-select box' do
@@ -55,7 +55,7 @@ describe Report do
       end
     end
     describe "with 2 bind variables from table A and 1 from table B" do
-      before(:all) do
+      before(:each) do
         @r = Report.new
         @r.add_constraint('vouchertype.price BETWEEN ? AND ?', 1,10)
         @r.add_constraint('donation.created_at < ?', Time.now)
@@ -67,7 +67,7 @@ describe Report do
     end
     describe "with no constraints" do
       it_should_behave_like "a valid SQL query"
-      before(:all) do ; @r = Report.new ; end
+      before(:each) do ; @r = Report.new ; end
       it "should have no bind slots" do
         @r.query.should have(1).element
       end

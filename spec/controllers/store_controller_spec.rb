@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe StoreController do
   fixtures :customers
@@ -43,7 +43,7 @@ describe StoreController do
         @params = {:donation => "13"}
         controller.stub!(:store_customer).and_return(@c = mock_model(Customer))
         controller.stub!(:logged_in_id).and_return((@l = mock_model(Customer)).id)
-        @d = mock_model(Donation, :price => 13, :amount => 13)
+        @d = mock_model(Donation, :price => 13, :amount => 13, :account_code_id => 1)
       end
       it "should allow proceeding" do
         post 'process_cart', @params

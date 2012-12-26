@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe AdminContentHelper do
   it "should be able to inspect if current user is an admin" do

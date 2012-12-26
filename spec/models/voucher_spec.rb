@@ -3,7 +3,7 @@ include BasicModels
 
 describe Voucher do
 
-  before :all do
+  before :each do
     #  some Vouchertype objects for these tests
     args = {
       :fulfillment_needed => false,
@@ -33,7 +33,7 @@ describe Voucher do
   end
 
   describe "one-line description" do
-    before :all do ; @v = Voucher.anonymous_voucher_for(@basic_showdate, @vt_regular) ; end
+    before :each do ; @v = Voucher.anonymous_voucher_for(@basic_showdate, @vt_regular) ; end
     it 'should include vouchertype' do
       @v.one_line_description.should match Regexp.new(@vt_regular.name)
     end
@@ -123,7 +123,7 @@ describe Voucher do
   end
 
   describe "expired voucher" do
-    before(:all) do
+    before(:each) do
       @vt_regular.update_attribute(:season, Time.now.year - 2)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @v.should be_valid
