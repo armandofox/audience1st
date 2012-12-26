@@ -25,6 +25,10 @@ class ValidVoucher < ActiveRecord::Base
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
+  attr_accessor :explanation    # tells customer/staff why the # of avail seats is what it is
+  attr_accessor :invisible_explanation      # hides explanation completely from customer (eg, if promocode needed)
+  
+
   # explanation when no seats are available
   cattr_accessor :no_seats_explanation
 
@@ -46,21 +50,47 @@ class ValidVoucher < ActiveRecord::Base
   
   public
 
-  def season ; vouchertype.season ; end
-
-  def visible_to(cust)
-    Vouchertype.find(self.vouchertype_id).visible_to(cust)
-  end
-
   def to_s
     sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
     start_sales.strftime('%c'), end_sales.strftime('%c'),
     promo_code
   end
   
-  def printable_name ;  self.showdate.printable_name ;  end
-
-  delegate :name, :price, :to => :vouchertype
+  delegate :name, :price, :visible_to, :season, :to => :vouchertype
+  delegate :printable_name, :to => :showdate
+  
+  # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
+  # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
+  def adjust_for_customer(customer,supplied_promo_code = '')
+    result = self.clone
+    now = Time.now
+    reason = invisible = ''
+    inventory = self.seats_remaining
+    self.max_sales_for_type = 0 # will be overwritten by correct answer
+    # conditions that result in *zero* seats available to this customer:
+    # without promo code, customer can't even see the offer
+    if !promo_code_matches(supplied_promo_code)
+      invisible = 'Promo code required'
+    elsif !visible_to(customer)
+      invisible = "Ticket sales of this type restricted to #{vouchertype.offer_public_as_string}"
+    elsif showdate.thedate < now
+      invisible = 'Event date is in the past'
+    elsif showdate.saleable_seats_left < 1
+      reason = 'Performance is sold out'
+    elsif showdate.end_advance_sales < now
+      result.explanation = 'Advance sales for this event are closed'
+    elsif now < start_sales
+      reason = "Tickets of this type not on sale until #{start_sales.to_formatted_s(:showtime)}"
+    elsif now > end_sales
+      reason = "Tickets of this type not sold after #{end_sales.to_formatted_s(:showtime)}"
+    elsif inventory.zero?
+      reason = "All tickets of this type have been sold"
+    else
+      self.max_sales_for_type = inventory
+    end      
+    result.explanation, result.invisible_explanation = reason,invisible
+    result.freeze
+  end
 
   def self.for_advance_sales(promo_codes = [])
     general_conds = "? BETWEEN start_sales AND end_sales"
@@ -75,19 +105,19 @@ class ValidVoucher < ActiveRecord::Base
     v.to_set.classify( &:showdate_id )
   end
 
-  def seats_remaining
-    nseatsleft = self.showdate.saleable_seats_left
-    if max_sales_for_type.zero?
-      # no limits on this type, so limit is just how many seats are left
-      return nseatsleft
-    else
-      # limits on type: sales limit is the lesser of the number of seats
-      # left or the number of seats left of this type
-    [nseatsleft, [0,max_sales_for_type-showdate.sales_by_type(vouchertype_id)].max].min
-    end
-  end
+  # def seats_remaining
+  #   nseatsleft = self.showdate.saleable_seats_left
+  #   if max_sales_for_type.zero?
+  #     # no limits on this type, so limit is just how many seats are left
+  #     return nseatsleft
+  #   else
+  #     # limits on type: sales limit is the lesser of the number of seats
+  #     # left or the number of seats left of this type
+  #   [nseatsleft, [0,max_sales_for_type-showdate.sales_by_type(vouchertype_id)].max].min
+  #   end
+  # end
 
-  def seats_left
+  def seats_remaining
     saleable_seats_left = showdate.saleable_seats_left
     if (max_sales_for_type.zero? || saleable_seats_left.zero?)
       # num seats left is just however many are left for show

@@ -94,13 +94,13 @@ class Vouchertype < ActiveRecord::Base
   def offer_public_as_string
     case offer_public
     when BOXOFFICE
-      "Box ofc only"
+      "Box office only"
     when SUBSCRIBERS
       "Subscribers"
     when ANYONE
       "Anyone"
     when EXTERNAL
-      "External"
+      "External Resellers"
     else
       "Unknown (#{offer_public})"
     end

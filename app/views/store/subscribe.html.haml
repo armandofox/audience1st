@@ -14,7 +14,7 @@
       Buy Subscriptions
       %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
-    - form_tag :action => 'shipping_address' do
+    - form_tag :action => 'process_cart' do
       %br
       = render :partial => 'enter_promo_code'
       %br

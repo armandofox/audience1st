@@ -20,7 +20,7 @@
     %p.center= link_to "Click here for special events", :action => 'special'
 
   #ticket_menus
-    - form_tag :action => 'shipping_address' do
+    - form_tag :action => 'process_cart' do
       = render :partial => 'ticket_menus'
 
       %label{:for => :donation} Additional tax-deductible donation

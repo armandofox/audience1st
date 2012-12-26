@@ -162,7 +162,6 @@ class StoreController < ApplicationController
     set_return_to :controller => 'store', :action => 'checkout'
     @cart = find_cart
     # Work around Rails bug 2298 here
-    @cart.workaround_rails_bug_2298!
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     @checkout_message = Option.value(:precheckout_popup) ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
@@ -264,7 +263,7 @@ class StoreController < ApplicationController
         @sd = @all_showdates.first
       end
       @vouchertypes = (@sd ?
-                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin, :promo_code => @promo_code) :
+                       ValidVoucher.numseats_for_showdate(@sd,@customer,:ignore_cutoff => is_admin, :promo_code => @promo_code) :
         [] )
       @vouchertypes = @vouchertypes.sort do |a,b|
         ord = (a.vouchertype.display_order <=> b.vouchertype.display_order)

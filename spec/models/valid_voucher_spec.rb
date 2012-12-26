@@ -76,26 +76,26 @@ describe ValidVoucher do
         :max_sales_for_type => 0)
     end
     it "should match showdate's saleable seats if no capacity controls" do
-      @v.seats_left.should == 10
+      @v.seats_remaining.should == 10
     end
     it "should respect capacity controls even if more seats remain" do
       @v.update_attribute(:max_sales_for_type, 3)
       @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(2)
-      @v.seats_left.should == 1
+      @v.seats_remaining.should == 1
     end
     it "should not be confused even if capacity control already exceeded" do
       @v.update_attribute(:max_sales_for_type, 3)
       @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(5)
-      @v.seats_left.should be_zero # not negative
+      @v.seats_remaining.should be_zero # not negative
     end
     it "should respect overall capacity even if ticket capacity remains" do
       @v.update_attribute(:max_sales_for_type, 15)
       @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(1)
-      @v.seats_left.should == 10 # not 14
+      @v.seats_remaining.should == 10 # not 14
     end
     it "should respect overall capacity if show is advance-sold-out" do
       @sd.stub(:saleable_seats_left).and_return(0)
-      @v.seats_left.should == 0
+      @v.seats_remaining.should == 0
     end
   end
 
@@ -109,6 +109,9 @@ describe ValidVoucher do
     end
     context "for boxoffice when advance sales have ended" do
       it "should still show seats"
+    end
+    describe 'for nonsubscriber' do
+      
     end
     context "for regular patron", :shared => true do
       describe "when advance sales have ended" do

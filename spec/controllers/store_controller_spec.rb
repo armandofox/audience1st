@@ -19,7 +19,7 @@ describe StoreController do
   end
   describe "processing empty cart" do
     context "and no donation" do
-      describe "all cases", :shared => true do
+      shared_examples_for "all cases" do
         it "should redirect to index" do
           post 'process_cart', @params
           response.should redirect_to(:action => 'index')
