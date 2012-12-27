@@ -28,7 +28,7 @@ describe ValidVoucher do
         it "should return valid vouchers" do ;@vouchers.each { |v| v.should be_valid } ; end
         it "should include the comment" do ; @vouchers.each { |v| v.comments.to_s.should == @comment } ; end
         it "should be marked processed by the logged-in customer" do
-            @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
+          @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
         end
         it "should belong to the showdate" do
           @valid_voucher.showdate_id.should == @showdate.id
@@ -48,63 +48,118 @@ describe ValidVoucher do
   end
 
   describe 'adjusting' do
-    before :each do
-      @vv = ValidVoucher.new(
-        :vouchertype => mock_model(Vouchertype, :visible_to => true, :offer_public_as_string => 'NOT-YOU')
-        )
-    end
-    shared_examples_for 'for regular customer' do
-      context 'for reasons based on visibility' do
-        subject do
-          c = mock_model(Customer)
-          @vv.stub!(:visible_to).with(c).and_return(visible)
-          the_showdate.stub(:saleable_seats_left).and_return(10)
-          @vv.showdate = the_showdate
-          @vv.adjust_for_customer(c)
-        end
-        shared_examples_for 'invisible' do
-          it { should_not be_visible }
-          its(:max_sales_for_type) { should be_zero }
-        end
-        context 'when vouchertype not visible to customer' do
-          let(:visible) { false }
-          let(:the_showdate) { mock_model Showdate, :thedate => 1.day.from_now }
-          it_should_behave_like 'invisible'
-          its(:explanation) { should == 'Ticket sales of this type restricted to NOT-YOU' }
-        end
-        context 'when showdate is in the past' do
-          let(:visible) { true }
-          let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.ago) }
-          it_should_behave_like 'invisible'
-          its(:explanation) { should == 'Event date is in the past' }
-        end
-        context "when showdate's advance sales have ended" do
-          let(:visible) { true }
-          let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :end_advance_sales => 1.day.ago) }
-          its(:explanation) { should == 'Advance sales for this event are closed' }
-        end
-      end
-      context 'when performance is sold out' 
-      context 'for reasons based on valid-voucher properties' do
-        @vv
-      end
-    end
-    describe 'when promo code is required but not given' do
-      subject do
-        @vv.stub!(:promo_code_matches).and_return(false)
-        @vv.adjust_for_customer(mock_model(Customer))
-      end
-      it { should_not be_visible }
+    shared_examples_for 'visible, zero capacity' do
+      it { should be_visible }
+      its(:explanation) { should_not be_blank }
       its(:max_sales_for_type) { should be_zero }
-      its(:explanation)        { should == 'Promo code required' }
     end
-    describe 'when correct promo code is provided' do
-      before :each do ; @vv.stub!(:promo_code_matches).and_return(true) ; end
-      it_should_behave_like 'for regular customer'
+    shared_examples_for 'invisible, zero capacity' do
+      it { should_not be_visible }
+      its(:explanation) { should_not be_blank }
+      its(:max_sales_for_type) { should be_zero }
     end
+    describe 'for visibility' do
+      before :all do ; ValidVoucher.send(:public, :adjust_for_visibility) ; end
+      subject do
+        v = ValidVoucher.new
+        v.stub!(:match_promo_code).and_return(promo_matched)
+        v.stub!(:visible_to).and_return(visible_to_customer)
+        v.stub!(:offer_public_as_string).and_return('NOT YOU')
+        v.adjust_for_visibility
+        v
+      end
+      describe 'when promo code mismatch' do
+        let(:promo_matched)    { nil }
+        let(:visible_to_customer) { true }
+        it_should_behave_like 'invisible, zero capacity'
+        its(:explanation) { should == 'Promo code required' }
+      end
+      describe 'when invisible to customer' do
+        let(:promo_matched)       { true }
+        let(:visible_to_customer) { nil }
+        it_should_behave_like 'invisible, zero capacity'
+        its(:explanation) { should == 'Ticket sales of this type restricted to NOT YOU' }
+      end
+      describe 'when promo code matches and visible to customer' do
+        let(:promo_matched)       { true }
+        let(:visible_to_customer) { true }
+        its(:explanation) { should be_blank }
+      end
+    end
+    describe 'for showdate' do
+      before :all do ; ValidVoucher.send(:public, :adjust_for_showdate) ; end
+      subject do
+        v = ValidVoucher.new
+        v.stub!(:showdate).and_return(the_showdate)
+        v.adjust_for_showdate
+        v
+      end
+      describe 'in the past' do
+        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.ago) }
+        it_should_behave_like 'invisible, zero capacity'
+        its(:explanation) { should == 'Event date is in the past' }
+      end
+      describe 'that is sold out' do
+        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 0) }
+        it_should_behave_like 'visible, zero capacity'
+        its(:explanation) { should == 'Event is sold out' }
+      end
+      describe 'whose advance sales have ended' do
+        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 10, :end_advance_sales => 1.day.ago) }
+        it_should_behave_like 'visible, zero capacity'
+        its(:explanation) { should == 'Advance sales for this event are closed' }
+      end
+    end
+
+    describe 'for per-ticket-type sales dates' do
+      before :all do ; ValidVoucher.send(:public, :adjust_for_sales_dates) ; end
+      subject do
+        v = ValidVoucher.new(:start_sales => starts, :end_sales => ends)
+        v.adjust_for_sales_dates
+        v
+      end
+      describe 'before start of sales' do
+        let(:starts) { @time = 2.days.from_now }
+        let(:ends)   { 3.days.from_now }
+        it_should_behave_like 'visible, zero capacity'
+        its(:explanation) { should == "Tickets of this type not on sale until #{@time.to_formatted_s(:showtime)}" }
+      end
+      describe 'after end of sales' do
+        let(:starts) { 2.days.ago }
+        let(:ends)   { @time = 1.day.ago }
+        it_should_behave_like 'visible, zero capacity'
+        its(:explanation) { should == "Tickets of this type not sold after #{@time.to_formatted_s(:showtime)}" }
+      end
+      describe 'when neither condition applies' do
+        let(:starts) { 2.days.ago }
+        let(:ends)   { 1.day.from_now }
+        its(:explanation) { should be_blank }
+      end
+    end
+
+    describe 'for capacity' do
+      before :all do ; ValidVoucher.send(:public, :adjust_for_capacity) ; end
+      subject do
+        v = ValidVoucher.new
+        v.stub!(:seats_remaining).and_return(seats)
+        v.adjust_for_capacity
+        v
+      end
+      describe 'when zero seats remain' do
+        let(:seats) { 0 }
+        its(:max_sales_for_type) { should be_zero }
+        its(:explanation) { should == 'All tickets of this type have been sold' }
+      end
+      describe 'when one or more seats remain' do
+        let(:seats) { 5 }
+        its(:max_sales_for_type) { should == 5 }
+        its(:explanation) { should be_blank }
+      end
+    end
+        
   end
 
-  describe "seats remaining" do
+  describe "seats remaining" do 
     subject do
       ValidVoucher.new(
         :showdate => mock_model(Showdate, :valid? => true,
@@ -228,48 +283,29 @@ describe ValidVoucher do
       end
       it_should_behave_like "for regular patron"
     end
-  end
-  describe "promo code filtering" do
-    before :all do ; ValidVoucher.send(:public, :promo_code_matches) ; end
-    after :all do ; ValidVoucher.send(:private, :promo_code_matches) ; end
-    before(:each) do
-      @v = ValidVoucher.new
+   end
+  describe "promo code matching" do
+    before :all do ; ValidVoucher.send(:public, :match_promo_code) ; end
+    after :all do ; ValidVoucher.send(:protected, :match_promo_code) ; end
+    context 'when promo code is blank' do
+      before :each do ; @v = ValidVoucher.new(:promo_code => nil) ; end
+      it 'should match empty string' do ;     @v.match_promo_code('').should be_true ; end
+      it 'should match arbitrary string' do ; @v.match_promo_code('foo!').should be_true ; end
+      it 'should match nil' do ;              @v.match_promo_code(nil).should be_true ; end
     end
-    context "with no promo-code" do
-      before(:each) do
-        @v.promo_code = nil
-      end
-      it "should succeed if promo_code is blank and promo code is empty string" do
-        @v.promo_code_matches(nil).should be_true
-      end
-      it "should succeed if promo_code is blank and promo code is not" do
-        @v.promo_code_matches('foo!').should be_true
-      end
-      it "should succeed if promo code is nil (not empty)" do
-        @v.promo_code_matches(nil).should be_true
-      end
+    shared_examples_for 'nonblank promo code' do
+      it 'should match exact string' do ;     @v.match_promo_code('foo').should be_true ; end
+      it 'should be case-insensitive' do ;    @v.match_promo_code('FoO').should be_true ; end
+      it 'should ignore whitespace' do ;      @v.match_promo_code(' Foo ').should be_true ; end
+      it 'should not match partial string' do;@v.match_promo_code('fo').should be_false ; end
     end
-    describe "with nonblank", :shared => true do
-      it "should succeed if promo_code matches exactly" do
-        @v.promo_code_matches('foo').should be_true
-      end
-      it "should match case-insensitively" do
-        @v.promo_code_matches('FoO').should be_true
-      end
-      it "should succeed if supplied promo_code is not blank-stripped" do
-        @v.promo_code_matches(' Foo ').should be_true
-      end
-      it "should fail if only partial word match" do
-        @v.promo_code_matches('fo').should be_false
-      end
+    context '"foo"' do
+      before :each do ; @v = ValidVoucher.new(:promo_code => 'foo') ; end
+      it_should_behave_like 'nonblank promo code'
     end
-    context "with a single promo_code" do
-      before(:each) do ; @v.promo_code = 'foo' ; end
-      it_should_behave_like "with nonblank"
-    end
-    context "with multiple promo_codes" do
-      before(:each) do ; @v.promo_code = 'bAr,Foo,BAZ' ; end
-      it_should_behave_like "with nonblank"
+    context 'multiple codes' do
+      before :each do ; @v = ValidVoucher.new(:promo_code => 'bAr,Foo,BAZ') ; end
+      it_should_behave_like 'nonblank promo code'
     end
   end
 end

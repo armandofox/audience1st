@@ -25,11 +25,12 @@ class ValidVoucher < ActiveRecord::Base
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
+  attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
   alias_method :visible?, :visible # for convenience and more http://www.cs.berkeley.edu/~foxreadable specs
 
-  delegate :name, :price, :visible_to, :season, :to => :vouchertype
+  delegate :name, :price, :visible_to, :season, :offer_public_as_string, :to => :vouchertype
   delegate :printable_name, :to => :showdate
   
   private
@@ -48,8 +49,50 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
-  def promo_code_matches(str = nil)
-    str.to_s.contained_in_or_blank(self.promo_code)
+  def match_promo_code(str)
+    promo_code.blank? || str.to_s.contained_in_or_blank(promo_code)
+  end
+  
+  def adjust_for_visibility
+    if !match_promo_code(supplied_promo_code)
+      self.explanation = 'Promo code required'
+      self.visible = false
+    elsif !visible_to(customer)
+      self.explanation = "Ticket sales of this type restricted to #{offer_public_as_string}"
+      self.visible = false
+    end
+    !self.explanation.blank?
+  end
+
+  def adjust_for_showdate
+    if showdate.thedate < Clock.now
+      self.explanation = 'Event date is in the past'
+      self.visible = false
+    elsif showdate.saleable_seats_left < 1
+      self.explanation = 'Event is sold out'
+      self.visible = true
+    elsif showdate.end_advance_sales < Clock.now
+      self.explanation = 'Advance sales for this event are closed'
+      self.visible = true
+    end
+    !self.explanation.blank?
+  end
+
+  def adjust_for_sales_dates
+    now = Clock.now
+    if now < start_sales
+      self.explanation = "Tickets of this type not on sale until #{start_sales.to_formatted_s(:showtime)}"
+      self.visible = true
+    elsif now > end_sales
+      self.explanation = "Tickets of this type not sold after #{end_sales.to_formatted_s(:showtime)}"
+      self.visible = true
+    end
+    !self.explanation.blank?
+  end
+
+  def adjust_for_capacity
+    self.max_sales_for_type = seats_remaining
+    self.explanation = "All tickets of this type have been sold" if max_sales_for_type.zero?
   end
 
   public
@@ -62,36 +105,16 @@ class ValidVoucher < ActiveRecord::Base
   
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
-  def adjust_for_customer(customer,supplied_promo_code = '')
+  def adjust_for_customer(customer,customer_supplied_promo_code = '')
     result = self.clone
-    now = Clock.now
+    result.visible = true
+    result.supplied_promo_code = customer_supplied_promo_code.to_s
+    result.explanation = ''
     result.max_sales_for_type = 0 # will be overwritten by correct answer
-    visible = true
-    # conditions that result in *zero* seats available to this customer:
-    # without promo code, customer can't even see the offer
-    if !promo_code_matches(supplied_promo_code)
-      reason = 'Promo code required'
-      visible = false
-    elsif !visible_to(customer)
-      reason = "Ticket sales of this type restricted to #{vouchertype.offer_public_as_string}"
-      visible = false
-    elsif showdate.thedate < now
-      reason = 'Event date is in the past'
-      visible = false
-    elsif showdate.saleable_seats_left < 1
-      reason = 'Performance is sold out'
-    elsif showdate.end_advance_sales < now
-      reason = 'Advance sales for this event are closed'
-    elsif now < start_sales
-      reason = "Tickets of this type not on sale until #{start_sales.to_formatted_s(:showtime)}"
-    elsif now > end_sales
-      reason = "Tickets of this type not sold after #{end_sales.to_formatted_s(:showtime)}"
-    else
-      self.max_sales_for_type = inventory
-      reason = "All tickets of this type have been sold" if inventory.zero?
-    end
-    result.explanation = reason
-    result.visible = visible
+    result.adjust_for_visibility ||
+      result.adjust_for_showdate ||
+      result.adjust_for_sales_dates ||
+      result.adjust_for_capacity
     result.freeze
   end
 
