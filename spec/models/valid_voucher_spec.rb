@@ -47,15 +47,61 @@ describe ValidVoucher do
     end
   end
 
-  describe 'adjusting for customer' do
+  describe 'adjusting' do
     before :each do
-      @showdate = BasicModels.create_one_showdate(1.month.from_now)
       @vv = ValidVoucher.new(
-        :vouchertype => mock_model(Vouchertype, :visible_to => true),
-        :showdate => @showdate
+        :vouchertype => mock_model(Vouchertype, :visible_to => true, :offer_public_as_string => 'NOT-YOU')
         )
     end
-    it "should pick minimum of valid-voucher's sales and showdate's sales" 
+    shared_examples_for 'for regular customer' do
+      context 'for reasons based on visibility' do
+        subject do
+          c = mock_model(Customer)
+          @vv.stub!(:visible_to).with(c).and_return(visible)
+          the_showdate.stub(:saleable_seats_left).and_return(10)
+          @vv.showdate = the_showdate
+          @vv.adjust_for_customer(c)
+        end
+        shared_examples_for 'invisible' do
+          it { should_not be_visible }
+          its(:max_sales_for_type) { should be_zero }
+        end
+        context 'when vouchertype not visible to customer' do
+          let(:visible) { false }
+          let(:the_showdate) { mock_model Showdate, :thedate => 1.day.from_now }
+          it_should_behave_like 'invisible'
+          its(:explanation) { should == 'Ticket sales of this type restricted to NOT-YOU' }
+        end
+        context 'when showdate is in the past' do
+          let(:visible) { true }
+          let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.ago) }
+          it_should_behave_like 'invisible'
+          its(:explanation) { should == 'Event date is in the past' }
+        end
+        context "when showdate's advance sales have ended" do
+          let(:visible) { true }
+          let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :end_advance_sales => 1.day.ago) }
+          its(:explanation) { should == 'Advance sales for this event are closed' }
+        end
+      end
+      context 'when performance is sold out' 
+      context 'for reasons based on valid-voucher properties' do
+        @vv
+      end
+    end
+    describe 'when promo code is required but not given' do
+      subject do
+        @vv.stub!(:promo_code_matches).and_return(false)
+        @vv.adjust_for_customer(mock_model(Customer))
+      end
+      it { should_not be_visible }
+      its(:max_sales_for_type) { should be_zero }
+      its(:explanation)        { should == 'Promo code required' }
+    end
+    describe 'when correct promo code is provided' do
+      before :each do ; @vv.stub!(:promo_code_matches).and_return(true) ; end
+      it_should_behave_like 'for regular customer'
+    end
   end
 
   describe "seats remaining" do

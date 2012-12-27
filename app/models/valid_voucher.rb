@@ -25,13 +25,13 @@ class ValidVoucher < ActiveRecord::Base
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
-  attr_accessor :explanation    # tells customer/staff why the # of avail seats is what it is
-  attr_accessor :invisible_explanation      # hides explanation completely from customer (eg, if promocode needed)
+  attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
+  attr_accessor :visible     # should this offer be viewable by non-admins?
+  alias_method :visible?, :visible # for convenience and more http://www.cs.berkeley.edu/~foxreadable specs
+
+  delegate :name, :price, :visible_to, :season, :to => :vouchertype
+  delegate :printable_name, :to => :showdate
   
-
-  # explanation when no seats are available
-  cattr_accessor :no_seats_explanation
-
   private
 
   # Vouchertype's valid date must not be later than valid_voucher start date
@@ -47,7 +47,11 @@ class ValidVoucher < ActiveRecord::Base
         (until #{end_sales.to_formatted_s(:month_day_year)})."
     end
   end
-  
+
+  def promo_code_matches(str = nil)
+    str.to_s.contained_in_or_blank(self.promo_code)
+  end
+
   public
 
   def to_s
@@ -56,39 +60,38 @@ class ValidVoucher < ActiveRecord::Base
     promo_code
   end
   
-  delegate :name, :price, :visible_to, :season, :to => :vouchertype
-  delegate :printable_name, :to => :showdate
-  
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
   def adjust_for_customer(customer,supplied_promo_code = '')
     result = self.clone
-    now = Time.now
-    reason = invisible = ''
-    inventory = self.seats_remaining
-    self.max_sales_for_type = 0 # will be overwritten by correct answer
+    now = Clock.now
+    result.max_sales_for_type = 0 # will be overwritten by correct answer
+    visible = true
     # conditions that result in *zero* seats available to this customer:
     # without promo code, customer can't even see the offer
     if !promo_code_matches(supplied_promo_code)
-      invisible = 'Promo code required'
+      reason = 'Promo code required'
+      visible = false
     elsif !visible_to(customer)
-      invisible = "Ticket sales of this type restricted to #{vouchertype.offer_public_as_string}"
+      reason = "Ticket sales of this type restricted to #{vouchertype.offer_public_as_string}"
+      visible = false
     elsif showdate.thedate < now
-      invisible = 'Event date is in the past'
+      reason = 'Event date is in the past'
+      visible = false
     elsif showdate.saleable_seats_left < 1
       reason = 'Performance is sold out'
     elsif showdate.end_advance_sales < now
-      result.explanation = 'Advance sales for this event are closed'
+      reason = 'Advance sales for this event are closed'
     elsif now < start_sales
       reason = "Tickets of this type not on sale until #{start_sales.to_formatted_s(:showtime)}"
     elsif now > end_sales
       reason = "Tickets of this type not sold after #{end_sales.to_formatted_s(:showtime)}"
-    elsif inventory.zero?
-      reason = "All tickets of this type have been sold"
     else
       self.max_sales_for_type = inventory
-    end      
-    result.explanation, result.invisible_explanation = reason,invisible
+      reason = "All tickets of this type have been sold" if inventory.zero?
+    end
+    result.explanation = reason
+    result.visible = visible
     result.freeze
   end
 
@@ -187,12 +190,6 @@ class ValidVoucher < ActiveRecord::Base
         :comments => comment).
         reserve(self.showdate, logged_in_customer)
     end
-  end
-
-  private
-
-  def promo_code_matches(str = nil)
-    str.to_s.contained_in_or_blank(self.promo_code)
   end
 
 end
