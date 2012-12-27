@@ -189,66 +189,10 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
-  def promo_code_matches(str = nil)
-    str.to_s.contained_in_or_blank(self.promo_code)
-  end
-
   private
 
-  # return true if this valid_voucher should be displayed based on promo_code.
-  # that is, if it has no associated promo code, OR if the supplied string
-  # matches one of the associated promo codes.
-  
-  def self.check_visible_to(av, admin=false)
-    cust = av.customer
-    av.staff_only = true        # only staff can see reason for reject
-    case av.vouchertype.offer_public
-    when -1                     # external reseller
-      av.explanation = "Sold by external reseller only"
-      return false
-    when 0                      # box office use only
-      av.explanation = "Not for customer purchase"
-      return (admin && av.vouchertype.price.to_f > 0.0) # don't show comps.
-    when 1                      # subscribers only
-      av.explanation = "Subscribers only"
-      av.staff_only = false     # ok to show this to customer
-      return cust.subscriber?
-    when 2
-      return true
-    else
-      raise "Unknown value #{av.vouchertype.offer_public} for offer_public"
-    end
-  end
-
-
-  def self.sold_out_or_date_invalid(sd,ignore_cutoff)
-    now = Time.now
-    if sd.saleable_seats_left < 1
-      "Performance is sold out"
-    elsif  sd.thedate < now && !sd.show.special && !ignore_cutoff
-      "Performance date has already passed"
-    elsif sd.end_advance_sales < now && !ignore_cutoff
-      "Advance reservations for this performance are closed"
-    else
-      nil
-    end
-  end
-
-  def self.check_date_and_quantity(v,ignore_cutoff)
-    if (howmany = v.seats_remaining).zero?
-      [0, "None left"]
-    elsif (!ignore_cutoff)
-      # check date-related constraints
-      if v.end_sales && v.end_sales < Time.now
-        [0, "Advance sales for this ticket type have ended"]
-      elsif v.start_sales && v.start_sales > Time.now
-        [0, "Tickets go on sale #{v.start_sales.to_formatted_s(:month_day_only)}"]
-      else
-        [howmany, "available"]
-      end
-    else                      # ignore date constraints
-      [howmany, "available"]
-    end
+  def promo_code_matches(str = nil)
+    str.to_s.contained_in_or_blank(self.promo_code)
   end
 
 end

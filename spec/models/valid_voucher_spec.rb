@@ -2,100 +2,102 @@ require 'spec_helper'
 include BasicModels
 
 describe ValidVoucher do
-  describe "for regular voucher" do
-    before :each do
-      #  some Vouchertype objects for these tests
-      @vt_regular = BasicModels.create_revenue_vouchertype(
-        :price => 10.00,
-        :offer_public => Vouchertype::ANYONE)
+  describe 'instantiation' do
+    before(:each) do
+      @vt_regular = BasicModels.create_revenue_vouchertype
+      @customer = BasicModels.create_generic_customer
+      @purch = mock_model(Purchasemethod, :purchase_medium => :cash)
+      @showdate = mock_model(Showdate, :valid? => true)
+      @logged_in_customer = Customer.boxoffice_daemon
+      @now = @vt_regular.expiration_date - 2.months
+      @comment = 'A comment'
+      @valid_voucher =
+        ValidVoucher.create!(:vouchertype => @vt_regular,
+        :showdate => @showdate,
+        :start_sales => @now - 1.month + 1.day,
+        :end_sales => @now + 1.month - 1.day,
+        :max_sales_for_type => 10)
     end
-    describe "when instantiated" do
-      before(:each) do
-        @customer = BasicModels.create_generic_customer
-        @purch = mock_model(Purchasemethod, :purchase_medium => :cash)
-        @showdate = mock_model(Showdate, :valid? => true)
-        @logged_in_customer = Customer.boxoffice_daemon
-        @now = @vt_regular.expiration_date - 2.months
-        @comment = 'A comment'
-        @valid_voucher =
-          ValidVoucher.create!(:vouchertype => @vt_regular,
-          :showdate => @showdate,
-          :start_sales => @now - 1.month + 1.day,
-          :end_sales => @now + 1.month - 1.day,
-          :max_sales_for_type => 10)
-      end
+    describe 'of a non-bundle voucher' do
       context "successfully" do
-        describe "instantiation", :shared => true do
-          it "should return valid vouchers" do
-            @vouchers.each { |v| v.should be_valid }
-          end
-          it "should be of the specified vouchertype" do
-            @vouchers.each { |v| v.vouchertype.should == @vt_regular }
-          end
-          it "should include the comment" do
-            @vouchers.each { |v| v.comments.to_s.should == @comment }
-          end
-          it "should be marked processed by the logged-in customer" do
+        before(:each) do
+          @vouchers =
+            @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,3,@comment)
+        end
+        it 'should have 3 vouchers' do ; @vouchers.length.should == 3 ; end
+        it "should return valid vouchers" do ;@vouchers.each { |v| v.should be_valid } ; end
+        it "should include the comment" do ; @vouchers.each { |v| v.comments.to_s.should == @comment } ; end
+        it "should be marked processed by the logged-in customer" do
             @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
-          end
-          it "should belong to the showdate" do
-            @valid_voucher.showdate_id.should == @showdate.id
-            @vouchers.each { |v| v.showdate_id.should == @showdate.id }
-          end
         end
-        context "without payment" do
-          before(:each) do
-            @num = 3
-            @vouchers =
-              @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,@num,@comment)
-          end
-          it_should_behave_like "instantiation"
-          it "should instantiate but not yet save the vouchers" do
-            @vouchers.each { |v| v.should be_a_new_record  }
-          end
+        it "should belong to the showdate" do
+          @valid_voucher.showdate_id.should == @showdate.id
+          @vouchers.each { |v| v.showdate_id.should == @showdate.id }
         end
+        it "should not save the vouchers" do ; @vouchers.each { |v| v.should be_a_new_record  } ; end
+      end
+    end
+    describe 'of a bundle voucher' do
+      before :each do
+        @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25)
+      end
+      it 'should instantiate individual vouchers in bundle' do
+        pending 'Refactoring of subscription sales using valid-vouchers'
       end
     end
   end
 
-  describe "for bundle voucher" do
+  describe 'adjusting for customer' do
     before :each do
-      @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25)
+      @showdate = BasicModels.create_one_showdate(1.month.from_now)
+      @vv = ValidVoucher.new(
+        :vouchertype => mock_model(Vouchertype, :visible_to => true),
+        :showdate => @showdate
+        )
     end
-    it "should return all vouchers if success"
-    it "should create no vouchers if any instantiation fails"
+    it "should pick minimum of valid-voucher's sales and showdate's sales" 
   end
 
   describe "seats remaining" do
-    before(:each) do
-      @sd = mock_model(Showdate, :saleable_seats_left => 10, :valid? => true)
-      @v = ValidVoucher.create!(:showdate => @sd,
-        :vouchertype => (@vt_regular = BasicModels.create_revenue_vouchertype),
+    subject do
+      ValidVoucher.new(
+        :showdate => mock_model(Showdate, :valid? => true,
+          :saleable_seats_left => showdate_seats,
+          :sales_by_type => existing_sales),
+        :vouchertype => mock_model(Vouchertype),
         :start_sales => 3.days.ago,
         :end_sales => 1.day.from_now,
-        :max_sales_for_type => 0)
+        :max_sales_for_type => capacity_control)
     end
-    it "should match showdate's saleable seats if no capacity controls" do
-      @v.seats_remaining.should == 10
+    context "without capacity controls should match showdate's saleable seats" do
+      let(:showdate_seats)   { 10 }
+      let(:capacity_control) { 0 }
+      let(:existing_sales)   { 10 }
+      its(:seats_remaining)  { should == 10 }
     end
-    it "should respect capacity controls even if more seats remain" do
-      @v.update_attribute(:max_sales_for_type, 3)
-      @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(2)
-      @v.seats_remaining.should == 1
+    context "should respect capacity controls even if more seats remain" do
+      let(:showdate_seats)   { 10 }
+      let(:capacity_control) { 3 } 
+      let(:existing_sales)   { 2 } 
+      its(:seats_remaining)  { should == 1 }
     end
-    it "should not be confused even if capacity control already exceeded" do
-      @v.update_attribute(:max_sales_for_type, 3)
-      @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(5)
-      @v.seats_remaining.should be_zero # not negative
+    context "should be zero (not negative) even if capacity control already exceeded" do
+      let(:showdate_seats)   { 10 }
+      let(:capacity_control) { 3  }
+      let(:existing_sales)   { 5  }
+      its(:seats_remaining)  { should be_zero }
     end
-    it "should respect overall capacity even if ticket capacity remains" do
-      @v.update_attribute(:max_sales_for_type, 15)
-      @sd.should_receive(:sales_by_type).with(@vt_regular.id).and_return(1)
-      @v.seats_remaining.should == 10 # not 14
+    context "should respect overall capacity even if ticket capacity remains" do
+      let(:showdate_seats)   { 10 }
+      let(:capacity_control) { 15 }
+      let(:existing_sales)   { 1  }
+      its(:seats_remaining)  { should == 10 }
     end
-    it "should respect overall capacity if show is advance-sold-out" do
-      @sd.stub(:saleable_seats_left).and_return(0)
-      @v.seats_remaining.should == 0
+    context "should respect overall capacity if show is advance-sold-out" do
+      let(:showdate_seats)   { 0  }
+      let(:capacity_control) { 0  }
+      let(:existing_sales)   { 10 }
+      its(:seats_remaining)  { should be_zero }
     end
   end
 
@@ -182,6 +184,8 @@ describe ValidVoucher do
     end
   end
   describe "promo code filtering" do
+    before :all do ; ValidVoucher.send(:public, :promo_code_matches) ; end
+    after :all do ; ValidVoucher.send(:private, :promo_code_matches) ; end
     before(:each) do
       @v = ValidVoucher.new
     end
