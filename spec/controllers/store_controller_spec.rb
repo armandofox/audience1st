@@ -47,20 +47,25 @@ describe StoreController do
       end
       it "should allow proceeding" do
         post 'process_cart', @params
-        response.should redirect_to(:action => 'checkout'), flash[:warning]
+        response.should redirect_to(:action => 'checkout')
       end
       it "should proceed to checkout even if gift order" do
         post 'process_cart', :donation => '13', :gift => '1'
         response.should redirect_to(:action => 'checkout')
       end
-      it "should create the donation" do
-        Donation.should_receive(:online_donation).with(13, nil, @c.id, @l.id).and_return(@d)
+      it "should create donation with no account code" do
+        Donation.should_receive(:from_amount_and_account_code).with(13, nil).and_return(@d)
+        post 'process_cart', @params
+      end
+      it 'should create donation with nondefault account code when supplied' do
+        @params[:account_code_id] = 75
+        Donation.should_receive(:from_amount_and_account_code).with(13, '75').and_return(@d)
         post 'process_cart', @params
       end
       it "should add the donation to the cart" do
         controller.stub!(:find_cart).and_return(@cart = Order.new)
-        Donation.stub!(:online_donation).and_return(@d)
-        @cart.should_receive(:add_donation).with(@d)
+        Donation.should_receive(:from_amount_and_account_code).with(13, nil).and_return(d = Donation.new)
+        @cart.should_receive(:add_donation).with(d)
         post 'process_cart', @params
       end
     end

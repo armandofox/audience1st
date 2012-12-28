@@ -19,13 +19,18 @@ class Show < ActiveRecord::Base
   # currently running show, or the one with the next soonest opening date.
 
   def self.current_or_next
-    (sd = Showdate.current_or_next) ? sd.show : nil
+    Showdate.current_or_next.try(:show)
   end
 
-  def self.all
-    Show.find(:all) 
-  end
+  named_scope :current_and_future, lambda {
+    {:joins => :showdates,
+      :conditions => ['showdates.thedate >= ?', 1.day.ago],
+      :order => 'opening_date ASC'
+    }
+  }
 
+  def has_showdates? ; !showdates.empty? ; end
+  
   def self.all_for_season(season=Time.this_season)
     startdate = Time.at_beginning_of_season(season)
     enddate = startdate + 1.year - 1.day

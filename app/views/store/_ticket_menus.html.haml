@@ -20,23 +20,23 @@
   %br/
 
   #voucher_menus
-    - if @vouchertypes.empty? && @sd
+    - if @valid_vouchers.empty? && @sd
 
       %p.explanation No tickets on sale for this performance
 
     - else
 
-      - ticket_menus(@vouchertypes) do |vid,name,qty,price|
-        - fieldname = "valid_voucher[#{vid}]"
-        %label{:for => "valid_voucher_#{vid}"}= name
+      - @valid_vouchers.each do |v|
+        - fieldname = "valid_voucher[#{v.id}]"
+        %label{:for => fieldname}= v.name_with_price
         - if @gAdmin.is_boxoffice
           = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
         - else
-          = select_tag(fieldname, options_for_select(qty), :onchange => 'recalc_total()', :class => 'itemQty')
+          = select_tag(fieldname, options_for_select(0..[30,v.max_sales_for_type].min), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
-        = hidden_field_tag "price[#{vid}]", price, {:id => "valid_voucher_#{vid}_price"}
+        = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
-    - unless @vouchertypes.empty?
+    - unless @valid_vouchers.empty?
       %label.emphasis Accessible seating requested?
       = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
       #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}

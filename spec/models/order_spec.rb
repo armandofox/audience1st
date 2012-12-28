@@ -204,6 +204,10 @@ describe Order do
           @cust.should have(2).vouchers_for(@sd,@vt)
           @cust.should have(1).vouchers_for(@sd2,@vt2)
         end
+        it 'should compute total price successfully' do
+          @order.reload
+          @order.total_price.should == 34
+        end
       end
       context 'when purchaser==recipient' do
         it_should_behave_like 'valid order processed' 

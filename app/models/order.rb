@@ -90,6 +90,7 @@ class Order < ActiveRecord::Base
   end
 
   def total_price
+    return items.map(&:amount).sum if completed?
     total = self.donation.try(:amount).to_f
     valid_vouchers.each_pair do |vv_id, qty| 
       total += ValidVoucher.find(vv_id).price * qty

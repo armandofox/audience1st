@@ -27,6 +27,13 @@ class Donation < Item
     [:customer_id, :processed_by_id]
   end
 
+  def self.from_amount_and_account_code(amount, code)
+    if code.blank? || (use_code = AccountCode.find_by_code(code)).nil?
+      use_code = Donation.default_code
+    end
+    Donation.new(:amount => amount, :account_code => use_code)
+  end
+
   def price ; self.amount ; end # why can't I use alias for this?
 
   def one_line_description
@@ -42,15 +49,5 @@ class Donation < Item
                     :purchasemethod_id => purch.id,
                     :letter_sent => false,
                     :processed_by_id => logged_in_id)
-  end
-
-  def self.online_donation(amount,account_code_id,cid,logged_in_id,purch=Purchasemethod.get_type_by_name('web_cc'))
-    Donation.new(:sold_on => Time.now,
-                 :amount => amount,
-                 :customer_id => cid,
-                 :account_code => AccountCode.find_by_id(account_code_id) || self.default_code,
-                 :purchasemethod_id => purch.id,
-                 :letter_sent => false,
-                 :processed_by_id => logged_in_id)
   end
 end

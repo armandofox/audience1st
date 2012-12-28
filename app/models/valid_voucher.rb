@@ -20,8 +20,6 @@ class ValidVoucher < ActiveRecord::Base
 
   validate :check_dates
 
-  require 'set'
-
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
 
@@ -30,8 +28,8 @@ class ValidVoucher < ActiveRecord::Base
   attr_accessor :visible     # should this offer be viewable by non-admins?
   alias_method :visible?, :visible # for convenience and more http://www.cs.berkeley.edu/~foxreadable specs
 
-  delegate :name, :price, :visible_to, :season, :offer_public_as_string, :to => :vouchertype
-  delegate :printable_name, :to => :showdate
+  delegate :name, :price, :name_with_price, :visible_to?, :season, :offer_public_as_string, :to => :vouchertype
+  delegate :<=>, :printable_name, :to => :showdate
   
   private
 
@@ -52,12 +50,14 @@ class ValidVoucher < ActiveRecord::Base
   def match_promo_code(str)
     promo_code.blank? || str.to_s.contained_in_or_blank(promo_code)
   end
+
+  protected
   
   def adjust_for_visibility
     if !match_promo_code(supplied_promo_code)
       self.explanation = 'Promo code required'
       self.visible = false
-    elsif !visible_to(customer)
+    elsif !visible_to?(customer)
       self.explanation = "Ticket sales of this type restricted to #{offer_public_as_string}"
       self.visible = false
     end
@@ -108,6 +108,7 @@ class ValidVoucher < ActiveRecord::Base
   def adjust_for_customer(customer,customer_supplied_promo_code = '')
     result = self.clone
     result.visible = true
+    result.customer = customer
     result.supplied_promo_code = customer_supplied_promo_code.to_s
     result.explanation = ''
     result.max_sales_for_type = 0 # will be overwritten by correct answer
@@ -118,7 +119,10 @@ class ValidVoucher < ActiveRecord::Base
     result.freeze
   end
 
-  def self.for_advance_sales(promo_codes = [])
+  named_scope :on_sale_now, :conditions => ['? BETWEEN start_sales AND end_sales', Time.now]
+
+
+  def self.for_advance_sales(supplied_promo_code = '')
     general_conds = "? BETWEEN start_sales AND end_sales"
     general_opts = [Time.now]
     promo_code_conds = "promo_code IS NULL OR promo_code = ''"
@@ -126,9 +130,8 @@ class ValidVoucher < ActiveRecord::Base
     unless promo_codes.empty?
       promo_code_conds += " OR promo_code LIKE ? " * promo_codes.length
     end
-    v = ValidVoucher.find(:all,
-                          :conditions => ["#{general_conds} AND (#{promo_code_conds})", general_opts + promo_codes])
-    v.to_set.classify( &:showdate_id )
+    ValidVoucher.find(:all,
+      :conditions => ["#{general_conds} AND (#{promo_code_conds})", general_opts + promo_codes])
   end
 
   # def seats_remaining

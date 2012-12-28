@@ -91,6 +91,11 @@ class Vouchertype < ActiveRecord::Base
     sprintf("%-15.15s $%2.2f (%s,%s)", name, price, category, offer_public_as_string)
   end
 
+  def <=>(other)
+    ord = (display_order <=> other.display_order)
+    ord == 0 ? price <=> other.price : ord
+  end
+  
   def offer_public_as_string
     case offer_public
     when BOXOFFICE
@@ -111,7 +116,15 @@ class Vouchertype < ActiveRecord::Base
     @@offer_to
   end
 
-      
+  def visible_to?(customer)
+    case offer_public
+    when ANYONE then true
+    when EXTERNAL then false
+    when SUBSCRIBERS then customer.subscriber? || customer.is_boxoffice
+    when BOXOFFICE then customer.is_boxoffice
+    else false
+    end
+  end
 
   def bundle? ; category == :bundle ; end
   def comp? ; category == :comp ; end

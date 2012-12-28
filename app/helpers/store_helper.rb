@@ -34,7 +34,7 @@ module StoreHelper
 
   def ticket_menus(avs)
     min_tix = 0
-    avs.each do |av|
+    valid_vouchers.each do |av|
       vid = av.valid_voucher.id
       max_tix = [av.howmany, 30].min
       qty = (min_tix..max_tix).to_a

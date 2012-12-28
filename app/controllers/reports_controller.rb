@@ -10,7 +10,7 @@ class ReportsController < ApplicationController
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
     # next showdate
-    @next_showdate = Showdate.next_or_latest
+    @next_showdate = Showdate.current_or_next
     # all show names
     @all_shows = Show.find(:all)
     # quick subscription stats
