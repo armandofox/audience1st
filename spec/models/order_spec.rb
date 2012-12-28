@@ -56,6 +56,11 @@ describe Order do
       it 'should empty cart' do
         expect { @order.empty_cart! }.to change { @order.ticket_count}.to(0)
       end
+      it 'should serialize cart' do
+        @order.save!
+        reloaded = Order.find(@order.id)
+        reloaded.ticket_count.should == 3
+      end
     end
     describe 'adding donations' do
       it 'should add donation' do
@@ -65,9 +70,9 @@ describe Order do
       it 'should serialize donation' do
         @order.donation = @donation
         @order.save!
-        @order.reload
-        @order.donation.amount.should == @donation.amount
-        @order.donation.account_code_id.should == @donation.account_code_id
+        reloaded = Order.find(@order.id)
+        reloaded.donation.amount.should == @donation.amount
+        reloaded.donation.account_code_id.should == @donation.account_code_id
       end
     end
     describe 'total price' do

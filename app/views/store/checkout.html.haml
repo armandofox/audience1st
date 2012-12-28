@@ -17,7 +17,7 @@
   = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
 - form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
-  - if @cart.include_vouchers? &&  !@cart.gift
+  - if @cart.include_vouchers? &&  !@cart.gift?
     #someone_else
     %h2 Who's Attending?
     %p

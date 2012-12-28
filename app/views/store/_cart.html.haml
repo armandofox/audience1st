@@ -1,33 +1,28 @@
 - @cart ||= cart 
 
 #cart
-  - if @cart.items.empty?
+  - if @cart.cart_empty?
     %p#empty_cart No items in your order.
   - else
     %h2#check_dates Please double check your order
     %ul#cart_items
-      - @cart.items.each_with_index do |i,index|
+      - @cart.each_voucher_in_cart do |v|
         %li.cart_item{:class=>cycle(:even,:odd)}
-          - price = (i.kind_of?(Voucher)) ? i.vouchertype.price : i.amount
           .price_and_actions
-            .actions
-              - if defined?(editable) && editable
-                = gen_button('Remove', {:action => 'remove_from_cart', :item => index, :redirect_to => (defined?(redirect_to) ? redirect_to : nil), :id => id})
-            .cart_item_price= number_to_currency(price)
-    
+            .cart_item_price= number_to_currency(v.price)
           %span.cart_item_desc
-            - if i.kind_of?(Voucher)
-              - price = i.vouchertype.price
-              - if i.showdate_id.to_i > 0 
-                %span.voucher_show_name= h i.showdate.name
-                %span.voucher_show_date= h i.showdate.thedate.to_formatted_s(:showtime)
-              %span.voucher_type= h i.vouchertype.name
-              - if i.promo_code
-                %span.promo_code= "(Promo #{h(i.promo_code)})"
-            - elsif i.kind_of?(Donation)
-              - price = i.amount
-              %span.donation_name= "Donation to #{h(i.account_code.name)}"
-              
+            %span.voucher_show_name= v.showdate.try(:name)
+            %span.voucher_show_date= v.showdate.thedate.to_formatted_s(:showtime) if v.showdate
+          %span.voucher_type= v.name
+          - if !v.promo_code.blank?
+            %span.promo_code (Promo #{h(v.promo_code)})
+
+      - if (d = @cart.donation)
+        %li.cart_item{:class=>cycle(:even,:odd)}
+          .price_and_actions
+            .cart_item_price= number_to_currency(d.price)
+          %span.donation_name Donation to #{h(d.account_code.name)}
+        
     #cart_total
       #total_price._stripe_total= number_to_currency(@cart.total_price)
       %div &nbsp;

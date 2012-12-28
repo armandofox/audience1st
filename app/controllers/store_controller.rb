@@ -8,6 +8,8 @@ class StoreController < ApplicationController
   before_filter :set_session_variables
   def set_session_variables
     @customer = current_user || Customer.walkup_customer
+    @subscriber = @customer.subscriber?
+    @next_season_subscriber = @customer.next_season_subscriber?
     @cart = find_cart
     @promo_code = session[:promo_code]
     @is_admin = current_admin.is_boxoffice
@@ -32,24 +34,24 @@ class StoreController < ApplicationController
   def index
     unless (@promo_code = redeeming_promo_code)
       reset_shopping
-      setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
     end
-    @subscriber = @customer.subscriber?
-    @next_season_subscriber = @customer.next_season_subscriber?
+    setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
     set_return_to :action => self.action_name
   end
 
   def special
     @special_shows_only = true
+    unless (@promo_code = redeeming_promo_code)
+      reset_shopping
+    end
+    setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
+    set_return_to :action => self.action_name
     render :action => :index
   end
 
   def subscribe
     reset_shopping
     set_return_to :controller => 'store', :action => 'subscribe'
-    @subscriber = @customer.subscriber?
-    @next_season_subscriber = @customer.next_season_subscriber?
-    @cart = find_cart
     # this uses the temporary hack of adding bundle sales start/end
     #   to bundle voucher record directly...ugh
     @promo_code = redeeming_promo_code
@@ -130,7 +132,6 @@ class StoreController < ApplicationController
 
   def checkout
     set_return_to :controller => 'store', :action => 'checkout'
-    @cart = find_cart
     # Work around Rails bug 2298 here
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     @checkout_message = Option.value(:precheckout_popup) ||
@@ -234,15 +235,15 @@ class StoreController < ApplicationController
       flash[:warning] = "Please select a show date and tickets, or enter a donation amount."
       return
     end
-    params[:valid_voucher] ||= {}
     admin = @gAdmin.is_boxoffice
     # pre-check whether the total number of tickets exceeds availability
-    total = params[:valid_voucher].values.sum
-    if showdate && total > showdate.saleable_seats_left  &&  !admin
+    valid_vouchers = valid_vouchers_from_params
+    total = valid_vouchers.values.sum
+    if showdate && total > showdate.saleable_seats_left && !admin
       flash[:warning] = "You've requested #{total} tickets, but only #{showdate.saleable_seats_left} are available for this performance."
     else
-      params[:valid_voucher].each_pair do |valid_voucher_id, qty|
-        @cart.add_tickets(valid_voucher_id, qty)
+      valid_vouchers.each_pair do |valid_voucher, qty|
+        @cart.add_tickets(valid_voucher, qty)
       end
     end
   end
@@ -331,5 +332,15 @@ class StoreController < ApplicationController
     end.find_all(&:visible?)
     @all_shows = Show.current_and_future.find_by_special(@special_shows_only) || []
     @all_shows << @sh unless @all_shows.include? @sh
+  end
+
+  def valid_vouchers_from_params
+    result = {}
+    (params[:valid_voucher] ||= {}).each_pair do |id,qty|
+      if (vv = ValidVoucher.find_by_id(id))
+        result[vv] = qty.to_i unless qty.to_i.zero?
+      end
+    end
+    result
   end
 end

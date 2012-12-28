@@ -1,5 +1,5 @@
 #ticket_menus_inner
-  = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty', '#{@gAdmin.is_boxoffice ? '' : 'submit'}') }"
+  = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty', 'submit') }"
   = render :partial => 'enter_promo_code'
   %br/
 

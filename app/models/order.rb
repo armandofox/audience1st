@@ -4,6 +4,7 @@ class Order < ActiveRecord::Base
   belongs_to :processed_by, :class_name => 'Customer'
   belongs_to :purchasemethod
   has_many :items
+  has_many :vouchers
 
   validates_presence_of :processed_by_id
 
@@ -22,8 +23,14 @@ class Order < ActiveRecord::Base
     super
   end
 
-  def after_initialize ; empty_cart! ; end
-  
+  def after_initialize
+    self.donation_data ||= {}
+    unless donation_data.empty?
+      @donation = Donation.new(:amount => donation_data[:amount], :account_code_id => donation_data[:account_code_id])
+    end
+    self.valid_vouchers ||= {}
+  end
+
   private
 
   def workaround_rails_bug_2298!
@@ -73,17 +80,29 @@ class Order < ActiveRecord::Base
 
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
-    donation_data[:amount] = d.amount
-    donation_data[:account_code_id] = d.account_code_id
+    self.donation_data[:amount] = d.amount
+    self.donation_data[:account_code_id] = d.account_code_id
     @donation = d
   end
-
   attr_reader :donation
   
   def ticket_count ; valid_vouchers.values.map(&:to_i).sum ; end
 
-  def include_vouchers? ; ticket_count > 0 ; end
-  def include_donation? ; !donation.nil?   ; end
+  def include_vouchers?
+    if completed?
+      items.any? { |v| v.kind_of?(Voucher) }
+    else
+      ticket_count > 0
+    end
+  end
+  
+  def include_donation?
+    if completed?
+      items.any? { |v| v.kind_of?(Donation) }
+    else
+      !donation.nil?
+    end
+  end
 
   def gift?
     ready_for_purchase? &&  include_vouchers?  &&  customer != purchaser
@@ -101,6 +120,13 @@ class Order < ActiveRecord::Base
   def summary
     item_list = completed? ? items : cart_items
     (item_list.map(&:one_line_description) + all_comments).join("\n")
+  end
+
+  def each_voucher_in_cart
+    valid_vouchers.each_pair do |id,num|
+      v = ValidVoucher.find(id)
+      num.times { yield v }
+    end
   end
 
   def completed? ;  !new_record?  &&  !sold_on.blank? ; end

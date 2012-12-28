@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
     @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
     @enableAdmin = session[:can_restore_admin]
     @gCart = find_cart
-    @gCheckoutInProgress = session[:checkout_in_progress]
+    @gCheckoutInProgress = !@gCart.cart_empty?
     @gLoggedIn = logged_in_user || Customer.walkup_customer
     true
   end
