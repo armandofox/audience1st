@@ -2,6 +2,17 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 World(ModelAccess)
 
+# Check for N occurrences of something
+Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, _, selector, count|
+  regexp = Regexp.new(regexp, Regexp::MULTILINE)
+  count = count.to_i
+  if selector
+    within(selector) { page.find(:xpath, '//*').text.split(regexp).length.should == 1+count }
+  else
+    page.find(:xpath, '//*').text.split(regexp).length.should == 1+count
+  end
+end
+
 # Wrapper around 'I should see ... within ...' steps
 Then /^I should see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
   Then %Q{I should see #{string} within "#{tag}[@id='#{id}']"}

@@ -29,7 +29,7 @@ class ValidVoucher < ActiveRecord::Base
   alias_method :visible?, :visible # for convenience and more http://www.cs.berkeley.edu/~foxreadable specs
 
   delegate :name, :price, :name_with_price, :visible_to?, :season, :offer_public_as_string, :to => :vouchertype
-  delegate :<=>, :printable_name, :to => :showdate
+  delegate :<=>, :printable_name, :thedate, :to => :showdate
   
   private
 
@@ -107,6 +107,7 @@ class ValidVoucher < ActiveRecord::Base
   # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
   def adjust_for_customer(customer,customer_supplied_promo_code = '')
     result = self.clone
+    result.id = self.id # necessary since views expect valid-vouchers to have an id...
     result.visible = true
     result.customer = customer
     result.supplied_promo_code = customer_supplied_promo_code.to_s

@@ -88,6 +88,14 @@ class Order < ActiveRecord::Base
   
   def ticket_count ; valid_vouchers.values.map(&:to_i).sum ; end
 
+  def tickets_for_date(date)
+    valid_vouchers.select { |v| v.thedate == date }
+  end
+
+  def tickets_of_type(vouchertype)
+    valid_vouchers.select { |v| v.vouchertype == vouchertype }
+  end
+  
   def include_vouchers?
     if completed?
       items.any? { |v| v.kind_of?(Voucher) }

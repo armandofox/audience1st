@@ -149,14 +149,14 @@ class StoreController < ApplicationController
 
   def place_order
     @cart = find_cart
-    @is_admin = current_admin.is_boxoffice
-    # what payment type?
-    @cart.purchasemethod,@cart.purchase_args = purchasemethod_from_params
     unless @cart.ready_for_purchase?
       flash[:warning] = @cart.errors.full_messages.join(', ')
       redirect_to_checkout
       return
     end
+    @is_admin = current_admin.is_boxoffice
+    # what payment type?
+    @cart.purchasemethod,@cart.purchase_args = purchasemethod_from_params
     @recipient = @cart.purchaser
     redirect_to_checkout and return unless verify_sales_final
     if ! @cart.gift?
@@ -294,7 +294,7 @@ class StoreController < ApplicationController
 
   def purchasemethod_from_params
     if ( !@is_admin || params[:commit ] =~ /credit/i ) 
-      meth = Purchasemethod.get_type_by_name(@cart.customer.id == logged_in_id ? 'web_cc' : 'box_cc')
+      meth = Purchasemethod.get_type_by_name(@cart.customer.try(:id) == logged_in_id ? 'web_cc' : 'box_cc')
       args = { :credit_card_token => params[:credit_card_token] }
     elsif params[:commit] =~ /check/i
       meth = Purchasemethod.get_type_by_name('box_chk')

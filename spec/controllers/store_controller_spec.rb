@@ -145,12 +145,16 @@ describe StoreController do
       @sd2 = BasicModels.create_one_showdate(Time.parse(@dt2),100,@sd1.show)
     end
     it "should override valid date if showdate_id given" do
-      @controller.should_receive(:set_current_showdate).with(@sd1)
       get :index, :showdate_id => @sd1.id, :date => @dt2
+      assigns(:sd).should == @sd1
     end
-    it "should default to earliest showdate if neither valid" do
-      @controller.should_not_receive(:set_current_showdate)
+    it "should respect valid date" do
+      get :index, :date => @dt2
+      assigns(:sd).should == @sd2
+    end
+    it "should default to earliest showdate with tickets if neither valid" do
       get :index, :showdate_id => 9999999
+      assigns(:sd).should == @sd2
     end
   end
 
