@@ -3,8 +3,9 @@
 .notice
   %p 
     You have paid a total of 
-    %strong= number_to_currency @cart.total_price
-    %strong= @payment
+    %span.strong= number_to_currency @cart.total_price
+    by 
+    %span.strong= humanize(@payment)
   %p.strong Please print this confirmation for your records:
   %pre= @cart.summary
 

@@ -20,11 +20,14 @@ module NavigationHelpers
     when /the change password page/i    then '/customers/change_password'
     when /the forgot password page/i    then '/customers/forgot_password'
     when /the new customer page/i       then '/customers/new'
+      # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page/i              then '/store/index'
     when /the subscriptions page/i      then '/store/subscribe'
     when /the shipping info page/i      then '/store/shipping_address'
     when /the checkout page/i           then '/store/checkout'
+    when /the order confirmation page/i then '/store/place_order'
+      # reporting pages 
     when /the donations page/i          then '/donations/list'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'

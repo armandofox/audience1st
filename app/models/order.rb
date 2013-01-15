@@ -148,7 +148,7 @@ class Order < ActiveRecord::Base
     errors.add(:customer, customer.errors.full_messages.join(',')) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
     if purchasemethod.kind_of?(Purchasemethod)
       errors.add(:purchasemethod, 'Invalid credit card transaction') if
-        purchase_args[:credit_card_token].blank?       &&
+        purchase_args && purchase_args[:credit_card_token].blank?       &&
         purchasemethod.purchase_medium == :credit_card 
       errors.add(:purchasemethod, 'Zero amount') if
         total_price.zero? && purchasemethod.purchase_medium != :cash
@@ -194,8 +194,6 @@ class Order < ActiveRecord::Base
   def refundable_to_credit_card?
     completed? && purchasemethod.purchase_medium == :credit_card  && !authorization.blank?
   end
-
-  protected
 
   def all_comments
     (completed? ? items : cart_items).map(&:comments).uniq

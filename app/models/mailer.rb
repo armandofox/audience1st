@@ -32,10 +32,10 @@ class Mailer < ActionMailer::Base
     )
   end
     
-  def confirm_order(order) 
-    sending_to(order.purchaser)
+  def confirm_order(customer, order) 
+    sending_to(customer)
     @subject << "order confirmation"
-    @body.merge!(:greeting => order.purchaser.full_name,
+    @body.merge!(:greeting => customer.full_name,
                  :description => order.summary,
                  :amount => order.amount,
                  :payment_desc => order.purchasemethod.description,

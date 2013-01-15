@@ -43,7 +43,7 @@ function checkPlaceOrderForm() {
     if (! $('credit_card_verification_value').value.match('[0-9]{3,4}')) {
         alrt += "Credit card security code appears to be too short.\n";
     }
-    if (! ($('sales_final').checked)) {
+    if ($('sales_final') && !($('sales_final').checked)) {
         alrt += "Please indicate your acceptance of our Terms of Sale by checking the TERMS OF SALE box.\n";
     }
     if (alrt != '') {

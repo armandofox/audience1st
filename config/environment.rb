@@ -54,7 +54,6 @@ end
 
 # gem 'rails', '2.3.5'
 # gem 'i18n', '~> 0.4.0'          # can remove once upgrade to 2.3.11
-# gem 'activemerchant'
 # gem 'haml'
 # gem 'nokogiri', '1.3.3'
 # gem 'dbf',  '>= 1.2.8'

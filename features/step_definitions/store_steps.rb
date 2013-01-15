@@ -16,11 +16,11 @@ end
 Given /^my cart contains the following tickets:/ do |tickets|
   tickets.hashes.each do |t|
     show,qty,type,price,showdate = t.values_at(:show, :qty, :type,:price,:showdate)
-    Given %Q{a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for #{price} on "#{showdate}"}
+    Given %Q{a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for $#{price} on "#{showdate}"}
     visit path_to %Q{the store page for "#{show}"}
     select show, :from => 'Show'
     select_date_matching showdate, :from => 'Date'
-    select qty, :from => "#{type} - #{price}"
+    select qty, :from => "#{type} - $#{price}"
     click_button 'CONTINUE >>'
   end
 end
@@ -50,9 +50,5 @@ end
 Then /^the cart should contain a donation of \$(.*) to "(.*)"$/ do |amount,account|
   # This should really check internal state of the cart, but due to current poor design
   #  that state's not externally grabbable because it's buried in the session.
-  cart = get_cart
-  donation = cart.donations_only.first
-  donation.should be_a_kind_of Donation
-  donation.amount.should == amount
-  donation.account_code.should == Account.find_by_name!(account)
+  Then %Q{I should see /#{sprintf('%.02f',amount)}.*?Donation to #{account}/ within "#cart_items" 1 times}
 end

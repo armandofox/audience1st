@@ -7,7 +7,5 @@ SANDBOX = (RAILS_ENV != 'production'  ||
            Option.value(:sandbox).to_i != 0)
 if SANDBOX
   ActionMailer::Base.delivery_method = :test
-  PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
-  ActiveMerchant::Billing::Base.mode = :test
   DISABLE_EMAIL_LIST_INTEGRATION = true
 end

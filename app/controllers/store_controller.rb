@@ -91,11 +91,12 @@ class StoreController < ApplicationController
       @cart.add_donation( Donation.from_amount_and_account_code(params[:donation].to_i,
           params[:account_code_id] ))
     end
-    remember_cart_in_session!
     if params[:gift] && @cart.include_vouchers?
+      remember_cart_in_session!
       redirect_to :action => 'shipping_address'
     else
       @cart.customer = @cart.purchaser
+      remember_cart_in_session!
       redirect_to_checkout
     end
   end
@@ -149,25 +150,26 @@ class StoreController < ApplicationController
 
   def place_order
     @cart = find_cart
-    unless @cart.ready_for_purchase?
-      flash[:warning] = @cart.errors.full_messages.join(', ')
-      redirect_to_checkout
-      return
-    end
     @is_admin = current_admin.is_boxoffice
     # what payment type?
     @cart.purchasemethod,@cart.purchase_args = purchasemethod_from_params
     @recipient = @cart.purchaser
-    redirect_to_checkout and return unless verify_sales_final
     if ! @cart.gift?
       # record 'who will pickup' field if necessary
       @cart.comments << "(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})" unless params[:pickup].blank?
     end
 
+    unless @cart.ready_for_purchase?
+      flash[:warning] = @cart.errors.full_messages.join(', ')
+      redirect_to_checkout
+      return
+    end
+
     begin
       @cart.finalize!
       logger.info("SUCCESS purchase #{@cart.customer}; Cart summary: #{@cart.summary}")
-      email_confirmation(:confirm_order, @cart) if params[:email_confirmation]
+      email_confirmation(:confirm_order, @cart.purchaser, @cart) if params[:email_confirmation]
+      @payment = @cart.purchasemethod.purchase_medium
       reset_shopping
       set_return_to
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
@@ -224,7 +226,7 @@ class StoreController < ApplicationController
   end
   def showdate_from_show_params
     (s = Show.find_by_id(params[:show_id], :include => :showdates)) &&
-      s.has_showdates &&
+      s.has_showdates? &&
       s.showdates.first
   end
   def showdate_from_default ; Showdate.current_or_next ; end
@@ -268,12 +270,6 @@ class StoreController < ApplicationController
     session[:cart] = @cart.id
   end
   
-  def verify_sales_final
-    return true if Option.value(:terms_of_sale).blank? || !params[:sales_final].blank?
-    flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
-    return nil
-  end
-
   def redirect_to_checkout
     redirect_to(:action => 'checkout',
       :sales_final => params[:sales_final],
