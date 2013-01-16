@@ -113,7 +113,7 @@ class Order < ActiveRecord::Base
   end
 
   def gift?
-    ready_for_purchase? &&  include_vouchers?  &&  customer != purchaser
+    include_vouchers?  &&  customer != purchaser
   end
 
   def total_price

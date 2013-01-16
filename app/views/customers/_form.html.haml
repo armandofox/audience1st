@@ -11,59 +11,48 @@
       Fields
       %span.strong like this
       are required for online reservations and ticket purchase.
-      = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
-    %label.strong{:for=>:customer_first_name} First name
-    =text_field 'customer', 'first_name', :size => 16, :max_length => 40, :id => 'customer_first_name', :readonly => disabled
-    %br/
+    = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
+    = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
+      %label.strong First name
+      = f.text_field :first_name, :size => 16, :max_length => 40, :readonly => disabled
+      %br/
+      %label.strong Last name
+      = f.text_field :last_name, :size => 16, :max_length => 40, :readonly => disabled 
+      %br/
+      %br/
+      %label.strong Street
+      = f.text_field :street, :readonly => disabled  
+      %br/
+      %label.strong City
+      = f.text_field :city, :size => 16, :max_length => 32, :readonly => disabled
+      %label.no_float.strong State
+      = f.text_field :state, {:size => 2, :max_length => 2, :readonly => disabled}
+      %label.no_float.strong Zip
+      = f.text_field :zip, {:size => 10, :max_length => 10, :readonly => disabled}
+      %br
+      %br
+      %label.strong{:for=>:customer_day_phone} Preferred phone
+      = f.text_field :day_phone, {:size => 16, :max_length => 16, :readonly => disabled}
+      %br/
+      %label{:for=>:customer_eve_phone} Alternate phone
+      = f.text_field :eve_phone, {:size => 16, :max_length => 16, :readonly => disabled}
+      %br/
+      - unless (defined?(hide_opt_out))
+        %label US Mail preferences
+        = f.check_box :blacklist
+        %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
+        %br
 
-    %label.strong{:for=>:customer_last_name} Last name
-    =text_field 'customer', 'last_name', :size => 16, :max_length => 40,:id => 'customer_last_name', :readonly => disabled 
-    %br/
-    %br/
-
-    %label.strong{:for=>:customer_street} Street
-    =text_field 'customer', 'street', :readonly => disabled  
-    %br/
-    %label.strong{:for=>:customer_city} City
-    =text_field 'customer', 'city', :size => 16, :max_length => 32, :readonly => disabled
-    %label.no_float.strong{:for=>:customer_state} State
-    =text_field 'customer', 'state', {:size => 2, :max_length => 2, :readonly => disabled}
-    %label.no_float.strong{:for=>:customer_zip} Zip
-    =text_field 'customer', 'zip', {:size => 10, :max_length => 10, :readonly => disabled}
-    - if nil && @gAdmin.is_boxoffice && !disabled
-      = submit_to_remote 'Validate','Validate...', |
-        :url => {:controller => 'customers',:action => 'validate_address'}, |
-        :before => "Element.show('wait_validate')", |
-        :complete => "Element.hide('wait_validate')", |
-        :success => "Element.show('success');Element.hide('failure')", |
-        :failure => "Element.show('failure');Element.hide('success')"  |
-      = spinner('wait_validate')
-      = hidden_image('success')
-      = hidden_image('failure')
-    %br
-    %br
-    %label.strong{:for=>:customer_day_phone} Preferred phone
-    =text_field 'customer', 'day_phone', {:size => 16, :max_length => 16, :readonly => disabled}
-    %br/
-    %label{:for=>:customer_eve_phone} Alternate phone
-    = text_field 'customer', 'eve_phone',{:size => 16, :max_length => 16, :readonly => disabled}
-    %br/
-    - unless (defined?(hide_opt_out))
-      %label US Mail preferences
-      = check_box 'customer', 'blacklist'
-      %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
+      %label.strong{:for=>:customer_email} Email
+      = f.text_field :email, {:size => 30, :max_length => 40, :readonly => disabled }
+      %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
       %br
 
-    %label.strong{:for=>:customer_email} Email
-    = text_field 'customer', 'email', {:size => 30, :max_length => 40, :readonly => disabled }
-    %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
-    %br
+      - if Option.value(:display_email_opt_out).to_i != 0
+        %label Email preferences
+        = f.check_box :e_blacklist
+        %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
+        %br
 
-    - if Option.value(:display_email_opt_out).to_i != 0
-      %label Email preferences
-      = check_box 'customer', 'e_blacklist'
-      %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
-      %br
-
-  /[eoform:customer]
+/[eoform:customer]
 

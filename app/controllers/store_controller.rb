@@ -128,6 +128,7 @@ class StoreController < ApplicationController
       end
     end
     @cart.customer = recipient
+    @cart.save!
     redirect_to_checkout
   end
 

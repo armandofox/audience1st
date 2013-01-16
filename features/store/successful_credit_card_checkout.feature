@@ -8,21 +8,32 @@ Feature: Successful checkout with credit card
   Background:
     Given today is May 9, 2011
     And I am logged in as customer "Tom Foolery"
-    And my cart contains the following tickets:
+
+  Scenario: successful credit card payment without donation
+
+    Given my cart contains the following tickets:
       | show    | qty | type    | price | showdate             |
       | Chicago |   3 | General |  7.00 | May 15, 2011, 8:00pm |
-    And I should be on the checkout page
-
-  Scenario: successful credit card payment
+    Then I should be on the checkout page
+    And the billing customer should be "Tom Foolery"
     When I place my order with a valid credit card
     Then I should be on the order confirmation page
     And I should see "You have paid a total of $21.00 by Credit card"
+    And customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 2011, 8:00pm
 
+  Scenario: successful gift order without donation
 
-  Scenario: unsuccessful login to existing account
+    Given my gift order contains the following tickets:
+      | show    | qty | type    | price | showdate             |
+      | Chicago |   2 | General |  7.00 | May 15, 2011, 8:00pm |
+    Then I should be on the shipping info page
+    When I fill in the "billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, alsmith@mail.com"
+    And I press "CONTINUE >>"
+    Then I should be on the checkout page
+    And the gift recipient customer should be "Al Smith"
+    And the billing customer should be "Tom Foolery"
+    When  I place my order with a valid credit card
+    Then I should be on the order confirmation page
+    And customer Tom Foolery should have 0 "General" tickets for "Chicago" on May 15, 2011, 8:00pm
+    And customer Al Smith should have 2 "General" tickets for "Chicago" on May 15, 2011, 8:00pm
 
-  Scenario: not logged in and does not have an account
-
-  Scenario: logged into account  
-
-  

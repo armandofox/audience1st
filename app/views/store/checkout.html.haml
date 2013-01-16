@@ -12,9 +12,10 @@
   jQuery(document).ready(whenReady);
   
 - if @cart.gift?
-  %h2 This Order is a Gift For...
-  = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
-  = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
+  #gift_recipient
+    %h2 This Order is a Gift For...
+    = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
+    = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
 - form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
   - if @cart.include_vouchers? &&  !@cart.gift?
@@ -33,7 +34,8 @@
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   .clear
-  #billing= render :partial => 'customers/form', :locals => {:customer=>@purchaser, :passive => true, :hide_opt_out => true }
+  #billing
+    = render :partial => 'customers/form', :locals => {:customer=>@cart.purchaser, :passive => true, :hide_opt_out => true }
 
   %p.notice
     We do not store or access your card number.

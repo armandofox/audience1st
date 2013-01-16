@@ -9,3 +9,13 @@ season_start_day:
   name: season_start_day
   value: 1
   typ: int
+
+allow_gift_tickets:
+  name: allow_gift_tickets
+  typ: string
+  value: 1
+
+allow_gift_subscriptions:
+  name: allow_gift_subscriptions
+  typ: string
+  value: 1
