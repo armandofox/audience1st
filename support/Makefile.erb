@@ -78,3 +78,6 @@ receive_goldstar_test:
 
 notify_pending_followups:
 	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'Visit.notify_pending_followups' $(QUIET)
+
+notify_upcoming_birthdays:
+	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'Customer.notify_upcoming_birthdays5o' $(QUIET)

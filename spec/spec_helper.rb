@@ -4,7 +4,7 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_ROOT)
 require 'spec/autorun'
 require 'spec/rails'
-require 'webrat'
+require 'timecop'
 
 TEST_FILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
 
@@ -23,7 +23,6 @@ Spec::Runner.configure do |config|
   config.use_transactional_fixtures = true
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
-  config.include Webrat::Matchers, :type => :views
   config.include AuthenticatedTestHelper
   config.include CustomMatchers
   # == Fixtures
