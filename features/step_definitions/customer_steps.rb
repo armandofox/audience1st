@@ -69,6 +69,16 @@ Given /^customer "(.*) (.*)" exists$/ do |first,last|
     :email => "#{first}_#{last}_#{rand(1000)}@yahoo.com")
 end
 
+Given /^my birthday is set to "(.*)"/ do |date|
+  @customer.update_attributes!(:birthday => Date.parse(date))
+end
+
+Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,date|
+  Customer.find_by_first_name_and_last_name!(first,last).birthday.should ==
+    Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
+end
+
+
 Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   @customer.update_attributes(

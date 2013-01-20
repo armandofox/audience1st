@@ -48,7 +48,8 @@ class Store
           :description => description)
         return ActiveMerchant::Billing::Response.new(true,
             'Credit card successfully charged',
-            {:transaction_id => result.id})
+            {},
+            {:authorization => result.id})
       end
     rescue Stripe::StripeError => e
       return ActiveMerchant::Billing::Response.new(false,

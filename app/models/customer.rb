@@ -73,6 +73,7 @@ class Customer < ActiveRecord::Base
 
   before_validation_on_create :force_valid_fields
   before_save :trim_whitespace_from_user_entered_strings
+  before_save :force_birthday_year
   after_save :update_email_subscription
 
   before_destroy :cannot_destroy_special_customers
@@ -230,6 +231,12 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  # force birthday year to a fixed value, since we don't care about birth year,
+  # to simplify comparisons
+  BIRTHDAY_YEAR = 2000
+  def force_birthday_year
+    self.birthday = birthday.change(:year => BIRTHDAY_YEAR) unless birthday.blank?
+  end
 
   # a convenient wrapper class for the ActiveRecord::sanitize_sql protected method
 

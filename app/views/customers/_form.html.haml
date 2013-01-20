@@ -65,5 +65,9 @@
       %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
       %br
 
+    - unless disabled
+      %label{:for => :customer_birthday} Birthday (optional)
+      = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]
+
   /[eoform:customer]
 

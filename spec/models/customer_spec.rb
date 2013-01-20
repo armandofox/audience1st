@@ -3,6 +3,14 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Customer do
   fixtures :customers
+  describe "birthday" do
+    before :each do ; @birthday = Time.parse("Jan 21, 1973") ; end
+    it "should always be in the year 2000" do
+      @c = BasicModels.create_generic_customer
+      @c.update_attribute :birthday, @birthday
+      @c.birthday.year.should == 2000
+    end
+  end
   describe "labels" do
     before(:each) do
       @c = BasicModels.create_generic_customer

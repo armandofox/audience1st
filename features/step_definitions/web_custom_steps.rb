@@ -17,16 +17,36 @@ Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
   html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank
 end
 
+Then /^nothing should be selected in the "(.*)" menu$/ do |menu|
+  html = Nokogiri::HTML(page.body)
+  menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
+  within "##{menu_id}" do
+    # there should exist a blank option
+    page.should have_xpath("//option[contains(text(),'')]")
+    # no nonblank option should be marked as 'selected'
+    page.should have_no_xpath("//option[text() != '' and @selected='selected']")
+  end
+end
+
 # Variant for dates
 Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
-  date = Time.parse(date)
+  date = Date.parse(date)
   html = Nokogiri::HTML(page.body)
   menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
   year, month, day =
-    html.xpath("//select[@id='#{menu_id}_1i']").empty? ? %w[year month day] : %w[1i 2i 3i]
-  Then %Q{"#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
-  Then %Q{"#{Date::MONTHNAMES[date.month]}" should be selected in the "#{menu_id}_#{month}" menu}
+    html.xpath("//select[@id='#{menu_id}_2i']").empty? ? %w[year month day] : %w[1i 2i 3i]
+  if page.has_selector?("select##{menu_id}_#{year}")
+    Then %Q{"#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
+  end
+  Then %Q{"#{date.strftime('%B')}" should be selected in the "#{menu_id}_#{month}" menu}
   Then %Q{"#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
+end
+
+When /^I select "(.*) (.*)" as the "(.*)" month and day$/ do |month,day, menu|
+  html = Nokogiri::HTML(page.body)
+  menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
+  select(month, :from => "#{menu_id}_2i")
+  select(day, :from => "#{menu_id}_3i")
 end
 
 # Select from menu using a regexp instead of exact string match
