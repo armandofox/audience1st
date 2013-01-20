@@ -60,6 +60,10 @@ class Cart
     self.items.empty?
   end
 
+  def contains_enrollment?
+    vouchers_only.any? { |v| v.show.event_type == 'Class' }
+  end
+  
   def vouchers_only
     self.items.select { |i| i.kind_of?(Voucher) }
   end

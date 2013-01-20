@@ -1,5 +1,7 @@
 class Show < ActiveRecord::Base
 
+  TYPES = ['Regular Show', 'Special Event', 'Class']
+
   acts_as_reportable
   
   has_many :showdates, :dependent => :destroy, :order => 'thedate'
@@ -11,6 +13,7 @@ class Show < ActiveRecord::Base
   has_many :imports
 
   validates_presence_of :opening_date, :closing_date, :listing_date
+  validates_inclusion_of :event_type, :in => Show::TYPES
   validates_length_of :name, :within => 3..40, :message =>
     "Show name must be between 3 and 40 characters"
   validates_numericality_of :house_capacity, :greater_than => 0
@@ -48,6 +51,8 @@ class Show < ActiveRecord::Base
   def future_showdates
     self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now],:order => 'thedate')
   end
+
+  def special? ; event_type != 'Regular Show' ; end
 
   def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.price} ; end
 

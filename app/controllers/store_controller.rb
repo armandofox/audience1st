@@ -184,6 +184,7 @@ class StoreController < ApplicationController
       redirect_to_index
       return
     end
+    @cart_contains_class_order = @cart.contains_enrollment?
     @double_check_dates = @cart.double_check_dates
     @checkout_message = Option.value(:precheckout_popup) ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
@@ -201,6 +202,11 @@ class StoreController < ApplicationController
 
   def place_order
     @cart = find_cart_not_empty or return
+    if @cart.contains_enrollment? && params[:pickup].blank?
+      flash[:warning] = "Please fill in enrollee's name(s) under \"Who's Attending?\" below."
+      redirect_to_checkout
+      return
+    end
     @customer = verify_valid_customer or return
     @is_admin = current_admin.is_boxoffice
     sales_final = verify_sales_final or return
