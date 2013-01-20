@@ -185,9 +185,9 @@ end
 Then /^(?:|I )should be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).select(:path, :query).compact.join('?')
   if defined?(Spec::Rails::Matchers)
-    current_path.should == path_to(page_name)
+    current_path.gsub(/\?.*$/, '').should == path_to(page_name).gsub(/\?.*$/, '')
   else
-    assert_equal path_to(page_name), current_path
+    assert_equal path_to(page_name).gsub(/\?.*$/, ''), current_path.gsub(/\?.*$/, '')
   end
 end
 
