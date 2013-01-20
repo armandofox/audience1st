@@ -97,6 +97,14 @@ class Mailer < ActionMailer::Base
     }
   end
 
+  def upcoming_birthdays(recipients, from, to, customers)
+    @recipients = recipients
+    @subject = "Birthdays between #{from.strftime('%x')} and #{to.strftime('%x')}"
+    @headers = {}
+    @body = {:customers => customers}
+    @from = @@from_addr
+  end
+
   def sending_to(recipient)
     @recipients = recipient.kind_of?(Customer)? recipient.email : recipient.to_s
     @from = @@from_addr

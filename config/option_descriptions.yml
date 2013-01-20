@@ -118,6 +118,19 @@ followup_visit_reminder_lead_time: >
   email 2 days before the "Follow up on" date of the visit record. If
   0, no reminders will be emailed.
 
+send_birthday_reminders: >
+
+  If set to any value other than 0, indicates how often you want to
+  receive an email about upcoming customer birthdays.  For example, a
+  setting of 10 will result in an email being sent every 10 days,
+  showing all birthdays starting 10 days from now until 10 days after
+  that.  In other words, the email sent on January 10 would show
+  birthdays from January 20 to January 30, the email sent on January 20 would show
+  birthdays from January 30 to February 10, and so on.  The email is not
+  sent to the customer, but to the same email address as Box Office
+  Daemon Notify, above.  A value of 0 will suppress birthday
+  notification emails completely.
+
 session_timeout: >
 
   Number of minutes of inactivity after which a user is automatically

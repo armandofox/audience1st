@@ -41,7 +41,7 @@ SESSION_CLEANOUT_IN_SECONDS = 3888000
 
 all: nightly
 #nightly: clean_sessions notify_pending_followups backup_db backup_svn
-nightly:  backup_db clean_sessions
+nightly:  backup_db clean_sessions notify_upcoming_birthdays
 #monthly: rotate_logs
 monthly: backup_db_monthly
 
@@ -78,3 +78,6 @@ receive_goldstar_test:
 
 notify_pending_followups:
 	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'Visit.notify_pending_followups' $(QUIET)
+
+notify_upcoming_birthdays:
+	@RAILS_ENV=production $(RUBY) $(APPROOT)/script/runner 'Customer.notify_upcoming_birthdays' $(QUIET)

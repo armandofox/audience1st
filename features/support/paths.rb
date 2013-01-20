@@ -17,6 +17,7 @@ module NavigationHelpers
       @customer = Customer.find_by_first_name_and_last_name!($1, $2)
       visit "/customers/switch_to/#{@customer.id}"
       "/customers/edit/#{@customer.id}"
+    when /the edit contact info page$/  then '/customers/edit'
     when /the change password page/i    then '/customers/change_password'
     when /the forgot password page/i    then '/customers/forgot_password'
     when /the new customer page/i       then '/customers/new'

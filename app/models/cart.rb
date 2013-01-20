@@ -104,7 +104,7 @@ class Cart
             i.vouchertype.name)
         end
       when i.kind_of?(Donation)
-        sprintf("$%6.2f  Donation to #{i.account_code.name} (confirmation \##{i.id})", i.amount)
+        sprintf("$%6.2f  Donation to #{i.account_code.name}", i.amount)
       end
     end.join("\n")
     txt << "\n"

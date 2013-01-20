@@ -54,7 +54,7 @@ class Show < ActiveRecord::Base
 
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
-  
+
   def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.price} ; end
 
   def revenue_per_seat

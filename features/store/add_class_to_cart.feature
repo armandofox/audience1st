@@ -18,6 +18,7 @@ Background:
 Scenario: try to enroll without giving a name, even enforced for admins
 
   When I press "Accept Cash Payment"
+  Then I should be on the checkout page
   Then I should see "Please fill in enrollee's name(s)"
 
 Scenario: try to enroll after providing a name

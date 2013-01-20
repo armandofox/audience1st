@@ -2,6 +2,7 @@ class Customer < ActiveRecord::Base
   require_dependency 'customer/special_customers'
   require_dependency 'customer/secret_question'
   require_dependency 'customer/scopes'
+  require_dependency 'customer/birthday'
   require_dependency '../lib/date_time_extras'
 
   include Authentication
@@ -229,7 +230,6 @@ class Customer < ActiveRecord::Base
       c.send(:strip!) if c.kind_of?(String)
     end
   end
-
 
   # a convenient wrapper class for the ActiveRecord::sanitize_sql protected method
 

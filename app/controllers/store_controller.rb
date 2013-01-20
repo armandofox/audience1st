@@ -273,7 +273,7 @@ class StoreController < ApplicationController
     if resp.success?
       @cart.items.map { |i| i.update_attribute('order_id', @order.id) }
       if @payment =~ /credit/i
-        auth = resp.params[:transaction_id]
+        auth = resp.authorization
         @order.update_attribute('authorization', auth)
         @payment << " (transaction ID: #{auth})"
       end
