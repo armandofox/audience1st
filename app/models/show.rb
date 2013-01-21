@@ -43,6 +43,17 @@ class Show < ActiveRecord::Base
         Time.at_beginning_of_season(from), Time.at_end_of_season(to)] }
   }
   
+  def special? ; event_type != 'Regular Show' ; end
+  def special ; special? ; end
+
+  named_scope :special, lambda { |value|
+    if value
+      {:conditions => ["event_type != ?", 'Regular Show']}
+    else
+      {:conditions => ["event_type = ?", 'Regular Show']}
+    end
+  }
+
   def season
     # latest season that contains opening date
     self.opening_date.at_beginning_of_season.year

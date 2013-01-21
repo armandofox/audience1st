@@ -318,7 +318,7 @@ class StoreController < ApplicationController
     @valid_vouchers = @sd.valid_vouchers
     @all_shows = Show.
       all_for_seasons(Time.this_season - 1, Time.this_season).
-      find_by_special(@special_shows_only)  ||  []
+      special(@special_shows_only)  ||  []
     # ensure default show is included in list of shows
     @all_shows << @sh unless @all_shows.include? @sh
   end
@@ -327,7 +327,7 @@ class StoreController < ApplicationController
     @valid_vouchers = @sd.valid_vouchers.map do |v|
       v.adjust_for_customer(@customer,@promo_code)
     end.find_all(&:visible?)
-    @all_shows = Show.current_and_future.find_by_special(@special_shows_only) || []
+    @all_shows = Show.current_and_future.special(@special_shows_only) || []
     @all_shows << @sh unless @all_shows.include? @sh
   end
 

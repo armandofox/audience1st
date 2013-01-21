@@ -178,11 +178,11 @@ describe StoreController do
     before(:each) do
       login_as(:tom)
       @controller.stub!(:recipient_from_params).and_return(nil)
-      @controller.stub!(:find_cart_not_empty).and_return(true)
       @customer = {:first_name => "John", :last_name => "Bob",
         :street => "742 Evergreen Terrace", :city => "Springfield",
         :state => "IL", :zip => "09091"}
       session[:recipient_id] = nil
+      controller.stub(:find_cart).and_return(mock_model(Order).as_null_object)
     end
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
