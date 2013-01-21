@@ -183,11 +183,11 @@ Then /^the "([^\"]*)" checkbox(?: within "([^\"]*)")? should not be checked$/ do
 end
  
 Then /^(?:|I )should be on (.+)$/ do |page_name|
-  current_path = URI.parse(current_url).select(:path, :query).compact.join('?')
+  current_path = URI.parse(current_url).select(:path).compact.join('?')
   if defined?(Spec::Rails::Matchers)
-    current_path.gsub(/\?.*$/, '').should == path_to(page_name).gsub(/\?.*$/, '')
+    current_path.should == path_to(page_name)
   else
-    assert_equal path_to(page_name).gsub(/\?.*$/, ''), current_path.gsub(/\?.*$/, '')
+    assert_equal path_to(page_name), current_path
   end
 end
 
