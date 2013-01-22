@@ -61,7 +61,7 @@ class Cart
   end
 
   def contains_enrollment?
-    vouchers_only.any? { |v| v.show.event_type == 'Class' }
+    vouchers_only.any? { |v| v.show.try(:event_type) == 'Class' }
   end
   
   def vouchers_only
