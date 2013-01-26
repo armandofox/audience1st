@@ -52,7 +52,7 @@ class ShowdatesController < ApplicationController
 
   def new
     @show = Show.find(params[:show_id])
-    @advance_sales_cutoff = Option.nonzero_value_or_default(:advance_sales_cutoff, 0)
+    @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = @show.house_capacity
   end
 
