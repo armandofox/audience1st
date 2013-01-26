@@ -20,7 +20,7 @@
       %td 
         %label{:for => :advance_sales_cutoff} Advance sales stop
       %td
-        = text_field_tag 'advance_sales_cutoff', Option.nonzero_value_or_default(:advance_sales_cutoff,0), :size => 4
+        = text_field_tag 'advance_sales_cutoff', Option.advance_sales_cutoff, :size => 4
         minutes before curtain
         = popup_help_for :advance_sales_cutoff
     %tr
