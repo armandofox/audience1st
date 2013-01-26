@@ -227,7 +227,7 @@ class Voucher < Item
   def reserved_for_showdate?(sd) ;  reserved && (showdate == sd) ;  end
   def within_grace_period?
     unreserved? ||
-      (Time.now < (showdate.thedate - Option.cancel_grace_period).minutes)
+      (Time.now < (showdate.thedate - Option.cancel_grace_period.minutes))
   end
 
   # Checked in?
