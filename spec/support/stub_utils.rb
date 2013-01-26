@@ -2,7 +2,7 @@ module StubUtils
 
   # fake returning an option value
   def stub_option!(option, value)
-    Option.stub(:option).and_return(value)
+    Option.stub(option).and_return(value)
   end
 
   def stub_month_and_day(month,day)
