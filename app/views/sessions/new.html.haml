@@ -1,5 +1,5 @@
 - unless @gCheckoutInProgress
-  %h1.page_heading.center= "#{Option.value(:venue)} Online Box Office"
+  %h1.page_heading.center= "#{Option.venue} Online Box Office"
   
 #have_account
   %h2 Subscribers and Returning Customers
@@ -27,7 +27,7 @@
       %p Sorry, Facebook Connect features don't work properly with Internet Explorer 8.
     - else
       %h2 Or Login Using Facebook
-      = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.value(:venue_shortname))}';")
+      = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.venue_shortname)}';")
       = popup_help_for 'login_using_facebook'
 
 .clear

@@ -37,7 +37,7 @@ class Store
     end
     description = description_from_params(params)
     amount = (100 * orig_amount.to_f).to_i
-    Stripe.api_key = Option.value(:stripe_secret_key)
+    Stripe.api_key = Option.stripe_secret_key
     begin
       ActiveRecord::Base.transaction do
         proc.call

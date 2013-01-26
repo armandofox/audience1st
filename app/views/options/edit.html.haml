@@ -1,19 +1,101 @@
-%p.infoMsg Click on the name of each configuration option for more information.
-- form_tag 'edit' do 
-  - @vars.each_pair do |group,varlist|
-    .pageDiv
-      %h1= h(group)
-      %table#options_table.hilite
-        - varlist.sort_by(&:id).each do |v|
-          %tr{:class=>cycle(:even,:odd)}
-            %td.option_name= link_to_function h(humanize(v.name).capitalize_each_word), "alert('#{escape_javascript(v.description)}')"
-            %td.option_value= edit_field_for v
+%p Click on the name of each configuration option for more information.
+- form_for @o, :url => {:action => :update} do |f|
   .pageDiv
-    %h1 Save Changes
-    %p
-      Clicking the button below will commit your changes, but it may take
-      up to an hour for them to all take effect.  If you've changed your mind,
-      =link_to "click here to cancel",:controller=>'customers',:action=>'welcome'
-      and discard your changes.
+    %h1 Your Venue Info As Seen By Customers
+    = render_collection_of_options f, |
+     %w(venue                   venue_address           venue_city_state_zip    |
+        venue_telephone         venue_homepage_url      boxoffice_telephone |
+        help_email              privacy_policy_url      ) |
+    %label{:for => 'option_season_start'}= link_to_function "Season Start Date", "alert('#{escape_javascript(OPTION_DESCRIPTIONS[:season_start_month])}')"
+    = select_month Option.season_start_month, :field_name => 'option[season_start_month]'
+    = select_day   Option.season_start_day,   :field_name => 'option[season_start_day]'
+        
+  .pageDiv
+    %h1 Accepting Donations Online
+    = render_collection_of_options f, %w( |
+      default_donation_account_code |
+      default_donation_account_code_with_subscriptions |
+      donation_ack_from |
+      ) |
 
+  .pageDiv
+    %h1 Info Messages Displayed on Customer's "My Account" Page
+    = render_collection_of_options f, %w( |
+      welcome_page_subscriber_message |
+      welcome_page_nonsubscriber_message |
+      homepage_ticket_sales_text |
+      homepage_subscription_sales_text |
+      encourage_email_opt_in |
+      display_email_opt_out |
+      ) |
+
+  .pageDiv
+    %h1 Info Messages Displayed on Ticket Sales Pages
+    = render_collection_of_options f, %w( |
+      single_ticket_sales_banner_for_nonsubscribers        |
+      single_ticket_sales_banner_for_current_subscribers        |
+      single_ticket_sales_banner_for_next_season_subscribers       |
+      subscription_sales_banner_for_nonsubscribers        |
+      subscription_sales_banner_for_current_subscribers        |
+      subscription_sales_banner_for_next_season_subscribers       |
+      special_event_sales_banner_for_nonsubscribers        |
+      special_event_sales_banner_for_current_subscribers        |
+      special_event_sales_banner_for_next_season_subscribers       |
+      ) |
+
+  .pageDiv
+    %h1 Ticket Sales
+    = render_collection_of_options f, %w( |
+      advance_sales_cutoff  |
+      sold_out_threshold   |
+      nearly_sold_out_threshold   |
+      cancel_grace_period    | 
+      allow_gift_tickets |
+      allow_gift_subscriptions |
+      accessible_seating_notices |
+      precheckout_popup  |
+      terms_of_sale  |       
+      checkout_notices |
+      ) |
+ 
+  .pageDiv
+    %h1 Email Confirmation of Reservation Sent to Customer
+    = render_collection_of_options f, %w( |
+      general_confirmation_email_notes |
+      subscriber_confirmation_email_notes |
+      nonsubscriber_confirmation_email_notes |
+      subscription_purchase_email_notes |
+      ) |
+    
+  .pageDiv
+    %h1 Email Reports Sent to Box Office Manager
+    = render_collection_of_options f, %w( |
+      boxoffice_daemon_notify  | 
+      followup_visit_reminder_lead_time  |
+      send_birthday_reminders  |
+      ) |
+
+  .pageDiv
+    %h1 Integration with Stripe (for payments)
+    = render_collection_of_options f, %w( |
+      stripe_publishable_key | 
+      stripe_secret_key |
+      ) |
+
+  .pageDiv
+    %h1 Email Integration for MailChimp Users
+    %p Leave blank if you don't use MailChimp.
+    = render_collection_of_options f, %w(mailchimp_api_key mailchimp_default_list_name)
+
+  .pageDiv
+    %h1 Email Integration with ConstantContact
+    %p Leave blank if you don't use ConstantContact.
+    = render_collection_of_options f, %w( |
+      constant_contact_username |
+      constant_contact_password |
+      constant_contact_api_key  |
+      ) |
+
+  .pageDiv
+    %h1 Save Your Changes
     %p.c= submit_tag  "Update Settings"

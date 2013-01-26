@@ -1,5 +1,4 @@
 require 'spec_helper'
-include Utils
 
 describe Customer, "birthdays" do
   before :each do
@@ -31,21 +30,21 @@ describe Customer, "birthdays" do
   end
   describe "delivering email" do
     before :each do
-      Option.stub!(:value).with(:send_birthday_reminders).and_return(5)
-      Option.stub!(:value).with(:boxoffice_daemon_notify).and_return('n@ai')
+      Option.stub!(:send_birthday_reminders).and_return(5)
+      Option.stub!(:boxoffice_daemon_notify).and_return('n@ai')
     end
     context "should not be attempted" do
       before :each do ; Mailer.should_not_receive :deliver_upcoming_birthdays ; end
       it 'when feature is turned off' do
-        Option.stub!(:value).with(:send_birthday_reminders).and_return(0)
+        Option.stub!(:send_birthday_reminders).and_return(0)
         Customer.notify_upcoming_birthdays
       end
       it 'when every-n value is negative' do
-        Option.stub!(:value).with(:send_birthday_reminders).and_return(-2)
+        Option.stub!(:send_birthday_reminders).and_return(-2)
         Customer.notify_upcoming_birthdays
       end
       it 'when no recipient specified in options' do
-        Option.stub!(:value).with(:boxoffice_daemon_notify).and_return('')
+        Option.stub!(:boxoffice_daemon_notify).and_return('')
         Customer.notify_upcoming_birthdays
       end
       it 'when day modulo n doesn\'t match up' do

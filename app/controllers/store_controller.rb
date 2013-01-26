@@ -186,7 +186,7 @@ class StoreController < ApplicationController
     end
     @cart_contains_class_order = @cart.contains_enrollment?
     @double_check_dates = @cart.double_check_dates
-    @checkout_message = Option.value(:precheckout_popup) ||
+    @checkout_message = Option.precheckout_popup ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
     set_return_to :controller => 'store', :action => 'checkout'
     # if this is a "walkup web" sale (not logged in), nil out the
@@ -549,7 +549,7 @@ class StoreController < ApplicationController
   end
 
   def verify_sales_final
-    return true if Option.value(:terms_of_sale).blank?
+    return true if Option.terms_of_sale.blank?
     if (sales_final = params[:sales_final].to_i).zero?
       flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
       redirect_to_checkout

@@ -178,8 +178,8 @@ class Showdate < ActiveRecord::Base
 
   def availability_in_words
     pct = percent_sold
-    pct >= Option.value(:sold_out_threshold).to_i ?  :sold_out :
-      pct >= Option.value(:nearly_sold_out_threshold).to_i ? :nearly_sold_out :
+    pct >= Option.sold_out_threshold.to_i ?  :sold_out :
+      pct >= Option.nearly_sold_out_threshold.to_i ? :nearly_sold_out :
       :available
   end
 

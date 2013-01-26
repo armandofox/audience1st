@@ -3,7 +3,7 @@
   - fields_for :credit_card, ActiveMerchant::Billing::CreditCard.new do |cc|
     %p#payment_errors
     = hidden_field_tag 'credit_card_token', 'DUMMY'
-    = hidden_field_tag '_stripe_api_key', Option.value(:stripe_publishable_key)
+    = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key
     = make_unsubmitted '_stripe_api_key'
     = label :credit_card, :verification_value, 'Enter CVV code manually FIRST!', :class => 'strong'
     = cc.text_field 'verification_value', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'

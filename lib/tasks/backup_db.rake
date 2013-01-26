@@ -11,8 +11,8 @@ namespace :db do
   end
 
   desc "Dump DB corresponding to RAILS_ENV to ENV[FILE] or an auto-generated filename"
-  task :dump => :environment do
-    do_db_cmd("mysqldump --opt --skip-add-locks #{retrieve_db_info}")
+  task :dump_sql => :environment do
+    do_db_cmd("mysqldump --add-drop-database --opt --skip-add-locks #{retrieve_db_info}")
   end
 
   desc "Dump static tables only (#{static_tables}) ENV[FILE] or auto-generated filename"
@@ -21,7 +21,7 @@ namespace :db do
   end
 
   desc "Restore DB corresponding to RAILS_ENV from ENV[FILE] or STDIN"
-  task :restore => :environment do
+  task :restore_sql => :environment do
     opts = retrieve_db_info
     #raise "Must set FILE=filename to restore from" unless file = ENV['FILE']
     if (file = ENV['FILE'])

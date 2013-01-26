@@ -1,5 +1,4 @@
 require 'spec_helper'
-include Utils
 
 describe ShowdatesController do
   fixtures :customers

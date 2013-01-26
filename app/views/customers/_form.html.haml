@@ -59,7 +59,7 @@
     %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
     %br
 
-    - if Option.value(:display_email_opt_out).to_i != 0
+    - if Option.display_email_opt_out?
       %label Email preferences
       = check_box 'customer', 'e_blacklist'
       %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.

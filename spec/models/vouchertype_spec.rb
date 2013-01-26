@@ -1,10 +1,9 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-include Utils
-
-@@now = Time.now.at_end_of_season - 6.months
+require 'spec_helper'
 
 describe Vouchertype do
-
+  before :each do
+    @@now = Time.now.at_end_of_season - 6.months
+  end
   describe "nonticket vouchertypes" do
     it "should be valid" do
       @vtn = Vouchertype.new(

@@ -31,7 +31,7 @@
         %td= item.comments
 
 - if @printable
-  %h2.center #{Option.value(:venue)} thanks you for your order!
+  %h2.center #{Option.venue} thanks you for your order!
 - else
   = gen_button 'Printable Receipt', {:action => :show, :id => @order, :printable => 1}, {:target => '_blank'}
 

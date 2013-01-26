@@ -40,8 +40,8 @@ class EmailList
   def self.init_hominid
     RAILS_DEFAULT_LOGGER.info("NOT initializing mailchimp") and return nil if self.disabled?
     return true if hominid
-    apikey = Option.value(:mailchimp_api_key)
-    @@list = Option.value(:mailchimp_default_list_name)
+    apikey = Option.mailchimp_api_key
+    @@list = Option.mailchimp_default_list_name
     if (apikey.blank? || @@list.blank?)
       RAILS_DEFAULT_LOGGER.warn("NOT using Mailchimp, one or more necessary options are blank")
       return nil

@@ -30,7 +30,7 @@
       #orderTotal
         %label.strong{:for=>:total} Order Total
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true
-      - unless Option.value(:allow_gift_tickets).blank?
+      - unless Option.allow_gift_tickets?
         %label.emphasis{:for=>:gift} Is this order a <strong>gift?</strong>
         = check_box_toggle 'gift', false, 'nextstep','to enter Recipient information', |
           'to Billing information' |

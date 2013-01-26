@@ -1,8 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-include Utils
 
 describe VouchertypesController do
-
+  include StubUtils
   before(:each) do
     stub_globals_and_userlevel(:boxoffice_manager)
     @vtype = mock(Vouchertype, :name => 'Test Vouchertype', :season => '2012')

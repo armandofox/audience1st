@@ -1,7 +1,7 @@
 module VouchertypesHelper
 
   def humanize_season(year=Time.this_season)
-    Option.value(:season_start_month) >= 6  ?
+    Option.season_start_month >= 6  ?
     "#{year.to_i}-#{year.to_i + 1}" :
       year.to_s
   end

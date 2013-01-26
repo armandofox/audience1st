@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-include Utils
 
 describe VouchersController do
+  include StubUtils
   before(:all) do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
       :name => 'regular voucher',

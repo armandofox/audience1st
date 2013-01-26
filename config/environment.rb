@@ -45,7 +45,7 @@ Rails::Initializer.run do |config|
   config.gem 'mechanize'
   config.gem 'ruport'
   config.gem 'stripe'
-
+  
 end
 
 # For use if we ever switch to Bundler:

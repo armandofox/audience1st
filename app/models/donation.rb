@@ -5,7 +5,7 @@
 class Donation < Item
 
   def self.default_code
-    if (code = Option.value(:default_donation_account_code)).blank?
+    if (code = Option.default_donation_account_code).blank?
       AccountCode.default_account_code
     else
       AccountCode.find_by_code(code) ||

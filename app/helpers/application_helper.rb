@@ -98,18 +98,18 @@ module ApplicationHelper
   #  otherwise return the alternate text
 
   def sanitize_option_text(opt, tag, tag_options = {})
-    s = Option.value(opt)
+    s = Option.send(opt)
     content_tag(tag, sanitize(s), tag_options)
   end
   
   def link_to_if_option(opt, text, opts={})
-    ((s = Option.value(opt)).blank? ?
+    ((s = Option.send(opt)).blank? ?
       opts[:alt].to_s :
       content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
   def link_to_if_option_text(opt, opts={}, html_opts={})
-    (s = Option.value(opt)).blank? ?
+    (s = Option.send(opt)).blank? ?
     opts.delete(:alt).to_s :
       content_tag(:span, link_to(s, opts, html_opts), :id => opt, :class => opt)
   end

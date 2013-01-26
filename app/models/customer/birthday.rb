@@ -16,8 +16,8 @@ class Customer < ActiveRecord::Base
   end
 
   def self.notify_upcoming_birthdays
-    n = Option.value(:send_birthday_reminders).to_i
-    recipient = Option.value(:boxoffice_daemon_notify).to_s
+    n = Option.send_birthday_reminders.to_i
+    recipient = Option.boxoffice_daemon_notify.to_s
     from = Date.today + n.days
     to = from + n.days
     return unless n > 0 && recipient.match(/\S+@\S+/) &&

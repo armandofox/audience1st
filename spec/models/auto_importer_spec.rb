@@ -7,10 +7,8 @@ describe AutoImporter do
   describe "email template" do
     before(:each) do
       ActionMailer::Base.deliveries = []
-      Option.create!(:name => :venue_name, :typ => :string,
-        :value => "Eat Cake Theater")
-      Option.create!(:name => :boxoffice_daemon_notify, :typ => :email,
-        :value => "help@eatcake.org")
+      Option.update_attributes!(:venue => "Eat Cake Theater",
+        :boxoffice_daemon_notify => "help@eatcake.org")
       @e = AutoImporter.new
       @e.stub!(:prepare_import).and_raise("Boom!")
     end

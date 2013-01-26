@@ -151,7 +151,7 @@ class Customer < ActiveRecord::Base
   end
 
   def encourage_opt_in_message
-    if !(m = Option.value(:encourage_email_opt_in)).blank?
+    if !(m = Option.encourage_email_opt_in).blank?
       m << '.' unless m =~ /[.!?:;,]$/
       m << ' Click the Billing/Contact tab (above) to update your preferences.'
       m
@@ -164,8 +164,8 @@ class Customer < ActiveRecord::Base
   end
 
   def welcome_message
-    subscriber? ? Option.value(:welcome_page_subscriber_message).to_s :
-      Option.value(:welcome_page_nonsubscriber_message).to_s
+    subscriber? ? Option.welcome_page_subscriber_message.to_s :
+      Option.welcome_page_nonsubscriber_message.to_s
   end
   
   
