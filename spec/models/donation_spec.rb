@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe Donation do
   describe "default account code" do
     before(:each) do
-      Option.stub!(:value).with(:default_donation_account_code).and_return '9999'
+      Option.stub!(:default_donation_account_code).and_return '9999'
       AccountCode.delete_all
     end
     it "should find default account code if it exists" do
@@ -41,7 +41,7 @@ describe Donation do
     end
     describe "during walkup sale" do
       it "should be assigned default account code" do
-        Option.stub!(:value).with(:default_donation_account_code).and_return('4444')
+        Option.stub!(:default_donation_account_code).and_return('4444')
         @donation = Donation.walkup_donation(5.00, @admin.id)
         @donation.account_code.code.should == '4444'
       end
