@@ -31,7 +31,7 @@
       #orderTotal
         %label.strong.wide_label{:for=>:total} Order Total:
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true
-      - unless Option.allow_gift_subscriptions?
+      - if Option.allow_gift_subscriptions?
         %label.emphasis.wide_label{:for=>:gift} Is this order a <strong>gift?</strong>
         = check_box_toggle 'gift', false, :nextstep, 'to enter Recipient information', 'to Billing information'
       %br
