@@ -14,6 +14,7 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   time = Time.parse(time)
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
+  @show = @showdate.show
 end
 
 Then /^"(.*)" should have (\d+) showdates$/ do |show,num|

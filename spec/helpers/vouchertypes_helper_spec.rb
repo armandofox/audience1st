@@ -1,7 +1,7 @@
 require 'spec_helper'
-include Utils
 
 describe VouchertypesHelper do
+  include StubUtils
   describe "seasons helper when it's 2009 season" do
     before(:each) do ; Time.stub!(:this_season).and_return(2009) ; end
     context "should work with either a range or deltas" do

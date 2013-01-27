@@ -36,8 +36,8 @@ class Time
   end
 
   def at_beginning_of_season(oldyear = nil)
-    startmon = Option.value(:season_start_month)
-    startday = Option.value(:season_start_day)
+    startmon = Option.season_start_month
+    startday = Option.season_start_day
     if (oldyear)
       # year given: just return start of that season
       Time.local(oldyear.to_i, startmon, startday)
@@ -66,8 +66,8 @@ class Time
 
   def within_season?(year)
     year = year.year unless year.kind_of?(Numeric)
-    start = Time.local(year,Option.value(:season_start_month),
-                       Option.value(:season_start_day)).at_beginning_of_season
+    start = Time.local(year,Option.season_start_month,
+                       Option.season_start_day).at_beginning_of_season
     (start <= self) && (self <= start.at_end_of_season)
   end
 

@@ -22,8 +22,10 @@
     #someone_else
     %h2 Who's Attending?
     %p
-      If someone <strong>other than the purchaser</strong> will be attending this show or class, please enter his/her name here:
-      %br
+      - if @cart_contains_class_order
+        For classes, you <strong>must</strong> enter enrollee's name(s) here:
+      - else
+        If someone <strong>other than the purchaser</strong> will be attending this event or picking up this order, please enter his/her name here:
       = text_field_tag 'pickup', '', :size => 30
 
   %h2.floatleft Please Review Billing Information
@@ -44,13 +46,13 @@
 
   = render :partial => 'credit_card'
   
-  - unless Option.value(:terms_of_sale).blank?
+  - unless Option.terms_of_sale.blank?
     #terms_of_sale
       %label{:for => 'sales_final'} TERMS OF SALE:
       = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
       %strong 
         I understand and agree to the
-        = link_to_function "terms of sale.", "alert('#{escape_javascript(Option.value(:terms_of_sale))}')"
+        = link_to_function "terms of sale.", "alert('#{escape_javascript(Option.terms_of_sale)}')"
       %br
       %br
   

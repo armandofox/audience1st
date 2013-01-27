@@ -8,24 +8,16 @@ class OptionsController < ApplicationController
   end
 
   def edit
-    @vars = Option.find(:all, :conditions => "grp != \"Config\"").group_by(&:grp)
-    return if request.get?
-    # update config variables
-    msgs = []
-    params[:values].each_pair do |var,val|
-      begin
-        Option.set_value!(var,val)
-      rescue Exception => e
-        msgs << "Error: #{e.message}"
-      end
-    end
-    unless msgs.empty?
-      flash[:notice] = msgs.join("<br/>")
-      redirect_to :action => 'edit', :method => 'get'
-    else
-      flash[:notice] = "Update successful, your changes should take effect in the next 15 minutes"
-      redirect_to :controller => 'customers', :action => 'welcome'
-    end
+    @o = Option.first
   end
 
+  def update
+    @o = Option.first
+    if (@o.update_attributes(params[:option]))
+      flash[:notice] = "Update successful, your changes should take effect in the next 15 minutes."
+    else
+      flash[:warning] = @o.errors.full_messages.join(", ")
+    end
+    redirect_to :action => :edit
+  end
 end

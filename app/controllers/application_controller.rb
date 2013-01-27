@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   require 'csv.rb'
   require 'string_extras.rb'
   require 'date_time_extras.rb'
-
+  
   # for Facebook Connect
   if USE_FACEBOOK
     before_filter :set_facebook_session

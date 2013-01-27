@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Donation do
   describe "default account code" do
     before(:each) do
-      Option.stub!(:value).with(:default_donation_account_code).and_return '9999'
+      Option.stub!(:default_donation_account_code).and_return '9999'
       AccountCode.delete_all
     end
     it "should find default account code if it exists" do
@@ -29,6 +29,14 @@ describe Donation do
     end
     it 'should use default when account code is nil' do
       Donation.from_amount_and_account_code(15, nil).account_code.should == @default
+    end
+    describe "during walkup sale" do
+      it "should be assigned default account code" do
+        flunk "We need to deprecate and delete Donation.walkup_donation"
+        Option.stub!(:default_donation_account_code).and_return('4444')
+        @donation = Donation.walkup_donation(5.00, @admin.id)
+        @donation.account_code.code.should == '4444'
+      end
     end
     it 'should use default when account code not found'
     it 'should use account code when matches existing' 

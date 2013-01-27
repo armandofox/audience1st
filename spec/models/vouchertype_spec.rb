@@ -1,10 +1,9 @@
 require 'spec_helper'
-include Utils
-
-@@now = Time.now.at_end_of_season - 6.months
 
 describe Vouchertype do
-
+  before :each do
+    @@now = Time.now.at_end_of_season - 6.months
+  end
   describe 'visibility' do
     before :each do
       @customers =  {}

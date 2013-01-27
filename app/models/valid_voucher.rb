@@ -26,11 +26,15 @@ class ValidVoucher < ActiveRecord::Base
   attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
-  alias_method :visible?, :visible # for convenience and more http://www.cs.berkeley.edu/~foxreadable specs
+  alias_method :visible?, :visible # for convenience and more readable specs
 
-  delegate :name, :price, :name_with_price, :visible_to?, :season, :offer_public_as_string, :to => :vouchertype
+  delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public_as_string, :to => :vouchertype
   delegate :<=>, :printable_name, :thedate, :to => :showdate
-  
+
+  def event_type
+    showdate.try(:show).try(:event_type)
+  end
+
   private
 
   # Vouchertype's valid date must not be later than valid_voucher start date

@@ -1,7 +1,7 @@
 require 'spec_helper'
-include Utils
 
 describe VouchersController do
+  include StubUtils
   before(:each) do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
       :name => 'regular voucher',

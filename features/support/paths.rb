@@ -17,12 +17,14 @@ module NavigationHelpers
       @customer = Customer.find_by_first_name_and_last_name!($1, $2)
       visit "/customers/switch_to/#{@customer.id}"
       "/customers/edit/#{@customer.id}"
+    when /the edit contact info page$/  then '/customers/edit'
     when /the change password page/i    then '/customers/change_password'
     when /the forgot password page/i    then '/customers/forgot_password'
     when /the new customer page/i       then '/customers/new'
       # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page/i              then '/store/index'
+    when /the special events page/      then '/store/special'
     when /the subscriptions page/i      then '/store/subscribe'
     when /the shipping info page/i      then '/store/shipping_address'
     when /the checkout page/i           then '/store/checkout'

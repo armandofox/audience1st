@@ -1,0 +1,14 @@
+%tr{:class => cycle(:even,:odd)}
+  %td.option_name
+    %label{:for => "option_#{attrib}"}= link_to_function h(humanize(attrib).capitalize_each_word), "alert('#{escape_javascript(OPTION_DESCRIPTIONS[attrib.to_sym])}')"
+  %td.t.option_value
+    - type = Option.columns_hash[attrib.to_s].type
+    - if type == :string
+      = f.text_field attrib, {:size => 60}
+    - elsif type == :text
+      = f.text_area attrib, :rows => 6, :cols => 60
+    - elsif type == :boolean
+      = f.select attrib, [['Yes', true], ['No', false]]
+    - elsif type == :integer
+      = f.text_field attrib, :size => 6, :maxlength => 6
+    - else raise "Unexpected option type for #{attrib}: #{type.to_s}"

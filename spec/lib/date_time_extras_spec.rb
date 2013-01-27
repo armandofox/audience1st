@@ -1,8 +1,10 @@
 require 'spec_helper'
 
-include Utils
-
 describe "Date/time extras" do
+  def stub_month_and_day(month,day)
+    Option.stub(:season_start_month).and_return(month)
+    Option.stub(:season_start_day).and_return(day)
+  end    
   describe "season calculations" do
     context "for season 1/1/09 - 12/31/09" do
       before(:each) do

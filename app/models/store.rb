@@ -2,7 +2,7 @@ class Store
   require 'stripe'
   
   def self.pay_with_credit_card(order)
-    Stripe.api_key = Option.value(:stripe_secret_key)
+    Stripe.api_key = Option.stripe_secret_key
     begin
       result = Stripe::Charge.create(
         :amount => (100 * order.total_price).to_i,

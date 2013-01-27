@@ -30,7 +30,7 @@ Given /^my cart contains the following tickets:/ do |tickets|
 end
 
 Given /^my gift order contains the following tickets:/ do |tickets|
-  Option.set_value!(:allow_gift_tickets, '1')
+  Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
   process_tickets(tickets.hashes)
   check 'gift'
   click_button 'CONTINUE >>'

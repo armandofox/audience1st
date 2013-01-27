@@ -76,7 +76,7 @@ class Mailer < ActionMailer::Base
     @body.merge!(:customer => customer,
                  :amount   => amount,
                  :nonprofit=> nonprofit,
-                 :donation_chair => Option.value(:donation_ack_from)
+                 :donation_chair => Option.donation_ack_from
                  )
   end
   
@@ -97,32 +97,32 @@ class Mailer < ActionMailer::Base
     }
   end
 
+  def upcoming_birthdays(recipients, from, to, customers)
+    sending_to(recipients)
+    @from = APP_CONFIG[:boxoffice_daemon_address] # override
+    @subject << "Birthdays between #{from.strftime('%x')} and #{to.strftime('%x')}"
+    @body.merge!( {:customers => customers} )
+  end
+
   def sending_to(recipient)
     @recipients = recipient.kind_of?(Customer)? recipient.email : recipient.to_s
-    @from = @@from_addr
+    @from = "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
     @headers = {}
-    @subject = "#{Option.value(:venue)} - "
+    @subject = "#{Option.venue} - "
+    contact = if Option.help_email.blank?
+              then "call #{Option.boxoffice_telephone}"
+              else "email #{Option.help_email} or call #{Option.boxoffice_telephone}"
+              end
     @body = {
-      :email => Option.value(:help_email),
-      :phone => Option.value(:boxoffice_telephone),
-      :venue => Option.value(:venue),
-      :how_to_contact_us =>  @@contact_string
-    }
-  end
-  
-  @@from_addr = "AutoConfirm-#{Option.value(:venue_shortname)}@audience1st.com"
-
-  @@contact = []
-  @@contact << "email #{Option.value(:help_email)}" unless Option.value(:help_email).blank?
-  @@contact << "call #{Option.value(:boxoffice_telephone)}" unless Option.value(:boxoffice_telephone).blank?
-  @@contact = @@contact.join(" or ")
-  
-  @@contact_string = <<EOS
+      :email => Option.help_email,
+      :phone => Option.boxoffice_telephone,
+      :venue => Option.venue,
+      :how_to_contact_us =>  <<EOS
 If this isn't correct, or if you have questions about your order or
 any problems using our Web site, PLEASE DO NOT REPLY to this email
 as it was generated automatically.
 
-Instead, please #{@@contact}.
+Instead, please #{contact}.
 Please include your name and login (as shown above), and if you're
 experiencing technical problems, a description of the problem and the
 type of browser and operating system you're using (Internet Explorer on
@@ -130,11 +130,11 @@ Windows, Safari or Firefox on Mac, etc.)
 
 Thanks for your patronage!
 
-#{Option.value(:venue)}
+#{Option.venue}
 Powered by Audience1st
-
 EOS
-
+    }
+  end
 end
 
 

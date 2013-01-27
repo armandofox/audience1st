@@ -25,14 +25,14 @@ class InfoController < ApplicationController
       end
       @showdate_avail << [sd, desc, link]
     end
-    @venue = Option.value(:venue)
+    @venue = Option.venue
     render :layout => false
   end
 
   # supports VXML voice playback of available shows
   def ticket_vxml
-    @venue = Option.value(:venue)
-    @xferphone = Option.value(:venue_telephone)
+    @venue = Option.venue
+    @xferphone = Option.venue_telephone
     # just check shows thru "this weekend"
     end_date = (Time.now + 1.day + 1.week).at_beginning_of_week
     showdates = Showdate.find(:all, :conditions =>
@@ -53,7 +53,7 @@ class InfoController < ApplicationController
   # iCal-compatible feed of upcoming shows
   def calendar_ical
     this_year = Time.now.at_beginning_of_year
-    @venue = Option.value(:venue)
+    @venue = Option.venue
     @showdates =
       Showdate.find(:all,
                     :conditions => ['thedate BETWEEN ? AND ?',

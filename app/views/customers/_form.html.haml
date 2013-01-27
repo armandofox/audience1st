@@ -11,8 +11,8 @@
       Fields
       %span.strong like this
       are required for online reservations and ticket purchase.
-    = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
-    = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
+      = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
+    - fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
       %label.strong First name
       = f.text_field :first_name, :size => 16, :max_length => 40, :readonly => disabled
       %br/
@@ -48,11 +48,15 @@
       %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
       %br
 
-      - if Option.value(:display_email_opt_out).to_i != 0
+      - if Option.display_email_opt_out?
         %label Email preferences
         = f.check_box :e_blacklist
         %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
         %br
 
-/[eoform:customer]
+    - unless disabled
+      %label{:for => :customer_birthday} Birthday (optional)
+      = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]
+
+  /[eoform:customer]
 

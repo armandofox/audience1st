@@ -1,8 +1,8 @@
 require 'spec_helper'
-include Utils
 
 describe BoxOfficeController do
 
+  include StubUtils
   before(:each) do
     stub_globals_and_userlevel(:boxoffice, :boxoffice_manager)
   end

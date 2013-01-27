@@ -1,21 +1,22 @@
-# Basic options for running features
+# Basic options for running features and specs
 
-season_start_month:
-  name: season_start_month
-  value: 1
-  typ: int
-
-season_start_day:
-  name: season_start_day
-  value: 1
-  typ: int
-
-allow_gift_tickets:
-  name: allow_gift_tickets
-  typ: string
-  value: 1
-
-allow_gift_subscriptions:
-  name: allow_gift_subscriptions
-  typ: string
-  value: 1
+default:
+  id:                           1
+  venue_id:                     111
+  venue_shortname:              testing
+  venue:                        Test Theater
+  sandbox:                      true
+  advance_sales_cutoff:         60
+  sold_out_threshold:           90
+  nearly_sold_out_threshold:    80
+  allow_gift_tickets:           false
+  allow_gift_subscriptions:     false
+  season_start_month:           1
+  season_start_day:             1
+  cancel_grace_period:          1440
+  venue:                        Test Theater
+  send_birthday_reminders:      0
+  followup_visit_reminder_lead_time: 0
+  terms_of_sale:                Sales Final
+  precheckout_popup:            Please double check dates
+  venue_homepage_url:           http://test.org

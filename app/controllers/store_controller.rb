@@ -136,8 +136,9 @@ class StoreController < ApplicationController
     set_return_to :controller => 'store', :action => 'checkout'
     # Work around Rails bug 2298 here
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    @checkout_message = Option.value(:precheckout_popup) ||
+    @checkout_message = Option.precheckout_popup ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
+    @cart_contains_class_order = @cart.contains_enrollment?
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
     redirect_to change_user_path and return unless logged_in?
@@ -315,7 +316,7 @@ class StoreController < ApplicationController
   end
 
   def setup_ticket_menus_for_admin
-    @valid_vouchers = @sd.valid_vouchers
+    @valid_vouchers = @sd.valid_vouchers.sort_by(&:display_order)
     @all_shows = Show.
       all_for_seasons(Time.this_season - 1, Time.this_season).
       special(@special_shows_only)  ||  []
@@ -326,7 +327,7 @@ class StoreController < ApplicationController
   def setup_ticket_menus_for_patron
     @valid_vouchers = @sd.valid_vouchers.map do |v|
       v.adjust_for_customer(@customer,@promo_code)
-    end.find_all(&:visible?)
+    end.find_all(&:visible?).sort_by(&:display_order)
     @all_shows = Show.current_and_future.special(@special_shows_only) || []
     @all_shows << @sh unless @all_shows.include? @sh
   end

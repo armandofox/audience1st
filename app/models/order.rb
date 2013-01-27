@@ -112,6 +112,10 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def contains_enrollment?
+    ValidVoucher.find(valid_vouchers.keys).any? { |v| v.event_type == 'Class' }
+  end
+
   def gift?
     include_vouchers?  &&  customer != purchaser
   end

@@ -214,7 +214,7 @@ class CustomersController < ApplicationController
       return true
     rescue Exception => e
       flash[:notice] = e.message +
-        "<br/>Please contact #{Option.value(:help_email)} if you need help."
+        "<br/>Please contact #{Option.help_email} if you need help."
       return nil
     end
   end

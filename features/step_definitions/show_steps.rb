@@ -14,7 +14,11 @@ Given /^a show "(.*)" with tickets on sale for today$/ do |name|
     Given 10 General vouchers costing $20 are available for that performance
   }
 end
-  
+
+Given /^a class "(.*)" available for enrollment now$/ do |name|
+  Given %Q{a show "#{name}" with tickets on sale for today}
+  @show.update_attributes!(:event_type => "Class")
+end
 
 Given /^there is a show named "([^\"]+)"$/ do |name|
   @show =  Show.find_by_name(name) ||

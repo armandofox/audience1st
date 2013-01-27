@@ -15,13 +15,11 @@ nearly_sold_out_threshold: >
 
 allow_gift_tickets: >
 
-  Set to any non-blank value to allow tickets to be purchased as a
-  gift. Leave blank to disable.
+  Whether customers can purchase individual tickets as a gift for another customer.
 
 allow_gift_subscriptions: >
 
-  Set to any non-blank value to allow subscriptions to be purchased as a
-  gift. Leave blank to disable.
+  Whether customers can purchase subscriptions as a gift for another customer.
 
 season_start_month: >
 
@@ -55,18 +53,6 @@ default_donation_account_code_with_subscriptions: >
 
   Default account code for donations accompanying subscription purchases
   (as opposed to single-ticket purchases).
-
-accept_amex: >
-
-  Set to any nonzero value if your payment gateway and merchant account
-  are set up to accept the American Express Card.  Leave blank if
-  you don't accept Amex. 
-
-accept_discover: >
-
-  Set to any nonzero value if your payment gateway and merchant account
-  are set up to accept the Discover Card.  Leave blank if
-  you don't accept Discover. 
 
 venue: >
 
@@ -117,6 +103,19 @@ followup_visit_reminder_lead_time: >
   staff member who has a followup visit pending will receive a reminder
   email 2 days before the "Follow up on" date of the visit record. If
   0, no reminders will be emailed.
+
+send_birthday_reminders: >
+
+  If set to any value other than 0, indicates how often you want to
+  receive an email about upcoming customer birthdays.  For example, a
+  setting of 10 will result in an email being sent every 10 days,
+  showing all birthdays starting 10 days from now until 10 days after
+  that.  In other words, the email sent on January 10 would show
+  birthdays from January 20 to January 30, the email sent on January 20 would show
+  birthdays from January 30 to February 10, and so on.  The email is not
+  sent to the customer, but to the same email address as Box Office
+  Daemon Notify, above.  A value of 0 will suppress birthday
+  notification emails completely.
 
 session_timeout: >
 
@@ -227,11 +226,11 @@ subscription_purchase_email_notes: >
 
 display_email_opt_out: >
 
-  If set to any nonzero value, an email opt-out box will appear whenever
-  customers edit their contact info.  If set to zero, this opt-out box
-  will not appear.  NOTE: if set to zero, you MUST ensure that you
+  Whether to display an email opt-out box when
+  customers edit their contact info.  
+  NOTE: if set to "No", you MUST ensure that you
   provide your customers some other way to opt out of email in order to
-  comply with CAN-SPAM.
+  comply with CAN-SPAM laws.
 
 encourage_email_opt_in: >
 
@@ -305,17 +304,28 @@ privacy_policy_url: >
 mailchimp_api_key: >
 
   API key for MailChimp integration, if you use MailChimp.  
-  If you don't use MailChimp, leave blank.
+  See the instructions at http://a1patronsystems.com for how to create
+  this key.
 
 mailchimp_default_list_name: >
 
   Name of your main email list, if you use MailChimp
   If you don't use MailChimp, leave blank.
 
-enable_facebook_connect: >
+constant_contact_username: >
 
-  Set to zero (0) to COMPLETELY DISABLE Facebook integration, including
-  "Login with your Facebook account" and Facebook-related social
-  features.  Set to any nonzero value to ENABLE Facebook integration.
-  NOTE: This change may take up to an hour to take effect.
+  If you use ConstantContact,
+  the user name (account name) you use when logging into the site.
+
+constant_contact_password: >
+
+  If you use ConstantContact,
+  the password you use when logging into the site.
+
+constant_contact_api_key: >
+
+  If you use ConstantContact,
+  the API key that allows integration with external applications.
+  See the instructions at http://a1patronsystems.com for how to create
+  this key.
 

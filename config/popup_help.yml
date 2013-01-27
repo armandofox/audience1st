@@ -160,11 +160,12 @@ show_landing_page_url: >
 
 show_is_special: >
 
-  Check this box if this event isn't really a regular show but is some
-  other product (acting class, sponsorship opportunity, etc.)  Shows
-  marked this way will NOT appear on the regular ticket sales page, but
-  will appear only on the Special Events page,
-  http://www.audience1st.com/your_venue_name/store/special
+  Indicate if this is a regular show (staged performance), special event
+  that isn't really a performance (fundraiser, sponsorship opportunity,
+  etc.), or an event that involves enrollment (acting class, drama camp,
+  etc.)  This determines what store page the event will be listed on,
+  and in some cases affects how customers purchase; for example, the
+  enrollee name MUST be provided for a course enrollment.
 
 show_also_notify: >
  
