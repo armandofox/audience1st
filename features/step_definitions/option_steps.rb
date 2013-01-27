@@ -1,7 +1,6 @@
  Given /the season start date is (.*)$/ do |date|
    d = Date.parse(date)
-   Option.set_value!(:season_start_month, d.month)
-   Option.set_value!(:season_start_day, d.day)
+   Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
  end
    
  Given /^I fill in all valid options$/ do
