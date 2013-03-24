@@ -44,7 +44,7 @@ class Showdate < ActiveRecord::Base
       :max_sales => 0)
   end
 
-  def valid_vouchers_for_walkup(clerk)
+  def valid_vouchers_for_walkup
     self.valid_vouchers.select { |vv| vv.vouchertype.walkup_sale_allowed? }
   end
 
@@ -56,9 +56,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def self.current_or_next(buffer = 0)
-    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer],
-      :order => "thedate") ||
-      Showdate.find(:first, :order => 'thedate DESC')
+    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer], :order => "thedate")
   end
 
   def self.find_by_date(dt)
