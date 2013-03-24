@@ -38,6 +38,7 @@ describe Order do
     subject { Order.new }
     it { should_not be_a_gift }
     it { should_not be_completed }
+    it { should_not be_walkup }
     its(:items) { should be_empty }
     its(:cart_empty?) { should be_true }
     its(:total_price) { should be_zero }
@@ -237,6 +238,20 @@ describe Order do
         it 'should NOT add vouchers to purchaser account' do
           @purch.vouchers.should have(0).vouchers_for(@sd,@vt)
           @purch.vouchers.should have(0).vouchers_for(@sd2,@vt2)
+        end
+      end
+      context 'for walkup order' do
+        before :each do
+          Customer.walkup_customer.vouchers.delete_all
+          @order.purchaser = @order.customer = Customer.walkup_customer
+          @order.walkup = true
+          @order.finalize! rescue puts(@order.errors.inspect)
+        end
+        it 'should assign all vouchers to walkup customer' do
+          Customer.walkup_customer.should have(3).vouchers
+        end
+        it 'should mark all vouchers as walkup' do
+          Customer.walkup_customer.vouchers.all? { |v| v.walkup? }.should be_true
         end
       end
       context 'with credit card payment' do

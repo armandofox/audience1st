@@ -9,7 +9,7 @@ class Order < ActiveRecord::Base
   validates_presence_of :processed_by_id
 
   attr_accessor :purchase_args
-
+  
   class Order::NotReadyError < StandardError ; end
   class Order::SaveRecipientError < StandardError; end
   class Order::SavePurchaserError < StandardError ; end
@@ -20,6 +20,7 @@ class Order < ActiveRecord::Base
 
   def initialize(*args)
     @purchase_args = {}
+    @walkup = false
     super
   end
 
@@ -32,6 +33,20 @@ class Order < ActiveRecord::Base
   end
 
   private
+
+  def check_purchaser_info
+    # walkup orders only need purchaser & recipient info to point to walkup
+    #  customer, but regular orders need full purchaser & recipient info.
+    if walkup?
+      errors.add_to_base "Walkup order requires purchaser & recipient to be walkup customer"unless
+        (purchaser == Customer.walkup_customer && customer == purchaser)
+    else
+      errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if
+        purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
+      errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
+      errors.add(:customer, customer.errors.full_messages.join(',')) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
+    end
+  end
 
   def workaround_rails_bug_2298!
     # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
@@ -63,6 +78,7 @@ class Order < ActiveRecord::Base
   end
   
   public
+
   def empty_cart!
     self.valid_vouchers = {}
     self.donation_data = {}
@@ -88,6 +104,8 @@ class Order < ActiveRecord::Base
   
   def ticket_count ; valid_vouchers.values.map(&:to_i).sum ; end
 
+  def item_count ; ticket_count + (include_donation? ? 1 : 0) ; end
+  
   def tickets_for_date(date)
     valid_vouchers.select { |v| v.thedate == date }
   end
@@ -147,9 +165,7 @@ class Order < ActiveRecord::Base
     errors.clear
     errors.add_to_base 'Shopping cart is empty' if cart_empty?
     errors.add_to_base 'No purchaser information' unless purchaser.kind_of?(Customer)
-    errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
-    errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
-    errors.add(:customer, customer.errors.full_messages.join(',')) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
+    check_purchaser_info
     if purchasemethod.kind_of?(Purchasemethod)
       errors.add(:purchasemethod, 'Invalid credit card transaction') if
         purchase_args && purchase_args[:credit_card_token].blank?       &&
@@ -171,6 +187,8 @@ class Order < ActiveRecord::Base
     begin
       transaction do
         # add non-donation items to recipient's account
+        # if walkup order, mark the vouchers as walkup
+        vouchers.each { |v| v.walkup = self.walkup? }
         customer.add_items(vouchers, processed_by.id, purchasemethod)
         raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
         # add donation items to purchaser's account

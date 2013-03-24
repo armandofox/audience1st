@@ -40,14 +40,7 @@ class Donation < Item
     sprintf("$%6.2f  Donation to #{account_code.name} (confirmation \##{id})", amount)
   end
 
-
-  def self.walkup_donation(amount,logged_in_id,purch=Purchasemethod.get_type_by_name('box_cash'))
-    Donation.create(:sold_on => Date.today,
-                    :amount => amount,
-                    :customer_id => Customer.walkup_customer.id,
-                    :account_code => self.default_code,
-                    :purchasemethod_id => purch.id,
-                    :letter_sent => false,
-                    :processed_by_id => logged_in_id)
+  def self.walkup_donation(amount)
+    Donation.new(:amount => amount, :account_code => Donation.default_code)
   end
 end
