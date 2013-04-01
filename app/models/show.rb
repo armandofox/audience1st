@@ -37,14 +37,21 @@ class Show < ActiveRecord::Base
   def self.all_for_season(season=Time.this_season)
     startdate = Time.at_beginning_of_season(season)
     enddate = startdate + 1.year - 1.day
-    Show.find(:all, :order => 'opening_date',
-      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate])
+    Show.find(:all,
+      :order => 'opening_date',
+      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate],
+      :include => :showdates)
   end
 
   named_scope :all_for_seasons, lambda { |from,to|
     {:conditions =>  ['opening_date BETWEEN ? AND ?',
         Time.at_beginning_of_season(from), Time.at_end_of_season(to)] }
   }
+
+  def self.seasons_range
+    [Show.find(:first, :order => 'opening_date').opening_date.year,
+      Show.find(:first, :order => 'opening_date DESC').opening_date.year]
+  end
   
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
