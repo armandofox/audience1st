@@ -9,7 +9,6 @@ is accepted", and encodes additional information such as the capacity limit for 
 =end
 
 class ValidVoucher < ActiveRecord::Base
-  # A valid_voucher must be associated with exactly 1 showdate and 1 vouchertype
   belongs_to :showdate
   belongs_to :vouchertype
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
@@ -33,6 +32,17 @@ class ValidVoucher < ActiveRecord::Base
 
   def event_type
     showdate.try(:show).try(:event_type)
+  end
+
+  def self.from_params(valid_vouchers_hash)
+    result = {}
+    (valid_vouchers_hash || {}).each_pair do |id,qty|
+      if ((vv = self.find_by_id(id)) &&
+          ((q = qty.to_i) > 0))
+        result[vv] = q
+      end
+    end
+    result
   end
 
   private
@@ -96,7 +106,11 @@ class ValidVoucher < ActiveRecord::Base
 
   def adjust_for_capacity
     self.max_sales_for_type = seats_remaining
-    self.explanation = "All tickets of this type have been sold" if max_sales_for_type.zero?
+    self.explanation =
+      if max_sales_for_type.zero?
+      then "All tickets of this type have been sold"
+      else "#{seats_remaining} of these tickets remaining"
+      end
   end
 
   public

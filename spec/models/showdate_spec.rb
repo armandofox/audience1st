@@ -53,9 +53,9 @@ describe Showdate do
       end
     end
     context "when there is only 1 showdate and it's in the past" do
-      it "should return nil" do
+      it "should return that showdate" do
         @showdate  = Showdate.create!(:thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
-        Showdate.current_or_next.should be_nil
+        Showdate.current_or_next.id.should == @showdate.id
       end
     end
     context "when there are past and future showdates" do

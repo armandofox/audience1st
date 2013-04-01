@@ -5,27 +5,27 @@ Feature: Sell walkup tickets
   So that we can maximize seat counts
 
   Background:
-    Given a performance of "The Nerd" on October 1, 8:00pm
-    And 3 General vouchers costing $11.00 are available for this performance
-    And today is October 1, 7:00pm
-    And I am logged in as a box office worker
-    And I go to the walkup sales page
-    Then I should see "The Nerd"
-    And I should see /Oct\s+1,\s+8:00\s+PM/
+    Given I am logged in as boxoffice
+    And a show "The Nerd" with the following tickets available:
+    | qty | type    | price  | showdate          |
+    |   3 | General | $11.00 | October 1, 7:00pm |
+    And I am on the walkup sales page for October 1, 7:00pm
 
   Scenario: purchase 2 tickets with cash
 
     When I select "2" from "General"
     And I press "Record Cash Payment or Zero Revenue Transaction"
-    Then I should see "Successfully added 2 vouchers purchased via Box office - Cash"
+    Then I should see "2 tickets paid by cash"
     And I should see "General (1 left)"
+    And I should be on the walkup sales page for October 1, 7:00pm
 
   Scenario: purchase 2 tickets with check
   
     When I select "2" from "General"
     And I press "Record Check Payment"
-    Then I should see "Successfully added 2 vouchers purchased via Box office - Check"
+    Then I should see "2 tickets paid by check"
     And I should see "General (1 left)"
+    And I should be on the walkup sales page for October 1, 7:00pm
 
   @javascript
   Scenario: purchase 2 tickets with valid credit card info
@@ -40,8 +40,9 @@ Feature: Sell walkup tickets
     | Expiration Year    | select "2015"       |
     And I fill in "Enter CVV code manually FIRST!" with "111"
     And I press "Charge Credit Card"
-    Then I should see "Successfully added 2 vouchers purchased via Box office - Credit Card"
+    Then I should see "2 tickets paid by credit card"
     And I should see "General (1 left)"
+    And I should be on the walkup sales page for October 1, 7:00pm
 
   Scenario: attempt purchase with invalid credit card
 
@@ -55,10 +56,12 @@ Feature: Sell walkup tickets
     And I press "Charge Credit Card"
     Then I should see "Transaction NOT processed"
     And I should see "General (3 left)"
+    And I should be on the walkup sales page for October 1, 7:00pm
 
   Scenario: attempt zero-revenue purchase by check
 
     When I press "Record Check Payment"
-    Then I should see "No tickets or donation to process"
+    Then I should see "There are no items to purchase"
     And I should see "General (3 left)"
+    And I should be on the walkup sales page for October 1, 7:00pm
 

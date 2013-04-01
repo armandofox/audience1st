@@ -26,7 +26,7 @@ describe StoreController do
         end
         it "should display a warning" do
           post 'process_cart', @params
-          flash[:warning].should match(/please select a show date and tickets/i)
+          flash[:warning].should match(/nothing in your order/i)
         end
       end
       context "if gift" do

@@ -9,6 +9,8 @@ class Order < ActiveRecord::Base
   validates_presence_of :processed_by_id
 
   attr_accessor :purchase_args
+
+  delegate :purchase_medium, :to => :purchasemethod
   
   class Order::NotReadyError < StandardError ; end
   class Order::SaveRecipientError < StandardError; end
@@ -86,6 +88,15 @@ class Order < ActiveRecord::Base
 
   def cart_empty?
     valid_vouchers.empty? && donation.nil?
+  end
+
+  def add_with_checking(valid_voucher, number, customer, promo_code)
+    adjusted = valid_voucher.adjust_for_customer(customer, promo_code)
+    if number <= adjusted.max_sales
+      self.add_tickets(valid_voucher, qty)
+    else
+      self.errors.add_to_base(adjusted.explanation)
+    end
   end
 
   def add_tickets(valid_voucher, number)
@@ -169,9 +180,9 @@ class Order < ActiveRecord::Base
     if purchasemethod.kind_of?(Purchasemethod)
       errors.add(:purchasemethod, 'Invalid credit card transaction') if
         purchase_args && purchase_args[:credit_card_token].blank?       &&
-        purchasemethod.purchase_medium == :credit_card 
+        purchase_medium == :credit_card 
       errors.add(:purchasemethod, 'Zero amount') if
-        total_price.zero? && purchasemethod.purchase_medium != :cash
+        total_price.zero? && purchase_medium != :cash
     else
       errors.add(:purchasemethod, 'No payment method specified')
     end

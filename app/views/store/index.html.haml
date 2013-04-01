@@ -8,16 +8,9 @@
     to manage your reservations and get your Subscriber benefits.
 
 #store
-  - if @special_shows_only
-    %h1.page_heading.center
-      Select Event
-      %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
-    %p.center= link_to "Click here for regular show tickets", :action => 'index'
-  - else
-    %h1.page_heading.center
-      Select Tickets
-      %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
-    %p.center= link_to "Click here for special events", :action => 'special'
+  %h1.page_heading.center
+    Select #{@what}
+    %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #ticket_menus
     - form_tag :action => 'process_cart' do

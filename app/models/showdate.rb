@@ -56,7 +56,8 @@ class Showdate < ActiveRecord::Base
   end
 
   def self.current_or_next(buffer = 0)
-    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer], :order => "thedate")
+    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer], :order => "thedate") ||
+      Showdate.find(:first, :order => 'thedate DESC')
   end
 
   def self.find_by_date(dt)

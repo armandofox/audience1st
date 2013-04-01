@@ -32,14 +32,15 @@ class StoreController < ApplicationController
 
   
   def index
-    unless (@promo_code = redeeming_promo_code)
-      reset_shopping
-    end
+    @what = params[:what] || 'Regular Tickets'
+    reset_shopping unless (@promo_code = redeeming_promo_code)
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
-    set_return_to :action => self.action_name
+    set_return_to :action => action_name
   end
 
   def special
+    redirect_to :action => :index, :params => {:what => 'special'}
+    @what = 'event'
     @special_shows_only = true
     unless (@promo_code = redeeming_promo_code)
       reset_shopping
@@ -84,12 +85,26 @@ class StoreController < ApplicationController
     @cart.purchaser = @customer
     @cart.comments = params[:comments]
     @cart.processed_by_id = logged_in_id
-    process_ticket_request
-    redirect_to_index and return if flash[:warning]
+    tickets = ValidVoucher.from_params(params[:valid_vouchers])
+    if @gAdmin.is_boxoffice
+      tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
+    else
+      cust = @gCustomer
+      promo = current_promo_code
+      tickets.each_pair { |vv, qty| @cart.add_with_checking(vv,qty,cust,promo) }
+    end
+    if !@cart.errors.empty?
+      flash[:warning] = @cart.errors.full_messages.join(', ')
+      redirect_to :action => :index and return
+    end
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
       @cart.add_donation( Donation.from_amount_and_account_code(params[:donation].to_i,
           params[:account_code_id] ))
+    end
+    if @cart.cart_empty?
+      flash[:warning] = "There is nothing in your order."
+      redirect_to :action => :index and return
     end
     if params[:gift] && @cart.include_vouchers?
       remember_cart_in_session!
@@ -218,40 +233,20 @@ class StoreController < ApplicationController
       params.delete(:commit)
       logger.info "Accepting promo code #{params[:promo_code]}"
       session[:promo_code] = params[:promo_code].to_s.upcase
-    else
-      nil
     end
   end
+
+  def current_promo_code ; session[:promo_code].to_s ; end
 
   def showdate_from_params
     Showdate.find_by_id(params[:showdate_id], :include => [:show, :valid_vouchers])
   end
   def showdate_from_show_params
     (s = Show.find_by_id(params[:show_id], :include => :showdates)) &&
-      s.has_showdates? &&
-      s.showdates.first
+      s.showdates.try(:first)
   end
   def showdate_from_default ; Showdate.current_or_next ; end
   
-  def process_ticket_request
-    unless (showdate = Showdate.find_by_id(params[:showdate])) ||
-        params[:donation].to_i > 0
-      flash[:warning] = "Please select a show date and tickets, or enter a donation amount."
-      return
-    end
-    admin = @gAdmin.is_boxoffice
-    # pre-check whether the total number of tickets exceeds availability
-    valid_vouchers = valid_vouchers_from_params
-    total = valid_vouchers.values.sum
-    if showdate && total > showdate.saleable_seats_left && !admin
-      flash[:warning] = "You've requested #{total} tickets, but only #{showdate.saleable_seats_left} are available for this performance."
-    else
-      valid_vouchers.each_pair do |valid_voucher, qty|
-        @cart.add_tickets(valid_voucher, qty)
-      end
-    end
-  end
-
   def recipient_from_session
     if ((s = session[:recipient_id]) &&
         (recipient = Customer.find_by_id(s)))
@@ -332,13 +327,4 @@ class StoreController < ApplicationController
     @all_shows << @sh unless @all_shows.include? @sh
   end
 
-  def valid_vouchers_from_params
-    result = {}
-    (params[:valid_voucher] ||= {}).each_pair do |id,qty|
-      if (vv = ValidVoucher.find_by_id(id))
-        result[vv] = qty.to_i unless qty.to_i.zero?
-      end
-    end
-    result
-  end
 end

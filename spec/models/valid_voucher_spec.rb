@@ -153,7 +153,7 @@ describe ValidVoucher do
       describe 'when one or more seats remain' do
         let(:seats) { 5 }
         its(:max_sales_for_type) { should == 5 }
-        its(:explanation) { should be_blank }
+        its(:explanation) { should == '5 of these tickets remaining' }
       end
     end
 
