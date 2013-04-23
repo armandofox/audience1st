@@ -172,6 +172,16 @@ class Voucher < Item
     end
   end
   
+  def reserve_if_only_one_showdate
+    valid_vouchers = vouchertype.valid_vouchers
+    if valid_vouchers.length == 1
+      self.reserve_for(valid_vouchers.first.showdate_id,
+        self.processed_by_id,
+        'Automatic reservation since ticket valid for only a specific show date')
+    end
+  end
+  protected :reserve_if_only_one_showdate
+  
   def add_to_customer(c)
     begin
       c.vouchers << self

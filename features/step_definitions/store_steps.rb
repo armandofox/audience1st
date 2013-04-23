@@ -24,8 +24,15 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+<<<<<<< HEAD
 Given /^my cart contains the following tickets:/ do |tickets|
   process_tickets(tickets.hashes)
+  click_button 'CONTINUE >>'
+end
+
+Given /^my cart contains (\d+) "(.*)" bundle vouchers$/ do |qty,name|
+  visit path_to(%Q{the subscriptions page})
+  select qty.to_s, :from => name
   click_button 'CONTINUE >>'
 end
 
@@ -56,6 +63,10 @@ end
 
 Then /^the cart should not contain a donation$/ do
   Then %Q{I should not see "Donation" within "#cart_items"}
+end
+
+When /^the order is placed successfully$/ do
+  click_button 'Charge Credit Card' # but will be handled as Cash sale in 'test' environment
 end
 
 Then /^the cart should contain a donation of \$(.*) to "(.*)"$/ do |amount,account|
