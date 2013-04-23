@@ -162,7 +162,8 @@ class Voucher < Item
     if unreserved?  &&  valid_vouchers.length == 1
       self.reserve_for(valid_vouchers.first.showdate_id,
         self.processed_by_id,
-        'Automatic reservation since ticket valid for only a specific show date')
+        'Automatic reservation since ticket valid for only a specific show date',
+        :ignore_cutoff => true)
     end
   end
   protected :reserve_if_only_one_showdate
