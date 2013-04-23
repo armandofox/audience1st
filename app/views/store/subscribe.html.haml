@@ -20,7 +20,7 @@
       %br
 
       - @subs_to_offer.each do |s|
-        %label.wide_label{:for => "vouchertype[#{s.id}]"}= s.name_with_price
+        %label.wide_label{:for => "vouchertype_#{s.id}"}= s.name_with_price
         = select_tag("vouchertype[#{s.id}]", options_for_select((0..20).to_a), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
         = hidden_field_tag "vouchertype_#{s.id}_price", s.price

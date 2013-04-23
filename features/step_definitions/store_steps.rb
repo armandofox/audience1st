@@ -13,6 +13,12 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+Given /^my cart contains (\d+) "(.*)" bundle vouchers$/ do |qty,name|
+  visit path_to(%Q{the subscriptions page})
+  select qty.to_s, :from => name
+end
+
+
 Given /^my cart contains the following tickets:/ do |tickets|
   tickets.hashes.each do |t|
     show,qty,type,price,showdate = t.values_at(:show, :qty, :type,:price,:showdate)

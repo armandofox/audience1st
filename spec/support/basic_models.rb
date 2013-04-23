@@ -39,8 +39,8 @@ module BasicModels
     c.update_attribute(:role, Customer.role_value(role))
     c
   end
-  def self.create_one_showdate(dt,cap=100,s=nil)
-    s ||= Show.create!(:name => "Show 1",
+  def self.create_one_showdate(dt,cap=100,s=nil,name="Show 1")
+    s ||= Show.create!(:name => name,
       :house_capacity => cap,
       :opening_date => dt - 1.week,
       :closing_date => dt + 1.week)
@@ -75,13 +75,31 @@ module BasicModels
     sym = self.gensym
     Vouchertype.create!({:fulfillment_needed => false,
       :name => 'subscription #{sym}',
-      :category => 'bundle',
+        :category => 'bundle',
       :subscription => true,
       :account_code => AccountCode.default_account_code,
       :price => 20.00,
       :season => Time.now.year}.merge(args))
   end
-      
+  def self.create_bundle_vouchertype(args={})
+    Vouchertype.create!({:fulfillment_needed => false,
+        :name => "Bundle",
+        :category => 'bundle',
+        :offer_public => Vouchertype::ANYONE,
+        :bundle_sales_start => 1.week.ago,
+        :bundle_sales_end => 1.week.from_now,
+        :subscription => false,
+        :account_code => AccountCode.default_account_code,
+        :price => 20.00,
+        :season => Time.now.year}.merge(args))
+  end
+  def self.create_included_vouchertype(args={})
+    Vouchertype.create!({:fulfillment_needed => false,
+        :name => self.gensym,
+        :category => 'subscriber',
+        :price => 0,
+        :season => Time.now.year}.merge(args))
+  end
   def self.create_generic_show(name="Some Show",opts={})
     Show.create!({
       :name => name,
