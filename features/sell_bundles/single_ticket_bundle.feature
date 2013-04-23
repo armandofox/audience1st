@@ -17,5 +17,5 @@ Background: my cart contains a fixed-date-bundle voucher
 Scenario: enough seats available for both shows
 
   When the order is placed successfully
-  Then customer Tom Foolery should have 2 "Hamlet (bundle)" tickets reserved for "Hamlet" on May 12, 2013, 8pm
-  And  customer Tom Foolery should have 2 "King Lear (bundle)" tickets reserved for "King Lear" on May 13, 2013, 8pm
+  Then customer Tom Foolery should have 2 "Hamlet (bundle)" tickets for "Hamlet" on May 12, 2013, 8pm
+  And  customer Tom Foolery should have 2 "King Lear (bundle)" tickets for "King Lear" on May 13, 2013, 8pm
