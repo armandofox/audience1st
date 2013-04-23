@@ -248,6 +248,7 @@ describe Voucher do
     context "when destroyed" do
       it "should destroy associated bundled vouchers" do
         @b1.destroy
+        @c.reload
         @c.should have(2).vouchers
         @c.vouchers.should_not include(@b1)
         @c.vouchers.any? { |v| v.bundle_id == @b1.id }.should be_false
