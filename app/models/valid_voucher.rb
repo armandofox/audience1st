@@ -177,6 +177,11 @@ class ValidVoucher < ActiveRecord::Base
       :conditions => ["#{general_conds} AND (#{promo_code_conds})", general_opts + promo_codes])
   end
 
+  def date_with_explanation
+    display_name = showdate.menu_selection_name
+    max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
+  end
+
   # def seats_remaining
   #   nseatsleft = self.showdate.saleable_seats_left
   #   if max_sales_for_type.zero?
