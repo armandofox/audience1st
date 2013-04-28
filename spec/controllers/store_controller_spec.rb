@@ -54,17 +54,17 @@ describe StoreController do
         response.should redirect_to(:action => 'checkout')
       end
       it "should create donation with no account code" do
-        Donation.should_receive(:from_amount_and_account_code).with(13, nil).and_return(@d)
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(@d)
         post 'process_cart', @params
       end
       it 'should create donation with nondefault account code when supplied' do
         @params[:account_code_id] = 75
-        Donation.should_receive(:from_amount_and_account_code).with(13, '75').and_return(@d)
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, '75').and_return(@d)
         post 'process_cart', @params
       end
       it "should add the donation to the cart" do
         controller.stub!(:find_cart).and_return(@cart = Order.new)
-        Donation.should_receive(:from_amount_and_account_code).with(13, nil).and_return(d = Donation.new)
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(d = Donation.new)
         @cart.should_receive(:add_donation).with(d)
         post 'process_cart', @params
       end

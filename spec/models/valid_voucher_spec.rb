@@ -58,6 +58,17 @@ describe ValidVoucher do
       its(:explanation) { should_not be_blank }
       its(:max_sales_for_type) { should be_zero }
     end
+
+    describe 'for reservation using existing voucher' do
+      subject do
+        s = BasicModels.create_one_showdate(1.day.from_now)
+        v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)
+        v.adjust_for_customer_reservation
+      end
+      its(:explanation) { should == 'Advance reservations for this performance are closed' }
+      its(:max_sales_for_type) { should be_zero }
+    end
+
     describe 'for visibility' do
       before :all do ; ValidVoucher.send(:public, :adjust_for_visibility) ; end
       subject do
@@ -104,17 +115,29 @@ describe ValidVoucher do
         it_should_behave_like 'visible, zero capacity'
         its(:explanation) { should == 'Event is sold out' }
       end
-      describe 'whose advance sales have ended' do
-        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 10, :end_advance_sales => 1.day.ago) }
-        it_should_behave_like 'visible, zero capacity'
-        its(:explanation) { should == 'Advance sales for this event are closed' }
+    end
+
+    describe "whose showdate's advance sales have ended" do
+      before :each do
+        ValidVoucher.send(:public, :adjust_for_sales_dates)
+        @showdate = mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 10, :end_advance_sales => 1.day.ago)
+        @v = ValidVoucher.new(:start_sales => 2.days.ago, :end_sales => 1.week.from_now,
+          :showdate => @showdate)
+        @v.adjust_for_sales_dates
+        @v
+      end
+      it 'should have no seats available' do
+        @v.max_sales_for_type.should be_zero
+      end
+      it 'should say advance sales are closed' do
+        @v.explanation.should == 'Advance sales for this performance are closed'
       end
     end
 
     describe 'for per-ticket-type sales dates' do
       before :all do ; ValidVoucher.send(:public, :adjust_for_sales_dates) ; end
       subject do
-        v = ValidVoucher.new(:start_sales => starts, :end_sales => ends)
+        v = ValidVoucher.new(:start_sales => starts, :end_sales => ends, :showdate => mock_model(Showdate, :end_advance_sales => 1.day.from_now))
         v.adjust_for_sales_dates
         v
       end
@@ -148,7 +171,7 @@ describe ValidVoucher do
       describe 'when zero seats remain' do
         let(:seats) { 0 }
         its(:max_sales_for_type) { should be_zero }
-        its(:explanation) { should == 'All tickets of this type have been sold' }
+        its(:explanation) { should == 'No seats remaining for tickets of this type' }
       end
       describe 'when one or more seats remain' do
         let(:seats) { 5 }

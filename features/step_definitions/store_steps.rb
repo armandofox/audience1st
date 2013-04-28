@@ -24,7 +24,6 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
-<<<<<<< HEAD
 Given /^my cart contains the following tickets:/ do |tickets|
   process_tickets(tickets.hashes)
   click_button 'CONTINUE >>'

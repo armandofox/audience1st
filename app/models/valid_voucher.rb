@@ -85,16 +85,16 @@ class ValidVoucher < ActiveRecord::Base
     elsif showdate.saleable_seats_left < 1
       self.explanation = 'Event is sold out'
       self.visible = true
-    elsif showdate.end_advance_sales < Clock.now
-      self.explanation = 'Advance sales for this event are closed'
-      self.visible = true
     end
     !self.explanation.blank?
   end
 
   def adjust_for_sales_dates
     now = Clock.now
-    if now < start_sales
+    if now > showdate.end_advance_sales
+      self.explanation = 'Advance sales for this performance are closed'
+      self.visible = true
+    elsif now < start_sales
       self.explanation = "Tickets of this type not on sale until #{start_sales.to_formatted_s(:showtime)}"
       self.visible = true
     elsif now > end_sales
@@ -104,15 +104,34 @@ class ValidVoucher < ActiveRecord::Base
     !self.explanation.blank?
   end
 
+  def adjust_for_advance_reservations
+    if Clock.now > end_sales
+      self.explanation = 'Advance reservations for this performance are closed'
+      self.max_sales_for_type = 0
+    end
+    !self.explanation.blank?
+  end
+
   def adjust_for_capacity
     self.max_sales_for_type = seats_remaining
     self.explanation =
       if max_sales_for_type.zero?
-      then "All tickets of this type have been sold"
+      then "No seats remaining for tickets of this type"
       else "#{seats_remaining} of these tickets remaining"
       end
   end
 
+  def clone_with_id
+    result = self.clone
+    result = self.clone
+    result.id = self.id # necessary since views expect valid-vouchers to have an id...
+    result.visible = true
+    result.customer = customer
+    result.explanation = ''
+    result.max_sales_for_type = 0 # will be overwritten by correct answer
+    result
+  end
+  
   public
 
   def to_s
@@ -123,18 +142,23 @@ class ValidVoucher < ActiveRecord::Base
   
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
-  def adjust_for_customer(customer,customer_supplied_promo_code = '')
-    result = self.clone
-    result.id = self.id # necessary since views expect valid-vouchers to have an id...
-    result.visible = true
-    result.customer = customer
+  def adjust_for_customer(customer_supplied_promo_code = '')
+    result = self.clone_with_id
     result.supplied_promo_code = customer_supplied_promo_code.to_s
-    result.explanation = ''
-    result.max_sales_for_type = 0 # will be overwritten by correct answer
     result.adjust_for_visibility ||
       result.adjust_for_showdate ||
       result.adjust_for_sales_dates ||
-      result.adjust_for_capacity
+      result.adjust_for_capacity # this one must be called last
+    result.freeze
+  end
+
+  # returns a copy of this ValidVoucher for a voucher *that the customer already has*
+  #  but adjusted to see if it can be redeemed
+  def adjust_for_customer_reservation
+    result = self.clone_with_id
+    result.adjust_for_showdate ||
+      result.adjust_for_advance_reservations ||
+      result.adjust_for_capacity # this one must be called last
     result.freeze
   end
 

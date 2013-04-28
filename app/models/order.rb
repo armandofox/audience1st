@@ -90,8 +90,8 @@ class Order < ActiveRecord::Base
     valid_vouchers.empty? && donation.nil?
   end
 
-  def add_with_checking(valid_voucher, number, customer, promo_code)
-    adjusted = valid_voucher.adjust_for_customer(customer, promo_code)
+  def add_with_checking(valid_voucher, number, promo_code)
+    adjusted = valid_voucher.adjust_for_customer(promo_code)
     if number <= adjusted.max_sales_for_type
       self.add_tickets(valid_voucher, number)
     else

@@ -73,6 +73,7 @@ class StoreController < ApplicationController
 
   def donate
     @account_code = AccountCode.find_by_id(params[:fund]) ||
+      AccountCode.find_by_code(params[:account_code]) ||
       AccountCode.default_account_code
   end
 
@@ -91,7 +92,7 @@ class StoreController < ApplicationController
     else
       cust = @gCustomer
       promo = current_promo_code
-      tickets.each_pair { |vv, qty| @cart.add_with_checking(vv,qty,cust,promo) }
+      tickets.each_pair { |vv, qty| @cart.add_with_checking(vv,qty,promo) }
     end
     if !@cart.errors.empty?
       flash[:warning] = @cart.errors.full_messages.join(', ')
@@ -99,7 +100,7 @@ class StoreController < ApplicationController
     end
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
-      @cart.add_donation( Donation.from_amount_and_account_code(params[:donation].to_i,
+      @cart.add_donation( Donation.from_amount_and_account_code_id(params[:donation].to_i,
           params[:account_code_id] ))
     end
     if @cart.cart_empty?
@@ -321,7 +322,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_patron
     @valid_vouchers = @sd.valid_vouchers.map do |v|
-      v.adjust_for_customer(@customer,@promo_code)
+      v.adjust_for_customer(@promo_code)
     end.find_all(&:visible?).sort_by(&:display_order)
     @all_shows = Show.current_and_future.special(@special_shows_only) || []
     @all_shows << @sh unless @all_shows.include? @sh

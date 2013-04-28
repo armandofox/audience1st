@@ -27,8 +27,8 @@ class Donation < Item
     [:customer_id, :processed_by_id]
   end
 
-  def self.from_amount_and_account_code(amount, code)
-    if code.blank? || (use_code = AccountCode.find_by_code(code)).nil?
+  def self.from_amount_and_account_code_id(amount, id)
+    if id.blank? || (use_code = AccountCode.find_by_id(id)).nil?
       use_code = Donation.default_code
     end
     Donation.new(:amount => amount, :account_code => use_code)

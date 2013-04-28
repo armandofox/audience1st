@@ -233,8 +233,14 @@ class Voucher < Item
   end
 
   def redeemable_showdates(ignore_cutoff = false)
-    self.vouchertype.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.sort
+    if ignore_cutoff
+      valid_vouchers.map(&:showdate)
+    else
+      # make sure advance reservations and other constraints fulfilled
+      valid_vouchers.map(&:adjust_for_customer_reservation).map(&:showdate)
+    end
   end
+
 
   def redeemable_for_show?(show,ignore_cutoff = false)
     show = Show.find(show, :include => :showdates) unless show.kind_of?(Show)
