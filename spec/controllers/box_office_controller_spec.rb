@@ -9,21 +9,30 @@ describe BoxOfficeController do
     stub_globals_and_userlevel(:boxoffice, :boxoffice_manager)
   end
     
-  describe "boxoffice action with bad showdate"do
-    before :each do
-      @id = 999999
-      @m = BasicModels.create_one_showdate(1.day.from_now)
+  describe "showdate-dependent boxoffice action" do
+    context 'with bad showdate' do
+      before :each do
+        @id = 999999
+        @m = BasicModels.create_one_showdate(1.day.from_now)
+      end
+      it 'should instead use current-or-next showdate if there is one' do
+        Showdate.stub!(:current_or_next).and_return(@m)
+        get :walkup, :id => @id
+        assigns(:showdate).should == @m
+      end
+      it 'should use any existing showdate if no next showdate' 
+      it 'should redirect to shows controller if no showdates at all' do
+        Showdate.delete_all
+        get :walkup, :id => @id
+        response.should redirect_to(:controller => 'shows', :action => 'index')
+      end
     end
-    it 'should instead use current-or-next showdate if there is one' do
-      Showdate.stub!(:current_or_next).and_return(@m)
-      get :walkup, :id => @id
-      assigns(:showdate).should == @m
-    end
-    it 'should use any existing showdate if no next showdate' 
-    it 'should redirect to shows controller if no showdates at all' do
-      Showdate.delete_all
-      get :walkup, :id => @id
-      response.should redirect_to(:controller => 'shows', :action => 'index')
+    context 'with good showdate' do
+      it "should work with valid showdate even if no others exist" do
+        @m = BasicModels.create_one_showdate(1.year.ago)
+        get :walkup, :id => @m.id
+        response.should render_template(:walkup)
+      end
     end
   end
   describe "transferring already-sold walkup vouchers" do

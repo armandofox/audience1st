@@ -19,14 +19,16 @@ class BoxOfficeController < ApplicationController
   # (current showdate, to which walkup sales will apply), or if not possible to set them,
   # force a redirect to a different controller & action
   def get_showdate
+    @showdate =
+      Showdate.find_by_id(params[:id]) ||
+      Showdate.current_or_next(2.hours)
     @showdates = Showdate.all_shows_this_season
+    @showdates << @showdate if @showdate
     if @showdates.empty?
       flash[:notice] = "There are no shows this season eligible for check-in right now.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'
     end
-    @showdate = Showdate.find_by_id(params[:id]) ||
-      Showdate.current_or_next(2.hours) ||
-      @showdates.last
+    @showdate ||= @showdates.last
   end
 
   def vouchers_for_showdate(showdate)

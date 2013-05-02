@@ -43,16 +43,16 @@ Given /^my gift order contains the following tickets:/ do |tickets|
 end
 
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
+  order = BasicModels.create_empty_walkup_order
   showdate = Showdate.find_by_thedate!(Time.parse(dt))
   tickets.hashes.each do |t|
     qty = t[:qty].to_i
     offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
       Vouchertype.find_by_name!(t[:type]).id,
       showdate.id)
-    vouchers = offer.sell!(qty, Customer.walkup_customer, Purchasemethod.find_by_shortdesc!(t[:payment]), Customer.boxoffice_daemon)
-    vouchers.map { |v| v.walkup = true ; v.save! }
-    vouchers.length.should == qty
+    order.add_tickets(offer, qty)
   end
+  order.finalize!
 end
 
 Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|

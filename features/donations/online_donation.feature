@@ -19,7 +19,6 @@ Scenario: landing on donation page with valid account code
   When I fill in "donation" with "65"
   And I press "submit"
   Then I should be on the Checkout page
-  Then show me the page
   And I should see "Donation to History Fund"
   And I should see "$65.00"
 

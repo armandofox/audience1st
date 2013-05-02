@@ -91,6 +91,21 @@ module BasicModels
         :listing_date => Date.today}.merge(opts))
   end
 
+  def self.create_empty_order(opts={})
+    c = BasicModels.create_generic_customer
+    Order.new(
+      {:walkup => false, :customer => c, :purchaser => c, :processed_by => c,
+        :purchasemethod => Purchasemethod.find_by_shortdesc(:box_cash)}.
+      merge(opts))
+  end
+
+  def self.create_empty_walkup_order
+    w = Customer.walkup_customer
+    bm = Customer.boxoffice_daemon
+    create_empty_order(
+      :walkup => true, :customer => w, :purchaser => w, :processed_by => bm)
+  end
+
   def self.new_voucher_for_showdate(showdate, vtype, opts={})
     vt = vtype.kind_of?(Vouchertype) ? vtype :
       (Vouchertype.find_by_name(vtype) || self.create_revenue_vouchertype(:name => vtype))

@@ -72,6 +72,7 @@ class StoreController < ApplicationController
   end
 
   def donate
+    set_return_to :controller => 'store', :action => 'donate'
     @account_code = AccountCode.find_by_id(params[:fund]) ||
       AccountCode.find_by_code(params[:account_code]) ||
       AccountCode.default_account_code
@@ -105,7 +106,7 @@ class StoreController < ApplicationController
     end
     if @cart.cart_empty?
       flash[:warning] = "There is nothing in your order."
-      redirect_to :action => :index and return
+      redirect_to(params[:redirect_to] || stored_action || :action => :index) and return
     end
     if params[:gift] && @cart.include_vouchers?
       remember_cart_in_session!

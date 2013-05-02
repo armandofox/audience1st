@@ -13,21 +13,21 @@
       are required for online reservations and ticket purchase.
       = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
     - fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
-      %label.strong First name
+      %label.strong{:for => 'customer_first_name'} First name
       = f.text_field :first_name, :size => 16, :max_length => 40, :readonly => disabled
       %br/
-      %label.strong Last name
+      %label.strong{:for => 'customer_last_name'} Last name
       = f.text_field :last_name, :size => 16, :max_length => 40, :readonly => disabled 
       %br/
       %br/
-      %label.strong Street
+      %label.strong{:for => 'customer_street'} Street
       = f.text_field :street, :readonly => disabled  
       %br/
-      %label.strong City
+      %label.strong{:for => 'customer_city'} City
       = f.text_field :city, :size => 16, :max_length => 32, :readonly => disabled
-      %label.no_float.strong State
+      %label.no_float.strong{:for => 'customer_state'} State
       = f.text_field :state, {:size => 2, :max_length => 2, :readonly => disabled}
-      %label.no_float.strong Zip
+      %label.no_float.strong{:for => 'customer_zip'} Zip
       = f.text_field :zip, {:size => 10, :max_length => 10, :readonly => disabled}
       %br
       %br
