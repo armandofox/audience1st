@@ -10,6 +10,23 @@ Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,pri
     )
 end
 
+Given /^a bundle "(.*)" containing:$/ do |name,tickets|
+  bundle = BasicModels.create_bundle_vouchertype(:name => name)
+  bundle.included_vouchers = {}
+  tickets.hashes.each do |h|
+    show_name = h['show']
+    the_showdate = Time.parse(h['date'])
+    bundle_component = BasicModels.create_included_vouchertype(:name => "#{show_name} (bundle)")
+    bundle.included_vouchers[bundle_component.id] = h['qty']
+    bundle.season = the_showdate.year
+    # make it valid for just the one showdate
+    showdate = BasicModels.create_one_showdate(the_showdate, 100, nil, show_name)
+    showdate.valid_vouchers.create!(:vouchertype => bundle_component,
+      :start_sales => 1.week.ago, :end_sales => 1.week.from_now)
+  end
+  bundle.save!
+end
+
 Then /a vouchertype with name "(.*)" should exist/i do |name|
   @vouchertype = Vouchertype.find_by_name(name)
   @vouchertype.should be_a_kind_of(Vouchertype)

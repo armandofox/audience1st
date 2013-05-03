@@ -24,14 +24,15 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
-Given /^my cart contains the following tickets:/ do |tickets|
-  process_tickets(tickets.hashes)
-  click_button 'CONTINUE >>'
-end
-
 Given /^my cart contains (\d+) "(.*)" bundle vouchers$/ do |qty,name|
   visit path_to(%Q{the subscriptions page})
   select qty.to_s, :from => name
+  click_button 'CONTINUE >>'
+end
+
+
+Given /^my cart contains the following tickets:/ do |tickets|
+  process_tickets(tickets.hashes)
   click_button 'CONTINUE >>'
 end
 

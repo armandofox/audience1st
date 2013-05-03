@@ -13,6 +13,7 @@ Background: my cart contains a fixed-date-bundle voucher
     | King Lear | May 13, 2013, 8pm |   1 |
   And I am logged in as customer "Tom Foolery"
   And my cart contains 2 "Shakespeare Combo - $20.00" bundle vouchers
+  Then show me the page
   
 Scenario: enough seats available for both shows
 
