@@ -5,10 +5,10 @@
 - form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher do
   = render :partial => 'reserve_for', :locals => {:seats => @available_seats}
 
-  %label.emphasis{:for => 'accessible_seating'} ADA seating required?
+  %label.emphasis{:for => 'accessible_seating'} Special seating needs?
   = checkbox_guard_for 'special_seating'
   #special_seating{:style => 'display:none'}
-    %label{:for => 'comments'} Please describe ADA needs
+    %label{:for => 'comments'} Please describe special seating needs
     = text_field_tag 'comments', '', :size => '20em', :class => :showdate
   %br
 

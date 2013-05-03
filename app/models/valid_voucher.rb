@@ -28,7 +28,7 @@ class ValidVoucher < ActiveRecord::Base
   alias_method :visible?, :visible # for convenience and more readable specs
 
   delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public_as_string, :to => :vouchertype
-  delegate :<=>, :printable_name, :thedate, :to => :showdate
+  delegate :<=>, :printable_name, :thedate, :saleable_seats_left, :to => :showdate
 
   def event_type
     showdate.try(:show).try(:event_type)
@@ -55,9 +55,9 @@ class ValidVoucher < ActiveRecord::Base
     vt = self.vouchertype
     if self.end_sales > (end_of_season = Time.now.at_end_of_season(vt.season))
       errors.add_to_base "Voucher type '#{vt.name}' is valid for the
-        season ending #{end_of_season.to_formatted_s(:month_day_year)},
+        season ending #{end_of_season.to_formatted_s(:showtime)},
         but you've indicated sales should continue later than that
-        (until #{end_sales.to_formatted_s(:month_day_year)})."
+        (until #{end_sales.to_formatted_s(:showtime)})."
     end
   end
 
@@ -79,10 +79,11 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_showdate
+    return nil if !showdate
     if showdate.thedate < Clock.now
       self.explanation = 'Event date is in the past'
       self.visible = false
-    elsif showdate.saleable_seats_left < 1
+    elsif showdate.sold_out?
       self.explanation = 'Event is sold out'
       self.visible = true
     end
@@ -91,7 +92,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def adjust_for_sales_dates
     now = Clock.now
-    if now > showdate.end_advance_sales
+    if showdate && (now > showdate.end_advance_sales)
       self.explanation = 'Advance sales for this performance are closed'
       self.visible = true
     elsif now < start_sales
@@ -122,7 +123,6 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def clone_with_id
-    result = self.clone
     result = self.clone
     result.id = self.id # necessary since views expect valid-vouchers to have an id...
     result.visible = true
@@ -182,21 +182,11 @@ class ValidVoucher < ActiveRecord::Base
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
   end
 
-  # def seats_remaining
-  #   nseatsleft = self.showdate.saleable_seats_left
-  #   if max_sales_for_type.zero?
-  #     # no limits on this type, so limit is just how many seats are left
-  #     return nseatsleft
-  #   else
-  #     # limits on type: sales limit is the lesser of the number of seats
-  #     # left or the number of seats left of this type
-  #   [nseatsleft, [0,max_sales_for_type-showdate.sales_by_type(vouchertype_id)].max].min
-  #   end
-  # end
-
   def seats_remaining
-    saleable_seats_left = showdate.saleable_seats_left
-    if (max_sales_for_type.zero? || saleable_seats_left.zero?)
+    if !showdate                # not tied to a showdate
+      # num seats left is infinite
+      (max_sales_for_type.zero? ? 1e6 : max_sales_for_type)
+    elsif (max_sales_for_type.zero? || saleable_seats_left.zero?)
       # num seats left is just however many are left for show
       saleable_seats_left
     else
@@ -258,11 +248,12 @@ class ValidVoucher < ActiveRecord::Base
   # returns the list of newly-instantiated vouchers
   def instantiate(logged_in_customer, purchasemethod, howmany=1, comment='')
     Array.new(howmany) do |i|
-      Voucher.new_from_vouchertype(
+      v = Voucher.new_from_vouchertype(
         self.vouchertype,
         :purchasemethod => purchasemethod,
-        :comments => comment).
-        reserve(self.showdate, logged_in_customer)
+        :comments => comment)
+      v.reserve(showdate, logged_in_customer) if showdate
+      v
     end
   end
 

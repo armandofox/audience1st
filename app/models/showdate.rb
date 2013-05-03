@@ -154,6 +154,8 @@ class Showdate < ActiveRecord::Base
     [self.max_allowed_sales - compute_total_sales, 0].max
   end
 
+  def sold_out? ; saleable_seats_left < 1 ; end
+
   def percent_of(cap)
     cap.to_f == 0.0 ?  0 : (100.0 * compute_total_sales / cap).floor
   end

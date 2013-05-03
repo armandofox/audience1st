@@ -45,22 +45,13 @@ class StoreController < ApplicationController
 
   def subscribe
     reset_shopping
-    set_return_to :controller => 'store', :action => 'subscribe'
-    # this uses the temporary hack of adding bundle sales start/end
-    #   to bundle voucher record directly...ugh
+    # which subscriptions/bundles are available now?
     @promo_code = redeeming_promo_code
-    @subs_to_offer =
-      Vouchertype.bundles_available_to(@customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code)
+    @subs_to_offer = Vouchertype.bundles_available_to(@customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code).map { |v| v.valid_vouchers.first }
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to_index
       return
-    end
-    if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
-        vt = Vouchertype.find_by_id(v) &&
-        # note! must use grep (uses ===) rather than include (uses ==)
-        @subs_to_offer.grep(vt)
-      @selected_sub = v.to_i
     end
   end
 
@@ -190,7 +181,7 @@ class StoreController < ApplicationController
       redirect_to_checkout
     rescue Exception => e
       flash[:checkout_error] = "Sorry, an unexpected problem occurred with your order.  Please try your order again."
-      logger.error("Unexpected exception: #{e.message}")
+      logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
       redirect_to_index
     end
 

@@ -77,7 +77,7 @@ class VouchersController < ApplicationController
             :processed_by_id => logged_in_id)
           @customer.vouchers << vc
           if sd
-            vc.reserve_for(sd.id, logged_in_id, thecomment, :ignore_cutoff => true)
+            vc.reserve_for(sd, logged_in_id, thecomment, :ignore_cutoff => true)
           end
           vc
         end
@@ -157,8 +157,9 @@ class VouchersController < ApplicationController
     num = params[:number].to_i
     count = 0
     lasterr = 'errors occurred making reservations'
+    the_showdate = Showdate.find(showdate)
     Voucher.find(params[:voucher_ids].split(",")).slice(0,num).each do |v|
-      if v.reserve_for(showdate, logged_in_id, params[:comments].to_s, :ignore_cutoff => @is_admin)
+      if v.reserve_for(the_showdate, logged_in_id, params[:comments].to_s, :ignore_cutoff => @is_admin)
         count += 1
         params[:comments] = nil # only first voucher gets comment field
       else
@@ -186,7 +187,8 @@ class VouchersController < ApplicationController
     @is_admin = @gAdmin.is_walkup
     try_again("Please select a date") and return if
       (showdate = params[:showdate_id].to_i).zero?
-    if (a = @voucher.reserve_for(showdate, logged_in_id,
+    the_showdate = Showdate.find(showdate_id)
+    if (a = @voucher.reserve_for(the_showdate, logged_in_id,
                                  params[:comments], :ignore_cutoff => @is_admin))
       flash[:notice] = "Reservation confirmed. " <<
         "Your confirmation number is #{a}."
