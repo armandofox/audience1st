@@ -150,6 +150,11 @@ describe Order do
       @order.processed_by = nil
       verify_error /No information on who processed/i
     end
+    it 'should fail if contains a course enrollment without enrollee name' do
+      @order.comments = nil
+      @order.stub!(:contains_enrollment?).and_return(true)
+      verify_error /You must specify the enrollee's name for classes/
+    end
   end
 
   describe 'finalizing' do

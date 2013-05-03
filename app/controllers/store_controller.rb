@@ -33,6 +33,7 @@ class StoreController < ApplicationController
   
   def index
     @what = params[:what] || 'Regular Tickets'
+    @special_shows_only = (@what =~ /special/i)
     reset_shopping unless (@promo_code = redeeming_promo_code)
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
     set_return_to :action => action_name
@@ -40,14 +41,6 @@ class StoreController < ApplicationController
 
   def special
     redirect_to :action => :index, :params => {:what => 'special'}
-    @what = 'event'
-    @special_shows_only = true
-    unless (@promo_code = redeeming_promo_code)
-      reset_shopping
-    end
-    setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
-    set_return_to :action => self.action_name
-    render :action => :index
   end
 
   def subscribe
@@ -72,7 +65,6 @@ class StoreController < ApplicationController
   end
 
   def donate
-    set_return_to :controller => 'store', :action => 'donate'
     @account_code = AccountCode.find_by_id(params[:fund]) ||
       AccountCode.find_by_code(params[:account_code]) ||
       AccountCode.default_account_code
@@ -97,16 +89,17 @@ class StoreController < ApplicationController
     end
     if !@cart.errors.empty?
       flash[:warning] = @cart.errors.full_messages.join(', ')
-      redirect_to :action => :index and return
+      redirect_to :back and return
     end
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
-      @cart.add_donation( Donation.from_amount_and_account_code_id(params[:donation].to_i,
+      @cart.add_donation(
+        Donation.from_amount_and_account_code_id(params[:donation].to_i,
           params[:account_code_id] ))
     end
     if @cart.cart_empty?
       flash[:warning] = "There is nothing in your order."
-      redirect_to(params[:redirect_to] || stored_action || :action => :index) and return
+      redirect_to :back and return
     end
     if params[:gift] && @cart.include_vouchers?
       remember_cart_in_session!
