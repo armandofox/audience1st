@@ -25,4 +25,5 @@ Scenario: try to enroll after providing a name
  
   When I fill in "pickup" with "John Doe" 
   And I press "Accept Cash Payment"
+  Then show me the page
   Then I should be on the order confirmation page
