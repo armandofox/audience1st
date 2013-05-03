@@ -19,10 +19,11 @@ Scenario: try to enroll without giving a name, even enforced for admins
 
   When I press "Accept Cash Payment"
   Then I should be on the checkout page
-  Then I should see "Please fill in enrollee's name(s)"
+  And I should see "You must specify the enrollee's name for classes"
 
 Scenario: try to enroll after providing a name
  
   When I fill in "pickup" with "John Doe" 
   And I press "Accept Cash Payment"
+  Then show me the page
   Then I should be on the order confirmation page

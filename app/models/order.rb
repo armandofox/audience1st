@@ -40,7 +40,7 @@ class Order < ActiveRecord::Base
     # walkup orders only need purchaser & recipient info to point to walkup
     #  customer, but regular orders need full purchaser & recipient info.
     if walkup?
-      errors.add_to_base "Walkup order requires purchaser & recipient to be walkup customer"unless
+      errors.add_to_base "Walkup order requires purchaser & recipient to be walkup customer" unless
         (purchaser == Customer.walkup_customer && customer == purchaser)
     else
       errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if
@@ -176,6 +176,8 @@ class Order < ActiveRecord::Base
     errors.clear
     errors.add_to_base 'Shopping cart is empty' if cart_empty?
     errors.add_to_base 'No purchaser information' unless purchaser.kind_of?(Customer)
+    errors.add_to_base "You must specify the enrollee's name for classes" if
+      contains_enrollment? && comments.blank?
     check_purchaser_info
     if purchasemethod.kind_of?(Purchasemethod)
       errors.add(:purchasemethod, 'Invalid credit card transaction') if

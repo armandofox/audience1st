@@ -78,6 +78,10 @@ boxoffice_manager:
   id: 4
   first_name: Mary
   last_name: Manager
+  street: 123 Fake St
+  city: San Francisco
+  state: CA
+  zip: 94001
   role: 31
   email: boxoffice_manager@example.com
   salt: abcdefghij

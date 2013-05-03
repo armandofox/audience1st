@@ -18,6 +18,7 @@ describe StoreController do
     end
   end
   describe "processing empty cart" do
+    before :each do ; request.env['HTTP_REFERER'] = '/store' ; end
     context "and no donation" do
       shared_examples_for "all cases" do
         it "should redirect to index" do

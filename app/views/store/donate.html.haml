@@ -8,7 +8,6 @@
       = text_field_tag 'donation', '', :size => 5
       \.00
       %br
-      = hidden_field_tag 'redirect_to', "/store/donate/#{@account_code.id}"
       = hidden_field_tag 'account_code_id', @account_code.id
       = submit_tag 'CONTINUE >>', {:id => 'submit'}
       %span#nextstep to Billing Information
