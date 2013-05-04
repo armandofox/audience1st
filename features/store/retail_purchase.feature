@@ -10,6 +10,11 @@ Scenario: successful retail purchase
   And I am acting on behalf of customer "Tom Foolery"
   When I visit the store page
   Then I should see "Retail purchase amount"
+  When I fill in "Retail purchase amount" with "237.88"
+  And I select "9999 General Fund" from "retail_account_code_id"
+  And I fill in "Description of retail purchase" with "Auction item" 
+  And I press "CONTINUE >>"
+  Then I should be on the checkout page
 
 Scenario: regular customers don't see retail option
 
