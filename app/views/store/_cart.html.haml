@@ -24,6 +24,8 @@
               %span.voucher_type= h i.vouchertype.name
               - if i.promo_code
                 %span.promo_code= "(Promo #{h(i.promo_code)})"
+            - elsif i.kind_of?(RetailItem)
+              %span.donation_name= "Purchase: #{i.comments}"
             - elsif i.kind_of?(Donation)
               - price = i.amount
               %span.donation_name= "Donation to #{h(i.account_code.name)}"

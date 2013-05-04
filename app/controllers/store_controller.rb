@@ -89,6 +89,7 @@ class StoreController < ApplicationController
     #  gift recipient info.
     # add items to cart
     @cart = find_cart
+    @is_admin = current_admin.is_boxoffice
     if request.post?
       params[:redirect_to] == 'subscribe' ? process_subscription_request : process_ticket_request
       # did anything go wrong?
@@ -96,6 +97,15 @@ class StoreController < ApplicationController
       if params[:donation].to_i > 0
         d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
         @cart.add(d)
+      end
+      if params[:retail].to_f > 0.0 && @is_admin
+        @r = RetailItem.from_amount_description_and_account_code_id(
+          *(params.values_at(:retail, :retail_comments, :retail_account_code_id)))
+        unless @r.valid?
+          flash[:warning] = "There were problems with your retail purchase: " << r.errors.full_messages.join(', ')
+          redirect_to_index and return
+        end
+        @cart.add(@r)
       end
     end
     # did anything get added to cart
@@ -107,6 +117,10 @@ class StoreController < ApplicationController
     # all is well. if this is a gift order, fall through to get Recipient info.
     # if NOT a gift, or if donation only, set recipient to same as current customer, and
     # continue to checkout.
+    if params[:gift] && @r.kind_of?(RetailItem)
+      flash[:warning] = "Retail items can't be included in a gift order."
+      redirect_to_index and return
+    end
     # in case it's a gift, customer should know donation is made in their name.
     @includes_donation = @cart.include_donation?
     set_checkout_in_progress(true)
@@ -442,7 +456,8 @@ class StoreController < ApplicationController
 
   def process_ticket_request
     unless (showdate = Showdate.find_by_id(params[:showdate])) ||
-        params[:donation].to_i > 0
+        params[:donation].to_i > 0 ||
+        params[:retail].to_f > 0
       flash[:warning] = "Please select a show date and tickets, or enter a donation amount."
       return
     end
