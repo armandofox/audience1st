@@ -6,7 +6,8 @@ Feature: accept retail purchases
 
 Background: logged in as administrator acting on behalf of a patron
 
-  Given I am logged in as administrator
+  Given the setting "allow gift tickets" is "true"
+  And I am logged in as administrator
   And I am acting on behalf of customer "Tom Foolery"
   When I visit the store page
   Then I should see "Retail purchase amount"
@@ -17,12 +18,13 @@ Scenario: successful retail purchase
 
   When I fill in "Description of retail purchase" with "Auction item" 
   And I press "CONTINUE >>"
+  Then show me the page
   Then I should be on the checkout page
 
 Scenario: gift purchase cannot include retail item
 
   When I fill in "Description of retail purchase" with "Auction item" 
-  And I check 'gift'
+  And I check "gift"
   And I press "CONTINUE >>"
   Then I should be on the store page
   And I should see "Retail items can't be included in a gift order"
