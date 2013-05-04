@@ -130,7 +130,7 @@ function recalculate(target,selector,field_to_enable_if_nonzero,decplaces,no_pri
         }
         var qty   = (elt.tagName.match( /^select$/i ) ?
                  parseInt(elt.options[elt.selectedIndex].value)  :
-                 parseInt(elt.value)) ;
+                 parseFloat(elt.value)) ;
         if (isNaN(qty)) { qty = 0; }
         tot += (price * qty);
     }

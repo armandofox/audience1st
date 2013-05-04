@@ -102,7 +102,7 @@ class StoreController < ApplicationController
         @r = RetailItem.from_amount_description_and_account_code_id(
           *(params.values_at(:retail, :retail_comments, :retail_account_code_id)))
         unless @r.valid?
-          flash[:warning] = "There were problems with your retail purchase: " << r.errors.full_messages.join(', ')
+          flash[:warning] = "There were problems with your retail purchase: " << @r.errors.full_messages.join(', ')
           redirect_to_index and return
         end
         @cart.add(@r)
