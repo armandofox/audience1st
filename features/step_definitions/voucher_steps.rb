@@ -11,10 +11,17 @@ end
 Then /^customer (.*) (.*) should have the following items:$/ do |first,last,items|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   items.hashes.each do |item|
-    candidate = Item.find_by_type_and_amount_and_customer_id!(
-      item[:type], item[:amount], @customer.id)
-    item.comments.should == comments if !comments.blank?
-    item.account_code_id.should == AccountCode.find_by_code(item[:account_code]).id if !item[:account_code].blank?
+    conds_clause = 'type = ? AND amount BETWEEN ? AND ?  AND customer_id = ?'
+    conds_values = [item[:type], item[:amount].to_f-0.01, item[:amount].to_f+0.01, @customer.id]
+    if !item[:comments].blank?
+      conds_clause << ' AND comments = ?'
+      conds_values << item[:comments]
+    end 
+    if !item[:account_code].blank?
+      conds_clause << ' AND account_code_id = ?'
+      conds_values << AccountCode.find_by_code!(item[:account_code]).id
+    end
+    Item.find(:first, :conditions => [conds_clause] + conds_values).should_not be_nil
   end
 end
 
