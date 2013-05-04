@@ -18,8 +18,12 @@ Scenario: successful retail purchase
 
   When I fill in "Description of retail purchase" with "Auction item" 
   And I press "CONTINUE >>"
-  Then show me the page
   Then I should be on the checkout page
+  And I should see "Purchase: Auction item"
+  When the order is placed successfully
+  Then customer Tom Foolery should have the following items:
+  | type       | amount | comments     | account_code |
+  | RetailItem | 237.88 | Auction item |         9999 |
 
 Scenario: gift purchase cannot include retail item
 

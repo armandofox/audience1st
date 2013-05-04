@@ -7,6 +7,7 @@ class RetailItem < Item
 
   validates_numericality_of :amount, :greater_than => 0.0
 
+  def price ; amount ; end
   
   def self.foreign_keys_to_customer
     [:customer_id, :processed_by_id]

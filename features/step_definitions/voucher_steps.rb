@@ -8,6 +8,16 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
   end
 end
 
+Then /^customer (.*) (.*) should have the following items:$/ do |first,last,items|
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  items.hashes.each do |item|
+    candidate = Item.find_by_type_and_amount_and_customer_id!(
+      item[:type], item[:amount], @customer.id)
+    item.comments.should == comments if !comments.blank?
+    item.account_code_id.should == AccountCode.find_by_code(item[:account_code]).id if !item[:account_code].blank?
+  end
+end
+
 Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   Then %Q{he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
