@@ -27,7 +27,7 @@ class RetailItem < Item
     if id.blank? || (use_code = AccountCode.find_by_id(id)).nil?
       use_code = RetailItem.default_code
     end
-    item = RetailItem.new(:amount => amount, :comments => description, :account_code => use_code)
+    item = RetailItem.new(:amount => amount, :comments => description, :account_code => use_code, :sold_on => Time.now)
   end
 
   def one_line_description

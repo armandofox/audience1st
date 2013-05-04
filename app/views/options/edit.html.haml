@@ -11,8 +11,9 @@
     = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
         
   .pageDiv
-    %h1 Accepting Donations Online
+    %h1 Accepting Donations and Retail Sales Online
     = render_collection_of_options f, %w( |
+      default_retail_account_code |
       default_donation_account_code |
       default_donation_account_code_with_subscriptions |
       donation_ack_from |
