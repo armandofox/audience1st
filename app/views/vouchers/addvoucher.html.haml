@@ -1,6 +1,6 @@
 %h2= "Add Comps for #{h(@customer.full_name)}"
 
-- form_tag({:action => 'addvoucher', :customer => @customer}, {:id => 'addcomps'}) do
+- form_tag({:action => 'process_addvoucher', :customer => @customer}, {:id => 'addcomps'}) do
 
   %label{:for => 'howmany'} How many:
   = text_field_tag 'howmany', '', :size => 3, :maxlength => 2

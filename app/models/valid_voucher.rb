@@ -124,9 +124,8 @@ class ValidVoucher < ActiveRecord::Base
       then "No seats remaining for tickets of this type"
       else "#{max_sales_for_type} of these tickets remaining"
       end
+    self.visible = true
   end
-
-
 
   def clone_with_id
     result = self.clone
@@ -153,6 +152,13 @@ class ValidVoucher < ActiveRecord::Base
              else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
              end
     remain = [remain, 0].max    # make sure it's positive
+  end
+
+  # returns a copy of ValidVoucher with available seats pinned to how many are actually available for the
+  # showdate, since admins do not have to respect capacity controls
+  def adjust_for_admin
+    result = self.clone_with_id
+    result.max_sales_for_type = 1e6
   end
 
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
@@ -194,6 +200,11 @@ class ValidVoucher < ActiveRecord::Base
 
   def date_with_explanation
     display_name = showdate.menu_selection_name
+    max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
+  end
+
+  def name_with_explanation
+    display_name = showdate.printable_name
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
   end
 

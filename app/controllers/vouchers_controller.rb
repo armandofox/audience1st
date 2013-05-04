@@ -14,9 +14,7 @@ class VouchersController < ApplicationController
 
   # AJAX helper for addvoucher
   def update_shows
-    @available_seats = Showdate.current_and_future.map do |s|
-      ValidVoucher.numseats_for_showdate_by_vouchertype(s,@gAdmin,Vouchertype.find(params[:vouchertype_id]), :redeeming => true,:ignore_cutoff => true)
-    end
+    @available_seats = Vouchertype.find(params[:vouchertype_id]).valid_vouchers
     render :partial => 'reserve_for', :locals => {:seats => @available_seats, :none => 'None (leave open)'}
   end
 
@@ -28,18 +26,15 @@ class VouchersController < ApplicationController
       redirect_to :controller => 'customers', :action => 'list'
       return
     end
-    if request.get?
-      @vouchers = Vouchertype.comp_vouchertypes(Time.this_season).reject { |v| v.offer_public == Vouchertype::EXTERNAL }
-      if @vouchers.empty?
-        flash[:notice] = "You must define some vouchertypes first"
-        redirect_to(:controller => 'vouchertypes', :action => 'list')
-      end
-      @available_seats = Showdate.current_and_future.map do |s|
-        ValidVoucher.numseats_for_showdate_by_vouchertype(s,@gAdmin, @vouchers.first,
-          :redeeming => true, :ignore_cutoff => true)
-      end
-      return
+    @vouchers = Vouchertype.comp_vouchertypes(Time.this_season).reject { |v| v.offer_public == Vouchertype::EXTERNAL }
+    if @vouchers.empty?
+      flash[:notice] = "You must define some vouchertypes first"
+      redirect_to(:controller => 'vouchertypes', :action => 'list')
     end
+    @available_seats = []
+  end
+
+  def process_addvoucher
     # post: add the actual comps, and possibly reserve
     thenumtoadd = params[:howmany].to_i
     thevouchertype = params[:vouchertype_id].to_i
@@ -141,12 +136,7 @@ class VouchersController < ApplicationController
     @customer = @voucher.customer
     @is_admin = @gAdmin.is_boxoffice
     try_again("Voucher already used: #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
-    showdates = (@is_admin ?
-                 Showdate.find(:all, :conditions => ["thedate >= ?", Time.now.at_beginning_of_season - 1.year]) :
-                 Showdate.all_shows_this_season)
-    @available_seats = showdates.map do |s|
-      ValidVoucher.numseats_for_showdate_by_vouchertype(s,@customer,@voucher.vouchertype,:redeeming => true,:ignore_cutoff => @is_admin)
-    end.reject { |av| av.howmany.zero? }
+    @available_seats = @voucher.redeemable_showdates(@is_admin).select(&:visible?)
   end
 
   def confirm_multiple
@@ -186,12 +176,12 @@ class VouchersController < ApplicationController
     @customer = @voucher.customer
     @is_admin = @gAdmin.is_walkup
     try_again("Please select a date") and return if
-      (showdate = params[:showdate_id].to_i).zero?
+      (showdate_id = params[:showdate_id].to_i).zero?
     the_showdate = Showdate.find(showdate_id)
     if (a = @voucher.reserve_for(the_showdate, logged_in_id,
                                  params[:comments], :ignore_cutoff => @is_admin))
-      flash[:notice] = "Reservation confirmed. " <<
-        "Your confirmation number is #{a}."
+      @voucher.save!
+      flash[:notice] = "Reservation confirmed."
       if params[:email_confirmation] && @customer.valid_email_address?
         email_confirmation(:confirm_reservation, @customer, showdate, 1, a)
       end
