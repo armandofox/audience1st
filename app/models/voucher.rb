@@ -241,6 +241,11 @@ class Voucher < Item
       vouchertype.valid_vouchers.map(&:adjust_for_customer_reservation)
     end
   end
+  def redeemable_for_show?(show,ignore_cutoff = false)
+    show = Show.find(show, :include => :showdates) unless show.kind_of?(Show)
+    show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
+  end
+
 
   def reserve_for(desired_showdate, logged_in_id, comments='', opts={})
     logged_in_customer = Customer.find(logged_in_id)
@@ -252,7 +257,7 @@ class Voucher < Item
       self.comments = 'This ticket is not valid for the selected performance.'
       return false
     end
-    redemption.adjust_for_customer_reservation
+    redemption = redemption.adjust_for_customer_reservation
     if redemption.max_sales_for_type > 0 || opts[:ignore_cutoff]
       self.comments = comments
       reserve(desired_showdate, logged_in_customer)
@@ -267,11 +272,6 @@ class Voucher < Item
       self.comments = redemption.explanation
       return false
     end
-  end
-
-  def redeemable_for_show?(show,ignore_cutoff = false)
-    show = Show.find(show, :include => :showdates) unless show.kind_of?(Show)
-    show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
   end
 
   def can_be_changed?(who = Customer.generic_customer)

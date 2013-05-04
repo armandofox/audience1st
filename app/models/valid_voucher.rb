@@ -83,7 +83,7 @@ class ValidVoucher < ActiveRecord::Base
     if showdate.thedate < Clock.now
       self.explanation = 'Event date is in the past'
       self.visible = false
-    elsif showdate.sold_out?
+    elsif showdate.really_sold_out?
       self.explanation = 'Event is sold out'
       self.visible = true
     end
@@ -114,13 +114,19 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_capacity
-    self.max_sales_for_type = seats_remaining
+    if !showdate
+      self.explanation = "No performance-specific limit applies"
+      return
+    end
+    self.max_sales_for_type = seats_of_type_remaining()
     self.explanation =
       if max_sales_for_type.zero?
       then "No seats remaining for tickets of this type"
-      else "#{seats_remaining} of these tickets remaining"
+      else "#{max_sales_for_type} of these tickets remaining"
       end
   end
+
+
 
   def clone_with_id
     result = self.clone
@@ -128,7 +134,6 @@ class ValidVoucher < ActiveRecord::Base
     result.visible = true
     result.customer = customer
     result.explanation = ''
-    result.max_sales_for_type = 0 # will be overwritten by correct answer
     result
   end
   
@@ -140,6 +145,16 @@ class ValidVoucher < ActiveRecord::Base
     promo_code
   end
   
+  def seats_of_type_remaining
+    total_empty = showdate.saleable_seats_left
+    return 1e6 unless showdate
+    remain = if max_sales_for_type.zero? # no limit on ticket type: only limit is show capacity
+             then total_empty
+             else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
+             end
+    remain = [remain, 0].max    # make sure it's positive
+  end
+
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
   def adjust_for_customer(customer_supplied_promo_code = '')
@@ -180,21 +195,6 @@ class ValidVoucher < ActiveRecord::Base
   def date_with_explanation
     display_name = showdate.menu_selection_name
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
-  end
-
-  def seats_remaining
-    if !showdate                # not tied to a showdate
-      # num seats left is infinite
-      (max_sales_for_type.zero? ? 1e6 : max_sales_for_type)
-    elsif (max_sales_for_type.zero? || saleable_seats_left.zero?)
-      # num seats left is just however many are left for show
-      saleable_seats_left
-    else
-      # num seats may be inventory constrained. Result is the LEAST
-      # of available seats left, or available seats for THIS TYPE.
-      inventory_left_for_type = [(max_sales_for_type - showdate.sales_by_type(self.vouchertype_id)), 0].max
-      [inventory_left_for_type, saleable_seats_left].min
-    end
   end
 
   # get number of seats available for a showdate, given a customer

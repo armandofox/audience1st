@@ -154,10 +154,10 @@ class Showdate < ActiveRecord::Base
     [self.max_allowed_sales - compute_total_sales, 0].max
   end
 
-  def sold_out? ; saleable_seats_left < 1 ; end
+  def really_sold_out? ; saleable_seats_left < 1 ; end
 
   def percent_of(cap)
-    cap.to_f == 0.0 ?  0 : (100.0 * compute_total_sales / cap).floor
+    cap.to_f == 0.0 ?  100 : (100.0 * compute_total_sales / cap).floor
   end
       
 
@@ -171,9 +171,9 @@ class Showdate < ActiveRecord::Base
     percent_of(house_capacity)
   end
 
-  def sold_out? ; percent_sold.to_i >= Option.sold_out_threshold ; end
+  def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
 
-  def nearly_sold_out? ; percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
+  def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
 
   def availability_in_words
     pct = percent_sold

@@ -146,7 +146,7 @@ describe Voucher do
       @sd.valid_vouchers.create!(:start_sales => 1.week.ago, :end_sales => 1.week.from_now, :vouchertype => @vt_regular)
     end
     context "that's sold out" do
-      before :each do ; @sd.stub!(:sold_out?).and_return(true) ; end
+      before :each do ; @sd.show.update_attribute(:house_capacity, 0) ; end
       describe "when reserved by box office" do
         before :each do
           @success = @v.reserve_for(@sd, Customer.generic_customer.id, 'foo', :ignore_cutoff => true)

@@ -60,13 +60,24 @@ describe ValidVoucher do
     end
 
     describe 'for reservation using existing voucher' do
-      subject do
-        s = BasicModels.create_one_showdate(1.day.from_now)
-        v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)
-        v.adjust_for_customer_reservation
+      context 'when after deadline' do
+        subject do
+          s = BasicModels.create_one_showdate(1.day.from_now)
+          v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)
+          v.adjust_for_customer_reservation
+        end
+        its(:explanation) { should == 'Advance reservations for this performance are closed' }
+        its(:max_sales_for_type) { should be_zero }
       end
-      its(:explanation) { should == 'Advance reservations for this performance are closed' }
-      its(:max_sales_for_type) { should be_zero }
+      context 'when valid' do
+        subject do
+          s = BasicModels.create_one_showdate(1.day.from_now)
+          v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.from_now, :max_sales_for_type => 10)
+          v.adjust_for_customer_reservation
+        end
+        its(:max_sales_for_type) { should == 10 }
+        its(:explanation) { should == '10 of these tickets remaining' }
+      end
     end
 
     describe 'for visibility' do
@@ -100,8 +111,7 @@ describe ValidVoucher do
     describe 'for showdate' do
       before :all do ; ValidVoucher.send(:public, :adjust_for_showdate) ; end
       subject do
-        v = ValidVoucher.new
-        v.stub!(:showdate).and_return(the_showdate)
+        v = ValidVoucher.new(:showdate => the_showdate)
         v.adjust_for_showdate
         v
       end
@@ -111,7 +121,7 @@ describe ValidVoucher do
         its(:explanation) { should == 'Event date is in the past' }
       end
       describe 'that is sold out' do
-        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 0) }
+        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :really_sold_out? => true) }
         it_should_behave_like 'visible, zero capacity'
         its(:explanation) { should == 'Event is sold out' }
       end
@@ -163,8 +173,8 @@ describe ValidVoucher do
     describe 'for capacity' do
       before :all do ; ValidVoucher.send(:public, :adjust_for_capacity) ; end
       subject do
-        v = ValidVoucher.new
-        v.stub!(:seats_remaining).and_return(seats)
+        v = ValidVoucher.new(:showdate => mock_model(Showdate))
+        v.stub!(:seats_of_type_remaining).and_return(seats)
         v.adjust_for_capacity
         v
       end
@@ -197,31 +207,31 @@ describe ValidVoucher do
       let(:showdate_seats)   { 10 }
       let(:capacity_control) { 0 }
       let(:existing_sales)   { 10 }
-      its(:seats_remaining)  { should == 10 }
+      its(:seats_of_type_remaining)  { should == 10 }
     end
     context "should respect capacity controls even if more seats remain" do
       let(:showdate_seats)   { 10 }
       let(:capacity_control) { 3 } 
       let(:existing_sales)   { 2 } 
-      its(:seats_remaining)  { should == 1 }
+      its(:seats_of_type_remaining)  { should == 1 }
     end
     context "should be zero (not negative) even if capacity control already exceeded" do
       let(:showdate_seats)   { 10 }
       let(:capacity_control) { 3  }
       let(:existing_sales)   { 5  }
-      its(:seats_remaining)  { should be_zero }
+      its(:seats_of_type_remaining)  { should be_zero }
     end
     context "should respect overall capacity even if ticket capacity remains" do
       let(:showdate_seats)   { 10 }
       let(:capacity_control) { 15 }
       let(:existing_sales)   { 1  }
-      its(:seats_remaining)  { should == 10 }
+      its(:seats_of_type_remaining)  { should == 10 }
     end
     context "should respect overall capacity if show is advance-sold-out" do
       let(:showdate_seats)   { 0  }
       let(:capacity_control) { 0  }
       let(:existing_sales)   { 10 }
-      its(:seats_remaining)  { should be_zero }
+      its(:seats_of_type_remaining)  { should be_zero }
     end
   end
 
