@@ -43,6 +43,7 @@ class BoxOfficeController < ApplicationController
   end
 
   def at_least_1_ticket_or_donation
+    return nil unless @qty.respond_to?(:values)
     if (@qty.values.map(&:to_i).sum.zero?  &&  @donation.zero?)
       logger.info(flash[:warning] = "No tickets or donation to process")
       nil
