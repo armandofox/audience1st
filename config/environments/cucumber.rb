@@ -21,10 +21,6 @@ config.action_controller.allow_forgery_protection    = false
 # ActionMailer::Base.deliveries array.
 config.action_mailer.delivery_method = :test
 
-require 'active_merchant'
-PAYMENT_GATEWAY = ActiveMerchant::Billing::BogusGateway
-ActiveMerchant::Billing::Base.mode = :test
-
 DISABLE_EMAIL_LIST_INTEGRATION = true
 DISABLE_FACEBOOK = true
 

@@ -37,7 +37,7 @@ Rails::Initializer.run do |config|
 
   config.gem 'i18n', :version => '~> 0.4.0'
   config.gem 'money'
-  config.gem 'active_merchant'
+  config.gem 'activemerchant'
   config.gem 'haml'
   config.gem 'nokogiri' # , :version => '1.3.3'
   config.gem 'dbf',  :version => '>= 1.2.8'
