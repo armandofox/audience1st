@@ -1,0 +1,22 @@
+%h1 Retail Transactions #{@from.to_formatted_s(:showtime)} - #{@to.to_formatted_s(:showtime)}
+
+#pageDiv
+  %table.hilite.ordersTable
+    %thead
+      %tr
+        %th Sale date
+        %th Customer
+        %th Amount
+        %th Description
+        %th Account Code
+    %tbody
+    - @items.each do |item|
+      %tr
+        %td= item.sold_on.to_formatted_s(:showtime)
+        %td= link_to_customer item.customer
+        %td= number_to_currency item.amount
+        %td= item.comments
+        %td= account_code_with_popup_link(item.account_code)
+
+        
+  

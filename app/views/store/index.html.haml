@@ -23,6 +23,8 @@
     - form_tag :action => 'shipping_address' do
       = render :partial => 'ticket_menus'
 
+      = render :partial => 'retail' if @gAdmin.is_boxoffice
+
       %label{:for => :donation} Additional tax-deductible donation
       = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'
       \.00

@@ -87,6 +87,8 @@ class Cart
     notes = {}
     txt = self.items.map do |i|
       case
+      when i.kind_of?(RetailItem)
+        i.one_line_description
       when i.kind_of?(Voucher)
         if i.showdate_id.to_i > 0
           s=sprintf("$%6.2f  %s\n         %s - ticket \##{i.id}",

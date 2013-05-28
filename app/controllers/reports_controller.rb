@@ -26,6 +26,8 @@ class ReportsController < ApplicationController
     # based on a dropdown menu.
     @from,@to = Time.range_from_params(params[:from],params[:to])
     case params[:rep]
+    when /retail/i
+      retail
     when /transaction/i
       sales_detail
     when /unearned/i
@@ -98,6 +100,18 @@ class ReportsController < ApplicationController
     end
   end
 
+  def retail
+    @items = RetailItem.find(:all,
+      :conditions => ['sold_on BETWEEN ? and ?', @from, @to],
+      :order => 'sold_on')
+    if @items.empty?
+      flash[:notice] = 'No retail purchases match these criteria.'
+      redirect_to :action => :index
+    else
+      render :action => 'retail'
+    end
+  end
+  
   def subscriber_details
     y = (params[:id] || Time.now.year).to_i
     subs = Voucher.subscription_vouchers(y)

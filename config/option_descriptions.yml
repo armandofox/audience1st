@@ -54,6 +54,11 @@ default_donation_account_code_with_subscriptions: >
   Default account code for donations accompanying subscription purchases
   (as opposed to single-ticket purchases).
 
+default_retail_account_code: >
+
+  Default account code for retail purchases that are not tickets or
+  subscriptions.
+
 venue: >
 
   Venue's full name as it will appear in confirmation emails, banners, etc.

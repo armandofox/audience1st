@@ -23,7 +23,8 @@ class Customer < ActiveRecord::Base
   has_many :txns
   has_one  :most_recent_txn, :class_name=>'Txn', :order=>'txn_date DESC'
   has_many :donations
-
+  has_many :retail_items
+  
   has_many :visits
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
@@ -334,6 +335,14 @@ class Customer < ActiveRecord::Base
       elsif v.kind_of?(Donation)
         self.donations << v
         Txn.add_audit_record(:txn_type => 'don_cash',
+                             :customer_id => self.id,
+                             :comments => comment,
+                             :logged_in_id => logged_in,
+                             :dollar_amount => v.amount,
+                             :purchasemethod_id => howpurchased)
+      elsif v.kind_of?(RetailItem)
+        self.retail_items << v
+        Txn.add_audit_record(:txn_type => 'retail',
                              :customer_id => self.id,
                              :comments => comment,
                              :logged_in_id => logged_in,

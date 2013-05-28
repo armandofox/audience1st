@@ -2,7 +2,7 @@
    d = Date.parse(date)
    Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
  end
-   
+ 
  Given /^I fill in all valid options$/ do
    opts = {
      'venue' => "Test Theater",
@@ -20,5 +20,9 @@
    opts.each_pair do |opt,val|
      fill_in "option[#{opt}]", :with => val
    end
+ end
+ 
+ Given /^the setting "(.*)" is "(.*)"$/ do |opt,val|
+   Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
  end
  

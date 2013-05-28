@@ -44,6 +44,15 @@ Given /^I am logged in as (.*)?$/ do |who|
   page.should have_css('#customer_quick_search') if is_admin
 end
 
+Given /^I am acting on behalf of customer "(.*) (.*)"$/ do |first,last|
+  customer = Customer.find_by_first_name_and_last_name!(first,last)
+  find(:xpath, "//input[@id='id']").set customer.id # must use xpath since hidden field
+  with_scope('form#quick_search') do ;  click_button 'Go' ;  end
+  with_scope('div#on_behalf_of_customer') do
+    page.should have_content("Customer: #{first} #{last}")
+  end
+end
+
 Then /^I should be able to login with username "(.*)" and that password$/ do |username|
   Then %Q{I should be able to login with username "#{username}" and password "#{@password}"}
 end

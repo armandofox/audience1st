@@ -10,7 +10,7 @@
         %tr
           %td.r 
             %label{:for => 'rep'} Report type
-          %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue"])
+          %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue", "Retail Sales"])
         %tr
           %td.r Date shortcuts:
           %td= select_date_shortcuts :start_year => 2007, :from_prefix => 'from', :to_prefix => 'to', :include_time => true

@@ -8,6 +8,23 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
   end
 end
 
+Then /^customer (.*) (.*) should have the following items:$/ do |first,last,items|
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  items.hashes.each do |item|
+    conds_clause = 'type = ? AND amount BETWEEN ? AND ?  AND customer_id = ?'
+    conds_values = [item[:type], item[:amount].to_f-0.01, item[:amount].to_f+0.01, @customer.id]
+    if !item[:comments].blank?
+      conds_clause << ' AND comments = ?'
+      conds_values << item[:comments]
+    end 
+    if !item[:account_code].blank?
+      conds_clause << ' AND account_code_id = ?'
+      conds_values << AccountCode.find_by_code!(item[:account_code]).id
+    end
+    Item.find(:first, :conditions => [conds_clause] + conds_values).should_not be_nil
+  end
+end
+
 Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   Then %Q{he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
