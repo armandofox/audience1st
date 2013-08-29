@@ -29,7 +29,3 @@ config.active_record.schema_format = :sql
 
 DISABLE_FACEBOOK = true
 DISABLE_EMAIL_LIST_INTEGRATION = true
-
-# for testing
-
-config.gem "cucumber", :lib => false, :version => ">= 0.6.4"
