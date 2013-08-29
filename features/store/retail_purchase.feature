@@ -37,7 +37,7 @@ Scenario: invalid retail purchase info returns you to store page
 
   When I press "CONTINUE >>"
   Then I should be on the store page
-  And I should see "comments or description can't be blank"
+  And I should see "Comments or description can't be blank"
 
 Scenario: regular customers don't see retail option
 

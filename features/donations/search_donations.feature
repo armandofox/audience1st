@@ -34,7 +34,6 @@ Scenario: filter donations by fund
 
 Scenario: list all donations
 
-  Given a donation of $10.00 on April 22, 2011 from Tom Foolery
-  When I go to the donations page
+  When I visit the donations page
   And I press "Search"
 
