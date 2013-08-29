@@ -28,6 +28,6 @@ class AttendanceByShow < Report
     end
 
     not_seen = if shows_not.empty? then [] else Customer.seen_any_of(shows_not) end
-    return seen - not_seen
+    return seen & not_seen
   end
 end
