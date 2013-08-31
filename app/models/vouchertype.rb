@@ -1,6 +1,7 @@
 class Vouchertype < ActiveRecord::Base
   include VouchertypesHelper
   
+  require 'ruport'
   acts_as_reportable :only => [:name, :price]
 
   belongs_to :account_code

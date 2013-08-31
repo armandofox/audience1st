@@ -1,4 +1,5 @@
 class Voucher < Item
+  require 'ruport'
   acts_as_reportable
   
   belongs_to :showdate

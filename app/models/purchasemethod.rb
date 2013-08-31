@@ -1,5 +1,6 @@
 class Purchasemethod < ActiveRecord::Base
 
+  require 'ruport'
   acts_as_reportable
 
   def purchase_medium

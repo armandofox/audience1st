@@ -2,6 +2,7 @@ class Show < ActiveRecord::Base
 
   TYPES = ['Regular Show', 'Special Event', 'Class']
 
+  require 'ruport'
   acts_as_reportable
   
   has_many :showdates, :dependent => :destroy, :order => 'thedate'

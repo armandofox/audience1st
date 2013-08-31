@@ -2,6 +2,7 @@ class Showdate < ActiveRecord::Base
 
   include Comparable
   
+  require 'ruport'
   acts_as_reportable
   
   belongs_to :show
