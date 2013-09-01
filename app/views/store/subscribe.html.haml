@@ -14,16 +14,16 @@
       Buy Subscriptions
       %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
-    - form_tag :action => 'shipping_address' do
+    - form_tag :action => 'process_cart' do
       %br
       = render :partial => 'enter_promo_code'
       %br
 
-      - @subs_to_offer.each do |s|
-        %label.wide_label{:for => "vouchertype_#{s.id}"}= s.name_with_price
-        = select_tag("vouchertype[#{s.id}]", options_for_select((0..20).to_a), :onchange => 'recalc_total()', :class => 'itemQty')
+      - @subs_to_offer.each do |v|
+        %label.wide_label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
+        = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
-        = hidden_field_tag "vouchertype_#{s.id}_price", s.price
+        = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
       %label.wide_label{:for => :donation} Additional tax-deductible donation
       = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'
       \.00

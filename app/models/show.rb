@@ -2,6 +2,7 @@ class Show < ActiveRecord::Base
 
   TYPES = ['Regular Show', 'Special Event', 'Class']
 
+  require 'ruport'
   acts_as_reportable
   
   has_many :showdates, :dependent => :destroy, :order => 'thedate'
@@ -22,27 +23,48 @@ class Show < ActiveRecord::Base
   # currently running show, or the one with the next soonest opening date.
 
   def self.current_or_next
-    (sd = Showdate.current_or_next) ? sd.show : nil
+    Showdate.current_or_next.try(:show)
   end
 
-  def self.all
-    Show.find(:all) 
-  end
+  named_scope :current_and_future, lambda {
+    {:joins => :showdates,
+      :conditions => ['showdates.thedate >= ?', 1.day.ago],
+      :order => 'opening_date ASC'
+    }
+  }
 
+  def has_showdates? ; !showdates.empty? ; end
+  
   def self.all_for_season(season=Time.this_season)
     startdate = Time.at_beginning_of_season(season)
     enddate = startdate + 1.year - 1.day
-    Show.find(:all, :order => 'opening_date',
-      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate])
+    Show.find(:all,
+      :order => 'opening_date',
+      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate],
+      :include => :showdates)
   end
 
-  def self.all_for_seasons(from,to)
-    startdate = Time.at_beginning_of_season(from)
-    enddate = Time.at_end_of_season(to)
-    Show.find(:all, :order => 'opening_date',
-      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate])
+  named_scope :all_for_seasons, lambda { |from,to|
+    {:conditions =>  ['opening_date BETWEEN ? AND ?',
+        Time.at_beginning_of_season(from), Time.at_end_of_season(to)] }
+  }
+
+  def self.seasons_range
+    [Show.find(:first, :order => 'opening_date').opening_date.year,
+      Show.find(:first, :order => 'opening_date DESC').opening_date.year]
   end
   
+  def special? ; event_type != 'Regular Show' ; end
+  def special ; special? ; end
+
+  named_scope :special, lambda { |value|
+    if value
+      {:conditions => ["event_type != ?", 'Regular Show']}
+    else
+      {:conditions => ["event_type = ?", 'Regular Show']}
+    end
+  }
+
   def season
     # latest season that contains opening date
     self.opening_date.at_beginning_of_season.year

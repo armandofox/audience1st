@@ -52,9 +52,9 @@ class Time
   def at_end_of_season(oldyear = nil)
     if (oldyear)
       # just return end of that season
-      self.at_beginning_of_season(oldyear) + 1.year - 1.day
+      self.at_beginning_of_season(oldyear) + 1.year - 1.second
     else
-      self.at_beginning_of_season + 1.year - 1.day
+      self.at_beginning_of_season + 1.year - 1.second
     end
   end
 

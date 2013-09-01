@@ -10,7 +10,7 @@ Scenario: generate door list
   And customer Joe Smith has 2 "General" tickets
   And customer Joe Smith has 3 "Senior" tickets
   And customer Bob Jones has 8 "General" tickets
-  And  I am logged in as boxoffice
+  And  I am logged in as boxoffice manager
   
   When I go to the door list
   Then I should see "13 total reservations"

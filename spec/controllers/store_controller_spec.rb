@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe StoreController do
   fixtures :customers
@@ -17,16 +17,17 @@ describe StoreController do
       response.should render_template 'messages/session_expired'
     end
   end
-  describe "trying to proceed with empty cart" do
+  describe "processing empty cart" do
+    before :each do ; request.env['HTTP_REFERER'] = '/store' ; end
     context "and no donation" do
-      describe "all cases", :shared => true do
+      shared_examples_for "all cases" do
         it "should redirect to index" do
-          post 'shipping_address', @params
+          post 'process_cart', @params
           response.should redirect_to(:action => 'index')
         end
         it "should display a warning" do
-          post 'shipping_address', @params
-          flash[:warning].should match(/please select a show date and tickets/i)
+          post 'process_cart', @params
+          flash[:warning].should match(/nothing in your order/i)
         end
       end
       context "if gift" do
@@ -43,25 +44,30 @@ describe StoreController do
         @params = {:donation => "13"}
         controller.stub!(:store_customer).and_return(@c = mock_model(Customer))
         controller.stub!(:logged_in_id).and_return((@l = mock_model(Customer)).id)
-        @d = mock_model(Donation, :price => 13, :amount => 13)
+        @d = mock_model(Donation, :price => 13, :amount => 13, :account_code_id => 1)
       end
       it "should allow proceeding" do
-        post 'shipping_address', @params
-        response.should redirect_to(:action => 'checkout'), flash[:warning]
-      end
-      it "should proceed to checkout even if gift order" do
-        post 'shipping_address', :donation => '13', :gift => '1'
+        post 'process_cart', @params
         response.should redirect_to(:action => 'checkout')
       end
-      it "should create the donation" do
-        Donation.should_receive(:online_donation).with(13, nil, @c.id, @l.id).and_return(@d)
-        post 'shipping_address', @params
+      it "should proceed to checkout even if gift order" do
+        post 'process_cart', :donation => '13', :gift => '1'
+        response.should redirect_to(:action => 'checkout')
+      end
+      it "should create donation with no account code" do
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(@d)
+        post 'process_cart', @params
+      end
+      it 'should create donation with nondefault account code when supplied' do
+        @params[:account_code_id] = 75
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, '75').and_return(@d)
+        post 'process_cart', @params
       end
       it "should add the donation to the cart" do
-        controller.stub!(:find_cart).and_return(@cart = Cart.new)
-        Donation.stub!(:online_donation).and_return(@d)
-        @cart.should_receive(:add).with(@d)
-        post 'shipping_address', @params
+        controller.stub!(:find_cart).and_return(@cart = Order.new)
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(d = Donation.new)
+        @cart.should_receive(:add_donation).with(d)
+        post 'process_cart', @params
       end
     end
 
@@ -133,23 +139,23 @@ describe StoreController do
   end
 
   describe "landing page" do
-    before(:all) do
+    before(:each) do
       @dt1 = "Jan 27, 2009, 8:00pm"
       @sd1 = BasicModels.create_one_showdate(Time.parse(@dt1))
       @dt2 = "Jan 29, 2009, 8:00pm"
       @sd2 = BasicModels.create_one_showdate(Time.parse(@dt2),100,@sd1.show)
     end
-    it "should select showdate when valid date given" do
-      @controller.should_receive(:set_current_showdate).with(@sd2)
-      get :index, :date => @dt2
-    end
     it "should override valid date if showdate_id given" do
-      @controller.should_receive(:set_current_showdate).with(@sd1)
       get :index, :showdate_id => @sd1.id, :date => @dt2
+      assigns(:sd).should == @sd1
     end
-    it "should default to earliest showdate if neither valid" do
-      @controller.should_not_receive(:set_current_showdate)
-      get :index, :showdate_id => 99999, :date => Date.today.to_s
+    it "should respect valid date" do
+      get :index, :date => @dt2
+      assigns(:sd).should == @sd2
+    end
+    it "should default to earliest showdate with tickets if neither valid" do
+      get :index, :showdate_id => 9999999
+      assigns(:sd).should == @sd2
     end
   end
 
@@ -173,23 +179,23 @@ describe StoreController do
     before(:each) do
       login_as(:tom)
       @controller.stub!(:recipient_from_params).and_return(nil)
-      @controller.stub!(:find_cart_not_empty).and_return(true)
       @customer = {:first_name => "John", :last_name => "Bob",
         :street => "742 Evergreen Terrace", :city => "Springfield",
         :state => "IL", :zip => "09091"}
       session[:recipient_id] = nil
+      controller.stub(:find_cart).and_return(mock_model(Order).as_null_object)
     end
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
       post :set_shipping_address, :customer => @customer
       flash[:warning].should be_blank, flash[:warning]
-      session[:recipient_id].should_not be_nil
+      response.should redirect_to(:action => 'checkout')
     end
     it "should be valid with only an email address" do
       @customer[:email] = "me@example.com"
       post :set_shipping_address, :customer => @customer
       flash[:warning].should be_blank
-      session[:recipient_id].should_not be_nil
+      response.should redirect_to(:action => 'checkout')
     end
     it "should not be valid if neither phone nor email given" do
       post :set_shipping_address, :customer => @customer

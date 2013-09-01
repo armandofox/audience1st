@@ -4,6 +4,44 @@ describe Vouchertype do
   before :each do
     @@now = Time.now.at_end_of_season - 6.months
   end
+  describe 'visibility' do
+    before :each do
+      @customers =  {}
+      %w[patron staff walkup boxoffice].each do |c|
+        @customers[c.to_sym] = Customer.new { |cust| cust.role = Customer.role_value(c) }
+        @customers[name = (c + '_subscriber').to_sym] = Customer.new do |cust|
+          cust.role = Customer.role_value(c)
+        end
+        @customers[name].stub!(:subscriber?).and_return(true)
+      end
+    end
+    context 'of boxoffice voucher' do
+      subject { Vouchertype.new :offer_public => Vouchertype::BOXOFFICE }
+      it { should_not be_visible_to(@customers[:patron]) }
+      it { should_not be_visible_to(@customers[:walkup]) }
+      it { should     be_visible_to(@customers[:boxoffice]) }
+    end
+    context 'of subscriber voucher' do
+      subject { Vouchertype.new :offer_public => Vouchertype::SUBSCRIBERS }
+      it { should_not be_visible_to(@customers[:patron]) }
+      it { should     be_visible_to(@customers[:patron_subscriber]) }
+      it { should     be_visible_to(@customers[:boxoffice]) }
+    end
+    context 'of general-availability voucher' do
+      subject { Vouchertype.new :offer_public => Vouchertype::ANYONE }
+      it { should     be_visible_to(@customers[:patron_subscriber]) }
+      it { should     be_visible_to(@customers[:boxoffice]) }
+      it { should     be_visible_to(@customers[:patron]) }
+      it { should     be_visible_to(@customers[:walkup]) }
+    end
+    context 'of external reseller voucher' do
+      subject { Vouchertype.new :offer_public => Vouchertype::EXTERNAL }
+      it { should_not be_visible_to(@customers[:patron]) }
+      it { should_not be_visible_to(@customers[:patron_subscriber]) }
+      it { should_not be_visible_to(@customers[:boxoffice]) }
+      it { should_not be_visible_to(@customers[:walkup]) }
+    end
+  end
   describe "nonticket vouchertypes" do
     it "should be valid" do
       @vtn = Vouchertype.new(

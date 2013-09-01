@@ -10,7 +10,7 @@ Scenario: customer can specify pickup name at purchase time
   Given I am logged in as customer "Tom Foolery"
   And my cart contains the following tickets:
     | qty | type    | show    | price  | showdate   |
-    |   2 | General | Chicago | $10.00 | Apr 1, 8pm |
+    |   2 | General | Chicago | 10.00  | Apr 1, 8pm |
   And I am on the checkout page
   Then I should see "If someone other than the purchaser will be attending this event"
   When I fill in "pickup" with "Jason Gray"

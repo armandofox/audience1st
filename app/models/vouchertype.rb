@@ -1,6 +1,7 @@
 class Vouchertype < ActiveRecord::Base
   include VouchertypesHelper
   
+  require 'ruport'
   acts_as_reportable :only => [:name, :price]
 
   belongs_to :account_code
@@ -91,16 +92,21 @@ class Vouchertype < ActiveRecord::Base
     sprintf("%-15.15s $%2.2f (%s,%s)", name, price, category, offer_public_as_string)
   end
 
+  def <=>(other)
+    ord = (display_order <=> other.display_order)
+    ord == 0 ? price <=> other.price : ord
+  end
+  
   def offer_public_as_string
     case offer_public
     when BOXOFFICE
-      "Box ofc only"
+      "Box office only"
     when SUBSCRIBERS
       "Subscribers"
     when ANYONE
       "Anyone"
     when EXTERNAL
-      "External"
+      "External Resellers"
     else
       "Unknown (#{offer_public})"
     end
@@ -111,7 +117,15 @@ class Vouchertype < ActiveRecord::Base
     @@offer_to
   end
 
-      
+  def visible_to?(customer)
+    case offer_public
+    when ANYONE then true
+    when EXTERNAL then false
+    when SUBSCRIBERS then customer.subscriber? || customer.is_boxoffice
+    when BOXOFFICE then customer.is_boxoffice
+    else false
+    end
+  end
 
   def bundle? ; category == :bundle ; end
   def comp? ; category == :comp ; end
@@ -193,7 +207,7 @@ class Vouchertype < ActiveRecord::Base
     str = "(category = ?) AND #{str}"
     str += " AND '#{Time.now.to_formatted_s(:db)}' BETWEEN bundle_sales_start AND bundle_sales_end" unless admin
     vals.unshift(str, :bundle)
-    Vouchertype.find(:all, :conditions => vals, :order => "season DESC,display_order,price DESC")
+    Vouchertype.find(:all, :conditions => vals, :order => "season DESC,display_order,price DESC", :include => :valid_vouchers)
   end
 
   def self.find_products(args={})

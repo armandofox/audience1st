@@ -2,9 +2,13 @@ class Showdate < ActiveRecord::Base
 
   include Comparable
   
+  require 'ruport'
   acts_as_reportable
   
   belongs_to :show
+
+  delegate :house_capacity, :patron_notes, :name, :to => :show
+
   has_many :vouchers, :conditions => "category != 'nonticket'"
   has_many :all_vouchers, :class_name => 'Voucher'
   has_many :walkup_vouchers, :class_name => 'Voucher', :conditions => ['walkup = ?', true]
@@ -41,7 +45,7 @@ class Showdate < ActiveRecord::Base
       :max_sales => 0)
   end
 
-  def valid_vouchers_for_walkup(clerk)
+  def valid_vouchers_for_walkup
     self.valid_vouchers.select { |vv| vv.vouchertype.walkup_sale_allowed? }
   end
 
@@ -53,12 +57,8 @@ class Showdate < ActiveRecord::Base
   end
 
   def self.current_or_next(buffer = 0)
-    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer],
-      :order => "thedate")
-  end
-
-  def self.next_or_latest
-    Showdate.current_or_next || Showdate.find(:first, :order => "thedate DESC")
+    Showdate.find(:first, :conditions => ["thedate >= ?", Time.now - buffer], :order => "thedate") ||
+      Showdate.find(:first, :order => 'thedate DESC')
   end
 
   def self.find_by_date(dt)
@@ -127,8 +127,6 @@ class Showdate < ActiveRecord::Base
     (self.end_advance_sales - 5.minutes) > Time.now
   end
 
-  def house_capacity ;   self.show.house_capacity ;  end
-
   def max_allowed_sales
     self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
   end
@@ -157,8 +155,10 @@ class Showdate < ActiveRecord::Base
     [self.max_allowed_sales - compute_total_sales, 0].max
   end
 
+  def really_sold_out? ; saleable_seats_left < 1 ; end
+
   def percent_of(cap)
-    cap.to_f == 0.0 ?  0 : (100.0 * compute_total_sales / cap).floor
+    cap.to_f == 0.0 ?  100 : (100.0 * compute_total_sales / cap).floor
   end
       
 
@@ -172,14 +172,14 @@ class Showdate < ActiveRecord::Base
     percent_of(house_capacity)
   end
 
-  def sold_out? ; percent_sold.to_i >= Option.sold_out_threshold ; end
+  def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
 
-  def nearly_sold_out? ; percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
+  def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
 
   def availability_in_words
     pct = percent_sold
-    pct >= Option.sold_out_threshold.to_i ?  :sold_out :
-      pct >= Option.nearly_sold_out_threshold.to_i ? :nearly_sold_out :
+    pct >= Option.sold_out_threshold ?  :sold_out :
+      pct >= Option.nearly_sold_out_threshold ? :nearly_sold_out :
       :available
   end
 
@@ -240,6 +240,5 @@ class Showdate < ActiveRecord::Base
     name
   end
 
-  def show_name ; show.name ; end
-  
 end
+

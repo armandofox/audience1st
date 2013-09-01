@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 # The name functions being tested here are currently included by extending
 # String - although they shouldn't be.

@@ -8,19 +8,12 @@
     to manage your reservations and get your Subscriber benefits.
 
 #store
-  - if @special_shows_only
-    %h1.page_heading.center
-      Select Event
-      %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
-    %p.center= link_to "Click here for regular show tickets", :action => 'index'
-  - else
-    %h1.page_heading.center
-      Select Tickets
-      %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
-    %p.center= link_to "Click here for special events", :action => 'special'
+  %h1.page_heading.center
+    Select #{@what}
+    %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #ticket_menus
-    - form_tag :action => 'shipping_address' do
+    - form_tag :action => 'process_cart' do
       = render :partial => 'ticket_menus'
 
       = render :partial => 'retail' if @gAdmin.is_boxoffice
@@ -38,6 +31,5 @@
           'to Billing information' |
       %br
       %label &nbsp;
-      = hidden_field_tag 'redirect_to', 'index'
-      = submit_tag 'CONTINUE >>', {:disabled => !(@gAdmin.is_boxoffice), :id => 'submit'}
+      = submit_tag 'CONTINUE >>', {:disabled => true, :id => 'submit'}
       %span#nextstep to Billing Information

@@ -26,4 +26,6 @@ DISABLE_FACEBOOK = true
 
 # for testing
 
+require 'spec/stubs/cucumber'   # to allow stubbing of credit-card payment calls in scenarios
+
 

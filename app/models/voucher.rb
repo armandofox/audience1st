@@ -1,4 +1,5 @@
 class Voucher < Item
+  require 'ruport'
   acts_as_reportable
   
   belongs_to :showdate
@@ -57,11 +58,11 @@ class Voucher < Item
   # delegations
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end
 
-    def unreserved? ; showdate_id.to_i.zero?  ;  end
+  def unreserved? ; showdate_id.to_i.zero?  ;  end
   def reserved? ; !(unreserved?) ; end
   
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
-  def reserved_show ; (showdate.show_name if reserved?).to_s ;  end
+  def reserved_show ; (showdate.name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
   def date ; self.showdate.thedate if self.reserved? ; end
 
@@ -76,7 +77,7 @@ class Voucher < Item
 
   def voucher_description
     if showdate.kind_of?(Showdate)
-      showdate.show_name
+      showdate.name
     elsif vouchertype.bundle?
       vouchertype.name
     else
@@ -103,12 +104,22 @@ class Voucher < Item
       self.showdate <=> other.showdate
   end
 
+  def one_line_description
+    if reserved?
+      s = sprintf("$%6.2f  %s\n         %s - ticket \##{id}",
+        price, showdate.printable_name, name)
+      s << "\n         Notes: #{comments}" unless comments.blank?
+    else
+      s = sprintf("$%6.2f  %s - voucher \##{id}", price, name)
+    end
+    s
+  end
+
   def to_s
     sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10s",
             id,
-            (showdate_id.zero? ? "OPEN" : (showdate.printable_name[-15..-1] rescue "--")),
-            (customer_id.zero? ? "NONE" :
-             ("#{customer.last_name[-6..-1]},#{customer.first_name[0..0]}" rescue "?#{customer_id}")),
+            (showdate ? (showdate.printable_name[-15..-1] rescue "--") : 'OPEN'),
+            (customer ? customer.to_s : 'NONE'),
             (vouchertype.name[0..10] rescue ""),
             (vouchertype.price.to_f rescue 0.0),
             ((vouchertype.subscription? ? "S" : "s") rescue "-"),
@@ -148,6 +159,10 @@ class Voucher < Item
                                      :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
   end
 
+  def add_comment(comment)
+    self.comments = (self.comments.blank? ? comment : [self.comments,comment].join('; '))
+  end
+
   def transfer_to_customer(c)
     if c.kind_of?(Customer) && !c.new_record?
       self.update_attribute(:customer_id, c.id)
@@ -159,8 +174,8 @@ class Voucher < Item
   
   def reserve_if_only_one_showdate
     valid_vouchers = vouchertype.valid_vouchers
-    if unreserved?  &&  valid_vouchers.length == 1
-      self.reserve_for(valid_vouchers.first.showdate_id,
+    if !bundle? && unreserved?  &&  valid_vouchers.length == 1
+      self.reserve_for(valid_vouchers.first.showdate,
         self.processed_by_id,
         'Automatic reservation since ticket valid for only a specific show date',
         :ignore_cutoff => true)
@@ -188,7 +203,7 @@ class Voucher < Item
       c.save!
     rescue Exception => e
       c.reload
-      return [nil,e.message]
+      return [nil,e.backtrace]
     end
     return [true,self]
   end
@@ -220,12 +235,44 @@ class Voucher < Item
   end
 
   def redeemable_showdates(ignore_cutoff = false)
-    self.vouchertype.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.sort
+    if ignore_cutoff
+      vouchertype.valid_vouchers
+    else
+      # make sure advance reservations and other constraints fulfilled
+      vouchertype.valid_vouchers.map(&:adjust_for_customer_reservation)
+    end
   end
-
   def redeemable_for_show?(show,ignore_cutoff = false)
     show = Show.find(show, :include => :showdates) unless show.kind_of?(Show)
     show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
+  end
+
+
+  def reserve_for(desired_showdate, logged_in_id, comments='', opts={})
+    logged_in_customer = Customer.find(logged_in_id)
+    if reserved?
+      comments = "This ticket is already holding a reservation for #{reserved_date}."
+      return nil
+    end
+    unless (redemption = ValidVoucher.find_by_showdate_id_and_vouchertype_id(desired_showdate.id, vouchertype_id))
+      self.comments = 'This ticket is not valid for the selected performance.'
+      return false
+    end
+    redemption = redemption.adjust_for_customer_reservation
+    if redemption.max_sales_for_type > 0 || opts[:ignore_cutoff]
+      self.comments = comments
+      reserve(desired_showdate, logged_in_customer)
+      a = Txn.add_audit_record(:txn_type => 'res_made',
+        :customer_id => self.customer.id,
+        :logged_in_id => logged_in_id,
+        :show_id => self.showdate.show.id,
+        :showdate_id => showdate_id,
+        :voucher_id => self.id)
+      return a
+    else
+      self.comments = redemption.explanation
+      return false
+    end
   end
 
   def can_be_changed?(who = Customer.generic_customer)
@@ -273,29 +320,6 @@ class Voucher < Item
   def self.destroy_multiple(vouchers, logged_in_customer)
     Voucher.transaction do
       vouchers.each { |v| v.destroy }
-    end
-  end
-  def reserve_for(showdate_id, logged_in, comments='', opts={})
-    ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : nil
-    if reserved?
-      comments = "This ticket is already holding a reservation for #{reserved_date}."
-      return nil
-    end
-    avail = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate_id,self.customer,self.vouchertype, :redeeming => true, :ignore_cutoff => ignore_cutoff)
-    if (avail.available? || ignore_cutoff)
-      self.showdate = Showdate.find(showdate_id)
-      self.comments = comments.to_s || ''
-      self.save!
-      a = Txn.add_audit_record(:txn_type => 'res_made',
-        :customer_id => self.customer.id,
-        :logged_in_id => logged_in,
-        :show_id => self.showdate.show.id,
-        :showdate_id => showdate_id,
-        :voucher_id => self.id)
-      return a
-    else
-      self.comments = avail.explanation
-      return false
     end
   end
 

@@ -6,7 +6,6 @@
 %table.hilite
   %thead
     %tr
-      %th ID
       %th Show Name
       %th Link
       %th Run Dates
@@ -16,7 +15,6 @@
   %tbody
     - @shows.each do |show|
       %tr{:class=>cycle(:even,:odd)}
-        %td.r= show.id
         %td= link_to show.name, :action => 'edit', :id => show
         %td= purchase_link_popup "[Link]", link_to_show_tickets(show), show.name
         %td.c= humanize_date_range(show.opening_date, show.closing_date)

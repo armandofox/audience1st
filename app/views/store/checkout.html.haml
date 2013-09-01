@@ -11,13 +11,14 @@
   }
   jQuery(document).ready(whenReady);
   
-- if @cart.include_vouchers? &&  @recipient.id != @cust.id
-  %h2 This Order is a Gift For...
-  = render :partial => 'customers/form', :locals => {:customer => @recipient, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
-  = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
+- if @cart.gift?
+  #gift_recipient
+    %h2 This Order is a Gift For...
+    = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
+    = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
 - form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
-  - if @cart.include_vouchers? &&  @recipient.id == @cust.id
+  - if @cart.include_vouchers? &&  !@cart.gift?
     #someone_else
     %h2 Who's Attending?
     %p
@@ -35,7 +36,8 @@
     | 
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   .clear
-  #billing= render :partial => 'customers/form', :locals => {:customer=>@cust, :passive => true, :hide_opt_out => true }
+  #billing
+    = render :partial => 'customers/form', :locals => {:customer=>@cart.purchaser, :passive => true, :hide_opt_out => true }
 
   %p.notice
     We do not store or access your card number.
@@ -64,10 +66,10 @@
       = text_field_tag 'check_number', '', :size => 6
       = submit_tag "Accept Check Payment"
       = submit_tag "Accept Cash Payment"
-      - if @cust.valid_email_address?
+      - if @cart.purchaser.valid_email_address?
         = check_box_tag('email_confirmation', 1, true)
         Send email confirmation
-  - elsif @cust.valid_email_address?
+  - elsif @cart.purchaser.valid_email_address?
     = hidden_field_tag 'email_confirmation', 1
 = observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
 = observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'

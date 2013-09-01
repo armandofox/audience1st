@@ -3,12 +3,13 @@
 .notice
   %p 
     You have paid a total of 
-    %strong= number_to_currency @amount
-    %strong= @payment
+    %span.strong= number_to_currency @cart.total_price
+    by 
+    %span.strong= humanize(@payment)
   %p.strong Please print this confirmation for your records:
-  %pre= @order_summary
+  %pre= @cart.summary
 
-  - if @recipient != @customer
+  - if @cart.gift?
     #gift
       %fieldset#gift_recipient
         %legend This order is a gift for:
@@ -21,11 +22,11 @@
 
   = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
-  - unless @special_instructions.blank?
+  - unless @cart.all_comments.blank?
     #accessible_seating_notices
       %p
-        %strong Accessible seating request:
-        = h @special_instructions
+        %strong Seating notes:
+        = h @cart.all_comments
       = sanitize_option_text(:accessible_seating_notices, 'p', :class => 'accessible_seating_notices')
 
 %p.center

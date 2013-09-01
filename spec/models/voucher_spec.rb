@@ -3,7 +3,7 @@ include BasicModels
 
 describe Voucher do
 
-  before :all do
+  before :each do
     #  some Vouchertype objects for these tests
     args = {
       :fulfillment_needed => false,
@@ -29,8 +29,15 @@ describe Voucher do
           :category => 'nonticket',
           :price => 5.00,
           :account_code => AccountCode.default_account_code}))
+    @basic_showdate = BasicModels.create_one_showdate(Time.now.tomorrow)
   end
 
+  describe "one-line description" do
+    before :each do ; @v = Voucher.anonymous_voucher_for(@basic_showdate, @vt_regular) ; end
+    it 'should include vouchertype' do
+      @v.one_line_description.should match Regexp.new(@vt_regular.name)
+    end
+  end
   describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|
@@ -116,7 +123,7 @@ describe Voucher do
   end
 
   describe "expired voucher" do
-    before(:all) do
+    before(:each) do
       @vt_regular.update_attribute(:season, Time.now.year - 2)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @v.should be_valid
@@ -136,46 +143,35 @@ describe Voucher do
       @c.vouchers << @v
       @c.save!
       @sd = BasicModels.create_one_showdate(1.day.from_now)
+      @sd.valid_vouchers.create!(:start_sales => 1.week.ago, :end_sales => 1.week.from_now, :vouchertype => @vt_regular)
     end
     context "that's sold out" do
-      before(:each) do
-      end
+      before :each do ; @sd.show.update_attribute(:house_capacity, 0) ; end
       describe "when reserved by box office" do
-        before(:each) do
-          @b = BasicModels.create_customer_by_role(:boxoffice)
+        before :each do
+          @success = @v.reserve_for(@sd, Customer.generic_customer.id, 'foo', :ignore_cutoff => true)
         end
-        before(:each) do
-          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).with(
-            @sd.id,
-            @c,
-            @vt_regular,
-            {:redeeming => true, :ignore_cutoff => true}).and_return(mock('AvailableSeat', :available? => nil))
-          av = @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @b.is_boxoffice)
-        end
-        it "should succeed" do
+        it 'should succeed' do
+          @success.should be_true
           @v.should be_reserved
         end
-        it "should be tied to that showdate" do
-          @v.showdate.id.should == @sd.id
+        it 'should be reserved for correct showdate' do
+          @v.showdate_id.should == @sd.id
+        end
+        it 'should include comment' do
+          @v.comments.should == 'foo'
         end
       end
-      describe "when reserved by customer" do
-        before(:each) do
+      describe 'when reserved by customer' do
+        before :each do
+          @v.reserve_for(@sd, Customer.generic_customer.id, 'foo')
         end
-        it "should not succeed" do
-          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
-            with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
-            and_return(mock('AvailableSeat', :available? => nil, :explanation => ''))
-          @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @c.is_boxoffice)
+        it 'should not succeed' do
+          @success.should_not be_true
           @v.should_not be_reserved
         end
-        it "should display an explanation" do
-          as = mock('AvailableSeat', :available? => nil)
-          as.should_receive(:explanation).and_return('')
-          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
-            with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
-            and_return(as)
-          @v.reserve_for(@sd.id,@c.id, '', :ignore_cutoff => @c.is_boxoffice)
+        it 'should explain that show is sold out' do
+          @v.comments.should == 'Event is sold out'
         end
       end
     end
@@ -219,10 +215,10 @@ describe Voucher do
       @c = BasicModels.create_generic_customer
       @v1 = BasicModels.create_comp_vouchertype
       @v2 = BasicModels.create_comp_vouchertype
-      @bun1 = BasicModels.create_subscriber_vouchertype({
+      @bun1 = BasicModels.create_bundle_vouchertype({
           :included_vouchers => {@v1.id => 2}
         })
-      @bun2 = BasicModels.create_subscriber_vouchertype({
+      @bun2 = BasicModels.create_bundle_vouchertype({
           :included_vouchers => {@v2.id => 1}
         })
       @b1 = Voucher.anonymous_bundle_for(@bun1)

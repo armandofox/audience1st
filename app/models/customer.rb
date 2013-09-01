@@ -248,7 +248,7 @@ class Customer < ActiveRecord::Base
 
   def inspect
     self.to_s <<
-      (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
+      (street.blank? ? '' : " #{street}, #{city} #{state} #{zip} #{day_phone}")
   end
   
   def full_name

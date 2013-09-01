@@ -1,8 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe VouchersController do
   include StubUtils
-  before(:all) do
+  before(:each) do
     @vt_regular = Vouchertype.create!(:fulfillment_needed => false,
       :name => 'regular voucher',
       :category => 'revenue',
@@ -33,7 +33,7 @@ describe VouchersController do
       end
     end
     context "when recipient exists" do
-      before(:all) do
+      before(:each) do
         @recip = BasicModels.create_generic_customer
       end
       context "and all selected vouchers exist" do

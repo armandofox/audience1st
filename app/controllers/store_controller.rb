@@ -1,23 +1,23 @@
 class StoreController < ApplicationController
-  include ActiveMerchant::Billing
 
-  require "money.rb"
-
-  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed comment_changed redeeming_promo_code set_promo_code clear_promo_code)
+  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed comment_changed redeeming_promo_code)
 
   before_filter :is_logged_in, :only => %w[edit_billing_address]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
-  
-  before_filter(:find_cart_not_empty,
-    :only => %w[edit_billing_address set_shipping_address
-                 place_order],
-    :add_to_flash => {:warning => "Your order appears to be empty. Please select some tickets."},
-    :redirect_to => {:action => 'index'})
-    
 
+  before_filter :set_session_variables
+  def set_session_variables
+    @customer = current_user || Customer.walkup_customer
+    @subscriber = @customer.subscriber?
+    @next_season_subscriber = @customer.next_season_subscriber?
+    @cart = find_cart
+    @promo_code = session[:promo_code]
+    @is_admin = current_admin.is_boxoffice
+  end
+  private :set_session_variables
+  
   verify(:method => :post,
-         :only => %w[add_tickets_to_cart add_donation_to_cart
-                        add_subscriptions_to_cart place_order],
+         :only => %w[process_cart set_shipping_address place_order],
          :add_to_flash => {:warning => "SYSTEM ERROR: action only callable as POST"},
          :redirect_to => {:action => 'index'})
 
@@ -29,106 +29,84 @@ class StoreController < ApplicationController
                  :shipping_address, :set_shipping_address,
                  :comment_changed,
                  :edit_billing_address)
+
   
   def index
-    @customer = store_customer
-    @is_admin = current_admin.is_boxoffice
-    setup_for_initial_visit unless (@promo_code = redeeming_promo_code)
-    @subscriber = @customer.subscriber?
-    @next_season_subscriber = @customer.next_season_subscriber?
-    set_return_to :action => :index
-    setup_ticket_menus
+    @what = params[:what] || 'Regular Tickets'
+    @special_shows_only = (@what =~ /special/i)
+    reset_shopping unless (@promo_code = redeeming_promo_code)
+    setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
+    set_return_to :action => action_name
   end
 
   def special
-    @customer = store_customer
-    @is_admin = current_admin.is_boxoffice
-    @special_shows_only = true
-    setup_for_initial_visit unless (@promo_code = redeeming_promo_code)
-    @subscriber = @customer.subscriber?
-    @next_season_subscriber = @customer.next_season_subscriber?
-    setup_ticket_menus
-    set_return_to :controller => 'store', :action => 'special'
-    render :action => 'index'
+    redirect_to :action => :index, :params => {:what => 'special'}
   end
 
   def subscribe
     reset_shopping
-    set_return_to :controller => 'store', :action => 'subscribe'
-    @customer = store_customer
-    @subscriber = @customer.subscriber?
-    @next_season_subscriber = @customer.next_season_subscriber?
-    @cart = find_cart
-    # this uses the temporary hack of adding bundle sales start/end
-    #   to bundle voucher record directly...ugh
+    # which subscriptions/bundles are available now?
     @promo_code = redeeming_promo_code
-    @subs_to_offer =
-      Vouchertype.bundles_available_to(store_customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code)
+    @subs_to_offer = Vouchertype.bundles_available_to(@customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code).map { |v| v.valid_vouchers.first }
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to_index
       return
     end
-    if (v = params[:vouchertype_id]).to_i > 0 && # default selected subscription
-        vt = Vouchertype.find_by_id(v) &&
-        # note! must use grep (uses ===) rather than include (uses ==)
-        @subs_to_offer.grep(vt)
-      @selected_sub = v.to_i
-    end
   end
 
   def donate
     @account_code = AccountCode.find_by_id(params[:fund]) ||
+      AccountCode.find_by_code(params[:account_code]) ||
       AccountCode.default_account_code
   end
 
-  def shipping_address
-    redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]})) and return if params[:commit] =~ /redeem/i
-    # if this is a post, add items to cart first (since we're coming from
-    #  ticket selection page).  If a get, buyer just wants to modify
-    #  gift recipient info.
-    # add items to cart
-    @cart = find_cart
-    @is_admin = current_admin.is_boxoffice
-    if request.post?
-      params[:redirect_to] == 'subscribe' ? process_subscription_request : process_ticket_request
-      # did anything go wrong?
-      redirect_to_index and return unless flash[:warning].blank?
-      if params[:donation].to_i > 0
-        d = Donation.online_donation(params[:donation].to_i, params[:account_code_id], store_customer.id,logged_in_id)
-        @cart.add(d)
-      end
-      if params[:retail].to_f > 0.0 && @is_admin
-        @r = RetailItem.from_amount_description_and_account_code_id(
-          *(params.values_at(:retail, :retail_comments, :retail_account_code_id)))
-        unless @r.valid?
-          flash[:warning] = "There were problems with your retail purchase: " << @r.errors.full_messages.join(', ')
-          redirect_to_index and return
-        end
-        @cart.add(@r)
-      end
-    end
-    # did anything get added to cart
-    if @cart.empty?
-      flash[:warning] = "Nothing was added to your order. Please try again."
-      redirect_to_index
+  def process_cart
+    if params[:commit] =~ /redeem/i # customer entered promo code, redisplay prices
+      redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]}))
       return
     end
-    # all is well. if this is a gift order, fall through to get Recipient info.
-    # if NOT a gift, or if donation only, set recipient to same as current customer, and
-    # continue to checkout.
-    if params[:gift] && @r.kind_of?(RetailItem)
-      flash[:warning] = "Retail items can't be included in a gift order."
-      redirect_to_index and return
-    end
-    # in case it's a gift, customer should know donation is made in their name.
-    @includes_donation = @cart.include_donation?
-    set_checkout_in_progress(true)
-    if params[:gift] && @cart.include_vouchers?
-      @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
+    @cart = find_cart
+    @cart.purchaser = @customer
+    @cart.comments = params[:comments]
+    @cart.processed_by_id = logged_in_id
+    tickets = ValidVoucher.from_params(params[:valid_voucher])
+    if @gAdmin.is_boxoffice
+      tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
     else
+      cust = @gCustomer
+      promo = current_promo_code
+      tickets.each_pair { |vv, qty| @cart.add_with_checking(vv,qty,promo) }
+    end
+    if !@cart.errors.empty?
+      flash[:warning] = @cart.errors.full_messages.join(', ')
+      redirect_to :back and return
+    end
+    # all well with cart, try to process donation if any
+    if params[:donation].to_i > 0
+      @cart.add_donation(
+        Donation.from_amount_and_account_code_id(params[:donation].to_i,
+          params[:account_code_id] ))
+    end
+    if @cart.cart_empty?
+      flash[:warning] = "There is nothing in your order."
+      redirect_to :back and return
+    end
+    if params[:gift] && @cart.include_vouchers?
+      remember_cart_in_session!
+      redirect_to :action => 'shipping_address'
+    else
+      @cart.customer = @cart.purchaser
+      remember_cart_in_session!
       redirect_to_checkout
     end
+  end
+
+  def shipping_address
+    #  collect gift recipient info
+    @cart = find_cart
+    set_checkout_in_progress true
+    @recipient = @cart.customer || Customer.new
   end
 
   def set_shipping_address
@@ -138,70 +116,30 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    @recipient = recipient_from_session || recipient_from_params ||
+    recipient = recipient_from_session || recipient_from_params ||
       Customer.new(params[:customer])
     # make sure minimal info for gift receipient was specified.
-    @recipient.gift_recipient_only = true
-    if @recipient.new_record?
-      @recipient.created_by_admin = true if current_admin.is_boxoffice
-      unless @recipient.save
-        flash[:warning] = @recipient.errors.full_messages
+    recipient.gift_recipient_only = true
+    if recipient.new_record?
+      recipient.created_by_admin = true if current_admin.is_boxoffice
+      unless recipient.save
+        flash[:warning] = recipient.errors.full_messages
         render :action => :shipping_address
         return
       end
     end
-    session[:recipient_id] = @recipient.id
+    @cart.customer = recipient
+    @cart.save!
     redirect_to_checkout
   end
 
-  def show_changed
-    if (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
-      @special_shows_only = s.special?
-      set_current_show(s)
-    end
-    setup_ticket_menus
-    render :partial => 'ticket_menus'
-  end
-
-  def showdate_changed
-    if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
-      @special_shows_only = s.show.special?
-      set_current_showdate(s)
-    end
-    setup_ticket_menus
-    render :partial => 'ticket_menus'
-  end
-
-  def comment_changed
-    cart = find_cart
-    cart.comments = params[:comments]
-    render :nothing => true
-  end
-
   def checkout
-    logger.info "User-agent: #{request.user_agent}"
     set_return_to :controller => 'store', :action => 'checkout'
-    @cust = store_customer
-    @is_admin = current_admin.is_boxoffice
-    if session[:recipient_id]
-      @recipient = Customer.find( session[:recipient_id] )
-    else
-      @recipient = @cust
-    end
-    @cart = find_cart_not_empty or return
     # Work around Rails bug 2298 here
-    @cart.workaround_rails_bug_2298!
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    if @cart.empty?
-      logger.warn "Cart empty, redirecting from checkout back to store"
-      redirect_to_index
-      return
-    end
-    @cart_contains_class_order = @cart.contains_enrollment?
-    @double_check_dates = @cart.double_check_dates
     @checkout_message = Option.precheckout_popup ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
-    set_return_to :controller => 'store', :action => 'checkout'
+    @cart_contains_class_order = @cart.contains_enrollment?
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
     redirect_to change_user_path and return unless logged_in?
@@ -214,290 +152,87 @@ class StoreController < ApplicationController
   end
 
   def place_order
-    @cart = find_cart_not_empty or return
-    if @cart.contains_enrollment? && params[:pickup].blank?
-      flash[:warning] = "Please fill in enrollee's name(s) under \"Who's Attending?\" below."
+    @cart = find_cart
+    @is_admin = current_admin.is_boxoffice
+    # what payment type?
+    @cart.purchasemethod,@cart.purchase_args = purchasemethod_from_params
+    @recipient = @cart.purchaser
+    if ! @cart.gift?
+      # record 'who will pickup' field if necessary
+      @cart.comments << "(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})" unless params[:pickup].blank?
+    end
+
+    unless @cart.ready_for_purchase?
+      flash[:warning] = @cart.errors.full_messages.join(', ')
       redirect_to_checkout
       return
     end
-    @customer = verify_valid_customer or return
-    @is_admin = current_admin.is_boxoffice
-    sales_final = verify_sales_final or return
-    redirect_to_index and return unless
-      @recipient = verify_valid_recipient 
-    if @recipient == @customer
-      # record 'who will pickup' field if necessary
-      @cart.add_comment("(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})") unless params[:pickup].blank?
-    else
-      @cart.gift_from(@customer)
-    end
-    # OK, we have a customer record to tie the transaction to
-    howpurchased = Purchasemethod.default
-    # regular customers can only purchase with credit card
-    params[:commit] = 'credit' if !@is_admin
-    params[:commit] = 'cash' if RAILS_ENV=='test'
-    if params[:commit] =~ /check/i
-      method = :check
-      howpurchased = Purchasemethod.get_type_by_name('box_chk')
-      args = {:check_number => params[:check_number]}
-      @payment = params[:check_number].blank? ? "by check" : "with check number #{params[:check_number]}"
-    elsif params[:commit] =~ /cash/i
-      method = :cash
-      howpurchased = Purchasemethod.get_type_by_name('box_cash')
-      args = {}
-      @payment = "in cash"
-    else                        # credit card
-      if (params[:credit_card_token].blank? || params[:credit_card_token] =~ /dummy/i)
-        flash[:warning] = "Credit card info could not be read successfully.  Please retry."
-        logger.error "Failed token read: #{params.inspect}"
-        redirect_to_checkout
-        return
-      end
-      verify_valid_credit_card_purchaser or return
-      method = :credit_card
-      howpurchased = Purchasemethod.get_type_by_name(@customer.id == logged_in_id ? 'web_cc' : 'box_cc')
-      args = {
-        :bill_to => Customer.new(params[:customer]),
-        :credit_card_token => params[:credit_card_token],
-        :order_number => @cart.order_number
-      }
-      @payment="with credit card"
-    end
-    @order = @customer.orders.create(
-      :purchasemethod => howpurchased,
-      :sold_on => Time.now,
-      :processed_by_id => logged_in_id)
-    resp = Store.purchase!(method, @cart.total_price, args) do
-      # add non-donation items to recipient's account
-      @recipient.add_items(@cart.nondonations_only, logged_in_id, howpurchased)
-      unless (@recipient.save)
-        s = @recipient.errors.full_messages.join(', ')
-        logger.error "Save failed, re-raising exception! #{s}"
-        raise s
-      end
-      # add donation items to payer's account
-      unless  @customer.add_items(@cart.donations_only, logged_in_id, howpurchased)
-        logger.error "Add items for #{@customer.full_name_with_id} of #{@cart} failed!"
-        raise "Add items failed!"
-      end
-      @amount = @cart.total_price
-      @order_summary = @cart.to_s
-      @special_instructions = @cart.comments
-    end
-    if resp.success?
-      @cart.items.map { |i| i.update_attribute('order_id', @order.id) }
-      if @payment =~ /credit/i
-        auth = resp.authorization
-        @order.update_attribute('authorization', auth)
-        @payment << " (transaction ID: #{auth})"
-      end
-      logger.info("SUCCESS purchase #{@customer.id} [#{@customer.full_name}] by #{@payment}; Cart summary: #{@cart}")
-      if params[:email_confirmation]
-        email_confirmation(:confirm_order, @customer,@recipient,@order_summary,
-          @amount, @payment,
-          @special_instructions)
-      end
+
+    begin
+      @cart.finalize!
+      logger.info("SUCCESS purchase #{@cart.customer}; Cart summary: #{@cart.summary}")
+      email_confirmation(:confirm_order, @cart.purchaser, @cart) if params[:email_confirmation]
+      @payment = @cart.purchasemethod.purchase_medium
       reset_shopping
       set_return_to
-      return
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
+      flash[:checkout_error] = @cart.errors.full_messages.join(', ')
+      logger.info("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
+      redirect_to_checkout
+    rescue Exception => e
+      flash[:checkout_error] = "Sorry, an unexpected problem occurred with your order.  Please try your order again."
+      logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
+      redirect_to_index
     end
-    # failure....
-    flash[:checkout_error] = resp.message
-    logger.info("FAILED purchase for #{@customer.id} [#{@customer.full_name}] by #{@payment}:\n #{resp.message}") rescue nil
-    redirect_to_checkout
-  end
 
-  private
-
-  def too_many_tickets_for(showdate)
-    # if a donation only, skip this check
-    return nil unless showdate
-    total = params[:vouchertype].values.inject(0) { |t,qty| t+qty.to_i }
-    if total > showdate.saleable_seats_left
-      flash[:warning] = "You've requested #{total} tickets, but only #{showdate.saleable_seats_left} are available for this performance."
-    else
-      nil
-    end
-  end
-
-  def redeeming_promo_code
-    clear_promo_code and return nil if params[:commit] =~ /clear/i
-    params[:commit] =~ /redeem/i ? set_promo_code(params[:promo_code]) : nil
-  end
-
-  def clear_promo_code
-    session.delete(:promo_code)
-    logger.info("Clearing promo code")
-  end
-
-  def set_promo_code(str)
-    promo_code = (str || '').upcase
-    params.delete(:commit)
-    session[:promo_code] = promo_code
-    logger.info "Accepted promo code #{promo_code}"
-    promo_code
-  end
-
-  def setup_ticket_menus
-    @customer = store_customer
-    @cart = find_cart
-    @promo_code = session[:promo_code]
-    is_admin = current_admin.is_boxoffice
-    # will set the following instance variables:
-    # @all_shows - choice for Shows menu
-    # @sh - selected show; nil means none selected
-    # @all_showdates - choices for Showdates menu
-    # @sd - selected showdate; nil means none selected
-    # @vouchertypes - array of AvailableSeat objects indicating vouchertypes
-    #   to offer, which includes how many are available
-    #   empty array means must choose showdate first
-    @all_shows = get_all_shows(get_all_showdates(is_admin))
-    if @sd = current_showdate   # everything keys off of selected showdate
-      @sh = @sd.show
-      @all_showdates = ((is_admin || @sh.special?) ? @sh.showdates :
-        @sh.future_showdates)
-      # @all_showdates = (is_admin ? @sh.showdates :
-      #  @sh.future_showdates.select { |s| s.saleable_seats_left > 0 })
-      # make sure originally-selected showdate is included among those
-      #  to be displayed.
-      unless @all_showdates.include?(@sd)
-        @sd = @all_showdates.first
-      end
-      @vouchertypes = (@sd ?
-                       ValidVoucher.numseats_for_showdate(@sd.id,@customer,:ignore_cutoff => is_admin, :promo_code => @promo_code) :
-        [] )
-      @vouchertypes = @vouchertypes.sort do |a,b|
-        ord = (a.vouchertype.display_order <=> b.vouchertype.display_order)
-        ord == 0 ? a.vouchertype.price <=> b.vouchertype.price : ord
-      end
-    elsif @sh = current_show    # show selected, but not showdate
-      @all_showdates = (is_admin ? @sh.showdates :
-        @sh.future_showdates)
-      @vouchertypes = []
-    else                      # not even show is selected
-      @all_showdates = []
-      @vouchertypes = []
-    end
-    # filtering: unless "customer" is an admin,
-    #  remove vouchertypes that customer shouldn't see
-    @vouchertypes.reject! { |av| av.staff_only } unless is_admin
-    # remove vouchertypes that are sold out (which could cause showdate menu
-    #   to become empty) 
-    @vouchertypes.reject! { |av|  av.howmany.zero? } unless is_admin
-  end
-
-  # Customer on whose behalf the store displays are based (for special
-  # ticket eligibility, etc.)  Current implementation: same as the active
-  # customer, if any; otherwise, the walkup customer.
-  # INVARIANT: this MUST return a valid Customer record.
-  def store_customer
-    current_user || Customer.walkup_customer
-  end
-
-  def reset_current_show_and_showdate ;  session[:store] = {} ;  end
-  def set_current_show(s)
-    session[:store] ||= {}
-    if !(sd = (@gAdmin.is_boxoffice ? s.showdates : s.future_showdates)).empty?
-      set_current_showdate(sd.first)
-    else
-      session[:store][:show] = session[:store][:showdate] = nil
-    end
-  end
-  def set_current_showdate(sd)
-    session[:store] ||= {}
-    if sd && sd.kind_of?(Showdate)
-      session[:store][:showdate] = sd.id
-      session[:store][:show] = sd.show.id
-    else
-      session[:store][:show] = session[:store][:showdate] = nil
-    end
-  end
-  def current_showdate
-    if session[:store] && session[:store][:showdate]
-      s = Showdate.find_by_id(session[:store][:showdate].to_i)
-      !s.show.special? == !@special_shows_only ? s : nil
-    else
-      nil
-    end
-  end
-  def current_show
-    if session[:store] && session[:store][:show]
-      s = Show.find_by_id(session[:store][:show].to_i)
-      !s.special? == !@special_shows_only ? s : nil
-    else
-      nil
-    end
   end
 
   # helpers for the AJAX handlers. These should probably be moved
   # to the respective models for shows and showdates, or called as
   # helpers from the views directly.
 
-  def get_all_shows(showdates)
-    s = showdates.map { |s| s.show }.uniq.sort_by { |s| s.opening_date }
-    unless @gAdmin.is_boxoffice
-      s.reject! { |sh| sh.listing_date > Date.today }
-    end
-    # display only regular shows, or only special shows
-    s.reject! { |sh| !(sh.special?) != !(@special_shows_only) }
-    s
+  def show_changed
+    setup_for_showdate(showdate_from_show_params || showdate_from_default)
+    render :partial => 'ticket_menus'
   end
 
-  def get_all_showdates(ignore_cutoff = false)
-    if ignore_cutoff
-      showdates = Showdate.find(:all,
-        :include => :show,
-        :conditions => ['showdates.thedate >= ?' ,Time.now.at_beginning_of_season - 1.year],
-        :order => "thedate ASC").reject { |sd| !sd.show.special? != !@special_shows_only }
-    else
-      showdates = Showdate.find(ValidVoucher.for_advance_sales.keys).reject { |sd| (!sd.show.special? && sd.thedate < Date.today || !sd.show.special? != !@special_shows_only)}.sort_by(&:thedate)
-    end
+  def showdate_changed
+    setup_for_showdate(showdate_from_params || showdate_from_default)
+    render :partial => 'ticket_menus'
   end
 
-  def process_ticket_request
-    unless (showdate = Showdate.find_by_id(params[:showdate])) ||
-        params[:donation].to_i > 0 ||
-        params[:retail].to_f > 0
-      flash[:warning] = "Please select a show date and tickets, or enter a donation amount."
-      return
-    end
-    msgs = []
-    comments = params[:comments]
-    params[:vouchertype] ||= {}
-    admin = @gAdmin.is_boxoffice
-    # pre-check whether the total number of tickets exceeds availability
-    return if (!admin && too_many_tickets_for(showdate))
-    params[:vouchertype].each_pair do |vtype, qty|
-      qty = qty.to_i
-      unless qty.zero?
-        av = ValidVoucher.numseats_for_showdate_by_vouchertype(showdate, store_customer, vtype, :ignore_cutoff => admin, :promo_code => session[:promo_code])
-        if (!admin && av.howmany.zero?)
-          msgs << "Sorry, no '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance."
-        elsif (!admin && (av.howmany < qty))
-          msgs << "Only #{av.howmany} '#{Vouchertype.find_by_id(vtype.to_i).name}' tickets available for this performance (you requested #{qty})."
-        else # either admin, or there's enough seats
-          @cart.comments ||= comments
-          qty.times  do
-            @cart.add(Voucher.anonymous_voucher_for(showdate,vtype,nil,comments))
-            comments = nil      # HACK - only add to first voucher
-          end
-        end
-      end
-    end
-    flash[:warning] = msgs.join("<br/>") unless msgs.empty?
-    logger.info "Added to cart: #{@cart}"
+  def comment_changed
+    cart = find_cart
+    cart.comments = params[:comments]
+    render :nothing => true
   end
 
-  def process_subscription_request
-    # subscription tickets
-    # BUG should check eligibility here
-    params[:vouchertype].each_pair do |vtype, qty|
-      unless qty.to_i.zero?
-        qty.to_i.times { @cart.add(Voucher.anonymous_bundle_for(vtype)) }
-      end
+  private
+
+  def redeeming_promo_code
+    case params[:commit]
+    when /clear/i
+      session.delete(:promo_code)
+      logger.info("Clearing promo code")
+      nil
+    when /redeem/i
+      params.delete(:commit)
+      logger.info "Accepting promo code #{params[:promo_code]}"
+      session[:promo_code] = params[:promo_code].to_s.upcase
     end
   end
 
+  def current_promo_code ; session[:promo_code].to_s ; end
+
+  def showdate_from_params
+    Showdate.find_by_id(params[:showdate_id], :include => [:show, :valid_vouchers])
+  end
+  def showdate_from_show_params
+    (s = Show.find_by_id(params[:show_id], :include => :showdates)) &&
+      s.showdates.try(:first)
+  end
+  def showdate_from_default ; Showdate.current_or_next ; end
+  
   def recipient_from_session
     if ((s = session[:recipient_id]) &&
         (recipient = Customer.find_by_id(s)))
@@ -513,85 +248,9 @@ class StoreController < ApplicationController
     recipient && recipient.valid_as_gift_recipient? ? recipient : nil
   end
 
-  def verify_valid_recipient
-    if session[:recipient_id]
-      # buyer is different from recipient
-      unless recipient = Customer.find_by_id(session[:recipient_id])
-        flash[:warning] = 'Gift recipient is invalid'
-        logger.error "Gift order, but invalid recipient; id=#{session[:recipient_id]}"
-        return nil
-      end
-    else
-      recipient = @customer
-    end
-    recipient
-  end
-
-  def verify_valid_customer
-    @customer = current_user
-    unless @customer.kind_of?(Customer)
-      flash[:warning] = "SYSTEM ERROR: Invalid purchaser (id=#{@customer.id})"
-      logger.error "Reached place_order with invalid customer: #{@customer}"
-      redirect_to_index
-      return nil
-    end
-    @customer
-  end
-
-  def verify_valid_credit_card_purchaser
-    result = @customer.valid_as_purchaser?
-    unless result
-      flash[:warning] = "Customer address/contact data insufficient for credit card purchase"
-      logger.error "Reached place_order with customer who is invalid as purchaser: #{@customer}"
-      redirect_to_checkout
-    end
-    result
-  end
-    
-  def find_cart_not_empty
-    cart = find_cart
-    logger.info "Cart: #{cart.to_s}"
-    # regular custonmers must have a total order > $0.00, but admins can
-    # have zero-cost order as long as has zero items
-    if ((@gAdmin.is_staff && cart.items.length > 0) ||
-        cart.total_price > 0)
-      return cart
-    else
-      flash[:warning] = "Your cart is empty - please add tickets and/or a donation."
-      redirect_to_index
-      return nil
-    end
-  end
-
-  def verify_sales_final
-    return true if Option.terms_of_sale.blank?
-    if (sales_final = params[:sales_final].to_i).zero?
-      flash[:checkout_error] = "Please indicate your acceptance of our Sales Final policy by checking the box."
-      redirect_to_checkout
-      return nil
-    else
-      return sales_final
-    end
-  end
-
-  def setup_for_initial_visit
-    # first visit to store/index
-    reset_shopping
-    set_return_to :controller => 'store', :action => 'index'
-    # if this is initial visit to page, reset ticket choice info
-    reset_current_show_and_showdate
-    if (id = params[:showdate_id].to_i) > 0 && (s = Showdate.find_by_id(id))
-      set_current_showdate(s)
-    elsif (!(params[:date].blank?) && (s = Showdate.find_by_date(Time.parse(params[:date]))))
-      set_current_showdate(s)
-    elsif (id = params[:show_id].to_i) > 0 && (s = Show.find_by_id(id))
-      set_current_show(s)
-    else                        # neither: pick earliest show
-      s = get_all_showdates(@is_admin)
-      unless (s.nil? || s.empty?)
-        set_current_show((s.sort.detect { |sd| sd.thedate >= Time.now } || s.first).show)
-      end
-    end
+  def remember_cart_in_session!
+    @cart.save!
+    session[:cart] = @cart.id
   end
   
   def redirect_to_checkout
@@ -611,4 +270,47 @@ class StoreController < ApplicationController
       redirect_to :action => url_or_path
     end
   end
+
+  def purchasemethod_from_params
+    if ( !@is_admin || params[:commit ] =~ /credit/i ) 
+      meth = Purchasemethod.get_type_by_name(@cart.customer.try(:id) == logged_in_id ? 'web_cc' : 'box_cc')
+      args = { :credit_card_token => params[:credit_card_token] }
+    elsif params[:commit] =~ /check/i
+      meth = Purchasemethod.get_type_by_name('box_chk')
+      args = {:check_number => params[:check_number] }
+    elsif params[:commit] =~ /cash/i
+      meth = Purchasemethod.get_type_by_name('box_cash')
+      args = {}
+    else
+      flash[:warning] = "Invalid form of payment."
+      redirect_to_checkout
+    end
+    return meth,args
+  end
+
+  def setup_for_showdate(sd)
+    @sd = sd
+    @sh = @sd.show
+    @special_shows_only = @sh.special?
+    @all_showdates = @sh.showdates
+    if @is_admin then setup_ticket_menus_for_admin else setup_ticket_menus_for_patron end
+  end
+
+  def setup_ticket_menus_for_admin
+    @valid_vouchers = @sd.valid_vouchers.sort_by(&:display_order)
+    @all_shows = Show.
+      all_for_seasons(Time.this_season - 1, Time.this_season).
+      special(@special_shows_only)  ||  []
+    # ensure default show is included in list of shows
+    @all_shows << @sh unless @all_shows.include? @sh
+  end
+
+  def setup_ticket_menus_for_patron
+    @valid_vouchers = @sd.valid_vouchers.map do |v|
+      v.adjust_for_customer(@promo_code)
+    end.find_all(&:visible?).sort_by(&:display_order)
+    @all_shows = Show.current_and_future.special(@special_shows_only) || []
+    @all_shows << @sh unless @all_shows.include? @sh
+  end
+
 end

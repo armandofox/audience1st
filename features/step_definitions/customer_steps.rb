@@ -95,6 +95,7 @@ Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do 
     :secret_answer => answer)
 end
 
+
 Then /^customer "(.*) (.*)" should have secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   @customer.secret_question.should == get_secret_question_index(question)

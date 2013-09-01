@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe CustomersController do
   before do
@@ -85,7 +85,7 @@ describe CustomersController do
     before(:each) do
       @customer = BasicModels.create_generic_customer
       login_as @customer
-      ApplicationController.stub!(:find_cart).and_return(mock_model(Cart).as_null_object)
+      ApplicationController.stub!(:find_cart).and_return(mock_model(Order).as_null_object)
       controller.set_checkout_in_progress(true)
       @target = {:controller => 'store', :action => 'checkout'}
       @controller.set_return_to @target

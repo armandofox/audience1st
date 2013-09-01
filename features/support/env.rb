@@ -81,3 +81,22 @@ After do
   end
 end
 
+# Stub Stripe for certain scenarios
+Before('@stubs_successful_credit_card_payment') do
+  class Store
+    def self.pay_with_credit_card(order)
+      order.authorization = 'ABC123'
+    end
+  end
+end
+
+Before('@stubs_failed_credit_card_payment') do
+  class Store
+    def self.pay_with_credit_card(order)
+      order.authorization = nil
+      order.errors.add_to_base "Credit card payment error: Failed"
+    end
+  end
+end
+
+

@@ -3,8 +3,8 @@ require 'spec_helper'
 describe TicketSalesImport do
 
   describe "importing showdate" do
-    before :all do ; TicketSalesImport.send(:public, :import_showdate) ; end
     before(:each) do
+      TicketSalesImport.send(:public, :import_showdate)
       @imp = TicketSalesImport.new(:show => BasicModels.create_generic_show)
       @date = "Tue, Oct 31, 8:00pm"
     end
