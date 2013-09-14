@@ -1,5 +1,11 @@
 abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
 
+# automatically run 'bundle install' to put bundled gems into vendor/ on deploy
+require 'bundler/capistrano'
+set :bundle_flags, '--deployment'
+set :bundle_without, [:development, :test]
+
+
 set :venue, variables[:venue]
 set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
