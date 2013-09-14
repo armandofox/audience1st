@@ -7,13 +7,24 @@ AuthType Basic
 
 RewriteEngine On
 
-ErrorDocument 503 /<%= venue %>/system/maintenance.html
+# 'cap deploy:web:disable' creates system/maintenance.html , and
+# 'cap deploy:web:enable' removes it.
+# Maintenance is handled by redirecting with a 503 error and
+#  using maintenance.html (if it exists) as the error document:
+ErrorDocument 503 http://www.audience1st.com/<%= venue %>/system/maintenance.html
+
+# Rewrite rule:
+# if system/maintenance.html file exists...
 RewriteCond %{DOCUMENT_ROOT}/<%= venue %>/system/maintenance.html -f
+# ...and this request has NOT already been rewritten to maintenance.html...
 RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+# ...and it DOESN'T come from a designated "privileged IP"...
 <% debugging_ips.each do |addr| %>
 RewriteCond %{REMOTE_ADDR} !^<%= addr.gsub('.','\.') %>$
 <% end %>
-RewriteRule ^.*$ /<%= venue %>/system/maintenance.html [redirect=503,L]
+# ...then force a 503 redirect, which will return the above
+#  ErrorDocument redirect with an HTTP 503 status
+RewriteRule ^.*$ - [redirect=503,last]
 
 # In case Rails experiences terminal errors
 
