@@ -4,7 +4,10 @@ abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
 require 'bundler/capistrano'
 set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
-
+# so capistrano can find 'bundle' binary...
+set :default_environment, {
+  'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
+}
 
 set :venue, variables[:venue]
 set :from, variables[:from]
