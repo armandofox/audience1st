@@ -14,10 +14,13 @@ gem 'mysql', '2.8.1'
 gem 'nokogiri', '1.4.3.1'
 gem 'rails', '2.3.11'
 gem 'rake', '>= 10.0.0'
-gem 'rdoc'
 gem 'ruby-debug', '0.10.3'
 gem 'ruport', '1.6.3'
 gem 'stripe', '1.5.16'
+# not really development dependencies, but 'rake' needs them 
+gem 'rdoc'
+gem 'rspec', '1.3.0'
+
 
 # deprecated soon
 gem 'activemerchant', '1.4.2', :require => 'active_merchant'
@@ -34,7 +37,6 @@ group :development, :test do
   gem 'fakeweb'
   gem 'launchy'
   gem 'rack-test', '0.5.7'
-  gem 'rspec', '1.3.0'
   gem 'rspec-rails', '1.3.2'
   gem 'timecop', '0.3.5'
 end
