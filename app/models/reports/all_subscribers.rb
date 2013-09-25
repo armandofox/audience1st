@@ -16,8 +16,7 @@ class AllSubscribers < Report
         Vouchertype.subscription_vouchertypes(season.to_i)
       end.flatten
     end
-    n = LapsedSubscribers.new
-    n.generate(:have_vouchertypes => vtypes.map(&:id), :output => self.output_options)
+    Customer.purchased_any_vouchertypes(vtypes.map(&:id))
   end
 end
       

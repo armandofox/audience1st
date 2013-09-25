@@ -1,13 +1,8 @@
 
 Dear <%= @greeting %>,
 
-(Please DO NOT REPLY to this email...it was generated automatically,
-not by a human being, and our computer isn't smart enough to
-understand your reply!)
-
-
 This is an automatic confirmation from the online box office
-at <%= Option.venue -%>.
+at <%= @venue -%>.
 
 Please check this information carefully:
 
@@ -25,5 +20,9 @@ We're confirming your reservation for the following performance --
 <%= strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)).wrap(60) %>
 
 <%= strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)).wrap(60) %>
+
+(Please DO NOT REPLY to this email...it was generated automatically,
+not by a human being, and our computer isn't smart enough to
+understand your reply!)
 
 <%= @how_to_contact_us %>

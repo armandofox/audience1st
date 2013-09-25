@@ -56,6 +56,7 @@ class Mailer < ActionMailer::Base
     @body.merge!(:greeting => customer.full_name,
                  :performance => showdate.printable_name,
                  :num => num,
+                 :venue => Option.venue,       
                  :confnum => confnum,
                  :subscriber => customer.subscriber?,
                  :notes => showdate.show.patron_notes
