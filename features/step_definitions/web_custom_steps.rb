@@ -4,10 +4,10 @@ World(ModelAccess)
 
 # Wrapper around 'I should see ... within ...' steps
 Then /^I should see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  Then %Q{I should see #{string} within "#{tag}[@id='#{id}']"}
+  step %Q{I should see #{string} within "#{tag}[@id='#{id}']"}
 end
 Then /^I should not see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  Then %Q{I should not see #{string} within "#{tag}[@id='#{id}']"}
+  step %Q{I should not see #{string} within "#{tag}[@id='#{id}']"}
 end
 
 # Check if menu option selected
@@ -36,10 +36,10 @@ Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
   year, month, day =
     html.xpath("//select[@id='#{menu_id}_2i']").empty? ? %w[year month day] : %w[1i 2i 3i]
   if page.has_selector?("select##{menu_id}_#{year}")
-    Then %Q{"#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
+    step %Q{"#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
   end
-  Then %Q{"#{date.strftime('%B')}" should be selected in the "#{menu_id}_#{month}" menu}
-  Then %Q{"#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
+  step %Q{"#{date.strftime('%B')}" should be selected in the "#{menu_id}_#{month}" menu}
+  step %Q{"#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
 end
 
 When /^I select "(.*) (.*)" as the "(.*)" month and day$/ do |month,day, menu|
@@ -58,7 +58,7 @@ end
 Then /^(?:|I )should see "([^\"]*)" within the (.*) for(?: the) (.*) with (.*) "(.*)"$/ do |text,tag_type,entity_type,attribute,value|
   entity = get_model_instance(entity_type, attribute, value)
   selector_id = "#{entity_type}_#{entity.id}"
-  Then %Q{I should see "#{text}" within "#{tag_type}\##{selector_id}"}
+  step %Q{I should see "#{text}" within "#{tag_type}\##{selector_id}"}
 end
 
 # 'should come before/should come after' for verifying orderings of things
@@ -116,7 +116,7 @@ end
 Then /^I should see a table "(.*)" with rows? (.*)$/ do |table,all_rows|
   page.should have_css(table)
   all_rows.split(/, ?/).each do |row|
-    Then "I should see a row #{row} within \"#{table}\""
+    step "I should see a row #{row} within \"#{table}\""
   end
 end      
 

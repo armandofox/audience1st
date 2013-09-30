@@ -1,12 +1,12 @@
 Given /^(\d+) "(.*)" tickets available at \$(.*) each$/i do |qty,type,price|
   @showdate.should be_an_instance_of(Showdate)
-  Given %Q{a "#{type}" vouchertype costing #{price} for the #{@showdate.season} season}
+  step %Q{a "#{type}" vouchertype costing #{price} for the #{@showdate.season} season}
   make_valid_tickets(@showdate, @vouchertype, qty.to_i)
 end
 
 Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that) performance/i do |n,vouchertype,price|
   @showdate.should be_an_instance_of(Showdate)
-  Given %Q{a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
+  step %Q{a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
   make_valid_tickets(@showdate, @vouchertype, n.to_i)
 end
                                    

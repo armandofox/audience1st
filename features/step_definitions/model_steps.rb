@@ -6,5 +6,5 @@ end
 
 # alias
 Given /^the (.*) of the (.*) with (.*) "(.*)" is set to (.*)$/ do |attr,model,finder_attr,finder_value,value|
-  Given %Q{I set the #{attr} of the #{model} with #{finder_attr} "#{finder_value}" to #{value}}
+  step %Q{I set the #{attr} of the #{model} with #{finder_attr} "#{finder_value}" to #{value}}
 end

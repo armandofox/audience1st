@@ -16,7 +16,7 @@ Given /^a show "(.*)" with tickets on sale for today$/ do |name|
 end
 
 Given /^a class "(.*)" available for enrollment now$/ do |name|
-  Given %Q{a show "#{name}" with tickets on sale for today}
+  step %Q{a show "#{name}" with tickets on sale for today}
   @show.update_attributes!(:event_type => "Class")
 end
 

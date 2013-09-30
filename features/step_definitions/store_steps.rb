@@ -1,15 +1,15 @@
 Given /^a show "(.*)" with "(.*)" tickets for \$?(.*) on "(.*)"$/ do |show,type,price,date|
-  Given %Q{a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
+  step %Q{a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
 end
 
 Given /^a show "(.*)" with (\d+) "(.*)" tickets for \$(.*) on "(.*)"$/ do |show,num,type,price,date|
-  Given %Q{a performance of "#{show}" on "#{date}"}
-  Given %Q{#{num} #{type} vouchers costing $#{price} are available for that performance}
+  step %Q{a performance of "#{show}" on "#{date}"}
+  step %Q{#{num} #{type} vouchers costing $#{price} are available for that performance}
 end
 
 Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
   tickets.hashes.each do |t|
-    Given %Q{a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
+    step %Q{a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
   end
 end
 
@@ -23,7 +23,7 @@ end
 Given /^my cart contains the following tickets:/ do |tickets|
   tickets.hashes.each do |t|
     show,qty,type,price,showdate = t.values_at(:show, :qty, :type,:price,:showdate)
-    Given %Q{a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for #{price} on "#{showdate}"}
+    step %Q{a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for #{price} on "#{showdate}"}
     visit path_to %Q{the store page for "#{show}"}
     select show, :from => 'Show'
     select_date_matching showdate, :from => 'Date'

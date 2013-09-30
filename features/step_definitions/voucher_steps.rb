@@ -27,7 +27,7 @@ end
 
 Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
-  Then %Q{he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
+  step %Q{he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
 
 Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,type,show,date|
@@ -45,7 +45,7 @@ end
 
 Then /^ticket sales should be as follows:$/ do |tickets|
   tickets.hashes.each do |t|
-    Then %Q{there should be #{t[:qty]} "#{t[:type]}" tickets sold for "#{t[:showdate]}"}
+    step %Q{there should be #{t[:qty]} "#{t[:type]}" tickets sold for "#{t[:showdate]}"}
   end
 end
 
