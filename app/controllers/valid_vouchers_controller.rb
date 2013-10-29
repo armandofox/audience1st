@@ -30,6 +30,7 @@ class ValidVouchersController < ApplicationController
   def create
     msgs = ''
     vouchertypes = params[:valid_voucher].delete(:vouchertypes)
+    redirect_to(:back, :flash => {:notice => 'You must select 1 or more show dates.'}) and return unless (vouchertypes && !vouchertypes.empty?)
     args = params[:valid_voucher]
     hours_before = (params[:end_is_relative].to_i > 0 ?
                     params[:hours_before].to_f.hours :
