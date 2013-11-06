@@ -16,4 +16,4 @@
       = check_box_tag 'restrict_by_vouchertype'
       Only if they used any of these:
       %br
-      = select_tag 'vouchertypes', options_from_collection_for_select((Vouchertype.find_all_by_season(Time.now.this_season) + Vouchertype.find_all_by_season(Time.now.this_season - 1)), :id, :name_with_season_and_price), :multiple => true
+      = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true

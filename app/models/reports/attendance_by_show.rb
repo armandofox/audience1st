@@ -1,9 +1,11 @@
 class AttendanceByShow < Report
   
   def initialize(output_options={})
+    season = Time.now.this_season
     @view_params = {
       :name => "Attendance by show",
-      :shows => Show.find(:all, :order => :opening_date)
+      :shows => Show.find(:all, :order => :opening_date),
+      :vouchertypes => Vouchertype.nonbundle_vouchertypes(season) + Vouchertype.nonbundle_vouchertypes(season-1)
     }
     super
   end
@@ -20,14 +22,11 @@ class AttendanceByShow < Report
     if shows.empty?
       seen = Customer.all
     else
-      if params[:restrict_by_vouchertype]
-        seen = Customer.seen_any_of(shows).purchased_any_vouchertypes(vouchertypes)
-      else
-        seen = Customer.seen_any_of(shows)
-      end
+      seen = Customer.seen_any_of(shows)
+      seen = seen.purchased_any_vouchertypes(vouchertypes) if params[:restrict_by_vouchertype]
     end
 
-    not_seen = if shows_not.empty? then [] else Customer.seen_any_of(shows_not) end
-    return seen & not_seen
+    seen = (seen & Customer.seen_any_of(shows_not)) if !shows_not.empty?
+    seen
   end
 end
