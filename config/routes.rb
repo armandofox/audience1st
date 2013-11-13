@@ -8,7 +8,7 @@ ActionController::Routing::Routes.draw do |map|
   # map.resources :customers
   map.connect '/customers/:id/show', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
 
-  map.connect '/store/donate/:fund', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
+  map.donation_page '/store/donate/:fund', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
 
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
