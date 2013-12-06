@@ -96,11 +96,8 @@ module CustomersHelper
   end
   
   def display_class(c)
+    return 'invalid' unless c.valid?
     klass = []
-    if !c.valid?
-      klass << 'invalid'
-      return
-    end
     klass << 'staff' if  c.is_staff
     klass << 'subscriber' if c.subscriber?
     klass.join ' '
