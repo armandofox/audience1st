@@ -2,7 +2,7 @@
   = render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
 
 - if Voucher.count > 0 || Donation.count > 0
-  .pageDiv
+  .pageDiv#accounting_reports
     %h1 Accounting Reports
     
     - form_tag({:action => 'do_report'}, {:method => :get}) do
@@ -27,13 +27,13 @@
             = select_datetime Time.now.at_end_of_day, :prefix => 'to',  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
             = submit_tag 'Go'
 
-.pageDiv
+.pageDiv#database_maintenance
   %h1 Database Maintenance
   #database_maintenance
     %p= link_to 'Find Possible Duplicates...', {:controller => :customers, :action => :list_duplicates}
     %p= link_to_function 'Synchronize with Email Database...', 'alert("This function is coming soon.")'
 
-.pageDiv
+.pageDiv#customer_lists
   %h1 Customer Lists
   = select_tag 'report_name', options_for_select(@special_report_names.map { |n| [n.humanize,n] }.unshift(['Select report...','']), '')
   = spinner('report_type')
@@ -45,7 +45,7 @@
     :complete => "Element.hide('report_type')" |
   #report_body
 
-.pageDiv
+.pageDiv#subscription_counts
   %h1
     Subscription Counts for
     - y = Time.this_season

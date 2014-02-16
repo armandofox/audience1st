@@ -175,6 +175,9 @@ class ReportsController < ApplicationController
         when /download/i
           @report.create_csv
           download_to_excel(@report.output, @report.filename, false)
+        when /display/i
+          @customers = @report.customers
+          render :template => 'customers/list'
         when /add/i
           l = @report.customers.length
           seg = params[:sublist]

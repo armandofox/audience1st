@@ -1,5 +1,15 @@
+Given /the following customers and labels exist/ do |customers_labels|
+  customers_labels.hashes.each do |entry|
+    customer = Customer.find_or_create_by_first_name_and_last_name(
+      entry[:first_name], entry[:last_name])
+    entry[:labels].split(/\s*,\s*/).each do |label|
+      customer.labels << Label.find_or_create_by_name(label)
+    end
+  end
+end
+
 Given /the label "(.*)" exists/ do |name|
-  find_or_create_label(name)
+  Label.find_or_create_by_name(name)
 end
 
 Given /the label "(.*)" does not exist/ do |name|
@@ -9,7 +19,7 @@ end
 
 Given /customer "(.*)" has label "(.*)"/i do |cust,label|
   c = find_customer_by_fullname(cust)
-  c.labels  << find_or_create_label(label)
+  c.labels  << Label.find_or_create_by_name(label)
 end
 
 Then /customer "(.*)" should have label "(.*)"/i do |cust,label|

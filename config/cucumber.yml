@@ -1,8 +1,8 @@
 <%
 format = '--require features --format pretty --color'
 %>
-autotest: <%= format %> --tags @ip 
-default: <%= format %> --tags ~@javascript --tags ~@facebook --tags ~@wip
+autotest: <%= format %> --tags @wip 
+default: <%= format %> --tags ~@facebook
 javascript: <%= format %> --tags @javascript
 passing:  <%= format %> --tags ~@wip  
 cur:  --tags @cur <%= format %>

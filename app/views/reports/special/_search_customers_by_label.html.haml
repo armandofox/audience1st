@@ -1,0 +1,2 @@
+%p Search for customers with ANY of these labels: (Command-click on Mac or Control-click on Windows to select multiple)
+= select_tag 'labels', options_from_collection_for_select(Label.all, :id, :name), :multiple => true, :lines => [10, Label.count].min

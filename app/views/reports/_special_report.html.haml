@@ -5,6 +5,7 @@
   %fieldset.generate_report
     %legend What to do with the results
     = submit_tag 'Download to Excel'
+    = submit_tag 'Display on screen'
     = submit_to_remote 'count', 'Estimate number of matches', |
       :url => {:action => 'run_special_report'},  |
       :method => :get, |

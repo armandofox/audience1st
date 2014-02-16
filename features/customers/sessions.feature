@@ -1,4 +1,3 @@
-@wip
 Feature: Logging in
   As an anonymous customer with an account
   I want to log in to my account
