@@ -31,7 +31,7 @@ module BasicModels
       :last_name => args[1], :email => args[2],
       :password => 'pass', :password_confirmation => 'pass'
       )
-    c.update_attributes!({:role, (Customer.role_value(args[3] || :patron))})
+    c.update_attributes!({:role => (Customer.role_value(args[3] || :patron))})
     c
   end
   def self.create_customer_by_role(role,args={})

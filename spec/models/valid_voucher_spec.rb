@@ -68,7 +68,7 @@ describe ValidVoucher do
       end
       context "unsuccessfully" do
         it "should fail if purchasing fails" do
-          Store.stub!(:purchase!).and_return(ActiveMerchant::Billing::Response.new(false, "Forced failure"))
+          Store.stub!(:purchase!).and_return(Store::BillingResponse.new(false, "Forced failure"))
           @vouchers = @valid_voucher.sell!(3, @customer, @purch, @logged_in_customer, :comments => @comment)
           @vouchers.should be_empty
           @customer.should have(0).vouchers

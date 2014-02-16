@@ -1,13 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-include ActiveMerchant::Billing
 
 describe Store, "Purchasing" do
   self.use_transactional_fixtures = false # to test if rollback works
   before(:each) do
     @amount = 12.35
-    @success = ActiveMerchant::Billing::Response.new(true, "Success",
+    @success = Store::BillingResponse.new(true, "Success",
       :transaction_id => "999")
-    @failure = ActiveMerchant::Billing::Response.new(false, "Failure")
+    @failure = Store::BillingResponse.new(false, "Failure")
     @bill_to = BasicModels.create_generic_customer
     @order_num = "789"
     @cc = 'DummyCreditCardToken'
@@ -29,12 +28,12 @@ describe Store, "Purchasing" do
     end
     it "should return failure if payment method invalid" do
       @resp = Store.purchase!('foo', @amount, {}) 
-      @resp.should be_a(ActiveMerchant::Billing::Response)
+      @resp.should be_a(Store::BillingResponse)
       @resp.should_not be_success
     end
     it "should return failure if params is nil" do
       @resp = Store.purchase!(:cash, @amount, nil)
-      @resp.should be_a(ActiveMerchant::Billing::Response)
+      @resp.should be_a(Store::BillingResponse)
       @resp.should_not be_success
     end
   end
@@ -67,7 +66,7 @@ describe Store, "Purchasing" do
       it "should return success" do
         @resp = Store.purchase!(:credit_card, @amount, @cc_params) do
         end
-        @resp.should be_a(ActiveMerchant::Billing::Response)
+        @resp.should be_a(Store::BillingResponse)
         @resp.should be_success
       end
     end
@@ -80,7 +79,7 @@ describe Store, "Purchasing" do
         end
         @bill_to.reload
         @bill_to.email.should == old_email
-        @resp.should be_a(ActiveMerchant::Billing::Response)
+        @resp.should be_a(Store::BillingResponse)
         @resp.should_not be_success
       end
       it "should not do purchase if side effects fail" do
@@ -88,7 +87,7 @@ describe Store, "Purchasing" do
         @resp = Store.purchase!(:credit_card, @amount, @cc_params) do
           raise "Boom!"
         end
-        @resp.should be_a(ActiveMerchant::Billing::Response)
+        @resp.should be_a(Store::BillingResponse)
         @resp.should_not be_success
       end
       it "should not change the database if side effects fail" do
@@ -99,7 +98,7 @@ describe Store, "Purchasing" do
         end
         @bill_to.reload
         @bill_to.email.should == old_email
-        @resp.should be_a(ActiveMerchant::Billing::Response)
+        @resp.should be_a(Store::BillingResponse)
         @resp.should_not be_success
       end
     end
@@ -121,7 +120,7 @@ describe Store, "Purchasing" do
           @resp = Store.purchase!(@method,@amount,@args) do
             raise "Boom!"
           end
-          @resp.should be_a(ActiveMerchant::Billing::Response)
+          @resp.should be_a(Store::BillingResponse)
           @resp.should_not be_success
         end
       end
@@ -137,7 +136,7 @@ describe Store, "Purchasing" do
     context "successfully" do
       it "should return success" do
         @resp = Store.purchase!(:cash,@amount,{})
-        @resp.should be_a(ActiveMerchant::Billing::Response)
+        @resp.should be_a(Store::BillingResponse)
         @resp.should be_success
       end
       it "should change the database if side effects OK" do

@@ -2,7 +2,7 @@
 format = '--require features --format pretty --color'
 %>
 autotest: <%= format %> --tags @wip 
-default: <%= format %> --tags ~@facebook
+default: <%= format %> --tags ~@facebook --tags ~@javascript --tags ~@wip
 javascript: <%= format %> --tags @javascript
 passing:  <%= format %> --tags ~@wip  
 cur:  --tags @cur <%= format %>

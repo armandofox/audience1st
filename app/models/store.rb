@@ -1,10 +1,18 @@
 class Store
-  include ActiveMerchant::Billing
-  require 'money'
+  class BillingResponse
+    attr_reader :success, :message, :args
+    def success? ; @success ;  end
+    def initialize(success, message, args1={}, args2={})
+      @success = success
+      @message = message
+      @args1 = args1
+      @args2 = args2
+    end
+  end
   require 'stripe'
   
   def self.purchase!(method, amount, params={}, &blk)
-    return ActiveMerchant::Billing::Response.new(false, "Null payment type") unless (method && params)
+    return Store::BillingResponse.new(false, "Null payment type") unless (method && params)
     blk = Proc.new {} unless block_given?
     case method.to_sym
     when :credit_card
@@ -15,7 +23,7 @@ class Store
     when :cash
       self.purchase_with_cash!(amount, blk)
     else
-      ActiveMerchant::Billing::Response.new(false,
+      Store::BillingResponse.new(false,
         "Invalid payment type #{method}")
     end
   end
@@ -32,7 +40,7 @@ class Store
   
   def self.purchase_with_credit_card!(orig_amount, params, proc)
     if params[:credit_card_token].blank?
-      return ActiveMerchant::Billing::Response.new(false,
+      return Store::BillingResponse.new(false,
         'Credit card information could not be read from form submission', {})
     end
     description = description_from_params(params)
@@ -46,17 +54,17 @@ class Store
           :currency => 'usd',
           :card => params[:credit_card_token],
           :description => description)
-        return ActiveMerchant::Billing::Response.new(true,
+        return Store::BillingResponse.new(true,
             'Credit card successfully charged',
             {},
             {:authorization => result.id})
       end
     rescue Stripe::StripeError => e
-      return ActiveMerchant::Billing::Response.new(false,
+      return Store::BillingResponse.new(false,
         'Payment gateway error: ' + e.message,
         {} )
     rescue Exception => e
-      return  ActiveMerchant::Billing::Response.new(false, e.message)
+      return  Store::BillingResponse.new(false, e.message)
     end
   end
 
@@ -64,11 +72,11 @@ class Store
     ActiveRecord::Base.transaction do
       begin
         proc.call
-        ActiveMerchant::Billing::Response.new(success=true,
+        Store::BillingResponse.new(success=true,
                                               message="Cash purchase recorded",
                                               :transaction_id => "CASH")
       rescue Exception => e
-        ActiveMerchant::Billing::Response.new(success=false,
+        Store::BillingResponse.new(success=false,
           message=e.message)
       end
     end
@@ -78,11 +86,11 @@ class Store
     ActiveRecord::Base.transaction do
       begin
         proc.call
-        ActiveMerchant::Billing::Response.new(success = true,
+        Store::BillingResponse.new(success = true,
                                             message = "Check recorded",
                                             :transaction_id => cknum.to_s)
       rescue Exception => e
-        ActiveMerchant::Billing::Response.new(success = false,
+        Store::BillingResponse.new(success = false,
                                               message = e.message)
       end
     end

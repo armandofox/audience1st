@@ -1,5 +1,7 @@
 # -*- mode: ruby; -*-
 
+
+
 source :rubygems
 
 gem 'acts_as_reportable', '1.1.1'
@@ -14,30 +16,27 @@ gem 'mysql', '2.8.1'
 gem 'nokogiri', '1.4.3.1'
 gem 'rails', '2.3.11'
 gem 'rake', '>= 10.0.0'
-gem 'ruby-debug', '0.10.3'
 gem 'ruport', '1.6.3'
 gem 'stripe', '1.5.16'
 # not really development dependencies, but 'rake' needs them 
 gem 'rdoc'
-gem 'rspec', '1.3.0'
-
-
-# deprecated soon
-gem 'activemerchant', '1.4.2', :require => 'active_merchant'
-gem 'money', '2.1.3'
+gem 'rspec', '~> 1.3'
 
 group :development, :test do
   # cucumber and capybara
+  gem 'ruby-debug'
   gem 'ZenTest'
-  gem 'capistrano', '2.5.10'
-  gem 'capybara', '0.4.1.2'
-  gem 'chronic', '0.9.1'
+  gem 'capistrano'
+  gem 'capybara'
+  gem 'capybara-webkit'
+  gem 'chronic'
+  gem 'timecop'
   gem 'cucumber'
   gem 'cucumber-rails'
   gem 'database_cleaner'
   gem 'fakeweb'
   gem 'launchy'
-  gem 'rack-test', '0.5.7'
-  gem 'rspec-rails', '1.3.2'
-  gem 'timecop', '0.3.5'
+  gem 'rack-test'
+  gem 'rspec-rails'
+  gem 'test-unit', '1.2.3'
 end

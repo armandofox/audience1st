@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include Enumerable
   include ExceptionNotifiable
-  include ActiveMerchant::Billing
   include FilenameUtils
   
   filter_parameter_logging :password

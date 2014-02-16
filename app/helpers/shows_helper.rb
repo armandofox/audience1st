@@ -1,4 +1,4 @@
-module ShowHelper
+module ShowsHelper
 
   def link_to_show_tickets(show, args={})
     action = (show.special? ? 'special' : 'index')

@@ -1,7 +1,4 @@
 class StoreController < ApplicationController
-  include ActiveMerchant::Billing
-
-  require "money.rb"
 
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed comment_changed redeeming_promo_code set_promo_code clear_promo_code)
 

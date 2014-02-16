@@ -1,4 +1,4 @@
-module ShowdateHelper
+module ShowdatesHelper
 
   def time_in_words_relative_to(ed,sd)
     if (sd.month == ed.month) && (sd.day == ed.day) && (sd.year == ed.year)
