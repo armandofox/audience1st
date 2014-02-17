@@ -143,6 +143,24 @@ describe Vouchertype do
       it "should  be valid with only zero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
       end
+      it 'should be invalid if linked to zero valid-vouchers'
+      it 'should be invalid if linked to >1 valid-voucher'
+      describe 'lifecycle' do
+        before :each do
+          @v = Vouchertype.create!(:category => 'bundle',
+            :name => 'test', :price => 10,
+            :offer_public => Vouchertype::ANYONE,
+            :subscription => false, :season => Time.now.year)
+        end
+        it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
+          @v.should have(1).valid_voucher
+        end
+        it 'should destroy its valid-voucher when destroyed' do
+          saved_id = @v.id
+          @v.destroy
+          ValidVoucher.find_by_vouchertype_id(saved_id).should be_nil
+        end
+      end
     end
   end
 

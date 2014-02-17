@@ -94,7 +94,6 @@ module BasicModels
         :account_code => AccountCode.default_account_code,
         :price => 20.00,
         :season => Time.now.year}.merge(args))
-    v.valid_vouchers.create!(:start_sales => start_sales, :end_sales => end_sales, :max_sales_for_type => 0)
     v
   end
   def self.create_included_vouchertype(args={})

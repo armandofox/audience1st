@@ -7,7 +7,7 @@ class Vouchertype < ActiveRecord::Base
   belongs_to :account_code
   validates_associated :account_code
 
-  has_many :valid_vouchers
+  has_many :valid_vouchers, :dependent => :destroy
   has_many :vouchers
   has_many :showdates, :through => :valid_vouchers
   serialize :included_vouchers, Hash
@@ -35,7 +35,20 @@ class Vouchertype < ActiveRecord::Base
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
+  after_create :setup_valid_voucher_for_bundle, :if => :bundle?
+  
   protected
+
+  # When a bundle is created, automatically create the single valid-voucher
+  # that will be linked to it.
+  def setup_valid_voucher_for_bundle
+    self.valid_vouchers.create!(
+      :max_sales_for_type => 0, # unlimited
+      :start_sales => Time.at_beginning_of_season(season),
+      :end_sales   => Time.at_end_of_season(season),
+      :promo_code  => nil
+      )
+  end
 
   def self.ensure_valid_name(name)
     # make name valid if it isn't already
@@ -314,7 +327,7 @@ class Vouchertype < ActiveRecord::Base
   end
 
   # BUG: this duplicates functionality 
-
+  
 end
 
 # For convenience, we define using_promo_code as an instance method of Enumerable so that
