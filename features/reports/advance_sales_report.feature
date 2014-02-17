@@ -7,7 +7,7 @@ Feature: generate advance sales reports
 Background:
 
   Given I am logged in as box office manager
-  And   the following shows exist:
+  And   the following Shows exist:
   | name      | opening_date | closing_date | house_capacity |
   | Hamlet    | 1/1/2010     | 1/31/2010    |             50 |
   | King Lear | 1/20/2012    | 1/31/2012    |             50 |

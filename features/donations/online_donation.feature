@@ -6,7 +6,7 @@ Feature: dedicated landing page for online donations
 
 Background:
 
-  Given the following account codes exist:
+  Given the following Account Codes exist:
   | name         | code | description                                                     |
   | History Fund | 7575 | The History Fund supports exhibits about the theater's history. |
   | Default Fund | 4040 |                                                                 |

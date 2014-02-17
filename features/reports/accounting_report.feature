@@ -7,19 +7,19 @@ Feature: run accounting report
 Background: 
 
   Given I am logged in as staff
-  And the following account codes exist:
+  And the following Account Codes exist:
     | name     | code | description                   |
     | Tickets  | 1111 | Ticket revenue                |
     | Donation | 2222 | General donations             |
     | Capital  | 3333 | Donations to capital campaign |
-  And the following purchasemethods exist:
+  And the following Purchasemethods exist:
     | description | shortdesc | nonrevenue |
     | Credit Card | box_cc    | nil        |
     | Cash        | box_cash  | nil        |
 
 Scenario: View breakdown of donations by date and account code
 
-  Given the following donations exist:
+  Given the following Donations exist:
     | sold_on         | amount | account_code  | customer_id | purchasemethod          |
     | 3/10/11 11:00am |  25.00 | name:Donation |          77 | description:Credit Card |
     | 3/12/11 1:00pm  |     20 | name:Donation |          77 | description:Cash        |

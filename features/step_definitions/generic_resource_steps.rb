@@ -1,4 +1,4 @@
-Given /^the following (.*) instances exist:/ do |thing, instances|
+Given /^the following ([A-Z].*) exist:/ do |thing, instances|
   klass = thing.gsub(/\s+/, '_').classify.constantize
   instances.hashes.each do |hash|
     hash.each_pair do |k,v|
