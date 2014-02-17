@@ -28,6 +28,7 @@ Scenario: Create new subscription vouchertype
   And it should have a season of 2011
   And it should be a Bundle voucher
   When I visit the edit page for the "NewSub" vouchertype
-  Then "September 15, 2011" should be selected as the "Sales start" date
-  And  "September 14, 2012" should be selected as the "Sales end" date
+  Then show me the page
+  Then "September 15, 2011" should be selected as the "Start sales" date
+  And  "September 14, 2012" should be selected as the "End sales" date
   

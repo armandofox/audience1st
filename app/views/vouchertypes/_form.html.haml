@@ -76,21 +76,22 @@
   /This part of form is for bundle vouchers
 
   #for_bundles
-    %p#p_vouchertype_bundle_sales_start
-      %label{:for=>:vouchertype_bundle_sales_start} Sales start
-      = datetime_select 'vouchertype', 'bundle_sales_start'
+    - fields_for @valid_voucher do |vv|
 
-    %p#p_vouchertype_bundle_sales_end
-      %label{:for=>:vouchertype_bundle_sales_end} Sales end
-      = datetime_select 'vouchertype', 'bundle_sales_end'
+      %p#p_vouchertype_bundle_sales_start
+        = vv.label :start_sales
+        = vv.datetime_select 'start_sales'
 
-    %p#p_vouchertype_bundle_promo_code
-      %label{:for => :vouchertype_bundle_promo_code} Promo code(s)
-      = text_field 'vouchertype', 'bundle_promo_code', :size => 40
-      = popup_help_for 'vouchertype_bundle_promo_code'
+      %p#p_vouchertype_bundle_sales_end
+        = vv.label :end_sales
+        = vv.datetime_select 'end_sales'
+
+      %p#p_vouchertype_bundle_promo_code
+        = vv.label :promo_code
+        = vv.text_field 'promo_code', :size => 40
 
     %p#p_vouchertype_vouchertype_included_vouchers
-      %label{:for=>:vouchertype_included_vouchers} Included vouchers:
+      %label Included vouchers:
       %br/
 
     #included_vouchers= render :partial => 'included_vouchers', :locals => {:season => @vouchertype.season }

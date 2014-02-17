@@ -143,8 +143,6 @@ describe Vouchertype do
       it "should  be valid with only zero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
       end
-      it 'should be invalid if linked to zero valid-vouchers'
-      it 'should be invalid if linked to >1 valid-voucher'
       describe 'lifecycle' do
         before :each do
           @v = Vouchertype.create!(:category => 'bundle',
@@ -159,6 +157,19 @@ describe Vouchertype do
           saved_id = @v.id
           @v.destroy
           ValidVoucher.find_by_vouchertype_id(saved_id).should be_nil
+        end
+        describe 'attempting to change to a non-bundle after creation' do
+          before :each do
+            @result = @v.update_attributes(:category => :revenue)
+          end
+          it 'should fail' do ; @result.should be_false ; end
+          it 'should explain why' do
+            @v.errors.on(:category).should include_match_for(/cannot be changed/)
+          end
+          it 'should not change the category' do
+            @v.reload
+            @v.category.should == :bundle
+          end
         end
       end
     end

@@ -35,10 +35,18 @@ class Vouchertype < ActiveRecord::Base
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
+  before_update :cannot_change_category
   after_create :setup_valid_voucher_for_bundle, :if => :bundle?
   
   protected
 
+  # can't change the category of an existing bundle
+  def cannot_change_category
+    if category != category_was
+      self.errors.add(:category, 'cannot be changed on an existing voucher type')
+      false
+    end
+  end
   # When a bundle is created, automatically create the single valid-voucher
   # that will be linked to it.
   def setup_valid_voucher_for_bundle

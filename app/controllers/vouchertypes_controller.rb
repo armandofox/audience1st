@@ -92,6 +92,7 @@ class VouchertypesController < ApplicationController
   def edit
     @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
+    @valid_voucher = @vouchertype.valid_vouchers.first if @vouchertype.bundle?
     if @num_vouchers > 0
       flash[:warning] = "#{@num_vouchers} vouchers of this voucher type have already been issued.  Any changes  you make will be retroactively reflected to all of them.  If this is not what you want, click Cancel below."
     end
@@ -100,20 +101,14 @@ class VouchertypesController < ApplicationController
   def update
     @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
-    was_bundle_before = @vouchertype.bundle?
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
     end
     if @vouchertype.update_attributes(params[:vouchertype])
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                            :comments => "Modify voucher type #{@vouchertype.name}")
-      if @vouchertype.bundle? and !was_bundle_before
-        flash[:notice] = 'Please edit bundle quantities now.'
-        redirect_to :action => 'edit', :id => @vouchertype
-      else
-        flash[:notice] = 'Vouchertype was successfully updated.'
-        redirect_to :action => 'list', :season => @vouchertype.season
-      end
+      flash[:notice] = 'Vouchertype was successfully updated.'
+      redirect_to :action => 'list', :season => @vouchertype.season
     else
       flash[:notice] = 'Update failed, please re-check information and try again'
       render :action => 'edit'
