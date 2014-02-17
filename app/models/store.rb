@@ -1,12 +1,11 @@
 class Store
   class BillingResponse
-    attr_reader :success, :message, :args
+    attr_reader :success, :message, :args, :authorization
     def success? ; @success ;  end
-    def initialize(success, message, args1={}, args2={})
+    def initialize(success, message, authorization='')
       @success = success
       @message = message
-      @args1 = args1
-      @args2 = args2
+      @authorization = authorization
     end
   end
   require 'stripe'
@@ -56,13 +55,11 @@ class Store
           :description => description)
         return Store::BillingResponse.new(true,
             'Credit card successfully charged',
-            {},
-            {:authorization => result.id})
+          result.id.to_s)
       end
     rescue Stripe::StripeError => e
       return Store::BillingResponse.new(false,
-        'Payment gateway error: ' + e.message,
-        {} )
+        'Payment gateway error: ' + e.message)
     rescue Exception => e
       return  Store::BillingResponse.new(false, e.message)
     end
@@ -72,12 +69,10 @@ class Store
     ActiveRecord::Base.transaction do
       begin
         proc.call
-        Store::BillingResponse.new(success=true,
-                                              message="Cash purchase recorded",
-                                              :transaction_id => "CASH")
+        Store::BillingResponse.new(success=true, message="Cash purchase recorded",
+          auth="CASH")
       rescue Exception => e
-        Store::BillingResponse.new(success=false,
-          message=e.message)
+        Store::BillingResponse.new(success=false, message=e.message)
       end
     end
   end
@@ -88,10 +83,9 @@ class Store
         proc.call
         Store::BillingResponse.new(success = true,
                                             message = "Check recorded",
-                                            :transaction_id => cknum.to_s)
+                                            auth=cknum.to_s)
       rescue Exception => e
-        Store::BillingResponse.new(success = false,
-                                              message = e.message)
+        Store::BillingResponse.new(success = false, message = e.message)
       end
     end
   end    

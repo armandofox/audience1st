@@ -11,10 +11,13 @@ describe Store::BillingResponse do
   end
   describe 'success' do
     before :each do
-      @r = Store::BillingResponse.new(success=true, message="message", :transaction_id => "0000")
+      @r = Store::BillingResponse.new(success=true, message="message", '0000')
     end
     it 'should be successful' do
       @r.should be_success
+    end
+    it 'should have txn id' do
+      @r.authorization.should == '0000'
     end
   end
 end
