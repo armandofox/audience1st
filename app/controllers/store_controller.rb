@@ -48,7 +48,6 @@ class StoreController < ApplicationController
     # which subscriptions/bundles are available now?
     @promo_code = redeeming_promo_code
     @subs_to_offer = Vouchertype.bundles_available_to(@customer, @gAdmin.is_boxoffice).using_promo_code(@promo_code).map { |v| v.valid_vouchers.first }
-    debugger
     if @subs_to_offer.empty?
       flash[:warning] = "There are no subscriptions on sale at this time."
       redirect_to_index

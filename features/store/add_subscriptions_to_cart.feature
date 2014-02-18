@@ -8,7 +8,12 @@ Feature: Add subscriptions to cart
     Given a "Regular Sub" subscription available to anyone for $50.00
     And I go to the subscriptions page
     Then I should see "Buy Subscriptions"
-    And I should see a quantity menu for "Regular Sub"
+    When I select "2" from "Regular Sub"
+    And I press "CONTINUE >>"
+    Then show me the page
+    Then I should be on the Checkout page
+    And I should see "100.00" within "#cart_total"
+
 
   Scenario:  Add subscriptions to order when not logged in  
 

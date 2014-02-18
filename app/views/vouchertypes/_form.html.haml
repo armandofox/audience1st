@@ -76,15 +76,19 @@
   #for_bundles
     - fields_for @valid_voucher do |vv|
 
-      %p#p_vouchertype_bundle_sales_start
+      %p
+        %label{:for => :valid_voucher_max_sales_for_type} Max sales (0 = unlimited)
+        = vv.text_field :max_sales_for_type
+
+      %p
         = vv.label :start_sales
         = vv.datetime_select 'start_sales'
 
-      %p#p_vouchertype_bundle_sales_end
+      %p
         = vv.label :end_sales
         = vv.datetime_select 'end_sales'
 
-      %p#p_vouchertype_bundle_promo_code
+      %p
         = vv.label :promo_code
         = vv.text_field 'promo_code', :size => 40
 
