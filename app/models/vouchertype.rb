@@ -53,7 +53,7 @@ class Vouchertype < ActiveRecord::Base
   # that will be linked to it.
   def setup_valid_voucher_for_bundle
     self.valid_vouchers.create!(
-      :max_sales_for_type => 0, # unlimited
+      :max_sales_for_type => nil, # unlimited
       :start_sales => Time.at_beginning_of_season(season),
       :end_sales   => Time.at_end_of_season(season),
       :promo_code  => nil

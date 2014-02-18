@@ -52,9 +52,9 @@ end
 Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |name, to_whom, price| 
   @sub = Vouchertype.create!(
     :name => name,
+    :category => :bundle,
+    :subscription => true,
     :price => price,
-    :bundle_sales_start => Time.now - 1.day,
-    :bundle_sales_end   => Time.now + 1.day,
     :walkup_sale_allowed => false,
     :offer_public => case to_whom
                  when /anyone/ ;     Vouchertype::ANYONE ;
@@ -63,10 +63,13 @@ Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |
                  when /box ?office/ ;Vouchertype::BOXOFFICE ;
                  else raise "Subscription available to whom?"
                  end,
-    :category => :bundle,
-    :subscription => true,
     :account_code => AccountCode.default_account_code,
     :season => Time.now.at_beginning_of_season.year
+    )
+  @sub.valid_vouchers.first.update_attributes!(
+    :start_sales => Time.now - 1.day,
+    :end_sales   => Time.now + 1.day,
+    :max_sales_for_type => nil
     )
 end
 

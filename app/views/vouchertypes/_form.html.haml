@@ -77,7 +77,7 @@
     - fields_for @valid_voucher do |vv|
 
       %p
-        %label{:for => :valid_voucher_max_sales_for_type} Max sales (0 = unlimited)
+        %label{:for => :valid_voucher_max_sales_for_type} Max sales (Leave blank for unlimited)
         = vv.text_field :max_sales_for_type
 
       %p

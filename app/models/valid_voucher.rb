@@ -9,13 +9,20 @@ is accepted", and encodes additional information such as the capacity limit for 
 =end
 
 class ValidVoucher < ActiveRecord::Base
+
   belongs_to :showdate
   belongs_to :vouchertype
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
-  validates_numericality_of :max_sales_for_type
+  validates_numericality_of :max_sales_for_type, :allow_nil => true, :greater_than_or_equal_to => 0
   validates_presence_of :start_sales
   validates_presence_of :end_sales
+
+
+  # Capacity is infinite if it is left blank
+  INFINITE = 1 << 20
+  def max_sales_for_type ; self[:max_sales_for_type] || INFINITE ; end
+  def sales_unlimited?   ; max_sales_for_type >= INFINITE ; end
 
   validate :check_dates
 
@@ -75,11 +82,15 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = "Ticket sales of this type restricted to #{offer_public_as_string}"
       self.visible = false
     end
+    self.max_sales_for_type = 0 if !self.explanation.blank?
     !self.explanation.blank?
   end
 
   def adjust_for_showdate
-    return nil if !showdate
+    if !showdate
+      self.max_sales_for_type = 0
+      return nil
+    end
     if showdate.thedate < Clock.now
       self.explanation = 'Event date is in the past'
       self.visible = false
@@ -87,6 +98,7 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = 'Event is sold out'
       self.visible = true
     end
+    self.max_sales_for_type = 0 if !self.explanation.blank?
     !self.explanation.blank?
   end
 
@@ -102,6 +114,7 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = "Tickets of this type not sold after #{end_sales.to_formatted_s(:showtime)}"
       self.visible = true
     end
+    self.max_sales_for_type = 0 if !self.explanation.blank?
     !self.explanation.blank?
   end
 
@@ -147,7 +160,7 @@ class ValidVoucher < ActiveRecord::Base
   def seats_of_type_remaining
     total_empty = showdate.saleable_seats_left
     return 1e6 unless showdate
-    remain = if max_sales_for_type.zero? # no limit on ticket type: only limit is show capacity
+    remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
              then total_empty
              else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
              end
@@ -158,7 +171,7 @@ class ValidVoucher < ActiveRecord::Base
   # showdate, since admins do not have to respect capacity controls
   def adjust_for_admin
     result = self.clone_with_id
-    result.max_sales_for_type = 1e6
+    result.max_sales_for_type = INFINITE
   end
 
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to

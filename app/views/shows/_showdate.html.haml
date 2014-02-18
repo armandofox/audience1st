@@ -34,7 +34,7 @@
           %tr[v]
             - nsales = showdate.sales_by_type(v.vouchertype_id)
             %td= nsales
-            %td= (max = v.max_sales_for_type).zero? ? '' : max
+            %td= sales_unlimited? ? '' : max_sales_for_type
             %td
               = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
               = "(#{h(v.promo_code)})" unless v.promo_code.blank?

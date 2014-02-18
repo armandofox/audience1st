@@ -205,7 +205,7 @@ describe ValidVoucher do
     end
     context "without capacity controls should match showdate's saleable seats" do
       let(:showdate_seats)   { 10 }
-      let(:capacity_control) { 0 }
+      let(:capacity_control) { nil }
       let(:existing_sales)   { 10 }
       its(:seats_of_type_remaining)  { should == 10 }
     end
@@ -229,7 +229,7 @@ describe ValidVoucher do
     end
     context "should respect overall capacity if show is advance-sold-out" do
       let(:showdate_seats)   { 0  }
-      let(:capacity_control) { 0  }
+      let(:capacity_control) { nil  }
       let(:existing_sales)   { 10 }
       its(:seats_of_type_remaining)  { should be_zero }
     end
