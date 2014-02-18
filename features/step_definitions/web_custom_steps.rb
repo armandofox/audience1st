@@ -25,7 +25,7 @@ end
 Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
   html = Nokogiri::HTML(page.body)
   menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
-  html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank
+  html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank, "Expected '#{opt}' to be selected in the '#{menu}' menu, but it was not"
 end
 
 Then /^nothing should be selected in the "(.*)" menu$/ do |menu|
@@ -33,9 +33,9 @@ Then /^nothing should be selected in the "(.*)" menu$/ do |menu|
   menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
   within "##{menu_id}" do
     # there should exist a blank option
-    page.should have_xpath("//option[contains(text(),'')]")
+    page.should have_xpath("//option[contains(text(),'')]"), "Menu doesn't have a blank option"
     # no nonblank option should be marked as 'selected'
-    page.should have_no_xpath("//option[text() != '' and @selected='selected']")
+    page.should have_no_xpath("//option[text() != '' and @selected='selected']"), "Expected menu's blank option to be selected, but it was not"
   end
 end
 

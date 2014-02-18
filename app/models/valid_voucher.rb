@@ -20,7 +20,7 @@ class ValidVoucher < ActiveRecord::Base
   validate :check_dates
 
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
-  validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance"
+  validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance", :unless => lambda { |s| s.showdate_id.nil? }
 
   attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is

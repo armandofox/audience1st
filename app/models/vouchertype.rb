@@ -8,19 +8,21 @@ class Vouchertype < ActiveRecord::Base
   validates_associated :account_code
 
   has_many :valid_vouchers, :dependent => :destroy
+  accepts_nested_attributes_for :valid_vouchers
   has_many :vouchers
   has_many :showdates, :through => :valid_vouchers
   serialize :included_vouchers, Hash
 
   NAME_LIMIT = 80
-
+  CATEGORIES = [:revenue, :comp, :subscriber, :bundle, :nonticket]
+  
   validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
   validates_numericality_of :price, :greater_than_or_equal_to => 0
   validates_numericality_of :season, :in => 1900..2100
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
-  validates_inclusion_of :category, :in => [:revenue, :comp, :subscriber, :bundle, :nonticket]
+  validates_inclusion_of :category, :in => CATEGORIES
   # Vouchertypes whose price is zero must NOT be available
   # to subscribers or general public
   validates_exclusion_of(:offer_public, :in => [1,2],

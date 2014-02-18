@@ -104,6 +104,12 @@ class VouchertypesController < ApplicationController
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
     end
+    # this is a hack, since we should really use the nested-attribute
+    #  form tags to do this, but the view is messy right now.
+    if params[:valid_voucher]
+      params[:valid_voucher][:id] = @vouchertype.valid_vouchers.first.id
+      params[:vouchertype][:valid_vouchers_attributes] = [ params[:valid_voucher] ]
+    end
     if @vouchertype.update_attributes(params[:vouchertype])
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                            :comments => "Modify voucher type #{@vouchertype.name}")
@@ -111,7 +117,7 @@ class VouchertypesController < ApplicationController
       redirect_to :action => 'list', :season => @vouchertype.season
     else
       flash[:notice] = 'Update failed, please re-check information and try again'
-      render :action => 'edit'
+      redirect_to :action => 'edit', :id => @vouchertype
     end
   end
 

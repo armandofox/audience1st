@@ -28,7 +28,21 @@ Scenario: Create new subscription vouchertype
   And it should have a season of 2011
   And it should be a Bundle voucher
   When I visit the edit page for the "NewSub" vouchertype
-  Then show me the page
   Then "September 15, 2011" should be selected as the "Start sales" date
   And  "September 14, 2012" should be selected as the "End sales" date
-  
+
+Scenario: Edit existing subscription vouchertype
+
+  Given a "Regular Sub" subscription available to anyone for $50.00
+  When I visit the edit page for the "Regular Sub" vouchertype
+  When I select "Box office use only" from "Availability"
+  And I select "December 1, 2011" as the "Start sales" date
+  And I fill in "Promo code" with "WXYZ"
+  And I press "Save Changes"
+  Then I should see "Vouchertype was successfully updated"
+  When I visit the edit page for the "Regular Sub" vouchertype
+  Then show me the page
+  Then "December 1, 2011" should be selected as the "Start sales" date
+  And "Box office use only" should be selected in the "Availability" menu
+
+
