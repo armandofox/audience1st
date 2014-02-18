@@ -41,7 +41,6 @@ Scenario: Edit existing subscription vouchertype
   And I press "Save Changes"
   Then I should see "Vouchertype was successfully updated"
   When I visit the edit page for the "Regular Sub" vouchertype
-  Then show me the page
   Then "December 1, 2011" should be selected as the "Start sales" date
   And "Box office use only" should be selected in the "Availability" menu
 
