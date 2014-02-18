@@ -8,9 +8,14 @@ class AddValidVouchersForBundles < ActiveRecord::Migration
       vt.valid_vouchers.create!(
         :start_sales =>  vt.bundle_sales_start,
         :end_sales =>  [vt.bundle_sales_end, Time.at_end_of_season(vt.season)].min, # whichever is earlier
+        :promo_code => vt.bundle_promo_code,
         :max_sales_for_type => nil)
     end
     ValidVoucher.update_all('max_sales_for_type=NULL', 'max_sales_for_type=0')
+    remove_column :vouchertypes, :bundle_sales_start
+    remove_column :vouchertypes, :bundle_sales_end
+    remove_column :vouchertypes, :bundle_promo_code
+    remove_column :vouchertypes, :valid_date
   end
 
   def self.down

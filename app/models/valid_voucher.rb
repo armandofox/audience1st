@@ -156,7 +156,19 @@ class ValidVoucher < ActiveRecord::Base
     start_sales.strftime('%c'), end_sales.strftime('%c'),
     promo_code
   end
-  
+
+  def self.bundles_available_to(customer = Customer.generic_customer, admin = nil, promo_code=nil)
+    # in Rails 3 this can be cleaned up by building up query with ARel
+    bundles = ValidVoucher.find(:all, :include => :vouchertype, :conditions => 'vouchertypes.category = "bundle"',
+      :order => "season DESC,display_order,price DESC")
+    if !admin
+      bundles.map! do |b|
+        b.customer = customer
+        b.adjust_for_customer(promo_code)
+      end
+    end
+  end
+
   def seats_of_type_remaining
     total_empty = showdate.saleable_seats_left
     return 1e6 unless showdate

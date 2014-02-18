@@ -82,14 +82,10 @@ module BasicModels
       :season => Time.now.year}.merge(args))
   end
   def self.create_bundle_vouchertype(args={})
-    start_sales = args[:bundle_sales_start] || 1.week.ago
-    end_sales = args[:bundle_sales_end] || 1.week.from_now
     v = Vouchertype.create!({:fulfillment_needed => false,
         :name => "Bundle",
         :category => 'bundle',
         :offer_public => Vouchertype::ANYONE,
-        :bundle_sales_start => start_sales,
-        :bundle_sales_end => end_sales,
         :subscription => false,
         :account_code => AccountCode.default_account_code,
         :price => 20.00,

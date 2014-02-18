@@ -184,8 +184,6 @@ describe Vouchertype do
           :comments => "A comment",
           :account_code => AccountCode.default_account_code,
           :season => @@now.year,
-          :bundle_sales_start => 1.month.ago,
-          :bundle_sales_end => 1.month.from_now
         }
         @sub_anyone = Vouchertype.create!(generic_args.merge({
               :category => :bundle, :subscription => true, :name => "Sub for anyone",
@@ -217,7 +215,7 @@ describe Vouchertype do
       end
       describe "for anyone" do
         before(:each) do
-          @subs = Vouchertype.bundles_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = nil)
+          @subs = ValidVoucher.bundles_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = nil)
         end
         it_should_behave_like "in general"
         it "should exclude subscriber-only products" do ; @subs.should_not include(@sub_subscriber) ;  end
@@ -226,20 +224,20 @@ describe Vouchertype do
       end
       describe "for boxoffice", :shared => true do
         before(:each) do
-          @subs = Vouchertype.bundles_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
+          @subs = ValidVoucher.bundles_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
         end
         it_should_behave_like "in general"
         it "should include boxoffice-only products" do ; @subs.should include(@sub_boxoffice) ;end
       end
       describe "for subscriber" do
         before do
-          @subs = Vouchertype.bundles_available_to(mock_model(Customer, :subscriber? => true, :next_season_subscriber? => false), admin = true)
+          @subs = ValidVoucher.bundles_available_to(mock_model(Customer, :subscriber? => true, :next_season_subscriber? => false), admin = true)
         end
         it_should_behave_like "in general"
       end
       describe "for nonsubscriber" do
         before do
-          @subs = Vouchertype.bundles_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
+          @subs = ValidVoucher.bundles_available_to(mock_model(Customer, :subscriber? => false, :next_season_subscriber? => false), admin = true)
         end
         it_should_behave_like "in general"
       end
