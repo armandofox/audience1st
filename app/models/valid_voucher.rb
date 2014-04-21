@@ -127,18 +127,27 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_capacity
-    if !showdate
-      self.explanation = "No performance-specific limit applies"
-      return
-    end
     self.max_sales_for_type = seats_of_type_remaining()
     self.explanation =
-      if max_sales_for_type.zero?
-      then "No seats remaining for tickets of this type"
+      case max_sales_for_type
+      when 0 then "No seats remaining for tickets of this type"
+      when INFINITE then "No performance-specific limit applies"
       else "#{max_sales_for_type} of these tickets remaining"
       end
     self.visible = true
   end
+
+  def seats_of_type_remaining
+    return INFINITE unless showdate
+    total_empty = showdate.saleable_seats_left
+    remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
+             then total_empty
+             else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
+             end
+    remain = [remain, 0].max    # make sure it's positive
+  end
+
+
 
   def clone_with_id
     result = self.clone
@@ -151,6 +160,7 @@ class ValidVoucher < ActiveRecord::Base
   
   public
 
+  def inspect ; self.to_s ; end
   def to_s
     sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
     start_sales.strftime('%c'), end_sales.strftime('%c'),
@@ -167,16 +177,7 @@ class ValidVoucher < ActiveRecord::Base
         b.adjust_for_customer(promo_code)
       end
     end
-  end
-
-  def seats_of_type_remaining
-    total_empty = showdate.saleable_seats_left
-    return 1e6 unless showdate
-    remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
-             then total_empty
-             else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
-             end
-    remain = [remain, 0].max    # make sure it's positive
+    bundles
   end
 
   # returns a copy of ValidVoucher with available seats pinned to how many are actually available for the
@@ -187,7 +188,8 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
-  # the number of tickets of THIS vouchertype for THIS show available to THIS customer.
+  # the number of tickets of THIS vouchertype for THIS show available to
+  # THIS customer. 
   def adjust_for_customer(customer_supplied_promo_code = '')
     result = self.clone_with_id
     result.supplied_promo_code = customer_supplied_promo_code.to_s

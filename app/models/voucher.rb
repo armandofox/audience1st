@@ -242,12 +242,7 @@ class Voucher < Item
       vouchertype.valid_vouchers.map(&:adjust_for_customer_reservation)
     end
   end
-  def redeemable_for_show?(show,ignore_cutoff = false)
-    show = Show.find(show, :include => :showdates) unless show.kind_of?(Show)
-    show.showdates.map { |sd| self.numseats_for_showdate(sd,:ignore_cutoff=>ignore_cutoff,:redeeming=>true) }.select { |av| av.howmany > 0 }
-  end
-
-
+  
   def reserve_for(desired_showdate, logged_in_id, comments='', opts={})
     logged_in_customer = Customer.find(logged_in_id)
     if reserved?

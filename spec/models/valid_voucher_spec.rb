@@ -259,4 +259,26 @@ describe ValidVoucher do
       it_should_behave_like 'nonblank promo code'
     end
   end
+
+  describe 'bundle availability' do
+    before :each do
+      @anyone_bundle = BasicModels.create_bundle_vouchertype
+      @anyone_bundle_availability = ValidVoucher.new(
+        :vouchertype => @anyone_bundle,
+        :max_sales_for_type => ValidVoucher::INFINITE,
+        :start_sales => 1.week.ago,
+        :end_sales => 1.week.from_now)
+      @anyone = BasicModels.create_generic_customer
+    end
+    it 'for generic bundle should be available to anyone' do
+      ValidVoucher.bundles_available_to(@anyone, admin=nil, promo_code=nil).
+        any? do |offer|
+        offer.vouchertype == @anyone_bundle &&
+          offer.max_sales_for_type == ValidVoucher::INFINITE
+      end.should be_true
+    end
+  end
+
+
+
 end
