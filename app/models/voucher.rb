@@ -220,20 +220,6 @@ class Voucher < Item
     end
   end
 
-
-  # this should probably be eliminated and the function call inlined to wherever
-  # this is called from.
-  def numseats_for_showdate(sd,args={})
-    unless self.valid_for_date?(sd.thedate)
-      AvailableSeat.no_seats(self,sd,"Voucher only valid #{self.validity_dates_as_string}")
-    else
-      ValidVoucher.numseats_for_showdate_by_vouchertype(sd, self.customer,
-                                                        self.vouchertype,
-                                                        :ignore_cutoff => args[:ignore_cutoff],
-                                                        :redeeming => args[:redeeming])
-    end
-  end
-
   def redeemable_showdates(ignore_cutoff = false)
     if ignore_cutoff
       vouchertype.valid_vouchers

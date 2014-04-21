@@ -91,7 +91,7 @@ class ValidVoucher < ActiveRecord::Base
       self.max_sales_for_type = 0
       return nil
     end
-    if showdate.thedate < Clock.now
+    if showdate.thedate < Time.now
       self.explanation = 'Event date is in the past'
       self.visible = false
     elsif showdate.really_sold_out?
@@ -103,7 +103,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_sales_dates
-    now = Clock.now
+    now = Time.now
     if showdate && (now > showdate.end_advance_sales)
       self.explanation = 'Advance sales for this performance are closed'
       self.visible = true
@@ -119,7 +119,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_advance_reservations
-    if Clock.now > end_sales
+    if Time.now > end_sales
       self.explanation = 'Advance reservations for this performance are closed'
       self.max_sales_for_type = 0
     end
@@ -137,18 +137,6 @@ class ValidVoucher < ActiveRecord::Base
     self.visible = true
   end
 
-  def seats_of_type_remaining
-    return INFINITE unless showdate
-    total_empty = showdate.saleable_seats_left
-    remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
-             then total_empty
-             else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
-             end
-    remain = [remain, 0].max    # make sure it's positive
-  end
-
-
-
   def clone_with_id
     result = self.clone
     result.id = self.id # necessary since views expect valid-vouchers to have an id...
@@ -165,6 +153,16 @@ class ValidVoucher < ActiveRecord::Base
     sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
     start_sales.strftime('%c'), end_sales.strftime('%c'),
     promo_code
+  end
+
+  def seats_of_type_remaining
+    return INFINITE unless showdate
+    total_empty = showdate.saleable_seats_left
+    remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
+             then total_empty
+             else  [[max_sales_for_type - showdate.sales_by_type(vouchertype_id), 0].max, total_empty].min
+             end
+    remain = [remain, 0].max    # make sure it's positive
   end
 
   def self.bundles_available_to(customer = Customer.generic_customer, admin = nil, promo_code=nil)
@@ -233,51 +231,6 @@ class ValidVoucher < ActiveRecord::Base
   def name_with_explanation
     display_name = showdate.printable_name
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
-  end
-
-  # get number of seats available for a showdate, given a customer
-  # (different customers have different purchasing rights), a list of
-  # promo_codes (some voucher types are promo_code protected), and whether
-  # to ignore time-based sales cutoffs (default: false).
-  # Returns an AvailableSeat object encapsulating the result of htis
-  # computation along with an English explanation if appropriate.
-
-  def self.numseats_for_showdate_by_vouchertype(sd,cust,vtype,opts={})
-    av = AvailableSeat.new(self,cust,0) # fail safe: 0 available
-    ignore_cutoff = opts.has_key?(:ignore_cutoff) ? opts[:ignore_cutoff] : cust.is_boxoffice
-    redeeming = opts.has_key?(:redeeming) ? opts[:redeeming] : false
-    # Basic checks: is show sold out? have advance sales ended?
-    if (res = sold_out_or_date_invalid(sd,ignore_cutoff))
-      av.howmany = 0
-      av.explanation = res
-      av.staff_only = false
-      return av
-    end
-    # Find the valid_vouchers, if any, that make this vouchertype eligible
-    unless redeeming
-      return av unless  check_visible_to(av,ignore_cutoff)
-    end
-    vv  = vtype.valid_vouchers.select do |v|
-      v.showdate_id == sd.id &&
-        (redeeming || v.promo_code_matches(opts[:promo_code]))
-    end
-    if vv.empty?
-      av.howmany = 0
-      av.explanation = "Ticket type not valid for this performance"
-      return av
-    end
-    if vv.length != 1
-      raise "#{vv.length} entries for vouchertype #{vtype.id} and showdate #{sd.id} (should be 1)"
-    end
-    av.staff_only = false
-    av.howmany,av.explanation = check_date_and_quantity(vv.first,ignore_cutoff)
-    av
-  end
-
-  def self.numseats_for_showdate(sd,cust,opts={})
-    sd.available_vouchertypes.map { |v| numseats_for_showdate_by_vouchertype(sd,cust,v,opts) }
-     # BUG: retrieve promo_codes from opts
-     # BUG: need to consider somewhere whether voucher is expired
   end
 
   # instantiate(logged_in_customer, purchasemethod, howmany=1)
