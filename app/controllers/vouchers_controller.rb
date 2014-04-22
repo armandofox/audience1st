@@ -214,7 +214,7 @@ class VouchersController < ApplicationController
     flash[:notice] << "Your reservations have been cancelled. "
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
     email_confirmation(:cancel_reservation, @gCustomer, old_showdate,
-                       vchs.length, a)
+                       vchs.length, a) unless @gAdmin.is_boxoffice
     redirect_to :controller => 'customers', :action => 'welcome'
   end
 
