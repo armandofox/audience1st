@@ -1,6 +1,6 @@
 # -*- mode: ruby; -*-
 
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'acts_as_reportable', '1.1.1'
 gem 'builder'
@@ -11,9 +11,8 @@ gem 'haml', '3.0.13'
 gem 'i18n', '0.4.0'
 gem 'mechanize', '1.0.0'
 gem 'nokogiri', '1.4.3.1'
-gem 'rails', '2.3.11'
-gem 'rake', '0.9.2.2'
-gem 'ruby-debug', '0.10.3'
+gem 'rails', '2.3.18'
+gem 'rake', '>= 10.0.0'
 gem 'ruport', '1.6.3'
 gem 'stripe', '1.5.16'
 
