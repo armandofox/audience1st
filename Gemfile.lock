@@ -146,7 +146,7 @@ DEPENDENCIES
   capybara
   capybara-webkit
   chronic
-  constant_contact
+  constant_contact (= 1.4.0)
   cucumber
   cucumber-rails
   database_cleaner
@@ -162,7 +162,7 @@ DEPENDENCIES
   rack-test
   rails (= 2.3.18)
   rake (>= 10.0.0)
-  rdoc (= 4.0.1)
+  rdoc
   rspec (~> 1.3)
   rspec-rails
   ruby-debug
