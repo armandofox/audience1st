@@ -14,7 +14,7 @@
 
   #ticket_menus
     - form_tag :action => 'process_cart' do
-      = render :partial => 'ticket_menus'
+      = render :partial => 'ticket_menus' unless @valid_vouchers.empty?
 
       = render :partial => 'retail' if @gAdmin.is_boxoffice
 

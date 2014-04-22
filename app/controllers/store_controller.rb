@@ -289,6 +289,7 @@ class StoreController < ApplicationController
   end
 
   def setup_for_showdate(sd)
+    @valid_vouchers = [] and return if sd.nil?
     @sd = sd
     @sh = @sd.show
     @special_shows_only = @sh.special?

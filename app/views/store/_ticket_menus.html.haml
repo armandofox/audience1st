@@ -32,11 +32,10 @@
         - if @gAdmin.is_boxoffice
           = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
         - else
-          - max_sales = [30, v.max_sales_for_type].min
-          = select_tag(fieldname, options_for_select(0..max_sales), :onchange => 'recalc_total()', :class => 'itemQty')
-        -# offer explanation if voucher count is zero
-        - if max_sales.zero?
-          %span= v.explanation
+          - if (max_sales = [30, v.max_sales_for_type].min).zero?
+            %span= v.explanation
+          - else
+            = select_tag(fieldname, options_for_select(0..max_sales), :onchange => 'recalc_total()', :class => 'itemQty')
         %br/
         = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 

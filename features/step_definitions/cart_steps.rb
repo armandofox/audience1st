@@ -16,7 +16,7 @@ Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, 
 end
 
 Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
-  Then %Q{I should see /\W#{type}\W/ within "#cart_items" #{num} times}
+  Then %Q{I should see /#{type}/ within "#cart_items" #{num} times}
 end
 
 
