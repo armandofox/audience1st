@@ -137,6 +137,7 @@ describe ValidVoucher do
           @sd.update_attribute(:end_advance_sales, 1.day.ago)
           @v = ValidVoucher.create!(:showdate => @sd,
             :vouchertype => @vt_regular,
+            :max_sales_for_type => 1000,
             :start_sales => 3.days.ago,
             :end_sales => 1.day.from_now)
         end
