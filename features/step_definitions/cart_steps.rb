@@ -6,7 +6,7 @@ end
 
 
 Given /^my cart contains the following tickets:/ do |tickets|
-  process_tickets(tickets.hashes)
+  create_tickets(tickets.hashes)
   click_button 'CONTINUE >>'
 end
 

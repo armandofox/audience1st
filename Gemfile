@@ -15,6 +15,7 @@ gem 'rails', '2.3.18'
 gem 'rake', '>= 10.0.0'
 gem 'ruport', '1.6.3'
 gem 'stripe', '1.5.16'
+gem 'ruby-debug'
 
 # deprecated soon
 gem 'activemerchant', '1.4.2', :require => 'active_merchant'
