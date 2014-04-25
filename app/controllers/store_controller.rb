@@ -298,7 +298,7 @@ class StoreController < ApplicationController
   end
 
   def setup_ticket_menus_for_admin
-    @valid_vouchers = @sd.valid_vouchers.sort_by(&:display_order)
+    @valid_vouchers = @sd.valid_vouchers.map(&:adjust_for_customer).sort_by(&:display_order)
     @all_shows = Show.
       all_for_seasons(Time.this_season - 1, Time.this_season).
       special(@special_shows_only)  ||  []

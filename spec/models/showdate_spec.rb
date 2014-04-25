@@ -75,6 +75,21 @@ describe Showdate do
       end
     end
   end
+  describe 'max sales' do
+    before :each do
+      @s = BasicModels.create_one_showdate(Time.now, cap=200)
+    end
+    it 'may exceed house capacity' do
+      @s.update_attributes!(:max_sales => 300)
+      @s.max_allowed_sales.should == 300
+    end
+    describe 'when zero' do
+      before(:each) { @s.update_attributes!(:max_sales => 0) }
+      it('should be allowed') {  @s.max_allowed_sales.should be_zero }
+      it('should make show sold-out') { @s.should be_really_sold_out }
+    end
+      
+  end
   describe "computing" do
     before(:each) do
       @house_cap = 12
@@ -129,15 +144,6 @@ describe Showdate do
         @v.save!
         @showdate.revenue.should ==  99.00
       end
-      it "should never allow max sales to exceed house capacity" do
-        @showdate.show.stub!(:house_capacity).and_return(5)
-        @showdate.max_allowed_sales.should == 5
-      end
-      it "when max_sales not set should default to house capacity" do
-        @showdate.show.stub!(:house_capacity).and_return(9)
-        @showdate.update_attribute(:max_sales, 0)
-        @showdate.max_allowed_sales.should == 9
-      end
     end
     describe "capacity computations" do
       describe "for normal sales", :shared => true do
@@ -162,15 +168,6 @@ describe Showdate do
         end
         it "should compute percent of house" do
           @showdate.percent_of_house.should == ((@total_sold.to_f / @house_cap) * 100).floor
-        end
-        it "should never allow max sales to exceed house capacity" do
-          @showdate.show.stub!(:house_capacity).and_return(5)
-          @showdate.max_allowed_sales.should == 5
-        end
-        it "when max_sales not set should default to house capacity" do
-          @showdate.show.stub!(:house_capacity).and_return(9)
-          @showdate.update_attribute(:max_sales, 0)
-          @showdate.max_allowed_sales.should == 9
         end
       end
       describe "when house is partly sold" do

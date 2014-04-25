@@ -15,13 +15,27 @@ Scenario Outline: Date-related restrictions
 
   Given sales cutoff at "<end_advance_sales>", with "General" tickets selling from <start_sales> to <end_sales>
   When I visit the store page for "Fame"
-  Then I should see "<message>" within "#ticket_menus"
+  Then I should see "<message>" within the container for "General" tickets
 
   Examples:
   | end_advance_sales | start_sales | end_sales     | message                                                          |
   | 4/10/13 6pm       | 4/2/13  8pm | 4/4/13 5:00pm | Tickets of this type not on sale until Tuesday, Apr  2,  8:00 PM |
   | 4/10/13 6pm       | 3/30/13 8pm | 3/31/13 5pm   | Tickets of this type not sold after Sunday, Mar 31,  5:00 PM     |
-  | 3/31/13 6pm       | 3/29/13 6pm | 3/30/13 5pm   | Advance reservations for this performance are closed             |
+  | 3/31/13 6pm       | 3/29/13 6pm | 3/30/13 5pm   | Advance sales for this performance are closed                    |
+  | 4/10/13 6pm       | 3/30/13 6pm | 3/31/13 6pm   |                                                                  |
 
+Scenario Outline: Capacity-related restrictions
+
+  Given there are <per_ticket_limit> "General" tickets and <remaining_seats> total seats available
+  When I visit the store page for "Fame"
+  Then I should see "<message>" within the container for "General" tickets
+
+  Examples:
+  | per_ticket_limit | remaining_seats | message                                     |
+  |                3 |               0 | Event is sold out                           |
+  |                0 |               3 | No seats remaining for tickets of this type |
+  |                3 |               2 | 2 of these tickets remaining                |
+  |                3 |               3 | 3 of these tickets remaining                |
+  |                  |                 |                                             |
 
 

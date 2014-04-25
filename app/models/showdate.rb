@@ -128,7 +128,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def max_allowed_sales
-    self.max_sales.zero? ? self.house_capacity : [self.max_sales,self.house_capacity].min
+    self.max_sales
   end
 
   def total_offered_for_sale ; house_capacity ; end
@@ -160,7 +160,6 @@ class Showdate < ActiveRecord::Base
   def percent_of(cap)
     cap.to_f == 0.0 ?  100 : (100.0 * compute_total_sales / cap).floor
   end
-      
 
   # percent of max sales: may exceed 100
   def percent_sold
@@ -197,8 +196,6 @@ class Showdate < ActiveRecord::Base
     self.vouchers.count(:conditions => ['customer_id = ?', Customer.walkup_customer.id])
   end
 
-  def really_sold_out? ; compute_total_sales >= house_capacity ; end
-  
   def checked_in
     self.vouchers.count(:conditions => ['checked_in = ?', true])
   end

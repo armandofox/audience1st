@@ -33,6 +33,11 @@ Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, ticket
   order.finalize!
 end
 
+Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message, name|
+  div_id = Vouchertype.find_by_name!(name).id
+  page.find("div#vouchertype_#{div_id} span.admin").text.should == message
+end
+
 When /^the order is placed successfully$/ do
   Store.stub!(:pay_with_credit_card).and_return(true)
   click_button 'Charge Credit Card' # but will be handled as Cash sale in 'test' environment

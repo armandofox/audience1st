@@ -62,7 +62,7 @@ describe ValidVoucher do
     describe 'for reservation using existing voucher' do
       context 'when after deadline' do
         subject do
-          s = BasicModels.create_one_showdate(1.day.from_now)
+          s = BasicModels.create_one_showdate(1.day.from_now, maxcap=200)
           v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)
           v.adjust_for_customer_reservation
         end

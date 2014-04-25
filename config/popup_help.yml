@@ -50,9 +50,9 @@ max_advance_sales: >
 
   The maximum allowed advance sales/reservations for this performance,
   which may be less than the show's house capacity (specified
-  as part of the overall show information).  If this number is
-  zero, or is greater than the actual house capacity, the actual house
-  capacity will be used.  The ticket availability shown to customers
+  as part of the overall show information).  It can be greater than
+  the actual house capacity (if you wanted to allow standees, for example).
+  The ticket availability shown to customers
   (when they self-purchase/reserve, or via the RSS feed) is based on
   this number, so a show whose max advance sales is 100 will report
   "sold out" when 100 tickets are sold, even if the physical house
