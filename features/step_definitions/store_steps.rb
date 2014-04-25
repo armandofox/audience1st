@@ -1,15 +1,15 @@
 Given /^a show "(.*)" with "(.*)" tickets for \$?(.*) on "(.*)"$/ do |show,type,price,date|
-  Given %Q{a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
+  steps %Q{Given a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
 end
 
 Given /^a show "(.*)" with (\d+) "(.*)" tickets for \$(.*) on "(.*)"$/ do |show,num,type,price,date|
-  Given %Q{a performance of "#{show}" on "#{date}"}
-  Given %Q{#{num} #{type} vouchers costing $#{price} are available for that performance}
+  steps %Q{Given a performance of "#{show}" on "#{date}"
+           And #{num} #{type} vouchers costing $#{price} are available for that performance}
 end
 
 Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
   tickets.hashes.each do |t|
-    Given %Q{a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
+    steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
   end
 end
 

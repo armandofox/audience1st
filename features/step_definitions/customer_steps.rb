@@ -2,8 +2,10 @@ World(FixtureAccess)
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 
 Then /^account creation should fail with "(.*)"$/ do |msg|
-  Then %Q{I should see "#{msg}"}
-  And %Q{I should see "Create Your Account"}
+  steps %Q{
+  Then I should see "#{msg}"
+  And I should see "Create Your Account"
+}
 end
 
 Given /^I am not logged in$/ do
@@ -54,7 +56,7 @@ Given /^I am acting on behalf of customer "(.*) (.*)"$/ do |first,last|
 end
 
 Then /^I should be able to login with username "(.*)" and that password$/ do |username|
-  Then %Q{I should be able to login with username "#{username}" and password "#{@password}"}
+  steps %Q{Then I should be able to login with username "#{username}" and password "#{@password}"}
 end
 
 Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |username,password|

@@ -22,7 +22,6 @@ Scenario Outline: Date-related restrictions
   | 4/10/13 6pm       | 4/2/13  8pm | 4/4/13 5:00pm | Tickets of this type not on sale until Tuesday, Apr  2,  8:00 PM |
   | 4/10/13 6pm       | 3/30/13 8pm | 3/31/13 5pm   | Tickets of this type not sold after Sunday, Mar 31,  5:00 PM     |
   | 3/31/13 6pm       | 3/29/13 6pm | 3/30/13 5pm   | Advance sales for this performance are closed                    |
-  | 4/10/13 6pm       | 3/30/13 6pm | 3/31/13 6pm   |                                                                  |
 
 Scenario Outline: Capacity-related restrictions
 
@@ -36,6 +35,5 @@ Scenario Outline: Capacity-related restrictions
   |                0 |               3 | No seats remaining for tickets of this type |
   |                3 |               2 | 2 of these tickets remaining                |
   |                3 |               3 | 3 of these tickets remaining                |
-  |                  |                 |                                             |
 
 
