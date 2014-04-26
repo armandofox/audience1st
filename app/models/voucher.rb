@@ -139,26 +139,6 @@ class Voucher < Item
         :category => vt.category}.merge(args))
   end
 
-
-  # return a voucher object that can be added to a shopping cart.
-  # Fields like customer_id will be bound when voucher is actualy
-  # purchased, and only then is it recorded permanently
-
-  def self.anonymous_voucher_for(showdate,vouchertype,promocode=nil,comment=nil)
-    showdate = showdate.kind_of?(Showdate) ? showdate.id : showdate.to_i
-    vouchertype = vouchertype.kind_of?(Vouchertype) ? vouchertype.id : vouchertype.to_i
-    Voucher.new_from_vouchertype(vouchertype,
-                                 :showdate_id => showdate,
-                                 :promo_code => promocode,
-                                 :comments => comment,
-                                 :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
-  end
-
-  def self.anonymous_bundle_for(vouchertype)
-    v = Voucher.new_from_vouchertype(vouchertype,
-                                     :purchasemethod_id => Purchasemethod.get_type_by_name('web_cc'))
-  end
-
   def add_comment(comment)
     self.comments = (self.comments.blank? ? comment : [self.comments,comment].join('; '))
   end
@@ -171,43 +151,18 @@ class Voucher < Item
       return nil
     end
   end
-  
-  def reserve_if_only_one_showdate
-    valid_vouchers = vouchertype.valid_vouchers
-    if !bundle? && unreserved?  &&  valid_vouchers.length == 1
-      self.reserve_for(valid_vouchers.first.showdate,
-        self.processed_by_id,
+
+  def reserve_if_only_one_showdate(customer)
+    if !bundle? && !reserved? && vouchertype.showdates.length == 1
+      result = self.reserve_for(vouchertype.showdates.first,
+        customer.id,
         'Automatic reservation since ticket valid for only a specific show date',
         :ignore_cutoff => true)
+      raise "Cannot reserve: #{comments}" unless result
     end
+    self
   end
-  protected :reserve_if_only_one_showdate
   
-  def add_to_customer(c)
-    begin
-      c.vouchers << self
-      if self.bundle?
-        purch_bundle = Purchasemethod.get_type_by_name('bundle')
-        self.vouchertype.get_included_vouchers.each do |type, qty|
-          1.upto qty do
-            c.vouchers <<
-              Voucher.new_from_vouchertype(type,
-              :bundle_id => self.id,
-              :purchasemethod_id => purch_bundle,
-              :processed_by_id => self.processed_by_id)
-          end
-        end
-      end
-      # reserve any vouchers that are valid on a single date only
-      c.vouchers.map(&:reserve_if_only_one_showdate)
-      c.save!
-    rescue Exception => e
-      c.reload
-      return [nil,e.backtrace]
-    end
-    return [true,self]
-  end
-
   def valid_for_date?(dt) ; dt.to_time <= expiration_date ; end
   def valid_today? ; valid_for_date?(Time.now) ; end
 
@@ -243,13 +198,8 @@ class Voucher < Item
     if redemption.max_sales_for_type > 0 || opts[:ignore_cutoff]
       self.comments = comments
       reserve(desired_showdate, logged_in_customer)
-      a = Txn.add_audit_record(:txn_type => 'res_made',
-        :customer_id => self.customer.id,
-        :logged_in_id => logged_in_id,
-        :show_id => self.showdate.show.id,
-        :showdate_id => showdate_id,
-        :voucher_id => self.id)
-      return a
+      RAILS_DEFAULT_LOGGER.info("Txn: customer #{logged_in_id} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
+      return true
     else
       self.comments = redemption.explanation
       return false
@@ -284,9 +234,10 @@ class Voucher < Item
     update_attributes!(:showdate_id => 0, :checked_in => false)
     self
   end
-  def reserve(showdate,logged_in_customer)
+  def reserve(showdate,logged_in_customer,comments='')
     self.showdate = showdate
     self.processed_by = logged_in_customer
+    self.comments = comments
     self
   end
   def self.transfer_multiple(vouchers, showdate, logged_in_customer)

@@ -39,10 +39,26 @@ describe ValidVoucher do
     end
     describe 'of a bundle voucher' do
       before :each do
-        @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25)
+        @v1 = BasicModels.create_included_vouchertype
+        @v2 = BasicModels.create_included_vouchertype
+        @v3 = BasicModels.create_included_vouchertype
+        @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25,
+          :included_vouchers => {@v1.id => 1, @v2.id => 2, @v3.id => 1})
+        @valid_voucher = ValidVoucher.create!(
+          :vouchertype => @vt_bundle,
+          :start_sales => 1.month.ago, :end_sales => 1.month.from_now,
+          :max_sales_for_type => 100)
       end
-      it 'should instantiate individual vouchers in bundle' do
-        pending 'Refactoring of subscription sales using valid-vouchers'
+      it 'should instantiate all vouchers in bundle' do
+        @result = @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,2)
+        @result.should have(10).vouchers
+      end
+      it 'should reserve included vouchers that are valid on exactly 1 showdate, but not others' do
+        @v1.stub!(:showdates).and_return(Array.new(1) { @sd = mock_model Showdate })
+        @v2.stub!(:showdates).and_return(Array.new(2) { mock_model Showdate })
+        @v3.stub!(:showdates).and_return(Array.new(3) { mock_model Showdate })
+        @result = @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,1)
+        @result.select { |v| v.vouchertype_id == @v1.id }.each { |v| v.showdate.should == @sd }
       end
     end
   end
@@ -60,7 +76,7 @@ describe ValidVoucher do
     end
 
     describe 'for reservation using existing voucher' do
-      context 'when after deadline' do
+      context 'after deadline' do
         subject do
           s = BasicModels.create_one_showdate(1.day.from_now, maxcap=200)
           v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)

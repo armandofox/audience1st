@@ -37,3 +37,20 @@ Feature: Successful checkout with credit card
     And customer Tom Foolery should have 0 "General" tickets for "Chicago" on May 15, 2011, 8:00pm
     And customer Al Smith should have 2 "General" tickets for "Chicago" on May 15, 2011, 8:00pm
 
+  Scenario: successful subscription purchase
+
+    Given a "Super Sub" subscription available to anyone for $60.00
+    And the "Super Sub" subscription includes the following vouchers:
+    | name      | quantity |
+    | Hamlet    |        2 |
+    | King Lear |        1 |
+    And my cart contains 2 "Super Sub" subscriptions
+    When I place my order with a valid credit card
+    Then I should be on the order confirmation page
+    And I should see "You have paid a total of $120.00 by Credit card"
+    And customer Tom Foolery should have the following vouchers:
+    | vouchertype            | quantity |
+    | Hamlet (subscriber)    |        4 |
+    | King Lear (subscriber) |        2 |
+    | Super Sub              |        2 |
+

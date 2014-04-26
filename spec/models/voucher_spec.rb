@@ -32,12 +32,6 @@ describe Voucher do
     @basic_showdate = BasicModels.create_one_showdate(Time.now.tomorrow)
   end
 
-  describe "one-line description" do
-    before :each do ; @v = Voucher.anonymous_voucher_for(@basic_showdate, @vt_regular) ; end
-    it 'should include vouchertype' do
-      @v.one_line_description.should match Regexp.new(@vt_regular.name)
-    end
-  end
   describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|
@@ -164,7 +158,7 @@ describe Voucher do
       end
       describe 'when reserved by customer' do
         before :each do
-          @v.reserve_for(@sd, Customer.generic_customer.id, 'foo')
+          @success = @v.reserve_for(@sd, Customer.generic_customer.id, 'foo')
         end
         it 'should not succeed' do
           @success.should_not be_true
@@ -207,47 +201,6 @@ describe Voucher do
       it "should not remove the voucher from the transferor's account" do
         @v.transfer_to_customer(@to)
         @from.vouchers.should include(@v)
-      end
-    end
-  end
-  describe "bundles" do
-    before(:each) do
-      @c = BasicModels.create_generic_customer
-      @v1 = BasicModels.create_comp_vouchertype
-      @v2 = BasicModels.create_comp_vouchertype
-      @bun1 = BasicModels.create_bundle_vouchertype({
-          :included_vouchers => {@v1.id => 2}
-        })
-      @bun2 = BasicModels.create_bundle_vouchertype({
-          :included_vouchers => {@v2.id => 1}
-        })
-      @b1 = Voucher.anonymous_bundle_for(@bun1)
-      @b2 = Voucher.anonymous_bundle_for(@bun2)
-      @b1.add_to_customer(@c)
-      @b2.add_to_customer(@c)
-    end
-    context "when created" do
-      it "should add correct number of vouchers" do
-        @c.should have(5).vouchers
-      end
-      it "should cause first bundle's vouchers to have first bundle's id" do
-        @c.vouchers.select { |v| v.vouchertype == @v1 }.all? do |v|
-          v.bundle_id.should == @b1.id
-        end.should be_true
-      end
-      it "should cause second bundle's vouchers to have second bundle's id" do
-        @c.vouchers.select { |v| v.vouchertype == @v2 }.all? do |v|
-          v.bundle_id.should == @b2.id
-        end.should be_true
-      end
-    end
-    context "when destroyed" do
-      it "should destroy associated bundled vouchers" do
-        @b1.destroy
-        @c.reload
-        @c.should have(2).vouchers
-        @c.vouchers.should_not include(@b1)
-        @c.vouchers.any? { |v| v.bundle_id == @b1.id }.should be_false
       end
     end
   end

@@ -202,10 +202,10 @@ class Order < ActiveRecord::Base
         # add non-donation items to recipient's account
         # if walkup order, mark the vouchers as walkup
         vouchers.each { |v| v.walkup = self.walkup? }
-        customer.add_items(vouchers, processed_by.id, purchasemethod)
+        customer.add_items(vouchers)
         raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
         # add donation items to purchaser's account
-        purchaser.add_items([donation], processed_by.id, purchasemethod) if donation
+        purchaser.add_items([donation]) if donation
         raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
         self.sold_on = Time.now
         self.items += vouchers
@@ -213,6 +213,7 @@ class Order < ActiveRecord::Base
         self.items.each do |i|
           i.purchasemethod = purchasemethod
           i.sold_on = sold_on
+          i.processed_by = processed_by
           i.gift_purchaser_id = purchaser.id if self.gift?
         end
         self.save!

@@ -135,7 +135,6 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-
   def self.offer_to
     @@offer_to
   end
@@ -295,6 +294,18 @@ class Vouchertype < ActiveRecord::Base
     else
       {}
     end
+  end
+
+  def instantiate(howmany = 1, args = {})
+    vouchers = Array.new(howmany) do
+      Voucher.new_from_vouchertype(self, args)
+    end
+    if bundle?
+      self.get_included_vouchers.each_pair do |vtype,qty|
+        vouchers += Vouchertype.find(vtype).instantiate(qty)
+      end
+    end
+    vouchers.map(&:reserve_if_only_one_showdate)
   end
 
   # display methods

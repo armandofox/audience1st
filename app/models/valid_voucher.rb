@@ -238,14 +238,25 @@ class ValidVoucher < ActiveRecord::Base
   #  voucher is bound to customer
   # returns the list of newly-instantiated vouchers
   def instantiate(logged_in_customer, purchasemethod, howmany=1, comment='')
-    Array.new(howmany) do |i|
-      v = Voucher.new_from_vouchertype(
-        self.vouchertype,
-        :purchasemethod => purchasemethod,
-        :comments => comment)
-      v.reserve(showdate, logged_in_customer) if showdate
-      v
+    results = []
+    1.upto(howmany) do
+      vtype = self.vouchertype
+      v = Voucher.new_from_vouchertype(vtype, :purchasemethod => purchasemethod, :comments => comment)  
+      # for bundle vouchers: instantiate components
+      results += instantiate_bundled_vouchers(vtype) if vtype.bundle?
+      results << v
     end
+    results
   end
 
+  def instantiate_bundled_vouchers(vtype)
+    results = []
+    part_of_bundle = Purchasemethod.find_by_shortdesc('bundle')
+    vtype.get_included_vouchers.each_pair do |vtype_id,qty|
+      results += Array.new(qty) do
+        Voucher.new_from_vouchertype(vtype_id, :purchasemethod => part_of_bundle)
+      end
+    end
+    results
+  end
 end

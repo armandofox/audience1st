@@ -1,9 +1,12 @@
-Given /^my cart contains (\d+) "(.*)" bundle vouchers$/ do |qty,name|
+Given /^my cart contains (\d+) "(.*)" (bundles|subscriptions)$/ do |qty,name,_|
   visit path_to(%Q{the subscriptions page})
   select qty.to_s, :from => name
   click_button 'CONTINUE >>'
 end
 
+Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
+  Then %Q{I should see /#{type}/ within "#cart_items" #{num} times}
+end
 
 Given /^my cart contains the following tickets:/ do |tickets|
   create_tickets(tickets.hashes)
@@ -13,10 +16,6 @@ end
 Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|
   date_string = Time.parse(date_string).to_formatted_s(:showtime)
   Then %Q{I should see /#{date_string}.*?#{type}/ within "#cart_items" #{num} times}
-end
-
-Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
-  Then %Q{I should see /#{type}/ within "#cart_items" #{num} times}
 end
 
 

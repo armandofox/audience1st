@@ -45,6 +45,7 @@ module BasicModels
       :opening_date => dt - 1.week,
       :closing_date => dt + 1.week)
     sd = s.showdates.create!(:thedate => dt,
+      :max_sales => cap,
       :end_advance_sales => dt - 1.minute)
   end
   def self.create_comp_vouchertype(args={})
@@ -94,7 +95,7 @@ module BasicModels
   end
   def self.create_included_vouchertype(args={})
     Vouchertype.create!({:fulfillment_needed => false,
-        :name => self.gensym,
+        :name => args[:name] || self.gensym,
         :category => 'subscriber',
         :price => 0,
         :season => Time.now.year}.merge(args))
