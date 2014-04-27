@@ -153,121 +153,122 @@ describe Order do
     it 'should fail if contains a course enrollment without enrollee name' do
       @order.comments = nil
       @order.stub!(:contains_enrollment?).and_return(true)
-      verify_error /You must specify the enrollee's name for classes/
+      verify_error /You must specify the enrollee's name for classes/ # '
     end
   end
 
-  describe 'finalizing' do
-    context 'when order is not ready' do
-      it 'should fail if order is not ready for purchase' do
-        @order.stub(:ready_for_purchase?).and_return(nil)
-        lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
+  describe 'finalizing not-ready order' do
+    it 'should fail if order is not ready for purchase' do
+      @order.stub(:ready_for_purchase?).and_return(nil)
+      lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
+    end
+    describe 'should not update' do
+      before(:each) do
+        @order.stub(:ready_for_purchase?).and_return(true)
+        @order.customer.stub(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
       end
-      describe 'should not update' do
-        before(:each) do
-          @order.stub(:ready_for_purchase?).and_return(true)
-          @order.customer.stub(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
-        end
-        it "completion status" do
-          lambda { @order.finalize! }.should raise_error
-          @order.should_not be_completed
-        end
-        it "items' properties" do
-          @order.add_tickets(@vv,1)
-          lambda { @order.finalize! }.should raise_error
-        end
+      it "completion status" do
+        lambda { @order.finalize! }.should raise_error
+        @order.should_not be_completed
+      end
+      it "items' properties" do
+        @order.add_tickets(@vv,1)
+        lambda { @order.finalize! }.should raise_error
       end
     end
+  end
 
-    context 'when order is ready' do
+  describe 'finalizing a ready order' do
+    before :each do
+      @cust = @the_customer
+      @cust.vouchers.should be_empty
+      @cust.donations.should be_empty
+      @order = Order.new(
+        :purchasemethod => Purchasemethod.default,
+        :processed_by   => @the_processed_by,
+        :customer       => @cust,
+        :purchaser      => @cust
+        )
+      @order.add_tickets(@vv,2)
+      @order.add_tickets(@vv2,1)
+      @order.add_donation(@donation)
+    end
+    shared_examples_for 'valid order processed' do
       before :each do
-        @cust = @the_customer
-        @cust.vouchers.should be_empty
-        @cust.donations.should be_empty
-        @order = Order.new(
-          :purchasemethod => Purchasemethod.default,
-          :processed_by   => @the_processed_by,
-          :customer       => @cust,
-          :purchaser      => @cust
-          )
-        @order.add_tickets(@vv,2)
-        @order.add_tickets(@vv2,1)
-        @order.add_donation(@donation)
+        Store.should_not_receive(:pay_with_credit_card) # stub this out, it has its own tests
+        @order.finalize!
       end
-      shared_examples_for 'valid order processed' do
-        before :each do
-          Store.should_not_receive(:pay_with_credit_card) # stub this out, it has its own tests
-          @order.finalize!
-        end
-        it 'should be saved' do ; @order.should_not be_a_new_record ; end
-        it 'should include the items' do ; @order.should have(4).items ; end
-        it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
-        it 'should set purchasemethod on its items' do
-          @order.items.each { |i| i.purchasemethod.should == @order.purchasemethod }
-        end
-        it 'should set order ID on its items' do
-          @order.items.each { |i| i.order_id.should == @order.id }
-        end
-        it 'should set sold-on time on its items' do
-          @order.items.each { |i| i.sold_on.should be_a_kind_of(Time) }
-        end
-        it 'should add vouchers to customer account' do
-          @cust.should have(2).vouchers_for(@sd,@vt)
-          @cust.should have(1).vouchers_for(@sd2,@vt2)
-        end
-        it 'should compute total price successfully' do
-          @order.reload
-          @order.total_price.should == 34
-        end
+      it 'should be saved' do ; @order.should_not be_a_new_record ; end
+      it 'should include the items' do ; @order.should have(4).items ; end
+      it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
+      it 'should set purchasemethod on its items' do
+        @order.items.each { |i| i.purchasemethod.should == @order.purchasemethod }
       end
-      context 'when purchaser==recipient' do
-        it_should_behave_like 'valid order processed' 
-        it 'should add donations to customer account' do
-          @cust.donations.should include(@donation)
-        end
-        it 'should leave gift_purchaser nil on all vouchers' do
-          @cust.vouchers.each { |v| v.gift_purchaser.should be_nil }
-        end
+      it 'should set order ID on its items' do
+        @order.items.each { |i| i.order_id.should == @order.id }
       end
-      context 'when purchaser!=recipient' do
-        before :each do
-          @purch = @the_purchaser
-          @order.purchaser = @purch
-        end
-        it_should_behave_like 'valid order processed'
-        it 'should set gift_purchaser_id on all vouchers' do
-          @cust.vouchers.each { |v| v.gift_purchaser_id.should == @purch.id }
-        end
-        it 'should add donations to purchaser account' do ; @purch.donations.should include(@donation) ; end
-        it 'should NOT add donations to recipient account' do ; @cust.donations.should_not include(@donation) ; end
-        it 'should NOT add vouchers to purchaser account' do
-          @purch.vouchers.should have(0).vouchers_for(@sd,@vt)
-          @purch.vouchers.should have(0).vouchers_for(@sd2,@vt2)
-        end
+      it 'should set sold-on time on its items' do
+        @order.items.each { |i| i.sold_on.should be_a_kind_of(Time) }
       end
-      context 'for walkup order' do
-        before :each do
-          Customer.walkup_customer.vouchers.delete_all
-          @order.purchaser = @order.customer = Customer.walkup_customer
-          @order.walkup = true
-          @order.finalize! rescue puts(@order.errors.inspect)
-        end
-        it 'should assign all vouchers to walkup customer' do
-          Customer.walkup_customer.should have(3).vouchers
-        end
-        it 'should mark all vouchers as walkup' do
-          Customer.walkup_customer.vouchers.all? { |v| v.walkup? }.should be_true
-        end
+      it 'should set promo code on its items' do
+        flunk
       end
-      context 'with credit card payment' do
-        before :each do
-          @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
-          @order.stub!(:ready_for_purchase?).and_return(true)
-        end
-        it 'succeeds' do
-          Store.should_receive(:pay_with_credit_card).and_return(true)
-          @order.finalize!
-        end
+      it 'should add vouchers to customer account' do
+        @cust.should have(2).vouchers_for(@sd,@vt)
+        @cust.should have(1).vouchers_for(@sd2,@vt2)
+      end
+      it 'should compute total price successfully' do
+        @order.reload
+        @order.total_price.should == 34
+      end
+    end
+    context 'when purchaser==recipient' do
+      it_should_behave_like 'valid order processed' 
+      it 'should add donations to customer account' do
+        @cust.donations.should include(@donation)
+      end
+      it 'should leave gift_purchaser nil on all vouchers' do
+        @cust.vouchers.each { |v| v.gift_purchaser.should be_nil }
+      end
+    end
+    context 'when purchaser!=recipient' do
+      before :each do
+        @purch = @the_purchaser
+        @order.purchaser = @purch
+      end
+      it_should_behave_like 'valid order processed'
+      it 'should set gift_purchaser_id on all vouchers' do
+        @cust.vouchers.each { |v| v.gift_purchaser_id.should == @purch.id }
+      end
+      it 'should add donations to purchaser account' do ; @purch.donations.should include(@donation) ; end
+      it 'should NOT add donations to recipient account' do ; @cust.donations.should_not include(@donation) ; end
+      it 'should NOT add vouchers to purchaser account' do
+        @purch.vouchers.should have(0).vouchers_for(@sd,@vt)
+        @purch.vouchers.should have(0).vouchers_for(@sd2,@vt2)
+      end
+    end
+    context 'for walkup order' do
+      before :each do
+        Customer.walkup_customer.vouchers.delete_all
+        @order.purchaser = @order.customer = Customer.walkup_customer
+        @order.walkup = true
+        @order.finalize! rescue puts(@order.errors.inspect)
+      end
+      it 'should assign all vouchers to walkup customer' do
+        Customer.walkup_customer.should have(3).vouchers
+      end
+      it 'should mark all vouchers as walkup' do
+        Customer.walkup_customer.vouchers.all? { |v| v.walkup? }.should be_true
+      end
+    end
+    context 'with credit card payment' do
+      before :each do
+        @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
+        @order.stub!(:ready_for_purchase?).and_return(true)
+      end
+      it 'succeeds' do
+        Store.should_receive(:pay_with_credit_card).and_return(true)
+        @order.finalize!
       end
     end
   end

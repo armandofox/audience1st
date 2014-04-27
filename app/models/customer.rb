@@ -312,9 +312,6 @@ class Customer < ActiveRecord::Base
   # donation, or purchased goods
 
   def add_items(items)
-    items.each do |item|
-      item.reserve_if_only_one_showdate(self) if item.kind_of?(Voucher)
-    end
     self.items += items
     self.save!
   end

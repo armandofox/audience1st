@@ -10,6 +10,9 @@ is accepted", and encodes additional information such as the capacity limit for 
 
 class ValidVoucher < ActiveRecord::Base
 
+  class InvalidRedemptionError < RuntimeError ;  end
+  class InvalidProcessedByError < RuntimeError ; end
+
   belongs_to :showdate
   belongs_to :vouchertype
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
@@ -29,7 +32,7 @@ class ValidVoucher < ActiveRecord::Base
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance", :unless => lambda { |s| s.showdate_id.nil? }
 
-  attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
+  attr_accessor :processed_by, :customer, :supplied_promo_code # used only when checking visibility - not stored
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
   alias_method :visible?, :visible # for convenience and more readable specs
@@ -178,6 +181,10 @@ class ValidVoucher < ActiveRecord::Base
     bundles
   end
 
+  def adjust_for_processor(who)
+    self.processed_by = who
+    who.is_walkup? ? adjust_for_admin : adjust_for_customer
+  end
   # returns a copy of ValidVoucher with available seats pinned to how many are actually available for the
   # showdate, since admins do not have to respect capacity controls
   def adjust_for_admin
@@ -233,30 +240,35 @@ class ValidVoucher < ActiveRecord::Base
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
   end
 
-  # instantiate(logged_in_customer, purchasemethod, howmany=1)
-  #  n vouchers of given vouchertype and for given showdate are created
-  #  voucher is bound to customer
-  # returns the list of newly-instantiated vouchers
-  def instantiate(logged_in_customer, purchasemethod, howmany=1, comment='')
-    results = []
-    1.upto(howmany) do
-      vtype = self.vouchertype
-      v = Voucher.new_from_vouchertype(vtype, :purchasemethod => purchasemethod, :comments => comment)  
-      # for bundle vouchers: instantiate components
-      results += instantiate_bundled_vouchers(vtype) if vtype.bundle?
-      results << v
+  def instantiate(quantity)
+    raise InvalidProcessedByError unless processed_by.kind_of?(Customer)
+    vouchers = vouchertype.instantiate(quantity, :promo_code => self.promo_code)
+    # if vouchertype was a bundle, check whether any of its components
+    #   are monogamous, if so reserve them
+    if vouchertype.bundle?
+      try_reserve_for_unique(vouchers)
+      # if the original vouchertype was NOT a bundle, we have a bunch of regular vouchers.
+      #   if a showdate was given OR the vouchers are monogamous, reserve them.
+    elsif (theshowdate = self.showdate || vouchertype.unique_showdate)
+      ValidVoucher.try_reserve_for(vouchers, theshowdate, processed_by)
     end
-    results
+    vouchers
   end
 
-  def instantiate_bundled_vouchers(vtype)
-    results = []
-    part_of_bundle = Purchasemethod.find_by_shortdesc('bundle')
-    vtype.get_included_vouchers.each_pair do |vtype_id,qty|
-      results += Array.new(qty) do
-        Voucher.new_from_vouchertype(vtype_id, :purchasemethod => part_of_bundle)
+  def self.try_reserve_for_unique(vouchers)
+    vouchers.each do |v|
+      if (showdate = v.unique_showdate)
+        v.reserve_for(showdate, processed_by) or
+          raise(InvalidRedemptionError, v.errors.full_messages.join(', '))
       end
     end
-    results
   end
+
+  def self.try_reserve_for(vouchers, showdate)
+    vouchers.each do |v|
+      v.reserve_for(showdate, processed_by) or
+        raise(InvalidRedemptionError, v.errors.full_messages.join(', '))
+    end
+  end
+
 end

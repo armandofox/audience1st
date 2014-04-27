@@ -42,22 +42,6 @@ describe Vouchertype do
       it { should_not be_visible_to(@customers[:walkup]) }
     end
   end
-  describe "nonticket vouchertypes" do
-    it "should be valid" do
-      @vtn = Vouchertype.new(
-        :price => 5.0,
-        :category => :nonticket,
-        :offer_public => Vouchertype::BOXOFFICE,
-        :name => "Fee",
-        :subscription => false,
-        :walkup_sale_allowed => true,
-        :comments => "A comment",
-        :account_code => AccountCode.default_account_code,
-        :season => @@now.year
-        )
-      @vtn.should be_valid
-    end
-  end
   describe "validations" do
     before(:each) do
       @vt = Vouchertype.new(:price => 1.0,
@@ -113,6 +97,22 @@ describe Vouchertype do
         @vt.errors[:base].should match(/walkup sales/i)
       end
     end
+    describe "nonticket vouchertypes" do
+      it "should be valid" do
+        @vtn = Vouchertype.new(
+          :price => 5.0,
+          :category => :nonticket,
+          :offer_public => Vouchertype::BOXOFFICE,
+          :name => "Fee",
+          :subscription => false,
+          :walkup_sale_allowed => true,
+          :comments => "A comment",
+          :account_code => AccountCode.default_account_code,
+          :season => @@now.year
+          )
+        @vtn.should be_valid
+      end
+    end
     describe "bundles" do
       before :each do
         args = {
@@ -123,17 +123,9 @@ describe Vouchertype do
           :account_code => AccountCode.default_account_code,
           :season => @@now.year
         }
-        @vtb = Vouchertype.new(args.merge({
-              :category => :bundle,
-              :name => "Bundle"}))
-        @vt_free = Vouchertype.create!(args.merge({
-              :category => :comp,
-              :price => 0,
-              :name => "Free"}))
-        @vt_notfree = Vouchertype.create!(args.merge({
-              :category => :revenue,
-              :price => 1,
-              :name => "Revenue"}))
+        @vt_free = Vouchertype.create!(args.merge({:category=>:comp,:price=>0, :name => "Free"}))
+        @vt_notfree = Vouchertype.create!(args.merge({:category => :revenue,:price => 1,:name => "Revenue"}))
+        @vtb = Vouchertype.new(args.merge({ :category => :bundle, :name => "Bundle"}))
       end
       it "should be invalid if contains any nonzero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 1}
@@ -143,34 +135,46 @@ describe Vouchertype do
       it "should  be valid with only zero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
       end
-      describe 'lifecycle' do
-        before :each do
-          @v = Vouchertype.create!(:category => 'bundle',
-            :name => 'test', :price => 10,
-            :offer_public => Vouchertype::ANYONE,
-            :subscription => false, :season => Time.now.year)
-        end
-        it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
-          @v.should have(1).valid_voucher
-        end
-        it 'should destroy its valid-voucher when destroyed' do
-          saved_id = @v.id
-          @v.destroy
-          ValidVoucher.find_by_vouchertype_id(saved_id).should be_nil
-        end
-        describe 'attempting to change to a non-bundle after creation' do
-          before :each do
-            @result = @v.update_attributes(:category => :revenue)
-          end
-          it 'should fail' do ; @result.should be_false ; end
-          it 'should explain why' do
-            @v.errors.on(:category).should include_match_for(/cannot be changed/)
-          end
-          it 'should not change the category' do
-            @v.reload
-            @v.category.should == :bundle
-          end
-        end
+    end
+  end
+  describe 'instantiating' do
+    fixtures :customers
+    describe 'bundle' do
+      before :each do
+        @customer = customers(:tom)
+        @v = Array.new(3) { BasicModels.create_included_vouchertype }
+        @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25,
+          :included_vouchers => {@v[0].id => 1, @v[1].id => 2, @v[2].id => 3})
+      end
+      it('should instantiate all vouchers in bundle') { @vt_bundle.instantiate(2).should have(14).vouchers }
+    end
+  end
+  describe 'lifecycle' do
+    before :each do
+      @v = Vouchertype.create!(:category => 'bundle',
+        :name => 'test', :price => 10,
+        :offer_public => Vouchertype::ANYONE,
+        :subscription => false, :season => Time.now.year)
+    end
+    it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
+      @v.should have(1).valid_voucher
+    end
+    it 'should destroy its valid-voucher when destroyed' do
+      saved_id = @v.id
+      @v.destroy
+      ValidVoucher.find_by_vouchertype_id(saved_id).should be_nil
+    end
+    describe 'attempting to change to a non-bundle after creation' do
+      before :each do
+        @result = @v.update_attributes(:category => :revenue)
+      end
+      it 'should fail' do ; @result.should be_false ; end
+      it 'should explain why' do
+        @v.errors.on(:category).should include_match_for(/cannot be changed/)
+      end
+      it 'should not change the category' do
+        @v.reload
+        @v.category.should == :bundle
       end
     end
   end

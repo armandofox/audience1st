@@ -2,67 +2,6 @@ require 'spec_helper'
 include BasicModels
 
 describe ValidVoucher do
-  describe 'instantiation' do
-    before(:each) do
-      @vt_regular = BasicModels.create_revenue_vouchertype
-      @customer = BasicModels.create_generic_customer
-      @purch = mock_model(Purchasemethod, :purchase_medium => :cash)
-      @showdate = mock_model(Showdate, :valid? => true)
-      @logged_in_customer = Customer.boxoffice_daemon
-      @now = @vt_regular.expiration_date - 2.months
-      @comment = 'A comment'
-      @valid_voucher =
-        ValidVoucher.create!(:vouchertype => @vt_regular,
-        :showdate => @showdate,
-        :start_sales => @now - 1.month + 1.day,
-        :end_sales => @now + 1.month - 1.day,
-        :max_sales_for_type => 10)
-    end
-    describe 'of a non-bundle voucher' do
-      context "successfully" do
-        before(:each) do
-          @vouchers =
-            @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,3,@comment)
-        end
-        it 'should have 3 vouchers' do ; @vouchers.length.should == 3 ; end
-        it "should return valid vouchers" do ;@vouchers.each { |v| v.should be_valid } ; end
-        it "should include the comment" do ; @vouchers.each { |v| v.comments.to_s.should == @comment } ; end
-        it "should be marked processed by the logged-in customer" do
-          @vouchers.each { |v| v.processed_by.should == @logged_in_customer }
-        end
-        it "should belong to the showdate" do
-          @valid_voucher.showdate_id.should == @showdate.id
-          @vouchers.each { |v| v.showdate_id.should == @showdate.id }
-        end
-        it "should not save the vouchers" do ; @vouchers.each { |v| v.should be_a_new_record  } ; end
-      end
-    end
-    describe 'of a bundle voucher' do
-      before :each do
-        @v1 = BasicModels.create_included_vouchertype
-        @v2 = BasicModels.create_included_vouchertype
-        @v3 = BasicModels.create_included_vouchertype
-        @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25,
-          :included_vouchers => {@v1.id => 1, @v2.id => 2, @v3.id => 1})
-        @valid_voucher = ValidVoucher.create!(
-          :vouchertype => @vt_bundle,
-          :start_sales => 1.month.ago, :end_sales => 1.month.from_now,
-          :max_sales_for_type => 100)
-      end
-      it 'should instantiate all vouchers in bundle' do
-        @result = @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,2)
-        @result.should have(10).vouchers
-      end
-      it 'should reserve included vouchers that are valid on exactly 1 showdate, but not others' do
-        @v1.stub!(:showdates).and_return(Array.new(1) { @sd = mock_model Showdate })
-        @v2.stub!(:showdates).and_return(Array.new(2) { mock_model Showdate })
-        @v3.stub!(:showdates).and_return(Array.new(3) { mock_model Showdate })
-        @result = @valid_voucher.instantiate(@logged_in_customer,@purchasemethod,1)
-        @result.select { |v| v.vouchertype_id == @v1.id }.each { |v| v.showdate.should == @sd }
-      end
-    end
-  end
-
   describe 'adjusting' do
     shared_examples_for 'visible, zero capacity' do
       it { should be_visible }
@@ -274,6 +213,30 @@ describe ValidVoucher do
       before :each do ; @v = ValidVoucher.new(:promo_code => 'bAr,Foo,BAZ') ; end
       it_should_behave_like 'nonblank promo code'
     end
+  end
+
+  describe 'instantiate with no checks' do
+    fixtures :customers
+    it 'should reserve if exactly 1 showdate' do
+      @s1 = mock_model(Showdate)
+      @vouchers = [
+        @v1 = mock_model(Voucher, :unique_showdate => @s1),
+        @v2 = mock_model(Voucher, :unique_showdate => @s1)
+      ]
+      @v1.should_receive(:reserve_for).and_return(true)
+      @v2.should_receive(:reserve_for).and_return(true)
+      result = ValidVoucher.try_reserve_for_unique(@vouchers,customers(:boxoffice_manager))
+      result[0].should be_reserved_for_showdate(@s1)
+      result[1].should_not be_reserved
+    end
+    it 'should reserve if specific showdate given'
+    it 'should not reserve subscriber voucher if zero showdates'
+    it 'should not reserve subscriber voucher if >1 showdates'
+  end
+
+  describe 'instantiate with checking' do
+    it 'should not reserve if exactly 1 showdate but voucher ineligible'
+    it 'should not reserve if exactly 1 showdate but insufficient seats'
   end
 
   describe 'bundle availability' do

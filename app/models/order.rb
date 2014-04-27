@@ -195,13 +195,17 @@ class Order < ActiveRecord::Base
   def finalize!
     raise Order::NotReadyError unless ready_for_purchase?
     vouchers = valid_vouchers.keys.map do |valid_voucher_id|
-      ValidVoucher.find(valid_voucher_id).instantiate(processed_by, purchasemethod, valid_vouchers[valid_voucher_id])
+      ValidVoucher.find(valid_voucher_id).instantiate(valid_vouchers[valid_voucher_id], processed_by)
     end.flatten
     begin
       transaction do
         # add non-donation items to recipient's account
         # if walkup order, mark the vouchers as walkup
-        vouchers.each { |v| v.walkup = self.walkup? }
+        vouchers.each do |v|
+          v.walkup = self.walkup?
+          v.processed_by =  processed_by
+          v.purchasemethod = purchasemethod
+        end
         customer.add_items(vouchers)
         raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
         # add donation items to purchaser's account

@@ -37,60 +37,34 @@ class VouchersController < ApplicationController
   def process_addvoucher
     # post: add the actual comps, and possibly reserve
     thenumtoadd = params[:howmany].to_i
-    thevouchertype = params[:vouchertype_id].to_i
-    thevouchername = (vt = Vouchertype.find(thevouchertype)).name
-    thepurchasemethod = Purchasemethod.find_by_shortdesc('none')
+    thevouchertype = Vouchertype.find(params[:vouchertype_id])
+    thecomment = params[:comments].to_s
+    theshowdate = Showdate.find_by_id(params[:showdate_id])
 
-    unless vt.comp?
-      flash[:warning] = "Only comp vouchers can be added this way.  For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment."
-      redirect_to(:controller => 'customers', :action => 'welcome') and return
-    end
+    flash[:warning] = 'Only comp vouchers can be added this way. For revenue vouchers,' <<
+      'use the Buy Tickets purchase flow, and choose Check or Cash Payment.' unless
+      thevouchertype.comp?
+    flash[:warning] ||= 'Please select a performance.' unless theshowdate
+    flash[:warning] ||= 'This comp ticket type not valid for this performance.' unless
+      vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
+    
+    redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:warning]
 
-    # if showdate specified, make sure allowed
-    sd = nil
-    if params[:showdate_id].to_i != 0
-      unless (sd = Showdate.find_by_id(params[:showdate_id]))
-        flash[:warning] = "No such performance."
-        redirect_to(:action => 'addvoucher', :method => :get) and return
-      end
-      av = ValidVoucher.numseats_for_showdate_by_vouchertype(sd, @gAdmin, vt,
-        :ignore_cutoff => true, :redeeming => true)
-      unless av.howmany >= thenumtoadd
-        flash[:warning] =
-          "WARNING: You added #{thenumtoadd} comps, but only #{av.howmany} seats were left for this performance."
-      end
-    end
+    order = Order.new(
+      :processed_by => @gLoggedIn,
+      :purchasemethod => Purchasemethod.find_by_shortname('none'),
+      :customer => @gCustomer,
+      :purchaser => @gCustomer # not a gift order
+      )
+    order.add_tickets(vv, howmany)
 
-    thecomment = params[:comments] || ""
-    custid = @customer.id
     begin
-      Voucher.transaction do
-        v = Array.new(thenumtoadd) do |i|
-          vc = Voucher.new_from_vouchertype(thevouchertype,
-            :purchasemethod_id => thepurchasemethod.id,
-            :comments => thecomment,
-            :processed_by_id => logged_in_id)
-          @customer.vouchers << vc
-          if sd
-            vc.reserve_for(sd, logged_in_id, thecomment, :ignore_cutoff => true)
-          end
-          vc
-        end
-        if (v.kind_of?(Array) && !v.empty?)
-          Txn.add_audit_record(:txn_type => 'add_tkts', :customer_id => custid,
-            :voucher_id => v.first.id,
-            :comments => thecomment,
-            :logged_in_id => logged_in_id,
-            :purchasemethod_id => thepurchasemethod)
-          flash[:notice] = "#{thenumtoadd} of '#{vt.name}' successfully added"
-          flash[:notice] << " and reserved for #{sd.printable_name}" if sd
-        else
-          flash[:notice] = "Adding comps FAILED: #{v}"
-        end
-      end
-    rescue Exception => e
-      flash[:notice] = "Error adding comps:<br/>#{e.message}"
+      order.finalize!
+      flash[:notice] = "Added #{thenumtoadd} '#{vt.name}' comps for #{sd.printable_name}."
+    rescue RuntimeError => e
+      flash[:warning] = "Error adding comps:<br/>#{e.message}"
     end
+    
     redirect_to :controller => 'customers', :action => 'welcome'
   end
 
@@ -149,7 +123,7 @@ class VouchersController < ApplicationController
     lasterr = 'errors occurred making reservations'
     the_showdate = Showdate.find(showdate)
     Voucher.find(params[:voucher_ids].split(",")).slice(0,num).each do |v|
-      if v.reserve_for(the_showdate, logged_in_id, params[:comments].to_s, :ignore_cutoff => @is_admin)
+      if v.reserve_for(the_showdate, @gLoggedIn, params[:comments].to_s)
         count += 1
         params[:comments] = nil # only first voucher gets comment field
       else
@@ -178,15 +152,14 @@ class VouchersController < ApplicationController
     try_again("Please select a date") and return if
       (showdate_id = params[:showdate_id].to_i).zero?
     the_showdate = Showdate.find(showdate_id)
-    if (a = @voucher.reserve_for(the_showdate, logged_in_id,
-                                 params[:comments], :ignore_cutoff => @is_admin))
+    if @voucher.reserve_for(the_showdate, @gLoggedIn, params[:comments])
       @voucher.save!
       flash[:notice] = "Reservation confirmed."
       if params[:email_confirmation] && @customer.valid_email_address?
         email_confirmation(:confirm_reservation, @customer, showdate, 1, a)
       end
     else
-      flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.comments}"
+      flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.errors.full_messages.join(',')}"
     end
     redirect_to :controller => 'customers',:action => 'welcome',:id => @customer
   end

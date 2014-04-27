@@ -53,6 +53,7 @@ class Voucher < Item
   delegate(
     :name, :price, :season, :account_code,
     :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
+    :unique_showdate,
     :to => :vouchertype)
   def amount ; vouchertype.price ; end
   # delegations
@@ -184,25 +185,19 @@ class Voucher < Item
     end
   end
   
-  def reserve_for(desired_showdate, logged_in_id, comments='', opts={})
-    logged_in_customer = Customer.find(logged_in_id)
-    if reserved?
-      comments = "This ticket is already holding a reservation for #{reserved_date}."
-      return nil
-    end
-    unless (redemption = ValidVoucher.find_by_showdate_id_and_vouchertype_id(desired_showdate.id, vouchertype_id))
-      self.comments = 'This ticket is not valid for the selected performance.'
-      return false
-    end
-    redemption = redemption.adjust_for_customer_reservation
-    if redemption.max_sales_for_type > 0 || opts[:ignore_cutoff]
+  def reserve_for(desired_showdate, processor, comments='', opts={})
+    errors.add_to_base "This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
+    errors.add_to_base 'This ticket is not valid for the selected performance.' and return nil unless
+      redemption = ValidVoucher.find_by_showdate_id_and_vouchertype_id(desired_showdate.id, vouchertype_id)
+    redemption = redemption.adjust_for_processor(processor)
+    if redemption.max_sales_for_type > 0
       self.comments = comments
-      reserve(desired_showdate, logged_in_customer)
+      self.showdate = showdate
       RAILS_DEFAULT_LOGGER.info("Txn: customer #{logged_in_id} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
-      return true
+      true
     else
-      self.comments = redemption.explanation
-      return false
+      errors.add_to_base redemption.explanation
+      false
     end
   end
 
@@ -214,8 +209,6 @@ class Voucher < Item
       (changeable? && valid_now? && within_grace_period?)
   end
 
-  def reserved_for_show?(s) ; reserved && (showdate.show == s) ;  end
-  def reserved_for_showdate?(sd) ;  reserved && (showdate == sd) ;  end
   def within_grace_period?
     unreserved? ||
       (Time.now < (showdate.thedate - Option.cancel_grace_period.minutes))

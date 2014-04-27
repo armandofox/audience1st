@@ -24,6 +24,9 @@ gem 'money', '2.1.3'
 group :development, :test do
   # cucumber and capybara
   gem 'ZenTest'
+  gem 'autotest-rails'
+  gem 'autotest-fsevent'
+  gem 'minitest'
   gem 'capistrano', '2.5.10'
   gem 'capybara', '0.4.1.2'
   gem 'chronic', '0.9.1'
@@ -34,7 +37,7 @@ group :development, :test do
   gem 'mysql', '2.8.1'
   gem 'rack-test', '0.5.7'
   gem 'rdoc'
-  gem 'rspec', '1.3.0'
-  gem 'rspec-rails', '1.3.2'
+  gem 'rspec', '1.3.2'
+  gem 'rspec-rails', '1.3.4'
   gem 'timecop', '0.3.5'
 end

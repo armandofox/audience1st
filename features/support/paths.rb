@@ -21,6 +21,8 @@ module NavigationHelpers
     when /the change password page/i    then '/customers/change_password'
     when /the forgot password page/i    then '/customers/forgot_password'
     when /the new customer page/i       then '/customers/new'
+      # admin-facing voucher management
+    when /the add comps page/i          then '/vouchers/addvoucher'
       # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page/i              then '/store'

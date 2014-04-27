@@ -296,7 +296,7 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def instantiate(howmany = 1, args = {})
+  def instantiate(howmany, args = {})
     vouchers = Array.new(howmany) do
       Voucher.new_from_vouchertype(self, args)
     end
@@ -305,7 +305,12 @@ class Vouchertype < ActiveRecord::Base
         vouchers += Vouchertype.find(vtype).instantiate(qty)
       end
     end
-    vouchers.map(&:reserve_if_only_one_showdate)
+    vouchers
+  end
+
+  # a monogamous vouchertype is valid for exactly one showdate.
+  def unique_showdate
+    showdates.length == 1 ? showdates.first : nil
   end
 
   # display methods
