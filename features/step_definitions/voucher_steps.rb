@@ -34,7 +34,6 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,typ
   @showdate = Showdate.find_by_thedate!(Time.parse(date))
   @showdate.show.name.should == show
   @vouchertype = Vouchertype.find_by_name!(type)
-  puts debugger
   @customer.vouchers.count(
     :conditions => ['vouchertype_id = ? AND showdate_id = ?', @vouchertype.id,@showdate.id]).
     should == num.to_i
@@ -43,7 +42,6 @@ end
 Then /^customer (.*) (.*) should have the following vouchers:$/ do |first,last,vouchers|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   @vouchers = @customer.vouchers
-  puts debugger
   vouchers.hashes.each do |v|
     vtype = Vouchertype.find_by_name!(v[:vouchertype])
     found_vouchers = @vouchers.find_all_by_vouchertype_id(vtype.id)

@@ -183,7 +183,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def adjust_for_processor(who)
     self.processed_by = who
-    who.is_walkup? ? adjust_for_admin : adjust_for_customer
+    who.is_walkup ? adjust_for_admin : adjust_for_customer
   end
   # returns a copy of ValidVoucher with available seats pinned to how many are actually available for the
   # showdate, since admins do not have to respect capacity controls
@@ -250,12 +250,12 @@ class ValidVoucher < ActiveRecord::Base
       # if the original vouchertype was NOT a bundle, we have a bunch of regular vouchers.
       #   if a showdate was given OR the vouchers are monogamous, reserve them.
     elsif (theshowdate = self.showdate || vouchertype.unique_showdate)
-      ValidVoucher.try_reserve_for(vouchers, theshowdate, processed_by)
+      try_reserve_for(vouchers, theshowdate)
     end
     vouchers
   end
 
-  def self.try_reserve_for_unique(vouchers)
+  def try_reserve_for_unique(vouchers)
     vouchers.each do |v|
       if (showdate = v.unique_showdate)
         v.reserve_for(showdate, processed_by) or
@@ -264,7 +264,7 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
-  def self.try_reserve_for(vouchers, showdate)
+  def try_reserve_for(vouchers, showdate)
     vouchers.each do |v|
       v.reserve_for(showdate, processed_by) or
         raise(InvalidRedemptionError, v.errors.full_messages.join(', '))

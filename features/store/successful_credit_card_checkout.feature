@@ -17,6 +17,7 @@ Feature: Successful checkout with credit card
     Then I should be on the checkout page
     And the billing customer should be "Tom Foolery"
     When I place my order with a valid credit card
+    Then show me the page
     Then I should be on the order confirmation page
     And I should see "You have paid a total of $21.00 by Credit card"
     And customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 2011, 8:00pm

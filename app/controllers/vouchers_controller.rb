@@ -14,8 +14,8 @@ class VouchersController < ApplicationController
 
   # AJAX helper for addvoucher
   def update_shows
-    @available_seats = Vouchertype.find(params[:vouchertype_id]).valid_vouchers
-    render :partial => 'reserve_for', :locals => {:seats => @available_seats, :none => 'None (leave open)'}
+    @valid_vouchers = Vouchertype.find(params[:vouchertype_id]).valid_vouchers.sort_by(&:showdate)
+    render :partial => 'reserve_for', :locals => {:valid_vouchers => @valid_vouchers}
   end
 
 
@@ -31,7 +31,7 @@ class VouchersController < ApplicationController
       flash[:notice] = "You must define some vouchertypes first"
       redirect_to(:controller => 'vouchertypes', :action => 'list')
     end
-    @available_seats = []
+    @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
 
   def process_addvoucher
@@ -60,6 +60,7 @@ class VouchersController < ApplicationController
 
     begin
       order.finalize!
+      RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@gCustomer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
       flash[:notice] = "Added #{thenumtoadd} '#{vt.name}' comps for #{sd.printable_name}."
     rescue RuntimeError => e
       flash[:warning] = "Error adding comps:<br/>#{e.message}"

@@ -193,7 +193,7 @@ class Voucher < Item
     if redemption.max_sales_for_type > 0
       self.comments = comments
       self.showdate = showdate
-      RAILS_DEFAULT_LOGGER.info("Txn: customer #{logged_in_id} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
+      RAILS_DEFAULT_LOGGER.info("Txn: customer #{processor} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
       true
     else
       errors.add_to_base redemption.explanation

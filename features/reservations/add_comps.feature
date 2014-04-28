@@ -11,5 +11,14 @@ Background: logged in as admin and shows are available
   And 10 "Comp" comps are available for "Macbeth" on "April 20, 2013, 8pm"
   And I am on the add comps page
 
+Scenario: add comps to performance with seats available
+
+  When I fill in "How many:" with "2"
+  And  I select "April 20, 2013,  8:00pm" from "showdate_id"
+  And  I fill in "Optional comments:" with "Courtesy Comp"
+  And  I press "Add Vouchers"
+
+Scenario: add comps to sold-out performance
+
   
   
