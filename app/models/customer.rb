@@ -313,7 +313,6 @@ class Customer < ActiveRecord::Base
 
   def add_items(items)
     self.items += items
-    self.save!
   end
 
   def self.find_by_email_for_authentication(email)

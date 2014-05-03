@@ -68,6 +68,7 @@ module BasicModels
     Vouchertype.create!({:fulfillment_needed => false,
       :name => 'regular voucher',
       :category => 'revenue',
+      :offer_public => Vouchertype::ANYONE,
       :account_code => AccountCode.default_account_code,
       :price => 10.00,
       :season => Time.now.year}.merge(args))

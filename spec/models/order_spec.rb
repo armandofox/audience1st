@@ -13,12 +13,12 @@ describe Order do
     @vt = BasicModels.create_revenue_vouchertype(:price => 7)
     @sd = BasicModels.create_one_showdate(1.day.from_now)
     @vv = ValidVoucher.create!(
-      :vouchertype => @vt, :showdate => @sd, :start_sales => Time.now, :end_sales => Time.now,
+      :vouchertype => @vt, :showdate => @sd, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
     @vt2 = BasicModels.create_revenue_vouchertype(:price => 3)
     @sd2 = BasicModels.create_one_showdate(1.week.from_now)
     @vv2 = ValidVoucher.create!(
-      :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => Time.now,
+      :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
     @the_processed_by = BasicModels.create_generic_customer
   end

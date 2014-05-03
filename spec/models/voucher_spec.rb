@@ -9,26 +9,9 @@ describe Voucher do
       :fulfillment_needed => false,
       :season => Time.now.year
     }
-    @vt_regular = Vouchertype.create!(args.merge({
-          :name => 'regular voucher',
-          :category => 'revenue',
-          :account_code => AccountCode.default_account_code,
-          :price => 10.00}))
-    @vt_subscriber = Vouchertype.create!(args.merge({
-          :name => 'subscriber voucher',
-          :category => :subscriber,
-          :account_code => AccountCode.default_account_code}))
-    @vt_bundle = Vouchertype.create!(args.merge({
-          :name => 'bundle voucher',
-          :category => 'bundle',
-          :price => 25.00,
-          :account_code => AccountCode.default_account_code,
-          :included_vouchers => {@vt_subscriber.id => 2}}))
-    @vt_nonticket = Vouchertype.create!(args.merge({
-          :name => 'fee',
-          :category => 'nonticket',
-          :price => 5.00,
-          :account_code => AccountCode.default_account_code}))
+    @vt_regular = BasicModels.create_revenue_vouchertype
+    @vt_subscriber = BasicModels.create_included_vouchertype
+    @vt_bundle = BasicModels.create_bundle_vouchertype(:included_vouchers => {@vt_subscriber.id => 2})
     @basic_showdate = BasicModels.create_one_showdate(Time.now.tomorrow)
   end
 
@@ -108,14 +91,6 @@ describe Voucher do
     end
   end
 
-  describe "nonticket voucher" do
-    before(:each) do
-      @v = Voucher.new_from_vouchertype(@vt_nonticket)
-      @v.purchasemethod = mock_model(Purchasemethod)
-      @v.save!
-    end
-  end
-
   describe "expired voucher" do
     before(:each) do
       @vt_regular.update_attribute(:season, Time.now.year - 2)
@@ -130,43 +105,41 @@ describe Voucher do
     end
   end
 
-  describe "when valid for a showdate" do
+  describe "for a sold-out showdate" do
     before(:each) do
       @c = BasicModels.create_customer_by_role(:patron)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @c.vouchers << @v
       @c.save!
       @sd = BasicModels.create_one_showdate(1.day.from_now)
+      @sd.stub!(:saleable_seats_left).and_return(0)
       @sd.valid_vouchers.create!(:start_sales => 1.week.ago, :end_sales => 1.week.from_now, :vouchertype => @vt_regular)
     end
-    context "that's sold out" do
-      before :each do ; @sd.show.update_attribute(:house_capacity, 0) ; end
-      describe "when reserved by box office" do
-        before :each do
-          @success = @v.reserve_for(@sd, Customer.generic_customer.id, 'foo', :ignore_cutoff => true)
-        end
-        it 'should succeed' do
-          @success.should be_true
-          @v.should be_reserved
-        end
-        it 'should be reserved for correct showdate' do
-          @v.showdate_id.should == @sd.id
-        end
-        it 'should include comment' do
-          @v.comments.should == 'foo'
-        end
+    describe "when reserved by box office" do
+      before :each do
+        @success = @v.reserve_for(@sd, Customer.boxoffice_daemon, 'foo')
       end
-      describe 'when reserved by customer' do
-        before :each do
-          @success = @v.reserve_for(@sd, Customer.generic_customer.id, 'foo')
-        end
-        it 'should not succeed' do
-          @success.should_not be_true
-          @v.should_not be_reserved
-        end
-        it 'should explain that show is sold out' do
-          @v.comments.should == 'Event is sold out'
-        end
+      it 'should succeed' do
+        @success.should be_true
+        @v.should be_reserved
+      end
+      it 'should be reserved for correct showdate' do
+        @v.showdate_id.should == @sd.id
+      end
+      it 'should include comment' do
+        @v.comments.should == 'foo'
+      end
+    end
+    describe 'when reserved by customer' do
+      before :each do
+        @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
+      end
+      it 'should not succeed' do
+        @success.should_not be_true
+        @v.should_not be_reserved
+      end
+      it 'should explain that show is sold out' do
+        @v.errors.full_messages.should include('Event is sold out')
       end
     end
   end

@@ -197,7 +197,7 @@ class Order < ActiveRecord::Base
     vouchers = []
     valid_vouchers.each_pair do |valid_voucher_id, quantity|
       vv = ValidVoucher.find(valid_voucher_id)
-      vv.processed_by = processed_by
+      vv.customer = processed_by
       vouchers += vv.instantiate(quantity)
     end
     vouchers.flatten!
@@ -207,8 +207,6 @@ class Order < ActiveRecord::Base
         # if walkup order, mark the vouchers as walkup
         vouchers.each do |v|
           v.walkup = self.walkup?
-          v.processed_by =  processed_by
-          v.purchasemethod = purchasemethod
         end
         customer.add_items(vouchers)
         raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save

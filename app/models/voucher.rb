@@ -185,14 +185,16 @@ class Voucher < Item
     end
   end
   
-  def reserve_for(desired_showdate, processor, comments='', opts={})
+  def reserve_for(desired_showdate, processor, new_comments='')
     errors.add_to_base "This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
     errors.add_to_base 'This ticket is not valid for the selected performance.' and return nil unless
       redemption = ValidVoucher.find_by_showdate_id_and_vouchertype_id(desired_showdate.id, vouchertype_id)
-    redemption = redemption.adjust_for_processor(processor)
+    processor = Customer.find(processor) unless processor.kind_of? Customer
+    redemption.customer = processor
+    redemption = redemption.adjust_for_customer
     if redemption.max_sales_for_type > 0
-      self.comments = comments
-      self.showdate = showdate
+      self.comments = new_comments
+      self.showdate = desired_showdate
       RAILS_DEFAULT_LOGGER.info("Txn: customer #{processor} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
       true
     else

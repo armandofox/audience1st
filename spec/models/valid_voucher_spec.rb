@@ -215,29 +215,6 @@ describe ValidVoucher do
     end
   end
 
-  describe 'instantiate with no checks' do
-    fixtures :customers
-    it 'should reserve if exactly 1 showdate' do
-      @s1 = mock_model(Showdate)
-      @vouchers = [
-        @v1 = mock_model(Voucher, :unique_showdate => @s1),
-        @v2 = mock_model(Voucher, :unique_showdate => @s1)
-      ]
-      @v1.should_receive(:reserve_for).and_return(true)
-      @v2.should_receive(:reserve_for).and_return(true)
-      result = ValidVoucher.try_reserve_for_unique(@vouchers,customers(:boxoffice_manager))
-      result[0].should be_reserved_for_showdate(@s1)
-      result[1].should_not be_reserved
-    end
-    it 'should reserve if specific showdate given'
-    it 'should not reserve subscriber voucher if zero showdates'
-    it 'should not reserve subscriber voucher if >1 showdates'
-  end
-
-  describe 'instantiate with checking' do
-    it 'should not reserve if exactly 1 showdate but voucher ineligible'
-    it 'should not reserve if exactly 1 showdate but insufficient seats'
-  end
 
   describe 'bundle availability' do
     before :each do

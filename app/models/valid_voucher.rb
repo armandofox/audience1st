@@ -32,7 +32,7 @@ class ValidVoucher < ActiveRecord::Base
   # for a given showdate ID, a particular vouchertype ID should be listed only once.
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance", :unless => lambda { |s| s.showdate_id.nil? }
 
-  attr_accessor :processed_by, :customer, :supplied_promo_code # used only when checking visibility - not stored
+  attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
   alias_method :visible?, :visible # for convenience and more readable specs
@@ -181,17 +181,6 @@ class ValidVoucher < ActiveRecord::Base
     bundles
   end
 
-  def adjust_for_processor(who)
-    self.processed_by = who
-    who.is_walkup ? adjust_for_admin : adjust_for_customer
-  end
-  # returns a copy of ValidVoucher with available seats pinned to how many are actually available for the
-  # showdate, since admins do not have to respect capacity controls
-  def adjust_for_admin
-    result = self.clone_with_id
-    result.max_sales_for_type = INFINITE
-  end
-
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to
   # THIS customer. 
@@ -241,7 +230,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def instantiate(quantity)
-    raise InvalidProcessedByError unless processed_by.kind_of?(Customer)
+    raise InvalidProcessedByError unless customer.kind_of?(Customer)
     vouchers = vouchertype.instantiate(quantity, :promo_code => self.promo_code)
     # if vouchertype was a bundle, check whether any of its components
     #   are monogamous, if so reserve them
@@ -258,7 +247,7 @@ class ValidVoucher < ActiveRecord::Base
   def try_reserve_for_unique(vouchers)
     vouchers.each do |v|
       if (showdate = v.unique_showdate)
-        v.reserve_for(showdate, processed_by) or
+        v.reserve_for(showdate, customer) ||
           raise(InvalidRedemptionError, v.errors.full_messages.join(', '))
       end
     end
@@ -266,7 +255,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def try_reserve_for(vouchers, showdate)
     vouchers.each do |v|
-      v.reserve_for(showdate, processed_by) or
+      v.reserve_for(showdate, customer) ||
         raise(InvalidRedemptionError, v.errors.full_messages.join(', '))
     end
   end

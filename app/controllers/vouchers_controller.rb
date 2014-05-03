@@ -50,18 +50,15 @@ class VouchersController < ApplicationController
     
     redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:warning]
 
-    order = Order.new(
-      :processed_by => @gLoggedIn,
-      :purchasemethod => Purchasemethod.find_by_shortname('none'),
-      :customer => @gCustomer,
-      :purchaser => @gCustomer # not a gift order
-      )
+    order = Order.new(:processed_by => @gLoggedIn, :purchasemethod => Purchasemethod.find_by_shortname('none'),
+      :customer => @gCustomer, :purchaser => @gCustomer) # not a gift order
+
     order.add_tickets(vv, howmany)
 
     begin
       order.finalize!
       RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@gCustomer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
-      flash[:notice] = "Added #{thenumtoadd} '#{vt.name}' comps for #{sd.printable_name}."
+      flash[:notice] = "Added #{thenumtoadd} '#{vt.name}' comps for #{theshowdate.printable_name}."
     rescue RuntimeError => e
       flash[:warning] = "Error adding comps:<br/>#{e.message}"
     end
