@@ -17,7 +17,6 @@ Feature: Successful checkout with credit card
     Then I should be on the checkout page
     And the billing customer should be "Tom Foolery"
     When I place my order with a valid credit card
-    Then show me the page
     Then I should be on the order confirmation page
     And I should see "You have paid a total of $21.00 by Credit card"
     And customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 2011, 8:00pm
@@ -45,13 +44,14 @@ Feature: Successful checkout with credit card
     | name      | quantity |
     | Hamlet    |        2 |
     | King Lear |        1 |
-    And my cart contains 2 "Super Sub" subscriptions
+    And my cart contains 3 "Super Sub" subscriptions
     When I place my order with a valid credit card
     Then I should be on the order confirmation page
-    And I should see "You have paid a total of $120.00 by Credit card"
+    And I should see "You have paid a total of $180.00 by Credit card"
     And customer Tom Foolery should have the following vouchers:
     | vouchertype            | quantity |
-    | Hamlet (subscriber)    |        4 |
-    | King Lear (subscriber) |        2 |
-    | Super Sub              |        2 |
+    | Super Sub              |        3 |
+    | Hamlet (subscriber)    |        6 |
+    | King Lear (subscriber) |        3 |
+
 

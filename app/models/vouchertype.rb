@@ -297,12 +297,10 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def instantiate(howmany, args = {})
-    vouchers = Array.new(howmany) do
-      Voucher.new_from_vouchertype(self, args)
-    end
+    vouchers = Array.new(howmany) { Voucher.new_from_vouchertype(self, args) }
     if bundle?
       self.get_included_vouchers.each_pair do |vtype,qty|
-        vouchers += Vouchertype.find(vtype).instantiate(qty)
+        vouchers += Vouchertype.find(vtype).instantiate(howmany * qty)
       end
     end
     vouchers

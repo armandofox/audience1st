@@ -46,7 +46,7 @@ Then /^customer (.*) (.*) should have the following vouchers:$/ do |first,last,v
     vtype = Vouchertype.find_by_name!(v[:vouchertype])
     found_vouchers = @vouchers.find_all_by_vouchertype_id(vtype.id)
     found_vouchers.length.should == v[:quantity].to_i
-    if v.has_key(:showdate)
+    if v.has_key?(:showdate)
       if v[:showdate].blank?
         found_vouchers.all? { |v| v.showdate.should be_nil }.should be_true
       else
@@ -98,7 +98,7 @@ Given /^the "(.*)" subscription includes the following vouchers:/ do |name, vouc
   sub.included_vouchers ||= {}
   vouchers.hashes.each do |voucher|
     vt = BasicModels.create_included_vouchertype(:name => "#{voucher[:name]} (subscriber)")
-    sub.included_vouchers[vt.id] = voucher[:quantity]
+    sub.included_vouchers[vt.id] = voucher[:quantity].to_i
   end
   sub.save!
 end
