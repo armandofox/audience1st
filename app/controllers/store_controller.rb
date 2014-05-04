@@ -159,7 +159,7 @@ class StoreController < ApplicationController
     @recipient = @cart.purchaser
     if ! @cart.gift?
       # record 'who will pickup' field if necessary
-      @cart.comments << "(Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])})" unless params[:pickup].blank?
+      @cart.comments << " - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}" unless params[:pickup].blank?
     end
 
     unless @cart.ready_for_purchase?

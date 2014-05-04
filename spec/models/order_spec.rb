@@ -187,7 +187,8 @@ describe Order do
         :purchasemethod => Purchasemethod.default,
         :processed_by   => @the_processed_by,
         :customer       => @cust,
-        :purchaser      => @cust
+        :purchaser      => @cust,
+        :comments       => 'Comment'
         )
       @order.add_tickets(@vv,2)
       @order.add_tickets(@vv2,1)
@@ -212,6 +213,9 @@ describe Order do
       end
       it 'should set promo code on its items' do
         flunk
+      end
+      it 'should set comments on its items' do
+        @order.items.each { |i| i.comments.should == 'Comment' }
       end
       it 'should add vouchers to customer account' do
         @cust.should have(2).vouchers_for(@sd,@vt)

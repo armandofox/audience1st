@@ -217,9 +217,9 @@ class Order < ActiveRecord::Base
         self.items += vouchers
         self.items += [ donation ] if donation
         self.items.each do |i|
-          i.purchasemethod = purchasemethod
-          i.sold_on = sold_on
-          i.processed_by = processed_by
+          %w(purchasemethod sold_on processed_by comments).each do |attr|
+            i.send("#{attr}=", self.send(attr))
+          end
           i.gift_purchaser_id = purchaser.id if self.gift?
         end
         self.save!
