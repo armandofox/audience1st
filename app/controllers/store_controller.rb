@@ -1,6 +1,6 @@
 class StoreController < ApplicationController
 
-  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed comment_changed redeeming_promo_code)
+  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed redeeming_promo_code)
 
   before_filter :is_logged_in, :only => %w[edit_billing_address]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
@@ -27,7 +27,6 @@ class StoreController < ApplicationController
                  :index, :subscribe, :special, :donate,
                  :show_changed, :showdate_changed,
                  :shipping_address, :set_shipping_address,
-                 :comment_changed,
                  :edit_billing_address)
 
   
@@ -159,9 +158,8 @@ class StoreController < ApplicationController
     @recipient = @cart.purchaser
     if ! @cart.gift?
       # record 'who will pickup' field if necessary
-      @cart.comments << " - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}" unless params[:pickup].blank?
+      @cart.comments += " - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}" unless params[:pickup].blank?
     end
-
     unless @cart.ready_for_purchase?
       flash[:warning] = @cart.errors.full_messages.join(', ')
       redirect_to_checkout
@@ -199,12 +197,6 @@ class StoreController < ApplicationController
   def showdate_changed
     setup_for_showdate(showdate_from_params || showdate_from_default)
     render :partial => 'ticket_menus'
-  end
-
-  def comment_changed
-    cart = find_cart
-    cart.comments = params[:comments]
-    render :nothing => true
   end
 
   private

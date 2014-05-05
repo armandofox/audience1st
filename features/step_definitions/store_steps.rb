@@ -38,11 +38,6 @@ Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message
   page.find("div#vouchertype_#{div_id} span.admin").text.should == message
 end
 
-When /^the order is placed successfully$/ do
-  Store.stub!(:pay_with_credit_card).and_return(true)
-  click_button 'Charge Credit Card' # but will be handled as Cash sale in 'test' environment
-end
-
 When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*(\S+)\s+(\S+),\s*([^,]+),\s*(.*@.*)"$/ do |fieldset, first, last, street, city, state, zip, phone, email|
   with_scope "fieldset##{fieldset}" do
     fill_in 'customer[first_name]', :with => first

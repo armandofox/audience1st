@@ -159,11 +159,10 @@ class Order < ActiveRecord::Base
   end
   
   def summary
-    item_list = completed? ? items : cart_items
-    (item_list.map(&:one_line_description) + all_comments).join("\n")
+    (items.map(&:one_line_description) << self.comments).join("\n")
   end
 
-  def each_voucher_in_cart
+  def each_voucher
     valid_vouchers.each_pair do |id,num|
       v = ValidVoucher.find(id)
       num.times { yield v }
@@ -235,10 +234,6 @@ class Order < ActiveRecord::Base
 
   def refundable_to_credit_card?
     completed? && purchasemethod.purchase_medium == :credit_card  && !authorization.blank?
-  end
-
-  def all_comments
-    (completed? ? items : cart_items).map(&:comments).uniq
   end
 
 end

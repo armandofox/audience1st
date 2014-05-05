@@ -16,7 +16,7 @@
     - form_tag :action => 'process_cart' do
       = render :partial => 'ticket_menus' unless @valid_vouchers.empty?
 
-      = render :partial => 'retail' if @gAdmin.is_boxoffice
+      -# = render :partial => 'retail' if @gAdmin.is_boxoffice
 
       %label{:for => :donation} Additional tax-deductible donation
       = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'

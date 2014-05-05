@@ -22,12 +22,9 @@
 
   = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
-  - unless @cart.all_comments.blank?
-    #accessible_seating_notices
-      %p
-        %strong Seating notes:
-        = h @cart.all_comments
-      = sanitize_option_text(:accessible_seating_notices, 'p', :class => 'accessible_seating_notices')
+  - unless @cart.comments.blank?
+    #order_notes
+      %p <strong>Order notes:</strong> #{@cart.comments}
 
 %p.center
   - if @is_admin

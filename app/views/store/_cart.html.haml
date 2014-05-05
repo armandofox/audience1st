@@ -6,7 +6,7 @@
   - else
     %h2#check_dates Please double check your order
     %ul#cart_items
-      - @cart.each_voucher_in_cart do |v|
+      - @cart.each_voucher do |v|
         %li.cart_item{:class=>cycle(:even,:odd)}
           .price_and_actions
             .cart_item_price= number_to_currency(v.price)

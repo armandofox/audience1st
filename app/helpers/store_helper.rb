@@ -62,10 +62,4 @@ module StoreHelper
     s
   end
 
-  def watch_comment_field
-    observe_field('comments',
-                  :with => 'comment',
-                  :url => {:controller => :store, :action => :comment_changed})
-  end
-
 end
