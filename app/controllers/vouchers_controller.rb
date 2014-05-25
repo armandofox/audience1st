@@ -245,7 +245,7 @@ class VouchersController < ApplicationController
         :voucher_id => @v.id)
       flash[:notice] = "Your reservation has been cancelled. " <<
         "Your cancellation confirmation number is #{a}. "
-      email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a)
+      email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a) unless @gAdmin.is_boxoffice
     else
       flash[:notice] = 'Error - reservation could not be cancelled'
     end
