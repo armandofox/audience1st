@@ -127,7 +127,7 @@ deploy.task :after_update_code do
 end
 
 deploy.task :restart do
-  run "touch #{release_path}/tmp/restart.txt"
+  run "touch #{current_release}/tmp/restart.txt"
   # touch the server to spin it up
   run "wget --no-check-certificate -o /dev/null -O /dev/null http://www.audience1st.com/#{venue}/store"
 end
