@@ -26,6 +26,7 @@ Spec::Runner.configure do |config|
   config.global_fixtures = :options
   config.include AuthenticatedTestHelper
   config.include CustomMatchers
+  config.include FactoryGirl::Syntax::Methods
   # == Fixtures
   #
   # You can declare fixtures for each example_group like this:

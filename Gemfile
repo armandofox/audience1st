@@ -23,10 +23,12 @@ group :development, :test do
   # cucumber and capybara
   gem 'ruby-debug'
   gem 'ZenTest'
+  gem 'autotest-fsevent'
   gem 'capistrano'
   gem 'capybara'
   gem 'capybara-webkit'
   gem 'chronic'
+  gem 'factory_girl', '~> 2.6.4'
   gem 'timecop'
   gem 'cucumber'
   gem 'cucumber-rails'
