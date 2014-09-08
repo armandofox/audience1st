@@ -17,10 +17,6 @@ gem 'ruport', '1.6.3'
 gem 'stripe', '1.5.16'
 gem 'ruby-debug'
 
-# deprecated soon
-gem 'activemerchant', '1.4.2', :require => 'active_merchant'
-gem 'money', '2.1.3'
-
 group :development, :test do
   # cucumber and capybara
   gem 'ZenTest'

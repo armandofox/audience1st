@@ -253,8 +253,6 @@ describe Order do
       @order.add_donation(@donation)
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count
-      @order.should be_a_new_record
-      @the_customer.should have(0).vouchers
       Store.stub(:pay_with_credit_card).and_return(nil)
       lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
     end

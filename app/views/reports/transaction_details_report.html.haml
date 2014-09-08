@@ -1,0 +1,15 @@
+#download
+  %p= gen_button 'Download to Excel', :action => 'transaction_details_report', :from => @from, :to => @to, :format => 'csv'
+  / = gen_button 'Download as PDF', :action => 'transaction_details_report', :from => @from, :to => @to, :format => 'pdf'
+
+#report_dates
+  - form_tag({:action => 'do_report'}, {:method => :get}) do
+    = select_datetime @from, :prefix => 'from', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+    to
+    = select_datetime @to, :prefix => 'to', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+    = hidden_field_tag 'rep', 'Transaction Details'
+    = submit_tag 'Re-run Report'
+
+#pageDiv
+  = @report
+

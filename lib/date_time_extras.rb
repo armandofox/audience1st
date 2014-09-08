@@ -83,7 +83,7 @@ class Time
     t
   end
 
-  def self.range_from_params(minp,maxp,default=Time.now)
+  def self.range_from_params(minp,maxp)
     min = Time.from_param(minp)
     max = Time.from_param(maxp)
     min,max = max,min if min > max

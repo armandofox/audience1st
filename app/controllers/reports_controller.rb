@@ -65,6 +65,23 @@ class ReportsController < ApplicationController
     }
   end
 
+  def transaction_details_report
+    @from,@to = Time.range_from_params(params[:from], params[:to])
+    case params[:format]
+    when /csv/i
+      send_data(TransactionDetailsReport.render_csv(:from => @from, :to => @to),
+        :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
+        :filename => filename_from_dates('transactions', @from, @to, 'csv'))
+    when /pdf/i
+      send_data(TransactionDetailsReport.render_pdf(:from => @from, :to => @to),
+        :type => 'application/pdf',
+        :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
+    else
+      @report = TransactionDetailsReport.render_html(:from => @from, :to => @to)
+      render :action => 'transaction_details_report'
+    end
+  end
+
   def sales_detail
     sales = Voucher.sold_between(@from, @to)
     @nsales = sales.size
