@@ -45,6 +45,13 @@ class Voucher < Item
     Voucher.find_by_sql([sql,from,to])
   end
 
+  def item_description
+    vouchertype.name_with_season << 
+      (showdate ?
+      ": #{showdate.printable_name}" :
+      (if bundle? then '' else ' (open)' end))
+  end
+
   # accessors and convenience methods
 
   # many are delegated to Vouchertype
@@ -53,7 +60,7 @@ class Voucher < Item
     :name, :price, :season, :account_code,
     :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
     :to => :vouchertype)
-  def amount ; vouchertype.price ; end
+
   # delegations
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end
 

@@ -29,6 +29,10 @@ class Donation < Item
 
   def price ; self.amount ; end # why can't I use alias for this?
 
+  def item_description
+    "Donation: #{account_code.name_or_code}"
+  end
+
   def self.walkup_donation(amount,logged_in_id,purch=Purchasemethod.get_type_by_name('box_cash'))
     Donation.create(:sold_on => Date.today,
                     :amount => amount,

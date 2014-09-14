@@ -13,6 +13,10 @@ describe ReportsController do
       TransactionDetailsReport.should_receive(:render_html)
       get :transaction_details_report
     end
-    it 'renders HTML template'
+    it 'renders HTML template' do
+      TransactionDetailsReport.stub(:render_html).and_return('')
+      get :transaction_details_report
+      response.should render_template('reports/transaction_details_report')
+    end
   end
 end
