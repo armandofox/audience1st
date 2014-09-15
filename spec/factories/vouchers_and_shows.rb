@@ -25,7 +25,7 @@ FactoryGirl.define do
     fulfillment_needed false
     category 'revenue'
     account_code AccountCode.default_account_code
-    price 10.00
+    price 12.00
     season Time.now.year
   end
 
@@ -33,6 +33,7 @@ FactoryGirl.define do
     sold_on { Time.now }
     showdate
     association :vouchertype, :factory => :revenue_vouchertype
+    amount { vouchertype.price }
   end
 
 end
