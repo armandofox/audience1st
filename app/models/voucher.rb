@@ -56,6 +56,10 @@ class Voucher < Item
 
   # many are delegated to Vouchertype
 
+  # :BUG: 79120088 no need to delegate this for Vouchers when their 'amount'
+  # is properly filled in at order time
+  def amount ; vouchertype.price ;  end
+
   delegate(
     :name, :price, :season, :account_code,
     :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
