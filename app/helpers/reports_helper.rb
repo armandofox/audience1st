@@ -25,4 +25,5 @@ module ReportsHelper
   def link_to_stripe(text,auth)
     link_to text, "https://dashboard.stripe.com/payments/#{auth}", :target => '_blank'
   end
+
 end

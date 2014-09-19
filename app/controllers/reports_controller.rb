@@ -31,13 +31,11 @@ class ReportsController < ApplicationController
     when /transaction/i
       transaction_details_report
     when /unearned/i
-      flash[:warning] = "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."
-      redirect_to :action => 'index' and return
+      redirect_to({:action => :index}, {:warning => "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."})
     when /earned/i
       accounting_report
     else
-      flash[:notice] = "Please select a valid report."
-      redirect_to(:action => 'index') and return
+      redirect_to({:action => 'index'}, {:notice => "Please select a valid report."})
     end
   end
 
@@ -66,8 +64,8 @@ class ReportsController < ApplicationController
   end
 
   def transaction_details_report
-    @from,@to = Time.range_from_params(params[:from], params[:to])
     @report = TransactionDetailsReport.run(@from, @to)
+    redirect_to({:action => 'index'}, {:notice => 'No matching transactions found'}) and return if @report.empty?
     case params[:format]
     when /csv/i
       send_data(@report.to_csv,
@@ -83,7 +81,6 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
-    @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
       send_data(AccountingReport.render_csv(:from => @from, :to => @to),
@@ -103,12 +100,8 @@ class ReportsController < ApplicationController
     @items = RetailItem.find(:all,
       :conditions => ['sold_on BETWEEN ? and ?', @from, @to],
       :order => 'sold_on')
-    if @items.empty?
-      flash[:notice] = 'No retail purchases match these criteria.'
-      redirect_to :action => :index
-    else
-      render :action => 'retail'
-    end
+    redirect_to({:action => :index},
+      {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
   end
   
   def subscriber_details
@@ -149,17 +142,13 @@ class ReportsController < ApplicationController
     n = params[:_report]
     logger.debug request.request_uri
     @report = n.camelize.constantize.__send__(:new, params[:output])
-    if (n.blank? || @report.nil? || !@report.kind_of?(Report))
-      flash[:warning] = "Error: unknown report name."
-      redirect_to(:action => 'index')
-      return
-    end
+    redirect_to({:action => :index}, {:warning => 'Unknown report name'}) and return if
+      (n.blank? || @report.nil? || !@report.kind_of?(Report))
     result = @report.generate_and_postprocess(params) # error!
     unless result
       respond_to do |wants|
         wants.html {
-          flash[:warning] = "Errors generating report: #{@report.errors}"
-          redirect_to :action => 'index'
+          redirect_to({:action => 'index'}, {:warning => "Errors generating report: #{@report.errors}"})
         }
         wants.js {
           render :text => "Error: #{@report.errors}"
@@ -201,10 +190,7 @@ class ReportsController < ApplicationController
                      :include => :customer,
                      :conditions => 'fulfillment_needed = 1',
                      :order => "customers.last_name")
-    if v.empty?
-      flash[:notice] = 'No unfulfilled orders at this time.'
-      redirect_to :action => 'index'
-    end
+    redirect_to({:action => 'index'}, {:notice => 'No unfulfilled orders at this time.'}) and return if v.empty?
     @vouchers = v
     @unique_addresses = v.group_by { |vc| vc.customer.street }.keys.length
   end
@@ -235,13 +221,12 @@ EOQ
         unless v.fulfillment_needed
           flash[:notice] << "Warning: voucher ID #{vid} was already marked fulfilled<br/>"
         end
-        v.fulfillment_needed = nil
+        v.fulfillment_needed = false
         v.save!
         i += 1
       end
     end
-    flash[:notice] << "#{i} orders marked fulfilled"
-    redirect_to :action => 'index'
+    redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
   private

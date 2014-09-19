@@ -13,6 +13,7 @@ class TransactionDetailsReport
       :include => {:customer => {:only => %w(id), :methods => %w(full_name)}}
       )
     # :BUG: 79120590
+    return orders if orders.empty?
     orders = orders.sub_table { |t| t.total > 0 }
     orders.reorder %w(id sold_on customer.id customer.full_name purchasemethod_description authorization total item_descriptions)
     orders.rename_columns(
@@ -25,8 +26,6 @@ class TransactionDetailsReport
       'total'             => 'Total',
       'item_descriptions' => 'Items'
       )
-      # %w(id sold_on customer.id customer.full_name purchasemethod_description authorization total item_descriptions),
-      # ['Order#', 'Sold on', 'Cust#', 'Name', 'Payment method', 'Authorization', 'Total', 'Items'])
     orders
   end
 
