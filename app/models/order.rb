@@ -25,4 +25,11 @@ class Order < ActiveRecord::Base
     purchasemethod.description
   end
 
+  def item_descriptions
+    items.map(&:item_description).
+      inject(Hash.new(0)) { |h,v| h[v]+=1 ; h }.
+      map { |item,count| ("%3d @ #{item}" % count) }.
+      join("\n")
+  end
+
 end

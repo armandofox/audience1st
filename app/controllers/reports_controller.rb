@@ -29,7 +29,7 @@ class ReportsController < ApplicationController
     when /retail/i
       retail
     when /transaction/i
-      sales_detail
+      transaction_details_report
     when /unearned/i
       flash[:warning] = "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."
       redirect_to :action => 'index' and return
@@ -67,37 +67,19 @@ class ReportsController < ApplicationController
 
   def transaction_details_report
     @from,@to = Time.range_from_params(params[:from], params[:to])
+    @report = TransactionDetailsReport.run(@from, @to)
     case params[:format]
     when /csv/i
-      send_data(TransactionDetailsReport.render_csv(:from => @from, :to => @to),
+      send_data(@report.to_csv,
         :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
         :filename => filename_from_dates('transactions', @from, @to, 'csv'))
     when /pdf/i
-      send_data(TransactionDetailsReport.render_pdf(:from => @from, :to => @to),
+      send_data(@report.to_pdf,
         :type => 'application/pdf',
         :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
     else
-      @report = TransactionDetailsReport.render_html(:from => @from, :to => @to)
       render :action => 'transaction_details_report'
     end
-  end
-
-  def sales_detail
-    sales = Voucher.sold_between(@from, @to)
-    @nsales = sales.size
-    @page_title = "#{@nsales} Transactions: #{@from.strftime('%a %b %e')} " <<
-      (@to - @from > 1.day ? (" - " << @to.strftime('%a %b %e')) : '')
-    @daily_sales = sales.group_by do |v|
-      u = v.sold_on
-      "#{u.change(:min => u.min - u.min.modulo(3))},#{v.customer.last_name},#{v.customer.first_name},#{v.vouchertype_id},#{v.processed_by_id}"
-    end
-    @nunique = sales.group_by { |v| v.customer.id }.keys.size
-    if @daily_sales.empty?
-      flash[:notice] = "No transactions during date range given"
-      redirect_to :action => 'index'
-      return
-    end
-    render :action => :sales_detail
   end
 
   def accounting_report

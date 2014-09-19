@@ -1,0 +1,15 @@
+- from ||= 'from' ; to ||= 'to'
+%table.date_shortcuts
+  %tr
+    %td.r Date shortcuts:
+    %td= select_date_shortcuts :start_year => 2007, :from_prefix => from, :to_prefix => to, :include_time => true
+  %tr
+    %td.r 
+      %label{:for => from} Or custom range from:
+    %td= select_datetime Time.now.at_beginning_of_day, :prefix => from, :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+  %tr
+    %td.r
+      %label{:for => to} To:
+    %td
+      = select_datetime Time.now.at_end_of_day, :prefix => to,  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+

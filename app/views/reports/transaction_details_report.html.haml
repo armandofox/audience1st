@@ -1,15 +1,37 @@
-#download
-  %p= gen_button 'Download to Excel', :action => 'transaction_details_report', :from => @from, :to => @to, :format => 'csv'
-  / = gen_button 'Download as PDF', :action => 'transaction_details_report', :from => @from, :to => @to, :format => 'pdf'
-
 #report_dates
   - form_tag({:action => 'do_report'}, {:method => :get}) do
-    = select_datetime @from, :prefix => 'from', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
-    to
-    = select_datetime @to, :prefix => 'to', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+    = render :partial => 'reports/date_shortcuts'
     = hidden_field_tag 'rep', 'Transaction Details'
-    = submit_tag 'Re-run Report'
+    = submit_tag 'Re-run with new dates'
+    = gen_button 'Download to Excel', :action => 'transaction_details_report', :from => @from, :to => @to, :format => 'csv'
+    = gen_button 'Download as PDF', :action => 'transaction_details_report', :from => @from, :to => @to, :format => 'pdf'
+
 
 #pageDiv
-  = @report
+  %h1 #{@report.size} transactions: #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}
+
+  %table.hilite
+    %thead
+      %tr
+        %th Order#
+        %th Sold on
+        %th Customer
+        %th Payment method
+        %th Total
+        %th Items
+    %tbody
+      - @report.data.each do |row|
+        - pmt = row['Payment method']
+        %tr
+          %td= link_to row['Order#'],order_path(row['Order#']) 
+          %td= row['Sold on'].strftime('%m/%d/%y %I:%M:%S')
+          %td= link_to_customer row['Cust#'], :content_text => row['Name']
+          %td= pmt =~ /credit/i ? link_to_stripe(pmt,row['Stripe Auth']) : pmt
+          %td= number_to_currency row['Total']
+          %td= row['Items'].gsub( /$/, '<br/>')
+
+
+
+
+
 

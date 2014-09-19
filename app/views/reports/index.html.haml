@@ -3,29 +3,16 @@
 
 - if Voucher.count > 0 || Donation.count > 0
   .pageDiv#accounting_reports
-    %h1 Accounting Reports
-    
+    %h1 Accounting/Financial Reports
     - form_tag({:action => 'do_report'}, {:method => :get}) do
+      = render :partial => 'reports/date_shortcuts'
       %table
         %tr
           %td.r 
             %label{:for => 'rep'} Report type
           %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue", "Retail Sales"])
         %tr
-          %td.r Date shortcuts:
-          %td= select_date_shortcuts :start_year => 2007, :from_prefix => 'from', :to_prefix => 'to', :include_time => true
-        %tr
-          %td.r 
-            Or custom dates:
-            %br
-            %label{:for => 'from'} From:
-          %td= select_datetime Time.now.at_beginning_of_day, :prefix => 'from', :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
-        %tr
-          %td.r
-            %label{:for => 'to'} To:
-          %td
-            = select_datetime Time.now.at_end_of_day, :prefix => 'to',  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
-            = submit_tag 'Go'
+          %td.r= submit_tag 'Display report'
 
 .pageDiv#database_maintenance
   %h1 Database Maintenance

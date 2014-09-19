@@ -21,4 +21,8 @@ module ReportsHelper
   def account_code_with_links(kode)
     link_to_function kode, "alert('" << escape_javascript(vouchertypes_for_account_code(kode.to_s)) << "')"
   end
+
+  def link_to_stripe(text,auth)
+    link_to text, "https://dashboard.stripe.com/payments/#{auth}", :target => '_blank'
+  end
 end
