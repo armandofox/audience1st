@@ -1,0 +1,9 @@
+- report_name ||= 'UNDEFINED'
+#pageDiv
+  #report_dates
+    - form_tag({:action => 'do_report'}, {:method => :get}) do
+      = render :partial => 'reports/date_shortcuts'
+      = hidden_field_tag 'rep', report_name
+      = submit_tag 'Re-run with new dates'
+      = gen_button 'Download to Excel', :action => action_name, :from => @from, :to => @to, :format => 'csv'
+      = gen_button 'Download as PDF', :action => action_name, :from => @from, :to => @to, :format => 'pdf'
