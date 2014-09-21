@@ -1,4 +1,6 @@
 - from ||= 'from' ; to ||= 'to'
+- from_date = @from || Time.now.at_beginning_of_day
+- to_date = @to || Time.now.at_beginning_of_day
 %table.date_shortcuts
   %tr
     %td.r Date shortcuts:
@@ -6,10 +8,10 @@
   %tr
     %td.r 
       %label{:for => from} Or custom range from:
-    %td= select_datetime Time.now.at_beginning_of_day, :prefix => from, :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+    %td= select_datetime from_date, :prefix => from, :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
   %tr
     %td.r
       %label{:for => to} To:
     %td
-      = select_datetime Time.now.at_end_of_day, :prefix => to,  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
+      = select_datetime to_date, :prefix => to,  :start_year => 2007, :time_separator => ':', :datetime_separator => ' - '
 

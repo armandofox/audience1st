@@ -24,7 +24,6 @@ class ReportsController < ApplicationController
   def do_report
     # this is a dispatcher that just redirects to the correct report
     # based on a dropdown menu.
-    @from,@to = Time.range_from_params(params[:from],params[:to])
     case params[:rep]
     when /retail/i
       retail
@@ -64,6 +63,7 @@ class ReportsController < ApplicationController
   end
 
   def transaction_details_report
+    @from,@to = Time.range_from_params(params[:from],params[:to])
     @report = TransactionDetailsReport.run(@from, @to)
     redirect_to({:action => 'index'}, {:notice => 'No matching transactions found'}) and return if @report.empty?
     case params[:format]
@@ -81,6 +81,7 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
+    @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
       send_data(AccountingReport.render_csv(:from => @from, :to => @to),
@@ -97,6 +98,7 @@ class ReportsController < ApplicationController
   end
 
   def retail
+    @from,@to = Time.range_from_params(params[:from],params[:to])
     @items = RetailItem.find(:all,
       :conditions => ['sold_on BETWEEN ? and ?', @from, @to],
       :order => 'sold_on')
