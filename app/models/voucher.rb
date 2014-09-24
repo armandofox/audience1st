@@ -51,11 +51,11 @@ class Voucher < Item
   # many are delegated to Vouchertype
 
   delegate(
-    :name, :price, :season, :account_code,
+    :name,  :season, :account_code,
     :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
     :unique_showdate,
     :to => :vouchertype)
-  def amount ; vouchertype.price ; end
+
   # delegations
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end
 
@@ -137,6 +137,7 @@ class Voucher < Item
     vt.vouchers.build({
         :fulfillment_needed => vt.fulfillment_needed,
         :sold_on => Time.now,
+        :amount => vt.price,
         :category => vt.category}.merge(args))
   end
 
@@ -188,7 +189,7 @@ class Voucher < Item
   def reserve_for(desired_showdate, processor, new_comments='')
     errors.add_to_base "This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
     errors.add_to_base 'This ticket is not valid for the selected performance.' and return nil unless
-      redemption = ValidVoucher.find_by_showdate_id_and_vouchertype_id(desired_showdate.id, vouchertype_id)
+      redemption = desired_showdate.valid_vouchers.find_by_vouchertype_id(vouchertype_id)
     processor = Customer.find(processor) unless processor.kind_of? Customer
     redemption.customer = processor
     redemption = redemption.adjust_for_customer

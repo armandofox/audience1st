@@ -65,7 +65,7 @@ describe Voucher do
       end
       it "should have a vouchertype" do  @v.vouchertype.should == @vt_regular end
       it "price should match its vouchertype" do
-        @v.price.should == 10.00
+        @v.amount.should == 10.00
       end
     end
     context "with no options" do
@@ -112,7 +112,7 @@ describe Voucher do
       @c.vouchers << @v
       @c.save!
       @sd = BasicModels.create_one_showdate(1.day.from_now)
-      @sd.stub!(:saleable_seats_left).and_return(0)
+      Showdate.any_instance.stub!(:saleable_seats_left).and_return(0)
       @sd.valid_vouchers.create!(:start_sales => 1.week.ago, :end_sales => 1.week.from_now, :vouchertype => @vt_regular)
     end
     describe "when reserved by box office" do
@@ -135,8 +135,8 @@ describe Voucher do
         @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
       end
       it 'should not succeed' do
-        @success.should_not be_true
         @v.should_not be_reserved
+        @success.should_not be_true
       end
       it 'should explain that show is sold out' do
         @v.errors.full_messages.should include('Event is sold out')

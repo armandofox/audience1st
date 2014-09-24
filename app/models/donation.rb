@@ -18,7 +18,8 @@ class Donation < Item
   validates_associated :account_code
   validates_presence_of :account_code_id
   
-
+  belongs_to :customer
+  
   validates_numericality_of :amount
   validates_presence_of :sold_on
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
@@ -35,6 +36,10 @@ class Donation < Item
   end
 
   def price ; self.amount ; end # why can't I use alias for this?
+
+  def inspect
+    "[Donation #{id} by #{customer_id}] $%6.2f #{account_code.name}"
+  end
 
   def one_line_description
     sprintf("$%6.2f  Donation to #{account_code.name} (confirmation \##{id})", amount)
