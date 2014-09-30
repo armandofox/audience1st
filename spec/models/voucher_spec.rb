@@ -105,42 +105,21 @@ describe Voucher do
     end
   end
 
-  describe "for a sold-out showdate" do
+  describe "customer reserving a sold-out showdate" do
     before(:each) do
       @c = BasicModels.create_customer_by_role(:patron)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @c.vouchers << @v
-      @c.save!
       @sd = BasicModels.create_one_showdate(1.day.from_now)
-      Showdate.any_instance.stub!(:saleable_seats_left).and_return(0)
-      @sd.valid_vouchers.create!(:start_sales => 1.week.ago, :end_sales => 1.week.from_now, :vouchertype => @vt_regular)
+      @v.stub(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_type => 0, :explanation => 'Event is sold out'))
+      @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
     end
-    describe "when reserved by box office" do
-      before :each do
-        @success = @v.reserve_for(@sd, Customer.boxoffice_daemon, 'foo')
-      end
-      it 'should succeed' do
-        @success.should be_true
-        @v.should be_reserved
-      end
-      it 'should be reserved for correct showdate' do
-        @v.showdate_id.should == @sd.id
-      end
-      it 'should include comment' do
-        @v.comments.should == 'foo'
-      end
+    it 'should not succeed' do
+      @v.should_not be_reserved
+      @success.should_not be_true
     end
-    describe 'when reserved by customer' do
-      before :each do
-        @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
-      end
-      it 'should not succeed' do
-        @v.should_not be_reserved
-        @success.should_not be_true
-      end
-      it 'should explain that show is sold out' do
-        @v.errors.full_messages.should include('Event is sold out')
-      end
+    it 'should explain that show is sold out' do
+      @v.errors.full_messages.should include('Event is sold out')
     end
   end
   describe "transferring" do

@@ -157,7 +157,7 @@ class Voucher < Item
   def reserve_if_only_one_showdate(customer)
     if !bundle? && !reserved? && vouchertype.showdates.length == 1
       result = self.reserve_for(vouchertype.showdates.first,
-        customer.id,
+        customer,
         'Automatic reservation since ticket valid for only a specific show date',
         :ignore_cutoff => true)
       raise "Cannot reserve: #{comments}" unless result
@@ -188,14 +188,9 @@ class Voucher < Item
   
   def reserve_for(desired_showdate, processor, new_comments='')
     errors.add_to_base "This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
-    errors.add_to_base 'This ticket is not valid for the selected performance.' and return nil unless
-      redemption = desired_showdate.valid_vouchers.find_by_vouchertype_id(vouchertype_id)
-    processor = Customer.find(processor) unless processor.kind_of? Customer
-    redemption.customer = processor
-    redemption = redemption.adjust_for_customer
+    redemption = valid_voucher_adjusted_for processor,desired_showdate
     if redemption.max_sales_for_type > 0
-      self.comments = new_comments
-      self.showdate = desired_showdate
+      self.update_attributes(:comments => new_comments, :showdate => desired_showdate)
       RAILS_DEFAULT_LOGGER.info("Txn: customer #{processor} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
       true
     else
@@ -258,6 +253,19 @@ class Voucher < Item
       save_showdate
     else
       nil
+    end
+  end
+
+  private
+
+  def valid_voucher_adjusted_for customer,showdate
+    redemption = vouchertype.valid_vouchers.find_by_showdate_id(showdate.id)
+    if redemption
+      redemption.customer = customer
+      redemption = redemption.adjust_for_customer
+    else
+      redemption = ValidVoucher.new(:max_sales_for_type => 0,
+        :explanation => 'This ticket is not valid for the selected performance.')
     end
   end
 
