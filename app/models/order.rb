@@ -193,15 +193,15 @@ class Order < ActiveRecord::Base
 
   def finalize!
     raise Order::NotReadyError unless ready_for_purchase?
-    vouchers = []
-    valid_vouchers.each_pair do |valid_voucher_id, quantity|
-      vv = ValidVoucher.find(valid_voucher_id)
-      vv.customer = processed_by
-      vouchers += vv.instantiate(quantity)
-    end
-    vouchers.flatten!
     begin
       transaction do
+        vouchers = []
+        valid_vouchers.each_pair do |valid_voucher_id, quantity|
+          vv = ValidVoucher.find(valid_voucher_id)
+          vv.customer = processed_by
+          vouchers += vv.instantiate(quantity)
+        end
+        vouchers.flatten!
         # add non-donation items to recipient's account
         # if walkup order, mark the vouchers as walkup
         vouchers.each do |v|

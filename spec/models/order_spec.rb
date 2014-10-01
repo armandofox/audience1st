@@ -9,7 +9,7 @@ end
 
 
 describe Order do
-  before :all do                # set these up so they're not rolled back by transaction around each example, since we test transactions in credit-card-failure case
+  before :each do                # set these up so they're not rolled back by transaction around each example, since we test transactions in credit-card-failure case
     @vt = BasicModels.create_revenue_vouchertype(:price => 7)
     @sd = BasicModels.create_one_showdate(1.day.from_now)
     @vv = ValidVoucher.create!(
@@ -21,17 +21,14 @@ describe Order do
       :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
     @the_processed_by = BasicModels.create_generic_customer
-  end
-
-  after :all do
-    [@vt, @sd, @vv, @vt2, @sd2, @vv2, @the_processed_by].each { |m| m.destroy rescue nil }
-  end
-
-  before :each do
-    @order = Order.new(:processed_by => @the_processed_by)
     @the_customer = BasicModels.create_generic_customer
     @the_purchaser = BasicModels.create_generic_customer
+    @order = Order.new(:processed_by => @the_processed_by)
     @donation = BasicModels.donation(17)
+  end
+
+  after :each do
+    [@vt, @sd, @vv, @vt2, @sd2, @vv2, @the_processed_by].each { |m| m.destroy rescue nil }
   end
 
   describe 'new order' do
