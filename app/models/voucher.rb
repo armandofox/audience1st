@@ -108,10 +108,10 @@ class Voucher < Item
   def one_line_description
     if reserved?
       s = sprintf("$%6.2f  %s\n         %s - ticket \##{id}",
-        price, showdate.printable_name, name)
+        amount, showdate.printable_name, name)
       s << "\n         Notes: #{comments}" unless comments.blank?
     else
-      s = sprintf("$%6.2f  %s - voucher \##{id}", price, name)
+      s = sprintf("$%6.2f  %s - voucher \##{id}", amount, name)
     end
     s
   end

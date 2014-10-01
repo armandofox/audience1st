@@ -154,7 +154,7 @@ class BoxOfficeController < ApplicationController
     @subtotal = {}
     @total = 0
     @vouchers.each_pair do |purch,vouchers|
-      @subtotal[purch] = vouchers.map(&:price).sum
+      @subtotal[purch] = vouchers.map(&:amount).sum
       @total += @subtotal[purch]
     end
     @other_showdates = @showdate.show.showdates
