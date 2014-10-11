@@ -47,28 +47,13 @@ class Report
   def count ; make_query(count=true) ; end
   def query ; make_query(count=false) ; end
 
-  def add_constraint(clause,*bind_vars)
-    if clause.gsub!(/voucher\./, 'i.')
-      add_join(:vouchers)
-    elsif clause.gsub!(/vouchertype\./, 'vt.')
-      add_join(:vouchertypes)
-    elsif clause.gsub!(/donation\./, 'i.')
-      add_join(:donations)
-    else
-      clause.gsub!(/customer\./, 'c.')
-    end
-    @wheres << clause
-    @wheres.uniq!
-    @bind_variables += bind_vars
-  end
-
   def create_csv
     multicolumn = (@output_options['multi_column_address'].to_i > 0)
     header_row = (@output_options['header_row'].to_i > 0)
     CSV::Writer.generate(@output='') do |csv|
       begin
         if multicolumn
-          csv << %w[first_name last_name email day_phone eve_phone street city state zip created_at] if header_row
+          csv << %w[first_name last_name email day_phone eve_phone street city state zip labels created_at] if header_row
           self.customers.each do |c|
             csv << [c.first_name.name_capitalize,
               c.last_name.name_capitalize,
@@ -76,11 +61,12 @@ class Report
               c.day_phone,
               c.eve_phone,
               c.street,c.city,c.state,c.zip,
+              c.labels.map(&:name).join(':'),
               (c.created_at.to_formatted_s(:db) rescue nil)
             ]
           end
         else
-          csv << %w[first_name last_name email day_phone eve_phone address created_at] if header_row
+          csv << %w[first_name last_name email day_phone eve_phone address labels created_at] if header_row
           self.customers.each do |c|
             addr = [c.street, c.city, c.state, c.zip].map { |str| str.to_s.gsub(/,/, ' ') }
             addr = addr[0,3].join(', ') << ' ' << addr[3]
@@ -90,6 +76,7 @@ class Report
               c.day_phone,
               c.eve_phone,
               addr,
+              c.labels.map(&:name).join(':'),
               (c.created_at.to_formatted_s(:db) rescue nil)
             ]
           end
@@ -152,22 +139,6 @@ class Report
     [query] + bind_variables
   end
   
-  def add_join(sym)
-    if sym == :vouchers
-      @joins << 'items i on i.customer_id = c.id'
-      @wheres << "i.type = 'Voucher'"
-    elsif sym == :donations
-      @joins << 'items i on i.customer_id = c.id'
-      @wheres << "i.type = 'Donation'"
-    elsif sym == :vouchertypes
-      add_join(:vouchers)
-      @joins << 'vouchertypes vt on i.vouchertype_id = vt.id'
-    else
-      raise 'Invalid call to add_join with #{sym}'
-    end
-    @joins.uniq!
-  end
-
   def add_error(itm)
     (@errors ||= []) << itm.to_s
   end

@@ -119,6 +119,13 @@ span.tooltip:hover span { /* will display just on :hover state*/
     font-weight: bold;
 }
 
+.customer_label {
+    font-size: 90%;
+    background-color: MintCream;
+    margin: 1px;
+    padding: 1px;
+}
+
 tr.staff {
     font-style: italic;
 }

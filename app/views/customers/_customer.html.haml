@@ -7,13 +7,14 @@
     %td= link_to first, {:action => 'switch_to', :id => customer }, {:title => last_login}
     %td= link_to last, {:action => 'switch_to', :id => customer }, {:title => last_login}
   - else
-    %td= h first
-    %td= h last
-  %td= h customer.street
-  %td= h customer.city
-  %td= h customer.state
-  %td= h customer.zip
+    %td= first
+    %td= last
+  %td= customer.street
+  %td= customer.city
+  %td= customer.state
+  %td= customer.zip
   %td= number_to_phone_2(customer.day_phone)
   %td= number_to_phone_2(customer.eve_phone)
-  %td= h customer.email
-  %td= h customer.company
+  %td= customer.email
+  %td= customer.company
+  %td= format_collection_with_style(customer.labels.map(&:name), 'customer_label')
