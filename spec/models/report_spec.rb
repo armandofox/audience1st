@@ -31,40 +31,6 @@ describe Report do
         @r.query.should be_an(Array)
       end
     end
-    describe "with no bind variables" do
-      it_should_behave_like "a valid SQL query"
-      before(:each) do
-        @r = Report.new
-        @r.add_constraint('vouchertype.price = 1')
-      end
-      it "should include JOIN with constrained table" do
-        @r.query.first.should match(/join items/i)
-      end
-    end
-    describe "with 1 bind variable" do
-      before(:each) do
-        @r = Report.new
-        @r.add_constraint('vouchertype.price > ?', 10)
-      end
-      it_should_behave_like "a valid SQL query"
-      it "should include JOIN with constrained table" do
-        @r.query.first.should match(/join vouchertypes/i)
-      end
-      it "should include the through-join" do
-        @r.query.first.should match(/join items/i)
-      end
-    end
-    describe "with 2 bind variables from table A and 1 from table B" do
-      before(:each) do
-        @r = Report.new
-        @r.add_constraint('vouchertype.price BETWEEN ? AND ?', 1,10)
-        @r.add_constraint('donation.created_at < ?', Time.now)
-      end
-      it_should_behave_like "a valid SQL query"
-      it "should include query plus 3 bind slots" do
-        @r.query.should have(4).elements
-      end
-    end
     describe "with no constraints" do
       it_should_behave_like "a valid SQL query"
       before(:each) do ; @r = Report.new ; end

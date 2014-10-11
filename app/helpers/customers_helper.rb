@@ -28,6 +28,12 @@ module CustomersHelper
     link_to h(content_text), {:controller => 'customers', :action => 'switch_to', :id => customer}, options
   end
 
+  def format_collection_with_style(collection, css_class)
+    # show a collection as a bunch of span's styled with css class
+    collection.map do |elt|
+      content_tag 'span', h(elt), :class => css_class
+    end
+  end
   #
   # Link to login page using remote ip address as link content
   #
