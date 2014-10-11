@@ -22,21 +22,24 @@
 
 
     - @vouchers.each do |v|
-      - gift = v.gift_purchaser_id.to_i
-      - cust =  (gift.zero? ? v.customer : Customer.find(gift))
-      %tr{:class => (gift.zero? ? nil : 'highlighted')}
+      - if v.gift_purchaser
+        - cust = if v.ship_to_purchaser? then v.gift_purchaser else v.customer end
+      - else  # not a gift
+        - cust = v.customer
+      %tr{:class => (v.gift_purchaser ? nil : 'highlighted')}
         %td= rollover_with_contact_info(cust, :first_name)
         %td= rollover_with_contact_info(cust, :last_name)
-        - [:street,:city,:state,:zip].each do |c|
-          %td= h cust.send(c)
-        %td= h v.sold_on.to_formatted_s(:compact)
-        %td= h v.vouchertype.name 
+        %td= cust.street
+        %td= cust.city
+        %td= cust.state
+        %td= cust.zip
+        %td= v.sold_on.to_formatted_s(:compact)
+        %td= v.vouchertype.name 
         %td= check_box 'voucher', v.id, :class=>'check'
-      - unless gift.zero?
+      - if v.gift_purchaser
         %tr.highlighted
           %td.strong{:colspan=>9}
-            (Gift for 
-            = h(v.customer.full_name)
-            )
+            Gift for #{link_to_customer v.customer} from #{link_to_customer v.gift_purchaser}
+            (ship to #{cust.full_name})
   = submit_tag 'Mark Checked Orders as Fulfilled'
 

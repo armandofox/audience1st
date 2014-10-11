@@ -576,12 +576,11 @@ EOSQL1
   # ActiveRecord error messages for the customer (joined with ';').
 
   def self.to_csv(custs,opts={})
-    filenm = custs.first.class.to_s.downcase
     CSV::Writer.generate(output='') do |csv|
       unless opts[:suppress_header]
         header = ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
           'Day/main phone', 'Eve/alt phone', "Don't mail", "Don't email"]
-        header += opts[:extra] if opts[:extra]
+        header += opts[:extra].map(&:humanize) if opts[:extra]
         csv << header
       end
       custs.each do |c|

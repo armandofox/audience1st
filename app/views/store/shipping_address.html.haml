@@ -1,18 +1,26 @@
 #store
   %h1.page_heading.center Gift Order
 
-  %p 
-    Please enter the gift recipient's full name, mailing address, and at least
-    one phone number or email address.
-    %br
-    In order to keep your gift a secret, we will
-    %strong not
-    notify the recipient of this purchase.
-
-  - if @includes_donation
-    %p.strong Note: Donations will be credited to buyer, not to gift recipient.
-
   - form_tag :action => 'set_shipping_address' do
+    - if @mailable
+      %p
+        If part of this order needs to be mailed, where should it be mailed?
+        (We will not otherwise notify recipient of their gift, but we need
+        their mailing address even if you want us to mail order to you.)
+      = radio_button_tag 'ship_to_purchaser', '1', true
+      %label{:for => :ship_to_purchaser_1} To the purchaser (you)
+      %br
+      = radio_button_tag 'ship_to_purchaser', '0', false
+      %label{:for => :ship_to_purchaser_0} To the gift recipient
+    - else
+      %p 
+        We won't notify the recipient of their gift, but we do need
+        the gift recipient's full name, mailing address, and at least
+        one phone number or email address.
+
+    - if @includes_donation
+      %p.strong Note: Donations will be credited to buyer, not to gift recipient.
+
     = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient", :hide_opt_out => false}
     = gen_button '<< Go Back', :action => (@redirect_to || :index)
     to change or cancel order, or

@@ -123,6 +123,7 @@ class StoreController < ApplicationController
     set_checkout_in_progress(true)
     if params[:gift] && @cart.include_vouchers?
       @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
+      @mailable = @cart.vouchers_only.any? { |v| v.fulfillment_needed? }
     else
       redirect_to_checkout
     end
@@ -130,6 +131,10 @@ class StoreController < ApplicationController
 
   def set_shipping_address
     @cart = find_cart
+    # if gift order, record whether we should mail to purchaser or recipient
+    @cart.vouchers_only.each do |item|
+      item.ship_to_purchaser = params[:ship_to_purchaser]
+    end
     # if we can find a unique match for the customer AND our existing DB record
     #  has enough contact info, great.  OR, if the new record was already created but
     #  the buyer needs to modify it, great.
@@ -176,7 +181,6 @@ class StoreController < ApplicationController
   end
 
   def checkout
-    logger.info "User-agent: #{request.user_agent}"
     set_return_to :controller => 'store', :action => 'checkout'
     @cust = store_customer
     @is_admin = current_admin.is_boxoffice

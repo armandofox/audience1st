@@ -199,18 +199,38 @@ class ReportsController < ApplicationController
 
   def unfulfilled_orders_addresses
     sql = <<-EOQ
-     SELECT  c.*, vt.name AS product, count(*) AS count
-     FROM customers c,items v,vouchertypes vt
-     WHERE c.id=v.customer_id AND v.fulfillment_needed=1 AND v.vouchertype_id=vt.id
+     SELECT  c.*,
+             vt.name AS product,
+             v.ship_to_purchaser AS gift_shipping_to_purchaser,
+             v.sold_on AS sold_on,
+             count(*) AS count
+     FROM customers c JOIN items v ON c.id=v.customer_id
+                      JOIN vouchertypes vt ON vt.id=v.vouchertype_id
+     WHERE v.fulfillment_needed=1
+       AND v.ship_to_purchaser=0
      GROUP BY c.street,vt.id
      ORDER BY c.last_name
 EOQ
     @customers = Customer.find_by_sql(sql)
+    sql2 = <<-EOQ2
+     SELECT  c.*,
+             vt.name AS product,
+             v.ship_to_purchaser AS gift_shipping_to_purchaser,
+             v.sold_on AS sold_on,
+             count(*) AS count
+     FROM customers c JOIN items v ON c.id=v.gift_purchaser_id
+                      JOIN vouchertypes vt ON vt.id=v.vouchertype_id
+     WHERE v.fulfillment_needed=1
+       AND v.ship_to_purchaser=1
+     GROUP BY c.street,vt.id
+     ORDER BY c.last_name
+EOQ2
+    @customers += Customer.find_by_sql(sql2)
     if @customers.empty?
       flash[:notice] = 'No unfulfilled orders at this time.'
       redirect_to :action => 'index' and return
     end
-    output = Customer.to_csv(@customers, :extra => %w(product count))
+    output = Customer.to_csv(@customers, :extra => %w(product count sold_on gift_shipping_to_purchaser))
     download_to_excel(output, 'customers')
   end
 
