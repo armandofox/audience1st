@@ -189,22 +189,17 @@ class ReportsController < ApplicationController
 
   def unfulfilled_orders
     v = Voucher.find(:all,
-                     :include => :customer,
-                     :conditions => 'fulfillment_needed = 1',
+                     :include => [:customer, :vouchertype],
+                     :conditions => 'items.fulfillment_needed = 1',
                      :order => "customers.last_name")
     redirect_to({:action => 'index'}, {:notice => 'No unfulfilled orders at this time.'}) and return if v.empty?
-    @vouchers = v
-    @unique_addresses = v.group_by { |vc| vc.customer.street }.keys.length
-  end
-
-  def unfulfilled_orders_addresses
-    v = Voucher.find(:all,
-      :include => [:customer, :vouchertype],
-      :conditions => 'items.fulfillment_needed = 1',
-      :order => "customers.last_name")
-    redirect_to({:action => 'index'}, {:notice => 'No unfulfilled orders at this time.'}) and return if v.empty?
-    output = Voucher.to_csv(v)
-    download_to_excel(output, 'customers')
+    if params[:csv]
+      output = Voucher.to_csv(v)
+      download_to_excel(output, 'customers')
+    else
+      @vouchers = v
+      @unique_addresses = v.group_by { |vc| vc.customer.street }.keys.length
+    end
   end
 
   def mark_fulfilled

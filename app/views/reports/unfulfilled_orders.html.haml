@@ -1,7 +1,7 @@
 %h1= "#{@vouchers.length} unfulfilled orders (#{@unique_addresses} unique addresses) as of #{Time.now.to_s(:short)}"
 
 %p{:align=>:top}
-  = button_to 'Download to Excel', :action => 'unfulfilled_orders_addresses', :method => :get
+  = gen_button 'Download to Excel', {:action => 'unfulfilled_orders', :csv => true}, {:method => :get}
   = button_to_function 'Check All', "checkBoxes('uf',true)"
   = button_to_function 'Clear All', "checkBoxes('uf',false)"
 
