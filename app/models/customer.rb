@@ -584,15 +584,7 @@ EOSQL1
         csv << header
       end
       custs.each do |c|
-        row = [
-          (c.first_name.name_capitalize unless c.first_name.blank?),
-          (c.last_name.name_capitalize unless c.last_name.blank?),
-          c.email,
-          c.street,c.city,c.state,c.zip,
-          c.day_phone, c.eve_phone,
-          (c.blacklist ? "true" : ""),
-          (c.e_blacklist ? "true" : "")
-        ]
+        row = c.to_csv
         opts[:extra].each { |attrib|  row << c.send(attrib) }
         row << c.errors.full_messages.join('; ') if opts[:include_errors]
         csv << row
@@ -601,6 +593,18 @@ EOSQL1
     end
   end
 
+  def to_csv
+    [
+      (first_name.name_capitalize unless first_name.blank?),
+      (last_name.name_capitalize unless last_name.blank?),
+      email,
+      street,city,state,zip,
+      day_phone, eve_phone,
+      (blacklist ? "true" : ""),
+      (e_blacklist ? "true" : "")
+    ]
+    
+  end
 
   def self.find_all_subscribers(order_by='last_name',opts={})
     from = Time.now.at_beginning_of_season.to_formatted_s(:db)

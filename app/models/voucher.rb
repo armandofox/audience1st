@@ -1,4 +1,5 @@
 class Voucher < Item
+  require 'csv'
   acts_as_reportable
   
   belongs_to :showdate
@@ -55,6 +56,29 @@ class Voucher < Item
   # accessors and convenience methods
 
   # many are delegated to Vouchertype
+
+  def self.to_csv(vouchers,opts={})
+    output = ''
+    CSV::Writer.generate(output) do |csv|
+      orders = vouchers.group_by do |v|
+        if v.gift_purchaser
+          cust = if v.ship_to_purchaser? then v.gift_purchaser else v.customer end
+        else  # not a gift
+          cust = v.customer
+        end
+        [cust, v.vouchertype]
+      end
+      orders.each_pair do |k,v|
+        voucher = v[0]
+        row = k[0].to_csv
+        row << v.size           # quantity
+        row << k[1].name        # product
+        csv << row
+      end
+    end
+    output
+  end
+
 
   # :BUG: 79120088 no need to delegate this for Vouchers when their 'amount'
   # is properly filled in at order time
