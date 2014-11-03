@@ -22,7 +22,7 @@
   #voucher_menus
     - if @valid_vouchers.empty? && @sd
 
-      %p.explanation No tickets on sale for this performance
+      %p.explanation= @sd.show.sold_out_customer_info
 
     - else
 
