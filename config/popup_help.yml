@@ -148,6 +148,19 @@ show_house_capacity: >
   To set the maximum allowed advance sales for a given performance, 
   click on the Edit link next to the performance date below.
 
+show_sold_out_dropdown_message: >
+
+  When a performance is sold out, what should appear next to the
+  performance date in the dropdown menu on the ticket purchase page?  
+  (Leave blank to display nothing special.)
+
+show_sold_out_customer_info: >
+
+  When a customer tries to select a sold-out performance on the ticket 
+  purchase page, what instructions or explanation should appear?  (For 
+  example, you might direct them to call the box office to inquire
+  about cancellations.)
+
 show_listing_date: >
  
   The date the show will first appear on any customer-facing screens.

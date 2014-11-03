@@ -26,6 +26,18 @@
   = text_area 'show', 'description', :rows => 4
   = popup_help_for :show_description
 
+%p.strong If show is sold out:
+
+%p
+  %label{:for => :show_sold_out_dropdown_message} Dropdown menu says
+  = text_field 'show', 'sold_out_dropdown_message'
+  = popup_help_for :show_sold_out_dropdown_message
+
+%p
+  %label{:for => :show_sold_out_customer_info} Information for patron
+  = text_area 'show', 'sold_out_customer_info', :rows => 4
+  = popup_help_for :show_sold_out_customer_info
+
 %p
   %label{:for=>:show_landing_page_url} Landing page URL (optional)
   = text_field 'show', 'landing_page_url'

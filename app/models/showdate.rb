@@ -233,7 +233,7 @@ class Showdate < ActiveRecord::Base
   def menu_selection_name
     name = printable_date_with_description
     if sold_out?
-      name << " (Sold Out)"
+      name = [name, show.sold_out_dropdown_message].join ' '
     elsif nearly_sold_out?
       name << " (Nearly Sold Out)"
     end
