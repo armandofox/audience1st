@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 gem 'acts_as_reportable', '1.1.1'
 gem 'builder'
-gem 'bundler', '1.3.5'
+#gem 'bundler', '1.3.5'
 gem 'constant_contact', '1.4.0'
 gem 'dbf', '1.2.8'
 gem 'dbi', '0.4.5'
