@@ -262,7 +262,7 @@ class Voucher < Item
     redemption = vouchertype.valid_vouchers.find_by_showdate_id(showdate.id)
     if redemption
       redemption.customer = customer
-      redemption = redemption.adjust_for_customer
+      redemption = redemption.adjust_for_customer_reservation
     else
       redemption = ValidVoucher.new(:max_sales_for_type => 0,
         :explanation => 'This ticket is not valid for the selected performance.')

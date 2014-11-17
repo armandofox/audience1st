@@ -1,3 +1,4 @@
+@time
 Feature: Cannot add tickets
 
   As a box office manager

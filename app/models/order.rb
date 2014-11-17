@@ -223,7 +223,7 @@ class Order < ActiveRecord::Base
         end
         self.save!
         if purchasemethod.purchase_medium == :credit_card
-          raise Order::PaymentFailedError unless Store.pay_with_credit_card(self)
+          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.full_messages.join(', '))
         end
       end
     rescue Exception => e

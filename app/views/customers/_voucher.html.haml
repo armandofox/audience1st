@@ -16,12 +16,12 @@
     / voucher bundle - not reservable
     %td
     - if is_boxoffice_manager
-      %td.adminField= button_to(*remove_voucher) if voucher.price.zero?
+      %td.adminField= button_to(*remove_voucher) if voucher.amount.zero?
   - elsif voucher.unreserved?
     / regular voucher, unreserved
     %td= button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => voucher.customer },:method=>:get )
     - if is_boxoffice_manager 
-      %td.adminField= button_to(*remove_voucher) if voucher.price.zero?
+      %td.adminField= button_to(*remove_voucher) if voucher.amount.zero?
   - else
     / regular voucher, reserved
     %td

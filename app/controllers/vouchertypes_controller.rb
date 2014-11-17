@@ -116,7 +116,7 @@ class VouchertypesController < ApplicationController
       flash[:notice] = 'Vouchertype was successfully updated.'
       redirect_to :action => 'list', :season => @vouchertype.season
     else
-      flash[:notice] = 'Update failed, please re-check information and try again'
+      flash[:warning] = 'Update failed, please re-check information and try again: ' + @vouchertype.errors.full_messages.join(', ')
       redirect_to :action => 'edit', :id => @vouchertype
     end
   end

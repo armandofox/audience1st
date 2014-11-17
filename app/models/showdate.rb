@@ -100,11 +100,11 @@ class Showdate < ActiveRecord::Base
   end
 
   def revenue_by_type(vouchertype_id)
-    self.vouchers.find_by_id(vouchertype_id).inject(0) {|sum,v| sum + v.price}
+    self.vouchers.find_by_id(vouchertype_id).inject(0) {|sum,v| sum + v.amount}
   end
 
   def revenue
-    self.vouchers.inject(0) {|sum,v| sum + v.price}
+    self.vouchers.inject(0) {|sum,v| sum + v.amoung}
   end
 
   def revenue_per_seat

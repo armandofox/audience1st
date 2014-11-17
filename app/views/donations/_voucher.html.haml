@@ -1,7 +1,7 @@
 %tr.even
   %td= link_to voucher.customer.full_name, :action => 'list', :cid => voucher.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
   %td= voucher.updated_on.strftime("%D")
-  %td{:align=>"right"}= number_to_currency(voucher.price)
+  %td{:align=>"right"}= number_to_currency(voucher.amount)
   %td= voucher.showdate.printable_name
   %td= voucher.purchasemethod.description
   %td 

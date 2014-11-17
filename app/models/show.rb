@@ -77,7 +77,7 @@ class Show < ActiveRecord::Base
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
 
-  def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.price} ; end
+  def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.amount} ; end
 
   def revenue_per_seat
     v = self.vouchers.count("category NOT IN ('comp','subscriber')")
@@ -85,7 +85,7 @@ class Show < ActiveRecord::Base
   end
 
   def revenue_by_type(vouchertype_id)
-    self.vouchers.find_by_id(vouchertype_id).inject(0) {|sum,v| sum + v.price}
+    self.vouchers.find_by_id(vouchertype_id).inject(0) {|sum,v| sum + v.amount}
   end
 
   def capacity

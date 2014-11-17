@@ -1,3 +1,4 @@
+@time
 Feature: admin can list all tickets with explanations
 
   As an admin
@@ -6,10 +7,10 @@ Feature: admin can list all tickets with explanations
 
 Background: logged in as admin
 
+  Given today is April 1, 2011
   Given I am logged in as boxoffice manager
-  And a performance of "Fame" on "April 10, 2013, 8:00pm"
-  And a "General" vouchertype costing $10 for the 2013 season
-  And today is April 1, 2013
+  And a performance of "Fame" on "April 10, 2011, 8:00pm"
+  And a "General" vouchertype costing $10 for the 2011 season
 
 Scenario Outline: Date-related restrictions
 
@@ -19,9 +20,9 @@ Scenario Outline: Date-related restrictions
 
   Examples:
   | end_advance_sales | start_sales | end_sales     | message                                                          |
-  | 4/10/13 6pm       | 4/2/13  8pm | 4/4/13 5:00pm | Tickets of this type not on sale until Tuesday, Apr  2,  8:00 PM |
-  | 4/10/13 6pm       | 3/30/13 8pm | 3/31/13 5pm   | Tickets of this type not sold after Sunday, Mar 31,  5:00 PM     |
-  | 3/31/13 6pm       | 3/29/13 6pm | 3/30/13 5pm   | Advance sales for this performance are closed                    |
+  | 4/10/11 6pm       | 4/2/11  8pm | 4/4/11 5:00pm | Tickets of this type not on sale until Saturday, Apr  2,  8:00 PM    |
+  | 4/10/11 6pm       | 3/30/11 8pm | 3/31/11 5pm   | Tickets of this type not sold after Thursday, Mar 31,  5:00 PM     |
+  | 3/31/11 6pm       | 3/29/11 6pm | 3/30/11 5pm   | Advance sales for this performance are closed                    |
 
 Scenario Outline: Capacity-related restrictions
 

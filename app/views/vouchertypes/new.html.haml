@@ -1,8 +1,8 @@
-%h1 New Voucher Type
-
 - form_tag :action => 'create' do
-  = render :partial => 'form' 
-  = submit_tag "Create"
-  = submit_tag "Create & Add Another"
-  = gen_button 'Cancel', :action => 'list'
+  %fieldset#new_vouchertype
+    %legend New Voucher Type
+    = render :partial => 'form' 
+    = submit_tag "Create"
+    = submit_tag "Create & Add Another"
+    = gen_button 'Cancel', :action => 'list'
 

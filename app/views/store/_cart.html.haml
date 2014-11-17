@@ -20,7 +20,7 @@
       - if (d = @cart.donation)
         %li.cart_item{:class=>cycle(:even,:odd)}
           .price_and_actions
-            .cart_item_price= number_to_currency(d.price)
+            .cart_item_price= number_to_currency(d.amount)
           %span.donation_name Donation to #{h(d.account_code.name)}
         
     #cart_total

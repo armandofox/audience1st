@@ -12,15 +12,17 @@ Background:
 Scenario: Create new subscription vouchertype
 
   When I visit the New Vouchertype page
-  And I select "Bundle" from "Type"
-  And I fill in "Name" with "NewSub"
-  And I fill in "Price" with "15"
-  And I fill in "Display order" with "8"
-  And I select "9999 General Fund" from "Account Code"
-  And I select "Anyone may purchase" from "Availability"
-  And I select "2011-2012" from "Season"
-  And I check "Mail fulfillment needed"
-  And I check "Qualifies buyer as a Subscriber"
+  And I fill in the "New Voucher Type" fields as follows:
+  | field                           | value                        |
+  | Type                            | select "Bundle"              |
+  | Name                            | NewSub                       |
+  | Price                           | 15                           |
+  | Display order                   | 8                            |
+  | Account Code                    | select "9999 General Fund"   |
+  | Availability                    | select "Anyone may purchase" |
+  | Season                          | select "2011-2012"           |
+  | Mail fulfillment needed         | checked                      |
+  | Qualifies buyer as a Subscriber | checked                      |
   And I press "Create"
   Then I should see "Please specify bundle quantities now"
   And a Vouchertype with name "NewSub" should exist
@@ -35,13 +37,15 @@ Scenario: Edit existing subscription vouchertype
 
   Given a "Regular Sub" subscription available to anyone for $50.00
   When I visit the edit page for the "Regular Sub" vouchertype
-  When I select "Box office use only" from "Availability"
-  And I select "December 1, 2011" as the "Start sales" date
-  And I fill in "Promo code" with "WXYZ"
+  And I fill in the "Make changes to \"Regular Sub\"" fields as follows:
+  | field        | value                         |
+  | Availability | select "Box office use only"  |
+  | Start sales  | select date "October 1, 2009" |
+  | Promo code   | WXYZ                          |
   And I press "Save Changes"
   Then I should see "Vouchertype was successfully updated"
   When I visit the edit page for the "Regular Sub" vouchertype
-  Then "December 1, 2011" should be selected as the "Start sales" date
+  Then "October 1, 2009" should be selected as the "Start sales" date
   And "Box office use only" should be selected in the "Availability" menu
 
 

@@ -140,7 +140,7 @@ class BoxOfficeController < ApplicationController
       flash[:notice] = "#{@order.item_count} tickets"
       flash[:notice] << " and #{@order.donation.amount}" if @order.include_donation?
       flash[:notice] << " as zero-revenue order" if @order.total_price.zero?
-      flash[:notice] << " paid by #{@order.purchase_medium}"
+      flash[:notice] << " paid by #{ActiveSupport::Inflector::humanize(@order.purchase_medium)}"
       redirect_to :action => 'walkup', :id => @showdate
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
       flash[:warning] = "Transaction NOT processed: " <<
