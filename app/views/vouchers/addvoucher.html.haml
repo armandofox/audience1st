@@ -15,7 +15,7 @@
   = text_field_tag 'comments', '', {:size => 30, :maxlength => 30}
   %br
 
-  #reserve_for= render :partial => 'reserve_for', :locals => {:valid_vouchers => @available_seats}
+  #reserve_for= render(:partial => 'reserve_for') if @valid_vouchers
   = observe_form 'addcomps', :url => {:action => 'update_shows'}, |
     :update => 'reserve_for', |
     :before => "Element.show('wait_showdate')", |

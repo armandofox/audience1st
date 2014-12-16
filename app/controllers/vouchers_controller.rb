@@ -27,10 +27,7 @@ class VouchersController < ApplicationController
       return
     end
     @vouchers = Vouchertype.comp_vouchertypes(Time.this_season).reject { |v| v.offer_public == Vouchertype::EXTERNAL }
-    if @vouchers.empty?
-      flash[:notice] = "You must define some vouchertypes first"
-      redirect_to(:controller => 'vouchertypes', :action => 'list')
-    end
+    redirect_to({:controller => 'vouchertypes', :action => 'list'}, :notice => 'You must define some voucher types first.') and return if @vouchers.empty?
     @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
 
@@ -44,21 +41,23 @@ class VouchersController < ApplicationController
     flash[:warning] = 'Only comp vouchers can be added this way. For revenue vouchers,' <<
       'use the Buy Tickets purchase flow, and choose Check or Cash Payment.' unless
       thevouchertype.comp?
+    flash[:warning] ||= 'Please select number of vouchers.' unless thenumtoadd > 0
     flash[:warning] ||= 'Please select a performance.' unless theshowdate
     flash[:warning] ||= 'This comp ticket type not valid for this performance.' unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
     redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:warning]
 
-    order = Order.new(:processed_by => @gLoggedIn, :purchasemethod => Purchasemethod.find_by_shortname('none'),
-      :customer => @gCustomer, :purchaser => @gCustomer) # not a gift order
-
-    order.add_tickets(vv, howmany)
+    order = Order.new_from_valid_voucher(vv, thenumtoadd,
+      :comments => thecomment,
+      :processed_by => @gLoggedIn,
+      :customer => @gCustomer,
+      :purchaser => @gCustomer) # not a gift order
 
     begin
       order.finalize!
       RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@gCustomer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
-      flash[:notice] = "Added #{thenumtoadd} '#{vt.name}' comps for #{theshowdate.printable_name}."
+      flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
     rescue RuntimeError => e
       flash[:warning] = "Error adding comps:<br/>#{e.message}"
     end
@@ -108,7 +107,11 @@ class VouchersController < ApplicationController
     @customer = @voucher.customer
     @is_admin = @gAdmin.is_boxoffice
     try_again("Voucher already used: #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
-    @available_seats = @voucher.redeemable_showdates(@is_admin).select(&:visible?)
+    @valid_vouchers = @voucher.redeemable_showdates(@is_admin).select(&:visible?)
+    if @valid_vouchers.empty?
+      flash[:notice] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
+      redirect_to :controller => 'customers', :action => 'welcome'
+    end
   end
 
   def confirm_multiple

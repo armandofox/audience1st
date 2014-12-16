@@ -26,7 +26,7 @@
       %td.label
         %label.no_float{:for => "qty_#{v.id}"}= v.name
         - unless v.sales_unlimited?
-          %span.emphasis= "(#{v.seats_of_type_remaining} left)" 
+          %span.emphasis= v.vouchertype_name_with_seats_of_type_remaining
         - if boxoffice_mgr_only
           %span.emphasis (Box office manager only)
       %td= text_field_tag "price[#{v.id}]", |

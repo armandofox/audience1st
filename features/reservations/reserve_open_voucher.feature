@@ -1,3 +1,4 @@
+@time
 Feature: customer can make a reservation against an open voucher
 
   As a customer
@@ -6,15 +7,14 @@ Feature: customer can make a reservation against an open voucher
 
 Background: logged in customer has an open voucher
 
-  Given I am logged in as customer "Tom Foolery"
-  And I have 1 "General" open voucher reservable for the following showdates:
-  | show    | date                 | advance_sales_cutoff | seats_remaining |
-  | Hamlet  | Dec 11, 2013, 8:00pm | Dec 11, 2013, 6:00pm |               5 |
-  | Macbeth | Dec 18, 2013, 8:00pm | Dec 18, 2013, 6:00pm |               3 |
+  Given today is Dec 1, 2010
+  And I am logged in as customer "Tom Foolery"
+  And a show "Macbeth" with 2 "General" tickets for $10 on "Dec 5, 2010, 8pm"
 
 Scenario: make reservation for available show
 
-  When I go to the make-reservations page for that voucher
+  Given I have 1 "General" open voucher
+  When I reserve that voucher for 
 
 Scenario: cannot make reservation if show is sold out
 

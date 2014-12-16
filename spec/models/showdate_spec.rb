@@ -130,7 +130,7 @@ describe Showdate do
     describe "revenue" do
       before(:each) do
         @showdate.vouchers.each do |v|
-          v.stub!(:price).and_return(11.00)
+          v.stub!(:amount).and_return(11.00)
         end
       end
       it "should be based on total seats sold" do

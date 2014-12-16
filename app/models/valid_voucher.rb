@@ -65,9 +65,9 @@ class ValidVoucher < ActiveRecord::Base
     vt = self.vouchertype
     if self.end_sales > (end_of_season = Time.now.at_end_of_season(vt.season))
       errors.add_to_base "Voucher type '#{vt.name}' is valid for the
-        season ending #{end_of_season.to_formatted_s(:showtime)},
+        season ending #{end_of_season.to_formatted_s(:showtime_including_year)},
         but you've indicated sales should continue later than that
-        (until #{end_sales.to_formatted_s(:showtime)})."
+        (until #{end_sales.to_formatted_s(:showtime_including_year)})."
     end
   end
 
@@ -227,6 +227,10 @@ class ValidVoucher < ActiveRecord::Base
   def name_with_explanation
     display_name = showdate.printable_name
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
+  end
+
+  def vouchertype_name_with_seats_of_type_remaining
+    "#{name} (#{seats_of_type_remaining} left)"
   end
 
   def instantiate(quantity)

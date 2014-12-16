@@ -1,4 +1,3 @@
-- remove_voucher = ['Destroy',  {:controller => 'vouchers',:action => 'remove_voucher',:id => voucher.id },  {:confirm => (voucher.bundle? ?  MESSAGES[:remove_bundle_0] :  MESSAGES[:remove_voucher_0])}]
 - cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => voucher.customer}, {:confirm => MESSAGES[:release_reservation_0]} ]
 - cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => voucher.customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
 - is_boxoffice = nil unless defined?(is_boxoffice)
@@ -12,28 +11,21 @@
       = voucher.processed_by_name unless voucher.processed_by_id == voucher.customer.id
     %td.adminField= link_to_if voucher.order_id, voucher.order_id, order_path(voucher.order_id)
   %td= h voucher.vouchertype.name
-  - if voucher.bundle?
-    / voucher bundle - not reservable
-    %td
-    - if is_boxoffice_manager
-      %td.adminField= button_to(*remove_voucher) if voucher.amount.zero?
-  - elsif voucher.unreserved?
-    / regular voucher, unreserved
-    %td= button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => voucher.customer },:method=>:get )
-    - if is_boxoffice_manager 
-      %td.adminField= button_to(*remove_voucher) if voucher.amount.zero?
-  - else
-    / regular voucher, reserved
-    %td
-      %span.showName= h voucher.showdate.show.name
+  / Reservation column: name of show + Cancel Res button, or Make Res button if open
+  %td
+    - if voucher.reservable? 
+      = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => voucher.customer },:method=>:get )
+    - elsif voucher.reserved?
+      %span.showName= h voucher.reserved_show
       %br
-      %span.showDate= h voucher.showdate.thedate.to_formatted_s(:showtime)
-      / customer actions on reserved voucher:
+      %span.showDate= h voucher.reserved_date
+  / Cancel Reservation (if applicable)
+  %td
+    - if voucher.reserved?
       - if (is_boxoffice || voucher.can_be_changed?)
-        %br
         = button_to(*cancel_res)
-    - if is_boxoffice_manager
-      %td.adminField.c.admin=  button_to(*cancel_res)
+      - elsif is_boxoffice_manager
+        %span.adminField.c.admin=  button_to(*cancel_res)
   / admin can update voucher comments
   - if is_boxoffice
     %td.admin

@@ -19,10 +19,10 @@ Scenario Outline: Date-related restrictions
   Then I should see "<message>" within the container for "General" tickets
 
   Examples:
-  | end_advance_sales | start_sales | end_sales     | message                                                          |
-  | 4/10/11 6pm       | 4/2/11  8pm | 4/4/11 5:00pm | Tickets of this type not on sale until Saturday, Apr  2,  8:00 PM    |
-  | 4/10/11 6pm       | 3/30/11 8pm | 3/31/11 5pm   | Tickets of this type not sold after Thursday, Mar 31,  5:00 PM     |
-  | 3/31/11 6pm       | 3/29/11 6pm | 3/30/11 5pm   | Advance sales for this performance are closed                    |
+  | end_advance_sales | start_sales | end_sales     | message                                                         |
+  | 4/10/11 6pm       | 4/2/11  8pm | 4/4/11 5:00pm | Tickets of this type not on sale until Saturday, Apr 2, 8:00 PM |
+  | 4/10/11 6pm       | 3/30/11 8pm | 3/31/11 5pm   | Tickets of this type not sold after Thursday, Mar 31, 5:00 PM   |
+  | 3/31/11 6pm       | 3/29/11 6pm | 3/30/11 5pm   | Advance sales for this performance are closed                   |
 
 Scenario Outline: Capacity-related restrictions
 

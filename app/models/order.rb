@@ -3,8 +3,8 @@ class Order < ActiveRecord::Base
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
   belongs_to :purchasemethod
-  has_many :items
-  has_many :vouchers
+  has_many :items, :dependent => :destroy
+  has_many :vouchers, :dependent => :destroy
 
   validates_presence_of :processed_by_id
 
@@ -80,6 +80,28 @@ class Order < ActiveRecord::Base
   end
   
   public
+
+  def self.create_from_existing_vouchers!(list_of_vouchers)
+    p = list_of_vouchers.first
+    max_string_length = Order.columns_hash['comments'].limit
+    params = {
+      :walkup => p.walkup,
+      :customer => p.customer,
+      :ship_to_purchaser => p.ship_to_purchaser,
+      :purchasemethod => p.purchasemethod,
+      :comments => (list_of_vouchers.map(&:comments).uniq.join('; '))[0, max_string_length],
+      :processed_by => p.processed_by || Customer.boxoffice_daemon
+    }
+    params[:purchaser] =  (p.gift_purchaser || p.customer) if p.kind_of? Voucher
+    Order.create! params
+  end
+
+  def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
+    other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
+    order = Order.new(other_args)
+    order.add_tickets(valid_voucher, howmany)
+    order
+  end
 
   def empty_cart!
     self.valid_vouchers = {}

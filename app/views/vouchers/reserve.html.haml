@@ -3,7 +3,7 @@
   = h @customer.full_name
 
 - form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher do
-  = render :partial => 'reserve_for', :locals => {:seats => @available_seats}
+  = render(:partial => 'reserve_for') if @valid_vouchers
 
   %label.emphasis{:for => 'accessible_seating'} Special seating needs?
   = checkbox_guard_for 'special_seating'
@@ -12,7 +12,7 @@
     = text_field_tag 'comments', '', :size => '20em', :class => :showdate
   %br
 
-  - unless @available_seats.empty?
+  - unless @valid_vouchers.empty?
     - if @customer.valid_email_address?
       %label{:for => 'email_confirmation'} Send confirmation email?
       = check_box_tag 'email_confirmation', 1, !@customer.is_admin
