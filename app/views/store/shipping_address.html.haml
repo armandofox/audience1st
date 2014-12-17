@@ -3,6 +3,7 @@
 
   - form_tag :action => 'set_shipping_address' do
     - if @mailable
+      = hidden_field_tag 'mailable_gift_order', 1
       %p
         If part of this order needs to be mailed, where should it be mailed?
         (We will not otherwise notify recipient of their gift, but we need
@@ -18,8 +19,8 @@
         the gift recipient's full name, mailing address, and at least
         one phone number or email address.
 
-  - if @cart.include_donation?
-    %p.strong Note: Donations will be credited to buyer, not to gift recipient.
+    - if @cart.include_donation?
+      %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
     = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient", :hide_opt_out => false}
     = gen_button '<< Go Back', :action => (@redirect_to || :index)

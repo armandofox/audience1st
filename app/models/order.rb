@@ -141,14 +141,15 @@ class Order < ActiveRecord::Base
 
   def item_count ; ticket_count + (include_donation? ? 1 : 0) ; end
   
-  def tickets_for_date(date)
-    valid_vouchers.select { |v| v.thedate == date }
+  def has_mailable_items?
+    # do any of the items require fulfillment?
+    if completed?
+      vouchers.any? { |v| v.vouchertype.fulfillment_needed? }
+    else
+      ValidVoucher.find(valid_vouchers.keys).any? { |vv| vv.vouchertype.fulfillment_needed? }
+    end
   end
 
-  def tickets_of_type(vouchertype)
-    valid_vouchers.select { |v| v.vouchertype == vouchertype }
-  end
-  
   def include_vouchers?
     if completed?
       items.any? { |v| v.kind_of?(Voucher) }

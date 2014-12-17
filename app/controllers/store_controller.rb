@@ -93,7 +93,9 @@ class StoreController < ApplicationController
     end
     if params[:gift] && @cart.include_vouchers?
       @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
-      @mailable = @cart.vouchers_only.any? { |v| v.fulfillment_needed? }
+      @mailable = @cart.has_mailable_items?
+      remember_cart_in_session!
+      redirect_to :action => 'shipping_address'
     else
       @cart.customer = @cart.purchaser
       remember_cart_in_session!
@@ -110,10 +112,8 @@ class StoreController < ApplicationController
 
   def set_shipping_address
     @cart = find_cart
-    # if gift order, record whether we should mail to purchaser or recipient
-    @cart.vouchers_only.each do |item|
-      item.ship_to_purchaser = params[:ship_to_purchaser]
-    end
+    # record whether we should mail to purchaser or recipient
+    @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
     # if we can find a unique match for the customer AND our existing DB record
     #  has enough contact info, great.  OR, if the new record was already created but
     #  the buyer needs to modify it, great.
