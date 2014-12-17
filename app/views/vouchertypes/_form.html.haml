@@ -1,19 +1,17 @@
-= error_messages_for 'vouchertype', :header_message => default_validation_error_message
+= error_messages_for 'vouchertype', 'valid_voucher', :header_message => default_validation_error_message
 /[form:vouchertype]
 
 - existing_bundle = @vouchertype.bundle? && !@vouchertype.new_record?
 
 %p
   %label{:for => :vouchertype_category} Type
-  = select 'vouchertype', 'category', options_for_select( |
-      [["Bundle", :bundle], |
-      ["Comp (single ticket)", :comp], |
-      ["Single subscriber voucher", :subscriber], |
-      ["Regular revenue voucher", :revenue], |
-      ["Nonticket product", :nonticket]], |
-      {:selected => @vouchertype.category.to_sym}) |
-  = popup_help_for :vouchertype_type
-  = observe_field 'vouchertype_category', :function => 'reset_vouchertype_fields(value)'
+  - if @vouchertype.new_record?
+    = select 'vouchertype', 'category', options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym)
+    = popup_help_for :vouchertype_type
+    = observe_field 'vouchertype_category', :function => 'reset_vouchertype_fields(value)'
+  - else
+    = text_field_tag 'vouchertype_category', humanize(@vouchertype.category), :disabled => 'disabled'
+    %span (The type of an existing vouchertype cannot be changed)
 
 %p
   %label{:for=>:vouchertype_name} Name
@@ -25,7 +23,7 @@
 
 %p#p_vouchertype_account_code.vtform
   %label{:for=>:vouchertype_account_code_id} Account Code
-  = collection_select 'vouchertype', 'account_code_id', AccountCode.find(:all), :id, :name_with_code
+  = collection_select 'vouchertype', 'account_code_id', AccountCode.all, :id, :name_with_code
   = gen_button "Add/Edit Account Codes", account_codes_path
   = popup_help_for :vouchertype_account_code
 
@@ -76,21 +74,26 @@
   /This part of form is for bundle vouchers
 
   #for_bundles
-    %p#p_vouchertype_bundle_sales_start
-      %label{:for=>:vouchertype_bundle_sales_start} Sales start
-      = datetime_select 'vouchertype', 'bundle_sales_start'
+    - fields_for @valid_voucher do |vv|
 
-    %p#p_vouchertype_bundle_sales_end
-      %label{:for=>:vouchertype_bundle_sales_end} Sales end
-      = datetime_select 'vouchertype', 'bundle_sales_end'
+      %p
+        %label{:for => :valid_voucher_max_sales_for_type} Max sales (Leave blank for unlimited)
+        = vv.text_field :max_sales_for_type
 
-    %p#p_vouchertype_bundle_promo_code
-      %label{:for => :vouchertype_bundle_promo_code} Promo code(s)
-      = text_field 'vouchertype', 'bundle_promo_code', :size => 40
-      = popup_help_for 'vouchertype_bundle_promo_code'
+      %p
+        = vv.label :start_sales
+        = vv.datetime_select 'start_sales'
+
+      %p
+        = vv.label :end_sales
+        = vv.datetime_select 'end_sales'
+
+      %p
+        = vv.label :promo_code
+        = vv.text_field 'promo_code', :size => 40
 
     %p#p_vouchertype_vouchertype_included_vouchers
-      %label{:for=>:vouchertype_included_vouchers} Included vouchers:
+      %label Included vouchers:
       %br/
 
     #included_vouchers= render :partial => 'included_vouchers', :locals => {:season => @vouchertype.season }

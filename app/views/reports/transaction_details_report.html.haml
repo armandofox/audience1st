@@ -22,9 +22,3 @@
           %td= pmt =~ /credit/i ? link_to_stripe(pmt,row['Stripe Auth']) : pmt
           %td= number_to_currency row['Total']
           %td= row['Items'].gsub( /$/, '<br/>')
-
-
-
-
-
-

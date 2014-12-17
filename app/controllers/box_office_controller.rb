@@ -10,26 +10,25 @@ class BoxOfficeController < ApplicationController
          :redirect_to => { :action => :walkup, :id => @showdate },
     :add_to_flash => {:warning => "Warning: action only callable as POST, no transactions were recorded! "})
   verify :method => :post, :only => :mark_checked_in
-  ssl_required(:walkup, :do_walkup_sale)
+  ssl_required :walkup, :do_walkup_sale
   ssl_allowed :change_showdate
   
   private
 
-  # this filter must setup @showdates and @showdate to non-nil,
-  # or else force a redirect to a different controller & action
+  # this filter must setup @showdates (pulldown menu) and @showdate
+  # (current showdate, to which walkup sales will apply), or if not possible to set them,
+  # force a redirect to a different controller & action
   def get_showdate
-    @showdates = Showdate.find(:all,
-      :conditions => ['thedate >= ?', Time.now.at_beginning_of_season - 1.year],
-      :order => "thedate ASC")
-    return true if (!params[:id].blank?) &&
-      (@showdate = Showdate.find_by_id(params[:id].to_i))
-    if (@showdate = (Showdate.current_or_next(2.hours) ||
-                    Showdate.find(:first, :order => "thedate DESC")))
-      redirect_to :action => action_name, :id => @showdate
-    else
-      flash[:notice] = "There are no shows listed.  Please add some."
+    @showdate =
+      Showdate.find_by_id(params[:id]) ||
+      Showdate.current_or_next(2.hours)
+    @showdates = Showdate.all_shows_this_season
+    @showdates << @showdate if @showdate
+    if @showdates.empty?
+      flash[:notice] = "There are no shows this season eligible for check-in right now.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'
     end
+    @showdate ||= @showdates.last
   end
 
   def vouchers_for_showdate(showdate)
@@ -40,46 +39,6 @@ class BoxOfficeController < ApplicationController
       "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
     end
     return [total,num_subscribers,vouchers]
-  end
-
-  def at_least_1_ticket_or_donation
-    return nil unless @qty.respond_to?(:values)
-    if (@qty.values.map(&:to_i).sum.zero?  &&  @donation.zero?)
-      logger.info(flash[:warning] = "No tickets or donation to process")
-      nil
-    else
-      true
-    end
-  end
-
-  # given a hash of valid-voucher ID's and quantities, compute the total
-  # price represented if those vouchers were to be purchase
-
-  def compute_price(qtys,donation='')
-    total = 0.0
-    qtys.each_pair do |vtype,q|
-      total += q.to_i * ValidVoucher.find(vtype).price
-    end
-    total += donation.to_f
-    total
-  end
-
-
-
-  # process a sale of walkup vouchers by linking them to the walkup customer
-  # pass a hash of {ValidVoucher ID => quantity} pairs
-  
-  def process_walkup_vouchers(qtys,howpurchased = Purchasemethod.find_by_shortdesc('none'), comment = '')
-    vouchers = []
-    qtys.each_pair do |vtype,q|
-      next if q.to_i.zero?
-      vv = ValidVoucher.find(vtype)
-      newvoucher = vv.instantiate(Customer.find(logged_in_id), howpurchased, q.to_i, comment)
-      newvoucher.each { |v| v.walkup = true }
-      vouchers += newvoucher
-    end
-    Customer.walkup_customer.vouchers += vouchers
-    (flash[:notice] ||= "") << "Successfully added #{vouchers.size} vouchers"
   end
 
   public
@@ -130,81 +89,63 @@ class BoxOfficeController < ApplicationController
   end
 
   def walkup
-    @showdate = (Showdate.find_by_id(params[:id]) ||
-      Showdate.current_or_next(2.hours))
-    @valid_vouchers = @showdate.valid_vouchers_for_walkup(@gAdmin)
+    @valid_vouchers = @showdate.valid_vouchers_for_walkup
     @admin = @gAdmin
     @qty = params[:qty] || {}     # voucher quantities
   end
 
   def do_walkup_sale
-    @qty = params[:qty]
-    @donation = params[:donation].to_f
-    redirect_to :action => 'walkup', :id => @showdate and return unless at_least_1_ticket_or_donation
-    begin
-      total = compute_price(@qty, @donation) 
-    rescue Exception => e
-      flash[:warning] =
-        "There was a problem verifying the amount of the order:<br/>#{e.message}"
-      redirect_to(:action => 'walkup', :id => @showdate) and return
+    @order = Order.new(
+      :walkup => true,
+      :customer => Customer.walkup_customer,
+      :purchaser => Customer.walkup_customer,
+      :processed_by => @gAdmin)
+    if ((amount = params[:donation].to_f) > 0)
+      @order.add_donation(Donation.walkup_donation amount)
     end
-    if total == 0.0 # zero-cost purchase
-      process_walkup_vouchers(@qty, p=Purchasemethod.find_by_shortdesc('none'), 'Zero revenue transaction')
+    ValidVoucher.from_params(params[:qty]).each_pair do |valid_voucher, qty|
+      @order.add_tickets(valid_voucher, qty)
+    end
+
+    # process order using appropriate payment method.
+    # if Stripe was used for credit card processing, it resubmits the original
+    #  form to us, but doesn't correctly pass name of Submit button that was
+    #  pressed, so we recover it here:
+    params[:commit] ||= 'credit'
+
+    case params[:commit]
+    when /cash/i
+      @order.purchasemethod = Purchasemethod.find_by_shortdesc(
+        @order.total_price.zero? ? 'none' : 'box_cash')
+    when /check/i
+      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_chk')
+      @order.purchase_args = {:check_number => params[:check_number]}
+    else                      # credit card
+      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_cc')
+      @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
+    end
+      
+    flash[:warning] = 'There are no items to purchase.' if @order.item_count.zero?
+    flash[:warning] ||= @order.errors.full_messages.join(', ') unless @order.ready_for_purchase?
+    redirect_to(:action => 'walkup', :id => @showdate) and return if flash[:warning]
+
+    # all set to try the purchase
+    begin
+      @order.finalize!
       Txn.add_audit_record(:txn_type => 'tkt_purch',
                            :customer_id => Customer.walkup_customer.id,
                            :comments => 'walkup',
                            :purchasemethod_id => p,
                            :logged_in_id => logged_in_id)
-      flash[:notice] << " as zero-revenue order"
-      logger.info "Zero revenue order successful"
+      flash[:notice] = "#{@order.item_count} tickets"
+      flash[:notice] << " and #{@order.donation.amount}" if @order.include_donation?
+      flash[:notice] << " as zero-revenue order" if @order.total_price.zero?
+      flash[:notice] << " paid by #{ActiveSupport::Inflector::humanize(@order.purchase_medium)}"
       redirect_to :action => 'walkup', :id => @showdate
-      return
-    end
-    # if there was a swipe_data field, a credit card was swiped, so
-    # assume it was a credit card purchase; otherwise depends on which
-    # submit button was used.
-    params[:commit] ||= 'credit' # Stripe form-resubmit from Javascript doesn't pass name of submit button
-    case params[:commit]
-    when /credit/i
-      method,how = :credit_card, Purchasemethod.find_by_shortdesc('box_cc')
-      comment = ''
-      args = {
-        :bill_to => Customer.new(:first_name => params[:credit_card][:first_name],
-          :last_name => params[:credit_card][:last_name]),
-        :comment => '(walkup)',
-        :credit_card_token => params[:credit_card_token],
-        :order_number => Cart.generate_order_id
-      }
-    when /cash|zero/i
-      method,how = :cash, Purchasemethod.find_by_shortdesc('box_cash')
-      comment = ''
-      args = {}
-    when /check/i
-      method,how = :check, Purchasemethod.find_by_shortdesc('box_chk')
-      comment = params[:check_number].blank? ? '' : "Check #: #{params[:check_number]}"
-      args = {}
-    else
-      logger.info(flash[:notice] = "Unrecognized purchase type: #{params[:commit]}")
-      redirect_to(:action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation) and return
-    end
-    resp = Store.purchase!(method,total,args) do
-      process_walkup_vouchers(@qty, how, comment)
-      Donation.walkup_donation(@donation,logged_in_id) if @donation > 0.0
-      Txn.add_audit_record(:txn_type => 'tkt_purch',
-        :customer_id => Customer.walkup_customer.id,
-        :comments => 'walkup',
-        :purchasemethod_id => how.id,
-        :logged_in_id => logged_in_id)
-    end
-    if resp.success?
-      flash[:notice] << " purchased via #{how.description}"
-      logger.info "Successful #{how.description} walkup"
-      redirect_to :action => 'walkup', :id => @showdate
-    else
-      flash[:warning] = "Transaction NOT processed: #{resp.message}"
-      flash[:notice] = ''
-      logger.info "Failed walkup sale: #{resp.message}"
-      redirect_to :action => 'walkup', :id => @showdate, :qty => @qty, :donation => @donation
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
+      flash[:warning] = "Transaction NOT processed: " <<
+        @order.errors.full_messages.join(', ')
+      redirect_to :action => 'walkup', :id => @showdate, :qty => params[:qty], :donation => params[:donation]
     end
   end
 
@@ -213,7 +154,7 @@ class BoxOfficeController < ApplicationController
     @subtotal = {}
     @total = 0
     @vouchers.each_pair do |purch,vouchers|
-      @subtotal[purch] = vouchers.map(&:price).sum
+      @subtotal[purch] = vouchers.map(&:amount).sum
       @total += @subtotal[purch]
     end
     @other_showdates = @showdate.show.showdates

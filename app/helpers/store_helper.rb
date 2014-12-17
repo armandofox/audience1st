@@ -34,8 +34,8 @@ module StoreHelper
 
   def ticket_menus(avs)
     min_tix = 0
-    avs.each do |av|
-      vid = av.vouchertype.id
+    valid_vouchers.each do |av|
+      vid = av.valid_voucher.id
       max_tix = [av.howmany, 30].min
       qty = (min_tix..max_tix).to_a
       yield vid, av.vouchertype.name_with_price, qty, av.vouchertype.price
@@ -60,12 +60,6 @@ module StoreHelper
                        :complete => "$('submit').disabled = false; recalc_total();",
                        :url => {:controller => 'store', :action => :showdate_changed})
     s
-  end
-
-  def watch_comment_field
-    observe_field('comments',
-                  :with => 'comment',
-                  :url => {:controller => :store, :action => :comment_changed})
   end
 
 end

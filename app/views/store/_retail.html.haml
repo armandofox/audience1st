@@ -1,4 +1,4 @@
-#retail
+#retail_purchase
   %label{:for => :retail} Retail purchase amount
   = text_field_tag 'retail', '', :size => 8, :onchange => 'recalc_total()', :class => 'itemQty'
   = select_tag 'retail_account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, AccountCode.find_by_code(Option.default_retail_account_code).try(:id))

@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe "Date/time extras" do
   def stub_month_and_day(month,day)
@@ -42,7 +42,7 @@ describe "Date/time extras" do
         Time.now.at_beginning_of_season(2005).should == Time.local(2005,@m,@d)
       end
       it "should calculate the end of the 2005 season" do
-        Time.now.at_end_of_season(2005).should == (Time.local(2006,@m,@d) - 1.day)
+        Time.now.at_end_of_season(2005).should == (Time.local(2006,@m,@d,23,59,59) - 1.day)
       end
       it "should calculate beginning of current season when calendar date precedes season start date" do
         y = Time.now.year
@@ -57,7 +57,7 @@ describe "Date/time extras" do
       before(:each) do
         stub_month_and_day(9,1)
         @start = Time.local(2009,9,1)
-        @end = Time.local(2010,8,31)
+        @end = Time.local(2010,8,31,23,59,59)
       end
       it "should be identified as the 2009 season" do
         d = @start + 1.day

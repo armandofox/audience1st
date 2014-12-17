@@ -1,3 +1,4 @@
+@wip
 Feature: accept retail purchases
   
   As an event manager or house manager

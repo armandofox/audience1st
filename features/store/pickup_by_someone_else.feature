@@ -3,18 +3,24 @@ Feature: customer can specify that someone else will pickup ticket or registrati
   To make kids' class enrollments easier to track
   I want to let patrons specify name of person who'll pickup the order
 
-Scenario: admin can see pickup name on door list
-
-Scenario: customer can specify pickup name at purchase time
+Background: customer is logged in
 
   Given I am logged in as customer "Tom Foolery"
-  And my cart contains the following tickets:
-    | qty | type    | show    | price  | showdate   |
-    |   2 | General | Chicago | $10.00 | Apr 1, 8pm |
+
+Scenario: admin can see pickup name on door list
+
+@stubs_successful_credit_card_payment
+Scenario: customer can specify pickup name at purchase time
+
+  Given my cart contains the following tickets:
+    | qty | type    | show    | price | showdate         |
+    |   2 | General | Chicago | 10.00 | Apr 2, 2010, 8pm |
   And I am on the checkout page
   Then I should see "If someone other than the purchaser will be attending this event"
   When I fill in "pickup" with "Jason Gray"
-  And I pay with a valid credit card
+  And the order is placed successfully
+  Then I should be on the order confirmation page
+  And I should see "Pickup by: Jason Gray" within "#order_notes"
 
 Scenario: customer cannot specify alternate person for donation-only order
   

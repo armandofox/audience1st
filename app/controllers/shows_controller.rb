@@ -6,8 +6,7 @@ class ShowsController < ApplicationController
   before_filter :has_at_least_one, :except => [:new, :create]
 
   def index
-    list
-    render :action => 'list'
+    redirect_to :action => :list
   end
 
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
@@ -15,18 +14,15 @@ class ShowsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
+    unless Show.find(:first)
+      flash[:notice] = "There are no shows set up yet."
+      redirect_to :action => 'new' and return
+    end
     @superadmin = Customer.find(logged_in_id).is_admin rescue false
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @shows = Show.find(:all, :order => 'opening_date', :conditions => ['opening_date BETWEEN ? AND ?', Time.now.at_beginning_of_season(@season), Time.now.at_end_of_season(@season)])
-    if @shows.empty?
-      @shows = Show.find(:all, :order => 'opening_date')
-      if @shows.empty?
-        flash[:notice] = "There are no shows set up yet."
-        redirect_to :action => 'new'
-      end
-    end
-    @earliest = Show.find(:first, :order => 'opening_date').opening_date.year
-    @latest = Show.find(:first, :order => 'opening_date DESC').opening_date.year
+    @earliest,@latest = Show.seasons_range
+    @season = @latest unless @season.between?(@earliest,@latest)
+    @shows = Show.all_for_season(@season)
   end
 
   def new

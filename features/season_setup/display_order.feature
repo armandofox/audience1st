@@ -6,10 +6,9 @@ Feature: set display order of voucher types
 
 Background:
 
-  Given a performance of "Hamlet" on January 21, 2010, 8:00pm
+  Given a performance of "Hamlet" on January 21, 8:00pm
   And   3 General vouchers costing $10 are available for that performance
   And   2 Senior vouchers costing $8 are available for that performance
-  And   today is January 20, 2010
  
 Scenario: display General vouchers earlier
 

@@ -8,7 +8,7 @@ class ReportsController < ApplicationController
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
     # next showdate
-    @next_showdate = Showdate.next_or_latest
+    @next_showdate = Showdate.current_or_next
     # all show names
     @all_shows = Show.find(:all)
     # quick subscription stats
@@ -112,7 +112,7 @@ class ReportsController < ApplicationController
     render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
     if params[:download]
       CSV::Writer.generate(output='') do |csv|
-        csv << %w[name price quantity]
+        csv << %w[name amount quantity]
         q=0 ; t=0
         subs.each { |s| csv << s ; t += s[1]*s[2] ; q += s[2] }
         csv << ['Total',t,q]
@@ -219,19 +219,4 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
-  private
-
-  # given a list of AR records returned from the GROUP BY sql queries of the
-  # accounting report, squeeze out the ones with a zero total, and sort
-  # the collection by (name,account code) where name may be a show name,
-  # subscription-vouchertype name, or donation-type name.
-  def sort_and_filter(records,price_key)
-    records.reject do |v|
-      v.attributes["SUM(#{price_key})"].to_f.zero?
-    end.sort_by(&Proc.new do |x|
-                  "#{x.attributes['name']},#{x.attributes['account_code']}"
-                end).map do |e|
-      e.attributes.values_at("account_code", "name", "SUM(#{price_key})")
-    end
-  end
 end

@@ -26,6 +26,7 @@ class Customer < ActiveRecord::Base
   has_one  :most_recent_txn, :class_name=>'Txn', :order=>'txn_date DESC'
   has_many :donations
   has_many :retail_items
+  has_many :items               # the superclass of vouchers,donations,retail_items
   
   has_many :visits
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
@@ -250,7 +251,7 @@ class Customer < ActiveRecord::Base
 
   def inspect
     self.to_s <<
-      (street.blank? ? '' : " #{street}, #{city} #{state} #{zip}")
+      (street.blank? ? '' : " #{street}, #{city} #{state} #{zip} #{day_phone}")
   end
   
   def full_name
@@ -312,51 +313,8 @@ class Customer < ActiveRecord::Base
   # add items to a customer's account - could be vouchers, record of a
   # donation, or purchased goods
 
-  def add_items(items, logged_in, howpurchased=Purchasemethod.get_type_by_name('web_cc'), comment='')
-    status = true
-    items.map do |v|
-      if v.kind_of?(Voucher)
-        v.processed_by_id = logged_in
-        v.purchasemethod = howpurchased
-        success,msg = v.add_to_customer(self)
-        if success
-          Txn.add_audit_record(:txn_type => 'tkt_purch',
-                               :customer_id => self.id,
-                               :voucher_id => v.id,
-                               :comments => comment,
-                               :logged_in_id => logged_in,
-                               :showdate_id => (v.showdate.id rescue 0),
-                               :show_id => (v.showdate.show.id rescue 0),
-                               :dollar_amount => v.vouchertype.price,
-                               :purchasemethod_id => howpurchased.id)
-        else
-          status = nil
-          logger.error "Error adding voucher #{v} to customer #{self.full_name_with_id}:  #{msg}"
-          raise "Error: #{msg}"
-        end
-      elsif v.kind_of?(Donation)
-        self.donations << v
-        Txn.add_audit_record(:txn_type => 'don_cash',
-                             :customer_id => self.id,
-                             :comments => comment,
-                             :logged_in_id => logged_in,
-                             :dollar_amount => v.amount,
-                             :purchasemethod_id => howpurchased)
-      elsif v.kind_of?(RetailItem)
-        self.retail_items << v
-        Txn.add_audit_record(:txn_type => 'retail',
-                             :customer_id => self.id,
-                             :comments => comment,
-                             :logged_in_id => logged_in,
-                             :dollar_amount => v.amount,
-                             :purchasemethod_id => howpurchased)
-      else
-        logger.error "Can't add this product type to customer record: #{v}"
-        raise "Can't add this product type to customer record"
-      end
-      v.id
-    end
-    return status
+  def add_items(items)
+    self.items += items
   end
 
   def self.find_by_email_for_authentication(email)

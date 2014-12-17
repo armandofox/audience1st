@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe Report do
   describe 'workaround parsing bug in Rack or Rails for multi-select box' do
@@ -33,7 +33,7 @@ describe Report do
     end
     describe "with no constraints" do
       it_should_behave_like "a valid SQL query"
-      before(:all) do ; @r = Report.new ; end
+      before(:each) do ; @r = Report.new ; end
       it "should have no bind slots" do
         @r.query.should have(1).element
       end

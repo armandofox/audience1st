@@ -1,25 +1,28 @@
 class Vouchertype < ActiveRecord::Base
   include VouchertypesHelper
   
+  require 'ruport'
   acts_as_reportable :only => [:name, :price]
 
   belongs_to :account_code
   validates_associated :account_code
 
-  has_many :valid_vouchers
+  has_many :valid_vouchers, :dependent => :destroy
+  accepts_nested_attributes_for :valid_vouchers
   has_many :vouchers
   has_many :showdates, :through => :valid_vouchers
   serialize :included_vouchers, Hash
 
   NAME_LIMIT = 80
-
+  CATEGORIES = [:revenue, :comp, :subscriber, :bundle, :nonticket]
+  
   validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
   validates_numericality_of :price, :greater_than_or_equal_to => 0
   validates_numericality_of :season, :in => 1900..2100
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
-  validates_inclusion_of :category, :in => [:revenue, :comp, :subscriber, :bundle, :nonticket]
+  validates_inclusion_of :category, :in => CATEGORIES
   # Vouchertypes whose price is zero must NOT be available
   # to subscribers or general public
   validates_exclusion_of(:offer_public, :in => [1,2],
@@ -34,7 +37,28 @@ class Vouchertype < ActiveRecord::Base
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
+  before_update :cannot_change_category
+  after_create :setup_valid_voucher_for_bundle, :if => :bundle?
+  
   protected
+
+  # can't change the category of an existing bundle
+  def cannot_change_category
+    if category != category_was
+      self.errors.add(:category, 'cannot be changed on an existing voucher type')
+      false
+    end
+  end
+  # When a bundle is created, automatically create the single valid-voucher
+  # that will be linked to it.
+  def setup_valid_voucher_for_bundle
+    self.valid_vouchers.create!(
+      :max_sales_for_type => nil, # unlimited
+      :start_sales => Time.at_beginning_of_season(season),
+      :end_sales   => Time.at_end_of_season(season),
+      :promo_code  => nil
+      )
+  end
 
   def self.ensure_valid_name(name)
     # make name valid if it isn't already
@@ -91,27 +115,39 @@ class Vouchertype < ActiveRecord::Base
     sprintf("%-15.15s $%2.2f (%s,%s)", name, price, category, offer_public_as_string)
   end
 
+  def <=>(other)
+    ord = (display_order <=> other.display_order)
+    ord == 0 ? price <=> other.price : ord
+  end
+  
   def offer_public_as_string
     case offer_public
     when BOXOFFICE
-      "Box ofc only"
+      "Box office only"
     when SUBSCRIBERS
       "Subscribers"
     when ANYONE
       "Anyone"
     when EXTERNAL
-      "External"
+      "External Resellers"
     else
       "Unknown (#{offer_public})"
     end
   end
 
-
   def self.offer_to
     @@offer_to
   end
 
-      
+  def visible_to?(customer)
+    case offer_public
+    when ANYONE then true
+    when EXTERNAL then false
+    when SUBSCRIBERS then customer.subscriber? || customer.is_boxoffice
+    when BOXOFFICE then customer.is_boxoffice
+    else false
+    end
+  end
 
   def bundle? ; category == :bundle ; end
   def comp? ; category == :comp ; end
@@ -177,24 +213,6 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def self.bundles_available_to(customer = Customer.generic_customer, admin = nil)
-    this_season = Time.this_season
-    next_season = this_season + 1
-    if admin
-      str = "offer_public != ? AND season IN (#{this_season}, #{next_season})"
-      vals = [Vouchertype::EXTERNAL]
-    elsif (customer.subscriber? || customer.next_season_subscriber?)
-      str = "offer_public IN (?) AND season IN (#{this_season}, #{next_season})"
-      vals = [[Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE]]
-    else                      # generic customer
-      str = "(offer_public = ?) AND season IN  (#{this_season}, #{next_season})"
-      vals = [Vouchertype::ANYONE]
-    end
-    str = "(category = ?) AND #{str}"
-    str += " AND '#{Time.now.to_formatted_s(:db)}' BETWEEN bundle_sales_start AND bundle_sales_end" unless admin
-    vals.unshift(str, :bundle)
-    Vouchertype.find(:all, :conditions => vals, :order => "season DESC,display_order,price DESC")
-  end
 
   def self.find_products(args={})
     restrict = []
@@ -278,6 +296,21 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
+  def instantiate(howmany, args = {})
+    vouchers = Array.new(howmany) { Voucher.new_from_vouchertype(self, args) }
+    if bundle?
+      self.get_included_vouchers.each_pair do |vtype,qty|
+        vouchers += Vouchertype.find(vtype).instantiate(howmany * qty)
+      end
+    end
+    vouchers
+  end
+
+  # a monogamous vouchertype is valid for exactly one showdate.
+  def unique_showdate
+    showdates.length == 1 ? showdates.first : nil
+  end
+
   # display methods
 
   def name_with_price ;  sprintf("%s - $%0.2f", name, price) ;  end
@@ -300,11 +333,11 @@ class Vouchertype < ActiveRecord::Base
   end
 
   # BUG: this duplicates functionality 
-
+  
 end
 
 # For convenience, we define using_promo_code as an instance method of Enumerable so that
-# we can write subs = Vouchertype.bundles_available_to(...).using_promo_code('foo')
+# we can write subs = ValidVoucher.bundles_available_to(...).using_promo_code('foo')
 
 module Enumerable
   def using_promo_code(p = '')

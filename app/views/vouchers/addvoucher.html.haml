@@ -1,6 +1,6 @@
 %h2= "Add Comps for #{h(@customer.full_name)}"
 
-- form_tag({:action => 'addvoucher', :customer => @customer}, {:id => 'addcomps'}) do
+- form_tag({:action => 'process_addvoucher', :customer => @customer}, {:id => 'addcomps'}) do
 
   %label{:for => 'howmany'} How many:
   = text_field_tag 'howmany', '', :size => 3, :maxlength => 2
@@ -15,7 +15,7 @@
   = text_field_tag 'comments', '', {:size => 30, :maxlength => 30}
   %br
 
-  #reserve_for= render :partial => 'reserve_for', :locals => {:seats => @available_seats, :none => 'None (leave open)'}
+  #reserve_for= render(:partial => 'reserve_for') if @valid_vouchers
   = observe_form 'addcomps', :url => {:action => 'update_shows'}, |
     :update => 'reserve_for', |
     :before => "Element.show('wait_showdate')", |

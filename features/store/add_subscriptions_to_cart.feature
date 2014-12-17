@@ -5,11 +5,12 @@ Feature: Add subscriptions to cart
   I want to add subscriptions to my order
 
   Background:
+    Given I am not logged in
+
+  Scenario: Add subscription to order when not logged in
     Given a "Regular Sub" subscription available to anyone for $50.00
-    And I go to the subscriptions page
+    When I go to the subscriptions page
     Then I should see "Buy Subscriptions"
-    And I should see a quantity menu for "Regular Sub"
-
-  Scenario:  Add subscriptions to order when not logged in  
-
-
+    When I select "2" from "Regular Sub"
+    And I press "CONTINUE >>"
+    Then the cart should contain 2 "Regular Sub" subscriptions

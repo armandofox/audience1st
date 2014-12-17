@@ -2,16 +2,16 @@
   %legend= defined?(legend) ? legend : 'Credit Card Information'
   %p#payment_errors
   %label{:for => 'credit_card_first_name'} First Name
-  = text_field_tag 'credit_card[first_name]', '', :size => 20
+  = text_field_tag 'credit_card_first_name', '', :size => 20
   %br
   %label{:for => 'credit_card_last_name'} Last Name
-  = text_field_tag 'credit_card[last_name]', '', :size => 20
+  = text_field_tag 'credit_card_last_name', '', :size => 20
   %br
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key
   = make_unsubmitted '_stripe_api_key'
   %label{:for => 'credit_card_number'} Number (no spaces)
-  = text_field_tag 'credit_card[number]', '', :size => 24, :max_length => 16, :autocomplete => :off
+  = text_field_tag 'credit_card_number', '', :size => 24, :max_length => 16, :autocomplete => :off
   = make_unsubmitted 'credit_card_number'
   %br
   %label We accept
@@ -27,7 +27,7 @@
   = make_unsubmitted 'credit_card_year'
   %br
   %label{:for => 'credit_card_verification_value'} Security (CVV) code
-  = text_field_tag 'credit_card[verification_value]', '', :size => 4, :max_length => 4
+  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4
   = make_unsubmitted 'credit_card_verification_value'
   = popup_help_for 'credit_card_verification_value'
   %br

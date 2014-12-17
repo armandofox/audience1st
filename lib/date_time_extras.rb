@@ -6,10 +6,10 @@ ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
   :compact => "%m/%d/%y",
   :filename => "%Y-%m-%d",
   :date_only => "%e %B %Y",
-  :showtime => '%A, %b %e, %l:%M %p',
-  :showtime_including_year => '%A, %b %e, %Y, %l:%M %p',
-  :month_day_only => "%b %e",
-  :month_day_year => "%b %e, %Y"
+  :showtime => '%A, %b %-e, %-l:%M %p',
+  :showtime_including_year => '%A, %b %-e, %Y, %-l:%M %p',
+  :month_day_only => "%b %-e",
+  :month_day_year => "%b %-e, %Y"
 })
 
 class Time
@@ -52,9 +52,9 @@ class Time
   def at_end_of_season(oldyear = nil)
     if (oldyear)
       # just return end of that season
-      self.at_beginning_of_season(oldyear) + 1.year - 1.day
+      self.at_beginning_of_season(oldyear) + 1.year - 1.second
     else
-      self.at_beginning_of_season + 1.year - 1.day
+      self.at_beginning_of_season + 1.year - 1.second
     end
   end
 

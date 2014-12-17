@@ -3,32 +3,16 @@ include BasicModels
 
 describe Voucher do
 
-  before :all do
+  before :each do
     #  some Vouchertype objects for these tests
     args = {
       :fulfillment_needed => false,
       :season => Time.now.year
     }
-    @vt_regular = Vouchertype.create!(args.merge({
-          :name => 'regular voucher',
-          :category => 'revenue',
-          :account_code => AccountCode.default_account_code,
-          :price => 10.00}))
-    @vt_subscriber = Vouchertype.create!(args.merge({
-          :name => 'subscriber voucher',
-          :category => :subscriber,
-          :account_code => AccountCode.default_account_code}))
-    @vt_bundle = Vouchertype.create!(args.merge({
-          :name => 'bundle voucher',
-          :category => 'bundle',
-          :price => 25.00,
-          :account_code => AccountCode.default_account_code,
-          :included_vouchers => {@vt_subscriber.id => 2}}))
-    @vt_nonticket = Vouchertype.create!(args.merge({
-          :name => 'fee',
-          :category => 'nonticket',
-          :price => 5.00,
-          :account_code => AccountCode.default_account_code}))
+    @vt_regular = BasicModels.create_revenue_vouchertype
+    @vt_subscriber = BasicModels.create_included_vouchertype
+    @vt_bundle = BasicModels.create_bundle_vouchertype(:included_vouchers => {@vt_subscriber.id => 2})
+    @basic_showdate = BasicModels.create_one_showdate(Time.now.tomorrow)
   end
 
   describe "multiple voucher" do
@@ -81,7 +65,7 @@ describe Voucher do
       end
       it "should have a vouchertype" do  @v.vouchertype.should == @vt_regular end
       it "price should match its vouchertype" do
-        @v.price.should == 10.00
+        @v.amount.should == 10.00
       end
     end
     context "with no options" do
@@ -107,16 +91,8 @@ describe Voucher do
     end
   end
 
-  describe "nonticket voucher" do
-    before(:each) do
-      @v = Voucher.new_from_vouchertype(@vt_nonticket)
-      @v.purchasemethod = mock_model(Purchasemethod)
-      @v.save!
-    end
-  end
-
   describe "expired voucher" do
-    before(:all) do
+    before(:each) do
       @vt_regular.update_attribute(:season, Time.now.year - 2)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @v.should be_valid
@@ -129,55 +105,21 @@ describe Voucher do
     end
   end
 
-  describe "when valid for a showdate" do
+  describe "customer reserving a sold-out showdate" do
     before(:each) do
       @c = BasicModels.create_customer_by_role(:patron)
       @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
       @c.vouchers << @v
-      @c.save!
       @sd = BasicModels.create_one_showdate(1.day.from_now)
+      @v.stub(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_type => 0, :explanation => 'Event is sold out'))
+      @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
     end
-    context "that's sold out" do
-      before(:each) do
-      end
-      describe "when reserved by box office" do
-        before(:each) do
-          @b = BasicModels.create_customer_by_role(:boxoffice)
-        end
-        before(:each) do
-          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).with(
-            @sd.id,
-            @c,
-            @vt_regular,
-            {:redeeming => true, :ignore_cutoff => true}).and_return(mock('AvailableSeat', :available? => nil))
-          av = @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @b.is_boxoffice)
-        end
-        it "should succeed" do
-          @v.should be_reserved
-        end
-        it "should be tied to that showdate" do
-          @v.showdate.id.should == @sd.id
-        end
-      end
-      describe "when reserved by customer" do
-        before(:each) do
-        end
-        it "should not succeed" do
-          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
-            with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
-            and_return(mock('AvailableSeat', :available? => nil, :explanation => ''))
-          @v.reserve_for(@sd.id, @c.id, '', :ignore_cutoff => @c.is_boxoffice)
-          @v.should_not be_reserved
-        end
-        it "should display an explanation" do
-          as = mock('AvailableSeat', :available? => nil)
-          as.should_receive(:explanation).and_return('')
-          ValidVoucher.should_receive(:numseats_for_showdate_by_vouchertype).
-            with(@sd.id, @c, @vt_regular, {:redeeming => true, :ignore_cutoff => false}).
-            and_return(as)
-          @v.reserve_for(@sd.id,@c.id, '', :ignore_cutoff => @c.is_boxoffice)
-        end
-      end
+    it 'should not succeed' do
+      @v.should_not be_reserved
+      @success.should_not be_true
+    end
+    it 'should explain that show is sold out' do
+      @v.errors.full_messages.should include('Event is sold out')
     end
   end
   describe "transferring" do
@@ -211,47 +153,6 @@ describe Voucher do
       it "should not remove the voucher from the transferor's account" do
         @v.transfer_to_customer(@to)
         @from.vouchers.should include(@v)
-      end
-    end
-  end
-  describe "bundles" do
-    before(:each) do
-      @c = BasicModels.create_generic_customer
-      @v1 = BasicModels.create_comp_vouchertype
-      @v2 = BasicModels.create_comp_vouchertype
-      @bun1 = BasicModels.create_subscriber_vouchertype({
-          :included_vouchers => {@v1.id => 2}
-        })
-      @bun2 = BasicModels.create_subscriber_vouchertype({
-          :included_vouchers => {@v2.id => 1}
-        })
-      @b1 = Voucher.anonymous_bundle_for(@bun1)
-      @b2 = Voucher.anonymous_bundle_for(@bun2)
-      @b1.add_to_customer(@c)
-      @b2.add_to_customer(@c)
-    end
-    context "when created" do
-      it "should add correct number of vouchers" do
-        @c.should have(5).vouchers
-      end
-      it "should cause first bundle's vouchers to have first bundle's id" do
-        @c.vouchers.select { |v| v.vouchertype == @v1 }.all? do |v|
-          v.bundle_id.should == @b1.id
-        end.should be_true
-      end
-      it "should cause second bundle's vouchers to have second bundle's id" do
-        @c.vouchers.select { |v| v.vouchertype == @v2 }.all? do |v|
-          v.bundle_id.should == @b2.id
-        end.should be_true
-      end
-    end
-    context "when destroyed" do
-      it "should destroy associated bundled vouchers" do
-        @b1.destroy
-        @c.reload
-        @c.should have(2).vouchers
-        @c.vouchers.should_not include(@b1)
-        @c.vouchers.any? { |v| v.bundle_id == @b1.id }.should be_false
       end
     end
   end

@@ -5,7 +5,7 @@
   = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key
   = make_unsubmitted '_stripe_api_key'
   %label.strong{:for => 'credit_card_verification_value'} Enter CVV code manually FIRST!
-  = text_field_tag 'credit_card[verification_value]', '', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
+  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
   = make_unsubmitted 'credit_card_verification_value'
   %br
   #ccReady
@@ -17,13 +17,13 @@
   %br
   %br
   %label{:for => 'credit_card_first_name'} First Name
-  = text_field_tag 'credit_card[first_name]', '', :size => 20
+  = text_field_tag 'credit_card_first_name', '', :size => 20
   %br
   %label{:for => 'credit_card_last_name'} Last Name
-  = text_field_tag 'credit_card[last_name]', '', :size => 20
+  = text_field_tag 'credit_card_last_name', '', :size => 20
   %br
-  %label{:for => 'credit_card[number]'} Number (no spaces)
-  = text_field_tag 'credit_card[number]', '', :size => 20, :max_length => 16, :autocomplete => :off
+  %label{:for => 'credit_card_number'} Number (no spaces)
+  = text_field_tag 'credit_card_number', '', :size => 20, :max_length => 16, :autocomplete => :off
   = make_unsubmitted 'credit_card_number'
   %br
   %label{:for => 'credit_card_month'} Expiration Month

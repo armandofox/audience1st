@@ -1,7 +1,7 @@
 = error_messages_for 'valid_voucher', :header_message => default_validation_error_message
 /[form:valid_voucher]
 
-%label{:for=>:valid_voucher_max_sales_for_type} Max sales for this type (0=unlimited)
+%label{:for=>:valid_voucher_max_sales_for_type} Max sales for this type (Leave blank for unlimited)
 = text_field 'valid_voucher', 'max_sales_for_type', :size=>5 
 = popup_help_for :valid_voucher_max_sales_for_type
 %br

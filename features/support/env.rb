@@ -72,7 +72,6 @@ Before do
   ActionMailer::Base.delivery_method = :test
   ActionMailer::Base.perform_deliveries = true
   ActionMailer::Base.deliveries.clear
-  Timecop.travel parse_time("Jan 1, 2012")
 end
 
 After do
@@ -82,4 +81,26 @@ After do
     $rspec_mocks.reset_all
   end
 end
+
+# It is always 1/1/2010, except for tests that specifically manipulate time
+Before('~@time') do
+  @base_time = Time.parse('January 1, 2010')
+  Timecop.travel @base_time
+end
+
+# Stub Stripe for certain scenarios
+Before('@stubs_successful_credit_card_payment') do
+  Store.stub(:pay_with_credit_card) do |order|
+    order.authorization = 'ABC123'
+  end
+end
+
+Before('@stubs_failed_credit_card_payment') do
+  Store.stub(:pay_with_credit_card) do |order|
+    order.authorization = nil
+    order.errors.add_to_base "Credit card payment error: Forced failure in test mode"
+    nil
+  end
+end
+
 

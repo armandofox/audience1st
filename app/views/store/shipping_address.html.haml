@@ -18,8 +18,8 @@
         the gift recipient's full name, mailing address, and at least
         one phone number or email address.
 
-    - if @includes_donation
-      %p.strong Note: Donations will be credited to buyer, not to gift recipient.
+  - if @cart.include_donation?
+    %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
     = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient", :hide_opt_out => false}
     = gen_button '<< Go Back', :action => (@redirect_to || :index)

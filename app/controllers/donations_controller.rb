@@ -1,7 +1,6 @@
 class DonationsController < ApplicationController
 
-  before_filter :is_staff_filter, :only => %w[new create], :redirect_to => {:controller => 'customers', :action => 'login' }
-  before_filter :is_boxoffice_manager_filter, :except => %w[new create]
+  before_filter :is_staff_filter
   verify(:method => :post, :only => %w[create mark_ltr_sent],
          :add_to_flash => "System error: method should only be called via POST",
          :redirect_to => {:action => 'list'})
@@ -85,57 +84,6 @@ class DonationsController < ApplicationController
       render :text => "#{now.strftime("%D")} by #{c}"
     else
       render :text => "(ERROR)"
-    end
-  end
-
-  def new
-    unless (@cust = @gCustomer)
-      flash[:notice] = "Must select a customer to add a donation"
-      redirect_to :controller => 'customers', :action => 'list'
-      return
-    end
-    @donation = Donation.new({'customer_id' => @cust})
-  end
-
-  def edit
-    unless (@donation = Donation.find_by_id(params[:id]))
-      flash[:notice] = "Donation record not found."
-      logger.error "Donation id #{params[:id]} doesn't exist!"
-      redirect_to(:action => 'list') and return
-    end
-  end
-
-  def update
-    unless (@donation = Donation.find_by_id(params[:id]))
-      flash[:notice] = "Donation record not found."
-      logger.error "Donation id #{params[:id]} doesn't exist!"
-      redirect_to(:action => 'list') and return
-    end
-    if (@donation.update_attributes(params[:donation]))
-      flash[:notice] = "Donation updated successfully."
-      redirect_to :action => 'list'
-    else
-      flash[:notice] = "Error updating donation info: " <<
-        @donation.errors.full_messages.join(', ')
-      redirect_to :action => 'edit', :id => params[:id]
-    end
-  end
-
-  def create
-    @donation = Donation.new(params[:donation])
-    unless (c = Customer.find_by_id(@donation.customer.id))
-      flash[:notice] = "Select a customer to add a donation"
-      redirect_to :controller => 'customers', :action => 'list'
-      return
-    end
-    if @donation.save
-      c.donations << @donation
-      flash[:notice] = sprintf("Donation of value $%.2f added for customer #{@donation.customer.full_name}", @donation.amount)
-      redirect_to :action => 'list'
-    else
-      flash[:notice] = "Errors occurred, donation was NOT recorded"
-      @cust = c
-      render :action=>'new', :customer=>c
     end
   end
 

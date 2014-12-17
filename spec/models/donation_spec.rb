@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
 describe Donation do
   describe "default account code" do
@@ -22,29 +22,18 @@ describe Donation do
       AccountCode.find_by_code('9999').should_not be_nil
     end
   end
-  describe "online donations" do
-    before(:each) do
-      @admin = BasicModels.create_generic_customer(:role => 100)
-      @cust = BasicModels.create_generic_customer
-    end  
-    describe "during self-purchase" do
-      it "should be valid" do
-        @donation = Donation.online_donation(5.00, nil, @cust.id, @cust.id)
-        @donation.should be_valid
-      end
+  describe 'creating from amount and account code' do
+    before :each do
+      @default = AccountCode.new
+      Donation.stub!(:default_code).and_return(@default)
     end
-    describe "during admin purchase" do
-      it "should be valid" do
-        @donation = Donation.online_donation(5.00, nil, @cust.id, @admin.id)
-        @donation.should be_valid
-      end
+    it 'should use default when account code is nil' do
+      Donation.from_amount_and_account_code_id(15, nil).account_code.should == @default
     end
-    describe "during walkup sale" do
-      it "should be assigned default account code" do
-        Option.stub!(:default_donation_account_code).and_return('4444')
-        @donation = Donation.walkup_donation(5.00, @admin.id)
-        @donation.account_code.code.should == '4444'
-      end
-    end
+  end
+  describe "during walkup sale" do
+    subject { Donation.walkup_donation(5.00) }
+    its(:amount) { should == 5.00 }
+    its(:account_code) { should be_a_kind_of AccountCode }
   end
 end

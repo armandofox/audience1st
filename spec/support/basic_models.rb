@@ -45,6 +45,7 @@ module BasicModels
       :opening_date => dt - 1.week,
       :closing_date => dt + 1.week)
     sd = s.showdates.create!(:thedate => dt,
+      :max_sales => cap,
       :end_advance_sales => dt - 1.minute)
   end
   def self.create_comp_vouchertype(args={})
@@ -67,6 +68,7 @@ module BasicModels
     Vouchertype.create!({:fulfillment_needed => false,
       :name => 'regular voucher',
       :category => 'revenue',
+      :offer_public => Vouchertype::ANYONE,
       :account_code => AccountCode.default_account_code,
       :price => 10.00,
       :season => Time.now.year}.merge(args))
@@ -82,20 +84,19 @@ module BasicModels
       :season => Time.now.year}.merge(args))
   end
   def self.create_bundle_vouchertype(args={})
-    Vouchertype.create!({:fulfillment_needed => false,
+    v = Vouchertype.create!({:fulfillment_needed => false,
         :name => "Bundle",
         :category => 'bundle',
         :offer_public => Vouchertype::ANYONE,
-        :bundle_sales_start => 1.week.ago,
-        :bundle_sales_end => 1.week.from_now,
         :subscription => false,
         :account_code => AccountCode.default_account_code,
         :price => 20.00,
         :season => Time.now.year}.merge(args))
+    v
   end
   def self.create_included_vouchertype(args={})
     Vouchertype.create!({:fulfillment_needed => false,
-        :name => self.gensym,
+        :name => args[:name] || self.gensym,
         :category => 'subscriber',
         :price => 0,
         :season => Time.now.year}.merge(args))
@@ -109,11 +110,30 @@ module BasicModels
         :listing_date => Date.today}.merge(opts))
   end
 
+  def self.create_empty_order(opts={})
+    c = BasicModels.create_generic_customer
+    Order.new(
+      {:walkup => false, :customer => c, :purchaser => c, :processed_by => c,
+        :purchasemethod => Purchasemethod.find_by_shortdesc(:box_cash)}.
+      merge(opts))
+  end
+
+  def self.create_empty_walkup_order
+    w = Customer.walkup_customer
+    bm = Customer.boxoffice_daemon
+    create_empty_order(
+      :walkup => true, :customer => w, :purchaser => w, :processed_by => bm)
+  end
+
   def self.new_voucher_for_showdate(showdate, vtype, opts={})
     vt = vtype.kind_of?(Vouchertype) ? vtype :
       (Vouchertype.find_by_name(vtype) || self.create_revenue_vouchertype(:name => vtype))
     Voucher.new_from_vouchertype(vt).reserve(showdate,
       (opts[:logged_in] || self.create_generic_customer(:created_by_admin => true, :role => 100, :first_name => 'MockBoxOfficeManager')))
+  end
+
+  def self.donation(amount=25, code=Donation.default_code)
+    Donation.new(:amount => amount, :sold_on => Time.now, :account_code => code)
   end
 end
 

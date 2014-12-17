@@ -4,8 +4,8 @@ class DatetimeRange
   attr_reader :days
 
   def initialize(args={})
-    @start_date = (args[:start_date] || Clock.now).to_date
-    @end_date = (args[:end_date] || Clock.now).to_date
+    @start_date = (args[:start_date] || Time.now).to_date
+    @end_date = (args[:end_date] || Time.now).to_date
     @start_date,@end_date = @end_date,@start_date if @start_date > @end_date
     @time = (args[:time] || Time.now).to_time
     @days = (args[:days] || []).map(&:to_i)

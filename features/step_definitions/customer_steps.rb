@@ -2,8 +2,10 @@ World(FixtureAccess)
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 
 Then /^account creation should fail with "(.*)"$/ do |msg|
-  step %Q{I should see "#{msg}"}
-  step %Q{I should see "Create Your Account"}
+  steps %Q{
+  Then I should see "#{msg}"
+  And I should see "Create Your Account"
+}
 end
 
 Given /^I am not logged in$/ do
@@ -54,7 +56,7 @@ Given /^I am acting on behalf of customer "(.*) (.*)"$/ do |first,last|
 end
 
 Then /^I should be able to login with username "(.*)" and that password$/ do |username|
-  step %Q{I should be able to login with username "#{username}" and password "#{@password}"}
+  steps %Q{Then I should be able to login with username "#{username}" and password "#{@password}"}
 end
 
 Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |username,password|
@@ -94,6 +96,7 @@ Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do 
     :secret_question => get_secret_question_index(question),
     :secret_answer => answer)
 end
+
 
 Then /^customer "(.*) (.*)" should have secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)

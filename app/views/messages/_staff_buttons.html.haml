@@ -1,7 +1,7 @@
 #staffButtons.adminField
-  %p
-    %span.strong Report:
-    = button_bar( |
+  %p= button_bar( |
+       ['Add Comps',:vouchers, :addvoucher, {}], |
+       ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}], |
        ['Contact History', :visits, :list, {}], |
        ['Prospecting Activities', :visits, :list_by_prospector, {}], |
        ['Database Transactions',:txn, :list, |
@@ -9,10 +9,4 @@
        ['Donation & Purchase History', :donations, :list, |
           {:use_cid => 1, :commit => 'Go', :cid => @gCustomer, |
           :show_vouchers => true}]) |
-  %p
-    %span.strong Actions:
-    = button_bar( |
-       ['Record Donation',:donations,:new, {}],  |
-       ['Add Comps',:vouchers, :addvoucher, {}], |
-       ['Manage Vouchers', :vouchers, :manage, {:customer => @gCustomer}] ) |
 .clear

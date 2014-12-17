@@ -2,19 +2,30 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 World(ModelAccess)
 
+# Check for N occurrences of something
+Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, _, selector, count|
+  regexp = Regexp.new(regexp, Regexp::MULTILINE)
+  count = count.to_i
+  if selector
+    within(selector) { page.find(:xpath, '//*').text.split(regexp).length.should == 1+count }
+  else
+    page.find(:xpath, '//*').text.split(regexp).length.should == 1+count
+  end
+end
+
 # Wrapper around 'I should see ... within ...' steps
 Then /^I should see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  step %Q{I should see #{string} within "#{tag}[@id='#{id}']"}
+  steps %Q{ThenI should see #{string} within "#{tag}[@id='#{id}']"}
 end
 Then /^I should not see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  step %Q{I should not see #{string} within "#{tag}[@id='#{id}']"}
+  steps %Q{Then I should not see #{string} within "#{tag}[@id='#{id}']"}
 end
 
 # Check if menu option selected
 Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
   html = Nokogiri::HTML(page.body)
   menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
-  html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank
+  html.xpath("//select[@id='#{menu_id}']/option[contains(text(),'#{opt}')]").first['selected'].should_not be_blank, "Expected '#{opt}' to be selected in the '#{menu}' menu, but it was not"
 end
 
 Then /^nothing should be selected in the "(.*)" menu$/ do |menu|
@@ -22,9 +33,9 @@ Then /^nothing should be selected in the "(.*)" menu$/ do |menu|
   menu_id = if !html.xpath("//select[@id='#{menu}']").empty? then menu else html.xpath("//label[contains(text(),'#{menu}')]").first['for'] end
   within "##{menu_id}" do
     # there should exist a blank option
-    page.should have_xpath("//option[contains(text(),'')]")
+    page.should have_xpath("//option[contains(text(),'')]"), "Menu doesn't have a blank option"
     # no nonblank option should be marked as 'selected'
-    page.should have_no_xpath("//option[text() != '' and @selected='selected']")
+    page.should have_no_xpath("//option[text() != '' and @selected='selected']"), "Expected menu's blank option to be selected, but it was not"
   end
 end
 
@@ -36,10 +47,10 @@ Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
   year, month, day =
     html.xpath("//select[@id='#{menu_id}_2i']").empty? ? %w[year month day] : %w[1i 2i 3i]
   if page.has_selector?("select##{menu_id}_#{year}")
-    step %Q{"#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
+    steps %Q{Then "#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
   end
-  step %Q{"#{date.strftime('%B')}" should be selected in the "#{menu_id}_#{month}" menu}
-  step %Q{"#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
+  steps %Q{Then "#{date.strftime('%B')}" should be selected in the "#{menu_id}_#{month}" menu
+           And  "#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
 end
 
 When /^I select "(.*) (.*)" as the "(.*)" month and day$/ do |month,day, menu|
@@ -58,7 +69,7 @@ end
 Then /^(?:|I )should see "([^\"]*)" within the (.*) for(?: the) (.*) with (.*) "(.*)"$/ do |text,tag_type,entity_type,attribute,value|
   entity = get_model_instance(entity_type, attribute, value)
   selector_id = "#{entity_type}_#{entity.id}"
-  step %Q{I should see "#{text}" within "#{tag_type}\##{selector_id}"}
+  steps %Q{Then I should see "#{text}" within "#{tag_type}\##{selector_id}"}
 end
 
 # 'should come before/should come after' for verifying orderings of things
@@ -116,7 +127,7 @@ end
 Then /^I should see a table "(.*)" with rows? (.*)$/ do |table,all_rows|
   page.should have_css(table)
   all_rows.split(/, ?/).each do |row|
-    step "I should see a row #{row} within \"#{table}\""
+    steps %Q{Then "I should see a row #{row} within \"#{table}\""}
   end
 end      
 
