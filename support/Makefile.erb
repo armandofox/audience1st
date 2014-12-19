@@ -50,16 +50,16 @@ clean_sessions:
 
 backup_db_monthly:
 	@$(MYSQLDUMP) $(DBOPTS) $(DBNAME) | $(GZIP) > $(BACKUPDIR)/$(YEARMONTHDAY).gz
-	@$(S3CMD) put a1_$(VENUE):$(YEARMONTHDAY).gz  $(BACKUPDIR)/$(YEARMONTHDAY).gz
+	@$(S3CMD) put a1-$(VENUE):$(YEARMONTHDAY).gz  $(BACKUPDIR)/$(YEARMONTHDAY).gz
 
 
 backup_db:
 	@$(MYSQLDUMP) $(DBOPTS) $(DBNAME) | $(GZIP) > $(BACKUPDIR)/db-$(TODAY).gz
-	@$(S3CMD) put a1_$(VENUE):db-$(TODAY).gz  $(BACKUPDIR)/db-$(TODAY).gz
+	@$(S3CMD) put a1-$(VENUE):db-$(TODAY).gz  $(BACKUPDIR)/db-$(TODAY).gz
 
 backup_svn:
 	@tar -zcf $(HOME)/backup/svn/svn-$(TODAY).gz $(HOME)/svn
-	@$(S3CMD) put a1_svn:svn-$(TODAY).gz $(HOME)/backup/svn/svn-$(TODAY).gz
+	@$(S3CMD) put a1-svn:svn-$(TODAY).gz $(HOME)/backup/svn/svn-$(TODAY).gz
 
 restore_db:
 	$(MYSQL) $(MIGRATION_OPTS) '-D$(DBNAME)' < $(FILE)
