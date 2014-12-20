@@ -1,5 +1,3 @@
-# need to set purchasemethod
-
 class CreateOrdersFromItemGroups < ActiveRecord::Migration
   def ddl_transaction(&block)
     say "Migrating without transaction..."
@@ -25,6 +23,7 @@ UPDATE items,vouchertypes
     items_done = 0
     limit = 5000
     while true
+      GC.start                  # force garbage collection to keep mem leaks under control
       items = Item.find(:all, :conditions => "order_id IS NULL AND id BETWEEN #{items_done} AND #{items_done+limit}", :limit => limit)
       break if items.empty?
       groups = items.group_by { |i| [i.gift_purchaser_id, i.ship_to_purchaser, i.processed_by_id, i.purchasemethod_id, i.sold_on, i.walkup] }
