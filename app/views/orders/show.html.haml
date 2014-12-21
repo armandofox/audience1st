@@ -1,12 +1,19 @@
 %h1.center Order ##{@order.id}
 
 .order_info
+  %p
+    %span.label Processed by:
+    #{staff_name(@order.processed_by)} on #{@order.sold_on.strftime('%c')}
   %p 
     %span.label Purchaser: 
-    = @order.customer.full_name
+    = link_to_customer @order.purchaser
   %p
-    %span.label Sold on:
-    = @order.sold_on.strftime('%c')
+    %span.label Gift order?
+    = @order.gift? ? 'Yes' : 'No'
+  - if @order.gift?
+    %p
+      %span.label Gift recipient:
+      = link_to_customer @order.customer
   %p
     %span.label Order total:
     = number_to_currency @total
@@ -17,12 +24,14 @@
 %table#order_items.hilite
   %thead
     %tr
+      %th Item#
       %th Amount
       %th Show or Acct Code
       %th Comment
   %tbody
     - @order.items.each do |item|
       %tr
+        %td= item.id
         %td= number_to_currency(item.amount)
         - if item.kind_of?(Voucher)
           %td= item.showdate ? item.showdate.printable_name : item.vouchertype.name

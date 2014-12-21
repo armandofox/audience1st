@@ -265,6 +265,7 @@ class CustomersController < ApplicationController
   end
 
   def merge
+    redirect_to({:action => :list}, :notice => 'Merging is temporarily disabled. It will be back soon.') and return
     if !params[:merge] || params[:merge].keys.length < 1
       flash[:notice] = 'You have not selected any customers.'
       redirect_to_last_list and return

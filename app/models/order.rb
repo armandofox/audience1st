@@ -83,18 +83,27 @@ class Order < ActiveRecord::Base
   
   public
 
-  def self.create_from_existing_vouchers!(list_of_vouchers)
-    p = list_of_vouchers.first
+  def self.create_from_existing_items!(list_of_items)
+    p = list_of_items.first
     max_string_length = Order.columns_hash['comments'].limit
+    purchaser_id = p.gift_purchaser_id
+    if (purchaser_id == 2146730911 ||  purchaser_id == 0 || purchaser_id == p.customer_id)
+      # not really a gift order
+      purchaser = p.customer
+    else
+      purchaser = p.gift_purchaser
+    end
     params = {
       :walkup => p.walkup,
       :customer => p.customer,
+      :purchaser => purchaser,
       :ship_to_purchaser => p.ship_to_purchaser,
+      :sold_on => p.sold_on,
       :purchasemethod => p.purchasemethod,
-      :comments => (list_of_vouchers.map(&:comments).uniq.join('; '))[0, max_string_length],
+      :comments => (list_of_items.map(&:comments).uniq.join('; '))[0, max_string_length],
+      :items => list_of_items,
       :processed_by => p.processed_by || Customer.boxoffice_daemon
     }
-    params[:purchaser] =  (p.gift_purchaser || p.customer) if p.kind_of? Voucher
     Order.create! params
   end
 
