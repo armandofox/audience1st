@@ -53,6 +53,9 @@ UPDATE items i1, items i2
       end
       items_done += items.length
     end
+    # This migration seems to screw up session state bigtime, so....
+    say "Nuking session table"
+    Session.delete_all
   end
 
   def self.down
