@@ -20,6 +20,9 @@ class ApplicationController < ActionController::Base
     def ssl_required? ; nil ; end
     def ssl_allowed? ; nil ; end
   end
+
+  ssl_required
+
   require 'csv.rb'
   require 'string_extras.rb'
   require 'date_time_extras.rb'

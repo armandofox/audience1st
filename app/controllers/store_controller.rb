@@ -16,20 +16,6 @@ class StoreController < ApplicationController
   end
   private :set_session_variables
   
-  verify(:method => :post,
-         :only => %w[process_cart set_shipping_address place_order],
-         :add_to_flash => {:warning => "SYSTEM ERROR: action only callable as POST"},
-         :redirect_to => {:action => 'index'})
-
-  # this should be the last declarative spec since it will append another
-  # before_filter
-  ssl_required(:checkout, :place_order, :direct_transaction,
-                 :index, :subscribe, :special, :donate,
-                 :show_changed, :showdate_changed,
-                 :shipping_address, :set_shipping_address,
-                 :edit_billing_address)
-
-  
   def index
     @what = params[:what] || 'Regular Tickets'
     @special_shows_only = (@what =~ /special/i)

@@ -10,8 +10,6 @@ class BoxOfficeController < ApplicationController
          :redirect_to => { :action => :walkup, :id => @showdate },
     :add_to_flash => {:warning => "Warning: action only callable as POST, no transactions were recorded! "})
   verify :method => :post, :only => :mark_checked_in
-  ssl_required :walkup, :do_walkup_sale
-  ssl_allowed :change_showdate
   
   private
 

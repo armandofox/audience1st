@@ -1,8 +1,5 @@
 class BulkDownloadsController < ApplicationController
   before_filter :is_admin
-  # verify :method => :post, :only => :create
-  # verify :method => :put, :only => :update
-  ssl_required                  # since usernames and passwords will be collected
   
   def index ; redirect_to :action => :new ; end
 

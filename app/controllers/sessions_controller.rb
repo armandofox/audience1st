@@ -1,9 +1,6 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
 
-  ssl_required :new, :create, :new_from_secret_question, :create_from_secret_question
-  ssl_allowed :destroy
-
   def index
     redirect_to :controller => 'customers', :action => 'welcome'
   end

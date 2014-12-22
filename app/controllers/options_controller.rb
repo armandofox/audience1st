@@ -1,7 +1,6 @@
 class OptionsController < ApplicationController
 
   before_filter :is_admin_filter
-  ssl_required
   
   def index
     redirect_to :action => 'edit'

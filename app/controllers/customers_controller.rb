@@ -34,10 +34,6 @@ class CustomersController < ApplicationController
     :redirect_to => { :controller => :customers, :action => :welcome},
     :add_flash => {:warning => "This action requires a POST."} )
 
-  # checks for SSL should be last, as they append a before_filter
-  ssl_required :change_password, :change_secret_question, :new, :create, :user_create, :edit, :forgot_password
-  ssl_allowed :auto_complete_for_customer_full_name, :update, :link_user_accounts, :link_existing_account
-
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
     render :inline => "" and return if params[:__arg].blank?
