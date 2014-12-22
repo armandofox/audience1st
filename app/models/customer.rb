@@ -16,7 +16,7 @@ class Customer < ActiveRecord::Base
   has_many :vouchers, :include => :vouchertype, :order => 'sold_on DESC'
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :orders
+  has_many :orders, :order => 'sold_on DESC'
   
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
