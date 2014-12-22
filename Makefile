@@ -20,7 +20,7 @@ tt:
 	echo $(FILES)
 
 TAGS: $(FILES)
-	etags $(FILES) >/dev/null
+	@etags $(FILES) >/dev/null
 
 .PHONY: doc
 doc:	
