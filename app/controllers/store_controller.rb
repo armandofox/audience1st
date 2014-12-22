@@ -49,7 +49,7 @@ class StoreController < ApplicationController
     if @is_admin
       @subs_to_offer = ValidVoucher.bundles
     else
-      @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer,@promo_code)
+      @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer || Customer.generic_customer,@promo_code)
     end
     redirect_to_index("There are no subscriptions on sale at this time.") and return if
       @subs_to_offer.empty?
@@ -297,7 +297,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_admin
     @valid_vouchers = @sd.valid_vouchers.map do |v|
-      v.customer = @gCustomer
+      v.customer = @gCustomer || Customer.generic_customer
       v.adjust_for_customer
     end.sort_by(&:display_order)
     @all_shows = Show.
@@ -309,7 +309,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_patron
     @valid_vouchers = @sd.valid_vouchers.map do |v|
-      v.customer = @gCustomer
+      v.customer = @gCustomer || Customer.generic_customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)
     @all_shows = Show.current_and_future.special(@special_shows_only) || []
