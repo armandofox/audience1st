@@ -46,12 +46,13 @@ class StoreController < ApplicationController
     reset_shopping
     # which subscriptions/bundles are available now?
     @promo_code = redeeming_promo_code
-    @subs_to_offer = ValidVoucher.bundles_available_to(@customer, @gAdmin.is_boxoffice, @promo_code)
-    if @subs_to_offer.empty?
-      flash[:warning] = "There are no subscriptions on sale at this time."
-      redirect_to_index
-      return
+    if @is_admin
+      @subs_to_offer = ValidVoucher.bundles
+    else
+      @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer,@promo_code)
     end
+    redirect_to_index("There are no subscriptions on sale at this time.") and return if
+      @subs_to_offer.empty?
   end
 
   def donate
@@ -256,7 +257,8 @@ class StoreController < ApplicationController
     true
   end
 
-  def redirect_to_index
+  def redirect_to_index(notice = nil)
+    flash[:notice] = notice if notice
     url_or_path = params[:redirect_to]
     if url_or_path.empty?
       redirect_to :action => 'index'

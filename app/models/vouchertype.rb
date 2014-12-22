@@ -142,9 +142,7 @@ class Vouchertype < ActiveRecord::Base
   def visible_to?(customer)
     case offer_public
     when ANYONE then true
-    when EXTERNAL then false
-    when SUBSCRIBERS then customer.subscriber? || customer.is_boxoffice
-    when BOXOFFICE then customer.is_boxoffice
+    when SUBSCRIBERS then customer.subscriber?
     else false
     end
   end

@@ -168,17 +168,18 @@ class ValidVoucher < ActiveRecord::Base
     remain = [remain, 0].max    # make sure it's positive
   end
 
-  def self.bundles_available_to(customer = Customer.generic_customer, admin = nil, promo_code=nil)
-    # in Rails 3 this can be cleaned up by building up query with ARel
-    bundles = ValidVoucher.find(:all, :include => :vouchertype, :conditions => 'vouchertypes.category = "bundle"',
+  def self.bundles
+    self.find(:all, :include => :vouchertype, :conditions => 'vouchertypes.category = "bundle"',
       :order => "season DESC,display_order,price DESC")
-    if !admin
-      bundles.map! do |b|
-        b.customer = customer
-        b.adjust_for_customer(promo_code)
-      end
-    end
-    bundles
+  end
+
+  def self.bundles_available_to(customer = Customer.generic_customer, promo_code=nil)
+    bundles = self.bundles.map do |b|
+      b.customer = customer
+      b.adjust_for_customer promo_code
+    end.
+      reject { |b| b.max_sales_for_type == 0 }.
+      sort_by(&:display_order)
   end
 
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
