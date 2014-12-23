@@ -8,7 +8,7 @@ class Purchasemethod < ActiveRecord::Base
     when :web_cc, :box_cc then :credit_card 
     when :box_cash, :none then :cash 
     when :box_chk then :check
-    else raise "Purchase method '#{self.description}' does not allow accepting payment"
+    else :none
     end
   end
 

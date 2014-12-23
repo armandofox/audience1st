@@ -14,4 +14,9 @@ class OrdersController < ApplicationController
     render :layout => 'layouts/receipt' if @printable
   end
 
+  def by_customer
+    @orders = Customer.find(params[:id]).orders
+    render :partial => 'order', :collection => @orders, :layout => true
+  end
+
 end

@@ -70,6 +70,11 @@ span.tooltip:hover span { /* will display just on :hover state*/
     color:#000;
 }
 
+/* Flippy triangles */
+.flippy, .flippy:hover, .flippy:visited {
+    text-decoration: none;
+}
+
 /*
  * Welcome panel:  needs to be statically sized (height) if FB is in use,
  * otherwise late load of FB image makes page jittery 

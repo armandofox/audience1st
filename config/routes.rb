@@ -25,6 +25,7 @@ ActionController::Routing::Routes.draw do |map|
   # Routes for viewing and refunding orders
   map.order '/orders/:id', :controller => 'orders', :action => 'show', :conditions => {:method => :get}
   map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
+  map.connect '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
 
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id'
