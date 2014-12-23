@@ -66,7 +66,7 @@ class StoreController < ApplicationController
     end
     if !@cart.errors.empty?
       flash[:warning] = @cart.errors.full_messages.join(', ')
-      redirect_to :back and return
+      redirect_to_index and return
     end
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
@@ -76,7 +76,7 @@ class StoreController < ApplicationController
     end
     if @cart.cart_empty?
       flash[:warning] = "There is nothing in your order."
-      redirect_to :back and return
+      redirect_to_index and return
     end
     if params[:gift] && @cart.include_vouchers?
       @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
