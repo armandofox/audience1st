@@ -15,7 +15,11 @@ class StoreController < ApplicationController
     @is_admin = current_admin.is_boxoffice
   end
   private :set_session_variables
-  
+
+  # flows:
+  #  index/subscribe -> process_cart -+--------> checkout--->place_order
+  #                                   |              ^
+  #                          shipping_addr -> set_shipping_addr
   def index
     @what = params[:what] || 'Regular Tickets'
     @special_shows_only = (@what =~ /special/i)
@@ -53,9 +57,7 @@ class StoreController < ApplicationController
       return
     end
     @cart = find_cart
-    @cart.purchaser = @customer
     @cart.comments = params[:comments]
-    @cart.processed_by_id = logged_in_id
     tickets = ValidVoucher.from_params(params[:valid_voucher])
     if @gAdmin.is_boxoffice
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
@@ -84,7 +86,6 @@ class StoreController < ApplicationController
       remember_cart_in_session!
       redirect_to :action => 'shipping_address'
     else
-      @cart.customer = @cart.purchaser
       remember_cart_in_session!
       redirect_to_checkout
     end
@@ -124,8 +125,8 @@ class StoreController < ApplicationController
   end
 
   def checkout
+    @cart = find_cart
     set_return_to :controller => 'store', :action => 'checkout'
-    # Work around Rails bug 2298 here
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     @checkout_message = Option.precheckout_popup ||
       "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
@@ -133,6 +134,11 @@ class StoreController < ApplicationController
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
     redirect_to change_user_path and return unless logged_in?
+    # here if valid user logged in
+    @cart.processed_by ||= Customer.find(logged_in_id)
+    @cart.purchaser ||= @customer
+    @cart.customer ||= @cart.purchaser
+    @cart.save!
   end
 
   def edit_billing_address
@@ -168,10 +174,12 @@ class StoreController < ApplicationController
       flash[:checkout_error] = @cart.errors.full_messages.join(', ')
       logger.info("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
       redirect_to_checkout
+      return
     rescue Exception => e
       flash[:checkout_error] = "Sorry, an unexpected problem occurred with your order.  Please try your order again."
       logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
       redirect_to_index
+      return
     end
 
   end

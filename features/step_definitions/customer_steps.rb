@@ -14,7 +14,15 @@ Given /^I am not logged in$/ do
 end
 
 Given /^I am logged in as (.*)?$/ do |who|
-  is_admin = false
+  visit '/logout'
+  visit '/sessions/new'
+  steps %Q{When I login as #{who}}
+  page.should have_content("Welcome, #{@customer.first_name}")
+  page.should have_css('#customer_quick_search') if @is_admin
+end
+
+When /^I login as (.*)$/ do |who|
+  @is_admin = false
   case who
   when /administrator/i
     @customer = customers(:admin)
@@ -25,25 +33,21 @@ Given /^I am logged in as (.*)?$/ do |who|
     make_subscriber!(@customer)
   when /box ?office manager/i
     @customer = customers(:boxoffice_manager)
-    is_admin = true
+    @is_admin = true
   when /box ?office/i
     @customer = customers(:boxoffice_user)
-    is_admin = true
+    @is_admin = true
   when /staff/i
     @customer = customers(:staff)
-    is_admin = true
+    @is_admin = true
   when /customer "(.*) (.*)"/
     @customer = Customer.find_by_first_name_and_last_name!($1,$2)
   else
     raise "No such user '#{who}'"
   end
-  visit '/logout'
-  visit '/sessions/new'
   fill_in 'email', :with => @customer.email
   fill_in 'password', :with => 'pass'
   click_button 'Login'
-  page.should have_content("Welcome, #{@customer.first_name}")
-  page.should have_css('#customer_quick_search') if is_admin
 end
 
 Given /^I am acting on behalf of customer "(.*) (.*)"$/ do |first,last|

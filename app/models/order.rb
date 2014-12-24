@@ -8,7 +8,7 @@ class Order < ActiveRecord::Base
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
 
-  validates_presence_of :processed_by_id
+  #validates_presence_of :processed_by_id
 
   attr_accessor :purchase_args
 
