@@ -6,6 +6,8 @@
     %span.strong= number_to_currency @cart.total_price
     by 
     %span.strong= humanize(@payment)
+    for order number
+    %span.strong= @cart.id
   %p.strong Please print this confirmation for your records:
   %pre= @cart.summary
 

@@ -40,7 +40,7 @@ class Donation < Item
   end
 
   def one_line_description
-    sprintf("$%6.2f  Donation to #{account_code.name} (confirmation \##{id})", amount)
+    sprintf("$%6.2f  Donation to #{account_code.name}", amount)
   end
 
   def self.walkup_donation(amount)

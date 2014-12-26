@@ -169,14 +169,14 @@ class StoreController < ApplicationController
 
     begin
       @cart.finalize!
-      logger.info("SUCCESS purchase #{@cart.customer}; Cart summary: #{@cart.summary}")
+      logger.error("SUCCESS purchase #{@cart.customer}; Cart summary: #{@cart.summary}")
       email_confirmation(:confirm_order, @cart.purchaser, @cart) if params[:email_confirmation]
       @payment = @cart.purchasemethod.purchase_medium
       reset_shopping
       set_return_to
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
       flash[:warning] = (@cart.errors.full_messages + [e.message]).join(', ') 
-      logger.info("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
+      logger.error("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
       redirect_to_checkout
       return
     rescue Exception => e
@@ -278,8 +278,9 @@ class StoreController < ApplicationController
       meth = Purchasemethod.get_type_by_name('box_cash')
       args = {}
     else
+      meth = nil
+      args = {}
       flash[:warning] = "Invalid form of payment."
-      redirect_to_checkout
     end
     return meth,args
   end
