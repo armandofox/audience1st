@@ -37,7 +37,7 @@ class Mailer < ActionMailer::Base
     @subject << "order confirmation"
     @body.merge!(:greeting => customer.full_name,
                  :description => order.summary,
-                 :amount => order.amount,
+                 :amount => order.total_price,
                  :payment_desc => order.purchasemethod.description,
                  :special_instructions => order.comments
                  )

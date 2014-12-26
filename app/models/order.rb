@@ -167,7 +167,15 @@ class Order < ActiveRecord::Base
       ticket_count > 0
     end
   end
-  
+
+  def include_regular_vouchers?
+    if completed?
+      items.any? { |v| v.kind_of?(Voucher) && !v.bundle? }
+    else
+      ValidVoucher.find(valid_vouchers.keys).any? { |vv| vv.vouchertype.category == :revenue }
+    end
+  end
+
   def include_donation?
     if completed?
       items.any? { |v| v.kind_of?(Donation) }
@@ -243,10 +251,14 @@ class Order < ActiveRecord::Base
           v.walkup = self.walkup?
         end
         customer.add_items(vouchers)
-        raise Order::SaveRecipientError.new(customer.errors.full_messages.join(', ')) unless customer.save
+        unless customer.save
+          raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors.full_messages.join(', '))
+        end
         # add donation items to purchaser's account
         purchaser.add_items([donation]) if donation
-        raise Order::SavePurchaserError.new(purchaser.errors.full_messages.join(', ')) unless purchaser.save
+        unless purchaser.save
+          raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors.full_messages.join(', '))
+        end
         self.sold_on = Time.now
         self.items += vouchers
         self.items += [ donation ] if donation

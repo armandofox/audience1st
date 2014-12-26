@@ -6,7 +6,8 @@
      $('credit_card_first_name').setValue($$('#billing #customer_first_name')[0].getValue());
      $('credit_card_last_name').setValue($$('#billing #customer_last_name')[0].getValue());
      if (checkForStripe('_stripe_submit')) {
-       alert("#{escape_javascript @checkout_message}");
+       var message = "#{escape_javascript @checkout_message}";
+       if (message != "") { alert(message); }
      }
   }
   jQuery(document).ready(whenReady);

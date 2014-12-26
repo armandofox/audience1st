@@ -1,7 +1,6 @@
 # to do:
 #  add logic to init new donation with correct default account_code (from options)
 
-
 class Donation < Item
 
   def self.default_code
@@ -21,7 +20,6 @@ class Donation < Item
   belongs_to :customer
   
   validates_numericality_of :amount
-  validates_presence_of :sold_on
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
 
   def self.foreign_keys_to_customer
@@ -39,10 +37,6 @@ class Donation < Item
 
   def item_description
     "Donation: #{account_code.name_or_code}"
-  end
-
-  def inspect
-    "[Donation #{id} by #{customer_id}] $%6.2f #{account_code.name}"
   end
 
   def one_line_description

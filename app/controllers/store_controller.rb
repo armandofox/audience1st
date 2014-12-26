@@ -128,8 +128,12 @@ class StoreController < ApplicationController
     @cart = find_cart
     set_return_to :controller => 'store', :action => 'checkout'
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
-    @checkout_message = Option.precheckout_popup ||
-      "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order."
+    @checkout_message =
+      if @cart.include_regular_vouchers?
+      then (Option.precheckout_popup ||
+        "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.") 
+      else ""
+      end
     @cart_contains_class_order = @cart.contains_enrollment?
     # if this is a "walkup web" sale (not logged in), nil out the
     # customer to avoid modifing the Walkup customer.
@@ -170,13 +174,13 @@ class StoreController < ApplicationController
       @payment = @cart.purchasemethod.purchase_medium
       reset_shopping
       set_return_to
-    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:checkout_error] = @cart.errors.full_messages.join(', ')
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
+      flash[:warning] = (@cart.errors.full_messages + [e.message]).join(', ') 
       logger.info("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
       redirect_to_checkout
       return
     rescue Exception => e
-      flash[:checkout_error] = "Sorry, an unexpected problem occurred with your order.  Please try your order again."
+      flash[:warning] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
       logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
       redirect_to_index
       return
