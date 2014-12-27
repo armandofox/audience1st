@@ -61,7 +61,7 @@ class DonationsController < ApplicationController
       @things += vouchers
     end
     @things = @things.sort_by { |x| (x.kind_of?(Donation) ?
-                                     x.sold_on.to_time : x.showdate.thedate.to_time) }
+                                     x.order.sold_on.to_time : x.showdate.thedate.to_time) }
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label
@@ -101,7 +101,7 @@ class DonationsController < ApplicationController
                 d.customer.zip,
                 d.customer.email,
                 d.amount,
-                d.sold_on.to_formatted_s(:db),
+                d.order.sold_on.to_formatted_s(:db),
                 d.account_code.code,
                 d.account_code.name,
                 d.letter_sent]
