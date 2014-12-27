@@ -16,16 +16,19 @@ end
 Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"$/ do |amount,date,customer,fund|
   steps %Q{Given customer \"#{customer}\" exists}
   account_code = fund.blank? ? AccountCode.default_account_code : find_or_create_account_code(fund)
-  @customer.donations.create!(
-    :amount => amount,
-    :sold_on => date,
-    :account_code => account_code
-    )
+  order = Order.new_from_donation(amount, account_code, @customer)
+  order.processed_by = @customer
+  order.purchasemethod = Purchasemethod.get_type_by_name('box_chk')
+  begin
+    order.finalize!(Time.parse date)
+  rescue Exception => e
+    raise "Finalize error: #{order.errors.full_messages}"
+  end
 end
 
 Then /^I should (not )?see the following donations:$/ do |no,donations|
   donations.hashes.each do |donation|
-    regexp = "#{donation[:donor]}||#{donation[:amount].to_i}|||||"
+    regexp = "#{donation[:donor]}|||#{donation[:amount].to_i}||||"
     steps %Q{Then I should #{no}see a row "#{regexp}" within "table[@id='donations']"}
   end
 end

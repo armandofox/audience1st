@@ -80,8 +80,7 @@ end
 Given /^customer "(.*) (.*)" exists$/ do |first,last|
   @customer =
     Customer.find_by_first_name_and_last_name(first,last) ||
-    Customer.create!(:first_name => first, :last_name => last,
-    :email => "#{first}_#{last}_#{rand(1000)}@yahoo.com")
+    BasicModels.create_generic_customer(:first_name => first, :last_name => last)
 end
 
 Given /^my birthday is set to "(.*)"/ do |date|

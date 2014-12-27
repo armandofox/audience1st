@@ -26,7 +26,7 @@ end
 
 def select_date(date_to_select, options ={})
   date = to_date(date_to_select)
-  id_prefix = id_prefix_for(options)
+  id_prefix = options[:from] =~ /^#(.*)/ ? $1 : id_prefix_for(options)
   select_if id_prefix, :year, date.year
   select_if id_prefix, :month, date.strftime('%B')
   select_if id_prefix, :day, date.day
@@ -46,8 +46,9 @@ end
 
 
 def id_prefix_for(options = {})
-  msg = "cannot select option, no select box with id, name, or label '#{options[:from]}' found"
-  find(:xpath, "//label[contains(text(),'#{options[:from]}')]")['for']
+  name = options[:from]
+  msg = "cannot select option, no select box with id, name, or label '#{name}' found"
+  find(:xpath, "//label[contains(text(),'#{name}')]")['for']
 end
 
 

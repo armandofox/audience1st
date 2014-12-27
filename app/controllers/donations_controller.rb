@@ -10,8 +10,7 @@ class DonationsController < ApplicationController
       # first time visiting page: don't do "null search"
       @things = []
       @params = {}
-      render :action => 'list'
-      return
+      render :action => 'list' and return
     end
     conds = {}
     if (params[:use_cid] &&
@@ -27,11 +26,11 @@ class DonationsController < ApplicationController
     mindate,maxdate = Time.range_from_params(params[:donation_date_from],
                                              params[:donation_date_to])
     mindate = mindate.at_beginning_of_day
-    maxate = maxdate.at_end_of_day
+    maxdate = maxdate.at_end_of_day
     params[:donation_date_from] = mindate
     params[:donation_date_to] = maxdate
     if params[:use_date]
-      conds.merge!("sold_on >= ?" => mindate, "sold_on <= ?" => maxdate)
+      conds.merge!("orders.sold_on >= ?" => mindate, "orders.sold_on <= ?" => maxdate)
     end
     if params[:use_amount]
       conds.merge!("amount >= ?" => params[:donation_min].to_f)
@@ -50,7 +49,7 @@ class DonationsController < ApplicationController
     if conds.empty?
       @things = Donation.find(:all)
     else
-      @things = Donation.find(:all, :conditions => conds_array)
+      @things = Donation.find(:all, :include => 'order', :conditions => conds_array)
     end
     # also show ticket purchases?
     if (params[:show_vouchers] && c)

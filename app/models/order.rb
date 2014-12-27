@@ -115,6 +115,12 @@ class Order < ActiveRecord::Base
     order
   end
 
+  def self.new_from_donation(amount, account_code, donor)
+    order = Order.new(:purchaser => donor, :customer => donor)
+    order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
+    order
+  end
+
   def empty_cart!
     self.valid_vouchers = {}
     self.donation_data = {}
@@ -234,7 +240,7 @@ class Order < ActiveRecord::Base
     errors.empty?
   end
 
-  def finalize!
+  def finalize!(sold_on_date = Time.now)
     raise Order::NotReadyError unless ready_for_purchase?
     begin
       transaction do
@@ -259,7 +265,7 @@ class Order < ActiveRecord::Base
         unless purchaser.save
           raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors.full_messages.join(', '))
         end
-        self.sold_on = Time.now
+        self.sold_on = sold_on_date
         self.items += vouchers
         self.items += [ donation ] if donation
         self.items.each do |i|

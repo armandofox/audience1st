@@ -209,11 +209,11 @@ class Customer < ActiveRecord::Base
       valid = false
     end
     if invalid_mailing_address?
-      errors.add_to_base "Valid mailing address must be provided"
+      errors.add_to_base "Valid mailing address must be provided for #{self.full_name}"
       valid = false
     end
     if day_phone.blank? && eve_phone.blank? && !valid_email_address?
-      errors.add_to_base "At least one phone number or email address must be provided"
+      errors.add_to_base "At least one phone number or email address must be provided for #{self.full_name}"
       valid = false
     end
     valid
