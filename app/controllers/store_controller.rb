@@ -57,7 +57,7 @@ class StoreController < ApplicationController
       return
     end
     @cart = find_cart
-    @cart.comments = params[:comments]
+    @cart.comments = params[:comments].to_s
     tickets = ValidVoucher.from_params(params[:valid_voucher])
     if @gAdmin.is_boxoffice
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }

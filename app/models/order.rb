@@ -25,7 +25,7 @@ class Order < ActiveRecord::Base
   def initialize(*args)
     @purchase_args = {}
     @walkup = false
-    @comments = ''
+    @comments ||= ''
     super
   end
 
