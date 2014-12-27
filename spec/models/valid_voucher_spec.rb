@@ -227,7 +227,7 @@ describe ValidVoucher do
       @anyone = BasicModels.create_generic_customer
     end
     it 'for generic bundle should be available to anyone' do
-      ValidVoucher.bundles_available_to(@anyone, admin=nil, promo_code=nil).
+      ValidVoucher.bundles_available_to(@anyone, promo_code=nil).
         any? do |offer|
         offer.vouchertype == @anyone_bundle &&
           offer.max_sales_for_type == ValidVoucher::INFINITE

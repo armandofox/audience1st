@@ -19,18 +19,15 @@ describe Vouchertype do
       subject { Vouchertype.new :offer_public => Vouchertype::BOXOFFICE }
       it { should_not be_visible_to(@customers[:patron]) }
       it { should_not be_visible_to(@customers[:walkup]) }
-      it { should     be_visible_to(@customers[:boxoffice]) }
     end
     context 'of subscriber voucher' do
       subject { Vouchertype.new :offer_public => Vouchertype::SUBSCRIBERS }
       it { should_not be_visible_to(@customers[:patron]) }
       it { should     be_visible_to(@customers[:patron_subscriber]) }
-      it { should     be_visible_to(@customers[:boxoffice]) }
     end
     context 'of general-availability voucher' do
       subject { Vouchertype.new :offer_public => Vouchertype::ANYONE }
       it { should     be_visible_to(@customers[:patron_subscriber]) }
-      it { should     be_visible_to(@customers[:boxoffice]) }
       it { should     be_visible_to(@customers[:patron]) }
       it { should     be_visible_to(@customers[:walkup]) }
     end
