@@ -17,7 +17,7 @@ ActionController::Routing::Routes.draw do |map|
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
   map.store '/store', :controller => 'store', :action => 'index', :conditions => {:method => :get}
-  map.home '/customers/welcome', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
+  map.welcome  '/customers/welcome', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   map.resource :session # other session actions
 
   map.connect 'subscribe', :controller => 'store', :action => 'subscribe', :conditions => {:method => :get}

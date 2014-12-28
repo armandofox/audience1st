@@ -205,7 +205,7 @@ EOEVAL
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "
         flash[:notice] << "send an email confirmation to #{addr}."
-        logger.error("Emailing #{addr}: #{e.message}")
+        logger.error("Emailing #{addr}: #{e.message} \n #{e.backtrace}")
       end
     else
       flash[:notice] << " Email confirmation was NOT sent because there isn't"

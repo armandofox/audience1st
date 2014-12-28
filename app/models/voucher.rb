@@ -225,7 +225,6 @@ class Voucher < Item
     redemption = valid_voucher_adjusted_for processor,desired_showdate
     if redemption.max_sales_for_type > 0
       self.update_attributes(:comments => new_comments, :showdate => desired_showdate)
-      RAILS_DEFAULT_LOGGER.info("Txn: customer #{processor} reserves voucher #{self.id} for showdate #{showdate_id} (#{self})")
       true
     else
       errors.add_to_base redemption.explanation
