@@ -103,7 +103,7 @@ class VouchersController < ApplicationController
           :customer_id => @gCustomer.id,
           :voucher_id => v.id,
           :logged_in_id => logged_in_id,
-          :showdate_id => the_showdate.id
+          :showdate_id => the_showdate.id,
           :comments => comments)
       else
         errors += v.errors.full_messages

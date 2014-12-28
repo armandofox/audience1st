@@ -278,6 +278,13 @@ class Order < ActiveRecord::Base
         if purchasemethod.purchase_medium == :credit_card
           Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.full_messages.join(', '))
         end
+        # Log the order
+        Txn.add_audit_record(:txn_type => 'oth_purch',
+          :customer_id => purchaser.id,
+          :logged_in_id => processed_by.id,
+          :dollar_amount => total_price,
+          :purchasemethod_id => purchasemethod.id,
+          :order_id => self.id)
       end
     rescue Exception => e
       workaround_rails_bug_2298!
