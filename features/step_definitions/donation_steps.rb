@@ -32,3 +32,15 @@ Then /^I should (not )?see the following donations:$/ do |no,donations|
     steps %Q{Then I should #{no}see a row "#{regexp}" within "table[@id='donations']"}
   end
 end
+
+Then /^customer (.*) should have a donation of \$([0-9.]+) to "(.*)"$/ do |customer_name,amount,fund|
+  formatted_amount = amount.to_i
+  formatted_fund = AccountCode.find_by_name(fund).name_with_code
+  formatted_date = Date.today.strftime('%D')
+  steps %Q{
+    Given I am logged in as staff
+    And I visit the donations page
+    And I press "Search"
+    Then I should see a row "#{customer_name}||#{formatted_date}|#{formatted_amount}||||" within "table[@id='donations']"
+}
+end
