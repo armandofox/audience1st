@@ -103,7 +103,7 @@ describe SessionsController do
       login_as :quentin
     end
     it 'logs out keeping session'   do controller.should_receive(:logout_keeping_session!); do_create end
-    it 'flashes an error'           do do_create; flash[:warning].should =~ /Couldn't log you in as 'quentin@email.com'/ end
+    it 'flashes an error'           do do_create; flash[:alert].should =~ /Couldn't log you in as 'quentin@email.com'/ end
     it 'renders the log in page'    do do_create; response.should render_template('new')  end
     it "doesn't log me in"          do do_create; controller.send(:logged_in?).should == false end
     it "doesn't send password back" do 

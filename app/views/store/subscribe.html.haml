@@ -36,7 +36,7 @@
         = check_box_toggle 'gift', false, :nextstep, 'to enter Recipient information', 'to Billing information'
       %br
       %label.wide_label &nbsp;
-      = hidden_field_tag 'redirect_to', 'subscribe'
+      = hidden_field_tag 'referer', 'subscribe'
       = submit_tag 'CONTINUE >>', {:disabled => !(@gAdmin.is_boxoffice), :id => 'submit'}
       %span#nextstep to Billing Information
 

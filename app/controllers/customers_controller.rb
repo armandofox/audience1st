@@ -27,13 +27,6 @@ class CustomersController < ApplicationController
   # prevent complaints on AJAX autocompletion
   skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name]
 
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify(:method => :post,
-    :only => %w[update finalize_merge destroy create user_create
-        link_existing_account],
-    :redirect_to => { :controller => :customers, :action => :welcome},
-    :add_flash => {:warning => "This action requires a POST."} )
-
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
     render :inline => "" and return if params[:__arg].blank?
@@ -273,7 +266,7 @@ class CustomersController < ApplicationController
     end
     @cust = ids.map { |x| Customer.find_by_id(x.to_i) }
     if @cust.any? { |c| c.nil? }
-      flash[:warning] = "At least one customer not found. Please try again."
+      flash[:alert] = "At least one customer not found. Please try again."
       redirect_to_last_list and return
     end
     @offset = params[:offset]
@@ -282,11 +275,11 @@ class CustomersController < ApplicationController
     case params[:commit]
     when /forget/i
       count = do_deletions(@cust, :forget!)
-      flash[:warning] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:warning]}"
+      flash[:notice] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:notice]}"
       redirect_to_last_list and return
     when /expunge/i
       count = do_deletions(@cust, :expunge!)
-      flash[:warning] = "#{count} customers (and their transactions) expunged<br/> #{flash[:warning]}"
+      flash[:notice] = "#{count} customers (and their transactions) expunged<br/> #{flash[:notice]}"
       redirect_to_last_list and return
     when /auto/i
       do_automatic_merge(*params[:merge].keys)
@@ -294,7 +287,7 @@ class CustomersController < ApplicationController
     when /manual/i
       render :action => :merge
     else
-      flash[:warning] = "Unrecognized action: #{params[:commit]}"
+      flash[:alert] = "Unrecognized action: #{params[:commit]}"
       redirect_to_last_list and return
     end
   end
@@ -303,7 +296,7 @@ class CustomersController < ApplicationController
     c0 = Customer.find_by_id(params.delete(:cust0))
     c1 = Customer.find_by_id(params.delete(:cust1))
     unless c0 && c1
-      flash[:warning] = "At least one customer not found. Please try again."
+      flash[:alert] = "At least one customer not found. Please try again."
       redirect_to_last_list and return
     end
     result = c0.merge_with_params!(c1, params)
@@ -480,13 +473,13 @@ class CustomersController < ApplicationController
 
   def do_deletions(customers, method)
     count = 0
-    flash[:warning] = ''
+    flash[:alert] = ''
     customers.each do |c|
       c.send(method)
       if c.errors.empty?
         count += 1
       else
-        flash[:warning] << c.errors.full_messages.join("<br/>")
+        flash[:alert] << c.errors.full_messages.join("<br/>")
       end
     end
     count

@@ -52,7 +52,7 @@ describe BoxOfficeController do
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
         post :modify_walkup_vouchers, @params
-        flash[:warning].should match(/you didn't select any vouchers/i)
+        flash[:alert].should match(/you didn't select any vouchers/i)
       end
     end
     context "when at least one voucher is not found" do
@@ -64,7 +64,7 @@ describe BoxOfficeController do
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
         post :modify_walkup_vouchers, @params
-        flash[:warning].should match(/no changes were made/i)
+        flash[:alert].should match(/no changes were made/i)
       end
     end
     context "when neither Transfer nor Destroy is pressed" do
@@ -74,7 +74,7 @@ describe BoxOfficeController do
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
         post :modify_walkup_vouchers, @params
-        flash[:warning].should match(/unrecognized action/i)
+        flash[:alert].should match(/unrecognized action/i)
       end
     end
     context "when target showdate doesn't exist" do
@@ -85,12 +85,12 @@ describe BoxOfficeController do
       it_should_behave_like "no transfer is attempted"
       it "should display error if showdate not found" do
         post :modify_walkup_vouchers, @params
-        flash[:warning].should match(/couldn't find showdate with id=99999/i)
+        flash[:alert].should match(/couldn't find showdate with id=99999/i)
       end
       it "should display error if showdate not specified" do
         @params.delete(:to_showdate)
         post :modify_walkup_vouchers, @params
-        flash[:warning].should match(/couldn't find showdate without an ID/i)
+        flash[:alert].should match(/couldn't find showdate without an ID/i)
       end
     end
     context "when all vouchers exist" do
@@ -120,8 +120,8 @@ describe BoxOfficeController do
         it "when errors occur should display a message" do
           Voucher.should_receive(:transfer_multiple).and_raise("boom!")
           post :modify_walkup_vouchers, @params
-          flash[:warning].should match(/no changes were made/i)
-          flash[:warning].should match(/boom!/)
+          flash[:alert].should match(/no changes were made/i)
+          flash[:alert].should match(/boom!/)
         end
       end
       describe "destroying" do
@@ -141,8 +141,8 @@ describe BoxOfficeController do
         it "should display error message when errors occur" do
           Voucher.should_receive(:destroy_multiple).and_raise("boom!")
           post :modify_walkup_vouchers, @params
-          flash[:warning].should match(/no changes were made/i)
-          flash[:warning].should match(/boom!/)
+          flash[:alert].should match(/no changes were made/i)
+          flash[:alert].should match(/boom!/)
         end
       end
     end

@@ -37,8 +37,7 @@
                   = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^list/)
             #content.clear
               = render :partial => 'messages/notice' unless flash[:notice].blank?
-              = render :partial => 'messages/warning' unless flash[:warning].blank?
-              = render :partial => 'store/checkout_error' unless flash[:checkout_error].blank?
+              = render :partial => 'messages/alert' unless flash[:alert].blank?
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller.controller_name)
                 %h1.center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}

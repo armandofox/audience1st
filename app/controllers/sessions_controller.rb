@@ -93,9 +93,9 @@ class SessionsController < ApplicationController
 
   # Track failed login attempts
   def note_failed_signin(user)
-    flash[:warning] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:warning] << ": #{user.errors.on(:login_failed)}" if user
-    logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:warning]}"
+    flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
+    flash[:alert] << ": #{user.errors.on(:login_failed)}" if user
+    logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
   end
 
 end

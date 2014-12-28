@@ -6,7 +6,7 @@ class VouchertypesController < ApplicationController
   private
   def at_least_one_vouchertype
     unless Vouchertype.find(:first)
-      flash[:warning] = "You have not defined any voucher types yet."
+      flash[:alert] = "You have not defined any voucher types yet."
       redirect_to :action => 'new'
     end
   end
@@ -51,7 +51,7 @@ class VouchertypesController < ApplicationController
       (v.bundle? ? 0 : 1e6) + v.season*1000 + v.display_order
     end
     if @vouchertypes.empty?
-      flash[:warning] = "No vouchertypes matched your criteria."
+      flash[:alert] = "No vouchertypes matched your criteria."
     end
   end
 
@@ -94,7 +94,7 @@ class VouchertypesController < ApplicationController
     @num_vouchers = @vouchertype.vouchers.count
     @valid_voucher = @vouchertype.valid_vouchers.first if @vouchertype.bundle?
     if @num_vouchers > 0
-      flash[:warning] = "#{@num_vouchers} vouchers of this voucher type have already been issued.  Any changes  you make will be retroactively reflected to all of them.  If this is not what you want, click Cancel below."
+      flash[:alert] = "#{@num_vouchers} vouchers of this voucher type have already been issued.  Any changes  you make will be retroactively reflected to all of them.  If this is not what you want, click Cancel below."
     end
   end
 
@@ -116,7 +116,7 @@ class VouchertypesController < ApplicationController
       flash[:notice] = 'Vouchertype was successfully updated.'
       redirect_to :action => 'list', :season => @vouchertype.season
     else
-      flash[:warning] = 'Update failed, please re-check information and try again: ' + @vouchertype.errors.full_messages.join(', ')
+      flash[:alert] = 'Update failed, please re-check information and try again: ' + @vouchertype.errors.full_messages.join(', ')
       redirect_to :action => 'edit', :id => @vouchertype
     end
   end

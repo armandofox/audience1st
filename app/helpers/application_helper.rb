@@ -68,6 +68,10 @@ module ApplicationHelper
     m.map { |line| content_tag(:span, line) }.join("<br/>\n") :
       m
   end
+
+  def errors_as_html(model, sep='<br/>')
+    model.errors.full_messages.join(sep)
+  end
   
   # gracefully show a range of dates
   def humanize_date_range(d1,d2,separator=" - ")

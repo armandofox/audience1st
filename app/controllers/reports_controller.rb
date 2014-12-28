@@ -30,7 +30,7 @@ class ReportsController < ApplicationController
     when /transaction/i
       transaction_details_report
     when /unearned/i
-      redirect_to({:action => :index}, {:warning => "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."})
+      redirect_to({:action => :index}, {:alert => "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."})
     when /earned/i
       accounting_report
     else
@@ -41,7 +41,7 @@ class ReportsController < ApplicationController
   def advance_sales
     if (params[:shows].blank? ||
         (@shows = params[:shows].map { |s| Show.find_by_id(s) }.flatten).empty?)
-      flash[:warning] = "Please select one or more shows."
+      flash[:alert] = "Please select one or more shows."
       redirect_to :action => :index
     end
   end
@@ -144,13 +144,13 @@ class ReportsController < ApplicationController
     n = params[:_report]
     logger.debug request.request_uri
     @report = n.camelize.constantize.__send__(:new, params[:output])
-    redirect_to({:action => :index}, {:warning => 'Unknown report name'}) and return if
+    redirect_to({:action => :index}, {:alert => 'Unknown report name'}) and return if
       (n.blank? || @report.nil? || !@report.kind_of?(Report))
     result = @report.generate_and_postprocess(params) # error!
     unless result
       respond_to do |wants|
         wants.html {
-          redirect_to({:action => 'index'}, {:warning => "Errors generating report: #{@report.errors}"})
+          redirect_to({:action => 'index'}, {:alert => "Errors generating report: #{@report.errors}"})
         }
         wants.js {
           render :text => "Error: #{@report.errors}"

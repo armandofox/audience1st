@@ -32,15 +32,15 @@ class VouchersController < ApplicationController
     thecomment = params[:comments].to_s
     theshowdate = Showdate.find_by_id(params[:showdate_id])
 
-    flash[:warning] = 'Only comp vouchers can be added this way. For revenue vouchers,' <<
+    flash[:alert] = 'Only comp vouchers can be added this way. For revenue vouchers,' <<
       'use the Buy Tickets purchase flow, and choose Check or Cash Payment.' unless
       thevouchertype.comp?
-    flash[:warning] ||= 'Please select number of vouchers.' unless thenumtoadd > 0
-    flash[:warning] ||= 'Please select a performance.' unless theshowdate
-    flash[:warning] ||= 'This comp ticket type not valid for this performance.' unless
+    flash[:alert] ||= 'Please select number of vouchers.' unless thenumtoadd > 0
+    flash[:alert] ||= 'Please select a performance.' unless theshowdate
+    flash[:alert] ||= 'This comp ticket type not valid for this performance.' unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
-    redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:warning]
+    redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:alert]
 
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
       :comments => thecomment,
@@ -53,7 +53,7 @@ class VouchersController < ApplicationController
       RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@gCustomer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
       flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
     rescue RuntimeError => e
-      flash[:warning] = "Error adding comps:<br/>#{e.message}"
+      flash[:alert] = "Error adding comps:<br/>#{e.message}"
     end
     
     redirect_to :controller => 'customers', :action => 'welcome'

@@ -29,7 +29,7 @@ describe ImportsController do
         end
         it "should display a warning message" do
           post :create, {:new_show_name => 'Existing Show'}.merge(@params)
-          flash[:warning].should == 'Show "Existing Show" already exists.'
+          flash[:alert].should == 'Show "Existing Show" already exists.'
         end
         it "should redirect to new import" do
           post :create, {:new_show_name => 'Existing Show'}.merge(@params)
@@ -69,7 +69,7 @@ describe ImportsController do
         controller.stub!(:partial_for_import).and_return nil
         get :edit, :id => @import
         response.should redirect_to(:action => :new)
-        flash[:warning].should match(/Don't know how to preview/)
+        flash[:alert].should match(/Don't know how to preview/)
       end
     end
   end

@@ -18,7 +18,7 @@ class ImportsController < ApplicationController
       @import.show_id = show.id
       @showdates = show.showdates
     else
-      flash[:warning] = "You have not set up any shows, so you won't be able to import will-call lists yet."
+      flash[:alert] = "You have not set up any shows, so you won't be able to import will-call lists yet."
     end
   end
 
@@ -28,7 +28,7 @@ class ImportsController < ApplicationController
     @import = (type.constantize).new(params[:import])
     if !(new = params[:new_show_name]).blank?
       if Show.find_by_name(new)
-        flash[:warning] = "Show \"#{new}\" already exists."
+        flash[:alert] = "Show \"#{new}\" already exists."
         redirect_to :action => :new and return
       end
       @import.show = Show.create_placeholder!(new)
@@ -48,7 +48,7 @@ class ImportsController < ApplicationController
     @import = Import.find(params[:id])
     @collection = @import.preview
     if (@partial = partial_for_import(@import)).nil?
-      flash[:warning] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}."
+      flash[:alert] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}."
       redirect_to(:action => :new) and return
     end
   end

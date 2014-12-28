@@ -4,7 +4,7 @@ class OrdersController < ApplicationController
   def show
     @order = Order.find_by_id(params[:id])
     if @order.nil?
-      flash[:warning] = "Order ID #{params[:id].to_i} not found"
+      flash[:alert] = "Order ID #{params[:id].to_i} not found"
       redirect_to_stored
       return
     end

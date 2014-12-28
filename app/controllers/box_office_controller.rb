@@ -5,11 +5,6 @@ class BoxOfficeController < ApplicationController
 
   # sets  instance variable @showdate and others for every method.
   before_filter :get_showdate, :except => [:mark_checked_in, :modify_walkup_vouchers]
-  verify(:method => :post,
-         :only => %w(do_walkup_sale modify_walkup_vouchers),
-         :redirect_to => { :action => :walkup, :id => @showdate },
-    :add_to_flash => {:warning => "Warning: action only callable as POST, no transactions were recorded! "})
-  verify :method => :post, :only => :mark_checked_in
   
   private
 
@@ -123,9 +118,9 @@ class BoxOfficeController < ApplicationController
       @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
     end
       
-    flash[:warning] = 'There are no items to purchase.' if @order.item_count.zero?
-    flash[:warning] ||= @order.errors.full_messages.join(', ') unless @order.ready_for_purchase?
-    redirect_to(:action => 'walkup', :id => @showdate) and return if flash[:warning]
+    flash[:alert] = 'There are no items to purchase.' if @order.item_count.zero?
+    flash[:alert] ||= @order.errors.full_messages.join(', ') unless @order.ready_for_purchase?
+    redirect_to(:action => 'walkup', :id => @showdate) and return if flash[:alert]
 
     # all set to try the purchase
     begin
@@ -141,7 +136,7 @@ class BoxOfficeController < ApplicationController
       flash[:notice] << " paid by #{ActiveSupport::Inflector::humanize(@order.purchase_medium)}"
       redirect_to :action => 'walkup', :id => @showdate
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:warning] = "Transaction NOT processed: " <<
+      flash[:alert] = "Transaction NOT processed: " <<
         @order.errors.full_messages.join(', ')
       redirect_to :action => 'walkup', :id => @showdate, :qty => params[:qty], :donation => params[:donation]
     end
@@ -162,7 +157,7 @@ class BoxOfficeController < ApplicationController
   # to another showdate, as directed
   def modify_walkup_vouchers
     if params[:vouchers].blank?
-      flash[:warning] = "You didn't select any vouchers to remove or transfer."
+      flash[:alert] = "You didn't select any vouchers to remove or transfer."
       redirect_to(:action => :index) and return
     end
     voucher_ids = params[:vouchers]
@@ -179,10 +174,10 @@ class BoxOfficeController < ApplicationController
         Voucher.transfer_multiple(vouchers, showdate, logged_in_user)
         flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
       else
-        flash[:warning] = "Unrecognized action: '#{action}'"
+        flash[:alert] = "Unrecognized action: '#{action}'"
       end
     rescue Exception => e
-      flash[:warning] = "Error (NO changes were made): #{e.message}"
+      flash[:alert] = "Error (NO changes were made): #{e.message}"
       RAILS_DEFAULT_LOGGER.warn(e.backtrace)
     end
     redirect_to :action => :index, :id => showdate_id

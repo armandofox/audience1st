@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
     contr = self.controller_name
     klass = Kernel.const_get(contr.singularize.camelize)
     unless klass.find(:first)
-      flash[:warning] = "You have not set up any #{contr} yet."
+      flash[:alert] = "You have not set up any #{contr} yet."
       redirect_to :action => 'new'
     end
   end

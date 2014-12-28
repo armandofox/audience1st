@@ -41,8 +41,7 @@ class StoreController < ApplicationController
     else
       @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer || Customer.generic_customer,@promo_code)
     end
-    redirect_to_index("There are no subscriptions on sale at this time.") and return if
-      @subs_to_offer.empty?
+    redirect_to(:action => :index, :alert => "There are no subscriptions on sale at this time.") and return if @subs_to_offer.empty?
   end
 
   def donate
@@ -66,20 +65,15 @@ class StoreController < ApplicationController
       promo = current_promo_code
       tickets.each_pair { |vv, qty| @cart.add_with_checking(vv,qty,promo) }
     end
-    if !@cart.errors.empty?
-      flash[:warning] = @cart.errors.full_messages.join(', ')
-      redirect_to_index and return
-    end
+    redirect_to_referer(errors_as_html(@cart)) and return unless
+      @cart.errors.empty?
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
       @cart.add_donation(
         Donation.from_amount_and_account_code_id(params[:donation].to_i,
           params[:account_code_id] ))
     end
-    if @cart.cart_empty?
-      flash[:warning] = "There is nothing in your order."
-      redirect_to_index and return
-    end
+    redirect_to_referer('There is nothing in your order.') and return if @cart.cart_empty?
     if params[:gift] && @cart.include_vouchers?
       @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
       @mailable = @cart.has_mailable_items?
@@ -114,7 +108,7 @@ class StoreController < ApplicationController
     if recipient.new_record?
       recipient.created_by_admin = true if current_admin.is_boxoffice
       unless recipient.save
-        flash[:warning] = recipient.errors.full_messages
+        flash[:alert] = recipient.errors.full_messages
         render :action => :shipping_address
         return
       end
@@ -162,7 +156,7 @@ class StoreController < ApplicationController
       @cart.comments += " - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}" unless params[:pickup].blank?
     end
     unless @cart.ready_for_purchase?
-      flash[:warning] = @cart.errors.full_messages.join(', ')
+      flash[:alert] = @cart.errors.full_messages.join(', ')
       redirect_to_checkout
       return
     end
@@ -175,14 +169,13 @@ class StoreController < ApplicationController
       reset_shopping
       set_return_to
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
-      flash[:warning] = (@cart.errors.full_messages + [e.message]).join(', ') 
+      flash[:alert] = (@cart.errors.full_messages + [e.message]).join(', ') 
       logger.error("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
       redirect_to_checkout
       return
     rescue Exception => e
-      flash[:warning] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
       logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
-      redirect_to_index
+      redirect_to :action => :index, :alert => "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
       return
     end
 
@@ -255,16 +248,14 @@ class StoreController < ApplicationController
     true
   end
 
-  def redirect_to_index(notice = nil)
-    flash[:notice] = notice if notice
-    url_or_path = params[:redirect_to]
-    if url_or_path.empty?
-      redirect_to :action => 'index'
-    elsif url_or_path =~ /\//
-      redirect_to url_or_path
-    else
-      redirect_to :action => url_or_path
-    end
+  def redirect_to_referer(msg=nil)
+    redirect_target = 
+      case params[:referer].to_s
+      when 'subscribe' then {:action => :subscribe}
+      when 'donate' then {:action => :donate, :id => params[:account_code_id]}
+      else {:action => :index}
+      end
+    redirect_to(redirect_target, :alert => msg)
   end
 
   def purchasemethod_from_params
@@ -280,7 +271,7 @@ class StoreController < ApplicationController
     else
       meth = nil
       args = {}
-      flash[:warning] = "Invalid form of payment."
+      flash[:alert] = "Invalid form of payment."
     end
     return meth,args
   end

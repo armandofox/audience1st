@@ -27,7 +27,7 @@ describe StoreController do
         end
         it "should display a warning" do
           post 'process_cart', @params
-          flash[:warning].should match(/nothing in your order/i)
+          flash[:alert].should match(/nothing in your order/i)
         end
       end
       context "if gift" do
@@ -188,18 +188,18 @@ describe StoreController do
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
       post :set_shipping_address, :customer => @customer
-      flash[:warning].should be_blank, flash[:warning]
+      flash[:alert].should be_blank, flash[:alert]
       response.should redirect_to(:action => 'checkout')
     end
     it "should be valid with only an email address" do
       @customer[:email] = "me@example.com"
       post :set_shipping_address, :customer => @customer
-      flash[:warning].should be_blank
+      flash[:alert].should be_blank
       response.should redirect_to(:action => 'checkout')
     end
     it "should not be valid if neither phone nor email given" do
       post :set_shipping_address, :customer => @customer
-      flash[:warning].join(',').should match(/at least one phone number or email/i)
+      flash[:alert].join(',').should match(/at least one phone number or email/i)
       response.should render_template(:shipping_address)
       response.should_not redirect_to(:action => :checkout)
     end

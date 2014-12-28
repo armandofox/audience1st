@@ -17,7 +17,7 @@ class BulkDownloadsController < ApplicationController
   def edit
     @download = BulkDownload.find(params[:id])
     if @download.report_names.blank?
-      flash[:warning] = "No report names could be retrieved.  Make sure your login and password are correct."
+      flash[:alert] = "No report names could be retrieved.  Make sure your login and password are correct."
     end
   end
 
@@ -35,10 +35,10 @@ class BulkDownloadsController < ApplicationController
         end
       end
     rescue Exception => e
-      flash[:warning] = "Creating new import(s) failed: #{e.message} (#{e.backtrace})"
+      flash[:alert] = "Creating new import(s) failed: #{e.message} (#{e.backtrace})"
       redirect_to edit_bulk_download_path(@download) and return
     end
-    flash[:warning] = "New imports successfully staged.  Ready to preview and finalize each one."
+    flash[:alert] = "New imports successfully staged.  Ready to preview and finalize each one."
     redirect_to :controller => :imports, :action => :index
   end
 

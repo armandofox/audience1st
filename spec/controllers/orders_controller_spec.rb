@@ -13,7 +13,7 @@ describe OrdersController do
     it "should redirect with a message" do
       get :show, :id => 5
       response.should be_redirect
-      flash[:warning].should_not be_blank
+      flash[:alert].should_not be_blank
     end
   end
 end
