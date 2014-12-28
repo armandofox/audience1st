@@ -222,7 +222,7 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
         :comments => 'Change secret question or answer')
       flash[:notice] = 'Secret question change confirmed.'
-      redirect_to home_path
+      redirect_to welcome_path
     else
       render :action => :change_secret_question
     end
