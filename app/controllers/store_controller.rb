@@ -37,9 +37,10 @@ class StoreController < ApplicationController
     # which subscriptions/bundles are available now?
     @promo_code = redeeming_promo_code
     if @is_admin
-      @subs_to_offer = ValidVoucher.bundles
+      this_season = Time.this_season
+      @subs_to_offer = ValidVoucher.bundles([this_season, this_season+1])
     else
-      @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer || Customer.generic_customer,@promo_code)
+      @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer || Customer.generic_customer, @promo_code)
     end
     redirect_to(:action => :index, :alert => "There are no subscriptions on sale at this time.") and return if @subs_to_offer.empty?
   end

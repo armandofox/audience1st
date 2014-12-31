@@ -168,8 +168,9 @@ class ValidVoucher < ActiveRecord::Base
     remain = [remain, 0].max    # make sure it's positive
   end
 
-  def self.bundles
-    self.find(:all, :include => :vouchertype, :conditions => 'vouchertypes.category = "bundle"',
+  def self.bundles(seasons = [Time.this_season])
+    ValidVoucher.find(:all, :include => :vouchertype,
+      :conditions => [ 'vouchertypes.category = "bundle" AND vouchertypes.season IN (?)', seasons],  #'
       :order => "season DESC,display_order,price DESC")
   end
 

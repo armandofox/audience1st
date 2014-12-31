@@ -1,5 +1,6 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
+ruby '1.8.7'
 
 gem 'acts_as_reportable', '1.1.1'
 gem 'builder'
