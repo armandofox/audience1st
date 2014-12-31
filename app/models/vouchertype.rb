@@ -149,6 +149,8 @@ class Vouchertype < ActiveRecord::Base
 
   def bundle? ; category == :bundle ; end
   def comp? ; category == :comp ; end
+  def external? ; offer_public == EXTERNAL ; end
+
   def subscriber_voucher? ; category == :subscriber ; end
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end

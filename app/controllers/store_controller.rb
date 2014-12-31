@@ -286,7 +286,7 @@ class StoreController < ApplicationController
   end
 
   def setup_ticket_menus_for_admin
-    @valid_vouchers = @sd.valid_vouchers.map do |v|
+    @valid_vouchers = @sd.valid_vouchers.delete_if(&:comp?).map do |v|
       v.customer = @gCustomer || Customer.generic_customer
       v.adjust_for_customer
     end.sort_by(&:display_order)

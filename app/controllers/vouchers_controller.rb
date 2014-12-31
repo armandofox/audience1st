@@ -20,7 +20,10 @@ class VouchersController < ApplicationController
       redirect_to :controller => 'customers', :action => 'list'
       return
     end
-    @vouchers = Vouchertype.comp_vouchertypes(Time.this_season).reject { |v| v.offer_public == Vouchertype::EXTERNAL }
+    this_season = Time.this_season
+    @vouchers = (
+      Vouchertype.comp_vouchertypes(this_season + 1) +
+      Vouchertype.comp_vouchertypes(this_season)).delete_if(&:external?)
     redirect_to({:controller => 'vouchertypes', :action => 'list'}, :notice => 'You must define some voucher types first.') and return if @vouchers.empty?
     @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
