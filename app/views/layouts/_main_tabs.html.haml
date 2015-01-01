@@ -1,8 +1,8 @@
 - tabs = [['Buy Tickets', :store, :index], |
-  ['My Tickets', :customers, :welcome], |
-  ['Billing/Contact', :customers, :edit], |
+  ['Subscribe', :store, :subscribe],       |
+  ['My Tickets', :customers, :welcome],    |
+  ['Billing/Contact', :customers, :edit],  |
   ['Change Password', :customers, :change_password]] |
-- tabs.insert(1, ['Subscribe', :store, :subscribe]) unless ValidVoucher.bundles_available_to(@gCustomer).empty?
 %ul.nav= nav_tabs 'store_nav', tabs
 - if @gAdmin.is_staff
   - tabs =    |

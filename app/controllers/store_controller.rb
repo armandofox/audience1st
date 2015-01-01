@@ -42,7 +42,11 @@ class StoreController < ApplicationController
     else
       @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer || Customer.generic_customer, @promo_code)
     end
-    redirect_to(:action => :index, :alert => "There are no subscriptions on sale at this time.") and return if @subs_to_offer.empty?
+    if @subs_to_offer.empty?
+      flash[:alert] = "There are no subscriptions on sale at this time."
+      redirect_to(:action => :index)
+      return
+    end
   end
 
   def donate

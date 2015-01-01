@@ -168,19 +168,19 @@ class ValidVoucher < ActiveRecord::Base
     remain = [remain, 0].max    # make sure it's positive
   end
 
-  def self.bundles(seasons = [Time.this_season])
+  def self.bundles(seasons = [Time.this_season, 1 + Time.this_season])
     ValidVoucher.find(:all, :include => :vouchertype,
       :conditions => [ 'vouchertypes.category = "bundle" AND vouchertypes.season IN (?)', seasons],  #'
       :order => "season DESC,display_order,price DESC")
   end
 
   def self.bundles_available_to(customer = Customer.generic_customer, promo_code=nil)
-    bundles = self.bundles.map do |b|
+    bundles = ValidVoucher.bundles.map do |b|
       b.customer = customer
       b.adjust_for_customer promo_code
-    end.
-      reject { |b| b.max_sales_for_type == 0 }.
-      sort_by(&:display_order)
+    end
+    bundles.reject! { |b| b.max_sales_for_type == 0 }
+    bundles.sort_by(&:display_order)
   end
 
   # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
