@@ -175,7 +175,11 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def self.bundles_available_to(customer = Customer.generic_customer, promo_code=nil)
-    bundles = ValidVoucher.bundles.map do |b|
+    bundles = ValidVoucher.find(:all,
+      :include => :vouchertype,
+      :conditions => ['vouchertypes.category = "bundle" AND ? BETWEEN start_sales AND end_sales', Time.now],
+      :order => "season DESC,display_order,price DESC")
+    bundles.map! do |b|
       b.customer = customer
       b.adjust_for_customer promo_code
     end
