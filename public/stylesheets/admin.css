@@ -54,6 +54,7 @@ a.tooltip:hover span{
 a.tooltip span
 {
     border-radius:4px;
+    font-size: small !important; 
     box-shadow: 5px 5px 8px #CCC;
 }
 
