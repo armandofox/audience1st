@@ -1,8 +1,0 @@
-%h1= "New donation for #{@cust.full_name}"
-
-- @donation.customer_id = @cust.id
-- form_tag :action => 'create' do 
-  = render :partial => 'form' 
-  = submit_tag "Record" 
-  = gen_button  "Don't Record", {:action => 'list'} 
-
