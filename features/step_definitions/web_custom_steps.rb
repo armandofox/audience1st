@@ -15,7 +15,7 @@ end
 
 # Wrapper around 'I should see ... within ...' steps
 Then /^I should see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  steps %Q{ThenI should see #{string} within "#{tag}[@id='#{id}']"}
+  steps %Q{Then I should see #{string} within "#{tag}[@id='#{id}']"}
 end
 Then /^I should not see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
   steps %Q{Then I should not see #{string} within "#{tag}[@id='#{id}']"}
@@ -112,7 +112,7 @@ Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
   matched = @rows.any? do |table_row|
     match = true
     col_regexps.each_with_index do |regexp,index|
-      match &&= table_row[index].content.match(regexp)
+      match &&= (regexp.blank? || table_row[index].content.match(regexp))
     end
     match
   end
@@ -123,14 +123,6 @@ Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
   end
 end
     
-
-Then /^I should see a table "(.*)" with rows? (.*)$/ do |table,all_rows|
-  page.should have_css(table)
-  all_rows.split(/, ?/).each do |row|
-    steps %Q{Then "I should see a row #{row} within \"#{table}\""}
-  end
-end      
-
 # File uploading
 When /^I upload (.*) import list "(.*)"$/ do |type,file|
   case type

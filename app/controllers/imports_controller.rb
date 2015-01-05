@@ -5,6 +5,8 @@ class ImportsController < ApplicationController
   verify :method => :put, :only => :update
   verify :method => :delete, :only => :destroy
 
+  before_filter :temporarily_unavailable
+
   def new
     @import ||= Import.new
     yr = Time.now.this_season

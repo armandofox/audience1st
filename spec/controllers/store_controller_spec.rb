@@ -150,10 +150,12 @@ describe StoreController do
       assigns(:sd).should == @sd1
     end
     it "should respect valid date" do
+      pending 'Fix showdate_spec examples for Showdate.current_or_next'
       get :index, :date => @dt2
       assigns(:sd).should == @sd2
     end
     it "should default to earliest showdate with tickets if neither valid" do
+      pending 'Fix showdate_spec examples for Showdate.current_or_next'
       get :index, :showdate_id => 9999999
       assigns(:sd).should == @sd2
     end

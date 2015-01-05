@@ -62,8 +62,6 @@ class TbaWebtixImport < TicketSalesImport
     vouchers = Array.new(total_tix) do |ticket_number|
       Voucher.new_from_vouchertype(vouchertype,
         :showdate => showdate,
-        :sold_on => order_date,
-        :purchasemethod => Purchasemethod.get_type_by_name('ext'),
         :comments => comments,
         :external_key => order_id + sprintf("%02d", ticket_number))
     end

@@ -133,7 +133,7 @@ module BasicModels
   end
 
   def self.donation(amount=25, code=Donation.default_code)
-    Donation.new(:amount => amount, :sold_on => Time.now, :account_code => code)
+    Donation.new(:amount => amount, :account_code => code)
   end
 end
 

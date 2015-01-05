@@ -138,7 +138,6 @@ describe Order, 'finalizing' do
         it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
         it 'should set purchasemethod on its items' do ; @order.items.each { |i| i.purchasemethod.should == @order.purchasemethod } ; end
         it 'should set order ID on its items' do ; @order.items.each { |i| i.order_id.should == @order.id } ; end
-        it 'should set sold-on time on its items' do ; @order.items.each { |i| i.sold_on.should be_a_kind_of(Time) } ; end
         it 'should set comments on its items' do ; @order.items.each { |i| i.comments.should == 'Comment' } ; end
         it 'should add vouchers to customer account' do
           @cust.should have(2).vouchers_for(@sd,@vt)

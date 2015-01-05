@@ -34,18 +34,6 @@ class Voucher < Item
     v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
   end
 
-  # methods to support reporting functions
-  def self.sold_between(from,to)
-    sql = %{
-        SELECT DISTINCT v.*
-        FROM items v JOIN vouchertypes vt ON v.vouchertype_id=vt.id WHERE
-        (v.sold_on BETWEEN ? AND ?) AND 
-        v.customer_id !=0 AND 
-        (v.showdate_id > 0 OR (vt.category='bundle' AND vt.subscription=1))
-    }
-    Voucher.find_by_sql([sql,from,to])
-  end
-
   def item_description
     vouchertype.name_with_season << 
       (showdate ?
@@ -78,11 +66,6 @@ class Voucher < Item
     end
     output
   end
-
-
-  # :BUG: 79120088 no need to delegate this for Vouchers when their 'amount'
-  # is properly filled in at order time
-  def amount ; vouchertype.price ;  end
 
   delegate(
     :name,  :season, :account_code,
@@ -167,10 +150,8 @@ class Voucher < Item
 
   def self.new_from_vouchertype(vt,args={})
     vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
-    args[:purchasemethod] ||= Purchasemethod.default
     vt.vouchers.build({
         :fulfillment_needed => vt.fulfillment_needed,
-        :sold_on => Time.now,
         :amount => vt.price,
         :category => vt.category}.merge(args))
   end

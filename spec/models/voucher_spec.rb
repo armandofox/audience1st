@@ -50,51 +50,21 @@ describe Voucher do
     end
   end
 
-  describe "regular voucher" do
-    context "when templated from vouchertype", :shared => true do
-      it "should not be reserved" do  @v.should_not be_reserved  end
-      it "should not belong to anyone" do @v.customer.should be_nil end
-      it "should take on the vouchertype's season validity" do
-        @v.season.should == @v.vouchertype.season
-      end
-      it "should take on the vouchertype's category" do
-        @v.category.should == @v.vouchertype.category
-      end
-      it "should not show up as processed by anyone" do
-        @v.processed_by.should be_nil
-      end
-      it "should have a vouchertype" do  @v.vouchertype.should == @vt_regular end
-      it "price should match its vouchertype" do
-        @v.amount.should == 10.00
-      end
-    end
-    context "with no options" do
-      before(:each) do
-        @v = Voucher.new_from_vouchertype(@vt_regular)
-      end
-      it_should_behave_like "when templated from vouchertype"
-      it "should be valid" do
-        @v.should be_valid, @v.errors.full_messages.join("\n")
-      end
-      it "should have a default purchasemethod if none supplied" do
-        @v.purchasemethod.should_not be_nil
-      end
-    end
-    context "with supplied purchasemethod" do
-      before(:each) do
-        @purchasemethod = Purchasemethod.create!
-        @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => @purchasemethod)
-      it "should use the supplied purchasemethod" do
-          @v.purchase_method.should == @purchasemethod
-        end
-      end
-    end
+  describe "templated from vouchertype" do
+    subject { Voucher.new_from_vouchertype(@vt_regular) }
+    it { should be_valid }
+    it { should_not be_reserved }
+    its(:customer) { should be_nil }
+    its(:category) { should == @vt_regular.category }
+    its(:processed_by) { should be_nil }
+    its(:vouchertype) { should == @vt_regular }
+    its(:amount) { should == 10.00 }
   end
 
   describe "expired voucher" do
     before(:each) do
       @vt_regular.update_attribute(:season, Time.now.year - 2)
-      @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
+      @v = Voucher.new_from_vouchertype(@vt_regular)
       @v.should be_valid
     end
     it "should not be valid today" do
@@ -108,7 +78,7 @@ describe Voucher do
   describe "customer reserving a sold-out showdate" do
     before(:each) do
       @c = BasicModels.create_customer_by_role(:patron)
-      @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
+      @v = Voucher.new_from_vouchertype(@vt_regular)
       @c.vouchers << @v
       @sd = BasicModels.create_one_showdate(1.day.from_now)
       @v.stub(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_type => 0, :explanation => 'Event is sold out'))
@@ -125,7 +95,7 @@ describe Voucher do
   describe "transferring" do
     before(:each) do
       @from = BasicModels.create_generic_customer
-      @v = Voucher.new_from_vouchertype(@vt_regular, :purchasemethod => Purchasemethod.create!)
+      @v = Voucher.new_from_vouchertype(@vt_regular)
       @v.should be_valid
       @from.vouchers << @v
       @from.save!

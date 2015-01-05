@@ -1,6 +1,8 @@
 class BulkDownloadsController < ApplicationController
   before_filter :is_admin
-  
+
+  before_filter :temporarily_unavailable
+
   def index ; redirect_to :action => :new ; end
 
   def show ; redirect_to :action => :edit ; end

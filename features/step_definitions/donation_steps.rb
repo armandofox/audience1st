@@ -13,12 +13,17 @@ Given /^the following donations:$/ do |donations|
   end
 end
 
-Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"$/ do |amount,date,customer,fund|
+Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|by cash|by credit card)?$/ do |amount,date,customer,fund,how|
   steps %Q{Given customer \"#{customer}\" exists}
   account_code = fund.blank? ? AccountCode.default_account_code : find_or_create_account_code(fund)
   order = Order.new_from_donation(amount, account_code, @customer)
   order.processed_by = @customer
-  order.purchasemethod = Purchasemethod.get_type_by_name('box_chk')
+  order.purchasemethod = Purchasemethod.get_type_by_name(
+    case how
+    when /cash/ then 'box_cash'
+    when /credit/ then 'box_cc'
+    else 'box_chk'
+    end)
   begin
     order.finalize!(Time.parse date)
   rescue Exception => e

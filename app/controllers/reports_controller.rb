@@ -81,6 +81,7 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
+    temporarily_unavailable; return
     @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
@@ -100,8 +101,9 @@ class ReportsController < ApplicationController
   def retail
     @from,@to = Time.range_from_params(params[:from],params[:to])
     @items = RetailItem.find(:all,
-      :conditions => ['sold_on BETWEEN ? and ?', @from, @to],
-      :order => 'sold_on')
+      :include => :order,
+      :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
+      :order => 'orders.sold_on')
     redirect_to({:action => :index},
       {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
   end

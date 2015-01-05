@@ -73,8 +73,6 @@ class BrownPaperTicketsImport < TicketSalesImport
     order_notes = row[ORDER_NOTES].to_s
 
     voucher = Voucher.new_from_vouchertype(vouchertype, :showdate => showdate,
-      :sold_on => order_date,
-      :purchasemethod => Purchasemethod.get_type_by_name('ext'),
       :external_key => bpt_order_id,
       :comments => order_notes)
     customer.vouchers << voucher

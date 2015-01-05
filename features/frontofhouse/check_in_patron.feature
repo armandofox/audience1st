@@ -13,7 +13,10 @@ Background:
   And  I am logged in as boxoffice
   And  I am on the checkin page for April 15, 2010, 8:00pm
   Then I should see "Chicago - Thursday, Apr 15, 8:00 PM"
-  And  I should see a table "table[@id='checkin']" with rows "|Smith|Joe|General||2", "|Smith|Joe|Senior||3", "|Jones|Bob|General||8"
+  And I should see a row "|Jones|Bob|General||8" within "table[@id='checkin']"
+  And I should see a row "|Smith|Joe|General||2" within "table[@id='checkin']"
+  And I should see a row "|Smith|Joe|Senior||3" within "table[@id='checkin']"
+
 
 Scenario: check in everyone in small party
 

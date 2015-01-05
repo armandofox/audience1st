@@ -42,8 +42,7 @@ class ExternalTicketOrder
     unless args[:verify_only]
       @qty.times do
         v = Voucher.new_from_vouchertype(ticket_offer.vouchertype,
-          :showdate => ticket_offer.showdate,
-          :purchasemethod => Purchasemethod.find_by_shortdesc('ext'))
+          :showdate => ticket_offer.showdate)
         v.external_key = order_key.to_i
         v.processed_by_id = Customer.boxoffice_daemon.id
         @vouchers << v

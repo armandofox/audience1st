@@ -101,7 +101,7 @@ class DonationsController < ApplicationController
                 d.customer.zip,
                 d.customer.email,
                 d.amount,
-                d.order.sold_on.to_formatted_s(:db),
+                d.sold_on.to_formatted_s(:db),
                 d.account_code.code,
                 d.account_code.name,
                 d.letter_sent]

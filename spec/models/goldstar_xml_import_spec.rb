@@ -6,6 +6,7 @@ def xml_from_file(file) ; Nokogiri::XML::Document.parse(IO.read("#{RAILS_ROOT}/s
 
 describe GoldstarXmlImport do
   before(:each) do
+    pending "importing must be refactored to use Orders not Vouchers"
     @vt1 = BasicModels.create_revenue_vouchertype(:price => 11.0, :name => "Goldstar 1/2 price")
     @vt2 = BasicModels.create_comp_vouchertype(:name => "Goldstar Comp")
     @import = GoldstarXmlImport.new

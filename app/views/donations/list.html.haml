@@ -27,7 +27,7 @@
         %tr{:class => if donation then 'odd' else 'even' end}
           %td= link_to t.customer.full_name, :action => 'list', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
           %td= link_to_order_containing t
-          %td= t.order.sold_on.strftime '%D'
+          %td= t.sold_on.strftime '%D'
           %td.right= number_to_currency(t.amount)
           %td= render(:partial => 'donation_letter_sent', :locals => {:donation => t}) if donation
           %td= t.comments

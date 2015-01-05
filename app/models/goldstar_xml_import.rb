@@ -64,7 +64,6 @@ class GoldstarXmlImport < TicketSalesImport
           voucher = Voucher.new_from_vouchertype(vouchertype,
             :purchasemethod => Purchasemethod.get_type_by_name('ext'),
             :showdate => showdate,
-            :sold_on => order_date,
             :comments => comment,
             :external_key => real_ext_key)
           vouchers << voucher

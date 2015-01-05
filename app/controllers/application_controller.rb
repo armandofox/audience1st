@@ -164,6 +164,11 @@ class ApplicationController < ActionController::Base
     return c && (c.role >= level)
   end
 
+  def temporarily_unavailable
+    flash[:alert] = "Sorry, this function is temporarily unavailable."
+    redirect_to :back
+  end
+
   # filter that requires login as an admin
   # TBD: these should be defined using a higher-order function but I
   # don't know the syntax for that

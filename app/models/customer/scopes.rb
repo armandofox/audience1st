@@ -39,9 +39,12 @@ class Customer < ActiveRecord::Base
 
 
   named_scope :donated_during, lambda { |start_date, end_date, amount|
-    { :joins => :donations,
+    { :joins => ',items,orders',
       :select => 'DISTINCT customers.*',
-      :conditions => ['items.amount >= ? AND items.sold_on BETWEEN ? AND ?',
+      :conditions => ['items.customer_id = customers.id AND
+                       items.amount >= ? AND
+                       items.type = "Donation" AND
+                       orders.sold_on BETWEEN ? AND ?',
         amount, start_date, end_date] }}
     
 
