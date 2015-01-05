@@ -66,9 +66,11 @@ class StoreController < ApplicationController
     if @gAdmin.is_boxoffice
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
     else
-      cust = @gCustomer
       promo = current_promo_code
-      tickets.each_pair { |vv, qty| @cart.add_with_checking(vv,qty,promo) }
+      tickets.each_pair do |vv, qty|
+        vv.customer = @gCustomer
+        @cart.add_with_checking(vv,qty,promo)
+      end
     end
     redirect_to_referer(errors_as_html(@cart)) and return unless
       @cart.errors.empty?
