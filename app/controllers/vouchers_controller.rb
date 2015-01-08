@@ -55,6 +55,8 @@ class VouchersController < ApplicationController
       order.finalize!
       RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@gCustomer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
       flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
+    rescue Order::NotReadyError => e
+      flash[:alert] = "Error adding comps:<br/> #{order.errors.full_messages.join(',')}"
     rescue RuntimeError => e
       flash[:alert] = "Error adding comps:<br/>#{e.message}"
     end
