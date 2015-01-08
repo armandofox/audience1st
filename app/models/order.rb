@@ -226,7 +226,7 @@ class Order < ActiveRecord::Base
     errors.add_to_base 'No purchaser information' unless purchaser.kind_of?(Customer)
     errors.add_to_base "You must specify the enrollee's name for classes" if
       contains_enrollment? && comments.blank?
-    check_purchaser_info
+    check_purchaser_info unless processed_by.try(:is_boxoffice)
     if purchasemethod.kind_of?(Purchasemethod)
       errors.add(:purchasemethod, 'Invalid credit card transaction') if
         purchase_args && purchase_args[:credit_card_token].blank?       &&

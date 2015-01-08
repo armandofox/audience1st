@@ -55,6 +55,12 @@ describe Order, 'finalizing' do
       @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
       verify_error /ERROR/
     end
+    it 'should pass if purchaser invalid but order is placed by admin' do
+      @order.processed_by = BasicModels.create_customer_by_role(:boxoffice)
+      @order.purchaser.stub(:valid_as_purchaser?).and_return(nil)
+      @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
+      @order.should be_ready_for_purchase
+    end
     it 'should fail if no recipient' do
       @order.customer = nil
       verify_error /No recipient information/
