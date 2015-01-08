@@ -50,9 +50,7 @@ class StoreController < ApplicationController
   end
 
   def donate
-    @account_code = AccountCode.find_by_id(params[:fund]) ||
-      AccountCode.find_by_code(params[:account_code]) ||
-      AccountCode.default_account_code
+    @customer = if @gNobodyReallyLoggedIn then Customer.new else @gCustomer end
   end
 
   def process_cart

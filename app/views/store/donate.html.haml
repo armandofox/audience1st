@@ -1,15 +1,27 @@
 #store
-  #donation_panel
-    %h1.page_heading.center Donation to #{@account_code.name}
-    - if @account_code.description
-      %p.center= @account_code.description
-    - form_tag :action => 'process_cart' do
-      %label{:for => :donation} Your tax-deductible donation
-      = text_field_tag 'donation', '', :size => 5
-      \.00
-      %br
-      = hidden_field_tag 'referer', 'donate'
-      = hidden_field_tag 'account_code_id', @account_code.id
-      = submit_tag 'CONTINUE >>', {:id => 'submit'}
-      %span#nextstep to Billing Information
+  #quick_donation
+    %h1.page_heading.center= sanitize(Option.quick_donation_banner)
+    %p.explanation= sanitize(Option.quick_donation_explanation)
 
+    - form_tag :action => 'quick_donation' do
+
+      = render :partial => 'customers/form', :locals => {:customer => @customer, :hide_opt_out => true, :hide_birthday => true}
+
+      %fieldset#donation_info
+        %legend Donation Information
+        %label{:for => :donation} Donation amount
+        = text_field_tag 'donation', '', :size => 5
+        \.00
+        %br
+        %label.wide_label{:for => :donor_listing} If you'd like to be recognized as Anonymous, or if you'd like to donate in honor of someone else, please provide that information here:
+        %br.clear
+        = text_area_tag 'comments', '', :size => '40x5'
+
+      %p.notice
+        We do not store or access your card number.
+        Our transactions are securely processed 
+        through #{link_to 'Stripe', 'http://stripe.com'}.
+
+      = render :partial => 'credit_card'
+
+      = submit_tag 'Donate', :id => '_stripe_submit'

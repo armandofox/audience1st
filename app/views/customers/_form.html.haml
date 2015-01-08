@@ -10,7 +10,7 @@
     %p
       Fields
       %span.strong like this
-      are required for online reservations and ticket purchase.
+      are required.
       = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
     - fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
       %label.strong{:for => 'customer_first_name'} First name
@@ -54,7 +54,7 @@
         %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
         %br
 
-    - unless disabled
+    - unless disabled || defined?(hide_birthday)
       %label{:for => :customer_birthday} Birthday (optional)
       = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]
 
