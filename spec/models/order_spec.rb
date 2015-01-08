@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe Order do
   before :each do
     @the_customer = BasicModels.create_generic_customer

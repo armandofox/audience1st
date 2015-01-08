@@ -1,3 +1,4 @@
+@wip
 Feature: automatic import of will-call email from Goldstar
 
   As a box office manager

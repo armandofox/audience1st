@@ -24,6 +24,7 @@
       %thead
         %tr
           %th Item#
+          %th Customer Holding Item
           %th Amount
           %th Show or Acct Code
           %th Comment
@@ -31,6 +32,7 @@
         - order.items.each do |item|
           %tr
             %td= item.id
+            %td= link_to_customer item.customer
             %td= number_to_currency(item.amount)
             - if item.kind_of?(Voucher)
               %td= item.showdate ? item.showdate.printable_name : item.vouchertype.name

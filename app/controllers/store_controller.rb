@@ -61,7 +61,7 @@ class StoreController < ApplicationController
       return
     end
     @cart = find_cart
-    @cart.comments = params[:comments].to_s
+    @cart.add_comment params[:comments].to_s
     tickets = ValidVoucher.from_params(params[:valid_voucher])
     if @gAdmin.is_boxoffice
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
@@ -160,7 +160,7 @@ class StoreController < ApplicationController
     @recipient = @cart.purchaser
     if ! @cart.gift?
       # record 'who will pickup' field if necessary
-      @cart.comments += " - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}" unless params[:pickup].blank?
+      @cart.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
     unless @cart.ready_for_purchase?
       flash[:alert] = @cart.errors.full_messages.join(', ')

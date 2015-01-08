@@ -8,8 +8,6 @@ class Order < ActiveRecord::Base
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
 
-  #validates_presence_of :processed_by_id
-
   attr_accessor :purchase_args
 
   delegate :purchase_medium, :to => :purchasemethod
@@ -24,8 +22,6 @@ class Order < ActiveRecord::Base
 
   def initialize(*args)
     @purchase_args = {}
-    @walkup = false
-    @comments ||= ''
     super
   end
 
@@ -119,6 +115,11 @@ class Order < ActiveRecord::Base
     order = Order.new(:purchaser => donor, :customer => donor)
     order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
     order
+  end
+
+  def add_comment(arg)
+    self.comments ||= ''
+    self.comments += arg
   end
 
   def empty_cart!
