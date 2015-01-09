@@ -1,6 +1,7 @@
 %tr{:class => cycle(:even,:odd)}
   %td.option_name
-    %label{:for => "option_#{attrib}"}= link_to_function h(humanize(attrib).capitalize_each_word), "alert('#{escape_javascript(OPTION_DESCRIPTIONS[attrib.to_sym])}')"
+    %label{:for => "option_#{attrib}"}= humanize(attrib).capitalize_each_word
+    = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[attrib.to_sym].to_s
   %td.t.option_value
     - type = Option.columns_hash[attrib.to_s].type
     - if type == :string

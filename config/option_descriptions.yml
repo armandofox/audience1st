@@ -226,7 +226,7 @@ subscription_purchase_email_notes: >
   Additional text included in purchase confirmation screen and email
   when a new or renewal subscription is PURCHASED.  Can include basic
   HTML tags and CSS information. It is automatically rendered inside
-  <div id="subscription_purchase_notices"> and converted to plain text
+  &lt;div id="subscription_purchase_notices"&gt; and converted to plain text
   for confirmation email.
 
 display_email_opt_out: >
@@ -249,15 +249,15 @@ checkout_notices: >
 
   Notices to customer that appear on checkout screen after successful
   payment is processed. Can include basic HTML tags and CSS
-  information. It is automatically rendered inside <div
-  id='checkout_notices'>.
+  information. It is automatically rendered inside &lt;div
+  id='checkout_notices'&gt;.
 
 accessible_seating_notices: >
 
   Message included in checkout confirmation and email confirmation if
   customer has indicated special seating needs. It can include basic
-  HTML tags and will be wrapped in <div
-  id='accessible_seating_notices'>.
+  HTML tags and will be wrapped in &lt;div
+  id='accessible_seating_notices'&gt;.
 
 general_confirmation_email_notes: >
 
@@ -334,3 +334,16 @@ constant_contact_api_key: >
   See the instructions at http://a1patronsystems.com for how to create
   this key.
 
+stripe_publishable_key: >
+
+  Your "publishable key" for your venue's Stripe account.  You can copy
+  and paste it from the stripe.com management console.  CAUTION: This
+  must be exactly correct for credit card processing to work.  Be sure
+  to keep the "publishable key" and "secret key" distinct.
+
+stripe_secret_key: >
+
+  The "secret key" for your venue's Stripe account.  You can copy
+  and paste it from the stripe.com management console.  CAUTION: This
+  must be exactly correct for credit card processing to work.  Be sure
+  to keep the "publishable key" and "secret key" distinct.

@@ -6,7 +6,8 @@
      %w(venue                   venue_address           venue_city_state_zip    |
         venue_telephone         venue_homepage_url      boxoffice_telephone |
         help_email              privacy_policy_url      ) |
-    %label{:for => 'option_season_start'}= link_to_function "Season Start Date", "alert('#{escape_javascript(OPTION_DESCRIPTIONS[:season_start_month])}')"
+    %label{:for => 'option_season_start'} Season Start Date
+    = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[:season_start_month]
     = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
     = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
         
