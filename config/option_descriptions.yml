@@ -89,6 +89,25 @@ donation_ack_from: >
   Auto-generated confirmation emails for online donations will appear to be
   signed by this person.  Example: "Bob Jones, Development Chair"
 
+quick_donation_banner: >
+
+  The banner text that appears at the top of the "donate instantly"
+  (donate by credit card without logging in) page.
+
+quick_donation_explanation: >
+
+  Explanatory text that appears on the "donate instantly" page.  Basic
+  HTML is allowed.  For example, you could direct patrons who wish to
+  donate by check to download a form or call the development office.
+
+quick_donation_redirect: >
+
+  If not blank, the absolute URL to which the patron is redirected after
+  successfully making an "instant donation", for example, a thank-you
+  page.  The parameters 'customer_full_name' and 'amount' will be
+  appended to the URL.  If blank, the standard Audience1st donation
+  thank-you page will appear.
+
 boxoffice_daemon_notify: >
 
   Whenever the box office does automatic background processing, such as
