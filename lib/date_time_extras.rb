@@ -1,5 +1,4 @@
-# methods added to Time to speak the correct time, and a new contructor for
-# making a Time from menus
+# new contructor for making a Time from menus
 
 # add a couple of useful formats to ActiveSupport to_formatted_s conversion
 ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!({
@@ -17,18 +16,6 @@ class Time
   # not be correct
   def self.db_now
     "\"#{Time.now.to_formatted_s(:db)}\""
-  end
-
-  def speak(args={})
-    res = []
-    unless args[:omit_date]
-      res << strftime("%A, %B %e")
-    end
-    unless args[:omit_time]
-      say_min = min.zero? ? "" :  min < 10 ? "oh #{min}" : min
-      res << "#{self.strftime('%I').to_i} #{say_min} #{self.strftime('%p')[0,1]} M"
-    end
-    res.join(", at ")
   end
 
   def at_end_of_day

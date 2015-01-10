@@ -204,14 +204,6 @@ class Showdate < ActiveRecord::Base
     [0, compute_advance_sales - checked_in].max
   end
 
-  def spoken_name
-    self.show.name.gsub( /\W/, ' ')
-  end
-
-  def speak
-    self.spoken_name + ", on " + self.thedate.speak
-  end
-
   def printable_name
     self.show.name + " - " + self.printable_date_with_description
   end
@@ -226,6 +218,10 @@ class Showdate < ActiveRecord::Base
 
   def printable_date_with_description
     description.blank? ? printable_date : "#{printable_date} (#{description})"
+  end
+
+  def name_and_date_with_capacity_stats
+    sprintf "#{printable_name} (%d)", compute_advance_sales
   end
   
   def menu_selection_name

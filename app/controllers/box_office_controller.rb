@@ -16,7 +16,7 @@ class BoxOfficeController < ApplicationController
       Showdate.find_by_id(params[:id]) ||
       Showdate.current_or_next(2.hours)
     @showdates = Showdate.all_shows_this_season
-    @showdates << @showdate if @showdate
+    @showdates |= [@showdate] if @showdate
     if @showdates.empty?
       flash[:notice] = "There are no shows this season eligible for check-in right now.  Please add some."
       redirect_to :controller => 'shows', :action => 'index'

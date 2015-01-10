@@ -8,6 +8,6 @@
   #select_show{:style => "display: none;"}
     - form_tag :action => :change_showdate, :method => :get do
       %label{:for=>:showdate_thedate} Show and Date:
-      = select_tag 'id', options_from_collection_for_select(@showdates,:id, :printable_name, @showdate.id), :onchange => 'this.form.submit();'
+      = select_tag 'id', options_from_collection_for_select(@showdates,:id, :name_and_date_with_capacity_stats, @showdate.id), :onchange => 'this.form.submit();'
       %label
 
