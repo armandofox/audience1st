@@ -14,15 +14,6 @@ class VouchertypesController < ApplicationController
   public
   
   def index
-    list
-    render :action => 'list'
-  end
-
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => [ :destroy, :create, :update ],
-         :redirect_to => { :action => :list }
-
-  def list
     @superadmin = is_admin
     # possibly limit pagination to only bundles or only subs
     @earliest = Vouchertype.find(:first, :order => 'season').season
@@ -81,7 +72,7 @@ class VouchertypesController < ApplicationController
         if params[:commit] =~ /another/i
           redirect_to :action => :new
         else
-          redirect_to :action => :list, :season => @vouchertype.season
+          redirect_to :action => :index, :season => @vouchertype.season
         end
       end
     else
@@ -114,7 +105,7 @@ class VouchertypesController < ApplicationController
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                            :comments => "Modify voucher type #{@vouchertype.name}")
       flash[:notice] = 'Vouchertype was successfully updated.'
-      redirect_to :action => 'list', :season => @vouchertype.season
+      redirect_to :action => 'index', :season => @vouchertype.season
     else
       flash[:alert] = 'Update failed, please re-check information and try again: ' + @vouchertype.errors.full_messages.join(', ')
       redirect_to :action => 'edit', :id => @vouchertype
@@ -125,20 +116,20 @@ class VouchertypesController < ApplicationController
     v = Vouchertype.find(params[:id])
     unless is_admin
       flash[:notice] = "Only superadmin can destroy vouchertypes."
-      redirect_to :action => 'list', :season => v.season
+      redirect_to :action => 'index', :season => v.season
       return
     end
     if ((c = v.vouchers.count) > 0)
       flash[:notice] = "Can't destroy this voucher type, because there are
                         #{c} issued vouchers of this type."
-      redirect_to :action => :list, :season => v.season
+      redirect_to :action => :index, :season => v.season
       return
     end
     if !(vv = v.valid_vouchers).empty?
       # helpfully tell which shows use this vouchertype
       shows = vv.map { |v| v.showdate.show.name }.uniq.join(', ')
       flash[:notice] = "Can't destroy this voucher type because it's listed as valid for purchase for the following shows: #{shows}"
-      redirect_to :action => :list, :season => v.season
+      redirect_to :action => :index, :season => v.season
       return
     end
     name = v.name
@@ -146,6 +137,6 @@ class VouchertypesController < ApplicationController
     v.destroy
     Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
                          :comments => "Destroy voucher type #{name}")
-    redirect_to :action => 'list', :season => season
+    redirect_to :action => 'index', :season => season
   end
 end

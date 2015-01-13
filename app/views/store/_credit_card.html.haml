@@ -2,10 +2,10 @@
   %legend= defined?(legend) ? legend : 'Credit Card Information'
   %p#payment_errors
   %label{:for => 'credit_card_first_name'} First Name
-  = text_field_tag 'credit_card_first_name', '', :size => 20
+  = text_field_tag 'credit_card_first_name', (first_name ||= ''), :size => 20
   %br
   %label{:for => 'credit_card_last_name'} Last Name
-  = text_field_tag 'credit_card_last_name', '', :size => 20
+  = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20
   %br
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key

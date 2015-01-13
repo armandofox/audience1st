@@ -1,11 +1,8 @@
 class DonationsController < ApplicationController
 
   before_filter :is_staff_filter
-  verify(:method => :post, :only => %w[create mark_ltr_sent],
-         :add_to_flash => "System error: method should only be called via POST",
-         :redirect_to => {:action => 'list'})
 
-  def list
+  def index
     unless params[:commit]
       # first time visiting page: don't do "null search"
       @things = []

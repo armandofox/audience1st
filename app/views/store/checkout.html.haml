@@ -1,6 +1,3 @@
-%script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
-= javascript_include_tag 'stripe'
-
 :javascript
   function whenReady() {
      $('credit_card_first_name').setValue($$('#billing #customer_first_name')[0].getValue());
@@ -15,7 +12,7 @@
 - if @cart.gift?
   #gift_recipient
     %h2 This Order is a Gift For...
-    = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide_opt_out => true, :legend => 'Gift Recipient Info' }
+    = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide => [:opt_out], :legend => 'Gift Recipient Info' }
     = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
 - form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
@@ -38,7 +35,7 @@
     %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
   .clear
   #billing
-    = render :partial => 'customers/form', :locals => {:customer=>@cart.purchaser, :passive => true, :hide_opt_out => true }
+    = render :partial => 'customers/form', :locals => {:customer=>@cart.purchaser, :passive => true, :hide => [:opt_out]}
 
   %p.notice
     We do not store or access your card number.

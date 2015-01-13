@@ -7,7 +7,7 @@ class VisitsController < ApplicationController
                 :redirect_to => {:controller =>'customers', :action =>'login'},
                 :add_to_flash => 'Staff privilege required for this action.')
 
-  def list
+  def index
     @customer = Customer.find_by_id(params[:id]) || @gCustomer
     @logged_in_id = current_admin.id
     @visit ||= Visit.new(:visited_by_id => @logged_in_id, :followup_assigned_to_id => @logged_in_id, :thedate => Date.today) 

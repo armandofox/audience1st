@@ -177,37 +177,6 @@ class CustomersController < ApplicationController
     end
   end
 
-  def send_new_password(email)
-    if email.blank?
-      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
-      return nil
-    end
-    @customer = Customer.find_by_email(email)
-    unless @customer
-      flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
-      return nil
-    end
-    begin
-      newpass = String.random_string(6)
-      @customer.password = @customer.password_confirmation = newpass
-      # Save without validations here, because if there is a dup email address,
-      # that will cause save-with-validations to fail!
-      @customer.save(false)
-      email_confirmation(:send_new_password,@customer, newpass,
-        "requested your password for logging in")
-      # will reach this point (and change password) only if mail delivery
-      # doesn't raise any exceptions
-      Txn.add_audit_record(:txn_type => 'edit',
-        :customer_id => @customer.id,
-        :comments => 'Password has been reset')
-      return true
-    rescue Exception => e
-      flash[:notice] = e.message +
-        "<br/>Please contact #{Option.help_email} if you need help."
-      return nil
-    end
-  end
-
   def change_secret_question
     @customer = current_user
     return if request.get?
@@ -424,27 +393,6 @@ class CustomersController < ApplicationController
     end
   end
 
-  # TBD this is an AJAX handler that is called from the partial
-  #  _validate.rhtml, which can be rendered as part of the customer
-  # _form partial to validate US Mail address.  But first it needs to be
-  # connected to a working validation service!
-
-  def validate_address
-    cust = params[:customer]
-    url = "http://zip4.usps.com/zip4/zcl_0_results.jsp?visited=1&pagenumber=0&firmname=&address2=#{cust[:street]}&address1=&city=#{cust[:city]}&state=#{cust[:state]}&urbanization=&zip5=#{cust[:zip]}"
-    res = Net::HTTP.get_response(URI.parse(URI.escape(url)))
-    if res.code.to_i == 200 && res.body.match(/.*td headers="full"[^>]+>(.*)<br \/>\s+<\/td>\s+<td style=/m )
-      street,csz = Regexp.last_match(1).split /<br \/>/
-      city,state,zip = (csz.strip.split( /(&nbsp;)+/ )).values_at(0,2,4)
-    end
-    render :update do |page|
-      page['customer_street'].value = street.strip
-      page['customer_city'].value = city.strip
-      page['customer_state'].value = state.strip
-      page['customer_zip'].value = zip.strip
-    end
-  end
-
   def temporarily_disable_admin
     disable_admin
     flash[:notice] = "Switched to non-admin user view."
@@ -499,11 +447,44 @@ class CustomersController < ApplicationController
       flash[:notice] = "Automatic merge failed, try merging manually to resolve the following errors:<br/>" + c0.errors.full_messages.join('; ')
     end
   end
-  
+
   def delete_admin_only_attributes(params)
     Customer.extra_attributes.each { |a| params.delete(a) }
     params.delete(:comments)
     params
   end
+
+  def send_new_password(email)
+    if email.blank?
+      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
+      return nil
+    end
+    @customer = Customer.find_by_email(email)
+    unless @customer
+      flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
+      return nil
+    end
+    begin
+      newpass = String.random_string(6)
+      @customer.password = @customer.password_confirmation = newpass
+      # Save without validations here, because if there is a dup email address,
+      # that will cause save-with-validations to fail!
+      @customer.save(false)
+      email_confirmation(:send_new_password,@customer, newpass,
+        "requested your password for logging in")
+      # will reach this point (and change password) only if mail delivery
+      # doesn't raise any exceptions
+      Txn.add_audit_record(:txn_type => 'edit',
+        :customer_id => @customer.id,
+        :comments => 'Password has been reset')
+      return true
+    rescue Exception => e
+      flash[:notice] = e.message +
+        "<br/>Please contact #{Option.help_email} if you need help."
+      return nil
+    end
+  end
+
+
 
 end

@@ -3,9 +3,9 @@
     %h1.page_heading.center= sanitize(Option.quick_donation_banner)
     %p.explanation= sanitize(Option.quick_donation_explanation)
 
-    - form_tag :action => 'quick_donation' do
+    - form_tag({:action => 'quick_donation'}, {:id => '_stripe_payment_form'}) do
 
-      = render :partial => 'customers/form', :locals => {:customer => @customer, :hide_opt_out => true, :hide_birthday => true}
+      = render :partial => 'customers/form', :locals => {:customer => @customer, :hide => [:opt_out, :birthday]}
 
       %fieldset#donation_info
         %legend Donation Information
@@ -22,6 +22,6 @@
         Our transactions are securely processed 
         through #{link_to 'Stripe', 'http://stripe.com'}.
 
-      = render :partial => 'credit_card'
+      = render :partial => 'credit_card', :locals => {:first_name => @customer.first_name, :last_name => @customer.last_name }
 
-      = submit_tag 'Donate', :id => '_stripe_submit'
+      = submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :onclick => 'stripeSubmit()'

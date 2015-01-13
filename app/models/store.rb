@@ -1,5 +1,4 @@
 class Store
-  require 'stripe'
   
   def self.pay_with_credit_card(order)
     Stripe.api_key = Option.stripe_secret_key

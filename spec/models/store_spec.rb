@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'stripe'
 
 describe Store, "Paying with credit card" do
   before(:each) do
@@ -23,7 +22,6 @@ describe Store, "Paying with credit card" do
       Store.pay_with_credit_card(@order)
       @order.authorization.should == 'auth'
     end
-    it 
   end
   describe 'unsuccessfully' do
     before :each do

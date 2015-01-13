@@ -2,6 +2,8 @@
 
 - @customer = customer if defined?(customer)
 - disabled =  defined?(passive) && passive 
+- hide ||= []
+- hide = hide.to_a
 
 #contact_info
   /[form:customer]
@@ -37,7 +39,7 @@
       %label{:for=>:customer_eve_phone} Alternate phone
       = f.text_field :eve_phone, {:size => 16, :max_length => 16, :readonly => disabled}
       %br/
-      - unless (defined?(hide_opt_out))
+      - unless hide.include?(:opt_out)
         %label US Mail preferences
         = f.check_box :blacklist
         %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
@@ -54,7 +56,7 @@
         %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
         %br
 
-    - unless disabled || defined?(hide_birthday)
+    - unless disabled || hide.include?(:birthday)
       %label{:for => :customer_birthday} Birthday (optional)
       = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]
 

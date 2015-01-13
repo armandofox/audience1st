@@ -1,7 +1,4 @@
 = render :partial => 'store/check_javascript'
-%script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1/'}
-= javascript_include_tag 'stripe'
-= javascript_include_tag 'swipe'
 :javascript
   function whenReady() { checkForStripe('_stripe_submit'); }
   jQuery(document).ready(whenReady);

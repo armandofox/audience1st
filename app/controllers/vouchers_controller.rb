@@ -241,6 +241,8 @@ class VouchersController < ApplicationController
     redirect_to :controller => 'customers', :action => 'welcome'
   end
 
+  private
+
   def owns_voucher_or_is_boxoffice
     return true if is_walkup    # or higher
     return true if (params[:id] &&
@@ -250,8 +252,6 @@ class VouchersController < ApplicationController
     redirect_to logout_path
     return false
   end
-
-  private
 
   def try_again(msg)
     flash[:notice] = msg

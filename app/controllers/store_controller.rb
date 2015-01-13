@@ -49,7 +49,14 @@ class StoreController < ApplicationController
     end
   end
 
+  def donate_to_fund
+    @account_code = AccountCode.find_by_id(params[:fund]) ||
+      AccountCode.find_by_code(params[:account_code]) ||
+      AccountCode.default_account_code
+  end
+  
   def donate
+    @gCheckoutInProgress = nil                 # even if order in progress, going to donation page cancels it
     @customer = if @gNobodyReallyLoggedIn then Customer.new else @gCustomer end
   end
 
@@ -257,7 +264,8 @@ class StoreController < ApplicationController
     redirect_target = 
       case params[:referer].to_s
       when 'subscribe' then {:action => :subscribe}
-      when 'donate' then {:action => :donate, :id => params[:account_code_id]}
+      when 'donate_to_fund' then {:action => :donate_to_fund, :id => params[:account_code_id]}
+      when 'donate' then {:action => :donate}
       else {:action => :index}
       end
     redirect_to(redirect_target, :alert => msg)

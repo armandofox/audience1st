@@ -5,15 +5,11 @@ class ShowsController < ApplicationController
                 :redirect_to => {:controller =>'customers',:action =>'welcome'})
   before_filter :has_at_least_one, :except => [:new, :create]
 
-  def index
-    redirect_to :action => :list
-  end
-
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => [ :destroy, :create, :update ],
          :redirect_to => { :action => :list }
 
-  def list
+  def index
     unless Show.find(:first)
       flash[:notice] = "There are no shows set up yet."
       redirect_to :action => 'new' and return

@@ -2,10 +2,6 @@ class OptionsController < ApplicationController
 
   before_filter :is_admin_filter
   
-  def index
-    redirect_to :action => 'edit'
-  end
-
   def edit
     @o = Option.first
   end

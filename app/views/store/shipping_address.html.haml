@@ -22,7 +22,7 @@
     - if @cart.include_donation?
       %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
-    = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient", :hide_opt_out => false}
+    = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient"}
     = gen_button '<< Go Back', :action => (@redirect_to || :index)
     to change or cancel order, or
     = submit_tag 'CONTINUE >>'

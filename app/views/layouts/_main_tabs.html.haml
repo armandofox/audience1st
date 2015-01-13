@@ -6,11 +6,11 @@
 %ul.nav= nav_tabs 'store_nav', tabs
 - if @gAdmin.is_staff
   - tabs =    |
-    [['Season', :shows, :list], |
-    ['Vouchers', :vouchertypes, :list], |
+    [['Season', :shows, :index], |
+    ['Vouchers', :vouchertypes, :index], |
     ['Reports', :reports, :index], |
     ['Box Office', :box_office, :walkup], |
-    ['Donations', :donations, :list]] |
+    ['Donations', :donations, :index]] |
   - if @gAdmin.is_boxoffice_manager
     - tabs << ['Admin', :options, :edit]
   %ul.nav= nav_tabs 'admin_nav', tabs
