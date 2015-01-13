@@ -142,7 +142,7 @@ class VouchersController < ApplicationController
       @voucher.save!
       flash[:notice] = "Reservation confirmed."
       if params[:email_confirmation] && @customer.valid_email_address?
-        email_confirmation(:confirm_reservation, @customer, the_showdate, 1, a)
+        email_confirmation(:confirm_reservation, @customer, the_showdate, 1, @voucher.id)
       end
     else
       flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.errors.full_messages.join(',')}"

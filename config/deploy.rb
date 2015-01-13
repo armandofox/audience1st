@@ -23,7 +23,7 @@ set :config, (:venue ? (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[
 
 set :debugging_ips, %w[199.116.74.100]
 
-set :application,     "vbo"
+set :application,     "audience1st"
 set :user,            "audienc"
 set :home,            "/home/#{user}"
 set :deploy_to,       "#{home}/rails/#{venue}"
@@ -34,7 +34,7 @@ role :app,            "#{host}"
 role :web,            "#{host}"
 role :db,             "#{host}", :primary => true
 
-set :repository, 'git@github.com:armandofox/vbo.git'
+set :repository, 'git@github.com:armandofox/audience1st.git'
 set :scm, :git
 set :deploy_via, :remote_cache
 set :branch, (variables[:branch] || 'master')
