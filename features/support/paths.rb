@@ -32,10 +32,10 @@ module NavigationHelpers
     when /the checkout page/i           then '/store/checkout'
     when /the order confirmation page/i then '/store/place_order'
       # reporting pages 
-    when /the donations page/i          then '/donations/list'
+    when /the donations page/i          then '/donations/'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
-    when /the vouchertypes page for the (\d+) season/ then "/vouchertypes/list?season=$1"
+    when /the vouchertypes page for the (\d+) season/ then "/vouchertypes/index?season=$1"
     when /the walkup sales page for (.*)$/
       @showdate = Showdate.find_by_thedate!(Time.parse($1))
       "/box_office/walkup/#{@showdate.id}"
@@ -59,17 +59,18 @@ module NavigationHelpers
     when /the show details page for "(.*)"/i
       @show = Show.find_by_name($1)
       @show.should_not be_nil
-      "/shows/edit/#{@show.id}"
+      "/shows/#{@show.id}/edit"
     when /the new showdate page for "(.*)"/i
       @show = Show.find_by_name($1)
       "/showdates/new?show_id=#{@show.id}"
 
     when /the donation landing page coded for fund (.*)/i
-      "/store/donate/#{AccountCode.find_by_code($1).try(:id)}"
-
+      "/store/donate_to_fund/#{AccountCode.find_by_code($1).id}"
+    when /the donation landing page coded for a nonexistent fund/i
+      '/store/donate_to_fund?account_code=9999999'
       # edit RESTful resource
 
-    when /the edit page for the "(.*)" vouchertype/ then "/vouchertypes/edit/#{Vouchertype.find_by_name($1).id}"
+    when /the edit page for the "(.*)" vouchertype/ then "/vouchertypes/#{Vouchertype.find_by_name($1).id}/edit"
 
       # create new RESTful resource (non-nested associations)
 

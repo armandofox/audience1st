@@ -1,10 +1,10 @@
 %h1
   Listing 
-  = h @things.length
+  = @things.length
   transactions totaling $
-  = h sprintf("%.02f",@things.inject(0) { |t,d| t + d.amount })
+  = sprintf("%.02f",@things.inject(0) { |t,d| t + d.amount })
 
-- form_tag(:action => 'list', :method => :get) do
+- form_tag({:action => 'index'}, {:method => :get}) do
   = render :partial => 'donation_search', :locals => {:params => @params}
   = submit_tag "Search"
   = submit_tag(@export_label) unless @things.empty?
@@ -25,7 +25,7 @@
       - @things.each do |t|
         - donation = t.kind_of?(Donation)
         %tr{:class => if donation then 'odd' else 'even' end}
-          %td= link_to t.customer.full_name, :action => 'list', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
+          %td= link_to t.customer.full_name, :action => 'index', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
           %td= link_to_order_containing t
           %td= t.sold_on.strftime '%D'
           %td.right= number_to_currency(t.amount)

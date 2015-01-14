@@ -19,7 +19,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/customers/change_password', :controller => 'customers', :action => 'change_password'
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password', :conditions => {:method => :get}
   map.connect '/customers/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
-  map.connect '/customers/list', :controller => 'customers', :action => 'list', :conditions => {:method => :get}
+  map.connect '/customers/list', :controller => 'customers', :action => 'index', :conditions => {:method => :get}
   map.connect '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates', :conditions => {:method => :get}
   map.connect '/customers/merge', :controller => 'customers', :action => 'merge', :conditions => {:method => :get}
   map.connect '/customers/finalize_merge', :controller => 'customers', :action => 'finalize_merge', :conditions => {:method => :post}
@@ -29,8 +29,8 @@ ActionController::Routing::Routes.draw do |map|
 
   # shows
   map.resources :shows
-
-  # vouchertypes
+  map.resources :showdates
+  map.resources :valid_vouchers
   map.resources :vouchertypes
   map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
 
@@ -52,7 +52,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/visits/list_by_prospector', :controller => 'visits', :action => 'list_by_prospector', :conditions => {:method => :get}
 
   # reports
-  %w(index do_report run_special_report advance_sales transaction_details_report accounting_report retail show_special_report unfulfilled_orders).each do |report_name|
+  map.connect '/reports', :controller => 'reports', :action => 'index'
+  %w(do_report run_special_report advance_sales transaction_details_report accounting_report retail show_special_report unfulfilled_orders).each do |report_name|
     map.connect "/reports/#{report_name}", :controller => 'reports', :action => report_name, :conditions => {:method => :get}
   end
   # reports that consume :id
@@ -66,13 +67,20 @@ ActionController::Routing::Routes.draw do |map|
 
   # customer-facing purchase pages
 
-  map.connect '/store/donate/:fund', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
+  %w(index special subscribe shipping_address checkout edit_billing_address show_changed showdate_changed).each do |action|
+    map.connect "/store/#{action}", :controller => 'store', :action => action, :conditions => {:method => :get}
+  end
+
+  %w(process_cart set_shipping_address place_order).each do |action|
+    map.connect "/store/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post}
+  end
+  map.connect '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
   map.connect '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
 
   # donations management
 
   map.connect '/donations', :controller => 'donations', :action => 'index', :conditions => {:method => :get}
-  map.connect '/donations/mark_ltr_sent',  :controller => 'donations', :action => 'index', :conditions => {:method => :post}
+  map.connect '/donations/mark_ltr_sent',  :controller => 'donations', :action => 'mark_ltr_sent', :conditions => {:method => :get}
   
   # config options
 
@@ -95,6 +103,7 @@ ActionController::Routing::Routes.draw do |map|
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
   map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question',:conditions => {:method => :get}
+  map.connect '/sessions/create_from_secret_question', :controller => 'sessions', :action => 'create_from_secret_question', :conditions => {:method => :post}
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
   map.store '/store', :controller => 'store', :action => 'index', :conditions => {:method => :get}
@@ -108,9 +117,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
   map.connect '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
 
-  # Install the default route as the lowest priority.
-  #map.connect ':controller/:action/:id'
-  map.connect '*anything', :controller => 'customers', :action => 'welcome'
+  #map.connect '*anything', :controller => 'customers', :action => 'welcome'
   map.root :controller => 'customers', :action => 'welcome'
  
 end

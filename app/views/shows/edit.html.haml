@@ -5,7 +5,7 @@
 - form_tag :action => 'update', :id => @show  do
   = render :partial => 'form'
   = submit_tag 'Save Changes'
-  = gen_button 'Back to List of Shows', :action => 'list', :season => @show.season
+  = gen_button 'Back to List of Shows', :action => 'index', :season => @show.season
 
 %h2 Performances
 
@@ -14,7 +14,7 @@
   = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
   = gen_button 'Hide all details', :action => 'edit', :id => @show
   = gen_button 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true
-  = gen_button 'Back to List of Shows', :action => 'list', :season => @show.season
+  = gen_button 'Back to List of Shows', :action => 'index', :season => @show.season
 
 %table.hilite
   %thead
@@ -31,5 +31,5 @@
   = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
   = gen_button 'Hide all details', :action => 'edit', :id => @show
   = gen_button 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true
-  = gen_button 'Back to List of Shows', :action => 'list', :season => @show.season
+  = gen_button 'Back to List of Shows', :action => 'index', :season => @show.season
 

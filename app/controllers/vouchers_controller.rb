@@ -17,14 +17,14 @@ class VouchersController < ApplicationController
     @page_title = "Add Comps"
     unless (@customer = @gCustomer)
       flash[:notice] = "Must select a customer to add comps"
-      redirect_to :controller => 'customers', :action => 'list'
+      redirect_to :controller => 'customers', :action => 'index'
       return
     end
     this_season = Time.this_season
     @vouchers = (
       Vouchertype.comp_vouchertypes(this_season + 1) +
       Vouchertype.comp_vouchertypes(this_season)).delete_if(&:external?)
-    redirect_to({:controller => 'vouchertypes', :action => 'list'}, :notice => 'You must define some voucher types first.') and return if @vouchers.empty?
+    redirect_to({:controller => 'vouchertypes', :action => 'index'}, :notice => 'You must define some voucher types first.') and return if @vouchers.empty?
     @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
 

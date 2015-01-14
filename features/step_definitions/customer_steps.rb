@@ -14,8 +14,8 @@ Given /^I am not logged in$/ do
 end
 
 Given /^I am logged in as (.*)?$/ do |who|
-  visit '/logout'
-  visit '/sessions/new'
+  visit logout_path
+  visit login_path
   steps %Q{When I login as #{who}}
   page.should have_content("Welcome, #{@customer.first_name}")
   page.should have_css('#customer_quick_search') if @is_admin

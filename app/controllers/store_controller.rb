@@ -50,9 +50,12 @@ class StoreController < ApplicationController
   end
 
   def donate_to_fund
-    @account_code = AccountCode.find_by_id(params[:fund]) ||
-      AccountCode.find_by_code(params[:account_code]) ||
-      AccountCode.default_account_code
+    @account_code = AccountCode.find_by_id(params[:id])
+    unless @account_code
+      @account_code = AccountCode.find_by_code(params[:account_code]) ||
+        AccountCode.default_account_code
+      redirect_to :action => :donate_to_fund, :id => @account_code
+    end
   end
   
   def donate

@@ -1,10 +1,6 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
 
-  def index
-    redirect_to :controller => 'customers', :action => 'welcome'
-  end
-
   # render new.rhtml
   def new
     redirect_to(:controller => 'customers', :action => 'welcome') and return if logged_in?

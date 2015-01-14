@@ -85,7 +85,7 @@ class Mailer < ActionMailer::Base
     # BUG: url_for doesn't work from script/runner since it doesn't
     #  know the hostname for the URL....removed for now
     #urls_for_visits = visits.map do |v|
-    #url_for(:controller => 'visits', :action=>'list', :id=>v.customer)
+    #url_for(:controller => 'visits', :action=>'index', :id=>v.customer)
     #end
     @recipients = who
     @from = @@from_addr # bug

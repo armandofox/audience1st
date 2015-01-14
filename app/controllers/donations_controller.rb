@@ -7,7 +7,7 @@ class DonationsController < ApplicationController
       # first time visiting page: don't do "null search"
       @things = []
       @params = {}
-      render :action => 'list' and return
+      render :action => 'index' and return
     end
     conds = {}
     if (params[:use_cid] &&

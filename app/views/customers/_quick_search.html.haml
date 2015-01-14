@@ -8,7 +8,7 @@
   - form_tag({:controller => 'customers',:action => 'switch_to'}, {:method => :get, :id => 'quick_search'}) do
     - if controller.controller_name =~ /store|customers/i
       = hidden_field_tag 'target_controller', controller.controller_name
-      = hidden_field_tag 'target_action', (controller.action_name == 'list' ? 'welcome' : controller.action_name)
+      = hidden_field_tag 'target_action', (controller.action_name == 'index' ? 'welcome' : controller.action_name)
     - else
       = hidden_field_tag 'target_controller', 'customers'
       = hidden_field_tag 'target_action', 'welcome'
@@ -16,11 +16,11 @@
     = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}
     = hidden_field_tag 'id'
     = submit_tag 'Go'
-  - form_tag({:controller => 'customers',:action =>'list'},{:method =>:get, :id => 'search_on_any_field'}) do
+  - form_tag({:controller => 'customers',:action =>'index'},{:method =>:get, :id => 'search_on_any_field'}) do
     Search any field:
     = text_field_tag 'customers_filter', @customers_filter, :size => 12
     = submit_tag 'Go'
-    = submit_tag 'List All', :onclick => "window.location = '#{url_for :controller => :customers, :action => :list}'"
+    = submit_tag 'List All', :onclick => "window.location = '#{url_for :controller => :customers, :action => :index}'"
   - form_tag({:controller =>'customers',:action =>'new'},{:method=>:get}) do
     = submit_tag 'Add New...'
 

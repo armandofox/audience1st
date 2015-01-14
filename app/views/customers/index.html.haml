@@ -1,6 +1,6 @@
 #customer_list_header
   Showing
-  = radio_button_tag 'show', 'all', (@controller.action_name == 'list'), :onclick => "window.location='#{url_for(:action => :list, :offset => @offset, :limit => @limit)}'"
+  = radio_button_tag 'show', 'all', (@controller.action_name == 'index'), :onclick => "window.location='#{url_for(:action => :index, :offset => @offset, :limit => @limit)}'"
   All
   = radio_button_tag 'show', 'dup', (@controller.action_name == 'list_duplicates'), :onclick => "window.location='#{url_for(:action => :list_duplicates, :offset => @offset, :limit => @limit)}'"
   Dups

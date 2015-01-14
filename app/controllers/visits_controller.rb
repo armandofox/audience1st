@@ -1,7 +1,7 @@
 class VisitsController < ApplicationController
 
   before_filter :is_logged_in   # ensures session[:cid] is valid
-  #before_filter :get_customer_ids, :only => [:create,:update], :redirect_to => 'list', :add_to_flash => 'Must assign followup to a valid user.'
+  #before_filter :get_customer_ids, :only => [:create,:update], :redirect_to => 'index', :add_to_flash => 'Must assign followup to a valid user.'
   
   before_filter(:is_staff_filter,
                 :redirect_to => {:controller =>'customers', :action =>'login'},
@@ -27,14 +27,14 @@ class VisitsController < ApplicationController
     @customer = Customer.find_by_id(@visit.customer_id)
     unless @customer.kind_of?(Customer)
       flash[:notice] = "You must go to a customer's account page before adding a visit"
-      redirect_to :action => 'list'
+      redirect_to :action => 'index'
       return
     end
     @customer.visits << @visit
     if @customer.save
       flash[:notice] = "Visit information saved"
     end
-    redirect_to :action => 'list', :id => @customer
+    redirect_to :action => 'index', :id => @customer
   end
 
   def update
@@ -48,7 +48,7 @@ class VisitsController < ApplicationController
     rescue
       flash[:notice] = "Errors updating the visit information; see below."
     end
-    redirect_to :action => 'list', :id => @visit.customer
+    redirect_to :action => 'index', :id => @visit.customer
   end
 
   private

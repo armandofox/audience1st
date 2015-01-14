@@ -5,17 +5,14 @@ class ShowdatesController < ApplicationController
 
 
   def index
-    redirect_to :controller => 'shows', :action => 'list', :season => params[:season]
+    redirect_to :controller => 'shows', :action => 'index', :season => params[:season]
   end
 
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => %w[create update destroy], :redirect_to => { :action => :list }
-
-  def list
+  def index
     if defined? params[:show_id]
       redirect_to :controller => 'shows', :action => 'edit', :id => params[:show_id]
     else
-      redirect_to :controller => 'shows', :action => 'list'
+      redirect_to :controller => 'shows', :action => 'index'
     end
   end
 

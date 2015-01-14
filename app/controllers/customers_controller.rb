@@ -21,7 +21,7 @@ class CustomersController < ApplicationController
   # only superadmin can destory customers, because that wreaks havoc
   before_filter(:is_admin_filter,
     :only => ['destroy'],
-    :redirect_to => {:action => :list},
+    :redirect_to => {:action => :index},
     :add_flash => {:notice => 'Only super-admin can delete customer; use Merge instead'})
 
   # prevent complaints on AJAX autocompletion
@@ -219,11 +219,11 @@ class CustomersController < ApplicationController
     @previous = [@offset - @limit, 0].max
     @next = @offset + [@limit,@count].min
     @title = "Suspected Duplicates #{@offset+1} - #{@offset+@count}"
-    render :action => 'list'
+    render :action => 'index'
   end
 
   def merge
-    redirect_to({:action => :list}, :notice => 'Merging is temporarily disabled. It will be back soon.') and return
+    redirect_to({:action => :index}, :notice => 'Merging is temporarily disabled. It will be back soon.') and return
     if !params[:merge] || params[:merge].keys.length < 1
       flash[:notice] = 'You have not selected any customers.'
       redirect_to_last_list and return
@@ -286,7 +286,7 @@ class CustomersController < ApplicationController
       end
     else
       flash[:notice] = "No such customer: id# #{params[:id]}"
-      redirect_to :controller => 'customers', :action => 'list'
+      redirect_to :controller => 'customers', :action => 'index'
     end
   end
 
@@ -379,7 +379,7 @@ class CustomersController < ApplicationController
       end
     end
     session[:cid] = @gAdmin.id
-    redirect_to :action => 'list'
+    redirect_to :action => 'index'
   end
 
 
@@ -434,7 +434,7 @@ class CustomersController < ApplicationController
   end
 
   def redirect_to_last_list
-    redirect_to :action => (params[:action_name] || 'list'), :customers_filter => params[:customers_filter], :offset => params[:offset]
+    redirect_to :action => (params[:action_name] || 'index'), :customers_filter => params[:customers_filter], :offset => params[:offset]
   end
 
   def do_automatic_merge(id0,id1)

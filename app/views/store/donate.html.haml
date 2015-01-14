@@ -4,7 +4,7 @@
     %p.explanation= sanitize(Option.quick_donation_explanation)
 
     - form_tag({:action => 'quick_donation'}, {:id => '_stripe_payment_form'}) do
-
+      = hidden_field_tag 'referer', 'donate'
       = render :partial => 'customers/form', :locals => {:customer => @customer, :hide => [:opt_out, :birthday]}
 
       %fieldset#donation_info

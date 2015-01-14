@@ -3,10 +3,6 @@ class ValidVouchersController < ApplicationController
   before_filter :is_boxoffice_filter
   before_filter(:is_boxoffice_manager_filter,:except => :show)
 
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => [ :create, :update ],
-  :redirect_to => { :controller => :shows, :action => :list }
-
   def show
     @valid_voucher = ValidVoucher.find(params[:id])
     @showdate = @valid_voucher.showdate

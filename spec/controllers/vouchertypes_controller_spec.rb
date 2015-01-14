@@ -12,14 +12,14 @@ describe VouchertypesController do
     it "should fail if logged-in user is not super-admin" do
       controller.stub!(:is_admin).and_return(false)
       post :destroy, :id => 1
-      response.should redirect_to(:action => 'list', :season => '2012')
+      response.should redirect_to(:action => 'index', :season => '2012')
       flash[:notice].should =~ /superadmin/i
     end
     it "should fail if vouchertype has any associated vouchers" do
       controller.stub!(:is_admin).and_return(true)
       @vtype.stub_chain(:vouchers, :count).and_return(1)
       post :destroy, :id => 1
-      response.should redirect_to(:action => 'list', :season => '2012')
+      response.should redirect_to(:action => 'index', :season => '2012')
       flash[:notice].should =~ /1 issued voucher/
     end
     it "should succeed if vouchertype has no associated vouchers or vouchertypes" do

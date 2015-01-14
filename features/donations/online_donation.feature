@@ -28,5 +28,5 @@ Scenario: not filling in a donation amount should return you to donation page
   Then I should be on the donation landing page coded for fund 7575
 
 Scenario: landing on donation page with invalid account code
-  When I visit the donation landing page coded for fund 1234
+  When I visit the donation landing page coded for a nonexistent fund
   Then I should see "Donation to General Fund"
