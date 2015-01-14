@@ -58,7 +58,6 @@ module NavigationHelpers
 
     when /the show details page for "(.*)"/i
       @show = Show.find_by_name($1)
-      @show.should_not be_nil
       "/shows/#{@show.id}/edit"
     when /the new showdate page for "(.*)"/i
       @show = Show.find_by_name($1)

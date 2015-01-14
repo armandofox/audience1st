@@ -5,10 +5,6 @@ class ShowsController < ApplicationController
                 :redirect_to => {:controller =>'customers',:action =>'welcome'})
   before_filter :has_at_least_one, :except => [:new, :create]
 
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => [ :destroy, :create, :update ],
-         :redirect_to => { :action => :index }
-
   def index
     unless Show.find(:first)
       flash[:notice] = "There are no shows set up yet."
@@ -49,11 +45,12 @@ class ShowsController < ApplicationController
 
   def update
     @show = Show.find(params[:id])
-    @showdates = @show.showdates.sort_by { |s| s.thedate }
+    @showdates = @show.showdates
     if @show.update_attributes(params[:show])
       flash[:notice] = 'Show details successfully updated.'
-      redirect_to :action => 'edit', :id => @show
+      redirect_to edit_show_path(@show)
     else
+      flash[:alert] = "Show details were not updated: " + @show.errors.full_messages.join(', ')
       render :action => 'edit', :id => @show
     end
   end

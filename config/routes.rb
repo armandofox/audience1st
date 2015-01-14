@@ -28,7 +28,7 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   # shows
-  map.resources :shows
+  map.resources :shows, :except => [:show]
   map.resources :showdates, :except => [:index]
   map.resources :valid_vouchers, :except => [:index]
   map.resources :vouchertypes
@@ -41,7 +41,7 @@ ActionController::Routing::Routes.draw do |map|
   # with :id
   map.connect '/vouchers/reserve/:id', :controller => 'vouchers', :action => 'reserve', :conditions => {:method => :get}
   %w(process_addvoucher update_comment confirm_multiple confirm_reservation cancel_prepaid cancel_multiple cancel_reservation).each do |action|
-    map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => 'reserve', :conditions => {:method => :post}
+    map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => action, :conditions => {:method => :post}
   end
 
   # database txns

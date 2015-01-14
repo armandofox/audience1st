@@ -10,9 +10,7 @@
     - p = showdate.percent_max_allowed_sales
     %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
   %td{:width=>"50%"}
-    = link_to 'Edit', {:controller => 'showdates', :action => 'edit', :id => showdate.id}
-    = "|"
-    = link_to 'Box Office', {:controller => 'box_office', :id => showdate }
+    = link_to 'Edit', edit_showdate_path(showdate)
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate), showdate.printable_name
     = "|"
