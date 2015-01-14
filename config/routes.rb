@@ -2,10 +2,10 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :bulk_downloads
   map.resources :account_codes
   map.resources :imports
+  map.connect '/imports/download_invalid/:id', :controller => 'imports', :action => 'download_invalid'
+  map.connect '/imports/help', :controller => 'imports', :action => 'help'
   map.resources :labels
   
-  # just enough RESTful routes for restful_authentication to work
-  # map.resources :customers
   map.welcome  '/customers/welcome', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   map.connect '/customers/:id/show', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   %w(new temporarily_disable_admin reenable_admin auto_complete_for_customer_full_name).each do |action|
@@ -17,7 +17,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/customers/switch_to/:id', :controller => 'customers', :action => 'switch_to', :conditions => {:method => :get}
   map.connect '/customers/update/:id', :controller => 'customers', :action => 'update', :conditions => {:method => :post}
   map.connect '/customers/change_password', :controller => 'customers', :action => 'change_password'
-  map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password', :conditions => {:method => :get}
+  map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
   map.connect '/customers/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
   map.connect '/customers/list', :controller => 'customers', :action => 'index', :conditions => {:method => :get}
   map.connect '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates', :conditions => {:method => :get}
@@ -29,8 +29,8 @@ ActionController::Routing::Routes.draw do |map|
 
   # shows
   map.resources :shows
-  map.resources :showdates
-  map.resources :valid_vouchers
+  map.resources :showdates, :except => [:index]
+  map.resources :valid_vouchers, :except => [:index]
   map.resources :vouchertypes
   map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
 
@@ -74,7 +74,7 @@ ActionController::Routing::Routes.draw do |map|
   %w(process_cart set_shipping_address place_order).each do |action|
     map.connect "/store/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post}
   end
-  map.connect '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
+  map.donate_to_fund '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
   map.connect '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
 
   # donations management
@@ -85,14 +85,17 @@ ActionController::Routing::Routes.draw do |map|
   # config options
 
   map.connect '/options', :controller => 'options', :action => 'edit', :conditions => {:method => :get}
-  map.connect '/options', :controller => 'options', :action => 'update', :conditions => {:method => :post}
+  map.connect '/options/update', :controller => 'options', :action => 'update', :conditions => {:method => :put}
 
   # walkup sales
 
   map.connect '/box_office/walkup/:id', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
   map.connect '/box_office/walkup', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
-  %w(checkin door_list walkup walkup_report change_showdate).each do |action|
+  %w(change_showdate).each do |action|
     map.connect "/box_office/#{action}", :controller => 'box_office', :action => action, :conditions => {:method => :get}
+  end
+  %w(checkin walkup door_list walkup_report).each do |action|
+    map.connect "/box_office/#{action}/:id", :controller => 'box_office', :action => action, :conditions => {:method => :get}    
   end
   %w(do_walkup_sale modify_walkup_vouchers).each do |action|
     map.connect "/box_office/#{action}", :controller => 'box_office', :action => action, :conditions => {:method => :post}

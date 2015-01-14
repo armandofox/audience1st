@@ -5,9 +5,6 @@ class AccountCodesController < ApplicationController
   # GET /account_codes
   # GET /account_codes.xml
   def index
-    list
-  end
-  def list
     @account_codes = AccountCode.all
 
     respond_to do |format|

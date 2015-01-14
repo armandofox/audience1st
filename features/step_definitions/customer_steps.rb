@@ -64,8 +64,8 @@ Then /^I should be able to login with username "(.*)" and that password$/ do |us
 end
 
 Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |username,password|
-  visit '/logout'
-  visit '/sessions/new'
+  visit logout_path
+  visit login_path
   customer = Customer.find_by_email(username)
   fill_in 'email', :with => username
   fill_in 'password', :with => password

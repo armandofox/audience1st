@@ -35,7 +35,7 @@ module NavigationHelpers
     when /the donations page/i          then '/donations/'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
-    when /the vouchertypes page for the (\d+) season/ then "/vouchertypes/index?season=$1"
+    when /the vouchertypes page for the (\d+) season/ then "/vouchertypes?season=$1"
     when /the walkup sales page for (.*)$/
       @showdate = Showdate.find_by_thedate!(Time.parse($1))
       "/box_office/walkup/#{@showdate.id}"
@@ -50,7 +50,7 @@ module NavigationHelpers
     when /the admin:(.*) page/i
       page = $1
       case page
-      when /settings/i    then '/options/edit' 
+      when /settings/i    then '/options' 
       when /bulk import/i then '/bulk_downloads/new'
       when /import/i      then '/imports/new'
       else                raise "No mapping for admin:#{page}"

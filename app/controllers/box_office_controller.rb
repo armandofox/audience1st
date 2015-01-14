@@ -36,10 +36,6 @@ class BoxOfficeController < ApplicationController
 
   public
 
-  def index
-    redirect_to :action => :walkup, :id => params[:id]
-  end
-
   def change_showdate
     unless ((sd = params[:id].to_i) &&
             (showdate = Showdate.find_by_id(sd)))
@@ -155,7 +151,7 @@ class BoxOfficeController < ApplicationController
   def modify_walkup_vouchers
     if params[:vouchers].blank?
       flash[:alert] = "You didn't select any vouchers to remove or transfer."
-      redirect_to(:action => :index) and return
+      redirect_to(:action => :walkup) and return
     end
     voucher_ids = params[:vouchers]
     action = params[:commit].to_s
@@ -177,7 +173,7 @@ class BoxOfficeController < ApplicationController
       flash[:alert] = "Error (NO changes were made): #{e.message}"
       RAILS_DEFAULT_LOGGER.warn(e.backtrace)
     end
-    redirect_to :action => :index, :id => showdate_id
+    redirect_to :action => :walkup, :id => showdate_id
   end
 
 end

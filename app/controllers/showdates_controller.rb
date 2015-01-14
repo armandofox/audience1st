@@ -3,19 +3,6 @@ class ShowdatesController < ApplicationController
   before_filter :is_boxoffice_filter
   before_filter :is_boxoffice_manager_filter, :only => ['new', 'create', 'destroy', 'edit', 'update']
 
-
-  def index
-    redirect_to :controller => 'shows', :action => 'index', :season => params[:season]
-  end
-
-  def index
-    if defined? params[:show_id]
-      redirect_to :controller => 'shows', :action => 'edit', :id => params[:show_id]
-    else
-      redirect_to :controller => 'shows', :action => 'index'
-    end
-  end
-
   def create
     @show = Show.find(params[:show_id])
     start_date,end_date = Time.range_from_params(params[:start], params[:end])

@@ -11,7 +11,7 @@
       %td= link_to account_code.name, edit_account_code_path(account_code)
       %td= h(account_code.description)
       %td= h(account_code.code)
-      %td= purchase_link_popup'[Link]', donation_page_url(:fund => account_code.id), "donations to #{account_code.name_with_code}"
+      %td= purchase_link_popup '[Link]', donate_to_fund_path(account_code.id), "donations to #{account_code.name_with_code}"
 %br
 
 = gen_button 'Add New Account Code', new_account_code_path 

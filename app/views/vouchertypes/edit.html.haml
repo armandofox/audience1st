@@ -1,6 +1,6 @@
 %fieldset#edit_vouchertype
   %legend Make changes to "#{@vouchertype.name}"
-  - form_tag :action => 'update', :id => @vouchertype do
+  - form_tag({ :action => 'update', :id => @vouchertype}, {:method => :put}) do
     = render :partial => 'form' 
     = submit_tag 'Save Changes' 
     = gen_button 'Cancel', :action => 'index'
