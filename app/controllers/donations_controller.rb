@@ -19,7 +19,7 @@ class DonationsController < ApplicationController
       @full_name = c.full_name
       @page_title = "Donation history: #{@full_name}"
       flash[:notice] = "Search restricted to customer #{@full_name}"
-      conds.merge!("customer_id = ?" => cid)
+      conds.merge!("items.customer_id = ?" => cid)
     else
       @page_title = "Donation history"
     end
