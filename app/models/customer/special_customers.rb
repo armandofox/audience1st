@@ -1,5 +1,12 @@
 class Customer < ActiveRecord::Base
 
+  ROLES = {
+    :walkup => -1,
+    :boxoffice_daemon => -2,
+    :anonymous => -3,
+    :generic => -4
+  }
+
   public
 
   # The "customer" to whom all walkup tickets are sold
@@ -35,57 +42,8 @@ class Customer < ActiveRecord::Base
 
   def deletable? ; !self.special_customer? ; end
 
-
-  #  Special customers that must exist, cannot be deleted, and are created
-  # on demand if they don't exist:
-
-  @@special_customers = {
-    :walkup => {
-      :role => -1, 
-      :first_name => 'WALKUP',
-      :last_name => 'CUSTOMER',
-      :blacklist => true,
-      :e_blacklist => true
-    },
-    :generic => {
-      :role => -4,
-      :first_name => 'GENERIC',
-      :last_name => 'CUSTOMER',
-      :blacklist => true,
-      :e_blacklist => true,
-    },
-    :boxoffice_daemon => {
-      :role => -2,
-      :first_name => 'BoxOffice',
-      :last_name => 'Daemon',
-      :blacklist => true,
-      :e_blacklist => true
-    },
-    :anonymous => {
-      :role => -3,
-      :first_name => 'ANONYMOUS',
-      :last_name => 'CUSTOMER',
-      :blacklist => true,
-      :e_blacklist => true
-    }
-  }
-
-  # helper method used to create 'special' customers and immediately set
-  # the Role attribute (since that attribute is protected and can't be
-  # set directly in the create call)
-
-  def self.create_with_role!(which)
-    attrs = @@special_customers[which]
-    c = Customer.new(attrs)
-    c.role = attrs[:role]
-    c.created_by_admin = true
-    c.save!
-    c
-  end
-
   def self.special_customer(which)
-    Customer.find_by_role(@@special_customers[which][:role]) ||
-      Customer.create_with_role!(which)
+    Customer.find_by_role!(ROLES[which])
   end
 
 end

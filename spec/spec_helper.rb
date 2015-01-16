@@ -27,6 +27,12 @@ Spec::Runner.configure do |config|
   config.include AuthenticatedTestHelper
   config.include CustomMatchers
   config.include FactoryGirl::Syntax::Methods
+  config.before(:each) do
+    # seed the DB with constants. Must be done before each test, since
+    # use of Fixtures wipes DB for each test.
+    load File.join(RAILS_ROOT, 'db', 'seeds.rb')
+  end
+
   # == Fixtures
   #
   # You can declare fixtures for each example_group like this:
