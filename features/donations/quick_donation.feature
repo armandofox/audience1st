@@ -16,7 +16,7 @@ Scenario: donor not logged in but has matching account
   When I fill in "Donation amount" with "15"
   And I press "Charge Donation to Credit Card"
   Then I should see "You have paid a total of $15.00 by Credit card"
-  
+  Then debugger
   And customer "Tom Foolery" should have a donation of $15.00 to "General Fund"
   
 
