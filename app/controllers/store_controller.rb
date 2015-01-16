@@ -60,38 +60,40 @@ class StoreController < ApplicationController
   
   def donate
     @gCheckoutInProgress = nil                 # even if order in progress, going to donation page cancels it
-    @customer = if @gNobodyReallyLoggedIn then Customer.new else @gCustomer end
+    @customer =  @gCustomer || Customer.new
   end
 
   def process_quick_donation
+    @gCheckoutInProgress = nil
     # If donor doesn't exist, create them and marked created-by-admin
     # If donor exists, make that the order's customer.
-    customer_info = Customer.new params[:customer]
-    @customer = nil
-    if (found_customer = Customer.find_unique(customer_info)) &&
-        found_customer.valid_as_purchaser?
-      # use this customer
-      @customer = found_customer
-    elsif customer_info.valid_as_purchaser?
-      # create this customer
-      @customer = Customer.find_or_create!(customer_info)
-    else
-      # invalid info given
-      @customer = customer_info
-      flash[:alert] = "Incomplete or invalid donor information: " +
-        @customer.errors.full_messages.join(', ')
-      render :action => 'donate'
-      return
-    end
     # Create an order consisting of just a donation.
-    donation = Donation.from_amount_and_account_code_id(params[:donation],nil)
-    unless donation.valid?
-      flash[:alert] = donation.errors.full_messages.join(', ')
-      render :action => 'donate'
-      return
+    errors = ''
+    @amount = params[:donation].to_i
+    unless @amount > 0
+      flash[:alert] = 'Donation amount must be provided'
+      render(:action => 'donate') and return
     end
-
-    # Either way, redirect to place the order, forwarding the credit_card_token.
+    @customer = Customer.for_donation(params[:customer])
+    unless @customer.valid_as_purchaser?
+      flash[:alert] = "Incomplete or invalid donor information: " +
+      render(:action => 'donate') and return
+    end
+    # Given valid donation, customer, and charge token, create & place credit card order.
+    @order = Order.new_from_donation(@amount, AccountCode.default_account_code, @customer)
+    @order.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
+    @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
+    @order.processed_by = @customer
+    @order.comments = params[:comments].to_s
+    unless @order.ready_for_purchase?
+      flash[:alert] = @order.errors.full_messages.join(', ')
+      render(:action => 'donate') and return
+    end
+    if finalize_order(@order)
+      render :action => 'place_order'
+    else
+      render :action => 'donate'
+    end
   end
 
   def process_cart
@@ -192,40 +194,30 @@ class StoreController < ApplicationController
   end
 
   def place_order
-    @cart = find_cart
+    @order = find_cart
     @is_admin = current_admin.is_boxoffice
     # what payment type?
-    @cart.purchasemethod,@cart.purchase_args = purchasemethod_from_params
-    @recipient = @cart.purchaser
-    if ! @cart.gift?
+    @order.purchasemethod,@order.purchase_args = purchasemethod_from_params
+    @recipient = @order.purchaser
+    if ! @order.gift?
       # record 'who will pickup' field if necessary
       @cart.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
-    unless @cart.ready_for_purchase?
-      flash[:alert] = @cart.errors.full_messages.join(', ')
+    unless @order.ready_for_purchase?
+      flash[:alert] = @order.errors.full_messages.join(', ')
       redirect_to_checkout
       return
     end
 
-    begin
-      @cart.finalize!
-      logger.error("SUCCESS purchase #{@cart.customer}; Cart summary: #{@cart.summary}")
-      email_confirmation(:confirm_order, @cart.purchaser, @cart) if params[:email_confirmation]
-      @payment = @cart.purchasemethod.purchase_medium
+    if finalize_order(@order)
       reset_shopping
       set_return_to
-    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
-      flash[:alert] = (@cart.errors.full_messages + [e.message]).join(', ') 
-      logger.error("FAILED purchase for #{@cart.customer}: #{@cart.errors.inspect}") rescue nil
+    else
       redirect_to_checkout
-      return
-    rescue Exception => e
-      logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
-      redirect_to :action => :index, :alert => "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
-      return
     end
 
   end
+
 
   # helpers for the AJAX handlers. These should probably be moved
   # to the respective models for shows and showdates, or called as
@@ -242,6 +234,22 @@ class StoreController < ApplicationController
   end
 
   private
+
+  def finalize_order(order)
+    begin
+      order.finalize!
+      logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
+      email_confirmation(:confirm_order, order.purchaser, order) if params[:email_confirmation]
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
+      flash[:alert] = (order.errors.full_messages + [e.message]).join(', ') 
+      logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
+    rescue Exception => e
+      logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
+      flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
+    end
+    flash[:alert].blank?
+  end
+
 
   def redeeming_promo_code
     case params[:commit]

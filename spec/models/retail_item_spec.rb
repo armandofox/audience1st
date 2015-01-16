@@ -3,7 +3,7 @@ require 'spec_helper'
 describe RetailItem do
   before :each do
     @account1 = AccountCode.default_account_code
-    @account2 = AccountCode.create_by_code("1234", "Fake")
+    @account2 = AccountCode.create!(:code => "1234", :name => "Fake")
   end
   describe 'new' do
     subject { RetailItem.from_amount_description_and_account_code_id(amount,description,id) }

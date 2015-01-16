@@ -3,15 +3,15 @@
 .notice
   %p 
     You have paid a total of 
-    %span.strong= number_to_currency @cart.total_price
+    %span.strong= number_to_currency @order.total_price
     by 
-    %span.strong= humanize(@payment)
+    %span.strong= humanize(@order.purchase_medium)
     for order number
-    %span.strong= @cart.id
+    %span.strong= @order.id
   %p.strong Please print this confirmation for your records:
-  %pre= @cart.summary
+  %pre= @order.summary
 
-  - if @cart.gift?
+  - if @order.gift?
     #gift
       %fieldset#gift_recipient
         %legend This order is a gift for:
@@ -24,9 +24,9 @@
 
   = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
-  - unless @cart.comments.blank?
+  - unless @order.comments.blank?
     #order_notes
-      %p <strong>Order notes:</strong> #{@cart.comments}
+      %p <strong>Order notes:</strong> #{@order.comments}
 
 %p.center
   - if @is_admin

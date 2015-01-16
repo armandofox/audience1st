@@ -84,7 +84,6 @@ class ApplicationController < ActionController::Base
     true
   end
 
-
   # a generic filter that can be used by any RESTful controller that checks
   # there's at least one instance of the model in the DB
 

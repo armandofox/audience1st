@@ -10,20 +10,12 @@ class AccountCode < ActiveRecord::Base
     !name.blank? || !code.blank?
   end
 
-  def self.create_by_code(code,name=nil)
-    name ||= "Account code #{code}"
-    AccountCode.create(:name => name, :code => code)
-  end
-  
   def self.default_account_code_id
     self.default_account_code.id
   end
   
   def self.default_account_code
-    AccountCode.find(:first) ||
-      AccountCode.create!(:name => "General Fund",
-      :code => '0000',
-      :description => "General Fund")
+    AccountCode.first
   end
 
   # convenience accessors

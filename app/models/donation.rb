@@ -8,7 +8,6 @@ class Donation < Item
       AccountCode.default_account_code
     else
       AccountCode.find_by_code(code) ||
-        AccountCode.create_by_code(code, "Default donation account") ||
         AccountCode.default_account_code
     end
   end

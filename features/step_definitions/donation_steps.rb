@@ -4,7 +4,7 @@ def find_or_create_account_code(full_name)
   else
     code,name = '0000', $2
   end
-  AccountCode.find_by_code(code) || AccountCode.create_by_code(code, name)
+  AccountCode.find_by_code(code) || AccountCode.create!(:name => name, :code => code)
 end
 
 Given /^the following donations:$/ do |donations|

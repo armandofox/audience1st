@@ -4,6 +4,7 @@ class Audience1stSeeder
 
   def self.seed_all
     self.create_special_customers
+    self.create_default_account_code
   end
 
   #  Special customers that must exist and cannot be deleted
@@ -50,6 +51,12 @@ class Audience1stSeeder
     end
   end
     
+  def self.create_default_account_code
+    unless AccountCode.find(:first)
+      AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
+    end
+  end
+
   self.seed_all
 
 end

@@ -66,6 +66,7 @@ Before do
   fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
   fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
   Fixtures.create_fixtures(fixtures_folder, fixtures)
+  load File.join(RAILS_ROOT, 'db', 'seeds.rb') # load static seed data that isn't fixtured
   # make rspec mocks/stubs work
   $rspec_mocks ||= Spec::Mocks::Space.new
   # Allow testing of emails

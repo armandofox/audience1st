@@ -33,7 +33,7 @@ describe StoreController do
     context 'with invalid donation amount' do
       before :each do
         @count = Customer.count(:all)
-        @alert = /Amount must be at least 1 dollar/
+        @alert = /Donation amount must be provided/
         post :process_quick_donation, {:customer => @new_valid_customer}
       end
       it_should_behave_like 'failure'
@@ -42,10 +42,18 @@ describe StoreController do
       before :each do
         @new_valid_customer.delete(:city)
         @alert = /Incomplete or invalid donor information:/
-        post :process_quick_donation, {:customer => @new_valid_customer}
+        post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
       end
       it_should_behave_like 'failure'
     end
+    context 'when credit card token invalid' do
+      before :each do
+        @alert = /payment transaction failed/i
+        post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5}
+      end
+      it_should_behave_like 'failure'
+    end
+    
   end
   describe "processing empty cart" do
     before :each do ; request.env['HTTP_REFERER'] = '/store' ; end

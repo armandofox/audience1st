@@ -125,6 +125,23 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  # match up donation customer with an existing one, or create it
+  def self.for_donation(params)
+    customer_info = Customer.new params
+    @customer =
+      if (found_customer = Customer.find_unique(customer_info)) &&
+          found_customer.valid_as_purchaser?
+        # use this customer
+        found_customer
+      elsif customer_info.valid_as_purchaser?
+        # create this customer
+        Customer.find_or_create!(customer_info)
+      else
+        # invalid info given
+        customer_info           # has failed validation as purchaser
+      end
+  end
+
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
     unless blank_mailing_address?

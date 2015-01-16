@@ -22,7 +22,6 @@ class RetailItem < Item
       AccountCode.default_account_code
     else
       AccountCode.find_by_code(code) ||
-        AccountCode.create_by_code(code, "Default retail purchase account") ||
         AccountCode.default_account_code
     end
   end

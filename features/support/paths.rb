@@ -32,6 +32,7 @@ module NavigationHelpers
     when /the checkout page/i           then '/store/checkout'
     when /the order confirmation page/i then '/store/place_order'
       # reporting pages 
+    when /the quick donation page/      then quick_donate_path
     when /the donations page/i          then '/donations/'
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
