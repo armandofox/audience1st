@@ -155,6 +155,7 @@ describe Customer do
     before(:each) do
       @customer = Customer.new(:first_name => "John", :last_name => "Do",
         :email => "johndoe111@yahoo.com",
+        :street => '123 Fake St', :city => 'Oakland', :state => 'CA', :zip => '94611',
         :password => "pass", :password_confirmation => "pass")
     end
     it "should allow &" do

@@ -127,7 +127,9 @@ class Customer < ActiveRecord::Base
 
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
-    errors.add_to_base "Mailing address must include street, city, state, Zip" unless (valid_mailing_address? || blank_mailing_address?)
+    unless blank_mailing_address?
+      errors.add_to_base "Mailing address must include street, city, state, Zip" unless valid_mailing_address?
+    end
   end
   
   # when customer is saved, possibly update their email opt-in status
@@ -275,11 +277,11 @@ class Customer < ActiveRecord::Base
   def has_opted_out_of_email? ;  e_blacklist? && valid_email_address?  end
 
   def valid_mailing_address?
-    !street.blank? &&
-      !city.blank?  &&
-      !state.blank? &&
-      !zip.blank? &&
-      zip.to_s.length.between?(5,10)
+    %w(street city state zip).each do |field|
+      errors.add(field, "can't be blank") if self.send(field).blank?
+    end
+    errors.add(:zip, 'must be between 5 and 10 characters') if !zip.blank? && !zip.to_s.length.between?(5,10)
+    errors.empty?
   end
   def invalid_mailing_address? ; !valid_mailing_address? ; end
   def blank_mailing_address?
