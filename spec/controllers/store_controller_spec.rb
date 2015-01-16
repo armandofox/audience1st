@@ -17,6 +17,36 @@ describe StoreController do
       response.should render_template 'messages/session_expired'
     end
   end
+  describe 'quick donation' do
+    before :each do
+      @new_valid_customer = {
+        :first_name => 'Joe', :last_name => 'Mallon',
+        :street => '123 Fake St', :city => 'Oakland', :state => 'CA',
+        :zip => '94111', :day_phone => '510-999-9999', :eve_phone => '333-3333'}
+    end
+    shared_examples_for 'failure' do
+      before :each do ; @count = Customer.count(:all) ; end
+      it 'redirects' do ; response.should render_template 'store/donate' ;  end
+      it 'shows appropriate message' do ; flash[:alert].should match(@alert) ; end
+      it 'does not create new customer' do ; Customer.count(:all).should == @count ; end
+    end
+    context 'with invalid donation amount' do
+      before :each do
+        @count = Customer.count(:all)
+        @alert = /Amount must be at least 1 dollar/
+        post :process_quick_donation, {:customer => @new_valid_customer}
+      end
+      it_should_behave_like 'failure'
+    end
+    context 'when new customer not valid as purchaser' do
+      before :each do
+        @new_valid_customer.delete(:city)
+        @alert = /Incomplete or invalid donor information:/
+        post :process_quick_donation, {:customer => @new_valid_customer}
+      end
+      it_should_behave_like 'failure'
+    end
+  end
   describe "processing empty cart" do
     before :each do ; request.env['HTTP_REFERER'] = '/store' ; end
     context "and no donation" do

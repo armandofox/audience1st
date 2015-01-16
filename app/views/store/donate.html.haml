@@ -10,7 +10,7 @@
       %fieldset#donation_info
         %legend Donation Information
         %label{:for => :donation} Donation amount
-        = text_field_tag 'donation', '', :size => 5
+        = text_field_tag 'donation', @amount, :size => 5
         \.00
         %br
         %label.wide_label{:for => :donor_listing} If you'd like to be recognized as Anonymous, or if you'd like to donate in honor of someone else, please provide that information here:

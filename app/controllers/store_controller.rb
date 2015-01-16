@@ -63,6 +63,37 @@ class StoreController < ApplicationController
     @customer = if @gNobodyReallyLoggedIn then Customer.new else @gCustomer end
   end
 
+  def process_quick_donation
+    # If donor doesn't exist, create them and marked created-by-admin
+    # If donor exists, make that the order's customer.
+    customer_info = Customer.new params[:customer]
+    @customer = nil
+    if (found_customer = Customer.find_unique(customer_info)) &&
+        found_customer.valid_as_purchaser?
+      # use this customer
+      @customer = found_customer
+    elsif customer_info.valid_as_purchaser?
+      # create this customer
+      @customer = Customer.find_or_create!(customer_info)
+    else
+      # invalid info given
+      @customer = customer_info
+      flash[:alert] = "Incomplete or invalid donor information: " +
+        @customer.errors.full_messages.join(', ')
+      render :action => 'donate'
+      return
+    end
+    # Create an order consisting of just a donation.
+    donation = Donation.from_amount_and_account_code_id(params[:donation],nil)
+    unless donation.valid?
+      flash[:alert] = donation.errors.full_messages.join(', ')
+      render :action => 'donate'
+      return
+    end
+
+    # Either way, redirect to place the order, forwarding the credit_card_token.
+  end
+
   def process_cart
     if params[:commit] =~ /redeem/i # customer entered promo code, redisplay prices
       redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]}))

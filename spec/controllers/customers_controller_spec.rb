@@ -73,12 +73,9 @@ describe CustomersController do
       get :switch_to, :id => id
     end
     it "should redirect to welcome action by default" do
+      pending 'RESTful customer routes'
       get :switch_to, :id => @customer.id
       response.should redirect_to(:controller => 'customers', :action => 'welcome')
-    end
-    it "should redirect to specified action if provided" do
-      get :switch_to, :id => @customer.id, :target_controller => 'foo', :target_action => 'bar'
-      response.should redirect_to(:controller => 'foo', :action => 'bar', :id => @customer.id)
     end
   end
   describe "checkout flow" do
@@ -113,16 +110,6 @@ describe CustomersController do
     end
   end
 
-  describe "legacy routes" do
-    it "should reroute the old /customers/login action" do
-      get :login
-      response.should redirect_to(login_path)
-    end
-    it "should route the old /customers/logout action" do
-      get :logout
-      response.should redirect_to(logout_path)
-    end
-  end
 end
 
   

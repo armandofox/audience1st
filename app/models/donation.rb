@@ -30,7 +30,7 @@ class Donation < Item
     if id.blank? || (use_code = AccountCode.find_by_id(id)).nil?
       use_code = Donation.default_code
     end
-    Donation.new(:amount => amount, :account_code => use_code)
+    Donation.new(:amount => amount.to_f, :account_code => use_code)
   end
 
   def price ; self.amount ; end # why can't I use alias for this?

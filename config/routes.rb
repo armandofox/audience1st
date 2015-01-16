@@ -75,7 +75,8 @@ ActionController::Routing::Routes.draw do |map|
     map.connect "/store/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post}
   end
   map.donate_to_fund '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
-  map.connect '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
+  map.quick_donate '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
+  map.connect '/process_quick_donation', :controller => 'store', :action => 'process_quick_donation', :conditions => {:method => :post}
 
   # donations management
 
