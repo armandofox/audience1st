@@ -46,6 +46,6 @@ Then /^customer (.*) should have a donation of \$([0-9.]+) to "(.*)"$/ do |custo
     Given I am logged in as staff
     And I visit the donations page
     And I press "Search"
-    Then I should see a row "#{customer_name}||#{formatted_date}|#{formatted_amount}||||" within "table[@id='donations']"
+    Then I should see a row "#{customer_name}|||#{formatted_amount}||||" within "table[@id='donations']"
 }
 end

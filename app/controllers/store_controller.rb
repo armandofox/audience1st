@@ -201,7 +201,7 @@ class StoreController < ApplicationController
     @recipient = @order.purchaser
     if ! @order.gift?
       # record 'who will pickup' field if necessary
-      @cart.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
+      @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
     unless @order.ready_for_purchase?
       flash[:alert] = @order.errors.full_messages.join(', ')
