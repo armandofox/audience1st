@@ -287,6 +287,8 @@ class Order < ActiveRecord::Base
           :purchasemethod_id => purchasemethod.id,
           :order_id => self.id)
       end
+    rescue ValidVoucher::InvalidRedemptionError => e
+      raise Order::NotReadyError, e.message
     rescue Exception => e
       workaround_rails_bug_2298!
       raise e                 # re-raise exception

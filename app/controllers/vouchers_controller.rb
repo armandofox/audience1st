@@ -58,7 +58,8 @@ class VouchersController < ApplicationController
     rescue Order::NotReadyError => e
       flash[:alert] = "Error adding comps:<br/> #{order.errors.full_messages.join(',')}"
     rescue RuntimeError => e
-      flash[:alert] = "Error adding comps:<br/>#{e.message}"
+      flash[:alert] = "Unexpected error:<br/>#{e.message}"
+      RAILS_DEFAULT_LOGGER.error e.backtrace.inspect
     end
     
     redirect_to :controller => 'customers', :action => 'welcome'
