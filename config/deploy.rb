@@ -7,19 +7,9 @@ set :default_environment, {
   'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
 }
 
-# automatically run 'bundle install' to put bundled gems into vendor/ on deploy
-require 'bundler/capistrano'
-set :bundle_flags, '--deployment'
-set :bundle_without, [:development, :test]
-# so capistrano can find 'bundle' binary...
-set :default_environment, {
-  'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
-}
-
 set :venue, variables[:venue]
 set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
-set :config, (:venue ? (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue] : {} )
 
 set :debugging_ips, %w[199.116.74.100]
 
@@ -28,7 +18,7 @@ set :user,            "audienc"
 set :home,            "/home/#{user}"
 set :deploy_to,       "#{home}/rails/#{venue}"
 set :stylesheet_dir,  "#{home}/public_html/stylesheets"
-set :venue_config,    "#{home}/vboadmin/venues.yml"
+set :config,          (YAML::load(IO.read("/Users/fox/Documents/fox/projects/vboadmin/venues.yml")))[venue]
 set :use_sudo,        false
 set :host,            "audience1st.com"
 role :app,            "#{host}"
@@ -78,7 +68,7 @@ namespace :provision do
     abort "Must set from name with -Sfrom=<venue>" unless variables[:from]
     init_release_path = "#{home}/rails/#{venue}/current"
     tmptables = "#{init_release_path}/db/static_tables.sql"
-    config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
+    # config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
     db = config['db'] || venue
     run "cd #{home}/rails/#{from}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{init_release_path}/db/schema.rb"
     run "cd #{home}/rails/#{from}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
@@ -114,7 +104,7 @@ namespace :deploy do
     # truncate REVISION to 6-hex-digit prefix
     run "perl -pi -e 's/^(......).*\$/\\1/g' #{release_path}/REVISION"
     # copy installation-specific files
-    config = (YAML::load(IO.read(venue_config)))[venue]
+    # config = (YAML::load(IO.read(venue_config)))[venue]
     abort if (config.nil? || config.empty?)
     debugging_ips = variables[:debugging_ips]
     %w[config/database.yml public/.htaccess].each do |f|
