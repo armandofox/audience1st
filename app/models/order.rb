@@ -154,7 +154,9 @@ class Order < ActiveRecord::Base
   end
   attr_reader :donation
   
-  def ticket_count ; valid_vouchers.values.map(&:to_i).sum ; end
+  def ticket_count
+    completed? ? vouchers.count : valid_vouchers.values.map(&:to_i).sum
+  end
 
   def item_count ; ticket_count + (include_donation? ? 1 : 0) ; end
   
@@ -208,6 +210,24 @@ class Order < ActiveRecord::Base
     total
   end
   
+  def walkup_confirmation_notice
+    notice = []
+    notice << "#{'$%.02f' % donation.amount} donation" if include_donation?
+    if include_vouchers?
+      notice << "#{ticket_count} ticket" + (ticket_count > 1 ? 's' : '')
+    end
+    message = notice.join(' and ')
+    if total_price.zero?
+      message = "Issued #{message} as zero-revenue order"
+    else
+      if include_vouchers?
+        message << " (total #{'$%.02f' % total_price})" 
+      end
+      message << " paid by #{ActiveSupport::Inflector::humanize(purchase_medium)}"
+    end
+    message
+  end
+
   def summary
     (items.map(&:one_line_description) << self.comments).join("\n")
   end

@@ -31,4 +31,25 @@ describe Order do
       @order.should be_ready_for_purchase
     end
   end
+
+  describe 'walkup confirmation' do
+    before :each do
+      @o = Order.new
+      @o.stub(:purchase_medium).and_return("Cash")
+      @v = BasicModels.create_revenue_vouchertype(:price => 7)
+      @vv = @v.valid_vouchers.create!(:start_sales => 1.day.ago, :end_sales => 1.day.from_now)
+    end
+    [ 1,0,"$5.00 donation paid by Cash",
+      1,2, "$5.00 donation and 2 tickets (total $19.00) paid by Cash" ,
+      0,2, "2 tickets (total $14.00) paid by Cash",
+      1,1, "$5.00 donation and 1 ticket (total $12.00) paid by Cash"
+    ].each_slice(3) do |donations,tickets,message|
+      specify "#{donations} donations and #{tickets} tickets" do
+        @o.add_donation(Donation.new(:amount => 5)) if donations > 0
+        @o.add_tickets(@vv,tickets) if tickets > 0
+        @o.walkup_confirmation_notice.should == message
+      end
+    end
+  end
+
 end

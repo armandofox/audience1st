@@ -12,6 +12,8 @@
     Then type in card data, or
     = link_to_function 'Click Here to Swipe Card', 'waitForSwipe()', {:class => 'genButton'}
   #ccWaiting{:style => 'display: none;'}= link_to_function 'Swipe Card or Click Here to Cancel', 'resetSwipe()', {:class => 'genButton'}
+  -# hidden field 'commit' filled in by javascript on cc purchase
+  = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
   = text_field_tag 'swipe_data', '', {:style => 'position: absolute; left: -10000px; top: auto; overflow: hidden;'}
   = make_unsubmitted 'swipe_data'
   %br
