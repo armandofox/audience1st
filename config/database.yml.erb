@@ -2,15 +2,15 @@
 
 base: &BASE
   adapter: mysql
-  database: <%= config['db'] || venue %>
+  database: <%= venue %>
   host: localhost
 
 production: 
-  username: <%= user = (config['username'] || venue) %>
+  username: <%= venue %>
   password: <%= config['password'] %>
   <<: *BASE
 
 migration:
   username: migration
-  password: m1Gr4ti0N
+  password: <%= migration_password %>
   <<: *BASE

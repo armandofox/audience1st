@@ -8,7 +8,6 @@ set :default_environment, {
 }
 
 set :venue, variables[:venue]
-set :from, variables[:from]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
 
 set :debugging_ips, %w[199.116.74.100]
@@ -19,6 +18,8 @@ set :home,            "/home/#{user}"
 set :deploy_to,       "#{home}/rails/#{venue}"
 set :stylesheet_dir,  "#{home}/public_html/stylesheets"
 set :config,          (YAML::load(IO.read("/Users/fox/Documents/fox/projects/vboadmin/venues.yml")))[venue]
+set :migration_password, (YAML::load(IO.read("/Users/fox/Documents/fox/projects/vboadmin/venues.yml")))['audience1st']['migration_password']
+
 set :use_sudo,        false
 set :host,            "audience1st.com"
 role :app,            "#{host}"
@@ -50,33 +51,6 @@ namespace :provision do
     run "ln -s #{home}/rails/#{venue}/current/public #{home}/public_html"
   end
 
-  task :truncate_database, :roles => [:db] do
-    "Truncate all non-static DB tables and wipe out sensitive Options"
-    drop_all = %w(bulk_downloads customers customers_labels imports items labels sessions showdates shows txns valid_vouchers visits vouchertypes).map do |tbl|
-      "truncate table #{tbl}"
-    end.join("; ")
-    run  "mysql -umigration -pm1Gr4ti0N -D#{venue} -e \"#{drop_all};\""
-    init_release_path = "#{home}/rails/#{venue}/current"
-    run %Q{cd #{init_release_path} && script/runner -e production 'Customer.create!(:first_name => "Administrator", :last_name => "Administrator", :email => "admin@#{venue}.org", :password => "admin", :created_by_admin => true).update_attribute(:role, 100)'}
-    run %Q{cd #{init_release_path} && script/runner -e production 'Option.update_all(:value => ""); Option.set_value!(:venue_shortname, "#{venue}")'}
-  end
-  
-  # initialize DB by copying schema and static content from a (production)
-  # source  DB
-  task :initialize_database, :roles => [:db] do
-    "Set up database (must exist already; use provision:create_database) for new venue by copying static structure and Options table from -Sfrom=<venue>."
-    abort "Must set from name with -Sfrom=<venue>" unless variables[:from]
-    init_release_path = "#{home}/rails/#{venue}/current"
-    tmptables = "#{init_release_path}/db/static_tables.sql"
-    # config = (YAML::load(IO.read("#{rails_root}/config/venues.yml")))[venue]
-    db = config['db'] || venue
-    run "cd #{home}/rails/#{from}/current && rake db:schema:dump RAILS_ENV=migration && mv db/schema.rb #{init_release_path}/db/schema.rb"
-    run "cd #{home}/rails/#{from}/current && rake db:dump_static RAILS_ENV=migration FILE=#{tmptables}"
-    run "cd #{init_release_path} && rake db:schema:load RAILS_ENV=migration"
-    run "mysql -umigration -pm1Gr4ti0N -D#{db} < #{tmptables}"
-    run "/bin/rm -f #{tmptables}"
-    Rake::Task['provision:truncate_database'].execute
-  end
 end
 
 namespace :deploy do
@@ -104,7 +78,6 @@ namespace :deploy do
     # truncate REVISION to 6-hex-digit prefix
     run "perl -pi -e 's/^(......).*\$/\\1/g' #{release_path}/REVISION"
     # copy installation-specific files
-    # config = (YAML::load(IO.read(venue_config)))[venue]
     abort if (config.nil? || config.empty?)
     debugging_ips = variables[:debugging_ips]
     %w[config/database.yml public/.htaccess].each do |f|
