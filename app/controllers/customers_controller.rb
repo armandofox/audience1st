@@ -70,33 +70,6 @@ class CustomersController < ApplicationController
     flash[:notice] = (@current_user.login_message || "Logged in successfully") if new_session?
   end
 
-  def link_user_accounts
-    #redirect_to login_path unless facebook_session.user
-    if self.current_user
-      #connect accounts
-      fbuid = facebook_session.user.id 
-      self.current_user.link_fb_connect(fbuid) unless
-        self.current_user.fb_user_id == fbuid
-      redirect_to_stored
-    else
-      flash[:warning] = "To use this feature, you must have an existing Facebook account."
-      redirect_to login_path
-    end
-  end
-
-  def link_existing_account
-    if other = Customer.authenticate(params[:email], params[:password])
-      @customer = current_user
-      if @customer.merge_automatically!(other)
-        flash[:notice] = "Congratulations!  Your accounts are now linked.  You can login either via Facebook or using your email and password."
-        redirect_to :action => :welcome, :id => @customer
-      else
-        flash[:notice] = "Merge failed: #{@customer.errors.full_messages.join(', ')}"
-        redirect_to :action => :edit, :id => current_user.id
-      end
-    end
-  end
-
   def edit
     @customer = current_user
     @is_admin = current_admin.is_staff

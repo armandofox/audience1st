@@ -55,8 +55,8 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
-  validates_length_of :password, :if => :self_created_and_not_linked_to_facebook, :in => 4..20, :allow_nil => true
-  validates_confirmation_of :password, :if => :self_created_and_not_linked_to_facebook
+  validates_length_of :password, :if => :self_created?, :in => 1..20, :allow_ni => true
+  validates_confirmation_of :password, :if => :self_created?
 
   attr_protected :id, :salt, :role, :created_by_admin
   attr_accessor :force_valid          ;  attr_protected :force_valid
@@ -95,10 +95,6 @@ class Customer < ActiveRecord::Base
   private
 
   def self_created? ; !created_by_admin && !gift_recipient_only ; end
-
-  def self_created_and_not_linked_to_facebook
-    self_created? && !facebook_user?
-  end
 
   # for things like daemon-created customers, the force_valid flag will cause a customer
   # to be created with minimal valid fields so that saving cannot possibly fail validations.
@@ -344,7 +340,7 @@ class Customer < ActiveRecord::Base
     end
     unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
       u = Customer.new
-      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
+      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
     end
   end
@@ -357,7 +353,7 @@ class Customer < ActiveRecord::Base
     end
     unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
       u = Customer.new
-      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account, or Login With Facebook to login with your Facebook ID.")
+      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
     end
     unless u.authenticated?(password)
@@ -599,71 +595,6 @@ EOSQL1
                          " WHERE v.type='Voucher' AND " <<
                          conds.join(' AND ') <<
                          " ORDER BY #{order_by}")
-  end
-
-
-  def self.find_by_fb_user(fb_user)
-    ((!fb_user.uid.blank? && Customer.find_by_fb_user_id(fb_user.uid)) ||
-      (!fb_user.email_hashes.blank? && Customer.find_by_email_hash(fb_user.email_hashes)))
-  end
-
-  # Take the data returned from facebook and create a new user from it.
-  # We don't get the email from Facebook and because a facebooker can only login through Connect we just generate a unique login name for them.
-  # If you were using username to display to people you might want to get them to select one after registering through Facebook Connect
-  if USE_FACEBOOK
-    def self.create_from_fb_connect(fb_user)
-      first_name,last_name = fb_user.name.first_and_last_from_full_name
-      logger.info "Creating new '#{first_name} #{last_name}' for FB id #{fb_user.id}"
-      new_facebooker = Customer.new(:first_name => first_name,
-        :last_name => last_name,
-        :password => "", :email => "")
-      new_facebooker.fb_user_id = fb_user.uid.to_i
-      #We need to save without validations
-      new_facebooker.save(false)
-      new_facebooker.register_user_to_fb
-      new_facebooker
-    end
-
-    #We are going to connect this user object with a facebook id. But only ever one account.
-    def link_fb_connect(fb_user_id)
-      logger.info "Linking FB userid #{fb_user_id} to current user"
-      unless fb_user_id.nil?
-        #check for existing account
-        existing_fb_user = Customer.find_by_fb_user_id(fb_user_id)
-        #unlink the existing account
-        unless existing_fb_user.nil?
-          existing_fb_user.fb_user_id = nil
-          existing_fb_user.save(false)
-        end
-        #link the new one
-        self.fb_user_id = fb_user_id
-        save(false)
-      end
-    end
-
-    #The Facebook registers user method is going to send the users email hash and our account id to Facebook
-    #We need this so Facebook can find friends on our local application even if they have not connect through connect
-    #We then use the email hash in the database to later identify a user from Facebook with a local user
-    def register_user_to_fb
-      if !email.blank?
-        begin
-          users = {:login => email, :account_id => id}
-          Facebooker::User.register([users])
-          self.email_hash = Facebooker::User.hash_email(email)
-          save(false)
-        rescue Exception => e
-          logger.error "Warning: register_user_to_fb for userid #{id}: #{e.message}"
-        end
-      end
-    end
-    def facebook_user?
-      return !fb_user_id.nil? && fb_user_id > 0
-    end
-  else                          # no Facebook integration
-    def self.create_from_fb_connect(fb_user) ; true ; end
-    def link_fb_connect(fb_user_id) ; true ; end
-    def register_user_to_fb ; true ; end
-    def facebook_user? ; nil ; end
   end
 
   # merge myself with another customer.  'params' array indicates which

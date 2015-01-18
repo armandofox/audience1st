@@ -28,4 +28,3 @@ Stripe.verify_ssl_certs = false
 #  :default_list_name => 'Test list'
 
 DISABLE_EMAIL_LIST_INTEGRATION = true
-DISABLE_FACEBOOK = true

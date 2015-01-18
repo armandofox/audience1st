@@ -120,12 +120,6 @@ describe SessionsController do
       end
       it_should_behave_like "any switching operation"
     end
-    it "to existing Facebook user should not link that user's Facebook id to admin user" do
-      @quentin.stub!(:facebook_user?).and_return(true)
-      current_user.should_not_receive(:link_user_accounts)
-      current_admin.should_not_receive(:link_user_accounts)
-      act_on_behalf_of(@quentin)
-    end
     context "to a nonexistent user" do
       before(:each) do ; act_on_behalf_of(nil) ; end
       it "should not switch the user" do

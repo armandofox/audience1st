@@ -27,22 +27,6 @@ class ApplicationController < ActionController::Base
   require 'string_extras.rb'
   require 'date_time_extras.rb'
   
-  # for Facebook Connect
-  if USE_FACEBOOK
-    before_filter :set_facebook_session
-    helper_method :facebook_session
-
-    rescue_from Facebooker::Session::SessionExpired, :with => :facebook_session_expired
-
-    def facebook_session_expired
-      clear_fb_cookies!
-      clear_facebook_session_information
-      reset_session
-      flash[:notice] = "Please login to Facebook again."
-      redirect_to login_path
-    end
-  end
-
   def session_expired
     render :template => 'messages/session_expired', :layout => 'application', :status => 400
     true
@@ -52,8 +36,7 @@ class ApplicationController < ActionController::Base
     ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE session_id = '#{request.session_options[:id]}'")
   end
 
-  # set_globals must happen AFTER Facebook Connect filters, since it will
-  # try to set globals based on current_user, among other things.
+  # set_globals tries to set globals based on current_user, among other things.
   before_filter :set_globals
 
   def set_globals

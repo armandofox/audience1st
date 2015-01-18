@@ -17,17 +17,4 @@
     = link_to_if_option_text :homepage_subscription_sales_text, {:controller => 'store', :action => 'subscribe'}, {:class => 'genButton'}
     %br
     
-  #login_with_facebook
-    %p Facebook Connect will be back shortly...meanwhile, login with your existing email and password, or enter your email and click "Forgot Password" if you need a new password.
-
-- if USE_FACEBOOK
-  #login_with_facebook
-    - if ie8
-      = image_tag 'connect_disabled.png'
-      %p Sorry, Facebook Connect features don't work properly with Internet Explorer 8.
-    - else
-      %h2 Or Login Using Facebook
-      = fb_login_button("window.location = '/customers/link_user_accounts_#{h(Option.venue_shortname)}';")
-      = popup_help_for 'login_using_facebook'
-
 .clear

@@ -22,7 +22,6 @@ config.action_controller.allow_forgery_protection    = false
 config.action_mailer.delivery_method = :test
 
 DISABLE_EMAIL_LIST_INTEGRATION = true
-DISABLE_FACEBOOK = true
 
 # for testing
 

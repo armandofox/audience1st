@@ -68,7 +68,7 @@ class StoreController < ApplicationController
     # If donor doesn't exist, create them and marked created-by-admin
     # If donor exists, make that the order's customer.
     # Create an order consisting of just a donation.
-    errors = ''
+
     @amount = params[:donation].to_i
     unless @amount > 0
       flash[:alert] = 'Donation amount must be provided'

@@ -43,4 +43,3 @@ Rubaidh::GoogleAnalytics.tracker_id = 'UA-4613071-1'
 Rubaidh::GoogleAnalytics.domain_name  = 'www.audience1st.com'
 Rubaidh::GoogleAnalytics.environments = ['production']
 
-DISABLE_FACEBOOK = true         # until we update to graph API

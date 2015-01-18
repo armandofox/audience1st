@@ -195,17 +195,6 @@ module AuthenticatedSystem
       end
     end
 
-    # login via Facebook Connect info
-  if USE_FACEBOOK
-    def login_from_facebook
-      if facebook_session
-        logger.info("login_from_facebook: Trying to set current user from FB id #{facebook_session.user}") 
-        self.current_user = Customer.find_by_fb_user(facebook_session.user)
-      end
-    end
-  else
-    def login_from_facebook ; false ; end
-  end
     #
     # Logout
     #
