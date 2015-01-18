@@ -63,7 +63,7 @@ namespace :deploy do
 
   desc "Run migrations in a separate 'migration' environment, so they can use a different DB user"
   task :migrate, :roles => [:db] do
-    run "cd #{release_path} && rake db:migrate RAILS_ENV=migration"
+    run "cd #{current_release} && rake db:migrate RAILS_ENV=migration"
   end
 
   desc "Restart all appserver processes on next request"
