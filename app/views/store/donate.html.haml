@@ -24,4 +24,6 @@
 
       = render :partial => 'credit_card', :locals => {:first_name => @customer.first_name, :last_name => @customer.last_name }
 
+      -# hidden field necessary for Stripe submit handler to fill in
+      = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
       = submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :onclick => 'stripeSubmit()'

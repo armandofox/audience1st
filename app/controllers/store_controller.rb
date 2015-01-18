@@ -236,10 +236,12 @@ class StoreController < ApplicationController
   private
 
   def finalize_order(order)
+    success = false
     begin
       order.finalize!
       logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
       email_confirmation(:confirm_order, order.purchaser, order) if params[:email_confirmation]
+      success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
       flash[:alert] = (order.errors.full_messages + [e.message]).join(', ') 
       logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
@@ -247,7 +249,7 @@ class StoreController < ApplicationController
       logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
       flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
     end
-    flash[:alert].blank?
+    success
   end
 
 

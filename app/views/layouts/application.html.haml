@@ -4,7 +4,7 @@
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
     = javascript_include_tag :defaults, 'jquery'
-    = javascript_include_tag 'https://js.stripe.com/v1/'
+    %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
     = javascript_include_tag 'stripe'
     = javascript_include_tag 'swipe'
     = javascript_include_tag 'donate'

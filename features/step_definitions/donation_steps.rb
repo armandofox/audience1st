@@ -2,9 +2,9 @@ def find_or_create_account_code(full_name)
   if full_name =~ /^(\d+)\s+(.*)$/
     code,name = $1,$2
   else
-    code,name = '0000', $2
+    code,name = '0000', full_name
   end
-  AccountCode.find_by_code(code) || AccountCode.create!(:name => name, :code => code)
+  AccountCode.find_by_code(code) || AccountCode.find_by_name(name) || AccountCode.create!(:name => name, :code => code)
 end
 
 Given /^the following donations:$/ do |donations|
@@ -38,14 +38,11 @@ Then /^I should (not )?see the following donations:$/ do |no,donations|
   end
 end
 
-Then /^customer (.*) should have a donation of \$([0-9.]+) to "(.*)"$/ do |customer_name,amount,fund|
-  formatted_amount = amount.to_i
-  formatted_fund = AccountCode.find_by_name(fund).name_with_code
-  formatted_date = Date.today.strftime('%D')
+Then /^customer "(.*)" should have a donation of \$([0-9.]+) to "(.*)"$/ do |customer_name,amount,fund|
   steps %Q{
     Given I am logged in as staff
     And I visit the donations page
     And I press "Search"
-    Then I should see a row "#{customer_name}|||#{formatted_amount}||||" within "table[@id='donations']"
-}
+    Then I should see a row "#{customer_name}|||#{amount}||||" within "table[@id='donations']"
+  }
 end

@@ -14,5 +14,5 @@ Scenario: make donation
   When I place my order with a valid credit card
   Then I should be on the order confirmation page
   And I should see "You have paid a total of $15.00 by Credit card"
-  And customer Tom Foolery should have a donation of $15.00 to "General Fund"
+  And customer "Tom Foolery" should have a donation of $15.00 to "General Fund"
 

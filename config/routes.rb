@@ -68,7 +68,7 @@ ActionController::Routing::Routes.draw do |map|
   # customer-facing purchase pages
 
   %w(index special subscribe shipping_address checkout edit_billing_address show_changed showdate_changed).each do |action|
-    map.connect "/store/#{action}", :controller => 'store', :action => action, :conditions => {:method => :get}
+    map.connect "/store/#{action}", :controller => 'store', :action => action
   end
 
   %w(process_cart set_shipping_address place_order).each do |action|
