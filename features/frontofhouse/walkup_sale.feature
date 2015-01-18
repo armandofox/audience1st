@@ -15,7 +15,7 @@ Feature: Sell walkup tickets
 
     When I select "2" from "General"
     And I press "Record Cash Payment or Zero Revenue Transaction"
-    Then I should see "2 tickets paid by Cash"
+    Then I should see "2 tickets (total $22.00) paid by Cash"
     And I should see "General (1 left)"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
 
@@ -23,7 +23,7 @@ Feature: Sell walkup tickets
   
     When I select "2" from "General"
     And I press "Record Check Payment"
-    Then I should see "2 tickets paid by Check"
+    Then I should see "2 tickets (total $22.00) paid by Check"
     And I should see "General (1 left)"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
 
@@ -40,7 +40,7 @@ Feature: Sell walkup tickets
     | Expiration Year    | select "2013"   |
     And I fill in "Enter CVV code manually FIRST!" with "111"
     And I press "Charge Credit Card"
-    Then I should see "2 tickets paid by Credit card"
+    Then I should see "2 tickets (total $22.00) paid by Credit card"
     And I should see "General (1 left)"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
 
