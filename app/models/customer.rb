@@ -55,7 +55,7 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
-  validates_length_of :password, :if => :self_created?, :in => 1..20, :allow_ni => true
+  validates_length_of :password, :if => :self_created?, :in => 1..20, :allow_nil => true
   validates_confirmation_of :password, :if => :self_created?
 
   attr_protected :id, :salt, :role, :created_by_admin
