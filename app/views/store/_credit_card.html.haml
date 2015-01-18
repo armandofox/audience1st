@@ -7,7 +7,7 @@
   %label{:for => 'credit_card_last_name'} Last Name
   = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20
   %br
-  = hidden_field_tag 'credit_card_token', 'DUMMY'
+  = hidden_field_tag 'credit_card_token'
   = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key
   = make_unsubmitted '_stripe_api_key'
   %label{:for => 'credit_card_number'} Number (no spaces)

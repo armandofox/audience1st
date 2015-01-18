@@ -48,7 +48,7 @@ describe StoreController do
     end
     context 'when credit card token invalid' do
       before :each do
-        @alert = /payment transaction failed/i
+        @alert = /Invalid credit card transaction/i
         post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5}
       end
       it_should_behave_like 'failure'
