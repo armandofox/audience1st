@@ -1,7 +1,4 @@
-- cancel_res = ['Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => voucher.customer}, {:confirm => MESSAGES[:release_reservation_0]} ]
-- cancel_prepaid = ['Cancel', { :controller => 'vouchers', :action => 'cancel_prepaid', :id => voucher.id, :customer => voucher.customer }, {:confirm => MESSAGES[:cancel_prepaid_0] } ]
 - is_boxoffice = nil unless defined?(is_boxoffice)
-- is_subscriber = nil unless defined?(is_subscriber)
 
 %tr
   - if is_boxoffice
@@ -19,14 +16,12 @@
       %span.showName= h voucher.reserved_show
       %br
       %span.showDate= h voucher.reserved_date
-  / Cancel Reservation (if applicable)
   %td
     - if voucher.reserved?
       - if (is_boxoffice || voucher.can_be_changed?)
-        = button_to(*cancel_res)
+        = button_to 'Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => voucher.customer}, {:confirm => 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'} 
       - elsif is_boxoffice_manager
         %span.adminField.c.admin=  button_to(*cancel_res)
-  / admin can update voucher comments
   - if is_boxoffice
     %td.admin
       - form_remote_tag(:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id }, :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do

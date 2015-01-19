@@ -28,44 +28,10 @@ voucher_comments:
  - Near Restroom
  - Other (briefly describe:)
 
-phplist_default_list_id: 8
-
 # Who email appears to come from (IMPORTANT: on many ISP's, this must be 
 #  a valid deliverable username)
 boxoffice_daemon_address: boxofficedaemon@audience1st.com
 
 # Whom to contact for general application error
 bug_notify:  armandofox@gmail.com
-
-# Payment information
-
-# IP addresses from which Walkup Sale page can be accessed w/o authentication
-# separate with commas.  Not a good idea to rely on this in presence of DHCP.
-
-walkup_locations: 127.0.0.1
-
-# Number of DAYS OLD an inactive session must be before it's reaped
-
-session_reap: 1
-
-# name of button used for CC purchase - used for commit logic in some places
-# to determine if 'pay by CC' or 'pay cash/check' was selected
-
-cc_purch: "Credit Card Payment"
-
-# Popup Help
-
-
-# Confirmation dialogs.  Trailing digit is # of string args expected.
-  
-
-messages:
-  areyousure_0: "Are you sure?"
-  delete_user_2: "Delete customer %s %s? Perhaps you should consider merging the customer with another customer instead, or merging with WALKUP CUSTOMER to permanently deactivate this customer.  If you click OK, this customer's vouchers will be destroyed, which affects show reservation counts and will screw up referential integrity. This action cannot be undone, and it's probably not what you want.  If you are wise, click Cancel to back out now. If you are SURE you know what you're doing, click OK to confirm deleting this customer."
-  remove_bundle_0: "OK to remove this voucher from customer account? This will NOT remove the individual vouchers that were part of the bundle - you have to remove those separately."
-  remove_voucher_0: "OK to remove this voucher from customer account?"
-  cancel_prepaid_0: "OK to cancel this revenue reservation?  NOTE: If this reservation was paid for with a credit card, cancellation WILL NOT cause the charge to be refunded.  Click OK to go ahead and cancel the reservation.  Click CANCEL to leave things as they are."
-  delete_performance_0: 'Delete this performance: are you sure?'
-  release_reservation_0: 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'
-  remove_vouchertype_1: 'This will destroy all existing "%s" vouchers, removing them from customer accounts. This action cannot be undone. Continue?'
 
