@@ -37,9 +37,3 @@ ExceptionNotifier.configure_exception_notifier do |config|
   config[:sender_address] =  %("EXCEPTION NOTIFIER" <bugs@audience1st.com>)
   config[:exception_recipients] =  %w(armandofox@gmail.com)
 end
-# Enable Google Analytics (http://svn.rubaidh.com/plugins/trunk/google_analytics)
-
-Rubaidh::GoogleAnalytics.tracker_id = 'UA-4613071-1'
-Rubaidh::GoogleAnalytics.domain_name  = 'www.audience1st.com'
-Rubaidh::GoogleAnalytics.environments = ['production']
-

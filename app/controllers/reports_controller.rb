@@ -18,9 +18,6 @@ class ReportsController < ApplicationController
       Dir.entries("#{RAILS_ROOT}/app/models/reports/").select { |x| x.gsub!(/\.rb$/,'') }
   end
 
-  verify(:method => :post, :only => %w[noshow_subscriber mark_fulfilled],
-         :add_flash => {:notice => 'ERROR: Action can only be called via POST'})
-
   def do_report
     # this is a dispatcher that just redirects to the correct report
     # based on a dropdown menu.
