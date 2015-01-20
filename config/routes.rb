@@ -92,9 +92,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect '/box_office/walkup/:id', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
   map.connect '/box_office/walkup', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
-  %w(change_showdate).each do |action|
-    map.connect "/box_office/#{action}", :controller => 'box_office', :action => action, :conditions => {:method => :get}
-  end
+  map.connect "/box_office/change_showdate", :controller => 'box_office', :action => 'change_showdate'
   %w(checkin walkup door_list walkup_report).each do |action|
     map.connect "/box_office/#{action}/:id", :controller => 'box_office', :action => action, :conditions => {:method => :get}    
   end
