@@ -7,7 +7,7 @@ Followup date:   <%= v.followup_date.to_formatted_s(:date_only) %>
 Followup action: <%= v.followup_action %>
 Last visit by:   <%= v.summarize %>
 Notes from last visit: ---------------------------------------
-<%= v.additional_notes.wrap(60) %>
+<%= word_wrap(v.additional_notes, :line_width => 60) %>
 --------------------------------------------------------------
 
 <% end %>

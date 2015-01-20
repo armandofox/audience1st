@@ -17,9 +17,9 @@ We're confirming your reservation for the following performance --
 
 <% end %>
 
-<%= strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)).wrap(60) %>
+<%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)), :line_width => 60) %>
 
-<%= strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)).wrap(60) %>
+<%= word_wrap(strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
 
 (Please DO NOT REPLY to this email...it was generated automatically,
 not by a human being, and our computer isn't smart enough to

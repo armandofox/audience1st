@@ -14,11 +14,6 @@ class String
     return newpass
   end
 
-  # Stripe gem relies on end_with? which isn't defined in 1.8.6 libs
-  unless "0".respond_to?(:end_with?)
-    def end_with?(arg) ; self.match( /#{arg}$/ ) ; end
-  end
-
   # true if target is blank, or target when split on commas contains self,
   # case-insensitively.  used for checking promo codes and tags.
   def contained_in_or_blank(target)
@@ -26,11 +21,6 @@ class String
       target.upcase.split(/\s*,\s*/).include?(self.strip.upcase)
   end
   
-  def wrap(col = 80)
-    # from blog.macromates.com/2006/wrapping-text-with-regular-expressions
-    self.gsub(/(.{1,#{col}})( +|$\n?)|(.{1,#{col}})/, "\\1\\3\n") 
-  end
-
   def capitalize_each_word ; self.to_s.split.map(&:capitalize).join(' ') ; end
 
   def boldify(s, tag=:strong, tag_opts = {})
