@@ -54,11 +54,11 @@ ActionController::Routing::Routes.draw do |map|
   # reports
   map.connect '/reports', :controller => 'reports', :action => 'index'
   %w(do_report run_special_report advance_sales transaction_details_report accounting_report retail show_special_report unfulfilled_orders).each do |report_name|
-    map.connect "/reports/#{report_name}", :controller => 'reports', :action => report_name, :conditions => {:method => :get}
+    map.connect "/reports/#{report_name}", :controller => 'reports', :action => report_name
   end
   # reports that consume :id
   %w(showdate_sales subscriber_details).each do |report_name|
-    map.connect "/reports/#{report_name}/:id", :controller => 'reports', :action => report_name, :conditions => {:method => :get}
+    map.connect "/reports/#{report_name}/:id", :controller => 'reports', :action => report_name
   end
   # update actions
   %w(mark_fulfilled create_sublist).each do |action|
