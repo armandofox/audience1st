@@ -104,6 +104,8 @@ ActionController::Routing::Routes.draw do |map|
 
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
+  # legacy login route
+  map.connect '/customers/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
   map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question',:conditions => {:method => :get}
   map.connect '/sessions/create_from_secret_question', :controller => 'sessions', :action => 'create_from_secret_question', :conditions => {:method => :post}
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
@@ -119,7 +121,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
   map.connect '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
 
-  #map.connect '*anything', :controller => 'customers', :action => 'welcome'
   map.root :controller => 'customers', :action => 'welcome'
  
 end
