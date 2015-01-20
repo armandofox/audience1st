@@ -14,9 +14,7 @@
   %h1 Walkup Sales Detail
   - form_tag :action => 'modify_walkup_vouchers' do
     %p
-      With checked vouchers:
-      = submit_tag 'Destroy', :confirm => 'If you destroy tickets purchased with a credit card, the credit card will NOT be automatically refunded.  Click OK to proceed or Cancel to leave things as they are.'
-      or transfer to another performance:
+      Transfer checked vouchers to a different performance:
       = select_tag 'to_showdate', options_from_collection_for_select(@other_showdates, :id, :menu_selection_name)
       = submit_tag 'Transfer'
     - @vouchers.each_pair do |howpurchased, vouchers|

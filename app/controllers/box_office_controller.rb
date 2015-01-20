@@ -150,7 +150,7 @@ class BoxOfficeController < ApplicationController
   # to another showdate, as directed
   def modify_walkup_vouchers
     if params[:vouchers].blank?
-      flash[:alert] = "You didn't select any vouchers to remove or transfer."
+      flash[:alert] = "You didn't select any vouchers to transfer."
       redirect_to(:action => :walkup) and return
     end
     voucher_ids = params[:vouchers]
@@ -159,16 +159,9 @@ class BoxOfficeController < ApplicationController
     begin
       vouchers = Voucher.find(voucher_ids)
       showdate_id = vouchers.first.showdate_id
-      if action =~ /destroy/i
-        Voucher.destroy_multiple(vouchers, logged_in_user)
-        flash[:notice] = "#{vouchers.length} vouchers destroyed."
-      elsif action =~ /transfer/i # transfer vouchers to another showdate
-        showdate = Showdate.find(params[:to_showdate])
-        Voucher.transfer_multiple(vouchers, showdate, logged_in_user)
-        flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
-      else
-        flash[:alert] = "Unrecognized action: '#{action}'"
-      end
+      showdate = Showdate.find(params[:to_showdate])
+      Voucher.transfer_multiple(vouchers, showdate, logged_in_user)
+      flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
     rescue Exception => e
       flash[:alert] = "Error (NO changes were made): #{e.message}"
       RAILS_DEFAULT_LOGGER.warn(e.backtrace)

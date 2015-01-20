@@ -39,15 +39,3 @@ Scenario: transferring doesn't work if you don't check any vouchers
   |   1 | General | April 7, 2012, 8:00pm |
   |   0 | General | April 8, 2012, 8:00pm |
 
-Scenario: box office can delete walkup vouchers
-
-  When I check "General" within "#box_cash"
-  And I press "Destroy"
-  Then I should be on the walkup sales page for "April 7, 2012, 8:00pm"
-  And I should see "1 vouchers destroyed."
-  And ticket sales should be as follows:
-  | qty | type    | showdate              |
-  |   0 | General | April 7, 2012, 8:00pm |
-  |   0 | General | April 8, 2012, 8:00pm |
-  
-
