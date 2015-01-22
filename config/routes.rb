@@ -14,7 +14,12 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
   map.connect '/customers/user_create', :controller => 'customers', :action => 'user_create', :conditions => {:method => :post}
   map.connect '/customers/edit/:id', :controller => 'customers', :action => 'edit', :conditions => {:method => :get}
-  map.connect '/customers/switch_to/:id', :controller => 'customers', :action => 'switch_to', :conditions => {:method => :get}
+  #map.connect '/customers/switch_to/:id', :controller => 'customers', :action => 'switch_to'
+  # switch-to cannot include :id in URL, since sometimes it is calld with a GET-style
+  # form submit that tries to override id by making it a hidden field.  There should
+  # be a POST-only route for switch-to that is properly constructed by cleaned-up
+  # JS code for the customer search field.
+  map.connect '/customers/switch_to', :controller => 'customers', :action => 'switch_to'
   map.connect '/customers/update/:id', :controller => 'customers', :action => 'update', :conditions => {:method => :post}
   map.connect '/customers/change_password', :controller => 'customers', :action => 'change_password'
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
@@ -27,6 +32,11 @@ ActionController::Routing::Routes.draw do |map|
     map.connect "/customers/#{action}", :controller => 'customers', :action => action
   end
 
+  # RSS
+
+  map.connect '/info/ticket_rss', :controller => 'info', :action => 'ticket_rss', :conditions => {:method => :get}
+  
+
   # shows
   map.resources :shows, :except => [:show]
   map.resources :showdates, :except => [:index]
@@ -36,7 +46,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # vouchers
   %w(update_shows addvoucher).each do |action|
-    map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => action, :conditions => {:method => :get}
+    map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => action
   end
   # with :id
   map.connect '/vouchers/reserve/:id', :controller => 'vouchers', :action => 'reserve', :conditions => {:method => :get}
