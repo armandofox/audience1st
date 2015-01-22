@@ -9,7 +9,7 @@ ActionController::Routing::Routes.draw do |map|
   map.welcome  '/customers/welcome', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   map.connect '/customers/:id/show', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   %w(new temporarily_disable_admin reenable_admin auto_complete_for_customer_full_name).each do |action|
-    map.connect "/customers/#{action}", :controller => 'customers', :action => action, :conditions => {:method => :get}
+    map.connect "/customers/#{action}", :controller => 'customers', :action => action
   end
   map.connect '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
   map.connect '/customers/user_create', :controller => 'customers', :action => 'user_create', :conditions => {:method => :post}
@@ -19,12 +19,12 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/customers/change_password', :controller => 'customers', :action => 'change_password'
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
   map.connect '/customers/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
-  map.connect '/customers/list', :controller => 'customers', :action => 'index', :conditions => {:method => :get}
+  map.connect '/customers/list', :controller => 'customers', :action => 'list', :conditions => {:method => :get}
   map.connect '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates', :conditions => {:method => :get}
   map.connect '/customers/merge', :controller => 'customers', :action => 'merge', :conditions => {:method => :get}
   map.connect '/customers/finalize_merge', :controller => 'customers', :action => 'finalize_merge', :conditions => {:method => :post}
   %w(search lookup).each do |action|
-    map.connect "/customers/#{action}", :controller => 'customers', :action => action, :conditions => {:method => :get}
+    map.connect "/customers/#{action}", :controller => 'customers', :action => action
   end
 
   # shows

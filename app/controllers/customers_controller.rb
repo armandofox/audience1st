@@ -183,6 +183,7 @@ class CustomersController < ApplicationController
     @title = (@count.zero? ? "No matches" : @count == 1 ? "1 record" :
       "Matches #{@offset+1} - #{@offset+@count} of #{count_all}")
     @title += " for '#{@customers_filter}'" unless @customers_filter.empty?
+    render :action => 'index'
   end
 
   def list_duplicates
@@ -264,6 +265,7 @@ class CustomersController < ApplicationController
   end
 
   def search
+    debugger
     unless params[:searching]
       render :partial => 'search'
       return
