@@ -17,7 +17,7 @@ class VouchersController < ApplicationController
     @page_title = "Add Comps"
     unless (@customer = @gCustomer)
       flash[:notice] = "Must select a customer to add comps"
-      redirect_to :controller => 'customers', :action => 'index'
+      redirect_to :controller => 'customers', :action => 'list'
       return
     end
     this_season = Time.this_season

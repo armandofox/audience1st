@@ -30,7 +30,7 @@
 
 %p.center
   - if @is_admin
-    = admin_button('Back to Customer List', {:controller => 'customers', :action => 'index'})
+    = admin_button('Back to Customer List', {:controller => 'customers', :action => 'list'})
     = admin_button('Back to This Customer', {:controller => 'customers', :action => 'welcome' })
   - else
     = gen_button('Back to My Tickets', {:controller => 'customers', :action => 'welcome' })

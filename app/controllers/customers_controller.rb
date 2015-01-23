@@ -260,7 +260,7 @@ class CustomersController < ApplicationController
       end
     else
       flash[:notice] = "No such customer: id# #{params[:id]}"
-      redirect_to :controller => 'customers', :action => 'index'
+      redirect_to :controller => 'customers', :action => 'list'
     end
   end
 
