@@ -157,7 +157,7 @@ module AuthenticatedSystem
       true
     end
 
-    def stored_action ; session[:return_to] || {:action => :index} ; end
+    def stored_action ; session[:return_to] || {:controller => 'customers', :action => 'welcome'} ; end
 
     # Redirect to the URI stored by the most recent store_location call or
     # to the passed default.  Set an appropriately modified
