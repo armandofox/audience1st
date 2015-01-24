@@ -10,13 +10,18 @@ ORDER SUMMARY:
 
 <%= @description %>
 
-All tickets and reservations can be picked up at will-call beginning one
-hour before showtime.
+------------------------------------------------------------
+PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
+
+PAYMENT METHOD: <%= @payment_desc %>
+------------------------------------------------------------
+
+<%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)), :line_width => 60) %>
+
+<%= word_wrap(strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
 
 <% unless @special_instructions.blank? %>
 ------------------------------------------------------------
-SPECIAL INSTRUCTIONS:
-
 <%= strip_tags(@special_instructions) %>
 ------------------------------------------------------------
 <% end %>
@@ -30,11 +35,6 @@ NOTE: The recipient HAS NOT BEEN notified of your gift!
   <%= [@recipient.day_phone,@recipient.eve_phone,@recipient.email].compact.join(' - ') %>
 
 <% end %>
-------------------------------------------------------------
-PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
-
-PAYMENT METHOD: <%= @payment_desc %>
-------------------------------------------------------------
 
 (Please DO NOT REPLY to this email...it was generated automatically,
 not by a human being, and our computer isn't smart enough to
