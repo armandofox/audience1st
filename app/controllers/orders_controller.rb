@@ -15,7 +15,8 @@ class OrdersController < ApplicationController
   end
 
   def by_customer
-    @orders = Customer.find(params[:id]).orders
+    @customer = Customer.find params[:id]
+    @orders = @customer.orders
     render :partial => 'order', :collection => @orders, :layout => true
   end
 

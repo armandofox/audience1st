@@ -6,31 +6,30 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/imports/help', :controller => 'imports', :action => 'help'
   map.resources :labels
   
-  map.welcome  '/customers/welcome', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
-  map.connect '/customers/:id/show', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
-  %w(new temporarily_disable_admin reenable_admin auto_complete_for_customer_full_name).each do |action|
-    map.connect "/customers/#{action}", :controller => 'customers', :action => action
-  end
-  map.connect '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
-  map.connect '/customers/user_create', :controller => 'customers', :action => 'user_create', :conditions => {:method => :post}
-  map.connect '/customers/edit/:id', :controller => 'customers', :action => 'edit', :conditions => {:method => :get}
-  #map.connect '/customers/switch_to/:id', :controller => 'customers', :action => 'switch_to'
-  # switch-to cannot include :id in URL, since sometimes it is calld with a GET-style
-  # form submit that tries to override id by making it a hidden field.  There should
-  # be a POST-only route for switch-to that is properly constructed by cleaned-up
-  # JS code for the customer search field.
-  map.connect '/customers/switch_to', :controller => 'customers', :action => 'switch_to'
-  map.connect '/customers/update/:id', :controller => 'customers', :action => 'update', :conditions => {:method => :post}
-  map.connect '/customers/change_password', :controller => 'customers', :action => 'change_password'
+
+  # admin-only actions
+  map.temporarily_disable_admin '/disable_admin', :controller => 'customers', :action => 'temporarily_disable_admin'
+  map.reenable_admin '/reenable_admin',  :controller => 'customers', :action => 'reenable_admin'
+  map.connect '/customers/auto_complete_for_customer_full_name', :controller => 'customers', :action => 'auto_complete_for_customer_full_name'
+  map.list_customers '/customers/list', :controller => 'customers', :action => 'list'
+  map.list_duplicates '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates'
+  
+  map.merge_customers '/customers/merge', :controller => 'customers', :action => 'merge', :conditions => {:method => :get}
+  map.finalize_merge '/customers/finalize_merge', :controller => 'customers', :action => 'finalize_merge', :conditions => {:method => :post}
+  map.search_customers  '/customers/search', :controller => 'customers', :action => 'search', :conditions => {:method => :get}
+  map.lookup_customer  '/customers/lookup', :controller => 'customers', :action => 'lookup'
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
-  map.connect '/customers/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
-  map.connect '/customers/list', :controller => 'customers', :action => 'list', :conditions => {:method => :get}
-  map.connect '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates', :conditions => {:method => :get}
-  map.connect '/customers/merge', :controller => 'customers', :action => 'merge', :conditions => {:method => :get}
-  map.connect '/customers/finalize_merge', :controller => 'customers', :action => 'finalize_merge', :conditions => {:method => :post}
-  %w(search lookup).each do |action|
-    map.connect "/customers/#{action}", :controller => 'customers', :action => action
-  end
+  map.new_customer '/customers/new', :controller => 'customers', :action => 'new', :conditions => {:method => :get}
+
+  map.welcome '/customers/:id', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
+  map.edit '/customers/:id/edit', :controller => 'customers', :action => 'edit', :conditions => {:method => :get}
+  map.change_password '/customers/:id/change_password', :controller => 'customers', :action => 'change_password'
+  map.connect '/customers/:id/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
+  map.update_customer '/customers/:id/update', :controller => 'customers', :action => 'update', :conditions => {:method => :post}
+
+  map.create_customer '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
+  map.user_create_customer '/customers/user_create', :controller => 'customers', :action => 'user_create', :conditions => {:method => :post}
+
 
   # RSS
 
@@ -45,12 +44,13 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
 
   # vouchers
-  %w(update_shows addvoucher).each do |action|
-    map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => action
-  end
+  map.connect '/vouchers/update_shows', :controller => 'vouchers', :action => 'update_shows'
+  map.customer_add_voucher '/customer/:id/addvoucher', :controller => 'vouchers', :action => 'addvoucher', :conditions => {:method => :get}
+  map.customer_process_add_voucher '/customer/:id/process_addvoucher', :controller => 'vouchers', :action => 'process_addvoucher', :conditions => {:method => :post}
+  
   # with :id
   map.connect '/vouchers/reserve/:id', :controller => 'vouchers', :action => 'reserve', :conditions => {:method => :get}
-  %w(process_addvoucher update_comment confirm_multiple confirm_reservation cancel_prepaid cancel_multiple cancel_reservation).each do |action|
+  %w(update_comment confirm_multiple confirm_reservation cancel_prepaid cancel_multiple cancel_reservation).each do |action|
     map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => action, :conditions => {:method => :post}
   end
 
@@ -59,10 +59,11 @@ ActionController::Routing::Routes.draw do |map|
 
   # customer visits
   map.resources 'visits'
+  map.customer_visits '/customer/:id/visits', :controller => 'visits', :action => 'index'
   map.connect '/visits/list_by_prospector', :controller => 'visits', :action => 'list_by_prospector', :conditions => {:method => :get}
 
   # reports
-  map.connect '/reports', :controller => 'reports', :action => 'index'
+  map.reports '/reports', :controller => 'reports', :action => 'index'
   %w(do_report run_special_report advance_sales transaction_details_report accounting_report retail show_special_report unfulfilled_orders).each do |report_name|
     map.connect "/reports/#{report_name}", :controller => 'reports', :action => report_name
   end
@@ -77,7 +78,10 @@ ActionController::Routing::Routes.draw do |map|
 
   # customer-facing purchase pages
 
-  %w(index special subscribe shipping_address checkout edit_billing_address show_changed showdate_changed).each do |action|
+  map.store     '/store', :controller => 'store', :action => 'index', :conditions => {:method => :get}
+  map.store_subscribe '/store/subscribe', :controller => 'store', :action => 'subscribe', :conditions => {:method => :get}
+  map.store_special   '/store/special',:controller => 'store', :action => 'special', :conditions => {:method => :get}
+  %w(shipping_address checkout edit_billing_address show_changed showdate_changed).each do |action|
     map.connect "/store/#{action}", :controller => 'store', :action => action
   end
 
@@ -90,22 +94,22 @@ ActionController::Routing::Routes.draw do |map|
 
   # donations management
 
-  map.connect '/donations', :controller => 'donations', :action => 'index', :conditions => {:method => :get}
+  map.donations '/donations', :controller => 'donations', :action => 'index', :conditions => {:method => :get}
   map.connect '/donations/mark_ltr_sent',  :controller => 'donations', :action => 'mark_ltr_sent', :conditions => {:method => :get}
   
   # config options
 
-  map.connect '/options', :controller => 'options', :action => 'edit', :conditions => {:method => :get}
+  map.options '/options', :controller => 'options', :action => 'edit', :conditions => {:method => :get}
   map.connect '/options/update', :controller => 'options', :action => 'update', :conditions => {:method => :put}
 
   # walkup sales
 
-  map.connect '/box_office/walkup/:id', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
-  map.connect '/box_office/walkup', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
+  map.walkup_sales '/box_office/walkup/:id', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
+  map.walkup_default '/box_office/walkup', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
   map.connect "/box_office/change_showdate", :controller => 'box_office', :action => 'change_showdate'
-  %w(checkin walkup door_list walkup_report).each do |action|
-    map.connect "/box_office/#{action}/:id", :controller => 'box_office', :action => action, :conditions => {:method => :get}    
-  end
+  map.door_list '/box_office/:id/door_list', :controller => 'box_office', :action => 'door_list', :conditions => {:method => :get}
+  map.checkin  '/box_office/:id/checkin', :controller => 'box_office', :action => 'checkin', :conditions => {:method => :get}
+  map.walkup_report '/box_office/:id/walkup_report', :controller => 'box_office', :action => 'walkup_report', :conditions => {:method => :get}
   %w(do_walkup_sale modify_walkup_vouchers).each do |action|
     map.connect "/box_office/#{action}", :controller => 'box_office', :action => action, :conditions => {:method => :post}
   end
@@ -129,8 +133,8 @@ ActionController::Routing::Routes.draw do |map|
   # Routes for viewing and refunding orders
   map.order '/orders/:id', :controller => 'orders', :action => 'show', :conditions => {:method => :get}
   map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
-  map.connect '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
+  map.customer_orders '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
 
-  map.root :controller => 'customers', :action => 'welcome'
+  map.root :controller => 'customers', :action => 'home'
  
 end

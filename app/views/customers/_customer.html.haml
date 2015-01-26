@@ -4,8 +4,8 @@
   - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize
   - if customer.id && !read_only
     - last_login = "Last login: " << h(customer.last_login.to_formatted_s(:long))
-    %td= link_to first, {:action => 'switch_to', :id => customer }, {:title => last_login}
-    %td= link_to last, {:action => 'switch_to', :id => customer }, {:title => last_login}
+    %td= link_to first, welcome_path(customer), {:title => last_login}
+    %td= link_to last, welcome_path(customer), {:title => last_login}
   - else
     %td= first
     %td= last

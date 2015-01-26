@@ -2,8 +2,8 @@
   Welcome, #{@gLoggedIn.full_name}
   = gen_button 'Log Out', logout_path
   - if @disableAdmin
-    = gen_button('Regular Patron View', :controller => 'customers', :action => 'temporarily_disable_admin') 
+    = gen_button('Regular Patron View', temporarily_disable_admin_path)
     = popup_help_for :disable_admin
   - elsif @enableAdmin
-    = gen_button('Admin View', :controller => 'customers', :action => 'reenable_admin') 
+    = gen_button('Admin View', reenable_admin_path)
     = popup_help_for :disable_admin

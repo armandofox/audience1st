@@ -19,11 +19,8 @@ module AuthenticatedSystem
   def current_user
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_cookie)
-      if @current_user && !session[:admin_id] && (session[:admin_id] != false)
-        logger.info "Checking whether to enable admin on #{@current_user}"
-        possibly_enable_admin(@current_user)
-      end
     end
+    session[:admin_id] = if @current_user.try(:is_staff) then @current_user.id else nil end
     @current_user
   end
 
@@ -35,18 +32,6 @@ module AuthenticatedSystem
     retval
   end
   
-  def act_on_behalf_of(new_user)
-    if new_user
-      session[:cid] = new_user.id
-      @current_user = new_user
-    end
-  end
-
-  def acting_on_own_behalf
-    (!session[:admin_id] && !session[:can_restore_admin]) || 
-      (session[:admin_id] == session[:cid])
-  end
-
   def logged_in_user
     session[:admin_id] ? current_admin : current_user
   end
@@ -68,27 +53,7 @@ module AuthenticatedSystem
   # otherwise returns a 'generic' customer with no admin privileges but on
   # which it is safe to call instance methods of Customer.
   def current_admin
-    (!session[:admin_id] || session[:admin_id].to_i.zero?) ?
-    Customer.generic_customer :
-      (Customer.find_by_id(session[:admin_id]) || Customer.generic_customer)
-  end
-
-  # enable admin ID in session if this user is in fact an admin
-  def possibly_enable_admin(c = Customer.generic_customer)
-    return nil unless c
-    return nil if session[:admin_id] == false # don't try to enable automatically
-    session[:admin_id] = false
-    if c.is_staff # least privilege level that allows seeing other customer accts
-      (flash[:notice] ||= '') << 'Logged in as Administrator ' + c.first_name
-      session[:admin_id] = c.id
-      session.delete(:can_restore_admin)
-    end
-    c
-  end
-
-  def disable_admin
-    session[:can_restore_admin] = session[:admin_id]
-    session[:admin_id] = false
+    Customer.find_by_id(session[:admin_id]) || Customer.generic_customer
   end
 
     # Check if the user is authorized
@@ -158,20 +123,6 @@ module AuthenticatedSystem
     end
 
     def stored_action ; session[:return_to] || {:controller => 'customers', :action => 'welcome'} ; end
-
-    # Redirect to the URI stored by the most recent store_location call or
-    # to the passed default.  Set an appropriately modified
-    #   after_filter :store_location, :only => [:index, :new, :show, :edit]
-    # for any controller you want to be bounce-backable.
-    def redirect_to_stored(params={})
-      if session[:return_to]
-        redirect_to session[:return_to]
-      else
-        redirect_to :controller => 'customers', :action => 'welcome'
-      end
-      session[:return_to] = nil
-      true
-    end
 
     # Inclusion hook to make #current_user and #logged_in?
     # available as ActionView helper methods.

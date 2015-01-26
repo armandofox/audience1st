@@ -51,33 +51,6 @@ describe CustomersController do
       end
     end
   end
-  describe "admin switching" do
-    before(:each) do
-      @admin = BasicModels.create_customer_by_role(:boxoffice_manager,
-        :last_name => "Admin" )
-      @customer = BasicModels.create_generic_customer
-      login_as @admin
-      @controller.current_user.id.should == @admin.id
-    end
-    it "should switch to existing user" do
-      get :switch_to, :id => @customer.id
-      @controller.current_user.id.should == @customer.id
-    end
-    it "should retain current admin" do
-      get :switch_to, :id => @customer.id
-      @controller.current_admin.id.should == @admin.id
-    end
-    it "should not switch to nonexistent user" do
-      id = @customer.id
-      @customer.destroy
-      get :switch_to, :id => id
-    end
-    it "should redirect to welcome action by default" do
-      pending 'RESTful customer routes'
-      get :switch_to, :id => @customer.id
-      response.should redirect_to(:controller => 'customers', :action => 'welcome')
-    end
-  end
   describe "checkout flow" do
     before(:each) do
       @customer = BasicModels.create_generic_customer

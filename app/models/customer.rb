@@ -10,13 +10,15 @@ class Customer < ActiveRecord::Base
   include Authentication
   include Authentication::ByPassword
   include Authentication::ByCookieToken
+
+
   require 'csv'
 
   has_and_belongs_to_many :labels
   has_many :vouchers, :include => :vouchertype
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :orders, :order => 'sold_on DESC'
+  has_many :orders, :order => 'sold_on DESC', :conditions => 'sold_on IS NOT NULL'
   
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
@@ -32,7 +34,7 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :if => :self_created?, :with => Authentication.email_regex
+  validates_format_of :email, :if => :self_created?, :with => /^[\w\d]+@[\w\d]+/
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
@@ -114,7 +116,7 @@ class Customer < ActiveRecord::Base
   def valid_and_unique(email)
     if email.blank?
       true 
-    elsif !email.match(Authentication.email_regex) 
+    elsif !email.match(/^[\w\d]+@[\w\d]+/)
       false
     else
       !(Customer.find_by_email email)
@@ -283,7 +285,7 @@ class Customer < ActiveRecord::Base
 
   def valid_email_address?
     !self.email.blank? &&
-      self.email.match(Authentication.email_regex)
+      self.email.match(/^[\w\d]+@[\w\d]+/)
   end
   def invalid_email_address? ; !valid_email_address? ; end
 

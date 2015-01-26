@@ -73,7 +73,6 @@ class SessionsController < ApplicationController
       # reset_session
       self.current_user = @user
       # if user is an admin, enable admin privs
-      possibly_enable_admin(@user)
       @user.update_attribute(:last_login,Time.now)
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
@@ -81,7 +80,7 @@ class SessionsController < ApplicationController
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
-      redirect_to_stored
+      redirect_to_stored(@user)
     end
   end
 

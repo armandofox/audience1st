@@ -1,52 +1,38 @@
 class CustomersController < ApplicationController
 
-  require File.dirname(__FILE__) + '/../helpers/application_helper.rb'
-  require 'net/http'
-  require 'uri'
 
-  helper CustomersHelper
-
-  include Enumerable
+  CUSTOMER_ACTIONS = %w(welcome edit update change_password change_secret_question)
 
   # must be validly logged in before doing anything except login or create acct
-  before_filter(:is_logged_in,
-                :only=>%w[welcome change_password change_secret_question edit link_existing_account],
-                :add_to_flash => 'Please log in or create an account to view this page.')
-  before_filter :reset_shopping, :only => %w[welcome]
+  # this filter ensures current_user returns non-nil
+  before_filter(:is_logged_in, :except => %w(new forgot_password))
 
-  # must be boxoffice to view other customer records or adding/removing vouchers
-  before_filter :is_staff_filter, :only => %w[list list_duplicates switch_to search]
-  before_filter :is_boxoffice_filter, :only=>%w[merge create]
 
-  # only superadmin can destory customers, because that wreaks havoc
-  before_filter(:is_admin_filter,
-    :only => ['destroy'],
-    :redirect_to => {:action => :index},
-    :add_flash => {:notice => 'Only super-admin can delete customer; use Merge instead'})
+  # and to do Restful customer actions, must be either that customer or staff
+  before_filter(:is_myself_or_staff, :only => CUSTOMER_ACTIONS)
 
-  # prevent complaints on AJAX autocompletion
-  skip_before_filter :verify_authenticity_token, :only => [:auto_complete_for_customer_full_name]
+  ADMIN_ACTIONS = %w(temporarily_disable_admin reenable_admin auto_complete_for_customer_full_name lookup create search merge finalize_merge list list_duplicates)
+  before_filter :is_staff_filter, :only => ADMIN_ACTIONS
 
-  # auto-completion for customer search
-  def auto_complete_for_customer_full_name
-    render :inline => "" and return if params[:__arg].blank?
-    @customers =
-      Customer.find_by_multiple_terms(params[:__arg].to_s.split( /\s+/ ))
-    render(:partial => 'customers/customer_search_result',
-           :locals => {:matches => @customers})
+  private
+  
+  def is_myself_or_staff
+    redirect_to login_path unless (@gAdmin.is_staff || Customer.find_by_id(params[:id]) == current_user)
   end
 
-  # the default is to show your welcome page, which automatically redirects
-  # to login if you're not logged in or to subscriber welcome if you're a
-  # subscriber.
-  def index ; redirect_to :action => 'welcome' ; end
+  public
 
-  # DEPRECATED legacy routes:
-  def login ; redirect_to login_path ; end
-  def logout ; redirect_to logout_path ; end
+  def home
+    if current_user
+      redirect_to welcome_path(current_user)
+    else
+      redirect_to login_path
+    end
+  end
 
   def welcome
-    @customer = @gCustomer
+    reset_shopping
+    @customer = Customer.find params[:id]
     @admin = current_admin
     @vouchers = @customer.active_vouchers.sort_by(&:created_at)
     session[:store_customer] = @customer.id
@@ -71,7 +57,7 @@ class CustomersController < ApplicationController
   end
 
   def edit
-    @customer = current_user
+    @customer = Customer.find params[:id]
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
     # editing contact info may be called from various places. correctly
@@ -80,7 +66,7 @@ class CustomersController < ApplicationController
   end
 
   def update
-    @customer = current_user
+    @customer = Customer.find params[:id]
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
     # editing contact info may be called from various places. correctly
@@ -113,7 +99,7 @@ class CustomersController < ApplicationController
         email_confirmation(:confirm_account_change,@customer, 
                            "updated your email address in our system")
       end
-      redirect_to_stored
+      redirect_to_stored(@customer)
     rescue ActiveRecord::RecordInvalid
       flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
       redirect_to :action => 'edit'
@@ -124,7 +110,7 @@ class CustomersController < ApplicationController
   end
 
   def change_password
-    @customer = current_user
+    @customer = Customer.find params[:id]
     return if request.get?
     if @customer.update_attributes(params[:customer])
       password = params[:customer][:password]
@@ -143,15 +129,43 @@ class CustomersController < ApplicationController
       set_return_to(params[:redirect_to] || login_path)
     else
       if send_new_password(params[:email])
-        redirect_to_stored
+        redirect_to login_path
       else
         redirect_to :action => 'forgot_password'
       end
     end
   end
 
+  def new
+    @is_admin = current_admin.is_boxoffice
+    @customer = Customer.new
+  end
+  
+  def user_create
+    @customer = Customer.new(params[:customer])
+    if @gCheckoutInProgress && @customer.day_phone.blank?
+      flash[:notice] = "Please provide a contact phone number in case we need to contact you about your order."
+      render :action => 'new'
+      return
+    end
+    begin
+      @customer.save!
+      @customer.update_attribute(:last_login, Time.now)
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
+      self.current_user = @customer
+      logger.info "Session cid set to #{session[:cid]}"
+      Txn.add_audit_record(:txn_type => 'edit',
+        :customer_id => @customer.id,
+        :comments => 'new customer self-signup')
+      redirect_to_stored(@customer)
+    rescue
+      flash[:notice] = "There was a problem creating your account.<br/>"
+      render :action => 'new'
+    end
+  end
+
   def change_secret_question
-    @customer = current_user
+    @customer = Customer.find params[:id]
     return if request.get?
     if @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
@@ -164,7 +178,7 @@ class CustomersController < ApplicationController
   end
 
   # Following actions are for use by admins only:
-  # list, switch_to, merge, search, create, destroy
+  # list, merge, search, create, destroy
 
   def list
     @offset,@limit = get_list_params 
@@ -228,7 +242,7 @@ class CustomersController < ApplicationController
       do_automatic_merge(*params[:merge].keys)
       redirect_to_last_list and return
     when /manual/i
-      render :action => :merge
+      render :action => 'merge'
     else
       flash[:alert] = "Unrecognized action: #{params[:commit]}"
       redirect_to_last_list and return
@@ -249,23 +263,7 @@ class CustomersController < ApplicationController
     redirect_to_last_list
   end
 
-  def switch_to
-    if (customer = Customer.find_by_id(params[:id]))
-      act_on_behalf_of customer
-      reset_shopping
-      if params[:target_controller] && params[:target_action]
-        redirect_to :controller => params[:target_controller], :action => params[:target_action], :id => customer.id
-      else
-        redirect_to :controller => 'customers',:action => 'welcome',:id => customer.id
-      end
-    else
-      flash[:notice] = "No such customer: id# #{params[:id]}"
-      redirect_to :controller => 'customers', :action => 'list'
-    end
-  end
-
   def search
-    debugger
     unless params[:searching]
       render :partial => 'search'
       return
@@ -287,11 +285,6 @@ class CustomersController < ApplicationController
     render :partial => 'search_results'
   end
 
-  def new
-    @is_admin = current_admin.is_boxoffice
-    @customer = Customer.new
-  end
-  
   def create
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     @customer = Customer.new(params[:customer])
@@ -307,56 +300,18 @@ class CustomersController < ApplicationController
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
     end
     current_user = @customer
-    @gCheckoutInProgress ? redirect_to_stored : redirect_to(:action => 'switch_to', :id => @customer.id)
+    redirect_to_stored(@customer)
   end
 
-  def user_create
-    @customer = Customer.new(params[:customer])
-    if @gCheckoutInProgress && @customer.day_phone.blank?
-      flash[:notice] = "Please provide a contact phone number in case we need to contact you about your order."
-      render :action => 'new'
-      return
-    end
-    begin
-      @customer.save!
-      @customer.update_attribute(:last_login, Time.now)
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
-      self.current_user = @customer
-      logger.info "Session cid set to #{session[:cid]}"
-      Txn.add_audit_record(:txn_type => 'edit',
-        :customer_id => @customer.id,
-        :comments => 'new customer self-signup')
-      redirect_to_stored
-    rescue
-      flash[:notice] = "There was a problem creating your account.<br/>"
-      render :action => 'new'
-    end
+  # AJAX helpers
+  # auto-completion for customer search
+  def auto_complete_for_customer_full_name
+    render :inline => "" and return if params[:__arg].blank?
+    @customers =
+      Customer.find_by_multiple_terms(params[:__arg].to_s.split( /\s+/ ))
+    render(:partial => 'customers/customer_search_result',
+      :locals => {:matches => @customers})
   end
-
-  # DANGEROUS METHOD: restricted to super-admin
-  # TBD: what this really should do is link all related stuff to
-  # the placeholder 'walkup customer'
-
-  def destroy
-    p = session[:cid].to_i
-    if p == logged_in_id
-      flash[:notice] = "Can't delete yourself while logged in"
-    elsif p.zero?
-      flash[:notice] = "Can't delete placeholder customer 0"
-    else
-      begin
-        c = Customer.find(p)
-        msg = "Customer '#{c.full_name}' (ID #{c.id}) permanently deleted"
-        c.destroy
-        flash[:notice] = msg
-      rescue Exception => e
-        flash[:notice] = "Error deleting customer: #{e.message}"
-      end
-    end
-    session[:cid] = @gAdmin.id
-    redirect_to :action => 'index'
-  end
-
 
   #  TBD this method only used by (eg) visits controller to replace-in-place
   # a customer id with a name. Should be obsoleted.
@@ -369,16 +324,14 @@ class CustomersController < ApplicationController
   end
 
   def temporarily_disable_admin
-    disable_admin
+    session.delete(:admin_id)
     flash[:notice] = "Switched to non-admin user view."
     redirect_to_stored
   end
 
   def reenable_admin
-    session[:admin_id] = nil    # fail-safe, will remain this way if reenable fails
-    if session[:can_restore_admin] &&
-        (c = Customer.find_by_id(session[:can_restore_admin])) &&
-        possibly_enable_admin(c)
+    if (c = Customer.find_by_id(session[:cid])) && c.is_staff
+      session[:admin_id] = c.id
       flash[:notice] = "Admin view reestablished."
     else
       flash[:notice] = "Could not reinstate admin privileges.  Try logging out and back in."
@@ -423,6 +376,8 @@ class CustomersController < ApplicationController
     end
   end
 
+  private
+ 
   def delete_admin_only_attributes(params)
     Customer.extra_attributes.each { |a| params.delete(a) }
     params.delete(:comments)
@@ -459,7 +414,5 @@ class CustomersController < ApplicationController
       return nil
     end
   end
-
-
 
 end

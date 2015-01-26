@@ -88,28 +88,18 @@ class ApplicationController < ActionController::Base
     @gCheckoutInProgress = val
   end
 
-  def find_cart
-    Order.find_by_id(session[:cart]) || Order.new
+  def redirect_to_stored(customer = Customer.find_by_id(session[:cid]))
+    if session[:return_to]
+      redirect_to session[:return_to]
+    elsif customer
+      redirect_to welcome_path(customer)
+    else
+      redirect_to login_path
+    end
   end
 
-  def get_filter_info(params,modelname,default=nil,descending=nil)
-    cols = eval(ActiveSupport::Inflector.camelize(modelname) + ".columns")
-    order = params[:order_by]
-    if order.nil? or order.empty?
-      if (default)
-        order = default
-      else
-        order = cols.first.name
-      end
-    end
-    order += " DESC" if descending
-    conds = nil
-    f = params[(ActiveSupport::Inflector.tableize(modelname)+"_filter").to_sym]
-    if f && !f.empty?
-      fs = "'%" + f.gsub(/\'/, "''") + "%'"
-      conds = cols.map { |c| "#{c.name} LIKE #{fs}"}.join(" OR ")
-    end
-    return conds, order, f
+  def find_cart
+    Order.find_by_id(session[:cart]) || Order.new
   end
 
   # setup session etc. for an "external" login, eg by a daemon
@@ -121,29 +111,12 @@ class ApplicationController < ActionController::Base
 
   def is_logged_in
     unless logged_in?
-      set_return_to
       flash[:notice] = "Please log in or create an account in order to view this page."
       redirect_to login_path
       nil
     else
       current_user
     end
-  end
-
-  def not_logged_in
-    c = logged_in_id
-    unless c.nil? or c.zero?
-      flash[:notice] = 'You cannot be logged in to do this action.'
-      redirect_to logout_path
-      false
-    else
-      true
-    end
-  end
-
-  def has_privilege(id,level)
-    c = Customer.find_by_id(id)
-    return c && (c.role >= level)
   end
 
   def temporarily_unavailable
@@ -156,21 +129,18 @@ class ApplicationController < ActionController::Base
   # don't know the syntax for that
 
   Customer.roles.each do |r|
-    eval <<EOEVAL
-    def is_#{r}
-      current_admin.is_#{r}
-      # (c = Customer.find_by_id(session[:admin_id])) && c.is_#{r}
+    define_method "is_#{r}" do
+      current_admin.send("is_#{r}")
     end
-    def is_#{r}_filter
-      unless current_admin.is_#{r}
-          flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
+    define_method "is_#{r}_filter" do
+      unless current_admin.send("is_#{r}")
+        flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
         session[:return_to] = request.request_uri
         redirect_to login_path
         return nil
       end
       return true
     end
-EOEVAL
   end
 
   def download_to_excel(output,filename="data",timestamp=true)

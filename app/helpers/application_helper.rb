@@ -240,25 +240,6 @@ EJS1
     "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
   end
 
-  def nav_tabs(klass,ary)
-    ary.map do |a|
-      args = {:controller => a[1].to_s, :action => a[2].to_s }
-      args[:id] = a[3].id if a.length > 3
-      args.merge!(a[4]) if a.length > 4
-      content_tag(:li, h(a[0]),
-        :id => "t_#{a[1]}_#{a[2]}") do
-        link_to(a[0], args)
-      end
-    end.join("\n")
-  end
-
-  def button_bar(*ary)
-    ary.map do |a|
-      options = {:controller => a[1].to_s, :action => a[2].to_s}
-      admin_button a[0].gsub(/ /,'&nbsp;'), options.merge(a[3])
-    end.join("\n")
-  end
-
   def pagination_bar(thispage, f, count, htmlopts={})
     s = ""
     curval = eval("@"+ f.to_s)  # value of the filter isntance variable

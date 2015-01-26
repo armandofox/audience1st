@@ -50,12 +50,17 @@ When /^I login as (.*)$/ do |who|
   click_button 'Login'
 end
 
-Given /^I am acting on behalf of customer "(.*) (.*)"$/ do |first,last|
+Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
   customer = Customer.find_by_first_name_and_last_name!(first,last)
-  find(:xpath, "//input[@id='id']").set customer.id # must use xpath since hidden field
-  with_scope('form#quick_search') do ;  click_button 'Go' ;  end
+  visit welcome_path(customer)
   with_scope('div#on_behalf_of_customer') do
     page.should have_content("Customer: #{first} #{last}")
+  end
+end
+
+Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
+  with_scope('#onBehalfOfName') do
+    page.should have_content(full_name)
   end
 end
 
@@ -81,6 +86,12 @@ Given /^customer "(.*) (.*)" exists$/ do |first,last|
   @customer =
     Customer.find_by_first_name_and_last_name(first,last) ||
     BasicModels.create_generic_customer(:first_name => first, :last_name => last)
+end
+
+Given /^the following customers exist: (.*)$/ do |list|
+  list.split(/\s*,\s*/).each do |name|
+    steps %Q{Given customer "#{name}" exists}
+  end
 end
 
 Given /^my birthday is set to "(.*)"/ do |date|
