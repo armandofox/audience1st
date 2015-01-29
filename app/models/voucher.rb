@@ -193,11 +193,12 @@ class Voucher < Item
   end
 
   def redeemable_showdates(ignore_cutoff = false)
+    valid_vouchers = vouchertype.valid_vouchers.sort_by(&:thedate)
     if ignore_cutoff
-      vouchertype.valid_vouchers
+      valid_vouchers
     else
       # make sure advance reservations and other constraints fulfilled
-      vouchertype.valid_vouchers.map(&:adjust_for_customer_reservation)
+      valid_vouchers.map(&:adjust_for_customer_reservation)
     end
   end
   
