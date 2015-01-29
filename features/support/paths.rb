@@ -7,19 +7,18 @@ module NavigationHelpers
   # step definition in webrat_steps.rb
   #
   def path_to(page_name)
-    case page_name
-    when /the login page/i              then login_path
-    when /the login with secret question page/i then secret_question_path
-    when /the change secret question page/i then '/customers/change_secret_question'
-    when /the home ?page/i              then '/customers/welcome'
-    when /the subscriber home ?page/i   then '/customers/welcome'
-    when /the edit contact info page for customer "(.*) +(.*)"/i
+    if page_name =~ /for customer "(.*) (.*)"/
       @customer = Customer.find_by_first_name_and_last_name!($1, $2)
-      visit "/customers/#{@customer.id}/edit"
-    when /the edit contact info page$/  then '/customers/edit'
-    when /the change password page/i    then '/customers/change_password'
-    when /the forgot password page/i    then '/customers/forgot_password'
-    when /the new customer page/i       then '/customers/new'
+    end
+    case page_name
+    when /login page/i              then login_path
+    when /login with secret question page/i then secret_question_path
+    when /change secret question page/i     then '/customers/change_secret_question'
+    when /home page/                        then welcome_path(@customer)
+    when /edit contact info page/           then edit_customer_path(@customer)
+    when /change password page/i            then change_password_path(@customer)
+    when /the forgot password page/i        then '/customers/forgot_password'
+    when /the new customer page/i           then new_customer_path
       # admin-facing voucher management
     when /the add comps page/i          then '/vouchers/addvoucher'
       # store purchase flow

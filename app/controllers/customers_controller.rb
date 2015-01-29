@@ -5,7 +5,7 @@ class CustomersController < ApplicationController
 
   # must be validly logged in before doing anything except login or create acct
   # this filter ensures current_user returns non-nil
-  before_filter(:is_logged_in, :except => %w(new forgot_password))
+  before_filter(:is_logged_in, :except => %w(new user_create forgot_password))
 
 
   # and to do Restful customer actions, must be either that customer or staff
@@ -118,7 +118,7 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
-      redirect_to :action => 'welcome'
+      redirect_to welcome_path(@customer)
     else
       render :action => 'change_password'
     end
@@ -131,7 +131,7 @@ class CustomersController < ApplicationController
       if send_new_password(params[:email])
         redirect_to login_path
       else
-        redirect_to :action => 'forgot_password'
+        redirect_to forgot_password_path
       end
     end
   end
@@ -300,7 +300,7 @@ class CustomersController < ApplicationController
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
     end
     current_user = @customer
-    redirect_to_stored(@customer)
+    redirect_to welcome_path(@customer)
   end
 
   # AJAX helpers
