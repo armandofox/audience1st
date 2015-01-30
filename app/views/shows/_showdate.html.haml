@@ -14,7 +14,7 @@
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate), showdate.printable_name
     = "|"
-    = link_to_if showdate.compute_total_sales.zero?, 'Delete', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :post,:confirm => 'Delete this performance: are you sure?' }
+    = link_to_if showdate.compute_total_sales.zero?, 'Delete', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :delete,:confirm => 'Delete this performance: are you sure?' }
     = "|"
     = link_to_function "Ticket Details", visual_effect(:toggle_slide,"showdate_#{showdate.id}")
 %tr
@@ -43,7 +43,7 @@
                   = link_to_remote 'Delete', |
                     :url => {:controller => 'valid_vouchers', |
                     :action => 'destroy', :id => v}, |
-                    :method => :post, |
+                    :method => :delete, |
                     :success => "Element.hide('valid_voucher_#{v.id}')", |
                     :failure => 'alert("Deletion failed!")' |
         %tr
