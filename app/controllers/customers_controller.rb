@@ -260,7 +260,6 @@ class CustomersController < ApplicationController
   end
 
   def search
-    debugger
     unless params[:searching]
       render :partial => 'search'
       return

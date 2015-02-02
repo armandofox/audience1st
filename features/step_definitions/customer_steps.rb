@@ -90,8 +90,10 @@ end
 
 Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
   customer = Customer.find_by_first_name_and_last_name! first,last
+  dummy = Customer.new
   attribs.hashes.each do |attr|
-    customer.send(attr[:attribute]).should == attr[:value]
+    name,val = attr[:attribute], attr[:value]
+    customer.send(name).should == Customer.columns_hash[name].type_cast(val)
   end
 end
 

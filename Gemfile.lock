@@ -49,6 +49,7 @@ GEM
       multi_test (>= 0.0.2)
     cucumber-rails (0.3.2)
       cucumber (>= 0.8.0)
+    database_cleaner (1.0.1)
     dbf (1.2.8)
       activesupport (>= 2.3.5)
       fastercsv (>= 1.4.0)
@@ -151,6 +152,7 @@ DEPENDENCIES
   constant_contact (= 1.4.0)
   cucumber
   cucumber-rails
+  database_cleaner (= 1.0.1)
   dbf (= 1.2.8)
   dbi (= 0.4.5)
   factory_girl (~> 2.6.4)

@@ -28,6 +28,7 @@ group :development, :test do
   gem 'minitest'
   gem 'capistrano', '2.5.10'
   gem 'capybara', '1.0.1'
+  gem 'database_cleaner', '1.0.1'
   gem 'factory_girl', '~> 2.6.4'
   gem 'rubyzip', '~> 0.9.9'
   gem 'mime-types', '1.24'

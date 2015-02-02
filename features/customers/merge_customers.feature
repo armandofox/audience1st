@@ -15,10 +15,10 @@ Background:
    |  35.00 | 2009-01-01 | Janey Weigandt    | General |
    |  12.00 | 2009-05-01 | MaryJane Weigandt | General |
   And I am logged in as boxoffice
+  And I select customers "MaryJane Weigandt" and "Janey Weigandt" for merging
 
 Scenario: auto merge 
   
-  When I select customers "MaryJane Weigandt" and "Janey Weigandt" for merging
   And I press "Auto Merge"
   Then customer "Janey Weigandt" should not exist
   And customer "MaryJane Weigandt" should have the following attributes:
@@ -29,8 +29,20 @@ Scenario: auto merge
   And customer "MaryJane Weigandt" should have a donation of $35.00 to "General"
   And customer "MaryJane Weigandt" should have a donation of $12.00 to "General"
 
-Scenario: forget customer
-
-
-
-  
+@no-txn
+Scenario: manual merge
+  # MaryJane appears in column 0 (left), Janey in column 1 (right)
+  When I press "Manual Merge"
+  And I choose "first_name_1"
+  And I choose "email_1"
+  And I choose "street_0"
+  And I choose "zip_1"
+  And I press "Merge Records"
+  Then I should see /Transferred .+ to customer/
+  And customer "MaryJane Weigandt" should not exist
+  And customer "Janey Weigandt" should have the following attributes:
+   | attribute  | value        |
+   | last_login | 2011-01-03   |
+   | zip        | 99949        |
+   | email      | janey@mail.com |
+   | street     | 11 Main St   |

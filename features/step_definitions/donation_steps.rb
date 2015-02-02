@@ -25,7 +25,7 @@ Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|b
     else 'box_chk'
     end)
   begin
-    order.finalize!(Time.parse date)
+    order.finalize!(date)
   rescue Exception => e
     raise "Finalize error: #{order.errors.full_messages}"
   end

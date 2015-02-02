@@ -1,10 +1,11 @@
 %p.infoMsg  Select which value will be retained from each record.  Unselected values will be discarded.
 
 - form_tag :action=>'finalize_merge' do
+  - c0,c1 = @cust[0].id, @cust[1].id
   = hidden_field_tag 'action_name', @last_action_name
   = hidden_field_tag 'offset', @offset
-  = hidden_field_tag 'cust0', @cust[0].id
-  = hidden_field_tag 'cust1', @cust[1].id
+  = hidden_field_tag 'cust0', c0
+  = hidden_field_tag 'cust1', c1
   %table.hilite
     %tr{:class=>cycle(:odd,:even)}
       %td Last login
@@ -17,10 +18,10 @@
     - Customer.replaceable_attributes.each do |c|
       %tr{:class=>cycle(:odd,:even)}
         %td= h c.humanize
-        %td
+        %td.c0
           = radio_button_tag c, 0, :selected=>true
           = h @cust[0].send(c)
-        %td
+        %td.c1
           = radio_button_tag c, 1
           = h @cust[1].send(c)
 
