@@ -197,7 +197,6 @@ class CustomersController < ApplicationController
   end
 
   def merge
-    redirect_to({:action => :index}, :notice => 'Merging is temporarily disabled. It will be back soon.') and return
     if !params[:merge] || params[:merge].keys.length < 1
       flash[:notice] = 'You have not selected any customers.'
       redirect_to_last_list and return
@@ -219,10 +218,6 @@ class CustomersController < ApplicationController
     when /forget/i
       count = do_deletions(@cust, :forget!)
       flash[:notice] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:notice]}"
-      redirect_to_last_list and return
-    when /expunge/i
-      count = do_deletions(@cust, :expunge!)
-      flash[:notice] = "#{count} customers (and their transactions) expunged<br/> #{flash[:notice]}"
       redirect_to_last_list and return
     when /auto/i
       do_automatic_merge(*params[:merge].keys)

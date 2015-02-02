@@ -12,11 +12,18 @@ class Order < ActiveRecord::Base
 
   delegate :purchase_medium, :to => :purchasemethod
   
+  # errors
+
   class Order::NotReadyError < StandardError ; end
   class Order::SaveRecipientError < StandardError; end
   class Order::SavePurchaserError < StandardError ; end
   class Order::PaymentFailedError < StandardError; end
-  
+
+  # merging customers
+  def self.foreign_keys_to_customer
+    [:customer_id, :purchaser_id, :processed_by_id]
+  end
+
   serialize :valid_vouchers, Hash
   serialize :donation_data, Hash
 

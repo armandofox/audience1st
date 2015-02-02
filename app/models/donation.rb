@@ -21,10 +21,6 @@ class Donation < Item
   validates_numericality_of :amount
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
 
-  def self.foreign_keys_to_customer
-    [:customer_id, :processed_by_id]
-  end
-
   def self.from_amount_and_account_code_id(amount, id)
     if id.blank? || (use_code = AccountCode.find_by_id(id)).nil?
       use_code = Donation.default_code

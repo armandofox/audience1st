@@ -23,9 +23,6 @@ class Voucher < Item
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
-  def self.foreign_keys_to_customer
-    [:customer_id, :processed_by_id, :gift_purchaser_id]
-  end
   
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)

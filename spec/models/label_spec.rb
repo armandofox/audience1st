@@ -30,10 +30,6 @@ describe Label do
       @c.forget!.should be_true
       @foo_label.customers.should_not include(@c)
     end
-    it "should be deleted when that customer is expunged" do
-      @c.expunge!.should be_true
-      @foo_label.customers.should_not include(@c)
-    end
     it "should be moved to surviving customer if merged" do
       @c2 = BasicModels.create_generic_customer
       @c2.merge_automatically!(@c).should be_true

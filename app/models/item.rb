@@ -9,4 +9,9 @@ class Item < ActiveRecord::Base
   validates_presence_of :processed_by_id
 
   delegate :sold_on, :purchasemethod, :to => :order
+
+  def self.foreign_keys_to_customer
+    [:customer_id, :processed_by_id, :gift_purchaser_id]
+  end
+
 end

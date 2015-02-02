@@ -73,8 +73,9 @@ Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |
   page.should have_content("Welcome, #{customer.first_name}")
 end
 
-Given /^customer "(.*) (.*)" should exist$/ do |first,last|
-  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
+  @customer = Customer.find_by_first_name_and_last_name(first,last)
+  if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
 end
 
 Given /^customer "(.*) (.*)" exists$/ do |first,last|
@@ -87,11 +88,25 @@ Given /^my birthday is set to "(.*)"/ do |date|
   @customer.update_attributes!(:birthday => Date.parse(date))
 end
 
+Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
+  customer = Customer.find_by_first_name_and_last_name! first,last
+  attribs.hashes.each do |attr|
+    customer.send(attr[:attribute]).should == attr[:value]
+  end
+end
+
 Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,date|
   Customer.find_by_first_name_and_last_name!(first,last).birthday.should ==
     Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
 end
 
+When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|
+  c1 = Customer.find_by_first_name_and_last_name! f1,l1
+  c2 = Customer.find_by_first_name_and_last_name! f2,l2
+  visit '/customers/list'
+  check "merge[#{c1.id}]"
+  check "merge[#{c2.id}]"
+end
 
 Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
