@@ -1,15 +1,13 @@
 require 'spec_helper'
 
 describe Order, 'adding' do
-  before :all do 
+  before :each do 
     @vv = ValidVoucher.create!(
       :vouchertype => BasicModels.create_revenue_vouchertype(:price => 7),
       :showdate => BasicModels.create_one_showdate(1.day.from_now),
       :start_sales => Time.now,
       :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
-  end
-  before :each do
     @order = Order.new 
   end
   describe 'tickets' do

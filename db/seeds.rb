@@ -5,6 +5,7 @@ class Audience1stSeeder
   def self.seed_all
     self.create_special_customers
     self.create_default_account_code
+    self.create_purchasemethods
   end
 
   #  Special customers that must exist and cannot be deleted
@@ -62,6 +63,22 @@ class Audience1stSeeder
   def self.create_default_account_code
     unless AccountCode.find(:first)
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
+    end
+  end
+
+  def self.create_purchasemethods
+    ["Web - Credit Card","web_cc",false,
+      "No payment required","none",true,
+      "Box office - Credit Card","box_cc",false,
+      "Box office - Cash","box_cash",false,
+      "Box office - Check","box_chk",false,
+      "Payment Due","pmt_due",false,
+      "External Vendor","ext",false,
+      "Part of a package","bundle",true,
+      "Other","?purch?",false,
+      "In-Kind Goods or Services","in_kind",true].each_slice(3) do |pm|
+      Purchasemethod.create!(:description => pm[0],
+        :shortdesc => pm[1], :nonrevenue => pm[2])
     end
   end
 

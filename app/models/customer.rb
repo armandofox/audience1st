@@ -260,9 +260,7 @@ class Customer < ActiveRecord::Base
   # convenience accessors
 
   def to_s
-    "[#{id}] #{full_name} " <<
-      (email.blank? ? '' : "<#{email}> ") <<
-      (fb_user_id.blank? ? '' : "{#{fb_user_id}}")
+    "[#{id}] #{full_name} " << (email.blank? ? '' : "<#{email}> ") 
   end
 
   def inspect
