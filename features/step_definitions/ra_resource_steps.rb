@@ -62,12 +62,12 @@ Then /^no (\w+) with ([\w: \']+) should exist$/ do |resource, attributes|
 end
 
 # Resource has attributes with given values
-Then  "the $resource should have $attributes" do |resource, attributes|
-  klass, instance, attributes = parse_resource_args resource, attributes
-  attributes.each do |attr, val|
-    instance.send(attr).should == val
-  end
-end
+# Then  "the $resource should have $attributes" do |resource, attributes|
+#   klass, instance, attributes = parse_resource_args resource, attributes
+#   attributes.each do |attr, val|
+#     instance.send(attr).should == val
+#   end
+# end
 
 # Resource attributes should / should not be nil
 Then  "the $resource's $attr should be nil" do |resource, attr|

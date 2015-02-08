@@ -64,6 +64,10 @@ module NavigationHelpers
       @show = Show.find_by_name($1)
       "/showdates/new?show_id=#{@show.id}"
 
+    when /the edit showdate page for (.*)/i
+      @showdate = Showdate.find_by_thedate! Time.parse($1) unless $1 =~ /that performance/
+      edit_showdate_path(@showdate)
+
     when /the donation landing page coded for fund (.*)/i
       "/store/donate_to_fund/#{AccountCode.find_by_code($1).id}"
     when /the donation landing page coded for a nonexistent fund/i

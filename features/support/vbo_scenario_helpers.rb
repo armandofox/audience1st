@@ -4,9 +4,8 @@ module VboScenarioHelpers
     show = Show.find_by_name(name) ||
       Show.create!(:name => name,
       :house_capacity => args[:house_capacity] || 10,
-      :opening_date => args[:opening_date] || 1.month.ago,
-      :closing_date => args[:closing_date] || 1.month.from_now)
-
+      :opening_date => args[:opening_date] || (time - 1.month),
+      :closing_date => args[:closing_date] || (time + 1.month))
     return Showdate.find_by_show_id_and_thedate(show.id, time) ||
       show.showdates.create!(
       :thedate => time,
