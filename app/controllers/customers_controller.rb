@@ -171,9 +171,9 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
         :comments => 'Change secret question or answer')
       flash[:notice] = 'Secret question change confirmed.'
-      redirect_to welcome_path
+      redirect_to welcome_path(@customer)
     else
-      render :action => :change_secret_question
+      render :action => :change_secret_question, :id => @customer
     end
   end
 
@@ -299,7 +299,6 @@ class CustomersController < ApplicationController
     unless params[:dont_send_email]
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
     end
-    current_user = @customer
     redirect_to welcome_path(@customer)
   end
 

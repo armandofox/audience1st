@@ -17,5 +17,5 @@ Scenario: admin can create customer by name only
   And I press "Create"
   Then customer "Bob Barker" should exist
   And I should be on the home page for customer "Bob Barker"
-  And I should see "Welcome, Bob Barker"
+
 

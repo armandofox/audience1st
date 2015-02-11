@@ -13,14 +13,14 @@ module NavigationHelpers
     case page_name
     when /login page/i              then login_path
     when /login with secret question page/i then secret_question_path
-    when /change secret question page/i     then '/customers/change_secret_question'
+    when /change secret question page/      then change_secret_question_path(@customer)
     when /home page/                        then welcome_path(@customer)
     when /edit contact info page/           then edit_customer_path(@customer)
     when /change password page/i            then change_password_path(@customer)
-    when /the forgot password page/i        then '/customers/forgot_password'
+    when /the forgot password page/i        then forgot_password_path
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management
-    when /the add comps page/i          then '/vouchers/addvoucher'
+    when /the add comps page for customer "(.*) (.*)"/i then customer_add_voucher_path(Customer.find_by_first_name_and_last_name! $1,$2)
       # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page/i              then '/store'
@@ -35,16 +35,11 @@ module NavigationHelpers
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes?season=$1"
-    when /the walkup sales page for (.*)$/
-      @showdate = Showdate.find_by_thedate!(Time.parse($1))
-      "/box_office/walkup/#{@showdate.id}"
-    when /the walkup sales page/i       then "/box_office/walkup/#{@showdate.id}"
-    when /the walkup sales report for "?(.*)?"$/ then "/box_office/walkup_report/#{(@showdate = Showdate.find_by_thedate!(Time.parse($1))).id}"
-    when /the checkin page for "?(.*)"?$/ then "/box_office/checkin/#{(@showdate = Showdate.find_by_thedate(Time.parse($1))).id}"
-    when /the checkin page$/i            then "/box_office/checkin/#{@showdate.id}"
 
-    when /the door list for "?(.*)"?$/ then "/box_office/door_list/#{(@showdate = Showdate.find_by_thedate(Time.parse($1))).id}"
-    when /the door list$/i            then "/box_office/door_list/#{@showdate.id}"
+    when /the (walkup report|walkup sales|checkin|door list) page (:?for (.*))?$/
+      @showdate = Showdate.find_by_thedate!(Time.parse $2) if !$2.blank?
+      page = $1.gsub(/\s+/, '_')
+      self.send("#{page}_path", @showdate)
 
     when /the admin:(.*) page/i
       page = $1

@@ -10,6 +10,7 @@ ActionController::Routing::Routes.draw do |map|
   # admin-only actions
   map.temporarily_disable_admin '/disable_admin', :controller => 'customers', :action => 'temporarily_disable_admin'
   map.reenable_admin '/reenable_admin',  :controller => 'customers', :action => 'reenable_admin'
+
   map.connect '/customers/auto_complete_for_customer_full_name', :controller => 'customers', :action => 'auto_complete_for_customer_full_name'
   map.list_customers '/customers/list', :controller => 'customers', :action => 'list'
   map.list_duplicates '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates'
@@ -24,7 +25,7 @@ ActionController::Routing::Routes.draw do |map|
   map.welcome '/customers/:id', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   map.edit_customer '/customers/:id/edit', :controller => 'customers', :action => 'edit', :conditions => {:method => :get}
   map.change_password '/customers/:id/change_password', :controller => 'customers', :action => 'change_password'
-  map.connect '/customers/:id/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
+  map.change_secret_question '/customers/:id/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
   map.update_customer '/customers/:id/update', :controller => 'customers', :action => 'update', :conditions => {:method => :post}
 
   map.create_customer '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
