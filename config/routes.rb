@@ -11,6 +11,7 @@ ActionController::Routing::Routes.draw do |map|
   map.temporarily_disable_admin '/disable_admin', :controller => 'customers', :action => 'temporarily_disable_admin'
   map.reenable_admin '/reenable_admin',  :controller => 'customers', :action => 'reenable_admin'
 
+  # begin new RESTful customer routes
   map.connect '/customers/auto_complete_for_customer_full_name', :controller => 'customers', :action => 'auto_complete_for_customer_full_name'
   map.list_customers '/customers/list', :controller => 'customers', :action => 'list'
   map.list_duplicates '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates'
@@ -30,6 +31,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.create_customer '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
   map.user_create_customer '/customers/user_create', :controller => 'customers', :action => 'user_create', :conditions => {:method => :post}
+  # begin new RESTful customer routes
 
 
   # RSS
