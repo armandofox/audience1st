@@ -8,6 +8,9 @@ module NavigationHelpers
   #
   def path_to(page_name)
     case page_name
+
+    when /the record donation page for customer "(.*) (.*)"/ then new_customer_donation_path(Customer.find_by_first_name_and_last_name!($1,$2))
+
     when /the login page/i              then login_path
     when /the login with secret question page/i then secret_question_path
     when /the change secret question page/i then '/customers/change_secret_question'

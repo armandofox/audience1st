@@ -1,0 +1,31 @@
+%fieldset
+  %legend Cash or Check Donation for #{@customer.full_name}
+  %label{:for => 'amount'} Amount
+  = text_field_tag 'amount', @donation.amount
+  %br
+  %label{:for => 'fund'} Fund
+  = select_tag 'fund', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @donation.account_code.try(:id))
+  %br
+  %label{:for => 'date'} Date Posted
+  = select_date Date.current, :order => [:month, :day, :year]
+  %br
+  %label Payment Method:
+  %span Check
+  = radio_button_tag 'payment', 'check', true
+  %span Cash
+  = radio_button_tag 'payment', 'cash', false
+  %br
+  %label{:for => 'comments'} Comments/Check no.
+  = text_area_tag 'Comments', @donation.comments, :size => '50x3'
+  %br
+
+  %label &nbsp;
+  = submit_tag 'Save'
+
+  
+
+
+
+
+
+

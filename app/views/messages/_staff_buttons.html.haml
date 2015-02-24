@@ -1,5 +1,6 @@
 #staffButtons.adminField
-  %p= button_bar( |
+  %p
+    = button_bar( |
        ['Add Comps',:vouchers, :addvoucher, {}],                      |
        ['Order History', :orders, :by_customer, {:id => @gCustomer}], |
        ['Donation History', :donations, :index,                       |
@@ -9,4 +10,5 @@
        ['Prospecting Activities', :visits, :list_by_prospector, {}],  |
        ['Database Transactions',:txn, :index,                         |
           {:params => {:txns_filter => @gCustomer.id}}] )             |
+    = link_to 'Record Donation', new_customer_donation_path(@gCustomer), {:class => 'adminButton'}
 .clear

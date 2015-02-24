@@ -66,6 +66,11 @@ class DonationsController < ApplicationController
     end
   end
 
+  def new
+    @customer = Customer.find params[:id]
+    @donation = @customer.donations.new
+  end
+
   def mark_ltr_sent
     id = params[:id]
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)

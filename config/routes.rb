@@ -5,6 +5,16 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/imports/download_invalid/:id', :controller => 'imports', :action => 'download_invalid'
   map.connect '/imports/help', :controller => 'imports', :action => 'help'
   map.resources :labels
+
+  ## one-off RESTful route for recording customer donation (should become
+  ## nested resource route under customers)
+  map.new_customer_donation '/customers/:id/donations/new', :controller => 'donations', :action => 'new', :conditions => {:method => :get}
+  map.customer_donation '/customers/:id/donations', :controller => 'donations', :action => 'create', :conditions => {:method => :post}
+  ##
+  ## end one-off routes for customer donation
+  
+  
+
   
   map.welcome  '/customers/welcome', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   map.connect '/customers/:id/show', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
