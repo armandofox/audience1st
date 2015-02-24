@@ -1,6 +1,15 @@
 World(FixtureAccess)
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
 
+module CustomerStepsHelper
+  def get_secret_question_index(question)
+    indx = APP_CONFIG[:secret_questions].index(question)
+    indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
+    indx
+  end
+end
+World(CustomerStepsHelper)
+
 Then /^account creation should fail with "(.*)"$/ do |msg|
   steps %Q{
   Then I should see "#{msg}"
@@ -124,8 +133,3 @@ Then /^customer "(.*) (.*)" should have secret question "(.*)" with answer "(.*)
   @customer.secret_answer.should == answer
 end
 
-def get_secret_question_index(question)
-  indx = APP_CONFIG[:secret_questions].index(question)
-  indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
-  indx
-end

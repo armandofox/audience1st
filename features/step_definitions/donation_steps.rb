@@ -1,11 +1,14 @@
-def find_or_create_account_code(full_name)
-  if full_name =~ /^(\d+)\s+(.*)$/
-    code,name = $1,$2
-  else
-    code,name = '0000', full_name
+module DonationStepsHelper
+  def find_or_create_account_code(full_name)
+    if full_name =~ /^(\d+)\s+(.*)$/
+      code,name = $1,$2
+    else
+      code,name = '0000', full_name
+    end
+    AccountCode.find_by_code(code) || AccountCode.find_by_name(name) || AccountCode.create!(:name => name, :code => code)
   end
-  AccountCode.find_by_code(code) || AccountCode.find_by_name(name) || AccountCode.create!(:name => name, :code => code)
 end
+World(DonationStepsHelper)
 
 Given /^the following donations:$/ do |donations|
   donations.hashes.each do |donation|
