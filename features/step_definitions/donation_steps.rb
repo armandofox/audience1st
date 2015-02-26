@@ -24,6 +24,20 @@ Given /^the following donations:$/ do |donations|
   end
 end
 
+Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
+  date = Time.parse(date)
+  account_code = AccountCode.find_by_name!(fund)
+  orders = Customer.find_by_first_name_and_last_name!(first,last).orders
+  orders.any? do |order|
+    order.sold_on == date &&
+    order.purchase_medium == type.to_sym &&
+      (d = order.donation)  &&
+      d.amount == amount &&
+      d.account_code == account_code
+  end.should be_true
+end
+
+
 Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|by cash|by credit card)?$/ do |amount,date,customer,fund,how|
   steps %Q{Given customer \"#{customer}\" exists}
   account_code = fund.blank? ? AccountCode.default_account_code : find_or_create_account_code(fund)

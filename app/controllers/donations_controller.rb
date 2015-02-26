@@ -74,6 +74,7 @@ class DonationsController < ApplicationController
   def create
     @customer = Customer.find params[:id]
     @order = Order.new_from_donation(params[:amount], AccountCode.find(params[:fund]), @customer)
+    sold_on = Date.from_year_month_day(params[:date])
     @order.purchasemethod = (params[:payment] == 'check' ?
       Purchasemethod.find_by_shortdesc('box_chk') :
       Purchasemethod.find_by_shortdesc('box_cash'))
@@ -85,11 +86,12 @@ class DonationsController < ApplicationController
       return
     end
     begin
-      @order.finalize!
-      @order.update_attributes!(:sold_on => Date.from_year_month_day(params[:date]))
-    rescue ActiveRecord::RecordInvalid => e
-    rescue Order::OrderFinalizeError => e
-    rescue RuntimeError => e
+      @order.finalize!(sold_on)
+    rescue Exception => e
+      raise e
+      # rescue ActiveRecord::RecordInvalid => e
+      # rescue Order::OrderFinalizeError => e
+      # rescue RuntimeError => e
     end
     flash[:notice] = "Donation successfully recorded."
     redirect_to welcome_path
