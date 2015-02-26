@@ -86,6 +86,10 @@ class Time
 end
 
 class Date
+  def Date.from_year_month_day(hash)
+    now = Time.now
+    Date.new((hash[:year] || now.year).to_i, (hash[:month] || now.month).to_i, (hash[:day] || now.day).to_i)
+  end
   def at_beginning_of_season(arg=nil)
     self.to_time.at_beginning_of_season(arg).to_date
   end

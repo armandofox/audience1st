@@ -86,12 +86,13 @@ class DonationsController < ApplicationController
     end
     begin
       @order.finalize!
-      @order.update_attributes!(:sold_on => params[:date])
+      @order.update_attributes!(:sold_on => Date.from_year_month_day(params[:date]))
     rescue ActiveRecord::RecordInvalid => e
     rescue Order::OrderFinalizeError => e
     rescue RuntimeError => e
     end
-      
+    flash[:notice] = "Donation successfully recorded."
+    redirect_to welcome_path
   end
 
   def mark_ltr_sent
