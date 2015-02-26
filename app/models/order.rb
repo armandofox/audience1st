@@ -14,10 +14,11 @@ class Order < ActiveRecord::Base
   
   # errors
 
-  class Order::NotReadyError < StandardError ; end
-  class Order::SaveRecipientError < StandardError; end
-  class Order::SavePurchaserError < StandardError ; end
-  class Order::PaymentFailedError < StandardError; end
+  class Order::OrderFinalizeError < StandardError ; end
+  class Order::NotReadyError < Order::OrderFinalizeError ; end
+  class Order::SaveRecipientError < Order::OrderFinalizeError ; end
+  class Order::SavePurchaserError < Order::OrderFinalizeError ; end
+  class Order::PaymentFailedError < Order::OrderFinalizeError ; end
 
   # merging customers
   def self.foreign_keys_to_customer

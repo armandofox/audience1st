@@ -9,11 +9,12 @@
   %label{:for => 'date'} Date Posted
   = select_date Date.current, :order => [:month, :day, :year]
   %br
-  %label Payment Method:
-  %span Check
-  = radio_button_tag 'payment', 'check', true
-  %span Cash
-  = radio_button_tag 'payment', 'cash', false
+  %label{:for => 'payment'} Payment Method:
+  %label.no_float{:for => 'payment_check'} Check
+  - is_cash = @donation.order && @donation.purchasemethod == Purchasemethod.get_type_by_name('box_cash')
+  = radio_button_tag 'payment', 'check', !is_cash
+  %label.no_float{:for => 'payment_cash'} Cash
+  = radio_button_tag 'payment', 'cash', is_cash
   %br
   %label{:for => 'comments'} Comments/Check no.
   = text_area_tag 'Comments', @donation.comments, :size => '50x3'

@@ -68,7 +68,30 @@ class DonationsController < ApplicationController
 
   def new
     @customer = Customer.find params[:id]
-    @donation = @customer.donations.new
+    @donation ||= @customer.donations.new(:amount => 0)
+  end
+
+  def create
+    @customer = Customer.find params[:id]
+    @order = Order.new_from_donation(params[:amount], AccountCode.find(params[:fund]), @customer)
+    @order.purchasemethod = (params[:payment] == 'check' ?
+      Purchasemethod.find_by_shortdesc('box_chk') :
+      Purchasemethod.find_by_shortdesc('box_cash'))
+    @order.processed_by = @gAdmin
+    @order.comments = params[:comments].to_s
+    unless @order.ready_for_purchase?
+      flash[:alert] = @order.errors.full_messages.join(',')
+      render :action => 'new'
+      return
+    end
+    begin
+      @order.finalize!
+      @order.update_attributes!(:sold_on => params[:date])
+    rescue ActiveRecord::RecordInvalid => e
+    rescue Order::OrderFinalizeError => e
+    rescue RuntimeError => e
+    end
+      
   end
 
   def mark_ltr_sent

@@ -10,6 +10,16 @@ module DonationStepsHelper
 end
 World(DonationStepsHelper)
 
+When /^I record a (check|cash) donation of \$([\d.]+) to "(.*)" on (.*)(?: with comment "(.*)")?$/ do |type, amount, fund, date, comment|
+  fill_in "Amount", :with => amount
+  choose type.capitalize
+  save_and_open_page
+  select (find_or_create_account_code(fund).name_with_code), :from => 'Fund'
+  select_date date, :from => 'Date Posted'
+  fill_in "Comments/Check no.", :with => comment.to_s
+  save_and_open_page
+end
+
 Given /^the following donations:$/ do |donations|
   donations.hashes.each do |donation|
     steps %Q{Given a donation of #{donation[:amount]} on #{donation[:date]} from "#{donation[:donor]}" to the "#{donation[:fund]}"}

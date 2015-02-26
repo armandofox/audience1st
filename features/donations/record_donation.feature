@@ -9,9 +9,10 @@ Background:
   Given I am logged in as boxoffice manager
   And I am on the record donation page for customer "Tom Foolery"
 
-Scenario: record cash or check donation
+Scenario: record valid cash or check donation
 
-  
+  When I record a check donation of $55.55 to "General Fund" on Jan 1, 2009 with comment "Check #2222"
 
 
-Scenario: record credit card donation
+
+Scenario: 
