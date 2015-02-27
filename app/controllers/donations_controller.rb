@@ -68,12 +68,14 @@ class DonationsController < ApplicationController
 
   def new
     @customer = Customer.find params[:id]
-    @donation ||= @customer.donations.new(:amount => 0)
+    @donation ||= @customer.donations.new(:amount => 0,:comments => 'x')
   end
 
   def create
     @customer = Customer.find params[:id]
-    @order = Order.new_from_donation(params[:amount], AccountCode.find(params[:fund]), @customer)
+    @order = Order.new(:purchaser => @customer, :customer => @customer)
+    @order.add_donation(Donation.from_amount_and_account_code_id(
+        params[:amount].to_f, params[:fund].to_i, params[:comments].to_s))
     sold_on = Date.from_year_month_day(params[:date])
     @order.purchasemethod = (params[:payment] == 'check' ?
       Purchasemethod.find_by_shortdesc('box_chk') :
@@ -87,14 +89,14 @@ class DonationsController < ApplicationController
     end
     begin
       @order.finalize!(sold_on)
+      flash[:notice] = "Donation successfully recorded."
+      redirect_to welcome_path
     rescue Exception => e
       raise e
       # rescue ActiveRecord::RecordInvalid => e
       # rescue Order::OrderFinalizeError => e
       # rescue RuntimeError => e
     end
-    flash[:notice] = "Donation successfully recorded."
-    redirect_to welcome_path
   end
 
   def mark_ltr_sent

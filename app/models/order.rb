@@ -7,7 +7,7 @@ class Order < ActiveRecord::Base
   belongs_to :purchasemethod
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
-  has_one :donation, :dependent => :destroy
+  has_many :donations, :dependent => :destroy
   
   attr_accessor :purchase_args
 

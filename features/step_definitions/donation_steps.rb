@@ -27,12 +27,12 @@ end
 Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
   date = Time.parse(date)
   account_code = AccountCode.find_by_name!(fund)
-  orders = Customer.find_by_first_name_and_last_name!(first,last).orders
-  orders.any? do |order|
-    order.sold_on == date &&
+  amount = amount.to_f
+  Customer.find_by_first_name_and_last_name!(first,last).orders.find_all_by_sold_on(date) do |order|
+  #find(:all,:conditions => ['sold_on = ?',date]).any? do |order|
     order.purchase_medium == type.to_sym &&
-      (d = order.donation)  &&
-      d.amount == amount &&
+      order.donations.length > 0 &&
+      (d = order.donations.first).amount == amount &&
       d.account_code == account_code
   end.should be_true
 end

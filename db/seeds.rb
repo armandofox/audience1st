@@ -44,11 +44,12 @@ class Audience1stSeeder
   def self.create_special_customers
     # Create Admin (God) login
     unless Customer.find_by_role(100)
-      Customer.create!(:first_name => 'Administrator',
+      admin = Customer.new(:first_name => 'Administrator',
         :last_name => 'Administrator',
-        :created_by_admin => true,
-        :password => 'admin').
-        update_attributes!(:role => 100)
+        :password => 'admin')
+      admin.created_by_admin = true
+      admin.role = 100
+      admin.save!
     end
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])

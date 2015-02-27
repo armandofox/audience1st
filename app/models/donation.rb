@@ -21,11 +21,11 @@ class Donation < Item
   validates_numericality_of :amount
   validates_inclusion_of :amount, :in => 1..10_000_000, :message => "must be at least 1 dollar"
 
-  def self.from_amount_and_account_code_id(amount, id)
+  def self.from_amount_and_account_code_id(amount, id, comments = nil)
     if id.blank? || (use_code = AccountCode.find_by_id(id)).nil?
       use_code = Donation.default_code
     end
-    Donation.new(:amount => amount.to_f, :account_code => use_code)
+    Donation.new(:amount => amount.to_f, :account_code => use_code, :comments => comments)
   end
 
   def price ; self.amount ; end # why can't I use alias for this?
