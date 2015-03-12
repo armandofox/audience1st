@@ -102,10 +102,10 @@ class CustomersController < ApplicationController
       redirect_to_stored(@customer)
     rescue ActiveRecord::RecordInvalid
       flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
-      redirect_to :action => 'edit'
+      redirect_to edit_customer_path(@customer)
     rescue Exception => e
       flash[:notice] = "Update failed: #{e.message}"
-      redirect_to :action => 'edit'
+      redirect_to edit_customer_path(@customer)
     end
   end
 
@@ -173,6 +173,7 @@ class CustomersController < ApplicationController
       flash[:notice] = 'Secret question change confirmed.'
       redirect_to welcome_path(@customer)
     else
+      flash[:alert] = "Could not update secret question: #{@customer.errors.full_messages.join(', ')}"
       render :action => :change_secret_question, :id => @customer
     end
   end
@@ -211,7 +212,6 @@ class CustomersController < ApplicationController
   end
 
   def merge
-    redirect_to({:action => :index}, :notice => 'Merging is temporarily disabled. It will be back soon.') and return
     if !params[:merge] || params[:merge].keys.length < 1
       flash[:notice] = 'You have not selected any customers.'
       redirect_to_last_list and return

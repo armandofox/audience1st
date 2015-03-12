@@ -8,7 +8,7 @@ Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, t
   steps %Q{Then I should see /#{type}/ within "#cart_items" #{num} times}
 end
 
-Given /^my cart contains the following tickets:/ do |tickets|
+Given /^(?:my cart contains|I add) the following tickets:/ do |tickets|
   create_tickets(tickets.hashes)
   click_button 'CONTINUE >>'
 end

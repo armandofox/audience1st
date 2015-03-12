@@ -5,7 +5,7 @@ class OrdersController < ApplicationController
     @order = Order.find_by_id(params[:id])
     if @order.nil?
       flash[:alert] = "Order ID #{params[:id].to_i} not found"
-      redirect_to_stored
+      redirect_to list_customers_path
       return
     end
     @total = @order.items.inject(0) { |sum,p| sum+p.amount }

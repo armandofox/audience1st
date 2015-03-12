@@ -2,7 +2,7 @@ class StoreController < ApplicationController
 
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed redeeming_promo_code)
 
-  before_filter :is_logged_in, :only => %w[edit_billing_address]
+  before_filter :is_logged_in, :only => %w[edit_billing_address checkout place_order]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
 
   before_filter :set_session_variables
