@@ -22,6 +22,7 @@ class StoreController < ApplicationController
   #                          shipping_addr -> set_shipping_addr
   def index
     @what = params[:what] || 'Regular Tickets'
+    @page_title = "#{Option.venue} - Tickets"
     @special_shows_only = (@what =~ /special/i)
     reset_shopping unless (@promo_code = redeeming_promo_code)
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
@@ -33,6 +34,7 @@ class StoreController < ApplicationController
   end
 
   def subscribe
+    @page_title = "#{Option.venue} - Subscriptions"
     reset_shopping
     # which subscriptions/bundles are available now?
     @promo_code = redeeming_promo_code
