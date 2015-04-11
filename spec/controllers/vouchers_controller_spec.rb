@@ -15,7 +15,7 @@ describe VouchersController do
       @params = {:voucher_ids => @vouchers.map(&:id), :showdate_id => @showdate.id}
     end
     shared_examples_for 'all reservations' do
-      it "redirects to welcome" do ; response.should redirect_to welcome_path ; end
+      it "redirects to welcome" do ; response.should redirect_to customer_path(@customer) ; end
     end
     describe 'successful reservations' do
       describe 'for all 3 vouchers' do

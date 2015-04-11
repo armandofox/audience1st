@@ -1,6 +1,6 @@
 %ul.nav.store_nav
   %li#t_store_index= link_to 'Buy Tickets', store_path
   %li#t_store_subscribe= link_to 'Subscribe', store_subscribe_path
-  %li#t_customers_welcome= link_to 'My Tickets', welcome_path(@customer)
+  %li#t_customers_welcome= link_to 'My Tickets', customer_path(@customer)
   %li#t_customers_edit= link_to 'Billing/Contact', edit_customer_path(@customer)
   %li#t_customers_change_password= link_to 'Change Password', change_password_path(@customer)

@@ -23,7 +23,7 @@ ActionController::Routing::Routes.draw do |map|
   map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
   map.new_customer '/customers/new', :controller => 'customers', :action => 'new', :conditions => {:method => :get}
 
-  map.welcome '/customers/:id', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
+  map.customer '/customers/:id', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
   map.edit_customer '/customers/:id/edit', :controller => 'customers', :action => 'edit', :conditions => {:method => :get}
   map.change_password '/customers/:id/change_password', :controller => 'customers', :action => 'change_password'
   map.change_secret_question '/customers/:id/change_secret_question', :controller => 'customers', :action => 'change_secret_question'

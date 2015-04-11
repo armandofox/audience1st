@@ -52,7 +52,7 @@ end
 
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
   customer = Customer.find_by_first_name_and_last_name!(first,last)
-  visit welcome_path(customer)
+  visit customer_path(customer)
   with_scope('div#on_behalf_of_customer') do
     page.should have_content("Customer: #{first} #{last}")
   end

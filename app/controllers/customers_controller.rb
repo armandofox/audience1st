@@ -24,7 +24,7 @@ class CustomersController < ApplicationController
 
   def home
     if current_user
-      redirect_to welcome_path(current_user)
+      redirect_to customer_path(current_user)
     else
       redirect_to login_path
     end
@@ -118,7 +118,7 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
-      redirect_to welcome_path(@customer)
+      redirect_to customer_path(@customer)
     else
       render :action => 'change_password'
     end
@@ -171,7 +171,7 @@ class CustomersController < ApplicationController
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
         :comments => 'Change secret question or answer')
       flash[:notice] = 'Secret question change confirmed.'
-      redirect_to welcome_path(@customer)
+      redirect_to customer_path(@customer)
     else
       flash[:alert] = "Could not update secret question: #{@customer.errors.full_messages.join(', ')}"
       render :action => :change_secret_question, :id => @customer
@@ -299,7 +299,7 @@ class CustomersController < ApplicationController
     unless params[:dont_send_email]
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
     end
-    redirect_to welcome_path(@customer)
+    redirect_to customer_path(@customer)
   end
 
   # AJAX helpers

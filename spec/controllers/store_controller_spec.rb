@@ -17,6 +17,13 @@ describe StoreController do
       response.should render_template 'messages/session_expired'
     end
   end
+  describe 'promo redemption redirect' do
+    it 'redirects to correct page' do
+      post :process_cart, {:promo_code => 'xyz', :commit => 'Redeem'}
+      response.should redirect_to(:action => :index)
+    end
+    it 'remembers promo code'
+  end
   describe 'quick donation' do
     before :each do
       @new_valid_customer = {

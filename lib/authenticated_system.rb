@@ -9,9 +9,15 @@ module AuthenticatedSystem
 
   # Store the given user id in the session.
   def current_user=(new_user)
-    session[:cid] = new_user ? new_user.id : nil
-    @current_user = new_user || false
-    logger.info "**** setting current user to #{@current_user}"
+    if new_user
+      session[:cid] = new_user.id
+      @current_user = new_user
+      session[:admin_id] = new_user.id if new_user.is_staff
+      logger.info "**** setting current user to #{@current_user}"
+    else
+      session[:cid] = session[:admin_id] = nil
+      @current_user = false
+    end
   end
 
   # Accesses the current user from the session.
@@ -20,7 +26,6 @@ module AuthenticatedSystem
     unless @current_user == false # false means don't attempt auto login
       @current_user ||= (login_from_session || login_from_cookie)
     end
-    session[:admin_id] = if @current_user.try(:is_staff) then @current_user.id else nil end
     @current_user
   end
 

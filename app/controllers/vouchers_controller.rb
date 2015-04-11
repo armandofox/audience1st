@@ -80,12 +80,12 @@ class VouchersController < ApplicationController
     @voucher = Voucher.find(params[:id]) # this is the voucher that customer wants to use
     @customer = @voucher.customer
     @is_admin = @gAdmin.is_boxoffice
-    redirect_to(welcome_path, :notice => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
+    redirect_to(customer_path(@customer), :notice => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
     @valid_vouchers = @voucher.redeemable_showdates(@is_admin)
     @valid_vouchers = @valid_vouchers.select(&:visible?) unless @is_admin
     if @valid_vouchers.empty?
       flash[:notice] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
-      redirect_to welcome_path
+      redirect_to customer_path(@customer)
     end
   end
 
@@ -98,12 +98,13 @@ class VouchersController < ApplicationController
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     errors = []
     comments = params[:comments].to_s
+    customer = vouchers.first.customer
     vouchers.each do |v|
       if v.reserve_for(the_showdate, @gLoggedIn, comments)
         count += 1
         comments = '' # only first voucher gets comment field
         Txn.add_audit_record(:txn_type => 'res_made',
-          :customer_id => v.customer.id,
+          :customer_id => customer.id,
           :voucher_id => v.id,
           :logged_in_id => logged_in_id,
           :showdate_id => the_showdate.id,
@@ -118,14 +119,14 @@ class VouchersController < ApplicationController
       flash[:notice] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
-      email_confirmation(:confirm_reservation, v.customer, showdate, count)
+      email_confirmation(:confirm_reservation, customer, showdate, count)
     else
       flash[:notice] = "Some of your reservations could not be completed: " <<
         errors <<
         "<br/>Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, v.customer, showdate, count)
+      email_confirmation(:confirm_reservation, customer, showdate, count)
     end
-    redirect_to welcome_path(v.customer)
+    redirect_to customer_path(customer)
   end
 
   def confirm_reservation
@@ -170,7 +171,7 @@ class VouchersController < ApplicationController
                          :showdate => save_showdate,
                          :comment => 'Prepaid, comp or other nonsubscriber ticket')
     flash[:notice] = "Reservation cancelled, voucher unlinked from customer"
-    redirect_to welcome_path(save_customer)
+    redirect_to customer_path(save_customer)
   end
 
   def cancel_multiple
@@ -201,7 +202,7 @@ class VouchersController < ApplicationController
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
     email_confirmation(:cancel_reservation, customer, old_showdate,
                        vchs.length, a) unless @gAdmin.is_boxoffice
-    redirect_to welcome_path(customer)
+    redirect_to customer_path(customer)
   end
 
 

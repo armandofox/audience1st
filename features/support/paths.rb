@@ -14,7 +14,7 @@ module NavigationHelpers
     when /login page/i              then login_path
     when /login with secret question page/i then secret_question_path
     when /change secret question page/      then change_secret_question_path(@customer)
-    when /home page/                        then welcome_path(@customer)
+    when /home page/                        then customer_path(@customer)
     when /edit contact info page/           then edit_customer_path(@customer)
     when /change password page/i            then change_password_path(@customer)
     when /the forgot password page/i        then forgot_password_path

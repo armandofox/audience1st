@@ -2,7 +2,7 @@
   - if @customer
     #on_behalf_of_customer
       %span.strong Customer: 
-      %span#onBehalfOfName= link_to @customer.full_name, welcome_path(@customer)
+      %span#onBehalfOfName= link_to @customer.full_name, customer_path(@customer)
       (last login:
       = h @customer.last_login.to_formatted_s(:month_day_year)
       )

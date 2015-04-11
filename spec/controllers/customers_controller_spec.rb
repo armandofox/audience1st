@@ -18,8 +18,10 @@ describe CustomersController do
       Customer.find_by_email(@params[:email]).should be_created_by_admin
     end
     it "should not clear created-by-admin flag if admin updates record" do
-      post :update, {:customer => {:first_name => 'Bobby'}}
-      Customer.find_by_email(@params[:email]).should be_created_by_admin
+      customer = Customer.find_by_email(@params[:email])
+      post :update, {:id => customer, :customer => {:first_name => 'Bobby'}}
+      customer.reload
+      customer.should be_created_by_admin
     end
   end
   describe "user self-creation or self-update" do
@@ -40,12 +42,12 @@ describe CustomersController do
         @customer.update_attribute(:created_by_admin, true)
       end
       it "should be cleared on successful update" do
-        post :update, {:customer => {:first_name => "Bobby"}}
+        post :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
         @customer.reload
         @customer.should_not be_created_by_admin
       end
       it "should not be cleared if update fails" do
-        post :update, {:customer => {:first_name => ''}}
+        post :update, {:id => @customer, :customer => {:first_name => ''}}
         @customer.reload
         @customer.should be_created_by_admin
       end

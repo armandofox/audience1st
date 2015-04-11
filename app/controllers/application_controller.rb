@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
     if session[:return_to]
       redirect_to session[:return_to]
     elsif customer
-      redirect_to welcome_path(customer)
+      redirect_to customer_path(customer)
     else
       redirect_to login_path
     end
