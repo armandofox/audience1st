@@ -13,6 +13,13 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
+  vouchertype = Vouchertype.find_by_name! ticket_type
+  showdate = Showdate.find_by_thedate! Time.parse date
+  ValidVoucher.find_by_vouchertype_id_and_showdate_id(vouchertype.id, showdate.id).
+    update_attributes!(:promo_code => promo)
+end
+
 Given /^my gift order contains the following tickets:/ do |tickets|
   Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
   create_tickets(tickets.hashes)

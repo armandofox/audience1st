@@ -88,6 +88,13 @@ class ApplicationController < ActionController::Base
     @gCheckoutInProgress = val
   end
 
+  # Store the action to return to, or URI of the current request if no action given.
+  # We can return to this location by calling #redirect_to_stored.
+  def set_return_to(hsh=nil)
+    session[:return_to] = hsh || request.request_uri
+    true
+  end
+
   def redirect_to_stored(customer = Customer.find_by_id(session[:cid]))
     if session[:return_to]
       redirect_to session[:return_to]

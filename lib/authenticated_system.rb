@@ -61,78 +61,10 @@ module AuthenticatedSystem
     Customer.find_by_id(session[:admin_id]) || Customer.generic_customer
   end
 
-    # Check if the user is authorized
-    #
-    # Override this method in your controllers if you want to restrict access
-    # to only a few actions or if you want to check if the user
-    # has the correct rights.
-    #
-    # Example:
-    #
-    #  # only allow nonbobs
-    #  def authorized?
-    #    current_user.login != "bob"
-    #  end
-    #
-    def authorized?(action = action_name, resource = nil)
-      logged_in?
-    end
-
-    # Filter method to enforce a login requirement.
-    #
-    # To require logins for all actions, use this in your controllers:
-    #
-    #   before_filter :login_required
-    #
-    # To require logins for specific actions, use this in your controllers:
-    #
-    #   before_filter :login_required, :only => [ :edit, :update ]
-    #
-    # To skip this in a subclassed controller:
-    #
-    #   skip_before_filter :login_required
-    #
-    def login_required
-      authorized? || access_denied
-    end
-
-    # Redirect as appropriate when an access request fails.
-    #
-    # The default action is to redirect to the login screen.
-    #
-    # Override this method in your controllers if you want to have special
-    # behavior in case the user is not authorized
-    # to access the requested action.  For example, a popup window might
-    # simply close itself.
-    def access_denied
-      respond_to do |format|
-        format.html do
-          set_return_to
-          redirect_to new_session_path
-        end
-        # format.any doesn't work in rails version < http://dev.rubyonrails.org/changeset/8987
-        # Add any other API formats here.  (Some browsers, notably IE6, send Accept: */* and trigger 
-        # the 'format.any' block incorrectly. See http://bit.ly/ie6_borken or http://bit.ly/ie6_borken2
-        # for a workaround.)
-        format.any(:json, :xml) do
-          request_http_basic_authentication 'Web Password'
-        end
-      end
-    end
-
-    # Store the action to return to, or URI of the current request if no action given.
-    # We can return to this location by calling #redirect_to_stored.
-    def set_return_to(hsh=nil)
-      session[:return_to] = hsh || request.request_uri
-      true
-    end
-
-    def stored_action ; session[:return_to] || {:controller => 'customers', :action => 'welcome'} ; end
-
     # Inclusion hook to make #current_user and #logged_in?
     # available as ActionView helper methods.
     def self.included(base)
-      base.send :helper_method, :current_user, :logged_in?, :authorized? if base.respond_to? :helper_method
+      base.send :helper_method, :current_user, :logged_in? if base.respond_to? :helper_method
     end
 
     #

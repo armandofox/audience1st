@@ -80,17 +80,19 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   # customer-facing purchase pages
+  # :promo_code is an optional route argument; in Rails 3, would be in parens #rails3
 
-  map.store     '/store', :controller => 'store', :action => 'index', :conditions => {:method => :get}
-  map.store_subscribe '/store/subscribe', :controller => 'store', :action => 'subscribe', :conditions => {:method => :get}
-  map.store_special   '/store/special',:controller => 'store', :action => 'special', :conditions => {:method => :get}
+  map.store     '/store/:promo_code', :controller => 'store', :action => 'index', :promo_code => nil, :conditions => {:method => :get}
+  map.store_special   '/special/:promo_code', :controller => 'store', :action => 'index', :what => 'special', :promo_code => nil, :conditions => {:method => :get}
+  map.store_subscribe '/subscribe/:promo_code', :controller => 'store', :action => 'subscribe', :promo_code => nil, :conditions => {:method => :get}
   %w(shipping_address checkout edit_billing_address show_changed showdate_changed).each do |action|
-    map.connect "/store/#{action}", :controller => 'store', :action => action
+    map.send(action, "/#{action}", :controller => 'store', :action => action)
   end
 
   %w(process_cart set_shipping_address place_order).each do |action|
-    map.connect "/store/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post}
+    map.send(action, "/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post})
   end
+  
   map.donate_to_fund '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
   map.quick_donate '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
   map.process_quick_donation '/process_quick_donation', :controller => 'store', :action => 'process_quick_donation', :conditions => {:method => :post}
@@ -127,7 +129,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/sessions/create_from_secret_question', :controller => 'sessions', :action => 'create_from_secret_question', :conditions => {:method => :post}
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
-  map.store '/store', :controller => 'store', :action => 'index', :conditions => {:method => :get}
 
   map.resource :session # other session actions
 

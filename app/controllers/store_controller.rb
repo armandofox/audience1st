@@ -1,6 +1,6 @@
 class StoreController < ApplicationController
 
-  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed redeeming_promo_code)
+  skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :is_logged_in, :only => %w[edit_billing_address checkout place_order]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
@@ -23,7 +23,7 @@ class StoreController < ApplicationController
   def index
     @what = params[:what] || 'Regular Tickets'
     @special_shows_only = (@what =~ /special/i)
-    reset_shopping unless (@promo_code = redeeming_promo_code)
+    reset_shopping unless (@promo_code = params[:promo_code])
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
     set_return_to :action => action_name
   end
@@ -33,9 +33,8 @@ class StoreController < ApplicationController
   end
 
   def subscribe
-    reset_shopping
+    reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
-    @promo_code = redeeming_promo_code
     if @is_admin
       this_season = Time.this_season
       @subs_to_offer = ValidVoucher.bundles([this_season, this_season+1])
@@ -97,24 +96,20 @@ class StoreController < ApplicationController
   end
 
   def process_cart
-    if params[:commit] =~ /redeem/i # customer entered promo code, redisplay prices
-      redirect_to(stored_action.merge({:commit => 'redeem', :promo_code => params[:promo_code]}))
-      return
-    end
+    redirect_to_referer('Promo code activated.') and return if promo_code_provided
     @cart = find_cart
     @cart.add_comment params[:comments].to_s
     tickets = ValidVoucher.from_params(params[:valid_voucher])
     if @gAdmin.is_boxoffice
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
     else
-      promo = current_promo_code
+      promo = params[:promo_code].to_s
       tickets.each_pair do |vv, qty|
         vv.customer = @gCustomer
         @cart.add_with_checking(vv,qty,promo)
       end
     end
-    redirect_to_referer(errors_as_html(@cart)) and return unless
-      @cart.errors.empty?
+    redirect_to_referer(errors_as_html(@cart)) and return unless @cart.errors.empty?
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
       @cart.add_donation(
@@ -252,21 +247,10 @@ class StoreController < ApplicationController
     success
   end
 
-
-  def redeeming_promo_code
-    case params[:commit]
-    when /clear/i
-      session.delete(:promo_code)
-      logger.info("Clearing promo code")
-      nil
-    when /redeem/i
-      params.delete(:commit)
-      logger.info "Accepting promo code #{params[:promo_code]}"
-      session[:promo_code] = params[:promo_code].to_s.upcase
-    end
+  def promo_code_provided
+    @promo = params[:promo_code].to_s.strip.upcase
+    params[:commit] == 'Redeem' && !@promo.blank?
   end
-
-  def current_promo_code ; session[:promo_code].to_s ; end
 
   def showdate_from_params
     Showdate.find_by_id(params[:showdate_id], :include => [:show, :valid_vouchers])
@@ -307,12 +291,14 @@ class StoreController < ApplicationController
   def redirect_to_referer(msg=nil)
     redirect_target = 
       case params[:referer].to_s
-      when 'subscribe' then {:action => :subscribe}
-      when 'donate_to_fund' then {:action => :donate_to_fund, :id => params[:account_code_id]}
-      when 'donate' then {:action => :donate}
-      else {:action => :index}
+      when 'subscribe' then store_subscribe_path(@promo)
+      when 'special' then store_special_path(@promo)
+      when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id])
+      when 'donate' then quick_donate_path
+      else store_path(@promo)
       end
-    redirect_to(redirect_target, :alert => msg)
+    flash[:alert] = msg
+    redirect_to redirect_target
   end
 
   def purchasemethod_from_params

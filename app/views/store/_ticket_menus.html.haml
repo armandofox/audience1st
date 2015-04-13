@@ -1,6 +1,8 @@
 #ticket_menus_inner
   = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty', 'submit') }"
+  = hidden_field_tag 'referer', (@special_shows_only ? 'special' : 'index')
   = render :partial => 'enter_promo_code'
+
   %br/
 
   - if !(@sh.try(:description).blank?)

@@ -66,7 +66,6 @@ describe SessionsController do
               post(:create, @login_params)
             end
             it "kills existing login"        do controller.should_receive(:logout_keeping_session!); post(:create, @login_params); end    
-            it "authorizes me"               do post(:create, @login_params); controller.send(:authorized?).should be_true;   end    
             it "logs me in"                  do post(:create, @login_params); controller.send(:logged_in?).should  be_true  end    
             it "sets/resets/expires cookie"  do controller.should_receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
             it "sends a cookie"              do controller.should_receive(:send_remember_cookie!);  post(:create, @login_params) end

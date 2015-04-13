@@ -59,13 +59,6 @@ describe SessionsController do
     end
   end
   
-  describe 'When logged out' do 
-    it "should not be authorized?" do
-      stub!(:action_name).and_return('')
-      authorized?().should be_false
-    end    
-  end
-
   #
   # Cookie Login
   #

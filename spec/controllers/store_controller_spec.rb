@@ -17,12 +17,25 @@ describe StoreController do
       response.should render_template 'messages/session_expired'
     end
   end
-  describe 'promo redemption redirect' do
-    it 'redirects to correct page' do
-      post :process_cart, {:promo_code => 'xyz', :commit => 'Redeem'}
-      response.should redirect_to(:action => :index)
+  describe 'promo code redirects' do
+    describe 'correct redirect' do
+      specify 'to store page' do
+        post :process_cart, {:commit => 'Redeem', :promo_code => 'code', :referer => 'INVALID'}
+        response.should redirect_to store_path('CODE')
+      end
+      specify 'to special page' do
+        post :process_cart, {:commit => 'Redeem', :promo_code => 'code', :referer => 'special'}
+        response.should redirect_to store_special_path('CODE')
+      end
+      specify 'to subscription page' do
+        post :process_cart, {:commit => 'Redeem', :promo_code => 'code', :referer => 'subscribe'}
+        response.should redirect_to store_subscribe_path('CODE')
+      end
+      specify 'blank promo code' do
+        post :process_cart, {:commit => 'Redeem', :promo_code => ' ', :referer => 'subscribe'}
+        response.should redirect_to store_subscribe_path
+      end
     end
-    it 'remembers promo code'
   end
   describe 'quick donation' do
     before :each do

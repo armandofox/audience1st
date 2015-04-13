@@ -125,14 +125,11 @@ class CustomersController < ApplicationController
   end
   
   def forgot_password
-    if request.get?
-      set_return_to(params[:redirect_to] || login_path)
+    return if request.get?
+    if send_new_password(params[:email])
+      redirect_to login_path
     else
-      if send_new_password(params[:email])
-        redirect_to login_path
-      else
-        redirect_to forgot_password_path
-      end
+      redirect_to forgot_password_path
     end
   end
 
