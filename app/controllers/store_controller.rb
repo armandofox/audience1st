@@ -25,7 +25,6 @@ class StoreController < ApplicationController
     @special_shows_only = (@what =~ /special/i)
     reset_shopping unless (@promo_code = params[:promo_code])
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
-    set_return_to :action => action_name
   end
 
   def special
@@ -163,7 +162,7 @@ class StoreController < ApplicationController
 
   def checkout
     @cart = find_cart
-    set_return_to :controller => 'store', :action => 'checkout'
+    set_return_to checkout_path
     @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
     @checkout_message =
       if @cart.include_regular_vouchers?
