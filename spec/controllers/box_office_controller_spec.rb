@@ -3,10 +3,10 @@ require 'spec_helper'
 describe BoxOfficeController do
 
   include BasicModels
+  fixtures :customers
 
-  include StubUtils
   before(:each) do
-    stub_globals_and_userlevel(:boxoffice, :boxoffice_manager)
+    login_as(:boxoffice_manager)
   end
     
   describe "showdate-dependent boxoffice action" do
@@ -67,16 +67,6 @@ describe BoxOfficeController do
         flash[:alert].should match(/no changes were made/i)
       end
     end
-    context "when neither Transfer nor Destroy is pressed" do
-      before(:each) do
-        @params = {:vouchers => [Voucher.create!.id], :commit => 'nothing'}
-      end
-      it_should_behave_like "no transfer is attempted"
-      it "should display appropriate error" do
-        post :modify_walkup_vouchers, @params
-        flash[:alert].should match(/unrecognized action/i)
-      end
-    end
     context "when target showdate doesn't exist" do
       before(:each) do
         @params = {:vouchers => [Voucher.create!(:showdate_id => 2)], :commit => 'Transfer',
@@ -119,27 +109,6 @@ describe BoxOfficeController do
         end
         it "when errors occur should display a message" do
           Voucher.should_receive(:transfer_multiple).and_raise("boom!")
-          post :modify_walkup_vouchers, @params
-          flash[:alert].should match(/no changes were made/i)
-          flash[:alert].should match(/boom!/)
-        end
-      end
-      describe "destroying" do
-        before(:each) do ; @params[:commit] = 'Destroy' ; end
-        context "when no errors occur" do
-          before(:each) do
-            Voucher.should_receive(:destroy_multiple).with(kind_of(Array), anything())
-          end
-          it "should attempt to destroy the vouchers" do
-            post :modify_walkup_vouchers, @params
-          end
-          it "should display confirmation" do
-            post :modify_walkup_vouchers, @params
-            flash[:notice].should == "2 vouchers destroyed."
-          end
-        end
-        it "should display error message when errors occur" do
-          Voucher.should_receive(:destroy_multiple).and_raise("boom!")
           post :modify_walkup_vouchers, @params
           flash[:alert].should match(/no changes were made/i)
           flash[:alert].should match(/boom!/)

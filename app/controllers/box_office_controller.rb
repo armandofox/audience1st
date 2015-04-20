@@ -146,15 +146,13 @@ class BoxOfficeController < ApplicationController
     @other_showdates = @showdate.show.showdates
   end
 
-  # process a change of walkup vouchers by either destroying them or moving them
-  # to another showdate, as directed
+  # process a change of walkup vouchers by moving them to another showdate, as directed
   def modify_walkup_vouchers
     if params[:vouchers].blank?
       flash[:alert] = "You didn't select any vouchers to transfer."
       redirect_to(:action => :walkup) and return
     end
     voucher_ids = params[:vouchers]
-    action = params[:commit].to_s
     showdate_id = 0
     begin
       vouchers = Voucher.find(voucher_ids)
