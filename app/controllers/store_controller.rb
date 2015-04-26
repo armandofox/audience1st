@@ -5,7 +5,7 @@ class StoreController < ApplicationController
   before_filter :is_logged_in, :only => %w[edit_billing_address checkout place_order]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
 
-  before_filter :set_session_variables
+  before_filter :set_session_variables, :except => %w[donate process_quick_donation]
   def set_session_variables
     # logged_in?   desired   result
     # 1 nil            x      redirect to anonymous customer
@@ -72,7 +72,7 @@ class StoreController < ApplicationController
   
   def donate
     @gCheckoutInProgress = nil                 # even if order in progress, going to donation page cancels it
-    @customer =  @gCustomer || Customer.new
+    @customer =  current_user() || Customer.new
   end
 
   def process_quick_donation
