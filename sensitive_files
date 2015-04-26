@@ -1,0 +1,7 @@
+facebooker.yml.erb
+venues.yml
+newrelic.yml.erb (move newrelic key to venues.yml)
+database.yml.dev (has settings for my local db root)
+database.yml.sandbox
+
+get rid of stuff in settings.yml to delete that file?

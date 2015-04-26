@@ -7,11 +7,27 @@ class StoreController < ApplicationController
 
   before_filter :set_session_variables
   def set_session_variables
-    @customer = current_user || Customer.walkup_customer
+    # logged_in?   desired   result
+    # 1 nil            x      redirect to anonymous customer
+    # 2 admin         nil     redirect to logged-in
+    # 3 non-admin     nil     redirect to logged-in
+    # 4 non-admin    other    redirect to logged-in
+    # 5 admin        non-nil  set customer=desired; no redirect
+    # 6 non-admin    self     set customer=desired; no redirect
+    logged_in = current_user()
+    desired = Customer.find_by_id(params[:customer_id]) 
+    # clause 1
+    redirect_to params.merge(:customer_id => Customer.anonymous_customer) and return unless logged_in
+    # clause 2 & 3: we know someone is logged in
+    redirect_to params.merge(:customer_id => logged_in) and return if desired.nil?
+    # clause 4: logged in, and has requested acting as customer
+    redirect_to params.merge(:customer_id => logged_in) and return unless
+      logged_in.is_boxoffice || desired==logged_in
+    # clause 5 & 6
+    @customer = desired
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
     @cart = find_cart
-    @promo_code = session[:promo_code]
     @is_admin = current_admin.is_boxoffice
   end
   private :set_session_variables
@@ -22,16 +38,14 @@ class StoreController < ApplicationController
   #                          shipping_addr -> set_shipping_addr
   def index
     @what = params[:what] || 'Regular Tickets'
+    @page_title = "#{Option.venue} - Tickets"
     @special_shows_only = (@what =~ /special/i)
     reset_shopping unless (@promo_code = params[:promo_code])
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
   end
 
-  def special
-    redirect_to :action => :index, :params => {:what => 'special'}
-  end
-
   def subscribe
+    @page_title = "#{Option.venue} - Subscriptions"
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
     if @is_admin

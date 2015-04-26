@@ -3,6 +3,58 @@ require 'spec_helper'
 describe StoreController do
   fixtures :customers
 
+  describe 'initial visit' do
+    before :each do
+      @r = {:controller => 'store', :action => 'index'}
+      @c = create(:customer)
+      @anon = Customer.anonymous_customer
+      @extra = {:show_id => '25', :promo_code => 'x'}
+    end
+    context 'when not logged in' do
+      before :each do ; login_as(nil) ; end
+      it 'redirects as generic customer' do
+        get :index
+        response.should redirect_to(@r.merge(:customer_id => @anon))
+      end
+      it 'preserves params' do
+        get :index, @extra
+        response.should redirect_to(@r.merge(:customer_id => @anon).merge(@extra))
+      end
+
+      it 'prevents switching to a different user' do
+        get :index, {:customer_id => @c.id}
+        response.should redirect_to(@r.merge(:customer_id => @anon))
+      end
+    end
+    context 'when logged in as regular user' do
+      before :each do ; login_as(@c) ;  end
+      it 'redirects to your login keeping params' do
+        get :index, @extra
+        response.should redirect_to(@r.merge(:customer_id => @c).merge(@extra))
+      end
+      it 'prevents you from switching to different user' do
+        other = create(:customer)
+        get :index, @extra.merge(:customer_id => other)
+        response.should redirect_to(@r.merge(@extra).merge(:customer_id => @c))
+      end
+      it 'lets you view store as yourself' do
+        get :index, @extra.merge(:customer_id => @c)
+        response.should be_success
+      end
+    end
+    context 'when logged in as admin' do
+      before :each do ; login_as(@b = customers(:boxoffice_user)) ; end
+      it 'redirects to you if no customer specified' do
+        get :index, @extra
+        response.should redirect_to(@r.merge(@extra).merge(:customer_id => @b))
+      end
+      it 'redirects to another customer' do
+        get :index, @extra.merge(:customer_id => @c)
+        response.should be_success
+      end
+    end
+  end
+
   describe "on InvalidAuthenticityToken exception" do
     before(:each) do
       @controller.allow_forgery_protection = true
@@ -264,4 +316,5 @@ describe StoreController do
       response.should_not redirect_to(:action => :checkout)
     end
   end
+
 end

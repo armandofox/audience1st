@@ -80,12 +80,21 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   # customer-facing purchase pages
-  # :promo_code is an optional route argument; in Rails 3, would be in parens #rails3
+  # promo_code and customer_id are optional route arguments; in Rails 3, would be in parens #rails3
 
-  map.store     '/store/:promo_code', :controller => 'store', :action => 'index', :promo_code => nil, :conditions => {:method => :get}
-  map.store_special   '/special/:promo_code', :controller => 'store', :action => 'index', :what => 'special', :promo_code => nil, :conditions => {:method => :get}
-  map.store_subscribe '/subscribe/:promo_code', :controller => 'store', :action => 'subscribe', :promo_code => nil, :conditions => {:method => :get}
-  %w(shipping_address checkout edit_billing_address show_changed showdate_changed).each do |action|
+  map.store     '/store/:customer_id', :controller => 'store', :action => 'index',
+  :customer_id => nil,
+  :conditions => {:method => :get}
+
+  map.store_subscribe '/subscribe/:customer_id', :controller => 'store', :action => 'subscribe',
+  :customer_id => nil,
+  :conditions => {:method => :get}
+  
+  %w(show_changed showdate_changed).each do |action|
+    map.send(action, "/#{action}", :controller => 'store', :action => action)
+  end
+
+  %w(shipping_address checkout edit_billing_address).each do |action|
     map.send(action, "/#{action}", :controller => 'store', :action => action)
   end
 
@@ -96,6 +105,8 @@ ActionController::Routing::Routes.draw do |map|
   map.donate_to_fund '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
   map.quick_donate '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
   map.process_quick_donation '/process_quick_donation', :controller => 'store', :action => 'process_quick_donation', :conditions => {:method => :post}
+
+  map.naked_store '/store', :controller => 'store', :action => 'index'
 
   # donations management
 
@@ -131,8 +142,6 @@ ActionController::Routing::Routes.draw do |map|
   map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
 
   map.resource :session # other session actions
-
-  map.connect 'subscribe', :controller => 'store', :action => 'subscribe', :conditions => {:method => :get}
 
   # Routes for viewing and refunding orders
   map.order '/orders/:id', :controller => 'orders', :action => 'show', :conditions => {:method => :get}
