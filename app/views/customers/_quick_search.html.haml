@@ -1,5 +1,5 @@
 #customer_quick_search.adminField
-  - if @customer
+  - if existing_customer(@customer)
     #on_behalf_of_customer
       %span.strong Customer: 
       %span#onBehalfOfName= link_to @customer.full_name, customer_path(@customer)
@@ -16,11 +16,11 @@
   = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}
   = hidden_field_tag 'id'
   = submit_tag 'Go', :onclick => 'window.location = "/customers/" + jQuery("#id").val()'
-  - form_tag(list_customers_path,{:method =>:get, :id => 'search_on_any_field'}) do
+  - form_tag(customers_path,{:method =>:get, :id => 'search_on_any_field'}) do
     Search any field:
     = text_field_tag 'customers_filter', @customers_filter, :size => 12
     = submit_tag 'Go'
-    = gen_button 'List All', list_customers_path
+    = gen_button 'List All', customers_path
   = gen_button 'Add New...', new_customer_path
 
 

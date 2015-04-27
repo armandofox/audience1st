@@ -7,33 +7,25 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :labels
   
 
-  # admin-only actions
-  map.temporarily_disable_admin '/disable_admin', :controller => 'customers', :action => 'temporarily_disable_admin'
-  map.reenable_admin '/reenable_admin',  :controller => 'customers', :action => 'reenable_admin'
-
-  # begin new RESTful customer routes
-  map.connect '/customers/auto_complete_for_customer_full_name', :controller => 'customers', :action => 'auto_complete_for_customer_full_name'
-  map.list_customers '/customers/list', :controller => 'customers', :action => 'list'
-  map.list_duplicates '/customers/list_duplicates', :controller => 'customers', :action => 'list_duplicates'
-  
-  map.merge_customers '/customers/merge', :controller => 'customers', :action => 'merge', :conditions => {:method => :get}
-  map.finalize_merge '/customers/finalize_merge', :controller => 'customers', :action => 'finalize_merge', :conditions => {:method => :post}
-  map.search_customers  '/customers/search', :controller => 'customers', :action => 'search', :conditions => {:method => :get}
-  map.lookup_customer  '/customers/lookup', :controller => 'customers', :action => 'lookup'
-  map.forgot_password '/customers/forgot_password', :controller => 'customers', :action => 'forgot_password'
-  map.new_customer '/customers/new', :controller => 'customers', :action => 'new', :conditions => {:method => :get}
-
-  map.customer '/customers/:id', :controller => 'customers', :action => 'welcome', :conditions => {:method => :get}
-  map.edit_customer '/customers/:id/edit', :controller => 'customers', :action => 'edit', :conditions => {:method => :get}
-  map.change_password '/customers/:id/change_password', :controller => 'customers', :action => 'change_password'
-  map.change_secret_question '/customers/:id/change_secret_question', :controller => 'customers', :action => 'change_secret_question'
-  map.update_customer '/customers/:id/update', :controller => 'customers', :action => 'update', :conditions => {:method => :post}
-
-  map.create_customer '/customers/create', :controller => 'customers', :action => 'create', :conditions => {:method => :post}
-  map.user_create_customer '/customers/user_create', :controller => 'customers', :action => 'user_create', :conditions => {:method => :post}
-  # begin new RESTful customer routes
-
-
+  map.resources(:customers,
+    :except => :destroy,
+    :new => {:user_create => :post},
+    :collection => {
+      :temporarily_disable_admin => [:get,:post], # should be in separate controller
+      :reenable_admin => [:get,:post], # should be in separate controller
+      :auto_complete_for_customer_full_name => [:get,:post], # should be in separate controller
+      :merge => :get,
+      :finalize_merge => :post,
+      :search => :get,
+      :lookup => [:get,:post],    # should be obsoleted
+      :list_duplicates => :get,
+      :forgot_password => [:get, :post] # dual-purpose action
+    },
+    :member => {
+      :change_password_for => [:get, :post], # dual-purpose action
+      :change_secret_question => [:get, :post] # dual-purpose action
+    })
+      
   # RSS
 
   map.connect '/info/ticket_rss', :controller => 'info', :action => 'ticket_rss', :conditions => {:method => :get}
@@ -80,7 +72,11 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   # customer-facing purchase pages
-  # promo_code and customer_id are optional route arguments; in Rails 3, would be in parens #rails3
+  #  Entry into purchase flow:
+  #    -  via :index, :subscribe, or :donate_to_fund - customer ID optional but guaranteed to be set
+  #       on all subsequent pages in that flow
+  #    -  via :donate (quick donation) - no customer ID needed nor set; the only other page in
+  #       the flow is the POST back to this same URL
 
   map.store     '/store/:customer_id', :controller => 'store', :action => 'index',
   :customer_id => nil,
@@ -90,23 +86,33 @@ ActionController::Routing::Routes.draw do |map|
   :customer_id => nil,
   :conditions => {:method => :get}
   
+  map.donate_to_fund '/store/donate_to_fund/:id/:customer_id',
+  :customer_id => nil,
+  :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
+
+  # subsequent actions in the above flow require a customer_id:
+
+  %w(shipping_address checkout edit_billing_address).each do |action|
+    map.send(action, "/store/:customer_id/#{action}", :controller => 'store', :action => action)
+  end
+
+  %w(process_cart set_shipping_address).each do |action|
+    map.send(action, "/store/:customer_id/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post})
+  end
+  
+  # quick-donation neither requires nor sets customer-id:
+
+  map.quick_donate '/donate', :controller => 'store', :action => 'donate'
+
+  # place_order doesn't require customer_id because a valid order contains both buyer and recipient info:
+
+  map.place_order '/store/place_order', :controller => 'store', :action => 'place_order',
+  :conditions => {:method => :post}
+
   %w(show_changed showdate_changed).each do |action|
     map.send(action, "/#{action}", :controller => 'store', :action => action)
   end
 
-  %w(shipping_address checkout edit_billing_address).each do |action|
-    map.send(action, "/#{action}", :controller => 'store', :action => action)
-  end
-
-  %w(process_cart set_shipping_address place_order).each do |action|
-    map.send(action, "/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post})
-  end
-  
-  map.donate_to_fund '/store/donate_to_fund/:id', :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
-  map.quick_donate '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => :get}
-  map.process_quick_donation '/process_quick_donation', :controller => 'store', :action => 'process_quick_donation', :conditions => {:method => :post}
-
-  map.naked_store '/store', :controller => 'store', :action => 'index'
 
   # donations management
 
@@ -132,16 +138,18 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/box_office/mark_checked_in', :controller => 'box_office', :action => 'mark_checked_in', :conditions => {:method => :post}
 
 
+  map.resource(:session,
+    :only => [:new, :create],
+    :collection => {})
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
-  # legacy login route
-  map.connect '/customers/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
+  map.logout '/logout', :controller => 'sessions', :action => 'destroy'
+
   map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question',:conditions => {:method => :get}
   map.connect '/sessions/create_from_secret_question', :controller => 'sessions', :action => 'create_from_secret_question', :conditions => {:method => :post}
-  map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
 
-  map.resource :session # other session actions
+
 
   # Routes for viewing and refunding orders
   map.order '/orders/:id', :controller => 'orders', :action => 'show', :conditions => {:method => :get}

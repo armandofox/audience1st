@@ -18,4 +18,4 @@
       = render :partial => 'voucher', :collection => @other_vouchers.sort_by  {|v| v.reserved? ? -(v.showdate.thedate.to_i) : -1.0e15 }, :locals => {:is_boxoffice => @admin.is_boxoffice, :is_boxoffice_manager => @admin.is_boxoffice_manager, :is_subscriber => @subscriber, :customer => @customer }
 
 %br/
-= button_to 'Buy More Tickets', {:controller => 'store', :action => 'index'}, {:method => :get}
+= button_to 'Buy More Tickets', store_path(@customer), {:method => :get}

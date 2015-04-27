@@ -38,8 +38,8 @@ class Customer < ActiveRecord::Base
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
-  :message => "address {{value}} has already been registered.
-    <a href='/login?email={{value}}'>Sign in with this email address</a>
+  :message => "address %{value} has already been registered.
+    <a href='/login?email=%{value}'>Sign in with this email address</a>
     (if you forgot your password, use the 'Forgot your password?' link on sign-in page)"
   
   validates_format_of :zip, :if => :self_created?, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true

@@ -41,7 +41,7 @@ class SessionsController < ApplicationController
           redirect_to secret_question_path
         end
       end
-      set_return_to change_password_path(u)
+      set_return_to change_password_for_customer_path(u)
       u
     end
   end

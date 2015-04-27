@@ -40,7 +40,6 @@ class ApplicationController < ActionController::Base
   before_filter :set_globals
 
   def set_globals
-    @gCustomer = current_user
     @gAdmin = current_admin
     @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
     @enableAdmin = session[:can_restore_admin]
@@ -124,6 +123,17 @@ class ApplicationController < ActionController::Base
     else
       current_user
     end
+  end
+
+  # This will always be called after is_logged_in has setup current_user or has redirected
+  def is_myself_or_staff
+    desired = Customer.find_by_id(params[:id])
+    if (desired.nil? ||
+        (desired != current_user && !current_user.is_staff))
+      flash[:notice] = "Attempt to perform unauthorized action."
+      redirect_to login_path
+    end
+    @customer = desired
   end
 
   def temporarily_unavailable

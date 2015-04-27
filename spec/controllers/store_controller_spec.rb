@@ -3,12 +3,12 @@ require 'spec_helper'
 describe StoreController do
   fixtures :customers
 
-  describe 'initial visit' do
+  shared_examples_for 'initial visit' do
     before :each do
       @r = {:controller => 'store', :action => 'index'}
       @c = create(:customer)
       @anon = Customer.anonymous_customer
-      @extra = {:show_id => '25', :promo_code => 'x'}
+      @extra = {:show_id => '25', :promo_code => 'x'}.merge(@extra ||= {})
     end
     context 'when not logged in' do
       before :each do ; login_as(nil) ; end
@@ -52,6 +52,21 @@ describe StoreController do
         get :index, @extra.merge(:customer_id => @c)
         response.should be_success
       end
+    end
+  end
+
+  context 'initial visit' do
+    describe 'to :index' do
+      before :each do ; @action = :index ; end
+      it_should_behave_like 'initial visit'
+    end
+    describe 'to :subscribe' do
+      before :each do ; @action = :subscribe ; end
+      it_should_behave_like 'initial visit'
+    end
+    describe 'to :donate_to_fund' do
+      before :each do ; @action = :donate_to_fund ; @extras = {:id => mock_model(AccountCode)}; end
+      it_should_behave_like 'initial visit'
     end
   end
 
@@ -106,7 +121,7 @@ describe StoreController do
       before :each do
         @count = Customer.count(:all)
         @alert = /Donation amount must be provided/
-        post :process_quick_donation, {:customer => @new_valid_customer}
+        post :donate, {:customer => @new_valid_customer}
       end
       it_should_behave_like 'failure'
     end
@@ -114,14 +129,14 @@ describe StoreController do
       before :each do
         @new_valid_customer.delete(:city)
         @alert = /Incomplete or invalid donor information:/
-        post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        post :donate, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
       end
       it_should_behave_like 'failure'
     end
     context 'when credit card token invalid' do
       before :each do
         @alert = /Invalid credit card transaction/i
-        post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5}
+        post :donate, {:customer => @new_valid_customer, :donation => 5}
       end
       it_should_behave_like 'failure'
     end
@@ -181,27 +196,6 @@ describe StoreController do
       end
     end
 
-  end
-  describe "proceeding with nonempty cart" do
-    context "with valid tickets" do
-      context "gift order" do
-      end
-      context "nongift order" do
-      end
-    end
-    context "with invalid tickets" do
-      describe "always", :shared => true do
-        it "should redirect to the index page"
-      end
-      context "gift order" do
-        before do ; @params = {:gift => '1'} ; end
-        it_should_behave_like "always"
-      end
-      context "nongift order" do
-        before do ; @params = {} ; end
-        it_should_behave_like "always"
-      end
-    end
   end
 
   describe "completing billing address" do

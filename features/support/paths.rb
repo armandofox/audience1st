@@ -13,11 +13,11 @@ module NavigationHelpers
     case page_name
     when /login page/i              then login_path
     when /login with secret question page/i then secret_question_path
-    when /change secret question page/      then change_secret_question_path(@customer)
+    when /change secret question page/      then change_secret_question_customer_path(@customer)
     when /home page/                        then customer_path(@customer)
     when /edit contact info page/           then edit_customer_path(@customer)
-    when /change password page/i            then change_password_path(@customer)
-    when /the forgot password page/i        then forgot_password_path
+    when /change password page/i            then change_password_for_customer_path(@customer)
+    when /the forgot password page/i        then forgot_password_customers_path
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management
     when /the add comps page for customer "(.*) (.*)"/i then customer_add_voucher_path(Customer.find_by_first_name_and_last_name! $1,$2)

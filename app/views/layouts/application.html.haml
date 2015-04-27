@@ -34,12 +34,12 @@
                 = render :partial => 'box_office/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'layouts/admin_tabs'
-              - elsif @customer
+              - elsif existing_customer(@customer)
                 = render :partial => 'layouts/main_tabs'
               - if @gAdmin.is_staff
                 = render :partial => 'layouts/season_tabs'
                 = render :partial => 'customers/quick_search'
-                = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^list/)
+                = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicates/)
             #content.clear
               = render :partial => 'messages/notice' unless flash[:notice].blank?
               = render :partial => 'messages/alert' unless flash[:alert].blank?

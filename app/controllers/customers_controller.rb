@@ -1,26 +1,17 @@
 class CustomersController < ApplicationController
 
 
-  CUSTOMER_ACTIONS = %w(welcome edit update change_password change_secret_question)
+  # Actions requiring no login, customer login, and staff login respectively
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password home)
+  CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
+  ADMIN_ACTIONS =         %w(temporarily_disable_admin reenable_admin
+                            auto_complete_for_customer_full_name lookup create
+                            search merge finalize_merge index list_duplicates)
 
-  # must be validly logged in before doing anything except login or create acct
-  # this filter ensures current_user returns non-nil
-  before_filter(:is_logged_in, :except => %w(new user_create forgot_password))
-
-
-  # and to do Restful customer actions, must be either that customer or staff
-  before_filter(:is_myself_or_staff, :only => CUSTOMER_ACTIONS)
-
-  ADMIN_ACTIONS = %w(temporarily_disable_admin reenable_admin auto_complete_for_customer_full_name lookup create search merge finalize_merge list list_duplicates)
+  # All these filters redirect to login if trying to trigger an action without correct preconditions.
+  before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
+  before_filter :is_myself_or_staff, :only => CUSTOMER_ACTIONS
   before_filter :is_staff_filter, :only => ADMIN_ACTIONS
-
-  private
-  
-  def is_myself_or_staff
-    redirect_to login_path unless (@gAdmin.is_staff || Customer.find_by_id(params[:id]) == current_user)
-  end
-
-  public
 
   def home
     if current_user
@@ -30,9 +21,10 @@ class CustomersController < ApplicationController
     end
   end
 
-  def welcome
+  # actions requiring @customer to be set by is_myself_or_staff
+
+  def show
     reset_shopping
-    @customer = Customer.find params[:id]
     @admin = current_admin
     @vouchers = @customer.active_vouchers.sort_by(&:created_at)
     session[:store_customer] = @customer.id
@@ -57,7 +49,6 @@ class CustomersController < ApplicationController
   end
 
   def edit
-    @customer = Customer.find params[:id]
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
     # editing contact info may be called from various places. correctly
@@ -66,7 +57,6 @@ class CustomersController < ApplicationController
   end
 
   def update
-    @customer = Customer.find params[:id]
     @is_admin = current_admin.is_staff
     @superadmin = current_admin.is_admin
     # editing contact info may be called from various places. correctly
@@ -109,8 +99,7 @@ class CustomersController < ApplicationController
     end
   end
 
-  def change_password
-    @customer = Customer.find params[:id]
+  def change_password_for
     return if request.get?
     if @customer.update_attributes(params[:customer])
       password = params[:customer][:password]
@@ -120,16 +109,30 @@ class CustomersController < ApplicationController
       :comments => 'Change password')
       redirect_to customer_path(@customer)
     else
-      render :action => 'change_password'
+      render :action => 'change_password_for'
     end
   end
-  
+
+  def change_secret_question
+    return if request.get?
+    if @customer.update_attributes(params[:customer])
+      Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
+        :comments => 'Change secret question or answer')
+      flash[:notice] = 'Secret question change confirmed.'
+      redirect_to customer_path(@customer)
+    else
+      flash[:alert] = "Could not update secret question: #{@customer.errors.full_messages.join(', ')}"
+      render :action => :change_secret_question, :id => @customer
+    end
+  end
+
+  # actions NOT requiring @customer to be set
   def forgot_password
     return if request.get?
     if send_new_password(params[:email])
       redirect_to login_path
     else
-      redirect_to forgot_password_path
+      redirect_to forgot_password_customers_path
     end
   end
 
@@ -161,24 +164,10 @@ class CustomersController < ApplicationController
     end
   end
 
-  def change_secret_question
-    @customer = Customer.find params[:id]
-    return if request.get?
-    if @customer.update_attributes(params[:customer])
-      Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
-        :comments => 'Change secret question or answer')
-      flash[:notice] = 'Secret question change confirmed.'
-      redirect_to customer_path(@customer)
-    else
-      flash[:alert] = "Could not update secret question: #{@customer.errors.full_messages.join(', ')}"
-      render :action => :change_secret_question, :id => @customer
-    end
-  end
-
   # Following actions are for use by admins only:
   # list, merge, search, create, destroy
 
-  def list
+  def index
     @offset,@limit = get_list_params 
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)

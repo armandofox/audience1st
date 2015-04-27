@@ -9,6 +9,10 @@ module CustomersHelper
     link_to h(content_text), customer_path(customer), options
   end
 
+  def existing_customer(customer)
+    customer && !customer.new_record?
+  end
+
   def format_collection_with_style(collection, css_class)
     # show a collection as a bunch of span's styled with css class
     collection.map do |elt|

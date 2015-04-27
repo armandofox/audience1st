@@ -5,7 +5,7 @@ class StoreController < ApplicationController
   before_filter :is_logged_in, :only => %w[edit_billing_address checkout place_order]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
 
-  before_filter :set_session_variables, :except => %w[donate process_quick_donation]
+  before_filter :set_session_variables, :except => :donate
   def set_session_variables
     # logged_in?   desired   result
     # 1 nil            x      redirect to anonymous customer
@@ -52,7 +52,7 @@ class StoreController < ApplicationController
       this_season = Time.this_season
       @subs_to_offer = ValidVoucher.bundles([this_season, this_season+1])
     else
-      @subs_to_offer = ValidVoucher.bundles_available_to(@gCustomer || Customer.generic_customer, @promo_code)
+      @subs_to_offer = ValidVoucher.bundles_available_to(@customer, @promo_code)
     end
     if @subs_to_offer.empty?
       flash[:alert] = "There are no subscriptions on sale at this time."
@@ -70,13 +70,11 @@ class StoreController < ApplicationController
     end
   end
   
+  # This single action handles quick_donate: GET serves the form, POST places the order
   def donate
     @gCheckoutInProgress = nil                 # even if order in progress, going to donation page cancels it
-    @customer =  current_user() || Customer.new
-  end
+    @customer =  (current_user() || Customer.new) and return if request.get?
 
-  def process_quick_donation
-    @gCheckoutInProgress = nil
     # If donor doesn't exist, create them and marked created-by-admin
     # If donor exists, make that the order's customer.
     # Create an order consisting of just a donation.
@@ -88,7 +86,7 @@ class StoreController < ApplicationController
     end
     @customer = Customer.for_donation(params[:customer])
     unless @customer.valid_as_purchaser?
-      flash[:alert] = "Incomplete or invalid donor information: " +
+      flash[:alert] = "Incomplete or invalid donor information: " + @customer.errors.full_messages.join(', ')
       render(:action => 'donate') and return
     end
     # Given valid donation, customer, and charge token, create & place credit card order.
@@ -113,12 +111,12 @@ class StoreController < ApplicationController
     @cart = find_cart
     @cart.add_comment params[:comments].to_s
     tickets = ValidVoucher.from_params(params[:valid_voucher])
-    if @gAdmin.is_boxoffice
+    if @customer.is_boxoffice
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
     else
       promo = params[:promo_code].to_s
       tickets.each_pair do |vv, qty|
-        vv.customer = @gCustomer
+        vv.customer = @customer
         @cart.add_with_checking(vv,qty,promo)
       end
     end
@@ -304,11 +302,11 @@ class StoreController < ApplicationController
   def redirect_to_referer(msg=nil)
     redirect_target = 
       case params[:referer].to_s
-      when 'subscribe' then store_subscribe_path(@promo)
-      when 'special' then store_special_path(@promo)
-      when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id])
-      when 'donate' then quick_donate_path
-      else store_path(@promo)
+      when 'donate' then quick_donate_path # no @customer assumed
+      when 'donate_to_fund' then donate_to_fund_path(@customer, params[:account_code_id])
+      when 'subscribe' then store_subscribe_path(@customer,:promo_code => @promo)
+      when 'special' then store_special_path(@customer, :promo_code => @promo)
+      else store_path(@customer,:promo_code => @promo)
       end
     flash[:alert] = msg
     redirect_to redirect_target
@@ -343,7 +341,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_admin
     @valid_vouchers = @sd.valid_vouchers.delete_if(&:comp?).map do |v|
-      v.customer = @gCustomer || Customer.generic_customer
+      v.customer = @customer
       v.adjust_for_customer
     end.sort_by(&:display_order)
     @all_shows = Show.
@@ -355,7 +353,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_patron
     @valid_vouchers = @sd.valid_vouchers.map do |v|
-      v.customer = @gCustomer || Customer.generic_customer
+      v.customer = @customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)
     @all_shows = Show.current_and_future.special(@special_shows_only) || []

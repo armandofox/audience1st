@@ -3,7 +3,7 @@
     %h1.page_heading.center= sanitize(Option.quick_donation_banner)
     %p.explanation= sanitize(Option.quick_donation_explanation)
 
-    - form_tag(process_quick_donation_path, {:id => '_stripe_payment_form'}) do
+    - form_tag(quick_donate_path, {:id => '_stripe_payment_form'}) do
       = hidden_field_tag 'referer', 'donate'
       #billing= render :partial => 'customers/form', :locals => {:customer => @customer, :hide => [:opt_out, :birthday]}
 
