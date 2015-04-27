@@ -21,12 +21,10 @@
           - @vouchers.keys.sort_by(&:downcase).each do |k|
             - v = @vouchers[k].first
             - c = v.customer
-            - c_lnk = {:controller => 'customers', :action =>'welcome', :id => c.id }
             %tr{:class=>(c.subscriber? ? 'subscriber' : nil)}
-              - ln,fn=c.last_name.name_capitalize, c.first_name.name_capitalize
               %td.maincolumn= letter_header_for(ln) 
-              %td= ln
-              %td= fn
+              %td= link_to c.last_name.name_capitalize, customer_path(c)
+              %td= link_to c.first_name.name_capitalize, customer_path(c)
               %td= h v.vouchertype.name
               %td.c= h @vouchers[k].size
               / concatenate all nonempty comments

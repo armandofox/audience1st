@@ -2,19 +2,19 @@
   Details for 
   %span.show_name= @show.name
 
-- form_tag({:action => 'update', :id => @show}, {:method => :put})  do
+- form_tag show_path(@show), :method => :put do
   = render :partial => 'form'
   = submit_tag 'Save Changes'
-  = gen_button 'Back to List of Shows', :action => 'index', :season => @show.season
+  = gen_button 'Back to List of Shows', shows_path(:season => @show.season)
 
 %h2 Performances
 
 %p
-  = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
-  = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
-  = gen_button 'Hide all details', :action => 'edit', :id => @show
+  = gen_button  'Add a Performance', new_showdate_path(:show_id => @show)
+  = gen_button 'Show all details', edit_show_path(@show, :display => 1)
+  = gen_button 'Hide all details', edit_show_path(@show)
   = gen_button 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true
-  = gen_button 'Back to List of Shows', :action => 'index', :season => @show.season
+  = gen_button 'Back to List of Shows', shows_path(:season => @show.season)
 
 %table.hilite
   %thead
@@ -25,11 +25,4 @@
       %th Redeemable Ticket Types (click name to edit)
   %tbody
     = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
-
-%p
-  = gen_button  'Add a Performance', {:controller => 'showdates', :action => 'new', :show_id => @show }
-  = gen_button 'Show all details', :action => 'edit',:id => @show, :display => 1
-  = gen_button 'Hide all details', :action => 'edit', :id => @show
-  = gen_button 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true
-  = gen_button 'Back to List of Shows', :action => 'index', :season => @show.season
 

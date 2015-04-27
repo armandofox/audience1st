@@ -28,6 +28,9 @@ describe 'Customer routes for', :type => :routing do
       {:get => '/customers/lookup'}.should route_to @r.merge(:action => 'lookup') # obsolete?
       {:post => '/customers/lookup'}.should route_to @r.merge(:action => 'lookup') # obsolete?
     end
+    specify 'listing dups' do
+      {:get => '/customers/list_duplicate'}.should route_to @r.merge(:action => 'list_duplicate')
+    end
   end
   describe 'individual customers' do
     specify 'change password' do

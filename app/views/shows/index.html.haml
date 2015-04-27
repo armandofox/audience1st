@@ -1,4 +1,4 @@
-- form_tag({:action => 'index'},{:method=>:get}) do
+- form_tag shows_path, :method => :get do
   %h1 
     Listing shows for season:
     = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onchange => 'this.form.submit();'
@@ -15,7 +15,7 @@
   %tbody
     - @shows.each do |show|
       %tr{:class=>cycle(:even,:odd)}
-        %td= link_to show.name, :action => 'edit', :id => show
+        %td= link_to show.name, edit_show_path(show)
         %td= purchase_link_popup "[Link]", link_to_show_tickets(show), show.name
         %td.c= humanize_date_range(show.opening_date, show.closing_date)
         %td= show.listing_date.to_formatted_s(:showtime)
@@ -24,6 +24,5 @@
           %td
         - else
           %td
-          %td= button_to 'Delete', {:action => 'destroy', :id => show}, |
-            :confirm => "Delete '#{show.name}': are you sure?" |
-= gen_button 'Add New Show', :action => 'new'
+          %td= button_to 'Delete', delete_show_path(show), :confirm => "Delete '#{show.name}': are you sure?" 
+= gen_button 'Add New Show', new_show_path

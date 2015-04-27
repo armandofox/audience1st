@@ -6,7 +6,7 @@ class CustomersController < ApplicationController
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(temporarily_disable_admin reenable_admin
                             auto_complete_for_customer_full_name lookup create
-                            search merge finalize_merge index list_duplicates)
+                            search merge finalize_merge index list_duplicate)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
   before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
@@ -168,6 +168,7 @@ class CustomersController < ApplicationController
   # list, merge, search, create, destroy
 
   def index
+    @list_type = :all
     @offset,@limit = get_list_params 
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
@@ -187,7 +188,8 @@ class CustomersController < ApplicationController
     render :action => 'index'
   end
 
-  def list_duplicates
+  def list_duplicate
+    @list_type = :duplicates
     @offset,@limit = get_list_params
     @customers = Customer.find_suspected_duplicates(@limit,@offset)
     @count = @customers.length

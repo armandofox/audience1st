@@ -23,4 +23,4 @@
     
   = submit_tag "Add Vouchers"
 
-  = gen_button  "Cancel", {:controller => 'customers', :action => 'welcome', :id => @customer}
+  = gen_button  "Cancel", customer_path(@customer)

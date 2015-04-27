@@ -39,7 +39,7 @@
               - if @gAdmin.is_staff
                 = render :partial => 'layouts/season_tabs'
                 = render :partial => 'customers/quick_search'
-                = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicates/)
+                = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)
             #content.clear
               = render :partial => 'messages/notice' unless flash[:notice].blank?
               = render :partial => 'messages/alert' unless flash[:alert].blank?

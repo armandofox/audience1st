@@ -3,7 +3,7 @@
     %tr
       %td.header
         = popup_help_for 'checkin_house_capacity'
-        = link_to 'True Cap:', :controller => 'shows', :action => 'edit', :id => showdate.show
+        = link_to 'True Cap:', edit_show_path(showdate.show)
       %td.value
         %span#cap= showdate.house_capacity
       %td
