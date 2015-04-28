@@ -38,7 +38,7 @@ class SessionsController < ApplicationController
         if u.errors.on(:login_failed) =~ /never set up a secret question/i
           redirect_to login_path
         else
-          redirect_to login_with_secret_question_path
+          redirect_to login_with_secret_session_path
         end
       end
       set_return_to change_password_for_customer_path(u)

@@ -1,4 +1,4 @@
-- form_tag({:action => 'index'},{:method=>:get}) do
+- form_tag vouchertypes_path, :method=>:get do
   %h1 
     Listing
     = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)", "Nonticket Products"],@filter), :onchange => 'this.form.submit();'
@@ -27,7 +27,7 @@
           - if @superadmin && vouchertype.vouchers.count == 0
             = link_to(image_tag('delete.png',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:post, :confirm => "This will destroy all existing '#{h vouchertype.name}' vouchers. This action cannot be undone. Continue?" })
         %td= vouchertype.display_order
-        %td= link_to h(vouchertype.name),:action=>'edit',:id =>vouchertype  
+        %td= link_to h(vouchertype.name), edit_vouchertype_path(vouchertype)
         %td.r= number_to_currency(vouchertype.price)   
         %td.r= account_code_with_popup_link(vouchertype.account_code)
         %td.c= vouchertype.subscription? ? "Yes" : ""
@@ -41,4 +41,4 @@
         %td= gen_button 'Clone', {:action => :clone, :id => vouchertype.id}, {:title => 'Prepopulate a new vouchertype with attributes based on this one'}
 
 %br/
-= gen_button  'New vouchertype', {:action => 'new'} 
+= gen_button  'New vouchertype', new_vouchertype_path

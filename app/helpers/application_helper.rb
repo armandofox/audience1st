@@ -112,10 +112,10 @@ module ApplicationHelper
       content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
-  def link_to_if_option_text(opt, opts={}, html_opts={})
-    (s = Option.send(opt)).blank? ?
-    opts.delete(:alt).to_s :
+  def link_to_if_option_text(opt, path, html_opts={})
+    if (s = Option.send(opt)).blank? then '' else
       content_tag(:span, link_to(s, opts, html_opts), :id => opt, :class => opt)
+    end
   end
 
   # return javascript that will do check-all/uncheck-all for checkboxes that have

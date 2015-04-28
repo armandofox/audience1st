@@ -6,11 +6,11 @@
   =  h(@valid_voucher.printable_name)
 %p
   %strong Ticket type:
-  =  link_to vt.name_with_season_and_price, :controller => 'vouchertypes', :action => 'edit', :id =>vt
+  =  link_to vt.name_with_season_and_price, edit_vouchertype_path(vt)
 
 %br
 
-- form_tag :action => 'update', :id => @valid_voucher do
+- form_tag valid_voucher_path(@valid_voucher), :method => :put do
 
   = hidden_field 'valid_voucher', 'vouchertype_id', :value => vt.id
   = render :partial => 'form'
