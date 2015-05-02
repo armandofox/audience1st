@@ -3,6 +3,6 @@
   = admin_button 'Order History', customer_orders_path(@customer)
   = admin_button 'Donation History', {:controller => 'donations', :action => 'index', :use_cid => 1, :commit => 'Go', :cid => @customer}
   = admin_button 'Contact History', customer_visits_path(@customer)
-  = admin_button 'Prospecting Activities', {:controller => 'visits', :action => 'list_by_prospector', :id => @customer}
+  = admin_button 'Prospecting Activities', prospector_customer_visits_path(@customer)
   = admin_button 'Database Transactions', {:controller => 'txn', :action => 'index', :params => {:txn_filter => @customer}}
 .clear

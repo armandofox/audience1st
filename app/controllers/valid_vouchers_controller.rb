@@ -12,7 +12,7 @@ class ValidVouchersController < ApplicationController
     @showdate_id = params[:showdate_id]
     unless (@showdate = Showdate.find_by_id(@showdate_id))
       flash[:notice] = "New voucher must be associated with a showdate"
-      redirect_to :controller => 'shows', :action => 'index'
+      redirect_to shows_path
       return
     end
     @add_to_all = params[:add_to_all]
@@ -73,7 +73,7 @@ class ValidVouchersController < ApplicationController
     if params[:commit] =~ /another/i
       redirect_to :action => :new, :showdate_id => showdate, :add_to_all => addtojustone.zero?
     else
-      redirect_to :controller => 'shows', :action => 'edit', :id => showdate.show.id
+      redirect_to edit_show_path(showdate.show)
     end
   end
 
@@ -96,7 +96,7 @@ class ValidVouchersController < ApplicationController
     rescue Exception => e
       flash[:notice] = e.message + errors_as_html(@valid_voucher)
     end
-    redirect_to :controller => 'shows', :action => 'edit', :id => @valid_voucher.showdate.show.id
+    redirect_to edit_show_path(@valid_voucher.showdate.show)
   end
 
   def destroy

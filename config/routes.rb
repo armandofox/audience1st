@@ -1,7 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :bulk_downloads
   map.resources :account_codes
-  map.resources :imports
+  map.resources :imports, :except => [:show]
   map.connect '/imports/download_invalid/:id', :controller => 'imports', :action => 'download_invalid'
   map.connect '/imports/help', :controller => 'imports', :action => 'help'
   map.resources :labels
@@ -24,7 +24,12 @@ ActionController::Routing::Routes.draw do |map|
     :member => {
       :change_password_for => [:get, :post], # dual-purpose action
       :change_secret_question => [:get, :post] # dual-purpose action
-    })
+    })  do  |customer|
+
+    customer.resources(:visits,
+      :except => [:new, :edit],
+      :collection => { :prospector => :get })
+  end
       
   # RSS
 
@@ -32,8 +37,9 @@ ActionController::Routing::Routes.draw do |map|
   
 
   # shows
-  map.resources :shows, :except => [:show]
-  map.resources :showdates, :except => [:index]
+  map.resources :shows, :except => [:show] do |show|
+    show.resources :showdates, :except => [:index]
+  end
   map.resources :valid_vouchers, :except => [:index]
   map.resources :vouchertypes
   map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
@@ -52,10 +58,6 @@ ActionController::Routing::Routes.draw do |map|
   # database txns
   map.connect '/txns', :controller => 'txn', :action => 'index', :conditions => {:method => :get}
 
-  # customer visits
-  map.resources 'visits'
-  map.customer_visits '/customer/:id/visits', :controller => 'visits', :action => 'index'
-  map.connect '/visits/list_by_prospector', :controller => 'visits', :action => 'list_by_prospector', :conditions => {:method => :get}
 
   # reports
   map.reports '/reports', :controller => 'reports', :action => 'index'
@@ -78,9 +80,9 @@ ActionController::Routing::Routes.draw do |map|
   #    -  via :donate (quick donation) - no customer ID needed nor set; the only other page in
   #       the flow is the POST back to this same URL
 
-  map.store     '/store/:customer_id', :controller => 'store', :action => 'index',
-  :customer_id => nil,
-  :conditions => {:method => :get}
+  map.store('/store/:customer_id', :controller => 'store', :action => 'index',
+    :customer_id => nil,
+    :conditions => {:method => :get})
 
   map.store_subscribe '/subscribe/:customer_id', :controller => 'store', :action => 'subscribe',
   :customer_id => nil,
@@ -128,8 +130,10 @@ ActionController::Routing::Routes.draw do |map|
 
   # walkup sales
 
-  map.walkup_sales '/box_office/walkup/:id', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
-  map.walkup_default '/box_office/walkup', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
+  map.walkup_sales('/box_office/walkup/:id',
+    :id => nil,
+    :controller => 'box_office', :action => 'walkup',
+    :conditions => {:method => :get})
   map.door_list '/box_office/:id/door_list', :controller => 'box_office', :action => 'door_list', :conditions => {:method => :get}
   map.checkin  '/box_office/:id/checkin', :controller => 'box_office', :action => 'checkin', :conditions => {:method => :get}
   map.walkup_report '/box_office/:id/walkup_report', :controller => 'box_office', :action => 'walkup_report', :conditions => {:method => :get}

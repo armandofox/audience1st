@@ -20,7 +20,11 @@ class VouchersController < ApplicationController
     @vouchers = (
       Vouchertype.comp_vouchertypes(this_season + 1) +
       Vouchertype.comp_vouchertypes(this_season)).delete_if(&:external?)
-    redirect_to({:controller => 'vouchertypes', :action => 'index'}, :notice => 'You must define some voucher types first.') and return if @vouchers.empty?
+    if @vouchers.empty?
+      flash[:alert] = 'You must define some comp voucher types first.'
+      redirect_to vouchertypes_path
+      return
+    end
     @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
 
@@ -40,7 +44,7 @@ class VouchersController < ApplicationController
     flash[:alert] ||= 'This comp ticket type not valid for this performance.' unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
-    redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:alert]
+    redirect_to customer_add_voucher_path(@customer) and return if flash[:alert]
 
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
       :comments => thecomment,
@@ -59,7 +63,7 @@ class VouchersController < ApplicationController
       RAILS_DEFAULT_LOGGER.error e.backtrace.inspect
     end
     
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to customer_path(@customer)
   end
 
   def update_comment
@@ -91,6 +95,7 @@ class VouchersController < ApplicationController
 
   def confirm_multiple
     showdate = params[:showdate_id].to_i
+    @customer = current_user #### BUG all these actions should be nested under customer!
     try_again("Please select a date.") and return if showdate.zero?
     num = params[:number].to_i
     count = 0
@@ -155,6 +160,7 @@ class VouchersController < ApplicationController
     # the fact that it was sold.  Its ID number will still be referred
     # to in the audit log.
     @v = Voucher.find(params[:id])
+    @customer = @v.customer
     try_again("Please cancel this reservation before removing the voucher.") and return if @v.reserved?
     save_showdate = @v.showdate.id
     save_show = @v.showdate.show.id
@@ -208,15 +214,16 @@ class VouchersController < ApplicationController
 
   def cancel_reservation
     @v = Voucher.find(params[:id])
+    @customer = @v.customer
     flash[:notice] ||= ""
     unless @v.can_be_changed?(logged_in_id)
       flash[:notice] << "This reservation is not changeable"
-      redirect_to(:controller => 'customers', :action => 'welcome')
+      redirect_to customer_path(@customer)
       return
     end
     if !@v.reserved?
       flash[:notice] << "This voucher is not currently reserved for any performance."
-      redirect_to(:controller => 'customers', :action => 'welcome')
+      redirect_to customer_path(@customer)
       return
     end
     showdate = @v.showdate
@@ -236,7 +243,7 @@ class VouchersController < ApplicationController
     else
       flash[:notice] = 'Error - reservation could not be cancelled'
     end
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to customer_path(@customer)
   end
 
   private
@@ -246,13 +253,13 @@ class VouchersController < ApplicationController
     return true if ((voucher = Voucher.find_by_id(params[:id])) &&
                     (voucher.customer == current_user))
     flash[:notice] = "Attempt to reserve a voucher that isn't yours."
-    redirect_to logout_path
+    redirect_to store_path
     return false
   end
 
   def try_again(msg)
     flash[:notice] = msg
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to customer_path(@customer)
   end
 
 end

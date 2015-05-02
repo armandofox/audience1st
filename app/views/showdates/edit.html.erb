@@ -2,7 +2,7 @@
   <%= @showdate.printable_name %>
   </h2>
 
-<% form_tag showdate_path(@showdate), :method => :put do %>
+<% form_tag show_showdate_path(@show,@showdate), :method => :put do %>
   <%= render :partial => 'form' %>
   <%= submit_tag 'Save Changes' %>
 <% end %>

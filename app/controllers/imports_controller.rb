@@ -22,13 +22,13 @@ class ImportsController < ApplicationController
   end
 
   def create
-    redirect_to :action => :new and return unless params[:import]
+    redirect_to new_import_path and return unless params[:import]
     type = params[:import][:type]
     @import = (type.constantize).new(params[:import])
     if !(new = params[:new_show_name]).blank?
       if Show.find_by_name(new)
         flash[:alert] = "Show \"#{new}\" already exists."
-        redirect_to :action => :new and return
+        redirect_to new_import_path and return
       end
       @import.show = Show.create_placeholder!(new)
     end
@@ -40,15 +40,12 @@ class ImportsController < ApplicationController
     end
   end
 
-  def show ; redirect_to :action => :index ; end
-
-
   def edit
     @import = Import.find(params[:id])
     @collection = @import.preview
     if (@partial = partial_for_import(@import)).nil?
       flash[:alert] = "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}."
-      redirect_to(:action => :new) and return
+      redirect_to new_import_path and return
     end
   end
 
@@ -80,7 +77,7 @@ class ImportsController < ApplicationController
     @imports = Import.all_by_date
     if @imports.empty?
       flash.keep
-      redirect_to :action => :new
+      redirect_to new_import_path
     end
   end
 
@@ -94,7 +91,7 @@ class ImportsController < ApplicationController
     flash[:notice] = "Import of file #{@import.filename} cancelled."
     delete_original_attachment
     @import.destroy rescue nil
-    redirect_to :action => :index
+    redirect_to new_import_path
   end
 
   private
