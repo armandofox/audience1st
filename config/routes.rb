@@ -147,11 +147,7 @@ ActionController::Routing::Routes.draw do |map|
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
-
-  #map.secret_question '/login_with_secret', :controller => 'sessions', :action => 'new_from_secret_question',:conditions => {:method => :get}
-  #map.connect '/sessions/create_from_secret_question', :controller => 'sessions', :action => 'create_from_secret_question', :conditions => {:method => :post}
   map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
-
 
 
   # Routes for viewing and refunding orders

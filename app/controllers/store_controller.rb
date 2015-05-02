@@ -5,36 +5,44 @@ class StoreController < ApplicationController
   before_filter :is_logged_in, :only => %w[edit_billing_address checkout place_order]
   before_filter :is_admin_filter, :only => %w[direct_transaction]
 
-  before_filter :set_session_variables, :except => :donate
-  def set_session_variables
+  before_filter :set_customer, :except => :donate
+
+  private
+
+  # invariant: after set_session_variables runs, the URL contains ID of customer doing the shopping
+  def set_customer
     # logged_in?   desired   result
-    # 0 nil          anon     set customer=anon; no redirect
-    # 1 nil            x      redirect to anonymous customer
-    # 2 admin         nil     redirect to logged-in
-    # 3 non-admin     nil     redirect to logged-in
-    # 4 non-admin    other    redirect to logged-in
+    # 1 nil          !anon    redirect to anonymous customer
+    # 2 nil          anon     set customer=anon; no redirect
+    # 3 non-admin    self     set customer=desired; no redirect
+    # 4 non-admin    !=self   redirect with customer=logged-in
     # 5 admin        non-nil  set customer=desired; no redirect
-    # 6 non-admin    self     set customer=desired; no redirect
+    # 6 admin        nil,anon redirect with customer=
     logged_in = current_user()
     desired = Customer.find_by_id(params[:customer_id]) 
-    anon = Customer.anonymous_customer
-    # clause 0
-    
-    # clause 1
-    redirect_to params.merge(:customer_id => anon) and return unless logged_in
-    # clause 2 & 3: we know someone is logged in
-    redirect_to params.merge(:customer_id => logged_in) and return if desired.nil?
-    # clause 4: logged in, and has requested acting as customer
-    redirect_to params.merge(:customer_id => logged_in) and return unless
-      logged_in.is_boxoffice || desired==logged_in
-    # clause 5 & 6
-    @customer = desired
-    @subscriber = @customer.subscriber?
-    @next_season_subscriber = @customer.next_season_subscriber?
-    @cart = find_cart
-    @is_admin = current_admin.is_boxoffice
+    # if URL is legal as-is, just proceed
+    if well_formed_customer_url(logged_in, desired)
+      @customer = desired
+      @is_admin = current_admin.is_boxoffice
+      @cart = find_cart
+    else # must redirect to include a customer_id in the url
+      desired = if !logged_in then Customer.anonymous_customer
+                elsif logged_in.is_staff then desired || logged_in
+                else logged_in
+                end
+      redirect_to params.merge(:customer_id => desired)
+    end
   end
-  private :set_session_variables
+
+  def well_formed_customer_url(logged_in, desired)
+    anon = Customer.anonymous_customer
+    # we can proceed without a redirect if:
+    return (desired == anon) if !logged_in
+    staff_login = logged_in.is_boxoffice
+    (staff_login && desired != anon) ||  ( ! staff_login && desired == logged_in )
+  end
+
+  public
 
   # flows:
   #  index/subscribe -> process_cart -+--------> checkout--->place_order
@@ -48,8 +56,12 @@ class StoreController < ApplicationController
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
   end
 
+      # All following actions can assume @customer is set. Doesn't mean that person is logged in,
+      # but valid for eligibility for tickets
   def subscribe
     @page_title = "#{Option.venue} - Subscriptions"
+    @subscriber = @customer.subscriber?
+    @next_season_subscriber = @customer.next_season_subscriber?
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
     if @is_admin
