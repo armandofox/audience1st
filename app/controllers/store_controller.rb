@@ -8,6 +8,7 @@ class StoreController < ApplicationController
   before_filter :set_session_variables, :except => :donate
   def set_session_variables
     # logged_in?   desired   result
+    # 0 nil          anon     set customer=anon; no redirect
     # 1 nil            x      redirect to anonymous customer
     # 2 admin         nil     redirect to logged-in
     # 3 non-admin     nil     redirect to logged-in
@@ -16,8 +17,11 @@ class StoreController < ApplicationController
     # 6 non-admin    self     set customer=desired; no redirect
     logged_in = current_user()
     desired = Customer.find_by_id(params[:customer_id]) 
+    anon = Customer.anonymous_customer
+    # clause 0
+    
     # clause 1
-    redirect_to params.merge(:customer_id => Customer.anonymous_customer) and return unless logged_in
+    redirect_to params.merge(:customer_id => anon) and return unless logged_in
     # clause 2 & 3: we know someone is logged in
     redirect_to params.merge(:customer_id => logged_in) and return if desired.nil?
     # clause 4: logged in, and has requested acting as customer

@@ -24,7 +24,7 @@ module NavigationHelpers
       # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page with promo code "(.*)"/ then "/store/#{$1}"
-    when /the store page/i              then '/store'
+    when /the store page$/i             then '/store'
     when /the special events page/      then '/store/special'
     when /the subscriptions page/i      then '/store/subscribe'
     when /the shipping info page/i      then '/shipping_address'
