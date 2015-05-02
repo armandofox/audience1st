@@ -50,13 +50,13 @@ class ShowsController < ApplicationController
       flash[:notice] = 'Show details successfully updated.'
       redirect_to edit_show_path(@show)
     else
-      flash[:alert] = "Show details were not updated: " + @show.errors.full_messages.join(', ')
+      flash[:alert] = "Show details were not updated: " + errors_as_html(@show)
       render :action => 'edit', :id => @show
     end
   end
 
   def destroy
     Show.find(params[:id]).destroy
-    redirect_to :action => 'index'
+    redirect_to shows_path
   end
 end

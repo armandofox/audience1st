@@ -92,11 +92,13 @@ ActionController::Routing::Routes.draw do |map|
 
   # subsequent actions in the above flow require a customer_id:
 
-  %w(shipping_address checkout edit_billing_address).each do |action|
+  map.shipping_address '/store/shipping_address', :controller => 'store', :action => 'shipping_address'
+
+  %w(checkout edit_billing_address).each do |action|
     map.send(action, "/store/:customer_id/#{action}", :controller => 'store', :action => action)
   end
 
-  %w(process_cart set_shipping_address).each do |action|
+  %w(process_cart).each do |action|
     map.send(action, "/store/:customer_id/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post})
   end
   
@@ -128,7 +130,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.walkup_sales '/box_office/walkup/:id', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
   map.walkup_default '/box_office/walkup', :controller => 'box_office', :action => 'walkup', :conditions => {:method => :get}
-  map.connect "/box_office/change_showdate", :controller => 'box_office', :action => 'change_showdate'
   map.door_list '/box_office/:id/door_list', :controller => 'box_office', :action => 'door_list', :conditions => {:method => :get}
   map.checkin  '/box_office/:id/checkin', :controller => 'box_office', :action => 'checkin', :conditions => {:method => :get}
   map.walkup_report '/box_office/:id/walkup_report', :controller => 'box_office', :action => 'walkup_report', :conditions => {:method => :get}
@@ -142,7 +143,7 @@ ActionController::Routing::Routes.draw do |map|
     :only => [:new, :create],
     :new => {:secret_question_create => :post},
     :collection => {
-      :login_with_secret => :get
+      :new_from_secret => :get
     })
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}

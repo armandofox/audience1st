@@ -12,7 +12,7 @@ module NavigationHelpers
     end
     case page_name
     when /login page/i              then login_path
-    when /login with secret question page/i then login_with_secret_session_path
+    when /login with secret question page/i then new_from_secret_session_path
     when /change secret question page/      then change_secret_question_customer_path(@customer)
     when /home page/                        then customer_path(@customer)
     when /edit contact info page/           then edit_customer_path(@customer)

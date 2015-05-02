@@ -47,7 +47,7 @@ class ValidVouchersController < ApplicationController
           unless vv.save
             msgs << %{Voucher type #{Vouchertype.find(vt_id).name} NOT added to
                 #{dt.thedate.to_formatted_s(:date_only)}:
-                #{vv.errors.full_messages.join("<br/>")}} << "<br/>"
+                #{errors_as_html(vv)}} << "<br/>"
           end
         end
       end
@@ -65,7 +65,7 @@ class ValidVouchersController < ApplicationController
         if @validvoucher.save
           msgs << 'Added to performance on ' << showdate.printable_date 
         else
-          msgs << @validvoucher.errors.full_messages.join("<br/>")
+          msgs << errors_as_html(@validvoucher)
         end
       end
     end
@@ -94,7 +94,7 @@ class ValidVouchersController < ApplicationController
       end
       flash[:notice] = 'Update successful'
     rescue Exception => e
-      flash[:notice] = e.message + @valid_voucher.errors.full_messages.join("\n")
+      flash[:notice] = e.message + errors_as_html(@valid_voucher)
     end
     redirect_to :controller => 'shows', :action => 'edit', :id => @valid_voucher.showdate.show.id
   end

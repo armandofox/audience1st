@@ -36,7 +36,7 @@
                 = render :partial => 'layouts/admin_tabs'
               - elsif existing_customer(@customer)
                 = render :partial => 'layouts/main_tabs'
-              - if @gAdmin.is_staff
+              - if @gAdmin.is_staff && controller.controller_name != 'box_office'
                 = render :partial => 'layouts/season_tabs'
                 = render :partial => 'customers/quick_search'
                 = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)

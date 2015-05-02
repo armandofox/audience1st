@@ -53,7 +53,7 @@ class VouchersController < ApplicationController
       RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@customer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
       flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
     rescue Order::NotReadyError => e
-      flash[:alert] = "Error adding comps:<br/> #{order.errors.full_messages.join(',')}"
+      flash[:alert] = "Error adding comps:<br/> #{errors_as_html(order)}"
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
       RAILS_DEFAULT_LOGGER.error e.backtrace.inspect
@@ -143,9 +143,9 @@ class VouchersController < ApplicationController
         email_confirmation(:confirm_reservation, @customer, the_showdate, 1, @voucher.id)
       end
     else
-      flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.errors.full_messages.join(',')}"
+      flash[:notice] = "Sorry, can't complete this reservation: #{errors_as_html(@voucher)}"
     end
-    redirect_to :controller => 'customers',:action => 'welcome',:id => @customer
+    redirect_to customer_path(@customer)
   end
 
   def cancel_prepaid

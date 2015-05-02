@@ -1,7 +1,6 @@
 class BoxOfficeController < ApplicationController
 
-  before_filter(:is_boxoffice_filter,
-                :redirect_to => { :controller => :customers, :action => :login})
+  before_filter :is_boxoffice_filter
 
   # sets  instance variable @showdate and others for every method.
   before_filter :get_showdate, :except => [:mark_checked_in, :modify_walkup_vouchers]
@@ -12,16 +11,20 @@ class BoxOfficeController < ApplicationController
   # (current showdate, to which walkup sales will apply), or if not possible to set them,
   # force a redirect to a different controller & action
   def get_showdate
-    @showdate =
-      Showdate.find_by_id(params[:id]) ||
-      Showdate.current_or_next(2.hours)
-    @showdates = Showdate.all_shows_this_season
-    @showdates |= [@showdate] if @showdate
-    if @showdates.empty?
-      flash[:notice] = "There are no shows this season eligible for check-in right now.  Please add some."
-      redirect_to :controller => 'shows', :action => 'index'
+    @showdate = Showdate.find_by_id(params[:id])
+    if @showdate.nil?
+      # use default showdate, and redirect
+      @showdate = Showdate.current_or_next(2.hours)
+      if @showdate.nil?
+        flash[:alert] = "There are no shows this season eligible for check-in right now.  Please add some."
+        redirect_to shows_path
+      else
+        redirect_to params.merge(:id => @showdate)
+      end
+    else
+      @showdates = Showdate.all_shows_this_season
+      @showdates << @showdate unless @showdates.include?(@showdate)
     end
-    @showdate ||= @showdates.last
   end
 
   def vouchers_for_showdate(showdate)
@@ -35,14 +38,6 @@ class BoxOfficeController < ApplicationController
   end
 
   public
-
-  def change_showdate
-    unless ((sd = params[:id].to_i) &&
-            (showdate = Showdate.find_by_id(sd)))
-      flash[:notice] = "Invalid show date."
-    end
-    redirect_to :action => 'walkup', :id => sd
-  end
 
   def checkin
     @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
@@ -71,7 +66,7 @@ class BoxOfficeController < ApplicationController
     @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
     if @vouchers.empty?
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
-      redirect_to :action => 'walkup', :id => @showdate
+      redirect_to walkup_sales_path(@showdate)
     else
       render :layout => 'door_list'
     end
@@ -115,8 +110,8 @@ class BoxOfficeController < ApplicationController
     end
       
     flash[:alert] = 'There are no items to purchase.' if @order.item_count.zero?
-    flash[:alert] ||= @order.errors.full_messages.join(', ') unless @order.ready_for_purchase?
-    redirect_to(:action => 'walkup', :id => @showdate) and return if flash[:alert]
+    flash[:alert] ||= errors_as_html(@order) unless @order.ready_for_purchase?
+    redirect_to walkup_sales_path(@showdate) and return if flash[:alert]
 
     # all set to try the purchase
     begin
@@ -127,11 +122,10 @@ class BoxOfficeController < ApplicationController
                            :purchasemethod_id => p,
                            :logged_in_id => logged_in_id)
       flash[:notice] = @order.walkup_confirmation_notice
-      redirect_to :action => 'walkup', :id => @showdate
+      redirect_to walkup_sales_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:alert] = "Transaction NOT processed: " <<
-        @order.errors.full_messages.join(', ')
-      redirect_to :action => 'walkup', :id => @showdate, :qty => params[:qty], :donation => params[:donation]
+      flash[:alert] = "Transaction NOT processed: " << errors_as_html(@order)
+      redirect_to walkup_sales_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
   end
 
@@ -150,7 +144,7 @@ class BoxOfficeController < ApplicationController
   def modify_walkup_vouchers
     if params[:vouchers].blank?
       flash[:alert] = "You didn't select any vouchers to transfer."
-      redirect_to(:action => :walkup) and return
+      redirect_to walkup_sales_path(@showdate) and return
     end
     voucher_ids = params[:vouchers]
     showdate_id = 0
@@ -164,7 +158,7 @@ class BoxOfficeController < ApplicationController
       flash[:alert] = "Error (NO changes were made): #{e.message}"
       RAILS_DEFAULT_LOGGER.warn(e.backtrace)
     end
-    redirect_to :action => :walkup, :id => showdate_id
+    redirect_to walkup_sales_path(@showdate)
   end
 
 end

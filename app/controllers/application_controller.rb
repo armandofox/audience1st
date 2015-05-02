@@ -89,9 +89,13 @@ class ApplicationController < ActionController::Base
 
   # Store the action to return to, or URI of the current request if no action given.
   # We can return to this location by calling #redirect_to_stored.
-  def set_return_to(hsh=nil)
-    session[:return_to] = hsh || request.request_uri
+  def return_after_login(where)
+    session[:return_to] = (where == :here ? request.request_uri : where)
     true
+  end
+
+  def postlogin_action
+    session[:return_to] || customer_path(current_user())
   end
 
   def redirect_to_stored(customer = Customer.find_by_id(session[:cid]))

@@ -3,4 +3,4 @@
   %tr{:class => 'invalid'}
     %td
     %td
-    %td{:colspan => 8}= h customer_with_errors.errors.full_messages.join(', ')
+    %td{:colspan => 8}= errors_as_html(customer_with_errors)

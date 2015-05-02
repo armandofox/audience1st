@@ -91,7 +91,7 @@ class CustomersController < ApplicationController
       end
       redirect_to_stored(@customer)
     rescue ActiveRecord::RecordInvalid
-      flash[:notice] = "Update failed: #{@customer.errors.full_messages.join(', ')}.  Please fix error(s) and try again."
+      flash[:notice] = "Update failed: #{errors_as_html(@customer)}.  Please fix error(s) and try again."
       redirect_to edit_customer_path(@customer)
     rescue Exception => e
       flash[:notice] = "Update failed: #{e.message}"
@@ -121,7 +121,7 @@ class CustomersController < ApplicationController
       flash[:notice] = 'Secret question change confirmed.'
       redirect_to customer_path(@customer)
     else
-      flash[:alert] = "Could not update secret question: #{@customer.errors.full_messages.join(', ')}"
+      flash[:alert] = "Could not update secret question: #{errors_as_html(@customer)}"
       render :action => :change_secret_question, :id => @customer
     end
   end
@@ -246,7 +246,7 @@ class CustomersController < ApplicationController
     end
     result = c0.merge_with_params!(c1, params)
     # result is nil if merge failed, else string describing result
-    flash[:notice] = result || c0.errors.full_messages.join(';')
+    flash[:notice] = result || errors_as_html(c0)
     logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
     redirect_to_last_list
   end
@@ -342,7 +342,7 @@ class CustomersController < ApplicationController
       if c.errors.empty?
         count += 1
       else
-        flash[:alert] << c.errors.full_messages.join("<br/>")
+        flash[:alert] << errors_as_html(c)
       end
     end
     count
@@ -359,7 +359,7 @@ class CustomersController < ApplicationController
     if c0.merge_automatically!(c1)
       flash[:notice] << "Successful merge"
     else
-      flash[:notice] = "Automatic merge failed, try merging manually to resolve the following errors:<br/>" + c0.errors.full_messages.join('; ')
+      flash[:notice] = "Automatic merge failed, try merging manually to resolve the following errors:<br/>" + errors_as_html(c0)
     end
   end
 

@@ -12,6 +12,10 @@ class SessionsController < ApplicationController
     @email ||= params[:email]
   end
 
+  def new_from_secret
+    redirect_to_stored and return if logged_in?
+  end
+
   def create
     create_session do |params|
       u = Customer.authenticate(params[:email], params[:password])
@@ -25,10 +29,6 @@ class SessionsController < ApplicationController
     end
   end
 
-  def login_with_secret
-    redirect_to_stored and return if logged_in?
-  end
-
   def secret_question_create
     create_session do |params|
     # If customer logged in using this mechanism, force them to change password.
@@ -38,8 +38,9 @@ class SessionsController < ApplicationController
         if u.errors.on(:login_failed) =~ /never set up a secret question/i
           redirect_to login_path
         else
-          redirect_to login_with_secret_session_path
+          redirect_to new_from_secret_session_path
         end
+        return
       end
       set_return_to change_password_for_customer_path(u)
       u

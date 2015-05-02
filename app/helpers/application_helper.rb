@@ -114,7 +114,7 @@ module ApplicationHelper
 
   def link_to_if_option_text(opt, path, html_opts={})
     if (s = Option.send(opt)).blank? then '' else
-      content_tag(:span, link_to(s, opts, html_opts), :id => opt, :class => opt)
+      content_tag(:span, link_to(s, path, html_opts), :id => opt, :class => opt)
     end
   end
 

@@ -22,7 +22,7 @@
             - v = @vouchers[k].first
             - c = v.customer
             %tr{:class=>(c.subscriber? ? 'subscriber' : nil)}
-              %td.maincolumn= letter_header_for(ln) 
+              %td.maincolumn= letter_header_for(c.last_name) 
               %td= link_to c.last_name.name_capitalize, customer_path(c)
               %td= link_to c.first_name.name_capitalize, customer_path(c)
               %td= h v.vouchertype.name

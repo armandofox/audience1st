@@ -561,7 +561,7 @@ EOSQL1
       custs.each do |c|
         row = c.to_csv
         opts[:extra].each { |attrib|  row << c.send(attrib) }
-        row << c.errors.full_messages.join('; ') if opts[:include_errors]
+        row << errors_as_html(c, '; ') if opts[:include_errors]
         csv << row
       end
       return output
