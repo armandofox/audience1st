@@ -3,43 +3,33 @@ class StoreController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :set_customer, :only => %w[index subscribe donate_to_fund]
-  before_filter :is_logged_in, :only => %w[edit_billing_address checkout place_order]
+  before_filter :is_logged_in, :only => %w[checkout place_order]
 
-  # flows:    ACTION                            INVARIANT
+  # flows:    ACTION                      INVARIANT BEFORE
   #   index, subscribe, donate_to_fund    @customer is set
   #              |
   #         process_cart
-  #        /             \
-  #  shipping_address    |
-  # set_shipping_address |
-  #        \             /
-  #    
-  #  index          \
-  #  donate_to_fund  +-- process_cart
-  #  subscribe      / > process_cart -+--------> checkout--->place_order
-
-
-  #                                   |              ^
-  #                          shipping_addr -> set_shipping_addr
-  def index
+  #        /           \
+  #  shipping_address   |
+  #           \        /
+  #            checkout                    logged in && valid @customer
+  #               |
+  #          place_order
+  #===================================
+  #             donate
+  #               |
+  #           place_order
 
   private
 
   # invariant: after set_session_variables runs, the URL contains ID of customer doing the shopping
   def set_customer
-    # logged_in?   desired   result
-    # 1 nil          !anon    redirect to anonymous customer
-    # 2 nil          anon     set customer=anon; no redirect
-    # 3 non-admin    self     set customer=desired; no redirect
-    # 4 non-admin    !=self   redirect with customer=logged-in
-    # 5 admin        non-nil  set customer=desired; no redirect
-    # 6 admin        nil,anon redirect with customer=
     logged_in = current_user()
     desired = Customer.find_by_id(params[:customer_id])
-    # if URL is legal as-is, just proceed
+    # OK to proceed given this URL?
     if well_formed_customer_url(logged_in, desired)
       @customer = desired
-      @is_admin = current_admin.is_boxoffice
+      @is_admin = logged_in.is_boxoffice
       @cart = find_cart
     else # must redirect to include a customer_id in the url
       desired = if !logged_in then Customer.anonymous_customer
@@ -53,9 +43,10 @@ class StoreController < ApplicationController
   def well_formed_customer_url(logged_in, desired)
     anon = Customer.anonymous_customer
     # we can proceed without a redirect if:
-    return (desired == anon) if !logged_in
-    staff_login = logged_in.is_boxoffice
-    (staff_login && desired != anon) ||  ( ! staff_login && desired == logged_in )
+    return (desired == anon) if !logged_in # not logged in, & anonymous customer specified
+    staff_login = logged_in.is_boxoffice   
+    (staff_login && desired != anon) || # staff login, and any non-anon customer specified
+      ( ! staff_login && desired == logged_in ) # or regular login, and self specified
   end
 
   public
@@ -69,8 +60,8 @@ class StoreController < ApplicationController
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
   end
 
-      # All following actions can assume @customer is set. Doesn't mean that person is logged in,
-      # but valid for eligibility for tickets
+  # All following actions can assume @customer is set. Doesn't mean that person is logged in,
+  # but valid for eligibility for tickets
   def subscribe
     return_after_login :here
     @page_title = "#{Option.venue} - Subscriptions"
@@ -140,7 +131,7 @@ class StoreController < ApplicationController
     redirect_to_referer('Promo code activated.') and return if promo_code_provided
     @cart.add_comment params[:comments].to_s
     tickets = ValidVoucher.from_params(params[:valid_voucher])
-    if @customer.is_boxoffice
+    if @is_admin
       tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
     else
       promo = params[:promo_code].to_s
@@ -183,26 +174,24 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    recipient = recipient_from_session || recipient_from_params ||
-      Customer.new(params[:customer])
+    @recipient =  recipient_from_params
     # make sure minimal info for gift receipient was specified.
-    recipient.gift_recipient_only = true
-    if recipient.new_record?
-      recipient.created_by_admin = true if current_admin.is_boxoffice
-      unless recipient.save
-        flash[:alert] = recipient.errors.full_messages
-        render :action => :shipping_address
-        return
-      end
+    @recipient.gift_recipient_only = true
+    unless @recipient.valid?
+      flash[:alert] = errors_as_html(@recipient)
+      render :action => :shipping_address
+      return
     end
-    @cart.customer = recipient
+    @recipient.created_by_admin = @is_admin if @recipient.new_record?
+    @recipient.save!
+    @cart.customer = @recipient
     @cart.save!
     redirect_to_checkout
   end
 
   def checkout
     return_after_login :here
-    @sales_final_acknowledged = (params[:sales_final].to_i > 0) || current_admin.is_boxoffice
+    @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message =
       if @cart.include_regular_vouchers?
       then (Option.precheckout_popup ||
@@ -210,26 +199,14 @@ class StoreController < ApplicationController
       else ""
       end
     @cart_contains_class_order = @cart.contains_enrollment?
-    # if this is a "walkup web" sale (not logged in), nil out the
-    # customer to avoid modifing the Walkup customer.
-    redirect_to change_user_path and return unless logged_in?
-    # here if valid user logged in
-    @cart.processed_by ||= Customer.find(logged_in_id)
+    @cart.processed_by ||= current_user()
     @cart.purchaser ||= @customer
     @cart.customer ||= @cart.purchaser
     @cart.save!
   end
 
-  def edit_billing_address
-    return_after_login checkout_path(@customer)
-    set_return_to :controller => 'store', :action => 'checkout'
-    flash[:notice] = "Please update your credit card billing address below. Click 'Save Changes' when done to continue with your order."
-    redirect_to :controller => 'customers', :action => 'edit'
-  end
-
   def place_order
     @order = @cart
-    @is_admin = current_admin.is_boxoffice
     # what payment type?
     @order.purchasemethod,@order.purchase_args = purchasemethod_from_params
     @recipient = @order.purchaser
@@ -300,19 +277,10 @@ class StoreController < ApplicationController
   end
   def showdate_from_default ; Showdate.current_or_next ; end
 
-  def recipient_from_session
-    if ((s = session[:recipient_id]) &&
-        (recipient = Customer.find_by_id(s)))
-      recipient.update_attributes(params[:customer])
-      recipient
-    else
-      nil
-    end
-  end
-
   def recipient_from_params
-    recipient = Customer.find_unique(Customer.new(params[:customer]))
-    recipient && recipient.valid_as_gift_recipient? ? recipient : nil
+    try_customer = Customer.new(params[:customer])
+    recipient = Customer.find_unique(try_customer)
+    recipient && recipient.valid_as_gift_recipient? ? recipient : try_customer
   end
 
   def remember_cart_in_session!

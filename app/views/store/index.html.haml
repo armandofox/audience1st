@@ -13,7 +13,7 @@
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #ticket_menus
-    - form_tag :action => 'process_cart' do
+    - form_tag process_cart_path(@customer) do
       = render :partial => 'ticket_menus' unless @valid_vouchers.empty?
 
       -# = render :partial => 'retail' if @gAdmin.is_boxoffice

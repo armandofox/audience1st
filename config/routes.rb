@@ -41,7 +41,7 @@ ActionController::Routing::Routes.draw do |map|
     show.resources :showdates, :except => [:index]
   end
   map.resources :valid_vouchers, :except => [:index]
-  map.resources :vouchertypes
+  map.resources(:vouchertypes)
   map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
 
   # vouchers
@@ -84,39 +84,36 @@ ActionController::Routing::Routes.draw do |map|
     :customer_id => nil,
     :conditions => {:method => :get})
 
-  map.store_subscribe '/subscribe/:customer_id', :controller => 'store', :action => 'subscribe',
+  map.store_subscribe( '/subscribe/:customer_id', :controller => 'store', :action => 'subscribe',
   :customer_id => nil,
-  :conditions => {:method => :get}
+  :conditions => {:method => :get})
   
-  map.donate_to_fund '/store/donate_to_fund/:id/:customer_id',
+  map.donate_to_fund('/store/donate_to_fund/:id/:customer_id',
   :customer_id => nil,
-  :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get}
+  :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get})
 
-  # subsequent actions in the above flow require a customer_id:
+  # subsequent actions in the above flow require a customer_id in the URL:
+
+  map.process_cart "/store/:customer_id/process_cart", :controller => 'store', :action => 'process_cart', :conditions => {:method => :post}
+  # process_cart redirects to either shipping_address (if a gift) or checkout (if not) a gift:
 
   map.shipping_address '/store/shipping_address', :controller => 'store', :action => 'shipping_address'
 
-  %w(checkout edit_billing_address).each do |action|
-    map.send(action, "/store/:customer_id/#{action}", :controller => 'store', :action => action)
-  end
+  # checkout requires you to be logged in:
 
-  %w(process_cart).each do |action|
-    map.send(action, "/store/:customer_id/#{action}", :controller => 'store', :action => action, :conditions => {:method => :post})
-  end
+  map.checkout "/store/:customer_id/checkout", :controller => 'store', :action => 'checkout', :conditions => {:method => :get}
   
+  # place_order doesn't require customer_id because a valid order contains both buyer and recipient info:
+  map.place_order '/store/place_order', :controller => 'store', :action => 'place_order',
+  :conditions => {:method => :post}
+
   # quick-donation neither requires nor sets customer-id:
 
   map.quick_donate '/donate', :controller => 'store', :action => 'donate'
 
-  # place_order doesn't require customer_id because a valid order contains both buyer and recipient info:
-
-  map.place_order '/store/place_order', :controller => 'store', :action => 'place_order',
-  :conditions => {:method => :post}
-
-  %w(show_changed showdate_changed).each do |action|
-    map.send(action, "/#{action}", :controller => 'store', :action => action)
-  end
-
+  # AJAX responders:
+  map.show_changed     '/show_changed',     :controller => 'store', :action => 'show_changed'
+  map.showdate_changed '/showdate_changed', :controller => 'store', :action => 'showdate_changed'
 
   # donations management
 

@@ -60,7 +60,6 @@ class ApplicationController < ActionController::Base
     @cart = find_cart
     @cart.empty_cart!
     session.delete(:promo_code)
-    session.delete(:recipient_id)
     session.delete(:cart)
     set_checkout_in_progress(false)
     true

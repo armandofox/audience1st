@@ -12,18 +12,14 @@
   = make_unsubmitted '_stripe_api_key'
   %label{:for => 'credit_card_number'} Number (no spaces)
   = text_field_tag 'credit_card_number', '', :size => 24, :max_length => 16, :autocomplete => :off
+  = image_tag 'credit_card_logos_horizontal.png'
   = make_unsubmitted 'credit_card_number'
   %br
-  %label We accept
-  = image_tag 'credit_card_logos_horizontal.png'
-  %br
-  %label{:for => 'credit_card_month'} Expiration Month
+  %label Expiration
   = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card'
-  = make_unsubmitted 'credit_card_month'
-  %br
-  %label{:for => 'credit_card_year'} Expiration Year
   - y = Time.now.year
   = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card'
+  = make_unsubmitted 'credit_card_month'
   = make_unsubmitted 'credit_card_year'
   %br
   %label{:for => 'credit_card_verification_value'} Security (CVV) code

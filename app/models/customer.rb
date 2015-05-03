@@ -198,7 +198,7 @@ class Customer < ActiveRecord::Base
   
   # message that will appear in flash[:notice] once only, at login
   def login_message
-    msg = ["Welcome, #{full_name.name_capitalize}"]
+    msg = ["Welcome, #{full_name}"]
     msg << encourage_opt_in_message if has_opted_out_of_email?
     msg << setup_secret_question_message unless has_secret_question?
     msg << welcome_message
@@ -278,7 +278,11 @@ class Customer < ActiveRecord::Base
   def full_name_with_id
     "#{self.id} [#{self.full_name}]"
   end
-  
+
+  def full_name_with_email
+    valid_email_address? "#{full_name} (#{email})" : full_name
+  end
+
   def sortable_name
     "#{self.last_name.downcase},#{self.first_name.downcase}"
   end
