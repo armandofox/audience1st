@@ -280,7 +280,7 @@ class Customer < ActiveRecord::Base
   end
 
   def full_name_with_email
-    valid_email_address? "#{full_name} (#{email})" : full_name
+    valid_email_address? ? "#{full_name} (#{email})" : full_name
   end
 
   def sortable_name

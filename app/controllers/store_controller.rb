@@ -2,7 +2,7 @@ class StoreController < ApplicationController
 
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
-  before_filter :set_customer, :only => %w[index subscribe donate_to_fund]
+  before_filter :set_customer, :except => %w[donate show_changed showdate_changed]
   before_filter :is_logged_in, :only => %w[checkout place_order]
 
   # flows:    ACTION                      INVARIANT BEFORE
@@ -190,6 +190,7 @@ class StoreController < ApplicationController
   end
 
   def checkout
+    @page_title = "Review Order For #{@customer.full_name}"
     return_after_login :here
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message =
@@ -222,7 +223,6 @@ class StoreController < ApplicationController
 
     if finalize_order(@order)
       reset_shopping
-      set_return_to
     else
       redirect_to_checkout
     end
@@ -289,7 +289,7 @@ class StoreController < ApplicationController
   end
 
   def redirect_to_checkout
-    redirect_to(:action => 'checkout',
+    redirect_to checkout_path(@customer,
       :sales_final => params[:sales_final],
       :email_confirmation => params[:email_confirmation])
     true

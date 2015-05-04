@@ -65,10 +65,11 @@ def verify_customer_in_div(id, first, last)
   end
 end
 
-Then /^the billing customer should be "(.*)\s+(.*)"$/ do |first,last|
-  verify_customer_in_div "#billing", first, last
-end
-
 Then /^the gift recipient customer should be "(.*)\s+(.*)"$/ do |first,last|
   verify_customer_in_div "#gift_recipient", first, last
 end
+
+Then /^the billing customer should be "(.*)\s+(.*)"$/ do |first,last|
+  within('#purchaser') { page.should have_content("#{first} #{last}") }
+end
+

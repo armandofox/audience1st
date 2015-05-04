@@ -97,14 +97,13 @@ ActionController::Routing::Routes.draw do |map|
   map.process_cart "/store/:customer_id/process_cart", :controller => 'store', :action => 'process_cart', :conditions => {:method => :post}
   # process_cart redirects to either shipping_address (if a gift) or checkout (if not) a gift:
 
-  map.shipping_address '/store/shipping_address', :controller => 'store', :action => 'shipping_address'
+  map.shipping_address '/store/:customer_id/shipping_address', :controller => 'store', :action => 'shipping_address'
 
   # checkout requires you to be logged in:
 
   map.checkout "/store/:customer_id/checkout", :controller => 'store', :action => 'checkout', :conditions => {:method => :get}
   
-  # place_order doesn't require customer_id because a valid order contains both buyer and recipient info:
-  map.place_order '/store/place_order', :controller => 'store', :action => 'place_order',
+  map.place_order '/store/:customer_id/place_order', :controller => 'store', :action => 'place_order',
   :conditions => {:method => :post}
 
   # quick-donation neither requires nor sets customer-id:

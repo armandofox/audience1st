@@ -26,7 +26,7 @@
         this event or picking up this order, please enter his/her name here:
       = text_field_tag 'pickup', '', :size => 30
 
-  %h2.floatleft Purchaser: #{@cart.customer.full_name_with_email}
+  %h2.floatleft#purchaser Purchaser: #{@cart.customer.full_name_with_email}
     
   %p.notice
     We do not store or access your card number.

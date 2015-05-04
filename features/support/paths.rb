@@ -20,16 +20,16 @@ module NavigationHelpers
     when /the forgot password page/i        then forgot_password_customers_path
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management
-    when /the add comps page for customer "(.*) (.*)"/i then customer_add_voucher_path(Customer.find_by_first_name_and_last_name! $1,$2)
+    when /the add comps page/i              then customer_add_voucher_path(@customer)
       # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page with promo code "(.*)"/ then "/store/#{$1}"
     when /the store page$/i             then '/store'
     when /the special events page/      then '/store/special'
     when /the subscriptions page/i      then '/store/subscribe'
-    when /the shipping info page/i      then '/shipping_address'
-    when /the checkout page/i           then '/checkout'
-    when /the order confirmation page/i then '/place_order'
+    when /the shipping info page/i      then shipping_address_path(@customer)
+    when /the checkout page/i           then checkout_path(@customer)
+    when /the order confirmation page/i then place_order_path(@customer)
       # reporting pages 
     when /the quick donation page/      then quick_donate_path
     when /the donations page/i          then '/donations/'
