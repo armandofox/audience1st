@@ -94,7 +94,9 @@ ActionController::Routing::Routes.draw do |map|
 
   # subsequent actions in the above flow require a customer_id in the URL:
 
-  map.process_cart "/store/:customer_id/process_cart", :controller => 'store', :action => 'process_cart', :conditions => {:method => :post}
+  map.process_cart("/store/:customer_id/process_cart",
+    :controller => 'store', :action => 'process_cart',
+    :conditions => {:method => :post})
   # process_cart redirects to either shipping_address (if a gift) or checkout (if not) a gift:
 
   map.shipping_address '/store/:customer_id/shipping_address', :controller => 'store', :action => 'shipping_address'

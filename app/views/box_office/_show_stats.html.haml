@@ -9,7 +9,7 @@
       %td
       %td
     %tr
-      %td.header= link_to 'Advance sales:', :action => 'checkin', :id => showdate
+      %td.header= link_to 'Advance sales:', walkup_sales_path(showdate)
       %td.value
         %span#advance_sales{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
       %td

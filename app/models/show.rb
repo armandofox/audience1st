@@ -28,6 +28,7 @@ class Show < ActiveRecord::Base
 
   named_scope :current_and_future, lambda {
     {:joins => :showdates,
+      :select => 'DISTINCT shows.*',
       :conditions => ['showdates.thedate >= ?', 1.day.ago],
       :order => 'opening_date ASC'
     }
@@ -40,6 +41,7 @@ class Show < ActiveRecord::Base
     enddate = startdate + 1.year - 1.day
     Show.find(:all,
       :order => 'opening_date',
+      :select => 'DISTINCT shows.*',
       :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate],
       :include => :showdates)
   end

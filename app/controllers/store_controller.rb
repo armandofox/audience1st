@@ -29,7 +29,7 @@ class StoreController < ApplicationController
     # OK to proceed given this URL?
     if well_formed_customer_url(logged_in, desired)
       @customer = desired
-      @is_admin = logged_in.is_boxoffice
+      @is_admin = logged_in && logged_in.is_boxoffice
       @cart = find_cart
     else # must redirect to include a customer_id in the url
       desired = if !logged_in then Customer.anonymous_customer
@@ -53,6 +53,8 @@ class StoreController < ApplicationController
 
   def index
     return_after_login :here
+    @show_url = url_for(params.merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @what = params[:what] || 'Regular Tickets'
     @page_title = "#{Option.venue} - Tickets"
     @special_shows_only = (@what =~ /special/i)
@@ -210,7 +212,7 @@ class StoreController < ApplicationController
     @order = @cart
     # what payment type?
     @order.purchasemethod,@order.purchase_args = purchasemethod_from_params
-    @recipient = @order.purchaser
+    @recipient = @order.customer
     if ! @order.gift?
       # record 'who will pickup' field if necessary
       @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?

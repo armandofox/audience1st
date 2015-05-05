@@ -14,7 +14,7 @@
     %h2 This Order is a Gift For...
     = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide => [:opt_out], :legend => 'Gift Recipient Info' }
 
-- form_tag place_order_path(@cart.customer), :id => '_stripe_payment_form' do
+- form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
   - if @cart.include_vouchers? &&  !@cart.gift?
     #someone_else
     %h2 Who's Attending?
@@ -26,7 +26,7 @@
         this event or picking up this order, please enter his/her name here:
       = text_field_tag 'pickup', '', :size => 30
 
-  %h2.floatleft#purchaser Purchaser: #{@cart.customer.full_name_with_email}
+  %h2.floatleft#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
     
   %p.notice
     We do not store or access your card number.

@@ -9,12 +9,14 @@
     #show_description.explanation= @sh.description
 
   %label{:for => "show"}= @special_shows_only ? 'Event' : 'Show'
-  = select_tag('show', options_with_default(@sh, @all_shows))
+  = select_tag('show', options_with_default(@sh, @all_shows),                |
+    :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('show').value)") |
   = spinner('wait_show')
   %br/
 
   %label{:for => "showdate"} Date
-  = select_tag('showdate', options_with_default(@sd, @all_showdates))
+  = select_tag('showdate', options_with_default(@sd, @all_showdates),        |
+    :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('show').value)") |
   = spinner('wait_showdate')
   - privileged_content_for :staff do
     - if (@sd.kind_of?(Showdate))
@@ -49,5 +51,3 @@
       #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}
         %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
         = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
-
-  = watch_show_and_showdate_fields

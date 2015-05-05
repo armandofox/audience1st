@@ -24,9 +24,9 @@ module NavigationHelpers
       # store purchase flow
     when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
     when /the store page with promo code "(.*)"/ then "/store/#{$1}"
-    when /the store page$/i             then '/store'
-    when /the special events page/      then '/store/special'
-    when /the subscriptions page/i      then '/store/subscribe'
+    when /the store page$/i             then store_path
+    when /the special events page/      then store_path(:what => 'special')
+    when /the subscriptions page/i      then store_subscribe_path
     when /the shipping info page/i      then shipping_address_path(@customer)
     when /the checkout page/i           then checkout_path(@customer)
     when /the order confirmation page/i then place_order_path(@customer)
