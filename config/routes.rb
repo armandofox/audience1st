@@ -112,10 +112,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.quick_donate '/donate', :controller => 'store', :action => 'donate'
 
-  # AJAX responders:
-  map.show_changed     '/show_changed',     :controller => 'store', :action => 'show_changed'
-  map.showdate_changed '/showdate_changed', :controller => 'store', :action => 'showdate_changed'
-
   # donations management
 
   map.donations '/donations', :controller => 'donations', :action => 'index', :conditions => {:method => :get}

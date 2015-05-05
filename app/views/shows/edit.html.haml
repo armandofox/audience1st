@@ -10,7 +10,7 @@
 %h2 Performances
 
 %p
-  = gen_button  'Add a Performance', new_showdate_path(:show_id => @show)
+  = gen_button  'Add a Performance', new_show_showdate_path(@show)
   = gen_button 'Show all details', edit_show_path(@show, :display => 1)
   = gen_button 'Hide all details', edit_show_path(@show)
   = gen_button 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true

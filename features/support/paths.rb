@@ -22,8 +22,8 @@ module NavigationHelpers
       # admin-facing voucher management
     when /the add comps page/i              then customer_add_voucher_path(@customer)
       # store purchase flow
-    when /the store page for "(.*)"/    then "/store?show_id=#{Show.find_by_name!($1).id}"
-    when /the store page with promo code "(.*)"/ then "/store/#{$1}"
+    when /the store page for "(.*)"/    then store_path(:show_id => Show.find_by_name!($1).id)
+    when /the store page with promo code "(.*)"/ then store_path(:promo_code => $1)
     when /the store page$/i             then store_path
     when /the special events page/      then store_path(:what => 'special')
     when /the subscriptions page/i      then store_subscribe_path
@@ -51,12 +51,9 @@ module NavigationHelpers
       else                raise "No mapping for admin:#{page}"
       end
 
-    when /the show details page for "(.*)"/i
-      @show = Show.find_by_name($1)
-      "/shows/#{@show.id}/edit"
-    when /the new showdate page for "(.*)"/i
-      @show = Show.find_by_name($1)
-      "/showdates/new?show_id=#{@show.id}"
+    when /the show details page for "(.*)"/i then edit_show_path(@show = Show.find_by_name!($1))
+    when /the new showdate page for "(.*)"/i then new_show_showdate_path(@show = Show.find_by_name!($1))
+
 
     when /the donation landing page coded for fund (.*)/i
       "/store/donate_to_fund/#{AccountCode.find_by_code($1).id}"
@@ -64,19 +61,13 @@ module NavigationHelpers
       '/store/donate_to_fund?account_code=9999999'
       # edit RESTful resource
 
-    when /the edit page for the "(.*)" vouchertype/ then "/vouchertypes/#{Vouchertype.find_by_name($1).id}/edit"
+    when /the edit page for the "(.*)" vouchertype/ then edit_vouchertype_path(Vouchertype.find_by_name!($1))
 
       # create new RESTful resource (non-nested associations)
 
-    when /the list of shows page for "(.*)"/i      then "/shows?season=#{$1}"
-    when /the new show page/i           then '/shows/new'
-    when /the new vouchertypes? page/i  then '/vouchertypes/new'
+    when /the list of shows page for "(.*)"/i      then shows_path(:season => $1)
     when /^the new (.*)s? page$/i       then eval("new_#{underscorize($1)}_path")
 
-      # RESTful index
-      
-    when /^the (.*s) page$/i      then eval(underscorize($1) << '_path')
-      
     else
       raise "Can't find mapping for \"#{page_name}\" in #{__FILE__}"
     end

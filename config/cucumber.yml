@@ -1,5 +1,5 @@
 <%
-format = '--require features --format pretty --format rerun --out rerun.txt --color'
+format = '-m -i --require features --format pretty --format rerun --out rerun.txt --color'
 %>
 autotest: <%= format %> --tags @wip 
 default: <%= format %> --tags ~@facebook --tags ~@javascript --tags ~@wip

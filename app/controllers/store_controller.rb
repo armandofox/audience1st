@@ -2,7 +2,7 @@ class StoreController < ApplicationController
 
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
-  before_filter :set_customer, :except => %w[donate show_changed showdate_changed]
+  before_filter :set_customer, :except => %w[donate]
   before_filter :is_logged_in, :only => %w[checkout place_order]
 
   # flows:    ACTION                      INVARIANT BEFORE
@@ -45,8 +45,8 @@ class StoreController < ApplicationController
     # we can proceed without a redirect if:
     return (desired == anon) if !logged_in # not logged in, & anonymous customer specified
     staff_login = logged_in.is_boxoffice   
-    (staff_login && desired != anon) || # staff login, and any non-anon customer specified
-      ( ! staff_login && desired == logged_in ) # or regular login, and self specified
+    (staff_login && desired && desired != anon) || # staff login, and any non-anon customer specified
+      ( ! staff_login && desired == logged_in) # or regular login, and self specified
   end
 
   public

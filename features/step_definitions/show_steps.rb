@@ -1,5 +1,3 @@
-DEFAULT_HOUSE_CAPACITY = 100
-
 Given /^there are no shows set up$/ do
   Show.delete_all
 end
@@ -22,27 +20,27 @@ end
 
 Given /^there is a show named "([^\"]+)"$/ do |name|
   @show =  Show.find_by_name(name) ||
-    Show.create!(:name => name,
-    :opening_date => Date.today,
-    :closing_date => Date.today + 1.week,
-    :house_capacity => DEFAULT_HOUSE_CAPACITY,
-    :listing_date => Date.today)
+    create(:show, :name => name,
+    :opening_date => Date.today, :closing_date => Date.today + 1.week)
 end
 
 Given /^there is a show named "([^\"]+)" opening "([^\"]+)"$/ do |name,opening|
-  @show = Show.create!(:name => name,
-    :opening_date => Date.parse(opening),
-    :closing_date => Date.parse(opening) + 1.month,
-    :house_capacity => DEFAULT_HOUSE_CAPACITY,
-    :listing_date => Date.today)
+  @show = create(:show, :name => name,
+    :opening_date => Date.parse(opening))
 end
 
 Given /^there is a show named "([^\"]+)" opening "([^\"]+)" and closing "([^\"]+)"$/ do |name,opening,closing|
-  @show = Show.create!(:name => name,
+  @show = create(:show, :name => name,
     :opening_date => Date.parse(opening),
-    :closing_date => Date.parse(closing),
-    :house_capacity => DEFAULT_HOUSE_CAPACITY,
-    :listing_date => Date.today)
+    :closing_date => Date.parse(closing))
+end
+
+Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
+  @show = create(:show, :name => name)
+  showdates.hashes.each do |showdate|
+    s = create(:showdate, :show => @show, :thedate => Time.parse(showdate[:date]))
+    showdate[:tickets_sold].to_i.times { create(:revenue_voucher, :showdate => s) }
+  end
 end
 
 # Given /^the following shows exist:$/ do |shows|
