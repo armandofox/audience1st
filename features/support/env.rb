@@ -71,6 +71,7 @@ Before do
   Fixtures.create_fixtures(fixtures_folder, fixtures)
   load File.join(RAILS_ROOT, 'db', 'seeds.rb') # load static seed data that isn't fixtured
   # make rspec mocks/stubs work
+  require 'spec/stubs/cucumber'
   $rspec_mocks ||= Spec::Mocks::Space.new
   # Allow testing of emails
   ActionMailer::Base.delivery_method = :test

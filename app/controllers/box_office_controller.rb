@@ -110,7 +110,7 @@ class BoxOfficeController < ApplicationController
     end
       
     flash[:alert] = 'There are no items to purchase.' if @order.item_count.zero?
-    flash[:alert] ||= errors_as_html(@order) unless @order.ready_for_purchase?
+    flash[:alert] ||= @order unless @order.ready_for_purchase?
     redirect_to walkup_sales_path(@showdate) and return if flash[:alert]
 
     # all set to try the purchase
@@ -124,7 +124,7 @@ class BoxOfficeController < ApplicationController
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sales_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:alert] = "Transaction NOT processed: " << errors_as_html(@order)
+      flash[:alert] = ["Transaction NOT processed: ", @order]
       redirect_to walkup_sales_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
   end

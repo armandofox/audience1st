@@ -63,14 +63,11 @@ module ApplicationHelper
       :class => 'tooltip') 
   end
 
-  def render_multiline_message(m,container=nil)
-    m.respond_to?(:each) ?
-    m.map { |line| content_tag(:span, line) }.join("<br/>\n") :
-      m
-  end
-
-  def errors_as_html(model, sep='<br/>')
-    model.errors.full_messages.join(sep)
+  def render_multiline_message(m,sep="<br/>\n")
+    if m.respond_to?(:errors_as_html) then m.errors_as_html(sep)
+    elsif (m.kind_of? Array) then m.map { |line| content_tag(:span, render_multiline_message(line,sep)) }.join(sep)
+    else m
+    end
   end
   
   # gracefully show a range of dates

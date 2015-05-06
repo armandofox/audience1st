@@ -19,18 +19,12 @@ Background:
 
 Scenario: redeem promo code redirects to tickets page
 
-  When I fill in "Discount Code" with "wxyz"
-  And I press "Redeem"
-  Then I should be on the store page with promo code "WXYZ"
-  And the "Discount Code" field should contain "WXYZ"
+  When I try to redeem the "WXYZ" discount code
+  Then the "Discount Code" field should contain "WXYZ"
   And I should see "Special" within "#voucher_menus"
 
 Scenario: discount tickets disappear if promo cleared
 
-  When I fill in "Discount Code" with "wxyz"
-  And I press "Redeem"
-  Then I should be on the store page with promo code "WXYZ"
-  When I fill in "Discount Code" with ""
-  And I press "Redeem"
-  Then I should be on the store page
-  And I should not see "Special" within "#voucher_menus"
+  When I try to redeem the "WXYZ" discount code
+  And I try to redeem the "" discount code
+  Then I should not see "Special" within "#voucher_menus"

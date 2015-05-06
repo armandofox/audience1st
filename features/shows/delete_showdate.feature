@@ -20,7 +20,6 @@ Scenario: delete showdate that has no tickets sold
 Scenario: cannot delete showdate with tickets sold
 
   When I visit the show details page for "Hamlet"
-  Then show me the page
   Then there should be no "Delete" button for the showdate "12/22/2011 8:00pm"
 
   

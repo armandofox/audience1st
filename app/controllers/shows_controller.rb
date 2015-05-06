@@ -49,7 +49,7 @@ class ShowsController < ApplicationController
       flash[:notice] = 'Show details successfully updated.'
       redirect_to edit_show_path(@show)
     else
-      flash[:alert] = "Show details were not updated: " + errors_as_html(@show)
+      flash[:alert] = ["Show details were not updated: ", @show]
       render :action => 'edit', :id => @show
     end
   end

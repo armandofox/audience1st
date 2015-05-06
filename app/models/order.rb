@@ -42,10 +42,10 @@ class Order < ActiveRecord::Base
       errors.add_to_base "Walkup order requires purchaser & recipient to be walkup customer" unless
         (purchaser == Customer.walkup_customer && customer == purchaser)
     else
-      errors.add_to_base "Purchaser information is incomplete: #{errors_as_html(purchaser)}" if
+      errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if
         purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
       errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
-      errors.add(:customer, errors_as_html(customer)) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
+      errors.add(:customer, customer.errors_as_html) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
     end
   end
 
@@ -279,12 +279,12 @@ class Order < ActiveRecord::Base
         end
         customer.add_items(vouchers)
         unless customer.save
-          raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + errors_as_html(customer))
+          raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors_as_html)
         end
         # add donation items to purchaser's account
         purchaser.add_items([donation]) if donation
         unless purchaser.save
-          raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + errors_as_html(purchaser))
+          raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors_as_html)
         end
         self.sold_on = sold_on_date
         self.items += vouchers
@@ -297,7 +297,7 @@ class Order < ActiveRecord::Base
         end
         self.save!
         if purchasemethod.purchase_medium == :credit_card
-          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, errors_as_html(self))
+          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors_as_html)
         end
         # Log the order
         Txn.add_audit_record(:txn_type => 'oth_purch',

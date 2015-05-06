@@ -21,8 +21,7 @@ class ShowdatesController < ApplicationController
     redirect_to new_show_showdate(@show) and return unless flash[:alert].blank?
     new_showdates.each do |showdate|
       unless showdate.save
-        flash[:alert] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: " <<
-          errors_as_html(showdate)
+        flash[:alert] = ["Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: ", showdate]
         redirect_to new_show_showdate(@show)
         return
       end
@@ -59,7 +58,7 @@ class ShowdatesController < ApplicationController
     if @showdate.update_attributes(params[:showdate])
       flash[:notice] = 'Showdate ID ' + params[:id].to_s + ' was successfully updated.'
     else
-      flash[:notice] = "Your changes were not saved because of errors:<br>" + errors_as_html(@showdate)
+      flash[:notice] = ["Your changes were not saved because of errors:<br>", @showdate]
     end
     redirect_to edit_show_path(@showdate.show)
   end
@@ -77,9 +76,7 @@ class ShowdatesController < ApplicationController
         :end_advance_sales => date - sales_cutoff.minutes,
         :description => description)
       unless s.valid?
-        flash[:alert] =
-          "NO showdates were created, because the #{date.to_formatted_s(:showtime)} showdate had errors: " <<
-          errors_as_html(s)
+        flash[:alert] = ["NO showdates were created, because the #{date.to_formatted_s(:showtime)} showdate had errors: ", s]
       end
       s
     end

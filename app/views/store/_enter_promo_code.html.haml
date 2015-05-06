@@ -1,6 +1,6 @@
 #enter_promo_code
   %label{:for => "promo_code"} Discount Code
   = text_field_tag 'promo_code', @promo_code, :size => 10
-  = submit_tag 'Redeem'
+  = link_to 'Redeem', '#', :onclick => "window.location = '#{@reload_url}'.replace('----',$('promo_code').value.toUpperCase()); false;"
   - unless @promo_code.blank?
     %p (Discounted price appears below <b>only</b> if discount still available)

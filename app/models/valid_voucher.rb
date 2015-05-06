@@ -262,7 +262,7 @@ class ValidVoucher < ActiveRecord::Base
     vouchers.each do |v|
       if (showdate = v.unique_showdate)
         v.reserve_for(showdate, customer) ||
-          raise(InvalidRedemptionError, errors_as_html(v))
+          raise(InvalidRedemptionError, v.errors_as_html)
       end
     end
   end
@@ -270,7 +270,7 @@ class ValidVoucher < ActiveRecord::Base
   def try_reserve_for(vouchers, showdate)
     vouchers.each do |v|
       v.reserve_for(showdate, customer) ||
-      raise(InvalidRedemptionError, errors_as_html(v))
+      raise(InvalidRedemptionError, v.errors_as_html)
     end
   end
 

@@ -55,6 +55,7 @@ class StoreController < ApplicationController
     return_after_login :here
     @show_url = url_for(params.merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @reload_url = url_for(params.merge(:promo_code => '----'))
     @what = params[:what] || 'Regular Tickets'
     @page_title = "#{Option.venue} - Tickets"
     @special_shows_only = (@what =~ /special/i)
@@ -67,6 +68,7 @@ class StoreController < ApplicationController
   def subscribe
     return_after_login :here
     @page_title = "#{Option.venue} - Subscriptions"
+    @reload_url = url_for(params.merge(:promo_code => '----'))
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
     reset_shopping unless @promo_code = params[:promo_code]
@@ -109,7 +111,7 @@ class StoreController < ApplicationController
     end
     @customer = Customer.for_donation(params[:customer])
     unless @customer.valid_as_purchaser?
-      flash[:alert] = "Incomplete or invalid donor information: " + errors_as_html(@customer)
+      flash[:alert] = ["Incomplete or invalid donor information: ", @customer]
       render(:action => 'donate') and return
     end
     # Given valid donation, customer, and charge token, create & place credit card order.
@@ -119,7 +121,7 @@ class StoreController < ApplicationController
     @order.processed_by = @customer
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
-      flash[:alert] = errors_as_html(@order)
+      flash[:alert] = @order
       render(:action => 'donate') and return
     end
     if finalize_order(@order)
@@ -130,7 +132,6 @@ class StoreController < ApplicationController
   end
 
   def process_cart
-    redirect_to_referer('Promo code activated.') and return if promo_code_provided
     @cart.add_comment params[:comments].to_s
     tickets = ValidVoucher.from_params(params[:valid_voucher])
     if @is_admin
@@ -142,7 +143,7 @@ class StoreController < ApplicationController
         @cart.add_with_checking(vv,qty,promo)
       end
     end
-    redirect_to_referer(errors_as_html(@cart)) and return unless @cart.errors.empty?
+    redirect_to_referer(@cart) and return unless @cart.errors.empty?
     # all well with cart, try to process donation if any
     if params[:donation].to_i > 0
       @cart.add_donation(
@@ -180,7 +181,7 @@ class StoreController < ApplicationController
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
-      flash[:alert] = errors_as_html(@recipient)
+      flash[:alert] = @recipient
       render :action => :shipping_address
       return
     end
@@ -218,7 +219,7 @@ class StoreController < ApplicationController
       @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
     unless @order.ready_for_purchase?
-      flash[:alert] = errors_as_html(@order)
+      flash[:alert] = @order
       redirect_to_checkout
       return
     end
@@ -263,11 +264,6 @@ class StoreController < ApplicationController
       flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
     end
     success
-  end
-
-  def promo_code_provided
-    @promo = params[:promo_code].to_s.strip.upcase
-    params[:commit] == 'Redeem' && !@promo.blank?
   end
 
   def showdate_from_params
