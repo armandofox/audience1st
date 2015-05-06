@@ -52,10 +52,10 @@ class StoreController < ApplicationController
   public
 
   def index
-    return_after_login :here
+    return_after_login params.except(:customer_id)
     @show_url = url_for(params.merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-    @reload_url = url_for(params.merge(:promo_code => '----'))
+    @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
     @what = params[:what] || 'Regular Tickets'
     @page_title = "#{Option.venue} - Tickets"
     @special_shows_only = (@what =~ /special/i)
@@ -66,9 +66,9 @@ class StoreController < ApplicationController
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
   # but valid for eligibility for tickets
   def subscribe
-    return_after_login :here
+    return_after_login params.except(:customer_id)
     @page_title = "#{Option.venue} - Subscriptions"
-    @reload_url = url_for(params.merge(:promo_code => '----'))
+    @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
     @subscriber = @customer.subscriber?
     @next_season_subscriber = @customer.next_season_subscriber?
     reset_shopping unless @promo_code = params[:promo_code]
@@ -87,6 +87,7 @@ class StoreController < ApplicationController
   end
 
   def donate_to_fund
+    return_after_login params.except(:customer_id)
     @account_code = AccountCode.find_by_id(params[:id])
     unless @account_code
       @account_code = AccountCode.find_by_code(params[:account_code]) ||
@@ -97,7 +98,7 @@ class StoreController < ApplicationController
 
   # This single action handles quick_donate: GET serves the form, POST places the order
   def donate
-    @gCheckoutInProgress = nil                 # even if order in progress, going to donation page cancels it
+    reset_shopping                 # even if order in progress, going to donation page cancels it
     @customer =  (current_user() || Customer.new) and return if request.get?
 
     # If donor doesn't exist, create them and marked created-by-admin
@@ -158,6 +159,7 @@ class StoreController < ApplicationController
       redirect_to :action => 'shipping_address'
     else
       remember_cart_in_session!
+      return_after_login params.except(:customer_id).merge(:action => 'checkout')
       redirect_to_checkout
     end
   end

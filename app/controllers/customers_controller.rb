@@ -29,7 +29,7 @@ class CustomersController < ApplicationController
     @vouchers = @customer.active_vouchers.sort_by(&:created_at)
     session[:store_customer] = @customer.id
 
-    name = @gLoggedIn.full_name.name_capitalize
+    name = @customer.full_name.name_capitalize
     @subscriber = @customer.subscriber?
     if @subscriber
       @package_type =  'Season Subscription'
@@ -71,7 +71,7 @@ class CustomersController < ApplicationController
       @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
-      @customer.update_attribute(:created_by_admin, false) if @gLoggedIn == @customer
+      @customer.update_attribute(:created_by_admin, false) if current_user == @customer
       flash[:notice] = "Contact information for #{@customer.full_name} successfully updated."
       if ((newrole = params[:customer][:role])  &&
           newrole != @customer.role_name  &&
@@ -89,7 +89,7 @@ class CustomersController < ApplicationController
         email_confirmation(:confirm_account_change,@customer, 
                            "updated your email address in our system")
       end
-      redirect_to_stored(@customer)
+      redirect_after_login(@customer)
     rescue ActiveRecord::RecordInvalid
       flash[:notice] = ["Update failed: ", @customer, "Please fix error(s) and try again."]
       redirect_to edit_customer_path(@customer)
@@ -150,14 +150,11 @@ class CustomersController < ApplicationController
     end
     begin
       @customer.save!
-      @customer.update_attribute(:last_login, Time.now)
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
-      self.current_user = @customer
-      logger.info "Session cid set to #{session[:cid]}"
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
-      redirect_to_stored(@customer)
+      create_session(@customer) # will redirect to next action
     rescue
       flash[:notice] = "There was a problem creating your account.<br/>"
       render :action => 'new'

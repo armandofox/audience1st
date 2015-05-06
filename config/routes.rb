@@ -29,6 +29,21 @@ ActionController::Routing::Routes.draw do |map|
     customer.resources(:visits,
       :except => [:new, :edit],
       :collection => { :prospector => :get })
+
+    customer.resources(:vouchers,
+      :only => [:new, :create],
+      :member => {
+        :update_comment => :post,
+        :reserve => :get,
+        :confirm_reservation => :post,
+        :cancel_reservation => :post,
+        :cancel_prepaid => :post,
+      },
+      :collection => {
+        :confirm_multiple => :post,
+        :cancel_multiple => :post,
+      })
+    
   end
       
   # RSS
@@ -44,16 +59,6 @@ ActionController::Routing::Routes.draw do |map|
   map.resources(:vouchertypes)
   map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
 
-  # vouchers
-  map.connect '/vouchers/update_shows', :controller => 'vouchers', :action => 'update_shows'
-  map.customer_add_voucher '/customer/:id/addvoucher', :controller => 'vouchers', :action => 'addvoucher', :conditions => {:method => :get}
-  map.customer_process_add_voucher '/customer/:id/process_addvoucher', :controller => 'vouchers', :action => 'process_addvoucher', :conditions => {:method => :post}
-  
-  # with :id
-  map.connect '/vouchers/reserve/:id', :controller => 'vouchers', :action => 'reserve', :conditions => {:method => :get}
-  %w(update_comment confirm_multiple confirm_reservation cancel_prepaid cancel_multiple cancel_reservation).each do |action|
-    map.connect "/vouchers/#{action}", :controller => 'vouchers', :action => action, :conditions => {:method => :post}
-  end
 
   # database txns
   map.connect '/txns', :controller => 'txn', :action => 'index', :conditions => {:method => :get}

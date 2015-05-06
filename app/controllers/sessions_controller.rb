@@ -64,26 +64,6 @@ class SessionsController < ApplicationController
 
   protected
   
-  def create_session
-    logout_keeping_session!
-    @user = yield(params)
-    if @user && @user.errors.empty?
-      # Protects against session fixation attacks, causes request forgery
-      # protection if user resubmits an earlier form using back
-      # button. Uncomment if you understand the tradeoffs.
-      # reset_session
-      self.current_user = @user
-      # if user is an admin, enable admin privs
-      @user.update_attribute(:last_login,Time.now)
-      # 'remember me' checked?
-      new_cookie_flag = (params[:remember_me] == "1")
-      handle_remember_cookie! new_cookie_flag
-      # finally: reset all store-related session state UNLESS the login
-      # was performed as part of a checkout flow
-      reset_shopping unless @gCheckoutInProgress
-      redirect_to_stored(@user)
-    end
-  end
 
   # Track failed login attempts
   def note_failed_signin(user)

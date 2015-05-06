@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 
   include AuthenticatedSystem
-  include Enumerable
   include ExceptionNotifiable
   include FilenameUtils
   
@@ -36,6 +35,11 @@ class ApplicationController < ActionController::Base
     ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE session_id = '#{request.session_options[:id]}'")
   end
 
+  def redirect_with(path,parms)
+    [:alert, :notice].each { |key| flash[key] = parms[key] }
+    redirect_to path
+  end
+  
   # set_globals tries to set globals based on current_user, among other things.
   before_filter :set_globals
 
@@ -45,7 +49,6 @@ class ApplicationController < ActionController::Base
     @enableAdmin = session[:can_restore_admin]
     @gCart = find_cart
     @gCheckoutInProgress = !@gCart.cart_empty?
-    @gLoggedIn = logged_in_user || Customer.walkup_customer
     true
   end
 
@@ -88,22 +91,14 @@ class ApplicationController < ActionController::Base
 
   # Store the action to return to, or URI of the current request if no action given.
   # We can return to this location by calling #redirect_to_stored.
-  def return_after_login(where)
-    session[:return_to] = (where == :here ? request.request_uri : where)
-    true
+  def return_after_login(route_params)
+    session[:return_to] = route_params
   end
 
-  def postlogin_action
-    session[:return_to] || customer_path(current_user())
-  end
-
-  def redirect_to_stored(customer = Customer.find_by_id(session[:cid]))
-    if session[:return_to]
-      redirect_to session[:return_to]
-    elsif customer
-      redirect_to customer_path(customer)
-    else
-      redirect_to login_path
+  def redirect_after_login(customer)
+    redirect_to ((r = session[:return_to]) ?
+      r.merge(:customer_id => customer) :
+      customer_path(customer)
     end
   end
 
@@ -187,6 +182,27 @@ class ApplicationController < ActionController::Base
     else
       flash[:notice] << " Email confirmation was NOT sent because there isn't"
       flash[:notice] << " a valid email address in your Contact Info."
+    end
+  end
+
+  def create_session(u = nil)
+    logout_keeping_session!
+    @user = u || yield(params)
+    if @user && @user.errors.empty?
+      # Protects against session fixation attacks, causes request forgery
+      # protection if user resubmits an earlier form using back
+      # button. Uncomment if you understand the tradeoffs.
+      # reset_session
+      self.current_user = @user
+      # if user is an admin, enable admin privs
+      @user.update_attribute(:last_login,Time.now)
+      # 'remember me' checked?
+      new_cookie_flag = (params[:remember_me] == "1")
+      handle_remember_cookie! new_cookie_flag
+      # finally: reset all store-related session state UNLESS the login
+      # was performed as part of a checkout flow
+      reset_shopping unless @gCheckoutInProgress
+      redirect_to_stored(@user)
     end
   end
 
