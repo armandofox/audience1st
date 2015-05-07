@@ -27,6 +27,8 @@ Spec::Runner.configure do |config|
   config.include AuthenticatedTestHelper
   config.include CustomMatchers
   config.include FactoryGirl::Syntax::Methods
+  config.include ApplicationHelper
+  config.include ActionView::Helpers
   config.before(:each) do
     # seed the DB with constants. Must be done before each test, since
     # use of Fixtures wipes DB for each test.

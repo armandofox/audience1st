@@ -264,13 +264,14 @@ class StoreController < ApplicationController
   end
 
   def redirect_to_referer(msg=nil)
+    promo_code_args = (@promo.blank? ? {} : {:promo_code => @promo})
     redirect_target =
       case params[:referer].to_s
       when 'donate' then quick_donate_path # no @customer assumed
       when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id], @customer)
-      when 'subscribe' then store_subscribe_path(@customer,:promo_code => @promo)
-      when 'special' then store_special_path(@customer, :promo_code => @promo)
-      else store_path(@customer,:promo_code => @promo)
+      when 'subscribe' then store_subscribe_path(@customer,promo_code_args)
+      when 'special' then store_special_path(@customer, promo_code_args)
+      else store_path(@customer,promo_code_args)
       end
     flash[:alert] = msg
     redirect_to redirect_target

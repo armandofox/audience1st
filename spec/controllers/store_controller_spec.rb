@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe StoreController do
   fixtures :customers
+  fixtures :purchasemethods
   before :each do ; @buyer = create(:customer) ;  end
   
   shared_examples_for 'initial visit' do
@@ -77,11 +78,11 @@ describe StoreController do
     end
     it 'should check the authenticity token' do
       @controller.should_receive(:verify_authenticity_token)
-      post :place_order, :authenticity_token => 'wrong'
+      post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
     end
     it "should show the Session Expired page rather than throwing error" do
       @controller.should_receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
-      post :place_order, :authenticity_token => 'wrong'
+      post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
       response.should render_template 'messages/session_expired'
     end
   end
@@ -96,7 +97,7 @@ describe StoreController do
     shared_examples_for 'failure' do
       before :each do ; @count = Customer.count(:all) ; end
       it 'redirects' do ; response.should render_template 'store/donate' ;  end
-      it 'shows appropriate message' do ; flash[:alert].should include_match_for(@alert) ; end
+      it 'shows error messages' do ; render_multiline_message(flash[:alert]).should match(@alert) ; end
       it 'does not create new customer' do ; Customer.count(:all).should == @count ; end
     end
     context 'with invalid donation amount' do
@@ -117,7 +118,8 @@ describe StoreController do
     end
     context 'when credit card token invalid' do
       before :each do
-        @alert = /Invalid credit card transaction/i
+        @alert = /Invalid credit card transaction/
+        Stripe::Charge.stub(:create).and_raise(Stripe::StripeError)
         post :donate, {:customer => @new_valid_customer, :donation => 5}
       end
       it_should_behave_like 'failure'
@@ -131,11 +133,11 @@ describe StoreController do
     context "and no donation" do
       shared_examples_for "all cases" do
         it "should redirect to index" do
-          post 'process_cart', @params
-          response.should redirect_to(:action => 'index')
+          post :process_cart, {:customer_id => @buyer.id}
+          response.should redirect_to store_path(@buyer)
         end
         it "should display a warning" do
-          post 'process_cart', @params
+          post :process_cart, {:customer_id => @buyer.id}
           flash[:alert].should match(/nothing in your order/i)
         end
       end
@@ -150,7 +152,7 @@ describe StoreController do
     end
     context "with donation" do
       before(:each) do
-        @params = {:customer_id => @buyer, :donation => "13"}
+        @params = {:customer_id => @buyer.id, :donation => "13"}
         @d = mock_model(Donation, :price => 13, :amount => 13, :account_code_id => 1)
       end
       it "should allow proceeding" do
@@ -164,18 +166,18 @@ describe StoreController do
       end
       it "should create donation with no account code" do
         Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(@d)
-        post 'process_cart', @params
+        post :process_cart, @params
       end
       it 'should create donation with nondefault account code when supplied' do
         @params[:account_code_id] = 75
         Donation.should_receive(:from_amount_and_account_code_id).with(13, '75').and_return(@d)
-        post 'process_cart', @params
+        post :process_cart, @params
       end
       it "should add the donation to the cart" do
         controller.stub!(:find_cart).and_return(@cart = Order.new)
         Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(d = Donation.new)
         @cart.should_receive(:add_donation).with(d)
-        post 'process_cart', @params
+        post :process_cart, @params
       end
     end
 
@@ -217,7 +219,7 @@ describe StoreController do
     end
     it "should not be valid if neither phone nor email given" do
       post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
-      flash[:alert].should match(/at least one phone number or email/i)
+      flash[:alert].should be_a_kind_of(Customer)
       response.should render_template(:shipping_address)
       response.should_not be_redirect
     end
