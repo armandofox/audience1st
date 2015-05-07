@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe CustomersController do
-  before do
-    CustomersController.send(:public, :current_user, :current_user, :set_return_to)
-  end
   describe "admin creating or updating valid customer" do
     fixtures :customers
     before(:each) do
@@ -60,7 +57,7 @@ describe CustomersController do
       ApplicationController.stub!(:find_cart).and_return(mock_model(Order).as_null_object)
       controller.set_checkout_in_progress(true)
       @target = {:controller => 'store', :action => 'checkout'}
-      @controller.set_return_to @target
+      @controller.return_after_login @target
     end
     describe "when updating billing info" do
       before(:each) do

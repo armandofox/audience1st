@@ -9,9 +9,9 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resources(:customers,
     :except => :destroy,
-    :new => {:user_create => :post},
     :collection => {
       :merge => :get,
+      :user_create => :post,
       :finalize_merge => :post,
       :search => :get,
       :list_duplicate => :get,

@@ -22,7 +22,7 @@ class ShowdatesController < ApplicationController
     new_showdates.each do |showdate|
       unless showdate.save
         flash[:alert] = ["Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: ", showdate]
-        redirect_to new_show_showdate(@show)
+        redirect_to new_show_showdate_path(@show)
         return
       end
     end
@@ -30,7 +30,7 @@ class ShowdatesController < ApplicationController
     if params[:commit] =~ /back to list/i
       redirect_to shows_path(:season => @show.season)
     else
-      redirect_to new_show_showdate(@show)
+      redirect_to new_show_showdate_path(@show)
     end
   end
     

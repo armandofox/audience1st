@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 # Be sure to include AuthenticatedTestHelper in spec/spec_helper.rb instead
 # Then, you can remove it from this and the units test.
@@ -12,23 +12,18 @@ describe SessionsController do
     Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
   end
   # Login for an admin
-  describe "on successful admin login" do
-    before(:each) do
-      @boxoffice_manager = customers(:boxoffice_manager)
-      @login_params = {:email => @boxoffice_manager.email, :password => 'pass'}
-      Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@boxoffice_manager)
-      post(:create, @login_params)
+  describe 'admin view' do
+    before(:each) do ;    login_as customers(:boxoffice_manager) ; end
+    it 'can be disabled' do
+      get :temporarily_disable_admin
+      @controller.send(:is_boxoffice).should_not be_true
     end
-    it "should set current Admin to logged-in user" do
-      controller.send(:current_admin).id.should == @boxoffice_manager.id
-    end
-    it "should result in Admin priv for logged-in user" do
-      controller.send(:current_admin).is_boxoffice.should be_true
-    end
-    it "should set the current user to the logged-in Admin" do
-      controller.send(:current_user).id.should == @boxoffice_manager.id
+    it 'can be reenabled' do
+      get :reenable_admin
+      @controller.send(:is_boxoffice).should be_true
     end
   end
+
   describe "on successful login," do
     [ [:nil,       nil,            nil],
       [:expired,   'valid_token',  15.minutes.ago],
@@ -119,45 +114,4 @@ describe SessionsController do
     it 'redirects me to the home page' do do_destroy; response.should be_redirect     end
   end
   
-end
-
-describe SessionsController do
-  describe "route generation" do
-    it "should route the new sessions action correctly" do
-      route_for(:controller => 'sessions', :action => 'new').should == "/login"
-    end
-    it "should route the create sessions correctly" do
-      # defective rspec test below replaced by
-      # http://github.com/dscataglini/restful-authentication/blob/master/generators/authenticated/templates/spec/controllers/sessions_controller_spec.rb
-      # route_for(:controller => 'sessions', :action => 'create').should == "/session"
-      route_for(:controller => 'sessions', :action => 'create').should == {:path => "/session", :method => :post}
-    end
-    it "should route the destroy sessions action correctly" do
-      route_for(:controller => 'sessions', :action => 'destroy').should == "/logout"
-    end
-  end
-  
-  describe "route recognition" do
-    it "should generate params from GET /login correctly" do
-      params_from(:get, '/login').should == {:controller => 'sessions', :action => 'new'}
-    end
-    it "should generate params from POST /session correctly" do
-      params_from(:post, '/session').should == {:controller => 'sessions', :action => 'create'}
-    end
-    it "should generate params from DELETE /session correctly" do
-      params_from(:delete, '/logout').should == {:controller => 'sessions', :action => 'destroy'}
-    end
-  end
-  
-  describe "named routing" do
-    before(:each) do
-      get :new
-    end
-    it "should route session_path() correctly" do
-      session_path().should == "/session"
-    end
-    it "should route new_session_path() correctly" do
-      new_session_path().should == "/session/new"
-    end
-  end
 end

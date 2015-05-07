@@ -25,7 +25,7 @@ Scenario: landing on donation page with valid account code
 Scenario: not filling in a donation amount should return you to donation page
   When I visit the donation landing page coded for fund 7575
   When I press "submit"
-  Then I should be on the donation landing page coded for fund 7575
+  Then I should see "Donation to History Fund"
 
 Scenario: landing on donation page with invalid account code
   When I visit the donation landing page coded for a nonexistent fund

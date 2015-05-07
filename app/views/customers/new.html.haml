@@ -14,7 +14,7 @@
       = submit_tag "Create New Customer Account"
       = gen_button 'Cancel', customers_path
   - else
-    - form_tag user_create_new_customer_path do
+    - form_tag user_create_customers_path do
       = render :partial => 'form'
       = render :partial => 'password'
       - if @gCheckoutInProgress

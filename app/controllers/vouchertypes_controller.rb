@@ -2,6 +2,8 @@ class VouchertypesController < ApplicationController
 
   before_filter :is_boxoffice_manager_filter
   before_filter :has_at_least_one, :except => [:new, :create]
+  before_filter :load_vouchertype, :only => [:clone, :edit, :update, :destroy]
+
 
   private
   def at_least_one_vouchertype
@@ -9,6 +11,10 @@ class VouchertypesController < ApplicationController
       flash[:alert] = "You have not defined any voucher types yet."
       redirect_to new_vouchertype_path
     end
+  end
+
+  def load_vouchertype
+    @vouchertype = Vouchertype.find params[:id]
   end
 
   public
@@ -51,7 +57,6 @@ class VouchertypesController < ApplicationController
   end
 
   def clone
-    @vouchertype = Vouchertype.find(params[:id])
     @vouchertype.name[0,0] = 'Copy of '
     render :action => :new
   end
@@ -81,7 +86,6 @@ class VouchertypesController < ApplicationController
   end
 
   def edit
-    @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
     @valid_voucher = @vouchertype.valid_vouchers.first if @vouchertype.bundle?
     if @num_vouchers > 0
@@ -90,7 +94,6 @@ class VouchertypesController < ApplicationController
   end
 
   def update
-    @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
@@ -113,20 +116,18 @@ class VouchertypesController < ApplicationController
   end
 
   def destroy
-    v = Vouchertype.find(params[:id])
+    c = @vouchertype.vouchers.size
     errors = []
-    errors << "there are #{c} issued vouchers of this type" if (c=v.vouchers.count) > 0
+    errors << "there are #{c} issued vouchers of this type" if (c > 0)
     errors << " it's listed as valid for purchase for the following shows: #{shows}" if
-      !(shows = v.valid_vouchers.map { |v| v.showdate.show.name }.uniq.join(', ')).blank?
+      !(shows = @vouchertype.valid_vouchers.map { |v| v.showdate.show.name }.uniq.join(', ')).blank?
     if !errors.empty?
       flash[:notice] = "Can't destroy this voucher types, because " << errors.join(" and ")
     else
-      name = v.name
-      season = v.season
-      v.destroy
+      @vouchertype.destroy
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
-        :comments => "Destroy voucher type #{name}")
+        :comments => "Destroy voucher type #{@vouchertype.name}")
     end
-    redirect_to vouchertypes_path, :season => season
+    redirect_to vouchertypes_path, :season => @vouchertype.season
   end
 end

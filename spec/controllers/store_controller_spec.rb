@@ -84,26 +84,7 @@ describe StoreController do
       response.should render_template 'messages/session_expired'
     end
   end
-  describe 'promo code redirects' do
-    describe 'correct redirect' do
-      specify 'to store page' do
-        post :process_cart, {:commit => 'Redeem', :promo_code => 'code', :referer => 'INVALID'}
-        response.should redirect_to store_path('CODE')
-      end
-      specify 'to special page' do
-        post :process_cart, {:commit => 'Redeem', :promo_code => 'code', :referer => 'special'}
-        response.should redirect_to store_special_path('CODE')
-      end
-      specify 'to subscription page' do
-        post :process_cart, {:commit => 'Redeem', :promo_code => 'code', :referer => 'subscribe'}
-        response.should redirect_to store_subscribe_path('CODE')
-      end
-      specify 'blank promo code' do
-        post :process_cart, {:commit => 'Redeem', :promo_code => ' ', :referer => 'subscribe'}
-        response.should redirect_to store_subscribe_path
-      end
-    end
-  end
+
   describe 'quick donation' do
     before :each do
       @new_valid_customer = {
@@ -114,7 +95,7 @@ describe StoreController do
     shared_examples_for 'failure' do
       before :each do ; @count = Customer.count(:all) ; end
       it 'redirects' do ; response.should render_template 'store/donate' ;  end
-      it 'shows appropriate message' do ; flash[:alert].should match(@alert) ; end
+      it 'shows appropriate message' do ; render_multiline_message(flash[:alert]).should match(@alert) ; end
       it 'does not create new customer' do ; Customer.count(:all).should == @count ; end
     end
     context 'with invalid donation amount' do
@@ -152,7 +133,7 @@ describe StoreController do
         end
         it "should display a warning" do
           post 'process_cart', @params
-          flash[:alert].should match(/nothing in your order/i)
+          render_multiline_message(flash[:alert]).should match(/nothing in your order/i)
         end
       end
       context "if gift" do
@@ -294,18 +275,18 @@ describe StoreController do
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
       post :set_shipping_address, :customer => @customer
-      flash[:alert].should be_blank, flash[:alert]
+      flash[:alert].should be_empty
       response.should redirect_to(:action => 'checkout')
     end
     it "should be valid with only an email address" do
       @customer[:email] = "me@example.com"
       post :set_shipping_address, :customer => @customer
-      flash[:alert].should be_blank
+      flash[:alert].should be_empty
       response.should redirect_to(:action => 'checkout')
     end
     it "should not be valid if neither phone nor email given" do
       post :set_shipping_address, :customer => @customer
-      flash[:alert].join(',').should match(/at least one phone number or email/i)
+      render_multiline_message(flash[:alert]).should match(/at least one phone number or email/i)
       response.should render_template(:shipping_address)
       response.should_not redirect_to(:action => :checkout)
     end

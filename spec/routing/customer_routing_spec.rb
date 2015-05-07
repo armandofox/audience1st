@@ -2,22 +2,6 @@ require 'spec_helper'
 
 describe 'Customer routes for', :type => :routing do
   before :all do ; @r = {:controller => 'customers'}; end
-  describe 'utility' do
-    specify 'autocomplete' do
-      [:get, :post].each do |action|
-        {action => '/customers/auto_complete_for_customer_full_name'}.should route_to(
-          @r.merge(:action => 'auto_complete_for_customer_full_name'))
-      end
-    end
-    specify 'enable/disable admin' do
-      [:get, :post].each do |action|
-        {action => '/customers/temporarily_disable_admin'}.should route_to(
-          @r.merge(:action => 'temporarily_disable_admin'))
-        {action => '/customers/reenable_admin'}.should route_to(
-          @r.merge(:action => 'reenable_admin'))
-      end
-    end
-  end
   describe 'customer collection' do
     specify 'merging' do
       {:post => '/customers/finalize_merge'}.should route_to @r.merge(:action => 'finalize_merge')
@@ -25,8 +9,6 @@ describe 'Customer routes for', :type => :routing do
     end
     specify 'searching' do
       {:get => '/customers/search'}.should route_to @r.merge(:action => 'search')
-      {:get => '/customers/lookup'}.should route_to @r.merge(:action => 'lookup') # obsolete?
-      {:post => '/customers/lookup'}.should route_to @r.merge(:action => 'lookup') # obsolete?
     end
     specify 'listing dups' do
       {:get => '/customers/list_duplicate'}.should route_to @r.merge(:action => 'list_duplicate')

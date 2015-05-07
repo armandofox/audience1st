@@ -25,7 +25,16 @@ class ApplicationController < ActionController::Base
   require 'csv.rb'
   require 'string_extras.rb'
   require 'date_time_extras.rb'
-  
+
+  # Session keys
+  #  :cid               id of logged in user; if absent, nobody logged in
+  #  :return_to         route params (for url_for) to return to after valid login
+  #  :admin_disabled    admin is logged in but wants to see regular patron view. Causes is_admin, etc to return nil
+  #  :checkout_in_progress  true if cart holds valid-looking order, which should be displayed throughout checkout flow
+  #  :cart              ID of the order in progress (BUG: redundant with checkout_in_progress??)
+  #  :exists            true the first time it's called on a session (for displaying login messages); false thereafter
+  #                        (BUG: logic should be moved to the session create logic for interactive login)
+
   def session_expired
     render :template => 'messages/session_expired', :layout => 'application', :status => 400
     true
@@ -46,6 +55,7 @@ class ApplicationController < ActionController::Base
   def set_globals
     @gCart = find_cart
     @gCheckoutInProgress = !@gCart.cart_empty?
+    @gReenableAdmin = session.has_key?(:admin_disabled)
     true
   end
 
@@ -131,11 +141,11 @@ class ApplicationController < ActionController::Base
 
   %w(staff walkup boxoffice boxoffice_manager admin).each do |r|
     define_method "is_#{r}" do
-      !session[:disable_admin] && current_user.send("is_#{r}")
+      !session[:admin_disabled] && current_user.send("is_#{r}")
     end
     define_method "is_#{r}_filter" do
       redirect_with(login_path, :alert => "You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.") unless
-        !session[:disable_admin] && current_user.send("is_#{r}")
+        !session[:admin_disabled] && current_user.send("is_#{r}")
     end
   end
 

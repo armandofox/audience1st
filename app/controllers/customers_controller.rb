@@ -26,7 +26,6 @@ class CustomersController < ApplicationController
     reset_shopping
     @admin = current_user
     @vouchers = @customer.active_vouchers.sort_by(&:created_at)
-    session[:store_customer] = @customer.id
 
     name = @customer.full_name.name_capitalize
     @subscriber = @customer.subscriber?
@@ -52,7 +51,6 @@ class CustomersController < ApplicationController
     @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
-    @return_to = session[:return_to]
   end
 
   def update
@@ -60,7 +58,6 @@ class CustomersController < ApplicationController
     @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
-    @return_to = session[:return_to]
     # unless admin, remove "extra contact" fields
     params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
     begin

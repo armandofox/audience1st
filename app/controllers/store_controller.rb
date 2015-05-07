@@ -79,11 +79,7 @@ class StoreController < ApplicationController
     else
       @subs_to_offer = ValidVoucher.bundles_available_to(@customer, @promo_code)
     end
-    if @subs_to_offer.empty?
-      flash[:alert] = "There are no subscriptions on sale at this time."
-      redirect_to(:action => :index)
-      return
-    end
+    redirect_with(store_path(@customer), :alert => "There are no subscriptions on sale at this time.") if @subs_to_offer.empty?
   end
 
   def donate_to_fund
@@ -134,43 +130,28 @@ class StoreController < ApplicationController
 
   def process_cart
     @cart.add_comment params[:comments].to_s
-    tickets = ValidVoucher.from_params(params[:valid_voucher])
-    if @is_admin
-      tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
-    else
-      promo = params[:promo_code].to_s
-      tickets.each_pair do |vv, qty|
-        vv.customer = @customer
-        @cart.add_with_checking(vv,qty,promo)
-      end
-    end
+    add_tickets_to_cart
     redirect_to_referer(@cart) and return unless @cart.errors.empty?
     # all well with cart, try to process donation if any
-    if params[:donation].to_i > 0
-      @cart.add_donation(
-        Donation.from_amount_and_account_code_id(params[:donation].to_i,
-          params[:account_code_id] ))
-    end
+    add_donation_to_cart
     redirect_to_referer('There is nothing in your order.') and return if @cart.cart_empty?
+    # order looks OK; all subsequent actions should display in-progress order at top of page
+    remember_cart_in_session!
+    set_checkout_in_progress true
+    # if gift, first collect separate shipping address...
     if params[:gift] && @cart.include_vouchers?
-      @recipient = session[:recipient_id] ? Customer.find_by_id(session[:recipient_id]) : Customer.new
-      @mailable = @cart.has_mailable_items?
-      remember_cart_in_session!
-      redirect_to :action => 'shipping_address'
+      redirect_to shipping_address_path(@customer)
     else
-      remember_cart_in_session!
+      # otherwise go directly to checkout
       return_after_login params.except(:customer_id).merge(:action => 'checkout')
       redirect_to_checkout
     end
   end
 
   def shipping_address
-    set_checkout_in_progress true
-    if request.get?
-      #  collect gift recipient info
-      @recipient = @cart.customer || Customer.new
-      return
-    end
+    @mailable = @cart.has_mailable_items?
+    @recipient ||= (@cart.customer || Customer.new) and return if request.get?
+
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
@@ -194,9 +175,10 @@ class StoreController < ApplicationController
     redirect_to_checkout
   end
 
+  # Beyond this point, purchaser is logged in (or admin is logged in and acting on behalf of purchaser)
+  
   def checkout
     @page_title = "Review Order For #{@customer.full_name}"
-    return_after_login :here
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message =
       if @cart.include_regular_vouchers?
@@ -265,7 +247,7 @@ class StoreController < ApplicationController
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)
-    recipient && recipient.valid_as_gift_recipient? ? recipient : try_customer
+    (recipient && recipient.valid_as_gift_recipient?) ? recipient : try_customer
   end
 
   def remember_cart_in_session!
@@ -341,4 +323,24 @@ class StoreController < ApplicationController
     @all_shows << @sh unless @all_shows.include? @sh
   end
 
+  def add_tickets_to_cart
+    tickets = ValidVoucher.from_params(params[:valid_voucher])
+    if @is_admin
+      tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
+    else
+      promo = params[:promo_code].to_s
+      tickets.each_pair do |vv, qty|
+        vv.customer = @customer
+        @cart.add_with_checking(vv,qty,promo)
+      end
+    end
+  end
+
+  def add_donation_to_cart
+    if params[:donation].to_i > 0
+      @cart.add_donation(
+        Donation.from_amount_and_account_code_id(params[:donation].to_i,
+          params[:account_code_id] ))
+    end
+  end
 end
