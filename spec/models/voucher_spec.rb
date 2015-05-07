@@ -114,7 +114,7 @@ describe Voucher do
       end
     end
     context "when recipient doesn't exist" do
-      before(:all) do
+      before(:each) do
         @to = Customer.new(:first_name => "Jane", :last_name => "Nonexistent")
       end
       it "should not cause an error" do

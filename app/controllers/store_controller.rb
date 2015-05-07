@@ -256,9 +256,10 @@ class StoreController < ApplicationController
   end
 
   def redirect_to_checkout
-    redirect_to checkout_path(@customer,
-      :sales_final => params[:sales_final],
-      :email_confirmation => params[:email_confirmation])
+    checkout_params = {}
+    checkout_params[:sales_final] = true if params[:sales_final]
+    checkout_params[:email_confirmation] = true if params[:email_confirmation]
+    redirect_to checkout_path(@customer, checkout_params)
     true
   end
 

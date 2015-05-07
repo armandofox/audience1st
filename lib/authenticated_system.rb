@@ -112,10 +112,11 @@ module AuthenticatedSystem
     end
   
     def kill_remember_cookie!
-      cookies.delete :auth_token
+      cookies.delete(:auth_token) if cookies
     end
     
     def send_remember_cookie!
+      cookies ||= {}
       cookies[:auth_token] = {
         :value   => @current_user.remember_token,
         :expires => @current_user.remember_token_expires_at }
