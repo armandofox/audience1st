@@ -140,9 +140,9 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resource(:session,
     :only => [:new, :create],
-    :new => {:secret_question_create => :post},
     :collection => {
-      :new_from_secret => :get,
+        :new_from_secret => :get,
+      :secret_question_create => :post,
       :temporarily_disable_admin => :get, # should be in separate controller
       :reenable_admin => :get, # should be in separate controller
     })

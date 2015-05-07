@@ -128,12 +128,12 @@ class VouchersController < ApplicationController
       flash[:notice] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
-      email_confirmation(:confirm_reservation, @customer, showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     else
       flash[:notice] = "Some of your reservations could not be completed: " <<
         errors <<
         "<br/>Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, @customer, showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     end
     redirect_to customer_path(@customer)
   end

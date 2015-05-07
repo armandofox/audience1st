@@ -4,14 +4,7 @@ class VouchertypesController < ApplicationController
   before_filter :has_at_least_one, :except => [:new, :create]
   before_filter :load_vouchertype, :only => [:clone, :edit, :update, :destroy]
 
-
   private
-  def at_least_one_vouchertype
-    unless Vouchertype.find(:first)
-      flash[:alert] = "You have not defined any voucher types yet."
-      redirect_to new_vouchertype_path
-    end
-  end
 
   def load_vouchertype
     @vouchertype = Vouchertype.find params[:id]
@@ -20,12 +13,12 @@ class VouchertypesController < ApplicationController
   public
   
   def index
-    @superadmin = is_admin
+    redirect_to params.merge(:season => Time.this_season) and return unless (@season = params[:season].to_i) > 0
+    @superadmin = current_user().is_admin
     # possibly limit pagination to only bundles or only subs
     @earliest = Vouchertype.find(:first, :order => 'season').season
     @latest = Vouchertype.find(:first, :order => 'season DESC').season
     @filter = params[:filter].to_s
-    @season = params[:season] || Time.this_season
     limit_to_season = (@season.to_i > 0) ? @season.to_i : nil
     case @filter
     when "Bundles"
@@ -122,12 +115,13 @@ class VouchertypesController < ApplicationController
     errors << " it's listed as valid for purchase for the following shows: #{shows}" if
       !(shows = @vouchertype.valid_vouchers.map { |v| v.showdate.show.name }.uniq.join(', ')).blank?
     if !errors.empty?
-      flash[:notice] = "Can't destroy this voucher types, because " << errors.join(" and ")
+      flash[:alert] = "Can't delete this voucher types, because " << errors.join(" and ")
     else
       @vouchertype.destroy
+      flash[:notice] = "Voucher type '#{@vouchertype.name}' deleted."
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
         :comments => "Destroy voucher type #{@vouchertype.name}")
     end
-    redirect_to vouchertypes_path, :season => @vouchertype.season
+    redirect_to vouchertypes_path(:season => @vouchertype.season)
   end
 end

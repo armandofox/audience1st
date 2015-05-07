@@ -188,7 +188,8 @@ class ApplicationController < ActionController::Base
       # if user is an admin, enable admin privs
       @user.update_attribute(:last_login,Time.now)
       # 'remember me' checked?
-      handle_remember_cookie!( !!params[:remember_me] )
+      new_cookie_flag = (params[:remember_me] == "1")
+      handle_remember_cookie! new_cookie_flag
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
