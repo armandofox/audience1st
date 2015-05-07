@@ -29,7 +29,7 @@ class SessionsController < ApplicationController
     end
   end
 
-  def secret_question_create
+  def create_from_secret
     create_session do |params|
     # If customer logged in using this mechanism, force them to change password.
       u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])

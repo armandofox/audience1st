@@ -82,7 +82,7 @@ describe Order, 'finalizing' do
     end
     it 'should fail if recipient not a valid recipient' do
       @order.customer.stub(:valid_as_gift_recipient?).and_return(nil)
-      @order.customer.stub_chain(:errors, :full_messages).and_return(['Recipient error'])
+      @order.customer.stub(:errors_as_html).and_return(['Recipient error'])
       verify_error /Recipient error/
     end
     it 'should fail if no purchase method' do

@@ -13,8 +13,6 @@ TEST_FILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files') unless defin
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 include AuthenticatedTestHelper
-include BasicModels
-
 
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these

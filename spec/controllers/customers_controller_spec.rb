@@ -16,7 +16,7 @@ describe CustomersController do
     end
     it "should not clear created-by-admin flag if admin updates record" do
       customer = Customer.find_by_email(@params[:email])
-      post :update, {:id => customer, :customer => {:first_name => 'Bobby'}}
+      put :update, {:id => customer, :customer => {:first_name => 'Bobby'}}
       customer.reload
       customer.should be_created_by_admin
     end
@@ -39,12 +39,12 @@ describe CustomersController do
         @customer.update_attribute(:created_by_admin, true)
       end
       it "should be cleared on successful update" do
-        post :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
+        put :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
         @customer.reload
         @customer.should_not be_created_by_admin
       end
       it "should not be cleared if update fails" do
-        post :update, {:id => @customer, :customer => {:first_name => ''}}
+        put :update, {:id => @customer, :customer => {:first_name => ''}}
         @customer.reload
         @customer.should be_created_by_admin
       end
@@ -52,7 +52,7 @@ describe CustomersController do
   end
   describe "checkout flow" do
     before(:each) do
-      @customer = BasicModels.create_generic_customer
+      @customer = create(:customer)
       login_as @customer
       ApplicationController.stub!(:find_cart).and_return(mock_model(Order).as_null_object)
       controller.set_checkout_in_progress(true)
@@ -63,7 +63,7 @@ describe CustomersController do
       before(:each) do
         params = {:id => @customer, :customer => {:street => "100 Embarcadero",   :zip => "94100",
             :email => "nobody@noplace.com"}}
-        post :update, params
+        put :update, params
       end
       it "should not update the password" do
         @customer.crypted_password_changed?.should be_false
@@ -75,9 +75,6 @@ describe CustomersController do
       end
       it "should display a message confirming the update" do
         flash[:notice].should match(/Contact information.*successfully updated/i)
-      end
-      it "should continue the checkout flow" do
-        response.should redirect_to(@target)
       end
     end
   end

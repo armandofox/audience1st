@@ -7,7 +7,7 @@ describe 'Session routes', :type => :routing do
       {:get => '/session/new'}.should route_to @r.merge(:action => 'new')
     end
     specify 'session via login alias' do
-      {:get => '/login'}.should route_to @r.merge(:action => 'new')
+      {:get => '/login'}.should route_to(@r.merge(:action => 'new'))
     end
   end
   describe 'for secret question' do
@@ -15,7 +15,7 @@ describe 'Session routes', :type => :routing do
       {:get => '/session/new_from_secret'}.should route_to @r.merge(:action => 'new_from_secret')
     end
     specify 'creation' do
-      {:post => '/session/secret_question_create'}.should route_to @r.merge(:action => 'secret_question_create')
+      {:post => '/session/create_from_secret'}.should route_to @r.merge(:action => 'create_from_secret')
     end
   end
   specify 'enable/disable admin' do

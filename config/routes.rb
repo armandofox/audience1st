@@ -141,8 +141,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resource(:session,
     :only => [:new, :create],
     :collection => {
-        :new_from_secret => :get,
-      :secret_question_create => :post,
+      :new_from_secret => :get,
+      :create_from_secret => :post,
       :temporarily_disable_admin => :get, # should be in separate controller
       :reenable_admin => :get, # should be in separate controller
     })
@@ -156,6 +156,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
   map.customer_orders '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
 
-  map.root :controller => 'customers', :action => 'home'
+  map.root :controller => 'store', :action => 'index'
  
 end
