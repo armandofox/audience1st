@@ -188,7 +188,7 @@ EJS1
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
     # default select args
     default_select_opts = {
-      :url => {:controller => :customers, :action => :auto_complete_for_customer_full_name},
+      :url => customer_autocomplete_path,
       :with => "'__arg=' + $('#{field_id}').value",
       :select => :full_name,
       :after_update_element => "function(e,v) { complete_#{field_id}(v) }"

@@ -3,19 +3,16 @@ class VouchersController < ApplicationController
   before_filter :is_logged_in
   before_filter(:is_boxoffice_filter,
                 :only => %w[new create update_shows cancel_prepaid update_comment])
-  before_filter(:owns_voucher_or_is_boxoffice,
-                :only => %w[reserve update_comment confirm_reservation cancel_reservation])
+  before_filter(:owns_voucher_or_is_boxoffice, :except => :update_shows)
 
   private
 
   def owns_voucher_or_is_boxoffice
-    @voucher = Voucher.find_by_id params[:id]
-    @customer = Customer.find_by_id params[:customer_id]
-    unless @voucher && @customer &&
-        (current_user.is_boxoffice || (current_user == @customer  && @voucher.customer == @customer))
-      flash[:alert] = "Attempt to reserve a voucher that isn't yours."
-      redirect_to customer_path(current_user)
-    end
+    @voucher = Voucher.find(params[:id]) if params[:id]
+    @customer = Customer.find params[:customer_id]
+    return if current_user.is_boxoffice
+    redirect_with(customer_path(current_user), :alert => "That voucher isn't yours.") unless
+      (current_user == @customer  && (@voucher.nil? || @voucher.customer == @customer))
   end
 
   def try_again(msg)
@@ -86,7 +83,7 @@ class VouchersController < ApplicationController
   def update_comment
     @voucher.update_attributes(:comments => params[:comments], :processed_by => current_user)
     Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @voucher.customer.id,
+      :customer_id => @customer.id,
       :voucher_id => @voucher.id,
       :comments => params[:comments],
       :logged_in_id => current_user.id)
@@ -112,13 +109,12 @@ class VouchersController < ApplicationController
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     errors = []
     comments = params[:comments].to_s
-    customer = vouchers.first.customer
     vouchers.each do |v|
       if v.reserve_for(the_showdate, current_user, comments)
         count += 1
         comments = '' # only first voucher gets comment field
         Txn.add_audit_record(:txn_type => 'res_made',
-          :customer_id => customer.id,
+          :customer_id => @customer.id,
           :voucher_id => v.id,
           :logged_in_id => current_user.id,
           :showdate_id => the_showdate.id,
@@ -133,14 +129,14 @@ class VouchersController < ApplicationController
       flash[:notice] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
-      email_confirmation(:confirm_reservation, customer, showdate, count)
+      email_confirmation(:confirm_reservation, @customer, showdate, count)
     else
       flash[:notice] = "Some of your reservations could not be completed: " <<
         errors <<
         "<br/>Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, customer, showdate, count)
+      email_confirmation(:confirm_reservation, @customer, showdate, count)
     end
-    redirect_to customer_path(customer)
+    redirect_to customer_path(@customer)
   end
 
   def confirm_reservation

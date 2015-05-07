@@ -53,19 +53,17 @@ module NavigationHelpers
     when /the show details page for "(.*)"/i then edit_show_path(@show = Show.find_by_name!($1))
     when /the new showdate page for "(.*)"/i then new_show_showdate_path(@show = Show.find_by_name!($1))
 
-
-    when /the donation landing page coded for fund (.*)/i
-      "/store/donate_to_fund/#{AccountCode.find_by_code($1).id}"
+    when /the donation landing page coded for fund (.*)/i then donate_to_fund_path(AccountCode.find_by_code($1))
     when /the donation landing page coded for a nonexistent fund/i
       '/store/donate_to_fund?account_code=9999999'
-      # edit RESTful resource
+
 
     when /the edit page for the "(.*)" vouchertype/ then edit_vouchertype_path(Vouchertype.find_by_name!($1))
 
-      # create new RESTful resource (non-nested associations)
-
     when /the list of shows page for "(.*)"/i      then shows_path(:season => $1)
     when /^the new (.*)s? page$/i       then eval("new_#{underscorize($1)}_path")
+
+    when /^the account codes page$/ then account_codes_path
 
     else
       raise "Can't find mapping for \"#{page_name}\" in #{__FILE__}"

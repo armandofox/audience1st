@@ -11,11 +11,9 @@ ActionController::Routing::Routes.draw do |map|
     :except => :destroy,
     :new => {:user_create => :post},
     :collection => {
-      :auto_complete_for_customer_full_name => [:get,:post], # should be in separate controller
       :merge => :get,
       :finalize_merge => :post,
       :search => :get,
-      :lookup => [:get,:post],    # should be obsoleted
       :list_duplicate => :get,
       :forgot_password => [:get, :post] # dual-purpose action
     },
@@ -47,17 +45,19 @@ ActionController::Routing::Routes.draw do |map|
   # RSS
 
   map.connect '/info/ticket_rss', :controller => 'info', :action => 'ticket_rss', :conditions => {:method => :get}
-  
+
+  # AJAX responders
+  map.update_shows '/ajax/update_shows', :controller => 'vouchers', :action => 'update_shows'
+  map.customer_autocomplete '/ajax/customer_autocomplete', :controller => 'customers', :action => 'auto_complete_for_customer_full_name'
+  map.customer_lookup '/ajax/customer_lookup', :controller => 'customers', :action => 'lookup'
 
   # shows
   map.resources :shows, :except => [:show] do |show|
     show.resources :showdates, :except => [:index]
   end
   map.resources :valid_vouchers, :except => [:index]
-  map.resources(:vouchertypes)
-  map.connect '/vouchertypes/clone/:id', :controller => 'vouchertypes', :action => 'clone', :conditions => {:method => :get}
-
-
+  map.resources :vouchertypes, :member => { :clone => :get }
+    
   # database txns
   map.connect '/txns', :controller => 'txn', :action => 'index', :conditions => {:method => :get}
 
@@ -151,7 +151,6 @@ ActionController::Routing::Routes.draw do |map|
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
-  map.change_user '/not_me', :controller => 'sessions', :action => 'not_me'
 
 
   # Routes for viewing and refunding orders

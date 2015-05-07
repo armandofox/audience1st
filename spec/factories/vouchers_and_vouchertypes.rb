@@ -4,7 +4,7 @@ FactoryGirl.define do
     name 'Revenue vouchertype'
     fulfillment_needed false
     category 'revenue'
-    account_code AccountCode.default_account_code
+    account_code { AccountCode.default_account_code }
     price 12.00
     season Time.now.year
   end

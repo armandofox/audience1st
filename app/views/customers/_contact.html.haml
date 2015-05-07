@@ -48,6 +48,6 @@
 =text_area 'customer', 'best_way_to_contact', {:cols => 50, :rows => 2}
 %br/
 
-= observe_field('referred_by_id',:update => 'referred_by_name', :with => 'id', :url => {:controller => 'customers', :action => 'lookup'})
+= observe_field('referred_by_id',:update => 'referred_by_name', :with => 'id', :url => customer_lookup_path)
 
 /[eoform:customer]

@@ -234,21 +234,6 @@ class StoreController < ApplicationController
 
   end
 
-
-  # helpers for the AJAX handlers. These should probably be moved
-  # to the respective models for shows and showdates, or called as
-  # helpers from the views directly.
-
-  def show_changed
-    setup_for_showdate(showdate_from_show_params || showdate_from_default)
-    render :partial => 'ticket_menus'
-  end
-
-  def showdate_changed
-    setup_for_showdate(showdate_from_params || showdate_from_default)
-    render :partial => 'ticket_menus'
-  end
-
   private
 
   def finalize_order(order)

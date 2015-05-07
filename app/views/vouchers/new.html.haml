@@ -1,4 +1,4 @@
-%h2= "Add Comps for #{h(@customer.full_name)}"
+%h2 Add Comps for #{@customer.full_name}
 
 - form_tag customer_vouchers_path(@customer), :id => 'addcomps' do
 
@@ -16,7 +16,7 @@
   %br
 
   #reserve_for= render(:partial => 'reserve_for') if @valid_vouchers
-  = observe_form 'addcomps', :url => {:action => 'update_shows'}, |
+  = observe_form 'addcomps', :url => update_shows_path, |
     :update => 'reserve_for', |
     :before => "Element.show('wait_showdate')", |
     :complete => "Element.hide('wait_showdate')" |

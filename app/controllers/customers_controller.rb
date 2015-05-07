@@ -24,7 +24,7 @@ class CustomersController < ApplicationController
 
   def show
     reset_shopping
-    @admin = current_user.is_staff
+    @admin = current_user
     @vouchers = @customer.active_vouchers.sort_by(&:created_at)
     session[:store_customer] = @customer.id
 
@@ -136,7 +136,7 @@ class CustomersController < ApplicationController
   end
 
   def new
-    @is_admin = current_user.is_boxoffice
+    @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
   end
   
@@ -147,15 +147,14 @@ class CustomersController < ApplicationController
       render :action => 'new'
       return
     end
-    begin
-      @customer.save!
+    if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
-    rescue RuntimeError => e
-      flash[:notice] = "There was a problem creating your account: #{e.message}."
+    else
+      flash[:notice] = ["There was a problem creating your account: ", @customer]
       render :action => 'new'
     end
   end

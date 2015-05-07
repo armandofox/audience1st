@@ -302,7 +302,7 @@ class Order < ActiveRecord::Base
         # Log the order
         Txn.add_audit_record(:txn_type => 'oth_purch',
           :customer_id => purchaser.id,
-          :current_user.id => processed_by.id,
+          :processed_by_id => processed_by.id,
           :dollar_amount => total_price,
           :purchasemethod_id => purchasemethod.id,
           :order_id => self.id)

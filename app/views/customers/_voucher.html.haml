@@ -1,7 +1,5 @@
-- is_boxoffice = nil unless defined?(is_boxoffice)
-
 %tr
-  - if is_boxoffice
+  - if @admin
     %td.adminField
       = h voucher.id
       %br
@@ -17,12 +15,10 @@
       %br
       %span.showDate= h voucher.reserved_date
   %td
-    - if voucher.reserved?
-      - if (is_boxoffice || voucher.can_be_changed?)
-        = button_to 'Release', cancel_reservation_customer_voucher(@customer, voucher), {:confirm => 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'} 
-      - elsif is_boxoffice_manager
-        %span.adminField.c.admin=  button_to(*cancel_res)
-  - if is_boxoffice
+    - if voucher.reserved? &&  (@admin || voucher.can_be_changed?)
+      = button_to 'Release', cancel_reservation_customer_voucher_path(@customer, voucher), {:confirm => 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'} 
+
+  - if @admin
     %td.admin
       - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,voucher), :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
         = text_field_tag 'comments', voucher.comments
