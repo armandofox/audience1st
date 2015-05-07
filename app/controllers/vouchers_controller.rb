@@ -1,9 +1,8 @@
 class VouchersController < ApplicationController
 
   before_filter :is_logged_in
-  before_filter(:is_boxoffice_filter,
-                :only => %w[new create update_shows cancel_prepaid update_comment])
-  before_filter(:owns_voucher_or_is_boxoffice, :except => :update_shows)
+  before_filter :is_boxoffice_filter, :only => %w[new create update_shows cancel_prepaid update_comment])
+  before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
 
   private
 

@@ -50,6 +50,8 @@ ActionController::Routing::Routes.draw do |map|
   map.update_shows '/ajax/update_shows', :controller => 'vouchers', :action => 'update_shows'
   map.customer_autocomplete '/ajax/customer_autocomplete', :controller => 'customers', :action => 'auto_complete_for_customer_full_name'
   map.customer_lookup '/ajax/customer_lookup', :controller => 'customers', :action => 'lookup'
+  map.mark_fulfilled '/ajax/mark_fulfilled', :controller => 'reports', :action => 'mark_fulfilled'
+  map.create_sublist '/ajax/create_sublist', :controller => 'reports', :action => 'create_sublist'
 
   # shows
   map.resources :shows, :except => [:show] do |show|
@@ -70,10 +72,6 @@ ActionController::Routing::Routes.draw do |map|
   # reports that consume :id
   %w(showdate_sales subscriber_details).each do |report_name|
     map.connect "/reports/#{report_name}/:id", :controller => 'reports', :action => report_name
-  end
-  # update actions
-  %w(mark_fulfilled create_sublist).each do |action|
-    map.connect "/reports/#{action}", :controller => 'reports', :action => action, :conditions => {:method => :post}
   end
 
   # customer-facing purchase pages

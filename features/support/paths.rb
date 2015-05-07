@@ -54,9 +54,7 @@ module NavigationHelpers
     when /the new showdate page for "(.*)"/i then new_show_showdate_path(@show = Show.find_by_name!($1))
 
     when /the donation landing page coded for fund (.*)/i then donate_to_fund_path(AccountCode.find_by_code($1))
-    when /the donation landing page coded for a nonexistent fund/i
-      '/store/donate_to_fund?account_code=9999999'
-
+    when /the donation landing page coded for a nonexistent fund/i then donate_to_fund_path('999999')
 
     when /the edit page for the "(.*)" vouchertype/ then edit_vouchertype_path(Vouchertype.find_by_name!($1))
 

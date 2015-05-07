@@ -92,7 +92,7 @@ class StoreController < ApplicationController
     unless @account_code
       @account_code = AccountCode.find_by_code(params[:account_code]) ||
         AccountCode.default_account_code
-      redirect_to :action => :donate_to_fund, :id => @account_code
+      redirect_to donate_to_fund_path(@account_code, @customer)
     end
   end
 
@@ -284,7 +284,7 @@ class StoreController < ApplicationController
     redirect_target =
       case params[:referer].to_s
       when 'donate' then quick_donate_path # no @customer assumed
-      when 'donate_to_fund' then donate_to_fund_path(@customer, params[:account_code_id])
+      when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id], @customer)
       when 'subscribe' then store_subscribe_path(@customer,:promo_code => @promo)
       when 'special' then store_special_path(@customer, :promo_code => @promo)
       else store_path(@customer,:promo_code => @promo)
