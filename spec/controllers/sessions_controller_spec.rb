@@ -6,7 +6,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe SessionsController do
   fixtures        :customers
   before(:each) do 
-    ApplicationController.send(:public, :current_user, :current_admin)
+    ApplicationController.send(:public, :current_user, :current_user)
     @user  = mock_user
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
     Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)

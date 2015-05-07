@@ -6,7 +6,7 @@
     = link_to "Sign in to your account", login_path
     to manage your reservations and get your Subscriber benefits.
 
-= javascript_tag "recalc_total = function() { recalculate('total', '.itemQty', '#{@gAdmin.is_boxoffice ? '' : 'submit'}') }"
+= javascript_tag "recalc_total = function() { recalculate('total','.itemQty', '#{@is_admin ? '': 'submit'}') }"
 
 #store
   #subscription_menus
@@ -37,6 +37,6 @@
       %br
       %label.wide_label &nbsp;
       = hidden_field_tag 'referer', 'subscribe'
-      = submit_tag 'CONTINUE >>', {:disabled => !(@gAdmin.is_boxoffice), :id => 'submit'}
+      = submit_tag 'CONTINUE >>', {:disabled => !@is_admin, :id => 'submit'}
       %span#nextstep to Billing Information
 

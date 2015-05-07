@@ -1,7 +1,7 @@
 = render :partial => 'store/check_javascript'
 = sales_banners_for((@special_shows_only ? :special_event : :single_ticket), @subscriber, @next_season_subscriber)
 
-- if @gNobodyReallyLoggedIn
+- unless current_user
   %p.subscription_msg2
     %strong Already a subscriber?
     = link_to "Sign in to your account", login_path
@@ -16,7 +16,7 @@
     - form_tag process_cart_path(@customer) do
       = render :partial => 'ticket_menus' unless @valid_vouchers.empty?
 
-      -# = render :partial => 'retail' if @gAdmin.is_boxoffice
+      -# = render :partial => 'retail' if @is_admin
 
       %label{:for => :donation} Additional tax-deductible donation
       = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'

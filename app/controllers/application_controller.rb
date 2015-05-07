@@ -44,20 +44,11 @@ class ApplicationController < ActionController::Base
   before_filter :set_globals
 
   def set_globals
-    @gAdmin = current_admin
-    @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
-    @enableAdmin = session[:can_restore_admin]
     @gCart = find_cart
     @gCheckoutInProgress = !@gCart.cart_empty?
     true
   end
 
-  def clear_session_state_preserving_auth_token
-    session[:cid] = nil   # keeps the session but kill our variable
-    session[:admin_id] = nil
-    session[:can_restore_admin] = nil
-    reset_shopping
-  end
 
   def reset_shopping           # called as a filter
     @cart = find_cart
@@ -90,7 +81,7 @@ class ApplicationController < ActionController::Base
   end
 
   # Store the action to return to, or URI of the current request if no action given.
-  # We can return to this location by calling #redirect_to_stored.
+  # We can return to this location by calling #redirect_after_login.
   def return_after_login(route_params)
     session[:return_to] = route_params
   end
@@ -98,8 +89,7 @@ class ApplicationController < ActionController::Base
   def redirect_after_login(customer)
     redirect_to ((r = session[:return_to]) ?
       r.merge(:customer_id => customer) :
-      customer_path(customer)
-    end
+      customer_path(customer))
   end
 
   def find_cart
@@ -139,22 +129,13 @@ class ApplicationController < ActionController::Base
     redirect_to :back
   end
 
-  # filter that requires login as an admin
-  # TBD: these should be defined using a higher-order function but I
-  # don't know the syntax for that
-
-  Customer.roles.each do |r|
+  %w(staff walkup boxoffice boxoffice_manager admin).each do |r|
     define_method "is_#{r}" do
-      current_admin.send("is_#{r}")
+      !session[:disable_admin] && current_user.send("is_#{r}")
     end
     define_method "is_#{r}_filter" do
-      unless current_admin.send("is_#{r}")
-        flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
-        session[:return_to] = request.request_uri
-        redirect_to login_path
-        return nil
-      end
-      return true
+      redirect_with(login_path, :alert => "You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.") unless
+        !session[:disable_admin] && current_user.send("is_#{r}")
     end
   end
 
@@ -202,7 +183,7 @@ class ApplicationController < ActionController::Base
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
-      redirect_to_stored(@user)
+      redirect_after_login(@user)
     end
   end
 

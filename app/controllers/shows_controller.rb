@@ -9,7 +9,7 @@ class ShowsController < ApplicationController
       redirect_to new_show_path
       return
     end
-    @superadmin = Customer.find(logged_in_id).is_admin rescue false
+    @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
     @earliest,@latest = Show.seasons_range
     @season = @latest unless @season.between?(@earliest,@latest)

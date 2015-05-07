@@ -34,7 +34,7 @@
         %div{:id => "vouchertype_#{v.vouchertype_id}"}
           - fieldname = "valid_voucher[#{v.id}]"
           %label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
-          - if @gAdmin.is_boxoffice
+          - if @is_admin
             = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
             %span.admin= v.explanation
           - else

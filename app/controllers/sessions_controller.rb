@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
   end
 
   def new_from_secret
-    redirect_to_stored and return if logged_in?
+    redirect_after_login and return if logged_in?
   end
 
   def create
@@ -61,6 +61,20 @@ class SessionsController < ApplicationController
     flash[:notice] = "You have been logged out."
     redirect_to login_path
   end
+
+  def temporarily_disable_admin
+    session[:admin_disabled] = true
+    flash[:notice] = "Switched to non-admin user view."
+    redirect_to request.request_uri
+  end
+
+  def reenable_admin
+    if session.delete(:admin_disabled)
+      flash[:notice] = "Admin view reestablished."
+    end
+    redirect_to request.request_uri
+  end
+  
 
   protected
   

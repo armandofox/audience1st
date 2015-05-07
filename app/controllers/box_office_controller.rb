@@ -74,7 +74,7 @@ class BoxOfficeController < ApplicationController
 
   def walkup
     @valid_vouchers = @showdate.valid_vouchers_for_walkup
-    @admin = @gAdmin
+    @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
   end
 
@@ -83,7 +83,7 @@ class BoxOfficeController < ApplicationController
       :walkup => true,
       :customer => Customer.walkup_customer,
       :purchaser => Customer.walkup_customer,
-      :processed_by => @gAdmin)
+      :processed_by => current_user)
     if ((amount = params[:donation].to_f) > 0)
       @order.add_donation(Donation.walkup_donation amount)
     end
@@ -120,7 +120,7 @@ class BoxOfficeController < ApplicationController
                            :customer_id => Customer.walkup_customer.id,
                            :comments => 'walkup',
                            :purchasemethod_id => p,
-                           :logged_in_id => logged_in_id)
+                           :logged_in_id => current_user.id)
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sales_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
@@ -152,7 +152,7 @@ class BoxOfficeController < ApplicationController
       vouchers = Voucher.find(voucher_ids)
       showdate_id = vouchers.first.showdate_id
       showdate = Showdate.find(params[:to_showdate])
-      Voucher.transfer_multiple(vouchers, showdate, logged_in_user)
+      Voucher.transfer_multiple(vouchers, showdate, current_user)
       flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
     rescue Exception => e
       flash[:alert] = "Error (NO changes were made): #{e.message}"

@@ -62,7 +62,7 @@ class VouchertypesController < ApplicationController
     end
     @vouchertype = Vouchertype.new(params[:vouchertype])
     if @vouchertype.save
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
+      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
                            :commments => "Create voucher type #{@vouchertype.name}")
       if @vouchertype.bundle? && @vouchertype.included_vouchers.empty?
         flash[:notice] = 'Please specify bundle quantities now.'
@@ -102,7 +102,7 @@ class VouchertypesController < ApplicationController
       params[:vouchertype][:valid_vouchers_attributes] = [ params[:valid_voucher] ]
     end
     if @vouchertype.update_attributes(params[:vouchertype])
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
+      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
                            :comments => "Modify voucher type #{@vouchertype.name}")
       flash[:notice] = 'Vouchertype was successfully updated.'
       redirect_to vouchertypes_path, :season => @vouchertype.season
@@ -124,7 +124,7 @@ class VouchertypesController < ApplicationController
       name = v.name
       season = v.season
       v.destroy
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
+      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
         :comments => "Destroy voucher type #{name}")
     end
     redirect_to vouchertypes_path, :season => season

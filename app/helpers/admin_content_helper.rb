@@ -2,7 +2,7 @@ module AdminContentHelper
   include AuthenticatedSystem
   
   def privileged_content_for(priv,&blk)
-    c = current_admin
+    c = current_user
     p = "is_#{priv}"
     yield blk if c.respond_to?(p) && c.send(p)
   end

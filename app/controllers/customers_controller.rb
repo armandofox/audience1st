@@ -4,8 +4,7 @@ class CustomersController < ApplicationController
   # Actions requiring no login, customer login, and staff login respectively
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password home)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
-  ADMIN_ACTIONS =         %w(temporarily_disable_admin reenable_admin
-                            auto_complete_for_customer_full_name lookup create
+  ADMIN_ACTIONS =         %w(auto_complete_for_customer_full_name lookup create
                             search merge finalize_merge index list_duplicate)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
@@ -25,7 +24,7 @@ class CustomersController < ApplicationController
 
   def show
     reset_shopping
-    @admin = current_admin
+    @admin = current_user.is_staff
     @vouchers = @customer.active_vouchers.sort_by(&:created_at)
     session[:store_customer] = @customer.id
 
@@ -49,16 +48,16 @@ class CustomersController < ApplicationController
   end
 
   def edit
-    @is_admin = current_admin.is_staff
-    @superadmin = current_admin.is_admin
+    @is_admin = current_user.is_staff
+    @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     @return_to = session[:return_to]
   end
 
   def update
-    @is_admin = current_admin.is_staff
-    @superadmin = current_admin.is_admin
+    @is_admin = current_user.is_staff
+    @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     @return_to = session[:return_to]
@@ -75,13 +74,13 @@ class CustomersController < ApplicationController
       flash[:notice] = "Contact information for #{@customer.full_name} successfully updated."
       if ((newrole = params[:customer][:role])  &&
           newrole != @customer.role_name  &&
-          current_admin.can_grant(newrole))
+          current_user.can_grant(newrole))
         @customer.update_attribute(:role, Customer.role_value(newrole))
         flash[:notice] << "  Privilege level set to '#{newrole}.'"
       end
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
-        :logged_in_id => logged_in_id,
+        :logged_in_id => current_user.id,
         :comments => flash[:notice])
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank? 
@@ -137,7 +136,7 @@ class CustomersController < ApplicationController
   end
 
   def new
-    @is_admin = current_admin.is_boxoffice
+    @is_admin = current_user.is_boxoffice
     @customer = Customer.new
   end
   
@@ -155,8 +154,8 @@ class CustomersController < ApplicationController
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
-    rescue
-      flash[:notice] = "There was a problem creating your account.<br/>"
+    rescue RuntimeError => e
+      flash[:notice] = "There was a problem creating your account: #{e.message}."
       render :action => 'new'
     end
   end
@@ -279,7 +278,7 @@ class CustomersController < ApplicationController
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'new customer added',
-      :logged_in_id => logged_in_id)
+      :logged_in_id => current_user.id)
     # if valid email, send user a welcome message
     unless params[:dont_send_email]
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
@@ -307,22 +306,6 @@ class CustomersController < ApplicationController
     end
   end
 
-  def temporarily_disable_admin
-    session.delete(:admin_id)
-    flash[:notice] = "Switched to non-admin user view."
-    redirect_to_stored
-  end
-
-  def reenable_admin
-    if (c = Customer.find_by_id(session[:cid])) && c.is_staff
-      session[:admin_id] = c.id
-      flash[:notice] = "Admin view reestablished."
-    else
-      flash[:notice] = "Could not reinstate admin privileges.  Try logging out and back in."
-    end
-    redirect_to_stored
-  end
-  
   private
 
   def get_list_params

@@ -310,7 +310,7 @@ class StoreController < ApplicationController
 
   def purchasemethod_from_params
     if ( !@is_admin || params[:commit ] =~ /credit/i )
-      meth = Purchasemethod.get_type_by_name(@cart.customer.try(:id) == logged_in_id ? 'web_cc' : 'box_cc')
+      meth = Purchasemethod.get_type_by_name(@cart.customer == current_user ? 'web_cc' : 'box_cc')
       args = { :credit_card_token => params[:credit_card_token] }
     elsif params[:commit] =~ /check/i
       meth = Purchasemethod.get_type_by_name('box_chk')

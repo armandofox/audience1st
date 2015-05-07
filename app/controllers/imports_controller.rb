@@ -54,7 +54,7 @@ class ImportsController < ApplicationController
     @imports,@rejects = @import.import!
     render(:action => :new) and return if !@import.errors.empty?
     flash[:notice] = "#{@imports.length} records successfully imported."
-    @import.finalize(logged_in_user)
+    @import.finalize(current_user)
     if @rejects.empty?
       redirect_to imports_path
     else

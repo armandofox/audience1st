@@ -11,8 +11,6 @@ ActionController::Routing::Routes.draw do |map|
     :except => :destroy,
     :new => {:user_create => :post},
     :collection => {
-      :temporarily_disable_admin => [:get,:post], # should be in separate controller
-      :reenable_admin => [:get,:post], # should be in separate controller
       :auto_complete_for_customer_full_name => [:get,:post], # should be in separate controller
       :merge => :get,
       :finalize_merge => :post,
@@ -146,7 +144,9 @@ ActionController::Routing::Routes.draw do |map|
     :only => [:new, :create],
     :new => {:secret_question_create => :post},
     :collection => {
-      :new_from_secret => :get
+      :new_from_secret => :get,
+      :temporarily_disable_admin => :get, # should be in separate controller
+      :reenable_admin => :get, # should be in separate controller
     })
   # special shortcuts
   map.login '/login', :controller => 'sessions', :action => 'new', :conditions => {:method => :get}

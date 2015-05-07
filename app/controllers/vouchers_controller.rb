@@ -61,7 +61,7 @@ class VouchersController < ApplicationController
     flash[:alert] ||= 'This comp ticket type not valid for this performance.' unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
-    redirect_to customer_add_voucher_path(@customer) and return if flash[:alert]
+    redirect_to new_customer_voucher_path(@customer) and return if flash[:alert]
 
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
       :comments => thecomment,
@@ -89,7 +89,7 @@ class VouchersController < ApplicationController
       :customer_id => @voucher.customer.id,
       :voucher_id => @voucher.id,
       :comments => params[:comments],
-      :logged_in_id => logged_in_id)
+      :logged_in_id => current_user.id)
     render :nothing => true
   end
 
@@ -120,7 +120,7 @@ class VouchersController < ApplicationController
         Txn.add_audit_record(:txn_type => 'res_made',
           :customer_id => customer.id,
           :voucher_id => v.id,
-          :logged_in_id => logged_in_id,
+          :logged_in_id => current_user.id,
           :showdate_id => the_showdate.id,
           :comments => comments)
       else
@@ -146,11 +146,11 @@ class VouchersController < ApplicationController
   def confirm_reservation
     @voucher = Voucher.find(params[:id])
     @customer = @voucher.customer
-    @is_admin = @gAdmin.is_walkup
+    @is_admin = current_user.is_walkup
     try_again("Please select a date") and return if
       (showdate_id = params[:showdate_id].to_i).zero?
     the_showdate = Showdate.find(showdate_id)
-    if @voucher.reserve_for(the_showdate, @gLoggedIn, params[:comments])
+    if @voucher.reserve_for(the_showdate, current_user, params[:comments])
       @voucher.save!
       flash[:notice] = "Reservation confirmed."
       if params[:email_confirmation] && @customer.valid_email_address?
@@ -176,12 +176,12 @@ class VouchersController < ApplicationController
     save_customer = @v.customer
     @v.showdate = nil
     @v.customer = nil
-    @v.processed_by_id = logged_in_id
+    @v.processed_by = @logged_in
     @v.save!
     Txn.add_audit_record(:txn_type => 'res_cancl',
                          :customer_id => save_customer.id,
                          :voucher_id => params[:id],
-                         :logged_in_id => logged_in_id,
+                         :logged_in_id => current_user.id,
                          :show_id => save_show,
                          :showdate => save_showdate,
                          :comment => 'Prepaid, comp or other nonsubscriber ticket')
@@ -196,14 +196,14 @@ class VouchersController < ApplicationController
     flash[:notice] = ''
     customer = v.first.customer
     vchs.each do |v|
-      if v.can_be_changed?(logged_in_id)
+      if v.can_be_changed?(current_user.id)
         showdate = v.showdate
         showdate_id = showdate.id
         show_id = showdate.show.id
-        v.cancel(logged_in_id)
+        v.cancel(current_user.id)
         a = Txn.add_audit_record(:txn_type => 'res_cancl',
                                  :customer_id => customer.id,
-                                 :logged_in_id => logged_in_id,
+                                 :logged_in_id => current_user.id,
                                  :showdate_id => showdate_id,
                                  :show_id => show_id,
                                  :voucher_id => v.id)
@@ -216,7 +216,7 @@ class VouchersController < ApplicationController
     flash[:notice] << "Your reservations have been cancelled. "
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
     email_confirmation(:cancel_reservation, customer, old_showdate,
-                       vchs.length, a) unless @gAdmin.is_boxoffice
+                       vchs.length, a) unless current_user.is_boxoffice
     redirect_to customer_path(customer)
   end
 
@@ -231,10 +231,10 @@ class VouchersController < ApplicationController
     old_showdate = showdate.clone
     showdate_id = showdate.id
     show_id = showdate.show.id
-    if @voucher.cancel(logged_in_id)
+    if @voucher.cancel(current_user.id)
       a= Txn.add_audit_record(:txn_type => 'res_cancl',
         :customer_id => @customer.id,
-        :logged_in_id => logged_in_id,
+        :logged_in_id => current_user.id,
         :showdate_id => showdate_id,
         :show_id => show_id,
         :voucher_id => @voucher.id)

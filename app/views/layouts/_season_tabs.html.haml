@@ -1,9 +1,9 @@
-- if @gAdmin.is_staff
+- if current_user.is_staff
   %ul.nav.admin_nav
     %li#t_shows_index= link_to 'Season', shows_path
     %li#t_vouchertypes_index= link_to 'Vouchers', vouchertypes_path
     %li#t_reports_index= link_to 'Reports', reports_path
     %li#t_box_office_walkup= link_to 'Box Office', walkup_sales_path
     %li#t_donations_index= link_to 'Donations', donations_path
-    - if @gAdmin.is_boxoffice_manager
+    - if current_user.is_boxoffice_manager
       %li#t_options_edit= link_to 'Options', options_path

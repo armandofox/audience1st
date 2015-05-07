@@ -16,7 +16,7 @@ class VisitsController < ApplicationController
   public
   
   def index
-    @logged_in_id = current_admin.id
+    @logged_in_id = current_user.id
     @visit ||= Visit.new(:visited_by_id => @logged_in_id, :followup_assigned_to_id => @logged_in_id, :thedate => Date.today) 
     @previous_visits = @customer.visits.sort_by { |v| (Date.today - v.thedate) }
     @previous_visits = nil if @previous_visits.empty?

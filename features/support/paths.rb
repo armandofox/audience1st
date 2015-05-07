@@ -20,7 +20,7 @@ module NavigationHelpers
     when /the forgot password page/i        then forgot_password_customers_path
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management
-    when /the add comps page/i              then customer_add_voucher_path(@customer)
+    when /the add comps page/i              then new_customer_voucher_path(@customer)
       # store purchase flow
     when /the store page for "(.*)"/    then store_path(:show_id => Show.find_by_name!($1).id)
     when /the store page$/i             then store_path

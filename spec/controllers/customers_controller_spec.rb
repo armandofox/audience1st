@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe CustomersController do
   before do
-    CustomersController.send(:public, :current_user, :current_admin, :set_return_to)
+    CustomersController.send(:public, :current_user, :current_user, :set_return_to)
   end
   describe "admin creating or updating valid customer" do
     fixtures :customers

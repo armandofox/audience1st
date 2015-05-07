@@ -5,7 +5,7 @@
       %th Show
       %th Your Reservation
       %th
-      - if @gAdmin.is_boxoffice
+      - if current_user.is_boxoffice
         %th.admin Comments
   %tbody
     - vouchertypes.keys.sort { |a,b| group_bundle_vouchers(a,b) }.each do |v|
@@ -22,11 +22,11 @@
           %td= showdate.printable_date
           -# ALL vouchers must be cancellable to allow multi-cancel option.
           %td.action
-            - if @gAdmin.is_boxoffice || vouchers.all?(&:can_be_changed?)
+            - if current_user.is_boxoffice || vouchers.all?(&:can_be_changed?)
               - form_tag cancel_multiple_customer_vouchers do
                 = hidden_field_tag 'voucher_ids', voucherlist
                 = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :style => "width: 15ex"
-          - if @gAdmin.is_boxoffice
+          - if current_user.is_boxoffice
             %td
               - svid = "save_#{vid}"
               - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,vouchers.first), |
@@ -36,7 +36,7 @@
                     :failure => "alert('Comment NOT saved - error ' + request.status)") do |
                 = text_field_tag 'comments', multiple_voucher_comments(vouchers)
                 = submit_tag 'Save', :id => svid
-        - elsif (dates = vouchers.first.redeemable_showdates(@gAdmin.is_boxoffice)).empty?
+        - elsif (dates = vouchers.first.redeemable_showdates(current_user.is_boxoffice)).empty?
           %td
           %td= vouchertype.name
           %td{:colspan=>3} Reservations unavailable for this show

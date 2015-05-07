@@ -12,10 +12,8 @@ module AuthenticatedSystem
     if new_user
       session[:cid] = new_user.id
       @current_user = new_user
-      session[:admin_id] = new_user.id if new_user.is_staff
-      logger.info "**** setting current user to #{@current_user}"
     else
-      session[:cid] = session[:admin_id] = nil
+      session[:cid] = nil
       @current_user = false
     end
   end
@@ -37,30 +35,6 @@ module AuthenticatedSystem
     retval
   end
   
-  def logged_in_user
-    session[:admin_id] ? current_admin : current_user
-  end
-
-  def logged_in_id
-    # Return the "effective logged-in ID" for audit purposes (ie to track
-    # who did what).
-    # if NO ADMIN is logged in, this is the logged-in customer's ID, or the
-    #   id of the 'nobody' fake customer if not set.
-    # if an admin IS logged in, it's that admin's ID.
-    return (session[:admin_id] || session[:cid] || Customer.nobody_id).to_i
-  end
-
-
-  
-  # current_admin is called from controller actions filtered by is_logged_in,
-  # so there might in fact be NO admin logged in.
-  # So it returns customer record of current admin, if one is logged in;
-  # otherwise returns a 'generic' customer with no admin privileges but on
-  # which it is safe to call instance methods of Customer.
-  def current_admin
-    Customer.find_by_id(session[:admin_id]) || Customer.generic_customer
-  end
-
     # Inclusion hook to make #current_user and #logged_in?
     # available as ActionView helper methods.
     def self.included(base)
@@ -74,13 +48,6 @@ module AuthenticatedSystem
     # Called from #current_user.  First attempt to login by the user id stored in the session.
     def login_from_session
       self.current_user = Customer.find_by_id(session[:cid]) if session[:cid]
-    end
-
-    # Called from #current_user.  Now, attempt to login by basic authentication information.
-    def login_from_basic_auth
-      authenticate_with_http_basic do |email, password|
-        self.current_user = Customer.authenticate(email, password)
-      end
     end
 
     #
