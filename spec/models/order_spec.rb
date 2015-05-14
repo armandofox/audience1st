@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Order do
   before :each do
-    @the_customer = BasicModels.create_generic_customer
-    @the_processed_by = BasicModels.create_generic_customer
+    @the_customer = create(:customer)
+    @the_processed_by = create(:customer)
     @order = Order.new(:processed_by => @the_processed_by)
   end
   describe 'new order' do
@@ -20,7 +20,7 @@ describe Order do
   end
 
   describe 'creating from bare donation' do
-    before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, BasicModels.create_generic_customer) }
+    before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, create(:customer)) }
     it 'should not be completed' do ; @order.should_not be_completed ; end
     it 'should include a donation' do ; @order.include_donation?.should be_true  ; end
     it 'should_not be_a_gift' do ; @order.should_not be_a_gift ; end

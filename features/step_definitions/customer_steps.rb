@@ -85,7 +85,7 @@ end
 Given /^customer "(.*) (.*)" exists$/ do |first,last|
   @customer =
     Customer.find_by_first_name_and_last_name(first,last) ||
-    BasicModels.create_generic_customer(:first_name => first, :last_name => last)
+    create(:customer, :first_name => first, :last_name => last)
 end
 
 Given /^the following customers exist: (.*)$/ do |list|

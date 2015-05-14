@@ -3,8 +3,8 @@ require 'spec_helper'
 describe 'scoping Customers' do
   fixtures :customers
   before :each do
-    @c1 = BasicModels.create_generic_customer
-    @c2 = BasicModels.create_generic_customer
+    @c1 = create(:customer)
+    @c2 = create(:customer)
   end
   describe 'based on show attendance' do
     before :each do
@@ -16,7 +16,7 @@ describe 'scoping Customers' do
       v = BasicModels.create_revenue_vouchertype
       @c1.vouchers << BasicModels.new_voucher_for_showdate(@sd1,v)
       @c2.vouchers << BasicModels.new_voucher_for_showdate(@sd2,v)
-      @new = BasicModels.create_generic_customer
+      @new = create(:customer)
     end
     context 'when selecting based on having seen a show' do
       it 'should select customer who has seen it' do
@@ -91,7 +91,7 @@ describe 'scoping Customers' do
     end
     context 'excluding specific Vouchertypes' do
       it 'should include customers who have purchased nothing' do
-        @c3 = BasicModels.create_generic_customer
+        @c3 = create(:customer)
         Customer.purchased_no_vouchertypes(@vt1.id).should include(@c3)
       end
       it 'should include customers who have not purchased that Vouchertype' do

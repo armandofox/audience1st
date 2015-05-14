@@ -5,7 +5,7 @@ describe Customer do
   fixtures :customers
   describe "labels" do
     before(:each) do
-      @c = BasicModels.create_generic_customer
+      @c = create(:customer)
       @l1 = Label.create!(:name => "L1")
       @l2 = Label.create!(:name => "L2")
     end
@@ -35,7 +35,7 @@ describe Customer do
     end
     describe "when merging" do
       before(:each) do
-        @c2 = BasicModels.create_generic_customer
+        @c2 = create(:customer)
       end
       it "should keep union of labels when merging automatically" do
         @c2.labels = [@l1] ; @c2.save!
@@ -139,7 +139,7 @@ describe Customer do
     end
     describe "should react to duplicate email" do
       before :each do
-        @existing = BasicModels.create_generic_customer
+        @existing = create(:customer)
         @customer.email = @existing.email
       end
       it "without raising an exception" do
@@ -226,7 +226,7 @@ describe Customer do
     end
     context "with nonblank address" do
       before(:each) do
-        @customer = BasicModels.create_generic_customer
+        @customer = create(:customer)
       end
       it "should be valid" do
         @customer.should be_valid
@@ -288,7 +288,7 @@ describe Customer do
   
   describe "managing email subscriptions" do
     before(:each) do
-      @customer = BasicModels.create_generic_customer
+      @customer = create(:customer)
       @email = @customer.email
     end
     context "when changing name only" do
@@ -314,7 +314,7 @@ describe Customer do
     end
     context "when opting out" do
       before(:each) do
-        @customer = BasicModels.create_generic_customer
+        @customer = create(:customer)
         @customer.update_attributes!(:e_blacklist => false)
         @email = @customer.email
         @customer.e_blacklist = true # so it's marked dirty
@@ -333,7 +333,7 @@ describe Customer do
     end
     context "when opting in" do
       before(:each) do
-        @customer = BasicModels.create_generic_customer
+        @customer = create(:customer)
         @customer.update_attributes!(:e_blacklist => true)
         @email = @customer.email
       end
@@ -368,7 +368,7 @@ describe Customer do
           :street => '1234 Fake St',
           :city => 'New York', :state => 'NY', :zip => '99999'
         }
-        @old = BasicModels.create_generic_customer(@attrs)
+        @old = create(:customer,@attrs)
         @cust = Customer.new(@attrs)
       end
       context "and last name matches" do
@@ -398,8 +398,7 @@ describe Customer do
           :street => '99 Fake Blvd', :city => 'New York',
           :state => 'NY', :zip => '99999',
         :created_by_admin => true}
-        @old = BasicModels.create_generic_customer(
-          @attrs.merge(:email => @old_email))
+        @old = create(:customer, @attrs.merge(:email => @old_email))
         @new = Customer.new(@attrs.merge(:email => @new_email))
       end
       it "should match if first, last and address all match" do
@@ -440,19 +439,19 @@ describe Customer do
       # uniquely, it could  be a very common name.  But if all we have
       # is a name and no other info on either side, it doesn't matter much.
       it "should match if first & last name match uniquely and exactly" do
-        @old = BasicModels.create_generic_customer(:first_name => 'Joe', :last_name => 'Jones')
+        @old = create(:customer, :first_name => 'Joe', :last_name => 'Jones')
         Customer.find_unique(Customer.new(:first_name => 'Joe', :last_name => 'Jones')).should  == @old
       end
       it "should not match if first & last match exactly but not uniquely" do
-        2.times { BasicModels.create_generic_customer(:first_name => 'Joe', :last_name => 'Jones') }
+        2.times { create(:customer, :first_name => 'Joe', :last_name => 'Jones') }
         Customer.find_unique(Customer.new(:first_name => 'Joe', :last_name => 'Jones')).should be_nil
       end
     end
   end
   describe "value selection for merging" do
     before(:each) do
-      @old = BasicModels.create_generic_customer
-      @new = BasicModels.create_generic_customer
+      @old = create(:customer)
+      @new = create(:customer)
       @old.stub!(:fresher_than?).and_return(nil)
       @new.stub!(:fresher_than?).and_return(true)
       Customer.stub!(:save_and_update_foreign_keys).and_return(true)
@@ -519,7 +518,7 @@ describe Customer do
   end
 
   describe "deleting" do
-    before :each do ;  @cust = BasicModels.create_generic_customer ;  end
+    before :each do ;  @cust = create(:customer) ;  end
     def create_records(type,cust)
       Array.new(1+rand(4)) do |idx|
         e = type.new(:customer_id => cust.id)
@@ -589,14 +588,14 @@ describe Customer do
   describe "merging" do
     before(:each) do
       now = Time.now.change(:usec => 0)
-      @old = BasicModels.create_generic_customer
-      @new = BasicModels.create_generic_customer
+      @old = create(:customer)
+      @new = create(:customer)
       @old.stub!(:fresher_than?).and_return(nil)
       @new.stub!(:fresher_than?).and_return(true)
     end
     it "should work when a third record has a duplicate email" do
       pending "Need to handle this as a separate special case in merge"
-      @triplicate = BasicModels.create_generic_customer
+      @triplicate = create(:customer)
       [@old, @new, @triplicate].each { |c| c.email = 'dupe@email.com' ; c.save(false) }
       # Since the 'triplicate' workaround relies on temporarily setting
       # the created-by-admin bit, make sure that bit gets properly reset.
@@ -608,8 +607,8 @@ describe Customer do
     end
     describe "disallowed cases" do
       before :each do
-        @c0 = BasicModels.create_generic_customer
-        @c1 = BasicModels.create_generic_customer
+        @c0 = create(:customer)
+        @c1 = create(:customer)
       end
       it "should refuse if RHS is any Special customer" do
         @c1.stub!(:special_customer?).and_return true

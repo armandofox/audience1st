@@ -111,7 +111,7 @@ module BasicModels
   end
 
   def self.create_empty_order(opts={})
-    c = BasicModels.create_generic_customer
+    c = create(:customer)
     Order.new(
       {:walkup => false, :customer => c, :purchaser => c, :processed_by => c,
         :purchasemethod => Purchasemethod.find_by_shortdesc(:box_cash)}.

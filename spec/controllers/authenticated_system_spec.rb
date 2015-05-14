@@ -44,7 +44,6 @@ describe SessionsController do
     it 'nils the current user'      do logout_keeping_session!; current_user.should be_false end
     it 'kills :user_id and admin id of session' do
       session.should_receive(:[]=).with(:cid, nil).at_least(:once).and_return(nil)
-      session.should_receive(:[]=).with(:admin_id, nil).at_least(:once).and_return(nil)    
       logout_keeping_session!
     end
     it 'forgets me' do    

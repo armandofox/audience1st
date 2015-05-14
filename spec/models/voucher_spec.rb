@@ -21,7 +21,7 @@ describe Voucher do
         @from = mock_model(Showdate)
         @to = BasicModels.create_one_showdate(Time.now.tomorrow)
         @logged_in = mock_model(Customer)
-        @customer = BasicModels.create_generic_customer
+        @customer = create(:customer)
         @invalid_voucher = Voucher.new
         @invalid_voucher.stub!(:valid?).and_return(nil)
         v = Voucher.new_from_vouchertype(@vt_regular)
@@ -94,7 +94,7 @@ describe Voucher do
   end
   describe "transferring" do
     before(:each) do
-      @from = BasicModels.create_generic_customer
+      @from = create(:customer)
       @v = Voucher.new_from_vouchertype(@vt_regular)
       @v.should be_valid
       @from.vouchers << @v
@@ -102,7 +102,7 @@ describe Voucher do
     end
     context "when recipient exists" do
       before(:each) do
-        @to = BasicModels.create_generic_customer
+        @to = create(:customer)
       end
       it "should add the voucher to the recipient's account" do
         @v.transfer_to_customer(@to)

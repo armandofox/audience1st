@@ -19,9 +19,9 @@ describe Order, 'finalizing' do
     @vv2 = ValidVoucher.create!(
       :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
-    @the_processed_by = BasicModels.create_generic_customer
-    @the_customer = BasicModels.create_generic_customer
-    @the_purchaser = BasicModels.create_generic_customer
+    @the_processed_by = create(:customer)
+    @the_customer = create(:customer)
+    @the_purchaser = create(:customer)
     @order = Order.new(:processed_by => @the_processed_by)
     @donation = BasicModels.donation(17)
   end

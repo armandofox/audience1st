@@ -2,7 +2,7 @@ require 'spec_helper'
 describe Customer do
   describe 'secret question' do
     before(:each) do
-      @c = BasicModels.create_generic_customer
+      @c = create(:customer)
     end
     it 'should be the empty question by default' do
       @c.secret_question.should == 0
@@ -31,12 +31,12 @@ describe Customer do
         end
       end
       it 'if user hasn\'t setup a secret question' do
-        c = BasicModels.create_generic_customer(:secret_question => 0)
+        c = create(:customer, :secret_question => 0)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'foo')
         u.errors.on(:login_failed).should include("Sorry, but '#{c.email}' never set up a secret question.")
       end
       it 'if answer incorrect' do
-        c = BasicModels.create_generic_customer(:secret_answer => 'blah',:secret_question => 2)
+        c = create(:customer, :secret_answer => 'blah',:secret_question => 2)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'answer')
         u.errors.on(:login_failed).should include("Sorry, that isn't the answer you provided when you selected your secret question.")
       end
@@ -44,7 +44,7 @@ describe Customer do
   end
   describe 'secret answer' do
     before(:each) do
-      @c = BasicModels.create_generic_customer
+      @c = create(:customer)
     end
     it 'should be valid if blank' do
       @c.secret_answer.should be_blank

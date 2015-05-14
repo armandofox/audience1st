@@ -4,7 +4,7 @@ describe CustomersController do
   describe "admin creating or updating valid customer" do
     fixtures :customers
     before(:each) do
-      @params = BasicModels.new_generic_customer_params
+      @params = attributes_for(:customer)
       login_as :boxoffice_manager
       post :create, {:customer => @params}
     end
@@ -23,7 +23,7 @@ describe CustomersController do
   end
   describe "user self-creation or self-update" do
     before(:each) do
-      @params = BasicModels.new_generic_customer_params
+      @params = attributes_for(:customer)
       login_as(nil)
       post :user_create, {:customer => @params}
     end
@@ -33,21 +33,22 @@ describe CustomersController do
     it "should not set created-by-admin flag when created by customer" do
       Customer.find_by_email(@params[:email]).should_not be_created_by_admin
     end
-    describe "created-by-admin flag" do
-      before(:each) do
-        @customer = Customer.find_by_email(@params[:email])
-        @customer.update_attribute(:created_by_admin, true)
-      end
-      it "should be cleared on successful update" do
-        put :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
-        @customer.reload
-        @customer.should_not be_created_by_admin
-      end
-      it "should not be cleared if update fails" do
-        put :update, {:id => @customer, :customer => {:first_name => ''}}
-        @customer.reload
-        @customer.should be_created_by_admin
-      end
+  end
+  describe "updating created-by-admin flag" do
+    before(:each) do
+      @customer = create(:customer)
+      @customer.update_attribute(:created_by_admin, true)
+      login_as @customer
+    end
+    it "should be cleared on successful update" do
+      put :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
+      @customer.reload
+      @customer.should_not be_created_by_admin
+    end
+    it "should not be cleared if update fails" do
+      put :update, {:id => @customer, :customer => {:first_name => ''}}
+      @customer.reload
+      @customer.should be_created_by_admin
     end
   end
   describe "checkout flow" do

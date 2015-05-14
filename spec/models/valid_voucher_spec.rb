@@ -224,7 +224,7 @@ describe ValidVoucher do
         :max_sales_for_type => ValidVoucher::INFINITE,
         :start_sales => 1.week.ago,
         :end_sales => 1.week.from_now)
-      @anyone = BasicModels.create_generic_customer
+      @anyone = create(:customer)
     end
     it 'for generic bundle should be available to anyone' do
       ValidVoucher.bundles_available_to(@anyone, promo_code=nil).
