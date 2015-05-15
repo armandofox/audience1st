@@ -5,7 +5,7 @@ class OrdersController < ApplicationController
     @order = Order.find_by_id(params[:id])
     if @order.nil?
       flash[:alert] = "Order ID #{params[:id].to_i} not found"
-      redirect_to_stored
+      redirect_to customers_path
       return
     end
     @total = @order.items.inject(0) { |sum,p| sum+p.amount }
@@ -15,7 +15,8 @@ class OrdersController < ApplicationController
   end
 
   def by_customer
-    @orders = Customer.find(params[:id]).orders
+    @customer = Customer.find params[:id]
+    @orders = @customer.orders
     render :partial => 'order', :collection => @orders, :layout => true
   end
 

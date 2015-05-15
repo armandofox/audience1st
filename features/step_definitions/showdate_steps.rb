@@ -10,9 +10,10 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that)
   make_valid_tickets(@showdate, @vouchertype, n.to_i)
 end
 
-Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"$/ do |num,comp_type,show_name,show_date|
-  @showdate = setup_show_and_showdate(show_name,Time.parse(show_date))
-  @comp = BasicModels.create_comp_vouchertype(:name => comp_type)
+Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"$/ do |num,comp_type,show_name,date|
+  show_date = Time.parse(date)
+  @showdate = setup_show_and_showdate(show_name,show_date)
+  @comp = create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
   make_valid_tickets(@showdate, @comp, num)
 end
                                    
@@ -41,4 +42,19 @@ Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|
       sd.end_advance_sales.should == Time.parse(date[:sales_cutoff])
     end
   end
+end
+
+When /^I delete the showdate "(.*)"$/ do |date|
+  showdate = Showdate.find_by_thedate!(Time.parse date)
+  steps %Q{When I visit the show details page for "#{showdate.show.name}"}
+  within("#showdate_#{showdate.id}") { click_button "Delete" }
+end
+
+Then /^there should be no "Delete" button for the showdate "(.*)"$/ do |date|
+  showdate = Showdate.find_by_thedate!(Time.parse date)
+  page.should_not have_xpath("//tr[@id='showdate_#{showdate.id}']//input[@type='submit' and @value='Delete']")
+end
+
+Then /^there should be no show on "(.*)"$/ do |date|
+  Showdate.find_by_thedate(Time.parse date).should be_nil
 end

@@ -120,8 +120,8 @@ describe Vouchertype do
           :account_code => AccountCode.default_account_code,
           :season => @@now.year
         }
-        @vt_free = Vouchertype.create!(args.merge({:category=>:comp,:price=>0, :name => "Free"}))
-        @vt_notfree = Vouchertype.create!(args.merge({:category => :revenue,:price => 1,:name => "Revenue"}))
+        @vt_free = create(:comp_vouchertype)
+        @vt_notfree = create(:revenue_vouchertype)
         @vtb = Vouchertype.new(args.merge({ :category => :bundle, :name => "Bundle"}))
       end
       it "should be invalid if contains any nonzero-price vouchers" do
@@ -139,9 +139,8 @@ describe Vouchertype do
     describe 'bundle' do
       before :each do
         @customer = customers(:tom)
-        @v = Array.new(3) { BasicModels.create_included_vouchertype }
-        @vt_bundle = BasicModels.create_subscriber_vouchertype(:price => 25,
-          :included_vouchers => {@v[0].id => 1, @v[1].id => 2, @v[2].id => 3})
+        @v = Array.new(3) { create(:vouchertype_included_in_bundle) }
+        @vt_bundle = create(:bundle, :including => {@v[0] => 1, @v[1] => 2, @v[2] => 3})
       end
       it('should instantiate all vouchers in bundle') { @vt_bundle.instantiate(2).should have(14).vouchers }
     end

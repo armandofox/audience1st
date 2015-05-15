@@ -1,16 +1,15 @@
 class ShowsController < ApplicationController
 
-  before_filter(:is_boxoffice_manager_filter,
-                :add_to_flash => "Only Box Office Manager can modify show information",
-                :redirect_to => {:controller =>'customers',:action =>'welcome'})
+  before_filter :is_boxoffice_manager_filter
   before_filter :has_at_least_one, :except => [:new, :create]
 
   def index
     unless Show.find(:first)
       flash[:notice] = "There are no shows set up yet."
-      redirect_to :action => 'new' and return
+      redirect_to new_show_path
+      return
     end
-    @superadmin = Customer.find(logged_in_id).is_admin rescue false
+    @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
     @earliest,@latest = Show.seasons_range
     @season = @latest unless @season.between?(@earliest,@latest)
@@ -27,7 +26,7 @@ class ShowsController < ApplicationController
     @show = Show.new(params[:show])
     if @show.save
       flash[:notice] = 'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
-      redirect_to :action => 'edit', :id => @show
+      redirect_to edit_show_path(@show)
     else
       flash[:notice] = "There were errors creating the show."
       render :action => 'new'
@@ -50,13 +49,13 @@ class ShowsController < ApplicationController
       flash[:notice] = 'Show details successfully updated.'
       redirect_to edit_show_path(@show)
     else
-      flash[:alert] = "Show details were not updated: " + @show.errors.full_messages.join(', ')
+      flash[:alert] = ["Show details were not updated: ", @show]
       render :action => 'edit', :id => @show
     end
   end
 
   def destroy
     Show.find(params[:id]).destroy
-    redirect_to :action => 'index'
+    redirect_to shows_path
   end
 end

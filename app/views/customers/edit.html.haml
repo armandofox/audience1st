@@ -3,11 +3,11 @@
 = error_messages_for :customer
 
 %br/
-- form_tag :action => 'update', :id => @customer do
+- form_tag customer_path(@customer), :method => :put do
   = render :partial => 'form' 
   - if @is_admin
     = render :partial => 'form_admin'
   %br/
   %br/
   = submit_tag 'Save Changes' 
-  = link_to 'Cancel', ({:action => 'welcome', :id => @customer}), :class => 'genButton'
+  = gen_button 'Cancel', customer_path(@customer)

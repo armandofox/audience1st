@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Label do
   before(:each) do
     @foo_label = Label.create!(:name => "foo")
-    @c = BasicModels.create_generic_customer
+    @c = create(:customer)
   end
   describe "when valid" do
     it "should be unique" do
@@ -31,7 +31,7 @@ describe Label do
       @foo_label.customers.should_not include(@c)
     end
     it "should be moved to surviving customer if merged" do
-      @c2 = BasicModels.create_generic_customer
+      @c2 = create(:customer)
       @c2.merge_automatically!(@c).should be_true
       @foo_label.customers.should_not include(@c)
       @foo_label.customers.should include(@c2)

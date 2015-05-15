@@ -1,13 +1,10 @@
 require 'spec_helper'
 
 describe CustomersController do
-  before do
-    CustomersController.send(:public, :current_user, :current_admin, :set_return_to)
-  end
   describe "admin creating or updating valid customer" do
     fixtures :customers
     before(:each) do
-      @params = BasicModels.new_generic_customer_params
+      @params = attributes_for(:customer)
       login_as :boxoffice_manager
       post :create, {:customer => @params}
     end
@@ -18,13 +15,15 @@ describe CustomersController do
       Customer.find_by_email(@params[:email]).should be_created_by_admin
     end
     it "should not clear created-by-admin flag if admin updates record" do
-      post :update, {:customer => {:first_name => 'Bobby'}}
-      Customer.find_by_email(@params[:email]).should be_created_by_admin
+      customer = Customer.find_by_email(@params[:email])
+      put :update, {:id => customer, :customer => {:first_name => 'Bobby'}}
+      customer.reload
+      customer.should be_created_by_admin
     end
   end
   describe "user self-creation or self-update" do
     before(:each) do
-      @params = BasicModels.new_generic_customer_params
+      @params = attributes_for(:customer)
       login_as(nil)
       post :user_create, {:customer => @params}
     end
@@ -34,64 +33,38 @@ describe CustomersController do
     it "should not set created-by-admin flag when created by customer" do
       Customer.find_by_email(@params[:email]).should_not be_created_by_admin
     end
-    describe "created-by-admin flag" do
-      before(:each) do
-        @customer = Customer.find_by_email(@params[:email])
-        @customer.update_attribute(:created_by_admin, true)
-      end
-      it "should be cleared on successful update" do
-        post :update, {:customer => {:first_name => "Bobby"}}
-        @customer.reload
-        @customer.should_not be_created_by_admin
-      end
-      it "should not be cleared if update fails" do
-        post :update, {:customer => {:first_name => ''}}
-        @customer.reload
-        @customer.should be_created_by_admin
-      end
-    end
   end
-  describe "admin switching" do
+  describe "updating created-by-admin flag" do
     before(:each) do
-      @admin = BasicModels.create_customer_by_role(:boxoffice_manager,
-        :last_name => "Admin" )
-      @customer = BasicModels.create_generic_customer
-      login_as @admin
-      @controller.current_user.id.should == @admin.id
+      @customer = create(:customer)
+      @customer.update_attribute(:created_by_admin, true)
+      login_as @customer
     end
-    it "should switch to existing user" do
-      get :switch_to, :id => @customer.id
-      @controller.current_user.id.should == @customer.id
+    it "should be cleared on successful update" do
+      put :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
+      @customer.reload
+      @customer.should_not be_created_by_admin
     end
-    it "should retain current admin" do
-      get :switch_to, :id => @customer.id
-      @controller.current_admin.id.should == @admin.id
-    end
-    it "should not switch to nonexistent user" do
-      id = @customer.id
-      @customer.destroy
-      get :switch_to, :id => id
-    end
-    it "should redirect to welcome action by default" do
-      pending 'RESTful customer routes'
-      get :switch_to, :id => @customer.id
-      response.should redirect_to(:controller => 'customers', :action => 'welcome')
+    it "should not be cleared if update fails" do
+      put :update, {:id => @customer, :customer => {:first_name => ''}}
+      @customer.reload
+      @customer.should be_created_by_admin
     end
   end
   describe "checkout flow" do
     before(:each) do
-      @customer = BasicModels.create_generic_customer
+      @customer = create(:customer)
       login_as @customer
       ApplicationController.stub!(:find_cart).and_return(mock_model(Order).as_null_object)
       controller.set_checkout_in_progress(true)
       @target = {:controller => 'store', :action => 'checkout'}
-      @controller.set_return_to @target
+      @controller.return_after_login @target
     end
     describe "when updating billing info" do
       before(:each) do
         params = {:id => @customer, :customer => {:street => "100 Embarcadero",   :zip => "94100",
             :email => "nobody@noplace.com"}}
-        post :update, params
+        put :update, params
       end
       it "should not update the password" do
         @customer.crypted_password_changed?.should be_false
@@ -103,9 +76,6 @@ describe CustomersController do
       end
       it "should display a message confirming the update" do
         flash[:notice].should match(/Contact information.*successfully updated/i)
-      end
-      it "should continue the checkout flow" do
-        response.should redirect_to(@target)
       end
     end
   end

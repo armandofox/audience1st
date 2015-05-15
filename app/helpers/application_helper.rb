@@ -63,14 +63,11 @@ module ApplicationHelper
       :class => 'tooltip') 
   end
 
-  def render_multiline_message(m,container=nil)
-    m.respond_to?(:each) ?
-    m.map { |line| content_tag(:span, line) }.join("<br/>\n") :
-      m
-  end
-
-  def errors_as_html(model, sep='<br/>')
-    model.errors.full_messages.join(sep)
+  def render_multiline_message(m,sep="<br/>\n")
+    if m.respond_to?(:errors_as_html) then m.errors_as_html(sep)
+    elsif (m.kind_of? Array) then m.map { |line| content_tag(:span, render_multiline_message(line,sep)) }.join(sep)
+    else m
+    end
   end
   
   # gracefully show a range of dates
@@ -112,10 +109,10 @@ module ApplicationHelper
       content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
   end
 
-  def link_to_if_option_text(opt, opts={}, html_opts={})
-    (s = Option.send(opt)).blank? ?
-    opts.delete(:alt).to_s :
-      content_tag(:span, link_to(s, opts, html_opts), :id => opt, :class => opt)
+  def link_to_if_option_text(opt, path, html_opts={})
+    if (s = Option.send(opt)).blank? then '' else
+      content_tag(:span, link_to(s, path, html_opts), :id => opt, :class => opt)
+    end
   end
 
   # return javascript that will do check-all/uncheck-all for checkboxes that have
@@ -191,7 +188,7 @@ EJS1
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
     # default select args
     default_select_opts = {
-      :url => {:controller => :customers, :action => :auto_complete_for_customer_full_name},
+      :url => customer_autocomplete_path,
       :with => "'__arg=' + $('#{field_id}').value",
       :select => :full_name,
       :after_update_element => "function(e,v) { complete_#{field_id}(v) }"
@@ -238,25 +235,6 @@ EJS1
 
   def option_separator(name,value='')
     "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
-  end
-
-  def nav_tabs(klass,ary)
-    ary.map do |a|
-      args = {:controller => a[1].to_s, :action => a[2].to_s }
-      args[:id] = a[3].id if a.length > 3
-      args.merge!(a[4]) if a.length > 4
-      content_tag(:li, h(a[0]),
-        :id => "t_#{a[1]}_#{a[2]}") do
-        link_to(a[0], args)
-      end
-    end.join("\n")
-  end
-
-  def button_bar(*ary)
-    ary.map do |a|
-      options = {:controller => a[1].to_s, :action => a[2].to_s}
-      admin_button a[0].gsub(/ /,'&nbsp;'), options.merge(a[3])
-    end.join("\n")
   end
 
   def pagination_bar(thispage, f, count, htmlopts={})

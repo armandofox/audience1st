@@ -11,9 +11,9 @@
   .indented
     .small
       Forgot your password?
-      = link_to 'Get a new one by email', forgot_password_path
+      = link_to 'Get a new one by email', forgot_password_customers_path
       or answer your
-      = link_to 'secret question.', secret_question_path
+      = link_to 'secret question.', new_from_secret_session_path
       to reset it.
       %br
       = check_box_tag 'remember_me', '1', @remember_me

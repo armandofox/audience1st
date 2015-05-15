@@ -17,7 +17,6 @@ Scenario: customer can login by answering secret question correctly
   When I fill in "Your Answer" with "New York"
   And I press "Verify"
   Then tom@foolery.com should be logged in
-  And should be on the change password page
 
 Scenario: customer cannot login if secret question answered incorrectly
 

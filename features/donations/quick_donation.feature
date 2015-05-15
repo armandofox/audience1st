@@ -10,7 +10,6 @@ Scenario: donor logged in, page gets prepopulated with donor info
   Given a donation of $10 on 12/1/09 from "Tom Foolery" to the "General Fund"
   And  I am logged in as customer "Tom Foolery"
   When I go to the quick donation page
-  Then the billing customer should be "Tom Foolery"
 
   When I fill in "Donation amount" with "15"
   And I press "Charge Donation to Credit Card"

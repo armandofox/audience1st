@@ -1,6 +1,5 @@
-%ul.nav= nav_tabs 'store_nav', |
-  [['Walkup Sales', :box_office, :walkup, @showdate], |
-  ['Printable Door List', :box_office, :door_list, @showdate], |
-  ['Reservation Checkin', :box_office, :checkin, @showdate], |
-  ['Walkup Report', :box_office, :walkup_report, @showdate], |
-  ['Back to Main', :customers, :list]]  |
+%ul.nav.store_nav
+  %li#t_box_office_walkup= link_to 'Walkup Sales', walkup_sales_path(@showdate)
+  %li#t_box_office_door_list= link_to 'Printable Door List', door_list_path(@showdate)
+  %li#t_box_office_checkin= link_to 'Reservation Checkin', checkin_path(@showdate)
+  %li#t_customers_welcome= link_to 'Back to Main', (@customer ? customer_path(@customer) : customers_path)

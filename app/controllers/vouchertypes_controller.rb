@@ -2,24 +2,23 @@ class VouchertypesController < ApplicationController
 
   before_filter :is_boxoffice_manager_filter
   before_filter :has_at_least_one, :except => [:new, :create]
+  before_filter :load_vouchertype, :only => [:clone, :edit, :update, :destroy]
 
   private
-  def at_least_one_vouchertype
-    unless Vouchertype.find(:first)
-      flash[:alert] = "You have not defined any voucher types yet."
-      redirect_to :action => 'new'
-    end
+
+  def load_vouchertype
+    @vouchertype = Vouchertype.find params[:id]
   end
 
   public
   
   def index
-    @superadmin = is_admin
+    redirect_to params.merge(:season => Time.this_season) and return unless (@season = params[:season].to_i) > 0
+    @superadmin = current_user().is_admin
     # possibly limit pagination to only bundles or only subs
     @earliest = Vouchertype.find(:first, :order => 'season').season
     @latest = Vouchertype.find(:first, :order => 'season DESC').season
     @filter = params[:filter].to_s
-    @season = params[:season] || Time.this_season
     limit_to_season = (@season.to_i > 0) ? @season.to_i : nil
     case @filter
     when "Bundles"
@@ -51,7 +50,6 @@ class VouchertypesController < ApplicationController
   end
 
   def clone
-    @vouchertype = Vouchertype.find(params[:id])
     @vouchertype.name[0,0] = 'Copy of '
     render :action => :new
   end
@@ -62,17 +60,17 @@ class VouchertypesController < ApplicationController
     end
     @vouchertype = Vouchertype.new(params[:vouchertype])
     if @vouchertype.save
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
+      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
                            :commments => "Create voucher type #{@vouchertype.name}")
       if @vouchertype.bundle? && @vouchertype.included_vouchers.empty?
         flash[:notice] = 'Please specify bundle quantities now.'
-        redirect_to :action => 'edit', :id => @vouchertype
+        redirect_to edit_vouchertype_path(@vouchertype)
       else
         flash[:notice] = 'Vouchertype was successfully created.'
         if params[:commit] =~ /another/i
-          redirect_to :action => :new
+          redirect_to new_vouchertype_path
         else
-          redirect_to :action => :index, :season => @vouchertype.season
+          redirect_to vouchertypes_path, :season => @vouchertype.season
         end
       end
     else
@@ -81,7 +79,6 @@ class VouchertypesController < ApplicationController
   end
 
   def edit
-    @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
     @valid_voucher = @vouchertype.valid_vouchers.first if @vouchertype.bundle?
     if @num_vouchers > 0
@@ -90,7 +87,6 @@ class VouchertypesController < ApplicationController
   end
 
   def update
-    @vouchertype = Vouchertype.find(params[:id])
     @num_vouchers = @vouchertype.vouchers.count
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
@@ -102,41 +98,30 @@ class VouchertypesController < ApplicationController
       params[:vouchertype][:valid_vouchers_attributes] = [ params[:valid_voucher] ]
     end
     if @vouchertype.update_attributes(params[:vouchertype])
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
+      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
                            :comments => "Modify voucher type #{@vouchertype.name}")
       flash[:notice] = 'Vouchertype was successfully updated.'
-      redirect_to :action => 'index', :season => @vouchertype.season
+      redirect_to vouchertypes_path, :season => @vouchertype.season
     else
-      flash[:alert] = 'Update failed, please re-check information and try again: ' + @vouchertype.errors.full_messages.join(', ')
-      redirect_to :action => 'edit', :id => @vouchertype
+      flash[:alert] = ['Update failed, please re-check information and try again: ', @vouchertype]
+      redirect_to edit_vouchertype_path(@vouchertype)
     end
   end
 
   def destroy
-    v = Vouchertype.find(params[:id])
-    unless is_admin
-      flash[:notice] = "Only superadmin can destroy vouchertypes."
-      redirect_to :action => 'index', :season => v.season
-      return
+    c = @vouchertype.vouchers.size
+    errors = []
+    errors << "there are #{c} issued vouchers of this type" if (c > 0)
+    errors << " it's listed as valid for purchase for the following shows: #{shows}" if
+      !(shows = @vouchertype.valid_vouchers.map { |v| v.showdate.show.name }.uniq.join(', ')).blank?
+    if !errors.empty?
+      flash[:alert] = "Can't delete this voucher types, because " << errors.join(" and ")
+    else
+      @vouchertype.destroy
+      flash[:notice] = "Voucher type '#{@vouchertype.name}' deleted."
+      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
+        :comments => "Destroy voucher type #{@vouchertype.name}")
     end
-    if ((c = v.vouchers.count) > 0)
-      flash[:notice] = "Can't destroy this voucher type, because there are
-                        #{c} issued vouchers of this type."
-      redirect_to :action => :index, :season => v.season
-      return
-    end
-    if !(vv = v.valid_vouchers).empty?
-      # helpfully tell which shows use this vouchertype
-      shows = vv.map { |v| v.showdate.show.name }.uniq.join(', ')
-      flash[:notice] = "Can't destroy this voucher type because it's listed as valid for purchase for the following shows: #{shows}"
-      redirect_to :action => :index, :season => v.season
-      return
-    end
-    name = v.name
-    season = v.season
-    v.destroy
-    Txn.add_audit_record(:txn_type => 'config', :logged_in_id => logged_in_id,
-                         :comments => "Destroy voucher type #{name}")
-    redirect_to :action => 'index', :season => season
+    redirect_to vouchertypes_path(:season => @vouchertype.season)
   end
 end

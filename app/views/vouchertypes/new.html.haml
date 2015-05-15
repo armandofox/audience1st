@@ -1,8 +1,8 @@
-- form_tag :action => 'create' do
+- form_tag vouchertypes_path do
   %fieldset#new_vouchertype
     %legend New Voucher Type
     = render :partial => 'form' 
     = submit_tag "Create"
     = submit_tag "Create & Add Another"
-    = gen_button 'Cancel', :action => 'index'
+    = gen_button 'Cancel', vouchertypes_path
 

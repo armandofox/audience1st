@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Order do
   before :each do
-    @the_customer = BasicModels.create_generic_customer
-    @the_processed_by = BasicModels.create_generic_customer
+    @the_customer = create(:customer)
+    @the_processed_by = create(:customer)
     @order = Order.new(:processed_by => @the_processed_by)
   end
   describe 'new order' do
@@ -20,7 +20,7 @@ describe Order do
   end
 
   describe 'creating from bare donation' do
-    before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, BasicModels.create_generic_customer) }
+    before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, create(:customer)) }
     it 'should not be completed' do ; @order.should_not be_completed ; end
     it 'should include a donation' do ; @order.include_donation?.should be_true  ; end
     it 'should_not be_a_gift' do ; @order.should_not be_a_gift ; end
@@ -36,7 +36,7 @@ describe Order do
     before :each do
       @o = Order.new
       @o.stub(:purchase_medium).and_return("Cash")
-      @v = BasicModels.create_revenue_vouchertype(:price => 7)
+      @v = create(:revenue_vouchertype,:price => 7)
       @vv = @v.valid_vouchers.create!(:start_sales => 1.day.ago, :end_sales => 1.day.from_now)
     end
     [ 1,0,"$5.00 donation paid by Cash",

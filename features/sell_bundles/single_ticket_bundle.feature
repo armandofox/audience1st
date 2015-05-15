@@ -6,7 +6,7 @@ Feature: sell bundles of tickets with preassigned dates
 
 Background: my cart contains a fixed-date-bundle voucher
 
-  And a bundle "Shakespeare Combo" containing:
+  And a bundle "Shakespeare Combo" for $20.00 containing:
     | show      | date              | qty |
     | Hamlet    | May 12, 2010, 8pm |   1 |
     | King Lear | May 13, 2010, 8pm |   1 |

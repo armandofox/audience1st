@@ -14,8 +14,8 @@ describe Import do
   end
   describe 'when finalized' do
     before :each do
-      @i = BrownPaperTicketsImport.create!(:show => BasicModels.create_generic_show)
-      @c = BasicModels.create_customer_by_role('boxoffice')
+      @i = BrownPaperTicketsImport.create!(:show => create(:show))
+      @c = create(:customer, :role => :boxoffice)
     end
     it 'should set customer ID' do
       @i.finalize(@c)

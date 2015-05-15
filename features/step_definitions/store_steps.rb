@@ -13,6 +13,13 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
+  vouchertype = Vouchertype.find_by_name! ticket_type
+  showdate = Showdate.find_by_thedate! Time.parse date
+  ValidVoucher.find_by_vouchertype_id_and_showdate_id(vouchertype.id, showdate.id).
+    update_attributes!(:promo_code => promo)
+end
+
 Given /^my gift order contains the following tickets:/ do |tickets|
   Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
   create_tickets(tickets.hashes)
@@ -21,7 +28,7 @@ Given /^my gift order contains the following tickets:/ do |tickets|
 end
 
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
-  order = BasicModels.create_empty_walkup_order
+  order = build(:order, :walkup => true)
   showdate = Showdate.find_by_thedate!(Time.parse(dt))
   tickets.hashes.each do |t|
     qty = t[:qty].to_i
@@ -36,6 +43,11 @@ end
 Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message, name|
   div_id = Vouchertype.find_by_name!(name).id
   page.find("div#vouchertype_#{div_id} span.admin").text.should == message
+end
+
+When /^I try to redeem the "(.*)" discount code$/ do |promo|
+  # should really use headless JS for this
+  visit store_path(:promo_code => promo)
 end
 
 When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*(\S+)\s+(\S+),\s*([^,]+),\s*(.*@.*)"$/ do |fieldset, first, last, street, city, state, zip, phone, email|
@@ -58,10 +70,11 @@ def verify_customer_in_div(id, first, last)
   end
 end
 
-Then /^the billing customer should be "(.*)\s+(.*)"$/ do |first,last|
-  verify_customer_in_div "#billing", first, last
-end
-
 Then /^the gift recipient customer should be "(.*)\s+(.*)"$/ do |first,last|
   verify_customer_in_div "#gift_recipient", first, last
 end
+
+Then /^the billing customer should be "(.*)\s+(.*)"$/ do |first,last|
+  within('#purchaser') { page.should have_content("#{first} #{last}") }
+end
+

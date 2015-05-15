@@ -1,19 +1,21 @@
 #ticket_menus_inner
   = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty', 'submit') }"
+  = hidden_field_tag 'referer', (@special_shows_only ? 'special' : 'index')
   = render :partial => 'enter_promo_code'
+
   %br/
 
   - if !(@sh.try(:description).blank?)
     #show_description.explanation= @sh.description
 
   %label{:for => "show"}= @special_shows_only ? 'Event' : 'Show'
-  = select_tag('show', options_with_default(@sh, @all_shows))
-  = spinner('wait_show')
+  = select_tag('show', options_with_default(@sh, @all_shows),                |
+    :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('show').value)") |
   %br/
 
   %label{:for => "showdate"} Date
-  = select_tag('showdate', options_with_default(@sd, @all_showdates))
-  = spinner('wait_showdate')
+  = select_tag('showdate', options_with_default(@sd, @all_showdates),        |
+    :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('showdate').value)") |
   - privileged_content_for :staff do
     - if (@sd.kind_of?(Showdate))
       %span.admin= "Available: #{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
@@ -30,7 +32,7 @@
         %div{:id => "vouchertype_#{v.vouchertype_id}"}
           - fieldname = "valid_voucher[#{v.id}]"
           %label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
-          - if @gAdmin.is_boxoffice
+          - if @is_admin
             = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
             %span.admin= v.explanation
           - else
@@ -47,5 +49,3 @@
       #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}
         %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
         = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
-
-  = watch_show_and_showdate_fields

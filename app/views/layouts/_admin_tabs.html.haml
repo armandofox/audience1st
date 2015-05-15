@@ -1,6 +1,5 @@
-%ul.nav= nav_tabs 'store_nav', |
-  [['Settings', :options, :edit],  |
-  ['Import', :imports, :index], |
-  ['Bulk Import', :bulk_downloads, :new], |
-  ['Back to Main', :customers, :welcome] |
-  ] |
+%ul.nav.store_nav
+  %li#t_options_edit= link_to 'Settings', options_path
+  %li#t_imports_index= link_to 'Import', imports_path
+  %li#t_bulk_downloads_new= link_to 'Bulk Import', new_bulk_download_path
+  %li#t_customers_welcome= link_to 'Back to Main', root_path

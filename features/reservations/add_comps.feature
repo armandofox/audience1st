@@ -7,13 +7,12 @@ Feature: add comps and reserve for a show
 Background: logged in as admin and shows are available
 
   Given I am logged in as boxoffice manager
-  And I am acting on behalf of customer "Tom Foolery"
   And 2 "Comp" comps are available for "Macbeth" on "April 20, 2010, 8pm"
 
 Scenario Outline: add comps to performance
 
   Given it is currently <time>
-  When I visit the add comps page
+  When I visit the add comps page for customer "Tom Foolery"
   When I select "Comp (2010)" from "What type:"
   And  I fill in "How many:" with "<number>"
   And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"

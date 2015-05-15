@@ -2,6 +2,75 @@ require 'spec_helper'
 
 describe StoreController do
   fixtures :customers
+  fixtures :purchasemethods
+  before :each do ; @buyer = create(:customer) ;  end
+  
+  shared_examples_for 'initial visit' do
+    before :each do
+      @r = {:controller => 'store', :action => 'index'}
+      @c = create(:customer)
+      @anon = Customer.anonymous_customer
+      @extra = {:show_id => '25', :promo_code => 'x'}.merge(@extra ||= {})
+    end
+    context 'when not logged in' do
+      before :each do ; login_as(nil) ; end
+      it 'redirects as generic customer' do
+        get :index
+        response.should redirect_to(@r.merge(:customer_id => @anon))
+      end
+      it 'preserves params' do
+        get :index, @extra
+        response.should redirect_to(@r.merge(:customer_id => @anon).merge(@extra))
+      end
+
+      it 'prevents switching to a different user' do
+        get :index, {:customer_id => @c.id}
+        response.should redirect_to(@r.merge(:customer_id => @anon))
+      end
+    end
+    context 'when logged in as regular user' do
+      before :each do ; login_as(@c) ;  end
+      it 'redirects to your login keeping params' do
+        get :index, @extra
+        response.should redirect_to(@r.merge(:customer_id => @c).merge(@extra))
+      end
+      it 'prevents you from switching to different user' do
+        other = create(:customer)
+        get :index, @extra.merge(:customer_id => other)
+        response.should redirect_to(@r.merge(@extra).merge(:customer_id => @c))
+      end
+      it 'lets you view store as yourself' do
+        get :index, @extra.merge(:customer_id => @c)
+        response.should be_success
+      end
+    end
+    context 'when logged in as admin' do
+      before :each do ; login_as(@b = customers(:boxoffice_user)) ; end
+      it 'redirects to you if no customer specified' do
+        get :index, @extra
+        response.should redirect_to(@r.merge(@extra).merge(:customer_id => @b))
+      end
+      it 'redirects to another customer' do
+        get :index, @extra.merge(:customer_id => @c)
+        response.should be_success
+      end
+    end
+  end
+
+  context 'initial visit' do
+    describe 'to :index' do
+      before :each do ; @action = :index ; end
+      it_should_behave_like 'initial visit'
+    end
+    describe 'to :subscribe' do
+      before :each do ; @action = :subscribe ; end
+      it_should_behave_like 'initial visit'
+    end
+    describe 'to :donate_to_fund' do
+      before :each do ; @action = :donate_to_fund ; @extras = {:id => mock_model(AccountCode)}; end
+      it_should_behave_like 'initial visit'
+    end
+  end
 
   describe "on InvalidAuthenticityToken exception" do
     before(:each) do
@@ -9,14 +78,15 @@ describe StoreController do
     end
     it 'should check the authenticity token' do
       @controller.should_receive(:verify_authenticity_token)
-      post :place_order, :authenticity_token => 'wrong'
+      post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
     end
     it "should show the Session Expired page rather than throwing error" do
       @controller.should_receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
-      post :place_order, :authenticity_token => 'wrong'
+      post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
       response.should render_template 'messages/session_expired'
     end
   end
+
   describe 'quick donation' do
     before :each do
       @new_valid_customer = {
@@ -27,14 +97,14 @@ describe StoreController do
     shared_examples_for 'failure' do
       before :each do ; @count = Customer.count(:all) ; end
       it 'redirects' do ; response.should render_template 'store/donate' ;  end
-      it 'shows appropriate message' do ; flash[:alert].should match(@alert) ; end
+      it 'shows error messages' do ; render_multiline_message(flash[:alert]).should match(@alert) ; end
       it 'does not create new customer' do ; Customer.count(:all).should == @count ; end
     end
     context 'with invalid donation amount' do
       before :each do
         @count = Customer.count(:all)
         @alert = /Donation amount must be provided/
-        post :process_quick_donation, {:customer => @new_valid_customer}
+        post :donate, {:customer => @new_valid_customer}
       end
       it_should_behave_like 'failure'
     end
@@ -42,29 +112,32 @@ describe StoreController do
       before :each do
         @new_valid_customer.delete(:city)
         @alert = /Incomplete or invalid donor information:/
-        post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        post :donate, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
       end
       it_should_behave_like 'failure'
     end
     context 'when credit card token invalid' do
       before :each do
-        @alert = /Invalid credit card transaction/i
-        post :process_quick_donation, {:customer => @new_valid_customer, :donation => 5}
+        @alert = /Invalid credit card transaction/
+        Stripe::Charge.stub(:create).and_raise(Stripe::StripeError)
+        post :donate, {:customer => @new_valid_customer, :donation => 5}
       end
       it_should_behave_like 'failure'
     end
     
   end
   describe "processing empty cart" do
-    before :each do ; request.env['HTTP_REFERER'] = '/store' ; end
+    before :each do
+      login_as @buyer
+    end
     context "and no donation" do
       shared_examples_for "all cases" do
         it "should redirect to index" do
-          post 'process_cart', @params
-          response.should redirect_to(:action => 'index')
+          post :process_cart, {:customer_id => @buyer.id}
+          response.should redirect_to store_path(@buyer)
         end
         it "should display a warning" do
-          post 'process_cart', @params
+          post :process_cart, {:customer_id => @buyer.id}
           flash[:alert].should match(/nothing in your order/i)
         end
       end
@@ -79,169 +152,77 @@ describe StoreController do
     end
     context "with donation" do
       before(:each) do
-        @params = {:donation => "13"}
-        controller.stub!(:store_customer).and_return(@c = mock_model(Customer))
-        controller.stub!(:logged_in_id).and_return((@l = mock_model(Customer)).id)
+        @params = {:customer_id => @buyer.id, :donation => "13"}
         @d = mock_model(Donation, :price => 13, :amount => 13, :account_code_id => 1)
       end
       it "should allow proceeding" do
-        post 'process_cart', @params
-        response.should redirect_to(:action => 'checkout')
+        post :process_cart, @params
+        response.should redirect_to checkout_path(@buyer)
       end
       it "should proceed to checkout even if gift order" do
-        post 'process_cart', :donation => '13', :gift => '1'
+        @params[:gift] = 1
+        post :process_cart, @params
         response.should redirect_to(:action => 'checkout')
       end
       it "should create donation with no account code" do
         Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(@d)
-        post 'process_cart', @params
+        post :process_cart, @params
       end
       it 'should create donation with nondefault account code when supplied' do
         @params[:account_code_id] = 75
         Donation.should_receive(:from_amount_and_account_code_id).with(13, '75').and_return(@d)
-        post 'process_cart', @params
+        post :process_cart, @params
       end
       it "should add the donation to the cart" do
         controller.stub!(:find_cart).and_return(@cart = Order.new)
         Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(d = Donation.new)
         @cart.should_receive(:add_donation).with(d)
-        post 'process_cart', @params
+        post :process_cart, @params
       end
     end
 
   end
-  describe "proceeding with nonempty cart" do
-    context "with valid tickets" do
-      context "gift order" do
-      end
-      context "nongift order" do
-      end
-    end
-    context "with invalid tickets" do
-      describe "always", :shared => true do
-        it "should redirect to the index page"
-      end
-      context "gift order" do
-        before do ; @params = {:gift => '1'} ; end
-        it_should_behave_like "always"
-      end
-      context "nongift order" do
-        before do ; @params = {} ; end
-        it_should_behave_like "always"
-      end
-    end
-  end
 
-  describe "completing billing address" do
-  end
-
-  describe "identifying gift recipient" do
-    describe "from session" do
-      before :each do
-        StoreController.send(:public, :recipient_from_session)
-        @rec = BasicModels.create_generic_customer
-        session[:recipient_id] = @rec.id.to_s
-      end
-      it "should find valid recipient" do
-        @controller.recipient_from_session.should == @rec
-      end
-      it "should update valid recipient's attributes" do
-        attrs = {:street => '999 Broadway', :city => 'San Francisco'}
-        @controller.params[:customer] = attrs
-        r = @controller.recipient_from_session
-        r.street.should == attrs[:street]
-        r.city.should == attrs[:city]
-      end
-      it "should be nil if recipient from session doesn't exist" do
-        session[:recipient_id] = 7979797979
-        @controller.recipient_from_session.should be_nil
-      end
-    end
-    describe "from supplied customer info" do
-      before :all do ; StoreController.send(:public, :recipient_from_params) ; end
-      it "should return customer if unique & valid gift recipient" do
-        m = mock_model(Customer, :valid_as_gift_recipient? => true)
-        Customer.should_receive(:find_unique).and_return(m)
-        @controller.recipient_from_params.should == m
-      end
-      it "should not return customer if no unique match" do
-        Customer.should_receive(:find_unique).and_return nil
-        @controller.recipient_from_params.should be_nil
-      end
-      it "should not return customer if not valid gift recipient" do
-        m = mock_model(Customer, :valid_as_gift_recipient? => nil)
-        Customer.should_receive(:find_unique).and_return(m)
-        @controller.recipient_from_params.should be_nil
-      end
-    end
-  end
-
-  describe "landing page" do
+  describe "landing page with show selected" do
     before(:each) do
-      @dt1 = "Jan 27, 2009, 8:00pm"
-      @sd1 = BasicModels.create_one_showdate(Time.parse(@dt1))
-      @dt2 = "Jan 29, 2009, 8:00pm"
-      @sd2 = BasicModels.create_one_showdate(Time.parse(@dt2),100,@sd1.show)
+      login_as @buyer
+      @sd1 = create(:showdate, :thedate => 1.week.from_now)
+      @sd2 = create(:showdate, :thedate => 4.weeks.from_now)
     end
-    it "should override valid date if showdate_id given" do
-      get :index, :showdate_id => @sd1.id, :date => @dt2
-      assigns(:sd).should == @sd1
+    it "should select showdate if given" do
+      get :index, {:customer_id => @buyer.id, :showdate_id => @sd2.id}
+      assigns(:sd).id.should == @sd2.id
     end
-    it "should respect valid date" do
-      pending 'Fix showdate_spec examples for Showdate.current_or_next'
-      get :index, :date => @dt2
-      assigns(:sd).should == @sd2
-    end
-    it "should default to earliest showdate with tickets if neither valid" do
-      pending 'Fix showdate_spec examples for Showdate.current_or_next'
-      get :index, :showdate_id => 9999999
-      assigns(:sd).should == @sd2
-    end
-  end
-
-  describe "successful order placement" do
-    before(:each) do
-    end
-    describe "generally", :shared => true do
-    end
-    describe "for myself" do
-      it_should_behave_like "generally"
-      it "should associate the ticket with the buyer"
-    end
-    describe "as gift" do
-      it_should_behave_like "generally"
-      it "should associate the ticket with the gift recipient"
-      it "should identify the buyer as the gift purchaser"
+    it "should default to earliest showdate with tickets if invalid" do
+      get :index, {:customer_id => @buyer.id, :showdate_id => 9999999}
+      assigns(:sd).id.should == @sd1.id
     end
   end
 
   describe "user-created gift recipient" do
     before(:each) do
-      login_as(:tom)
-      @controller.stub!(:recipient_from_params).and_return(nil)
+      login_as @buyer
       @customer = {:first_name => "John", :last_name => "Bob",
         :street => "742 Evergreen Terrace", :city => "Springfield",
         :state => "IL", :zip => "09091"}
-      session[:recipient_id] = nil
       controller.stub(:find_cart).and_return(mock_model(Order).as_null_object)
     end
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
-      post :set_shipping_address, :customer => @customer
-      flash[:alert].should be_blank, flash[:alert]
-      response.should redirect_to(:action => 'checkout')
+      post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
+      response.should redirect_to checkout_path(@buyer)
     end
     it "should be valid with only an email address" do
       @customer[:email] = "me@example.com"
-      post :set_shipping_address, :customer => @customer
-      flash[:alert].should be_blank
-      response.should redirect_to(:action => 'checkout')
+      post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
+      response.should redirect_to checkout_path(@buyer)
     end
     it "should not be valid if neither phone nor email given" do
-      post :set_shipping_address, :customer => @customer
-      flash[:alert].join(',').should match(/at least one phone number or email/i)
+      post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
+      flash[:alert].should be_a_kind_of(Customer)
       response.should render_template(:shipping_address)
-      response.should_not redirect_to(:action => :checkout)
+      response.should_not be_redirect
     end
   end
+
 end

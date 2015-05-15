@@ -103,11 +103,11 @@ class DonationsController < ApplicationController
     id = params[:id]
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.now
-      c = Customer.find(logged_in_id).email rescue "(ERROR)"
+      c = current_user.email rescue "(ERROR)"
       t.update_attributes(:letter_sent => now,
-                          :processed_by_id => logged_in_id)
+                          :processed_by => current_user)
       Txn.add_audit_record(:cust_id => t.customer_id,
-                           :logged_in_id => logged_in_id,
+                           :logged_in_id => current_user.id,
                            :txn_type => 'don_ack',
                            :comments => "Donation ID #{t.id} marked as acknowledged")
       render :text => "#{now.strftime("%D")} by #{c}"

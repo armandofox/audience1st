@@ -6,7 +6,7 @@ Feature: Successful checkout with credit card
   I want to checkout with a credit card
 
   Background:
-    And I am logged in as customer "Tom Foolery"
+    Given I am logged in as customer "Tom Foolery"
 
   Scenario: successful credit card payment without donation
 
@@ -16,7 +16,7 @@ Feature: Successful checkout with credit card
     Then I should be on the checkout page
     And the billing customer should be "Tom Foolery"
     When I place my order with a valid credit card
-    Then I should be on the order confirmation page
+    Then I should be on the order confirmation page for customer "Tom Foolery"
     And I should see "You have paid a total of $21.00 by Credit card"
     And customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
 
@@ -25,14 +25,14 @@ Feature: Successful checkout with credit card
     Given my gift order contains the following tickets:
       | show    | qty | type    | price | showdate             |
       | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
-    Then I should be on the shipping info page
+    Then I should be on the shipping info page for customer "Tom Foolery"
     When I fill in the "billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, alsmith@mail.com"
     And I press "CONTINUE >>"
     Then I should be on the checkout page
     And the gift recipient customer should be "Al Smith"
     And the billing customer should be "Tom Foolery"
     When  I place my order with a valid credit card
-    Then I should be on the order confirmation page
+    Then I should be on the order confirmation page for customer "Tom Foolery"
     And customer Tom Foolery should have 0 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
     And customer Al Smith should have 2 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
 

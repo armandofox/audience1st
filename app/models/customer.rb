@@ -11,13 +11,15 @@ class Customer < ActiveRecord::Base
   include Authentication
   include Authentication::ByPassword
   include Authentication::ByCookieToken
+
+
   require 'csv'
 
   has_and_belongs_to_many :labels
   has_many :vouchers, :include => :vouchertype
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :orders, :order => 'sold_on DESC'
+  has_many :orders, :order => 'sold_on DESC', :conditions => 'sold_on IS NOT NULL'
   
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
@@ -33,12 +35,12 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :if => :self_created?, :with => Authentication.email_regex
+  validates_format_of :email, :if => :self_created?, :with => /^[\w\d]+@[\w\d]+/
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
-  :message => "address {{value}} has already been registered.
-    <a href='/login?email={{value}}'>Sign in with this email address</a>
+  :message => "address %{value} has already been registered.
+    <a href='/login?email=%{value}'>Sign in with this email address</a>
     (if you forgot your password, use the 'Forgot your password?' link on sign-in page)"
   
   validates_format_of :zip, :if => :self_created?, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
@@ -115,7 +117,7 @@ class Customer < ActiveRecord::Base
   def valid_and_unique(email)
     if email.blank?
       true 
-    elsif !email.match(Authentication.email_regex) 
+    elsif !email.match(/^[\w\d]+@[\w\d]+/)
       false
     else
       !(Customer.find_by_email email)
@@ -197,7 +199,7 @@ class Customer < ActiveRecord::Base
   
   # message that will appear in flash[:notice] once only, at login
   def login_message
-    msg = ["Welcome, #{full_name.name_capitalize}"]
+    msg = ["Welcome, #{full_name}"]
     msg << encourage_opt_in_message if has_opted_out_of_email?
     msg << setup_secret_question_message unless has_secret_question?
     msg << welcome_message
@@ -275,14 +277,18 @@ class Customer < ActiveRecord::Base
   def full_name_with_id
     "#{self.id} [#{self.full_name}]"
   end
-  
+
+  def full_name_with_email
+    valid_email_address? ? "#{full_name} (#{email})" : full_name
+  end
+
   def sortable_name
     "#{self.last_name.downcase},#{self.first_name.downcase}"
   end
 
   def valid_email_address?
     !self.email.blank? &&
-      self.email.match(Authentication.email_regex)
+      self.email.match(/^[\w\d]+@[\w\d]+/)
   end
   def invalid_email_address? ; !valid_email_address? ; end
 

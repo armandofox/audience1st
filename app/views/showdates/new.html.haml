@@ -7,7 +7,7 @@
   options, you can either edit them after they're created, or create them 
   separately instead of all at once.
 
-- form_tag :action => 'create', :method => 'post' do
+- form_tag show_showdates_path(@show) do
   
   %table
     %tr
@@ -49,5 +49,5 @@
     
   = submit_tag 'Save & Back to List of Shows' 
   = submit_tag 'Save & Add More Dates for This Show' 
-  = gen_button 'Cancel', {:controller => :shows, :action => :edit, :id => @show}
+  = gen_button 'Cancel', edit_show_path(@show)
 

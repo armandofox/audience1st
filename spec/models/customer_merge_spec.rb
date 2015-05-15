@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Customer, "merging" do
   describe "value selection" do
     before(:each) do
-      @old = BasicModels.create_generic_customer
-      @new = BasicModels.create_generic_customer
+      @old = create(:customer)
+      @new = create(:customer)
       @old.stub!(:fresher_than?).and_return(nil)
       @new.stub!(:fresher_than?).and_return(true)
       Customer.stub!(:save_and_update_foreign_keys).and_return(true)
@@ -71,7 +71,7 @@ describe Customer, "merging" do
   end
 
   describe "deleting" do
-    before :each do ;  @cust = BasicModels.create_generic_customer ;  end
+    before :each do ;  @cust = create(:customer) ;  end
     def create_records(type,cust)
       Array.new(1+rand(4)) do |idx|
         e = type.new(:customer_id => cust.id)
@@ -120,14 +120,14 @@ describe Customer, "merging" do
   describe "merging" do
     before(:each) do
       now = Time.now.change(:usec => 0)
-      @old = BasicModels.create_generic_customer
-      @new = BasicModels.create_generic_customer
+      @old = create(:customer)
+      @new = create(:customer)
       @old.stub!(:fresher_than?).and_return(nil)
       @new.stub!(:fresher_than?).and_return(true)
     end
     it "should work when a third record has a duplicate email" do
       pending "Need to handle this as a separate special case in merge"
-      @triplicate = BasicModels.create_generic_customer
+      @triplicate = create(:customer)
       [@old, @new, @triplicate].each { |c| c.email = 'dupe@email.com' ; c.save(false) }
       # Since the 'triplicate' workaround relies on temporarily setting
       # the created-by-admin bit, make sure that bit gets properly reset.
@@ -139,8 +139,8 @@ describe Customer, "merging" do
     end
     describe "disallowed cases" do
       before :each do
-        @c0 = BasicModels.create_generic_customer
-        @c1 = BasicModels.create_generic_customer
+        @c0 = create(:customer)
+        @c1 = create(:customer)
       end
       it "should refuse if RHS is any Special customer" do
         @c1.stub!(:special_customer?).and_return true

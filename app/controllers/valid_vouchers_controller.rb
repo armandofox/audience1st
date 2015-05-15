@@ -12,7 +12,7 @@ class ValidVouchersController < ApplicationController
     @showdate_id = params[:showdate_id]
     unless (@showdate = Showdate.find_by_id(@showdate_id))
       flash[:notice] = "New voucher must be associated with a showdate"
-      redirect_to :controller => 'shows', :action => 'index'
+      redirect_to shows_path
       return
     end
     @add_to_all = params[:add_to_all]
@@ -47,7 +47,7 @@ class ValidVouchersController < ApplicationController
           unless vv.save
             msgs << %{Voucher type #{Vouchertype.find(vt_id).name} NOT added to
                 #{dt.thedate.to_formatted_s(:date_only)}:
-                #{vv.errors.full_messages.join("<br/>")}} << "<br/>"
+                #{vv.errors.full_messages.join(', ')}} << "<br/>"
           end
         end
       end
@@ -65,7 +65,7 @@ class ValidVouchersController < ApplicationController
         if @validvoucher.save
           msgs << 'Added to performance on ' << showdate.printable_date 
         else
-          msgs << @validvoucher.errors.full_messages.join("<br/>")
+          msgs << @validvoucher.errors.full_messages.join(', ')
         end
       end
     end
@@ -73,7 +73,7 @@ class ValidVouchersController < ApplicationController
     if params[:commit] =~ /another/i
       redirect_to :action => :new, :showdate_id => showdate, :add_to_all => addtojustone.zero?
     else
-      redirect_to :controller => 'shows', :action => 'edit', :id => showdate.show.id
+      redirect_to edit_show_path(showdate.show)
     end
   end
 
@@ -94,9 +94,9 @@ class ValidVouchersController < ApplicationController
       end
       flash[:notice] = 'Update successful'
     rescue Exception => e
-      flash[:notice] = e.message + @valid_voucher.errors.full_messages.join("\n")
+      flash[:notice] = [e.message, @valid_voucher]
     end
-    redirect_to :controller => 'shows', :action => 'edit', :id => @valid_voucher.showdate.show.id
+    redirect_to edit_show_path(@valid_voucher.showdate.show)
   end
 
   def destroy

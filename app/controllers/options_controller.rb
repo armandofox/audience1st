@@ -2,17 +2,14 @@ class OptionsController < ApplicationController
 
   before_filter :is_admin_filter
   
-  def edit
+  def options
     @o = Option.first
-  end
-
-  def update
-    @o = Option.first
+    return if request.get?
     if (@o.update_attributes(params[:option]))
       flash[:notice] = "Update successful, your changes should take effect in the next 15 minutes."
     else
-      flash[:alert] = @o.errors.full_messages.join(", ")
+      flash[:alert] = @o
     end
-    redirect_to :action => :edit
+    redirect_to options_path
   end
 end

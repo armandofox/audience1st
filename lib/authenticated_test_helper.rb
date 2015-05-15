@@ -3,8 +3,7 @@ module AuthenticatedTestHelper
   def login_as(user)
     if user
       user = customers(user) unless user.kind_of?(Customer)
-      @request.session[:cid] = user.id
-      @current_user = user
+      session[:cid] = user.id
     else
       @request.session[:cid] = @current_user = nil
     end

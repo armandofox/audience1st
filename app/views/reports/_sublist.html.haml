@@ -5,6 +5,6 @@
     = submit_tag 'Add'
   Create new sublist:
   = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
-  = submit_to_remote "create_sublist", "Create", :url => {:controller => 'reports', :action => 'create_sublist'}, :update => "sublists"
+  = submit_to_remote "create_sublist", "Create", :url => create_sublist_path, :update => "sublists"
   = popup_help_for :sublists
   = @error_messages

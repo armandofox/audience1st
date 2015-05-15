@@ -10,4 +10,5 @@
   %tbody
     = render :partial => 'import', :collection => @imports
 
-= gen_button 'New Import...', :action => :new
+= gen_button 'New Import...', new_import_path
+

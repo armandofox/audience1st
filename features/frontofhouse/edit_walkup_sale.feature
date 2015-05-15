@@ -15,7 +15,7 @@ Background:
   And the following walkup tickets have been sold for "April 7, 2012, 8:00pm":
   | qty | type     | payment  |
   |   1 | General  | box_cash |
-  And I am on the walkup sales report for "April 7, 2012, 8:00pm"
+  And I am on the walkup report page for "April 7, 2012, 8:00pm"
   Then I should see "General" within "#box_cash"
 
 Scenario: box office can change walkup to same ticket type for another performance

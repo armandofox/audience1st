@@ -4,7 +4,8 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
-ENV["RAILS_ENV"] ||= "cucumber"
+
+ENV["RAILS_ENV"] ||= "test"
 require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
 require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
@@ -16,6 +17,8 @@ require 'cucumber/web/tableish'
 require 'capybara/rails'
 require 'capybara/cucumber'
 require 'capybara/session'
+
+
 # require 'cucumber/rails/capybara_javascript_emulation' # Lets you click links with onclick javascript handlers without using @culerity or @javascript
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
 # order to ease the transition to Capybara we set the default here. If you'd
@@ -64,6 +67,7 @@ Before do
   Fixtures.create_fixtures(fixtures_folder, fixtures)
   load File.join(RAILS_ROOT, 'db', 'seeds.rb') # load static seed data that isn't fixtured
   # make rspec mocks/stubs work
+  require 'spec/stubs/cucumber'
   $rspec_mocks ||= Spec::Mocks::Space.new
   # Allow testing of emails
   ActionMailer::Base.delivery_method = :test
@@ -101,3 +105,5 @@ Before('@stubs_failed_credit_card_payment') do
 end
 
 
+
+World(FactoryGirl::Syntax::Methods)

@@ -81,7 +81,7 @@ describe ImportsController, :pending => true do
       Import.stub(:find).and_return(@import)
     end
     it "should get finalized if successful" do
-      admin = BasicModels.create_customer_by_role('boxoffice')
+      admin = create(:customer, :role => :boxoffice)
       controller.stub(:logged_in_user).and_return(admin)
       @import.should_receive(:finalize).with(admin)
       put :update, :id => @import

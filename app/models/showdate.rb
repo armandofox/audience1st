@@ -61,12 +61,6 @@ class Showdate < ActiveRecord::Base
       Showdate.find(:first, :order => 'thedate DESC')
   end
 
-  def self.find_by_date(dt)
-    Showdate.find_by_thedate(dt) ||
-      Showdate.find(:first, :conditions =>
-      ['thedate BETWEEN ? AND ?', dt.midnight, dt + 1.day])
-  end
-
   def self.all_shows_this_season
     Showdate.find(:all, :order => 'thedate ASC',
                   :conditions => ['thedate BETWEEN ? and ?',
@@ -74,18 +68,11 @@ class Showdate < ActiveRecord::Base
                                   Time.now.at_end_of_season])
   end
 
-  # to support Store views for which showdates to display
-
-  def ok_to_display_for?(who = Customer.generic_customer)
-    unless who.kind_of?(Customer)
-      who = Customer.find_by_id(who)
-      return nil unless who.kind_of?(Customer)
-    end
-    # is showdate in past?  if so, only Boxoffice users can see
-    return who.is_boxoffice if self.thedate < Time.now
-  end
-
   # reporting, comparisons
+
+  def inspect
+    "#{self.id} #{name_and_date_with_capacity_stats}/#{max_allowed_sales}"
+  end
   
   def <=>(other_showdate)
     other_showdate ? thedate <=> other_showdate.thedate : 1

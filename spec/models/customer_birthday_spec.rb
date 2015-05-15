@@ -2,15 +2,15 @@ require 'spec_helper'
 
 describe Customer, "birthdays" do
   before :each do
-    @c1 = BasicModels.create_generic_customer
-    @c2 = BasicModels.create_generic_customer
+    @c1 = create(:customer)
+    @c2 = create(:customer)
     @c1.update_attributes!(:birthday => 'Jan 5, 1968')
     @c2.update_attributes!(:birthday => 'Feb 4, 1974')
   end
   describe "setting" do
     before :each do ; @birthday = Time.parse("Jan 21, 1973") ; end
     it "should always be in the year 2000" do
-      @c = BasicModels.create_generic_customer
+      @c = create(:customer)
       @c.update_attribute :birthday, @birthday
       @c.birthday.year.should == 2000
     end

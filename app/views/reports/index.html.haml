@@ -17,7 +17,7 @@
 .pageDiv#database_maintenance
   %h1 Database Maintenance
   #database_maintenance
-    %p= link_to 'Find Possible Duplicates...', {:controller => :customers, :action => :list_duplicates}
+    %p= link_to 'Find Possible Duplicates...', list_duplicate_customers_path
     %p= link_to_function 'Synchronize with Email Database...', 'alert("This function is coming soon.")'
 
 .pageDiv#customer_lists

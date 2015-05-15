@@ -1,8 +1,6 @@
-%h2
-  Add ticket type(s) for 
-  = @showdate.show.name
+%h2 Add ticket type(s) for #{@showdate.show.name}
 
-- form_tag :action => 'create' do
+- form_tag valid_vouchers_path do
   %label{:for=>:valid_voucher_vouchertypes} Voucher/ticket type (Ctrl-click to select multiple)
   = select_tag 'valid_voucher[vouchertypes]', options_from_collection_for_select(@vouchertypes, :id, :name_with_season_and_price), :multiple => true
   %br/

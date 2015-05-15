@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Order, 'adding' do
   before :each do 
     @vv = ValidVoucher.create!(
-      :vouchertype => BasicModels.create_revenue_vouchertype(:price => 7),
-      :showdate => BasicModels.create_one_showdate(1.day.from_now),
+      :vouchertype => create(:revenue_vouchertype, :price => 7),
+      :showdate => create(:showdate, :date => 1.day.from_now),
       :start_sales => Time.now,
       :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
@@ -26,7 +26,7 @@ describe Order, 'adding' do
     end
   end
   describe 'donations' do
-    before :each do ; @donation = BasicModels.donation(17) ; end
+    before :each do ; @donation = build(:donation, :amount => 17) ; end
     it 'should add donation' do
       @order.add_donation(@donation)
       @order.donation.should be_a_kind_of(Donation)
@@ -42,15 +42,15 @@ describe Order, 'adding' do
   describe 'and getting total price' do
     it 'without donation' do
       vv2 = ValidVoucher.create!(
-        :vouchertype => BasicModels.create_revenue_vouchertype(:price => 3),
-        :showdate => BasicModels.create_one_showdate(1.day.from_now),
+        :vouchertype => create(:revenue_vouchertype, :price => 3),
+        :showdate => create(:showdate, :date => 1.day.from_now),
         :start_sales => Time.now,
         :end_sales => 10.minutes.from_now,
         :max_sales_for_type => 100)
       expect { @order.add_tickets(@vv, 2) ; @order.add_tickets(vv2, 3) }.to change { @order.total_price }.to(23.0)
     end
     describe 'with donation' do
-      before :each do ; @donation = BasicModels.donation(17) ; end
+      before :each do ; @donation = build(:donation, :amount => 17) ; end
       specify 'and tickets' do
         @order.add_tickets(@vv, 2)
         @order.add_donation(@donation)   # at $17

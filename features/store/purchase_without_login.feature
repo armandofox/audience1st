@@ -8,7 +8,7 @@ Feature: Successful checkout when not starting as logged in
 Background:
 
   Given I am not logged in
-  And my cart contains the following tickets:
+  And I add the following tickets:
   | show    | qty | type    | price | showdate             |
   | Chicago |   3 | General |  7.00 | May 15, 2010, 8:00pm |
   Then I should be on the login page

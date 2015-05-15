@@ -1,10 +1,25 @@
 class VouchersController < ApplicationController
 
   before_filter :is_logged_in
-  before_filter(:is_boxoffice_filter,
-                :only => %w[addvoucher update_shows cancel_prepaid manage update_comment])
-  before_filter(:owns_voucher_or_is_boxoffice,
-                :only => %w[reserve confirm_reservation cancel_reservation])
+  before_filter :is_boxoffice_filter, :only => %w[new create update_shows cancel_prepaid update_comment]
+  before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
+
+  private
+
+  def owns_voucher_or_is_boxoffice
+    @voucher = Voucher.find(params[:id]) if params[:id]
+    @customer = Customer.find params[:customer_id]
+    return if current_user.is_boxoffice
+    redirect_with(customer_path(current_user), :alert => "That voucher isn't yours.") unless
+      (current_user == @customer  && (@voucher.nil? || @voucher.customer == @customer))
+  end
+
+  def try_again(msg)
+    flash[:notice] = msg
+    redirect_to customer_path(@customer)
+  end
+
+  public
 
   # AJAX helper for addvoucher
   def update_shows
@@ -13,22 +28,21 @@ class VouchersController < ApplicationController
   end
 
 
-  def addvoucher
+  def new
     @page_title = "Add Comps"
-    unless (@customer = @gCustomer)
-      flash[:notice] = "Must select a customer to add comps"
-      redirect_to :controller => 'customers', :action => 'list'
-      return
-    end
     this_season = Time.this_season
     @vouchers = (
       Vouchertype.comp_vouchertypes(this_season + 1) +
       Vouchertype.comp_vouchertypes(this_season)).delete_if(&:external?)
-    redirect_to({:controller => 'vouchertypes', :action => 'index'}, :notice => 'You must define some voucher types first.') and return if @vouchers.empty?
+    if @vouchers.empty?
+      flash[:alert] = 'You must define some comp voucher types first.'
+      redirect_to vouchertypes_path
+      return
+    end
     @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
 
-  def process_addvoucher
+  def create
     # post: add the actual comps, and possibly reserve
     thenumtoadd = params[:howmany].to_i
     thevouchertype = Vouchertype.find(params[:vouchertype_id])
@@ -43,73 +57,65 @@ class VouchersController < ApplicationController
     flash[:alert] ||= 'This comp ticket type not valid for this performance.' unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
-    redirect_to(:action => 'addvoucher', :method => :get) and return if flash[:alert]
+    redirect_to new_customer_voucher_path(@customer) and return if flash[:alert]
 
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
       :comments => thecomment,
-      :processed_by => @gLoggedIn,
-      :customer => @gCustomer,
-      :purchaser => @gCustomer) # not a gift order
+      :processed_by => current_user,
+      :customer => @customer,
+      :purchaser => @customer) # not a gift order
 
     begin
       order.finalize!
-      RAILS_DEFAULT_LOGGER.info "Txn: #{@gLoggedIn} issues #{@gCustomer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
+      RAILS_DEFAULT_LOGGER.info "Txn: #{current_user} issues #{@customer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
       flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
     rescue Order::NotReadyError => e
-      flash[:alert] = "Error adding comps:<br/> #{order.errors.full_messages.join(',')}"
+      flash[:alert] = ["Error adding comps: ", order]
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
       RAILS_DEFAULT_LOGGER.error e.backtrace.inspect
     end
     
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to customer_path(@customer)
   end
 
   def update_comment
-    who = logged_in_id rescue Customer.nobody_id
-    if (voucher = Voucher.find_by_id(params[:vid]))
-      voucher.update_attributes({:comments => params[:comments],
-                                  :processed_by_id => who})
-      Txn.add_audit_record(:txn_type => 'edit',
-                           :customer_id => voucher.customer.id,
-                           :voucher_id => voucher.id,
-                           :comments => params[:comments],
-                           :logged_in_id => logged_in_id)
-    end
+    @voucher.update_attributes(:comments => params[:comments], :processed_by => current_user)
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => @customer.id,
+      :voucher_id => @voucher.id,
+      :comments => params[:comments],
+      :logged_in_id => current_user.id)
     render :nothing => true
   end
 
   def reserve
-    @voucher = Voucher.find(params[:id]) # this is the voucher that customer wants to use
-    @customer = @voucher.customer
-    @is_admin = @gAdmin.is_boxoffice
-    redirect_to(welcome_path, :notice => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
+    @is_admin = current_user.is_boxoffice
+    redirect_with(customer_path(@customer), :alert => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
     @valid_vouchers = @voucher.redeemable_showdates(@is_admin)
     @valid_vouchers = @valid_vouchers.select(&:visible?) unless @is_admin
     if @valid_vouchers.empty?
       flash[:notice] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
-      redirect_to welcome_path
+      redirect_to customer_path(@customer)
     end
   end
 
   def confirm_multiple
-    @customer = @gCustomer
-    showdate = params[:showdate_id].to_i
-    try_again("Please select a date.") and return if showdate.zero?
+    the_showdate = Showdate.find_by_id params[:showdate_id]
+    try_again("Please select a date.") and return unless the_showdate
     num = params[:number].to_i
     count = 0
-    the_showdate = Showdate.find(showdate)
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     errors = []
     comments = params[:comments].to_s
     vouchers.each do |v|
-      if v.reserve_for(the_showdate, @gLoggedIn, comments)
+      if v.reserve_for(the_showdate, current_user, comments)
         count += 1
         comments = '' # only first voucher gets comment field
         Txn.add_audit_record(:txn_type => 'res_made',
-          :customer_id => @gCustomer.id,
+          :customer_id => @customer.id,
           :voucher_id => v.id,
-          :logged_in_id => logged_in_id,
+          :logged_in_id => current_user.id,
           :showdate_id => the_showdate.id,
           :comments => comments)
       else
@@ -122,33 +128,33 @@ class VouchersController < ApplicationController
       flash[:notice] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
-      email_confirmation(:confirm_reservation, @customer, showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     else
       flash[:notice] = "Some of your reservations could not be completed: " <<
         errors <<
         "<br/>Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, @customer, showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     end
-    redirect_to welcome_path
+    redirect_to customer_path(@customer)
   end
 
   def confirm_reservation
     @voucher = Voucher.find(params[:id])
     @customer = @voucher.customer
-    @is_admin = @gAdmin.is_walkup
+    @is_admin = current_user.is_walkup
     try_again("Please select a date") and return if
       (showdate_id = params[:showdate_id].to_i).zero?
     the_showdate = Showdate.find(showdate_id)
-    if @voucher.reserve_for(the_showdate, @gLoggedIn, params[:comments])
+    if @voucher.reserve_for(the_showdate, current_user, params[:comments])
       @voucher.save!
       flash[:notice] = "Reservation confirmed."
       if params[:email_confirmation] && @customer.valid_email_address?
         email_confirmation(:confirm_reservation, @customer, the_showdate, 1, @voucher.id)
       end
     else
-      flash[:notice] = "Sorry, can't complete this reservation: #{@voucher.errors.full_messages.join(',')}"
+      flash[:notice] = ["Sorry, can't complete this reservation: ", @voucher]
     end
-    redirect_to :controller => 'customers',:action => 'welcome',:id => @customer
+    redirect_to customer_path(@customer)
   end
 
   def cancel_prepaid
@@ -158,23 +164,24 @@ class VouchersController < ApplicationController
     # the fact that it was sold.  Its ID number will still be referred
     # to in the audit log.
     @v = Voucher.find(params[:id])
+    @customer = @v.customer
     try_again("Please cancel this reservation before removing the voucher.") and return if @v.reserved?
     save_showdate = @v.showdate.id
     save_show = @v.showdate.show.id
-    save_customer = @v.customer.id
+    save_customer = @v.customer
     @v.showdate = nil
     @v.customer = nil
-    @v.processed_by_id = logged_in_id
+    @v.processed_by = @logged_in
     @v.save!
     Txn.add_audit_record(:txn_type => 'res_cancl',
-                         :customer_id => @gCustomer.id,
+                         :customer_id => save_customer.id,
                          :voucher_id => params[:id],
-                         :logged_in_id => logged_in_id,
+                         :logged_in_id => current_user.id,
                          :show_id => save_show,
                          :showdate => save_showdate,
                          :comment => 'Prepaid, comp or other nonsubscriber ticket')
     flash[:notice] = "Reservation cancelled, voucher unlinked from customer"
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to customer_path(save_customer)
   end
 
   def cancel_multiple
@@ -182,15 +189,16 @@ class VouchersController < ApplicationController
     old_showdate = vchs.first.showdate.clone
     a = nil
     flash[:notice] = ''
+    customer = v.first.customer
     vchs.each do |v|
-      if v.can_be_changed?(logged_in_id)
+      if v.can_be_changed?(current_user.id)
         showdate = v.showdate
         showdate_id = showdate.id
         show_id = showdate.show.id
-        v.cancel(logged_in_id)
+        v.cancel(current_user.id)
         a = Txn.add_audit_record(:txn_type => 'res_cancl',
-                                 :customer_id => @gCustomer.id,
-                                 :logged_in_id => logged_in_id,
+                                 :customer_id => customer.id,
+                                 :logged_in_id => current_user.id,
                                  :showdate_id => showdate_id,
                                  :show_id => show_id,
                                  :voucher_id => v.id)
@@ -202,60 +210,37 @@ class VouchersController < ApplicationController
     end
     flash[:notice] << "Your reservations have been cancelled. "
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
-    email_confirmation(:cancel_reservation, @gCustomer, old_showdate,
-                       vchs.length, a) unless @gAdmin.is_boxoffice
-    redirect_to :controller => 'customers', :action => 'welcome'
+    email_confirmation(:cancel_reservation, customer, old_showdate,
+                       vchs.length, a) unless current_user.is_boxoffice
+    redirect_to customer_path(customer)
   end
 
 
   def cancel_reservation
-    @v = Voucher.find(params[:id])
     flash[:notice] ||= ""
-    unless @v.can_be_changed?(logged_in_id)
-      flash[:notice] << "This reservation is not changeable"
-      redirect_to(:controller => 'customers', :action => 'welcome')
-      return
-    end
-    if !@v.reserved?
-      flash[:notice] << "This voucher is not currently reserved for any performance."
-      redirect_to(:controller => 'customers', :action => 'welcome')
-      return
-    end
-    showdate = @v.showdate
+    redirect_with(customer_path(@customer), :notice => "This reservation is not changeable") and return unless
+      @voucher.can_be_changed?(current_user)
+    redirect_with(customer_path(@customer), :alert => "This voucher is not currently reserved for any performance.") and return unless
+      @voucher.reserved?
+    showdate = @voucher.showdate
     old_showdate = showdate.clone
     showdate_id = showdate.id
     show_id = showdate.show.id
-    if @v.cancel(logged_in_id)
+    if @voucher.cancel(current_user.id)
       a= Txn.add_audit_record(:txn_type => 'res_cancl',
-        :customer_id => @gCustomer.id,
-        :logged_in_id => logged_in_id,
+        :customer_id => @customer.id,
+        :logged_in_id => current_user.id,
         :showdate_id => showdate_id,
         :show_id => show_id,
-        :voucher_id => @v.id)
+        :voucher_id => @voucher.id)
       flash[:notice] = "Your reservation has been cancelled. " <<
         "Your cancellation confirmation number is #{a}. "
-      email_confirmation(:cancel_reservation, @gCustomer, old_showdate, 1, a) unless @gAdmin.is_boxoffice
+      email_confirmation(:cancel_reservation, @customer, old_showdate, 1, a) unless current_user.is_boxoffice
     else
       flash[:notice] = 'Error - reservation could not be cancelled'
     end
-    redirect_to :controller => 'customers', :action => 'welcome'
+    redirect_to customer_path(@customer)
   end
 
-  private
-
-  def owns_voucher_or_is_boxoffice
-    return true if is_walkup    # or higher
-    return true if (params[:id] &&
-                    (voucher = Voucher.find(params[:id].to_i)) &&
-                    (voucher.customer.id == @gCustomer.id)) rescue nil
-    flash[:notice] = "Attempt to reserve a voucher that isn't yours."
-    redirect_to logout_path
-    return false
-  end
-
-  def try_again(msg)
-    flash[:notice] = msg
-    redirect_to :controller => 'customers', :action => 'welcome'
-  end
 
 end

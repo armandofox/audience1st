@@ -12,6 +12,6 @@ Scenario: generate door list
   And customer Bob Jones has 8 "General" tickets
   And  I am logged in as boxoffice manager
   
-  When I go to the door list
+  When I go to the door list page for April 15, 2010, 8:00pm
   Then I should see "13 total reservations"
   

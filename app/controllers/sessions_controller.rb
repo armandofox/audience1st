@@ -3,13 +3,17 @@ class SessionsController < ApplicationController
 
   # render new.rhtml
   def new
-    redirect_to(:controller => 'customers', :action => 'welcome') and return if logged_in?
+    redirect_to customer_path(current_user) and return if logged_in?
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
     end
     @remember_me = true
     @email ||= params[:email]
+  end
+
+  def new_from_secret
+    redirect_after_login and return if logged_in?
   end
 
   def create
@@ -25,65 +29,45 @@ class SessionsController < ApplicationController
     end
   end
 
-  def new_from_secret_question
-    redirect_to_stored and return if logged_in?
-  end
-
-  def create_from_secret_question
+  def create_from_secret
     create_session do |params|
     # If customer logged in using this mechanism, force them to change password.
-      set_return_to :controller => 'customers', :action => 'change_password'
       u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
       if u.nil? || !u.errors.empty?
         note_failed_signin(u)
         if u.errors.on(:login_failed) =~ /never set up a secret question/i
           redirect_to login_path
         else
-          redirect_to secret_question_path
+          redirect_to new_from_secret_session_path
         end
+        return
       end
       u
     end
   end
 
-  def not_me
-    logout_keeping_session!
-    set_return_to :controller => 'store', :action => 'checkout'
-    set_checkout_in_progress(true)
-    flash[:notice] = "Please sign in, or if you don't have an account, please enter your billing information."
-    @cust = Customer.new
-    redirect_to login_path
-  end
-  
   def destroy
     logout_killing_session!
     flash[:notice] = "You have been logged out."
     redirect_to login_path
   end
 
+  def temporarily_disable_admin
+    session[:admin_disabled] = true
+    flash[:notice] = "Switched to non-admin user view."
+    redirect_to request.request_uri
+  end
+
+  def reenable_admin
+    if session.delete(:admin_disabled)
+      flash[:notice] = "Admin view reestablished."
+    end
+    redirect_to request.request_uri
+  end
+  
+
   protected
   
-  def create_session
-    logout_keeping_session!
-    @user = yield(params)
-    if @user && @user.errors.empty?
-      # Protects against session fixation attacks, causes request forgery
-      # protection if user resubmits an earlier form using back
-      # button. Uncomment if you understand the tradeoffs.
-      # reset_session
-      self.current_user = @user
-      # if user is an admin, enable admin privs
-      possibly_enable_admin(@user)
-      @user.update_attribute(:last_login,Time.now)
-      # 'remember me' checked?
-      new_cookie_flag = (params[:remember_me] == "1")
-      handle_remember_cookie! new_cookie_flag
-      # finally: reset all store-related session state UNLESS the login
-      # was performed as part of a checkout flow
-      reset_shopping unless @gCheckoutInProgress
-      redirect_to_stored
-    end
-  end
 
   # Track failed login attempts
   def note_failed_signin(user)

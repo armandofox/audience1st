@@ -152,6 +152,12 @@ Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should contain "([^\"]*)"$/ d
   end
 end
 
+Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should be blank$/ do |field, selector|
+  with_scope(selector) do
+    find_field(field).value.should be_blank
+  end
+end
+
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should not contain "([^\"]*)"$/ do |field, selector, value|
   with_scope(selector) do
     if defined?(Spec::Rails::Matchers)

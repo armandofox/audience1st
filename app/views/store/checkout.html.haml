@@ -13,9 +13,8 @@
   #gift_recipient
     %h2 This Order is a Gift For...
     = render :partial => 'customers/form', :locals => {:customer => @cart.customer, :passive => true, :hide => [:opt_out], :legend => 'Gift Recipient Info' }
-    = gen_button "Change Recipient Info", :action => :shipping_address, :gift => true
 
-- form_tag({:action => 'place_order'}, {:id => '_stripe_payment_form'}) do
+- form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
   - if @cart.include_vouchers? &&  !@cart.gift?
     #someone_else
     %h2 Who's Attending?
@@ -23,20 +22,12 @@
       - if @cart_contains_class_order
         For classes, you <strong>must</strong> enter enrollee's name(s) here:
       - else
-        If someone <strong>other than the purchaser</strong> will be attending this event or picking up this order, please enter his/her name here:
+        If someone <strong>other than the purchaser</strong> will be attending 
+        this event or picking up this order, please enter his/her name here:
       = text_field_tag 'pickup', '', :size => 30
 
-  %h2.floatleft Please Review Billing Information
-  .floatright.h2
-    %strong= link_to "Cancel", {:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
-    |
-    %strong= gen_button "This Isn't Me", logout_path
-    | 
-    %strong= gen_button "Change Billing Address", :action => 'edit_billing_address'
-  .clear
-  #billing
-    = render :partial => 'customers/form', :locals => {:customer=>@cart.purchaser, :passive => true, :hide => [:opt_out]}
-
+  %h2.floatleft#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
+    
   %p.notice
     We do not store or access your card number.
     Our transactions are securely processed 
@@ -59,7 +50,7 @@
     = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
     -# hidden field 'commit' filled in by javascript on cc purchase
     = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-    = link_to "Cancel", {:controller => 'store',:action => 'index'}, {:id => 'cancel',:class => 'genButton'} 
+    = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
   - if @is_admin
     #other_payments.adminDiv
       Or pay with check number: 

@@ -9,21 +9,21 @@ describe Order, 'finalizing' do
   end
 
   before :each do                # set these up so they're not rolled back by transaction around each example, since we test transactions in credit-card-failure case
-    @vt = BasicModels.create_revenue_vouchertype(:price => 7)
-    @sd = BasicModels.create_one_showdate(1.day.from_now)
+    @vt = create(:revenue_vouchertype, :price => 7)
+    @sd = create(:showdate, :date => 1.day.from_now)
     @vv = ValidVoucher.create!(
       :vouchertype => @vt, :showdate => @sd, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
-    @vt2 = BasicModels.create_revenue_vouchertype(:price => 3)
-    @sd2 = BasicModels.create_one_showdate(1.week.from_now)
+    @vt2 = create(:revenue_vouchertype, :price => 3)
+    @sd2 = create(:showdate, :date => 1.week.from_now)
     @vv2 = ValidVoucher.create!(
       :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
-    @the_processed_by = BasicModels.create_generic_customer
-    @the_customer = BasicModels.create_generic_customer
-    @the_purchaser = BasicModels.create_generic_customer
+    @the_processed_by = create(:customer)
+    @the_customer = create(:customer)
+    @the_purchaser = create(:customer)
     @order = Order.new(:processed_by => @the_processed_by)
-    @donation = BasicModels.donation(17)
+    @donation = build(:donation, :amount => 17)
   end
 
   after :each do
@@ -56,7 +56,7 @@ describe Order, 'finalizing' do
       verify_error /ERROR/
     end
     it 'should pass if purchaser invalid but order is placed by admin' do
-      @order.processed_by = BasicModels.create_customer_by_role(:boxoffice)
+      @order.processed_by = create(:customer, :role => :boxoffice)
       @order.purchaser.stub(:valid_as_purchaser?).and_return(nil)
       @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
       @order.should be_ready_for_purchase
@@ -82,7 +82,7 @@ describe Order, 'finalizing' do
     end
     it 'should fail if recipient not a valid recipient' do
       @order.customer.stub(:valid_as_gift_recipient?).and_return(nil)
-      @order.customer.stub_chain(:errors, :full_messages).and_return(['Recipient error'])
+      @order.customer.stub(:errors_as_html).and_return(['Recipient error'])
       verify_error /Recipient error/
     end
     it 'should fail if no purchase method' do

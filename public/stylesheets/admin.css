@@ -97,6 +97,11 @@ span.tooltip:hover span { /* will display just on :hover state*/
     text-decoration: none;
 }
 
+/* Inline form buttons */
+.inline, .button-to, .button-to div {
+   display: inline;
+}
+
 /*
  * Welcome panel:  needs to be statically sized (height) if FB is in use,
  * otherwise late load of FB image makes page jittery 

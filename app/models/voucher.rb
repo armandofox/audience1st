@@ -130,7 +130,7 @@ class Voucher < Item
     s
   end
 
-  def to_s
+  def inspect
     sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10s",
             id,
             (showdate ? (showdate.printable_name[-15..-1] rescue "--") : 'OPEN'),

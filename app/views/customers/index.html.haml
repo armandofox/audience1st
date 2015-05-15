@@ -1,8 +1,8 @@
 #customer_list_header
-  Showing
-  = radio_button_tag 'show', 'all', (@controller.action_name == 'list'), :onclick => "window.location='#{url_for(:action => 'list', :offset => @offset, :limit => @limit)}'"
+  Show
+  = radio_button_tag 'show', 'all', (@list_type == :all), :onclick => "window.location='#{customers_path(:offset => @offset, :limit => @limit)}'"
   All
-  = radio_button_tag 'show', 'dup', (@controller.action_name == 'list_duplicates'), :onclick => "window.location='#{url_for(:action => 'list_duplicates', :offset => @offset, :limit => @limit)}'"
+  = radio_button_tag 'show', 'dup', (@list_type == :duplicates), :onclick => "window.location='#{list_duplicate_customers_path(:offset => @offset, :limit => @limit)}'"
   Dups
 
   - if @customers.empty?
@@ -15,7 +15,7 @@
 %br/
 
 - unless @customers.empty?
-  - form_tag :action => 'merge' do
+  - form_tag merge_customers_path, :method => :get do
     = render :partial => 'customers/merge_bar'
     = hidden_field_tag 'action_name', @controller.action_name
     = hidden_field_tag 'offset', @offset

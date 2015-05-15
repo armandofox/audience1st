@@ -3,7 +3,7 @@
     %h1.page_heading.center Donation to #{@account_code.name}
     - if @account_code.description
       %p.center= @account_code.description
-    - form_tag :action => 'process_cart' do
+    - form_tag process_cart_path(@customer) do
       %label{:for => :donation} Your tax-deductible donation
       = text_field_tag 'donation', '', :size => 5
       \.00

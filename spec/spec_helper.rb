@@ -13,8 +13,6 @@ TEST_FILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files') unless defin
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 include AuthenticatedTestHelper
-include BasicModels
-
 
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these
@@ -27,6 +25,8 @@ Spec::Runner.configure do |config|
   config.include AuthenticatedTestHelper
   config.include CustomMatchers
   config.include FactoryGirl::Syntax::Methods
+  config.include ApplicationHelper
+  config.include ActionView::Helpers
   config.before(:each) do
     # seed the DB with constants. Must be done before each test, since
     # use of Fixtures wipes DB for each test.

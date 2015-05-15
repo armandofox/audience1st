@@ -24,7 +24,7 @@ Feature: Creating an account
       | Password         | johndoe       |
       | Confirm Password | johndoe       |
     And I press "Create My Account"
-    Then I should be on the home page  
+    Then I should be on the home page for customer "John Doe"  
     And I should see "Welcome, John"
 
   Scenario: New customer cannot create account without providing email address

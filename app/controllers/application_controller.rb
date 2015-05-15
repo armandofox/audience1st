@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 
   include AuthenticatedSystem
-  include Enumerable
   include ExceptionNotifiable
   include FilenameUtils
   
@@ -26,7 +25,16 @@ class ApplicationController < ActionController::Base
   require 'csv.rb'
   require 'string_extras.rb'
   require 'date_time_extras.rb'
-  
+
+  # Session keys
+  #  :cid               id of logged in user; if absent, nobody logged in
+  #  :return_to         route params (for url_for) to return to after valid login
+  #  :admin_disabled    admin is logged in but wants to see regular patron view. Causes is_admin, etc to return nil
+  #  :checkout_in_progress  true if cart holds valid-looking order, which should be displayed throughout checkout flow
+  #  :cart              ID of the order in progress (BUG: redundant with checkout_in_progress??)
+  #  :exists            true the first time it's called on a session (for displaying login messages); false thereafter
+  #                        (BUG: logic should be moved to the session create logic for interactive login)
+
   def session_expired
     render :template => 'messages/session_expired', :layout => 'application', :status => 400
     true
@@ -36,32 +44,26 @@ class ApplicationController < ActionController::Base
     ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE session_id = '#{request.session_options[:id]}'")
   end
 
+  def redirect_with(path,parms)
+    [:alert, :notice].each { |key| flash[key] = parms[key] }
+    redirect_to path
+  end
+  
   # set_globals tries to set globals based on current_user, among other things.
   before_filter :set_globals
 
   def set_globals
-    @gCustomer = current_user
-    @gAdmin = current_admin
-    @disableAdmin = (@gAdmin.is_staff && controller_name=~/customer|store|vouchers/)
-    @enableAdmin = session[:can_restore_admin]
     @gCart = find_cart
     @gCheckoutInProgress = !@gCart.cart_empty?
-    @gLoggedIn = logged_in_user || Customer.walkup_customer
+    @gReenableAdmin = session.has_key?(:admin_disabled)
     true
   end
 
-  def clear_session_state_preserving_auth_token
-    session[:cid] = nil   # keeps the session but kill our variable
-    session[:admin_id] = nil
-    session[:can_restore_admin] = nil
-    reset_shopping
-  end
 
   def reset_shopping           # called as a filter
     @cart = find_cart
     @cart.empty_cart!
     session.delete(:promo_code)
-    session.delete(:recipient_id)
     session.delete(:cart)
     set_checkout_in_progress(false)
     true
@@ -88,28 +90,20 @@ class ApplicationController < ActionController::Base
     @gCheckoutInProgress = val
   end
 
-  def find_cart
-    Order.find_by_id(session[:cart]) || Order.new
+  # Store the action to return to, or URI of the current request if no action given.
+  # We can return to this location by calling #redirect_after_login.
+  def return_after_login(route_params)
+    session[:return_to] = route_params
   end
 
-  def get_filter_info(params,modelname,default=nil,descending=nil)
-    cols = eval(ActiveSupport::Inflector.camelize(modelname) + ".columns")
-    order = params[:order_by]
-    if order.nil? or order.empty?
-      if (default)
-        order = default
-      else
-        order = cols.first.name
-      end
-    end
-    order += " DESC" if descending
-    conds = nil
-    f = params[(ActiveSupport::Inflector.tableize(modelname)+"_filter").to_sym]
-    if f && !f.empty?
-      fs = "'%" + f.gsub(/\'/, "''") + "%'"
-      conds = cols.map { |c| "#{c.name} LIKE #{fs}"}.join(" OR ")
-    end
-    return conds, order, f
+  def redirect_after_login(customer)
+    redirect_to ((r = session[:return_to]) ?
+      r.merge(:customer_id => customer) :
+      customer_path(customer))
+  end
+
+  def find_cart
+    Order.find_by_id(session[:cart]) || Order.new
   end
 
   # setup session etc. for an "external" login, eg by a daemon
@@ -121,7 +115,6 @@ class ApplicationController < ActionController::Base
 
   def is_logged_in
     unless logged_in?
-      set_return_to
       flash[:notice] = "Please log in or create an account in order to view this page."
       redirect_to login_path
       nil
@@ -130,20 +123,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def not_logged_in
-    c = logged_in_id
-    unless c.nil? or c.zero?
-      flash[:notice] = 'You cannot be logged in to do this action.'
-      redirect_to logout_path
-      false
-    else
-      true
+  # This will always be called after is_logged_in has setup current_user or has redirected
+  def is_myself_or_staff
+    desired = Customer.find_by_id(params[:id])
+    if (desired.nil? ||
+        (desired != current_user && !current_user.is_staff))
+      flash[:notice] = "Attempt to perform unauthorized action."
+      redirect_to login_path
     end
-  end
-
-  def has_privilege(id,level)
-    c = Customer.find_by_id(id)
-    return c && (c.role >= level)
+    @customer = desired
   end
 
   def temporarily_unavailable
@@ -151,26 +139,14 @@ class ApplicationController < ActionController::Base
     redirect_to :back
   end
 
-  # filter that requires login as an admin
-  # TBD: these should be defined using a higher-order function but I
-  # don't know the syntax for that
-
-  Customer.roles.each do |r|
-    eval <<EOEVAL
-    def is_#{r}
-      current_admin.is_#{r}
-      # (c = Customer.find_by_id(session[:admin_id])) && c.is_#{r}
+  %w(staff walkup boxoffice boxoffice_manager admin).each do |r|
+    define_method "is_#{r}" do
+      !session[:admin_disabled] && current_user.send("is_#{r}")
     end
-    def is_#{r}_filter
-      unless current_admin.is_#{r}
-          flash[:notice] = 'You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.'
-        session[:return_to] = request.request_uri
-        redirect_to login_path
-        return nil
-      end
-      return true
+    define_method "is_#{r}_filter" do
+      redirect_with(login_path, :alert => "You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.") unless
+        !session[:admin_disabled] && current_user.send("is_#{r}")
     end
-EOEVAL
   end
 
   def download_to_excel(output,filename="data",timestamp=true)
@@ -197,6 +173,27 @@ EOEVAL
     else
       flash[:notice] << " Email confirmation was NOT sent because there isn't"
       flash[:notice] << " a valid email address in your Contact Info."
+    end
+  end
+
+  def create_session(u = nil)
+    logout_keeping_session!
+    @user = u || yield(params)
+    if @user && @user.errors.empty?
+      # Protects against session fixation attacks, causes request forgery
+      # protection if user resubmits an earlier form using back
+      # button. Uncomment if you understand the tradeoffs.
+      # reset_session
+      self.current_user = @user
+      # if user is an admin, enable admin privs
+      @user.update_attribute(:last_login,Time.now)
+      # 'remember me' checked?
+      new_cookie_flag = (params[:remember_me] == "1")
+      handle_remember_cookie! new_cookie_flag
+      # finally: reset all store-related session state UNLESS the login
+      # was performed as part of a checkout flow
+      reset_shopping unless @gCheckoutInProgress
+      redirect_after_login(@user)
     end
   end
 

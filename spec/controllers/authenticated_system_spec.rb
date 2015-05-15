@@ -44,7 +44,6 @@ describe SessionsController do
     it 'nils the current user'      do logout_keeping_session!; current_user.should be_false end
     it 'kills :user_id and admin id of session' do
       session.should_receive(:[]=).with(:cid, nil).at_least(:once).and_return(nil)
-      session.should_receive(:[]=).with(:admin_id, nil).at_least(:once).and_return(nil)    
       logout_keeping_session!
     end
     it 'forgets me' do    
@@ -59,13 +58,6 @@ describe SessionsController do
     end
   end
   
-  describe 'When logged out' do 
-    it "should not be authorized?" do
-      stub!(:action_name).and_return('')
-      authorized?().should be_false
-    end    
-  end
-
   #
   # Cookie Login
   #
@@ -99,33 +91,6 @@ describe SessionsController do
       set_remember_token 'hello!', 5.minutes.ago
       stub!(:cookies).and_return({ :auth_token => 'hello!' })
       logged_in?.should_not be_true
-    end
-  end
-  
-  describe "admin switching" do
-    before(:each) do
-      @boxoffice_manager = customers(:boxoffice_manager)
-      @quentin = customers(:quentin)
-      login_as(:boxoffice_manager)
-      current_user.id.should == @boxoffice_manager.id
-      current_admin.id.should == @boxoffice_manager.id
-    end
-    context "any switching operation", :shared => true do
-      it "should not change the admin user" do ; current_admin.id.should == @boxoffice_manager.id  ; end
-    end
-    context "to an existing user" do
-      before(:each) do ; act_on_behalf_of(@quentin) ; end
-      it "should change the active user" do
-        current_user.id.should == @quentin.id
-      end
-      it_should_behave_like "any switching operation"
-    end
-    context "to a nonexistent user" do
-      before(:each) do ; act_on_behalf_of(nil) ; end
-      it "should not switch the user" do
-        current_user.id.should == @boxoffice_manager.id
-      end
-      it_should_behave_like "any switching operation"
     end
   end
 end

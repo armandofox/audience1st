@@ -1,6 +1,4 @@
-/ form:showdate
-
-%tr.t
+%tr.t[showdate]
   %td.t
     = showdate.printable_date
     %br
@@ -10,13 +8,14 @@
     - p = showdate.percent_max_allowed_sales
     %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
   %td{:width=>"50%"}
-    = link_to 'Edit', edit_showdate_path(showdate)
+    = link_to 'Edit', edit_show_showdate_path(showdate.show,showdate)
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate), showdate.printable_name
     = "|"
-    = link_to_if showdate.compute_total_sales.zero?, 'Delete', { :controller => 'showdates', :action => 'destroy',  :id => showdate.id}, {:method => :delete,:confirm => 'Delete this performance: are you sure?' }
-    = "|"
     = link_to_function "Ticket Details", visual_effect(:toggle_slide,"showdate_#{showdate.id}")
+    = "|"
+    - if showdate.compute_total_sales.zero?
+      = button_to 'Delete', show_showdate_path(showdate.show, showdate), {:method => :delete, :class => 'inline', :confirm => 'Delete this performance: are you sure?' }
 %tr
   %td{:colspan=>4}
     %div[showdate]{:style => @maybe_hide}
@@ -48,4 +47,4 @@
                     :failure => 'alert("Deletion failed!")' |
         %tr
           %td{:colspan=>4}
-            = gen_button  "Add New...", {:controller => 'valid_vouchers', :action => 'new', :showdate_id => showdate.id }
+            = gen_button  "Add New...", new_valid_voucher_path(:showdate_id => showdate.id)

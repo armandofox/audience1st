@@ -158,7 +158,6 @@ RE_QUOTED_PATH     = /^'([^']*)'$/i
 def grok_path path
   path.gsub(/\s+again$/,'') # strip trailing ' again'
   case
-  when path == 'the home page'    then dest = '/customers/welcome'
   when path =~ RE_PRETTY_RESOURCE then dest = template_for $1, $2
   when path =~ RE_THE_FOO_PAGE    then dest = $1
   when path =~ RE_QUOTED_PATH     then dest = $1

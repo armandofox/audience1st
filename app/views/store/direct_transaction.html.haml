@@ -1,9 +1,0 @@
-- form_tag :action => 'direct_transaction' do
-  = render :partial => 'customers/form'
-  = render :partial => 'credit_card'
-  %fieldset
-    %label{:for => 'amount'} Amount: $
-    = text_field_tag 'amount', '', :size => 6
-    = submit_tag 'Submit Transaction'
-    = gen_button 'Cancel', :action => 'direct_transaction'
-

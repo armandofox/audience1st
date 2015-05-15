@@ -1,8 +1,6 @@
-%h2 
-  Make Reservation for 
-  = h @customer.full_name
+%h2 Make Reservation for #{@customer.full_name}
 
-- form_tag :action => 'confirm_reservation', :method=>'post', :id => @voucher do
+- form_tag confirm_reservation_customer_voucher(@customer,@voucher) do
   = render(:partial => 'reserve_for') if @valid_vouchers
 
   %label.emphasis{:for => 'accessible_seating'} Special seating needs?
@@ -28,7 +26,7 @@
       %li All shows for which it's valid may be sold out
       %li All seats allocated for this type of ticket may be sold out 
       %li Seats allocated for this type of ticket may not be available for reservation until a future date
-  = gen_button (back_label, {:controller => 'customers', :action => 'welcome'})
+  = gen_button back_label, customer_path(@customer)
 
 
 

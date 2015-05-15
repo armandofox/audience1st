@@ -1,7 +1,5 @@
-- is_boxoffice = nil unless defined?(is_boxoffice)
-
 %tr
-  - if is_boxoffice
+  - if @admin
     %td.adminField
       = h voucher.id
       %br
@@ -11,19 +9,17 @@
   / Reservation column: name of show + Cancel Res button, or Make Res button if open
   %td
     - if voucher.reservable? 
-      = button_to('Make reservation',{ :controller => 'vouchers', :action => 'reserve', :id => voucher.id, :customer => voucher.customer },:method=>:get )
+      = link_to 'Make reservation', reserve_customer_voucher_path(@customer,voucher)
     - elsif voucher.reserved?
       %span.showName= h voucher.reserved_show
       %br
       %span.showDate= h voucher.reserved_date
   %td
-    - if voucher.reserved?
-      - if (is_boxoffice || voucher.can_be_changed?)
-        = button_to 'Release',  {:controller => 'vouchers', :action => :cancel_reservation, :id => voucher.id, :customer => voucher.customer}, {:confirm => 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'} 
-      - elsif is_boxoffice_manager
-        %span.adminField.c.admin=  button_to(*cancel_res)
-  - if is_boxoffice
+    - if voucher.reserved? &&  (@admin || voucher.can_be_changed?)
+      = button_to 'Release', cancel_reservation_customer_voucher_path(@customer, voucher), {:confirm => 'OK to release this reservation? Click OK to release it, or Cancel to leave things as they are.'} 
+
+  - if @admin
     %td.admin
-      - form_remote_tag(:url => {:controller => 'vouchers', :action => 'update_comment', :vid => voucher.id }, :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
+      - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,voucher), :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
         = text_field_tag 'comments', voucher.comments
         = submit_tag 'Save'

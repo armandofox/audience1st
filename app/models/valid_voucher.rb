@@ -151,9 +151,8 @@ class ValidVoucher < ActiveRecord::Base
   
   public
 
-  def inspect ; self.to_s ; end
-  def to_s
-    sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
+  def inspect
+    sprintf "%s max %3d %s- %s %s", vouchertype.name, max_sales_for_type,
     start_sales.strftime('%c'), end_sales.strftime('%c'),
     promo_code
   end
@@ -262,7 +261,7 @@ class ValidVoucher < ActiveRecord::Base
     vouchers.each do |v|
       if (showdate = v.unique_showdate)
         v.reserve_for(showdate, customer) ||
-          raise(InvalidRedemptionError, v.errors.full_messages.join(', '))
+          raise(InvalidRedemptionError, v.errors_as_html)
       end
     end
   end
@@ -270,7 +269,7 @@ class ValidVoucher < ActiveRecord::Base
   def try_reserve_for(vouchers, showdate)
     vouchers.each do |v|
       v.reserve_for(showdate, customer) ||
-        raise(InvalidRedemptionError, v.errors.full_messages.join(', '))
+      raise(InvalidRedemptionError, v.errors_as_html)
     end
   end
 

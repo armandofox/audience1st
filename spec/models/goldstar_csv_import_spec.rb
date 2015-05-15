@@ -1,10 +1,9 @@
 require 'spec_helper'
-include BasicModels
 
 describe "Goldstar new CSV format importing" do
   before(:each) do
     pending "Importing must be refactored to use Orders, not Vouchers"
-    @showdate = BasicModels.create_one_showdate(Time.at_beginning_of_season(2012) + 1.week)
+    @showdate = create(:showdate, :date => Time.at_beginning_of_season(2012) + 1.week)
     @show = @showdate.show
     @imp = GoldstarCsvImport.new(:show => @show)
   end
@@ -14,7 +13,7 @@ describe "Goldstar new CSV format importing" do
   describe "format sanity checks" do
     it "should reject if column headers invalid" do
       use_file('no_headers.csv')
-      @imp.showdate_id = BasicModels.create_one_showdate(Time.now).id
+      @imp.showdate_id = create(:showdate, :date => Time.now).id
       @imp.preview
       @imp.sanity_check.should be_nil
       @imp.errors.full_messages.should include("Expected header row not found")
@@ -37,8 +36,8 @@ describe "Goldstar new CSV format importing" do
     end
     context "when Goldstar vouchertypes exist" do
       before(:each) do
-        BasicModels.create_comp_vouchertype(:name => "Goldstar Comp", :season => @show.season)
-        BasicModels.create_revenue_vouchertype(:name => "Goldstar Half", :season => @show.season, :price => 10)
+        create(:comp_vouchertype, :name => "Goldstar Comp", :season => @show.season)
+        create(:revenue_vouchertype, :name => "Goldstar Half", :season => @show.season, :price => 10)
       end
       it "should pass sanity check" do
         @imp.preview
@@ -58,6 +57,6 @@ describe "Goldstar new CSV format importing" do
       end
     end
     context "when Goldstar vouchertypes do not exist" do
- end
+  end
   end
 end

@@ -41,6 +41,7 @@ class Show < ActiveRecord::Base
     enddate = startdate + 1.year - 1.day
     Show.find(:all,
       :order => 'opening_date',
+      :select => 'DISTINCT shows.*',
       :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate],
       :include => :showdates)
   end

@@ -5,7 +5,7 @@ describe TicketSalesImport do
   describe "importing showdate" do
     before(:each) do
       TicketSalesImport.send(:public, :import_showdate)
-      @imp = TicketSalesImport.new(:show => BasicModels.create_generic_show)
+      @imp = TicketSalesImport.new(:show => create(:show))
       @date = "Tue, Oct 31, 8:00pm"
     end
     context "when no match" do

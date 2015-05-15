@@ -4,7 +4,7 @@
   transactions totaling $
   = sprintf("%.02f",@things.inject(0) { |t,d| t + d.amount })
 
-- form_tag({:action => 'index'}, {:method => :get}) do
+- form_tag donations_path, {:method => :get} do
   = render :partial => 'donation_search', :locals => {:params => @params}
   = submit_tag "Search"
   = submit_tag(@export_label) unless @things.empty?
