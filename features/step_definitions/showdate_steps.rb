@@ -58,3 +58,13 @@ end
 Then /^there should be no show on "(.*)"$/ do |date|
   Showdate.find_by_thedate(Time.parse date).should be_nil
 end
+
+Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, _, num|
+  showdate = Showdate.find_by_thedate! Time.parse(date)
+  num = num.to_i
+  if num > 0
+    (showdate.compute_total_sales - showdate.max_sales).should == num
+  else
+    showdate.compute_total_sales.should be > showdate.max_sales
+  end
+end

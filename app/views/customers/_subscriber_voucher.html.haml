@@ -23,7 +23,7 @@
           -# ALL vouchers must be cancellable to allow multi-cancel option.
           %td.action
             - if current_user.is_boxoffice || vouchers.all?(&:can_be_changed?)
-              - form_tag cancel_multiple_customer_vouchers do
+              - form_tag cancel_multiple_customer_vouchers_path(@customer) do
                 = hidden_field_tag 'voucher_ids', voucherlist
                 = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :style => "width: 15ex"
           - if current_user.is_boxoffice
@@ -41,7 +41,7 @@
           %td= vouchertype.name
           %td{:colspan=>3} Reservations unavailable for this show
         - else
-          - form_tag confirm_multiple_customer_vouchers do
+          - form_tag confirm_multiple_customer_vouchers_path(@customer) do
             = hidden_field_tag 'voucher_ids', voucherlist
             - if num > 1
               %td.c= select_tag 'number', options_for_select((1..num).to_a, num)

@@ -9,7 +9,22 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
   end
 end
 
-Then /^customer (.*) (.*) should have the following items:$/ do |first,last,items|
+Given /^customer "(.*) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.*)"$/ do |first,last,num_free,num_total,show|
+  c = Customer.find_or_create_by_first_name_and_last_name first,last
+  show = Show.find_by_name!(show)
+  sub_vouchers = setup_subscriber_tickets(c, show, num_total)
+  # reserve some of them?
+  sub_vouchers[0, num_total.to_i - num_free.to_i].each { |v| v.reserve_for(show.showdates.first, Customer.boxoffice_daemon) }
+end
+
+Given /^customer "(.*) (.*)" has (\d+) subscriber reservations for (.*)$/ do |first,last,num,date|
+  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  @showdate = Showdate.find_by_thedate! Time.parse(date) unless date =~ /that performance/
+  sub_vouchers = setup_subscriber_tickets(@customer, @showdate.show, num)
+  sub_vouchers.each { |v| v.reserve_for(@showdate, Customer.boxoffice_daemon) }
+end
+
+Then /^customer "?(.*) (.*)"? should have the following items:$/ do |first,last,items|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   items.hashes.each do |item|
     conds_clause = 'type = ? AND amount BETWEEN ? AND ?  AND customer_id = ?'
@@ -25,6 +40,7 @@ Then /^customer (.*) (.*) should have the following items:$/ do |first,last,item
     Item.find(:first, :conditions => [conds_clause] + conds_values).should_not be_nil
   end
 end
+
 
 Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)

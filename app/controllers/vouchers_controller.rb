@@ -189,7 +189,6 @@ class VouchersController < ApplicationController
     old_showdate = vchs.first.showdate.clone
     a = nil
     flash[:notice] = ''
-    customer = v.first.customer
     vchs.each do |v|
       if v.can_be_changed?(current_user.id)
         showdate = v.showdate
@@ -197,7 +196,7 @@ class VouchersController < ApplicationController
         show_id = showdate.show.id
         v.cancel(current_user.id)
         a = Txn.add_audit_record(:txn_type => 'res_cancl',
-                                 :customer_id => customer.id,
+                                 :customer_id => @customer.id,
                                  :logged_in_id => current_user.id,
                                  :showdate_id => showdate_id,
                                  :show_id => show_id,
@@ -210,9 +209,9 @@ class VouchersController < ApplicationController
     end
     flash[:notice] << "Your reservations have been cancelled. "
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
-    email_confirmation(:cancel_reservation, customer, old_showdate,
+    email_confirmation(:cancel_reservation, @customer, old_showdate,
                        vchs.length, a) unless current_user.is_boxoffice
-    redirect_to customer_path(customer)
+    redirect_to customer_path(@customer)
   end
 
 

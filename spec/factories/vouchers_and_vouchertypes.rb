@@ -4,6 +4,7 @@ FactoryGirl.define do
     account_code { AccountCode.default_account_code }
     season Time.now.year
     fulfillment_needed false
+    changeable true
 
     factory :revenue_vouchertype do
       name 'Revenue vouchertype'
@@ -54,7 +55,6 @@ FactoryGirl.define do
   end
 
   factory :voucher do
-    showdate 
     customer
 
     factory :revenue_voucher do
