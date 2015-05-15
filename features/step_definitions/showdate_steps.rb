@@ -10,9 +10,10 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that)
   make_valid_tickets(@showdate, @vouchertype, n.to_i)
 end
 
-Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"$/ do |num,comp_type,show_name,show_date|
-  @showdate = setup_show_and_showdate(show_name,Time.parse(show_date))
-  @comp = create(:comp_vouchertype, :name => comp_type)
+Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"$/ do |num,comp_type,show_name,date|
+  show_date = Time.parse(date)
+  @showdate = setup_show_and_showdate(show_name,show_date)
+  @comp = create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
   make_valid_tickets(@showdate, @comp, num)
 end
                                    

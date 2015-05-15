@@ -1,8 +1,5 @@
 module CustomerHelpers
 
-  $:.push(File.join(RAILS_ROOT, 'spec', 'support'))
-  require 'basic_models'
-  
   def make_subscriber!(customer)
     vtype = create(:bundle, :subscription => true)
     voucher = Voucher.new_from_vouchertype(vtype)

@@ -69,6 +69,10 @@ class Showdate < ActiveRecord::Base
   end
 
   # reporting, comparisons
+
+  def inspect
+    "#{self.id} #{name_and_date_with_capacity_stats}/#{max_allowed_sales}"
+  end
   
   def <=>(other_showdate)
     other_showdate ? thedate <=> other_showdate.thedate : 1

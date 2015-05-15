@@ -151,9 +151,8 @@ class ValidVoucher < ActiveRecord::Base
   
   public
 
-  def inspect ; self.to_s ; end
-  def to_s
-    sprintf "%s max %3d %s- %s %s", vouchertype, max_sales_for_type,
+  def inspect
+    sprintf "%s max %3d %s- %s %s", vouchertype.name, max_sales_for_type,
     start_sales.strftime('%c'), end_sales.strftime('%c'),
     promo_code
   end
