@@ -1,4 +1,4 @@
-- form_tag customer_donation_path(@customer.id) do
-
+- form_tag donations_path(:customer_id => @customer) do
+  
   = render :partial => 'donation'
  

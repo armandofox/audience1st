@@ -1,14 +1,22 @@
 class DonationsController < ApplicationController
 
   before_filter :is_staff_filter
+  before_filter :load_customer, :only => [:new, :create]
 
+  private
+
+  def load_customer
+    redirect_with(donations_path, :alert => 'You must select a customer.') and return unless
+      @customer = Customer.find(params[:customer_id])
+  end
+
+  public
+  
   def index
-    unless params[:commit]
-      # first time visiting page: don't do "null search"
-      @things = []
-      @params = {}
-      render :action => 'index' and return
-    end
+    @things = []
+    @params = {}
+    return unless params[:commit] # first time visiting page: don't do "null search"
+
     conds = {}
     if (params[:use_cid] &&
         (cid = params[:cid].to_i) != 0) &&
@@ -67,20 +75,19 @@ class DonationsController < ApplicationController
   end
 
   def new
-    @customer = Customer.find params[:id]
     @donation ||= @customer.donations.new(:amount => 0,:comments => 'x')
   end
 
   def create
-    @customer = Customer.find params[:id]
     @order = Order.new(:purchaser => @customer, :customer => @customer)
-    @order.add_donation(Donation.from_amount_and_account_code_id(
-        params[:amount].to_f, params[:fund].to_i, params[:comments].to_s))
+    @donation = Donation.from_amount_and_account_code_id(
+      params[:amount].to_f, params[:fund].to_i, params[:comments].to_s)
+    @order.add_donation(@donation)
     sold_on = Date.from_year_month_day(params[:date])
     @order.purchasemethod = (params[:payment] == 'check' ?
       Purchasemethod.find_by_shortdesc('box_chk') :
       Purchasemethod.find_by_shortdesc('box_cash'))
-    @order.processed_by = @gAdmin
+    @order.processed_by = current_user()
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
       flash[:alert] = @order.errors.full_messages.join(',')
@@ -90,7 +97,7 @@ class DonationsController < ApplicationController
     begin
       @order.finalize!(sold_on)
       flash[:notice] = "Donation successfully recorded."
-      redirect_to welcome_path
+      redirect_to customer_path(@customer)
     rescue Exception => e
       raise e
       # rescue ActiveRecord::RecordInvalid => e
@@ -100,7 +107,6 @@ class DonationsController < ApplicationController
   end
 
   def mark_ltr_sent
-    id = params[:id]
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.now
       c = current_user.email rescue "(ERROR)"

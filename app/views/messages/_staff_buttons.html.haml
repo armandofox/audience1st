@@ -5,4 +5,5 @@
   = admin_button 'Contact History', customer_visits_path(@customer)
   = admin_button 'Prospecting Activities', prospector_customer_visits_path(@customer)
   = admin_button 'Database Transactions', {:controller => 'txn', :action => 'index', :params => {:txn_filter => @customer}}
+  = admin_button 'Record Donation', new_donation_path(:customer_id => @customer)
 .clear

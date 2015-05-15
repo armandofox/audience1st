@@ -1,3 +1,4 @@
+# TODO: this should really be in locales, using t() function to get strings
 # Configuration settings common to ALL VENUES
 # PLEASE BE CAREFUL WHEN EDITING THIS FILE. The number of spaces at the
 # beginnings of lines is significant. Do not use tabs.
@@ -35,3 +36,4 @@ boxoffice_daemon_address: boxofficedaemon@audience1st.com
 # Whom to contact for general application error
 bug_notify:  armandofox@gmail.com
 
+confirm_delete_customers: "Selected customer(s) will be PERMANENTLY deleted.  This action CANNOT BE UNDONE.  OK to proceed?"

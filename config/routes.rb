@@ -114,12 +114,9 @@ ActionController::Routing::Routes.draw do |map|
 
   # donations management
 
-  map.donations '/donations', :controller => 'donations', :action => 'index', :conditions => {:method => :get}
-  ## one-off RESTful route for recording customer donation (should become
-  ## nested resource route under customers)
-  map.new_customer_donation '/customers/:id/donations/new', :controller => 'donations', :action => 'new', :conditions => {:method => :get}
-  map.customer_donation '/customers/:id/donations', :controller => 'donations', :action => 'create', :conditions => {:method => :post}
-  map.connect '/donations/mark_ltr_sent',  :controller => 'donations', :action => 'mark_ltr_sent', :conditions => {:method => :get}
+  map.resources(:donations,
+    :only  => [:index, :new, :create],
+    :member => {:mark_ltr_sent => :get})
   
   # config options
 

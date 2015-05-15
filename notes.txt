@@ -1,5 +1,4 @@
-route specs for all customer actions, ticket_rss
+specs, scenarios, manual test for:
+- deleting a ticket type from showdate
 is _search_panel dead code?
 feature for listing customers, search any field, ajax automcplete
-addvoucher should be split into separate routes
-swithc to admin still have problems if last action wasn't a GET

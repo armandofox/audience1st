@@ -125,7 +125,7 @@ end
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|
   c1 = Customer.find_by_first_name_and_last_name! f1,l1
   c2 = Customer.find_by_first_name_and_last_name! f2,l2
-  visit '/customers/list'
+  visit customers_path
   check "merge[#{c1.id}]"
   check "merge[#{c2.id}]"
 end

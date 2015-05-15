@@ -67,6 +67,7 @@ class StoreController < ApplicationController
   # but valid for eligibility for tickets
   def subscribe
     return_after_login params.except(:customer_id)
+    @nobody_really_logged_in = (current_user().nil?)
     @page_title = "#{Option.venue} - Subscriptions"
     @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
     @subscriber = @customer.subscriber?

@@ -1,6 +1,6 @@
 = sales_banners_for :subscription, @subscriber, @next_season_subscriber
 
-- if @gNobodyReallyLoggedIn
+- if @nobody_really_logged_in
   %p.subscription_msg2
     %strong Already a subscriber?
     = link_to "Sign in to your account", login_path

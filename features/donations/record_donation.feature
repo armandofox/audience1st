@@ -8,7 +8,8 @@ Feature: record donation
 Background:
 
   Given I am logged in as boxoffice manager
-  And I am on the record donation page for customer "Tom Foolery"
+  And I am on the home page for customer "Tom Foolery"
+  And I follow "Record Donation"
 
 Scenario: record valid check donation
 

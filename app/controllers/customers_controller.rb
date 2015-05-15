@@ -218,6 +218,7 @@ class CustomersController < ApplicationController
       do_automatic_merge(*params[:merge].keys)
       redirect_to_last_list and return
     when /manual/i
+      @customer = @cust.first   # needed for layout setup
       render :action => 'merge'
     else
       flash[:alert] = "Unrecognized action: #{params[:commit]}"
