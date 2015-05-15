@@ -4,7 +4,7 @@ module CustomerHelpers
   require 'basic_models'
   
   def make_subscriber!(customer)
-    vtype = BasicModels.create_subscriber_vouchertype
+    vtype = create(:bundle, :subscription => true)
     voucher = Voucher.new_from_vouchertype(vtype)
     customer.vouchers << voucher
     customer.save!

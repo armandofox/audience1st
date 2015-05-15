@@ -211,12 +211,8 @@ class CustomersController < ApplicationController
     # automatic merge?
     case params[:commit]
     when /forget/i
-      count = do_deletions(@cust, :forget!)
+      count = do_deletions(@cust)
       flash[:notice] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:notice]}"
-      redirect_to_last_list and return
-    when /expunge/i
-      count = do_deletions(@cust, :expunge!)
-      flash[:notice] = "#{count} customers (and their transactions) expunged<br/> #{flash[:notice]}"
       redirect_to_last_list and return
     when /auto/i
       do_automatic_merge(*params[:merge].keys)
@@ -310,11 +306,11 @@ class CustomersController < ApplicationController
     return [offset,limit]
   end
 
-  def do_deletions(customers, method)
+  def do_deletions(customers)
     count = 0
     flash[:alert] = ''
     customers.each do |c|
-      c.send(method)
+      c.forget!
       if c.errors.empty?
         count += 1
       else

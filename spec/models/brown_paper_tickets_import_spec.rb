@@ -1,11 +1,10 @@
 require 'spec_helper'
-include BasicModels
 
 TESTFILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files', 'brownpapertickets')
 
 describe "BPT import" do
   before :each do
-    @imp = BrownPaperTicketsImport.new(:show => BasicModels.create_generic_show)
+    @imp = BrownPaperTicketsImport.new(:show => create(:show))
   end
   describe "parsing attachment with embedded CR's" do
     it "should have 18 records" do
@@ -33,7 +32,7 @@ describe "BPT import" do
     context "when no unique match" do
       before :each do
         Customer.stub!(:find_unique).and_return(nil)
-        @new = BasicModels.new_generic_customer
+        @new = build(:customer)
         Customer.should_receive(:new).and_return(@new)
       end
       it "should create new customer" do
@@ -60,9 +59,9 @@ describe "BPT import" do
         row
       end
       it "should return first match if more than one match" do
-        v1 = BasicModels.create_revenue_vouchertype
+        v1 = create(:revenue_vouchertype)
         v1.update_attributes!(:name => "V01", :price => 11.0)
-        v2 = BasicModels.create_revenue_vouchertype
+        v2 = create(:revenue_vouchertype)
         v2.update_attributes!(:name => "V01", :price => 11.0)
         @imp.vouchertype_from_row(make_row("V01", 11.0),2010).should be_a_kind_of(Vouchertype)
       end

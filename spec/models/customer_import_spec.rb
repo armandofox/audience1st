@@ -1,5 +1,4 @@
 require 'spec_helper'
-include BasicModels
 
 describe CustomerImport do
 
@@ -58,7 +57,7 @@ describe CustomerImport do
   describe "importing" do
     describe "a valid customer" do
       before(:each) do
-        @customer = BasicModels.new_generic_customer
+        @customer = build(:customer)
         @import = CustomerImport.new
         @import.stub!(:get_customers_to_import).and_return([@customer])
         @imports,@rejects = @import.import!
@@ -78,7 +77,7 @@ describe CustomerImport do
     end
     describe "an invalid customer" do
       before(:each) do
-        @customer = BasicModels.new_generic_customer
+        @customer = build(:customer)
         @customer.last_name = '' # makes invalid
         @customer.should_not be_valid
         @import = CustomerImport.new

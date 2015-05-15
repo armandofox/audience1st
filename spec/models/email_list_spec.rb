@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-include BasicModels
 
 class Customer
   def to_mailchimp
@@ -20,10 +19,10 @@ describe EmailList do
   end
   describe "bulk comparison" do
     before(:each) do
-      @l1 = BasicModels::create_customer_by_name_and_email %w[John Doe john@doe.com]
-      @l2 = BasicModels::create_customer_by_name_and_email %w[Bob Smith bob@smith.com]
-      @l3 = BasicModels::create_customer_by_name_and_email %w[Jimbo Jones jimbo@jones.com]
-      @l4 = BasicModels::create_customer_by_name_and_email %w[James Jones jimbo2@jones.com]
+      @l1 = create(:customer, :first_name => 'John', :last_name => 'Doe', :email => 'john@doe.com')
+      @l2 = create(:customer, :first_name => 'Bob', :last_name => 'Smith', :email => 'bob@smith.com')
+      @l3 = create(:customer, :first_name => 'Jimbo', :last_name => 'Jones', :email => 'jimbo@jones.com')
+      @l4 = create(:customer, :first_name => 'James', :last_name => 'Jones', :email => 'jimbo2@jones.com')
       @l4.update_attribute(:e_blacklist, true)
       @r5 = Customer.new(:first_name => "Carl", :last_name => "Carlson", :email =>"c@carl.com")
       EmailList.stub!(:members).with('subscribed').and_return([@l1,@l2,@r5].map(&:to_mailchimp))

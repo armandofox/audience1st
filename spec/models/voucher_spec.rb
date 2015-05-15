@@ -1,5 +1,4 @@
 require 'spec_helper'
-include BasicModels
 
 describe Voucher do
 
@@ -9,17 +8,17 @@ describe Voucher do
       :fulfillment_needed => false,
       :season => Time.now.year
     }
-    @vt_regular = BasicModels.create_revenue_vouchertype
-    @vt_subscriber = BasicModels.create_included_vouchertype
-    @vt_bundle = BasicModels.create_bundle_vouchertype(:included_vouchers => {@vt_subscriber.id => 2})
-    @basic_showdate = BasicModels.create_one_showdate(Time.now.tomorrow)
+    @vt_regular = create(:revenue_vouchertype, :price => 10)
+    @vt_subscriber = create(:vouchertype_included_in_bundle)
+    @vt_bundle = create(:bundle, :including  => {@vt_subscriber => 2})
+    @basic_showdate = create(:showdate, :date => Time.now.tomorrow)
   end
 
   describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|
         @from = mock_model(Showdate)
-        @to = BasicModels.create_one_showdate(Time.now.tomorrow)
+        @to = create(:showdate, :date => Time.now.tomorrow)
         @logged_in = mock_model(Customer)
         @customer = create(:customer)
         @invalid_voucher = Voucher.new
@@ -77,10 +76,10 @@ describe Voucher do
 
   describe "customer reserving a sold-out showdate" do
     before(:each) do
-      @c = BasicModels.create_customer_by_role(:patron)
+      @c = create(:customer)
       @v = Voucher.new_from_vouchertype(@vt_regular)
       @c.vouchers << @v
-      @sd = BasicModels.create_one_showdate(1.day.from_now)
+      @sd = create(:showdate, :date => 1.day.from_now)
       @v.stub(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_type => 0, :explanation => 'Event is sold out'))
       @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
     end

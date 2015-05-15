@@ -12,7 +12,7 @@ end
 
 Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"$/ do |num,comp_type,show_name,show_date|
   @showdate = setup_show_and_showdate(show_name,Time.parse(show_date))
-  @comp = BasicModels.create_comp_vouchertype(:name => comp_type)
+  @comp = create(:comp_vouchertype, :name => comp_type)
   make_valid_tickets(@showdate, @comp, num)
 end
                                    

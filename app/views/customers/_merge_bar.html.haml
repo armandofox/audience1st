@@ -6,5 +6,4 @@
     = popup_help_for 'merge_customers'
     - confirm_delete_warning = confirm_javascript_function("Selected customer(s) will be PERMANENTLY deleted.  This action CANNOT BE UNDONE.  OK to proceed?")
     = submit_tag 'Forget',  :onclick => "return #{confirm_delete_warning}"
-    = submit_tag 'Expunge', :onclick => "return #{confirm_delete_warning}"
     = popup_help_for 'delete_customers'

@@ -1,48 +1,6 @@
 require 'spec_helper'
-include BasicModels
 
 describe Showdate do
-  describe "lookup" do
-    context "by date" do
-      it "should return existing showdate" do
-        dt = "2008-02-01"
-        sd = BasicModels.create_one_showdate(Time.parse(dt))
-        Showdate.find_by_date(dt).should == sd
-      end
-    end
-  end
-  describe "displaying on tickets page" do
-    before(:each) do
-      @boxoffice = mock_model(Customer, :is_boxoffice => true)
-      @patron = mock_model(Customer, :is_boxoffice => false)
-      @past_show = BasicModels.create_one_showdate(Time.now.yesterday)
-      @future_show = BasicModels.create_one_showdate(Time.now.tomorrow)
-    end
-    it "for invalid customer should not be displayed" do
-      @future_show.should_not be_ok_to_display_for(999999)
-    end
-    context "for boxoffice user" do
-      before(:each) do
-        @boxoffice = mock_model(Customer, :is_boxoffice => true)
-      end
-      it "should be displayed even if showdate has passed" do
-        @past_show.should be_ok_to_display_for(@boxoffice)
-      end
-    end
-    context "for nonsubscriber" do
-      before(:each) do
-        @patron = mock_model(Customer, :is_boxoffice => nil, :subscriber? => nil)
-      end
-      it "should not be displayed if showdate has passed" do
-        @past_show.should_not be_ok_to_display_for(@patron)
-      end
-      it "should not be displayed if show has no seats for nonsubscribers" do
-        pending
-        @future_show.should_receive(:available_seats_for).with(Vouchertype::ANYONE).and_return(nil)
-        @future_show.should_not be_ok_to_display_for(@patron)
-      end
-    end
-  end
   describe "of next show" do
     context "when there are no showdates" do
       before(:each) do ; Showdate.delete_all ; end
@@ -79,11 +37,7 @@ describe Showdate do
   end
   describe 'max sales' do
     before :each do
-      @s = BasicModels.create_one_showdate(Time.now, cap=200)
-    end
-    it 'may exceed house capacity' do
-      @s.update_attributes!(:max_sales => 300)
-      @s.max_allowed_sales.should == 300
+      @s = create(:showdate, :date => Time.now, :max_sales => 200)
     end
     describe 'when zero' do
       before(:each) { @s.update_attributes!(:max_sales => 0) }
@@ -139,7 +93,7 @@ describe Showdate do
         @showdate.revenue.should == 99.00
       end
       it "should not include nonticket revenue" do
-        @v = Voucher.new_from_vouchertype(BasicModels.create_nonticket_vouchertype(:price => 22))
+        @v = Voucher.new_from_vouchertype(create(:nonticket_vouchertype,:price => 22))
         @v.reserve(@showdate, mock_model(Customer))
         @v.save!
         @showdate.revenue.should ==  99.00
@@ -156,8 +110,7 @@ describe Showdate do
           @showdate.total_seats_left.should == 3
         end
         it "should not be affected by nonticket vouchers" do
-          @v = Voucher.new_from_vouchertype(
-            BasicModels.create_nonticket_vouchertype(:price => 99))
+          @v = Voucher.new_from_vouchertype(create(:nonticket_vouchertype, :price => 99))
           @v.reserve(@showdate, mock_model(Customer))
           @v.save!
           @showdate.total_seats_left.should == 3

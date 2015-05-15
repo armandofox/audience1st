@@ -1,5 +1,4 @@
 require 'spec_helper'
-include BasicModels
 
 describe ValidVoucher do
   describe 'adjusting' do
@@ -17,7 +16,7 @@ describe ValidVoucher do
     describe 'for reservation using existing voucher' do
       context 'after deadline' do
         subject do
-          s = BasicModels.create_one_showdate(1.day.from_now, maxcap=200)
+          s = create(:showdate, :date => 1.day.from_now, :max_sales => 200)
           v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)
           v.adjust_for_customer_reservation
         end
@@ -26,7 +25,7 @@ describe ValidVoucher do
       end
       context 'when valid' do
         subject do
-          s = BasicModels.create_one_showdate(1.day.from_now)
+          s = create(:showdate, :date => 1.day.from_now)
           v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.from_now, :max_sales_for_type => 10)
           v.adjust_for_customer_reservation
         end
@@ -218,7 +217,7 @@ describe ValidVoucher do
 
   describe 'bundle availability' do
     before :each do
-      @anyone_bundle = BasicModels.create_bundle_vouchertype
+      @anyone_bundle = create(:bundle)
       @anyone_bundle_availability = ValidVoucher.new(
         :vouchertype => @anyone_bundle,
         :max_sales_for_type => ValidVoucher::INFINITE,

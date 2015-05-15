@@ -111,7 +111,7 @@ class Vouchertype < ActiveRecord::Base
 
   public
   
-  def to_s
+  def inspect
     sprintf("%-15.15s $%2.2f (%s,%s)", name, price, category, offer_public_as_string)
   end
 

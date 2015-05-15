@@ -1,10 +1,11 @@
-World(BasicModels)
-
 Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type|
   raise "No default showdate" unless @showdate.kind_of?(Showdate)
   c = create(:customer, :first_name => first, :last_name => last)
   1.upto(num.to_i) do
-    c.vouchers << BasicModels.new_voucher_for_showdate(@showdate, type, :logged_in => c)
+    c.vouchers <<
+      Voucher.
+      new_from_vouchertype(Vouchertype.find_by_name(type) || create(:revenue_vouchertype, :name => type)).
+      reserve(@showdate, c)
   end
 end
 
@@ -97,7 +98,7 @@ Given /^the "(.*)" subscription includes the following vouchers:/ do |name, vouc
   sub = Vouchertype.find_by_category_and_name!(:bundle, name)
   sub.included_vouchers ||= {}
   vouchers.hashes.each do |voucher|
-    vt = BasicModels.create_included_vouchertype(:name => "#{voucher[:name]} (subscriber)")
+    vt = create(:vouchertype_included_in_bundle, :name => "#{voucher[:name]} (subscriber)")
     sub.included_vouchers[vt.id] = voucher[:quantity].to_i
   end
   sub.save!

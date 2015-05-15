@@ -28,7 +28,7 @@ Given /^my gift order contains the following tickets:/ do |tickets|
 end
 
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
-  order = BasicModels.create_empty_walkup_order
+  order = build(:order, :walkup => true)
   showdate = Showdate.find_by_thedate!(Time.parse(dt))
   tickets.hashes.each do |t|
     qty = t[:qty].to_i

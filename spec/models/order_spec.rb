@@ -36,7 +36,7 @@ describe Order do
     before :each do
       @o = Order.new
       @o.stub(:purchase_medium).and_return("Cash")
-      @v = BasicModels.create_revenue_vouchertype(:price => 7)
+      @v = create(:revenue_vouchertype,:price => 7)
       @vv = @v.valid_vouchers.create!(:start_sales => 1.day.ago, :end_sales => 1.day.from_now)
     end
     [ 1,0,"$5.00 donation paid by Cash",

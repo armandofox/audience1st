@@ -45,6 +45,7 @@ class Audience1stSeeder
     unless Customer.find_by_role(100)
       Customer.create!(:first_name => 'Administrator',
         :last_name => 'Administrator',
+        :email => 'admin@admin.com',
         :created_by_admin => true,
         :password => 'admin').
         update_attributes!(:role => 100)

@@ -1,6 +1,9 @@
 FactoryGirl.define do
 
   factory :customer do
+    ignore do
+      role :patron
+    end
     sequence(:first_name) { |n| "Joe#{n}" }
     sequence(:last_name) { |n| "Doe#{n}" }
     sequence(:email) { |n| "joe#{n}@yahoo.com" }
@@ -12,5 +15,10 @@ FactoryGirl.define do
     state 'NY'
     zip '10019'
     created_by_admin false
+
+    after_build do |customer,evaluator|
+      customer.role = Customer.role_value(evaluator.role) unless evaluator.role == :patron
+    end
   end
+
 end

@@ -2,8 +2,7 @@ require 'spec_helper'
 
 describe BoxOfficeController do
 
-  include BasicModels
-  fixtures :customers
+    fixtures :customers
 
   before(:each) do
     login_as(:boxoffice_manager)
@@ -13,7 +12,7 @@ describe BoxOfficeController do
     context 'with bad showdate' do
       before :each do
         @id = 999999
-        @m = BasicModels.create_one_showdate(1.day.from_now)
+        @m = create(:showdate, :date => 1.day.from_now)
       end
       it 'should instead use current-or-next showdate if there is one' do
         Showdate.stub!(:current_or_next).and_return(@m)
@@ -29,7 +28,7 @@ describe BoxOfficeController do
     end
     context 'with good showdate' do
       it "should work with valid showdate even if no others exist" do
-        @m = BasicModels.create_one_showdate(1.year.ago)
+        @m = create(:showdate, :date => 1.year.ago)
         get :walkup, :id => @m.id
         response.should render_template(:walkup)
       end
@@ -91,7 +90,7 @@ describe BoxOfficeController do
       end
       describe "transferring" do
         before(:each) do
-          @showdate = BasicModels.create_one_showdate(Time.now)
+          @showdate = create(:showdate, :date => Time.now)
           @params[:commit] = 'Transfer'
           @params[:to_showdate] = @showdate.id
         end

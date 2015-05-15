@@ -1,24 +1,23 @@
 require 'spec_helper'
 
 describe 'scoping Customers' do
-  fixtures :customers
   before :each do
     @c1 = create(:customer)
     @c2 = create(:customer)
   end
-  describe 'based on show attendance' do
+  describe 'who have' do
     before :each do
-      # customer @c1 has only seen show @s1, @c2 has only seen show @s2, @new has seen nothing
-      @sd1 = BasicModels.create_one_showdate(Time.now)
-      @sd2 = BasicModels.create_one_showdate(1.day.from_now)
-      @s1 = @sd1.show
-      @s2 = @sd2.show
-      v = BasicModels.create_revenue_vouchertype
-      @c1.vouchers << BasicModels.new_voucher_for_showdate(@sd1,v)
-      @c2.vouchers << BasicModels.new_voucher_for_showdate(@sd2,v)
+      # customer @c1 has only seen show @s1, @c2 has only seen show @s2
+      sd1 = create(:showdate, :date => Time.now)
+      sd2 = create(:showdate, :date => 1.day.from_now)
+      @s1 = sd1.show
+      @s2 = sd2.show
+      create(:revenue_voucher, :showdate => sd1, :customer => @c1)
+      create(:revenue_voucher, :showdate => sd2, :customer => @c2)
+      # customer @new has seen nothing
       @new = create(:customer)
     end
-    context 'when selecting based on having seen a show' do
+    context 'seen a show' do
       it 'should select customer who has seen it' do
         Customer.seen_any_of(@s1).should include(@c1)
       end
@@ -57,12 +56,16 @@ describe 'scoping Customers' do
   end
   describe 'based on purchases' do
     before :each do
-      @vt1 = BasicModels.create_subscriber_vouchertype(:season => 2012)
-      @v1 = @vt1.vouchers.create
-      @vt2 = BasicModels.create_subscriber_vouchertype(:season => 2013)
-      @v2 = @vt2.vouchers.create
-      @c1.vouchers << @v1
-      @c2.vouchers << @v2
+      @show_voucher_1 = create(:subscriber_voucher, :customer => @c1)
+      @vid1 = @show_voucher_1.vouchertype.id
+      @sub_1 = create(:bundle_voucher, :customer => @c1, :subscription => true,
+        :season => 2012, :including => {@show_voucher_1 => 1})
+      
+      @show_voucher_2 = create(:subscriber_voucher, :customer => @c2)
+      @vid2 = @show_voucher_2.vouchertype.id
+      @sub_2 = create(:bundle_voucher, :customer => @c2, :subscription => true,
+        :season => 2013, :including => {@show_voucher_2 => 1})
+
     end
     context 'of subscription' do
       it 'should identify subscribers during a given year' do
@@ -84,7 +87,7 @@ describe 'scoping Customers' do
     end
     context 'including specific Vouchertypes' do
       it 'should include customers who have purchased ANY of...' do
-        c = Customer.purchased_any_vouchertypes([@vt1.id, @vt2.id])
+        c = Customer.purchased_any_vouchertypes([@vid1, @vid2])
         c.should include(@c1)
         c.should include(@c2)
       end
@@ -92,16 +95,16 @@ describe 'scoping Customers' do
     context 'excluding specific Vouchertypes' do
       it 'should include customers who have purchased nothing' do
         @c3 = create(:customer)
-        Customer.purchased_no_vouchertypes(@vt1.id).should include(@c3)
+        Customer.purchased_no_vouchertypes(@vid1).should include(@c3)
       end
       it 'should include customers who have not purchased that Vouchertype' do
-        Customer.purchased_no_vouchertypes(@vt2.id).should include(@c1)
+        Customer.purchased_no_vouchertypes(@vid2).should include(@c1)
       end
       it 'should exclude customers who have purchased ANY of that Vouchertype' do
-        Customer.purchased_no_vouchertypes(@vt2.id).should_not include(@c2)
+        Customer.purchased_no_vouchertypes(@vid2).should_not include(@c2)
       end
       it 'should exclude union of customers who have purchased ANY of that Vouchertype' do
-        c = Customer.purchased_no_vouchertypes([@vt1.id, @vt2.id])
+        c = Customer.purchased_no_vouchertypes([@vid1,@vid2])
         c.should_not include(@c1)
         c.should_not include(@c2)
       end
