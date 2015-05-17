@@ -123,17 +123,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # This will always be called after is_logged_in has setup current_user or has redirected
-  def is_myself_or_staff
-    desired = Customer.find_by_id(params[:id])
-    if (desired.nil? ||
-        (desired != current_user && !current_user.is_staff))
-      flash[:notice] = "Attempt to perform unauthorized action."
-      redirect_to login_path
-    end
-    @customer = desired
-  end
-
   def temporarily_unavailable
     flash[:alert] = "Sorry, this function is temporarily unavailable."
     redirect_to :back
