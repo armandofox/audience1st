@@ -141,7 +141,6 @@ class ReportsController < ApplicationController
 
   def run_special_report
     n = params[:_report]
-    logger.debug request.request_uri
     @report = n.camelize.constantize.__send__(:new, params[:output])
     redirect_to({:action => :index}, {:alert => 'Unknown report name'}) and return if
       (n.blank? || @report.nil? || !@report.kind_of?(Report))

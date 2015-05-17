@@ -22,7 +22,7 @@ class StoreController < ApplicationController
 
   private
 
-  # invariant: after set_session_variables runs, the URL contains ID of customer doing the shopping
+  # invariant: after set_customer runs, the URL contains ID of customer doing the shopping
   def set_customer
     logged_in = current_user()
     desired = Customer.find_by_id(params[:customer_id])

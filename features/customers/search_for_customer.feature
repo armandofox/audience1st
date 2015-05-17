@@ -11,5 +11,22 @@ Background: I am logged in as boxoffice
 
 Scenario: search by last name
 
-  When I fill in 'name' with 'Foolery'
-  And I press 'Go' within '#search_on_any_field'
+  Given the following customers exist: Frodo Baggins, Bilbo Baggins, Bob Bag
+  When I search any field for "Baggins"  
+  Then table "#customers" should include:
+  | First name | Last name |
+  | Frodo      | Baggins   |
+  | Bilbo      | Baggins   |
+  But table "#customers" should not include:
+  | First name | Last name |
+  | Bob        | Bag       |
+
+Scenario: partial match last name
+
+  Given the following customers exist: Frodo Baggins, Bilbo Baggins, Bob Bag
+  When I search any field for "Bag"  
+  Then table "#customers" should include:
+  | First name | Last name |
+  | Frodo      | Baggins   |
+  | Bilbo      | Baggins   |
+  | Bob        | Bag       |

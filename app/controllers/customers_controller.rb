@@ -4,8 +4,8 @@ class CustomersController < ApplicationController
   # Actions requiring no login, customer login, and staff login respectively
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password home)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
-  ADMIN_ACTIONS =         %w(auto_complete_for_customer_full_name lookup create
-                            search merge finalize_merge index list_duplicate)
+  ADMIN_ACTIONS =         %w(create search merge finalize_merge index list_duplicate
+                             auto_complete_for_customer_full_name lookupx)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
   before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
@@ -238,28 +238,6 @@ class CustomersController < ApplicationController
     flash[:notice] = result || c0
     logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
     redirect_to_last_list
-  end
-
-  def search
-    unless params[:searching]
-      render :partial => 'search'
-      return
-    end
-    str = ''
-    if params[:match] =~ /any/i
-      conds = %w[first_name last_name street city email].map {|x| "#{x} LIKE '%#{params[:any]}%'"}.join(" OR ")
-    else
-      k = params[:customer].keys
-      if k.empty?
-        flash[:notice] = "Please enter some constraints"
-        render :partial => 'search'
-      else
-        conds = [ k.map { |x| "#{x} LIKE ?"}.join(" AND ") ] +
-          params[:customer].values_at(*k).map { |s| "%#{s}%" }
-      end
-    end
-    @customers = Customer.find(:all, :conditions => conds)
-    render :partial => 'search_results'
   end
 
   def create

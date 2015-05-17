@@ -155,6 +155,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
   map.customer_orders '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
 
-  map.root :controller => 'store', :action => 'index'
+  map.root :controller => 'customers', :action => 'show'
  
 end

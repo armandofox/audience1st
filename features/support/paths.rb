@@ -20,7 +20,8 @@ module NavigationHelpers
       # customer donations.  See notes in routes.rb
     when /the record donation page/         then new_donation_path(@customer)
     when /the new customer page/i           then new_customer_path
-      # admin-facing voucher management
+      # admin-facing voucher management and customer help
+    when /the list of customers page/i      then customers_path
     when /the add comps page/i              then new_customer_voucher_path(@customer)
       # store purchase flow
     when /the store page for "(.*)"/    then store_path(:show_id => Show.find_by_name!($1).id)

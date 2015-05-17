@@ -21,7 +21,7 @@
     = hidden_field_tag 'offset', @offset
     = hidden_field_tag 'limit', @limit
     = hidden_field_tag 'customers_filter', @customers_filter
-    %table.hilite
+    %table.hilite#customers
       %thead
         = render :partial => 'customers/customer_header'
       %tbody

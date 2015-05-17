@@ -73,16 +73,13 @@ Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
   end
 end
 
-Then /^I should be able to login with username "(.*)" and that password$/ do |username|
-  steps %Q{Then I should be able to login with username "#{username}" and password "#{@password}"}
-end
-
-Then /^I should be able to login with username "(.*)" and password "(.*)"$/ do |username,password|
+Then /^I should be able to login with username "(.*)" and (that password|password "(.*)")$/ do |username,use_prev,password|
+  @password = password if use_prev !~ /that/
   visit logout_path
   visit login_path
   customer = Customer.find_by_email(username)
   fill_in 'email', :with => username
-  fill_in 'password', :with => password
+  fill_in 'password', :with => @password
   click_button 'Login'
   page.should have_content("Welcome, #{customer.first_name}")
 end
@@ -102,6 +99,14 @@ Given /^the following customers exist: (.*)$/ do |list|
   list.split(/\s*,\s*/).each do |name|
     steps %Q{Given customer "#{name}" exists}
   end
+end
+
+# Searching for customers
+
+When /^I search any field for "(.*)"$/ do |text|
+  visit customers_path
+  fill_in "customers_filter", :with => text
+  with_scope '#search_on_any_field' do ; click_button 'Go' ; end
 end
 
 Given /^my birthday is set to "(.*)"/ do |date|
@@ -130,17 +135,14 @@ When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f
   check "merge[#{c2.id}]"
 end
 
-Given /^customer "(.*) (.*)" has secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
+Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
-  @customer.update_attributes(
-    :secret_question => get_secret_question_index(question),
-    :secret_answer => answer)
+  if assert =~ /should/
+    @customer.secret_question.should == get_secret_question_index(question)
+    @customer.secret_answer.should == answer
+  else
+    @customer.update_attributes(
+      :secret_question => get_secret_question_index(question),
+      :secret_answer => answer)
+  end
 end
-
-
-Then /^customer "(.*) (.*)" should have secret question "(.*)" with answer "(.*)"$/ do |first,last,question,answer|
-  @customer = Customer.find_by_first_name_and_last_name!(first,last)
-  @customer.secret_question.should == get_secret_question_index(question)
-  @customer.secret_answer.should == answer
-end
-
