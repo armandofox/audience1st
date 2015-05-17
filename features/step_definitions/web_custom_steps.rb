@@ -106,13 +106,12 @@ end
 # tabular data
 Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
   page.should have_css(table)
-  @html = Nokogiri::HTML(page.body)
-  @rows = @html.xpath("//#{table}//tr").collect { |r| r.xpath('.//th|td') }
+  @rows = page.all(:xpath, "//#{table}//tr").collect { |r| r.all(:xpath, './/th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
   matched = @rows.any? do |table_row|
     match = true
     col_regexps.each_with_index do |regexp,index|
-      match &&= (regexp.blank? || table_row[index].content.match(regexp))
+      match &&= (regexp.blank? || table_row[index].text.match(regexp))
     end
     match
   end
@@ -122,7 +121,12 @@ Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
     matched.should be_true, "Expected #{table} to contain a row matching <#{row}>"
   end
 end
-    
+
+# match several rows
+Then /^table "(.*)" should include the following results:$/ do |table_name|
+  
+end
+
 # File uploading
 When /^I upload (.*) import list "(.*)"$/ do |type,file|
   case type
