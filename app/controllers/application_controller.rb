@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
 
   helper :all
-
+  
   protect_from_forgery
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 
@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
   def set_globals
     @gCart = find_cart
     @gCheckoutInProgress = !@gCart.cart_empty?
-    @gReenableAdmin = session.has_key?(:admin_disabled)
+    @gAdminDisplay = is_staff && !session.has_key?(:admin_disabled)
     true
   end
 
@@ -141,11 +141,11 @@ class ApplicationController < ActionController::Base
 
   %w(staff walkup boxoffice boxoffice_manager admin).each do |r|
     define_method "is_#{r}" do
-      !session[:admin_disabled] && current_user.send("is_#{r}")
+      !session[:admin_disabled] && current_user && current_user.send("is_#{r}")
     end
     define_method "is_#{r}_filter" do
       redirect_with(login_path, :alert => "You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.") unless
-        !session[:admin_disabled] && current_user.send("is_#{r}")
+        !session[:admin_disabled] && current_user && current_user.send("is_#{r}")
     end
   end
 

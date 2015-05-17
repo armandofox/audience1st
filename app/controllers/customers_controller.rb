@@ -2,23 +2,17 @@ class CustomersController < ApplicationController
 
 
   # Actions requiring no login, customer login, and staff login respectively
-  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password home)
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(create search merge finalize_merge index list_duplicate
-                             auto_complete_for_customer_full_name lookupx)
+                             auto_complete_for_customer_full_name lookup)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
   before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
   before_filter :is_myself_or_staff, :only => CUSTOMER_ACTIONS
   before_filter :is_staff_filter, :only => ADMIN_ACTIONS
 
-  def home
-    if current_user
-      redirect_to customer_path(current_user)
-    else
-      redirect_to login_path
-    end
-  end
+  skip_before_filter :verify_authenticity_token, %w(lookup auto_complete_for_customer_full_name)
 
   # actions requiring @customer to be set by is_myself_or_staff
 
@@ -85,7 +79,7 @@ class CustomersController < ApplicationController
         email_confirmation(:confirm_account_change,@customer, 
                            "updated your email address in our system")
       end
-      redirect_after_login(@customer)
+      redirect_to customer_path(@customer)
     rescue ActiveRecord::RecordInvalid
       flash[:notice] = ["Update failed: ", @customer, "Please fix error(s) and try again."]
       redirect_to edit_customer_path(@customer)

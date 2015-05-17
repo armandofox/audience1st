@@ -1,9 +1,9 @@
 #welcome_header
-  Welcome, #{current_user.full_name}
+  Signed in as #{current_user.full_name}
   = gen_button 'Log Out', logout_path
-  - if current_user.is_staff
+  - if @gAdminDisplay
     = gen_button('Regular Patron View', temporarily_disable_admin_session_path)
     = popup_help_for :disable_admin
-  - elsif @gReenableAdmin
+  - elsif current_user().is_staff
     = gen_button('Admin View', reenable_admin_session_path)
     = popup_help_for :disable_admin

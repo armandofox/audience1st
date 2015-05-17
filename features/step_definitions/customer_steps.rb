@@ -26,7 +26,7 @@ Given /^I am logged in as (.*)?$/ do |who|
   visit logout_path
   visit login_path
   steps %Q{When I login as #{who}}
-  page.should have_content("Welcome, #{@customer.first_name}")
+  page.should have_content("Signed in as #{@customer.first_name}")
   page.should have_css('#customer_quick_search') if @is_admin
 end
 
@@ -81,7 +81,7 @@ Then /^I should be able to login with username "(.*)" and (that password|passwor
   fill_in 'email', :with => username
   fill_in 'password', :with => @password
   click_button 'Login'
-  page.should have_content("Welcome, #{customer.first_name}")
+  page.should have_content("Signed in as #{customer.first_name}")
 end
 
 Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|

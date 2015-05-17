@@ -67,13 +67,13 @@ end
 
 Then "$actor should not be logged in" do |email|
   customer = Customer.find_by_email!(email)
-  page.should_not have_content("Welcome, #{customer.full_name}")
+  page.should_not have_content("Signed in as #{customer.full_name}")
   #controller.send(:logged_in?).should_not be_true
 end
 
 Then "$login should be logged in" do |email|
   customer = Customer.find_by_email!(email)
-  page.should have_content("Welcome, #{customer.full_name}")
+  page.should have_content("Signed in as #{customer.full_name}")
 end
 
 def named_user login

@@ -7,7 +7,7 @@
   Quick search first or last name:
   = customer_search_field 'name', '', {:size => 20}, :also_update => {:id => :id}
   = hidden_field_tag 'id'
-  = submit_tag 'Go', :onclick => 'window.location.href = "/customers/" + jQuery("#id").val(); return(false)'
+  = submit_tag 'Go', :onclick => 'window.location.pathname="/customers/"+jQuery("#id").val(); return(false)'
   - form_tag(customers_path,{:method =>:get, :id => 'search_on_any_field'}) do
     Search any field:
     = text_field_tag 'customers_filter', @customers_filter, :size => 12

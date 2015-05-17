@@ -5,7 +5,7 @@
 %br/
 - form_tag customer_path(@customer), :method => :put do
   = render :partial => 'form' 
-  - if @is_admin
+  - if @gAdminDisplay
     = render :partial => 'form_admin'
   %br/
   %br/

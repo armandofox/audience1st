@@ -29,7 +29,7 @@ class StoreController < ApplicationController
     # OK to proceed given this URL?
     if well_formed_customer_url(logged_in, desired)
       @customer = desired
-      @is_admin = logged_in && logged_in.is_boxoffice
+      @is_admin = is_boxoffice()
       @cart = find_cart
     else # must redirect to include a customer_id in the url
       desired = if !logged_in then Customer.anonymous_customer
