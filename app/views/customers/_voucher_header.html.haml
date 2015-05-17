@@ -1,10 +1,9 @@
-- is_boxoffice = nil unless defined?(is_boxoffice)
 %tr
-  - if @admin
+  - if @gAdminDisplay
     %th.admin Tkt #
     %th.admin Ord #
   %th Type
   %th Reservation
   %th
-  - if @admin
+  - if @gAdminDisplay
     %th.admin Comment

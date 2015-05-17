@@ -15,7 +15,7 @@
     %thead
       = render :partial => 'voucher_header'
     %tbody
-      = render :partial => 'voucher', :collection => @other_vouchers.sort_by  {|v| v.reserved? ? -(v.showdate.thedate.to_i) : -1.0e15 }
+      = render :partial => 'voucher', :collection => @other_vouchers.sort_by(&:reservation_status_then_showdate)
 
 %br/
-= button_to 'Buy More Tickets', store_path(@customer), {:method => :get}
+= gen_button 'Buy More Tickets', store_path(@customer)

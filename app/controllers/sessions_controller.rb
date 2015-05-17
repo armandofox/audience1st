@@ -55,7 +55,6 @@ class SessionsController < ApplicationController
   def temporarily_disable_admin
     session[:admin_disabled] = true
     flash[:notice] = "Switched to non-admin user view."
-    #redirect_to request.request_uri
     redirect_to :back
   end
 
@@ -63,7 +62,6 @@ class SessionsController < ApplicationController
     if session.delete(:admin_disabled)
       flash[:notice] = "Admin view reestablished."
     end
-    #redirect_to request.request_uri
     redirect_to :back
   end
   

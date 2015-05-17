@@ -5,7 +5,7 @@
       %th Show
       %th Your Reservation
       %th
-      - if current_user.is_boxoffice
+      - if @gAdminDisplay
         %th.admin Comments
   %tbody
     - vouchertypes.keys.sort { |a,b| group_bundle_vouchers(a,b) }.each do |v|
@@ -26,7 +26,7 @@
               - form_tag cancel_multiple_customer_vouchers_path(@customer) do
                 = hidden_field_tag 'voucher_ids', voucherlist
                 = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :style => "width: 15ex"
-          - if current_user.is_boxoffice
+          - if @gAdminDisplay
             %td
               - svid = "save_#{vid}"
               - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,vouchers.first), |

@@ -119,6 +119,9 @@ class Voucher < Item
       self.showdate <=> other.showdate
   end
 
+  # Sort all reserved vouchers by showdate, then all unreserved ones
+  def reservation_status_then_showdate ; reserved? ? -(showdate.thedate.to_i) : -1.0e15 ; end
+
   def one_line_description
     if reserved?
       s = sprintf("$%6.2f  %s\n         %s - ticket \##{id}",
