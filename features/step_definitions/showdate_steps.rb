@@ -47,7 +47,7 @@ end
 When /^I delete the showdate "(.*)"$/ do |date|
   showdate = Showdate.find_by_thedate!(Time.parse date)
   steps %Q{When I visit the show details page for "#{showdate.show.name}"}
-  within("#showdate_#{showdate.id}") { click_button "Delete" }
+  click_button "delete_showdate_#{showdate.id}"
 end
 
 Then /^there should be no "Delete" button for the showdate "(.*)"$/ do |date|

@@ -13,7 +13,11 @@ describe SessionsController do
   end
   # Login for an admin
   describe 'admin view' do
-    before(:each) do ;    login_as customers(:boxoffice_manager) ; end
+    before(:each) do
+      login_as customers(:boxoffice_manager)
+      # we must set an action FROM WHICH this request was given
+      request.env['HTTP_REFERER'] = customer_path(:boxoffice_manager)
+    end
     it 'can be disabled' do
       get :temporarily_disable_admin
       @controller.send(:is_boxoffice).should_not be_true

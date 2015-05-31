@@ -1,5 +1,5 @@
 #customer_quick_search.adminField
-  - if @customer
+  - if @customer && !@customer.new_record?
     #on_behalf_of_customer
       %span.strong Customer: 
       %span#onBehalfOfName= link_to @customer.full_name, customer_path(@customer)

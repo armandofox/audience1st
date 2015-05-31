@@ -11,6 +11,7 @@ Background: logged in as boxoffice
    | date              | tickets_sold |
    | 12/20/2011 8:00pm |            0 |
    | 12/22/2011 8:00pm |            5 |
+  And I am on the show details page for "Hamlet"
 
 Scenario: delete showdate that has no tickets sold
 
