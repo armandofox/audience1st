@@ -6,8 +6,8 @@ module ShowsHelper
     store_url(params)
   end
 
-  def link_to_showdate_tickets(showdate)
-    params = {:showdate_id => showdate.id}
+  def link_to_showdate_tickets(showdate, params={})
+    params[:showdate_id] = showdate.id
     params[:what] = 'Special Events' if showdate.show.special?
     store_url(params)
   end
