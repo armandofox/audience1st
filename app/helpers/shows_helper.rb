@@ -1,15 +1,15 @@
 module ShowsHelper
 
-  def link_to_show_tickets(show, args={})
-    action = (show.special? ? 'special' : 'index')
-    url_for({:only_path => false, :controller => 'store', :action => action,
-        :show_id => show.id}.merge(args))
+  def link_to_show_tickets(show)
+    params = {:show_id => show.id}
+    params[:what] = 'Special Events' if show.special?
+    store_url(params)
   end
 
-  def link_to_showdate_tickets(showdate, args={})
-    action = (showdate.show.special? ? 'special' : 'index')
-    url_for({:only_path => false, :controller => 'store', :action => action,
-        :showdate_id => showdate.id}.merge(args))
+  def link_to_showdate_tickets(showdate)
+    params = {:showdate_id => showdate.id}
+    params[:what] = 'Special Events' if showdate.show.special?
+    store_url(params)
   end
 
 end
