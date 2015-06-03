@@ -3,13 +3,13 @@
     %label{:for => "option_#{attrib}"}= humanize(attrib).capitalize_each_word
     = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[attrib.to_sym].to_s
   %td.t.option_value
-    - type = Option.columns_hash[attrib.to_s].type
-    - if type == :string
+    - case Option.columns_hash[attrib.to_s].type
+    - when :string
       = f.text_field attrib, {:size => 60}
-    - elsif type == :text
+    - when :text
       = f.text_area attrib, :rows => 6, :cols => 60
-    - elsif type == :boolean
+    - when :boolean
       = f.select attrib, [['Yes', true], ['No', false]]
-    - elsif type == :integer
+    - when :integer
       = f.text_field attrib, :size => 6, :maxlength => 6
     - else raise "Unexpected option type for #{attrib}: #{type.to_s}"

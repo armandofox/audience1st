@@ -42,7 +42,7 @@ class AccountCodesController < ApplicationController
   # DELETE /account_codes/1.xml
   def destroy
     @account_code = AccountCode.find(params[:id])
-    @account_code.destroy
+    @account_code.destroy or flash[:alert] = @account_code.errors_on(:base) 
     redirect_to account_codes_path
   end
 end
