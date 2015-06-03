@@ -287,6 +287,26 @@ encourage_email_opt_in: >
   email address on file but have opted out.  If blank, or if customer
   has no email address on file, no message or link will be displayed.
 
+subscription_order_service_charge: >
+
+  A flat fee (service charge) assessed on subscription orders only.  
+  Leave blank or enter 0 for no charge.
+
+subscription_service_charge_description: >
+
+  A description that will appear on the order summary for subscription
+  orders explaining this charge, for example, "Subscription Service Fee".
+
+regular_order_service_charge: >
+
+  A flat fee (service charge) assessed on regular (non-subscription) orders.  
+  Leave blank or enter 0 for no charge.
+
+regular_service_charge_description: >
+
+  A description that will appear on the order summary for regular 
+  (non-subscription) orders explaining this charge, for example, "Service Fee".
+
 checkout_notices: >
 
   Notices to customer that appear on checkout screen after successful

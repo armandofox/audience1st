@@ -14,6 +14,8 @@
      'send_birthday_reminders' => "0",
      'followup_visit_reminder_lead_time' => "0",
      'terms_of_sale' => 'Sales Final',
+     'subscription_order_service_charge' => '3',
+     'subscription_service_charge_description' => 'Service Charge',
      'precheckout_popup' => 'Please double check dates',
      'venue_homepage_url' => 'http://test.org'
    }
