@@ -4,6 +4,8 @@
     = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[attrib.to_sym].to_s
   %td.t.option_value
     - case Option.columns_hash[attrib.to_s].type
+    - when (attrib =~ /account_code/i)
+      = f.options_from_collection_for_select(associated_class.
     - when :string
       = f.text_field attrib, {:size => 60}
     - when :text

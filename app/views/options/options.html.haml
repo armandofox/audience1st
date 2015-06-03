@@ -24,6 +24,12 @@
       ) |
 
   .pageDiv
+    %h1 Account Codes
+    %p= gen_button 'Create New Account Codes', account_codes_path
+    = Option.account_code_options.each do |attr|
+      
+
+  .pageDiv
     %h1 Info Messages Displayed on Customer's "My Account" Page
     = render_collection_of_options f, %w( |
       welcome_page_subscriber_message |
