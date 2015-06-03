@@ -1,11 +1,30 @@
 class Txn < ActiveRecord::Base
-  belongs_to :txn_type
   belongs_to :purchasemethod
   belongs_to :show
   belongs_to :showdate
   belongs_to :customer
 
-  validates_associated :txn_type, :purchasemethod
+  Txn::TYPES = {
+    "other" => "Other",
+    "tkt_purch" => "Ticket purchase",
+    "sub_purch" => "Subscription purchase",
+    "add_tkts" => "Add tickets to account",
+    "oth_purch" => "Other purchase",
+    "edit" => "Edit customer info",
+    "don_cash" => "Donation - Cash",
+    "don_svc" => "Donation - Services",
+    "don_good" => "Donation - Goods or In-Kind",
+    "res_made" => "Reservation",
+    "res_cancl" => "Cancellation",
+    "pmt_rcv" => "Receipt of Pending Payment",
+    "refund" => "Refund",
+    "del_tkts" => "Remove tickets from account",
+    "???" => "UNKNOWN",
+    "config" => "Configuration Change",
+    "don_ack" => "Acknowledge donation"
+  }
+
+  def desc ; TYPES[type.to_s][1] ; end
 
   # provide a handler to be called when customers are merged.
   # Transfers the txns from old to new id, and also changes the
@@ -21,13 +40,6 @@ class Txn < ActiveRecord::Base
 
   def self.add_audit_record(args={})
 
-    if args.has_key?(:txn_type)
-      type_id = TxnType.get_type_by_name(args[:txn_type])
-    else
-      type_id = TxnType.get_type_by_name('???')
-      # TBD: log that txn type wasn't specified
-    end
-
     cust_id = args[:customer_id] || Customer.nobody_id
     logged_in = args[:logged_in_id].to_i
     show_id =  args[:show_id].to_i
@@ -41,7 +53,7 @@ class Txn < ActiveRecord::Base
     a = Txn.create( :customer_id => cust_id,
                      :entered_by_id => logged_in,
                      :txn_date => Time.now,
-                     :txn_type_id => type_id,
+                     :txn_type => args[:txn_type] || '???',
                      :show_id => show_id,
                      :showdate_id => showdate_id,
                      :purchasemethod_id => purch_id,
@@ -51,16 +63,5 @@ class Txn < ActiveRecord::Base
                      :comments => comments  )
     a.id
   end
-
-
-end
-
-class TxnType < ActiveRecord::Base
-  has_many :txns
-
-  def self.get_type_by_name(str)
-    (TxnType.find_by_shortdesc(str) || TxnType.find(:first)).id rescue 0
-  end
-
 end
 

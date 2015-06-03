@@ -67,7 +67,15 @@ class VouchersController < ApplicationController
 
     begin
       order.finalize!
-      RAILS_DEFAULT_LOGGER.info "Txn: #{current_user} issues #{@customer} #{thenumtoadd} '#{thevouchertype}' comps for #{theshowdate.printable_name}"
+      order.vouchers.each do |v|
+        Txn.add_audit_record(:txn_type => 'add_tkts',
+          :order_id => order.id,
+          :logged_in_id => current_user.id,
+          :customer_id => @customer.id,
+          :showdate_id => theshowdate.id,
+          :voucher_id => v.id,
+          :purchasemethod_id => Purchasemethod.get_type_by_name('none').id)
+      end
       flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
     rescue Order::NotReadyError => e
       flash[:alert] = ["Error adding comps: ", order]

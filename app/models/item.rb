@@ -11,7 +11,7 @@ class Item < ActiveRecord::Base
   delegate :sold_on, :purchasemethod, :to => :order
 
   def self.foreign_keys_to_customer
-    [:customer_id, :processed_by_id, :gift_purchaser_id]
+    [:customer_id, :processed_by_id]
   end
 
 end

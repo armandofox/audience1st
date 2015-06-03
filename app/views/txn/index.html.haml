@@ -21,7 +21,7 @@
         %td= link_to c.id, customer_path(t.customer)
         %td= link_to c.last_name, customer_path(t.customer)
         %td= link_to c.first_name, customer_path(t.customer)
-      %td= t.txn_type.desc 
+      %td= t.desc 
       %td= (t.voucher_id.to_i.zero? || (v= Voucher.find_by_id(t.voucher_id)).nil?) ? '' : v.purchasemethod.description
       %td= number_to_currency(t.dollar_amount) 
       %td= t.show ? t.show.name : "" 

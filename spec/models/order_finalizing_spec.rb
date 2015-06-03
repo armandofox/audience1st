@@ -155,12 +155,10 @@ describe Order, 'finalizing' do
         before :each do ; @order.finalize! ; end
         it_should_behave_like 'when valid'
         it 'should add donations to customer account' do ; @cust.donations.should include(@donation) ; end
-        it 'should leave gift_purchaser nil on all vouchers' do ; @cust.vouchers.each { |v| v.gift_purchaser.should be_nil } ; end
       end
       context 'when purchaser!=recipient' do
         before :each do ;   @order.purchaser = @purch = @the_purchaser ; @order.finalize! ; end
         it_should_behave_like 'when valid'
-        it 'should set gift_purchaser_id on all vouchers' do ; @cust.vouchers.each { |v| v.gift_purchaser_id.should == @purch.id } ; end
         it 'should add donations to purchaser account' do ; @purch.donations.should include(@donation) ; end
         it 'should NOT add donations to recipient account' do ; @cust.donations.should_not include(@donation) ; end
         it 'should NOT add vouchers to purchaser account' do

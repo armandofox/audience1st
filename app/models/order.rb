@@ -89,30 +89,6 @@ class Order < ActiveRecord::Base
   
   public
 
-  def self.create_from_existing_items!(list_of_items)
-    p = list_of_items.first
-    max_string_length = Order.columns_hash['comments'].limit
-    purchaser_id = p.gift_purchaser_id
-    if (purchaser_id == 2146730911 ||  purchaser_id == 0 || purchaser_id == p.customer_id)
-      # not really a gift order
-      purchaser = p.customer
-    else
-      purchaser = p.gift_purchaser
-    end
-    params = {
-      :walkup => p.walkup,
-      :customer => p.customer,
-      :purchaser => purchaser,
-      :ship_to_purchaser => p.ship_to_purchaser,
-      :sold_on => p.sold_on,
-      :purchasemethod => p.purchasemethod,
-      :comments => (list_of_items.map(&:comments).uniq.join('; '))[0, max_string_length],
-      :items => list_of_items,
-      :processed_by => p.processed_by || Customer.boxoffice_daemon
-    }
-    Order.create! params
-  end
-
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
     other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
     order = Order.new(other_args)
@@ -302,7 +278,6 @@ class Order < ActiveRecord::Base
           %w(processed_by comments).each do |attr|
             i.send("#{attr}=", self.send(attr))
           end
-          i.gift_purchaser_id = purchaser.id if self.gift?
         end
         self.save!
         if purchasemethod.purchase_medium == :credit_card
@@ -326,6 +301,14 @@ class Order < ActiveRecord::Base
 
   def refundable_to_credit_card?
     completed? && purchasemethod.purchase_medium == :credit_card  && !authorization.blank?
+  end
+
+  def gift?
+    purchaser_id != customer_id  &&  !purchaser_id.nil?
+  end
+
+  def ship_to
+    if gift? && ship_to_purchaser  then purchaser else customer end
   end
 
   def total

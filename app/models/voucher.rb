@@ -4,9 +4,11 @@ class Voucher < Item
   
   belongs_to :showdate
   belongs_to :vouchertype
-  belongs_to :gift_purchaser, :class_name => 'Customer'
 
   validates_presence_of :vouchertype_id
+
+  delegate :gift?, :ship_to, :to => :order
+
   # provide a handler to be called when customers are merged.
   # Transfers the vouchers from old to new id, and also changes the
   # values of processed_by field, which is really a customer id.
@@ -46,12 +48,7 @@ class Voucher < Item
     output = ''
     CSV::Writer.generate(output) do |csv|
       orders = vouchers.group_by do |v|
-        if v.gift_purchaser
-          cust = if v.ship_to_purchaser? then v.gift_purchaser else v.customer end
-        else  # not a gift
-          cust = v.customer
-        end
-        [cust, v.vouchertype]
+        [v.ship_to, v.vouchertype]
       end
       orders.each_pair do |k,v|
         voucher = v[0]

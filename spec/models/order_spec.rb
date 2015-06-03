@@ -32,6 +32,25 @@ describe Order do
     end
   end
 
+  describe 'gift' do
+    before :each do ; @c = create(:customer) ; @p = create(:customer) ; end
+    context 'sent to purchaser' do
+      subject { Order.new(:customer => @c, :purchaser => @p, :ship_to_purchaser => true) }
+      it { should be_a_gift }
+      its(:ship_to) { should == @p }
+    end
+    context 'sent to recipient' do
+      subject { Order.new(:customer => @c, :purchaser => @p, :ship_to_purchaser => false) }
+      it { should be_a_gift }
+      its(:ship_to) { should == @c }
+    end
+    context 'not a gift' do
+      subject { Order.new(:customer => @c, :purchaser => @c) }
+      it { should_not be_a_gift }
+      its(:ship_to) { should == @c }
+    end
+  end
+
   describe 'walkup confirmation' do
     before :each do
       @o = Order.new
