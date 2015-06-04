@@ -23,7 +23,7 @@
 
     - @vouchers.each do |v|
       - cust = v.ship_to
-      %tr{:class => 'highlighted' if v.gift?}
+      %tr{:class => ('highlighted' if v.gift?)}
         %td= rollover_with_contact_info(cust, :first_name)
         %td= rollover_with_contact_info(cust, :last_name)
         %td= cust.street
