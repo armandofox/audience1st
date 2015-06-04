@@ -1,5 +1,5 @@
 = render :partial => 'store/check_javascript'
-= sales_banners_for((@special_shows_only ? :special_event : :single_ticket), @subscriber, @next_season_subscriber)
+= sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
 - unless current_user
   %p.subscription_msg2
@@ -9,17 +9,19 @@
 
 #store
   %h1.page_heading.center
-    Select #{@what}
+    #{@what.pluralize}
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #event_types.center
-    = gen_button 'Regular Tickets', store_path(@customer)
-    = gen_button 'Special Events', store_path(@customer, :what => 'Special Events')
-    = gen_button 'Camps & Classes', store_path(@customer, :what => '
+    - (Show::TYPES - [@what]).each do |type|
+      = gen_button type.pluralize, store_path(@customer, :what => type)
 
   #ticket_menus
     - form_tag process_cart_path(@customer) do
-      = render :partial => 'ticket_menus' unless @valid_vouchers.empty?
+      - if @valid_vouchers.empty?
+        #show_description.explanation There are no #{@what.pluralize} on sale at this time.
+      - else
+        = render :partial => 'ticket_menus'
 
       -# = render :partial => 'retail' if @is_admin
 

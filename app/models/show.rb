@@ -1,10 +1,11 @@
 class Show < ActiveRecord::Base
 
-  TYPES = ['Regular Show', 'Special Event', 'Class']
-
   require 'ruport'
   acts_as_reportable
-  
+
+  REGULAR_SHOW = 'Regular Show'
+  TYPES = [REGULAR_SHOW, 'Special Event', 'Class']
+
   has_many :showdates, :dependent => :destroy, :order => 'thedate'
   has_one :latest_showdate, :class_name => 'Showdate', :order => 'thedate DESC'
   # NOTE: We can't do the trick below because the database's timezone
@@ -59,14 +60,14 @@ class Show < ActiveRecord::Base
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
 
-  named_scope :special, lambda { |value|
-    if value
-      {:conditions => ["event_type != ?", 'Regular Show']}
-    else
-      {:conditions => ["event_type = ?", 'Regular Show']}
-    end
+  def self.type(arg)
+    TYPES.include?(arg) ? arg : REGULAR_SHOW
+  end
+  
+  named_scope :of_type, lambda { |type|
+    {:conditions => ["event_type = ?", self.type(type) ] }
   }
-
+  
   def season
     # latest season that contains opening date
     self.opening_date.at_beginning_of_season.year
@@ -75,6 +76,8 @@ class Show < ActiveRecord::Base
   def future_showdates
     self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now],:order => 'thedate')
   end
+
+    
 
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end

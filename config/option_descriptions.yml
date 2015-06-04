@@ -171,39 +171,39 @@ subscription_sales_banner_for_nonsubscribers: >
   storeBanner.  The DIV can contain basic HTML tags
   but no JavaScript.
 
-single_ticket_sales_banner_for_current_subscribers: >
+regular_show_sales_banner_for_current_subscribers: >
 
   Banner text shown on Buy Single Tickets page to CURRENT subscribers.
-  It is placed inside a DIV with ID singleTicketBannerCurrentSubscriber
+  It is placed inside a DIV with ID regularShowBannerCurrentSubscriber
   and class storeBanner.  The DIV can contain basic HTML tags but no
   JavaScript.
 
-single_ticket_sales_banner_for_next_season_subscribers: >
+regular_show_sales_banner_for_next_season_subscribers: >
 
   Banner text shown on Buy Single Tickets page to patrons who have
   purchased a subscription for next season, whether or not they are
   current subscribers. It is placed inside a DIV with ID
-  singleTicketBannerNextSeasonSubscriber and class storeBanner.
+  regularShowBannerNextSeasonSubscriber and class storeBanner.
   The DIV can contain basic HTML tags but no JavaScript.
 
-single_ticket_sales_banner_for_nonsubscribers: >
+regular_show_sales_banner_for_nonsubscribers: >
 
   Banner text shown on Buy Single Tickets page to NONSUBSCRIBERS.  It is
-  placed inside a DIV with ID singleTicketBannerNonsubscriber and class
+  placed inside a DIV with ID regularShowBannerNonsubscriber and class
   storeBanner.
   The DIV can contain basic HTML tags but no JavaScript.
 
 special_event_sales_banner_for_current_subscribers: >
 
   Banner text shown on Special Events sales page to CURRENT subscribers.
-  It is placed inside a DIV with ID singleTicketBannerNonsubscriber
+  It is placed inside a DIV with ID specialEventBannerNonsubscriber
   and class storeBanner.  The DIV can contain basic HTML tags but no
   JavaScript.
 
 special_event_sales_banner_for_nonsubscribers: >
 
   Banner text shown on Special Events sales page to nonsubscribers.
-  It is placed inside a DIV with ID singleTicketBannerCurrentSubscriber
+  It is placed inside a DIV with ID specialEventBannerCurrentSubscriber
   and class storeBanner.  The DIV can contain basic HTML tags but no
   JavaScript.
 
@@ -212,7 +212,30 @@ special_event_sales_banner_for_next_season_subscribers: >
   Banner text shown on Special Events sales page to people who have
   purchased a subscription for next season, whether or not they are
   current subscribers.
-  It is placed inside a DIV with ID singleTicketBannerNextSeasonSubscriber
+  It is placed inside a DIV with ID specialEventBannerNextSeasonSubscriber
+  and class storeBanner.  The DIV can contain basic HTML tags but no
+  JavaScript.
+
+class_sales_banner_for_current_subscribers: >
+
+  Banner text shown on Classes & Camps sales page to CURRENT subscribers.
+  It is placed inside a DIV with ID classBannerNonsubscriber
+  and class storeBanner.  The DIV can contain basic HTML tags but no
+  JavaScript.
+
+class_sales_banner_for_nonsubscribers: >
+
+  Banner text shown on Classes & Camps sales page to nonsubscribers.
+  It is placed inside a DIV with ID classBannerCurrentSubscriber
+  and class storeBanner.  The DIV can contain basic HTML tags but no
+  JavaScript.
+
+class_sales_banner_for_next_season_subscribers: >
+
+  Banner text shown on Classes & Camps sales page to people who have
+  purchased a subscription for next season, whether or not they are
+  current subscribers.
+  It is placed inside a DIV with ID classBannerNextSeasonSubscriber
   and class storeBanner.  The DIV can contain basic HTML tags but no
   JavaScript.
 

@@ -5,14 +5,15 @@ class StoreController < ApplicationController
   before_filter :set_customer, :except => %w[donate]
   before_filter :is_logged_in, :only => %w[checkout place_order]
 
-  # flows:    ACTION                      INVARIANT BEFORE
-  #   index, subscribe, donate_to_fund    @customer is set
+  #        ACTION                      INVARIANT BEFORE ACTION
+  #        ------                      -----------------------
+  # index, subscribe, donate_to_fund    valid @customer
   #              |
   #         process_cart
   #        /           \
   #  shipping_address   |
   #           \        /
-  #            checkout                    logged in && valid @customer
+  #            checkout                logged in && valid @customer
   #               |
   #          place_order
   #===================================
@@ -56,9 +57,8 @@ class StoreController < ApplicationController
     @show_url = url_for(params.merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
-    @what = params[:what] || 'Regular Tickets'
+    @what = Show.type(params[:what])
     @page_title = "#{Option.venue} - Tickets"
-    @special_shows_only = (@what =~ /special/i)
     reset_shopping unless (@promo_code = params[:promo_code])
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
   end
@@ -243,7 +243,7 @@ class StoreController < ApplicationController
     (s = Show.find_by_id(params[:show_id], :include => :showdates)) &&
       s.showdates.try(:first)
   end
-  def showdate_from_default ; Showdate.current_or_next ; end
+  def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
 
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
@@ -271,7 +271,7 @@ class StoreController < ApplicationController
       when 'donate' then quick_donate_path # no @customer assumed
       when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id], @customer)
       when 'subscribe' then store_subscribe_path(@customer,promo_code_args)
-      when 'special' then store_special_path(@customer, promo_code_args)
+      when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what]))
       else store_path(@customer,promo_code_args)
       end
     flash[:alert] = msg
@@ -298,9 +298,9 @@ class StoreController < ApplicationController
 
   def setup_for_showdate(sd)
     @valid_vouchers = [] and return if sd.nil?
+    @what = sd.show.event_type
     @sd = sd
     @sh = @sd.show
-    @special_shows_only = @sh.special?
     @all_showdates = @sh.showdates
     if @is_admin then setup_ticket_menus_for_admin else setup_ticket_menus_for_patron end
   end
@@ -316,9 +316,11 @@ class StoreController < ApplicationController
     end.sort_by(&:display_order)
     @all_shows = Show.
       all_for_seasons(Time.this_season - 1, Time.this_season).
-      special(@special_shows_only)  ||  []
+      of_type(@what)  ||  []
     # ensure default show is included in list of shows
-    @all_shows << @sh unless @all_shows.include? @sh
+    if (@what == 'Regular Show' && !@all_shows.include?(@sh))
+      @all_shows << @sh 
+    end
   end
 
   def setup_ticket_menus_for_patron
@@ -326,8 +328,10 @@ class StoreController < ApplicationController
       v.customer = @customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)
-    @all_shows = Show.current_and_future.special(@special_shows_only) || []
-    @all_shows << @sh unless @all_shows.include? @sh
+    @all_shows = Show.current_and_future.of_type(@what) || []
+    if (@what == 'Regular Show' && !@all_shows.include?(@sh))
+      @all_shows << @sh 
+    end
   end
 
   def add_tickets_to_cart
