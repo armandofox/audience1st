@@ -1,4 +1,11 @@
-specs, scenarios, manual test for:
-- deleting a ticket type from showdate
-is _search_panel dead code?
-feature for listing customers, search any field, ajax automcplete
+show event_type can be Regular Show, Special Event, Class.
+
+this should be pluralized and used as button text to switch among pages
+on Store screens.
+
+named scope should symbolize this (eg :special_event) and use as
+argument.
+
+use of @special_shows_only should then be replaced w/this.
+
+and delete this notes file :-)

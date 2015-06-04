@@ -14,7 +14,7 @@ class BoxOfficeController < ApplicationController
     @showdate = Showdate.find_by_id(params[:id])
     if @showdate.nil?
       # use default showdate, and redirect
-      @showdate = Showdate.current_or_next(2.hours)
+      @showdate = Showdate.current_or_next(:grace_period => 2.hours)
       if @showdate.nil?
         flash[:alert] = "There are no shows this season eligible for check-in right now.  Please add some."
         redirect_to shows_path

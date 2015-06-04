@@ -2,6 +2,20 @@ require 'spec_helper'
 
 describe Showdate do
   describe "of next show" do
+    context "for non-regular shows" do
+      it 'returns correct entry' do
+        regular = create(:show, :event_type => 'Regular Show')
+        special = create(:show, :event_type => 'Special Event')
+        s1 = create(:showdate, :show => regular, :thedate => 1.day.from_now)
+        s2 = create(:showdate, :show => special, :thedate => 2.days.from_now)
+        Showdate.current_or_next(:type => 'Special Event').id.should == s2.id
+      end
+      it 'returns nil if no matches' do
+        s1 = create(:showdate)
+        Showdate.current_or_next(:type => 'Special Event').should be_nil
+      end
+    end
+      
     context "when there are no showdates" do
       before(:each) do ; Showdate.delete_all ; end
       it "should be nil" do
@@ -20,18 +34,16 @@ describe Showdate do
     end
     context "when there are past and future showdates" do
       before :each do
-        @past_show = Showdate.create!(:thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
-        @show_in_1_hour = Showdate.create!(:thedate => 1.hour.from_now, :end_advance_sales => 1.hour.from_now)
+        @past_show = create(:showdate, :thedate => 1.day.ago)
+        @show_in_1_hour = create(:showdate, :thedate => 1.hour.from_now)
       end
       it "should return the next showdate" do
-        @now_show = Showdate.create!(:thedate => 5.minutes.from_now,
-          :end_advance_sales => 5.minutes.from_now)
+        @now_show = create(:showdate, :thedate => 5.minutes.from_now)
         Showdate.current_or_next.id.should == @now_show.id
       end
       it "and 30-minute margin should return a showdate that started 5 minutes ago" do
-        @now_show = Showdate.create!(:thedate => 5.minutes.ago,
-          :end_advance_sales => 5.minutes.ago)
-        Showdate.current_or_next(30.minutes).id.should == @now_show.id
+        @now_show = create(:showdate, :thedate => 5.minutes.ago)
+        Showdate.current_or_next(:grace_period => 30.minutes).id.should == @now_show.id
       end
     end
   end

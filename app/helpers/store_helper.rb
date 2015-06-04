@@ -19,8 +19,9 @@ module StoreHelper
     else
       option, id = 'sales_banner_for_nonsubscribers', 'BannerNonSubscriber'
     end
-    sanitize_option_text("#{for_what}_#{option}",
-      'div', :id => "#{for_what.to_s.camelize(:lower)}#{id}", :class => 'storeBanner')
+    prefix = if for_what == :subscription then 'subscription' else for_what.tr(' ','').underscore end
+    sanitize_option_text("#{prefix}_#{option}",
+      'div', :id => "#{prefix.camelize(:lower)}_#{id}", :class => 'storeBanner')
   end
       
   def options_with_default(default_item, collection, name=nil)

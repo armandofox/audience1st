@@ -1,6 +1,7 @@
 #ticket_menus_inner
   = javascript_tag "recalc_total = function() { recalculate('total', '.itemQty', 'submit') }"
-  = hidden_field_tag 'referer', (@special_shows_only ? 'special' : 'index')
+  = hidden_field_tag 'referer', 'index'
+  = hidden_field_tag 'what', @show_type
   = render :partial => 'enter_promo_code'
 
   %br/
@@ -8,7 +9,7 @@
   - if !(@sh.try(:description).blank?)
     #show_description.explanation= @sh.description
 
-  %label{:for => "show"}= @special_shows_only ? 'Event' : 'Show'
+  %label{:for => "show"}= label_for_event_type(@what)
   = select_tag('show', options_with_default(@sh, @all_shows),                |
     :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('show').value)") |
   %br/

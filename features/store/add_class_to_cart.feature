@@ -8,8 +8,8 @@ Background:
 
   Given a class "Acting 101" available for enrollment now
   And I am logged in as customer "Mary Manager"
-  When I visit the special events page
-  And I select "Acting 101" from "Event"
+  When I visit the classes and camps page
+  And I select "Acting 101" from "Class"
   And I fill in "General - $20.00" with "1"
   And I press "CONTINUE >>"
   Then I should be on the checkout page
