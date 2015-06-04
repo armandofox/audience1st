@@ -12,6 +12,11 @@
     Select #{@what}
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
+  #event_types.center
+    = gen_button 'Regular Tickets', store_path(@customer)
+    = gen_button 'Special Events', store_path(@customer, :what => 'Special Events')
+    = gen_button 'Camps & Classes', store_path(@customer, :what => '
+
   #ticket_menus
     - form_tag process_cart_path(@customer) do
       = render :partial => 'ticket_menus' unless @valid_vouchers.empty?
