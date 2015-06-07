@@ -4,7 +4,7 @@ class Show < ActiveRecord::Base
   acts_as_reportable
 
   REGULAR_SHOW = 'Regular Show'
-  TYPES = [REGULAR_SHOW, 'Special Event', 'Class']
+  TYPES = [REGULAR_SHOW, 'Special Event', 'Class', 'Subscription']
 
   has_many :showdates, :dependent => :destroy, :order => 'thedate'
   has_one :latest_showdate, :class_name => 'Showdate', :order => 'thedate DESC'

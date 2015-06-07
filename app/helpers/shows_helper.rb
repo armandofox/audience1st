@@ -1,9 +1,18 @@
 module ShowsHelper
 
+  def label_for_page_header(type)
+    case type
+    when 'Special Event' then 'Special Events'
+    when 'Class' then 'Classes & Camps'
+    when 'Subscription' then 'Subscribe Now'
+    else 'Shows'
+    end
+  end
   def label_for_event_type(type)
     case type
     when 'Special Event' then 'Event'
     when 'Class' then 'Class'
+    when 'Subscription' then 'Subscription Package'
     else 'Show'
     end
   end

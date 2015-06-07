@@ -58,6 +58,7 @@ class StoreController < ApplicationController
     @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
     @what = Show.type(params[:what])
+    redirect_to store_subscribe_path and return if @what == 'Subscription'
     @page_title = "#{Option.venue} - Tickets"
     reset_shopping unless (@promo_code = params[:promo_code])
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
@@ -71,6 +72,7 @@ class StoreController < ApplicationController
     @page_title = "#{Option.venue} - Subscriptions"
     @reload_url = url_for(params.merge(:promo_code => 'XXXX'))
     @subscriber = @customer.subscriber?
+    @what = 'Subscription'
     @next_season_subscriber = @customer.next_season_subscriber?
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?

@@ -9,17 +9,17 @@
 
 #store
   %h1.page_heading.center
-    #{@what.pluralize}
+    = label_for_page_header @what
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #event_types.center
     - (Show::TYPES - [@what]).each do |type|
-      = gen_button type.pluralize, store_path(@customer, :what => type)
+      = gen_button label_for_page_header(type), store_path(@customer, :what => type)
 
   #ticket_menus
     - form_tag process_cart_path(@customer) do
       - if @valid_vouchers.empty?
-        #show_description.explanation There are no #{@what.pluralize} on sale at this time.
+        #show_description.explanation There are no #{label_for_page_header @what} on sale at this time.
       - else
         = render :partial => 'ticket_menus'
 
