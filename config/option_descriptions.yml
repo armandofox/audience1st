@@ -292,20 +292,42 @@ subscription_order_service_charge: >
   A flat fee (service charge) assessed on subscription orders only.  
   Leave blank or enter 0 for no charge.
 
-subscription_service_charge_description: >
+subscription_order_service_charge_description: >
 
   A description that will appear on the order summary for subscription
   orders explaining this charge, for example, "Subscription Service Fee".
+
+subscription_order_service_charge_account_code: >
+
+  The account code for coding service charges on subscription orders.
 
 regular_order_service_charge: >
 
   A flat fee (service charge) assessed on regular (non-subscription) orders.  
   Leave blank or enter 0 for no charge.
 
-regular_service_charge_description: >
+regular_order_service_charge_description: >
 
   A description that will appear on the order summary for regular 
   (non-subscription) orders explaining this charge, for example, "Service Fee".
+
+regular_order_service_charge_account_code: >
+
+  The account code for coding service charges on regular ticket orders.
+
+classes_order_service_charge: >
+
+  A flat fee (service charge) assessed on orders for classes and camps.
+  Leave blank or enter 0 for no charge.
+
+classes_order_service_charge_description: >
+
+  A description that will appear on the order summary for classes and camps
+  explaining this charge, for example, "Service Fee".
+
+classes_order_service_charge_account_code: >
+
+  The account code for coding service charges on classes and camps orders.
 
 checkout_notices: >
 

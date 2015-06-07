@@ -13,6 +13,7 @@
         
   .pageDiv
     %h1 Accepting Donations and Retail Sales Online
+    = gen_button 'Create/Edit Account Codes', account_codes_path
     = render_collection_of_options f, %w( |
       default_retail_account_code |
       default_donation_account_code |
@@ -22,12 +23,6 @@
       quick_donation_redirect |
       donation_ack_from |
       ) |
-
-  .pageDiv
-    %h1 Account Codes
-    %p= gen_button 'Create New Account Codes', account_codes_path
-    = Option.account_code_options.each do |attr|
-      
 
   .pageDiv
     %h1 Info Messages Displayed on Customer's "My Account" Page
@@ -68,11 +63,22 @@
       allow_gift_subscriptions |
       precheckout_popup  |
       terms_of_sale  |       
-      subscription_order_service_charge |
-      subscription_service_charge_description |
-      regular_order_service_charge |
-      regular_service_charge_description |
       checkout_notices |
+      ) |
+
+  .pageDiv
+    %h1 Order Service Charges
+    = gen_button 'Create/Edit Account Codes', account_codes_path
+    = render_collection_of_options f, %w( |
+      subscription_order_service_charge |
+      subscription_order_service_charge_description |
+      subscription_order_service_charge_account_code |
+      regular_order_service_charge |
+      regular_order_service_charge_description |
+      regular_order_service_charge_account_code |
+      classes_order_service_charge |
+      classes_order_service_charge_description |
+      classes_order_service_charge_account_code |
       ) |
  
   .pageDiv
