@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
   end
 
   def new_from_secret
-    redirect_after_login and return if logged_in?
+    redirect_after_login(current_user) and return if logged_in?
   end
 
   def create

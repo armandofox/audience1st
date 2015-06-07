@@ -14,7 +14,12 @@ class Option < ActiveRecord::Base
   validates_numericality_of :cancel_grace_period
   validates_presence_of(
     :venue, :venue_address, :venue_city_state_zip, :venue_telephone, :venue_homepage_url,
-    :boxoffice_telephone, :precheckout_popup, :terms_of_sale, :privacy_policy_url
+    :boxoffice_telephone, :precheckout_popup, :terms_of_sale, :privacy_policy_url,
+    :default_retail_account_code, :default_donation_account_code,
+    :default_donation_account_code_with_subscriptions,
+    :subscription_order_service_charge_account_code,
+    :regular_order_service_charge_account_code,
+    :classes_order_service_charge_account_code
     )
 
   validates_numericality_of :followup_visit_reminder_lead_time, :send_birthday_reminders

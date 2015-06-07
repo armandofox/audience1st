@@ -4,12 +4,7 @@
 class Donation < Item
 
   def self.default_code
-    if (code = Option.default_donation_account_code).blank?
-      AccountCode.default_account_code
-    else
-      AccountCode.find_by_code(code) ||
-        AccountCode.default_account_code
-    end
+    AccountCode.find(Option.default_donation_account_code)
   end
   
   belongs_to :account_code

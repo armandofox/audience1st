@@ -18,12 +18,7 @@ class RetailItem < Item
   end
 
   def self.default_code
-    if (code = Option.default_retail_account_code).blank?
-      AccountCode.default_account_code
-    else
-      AccountCode.find_by_code(code) ||
-        AccountCode.default_account_code
-    end
+    AccountCode.find(Option.default_retail_account_code)
   end
 
   def self.from_amount_description_and_account_code_id(amount, description, id)
