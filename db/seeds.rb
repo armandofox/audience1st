@@ -62,9 +62,17 @@ class Audience1stSeeder
   end
     
   def self.create_default_account_code
-    unless AccountCode.find(:first)
+    a = AccountCode.find(:first) ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
-    end
+    id = a.id
+    # set it as default account code for various things
+    Option.first.update_attributes!(
+      :default_donation_account_code => a.id,
+      :default_donation_account_code_with_subscriptions => a.id,
+      :default_retail_account_code => a.id,
+      :subscription_order_service_charge_account_code => a.id,
+      :regular_order_service_charge_account_code => a.id,
+      :classes_order_service_charge_account_code => a.id)
   end
 
   def self.create_purchasemethods

@@ -1,6 +1,8 @@
 class PerOrderServiceCharge < ActiveRecord::Migration
   def self.up
 
+    add_column :orders, :retail_items, :text, :null => true, :default => nil
+
     %w(subscription regular classes).each do |type|
       add_column :options, "#{type}_order_service_charge", :float, :default => 0.0
       add_column :options, "#{type}_order_service_charge_description", :string, :null => true, :default => nil

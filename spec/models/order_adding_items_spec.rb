@@ -2,13 +2,31 @@ require 'spec_helper'
 
 describe Order, 'adding' do
   before :each do 
-    @vv = ValidVoucher.create!(
-      :vouchertype => create(:revenue_vouchertype, :price => 7),
-      :showdate => create(:showdate, :date => 1.day.from_now),
-      :start_sales => Time.now,
-      :end_sales => 10.minutes.from_now,
-      :max_sales_for_type => 100)
+    @vv = create(:valid_voucher)
     @order = Order.new 
+  end
+  describe 'retail items' do
+    before :each do
+      @thing = Array.new(2) { |i| RetailItem.from_amount_description_and_account_code_id(4*(i+1), "Thing #{i}") }
+    end
+    it 'has none initially' do
+      @order.retail_items.should == []
+    end
+    it 'can include several' do
+      @order.add_retail_item(@thing[0])
+      @order.add_retail_item(@thing[1])
+      @order.retail_items.should == @thing
+      @order.total_price.should == 12.0
+    end
+    it 'includes them in price' do
+      expect { @order.add_retail_item(@thing[0]) }.to change { @order.total_price }.by(4)
+    end
+    it 'includes them in count' do
+      expect { @order.add_retail_item(@thing[0]) }.to change { @order.item_count }.by(1)
+    end
+    it 'excludes them from ticket count' do
+      expect { @order.add_retail_item(@thing[0]) }.to_not change { @order.ticket_count }
+    end
   end
   describe 'tickets' do
     before :each do  ;    @order.add_tickets(@vv, 3) ;   end
@@ -41,20 +59,15 @@ describe Order, 'adding' do
   end
   describe 'and getting total price' do
     it 'without donation' do
-      vv2 = ValidVoucher.create!(
-        :vouchertype => create(:revenue_vouchertype, :price => 3),
-        :showdate => create(:showdate, :date => 1.day.from_now),
-        :start_sales => Time.now,
-        :end_sales => 10.minutes.from_now,
-        :max_sales_for_type => 100)
-      expect { @order.add_tickets(@vv, 2) ; @order.add_tickets(vv2, 3) }.to change { @order.total_price }.to(23.0)
+      vv2 = create(:valid_voucher)
+      expect { @order.add_tickets(@vv, 2) ; @order.add_tickets(vv2, 3) }.to change { @order.total_price }.to(60.0)
     end
     describe 'with donation' do
       before :each do ; @donation = build(:donation, :amount => 17) ; end
       specify 'and tickets' do
         @order.add_tickets(@vv, 2)
         @order.add_donation(@donation)   # at $17
-        @order.total_price.should == 31.0
+        @order.total_price.should == 41.0
       end
       specify 'with donation only' do
         @order.add_donation(@donation)

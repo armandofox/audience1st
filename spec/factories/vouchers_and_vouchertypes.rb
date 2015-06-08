@@ -1,5 +1,16 @@
 FactoryGirl.define do
 
+  factory :valid_voucher do
+    ignore do
+      price 7
+    end
+    start_sales { Time.now }
+    end_sales   { 10.minutes.from_now }
+    max_sales_for_type 100
+    association :showdate
+    association :vouchertype, :factory => :revenue_vouchertype
+  end
+
   factory :vouchertype do
     account_code { AccountCode.default_account_code }
     season Time.now.year
@@ -37,7 +48,6 @@ FactoryGirl.define do
     factory :bundle do
       ignore do
         including { Hash.new }
-#        including { Hash[FactoryGirl.create(:vouchertype_included_in_bundle), 2] }
       end
       name 'Bundle'
       category 'bundle'

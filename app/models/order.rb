@@ -10,6 +10,7 @@ class Order < ActiveRecord::Base
   has_many :donations, :dependent => :destroy
   
   attr_accessor :purchase_args
+  attr_reader :donation
 
   delegate :purchase_medium, :to => :purchasemethod
   
@@ -28,6 +29,7 @@ class Order < ActiveRecord::Base
 
   serialize :valid_vouchers, Hash
   serialize :donation_data, Hash
+  serialize :retail_items, Array
 
   def initialize(*args)
     @purchase_args = {}
@@ -40,6 +42,7 @@ class Order < ActiveRecord::Base
       @donation = Donation.new(:amount => donation_data[:amount], :account_code_id => donation_data[:account_code_id])
     end
     self.valid_vouchers ||= {}
+    self.retail_items = []
   end
 
   private
@@ -137,13 +140,16 @@ class Order < ActiveRecord::Base
     self.donation_data[:account_code_id] = d.account_code_id
     @donation = d
   end
-  attr_reader :donation
   
+  def add_retail_item(r)
+    self.retail_items << r
+  end
+
   def ticket_count
     completed? ? vouchers.count : valid_vouchers.values.map(&:to_i).sum
   end
 
-  def item_count ; ticket_count + (include_donation? ? 1 : 0) ; end
+  def item_count ; ticket_count + (include_donation? ? 1 : 0) + retail_items.size; end
   
   def has_mailable_items?
     # do any of the items require fulfillment?
@@ -188,7 +194,7 @@ class Order < ActiveRecord::Base
 
   def total_price
     return items.map(&:amount).sum if completed?
-    total = self.donation.try(:amount).to_f
+    total = self.donation.try(:amount).to_f + self.retail_items.map(&:amount).sum
     valid_vouchers.each_pair do |vv_id, qty| 
       total += ValidVoucher.find(vv_id).price * qty
     end
