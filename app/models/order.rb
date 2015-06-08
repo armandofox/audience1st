@@ -269,23 +269,24 @@ class Order < ActiveRecord::Base
           v.walkup = self.walkup?
         end
         customer.add_items(vouchers)
+        # add retail items to recipient's account
+        customer.add_items(retail_items) if !retail_items.empty?
         unless customer.save
           raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors_as_html)
         end
         # add donation items to purchaser's account
         purchaser.add_items([donation]) if donation
-        # add retail items to purchaser's account
-        purchaser.add_items(retail_items) if !retail_items.empty?
         unless purchaser.save
           raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors_as_html)
         end
         self.sold_on = sold_on_date
         self.items += vouchers
         self.items += [ donation ] if donation
+        self.items += retail_items if retail_items
         self.items.each do |i|
-          %w(processed_by comments).each do |attr|
-            i.send("#{attr}=", self.send(attr))
-          end
+          i.processed_by = self.processed_by
+          # for retail item, comment is name of item, so we don't overwrite that.
+          i.comments = self.comments unless i.kind_of?(RetailItem)
         end
         self.save!
         if purchasemethod.purchase_medium == :credit_card

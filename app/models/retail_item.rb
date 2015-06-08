@@ -23,7 +23,7 @@ class RetailItem < Item
   end
 
   def one_line_description
-    sprintf("$%6.2f  Purchase: #{comments}", amount)
+    sprintf("$%6.2f  #{comments}", amount)
   end
 
 end

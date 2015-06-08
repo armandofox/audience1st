@@ -34,7 +34,7 @@ When /^I login as (.*)$/ do |who|
   @is_admin = false
   case who
   when /administrator/i
-    @customer = customers(:admin)
+    @customer = Customer.find_by_role!(100)
   when /nonsubscriber/i
     @customer = customers(:tom)
   when /subscriber/i

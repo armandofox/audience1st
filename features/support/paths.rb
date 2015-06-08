@@ -25,7 +25,7 @@ module NavigationHelpers
     when /the add comps page/i              then new_customer_voucher_path(@customer)
       # store purchase flow
     when /the store page for "(.*)"/    then store_path(:show_id => Show.find_by_name!($1).id)
-    when /the store page$/i             then store_path
+    when /the store page/i              then store_path(@customer)
     when /the special events page/      then store_path(:what => 'Special Event')
     when /the classes and camps page/   then store_path(:what => 'Class')
     when /the subscriptions page/i      then store_subscribe_path

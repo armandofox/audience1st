@@ -31,6 +31,6 @@ describe RetailItem do
     subject { RetailItem.from_amount_description_and_account_code_id(3.51, 'Auction', @account2.id) }
     its(:account_code) { should == @account2 }
     its(:amount) { should == 3.51 }
-    its(:one_line_description) { should match(/\$\s*3.51\s+Purchase: Auction$/) }
+    its(:one_line_description) { should match(/\$\s*3.51\s+Auction$/) }
   end
 end

@@ -53,7 +53,7 @@ admin:
   first_name: Super
   last_name:  Admin
   role: 100
-  email: admin
+  email: admin@mail.com
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
 
