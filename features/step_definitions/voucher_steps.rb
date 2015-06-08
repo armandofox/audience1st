@@ -24,7 +24,7 @@ Given /^customer "(.*) (.*)" has (\d+) subscriber reservations for (.*)$/ do |fi
   sub_vouchers.each { |v| v.reserve_for(@showdate, Customer.boxoffice_daemon) }
 end
 
-Then /^customer "?(.*) (.*)"? should have the following items:$/ do |first,last,items|
+Then /^customer "(.*) (.*)" should have the following items:$/ do |first,last,items|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   items.hashes.each do |item|
     conds_clause = 'type = ? AND amount BETWEEN ? AND ?  AND customer_id = ?'
@@ -56,7 +56,7 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,typ
     should == num.to_i
 end
 
-Then /^customer (.*) (.*) should have the following vouchers:$/ do |first,last,vouchers|
+Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last,vouchers|
   @customer = Customer.find_by_first_name_and_last_name!(first,last)
   @vouchers = @customer.vouchers
   vouchers.hashes.each do |v|

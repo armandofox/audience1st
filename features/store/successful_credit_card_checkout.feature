@@ -47,7 +47,7 @@ Feature: Successful checkout with credit card
     When I place my order with a valid credit card
     Then I should be on the order confirmation page
     And I should see "You have paid a total of $180.00 by Credit card"
-    And customer Tom Foolery should have the following vouchers:
+    And customer "Tom Foolery" should have the following vouchers:
     | vouchertype            | quantity |
     | Super Sub              |        3 |
     | Hamlet (subscriber)    |        6 |

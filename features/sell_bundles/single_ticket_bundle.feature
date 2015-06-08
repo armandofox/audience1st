@@ -17,7 +17,7 @@ Scenario: enough seats available for both shows
 
   When the order is placed successfully
   Then I should be on the order confirmation page
-  Then customer Tom Foolery should have the following vouchers:
+  Then customer "Tom Foolery" should have the following vouchers:
   | vouchertype        | quantity | showdate          |
   | Hamlet (bundle)    |        2 | May 12, 2010, 8pm |
   | King Lear (bundle) |        2 | May 13, 2010, 8pm |

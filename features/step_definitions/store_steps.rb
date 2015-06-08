@@ -1,3 +1,14 @@
+module CustomerDivs
+  def verify_customer_in_div(id, first, last)
+    with_scope id do
+      find_field("customer[first_name]").value.should == first
+      find_field("customer[last_name]").value.should == last
+    end
+  end
+end
+
+World(CustomerDivs)
+
 Given /^a show "(.*)" with "(.*)" tickets for \$?(.*) on "(.*)"$/ do |show,type,price,date|
   steps %Q{Given a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
 end
@@ -60,13 +71,6 @@ When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*
     fill_in 'customer[zip]', :with => zip
     fill_in 'customer[day_phone]', :with => phone
     fill_in 'customer[email]', :with => email
-  end
-end
-
-def verify_customer_in_div(id, first, last)
-  with_scope id do
-    find_field("customer[first_name]").value.should == first
-    find_field("customer[last_name]").value.should == last
   end
 end
 

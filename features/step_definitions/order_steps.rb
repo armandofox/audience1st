@@ -14,6 +14,7 @@ end
 When /^I place my order with a valid credit card$/ do
   # relies on stubbing Store.purchase_with_credit_card method
   steps %Q{When I press "Charge Credit Card"}
+  page.first('title').text.should match(/confirmation of order/i)
 end
 
 When /^the order is placed successfully$/ do

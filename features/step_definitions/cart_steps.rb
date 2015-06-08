@@ -1,4 +1,7 @@
-Given /^my cart contains (\d+) "(.*)" (bundles|subscriptions)$/ do |qty,name,_|
+Given /^(?:my cart contains|I add) (\d+) "(.*)" (bundles|subscriptions)$/ do |qty,name,_|
+  unless Vouchertype.find_by_name_and_category(name, "bundle")
+    steps "Given a \"#{name}\" subscription available to anyone for $50.00"
+  end
   visit path_to(%Q{the subscriptions page})
   select qty.to_s, :from => name
   click_button 'CONTINUE >>'
@@ -29,3 +32,16 @@ Then /^the cart should not contain a donation$/ do
   steps %Q{Then I should not see "Donation" within "#cart_items"}
 end
 
+Then /^the cart should show the following items:$/ do |table|
+  table.hashes.each do |item|
+    formatted_price = number_to_currency(item['price'].to_f)
+    page.all('li.cart_item').any? do |entry|
+      entry.find('.cart_item_price').has_content?(formatted_price) &&
+        entry.find('.cart_item_desc').has_content?(item['description'])
+    end
+  end
+end
+
+Then /^the cart total price should be \$?([0-9.]+)$/ do |price|
+  within '#cart_total' do ; page.should have_content(number_to_currency price.to_f) ; end
+end

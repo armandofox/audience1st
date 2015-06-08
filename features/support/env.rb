@@ -104,6 +104,7 @@ Before('@stubs_failed_credit_card_payment') do
   end
 end
 
-
-
 World(FactoryGirl::Syntax::Methods)
+World(ActionView::Helpers::NumberHelper)
+World(ActionView::Helpers::TextHelper)
+

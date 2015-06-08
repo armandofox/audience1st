@@ -142,7 +142,7 @@ class Order < ActiveRecord::Base
   end
   
   def add_retail_item(r)
-    self.retail_items << r
+    self.retail_items << r if r
   end
 
   def ticket_count

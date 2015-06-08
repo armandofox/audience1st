@@ -141,6 +141,7 @@ class StoreController < ApplicationController
     add_donation_to_cart
     redirect_to_referer('There is nothing in your order.') and return if @cart.cart_empty?
     # order looks OK; all subsequent actions should display in-progress order at top of page
+    add_service_charge_to_cart
     remember_cart_in_session!
     set_checkout_in_progress true
     # if gift, first collect separate shipping address...
@@ -199,6 +200,7 @@ class StoreController < ApplicationController
   end
 
   def place_order
+    @page_title = "Confirmation of Order #{@cart.id}"
     @order = @cart
     # what payment type?
     @order.purchasemethod,@order.purchase_args = purchasemethod_from_params
@@ -371,5 +373,10 @@ class StoreController < ApplicationController
       @cart.errors.add(:base, "There were problems with your retail purchase: " <<
         r.errors.full_messages.join(', '))
     end
-  end      
+  end
+
+  def add_service_charge_to_cart
+    @cart.add_retail_item RetailItem.new_service_charge_for(params[:what])
+  end
+
 end

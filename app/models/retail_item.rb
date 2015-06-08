@@ -13,6 +13,24 @@ class RetailItem < Item
     "Retail: #{comments}"
   end
 
+  def self.new_service_charge_for(what='Regular Show')
+    if (what == 'Class' && (amount = Option.classes_order_service_charge) > 0)
+      new(:amount => amount,
+        :comments => Option.classes_order_service_charge_description,
+        :account_code => AccountCode.find(Option.classes_order_service_charge_account_code))
+    elsif (what == 'Subscription' && (amount = Option.subscription_order_service_charge) > 0)
+      new(:amount => amount,
+        :comments => Option.subscription_order_service_charge_description,
+        :account_code => AccountCode.find(Option.subscription_order_service_charge_account_code))
+    elsif (amount = Option.regular_order_service_charge) > 0
+      new(:amount => amount,
+        :comments => Option.regular_order_service_charge_description,
+        :account_code => AccountCode.find(Option.regular_order_service_charge_account_code))
+    else
+      nil
+    end
+  end
+
   def self.default_code
     AccountCode.find(Option.default_retail_account_code)
   end

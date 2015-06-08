@@ -28,7 +28,7 @@ module NavigationHelpers
     when /the store page/i              then store_path(@customer)
     when /the special events page/      then store_path(:what => 'Special Event')
     when /the classes and camps page/   then store_path(:what => 'Class')
-    when /the subscriptions page/i      then store_subscribe_path
+    when /the subscriptions page/i      then store_subscribe_path(@customer)
     when /the shipping info page/i      then shipping_address_path(@customer)
     when /the checkout page/i           then checkout_path(@customer)
     when /the order confirmation page/i then place_order_path(@customer)
