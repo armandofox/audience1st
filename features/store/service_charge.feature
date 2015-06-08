@@ -9,12 +9,12 @@ Background: per-order service charges have been set up
 
   And I am logged in as customer "Tom Foolery"
   And a "Regular Sub" subscription available to anyone for $50.00
+  And   the setting "subscription order service charge description" is "Sub Fee"
+  And   the setting "subscription order service charge" is "2.50"
 
 Scenario: service charge on subscription order
 
-  Given the setting "subscription order service charge" is "2.50"
-  And the setting "subscription order service charge description" is "Sub Fee"
-  And my cart contains 1 "Regular Sub" subscriptions
+  Given my cart contains 1 "Regular Sub" subscriptions
 
   Then I should be on the checkout page for customer "Tom Foolery"
   And the cart should show the following items:
@@ -33,8 +33,8 @@ Scenario: service charge on subscription order
 
 Scenario: service charge on regular order
   
-  Given the setting "regular order service charge" is "3.50"
-  And the setting "regular order service charge description" is "Order Fee"
+  Given the setting "regular order service charge description" is "Order Fee"
+  And   the setting "regular order service charge" is "3.50"
   And my cart contains the following tickets:
   | show    | qty | type    | price | showdate             |
   | Chicago |   3 | General |  7.00 | May 15, 8:00pm   |
@@ -49,13 +49,11 @@ Scenario: service charge on regular order
 
 Scenario: service charge is not added twice if order error first time
 
-  Given the setting "subscription order service charge" is "2.50"
-  And the setting "subscription order service charge description" is "Sub Fee"
-  And I am on the subscriptions page for customer "Tom Foolery"
+  Given I am on the subscriptions page for customer "Tom Foolery"
   And I press "CONTINUE >>"
 
   Then I should be on the subscriptions page for customer "Tom Foolery"
   And I should see "There is nothing in your order"
   When I add 1 "Regular Sub" subscriptions
-  Then the cart total price should be 53.50
+  Then the cart total price should be 52.50
 
