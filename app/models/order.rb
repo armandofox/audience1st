@@ -274,6 +274,8 @@ class Order < ActiveRecord::Base
         end
         # add donation items to purchaser's account
         purchaser.add_items([donation]) if donation
+        # add retail items to purchaser's account
+        purchaser.add_items(retail_items) if !retail_items.empty?
         unless purchaser.save
           raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors_as_html)
         end
