@@ -26,4 +26,14 @@ class Option < ActiveRecord::Base
 
   validates_numericality_of :subscription_order_service_charge, :greater_than_or_equal_to => 0
   validates_numericality_of :regular_order_service_charge, :greater_than_or_equal_to => 0
+
+  validates_presence_of :subscription_order_service_charge_description,
+  :if => Proc.new { |o| o.subscription_order_service_charge > 0 }
+  
+  validates_presence_of :regular_order_service_charge_description,
+  :if => Proc.new { |o| o.regular_order_service_charge > 0 }
+  
+  validates_presence_of :classes_order_service_charge_description,
+  :if => Proc.new { |o| o.classes_order_service_charge > 0 }
+  
 end
