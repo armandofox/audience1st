@@ -23,7 +23,7 @@
       - else
         = render :partial => 'ticket_menus'
 
-      -# = render :partial => 'retail' if @is_admin
+      = render :partial => 'retail' if @is_admin
 
       %label{:for => :donation} Additional tax-deductible donation
       = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'

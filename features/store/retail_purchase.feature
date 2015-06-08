@@ -1,4 +1,3 @@
-@wip
 Feature: accept retail purchases
   
   As an event manager or house manager
@@ -20,7 +19,7 @@ Scenario: successful retail purchase
   When I fill in "Description of retail purchase" with "Auction item" 
   And I press "CONTINUE >>"
   Then I should be on the checkout page
-  And I should see "Purchase: Auction item"
+  And I should see "Auction item"
   When the order is placed successfully
   Then customer Tom Foolery should have the following items:
   | type       | amount | comments     | account_code |

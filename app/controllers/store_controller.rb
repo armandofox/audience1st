@@ -135,6 +135,7 @@ class StoreController < ApplicationController
     @cart.add_comment params[:comments].to_s
     add_tickets_to_cart
     redirect_to_referer(@cart) and return unless @cart.errors.empty?
+    add_retail_items_to_cart
     # all well with cart, try to process donation if any
     add_donation_to_cart
     redirect_to_referer('There is nothing in your order.') and return if @cart.cart_empty?
@@ -356,4 +357,16 @@ class StoreController < ApplicationController
           params[:account_code_id] ))
     end
   end
+
+  def add_retail_items_to_cart
+    return unless @is_admin && params[:retail].to_f > 0.0
+    r = RetailItem.from_amount_description_and_account_code_id(
+      *(params.values_at(:retail, :retail_comments, :retail_account_code_id)))
+    if r.valid?
+      @cart.add_retail_item(r)
+    else
+      @cart.errors.add(:base, "There were problems with your retail purchase: " <<
+        @r.errors.full_messages.join(', '))
+    end
+  end      
 end

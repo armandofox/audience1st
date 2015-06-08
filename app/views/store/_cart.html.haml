@@ -23,6 +23,12 @@
             .cart_item_price= number_to_currency(d.amount)
           %span.donation_name Donation to #{h(d.account_code.name)}
         
+      - @cart.retail_items.each do |item|
+        %li.cart_item{:class=>cycle(:even,:odd)}
+          .price_and_actions
+            .cart_item_price= number_to_currency(item.amount)
+          %span.retail_item_description= item.comments
+
     #cart_total
       #total_price._stripe_total= number_to_currency(@cart.total_price)
       %div &nbsp;

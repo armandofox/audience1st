@@ -42,7 +42,7 @@ class Order < ActiveRecord::Base
       @donation = Donation.new(:amount => donation_data[:amount], :account_code_id => donation_data[:account_code_id])
     end
     self.valid_vouchers ||= {}
-    self.retail_items = []
+    self.retail_items ||= []
   end
 
   private
@@ -116,7 +116,7 @@ class Order < ActiveRecord::Base
   end
 
   def cart_empty?
-    valid_vouchers.empty? && donation.nil?
+    valid_vouchers.empty? && donation.nil? && retail_items.empty?
   end
 
   def add_with_checking(valid_voucher, number, promo_code)

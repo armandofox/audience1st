@@ -21,6 +21,11 @@ describe Order, 'adding' do
     it 'includes them in price' do
       expect { @order.add_retail_item(@thing[0]) }.to change { @order.total_price }.by(4)
     end
+    it 'makes order nonempty' do
+      @order.cart_empty?.should be_true
+      @order.add_retail_item(@thing[0])
+      @order.cart_empty?.should_not be_true
+    end
     it 'includes them in count' do
       expect { @order.add_retail_item(@thing[0]) }.to change { @order.item_count }.by(1)
     end
