@@ -88,7 +88,7 @@ ActionController::Routing::Routes.draw do |map|
   :customer_id => nil,
   :conditions => {:method => :get})
   
-  map.donate_to_fund('/store/donate_to_fund/:id/:customer_id',
+  map.donate_to_fund('/donate_to_fund/:id/:customer_id',
   :customer_id => nil,
   :controller => 'store', :action => 'donate_to_fund', :conditions => {:method => :get})
 
