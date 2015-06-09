@@ -12,8 +12,10 @@ class ApplicationController < ActionController::Base
   
   filter_parameter_logging :password
 
-  if (RAILS_ENV == 'production' && !SANDBOX)
-    ssl_exception()             # NO exceptions, everything SSL
+  if (RAILS_ENV == 'production')
+    SslRequirement.ssl_all = true
+  else
+    SslRequirement.disable_ssl_check = true
   end
 
   require 'csv.rb'
