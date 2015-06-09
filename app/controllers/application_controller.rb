@@ -8,19 +8,13 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include ExceptionNotifiable
   include FilenameUtils
+  include SslRequirement
   
   filter_parameter_logging :password
 
   if (RAILS_ENV == 'production' && !SANDBOX)
-    include SslRequirement
-  else
-    def self.ssl_required(*args) ; true ; end
-    def self.ssl_allowed(*args) ; true ; end
-    def ssl_required? ; nil ; end
-    def ssl_allowed? ; nil ; end
+    ssl_exception()             # NO exceptions, everything SSL
   end
-
-  ssl_required
 
   require 'csv.rb'
   require 'string_extras.rb'
