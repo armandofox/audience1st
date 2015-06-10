@@ -224,6 +224,10 @@ class Order < ActiveRecord::Base
     (items.map(&:one_line_description) << self.comments).join("\n")
   end
 
+  def summary_for_audit_txn
+    (items.map(&:description_for_audit_txn) << self.comments).join('; ')
+  end
+
   def each_voucher
     valid_vouchers.each_pair do |id,num|
       v = ValidVoucher.find(id)

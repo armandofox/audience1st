@@ -14,4 +14,7 @@ class Item < ActiveRecord::Base
     [:customer_id, :processed_by_id]
   end
 
+  def one_line_description ; raise "Must override this method" ; end
+  def description_for_audit_txn ; raise "Must override this method" ; end
+
 end

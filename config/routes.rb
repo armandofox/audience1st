@@ -151,9 +151,7 @@ ActionController::Routing::Routes.draw do |map|
 
 
   # Routes for viewing and refunding orders
-  map.order '/orders/:id', :controller => 'orders', :action => 'show', :conditions => {:method => :get}
-  map.connect '/orders/refund/:id', :controller => 'orders', :action => 'refund', :conditions => {:method => :post}
-  map.customer_orders '/orders/by_customer/:id', :controller => 'orders', :action => 'by_customer'
+  map.resources(:orders, :only => [:index, :show, :destroy])
 
   map.root :controller => 'customers', :action => 'show'
  

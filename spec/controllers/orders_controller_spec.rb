@@ -16,4 +16,14 @@ describe OrdersController do
       flash[:alert].should_not be_blank
     end
   end
+  describe 'destroying' do
+    before :each do ; @o = create(:order) ; end
+    it 'creates a Txn summarizing the order' do
+      Txn.should_receive(:add_audit_record).
+        with(hash_including({:order_id => @o.id}))
+      @o.destroy
+    end
+  end
+  
+
 end

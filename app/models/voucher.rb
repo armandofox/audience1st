@@ -130,6 +130,11 @@ class Voucher < Item
     s
   end
 
+  def description_for_audit_txn
+    sprintf("%.2f #{vouchertype.name} (%s) [#{id}]", amount,
+      (reserved? ? showdate.printable_name : 'open'))
+  end
+  
   def inspect
     sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10s",
             id,
