@@ -260,6 +260,7 @@ class Customer < ActiveRecord::Base
   # convenience accessors
 
   def to_s
+    return ""
     "[#{id}] #{full_name} " << (email.blank? ? '' : "<#{email}> ") 
   end
 

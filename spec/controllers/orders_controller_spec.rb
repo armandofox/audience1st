@@ -21,7 +21,7 @@ describe OrdersController do
     it 'creates a Txn summarizing the order' do
       Txn.should_receive(:add_audit_record).
         with(hash_including({:order_id => @o.id}))
-      @o.destroy
+      delete :destroy, :id => @o.id
     end
   end
   

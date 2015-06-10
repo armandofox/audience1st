@@ -225,7 +225,10 @@ class Order < ActiveRecord::Base
   end
 
   def summary_for_audit_txn
-    (items.map(&:description_for_audit_txn) << self.comments).join('; ')
+    summary = items.map(&:description_for_audit_txn)
+    summary << comments unless comments.blank?
+    summary << "Stripe ID #{authorization}" unless authorization.blank?
+    summary.join('; ')
   end
 
   def each_voucher
@@ -294,7 +297,7 @@ class Order < ActiveRecord::Base
           i.comments = self.comments unless i.kind_of?(RetailItem)
         end
         self.save!
-        if purchasemethod.purchase_medium == :credit_card
+        if purchase_medium == :credit_card
           Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors_as_html)
         end
         # Log the order
@@ -313,8 +316,13 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def refundable?
+    completed? &&
+      (refundable_to_credit_card? || purchase_medium != :credit_card)
+  end
+
   def refundable_to_credit_card?
-    completed? && purchasemethod.purchase_medium == :credit_card  && !authorization.blank?
+    completed? && purchase_medium == :credit_card  && !authorization.blank?
   end
 
   def gift?

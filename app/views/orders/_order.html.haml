@@ -18,7 +18,7 @@
       = number_to_currency @total
     %p
       %span.label Payment method:
-      = humanize(order.purchasemethod.purchase_medium)
+      = humanize(order.purchase_medium)
 
     %table#order_items.hilite
       %thead
@@ -43,8 +43,8 @@
     - if @printable
       %h2.center #{Option.venue} thanks you for your order!
     - else
-      = gen_button 'Printable Receipt', {:action => :show, :id => order, :printable => 1}, {:target => '_blank'}
+      = gen_button 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank'}
 
-      - if order.refundable_to_credit_card?
-        - form_tag :action => 'refund', :id => order.id do
-          = submit_tag 'Refund'
+      - if order.refundable?
+        = button_to 'Refund', order, :method => :delete, :confirm => deletion_warning_for(order)
+

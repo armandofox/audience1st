@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
-
   helper :all
-  
+
   protect_from_forgery
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 

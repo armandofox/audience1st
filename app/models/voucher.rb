@@ -140,7 +140,7 @@ class Voucher < Item
             id,
             (showdate ? (showdate.printable_name[-15..-1] rescue "--") : 'OPEN'),
             (customer ? customer.to_s : 'NONE'),
-            (vouchertype.name[0..10] rescue ""),
+      name,
             (vouchertype.price.to_f rescue 0.0),
             ((vouchertype.subscription? ? "S" : "s") rescue "-"),
             ((vouchertype.bundle?? "B": "b") rescue "-"),

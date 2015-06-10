@@ -92,7 +92,7 @@ end
 # Stub Stripe for certain scenarios
 Before('@stubs_successful_credit_card_payment') do
   Store.stub(:pay_with_credit_card) do |order|
-    order.authorization = 'ABC123'
+    order.update_attributes!(:authorization => 'ABC123')
   end
 end
 
@@ -102,6 +102,14 @@ Before('@stubs_failed_credit_card_payment') do
     order.errors.add_to_base "Credit card payment error: Forced failure in test mode"
     nil
   end
+end
+
+Before('@stubs_successful_refund') do
+  Store.stub(:refund_credit_card).and_return(true)
+end
+
+Before('@stubs_failed_refund') do
+  Store.stub(:refund_credit_card).and_raise(Stripe::StripeError.new("Refund failed in test mode"))
 end
 
 World(FactoryGirl::Syntax::Methods)
