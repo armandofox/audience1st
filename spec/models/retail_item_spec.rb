@@ -6,11 +6,11 @@ describe RetailItem do
     @account2 = AccountCode.create!(:code => "1234", :name => "Fake")
   end
   describe 'new' do
-    subject { RetailItem.from_amount_description_and_account_code_id(amount,description,id) }
+    subject { RetailItem.from_amount_description_and_account_code_id(amount,description,ac_id) }
     describe 'valid item' do
       let(:amount) { 1 }
       let(:description) { 'Item' }
-      let(:id) { nil }
+      let(:ac_id) { nil }
       it { should be_valid }
       its(:account_code_id) { should == @account1.id }
     end
