@@ -271,7 +271,6 @@ class Order < ActiveRecord::Base
         customer.add_items(vouchers)
         # add retail items to recipient's account
         customer.add_items(retail_items) if !retail_items.empty?
-        debugger
         unless customer.save
           raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors_as_html)
         end
