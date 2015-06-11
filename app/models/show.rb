@@ -37,6 +37,11 @@ class Show < ActiveRecord::Base
 
   def has_showdates? ; !showdates.empty? ; end
   
+  def upcoming_showdates
+    showdates.find(:all, :conditions => ['thedate > ?', Time.now],
+      :include => :valid_vouchers)
+  end
+
   def next_showdate
     showdates.find(:first, :conditions => ['thedate > ?', Time.now],
       :include => :valid_vouchers)

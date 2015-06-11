@@ -30,7 +30,7 @@ describe ValidVoucher do
           v.adjust_for_customer_reservation
         end
         its(:max_sales_for_type) { should == 10 }
-        its(:explanation) { should == '10 of these tickets remaining' }
+        its(:explanation) { should == '10 remaining' }
       end
     end
 
@@ -140,7 +140,7 @@ describe ValidVoucher do
       describe 'when one or more seats remain' do
         let(:seats) { 5 }
         its(:max_sales_for_type) { should == 5 }
-        its(:explanation) { should == '5 of these tickets remaining' }
+        its(:explanation) { should == '5 remaining' }
       end
     end
 

@@ -135,7 +135,7 @@ class ValidVoucher < ActiveRecord::Base
       case max_sales_for_type
       when 0 then "No seats remaining for tickets of this type"
       when INFINITE then "No performance-specific limit applies"
-      else "#{max_sales_for_type} of these tickets remaining"
+      else "#{max_sales_for_type} remaining"
       end
     self.visible = true
   end

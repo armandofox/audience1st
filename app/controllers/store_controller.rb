@@ -307,8 +307,13 @@ class StoreController < ApplicationController
     @what = sd.show.event_type
     @sd = sd
     @sh = @sd.show
-    @all_showdates = @sh.showdates
-    if @is_admin then setup_ticket_menus_for_admin else setup_ticket_menus_for_patron end
+    if @is_admin
+      @all_showdates = @sh.showdates
+      setup_ticket_menus_for_admin
+    else
+      @all_showdates = @sh.upcoming_showdates
+      setup_ticket_menus_for_patron
+    end
   end
 
   def setup_ticket_menus_for_admin

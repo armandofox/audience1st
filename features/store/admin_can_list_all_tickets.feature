@@ -34,7 +34,7 @@ Scenario Outline: Capacity-related restrictions
   | per_ticket_limit | remaining_seats | message                                     |
   |                3 |               0 | Event is sold out                           |
   |                0 |               3 | No seats remaining for tickets of this type |
-  |                3 |               2 | 2 of these tickets remaining                |
-  |                3 |               3 | 3 of these tickets remaining                |
+  |                3 |               2 | 2 remaining                 |
+  |                3 |               3 | 3 remaining                 |
 
 
