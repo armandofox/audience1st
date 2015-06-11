@@ -22,8 +22,7 @@ class Store
 
   def self.refund_credit_card(order)
     self.set_api_key
-    amount = (order.total_price * 100).to_i
     ch = Stripe::Charge.retrieve(order.authorization)
-    ch.refunds.create(:amount => amount)
+    refund = ch.refunds.create
   end
 end

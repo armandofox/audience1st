@@ -17,7 +17,11 @@ gem 'nokogiri', '1.4.3.1'
 gem 'rails', '2.3.18'
 gem 'rake', '>= 10.0.0'
 gem 'ruport', '1.6.3'
-gem 'stripe', '1.5.16'
+# stripe depends on rest-client and json, but we can't use the latest version of
+# those until upgrade to ruby >= 1.9.2
+gem 'rest-client', '~> 1.4'     
+gem 'json', '1.8.1'
+gem 'stripe', '1.22.0'
 gem 'ruby-debug'
 
 group :development, :test do
