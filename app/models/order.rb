@@ -8,6 +8,7 @@ class Order < ActiveRecord::Base
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
   has_many :donations, :dependent => :destroy
+  has_many :retail_items, :dependent => :destroy
   
   attr_accessor :purchase_args
   attr_reader :donation

@@ -20,7 +20,7 @@ Scenario: successful retail purchase
   Then I should be on the checkout page
   And I should see "Auction item"
   When the order is placed successfully
-  Then customer Tom Foolery should have the following items:
+  Then customer "Tom Foolery" should have the following items:
   | type       | amount | comments     | account_code |
   | RetailItem | 237.88 | Auction item |         9999 |
   And I should be on the order confirmation page for customer "Tom Foolery"
