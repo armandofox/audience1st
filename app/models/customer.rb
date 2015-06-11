@@ -35,7 +35,7 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :if => :self_created?, :with => /^[\w\d]+@[\w\d]+/
+  validates_format_of :email, :if => :self_created?, :with => /^\S+@\S+/
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
@@ -143,9 +143,7 @@ class Customer < ActiveRecord::Base
 
   # address is allowed to be blank, but if nonblank, it must be valid
   def valid_or_blank_address?
-    unless blank_mailing_address?
-      errors.add_to_base "Mailing address must include street, city, state, Zip" unless valid_mailing_address?
-    end
+    blank_mailing_address? || valid_mailing_address?
   end
   
   # when customer is saved, possibly update their email opt-in status
@@ -287,8 +285,7 @@ class Customer < ActiveRecord::Base
   end
 
   def valid_email_address?
-    !self.email.blank? &&
-      self.email.match(/^[\w\d]+@[\w\d]+/)
+    !self.email.blank? && self.email.match(/^\S+@\S+/)
   end
   def invalid_email_address? ; !valid_email_address? ; end
 
