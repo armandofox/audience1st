@@ -37,6 +37,11 @@ class Show < ActiveRecord::Base
 
   def has_showdates? ; !showdates.empty? ; end
   
+  def next_showdate
+    showdates.find(:first, :conditions => ['thedate > ?', Time.now],
+      :include => :valid_vouchers)
+  end
+
   def self.all_for_season(season=Time.this_season)
     startdate = Time.at_beginning_of_season(season)
     enddate = startdate + 1.year - 1.day

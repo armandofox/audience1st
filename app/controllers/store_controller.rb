@@ -246,8 +246,8 @@ class StoreController < ApplicationController
     Showdate.find_by_id(params[:showdate_id], :include => [:show, :valid_vouchers])
   end
   def showdate_from_show_params
-    (s = Show.find_by_id(params[:show_id], :include => :showdates)) &&
-      s.showdates.try(:first)
+    (s = Show.find_by_id(params[:show_id])) &&
+      s.next_showdate
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
 
