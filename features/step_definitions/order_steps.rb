@@ -24,7 +24,27 @@ When /^the order is placed successfully$/ do
   click_button 'Charge Credit Card' # but will be handled as Cash sale in 'test' environment
 end
 
+When /^I refund items? (.*) of that order$/ do |items|
+  steps %Q{
+    When I select items #{items} of that order
+    And I refund that order
+}
+end
+
 When /^I refund that order$/ do
   @order.should be_a_kind_of Order # setup by a previous step
   within "#order_#{@order.id}" do ;  click_button 'Refund Checked Items' ; end
+end
+
+When /^I (un)?select all the items in that order$/ do |un|
+  page.all(:css, 'input.itemSelect').each do |e|
+    if un then uncheck e['id'] else check e['id'] end
+  end
+end
+
+When /^I (un)?select items? ([0-9, ]+) of that order$/ do |un, index|
+  e = page.all(:css, "input.itemSelect")
+  index.split(/, */).map(&:to_i).each do |i|
+    if un then uncheck(e[i-1]['id']) else check(e[i-1]['id']) end
+  end
 end

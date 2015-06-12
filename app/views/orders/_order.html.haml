@@ -3,7 +3,7 @@
     %a.flippy[order, :flippy]{:href=>'#'} &#x25BC;
     Order ##{order.id}, by #{staff_name(order.processed_by)} on #{order.sold_on.strftime('%c')}
   %div.order_info[order, :details]
-    - form_tag order_path(order), :method => :delete do
+    - form_tag order_path(order), :method => :put do
       %p 
         %span.label Purchaser: 
         = link_to_customer order.purchaser
@@ -16,7 +16,7 @@
           = link_to_customer order.customer
       %p
         %span.label Order total:
-        = number_to_currency @total
+        = number_to_currency order.total_price
       %p
         %span.label Payment method:
         = humanize(order.purchase_medium)
@@ -24,16 +24,15 @@
       %table#order_items.hilite
         %thead
           %tr
-            %th
-            %th Item#
+            %th{:colspan => 2} Item#
             %th Customer Holding Item
-            %th Amount
-            %th Show or Acct Code
-            %th Comment
+            %th Paid
+            %th Show or Account Code
+            %th Comments
         %tbody
           - order.items.each do |item|
             %tr
-              %td= check_box_tag(item.id,1,true) if item.cancelable? && order.refundable?
+              %td= check_box_tag("items[#{item.id}]",1,false, :class => 'itemSelect') if item.cancelable? && order.refundable? && !@printable
               %td= item.id
               %td= link_to_customer item.customer
               %td= number_to_currency(item.amount)

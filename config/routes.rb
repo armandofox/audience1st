@@ -151,7 +151,7 @@ ActionController::Routing::Routes.draw do |map|
 
 
   # Routes for viewing and refunding orders
-  map.resources(:orders, :only => [:index, :show, :destroy])
+  map.resources(:orders, :only => [:index, :show, :update])
 
   map.root :controller => 'customers', :action => 'show'
  

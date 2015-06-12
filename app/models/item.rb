@@ -20,8 +20,8 @@ class Item < ActiveRecord::Base
   # Canceling an item forces its price to zero and copies its original
   #  description into the comment field of the item
 
-  def cancel!
-    self.comments = "[CANCELED] #{description_for_audit_txn}"
+  def cancel!(by_whom)
+    self.comments = "[CANCELED #{by_whom.full_name} #{Time.now.to_formatted_s :long}] #{description_for_audit_txn}"
     self.type = 'CanceledItem'
     self.save!
     CanceledItem.find(self.id)  #  !

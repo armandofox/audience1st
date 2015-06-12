@@ -16,41 +16,49 @@ class OrdersController < ApplicationController
       return
     end
     @total = @order.total_price
-    @refund_msg = "Upon refund, the customer's credit card charge will be reversed and all of these items will be permanently destroyed, which cannot be undone.  If the refund fails, all items will stay exactly as they are.  Do you want to proceed with the refund?" # "
+    @refund_msg = "Delete checked items and issue credit card refund?"
     @printable = params[:printable]
     render :layout => 'layouts/receipt' if @printable
   end
 
-  def destroy
+  def update
     @order = Order.find params[:id]
-    redirect_with(order_path(@order), :alert => 'This order is not refundable.') and return unless @order.refundable?
-    total_amount = @order.total_price
+    items = Item.find(params[:items].keys) rescue []
+    if items.empty?
+      redirect_with(order_path(@order), :alert => 'No items selected for refund.') and return
+    elsif items.any? { |i| i.order_id != @order.id }
+      redirect_with(order_path(@order), :alert => 'Some items not part of this order.') and return
+    elsif items.any? { |i| !i.cancelable? }
+      redirect_with(order_path(@order), :alert => 'Some items are not refundable.') and return
+    end
+    amount_to_refund = items.map(&:amount).sum
+    by_whom = current_user()
     begin
-      Order.transaction do
-        Store.refund_credit_card(@order) if @order.purchase_medium == :credit_card
-        Txn.add_audit_record(
-          :txn_type => 'refund',
-          :comments => @order.summary_for_audit_txn,
-          :logged_in_id => current_user().id,
-          :dollar_amount => total_amount,
-          :order_id => @order.id)
-        @order.destroy
+      Item.transaction do
+        items.each do |item|
+          Txn.add_audit_record(
+            :txn_type => 'refund',
+            :comments => item.description_for_audit_txn,
+            :logged_in_id => current_user().id,
+            :dollar_amount => item.amount,
+            :order_id => @order.id)
+          item.cancel!(by_whom)
+        end
+        Store.refund_credit_card(@order, amount_to_refund) if @order.purchase_medium == :credit_card
       end
     rescue Stripe::StripeError => e
-      redirect_with(order_path(@order), :alert => "Could not process credit card refund: #{e.message}")
-      return
+      redirect_with(order_path(@order), :alert => "Could not process credit card refund: #{e.message}") and return
     rescue RuntimeError => e
-      redirect_with(order_path(@order), :alert => "Error destroying order: #{e}")
-      return
+      redirect_with(order_path(@order), :alert => "Error destroying order: #{e}") and return
     end
-    formatted_amount = sprintf("$%.2f", total_amount)
+    formatted_amount = sprintf("$%.2f", amount_to_refund)
     notice =
       case @order.purchase_medium
       when :credit_card then "Credit card refund of #{formatted_amount} successfully processed."
       when :check then "Please destroy or return customer's original check for #{formatted_amount}."
       else "Please refund #{formatted_amount} in cash to customer."
       end
-    redirect_with(customer_path(@order.customer), :notice => notice)
+    redirect_with(order_path(@order), :notice => notice)
   end
 
 end

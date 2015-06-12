@@ -10,20 +10,37 @@ Background: customer has placed a credit card order
   Given an order for customer "Tom Foolery" paid with "credit card" containing:
   | show    | qty | type    | price | showdate             |
   | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
-  | Chicago |   1 | Senior  |  7.00 | May 15, 2010, 8:00pm |
+  | Chicago |   1 | Special |  5.00  | May 15, 2010, 8:00pm |
+  | Chicago |   1 | Senior  |  4.00 | May 15, 2010, 8:00pm |
   And I am logged in as boxoffice
   And I am on the orders page for customer "Tom Foolery"
 
 @stubs_successful_refund
 Scenario: successful refund of credit card order
 
-  When I refund that order
-  Then I should be on the home page for customer "Tom Foolery"
-  And I should see "Credit card refund of $21.00 successfully processed."
+  When I select all the items in that order
+  And  I refund that order
+  Then I should be on the orders page for that order
+  And  I should see "Credit card refund of $21.00 successfully processed."
 
 @stubs_successful_refund
 Scenario: partial refund credit card order
 
+  When I select items 2,3 of that order
+  And I refund that order
+  Then show me the page
+  Then I should see "Credit card refund of $12.00 successfully processed"
+  And I should see "Order total: $11.00"
+  And I should see /CANCELED Barbara Boxoffice.*7.00 General/
+  But I should not see /CANCELED Barbara Boxoffice.*4.00 Senior/
+
+@stubs_successful_refund
+Scenario: refund multiple items in separate transactions
+
+  When I refund item 1 of that order
+  And I refund items 2,3 of that order
+  Then I should see "Order total: $7.00"
+  And I should see "Credit card refund of $9.00 successfully processed"
 
 @stubs_failed_refund
 Scenario: cannot refund credit card order
