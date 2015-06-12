@@ -16,7 +16,6 @@ class OrdersController < ApplicationController
       return
     end
     @total = @order.total_price
-    @refund_msg = "Delete checked items and issue credit card refund?"
     @printable = params[:printable]
     render :layout => 'layouts/receipt' if @printable
   end

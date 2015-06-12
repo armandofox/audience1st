@@ -5,8 +5,7 @@ module OrdersHelper
   end
 
   def deletion_warning_for(order)
-    "This will remove all items in this order from patron's account" <<
-      (order.purchase_medium == :credit_card ? " and refund their credit card" : "") <<
-      ". OK to proceed?"
+    "Delete checked items" <<
+      (order.purchase_medium == :credit_card ? " and issue credit card refund?" : "?")
   end
 end
