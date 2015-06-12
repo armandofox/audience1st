@@ -17,4 +17,15 @@ class Item < ActiveRecord::Base
   def one_line_description ; raise "Must override this method" ; end
   def description_for_audit_txn ; raise "Must override this method" ; end
 
+  # Canceling an item forces its price to zero and copies its original
+  #  description into the comment field of the item
+
+  def cancel!
+    self.comments = "[CANCELED] #{description_for_audit_txn}"
+    self.type = 'CanceledItem'
+    self.save!
+    CanceledItem.find(self.id)  #  !
+  end
+
+  def cancelable? ; true ; end
 end

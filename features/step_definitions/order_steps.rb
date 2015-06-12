@@ -26,5 +26,5 @@ end
 
 When /^I refund that order$/ do
   @order.should be_a_kind_of Order # setup by a previous step
-  within "#order_#{@order.id}" do ;  click_button 'Refund' ; end
+  within "#order_#{@order.id}" do ;  click_button 'Refund Checked Items' ; end
 end

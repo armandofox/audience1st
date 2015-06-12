@@ -9,16 +9,21 @@ Background: customer has placed a credit card order
 
   Given an order for customer "Tom Foolery" paid with "credit card" containing:
   | show    | qty | type    | price | showdate             |
-  | Chicago |   3 | General |  7.00 | May 15, 2010, 8:00pm |
+  | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
+  | Chicago |   1 | Senior  |  7.00 | May 15, 2010, 8:00pm |
   And I am logged in as boxoffice
   And I am on the orders page for customer "Tom Foolery"
 
 @stubs_successful_refund
-Scenario: refund credit card order
+Scenario: successful refund of credit card order
 
   When I refund that order
   Then I should be on the home page for customer "Tom Foolery"
   And I should see "Credit card refund of $21.00 successfully processed."
+
+@stubs_successful_refund
+Scenario: partial refund credit card order
+
 
 @stubs_failed_refund
 Scenario: cannot refund credit card order

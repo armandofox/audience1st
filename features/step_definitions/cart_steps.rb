@@ -13,7 +13,7 @@ end
 
 Given /^an order for customer "(.*)" paid with "credit card" containing:$/ do |customer, table|
   step %Q{I am logged in as customer "#{customer}"}
-  step %Q{my cart contains the following tickets:}, table
+  step(%Q{my cart contains the following tickets:}, table)
   step %Q{I place my order with a valid credit card}
 end
 

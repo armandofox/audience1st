@@ -3,48 +3,48 @@
     %a.flippy[order, :flippy]{:href=>'#'} &#x25BC;
     Order ##{order.id}, by #{staff_name(order.processed_by)} on #{order.sold_on.strftime('%c')}
   %div.order_info[order, :details]
-    %p 
-      %span.label Purchaser: 
-      = link_to_customer order.purchaser
-    %p
-      %span.label Gift order?
-      = order.gift? ? 'Yes' : 'No'
-    - if order.gift?
+    - form_tag order_path(order), :method => :delete do
+      %p 
+        %span.label Purchaser: 
+        = link_to_customer order.purchaser
       %p
-        %span.label Gift recipient:
-        = link_to_customer order.customer
-    %p
-      %span.label Order total:
-      = number_to_currency @total
-    %p
-      %span.label Payment method:
-      = humanize(order.purchase_medium)
+        %span.label Gift order?
+        = order.gift? ? 'Yes' : 'No'
+      - if order.gift?
+        %p
+          %span.label Gift recipient:
+          = link_to_customer order.customer
+      %p
+        %span.label Order total:
+        = number_to_currency @total
+      %p
+        %span.label Payment method:
+        = humanize(order.purchase_medium)
 
-    %table#order_items.hilite
-      %thead
-        %tr
-          %th Item#
-          %th Customer Holding Item
-          %th Amount
-          %th Show or Acct Code
-          %th Comment
-      %tbody
-        - order.items.each do |item|
+      %table#order_items.hilite
+        %thead
           %tr
-            %td= item.id
-            %td= link_to_customer item.customer
-            %td= number_to_currency(item.amount)
-            - if item.kind_of?(Voucher)
-              %td= item.showdate ? item.showdate.printable_name : item.vouchertype.name
-            - else
-              %td Donation to #{item.account_code.name_or_code}
-            %td= item.comments
+            %th
+            %th Item#
+            %th Customer Holding Item
+            %th Amount
+            %th Show or Acct Code
+            %th Comment
+        %tbody
+          - order.items.each do |item|
+            %tr
+              %td= check_box_tag(item.id,1,true) if item.cancelable? && order.refundable?
+              %td= item.id
+              %td= link_to_customer item.customer
+              %td= number_to_currency(item.amount)
+              %td= item.one_line_description
+              %td= item.comments
 
-    - if @printable
-      %h2.center #{Option.venue} thanks you for your order!
-    - else
-      = gen_button 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank'}
+      - if @printable
+        %h2.center #{Option.venue} thanks you for your order!
+      - else
+        = gen_button 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank'}
 
-      - if order.refundable?
-        = button_to 'Refund', order, :method => :delete, :confirm => deletion_warning_for(order)
+        - if order.refundable?
+          = submit_tag 'Refund Checked Items', :confirm => deletion_warning_for(order)
 
