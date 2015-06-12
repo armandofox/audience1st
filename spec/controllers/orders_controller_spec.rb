@@ -17,11 +17,14 @@ describe OrdersController do
     end
   end
   describe 'updating' do
-    before :each do ; @o = create(:order) ; end
+    before :each do
+      @o = create(:order, :vouchers_count => 2)
+    end           
     it 'creates a Txn summarizing the order' do
       Txn.should_receive(:add_audit_record).
-        with(hash_including({:order_id => @o.id}))
-      put :update, :id => @o.id
+        with(hash_including({:order_id => @o.id})).
+        exactly(2).times
+      put :update, :id => @o.id, :items => @o.items.index_by(&:id)
     end
   end
   

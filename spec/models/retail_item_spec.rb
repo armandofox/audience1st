@@ -17,12 +17,14 @@ describe RetailItem do
     describe 'invalid amount' do
       let(:amount) { 0 }
       let(:description) { 'Item' }
+      let(:ac_id) { nil }
       it { should_not be_valid }
       it { should have(1).error_on(:amount) }
     end
     describe 'blank description' do
       let(:amount) { 1 }
       let(:description) { nil }
+      let(:ac_id) { nil }
       it { should_not be_valid }
       it { should have(1).error_on(:comments) }
     end
