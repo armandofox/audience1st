@@ -20,15 +20,14 @@ Scenario: successful refund of credit card order
 
   When I select all the items in that order
   And  I refund that order
-  Then I should be on the orders page for that order
-  And  I should see "Credit card refund of $21.00 successfully processed."
+  Then I should be on the order page for that order
+  And  I should see "Credit card refund of $23.00 successfully processed."
 
 @stubs_successful_refund
 Scenario: partial refund credit card order
 
   When I select items 2,3 of that order
   And I refund that order
-  Then show me the page
   Then I should see "Credit card refund of $12.00 successfully processed"
   And I should see "Order total: $11.00"
   And I should see /CANCELED Barbara Boxoffice.*7.00 General/
@@ -45,7 +44,7 @@ Scenario: refund multiple items in separate transactions
 @stubs_failed_refund
 Scenario: cannot refund credit card order
 
-  When I refund that order
+  When I refund item 1 of that order
   Then I should see "Could not process credit card refund"
 
   
