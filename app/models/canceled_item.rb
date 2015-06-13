@@ -9,6 +9,7 @@ class CanceledItem < Item
   def one_line_description ; attributes['comments'] ; end
   def description_for_audit_txn ; attributes['comments'] ; end
   def comments ; '' ; end
+  def item_description ; one_line_description ; end
 
   def cancelable? ; false ;  end
 end

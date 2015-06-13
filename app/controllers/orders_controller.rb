@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController
-  before_filter :is_boxoffice
+  before_filter :is_boxoffice_filter
 
   def index
     redirect_with(root_path, :alert => 'No customer specified') unless
