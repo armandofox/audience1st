@@ -1,6 +1,6 @@
 class ImportsController < ApplicationController
   include ActiveSupport::Inflector
-  before_filter :is_boxoffice_manager
+  before_filter :is_boxoffice_manager_filter
 
   before_filter :temporarily_unavailable
 

@@ -1,5 +1,5 @@
 class BulkDownloadsController < ApplicationController
-  before_filter :is_admin
+  before_filter :is_admin_filter
 
   before_filter :temporarily_unavailable
 
