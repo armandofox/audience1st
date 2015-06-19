@@ -33,7 +33,7 @@ said”)
 
 # Feature Highlights
 
-For more complete descriptions and operating instructions, see the wiki.
+For more complete descriptions and operating instructions, see the [wiki](http://github.com/armandofox/audience1st/wiki).
 
 ## Flexible Ticketing
 
@@ -79,8 +79,8 @@ for a patron to become a phone staff volunteer.
 box-office-only work selling tickets at showtime 
 
 * Walk-up sales can be cash, check, or credit card (if you have a
-credit-card processing machine); includes support for MagTek USB credit
-card swipes
+credit-card processing machine); includes support for [MagTek USB credit
+card swipes](http://www.amazon.com/MagTek-Mini-Swipe-Readers-21040108/dp/B00466QS5U)
 
 ## Sell Subscriptions, Bundles & Other Products
 
@@ -163,8 +163,8 @@ arrives, just check off their name and the totals are updated.
 
 * Walk-up sales can be cash, check, or credit card.  If you have an
 Internet connection at the box office, you don't need any separate
-equipment to do fast credit card purchases.  With a MagTek credit card
-swipe, you can process them even faster by not having to type
+equipment to do fast credit card purchases.  With a [MagTek credit card
+swipe](http://www.amazon.com/MagTek-Mini-Swipe-Readers-21040108/dp/B00466QS5U), you can process them even faster by not having to type
 information off the credit card manually.   (Requires 
 available USB port.)  Every walkup sale updates the "capacity remaining"
 dashboard. 

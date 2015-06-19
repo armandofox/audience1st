@@ -187,8 +187,8 @@ class ReportsController < ApplicationController
 
   def unfulfilled_orders
     v = Voucher.find(:all,
-                     :include => [:customer, :vouchertype],
-                     :conditions => 'items.fulfillment_needed = 1',
+                     :include => [:customer, :vouchertype, :order],
+                     :conditions => 'orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1',
                      :order => "customers.last_name")
     redirect_to({:action => 'index'}, {:notice => 'No unfulfilled orders at this time.'}) and return if v.empty?
     if params[:csv]
