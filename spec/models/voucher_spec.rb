@@ -40,13 +40,6 @@ describe Voucher do
         @vouchers.each { |v| @to.vouchers.should_not include(v) }
       end
     end
-    describe "deletion" do
-      it "should destroy the vouchers" do
-        ids = @vouchers.map(&:id)
-        Voucher.destroy_multiple(@vouchers, @logged_in)
-        ids.each { |id| Voucher.find_by_id(id).should be_nil }
-      end
-    end
   end
 
   describe "templated from vouchertype" do

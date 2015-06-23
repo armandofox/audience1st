@@ -9,17 +9,26 @@ class Voucher < Item
 
   delegate :gift?, :ship_to, :to => :order
 
-  # provide a handler to be called when customers are merged.
-  # Transfers the vouchers from old to new id, and also changes the
-  # values of processed_by field, which is really a customer id.
-  # Returns number of actual voucher records transferred.
+  # when a bundle voucher is cancelled, we must also cancel all its
+  # constituent vouchers.  This method therefore extends the superclass method.
 
-  # after destroying a bundle voucher, destroy its constituents
-  after_destroy do |voucher|
-    if voucher.bundle? && voucher.id != 0
-      Voucher.delete_all("bundle_id = #{voucher.id}")
+  has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
+
+  def cancel!(by_whom)
+    super # cancel the main voucher
+    if bundle?
+      bundled_vouchers.each { |v| v.cancel!(by_whom) }
     end
   end
+
+  def part_of_bundle? ; bundle_id != 0 ; end
+
+  # similarly, a voucher that is part of a bundle is not individually cancelable
+
+  def cancelable?
+    !part_of_bundle? &&  super
+  end
+    
 
   # class methods
 
@@ -255,11 +264,6 @@ class Voucher < Item
         v.reserve(showdate, logged_in_customer)
         v.save! unless v.new_record?
       end
-    end
-  end
-  def self.destroy_multiple(vouchers, logged_in_customer)
-    Voucher.transaction do
-      vouchers.each { |v| v.destroy }
     end
   end
 
