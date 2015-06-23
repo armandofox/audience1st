@@ -2,4 +2,4 @@
   - if donation.letter_sent
     = "#{donation.letter_sent.strftime('%D')} by #{Customer.find(donation.processed_by_id).first_name rescue '(???)'}"
   - else
-    = link_to_remote("Mark Sent", :update => "donation_#{donation.id}", :url => {:action => :mark_ltr_sent, :id => donation.id})
+    = link_to_remote "Mark Sent", :update => "donation_#{donation.id}", :method => :put, :url => donation_path(donation)

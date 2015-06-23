@@ -114,9 +114,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # donations management
 
-  map.resources(:donations,
-    :only  => [:index, :new, :create],
-    :member => {:mark_ltr_sent => :get})
+  map.resources(:donations, :only  => [:index, :new, :create, :update])
   
   # config options
 

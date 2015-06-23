@@ -106,7 +106,7 @@ class DonationsController < ApplicationController
     end
   end
 
-  def mark_ltr_sent
+  def update
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.now
       c = current_user.email rescue "(ERROR)"
