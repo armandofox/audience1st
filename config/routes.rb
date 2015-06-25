@@ -1,9 +1,11 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :bulk_downloads
   map.resources :account_codes
-  map.resources :imports, :except => [:show]
-  map.connect '/imports/download_invalid/:id', :controller => 'imports', :action => 'download_invalid'
-  map.connect '/imports/help', :controller => 'imports', :action => 'help'
+  map.resources(:imports,
+    :except => [:show] ,
+    :member => {:download_invalid => :get},
+    :collection => {:help => :get})
+  
   map.resources :labels
 
   map.resources(:customers,

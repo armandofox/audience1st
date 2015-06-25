@@ -24,7 +24,7 @@ class Txn < ActiveRecord::Base
     "don_ack" => "Acknowledge donation"
   }
 
-  def desc ; TYPES[type.to_s][1] ; end
+  def desc ; TYPES[type.to_s][1] rescue "???" ; end
 
   # provide a handler to be called when customers are merged.
   # Transfers the txns from old to new id, and also changes the

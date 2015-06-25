@@ -37,7 +37,6 @@ describe BoxOfficeController do
   describe "transferring already-sold walkup vouchers" do
     context "no transfer is attempted", :shared => true do
       it "should not attempt to transfer" do
-        Voucher.should_not_receive(:destroy_multiple)
         Voucher.should_not_receive(:transfer_multiple)
         post :modify_walkup_vouchers, @params
       end
