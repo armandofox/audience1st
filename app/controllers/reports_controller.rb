@@ -165,7 +165,7 @@ class ReportsController < ApplicationController
           download_to_excel(@report.output, @report.filename, false)
         when /display/i
           @customers = @report.customers
-          render :template => 'customers/list'
+          render :template => 'customers/index'
         when /add/i
           l = @report.customers.length
           seg = params[:sublist]
