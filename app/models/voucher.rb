@@ -15,10 +15,11 @@ class Voucher < Item
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
 
   def cancel!(by_whom)
-    super # cancel the main voucher
+    result = super # cancel the main voucher
     if bundle?
       bundled_vouchers.each { |v| v.cancel!(by_whom) }
     end
+    result
   end
 
   def part_of_bundle? ; bundle_id != 0 ; end
