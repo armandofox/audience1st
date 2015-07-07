@@ -21,8 +21,6 @@ config.action_controller.allow_forgery_protection    = false
 # ActionMailer::Base.deliveries array.
 config.action_mailer.delivery_method = :test
 
-DISABLE_EMAIL_LIST_INTEGRATION = true
-
 # for testing
 
 require 'spec/stubs/cucumber'   # to allow stubbing of credit-card payment calls in scenarios

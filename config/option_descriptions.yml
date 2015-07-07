@@ -382,44 +382,7 @@ privacy_policy_url: >
   credit card numbers nor share any information used in processing the
   transactions except as required by law."
 
-mailchimp_api_key: >
-
-  API key for MailChimp integration, if you use MailChimp.  
-  See the instructions at http://a1patronsystems.com for how to create
-  this key.
-
 mailchimp_default_list_name: >
 
-  Name of your main email list, if you use MailChimp
+  Name of your main email list, if you use MailChimp.
   If you don't use MailChimp, leave blank.
-
-constant_contact_username: >
-
-  If you use ConstantContact,
-  the user name (account name) you use when logging into the site.
-
-constant_contact_password: >
-
-  If you use ConstantContact,
-  the password you use when logging into the site.
-
-constant_contact_api_key: >
-
-  If you use ConstantContact,
-  the API key that allows integration with external applications.
-  See the instructions at http://a1patronsystems.com for how to create
-  this key.
-
-stripe_publishable_key: >
-
-  Your "publishable key" for your venue's Stripe account.  You can copy
-  and paste it from the stripe.com management console.  CAUTION: This
-  must be exactly correct for credit card processing to work.  Be sure
-  to keep the "publishable key" and "secret key" distinct.
-
-stripe_secret_key: >
-
-  The "secret key" for your venue's Stripe account.  You can copy
-  and paste it from the stripe.com management console.  CAUTION: This
-  must be exactly correct for credit card processing to work.  Be sure
-  to keep the "publishable key" and "secret key" distinct.

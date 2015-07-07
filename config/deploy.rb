@@ -80,7 +80,10 @@ namespace :deploy do
     # copy installation-specific files
     abort if (config.nil? || config.empty?)
     debugging_ips = variables[:debugging_ips]
-    %w[config/database.yml config/initializers/session_store.rb  public/.htaccess public/404.html public/422.html public/500.html].each do |f|
+    # write application.yml file for Figaro
+    put config.to_yaml, "#{release_path}/application.yml"
+    # files that must have venue name interpolated into various pathnames
+    %w[config/database.yml public/.htaccess public/404.html public/422.html public/500.html].each do |f|
       file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
       put file, "#{release_path}/#{f}"
       run "rm -f #{release_path}/#{f}.erb"

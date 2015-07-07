@@ -6,7 +6,7 @@
 # no regular words or you'll be exposed to dictionary attacks.
 ActionController::Base.session = {
   :key         => '_trunk_session_', 
-  :secret      => '<%= config["session_secret"] %>'
+  :secret      => Figaro.env["session_secret"]
 }
 
 # Use the database for sessions instead of the cookie-based default,

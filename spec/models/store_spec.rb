@@ -5,7 +5,6 @@ describe Store, "credit card" do
     @purchaser = create(:customer) 
     @order = Order.new(:purchaser => @purchaser)
     @order.stub(:total_price).and_return(25.00)
-    Option.stub(:value).with(:stripe_secret_key).and_return('secret')
   end
   describe 'refund' do
     

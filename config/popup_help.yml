@@ -284,7 +284,7 @@ donation_search_by_letter_sent: >
 sublists: >
 
   Sublists are named subsets of your master email list as maintained by
-  Mailchimp or ConstantContact.  By saving the result of a report as a
+  MailChimp or ConstantContact.  By saving the result of a report as a
   sublist, you can then send an email campaign to just those patrons.
 
 # Box office
