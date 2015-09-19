@@ -55,7 +55,7 @@
                 %span.emphasis Special seating needs?
                 = checkbox_guard_for "special_seating_div_#{vid}"
                 %div{:id => "special_seating_div_#{vid}", :style=>'display:none'}
-                  Please describe (wheelchair, walker, cane, etc.)
+                  = Option.special_seating_requests
                   %br
                   = text_field_tag 'comments', '', :size => '20em', :class => :showdate
             %td.action= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"

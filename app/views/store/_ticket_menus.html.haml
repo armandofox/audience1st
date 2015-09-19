@@ -48,5 +48,5 @@
       %label.emphasis Accessible seating requested?
       = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
       #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}
-        %label{:for => :comments} Please describe (wheelchair, walker, cane, etc.)
+        %label{:for => :comments}= Option.special_seating_requests
         = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
