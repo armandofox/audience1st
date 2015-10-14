@@ -1,3 +1,8 @@
+Given /^(\d+) "(.*)" vouchers have been issued$/ do |num, type|
+  vt = Vouchertype.find_by_name(type) || FactoryGirl.create(:vouchertype, :name => type)
+  num.to_i.times { FactoryGirl.create(:voucher, :vouchertype => vt) }
+end
+
 Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type|
   raise "No default showdate" unless @showdate.kind_of?(Showdate)
   c = create(:customer, :first_name => first, :last_name => last)

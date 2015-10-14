@@ -10,6 +10,10 @@ Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,pri
     )
 end
 
+When /^I click the delete icon for the "(.*)" vouchertype$/ do |vtype|
+  page.find(:css, "img#delete_#{Vouchertype.find_by_name!(vtype).id}").click
+end
+
 Given /^a bundle "(.*)" for \$?([0-9.]+) containing:$/ do |name,price,tickets|
   bundle = build(:bundle,:name => name, :price => price.to_f)
   bundle.included_vouchers = {}
@@ -27,9 +31,9 @@ Given /^a bundle "(.*)" for \$?([0-9.]+) containing:$/ do |name,price,tickets|
   bundle.save!
 end
 
-Then /a vouchertype with name "(.*)" should exist/i do |name|
+Then /a vouchertype with name "(.*)" should (not )?exist/i do |no,name|
   @vouchertype = Vouchertype.find_by_name(name)
-  @vouchertype.should be_a_kind_of(Vouchertype)
+  if no then @vouchertype.should be_nil else @vouchertype.should be_a_kind_of(Vouchertype) end
 end
 
 Then /it should have a (.*) of (.*)/i do |attr,val|

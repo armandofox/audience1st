@@ -25,7 +25,7 @@
       %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
         %td
           - if @superadmin && vouchertype.vouchers.count == 0
-            = link_to(image_tag('delete.png',:border => 0, :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, :confirm => "This will destroy all existing '#{h vouchertype.name}' vouchers. This action cannot be undone. Continue?" })
+            = link_to(image_tag('delete.png',:border => 0, :id => "delete_#{vouchertype.id}", :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, :confirm => "Deleting the '#{h vouchertype.name}' voucher type cannot be undone. Continue?" })
         %td= vouchertype.display_order
         %td= link_to h(vouchertype.name), edit_vouchertype_path(vouchertype)
         %td.r= number_to_currency(vouchertype.price)   

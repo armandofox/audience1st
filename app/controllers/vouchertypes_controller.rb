@@ -109,19 +109,13 @@ class VouchertypesController < ApplicationController
   end
 
   def destroy
-    c = @vouchertype.vouchers.size
-    errors = []
-    errors << "there are #{c} issued vouchers of this type" if (c > 0)
-    errors << " it's listed as valid for purchase for the following shows: #{shows}" if
-      !(shows = @vouchertype.valid_vouchers.map { |v| v.showdate.show.name }.uniq.join(', ')).blank?
-    if !errors.empty?
-      flash[:alert] = "Can't delete this voucher types, because " << errors.join(" and ")
-    else
-      @vouchertype.destroy
-      flash[:notice] = "Voucher type '#{@vouchertype.name}' deleted."
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
-        :comments => "Destroy voucher type #{@vouchertype.name}")
-    end
-    redirect_to vouchertypes_path(:season => @vouchertype.season)
+    c = @vouchertype.vouchers.count
+    redirect_with(vouchertypes_path, :alert => "Can't delete this voucher type because #{c} of them have already been issued") and return if c > 0
+
+    @vouchertype.destroy
+    Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
+      :comments => "Destroy voucher type #{@vouchertype.name}")
+    redirect_with(vouchertypes_path(:season => @vouchertype.season), :notice => "Voucher type '#{@vouchertype.name}' deleted.")
+
   end
 end
