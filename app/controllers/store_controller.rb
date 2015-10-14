@@ -1,5 +1,7 @@
 class StoreController < ApplicationController
 
+  include StoreHelper
+
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :set_customer, :except => %w[donate]
@@ -104,7 +106,7 @@ class StoreController < ApplicationController
     # If donor exists, make that the order's customer.
     # Create an order consisting of just a donation.
 
-    @amount = params[:donation].to_i
+    @amount = to_numeric(params[:donation])
     unless @amount > 0
       flash[:alert] = 'Donation amount must be provided'
       render(:action => 'donate') and return
@@ -359,10 +361,9 @@ class StoreController < ApplicationController
   end
 
   def add_donation_to_cart
-    if params[:donation].to_i > 0
+    if (amount = to_numeric(params[:donation])) > 0
       @cart.add_donation(
-        Donation.from_amount_and_account_code_id(params[:donation].to_i,
-          params[:account_code_id] ))
+        Donation.from_amount_and_account_code_id(amount, params[:account_code_id] ))
     end
   end
 

@@ -1,5 +1,9 @@
 module StoreHelper
 
+  def to_numeric(str)
+    str.blank? ? 0 : str.gsub(/\D/, '').to_i
+  end
+
   # make a form field not be submitted, by removing its name attribute
   def make_unsubmitted(id)
     javascript_tag "\$('#{id}').removeAttribute('name')"
