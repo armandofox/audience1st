@@ -1,5 +1,7 @@
 class Customer < ActiveRecord::Base
 
+  attr_accessible :secret_question, :secret_answer
+  
   validates_numericality_of(:secret_question,
     :greater_than_or_equal_to => 0,
     :less_than => APP_CONFIG[:secret_questions].length)

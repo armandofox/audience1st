@@ -61,9 +61,14 @@ class Customer < ActiveRecord::Base
   validates_length_of :password, :if => :self_created?, :in => 1..20, :allow_nil => true
   validates_confirmation_of :password, :if => :self_created?
 
-  attr_protected :id, :salt, :role, :created_by_admin
-  attr_accessor :force_valid          ;  attr_protected :force_valid
-  attr_accessor :gift_recipient_only  ;  attr_protected :gift_recipient_only
+  attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
+  :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
+  :company, :title, :company_url, :company_address_line_1,
+  :company_address_line_2, :company_city, :company_state, :company_zip,
+  :cell_phone, :work_phone, :work_fax, :best_way_to_contact, :referred_by_id
+
+  attr_accessor :force_valid         
+  attr_accessor :gift_recipient_only 
   attr_accessor :password
 
   cattr_reader :replaceable_attributes, :extra_attributes
