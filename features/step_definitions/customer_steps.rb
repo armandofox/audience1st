@@ -89,10 +89,12 @@ Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
   if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
 end
 
-Given /^customer "(.*) (.*)" exists$/ do |first,last|
+Given /^customer "(.*) (.*)" exists( and was created by admin)?$/ do |first,last,admin|
   @customer =
     Customer.find_by_first_name_and_last_name(first,last) ||
-    create(:customer, :first_name => first, :last_name => last)
+    create(:customer, :first_name => first, :last_name => last,
+    :email => "#{first}@#{last}.com")
+  @customer.update_attribute(:created_by_admin, true) if admin
 end
 
 Given /^the following customers exist: (.*)$/ do |list|

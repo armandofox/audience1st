@@ -58,18 +58,20 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
-  validates_length_of :password, :if => :self_created?, :in => 1..20, :allow_nil => true
+  validates_length_of :password, :if => :self_created?, :in => 1..20
   validates_confirmation_of :password, :if => :self_created?
-
-  attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
-  :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
-  :company, :title, :company_url, :company_address_line_1,
-  :company_address_line_2, :company_city, :company_state, :company_zip,
-  :cell_phone, :work_phone, :work_fax, :best_way_to_contact, :referred_by_id
 
   attr_accessor :force_valid         
   attr_accessor :gift_recipient_only 
   attr_accessor :password
+
+  attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
+  :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
+  :secret_question, :secret_answer,
+  :company, :title, :company_url, :company_address_line_1,
+  :company_address_line_2, :company_city, :company_state, :company_zip,
+  :cell_phone, :work_phone, :work_fax, :best_way_to_contact, :referred_by_id
+
 
   cattr_reader :replaceable_attributes, :extra_attributes
   @@replaceable_attributes  =
