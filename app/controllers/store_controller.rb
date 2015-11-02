@@ -328,7 +328,7 @@ class StoreController < ApplicationController
       v.adjust_for_customer
     end.sort_by(&:display_order)
     @all_shows = Show.
-      all_for_seasons(Time.this_season - 1, Time.this_season).
+      all_for_seasons(Time.this_season - 1, Time.this_season + 1).
       of_type(@what)  ||  []
     # ensure default show is included in list of shows
     if (@what == 'Regular Show' && !@all_shows.include?(@sh))
