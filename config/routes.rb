@@ -28,7 +28,7 @@ ActionController::Routing::Routes.draw do |map|
       :collection => { :prospector => :get })
 
     customer.resources(:vouchers,
-      :only => [:new, :create],
+      :only => [:index, :new, :create],
       :member => {
         :update_comment => :post,
         :reserve => :get,
@@ -37,6 +37,7 @@ ActionController::Routing::Routes.draw do |map|
         :cancel_prepaid => :post,
       },
       :collection => {
+        :transfer_multiple => :post,
         :confirm_multiple => :post,
         :cancel_multiple => :post,
       })

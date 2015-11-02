@@ -1,0 +1,22 @@
+#transfer_to.explain
+  %ul
+    %li You can transfer subscription vouchers (which will transfer all the vouchers in the subscription) or unreserved regular vouchers.  
+    %li You cannot transfer a subscription if any of its vouchers are holding a reservation.
+    %li 
+      Vouchers holding a reservation appear
+      %span.attention like this. 
+      To transfer a voucher that is holding a reservation, cancel the reservation first.
+
+  - form_tag transfer_multiple_customer_vouchers_path(@customer) do
+    %strong Transfer checked vouchers to:
+    = customer_search_field 'customer', '', {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {'customer_id' => :id}, :select_opts => {:indicator => 'wait'}
+    = spinner 'wait'
+    = submit_tag 'Go'
+
+%table
+  %tbody
+    - @vouchers.each do |v|
+      %tr
+        %td= check_box_tag v.id unless (v.subscriber_voucher? || v.reserved?)
+        %td= v.id
+        %td= v.item_description

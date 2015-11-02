@@ -29,17 +29,17 @@
           #right_main
             #nav
               - if controller.controller_name == 'box_office'
-                = render :partial => 'layouts/box_office_tabs'
+                = render :partial => 'navbars/box_office_tabs'
                 = render :partial => 'box_office/change_showdate'
                 = render :partial => 'box_office/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
-                = render :partial => 'layouts/admin_tabs'
+                = render :partial => 'navbars/admin_tabs'
               - elsif existing_customer(@customer)
-                = render :partial => 'layouts/main_tabs'
+                = render :partial => 'navbars/main_tabs'
               - if current_user && @gAdminDisplay && controller.controller_name != 'box_office'
-                = render :partial => 'layouts/season_tabs'
+                = render :partial => 'navbars/season_tabs'
                 = render :partial => 'customers/quick_search'
-                = render :partial => 'messages/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)
+                = render :partial => 'navbars/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)
             #content.clear
               = render :partial => 'messages/notices'
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller.controller_name)

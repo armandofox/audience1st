@@ -1,7 +1,7 @@
 class VouchersController < ApplicationController
 
   before_filter :is_logged_in
-  before_filter :is_boxoffice_filter, :only => %w[new create update_shows cancel_prepaid update_comment]
+  before_filter :is_boxoffice_filter, :except => %w(update_shows reserve confirm_multiple confirm_reservation cancel_multiple cancel_reservation)
   before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
 
   private
@@ -27,7 +27,10 @@ class VouchersController < ApplicationController
     render :partial => 'reserve_for', :locals => {:valid_vouchers => @valid_vouchers}
   end
 
-
+  def index
+    @vouchers = @customer.vouchers.sort_by(&:reservation_status_then_showdate)
+  end
+  
   def new
     @page_title = "Add Comps"
     this_season = Time.this_season
