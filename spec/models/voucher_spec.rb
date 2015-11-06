@@ -105,16 +105,23 @@ describe Voucher do
         @from.vouchers.should_not include(@v)
       end
     end
-    context "when recipient doesn't exist" do
+    context 'for bundles' do
       before(:each) do
-        @to = Customer.new(:first_name => "Jane", :last_name => "Nonexistent")
+        @from = create(:customer)
+        @to = create(:customer)
+        @bundle = create(:bundle, :including =>
+          { (@vt1 = create(:vouchertype_included_in_bundle)) => 2,
+            (@vt2 = create(:vouchertype_included_in_bundle)) => 1 })
+        @from.vouchers << @bundle.instantiate(1)
+        # now transfer it
+        @from.vouchers.find_by_vouchertype_id(@bundle.id).transfer_to_customer(@to)
       end
-      it "should not cause an error" do
-        lambda { @v.transfer_to_customer(@to) }.should_not raise_error
+      it 'transfers the bundle voucher' do
+        @to.should have_voucher_matching(:vouchertype_id => @bundle.id)
       end
-      it "should not remove the voucher from the transferor's account" do
-        @v.transfer_to_customer(@to)
-        @from.vouchers.should include(@v)
+      it 'transfers the included vouchers' do
+        @to.should have_vouchers_matching(2, :vouchertype_id => @vt1.id)
+        @to.should have_vouchers_matching(1, :vouchertype_id => @vt2.id)
       end
     end
   end

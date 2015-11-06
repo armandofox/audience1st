@@ -168,6 +168,15 @@ class VouchersController < ApplicationController
     redirect_to customer_path(@customer)
   end
 
+  def transfer_multiple
+    vouchers = params[:vouchers].keys
+    from_customer = Customer.find params[:customer_id]
+    new_customer = Customer.find_by_id params[:customer]
+    redirect_with(customer_vouchers_path(from_customer),
+      :alert => 'Must select valid customer to transfer to.') and
+      return unless new_customer.kind_of? Customer
+  end
+
   def cancel_prepaid
     # A prepaid ticket can be cancelled at any time, but the voucher is
     # NOT reused.  it is "orphaned" and not linked to any customer or

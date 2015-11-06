@@ -16,9 +16,7 @@ class Voucher < Item
 
   def cancel!(by_whom)
     result = super # cancel the main voucher
-    if bundle?
-      bundled_vouchers.each { |v| v.cancel!(by_whom) }
-    end
+    bundled_vouchers.each { |v| v.cancel!(by_whom) }
     result
   end
 
@@ -172,28 +170,15 @@ class Voucher < Item
     self.comments = (self.comments.blank? ? comment : [self.comments,comment].join('; '))
   end
 
-  def transfer_to_customer(c)
-    if c.kind_of?(Customer) && !c.new_record?
-      self.update_attribute(:customer_id, c.id)
-      return c
-    else
-      return nil
+  def transfer_to_customer(customer)
+    cid = customer.id
+    Voucher.transaction do
+      update_attributes!(:customer_id => cid)
+      bundled_vouchers.each { |v| v.update_attributes!(:customer_id => cid) } 
     end
   end
 
-  def reserve_if_only_one_showdate(customer)
-    if !bundle? && !reserved? && vouchertype.showdates.length == 1
-      result = self.reserve_for(vouchertype.showdates.first,
-        customer,
-        'Automatic reservation since ticket valid for only a specific show date',
-        :ignore_cutoff => true)
-      raise "Cannot reserve: #{comments}" unless result
-    end
-    self
-  end
-  
-  def valid_for_date?(dt) ; dt.to_time <= expiration_date ; end
-  def valid_today? ; valid_for_date?(Time.now) ; end
+  def valid_today? ; Time.now <= expiration_date ; end
 
   def validity_dates_as_string
     fmt = '%m/%d/%y'
