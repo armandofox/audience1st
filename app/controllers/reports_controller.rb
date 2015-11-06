@@ -15,7 +15,7 @@ class ReportsController < ApplicationController
     @subscriptions = Voucher.subscription_vouchers(Time.now.year)
     # list of all special reports
     @special_report_names =
-      Dir.entries("#{RAILS_ROOT}/app/models/reports/").select { |x| x.gsub!(/\.rb$/,'') }
+      Dir.entries("#{RAILS_ROOT}/app/models/report/").select { |x| x.gsub!(/\.rb$/,'') }
   end
 
   def do_report
