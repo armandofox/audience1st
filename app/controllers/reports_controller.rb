@@ -14,8 +14,7 @@ class ReportsController < ApplicationController
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.now.year)
     # list of all special reports
-    @special_report_names =
-      Dir.entries("#{RAILS_ROOT}/app/models/report/").select { |x| x.gsub!(/\.rb$/,'') }
+    @special_report_names = Report.subclasses.map { |s| s.underscore.humanize.capitalize }
   end
 
   def do_report

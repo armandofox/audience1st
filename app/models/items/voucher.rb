@@ -14,6 +14,17 @@ class Voucher < Item
 
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
 
+  # we need to be able to track the bundle that a voucher belongs to until it's first saved,
+  # and upon first save, set the foreign key appropriately.
+  # attr_accessor :owning_bundle
+  # after_create :set_bundle_id
+  # private
+  # def set_bundle_id
+  #   bundle = owning_bundle.reload
+  #   raise "Cannot set bundle ID since owning bundle has not been saved" if bundle.new_record?
+  #   update_attributes!(:bundle_id => bundle.id)
+  # end
+
   def cancel!(by_whom)
     result = super # cancel the main voucher
     bundled_vouchers.each { |v| v.cancel!(by_whom) }
@@ -144,16 +155,11 @@ class Voucher < Item
   end
   
   def inspect
-    sprintf("%6d sd=%-15.15s own=%s vtype=%s (%3.2f) %s%s%s] extkey=%-10s",
-            id,
-            (showdate ? (showdate.printable_name[-15..-1] rescue "--") : 'OPEN'),
-            (customer ? customer.to_s : 'NONE'),
-            (vouchertype.name rescue ""),
-            (vouchertype.price.to_f rescue 0.0),
-            ((vouchertype.subscription? ? "S" : "s") rescue "-"),
-            ((vouchertype.bundle?? "B": "b") rescue "-"),
-            ((vouchertype.offer_public ? "P" : "p") rescue "-"),
-            external_key)
+    s = sprintf("%d %s", (new_record? ? object_id : id), vouchertype.name)
+    if bundle?
+      s += sprintf("\n  <%s>,\n", bundled_vouchers.map(&:inspect).join("\n   "))
+    end
+    s
   end
 
   # constructors

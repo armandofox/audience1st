@@ -28,17 +28,17 @@ module CustomMatchers
     end
     def matches?(target)
       @target = target
-      matches = target.vouchers.select do |v|
+      matches = target.select do |v|
         @attribs.keys.all? { |k| v.send(k) == @attribs[k] }
       end
       @matched = matches.size
       @matched == @num
     end
     def failure_message
-      "expected customer #{@target.name} to have #{@num} vouchers matching #{@attribs.inspect}, but found #{@matched}"
+      "expected to find #{@num} vouchers matching #{@attribs.inspect}, but found #{@matched}"
     end
     def negative_failure_message
-      "expected customer #{@target.name} not to have #{@num} vouchers matching #{@attribs.inspect}, but he did"      
+      "expected not to find #{@num} vouchers matching #{@attribs.inspect}, but I did"      
     end
   end
   def have_voucher_matching(args)

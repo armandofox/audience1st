@@ -138,11 +138,20 @@ describe Vouchertype do
     fixtures :customers
     describe 'bundle' do
       before :each do
-        @customer = customers(:tom)
         @v = Array.new(3) { create(:vouchertype_included_in_bundle) }
         @vt_bundle = create(:bundle, :including => {@v[0] => 1, @v[1] => 2, @v[2] => 3})
       end
-      it('should instantiate all vouchers in bundle') { @vt_bundle.instantiate(2).should have(14).vouchers }
+      it('should instantiate all vouchers in bundle') do
+        @vt_bundle.instantiate(2).should have(14).vouchers
+      end
+      it 'should set bundle-id when saved' do
+        all_vouchers = @vt_bundle.instantiate(2)
+        all_vouchers.map(&:save!)
+        saved_bundles = Voucher.find_all_by_vouchertype_id(@vt_bundle.id)
+        all_vouchers.should have_vouchers_matching(quantity=2, :vouchertype_id => @vt_bundle.id)
+        all_vouchers.should have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[0].id)
+        all_vouchers.should have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[1].id)
+      end
     end
   end
   describe 'lifecycle' do

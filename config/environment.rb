@@ -31,8 +31,9 @@ Rails::Initializer.run do |config|
   #ActionController::Base.session_options[:session_key] = 'audience1st_session_id'
 
   # Add additional load paths for your own custom dirs
-  config.autoload_paths += Dir.glob(File.join Rails.root, "app/models/*").
-    select { |f| File.directory? f }
+  additional_paths = Dir.glob(File.join Rails.root, "app/models/**/*").select { |f| File.directory? f }
+  config.eager_load_paths += additional_paths
+  config.autoload_paths += additional_paths
 
   config.active_record.timestamped_migrations = true
 

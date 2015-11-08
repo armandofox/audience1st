@@ -117,11 +117,11 @@ describe Voucher do
         @from.vouchers.find_by_vouchertype_id(@bundle.id).transfer_to_customer(@to)
       end
       it 'transfers the bundle voucher' do
-        @to.should have_voucher_matching(:vouchertype_id => @bundle.id)
+        @to.vouchers.should have_voucher_matching(:vouchertype_id => @bundle.id)
       end
       it 'transfers the included vouchers' do
-        @to.should have_vouchers_matching(2, :vouchertype_id => @vt1.id)
-        @to.should have_vouchers_matching(1, :vouchertype_id => @vt2.id)
+        @to.vouchers.should have_vouchers_matching(2, :vouchertype_id => @vt1.id)
+        @to.vouchers.should have_vouchers_matching(1, :vouchertype_id => @vt2.id)
       end
     end
   end

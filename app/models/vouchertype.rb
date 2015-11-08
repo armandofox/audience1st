@@ -112,7 +112,7 @@ class Vouchertype < ActiveRecord::Base
   public
   
   def inspect
-    sprintf("%-15.15s $%2.2f (%s,%s)", name, price, category, offer_public_as_string)
+    sprintf "%s, %s, $%.02f", name, category, price
   end
 
   def <=>(other)
@@ -297,13 +297,20 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def instantiate(howmany, args = {})
-    vouchers = Array.new(howmany) { Voucher.new_from_vouchertype(self, args) }
-    if bundle?
-      self.get_included_vouchers.each_pair do |vtype,qty|
-        vouchers += Vouchertype.find(vtype).instantiate(howmany * qty)
+    all_vouchers = []
+    howmany.times do
+      voucher = Voucher.new_from_vouchertype(self, args)
+      all_vouchers << voucher
+      if self.bundle?
+        included_vouchers = []
+        self.get_included_vouchers.each_pair do |vtype,qty|
+          included_vouchers += Vouchertype.find(vtype).instantiate(qty)
+        end
+        voucher.bundled_vouchers += included_vouchers
+        all_vouchers += included_vouchers
       end
     end
-    vouchers
+    all_vouchers
   end
 
   # a monogamous vouchertype is valid for exactly one showdate.
