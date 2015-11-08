@@ -1,3 +1,21 @@
+Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
+  customer =
+    Customer.find_by_first_name_and_last_name(first,last) ||
+    create(:customer, :first_name => first, :last_name => last)
+  # make it legal for customer to buy the things
+  @order = build(:order,
+    :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
+    :customer => customer,
+    :purchaser => customer)
+  @order.vouchers = []
+  table.hashes.each do |voucher|
+    vtype = Vouchertype.find_by_name!(voucher[:name])
+    vv = create(:valid_voucher, :vouchertype => vtype, :showdate => nil)
+    @order.add_tickets(vv, voucher[:quantity].to_i)
+  end
+  @order.finalize!
+end
+
 Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,_,comments,table|
   @customer = Customer.find_by_first_name_and_last_name(first,last)
   order = @customer.orders.first

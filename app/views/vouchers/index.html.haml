@@ -5,19 +5,17 @@
       %span.attention reserved voucher,
       cancel the reservation first.
     %li Transferring a subscription/bundle will transfer all the vouchers in the bundle.
-    %li 
-n first.
 
   - form_tag transfer_multiple_customer_vouchers_path(@customer) do
-    %strong Transfer checked vouchers to:
+    %strong Transfer checked vouchers to customer
     = customer_search_field 'customer', '', {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {'customer_id' => :id}, :select_opts => {:indicator => 'wait'}
     = spinner 'wait'
     = submit_tag 'Go'
 
-%table
+%table.hilite
   %tbody
     - @vouchers.each do |v|
       %tr
-        %td= check_box_tag "vouchers[#{v.id}]" unless (v.subscriber_voucher? || v.reserved?)
+        %td{:class => ('strong' if v.reserved?)}= check_box_tag "vouchers[#{v.id}]" if v.transferable?
         %td= v.id
         %td= v.item_description

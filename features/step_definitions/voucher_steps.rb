@@ -116,11 +116,21 @@ Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |
 end
 
 Given /^the "(.*)" subscription includes the following vouchers:/ do |name, vouchers|
-  sub = Vouchertype.find_by_category_and_name!(:bundle, name)
+  sub =
+    Vouchertype.find_by_category_and_name(:bundle, name) ||
+    create(:bundle, :name => name, :subscription => true)
   sub.included_vouchers ||= {}
   vouchers.hashes.each do |voucher|
     vt = create(:vouchertype_included_in_bundle, :name => "#{voucher[:name]} (subscriber)")
     sub.included_vouchers[vt.id] = voucher[:quantity].to_i
   end
   sub.save!
+end
+
+Given /^customer "(.*) (.*)" has purchased (\d+) "(.*)" subscriptions?$/ do |first,last,num,name|
+  customer =
+    Customer.find_by_first_name_and_last_name(first, last) ||
+    create(:customer, :first_name => first, :last_name => last)
+  sub = Vouchertype.find_by_type_and_name!(:bundle, name)
+  
 end

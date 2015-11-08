@@ -23,6 +23,7 @@ module NavigationHelpers
       # admin-facing voucher management and customer help
     when /the list of customers page/i      then customers_path
     when /the add comps page/i              then new_customer_voucher_path(@customer)
+    when /the transfer vouchers page/i  then customer_vouchers_path(@customer)
     when /the orders page/i             then orders_path(:customer_id => @customer)
       # store purchase flow
     when /the order page for that order/ then order_path(@order)

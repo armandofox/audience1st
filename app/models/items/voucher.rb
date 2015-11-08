@@ -225,6 +225,14 @@ class Voucher < Item
       (changeable? && valid_now? && within_grace_period?)
   end
 
+  # A voucher is transferable if:
+  #  - It is a regular (not part of bundle) voucher, and unreserved
+  #  - It is a bundle voucher, and none of its children are reserved
+  def transferable?
+    !bundle? && !part_of_bundle?  &&  unreserved?  or
+      bundle? && bundled_vouchers.all?(&:unreserved?)
+  end
+
   def within_grace_period?
     unreserved? ||
       (Time.now < (showdate.thedate - Option.cancel_grace_period.minutes))
