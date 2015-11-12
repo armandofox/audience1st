@@ -20,6 +20,11 @@ Scenario: transfer one subscription
 
   When I visit the transfer vouchers page for customer "Tom Foolery"
   And I check the transfer box for the 1st "Full Season" voucher
-  Then show me the page
   And I fill in the customer autocomplete with "Chris Jones"
   And I press "Transfer"
+  Then I should be on the home page for "Chris Jones"
+  And customer "Chris Jones" should have the following vouchers:
+  | vouchertype | quantity    |
+  |           1 | Full Season |
+  |           1 | Nunsense    |
+  |           1 | Ragtime     |
