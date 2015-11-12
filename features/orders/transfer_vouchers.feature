@@ -22,9 +22,9 @@ Scenario: transfer one subscription
   And I check the transfer box for the 1st "Full Season" voucher
   And I fill in the customer autocomplete with "Chris Jones"
   And I press "Transfer"
-  Then I should be on the home page for "Chris Jones"
+  Then I should be on the home page for customer "Chris Jones"
   And customer "Chris Jones" should have the following vouchers:
-  | vouchertype | quantity    |
-  |           1 | Full Season |
-  |           1 | Nunsense    |
-  |           1 | Ragtime     |
+  | quantity | vouchertype           |
+  |        1 | Full Season           |
+  |        1 | Nunsense (subscriber) |
+  |        1 | Ragtime (subscriber)  |
