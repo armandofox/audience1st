@@ -169,12 +169,19 @@ class VouchersController < ApplicationController
   end
 
   def transfer_multiple
-    vouchers = params[:vouchers].keys
-    from_customer = Customer.find params[:customer_id]
+    vouchers = params[:vouchers]
+    redirect_with(customer_vouchers_path(@customer), :alert => 'You did not select any vouchers.') and return unless vouchers
     new_customer = Customer.find_by_id params[:customer]
-    redirect_with(customer_vouchers_path(from_customer),
+    redirect_with(customer_vouchers_path(@customer),
       :alert => 'Must select valid customer to transfer to.') and
       return unless new_customer.kind_of? Customer
+    
+    result,num_transferred = Voucher.transfer_multiple(vouchers.keys, new_customer, current_user)
+    if result
+      redirect_with customer_path(new_customer), :notice => "#{num_transferred} items transferred.  Now viewing #{new_customer.full_name}'s account."
+    else
+      redirect_with customer_transfer_multiple_vouchers_path(@customer), "NO changes were made because of error: #{msg}.  Try again."
+    end
   end
 
   def cancel_prepaid

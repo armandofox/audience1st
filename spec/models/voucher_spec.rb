@@ -30,12 +30,12 @@ describe Voucher do
     end
     describe "transferring" do
       it "should transfer to the new showdate" do
-        Voucher.transfer_multiple(@vouchers, @to, @logged_in)
+        Voucher.change_showdate_multiple(@vouchers, @to, @logged_in)
         @vouchers.each { |v| @to.vouchers.should include(v) }
       end
       it "should do nothing if any of the vouchers is invalid" do
         lambda do
-          Voucher.transfer_multiple(@vouchers.push(@invalid_voucher),@to,@logged_in)
+          Voucher.change_showdate_multiple(@vouchers.push(@invalid_voucher),@to,@logged_in)
         end.should raise_error(ActiveRecord::RecordInvalid)
         @vouchers.each { |v| @to.vouchers.should_not include(v) }
       end

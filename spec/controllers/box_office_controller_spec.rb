@@ -37,7 +37,7 @@ describe BoxOfficeController do
   describe "transferring already-sold walkup vouchers" do
     context "no transfer is attempted", :shared => true do
       it "should not attempt to transfer" do
-        Voucher.should_not_receive(:transfer_multiple)
+        Voucher.should_not_receive(:change_showdate_multiple)
         post :modify_walkup_vouchers, @params
       end
       it "should redirect" do
@@ -95,7 +95,7 @@ describe BoxOfficeController do
         end
         context "when no errors occur" do
           before(:each) do
-            Voucher.should_receive(:transfer_multiple).with(kind_of(Array), kind_of(Showdate), anything())
+            Voucher.should_receive(:change_showdate_multiple).with(kind_of(Array), kind_of(Showdate), anything())
           end
           it "should do the transfer" do
             post :modify_walkup_vouchers, @params
@@ -106,7 +106,7 @@ describe BoxOfficeController do
           end
         end
         it "when errors occur should display a message" do
-          Voucher.should_receive(:transfer_multiple).and_raise("boom!")
+          Voucher.should_receive(:change_showdate_multiple).and_raise("boom!")
           post :modify_walkup_vouchers, @params
           flash[:alert].should match(/no changes were made/i)
           flash[:alert].should match(/boom!/)

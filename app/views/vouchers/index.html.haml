@@ -1,4 +1,6 @@
 #transfer_to.explain
+  Check the vouchers you want to transfer, then at the bottom of this
+  page, fill in the customer name to transfer them to.
   %ul
     %li 
       You can only transfer unreserved (open) vouchers.  To transfer a
@@ -6,16 +8,31 @@
       cancel the reservation first.
     %li Transferring a subscription/bundle will transfer all the vouchers in the bundle.
 
-  - form_tag transfer_multiple_customer_vouchers_path(@customer) do
-    %strong Transfer checked vouchers to customer
-    = customer_search_field 'customer', '', {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {'customer_id' => :id}, :select_opts => {:indicator => 'wait'}
-    = spinner 'wait'
-    = submit_tag 'Go'
+%div
+  = check_box_tag 'hide', 1, false, :class => 'hide_checkbox', 'data-selector' => '.nontransferable', 'data-ifchecked' => 'hide'
+  Show only transferable vouchers
 
-%table.hilite
-  %tbody
-    - @vouchers.each do |v|
-      %tr
-        %td{:class => ('strong' if v.reserved?)}= check_box_tag "vouchers[#{v.id}]" if v.transferable?
-        %td= v.id
-        %td= v.item_description
+- form_tag transfer_multiple_customer_vouchers_path(@customer) do
+  %table.hilite#transfer_vouchers_table
+    %thead
+      %th 
+      %th ID
+      %th Description
+      %th Order#
+      %th Original purchaser
+    %tbody
+      - @vouchers.each do |v|
+        %tr{:class => ('nontransferable' unless v.transferable?)}
+          %td= check_box_tag "vouchers[#{v.id}]" if v.transferable?
+          %td= v.id
+          %td{:class => ('attention' if v.reserved?)}= v.item_description
+          %td= link_to v.order_id, order_path(v.order)
+          %td= v.purchaser.full_name
+
+  .explain
+    %strong Transfer checked vouchers to customer
+    = customer_search_field 'customer', '', {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {'cid' => :id}, :select_opts => {:indicator => 'wait'}
+    = hidden_field_tag 'cid'
+    = spinner 'wait'
+    = submit_tag 'Transfer'
+

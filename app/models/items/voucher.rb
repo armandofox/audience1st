@@ -257,7 +257,8 @@ class Voucher < Item
     self.comments = comments
     self
   end
-  def self.transfer_multiple(vouchers, showdate, logged_in_customer)
+
+  def self.change_showdate_multiple(vouchers, showdate, logged_in_customer)
     Voucher.transaction do
       vouchers.each do |v|
         v.unreserve
@@ -265,6 +266,27 @@ class Voucher < Item
         v.save! unless v.new_record?
       end
     end
+  end
+
+  def self.transfer_multiple(voucher_ids, to_customer, logged_in_customer)
+    total = 0
+    begin
+      vouchers = voucher_ids.map { |v| Voucher.find v }
+      Voucher.transaction do
+        vouchers.each do |v|
+          v.update_attributes!(:customer => to_customer, :processed_by => logged_in_customer)
+          total += 1
+          if v.bundle?
+            bundled = v.bundled_vouchers
+            bundled.each { |b| b.update_attributes!(:customer => to_customer, :processed_by => logged_in_customer) }
+            total += bundled.length
+          end
+        end
+      end
+    rescue RuntimeError => e
+      return nil, e.message
+    end
+    return true, total
   end
 
   def cancel(logged_in = Customer.generic_customer.id)

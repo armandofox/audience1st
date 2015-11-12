@@ -2,6 +2,7 @@ class Item < ActiveRecord::Base
   acts_as_reportable
   
   belongs_to :customer
+  delegate :purchaser, :to => :order
   belongs_to :order
   validates_associated :order
   

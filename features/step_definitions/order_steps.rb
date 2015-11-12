@@ -66,3 +66,12 @@ When /^I (un)?select items? ([0-9, ]+) of that order$/ do |un, index|
     if un then uncheck(e[i-1]['id']) else check(e[i-1]['id']) end
   end
 end
+
+When /^I check the transfer box for the (\d)(?:th|st|rd) "(.*)" voucher$/ do |ordinal,voucher_name|
+  ordinal = ordinal.to_i
+  raise "Can only get first element right now" unless ordinal==1
+  td = "//table[@id='transfer_vouchers_table']//td[contains(text(),'#{voucher_name}')]"
+  # navigate from the td to the checkbox at the beginning of its row
+  checkbox = "#{td}/..//input[@type='checkbox']"
+  find(:xpath, checkbox).set(true)
+end

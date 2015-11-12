@@ -142,17 +142,14 @@ class BoxOfficeController < ApplicationController
 
   # process a change of walkup vouchers by moving them to another showdate, as directed
   def modify_walkup_vouchers
-    if params[:vouchers].blank?
-      flash[:alert] = "You didn't select any vouchers to transfer."
-      redirect_to walkup_sales_path(@showdate) and return
-    end
+    redirect_with(walkup_sales_path(@showdate), :alert => "You didn't select any vouchers to transfer.") and return if params[:vouchers].blank?
     voucher_ids = params[:vouchers]
     showdate_id = 0
     begin
       vouchers = Voucher.find(voucher_ids)
       showdate_id = vouchers.first.showdate_id
       showdate = Showdate.find(params[:to_showdate])
-      Voucher.transfer_multiple(vouchers, showdate, current_user)
+      Voucher.change_showdate_multiple(vouchers, showdate, current_user)
       flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
     rescue Exception => e
       flash[:alert] = "Error (NO changes were made): #{e.message}"
