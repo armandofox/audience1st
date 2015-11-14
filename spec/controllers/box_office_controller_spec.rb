@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe BoxOfficeController do
 
-    fixtures :customers
+  fixtures :customers
 
   before(:each) do
     login_as(:boxoffice_manager)
@@ -67,7 +67,8 @@ describe BoxOfficeController do
     end
     context "when target showdate doesn't exist" do
       before(:each) do
-        @params = {:vouchers => [Voucher.create!(:showdate_id => 2)], :commit => 'Transfer',
+        @params = {:vouchers => [create(:revenue_voucher, :walkup => true, :showdate_id => 2)],
+          :commit => 'Transfer',
           :to_showdate => '99999'}
       end
       it_should_behave_like "no transfer is attempted"
@@ -83,8 +84,8 @@ describe BoxOfficeController do
     end
     context "when all vouchers exist" do
       before(:each) do
-        @v1 = Voucher.create!
-        @v2 = Voucher.create!
+        @v1 = create(:walkup_voucher)
+        @v2 = create(:walkup_voucher)
         @params = {:vouchers => [@v1.id, @v2.id]}
       end
       describe "transferring" do

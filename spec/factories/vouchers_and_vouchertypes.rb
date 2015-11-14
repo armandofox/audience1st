@@ -65,12 +65,17 @@ FactoryGirl.define do
   end
 
   factory :voucher do
-    customer
+    customer      
 
     factory :revenue_voucher do
       association :vouchertype, :factory => :revenue_vouchertype
       amount { vouchertype.price }
       category { vouchertype.category }
+
+      factory :walkup_voucher do
+        walkup true
+        customer { Customer.walkup_customer }
+      end
     end
 
     factory :subscriber_voucher do

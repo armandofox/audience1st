@@ -31,7 +31,7 @@ Given /^a bundle "(.*)" for \$?([0-9.]+) containing:$/ do |name,price,tickets|
   bundle.save!
 end
 
-Then /a vouchertype with name "(.*)" should (not )?exist/i do |no,name|
+Then /a vouchertype with name "(.*)" should (not )?exist/i do |name,no|
   @vouchertype = Vouchertype.find_by_name(name)
   if no then @vouchertype.should be_nil else @vouchertype.should be_a_kind_of(Vouchertype) end
 end

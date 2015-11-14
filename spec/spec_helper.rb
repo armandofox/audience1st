@@ -30,7 +30,7 @@ Spec::Runner.configure do |config|
   config.before(:each) do
     # seed the DB with constants. Must be done before each test, since
     # use of Fixtures wipes DB for each test.
-    load File.join(RAILS_ROOT, 'db', 'seeds.rb')
+    load File.join(Rails.root, 'db', 'seeds.rb')
   end
 
   # == Fixtures

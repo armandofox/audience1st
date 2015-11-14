@@ -289,7 +289,7 @@ class Vouchertype < ActiveRecord::Base
   # BUG can we delete this method??
   def get_included_vouchers
     if self.bundle?
-      self.included_vouchers.
+      (self.included_vouchers ||= {}).
         delete_if { |k,v| v.blank? }.
         inject(Hash.new) { |h,(k,v)| h[k.to_i] = v.to_i ; h }
     else
