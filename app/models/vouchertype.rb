@@ -82,6 +82,7 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
+  # BUG clean up this method
   def bundles_include_only_zero_cost_vouchers
     return if self.get_included_vouchers.empty?
     self.get_included_vouchers.each_pair do |id,num|
@@ -113,6 +114,8 @@ class Vouchertype < ActiveRecord::Base
   
   def inspect
     sprintf "%s, %s, $%.02f", name, category, price
+    if bundle?
+    end
   end
 
   def <=>(other)
@@ -283,17 +286,19 @@ class Vouchertype < ActiveRecord::Base
       :season => year)
   end
 
+  # BUG can we delete this method??
   def get_included_vouchers
     if self.bundle?
-      hsh = self.included_vouchers
-      return {} if (hsh.nil? || hsh.empty?)
-      numeric_hsh = Hash.new
-      # convert everthing to ints (stored as strings)
-      hsh.each_pair { |k,v| numeric_hsh[k.to_i || 0] = (v.to_i || 0) }
-      numeric_hsh
+      self.included_vouchers.
+        delete_if { |k,v| v.blank? }.
+        inject(Hash.new) { |h,(k,v)| h[k.to_i] = v.to_i ; h }
     else
       {}
     end
+  end
+
+  def num_included_vouchers
+    get_included_vouchers.values.sum
   end
 
   def instantiate(howmany, args = {})

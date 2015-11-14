@@ -28,7 +28,7 @@ class VouchersController < ApplicationController
   end
 
   def index
-    @vouchers = @customer.vouchers.sort_by(&:reservation_status_then_showdate)
+    @vouchers = @customer.vouchers
   end
   
   def new
@@ -170,10 +170,10 @@ class VouchersController < ApplicationController
 
   def transfer_multiple
     vouchers = params[:vouchers]
-    redirect_with(customer_vouchers_path(@customer), :alert => 'You did not select any vouchers.') and return unless vouchers
+    redirect_with(customer_vouchers_path(@customer), :alert => 'Nothing was transferred because you did not select any vouchers.') and return unless vouchers
     new_customer = Customer.find_by_id params[:cid]
     redirect_with(customer_vouchers_path(@customer),
-      :alert => 'Must select valid customer to transfer to.') and
+      :alert => 'Nothing was transferred because you must select valid customer to transfer to.') and
       return unless new_customer.kind_of? Customer
     result,num_transferred = Voucher.transfer_multiple(vouchers.keys, new_customer, current_user)
     if result

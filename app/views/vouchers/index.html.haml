@@ -25,7 +25,9 @@
         %tr{:class => ('nontransferable' unless v.transferable?)}
           %td= check_box_tag "vouchers[#{v.id}]" if v.transferable?
           %td= v.id
-          %td{:class => ('attention' if v.reserved?)}= v.item_description
+          %td{:class => ('attention' if v.reserved?)}
+            = raw("&nbsp;&nbsp") if v.part_of_bundle?
+            = v.item_description
           %td= link_to v.order_id, order_path(v.order)
           %td= v.purchaser.full_name
 

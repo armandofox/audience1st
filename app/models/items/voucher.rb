@@ -83,6 +83,7 @@ class Voucher < Item
   delegate(
     :name,  :season, :account_code,
     :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
+    :included_vouchers, :num_included_vouchers,
     :unique_showdate,
     :to => :vouchertype)
 
@@ -162,6 +163,21 @@ class Voucher < Item
     s
   end
 
+  # BUG remove this method, only needed for migration/fixup
+  def grab(*others)
+    begin
+      Voucher.record_timestamps = false
+      Voucher.transaction do
+        others.each do |v|
+          raise "#{v} is not an orphan!" unless
+            v.category == :subscriber && v.bundle_id == 0
+          v.update_attributes!(:bundle_id => self.id, :order_id => self.order_id)
+        end
+      end
+    ensure
+      Voucher.record_timestamps = true
+    end
+  end
   # constructors
 
   def self.new_from_vouchertype(vt,args={})
