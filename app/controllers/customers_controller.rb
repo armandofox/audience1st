@@ -265,9 +265,11 @@ class CustomersController < ApplicationController
   # AJAX helpers
   # auto-completion for customer search
   def auto_complete_for_customer_full_name
-    render :inline => "" and return if params[:__arg].blank?
+    debugger
+    search = params[:query]
+    render :inline => "" and return if query.blank?
     @customers =
-      Customer.find_by_multiple_terms(params[:__arg].to_s.split( /\s+/ ))
+      Customer.find_by_multiple_terms(query.split( /\s+/ ))
     render(:partial => 'customers/customer_search_result',
       :locals => {:matches => @customers})
   end

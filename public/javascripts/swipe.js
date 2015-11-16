@@ -44,7 +44,7 @@ function parseSwipeData() {
 }
 
 function setSelectedYear(elt_id, val) {
-  elt = $(elt_id);
+  var elt = $(elt_id);
   for (var i=0; i < elt.length ; i++) {
     if (val == Number(elt[i].value))
       elt.selectedIndex = i;

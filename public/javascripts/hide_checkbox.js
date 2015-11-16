@@ -2,7 +2,6 @@ A1.hide_checkbox = function() {
   var elt = jQuery(self);
   var selector = elt.data('selector');
   var action_if_checked = elt.data('ifchecked');
-  1/0;
   if (jQuery(self).is(':checked')) {
     if (action_if_checked == 'hide') {
       jQuery.hide(selector);
@@ -19,6 +18,6 @@ A1.hide_checkbox = function() {
     }
   }
 };
-addLoadEvent(function() {
-  jQuery(document).on('change', '.hide_checkbox', A1.hide_checkbox);
-});
+
+jQuery('.hide_checkbox').change(A1.hide_checkbox);
+

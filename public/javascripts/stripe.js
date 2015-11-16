@@ -30,9 +30,9 @@ function stripeResponseHandler(status, response) {
     $('payment_errors').innerHTML = 'Please correct the following problems:<br/>' +   response.error.message;
     //console.log("Stripe error: " + response.error.message);
   } else {
-    document.getElementById('credit_card_token').value = response['id'];
-    document.getElementById('_stripe_commit').value = 'credit';
-    document.getElementById('_stripe_payment_form').submit();
+    $('credit_card_token').value = response['id'];
+    $('_stripe_commit').value = 'credit';
+    $('_stripe_payment_form').submit();
   }
 }
 

@@ -5,16 +5,16 @@ var A1 = {};                    // toplevel namespace for all our stuff
 jQuery.noConflict(); // call Prototype's $ rather than Jquery's, temporary for compatibility
 function reset_vouchertype_fields(category) {
     function hide_price() {
-        $('p_vouchertype_price').hide();   $('vouchertype_price').value = '0'; }
+        jQuery('#p_vouchertype_price').hide();   jQuery('#vouchertype_price').value = '0'; }
     function hide_walkup_sale()  {
-        $('p_vouchertype_walkup_sale_allowed').hide(); $('vouchertype_walkup_sale_allowed').checked = false;  }
+        jQuery('#p_vouchertype_walkup_sale_allowed').hide(); jQuery('#vouchertype_walkup_sale_allowed').checked = false;  }
     function hide_changeable() {
-        $('vouchertype_changeable').checked = false;  $('p_vouchertype_changeable').hide(); }
-    function hide_account_code() {   $('p_vouchertype_account_code').hide();  }
-    function hide_availability() {   $('p_vouchertype_offer_public').hide();  }
+        jQuery('#vouchertype_changeable').checked = false;  jQuery('#p_vouchertype_changeable').hide(); }
+    function hide_account_code() {   jQuery('#p_vouchertype_account_code').hide();  }
+    function hide_availability() {   jQuery('#p_vouchertype_offer_public').hide();  }
     function hide_subscriber()   {   
-        $('vouchertype_subscription').checked = false ; $('p_vouchertype_subscription').hide();  }
-    $$('.vtform').map(Element.show);
+        jQuery('#vouchertype_subscription').checked = false ; jQuery('#p_vouchertype_subscription').hide();  }
+    jQuery('.vtform').show();
     switch(category)  {
     case 'bundle':
         hide_walkup_sale(); hide_changeable();

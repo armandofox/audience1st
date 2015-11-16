@@ -7,7 +7,7 @@
       = link_to_remote(hdr, :update=> divid, |
         :url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, |
         :before => "Element.show('wait_#{divid}')", |
-        :complete=> visual_effect(:toggle_slide,divid,:duration=>0.5) + "Element.hide('wait_#{divid}');") |
+        :complete=> %Q{jQuery('##{divid}').slideToggle(); jQuery('#wait_#{divid}').hide() } |
       = spinner("wait_#{divid}")
     %td.showSalesDateQty= showdate.compute_total_sales
     %td.showSalesDatePercent

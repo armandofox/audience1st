@@ -30,10 +30,10 @@
             %td
               - svid = "save_#{vid}"
               - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,vouchers.first), |
-                    :before => disable_with(svid,'Saving...'), |
-                    :complete => enable_with(svid, 'Save'), |
-                    :success => "alert('Comment saved')", |
-                    :failure => "alert('Comment NOT saved - error ' + request.status)") do |
+                :before => %Q{jQuery('##{svid}').text('Saving...').disable()}, |
+                :complete => %Q{jQuery('##{svid}').text('Save').enable(); false; },  |
+                :success => "alert('Comment saved')", |
+                :failure => "alert('Comment NOT saved - error ' + request.status)") do |
                 = text_field_tag 'comments', multiple_voucher_comments(vouchers)
                 = submit_tag 'Save', :id => svid
         - elsif (dates = vouchers.first.redeemable_showdates(current_user.is_boxoffice)).empty?
@@ -50,7 +50,7 @@
               = hidden_field_tag 'number', 1
             %td= vouchertype.name
             %td.selectShowdate
-              = select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates.sort, :showdate_id, :date_with_explanation), :class => :showdate, :onchange => visual_effect(:toggle_appear, "special_seating_#{vid}")
+              = select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates.sort, :showdate_id, :date_with_explanation), :class => :showdate, :onchange => %Q{jQuery('#special_seating_#{vid}').slideToggle() }
               %div{:id => "special_seating_#{vid}",:style=>'display:none'}
                 %span.emphasis Special seating needs?
                 = checkbox_guard_for "special_seating_div_#{vid}"

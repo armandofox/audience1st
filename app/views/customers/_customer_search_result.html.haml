@@ -7,6 +7,7 @@
         - if c.first_name.downcase == first && c.last_name.downcase == last
           %span.street= " (#{h(c.street)})"
         - first,last = c.first_name.downcase, c.last_name.downcase
-        %span.id.hidden= customer_url(c)
+        %span.id.hidden.customer_url= customer_url(c)
+        %span.id.hidden.customer_id= c.id
   - else
     %li.full_name (No matches)

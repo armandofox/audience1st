@@ -1,8 +1,8 @@
 #change_showdate.clear
   %h1.floatleft= h(@showdate.printable_name)
   .floatleft.h1= link_to_function 'Change', |
-    visual_effect(:toggle_slide, 'select_show', :duration => 0.5), |
-    {:class => 'genButton'} |
+    'jQuery("#select_show").slideToggle(),  |
+    {:class => 'genButton'}                 |
   .clear
 
   #select_show{:style => "display: none;"}
