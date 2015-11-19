@@ -249,7 +249,7 @@ class StoreController < ApplicationController
   end
   def showdate_from_show_params
     (s = Show.find_by_id(params[:show_id])) &&
-      s.next_showdate
+      s.showdates.first
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
 
