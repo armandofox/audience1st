@@ -121,14 +121,13 @@ class ReportsController < ApplicationController
 
   def show_special_report
     n = params[:report_name]
-    unless (n.blank? || n =~ /select report/i)
-      # setup any parameters needed to render the report's partial
-      report_subclass = n.camelize.constantize
-      @report = report_subclass.__send__(:new)
-      @args = @report.view_params
-      @sublists = EmailList.get_sublists unless EmailList.disabled?
-      render :partial => "reports/special_report", :locals => {:name => n}
-    end
+    return if (n.blank? || n =~ /select report/i)
+    # setup any parameters needed to render the report's partial
+    report_subclass = n.gsub(/\s+/, '_').camelize.constantize
+    @report = report_subclass.__send__(:new)
+    @args = @report.view_params
+    @sublists = EmailList.get_sublists unless EmailList.disabled?
+    render :partial => "reports/special_report", :locals => {:name => n}
   end
 
   def create_sublist
