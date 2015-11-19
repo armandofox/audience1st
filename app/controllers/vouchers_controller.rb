@@ -173,7 +173,6 @@ class VouchersController < ApplicationController
     redirect_with(customer_vouchers_path(@customer), :alert => 'Nothing was transferred because you did not select any vouchers.') and return unless vouchers
     cid = params[:cid].gsub(/^.*\//, '')
     new_customer = Customer.find_by_id(cid)
-    debugger
     redirect_with(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you must select valid customer to transfer to.') and
       return unless new_customer.kind_of? Customer
