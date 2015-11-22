@@ -3,36 +3,6 @@
 
 var A1 = {};                    // toplevel namespace for all our stuff
 jQuery.noConflict(); // call Prototype's $ rather than Jquery's, temporary for compatibility
-function reset_vouchertype_fields(category) {
-    function hide_price() {
-        jQuery('#p_vouchertype_price').hide();   jQuery('#vouchertype_price').value = '0'; }
-    function hide_walkup_sale()  {
-        jQuery('#p_vouchertype_walkup_sale_allowed').hide(); jQuery('#vouchertype_walkup_sale_allowed').checked = false;  }
-    function hide_changeable() {
-        jQuery('#vouchertype_changeable').checked = false;  jQuery('#p_vouchertype_changeable').hide(); }
-    function hide_account_code() {   jQuery('#p_vouchertype_account_code').hide();  }
-    function hide_availability() {   jQuery('#p_vouchertype_offer_public').hide();  }
-    function hide_subscriber()   {   
-        jQuery('#vouchertype_subscription').checked = false ; jQuery('#p_vouchertype_subscription').hide();  }
-    jQuery('.vtform').show();
-    switch(category)  {
-    case 'bundle':
-        hide_walkup_sale(); hide_changeable();
-        break;
-    case 'subscriber':
-        hide_price(); hide_walkup_sale(); hide_account_code(); hide_availability();
-        break;
-    case 'comp':
-        hide_price(); hide_account_code(); hide_subscriber();
-        break;
-    case 'nonticket':
-        hide_changeable();
-        break;
-    case 'revenue':
-        break;
-    }
-
-}
 
 // Check place-order form before it's submitted.
 
