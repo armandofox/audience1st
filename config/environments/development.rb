@@ -16,7 +16,7 @@ config.action_controller.perform_caching             = false
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
 
-config.log_level = :warn
+config.log_level = :info
 
 # Stripe payments: disable SSL verification for local testing
 require 'stripe'

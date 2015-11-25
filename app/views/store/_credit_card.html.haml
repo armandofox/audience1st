@@ -8,22 +8,21 @@
   = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20
   %br
   = hidden_field_tag 'credit_card_token', 'DUMMY'
-  = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key
-  = make_unsubmitted '_stripe_api_key'
+  = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key, :class => 'unsubmitted'
+
   %label{:for => 'credit_card_number'} Number (no spaces)
-  = text_field_tag 'credit_card_number', '', :size => 24, :max_length => 16, :autocomplete => :off
+  = text_field_tag 'credit_card_number', '', :size => 24, :max_length => 16, :autocomplete => :off, :class => 'unsubmitted'
   = image_tag 'credit_card_logos_horizontal.png'
-  = make_unsubmitted 'credit_card_number'
+
   %br
   %label Expiration
-  = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card'
+  = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card', :class => 'unsubmitted'
   - y = Time.now.year
-  = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card'
-  = make_unsubmitted 'credit_card_month'
-  = make_unsubmitted 'credit_card_year'
+  = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card', :class => 'unsubmitted'
+
   %br
   %label{:for => 'credit_card_verification_value'} Security (CVV) code
-  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4
-  = make_unsubmitted 'credit_card_verification_value'
+  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :class => 'unsubmitted'
   = popup_help_for 'credit_card_verification_value'
   %br
+

@@ -4,11 +4,6 @@ module StoreHelper
     str.blank? ? 0 : str.gsub(/\D/, '').to_i
   end
 
-  # make a form field not be submitted, by removing its name attribute
-  def make_unsubmitted(id)
-    javascript_tag "\$('#{id}').removeAttribute('name')"
-  end
-
   def confirm_dates_dialog(dates_string)
     return nil if dates_string.blank?
     dates_string = escape_javascript("PLEASE DOUBLE CHECK DATES:  You are purchasing ticket(s) for #{dates_string}.  If this is correct, click OK.  If not, click Cancel to start over.")

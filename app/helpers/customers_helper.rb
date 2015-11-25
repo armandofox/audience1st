@@ -1,5 +1,6 @@
 module CustomersHelper
   def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
+    return ''
     # default select args
     default_select_opts = {
       :url => customer_autocomplete_path,

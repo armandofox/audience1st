@@ -2,11 +2,11 @@
   %legend Credit Card Payment
   %p#payment_errors
   = hidden_field_tag 'credit_card_token', 'DUMMY'
-  = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key
-  = make_unsubmitted '_stripe_api_key'
+  = hidden_field_tag '_stripe_api_key', Option.stripe_publishable_key, :class => 'unsubmitted'
+
   %label.strong{:for => 'credit_card_verification_value'} Enter CVV code manually FIRST!
-  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
-  = make_unsubmitted 'credit_card_verification_value'
+  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors unsubmitted'
+
   %br
   #ccReady
     Then type in card data, or
@@ -14,8 +14,8 @@
   #ccWaiting{:style => 'display: none;'}= link_to_function 'Swipe Card or Click Here to Cancel', 'resetSwipe()', {:class => 'genButton'}
   -# hidden field 'commit' filled in by javascript on cc purchase
   = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-  = text_field_tag 'swipe_data', '', {:style => 'position: absolute; left: -10000px; top: auto; overflow: hidden;'}
-  = make_unsubmitted 'swipe_data'
+  = text_field_tag 'swipe_data', '', {:class => 'unsubmitted', :style => 'position: absolute; left: -10000px; top: auto; overflow: hidden;'}
+
   %br
   %br
   %label{:for => 'credit_card_first_name'} First Name
@@ -25,17 +25,17 @@
   = text_field_tag 'credit_card_last_name', '', :size => 20
   %br
   %label{:for => 'credit_card_number'} Number (no spaces)
-  = text_field_tag 'credit_card_number', '', :size => 20, :max_length => 16, :autocomplete => :off
-  = make_unsubmitted 'credit_card_number'
+  = text_field_tag 'credit_card_number', '', :size => 20, :max_length => 16, :autocomplete => :off, :class => 'unsubmitted'
+
   %br
   %label{:for => 'credit_card_month'} Expiration Month
-  = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card'
-  = make_unsubmitted 'credit_card_month'
+  = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card', :class => 'unsubmitted'
+
   %br
   %label{:for => 'credit_card_year'} Expiration Year
   - y = Time.now.year
-  = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card'
-  = make_unsubmitted 'credit_card_year'
+  = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card', :class => 'unsubmitted'
+
   %br
-  = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
+  = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
   %br

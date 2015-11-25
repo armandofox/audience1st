@@ -10,6 +10,6 @@
     = select_tag 'new_showdate', |
      options_for_select(@showdates.map { |sd| [sd.name_and_date_with_capacity_stats, walkup_sales_path(sd)] }, |
      walkup_sales_path(@showdate)), |
-     :onchange => 'window.location = $("new_showdate").value' |
+     :onchange => 'window.location = $("new_showdate").val()' |
     %label
 
