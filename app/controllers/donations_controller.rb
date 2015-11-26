@@ -128,7 +128,7 @@ class DonationsController < ApplicationController
     else
       result = '(ERROR)'
     end
-    render :js => %Q{jQuery('#donation_#{params[:id]}').text('#{result}')}
+    render :js => %Q{\$('#donation_#{params[:id]}').text('#{result}')}
   end
   
   private

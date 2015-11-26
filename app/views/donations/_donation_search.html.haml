@@ -3,7 +3,7 @@
     %tr 
       %td= check_box_tag 'use_cid', 1, @params[:use_cid]
       :javascript
-        $('#use_cid').change(function() { if (! $(this).is(':checked')) { $('#show_vouchers').prop('checked',false); } );
+        $('#use_cid').change(function() { if (! $(this).is(':checked')) { $('#show_vouchers').prop('checked',false); } })
       %td Only for this customer (type first or last name):
       %td
         = customer_search_field 'donor_name', @full_name, |

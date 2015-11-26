@@ -1,14 +1,15 @@
 !!! 5
 %html
   %head
+    = stylesheet_link_tag 'jquery-ui.min', :media => 'all'
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
-    = javascript_include_tag 'jquery'
+    = javascript_include_tag 'jquery.min'
     = javascript_include_tag 'jquery-ui.min'
     = javascript_include_tag 'rails'
-    = javascript_include_tag 'application'
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
-    = javascript_include_tag 'checkout'
+    = javascript_include_tag 'application'
+    = javascript_include_tag 'store'
     = javascript_include_tag 'swipe'
     = javascript_include_tag 'donate'
     = javascript_include_tag 'vouchertype'
