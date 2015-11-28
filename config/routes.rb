@@ -121,18 +121,22 @@ ActionController::Routing::Routes.draw do |map|
 
   # walkup sales
 
-  map.walkup_sales('/box_office/walkup/:id',
-    :id => nil,
-    :controller => 'box_office', :action => 'walkup',
-    :conditions => {:method => :get})
-  map.door_list '/box_office/:id/door_list', :controller => 'box_office', :action => 'door_list', :conditions => {:method => :get}
-  map.checkin  '/box_office/:id/checkin', :controller => 'box_office', :action => 'checkin', :conditions => {:method => :get}
-  map.walkup_report '/box_office/:id/walkup_report', :controller => 'box_office', :action => 'walkup_report', :conditions => {:method => :get}
-  %w(do_walkup_sale modify_walkup_vouchers).each do |action|
-    map.connect "/box_office/#{action}", :controller => 'box_office', :action => action, :conditions => {:method => :post}
-  end
-  map.connect '/box_office/mark_checked_in', :controller => 'box_office', :action => 'mark_checked_in', :conditions => {:method => :post}
+  map.resources(:walkup_sales,
+    :only => [:show, :create, :update],
+    )
+  
 
+  map.resources(:box_office,
+    :only => [:index, :update],
+    :member => {
+      :walkup_sales => :get,
+      :walkup_report => :get,
+      :door_list => :get
+    },
+    :collection => {
+      :do_walkup_sale => :post,
+      :modify_walkup_vouchers => :post
+    })
 
   map.resource(:session,
     :only => [:new, :create],

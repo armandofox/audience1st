@@ -1,6 +1,6 @@
 %ul.nav.store_nav
-  %li#t_box_office_walkup= link_to 'Walkup Sales', walkup_sales_path(@showdate)
-  %li#t_box_office_door_list= link_to 'Printable Door List', door_list_path(@showdate)
-  %li#t_box_office_checkin= link_to 'Reservation Checkin', checkin_path(@showdate)
-  %li#t_box_office_walkup_report= link_to 'Walkup Report', walkup_report_path(@showdate)
+  %li#t_box_office_walkup= link_to 'Walkup Sales', box_office_walkup_sales_path(@showdate)
+  %li#t_box_office_door_list= link_to 'Printable Door List', box_office_door_list_path(@showdate)
+  %li#t_box_office_checkin= link_to 'Reservation Checkin', box_office_path(@showdate)
+  %li#t_box_office_walkup_report= link_to 'Walkup Report', box_office_walkup_report_path(@showdate)
   %li#t_customers_welcome= link_to 'Back to Main', (@customer ? customer_path(@customer) : customers_path)
