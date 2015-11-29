@@ -40,7 +40,7 @@ class Order < ActiveRecord::Base
   def after_initialize
     self.donation_data ||= {}
     unless donation_data.empty?
-      @donation = Donation.new(:amount => donation_data[:amount], :account_code_id => donation_data[:account_code_id])
+      @donation = Donation.new(:amount => donation_data[:amount], :account_code_id => donation_data[:account_code_id], :comments => donation_data[:comments])
     end
     self.valid_vouchers ||= {}
     self.retail_items ||= []
@@ -139,6 +139,7 @@ class Order < ActiveRecord::Base
   def donation=(d)
     self.donation_data[:amount] = d.amount
     self.donation_data[:account_code_id] = d.account_code_id
+    self.donation_data[:comments] = d.comments
     @donation = d
   end
   

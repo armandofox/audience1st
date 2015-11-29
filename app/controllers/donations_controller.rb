@@ -75,7 +75,7 @@ class DonationsController < ApplicationController
   end
 
   def new
-    @donation ||= @customer.donations.new(:amount => 0,:comments => 'x')
+    @donation ||= @customer.donations.new(:amount => 0,:comments => '')
   end
 
   def create
@@ -83,11 +83,19 @@ class DonationsController < ApplicationController
     @donation = Donation.from_amount_and_account_code_id(
       params[:amount].to_f, params[:fund].to_i, params[:comments].to_s)
     @order.add_donation(@donation)
-    sold_on = Date.from_year_month_day(params[:date])
-    @order.purchasemethod = (params[:payment] == 'check' ?
-      Purchasemethod.find_by_shortdesc('box_chk') :
-      Purchasemethod.find_by_shortdesc('box_cash'))
     @order.processed_by = current_user()
+
+    sold_on = Date.from_year_month_day(params[:date])
+    case params[:payment]
+    when 'check'
+      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_chk')
+    when 'cash'
+      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_cash')
+    when 'credit_card'
+      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_cc')
+      @order.purchase_args =  { :credit_card_token => params[:credit_card_token] }
+      sold_on = Time.now
+    end
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
       flash[:alert] = @order.errors.full_messages.join(',')
