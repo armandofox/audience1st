@@ -364,7 +364,7 @@ class StoreController < ApplicationController
     if (amount = to_numeric(params[:donation])) > 0
       @cart.add_donation(
         Donation.new(:amount => amount,
-          :account_code_id => params[:account_code_id],
+          :account_code_id => params[:account_code_id] || AccountCode.default_account_code_id,
           :comments => params[:comments]))
     end
   end
