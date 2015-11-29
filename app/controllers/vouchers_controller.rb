@@ -169,7 +169,6 @@ class VouchersController < ApplicationController
   end
 
   def transfer_multiple
-    debugger
     vouchers = params[:vouchers]
     redirect_with(customer_vouchers_path(@customer), :alert => 'Nothing was transferred because you did not select any vouchers.') and return unless vouchers
     cid = params[:cid].gsub(/^.*\//, '')
