@@ -153,7 +153,7 @@ describe StoreController do
     context "with donation" do
       before(:each) do
         @params = {:customer_id => @buyer.id, :donation => "13"}
-        @d = mock_model(Donation, :price => 13, :amount => 13, :account_code_id => 1)
+        @d = mock_model(Donation, :price => 13, :amount => 13, :account_code_id => 1).as_null_object
       end
       it "should allow proceeding" do
         post :process_cart, @params
@@ -164,18 +164,9 @@ describe StoreController do
         post :process_cart, @params
         response.should redirect_to(:action => 'checkout')
       end
-      it "should create donation with no account code" do
-        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(@d)
-        post :process_cart, @params
-      end
-      it 'should create donation with nondefault account code when supplied' do
-        @params[:account_code_id] = 75
-        Donation.should_receive(:from_amount_and_account_code_id).with(13, '75').and_return(@d)
-        post :process_cart, @params
-      end
       it "should add the donation to the cart" do
         controller.stub!(:find_cart).and_return(@cart = Order.new)
-        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil).and_return(d = Donation.new)
+        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil, nil).and_return(d = Donation.new)
         @cart.should_receive(:add_donation).with(d)
         post :process_cart, @params
       end
