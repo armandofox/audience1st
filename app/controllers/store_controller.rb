@@ -89,12 +89,9 @@ class StoreController < ApplicationController
 
   def donate_to_fund
     return_after_login params.except(:customer_id)
-    @account_code = AccountCode.find_by_id(params[:id])
-    unless @account_code
-      @account_code = AccountCode.find_by_code(params[:account_code]) ||
-        AccountCode.default_account_code
-      redirect_to donate_to_fund_path(@account_code, @customer)
-    end
+    @account_code = AccountCode.find_by_code(params[:id]) ||
+      AccountCode.find_by_id(params[:id]) ||
+      AccountCode.default_account_code
   end
 
   # This single action handles quick_donate: GET serves the form, POST places the order
@@ -364,7 +361,7 @@ class StoreController < ApplicationController
     if (amount = to_numeric(params[:donation])) > 0
       @cart.add_donation(
         Donation.new(:amount => amount,
-          :account_code_id => params[:account_code_id] || AccountCode.default_account_code_id,
+          :account_code_id => (params[:account_code_id] || AccountCode.default_account_code_id),
           :comments => params[:comments]))
     end
   end

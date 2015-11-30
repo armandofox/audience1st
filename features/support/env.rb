@@ -26,7 +26,8 @@ require 'capybara/session'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 
-Capybara.javascript_driver = :selenium
+require 'capybara/poltergeist'
+Capybara.javascript_driver = :poltergeist
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere

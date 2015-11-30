@@ -13,7 +13,7 @@
   = select_date Date.current, :order => [:month, :day, :year]
   %br
   %label{:for => 'comments'} Comments/Check no.
-  = text_area_tag 'comments', @donation.comments, :size => '50x3'
+  = text_area_tag 'comments', @donation.comments
   %br
 
 

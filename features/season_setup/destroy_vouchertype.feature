@@ -9,6 +9,7 @@ Background:
   Given I am logged in as administrator
   And a "Student" vouchertype costing $13.00 for the 2010 season
 
+@javascript
 Scenario: destroy vouchertype if none have been issued
 
   When I visit the vouchertypes page
