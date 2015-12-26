@@ -1,13 +1,7 @@
-Given /^the following ([A-Z].*) exist:/ do |thing, instances|
-  klass = thing.gsub(/\s+/, '_').classify.constantize
+Given /^the following ([A-Z].*)s exist:/ do |thing, instances|
+  klass = thing.gsub(/\s+/, '_').downcase.to_sym
   instances.hashes.each do |hash|
-    hash.each_pair do |k,v|
-      if v =~ /^(\S+):(.*)$/
-        hash["#{k}_id"] = k.classify.constantize.send("find_by_#{$1}!", $2)
-        hash.delete(k)
-      end
-    end
-    klass.send(:create!, hash)
+    FactoryGirl.create(klass, hash)
   end
 end
 

@@ -77,7 +77,7 @@ Then /^I should be able to login with username "(.*)" and (that password|passwor
   @password = password if use_prev !~ /that/
   visit logout_path
   visit login_path
-  customer = Customer.find_by_email(username)
+  customer = Customer.find(:first, :conditions => ['email LIKE ?',username.downcase])
   fill_in 'email', :with => username
   fill_in 'password', :with => @password
   click_button 'Login'
@@ -93,7 +93,7 @@ Given /^customer "(.*) (.*)" exists( and was created by admin)?$/ do |first,last
   @customer =
     Customer.find_by_first_name_and_last_name(first,last) ||
     create(:customer, :first_name => first, :last_name => last,
-    :email => "#{first}@#{last}.com")
+    :email => "#{first.downcase}@#{last.downcase}.com")
   @customer.update_attribute(:created_by_admin, true) if admin
 end
 

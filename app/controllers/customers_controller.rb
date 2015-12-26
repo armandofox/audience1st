@@ -101,6 +101,7 @@ class CustomersController < ApplicationController
 
   def change_password_for
     return if request.get?
+    @customer.validate_password = true
     if @customer.update_attributes(params[:customer])
       password = params[:customer][:password]
       flash[:notice] = "Changes confirmed."
@@ -331,7 +332,7 @@ class CustomersController < ApplicationController
       flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
       return nil
     end
-    @customer = Customer.find_by_email(email)
+    @customer = Customer.find(:first, :conditions => ['email LIKE ?', email])
     unless @customer
       flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
       return nil

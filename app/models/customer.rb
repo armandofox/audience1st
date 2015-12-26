@@ -58,8 +58,12 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
-  validates_length_of :password, :if => :self_created?, :in => 1..20
+  attr_accessor :validate_password
+  validates_length_of :password, :on => :create, :if => :self_created?, :in => 1..20
+  validates_length_of :password, :on => :update, :if => :validate_password, :in => 1..20
   validates_confirmation_of :password, :if => :self_created?
+
+  
 
   attr_accessor :force_valid         
   attr_accessor :gift_recipient_only 
@@ -67,6 +71,7 @@ class Customer < ActiveRecord::Base
 
   attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
   :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
+  :password, :password_confirmation,
   :secret_question, :secret_answer,
   :company, :title, :company_url, :company_address_line_1,
   :company_address_line_2, :company_city, :company_state, :company_zip,
@@ -127,7 +132,7 @@ class Customer < ActiveRecord::Base
     elsif !email.match(/^[\w\d]+@[\w\d]+/)
       false
     else
-      !(Customer.find_by_email email)
+      !(Customer.find(:first, :conditions => ['email LIKE ?', email.downcase]))
     end
   end
 
