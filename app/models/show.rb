@@ -20,6 +20,9 @@ class Show < ActiveRecord::Base
     "Show name must be between 3 and 40 characters"
   validates_numericality_of :house_capacity, :greater_than => 0
 
+  attr_accessible :name, :opening_date, :closing_date, :house_capacity, :patron_notes, :landing_page_url
+  attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
+
   # current_or_next returns the Show object corresponding to either the
   # currently running show, or the one with the next soonest opening date.
 

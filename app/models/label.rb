@@ -6,6 +6,8 @@ class Label < ActiveRecord::Base
 
   before_destroy :remove_from_join_table
 
+  attr_accessible :name
+
   def remove_from_join_table
     connection.execute("DELETE FROM customers_labels WHERE label_id=#{id}")
   end

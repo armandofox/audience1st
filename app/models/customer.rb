@@ -35,7 +35,7 @@ class Customer < ActiveRecord::Base
   has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
   has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
 
-  validates_format_of :email, :if => :self_created?, :with => /^\S+@\S+/
+  validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
@@ -43,11 +43,11 @@ class Customer < ActiveRecord::Base
     <a href='/login?email=%{value}'>Sign in with this email address</a>
     (if you forgot your password, use the 'Forgot your password?' link on sign-in page)"
   
-  validates_format_of :zip, :if => :self_created?, :with => /^[0-9]{5}-?([0-9]{4})?$/, :allow_blank => true
+  validates_format_of :zip, :if => :self_created?, :with => /\A^[0-9]{5}-?([0-9]{4})?\z/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
   validate :valid_as_gift_recipient?, :if => :gift_recipient_only
 
-  NAME_REGEX = /^[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+$/
+  NAME_REGEX = /\A[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+\z/
   NAME_FORBIDDEN_CHARS = /[^-A-Za-z0-9_\/#\@'":;,.%\ ()&]/
   
   BAD_NAME_MSG = "must not include special characters like <, >, !, etc."

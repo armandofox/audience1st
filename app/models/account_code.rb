@@ -7,6 +7,8 @@ class AccountCode < ActiveRecord::Base
   validates_uniqueness_of :code
   validate :name_or_code_given
 
+  attr_accessible :name, :code, :description
+
   def name_or_code_given
     !name.blank? || !code.blank?
   end
