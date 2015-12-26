@@ -7,10 +7,6 @@ Feature: run accounting report
 Background: 
 
   Given I am logged in as staff
-  And the following Purchasemethods exist:
-    | description | shortdesc | nonrevenue |
-    | Credit Card | box_cc    | nil        |
-    | Cash        | box_cash  | nil        |
 
 Scenario: View donations by date and account code
 

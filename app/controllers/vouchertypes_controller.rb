@@ -110,7 +110,7 @@ class VouchertypesController < ApplicationController
 
   def destroy
     c = @vouchertype.vouchers.count
-    redirect_with(vouchertypes_path, :alert => "Can't delete this voucher type because #{c} of them have already been issued") and return if c > 0
+    return redirect_with(vouchertypes_path(:season => @vouchertype.season), :alert => "Can't delete this voucher type because #{c} of them have already been issued") if c > 0
 
     @vouchertype.destroy
     Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,

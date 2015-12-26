@@ -12,7 +12,7 @@ describe VouchertypesController do
       create(:revenue_voucher, :vouchertype => @vtype)
       delete :destroy, :id => @vtype.id
       response.should redirect_to vouchertypes_path(:season => @vtype.season)
-      flash[:alert].should =~ /1 issued vouchers/
+      flash[:alert].should =~ /1 of them have already been issued/
     end
     it "should succeed if vouchertype has no associated vouchers or vouchertypes" do
       post :destroy, :id => @vtype.id
