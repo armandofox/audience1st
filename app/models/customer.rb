@@ -579,24 +579,6 @@ EOSQL1
     
   end
 
-  def self.find_all_subscribers(order_by='last_name',opts={})
-    from = Time.now.at_beginning_of_season.to_formatted_s(:db)
-    to = Time.now.at_end_of_season.to_formatted_s(:db)
-    conds = ['vt.subscription=1',
-      "#{Time.db_now} BETWEEN '#{from}' AND '#{to}'"]
-    conds.push('(c.e_blacklist IS NULL OR c.e_blacklist=0)') if
-      opts[:exclude_e_blacklist]
-    conds.push('(c.blacklist IS NULL OR c.blacklist=0)') if
-      opts[:exclude_blacklist]
-
-    Customer.find_by_sql("SELECT DISTINCT c.* " <<
-                         " FROM customers c JOIN items v ON v.customer_id=c.id " <<
-                         " JOIN vouchertypes vt on v.vouchertype_id=vt.id " <<
-                         " WHERE v.type='Voucher' AND " <<
-                         conds.join(' AND ') <<
-                         " ORDER BY #{order_by}")
-  end
-
   # support for find_unique
 
   def self.match_email_and_last_name(email,last_name)

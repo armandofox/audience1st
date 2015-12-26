@@ -63,11 +63,11 @@ describe Showdate do
       @house_cap = 12
       @max_sales = 10
       @thedate = Time.now
-      @showdate = Showdate.create!(
+      @showdate = FactoryGirl.create(:showdate,
         :thedate => @thedate,
         :end_advance_sales => @thedate - 5.minutes,
-        :max_sales => @max_sales,
-        :show => mock_model(Show, :valid? => true, :house_capacity => @house_cap))
+        :max_sales => @max_sales)
+      @showdate.show.update_attributes!(:house_capacity => @house_cap)
       @vouchers = {
         :subscriber => 4,
         :comp => 3,

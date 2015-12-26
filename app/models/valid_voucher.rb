@@ -209,21 +209,6 @@ class ValidVoucher < ActiveRecord::Base
     result.freeze
   end
 
-  named_scope :on_sale_now, :conditions => ['? BETWEEN start_sales AND end_sales', Time.now]
-
-
-  def self.for_advance_sales(supplied_promo_code = '')
-    general_conds = "? BETWEEN start_sales AND end_sales"
-    general_opts = [Time.now]
-    promo_code_conds = "promo_code IS NULL OR promo_code = ''"
-    promo_code_opts = []
-    unless promo_codes.empty?
-      promo_code_conds += " OR promo_code LIKE ? " * promo_codes.length
-    end
-    ValidVoucher.find(:all,
-      :conditions => ["#{general_conds} AND (#{promo_code_conds})", general_opts + promo_codes])
-  end
-
   def date_with_explanation
     display_name = showdate.menu_selection_name
     max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"

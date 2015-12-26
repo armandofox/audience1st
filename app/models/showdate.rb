@@ -23,7 +23,7 @@ class Showdate < ActiveRecord::Base
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
-  attr_accessible :thedate, :end_advance_sales, :max_sales, :description
+  attr_accessible :thedate, :end_advance_sales, :max_sales, :description, :show_id
 
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
