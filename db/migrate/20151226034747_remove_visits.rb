@@ -25,8 +25,6 @@ class RemoveVisits < ActiveRecord::Migration
     add_index :customers, :day_phone
     add_index :customers, :eve_phone
     add_index :customers, :role
-    add_index :customers, :comments
-    
     
   end
 
