@@ -21,7 +21,3 @@ tt:
 
 TAGS: $(FILES)
 	@etags $(FILES) >/dev/null
-
-.PHONY: doc
-doc:	
-	cd manual && make

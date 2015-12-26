@@ -1,13 +1,3 @@
-%label{:for=>:referred_by_id} Referred by <span class="small">(cust ID)</small>
-=text_field 'customer', 'referred_by_id', :size=>10, :id => 'referred_by_id'
-%br/
-
-%span#referred_by_name{:width=>"40ex"}= @customer.referred_by_name
-%label{:for=>:referred_by_other} Referred by <span class="small">(other)</small>
-=text_field 'customer', 'referred_by_other', :id => 'referred_by_other'
-%br/
-%br/
-
 %fieldset#company_info
   %legend Company Information
   %label{:for=>:customer_company} Name
@@ -47,7 +37,5 @@
 %label{:for=>:customer_best_way_to_contact} Best Way to Contact
 =text_area 'customer', 'best_way_to_contact', {:cols => 50, :rows => 2}
 %br/
-
-= observe_field('referred_by_id',:update => 'referred_by_name', :with => 'id', :url => customer_lookup_path)
 
 /[eoform:customer]

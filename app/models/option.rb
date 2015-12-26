@@ -22,7 +22,7 @@ class Option < ActiveRecord::Base
     :classes_order_service_charge_account_code
     )
 
-  validates_numericality_of :followup_visit_reminder_lead_time, :send_birthday_reminders
+  validates_numericality_of :send_birthday_reminders
 
   validates_numericality_of :subscription_order_service_charge, :greater_than_or_equal_to => 0
   validates_numericality_of :regular_order_service_charge, :greater_than_or_equal_to => 0

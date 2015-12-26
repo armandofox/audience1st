@@ -23,10 +23,6 @@ ActionController::Routing::Routes.draw do |map|
       :change_secret_question => [:get, :post] # dual-purpose action
     })  do  |customer|
 
-    customer.resources(:visits,
-      :except => [:new, :edit],
-      :collection => { :prospector => :get })
-
     customer.resources(:vouchers,
       :only => [:index, :new, :create],
       :member => {

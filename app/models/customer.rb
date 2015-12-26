@@ -31,10 +31,6 @@ class Customer < ActiveRecord::Base
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
   
-  has_many :visits
-  has_one :most_recent_visit, :class_name => 'Visit', :order=>'thedate DESC'
-  has_one :next_followup, :class_name => 'Visit', :order => 'followup_date'
-
   validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
   validates_uniqueness_of :email,
   :allow_blank => true,
@@ -75,7 +71,7 @@ class Customer < ActiveRecord::Base
   :secret_question, :secret_answer,
   :company, :title, :company_url, :company_address_line_1,
   :company_address_line_2, :company_city, :company_state, :company_zip,
-  :cell_phone, :work_phone, :work_fax, :best_way_to_contact, :referred_by_id
+  :cell_phone, :work_phone, :work_fax, :best_way_to_contact
 
 
   cattr_reader :replaceable_attributes, :extra_attributes
@@ -86,8 +82,7 @@ class Customer < ActiveRecord::Base
         best_way_to_contact
 )
   @@extra_attributes =
-    [:referred_by_id, :referred_by_other, 
-     :company, :title, :company_address_line_1, :company_address_line_2,
+    [:company, :title, :company_address_line_1, :company_address_line_2,
      :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
      :work_fax, :company_url]
 
@@ -327,15 +322,6 @@ class Customer < ActiveRecord::Base
       self.vouchers.detect do |f|
       f.vouchertype.subscription? &&
         f.vouchertype.expiration_date.within_season?(Time.now.at_end_of_season + 1.year)
-    end
-  end
-
-
-  def referred_by_name(maxlen=1000)
-    if (c = Customer.find_by_id(self.referred_by_id.to_i))
-      c.full_name[0..maxlen-1]
-    else
-      self.referred_by_other.to_s[0..maxlen-1]
     end
   end
 

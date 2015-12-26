@@ -104,7 +104,7 @@ describe Customer, "merging" do
         @cust.forget!
         Customer.find_by_id(old_id).should be_nil
       end
-      [Donation, Voucher, Txn, Visit, Import].each do |t|
+      [Donation, Voucher, Txn, Import].each do |t|
         it "should preserve old customer's #{t}s" do
           objs = create_records(t, @cust)
           t.count(:conditions => "customer_id = #{@cust.id}").should == objs.length

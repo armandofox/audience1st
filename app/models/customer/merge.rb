@@ -95,10 +95,9 @@ class Customer < ActiveRecord::Base
   # Note: This method should only be called inside a transaction block!
   def self.update_foreign_keys_from_to(old,new)
     msg = []
-    Customer.update_all("referred_by_id = '#{new}'", "referred_by_id = '#{old}'")
     l = Label.rename_customer(old, new)
     msg << "#{l} labels"
-    [Order, Item, Txn, Visit, Import].each do |t|
+    [Order, Item, Txn, Import].each do |t|
       howmany = 0
       t.foreign_keys_to_customer.each do |field|
         howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")

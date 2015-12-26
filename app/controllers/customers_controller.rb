@@ -272,16 +272,6 @@ class CustomersController < ApplicationController
       :locals => {:matches => @customers})
   end
 
-  #  TBD this method only used by (eg) visits controller to replace-in-place
-  # a customer id with a name. Should be obsoleted.
-  def lookup
-    if ((params[:id].to_i != 0) && (c=Customer.find_by_id(params[:id])))
-      render :text => c.full_name
-    else
-      render(:text => 'No such customer') unless params[:silent]
-    end
-  end
-
   private
 
   def get_list_params

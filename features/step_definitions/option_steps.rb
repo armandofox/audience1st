@@ -12,7 +12,6 @@
      'cancel_grace_period' => "1440",
      'venue' => "Test Theater",
      'send_birthday_reminders' => "0",
-     'followup_visit_reminder_lead_time' => "0",
      'terms_of_sale' => 'Sales Final',
      'precheckout_popup' => 'Please double check dates',
      'venue_homepage_url' => 'http://test.org'

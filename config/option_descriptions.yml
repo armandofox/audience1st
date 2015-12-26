@@ -120,14 +120,6 @@ help_email: >
   for online orders.  If blank, this info will be omitted from
   confirmations, but we strongly suggest you provide an email address.
 
-followup_visit_reminder_lead_time: >
-
-  Number of days lead time for reminding a staff member that a followup
-  visit is pending with a prospect. For example, if you enter 2, any
-  staff member who has a followup visit pending will receive a reminder
-  email 2 days before the "Follow up on" date of the visit record. If
-  0, no reminders will be emailed.
-
 send_birthday_reminders: >
 
   If set to any value other than 0, indicates how often you want to
