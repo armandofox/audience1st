@@ -66,7 +66,7 @@ class Customer < ActiveRecord::Base
   private
 
   def finish_merge(c1)
-    %w(comments tags role blacklist e_blacklist created_by_admin oldid).each do |attr|
+    %w(comments tags role blacklist e_blacklist created_by_admin).each do |attr|
       newval = merge_attribute(c1, attr)
       self.send("#{attr}=", newval)
     end
@@ -81,12 +81,6 @@ class Customer < ActiveRecord::Base
       when :tags then (v1.to_s.downcase.split(/\s+/)+v2.to_s.downcase.split(/\s+/)).uniq.join(' ')
       when :role then [v1.to_i, v2.to_i].max  
       when :blacklist, :e_blacklist  then v1 || v2
-      when :oldid
-        if self.fresher_than?(other)
-          v1.blank? ? v2 : v1
-        else
-          v2.blank? ? v1 : v2
-        end
       when :created_by_admin, :inactive then v1 && v2
       else raise "No automatic merge procedure for #{attr.to_s.humanize}"
       end

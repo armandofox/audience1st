@@ -536,7 +536,7 @@ EOSQL1
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns
-    super.delete_if { |x| x.name.match(%w[role oldid crypted_password salt _at$ _on$].join('|')) }
+    super.delete_if { |x| x.name.match(%w[role crypted_password salt _at$ _on$].join('|')) }
   end
 
   def self.address_columns

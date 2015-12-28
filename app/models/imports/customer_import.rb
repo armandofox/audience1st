@@ -71,8 +71,7 @@ class CustomerImport < Import
       :day_phone        => row[7],
       :eve_phone        => row[8],
       :blacklist        => !row[9].blank? ,
-      :e_blacklist      => !row[10].blank? ,
-      :oldid            => row[11]
+      :e_blacklist      => !row[10].blank? 
       )
     c.created_by_admin = true
     c
