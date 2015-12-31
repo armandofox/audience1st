@@ -123,20 +123,12 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resources(:walkup_sales,
     :only => [:show, :create, :update],
+    :member => {:report => :get}
     )
-  
 
-  map.resources(:box_office,
-    :only => [:index, :update],
-    :member => {
-      :walkup_sales => :get,
-      :walkup_report => :get,
-      :door_list => :get
-    },
-    :collection => {
-      :do_walkup_sale => :post,
-      :modify_walkup_vouchers => :post
-    })
+  map.resources(:checkins,
+    :only => [:show, :update],
+    :member => { :door_list => :get })
 
   map.resource(:session,
     :only => [:new, :create],

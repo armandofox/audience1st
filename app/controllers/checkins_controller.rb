@@ -1,4 +1,4 @@
-class BoxOfficeController < ApplicationController
+class CheckinsController < ApplicationController
 
   before_filter :is_boxoffice_filter
 
@@ -6,27 +6,6 @@ class BoxOfficeController < ApplicationController
   before_filter :get_showdate, :except => [:update, :modify_walkup_vouchers]
   
   private
-
-  # this filter must setup @showdates (pulldown menu) and @showdate
-  # (current showdate, to which walkup sales will apply), or if not possible to set them,
-  # force a redirect to a different controller & action
-  def get_showdate
-    @showdate = Showdate.find_by_id(params[:id])
-    if @showdate.nil?
-      # use default showdate, and redirect
-      @showdate = Showdate.current_or_next(:grace_period => 2.hours)
-      if @showdate.nil?
-        flash[:alert] = "There are no shows this season eligible for check-in right now.  Please add some."
-        redirect_to shows_path
-      else
-        redirect_to params.merge(:id => @showdate)
-      end
-    else
-      year = Time.now.year
-      @showdates = Showdate.all_showdates_for_seasons(year, year+1)
-      @showdates << @showdate unless @showdates.include?(@showdate)
-    end
-  end
 
   def vouchers_for_showdate(showdate)
     perf_vouchers = @showdate.advance_sales_vouchers
@@ -40,7 +19,7 @@ class BoxOfficeController < ApplicationController
 
   public
 
-  def index
+  def show
     @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
   end
 
@@ -72,17 +51,5 @@ class BoxOfficeController < ApplicationController
       render :layout => 'door_list'
     end
   end
-
-  def walkup_report
-    @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
-    @subtotal = {}
-    @total = 0
-    @vouchers.each_pair do |purch,vouchers|
-      @subtotal[purch] = vouchers.map(&:amount).sum
-      @total += @subtotal[purch]
-    end
-    @other_showdates = @showdate.show.showdates
-  end
-
 
 end

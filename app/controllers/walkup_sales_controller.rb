@@ -1,6 +1,7 @@
 class WalkupSalesController < ApplicationController
 
   before_filter :is_boxoffice_filter
+  before_filter :get_showdate
 
   def show
     @showdate = Showdate.find params[:id]
@@ -10,6 +11,7 @@ class WalkupSalesController < ApplicationController
   end
 
   def create
+    @showdate = Showdate.find(params[:showdate])
     @order = Order.new(
       :walkup => true,
       :customer => Customer.walkup_customer,
@@ -63,19 +65,28 @@ class WalkupSalesController < ApplicationController
   # process a change of walkup vouchers by moving them to another showdate, as directed
   def update
     @showdate = Showdate.find params[:id]
-    redirect_with(walkup_sales_path(@showdate), :alert => "You didn't select any vouchers to transfer.") and return if params[:vouchers].blank?
+    return redirect_with(walkup_sales_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
     voucher_ids = params[:vouchers]
-    showdate_id = 0
     begin
       vouchers = Voucher.find(voucher_ids)
-      showdate_id = vouchers.first.showdate_id
       showdate = Showdate.find(params[:to_showdate])
       Voucher.change_showdate_multiple(vouchers, showdate, current_user)
       flash[:notice] = "#{vouchers.length} vouchers transferred to #{showdate.printable_name}."
-    rescue Exception => e
+    rescue ActiveRecord::RecordNotFound, RuntimeError => e
       flash[:alert] = "Error (NO changes were made): #{e.message}"
-      RAILS_DEFAULT_LOGGER.warn(e.backtrace)
     end
     redirect_to walkup_sales_path(@showdate)
   end
 
+  def report
+    @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
+    @subtotal = {}
+    @total = 0
+    @vouchers.each_pair do |purch,vouchers|
+      @subtotal[purch] = vouchers.map(&:amount).sum
+      @total += @subtotal[purch]
+    end
+    @other_showdates = @showdate.show.showdates
+  end
+
+end

@@ -1,7 +1,7 @@
 #change_showdate.clear
-  %h1.floatleft= h(@showdate.printable_name)
+  %h1.floatleft= @showdate.printable_name
   .floatleft.h1= link_to_function 'Change', |
-    'jQuery("#select_show").slideToggle(),  |
+    'jQuery("#select_show").slideToggle()',  |
     {:class => 'genButton'}                 |
   .clear
 
