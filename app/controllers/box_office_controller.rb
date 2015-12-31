@@ -22,7 +22,8 @@ class BoxOfficeController < ApplicationController
         redirect_to params.merge(:id => @showdate)
       end
     else
-      @showdates = Showdate.all_shows_this_season + Showdate.all_shows_next_season
+      year = Time.now.year
+      @showdates = Showdate.all_showdates_for_seasons(year, year+1)
       @showdates << @showdate unless @showdates.include?(@showdate)
     end
   end

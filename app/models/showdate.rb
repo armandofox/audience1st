@@ -72,11 +72,11 @@ class Showdate < ActiveRecord::Base
       :order => 'thedate DESC')
   end
 
-  def self.all_shows_this_season
+  def self.all_showdates_for_seasons(first=Time.now.year, last=Time.now.year)
+    first = Time.now.at_beginning_of_season(first)
+    last = Time.now.at_end_of_season(last)
     Showdate.find(:all, :order => 'thedate ASC',
-                  :conditions => ['thedate BETWEEN ? and ?',
-                                  Time.now.at_beginning_of_season,
-                                  Time.now.at_end_of_season])
+                  :conditions => ['thedate BETWEEN ? and ?', first, last])
   end
 
   # reporting, comparisons
