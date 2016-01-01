@@ -6,6 +6,9 @@ module NavigationHelpers
   #
   # step definition in webrat_steps.rb
   #
+  def sd(time)
+    Showdate.find_by_thedate!(Time.parse time)
+  end
   def path_to(page_name)
     @customer = Customer.find_by_first_name_and_last_name!($1, $2) if page_name =~ /for customer "(.*) (.*)"/
 
@@ -42,10 +45,10 @@ module NavigationHelpers
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes?season=$1"
 
-    when /the (walkup report|walkup sales|checkin|door list) page (:?for (.*))?$/
-      @showdate = Showdate.find_by_thedate!(Time.parse $2) if !$2.blank?
-      page = $1.gsub(/\s+/, '_')
-      self.send("#{page}_path", @showdate)
+    when /the walkup sales page for (.*)$/ then walkup_sale_path(sd $1)
+    when /the walkup report page for (.*)$/ then report_walkup_sale_path(sd $1)
+    when /the checkin page for (.*)$/ then checkin_path(sd $1)
+    when /the door list page for (.*)$/ then door_list_checkin_path(sd $1)
 
     when /the admin:(.*) page/i
       page = $1

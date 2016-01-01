@@ -7,9 +7,6 @@
 
   #select_show{:style => "display: none;"}
     %label{:for=>:showdate_thedate} Show and Date:
-    = select_tag 'new_showdate', |
-     options_for_select(@showdates.map { |sd| [sd.name_and_date_with_capacity_stats, walkup_sales_path(sd)] }, |
-     walkup_sales_path(@showdate)), |
-     :onchange => 'window.location = $("new_showdate").val()' |
-    %label
+    = select_tag 'new_showdate', showdates_with_urls(), :onchange => 'window.location = $("#new_showdate").val()'
+
 

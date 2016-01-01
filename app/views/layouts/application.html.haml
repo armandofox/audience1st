@@ -36,15 +36,15 @@
           #left_sidebar
           #right_main
             #nav
-              - if controller.controller_name =~ /box_office|walkup_sales/
+              - if controller.controller_name =~ /checkins|walkup_sales/
                 = render :partial => 'navbars/box_office_tabs'
-                = render :partial => 'box_office/change_showdate'
-                = render :partial => 'box_office/show_stats', :locals => {:showdate => @showdate}
+                = render :partial => 'checkins/change_showdate'
+                = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'navbars/admin_tabs'
               - elsif existing_customer(@customer)
                 = render :partial => 'navbars/main_tabs'
-              - if current_user && @gAdminDisplay && controller.controller_name !~ /box_office|walkup_sales/
+              - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
                 = render :partial => 'navbars/season_tabs'
                 = render :partial => 'customers/quick_search'
                 = render :partial => 'navbars/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)

@@ -1,7 +1,6 @@
 class WalkupSalesController < ApplicationController
 
   before_filter :is_boxoffice_filter
-  before_filter :get_showdate
 
   def show
     @showdate = Showdate.find params[:id]
@@ -11,7 +10,7 @@ class WalkupSalesController < ApplicationController
   end
 
   def create
-    @showdate = Showdate.find(params[:showdate])
+    @showdate = Showdate.find params[:id]
     @order = Order.new(
       :walkup => true,
       :customer => Customer.walkup_customer,
@@ -44,7 +43,7 @@ class WalkupSalesController < ApplicationController
     
     flash[:alert] = 'There are no items to purchase.' if @order.item_count.zero?
     flash[:alert] ||= @order unless @order.ready_for_purchase?
-    redirect_to edit_boxoffice_path(@showdate) and return if flash[:alert]
+    return redirect_to(walkup_sale_path(@showdate)) if flash[:alert]
 
     # all set to try the purchase
     begin
@@ -55,17 +54,17 @@ class WalkupSalesController < ApplicationController
         :purchasemethod_id => p,
         :logged_in_id => current_user.id)
       flash[:notice] = @order.walkup_confirmation_notice
-      redirect_to walkup_sales_path(@showdate)
+      redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
       flash[:alert] = ["Transaction NOT processed: ", @order]
-      redirect_to walkup_sales_path(@showdate, :qty => params[:qty], :donation => params[:donation])
+      redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
   end
 
   # process a change of walkup vouchers by moving them to another showdate, as directed
   def update
     @showdate = Showdate.find params[:id]
-    return redirect_with(walkup_sales_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
+    return redirect_with(walkup_sale_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
     voucher_ids = params[:vouchers]
     begin
       vouchers = Voucher.find(voucher_ids)
@@ -75,10 +74,11 @@ class WalkupSalesController < ApplicationController
     rescue ActiveRecord::RecordNotFound, RuntimeError => e
       flash[:alert] = "Error (NO changes were made): #{e.message}"
     end
-    redirect_to walkup_sales_path(@showdate)
+    redirect_to walkup_sale_path(@showdate)
   end
 
   def report
+    @showdate = Showdate.find params[:id]
     @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
     @subtotal = {}
     @total = 0
