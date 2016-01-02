@@ -1,7 +1,7 @@
 module StoreHelper
 
   def to_numeric(str)
-    str.blank? ? 0 : str.gsub(/\D/, '').to_i
+    str.blank? ? 0 : str.to_f
   end
 
   # make a form field not be submitted, by removing its name attribute

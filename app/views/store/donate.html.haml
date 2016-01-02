@@ -1,14 +1,32 @@
+:javascript
+  // Expunge any nondigit characters in payment field, and confirm
+  // payment amount before continuing.
+  function confirmAndSubmit() {
+    var amount_field = '#donation';
+    var amountStr = jQuery(amount_field).val();
+    amountStr = amountStr.replace(/[^0-9]/g, '');
+    jQuery(amount_field).val(amountStr);
+    var amountInt = parseInt(amountStr);
+    if (confirm("Please confirm amount: OK to continue with payment of $" + amountInt.toString() + ".00 ?")) {
+        stripeSubmit();
+    } 
+    return false;   // disable form submission, since stripeResponseHandler will do it
+  } 
+
+
 #store
   #quick_donation
     %h1.page_heading.center= sanitize(Option.quick_donation_banner)
     %p.explanation= sanitize(Option.quick_donation_explanation)
 
-    - form_tag(quick_donate_path, {:id => '_stripe_payment_form'}) do
+    - form_tag(quick_donate_path, {:id => '_stripe_payment_form', :onsubmit => 'return confirmAndSubmit()' }) do
       = hidden_field_tag 'referer', 'donate'
       #billing= render :partial => 'customers/form', :locals => {:customer => @customer, :hide => [:opt_out, :birthday]}
 
       %fieldset#donation_info
         %legend Donation Information
+        %label.wide_label.strong Please enter digits only.
+        %br
         %label{:for => :donation} Donation amount
         = text_field_tag 'donation', @amount, :size => 5
         \.00
@@ -26,4 +44,4 @@
 
       -# hidden field necessary for Stripe submit handler to fill in
       = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-      = submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
+      = submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit'

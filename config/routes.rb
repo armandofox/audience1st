@@ -109,7 +109,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # quick-donation neither requires nor sets customer-id:
 
-  map.quick_donate '/donate', :controller => 'store', :action => 'donate'
+  map.quick_donate '/donate', :controller => 'store', :action => 'donate', :as => 'quick_donate'
 
   # donations management
 
