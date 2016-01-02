@@ -97,7 +97,8 @@ class StoreController < ApplicationController
   # This single action handles quick_donate: GET serves the form, POST places the order
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
-    @customer =  (current_user() || Customer.new) and return if request.get?
+    @customer =  (current_user() || Customer.new)
+    return if request.get?
 
     # If donor doesn't exist, create them and marked created-by-admin
     # If donor exists, make that the order's customer.
@@ -121,11 +122,13 @@ class StoreController < ApplicationController
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
       flash[:alert] = @order
+      @customer =  (current_user() || Customer.new)
       render(:action => 'donate') and return
     end
     if finalize_order(@order)
       render :action => 'place_order'
     else
+      @customer =  (current_user() || Customer.new)
       render :action => 'donate'
     end
   end
