@@ -17,8 +17,12 @@ set :user,            "audienc"
 set :home,            "/home/#{user}"
 set :deploy_to,       "#{home}/rails/#{venue}"
 set :stylesheet_dir,  "#{home}/public_html/stylesheets"
-set :config,          (YAML::load(IO.read("/Users/fox/Documents/fox/projects/vboadmin/venues.yml")))[venue]
-set :migration_password, (YAML::load(IO.read("/Users/fox/Documents/fox/projects/vboadmin/venues.yml")))['audience1st']['migration_password']
+
+ADMIN_DIR = "/Users/fox/Documents/fox/projects/vboadmin"
+ALL_CONFIG = YAML::load(IO.read("#{ADMIN_DIR}/venues.yml"))
+set :migration_password, ALL_CONFIG['audience1st']['migration_password']
+set :config,          ALL_CONFIG[venue]
+set :application_yml, config['application_yml']
 
 set :use_sudo,        false
 set :host,            "audience1st.com"
@@ -81,7 +85,7 @@ namespace :deploy do
     abort if (config.nil? || config.empty?)
     debugging_ips = variables[:debugging_ips]
     # write application.yml file for Figaro
-    put config.to_yaml, "#{release_path}/application.yml"
+    put application_yml.to_yaml, "#{release_path}/application.yml"
     # files that must have venue name interpolated into various pathnames
     %w[config/database.yml public/.htaccess public/404.html public/422.html public/500.html].each do |f|
       file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
