@@ -41,7 +41,7 @@ function stripeResponseHandler(status, response) {
 
 function stripeSubmit(event) {
   // disable regular form submit action (needed for Firefox <4)
-  disableRegularFormSubmit();
+  //  disableRegularFormSubmit();
   //console.log("Submitting to Stripe");
   if ($('swipe_data')  && $('swipe_data').getValue() != '') {
     // populate credit card info fields from magstripe swipe hidden field
