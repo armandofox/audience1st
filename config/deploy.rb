@@ -85,7 +85,7 @@ namespace :deploy do
     abort if (config.nil? || config.empty?)
     debugging_ips = variables[:debugging_ips]
     # write application.yml file for Figaro
-    put application_yml.to_yaml, "#{release_path}/application.yml"
+    put application_yml.to_yaml, "#{release_path}/config/application.yml"
     # files that must have venue name interpolated into various pathnames
     %w[config/database.yml public/.htaccess public/404.html public/422.html public/500.html].each do |f|
       file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
