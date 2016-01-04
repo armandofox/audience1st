@@ -39,6 +39,8 @@ class Showdate < ActiveRecord::Base
 
   public
 
+  Showdate::Sales = Struct.new(:vouchers, :revenue_per_seat, :total_offered_for_sale)
+
   # create new showdate (for use by imports/daemons)
 
   def self.placeholder(thedate)

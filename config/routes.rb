@@ -63,14 +63,22 @@ ActionController::Routing::Routes.draw do |map|
 
 
   # reports
-  map.reports '/reports', :controller => 'reports', :action => 'index'
-  %w(do_report run_special_report advance_sales transaction_details_report accounting_report retail show_special_report unfulfilled_orders).each do |report_name|
-    map.connect "/reports/#{report_name}", :controller => 'reports', :action => report_name
-  end
-  # reports that consume :id
-  %w(showdate_sales subscriber_details).each do |report_name|
-    map.connect "/reports/#{report_name}/:id", :controller => 'reports', :action => report_name
-  end
+  map.resources(:reports,
+    :only => [:index],
+    :member => {
+      :showdate_sales => :get
+    },
+    :collection => {
+      :subscriber_details => :get,
+      :attendance => :get,
+      :advance_sales => :get,
+      :do_report => :get,
+      :run_special => :get,
+      :transaction_details => :get,
+      :accounting => :get,
+      :retail => :get,
+      :unfulfilled_orders => :get
+    })
 
   # customer-facing purchase pages
   #  Entry into purchase flow:

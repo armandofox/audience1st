@@ -46,17 +46,10 @@ class ReportsController < ApplicationController
   def showdate_sales
     entity = Object.const_get(params[:klass]).find(params[:id])
     vouchers = entity.vouchers
-    by_vtype = vouchers.group_by(&:vouchertype)
-    categories = vouchers.group_by(&:class)
-    revenue_per_seat = entity.revenue_per_seat
-    render :partial => 'showdate_sales',
-    :locals => {
-      :total_vouchers => vouchers.size,
-      :vouchers => by_vtype,
-      :categories => categories,
-      :revenue_per_seat => revenue_per_seat,
-      :entity => entity
-    }
+
+    sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype),
+      entity.revenue_per_seat, entity.total_offered_for_sale)
+    render :partial => 'showdate_sales', :locals => { :sales => sales }
   end
 
   def transaction_details_report
@@ -120,8 +113,8 @@ class ReportsController < ApplicationController
     end
   end
 
-  def show_special_report
-    n = params[:report_name]
+  def attendance
+    n = params[:id]
     return if (n.blank? || n =~ /select report/i)
     # setup any parameters needed to render the report's partial
     report_name = n.gsub(/\s+/, '_').downcase
@@ -139,7 +132,7 @@ class ReportsController < ApplicationController
     render :partial => 'sublist'
   end
 
-  def run_special_report
+  def run_special
     n = params[:_report]
     @report = n.camelize.constantize.__send__(:new, params[:output])
     redirect_to({:action => :index}, {:alert => 'Unknown report name'}) and return if
@@ -190,7 +183,7 @@ class ReportsController < ApplicationController
                      :include => [:customer, :vouchertype, :order],
                      :conditions => 'orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1',
                      :order => "customers.last_name")
-    redirect_to({:action => 'index'}, {:notice => 'No unfulfilled orders at this time.'}) and return if v.empty?
+    return redirect_with(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
     if params[:csv]
       output = Voucher.to_csv(v)
       download_to_excel(output, 'customers')
