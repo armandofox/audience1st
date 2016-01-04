@@ -133,7 +133,7 @@ class ReportsController < ApplicationController
   end
 
   def run_special
-    n = params[:_report]
+    n = params[:id]
     @report = n.camelize.constantize.__send__(:new, params[:output])
     redirect_to({:action => :index}, {:alert => 'Unknown report name'}) and return if
       (n.blank? || @report.nil? || !@report.kind_of?(Report))

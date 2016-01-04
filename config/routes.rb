@@ -66,14 +66,14 @@ ActionController::Routing::Routes.draw do |map|
   map.resources(:reports,
     :only => [:index],
     :member => {
-      :showdate_sales => :get
+      :showdate_sales => :get,
+      :run_special => :get
     },
     :collection => {
       :subscriber_details => :get,
       :attendance => :get,
       :advance_sales => :get,
       :do_report => :get,
-      :run_special => :get,
       :transaction_details => :get,
       :accounting => :get,
       :retail => :get,
