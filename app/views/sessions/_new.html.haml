@@ -10,10 +10,10 @@
 
   .indented
     .small
-      Forgot your password?
-      = link_to 'Get a new one by email', forgot_password_customers_path
-      or answer your
-      = link_to 'secret question.', new_from_secret_session_path
+      Need to reset your password?
+      = link_to 'Get a new password by email', forgot_password_customers_path
+      or if you have previously setup a secret question,
+      = link_to 'answer it.', new_from_secret_session_path
       to reset it.
       %br
       = check_box_tag 'remember_me', '1', @remember_me

@@ -33,7 +33,7 @@
     Our transactions are securely processed 
     through #{link_to 'Stripe', 'http://stripe.com'}.
 
-  = render :partial => 'credit_card'
+  = render :partial => 'credit_card', :locals => {:first_name => @cart.purchaser.first_name, :last_name => @cart.purchaser.last_name}
   
   - unless Option.terms_of_sale.blank?
     #terms_of_sale
