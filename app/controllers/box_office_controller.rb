@@ -22,8 +22,9 @@ class BoxOfficeController < ApplicationController
         redirect_to params.merge(:id => @showdate)
       end
     else
-      year = Time.now.year
-      @showdates = Showdate.all_showdates_for_seasons(year, year+1)
+      @showdates = Showdate.find(:all,
+        :order => 'thedate ASC',
+        :conditions => ['thedate BETWEEN ? AND ?', 6.months.ago, 12.months.from_now])
       @showdates << @showdate unless @showdates.include?(@showdate)
     end
   end
