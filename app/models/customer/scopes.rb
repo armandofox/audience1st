@@ -29,10 +29,10 @@ class Customer < ActiveRecord::Base
   def self.seen_none_of(show_ids) ;  Customer.all - Customer.seen_any_of(show_ids) ;  end
 
   named_scope :with_open_subscriber_vouchers, lambda { |vtypes|
-    { :joins => ',items, showdates',
+    { :joins => ',items',
       :conditions => ['items.customer_id = customers.id AND
                        items.type = "Voucher" AND
-                       items.showdate_id = 0 AND
+                       (items.showdate_id = 0 OR items.showdate_id IS NULL) AND
                        items.vouchertype_id IN (?)', vtypes],
       :select => 'DISTINCT customers.*'
     }}

@@ -5,7 +5,6 @@ class ReportsController < ApplicationController
   before_filter :is_staff_filter
 
   def index
-
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
     # next showdate

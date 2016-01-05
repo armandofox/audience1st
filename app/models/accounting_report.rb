@@ -4,7 +4,7 @@ class AccountingReport < Ruport::Controller
   include ApplicationHelper
   attr_accessor :from, :to, :title
 
-  stage :itemized_groups, :donations, :subtotal_by_purchasemethod
+  stage :vouchers, :donations, :nonvouchers, :subtotal_by_purchasemethod
 
   def setup
     @from,@to = options[:from],options[:to]
@@ -59,6 +59,15 @@ class AccountingReport < Ruport::Controller
   
   protected
   
+  # def generate3
+  #   includes = [
+  #     :vouchertype => 
+      
+  #   Item.report_table(:all,
+  #     :include => [:orders, :vouchertypes],
+  #     :conditions => ['orders.sold_on BETWEEN ? AND ?', @from, @to],
+  # end
+
   def generate_vouchers_report
     q = <<EOQ1
         SELECT purchasemethods.description,
@@ -83,7 +92,7 @@ class AccountingReport < Ruport::Controller
         ORDER BY account_codes.code,shows.opening_date
 EOQ1
     sql = [q, @from, @to, @exclude_categories, @exclude_purchasemethods]
-    Voucher.report_table_by_sql(sql)
+    Item.report_table_by_sql(sql)
   end
 
   def generate2
