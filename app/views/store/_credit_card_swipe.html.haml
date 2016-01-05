@@ -2,7 +2,7 @@
   %legend Credit Card Payment
   %p#payment_errors
   = hidden_field_tag 'credit_card_token', 'DUMMY'
-  = hidden_field_tag '_stripe_api_key', Figaro.env['stripe_key']
+  = hidden_field_tag '_stripe_api_key', Figaro.env.stripe_key
   = make_unsubmitted '_stripe_api_key'
   %label.strong{:for => 'credit_card_verification_value'} Enter CVV code manually FIRST!
   = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors'
