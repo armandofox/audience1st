@@ -1,5 +1,11 @@
 class Report
   include FilenameUtils
+
+  if self.subclasses.empty?
+    Dir["#{Rails.root}/app/models/reports/*.rb"].each do |file|
+      require_dependency file
+    end
+  end
   
   attr_accessor :output_options, :filename, :query
   attr_reader :view_params, :customers, :output

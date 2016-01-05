@@ -5,7 +5,7 @@
     %legend What to do with the results
     = submit_tag 'Download to Excel'
     = submit_tag 'Display on screen'
-    = submit_tag 'Estimate number of matches', :onclick => "\$('#report_preview').load('#{run_special_report_path(name)}'); return(false)"
+    = submit_tag 'Estimate number of matches', 'data-remote' => 'true', 'data-method' => 'get',  :onclick => "\$('#report_preview').load('#{run_special_report_path(name)}'); return(false)"
     %span#report_preview
     = render :partial => 'sublist' if @sublists
 

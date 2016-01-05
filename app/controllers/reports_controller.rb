@@ -5,7 +5,6 @@ class ReportsController < ApplicationController
   before_filter :is_staff_filter
 
   def index
-
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
     # next showdate
@@ -114,7 +113,7 @@ class ReportsController < ApplicationController
   end
 
   def attendance
-    n = params[:id]
+    n = params[:report_name]
     return if (n.blank? || n =~ /select report/i)
     # setup any parameters needed to render the report's partial
     report_name = n.gsub(/\s+/, '_').downcase
