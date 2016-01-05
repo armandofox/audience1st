@@ -5,7 +5,6 @@ default:
   venue_id:                     111
   venue_shortname:              testing
   venue:                        Test Theater
-  sandbox:                      true
   advance_sales_cutoff:         60
   sold_out_threshold:           90
   nearly_sold_out_threshold:    80

@@ -1,7 +1,7 @@
 class Store
   
   def self.set_api_key
-    Stripe.api_key = Option.stripe_secret_key
+    Stripe.api_key = Figaro.env.stripe_secret
   end
 
   def self.pay_with_credit_card(order)

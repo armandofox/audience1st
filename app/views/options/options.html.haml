@@ -99,25 +99,12 @@
       ) |
 
   .pageDiv
-    %h1 Integration with Stripe (for payments)
-    = render_collection_of_options f, %w( |
-      stripe_publishable_key | 
-      stripe_secret_key |
-      ) |
-
-  .pageDiv
     %h1 Email Integration for MailChimp Users
-    %p Leave blank if you don't use MailChimp.
+    %p 
+      <strong>Note:</strong> You must have configured a MailChimp API
+      key at installation time in order to use this feature.  Leave
+      these fields blank if you don't use MailChimp.
     = render_collection_of_options f, %w(mailchimp_api_key mailchimp_default_list_name)
-
-  .pageDiv
-    %h1 Email Integration with ConstantContact
-    %p Leave blank if you don't use ConstantContact.
-    = render_collection_of_options f, %w( |
-      constant_contact_username |
-      constant_contact_password |
-      constant_contact_api_key  |
-      ) |
 
   .pageDiv
     %h1 Save Your Changes

@@ -22,9 +22,3 @@ config.log_level = :warn
 require 'stripe'
 Stripe.verify_ssl_certs = false
 
-# Mailchimp integration: is disabled in non-production mode.
-# test account:
-# :api_key =>  'a5d35b24aaa29563837f56c9db670e00-us1',
-#  :default_list_name => 'Test list'
-
-DISABLE_EMAIL_LIST_INTEGRATION = true
