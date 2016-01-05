@@ -1,3 +1,21 @@
+Given /^an order for customer "(.*)" paid with "credit card" containing:$/ do |customer, table|
+  step %Q{I am logged in as customer "#{customer}"}
+  step(%Q{my cart contains the following tickets:}, table)
+  step %Q{I place my order with a valid credit card}
+end
+
+Given /^that order has the comment "(.*)"$/ do |comment|
+  @order.update_attributes!(:comments => comment)
+end
+
+Then /^I should see the following details for that order:$/ do |table|
+  within("div#details_order_#{@order.id}") do
+    table.hashes.each do |h|
+      page.should have_content h[:content]
+    end
+  end
+end
+
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
   customer =
     Customer.find_by_first_name_and_last_name(first,last) ||

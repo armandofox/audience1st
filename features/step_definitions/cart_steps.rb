@@ -11,12 +11,6 @@ Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, t
   steps %Q{Then I should see /#{type}/ within "#cart_items" #{num} times}
 end
 
-Given /^an order for customer "(.*)" paid with "credit card" containing:$/ do |customer, table|
-  step %Q{I am logged in as customer "#{customer}"}
-  step(%Q{my cart contains the following tickets:}, table)
-  step %Q{I place my order with a valid credit card}
-end
-
 Given /^(?:my cart contains|I add) the following tickets:/ do |tickets|
   create_tickets(tickets.hashes)
   click_button 'CONTINUE >>'

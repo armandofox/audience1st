@@ -21,6 +21,10 @@
         %span.label Payment method:
         = humanize(order.purchase_medium)
 
+      %p
+        %span.label Order comments:
+        = order.comments
+
       %table#order_items.hilite
         %thead
           %tr
