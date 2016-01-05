@@ -172,7 +172,7 @@ DEPENDENCIES
   dbi (= 0.4.5)
   factory_girl (~> 2.6.4)
   fakeweb
-  figaro
+  figaro (~> 1.0)
   haml (~> 3.1.8)
   i18n (= 0.4.1)
   json (= 1.8.1)

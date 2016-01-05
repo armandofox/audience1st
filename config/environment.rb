@@ -30,6 +30,10 @@ Rails::Initializer.run do |config|
   config.action_controller.session_store = :active_record_store
   #ActionController::Base.session_options[:session_key] = 'audience1st_session_id'
 
+  config.after_initialize do
+    config.action_mailer.delivery_method = :test if Figaro.env.sandbox
+  end
+  
   # Add additional load paths for your own custom dirs
   additional_paths = Dir.glob(File.join Rails.root, "app/models/**/*").select { |f| File.directory? f }
   config.eager_load_paths += additional_paths
