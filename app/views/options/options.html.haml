@@ -98,13 +98,7 @@
       send_birthday_reminders  |
       ) |
 
-  .pageDiv
-    %h1 Email Integration for MailChimp Users
-    %p 
-      <strong>Note:</strong> You must have configured a MailChimp API
-      key at installation time in order to use this feature.  Leave
-      these fields blank if you don't use MailChimp.
-    = render_collection_of_options f, %w(mailchimp_api_key mailchimp_default_list_name)
+    = render_collection_of_options f, %w(mailchimp_default_list_name)
 
   .pageDiv
     %h1 Save Your Changes

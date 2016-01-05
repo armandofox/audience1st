@@ -2,7 +2,8 @@ module VboScenarioHelpers
   
   def setup_show_and_showdate(name,time,args={})
     show = Show.find_by_name(name) ||
-      Show.create!(:name => name,
+      create(:show,
+      :name => name,
       :house_capacity => args[:house_capacity] || 10,
       :opening_date => args[:opening_date] || (time - 1.month),
       :closing_date => args[:closing_date] || (time + 1.month))
