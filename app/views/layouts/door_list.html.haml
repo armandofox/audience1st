@@ -6,6 +6,6 @@
 
   %title= h(@showdate.printable_name)
 
-  %body#door_list{:class => (SANDBOX ? :testing : nil)}
+  %body#door_list{:class => (Figaro.env.sandbox ? :testing : nil)}
 
     = yield

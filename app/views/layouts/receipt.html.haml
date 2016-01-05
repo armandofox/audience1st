@@ -3,5 +3,5 @@
   %head
     = stylesheet_link_tag 'venue/default'
   %title Customer Receipt
-  %body#receipt{:class => (SANDBOX ? 'testing' : nil)}
+  %body#receipt{:class => (Figaro.env.sandbox ? 'testing' : nil)}
     = yield
