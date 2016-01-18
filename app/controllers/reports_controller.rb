@@ -77,7 +77,6 @@ class ReportsController < ApplicationController
   end
 
   def accounting_report
-    temporarily_unavailable; return
     @from,@to = Time.range_from_params(params[:from],params[:to])
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
