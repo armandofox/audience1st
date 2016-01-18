@@ -10,7 +10,11 @@
         %tr
           %td.r 
             %label{:for => 'rep'} Report type
-          %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Unearned Revenue", "Retail Sales"])
+          %td= select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Retail Sales"])
+        %tr
+          %td.r
+            %label{:for => 'account_codes'} Include account codes
+          %td= select_tag 'account_codes', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, Proc.new { |n| true }), :multiple => true
         %tr
           %td.r= submit_tag 'Display report'
 

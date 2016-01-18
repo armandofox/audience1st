@@ -78,17 +78,19 @@ class ReportsController < ApplicationController
 
   def accounting_report
     @from,@to = Time.range_from_params(params[:from],params[:to])
+    @account_codes = params[:account_codes]
+    options = {:from => @from, :to => @to, :account_codes => @account_codes}
     if params[:format] =~ /csv/i
       content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
-      send_data(AccountingReport.render_csv(:from => @from, :to => @to),
+      send_data(AccountingReport.render_csv(options),
         :type => content_type,
         :filename => filename_from_dates('revenue', @from, @to, 'csv'))
     elsif params[:format] =~ /pdf/i
-      send_data(AccountingReport.render_pdf(:from => @from, :to => @to),
+      send_data(AccountingReport.render_pdf(options),
         :type => 'application/pdf',
         :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
     else
-      @report = AccountingReport.render_html(:from => @from, :to => @to)
+      @report = AccountingReport.render_html(options)
       render :action => 'accounting_report'
     end
   end

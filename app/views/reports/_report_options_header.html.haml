@@ -3,7 +3,6 @@
   #report_dates
     - form_tag({:action => 'do_report'}, {:method => :get}) do
       = render :partial => 'reports/date_shortcuts'
-      = hidden_field_tag 'rep', report_name
-      = submit_tag 'Re-run with new dates'
-      = gen_button 'Download to Excel', :action => action_name, :from => @from, :to => @to, :rep => report_name, :format => 'csv'
-      = gen_button 'Download as PDF', :action => action_name, :from => @from, :to => @to, :rep => report_name, :format => 'pdf'
+      = hidden_field_tag 'account_codes', @account_codes
+      = gen_button 'Download to Excel', :action => action_name, :from => @from, :to => @to, :rep => report_name, :account_codes => @account_codes, :format => 'csv'
+      = gen_button 'Download as PDF', :action => action_name, :from => @from, :to => @to, :rep => report_name, :account_codes => @account_codes, :format => 'pdf'

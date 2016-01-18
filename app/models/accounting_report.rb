@@ -2,12 +2,13 @@ require 'ruport'
 class AccountingReport < Ruport::Controller
 
   include ApplicationHelper
-  attr_accessor :from, :to, :title
+  attr_accessor :from, :to, :title, :account_code_ids
 
   stage :itemized_groups, :subtotal_by_purchasemethod
 
   def setup
     @from,@to = options[:from],options[:to]
+    @account_code_ids = options[:account_codes]
     options[:title] = "Earned and unearned revenue:<br/> #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}"
     @exclude_purchasemethods = Purchasemethod.find_all_by_nonrevenue(true).map(&:id)
     @exclude_categories = [:comp,:subscriber]
@@ -76,6 +77,7 @@ class AccountingReport < Ruport::Controller
           LEFT OUTER JOIN shows ON shows.id=showdates.show_id
         WHERE
           (items.type  NOT IN ('Donation', 'CanceledItem')
+            AND account_codes.id IN (?)
             AND orders.sold_on BETWEEN ? AND ?
             AND items.category  NOT IN (?)
             AND orders.purchasemethod_id  NOT IN (?)
@@ -83,7 +85,7 @@ class AccountingReport < Ruport::Controller
         GROUP BY purchasemethods.description, account_codes.code, show_name
         ORDER BY account_codes.code,shows.opening_date
 EOQ1
-    sql = [q, @from, @to, @exclude_categories, @exclude_purchasemethods]
+    sql = [q, @account_code_ids, @from, @to, @exclude_categories, @exclude_purchasemethods]
     Item.report_table_by_sql(sql)
   end
 
