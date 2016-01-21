@@ -37,7 +37,7 @@ class Customer < ActiveRecord::Base
   :case_sensitive => false,
   :message => "address %{value} has already been registered.
     <a href='/login?email=%{value}'>Sign in with this email address</a>
-    (if you forgot your password, use the 'Forgot your password?' link on sign-in page)"
+    (if you forgot your password, use the 'Reset my password' link on sign-in page)"
   
   validates_format_of :zip, :if => :self_created?, :with => /\A^[0-9]{5}-?([0-9]{4})?\z/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
@@ -357,7 +357,7 @@ class Customer < ActiveRecord::Base
       return u
     end
     unless u.authenticated?(password)
-      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, click 'Forgot your password?' and we will email you a new password within 1 minute.")
+      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, click 'Reset my password' and we will email you a new password within 1 minute.")
     end
     return u
   end
