@@ -13,7 +13,7 @@ class VouchertypesController < ApplicationController
   public
   
   def index
-    redirect_to params.merge(:season => Time.this_season) and return unless (@season = params[:season].to_i) > 0
+    return redirect_to(params.merge(:season => Time.this_season, :only_path => true)) unless (@season = params[:season].to_i) > 0
     @superadmin = current_user().is_admin
     # possibly limit pagination to only bundles or only subs
     @earliest = Vouchertype.find(:first, :order => 'season').season

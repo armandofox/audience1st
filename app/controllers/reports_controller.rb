@@ -4,6 +4,17 @@ class ReportsController < ApplicationController
 
   before_filter :is_staff_filter
 
+  private
+
+  def validate_report_type(str)
+    klass = str.camelize.constantize
+    valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
+    redirect_with(reports_path, :alert => "Invalid report name '#{str}'") unless valid
+    valid && klass
+  end
+
+  public
+
   def index
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
@@ -25,12 +36,10 @@ class ReportsController < ApplicationController
       retail
     when /transaction/i
       transaction_details_report
-    when /unearned/i
-      redirect_to({:action => :index}, {:alert => "Improved donations/unearned revenue report coming soon.  In the meantime please click Donation tab and use the Donation Search function."})
     when /earned/i
       accounting_report
     else
-      redirect_to({:action => 'index'}, {:notice => "Please select a valid report."})
+      redirect_with(reports_path, :alert => "Please select a valid report.")
     end
   end
 
@@ -61,7 +70,7 @@ class ReportsController < ApplicationController
   def transaction_details_report
     @from,@to = Time.range_from_params(params[:from],params[:to])
     @report = TransactionDetailsReport.run(@from, @to)
-    redirect_to({:action => 'index'}, {:notice => 'No matching transactions found'}) and return if @report.empty?
+    return redirect_with(reports_path, :alert => 'No matching transactions found') if @report.empty?
     case params[:format]
     when /csv/i
       send_data(@report.to_csv,
@@ -121,11 +130,8 @@ class ReportsController < ApplicationController
   end
 
   def show_special_report
-    n = params[:report_name]
-    return if (n.blank? || n =~ /select report/i)
-    # setup any parameters needed to render the report's partial
-    report_name = n.gsub(/\s+/, '_').downcase
-    report_subclass = report_name.camelize.constantize
+    report_name = params[:report_name].to_s.gsub(/\s+/, '_').downcase
+    return unless report_subclass = validate_report_type(report_name)
     @report = report_subclass.__send__(:new)
     @args = @report.view_params
     @sublists = EmailList.get_sublists unless EmailList.disabled?
@@ -140,15 +146,13 @@ class ReportsController < ApplicationController
   end
 
   def run_special_report
-    n = params[:_report]
-    @report = n.camelize.constantize.__send__(:new, params[:output])
-    redirect_to({:action => :index}, {:alert => 'Unknown report name'}) and return if
-      (n.blank? || @report.nil? || !@report.kind_of?(Report))
+    return unless (klass = validate_report_type params[:_report])
+    @report = klass.__send__(:new, params[:output])
     result = @report.generate_and_postprocess(params) # error!
     unless result
       respond_to do |wants|
         wants.html {
-          redirect_to({:action => 'index'}, {:alert => "Errors generating report: #{@report.errors}"})
+          redirect_with(reports_path, :alert => "Errors generating report: #{@report.errors}")
         }
         wants.js {
           render :text => "Error: #{@report.errors}"
@@ -172,7 +176,7 @@ class ReportsController < ApplicationController
           result = EmailList.add_to_sublist(seg, @report.customers)
           flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
             EmailList.errors.to_s
-          redirect_to :action => :index
+          redirect_to reports_path
         end
       }
       wants.js {

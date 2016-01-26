@@ -39,7 +39,7 @@ class StoreController < ApplicationController
                 elsif logged_in.is_staff then desired || logged_in
                 else logged_in
                 end
-      redirect_to params.merge(:customer_id => desired)
+      redirect_to params.merge(:customer_id => desired, :only_path => true)
     end
   end
 

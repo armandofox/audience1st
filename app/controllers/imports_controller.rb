@@ -22,9 +22,10 @@ class ImportsController < ApplicationController
   end
 
   def create
-    redirect_to new_import_path and return unless params[:import]
-    type = params[:import][:type]
-    @import = (type.constantize).new(params[:import])
+    return redirect_to new_import_path unless params[:import]
+    type = params[:import][:type].constantize
+    return redirect_to(new_import_path) unless type.ancestors.include?(Import)
+    @import = type.new(params[:import])
     if !(new = params[:new_show_name]).blank?
       if Show.find_by_name(new)
         flash[:alert] = "Show \"#{new}\" already exists."
