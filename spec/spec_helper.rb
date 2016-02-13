@@ -5,6 +5,7 @@ require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_
 require 'spec/autorun'
 require 'spec/rails'
 require 'timecop'
+require 'spec/support/redirect_to_path.rb'
 
 TEST_FILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
 

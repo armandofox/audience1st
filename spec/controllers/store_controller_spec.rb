@@ -16,28 +16,28 @@ describe StoreController do
       before :each do ; login_as(nil) ; end
       it 'redirects as generic customer' do
         get :index
-        response.should redirect_to(@r.merge(:customer_id => @anon))
+        response.should redirect_to_path(store_path(@anon))
       end
       it 'preserves params' do
         get :index, @extra
-        response.should redirect_to(@r.merge(:customer_id => @anon).merge(@extra))
+        response.should redirect_to_path(store_path(@anon, @extra))
       end
 
       it 'prevents switching to a different user' do
         get :index, {:customer_id => @c.id}
-        response.should redirect_to(@r.merge(:customer_id => @anon))
+        response.should redirect_to_path(store_path(@anon))
       end
     end
     context 'when logged in as regular user' do
       before :each do ; login_as(@c) ;  end
       it 'redirects to your login keeping params' do
         get :index, @extra
-        response.should redirect_to(@r.merge(:customer_id => @c).merge(@extra))
+        response.should redirect_to_path(store_path(@c, @extra))
       end
       it 'prevents you from switching to different user' do
         other = create(:customer)
         get :index, @extra.merge(:customer_id => other)
-        response.should redirect_to(@r.merge(@extra).merge(:customer_id => @c))
+        response.should redirect_to_path(store_path(@c, @extra))
       end
       it 'lets you view store as yourself' do
         get :index, @extra.merge(:customer_id => @c)
@@ -48,7 +48,7 @@ describe StoreController do
       before :each do ; login_as(@b = customers(:boxoffice_user)) ; end
       it 'redirects to you if no customer specified' do
         get :index, @extra
-        response.should redirect_to(@r.merge(@extra).merge(:customer_id => @b))
+        response.should redirect_to_path(store_path(@b,@extra))
       end
       it 'redirects to another customer' do
         get :index, @extra.merge(:customer_id => @c)
