@@ -56,6 +56,9 @@ class StoreController < ApplicationController
 
   def index
     return_after_login params.except(:customer_id)
+    @valid_vouchers = []
+    @all_shows = []
+    @all_showdates = []
     @show_url = url_for(params.merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
@@ -305,7 +308,7 @@ class StoreController < ApplicationController
   end
 
   def setup_for_showdate(sd)
-    @valid_vouchers = [] and return if sd.nil?
+    return if sd.nil?
     @what = sd.show.event_type
     @sd = sd
     @sh = @sd.show
