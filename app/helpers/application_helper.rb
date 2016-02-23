@@ -50,10 +50,10 @@ module ApplicationHelper
     collection.each_slice(n) do |things|
       row = ''
       things.each { |l|  row << content_tag('td', yield(l)) }
-      rows << content_tag('tr', row)
+      rows << content_tag('tr', row.html_safe!)
     end
     content_tag('table') do
-      content_tag('tbody', rows)
+      content_tag('tbody', rows.html_safe!)
     end
   end
 

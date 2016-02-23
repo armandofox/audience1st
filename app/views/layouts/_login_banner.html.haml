@@ -1,5 +1,6 @@
 #welcome_header
-  Signed in as #{current_user.full_name}
+  Signed in as 
+  = link_to current_user.full_name, customer_path(current_user)
   = gen_button 'Log Out', logout_path
   - if @gAdminDisplay
     = gen_button('Regular Patron View', temporarily_disable_admin_session_path)

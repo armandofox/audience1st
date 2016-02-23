@@ -8,6 +8,7 @@ gem 'bundler'
 gem 'constant_contact', '1.4.0'
 gem 'dbf', '1.2.8'
 gem 'dbi', '0.4.5'
+gem 'erubis'                    # for html-escape XSS protection; not needed for Rails >=3
 gem 'figaro', '~> 1.0'
 gem 'sslrequirement'
 gem 'haml', '~> 3.1.8'

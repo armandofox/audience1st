@@ -1,8 +1,8 @@
 #staffButtons.adminField
-  = admin_button 'Add Comps&hellip;', new_customer_voucher_path(@customer)
-  = admin_button 'Orders&hellip;', orders_path(:customer_id => @customer)
-  = admin_button 'Transfer&hellip;', customer_vouchers_path(@customer)
-  = admin_button 'Donations&hellip;', {:controller => 'donations', :action => 'index', :use_cid => 1, :commit => 'Go', :cid => @customer}
-  = admin_button 'Transactions&hellip;', {:controller => 'txn', :action => 'index', :params => {:txn_filter => @customer}}
-  = admin_button 'Record Donation&hellip;', new_donation_path(:customer_id => @customer)
+  = admin_button 'Add Comps&hellip;'.html_safe!, new_customer_voucher_path(@customer)
+  = admin_button 'Orders&hellip;'.html_safe!, orders_path(:customer_id => @customer)
+  = admin_button 'Transfer&hellip;'.html_safe!, customer_vouchers_path(@customer)
+  = admin_button 'Donations&hellip;'.html_safe!, {:controller => 'donations', :action => 'index', :use_cid => 1, :commit => 'Go', :cid => @customer}
+  = admin_button 'Transactions&hellip;'.html_safe!, {:controller => 'txn', :action => 'index', :params => {:txn_filter => @customer}}
+  = admin_button 'Record Donation&hellip;'.html_safe!, new_donation_path(:customer_id => @customer)
 .clear
