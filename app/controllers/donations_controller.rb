@@ -6,8 +6,7 @@ class DonationsController < ApplicationController
   private
 
   def load_customer
-    redirect_with(donations_path, :alert => 'You must select a customer.') and return unless
-      @customer = Customer.find(params[:customer_id])
+    return redirect_with(donations_path, :alert => 'You must select a customer.') unless @customer = Customer.find(params[:customer_id])
   end
 
   public

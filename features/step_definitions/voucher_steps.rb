@@ -5,13 +5,16 @@ end
 
 Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type|
   raise "No default showdate" unless @showdate.kind_of?(Showdate)
-  c = create(:customer, :first_name => first, :last_name => last)
-  1.upto(num.to_i) do
-    c.vouchers <<
-      Voucher.
-      new_from_vouchertype(Vouchertype.find_by_name(type) || create(:revenue_vouchertype, :name => type)).
-      reserve(@showdate, c)
-  end
+  customer = create(:customer, :first_name => first, :last_name => last)
+  vtype = Vouchertype.find_by_name(type) || create(:revenue_vouchertype, :name => type)
+  vv = ValidVoucher.find_by_vouchertype_id_and_showdate_id(vtype.id,@showdate.id) ||
+    create(:valid_voucher, :vouchertype => vtype, :showdate => @showdate)
+  order = build(:order,
+    :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
+    :customer => customer,
+    :purchaser => customer)
+  order.add_tickets(vv, num.to_i)
+  order.finalize!
 end
 
 Given /^customer "(.*) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.*)"$/ do |first,last,num_free,num_total,show|

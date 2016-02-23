@@ -29,4 +29,4 @@ Scenario: not filling in a donation amount should return you to donation page
 
 Scenario: landing on donation page with invalid account code
   When I visit the donation landing page coded for a nonexistent fund
-  Then I should see "Donation to General Fund"
+  Then I should see "Donation to Default Fund"
