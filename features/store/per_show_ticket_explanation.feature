@@ -26,9 +26,9 @@ Scenario: see show-specific description on ticket page
 
 Scenario: show without ticket explanation doesn't display anything
 
-  Given a show "Cabaret" with tickets on sale for today
-  And a show with name: Chicago should exist
+  Given a show with name: Chicago should exist
   And the show has description: "This show is racy"
+  And a show "Cabaret" with tickets on sale for today
   When I visit the store page for "Cabaret" 
   Then I should not see "This show is racy"
   

@@ -69,7 +69,11 @@ class String
 end
 
 def instantize(string)
-  instance_variable_get("@#{string}")
+  obj = instance_variable_get("@#{string}")
+  if obj.kind_of?(ActiveRecord::Base)
+    obj.reload # in case a previous step changed the database
+  end
+  obj
 end
 
 #
