@@ -20,7 +20,7 @@ module ShowdatesHelper
             content_tag('label', day, :for => "#{prefix}_#{idx}", :class => 'no_float') 
         end)
     end
-    tag
+    tag.html_safe
   end
 
 

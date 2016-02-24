@@ -27,7 +27,7 @@
         = d1
         %br
         or
-        = "#{d2} to #{d3}"
+        = "#{d2} to #{d3}".html_safe
     %tr 
       %td= check_box_tag 'use_amount', 1, @params[:use_amount]
       %td  Donation amount between:

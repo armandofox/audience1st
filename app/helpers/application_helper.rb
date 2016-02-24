@@ -3,18 +3,8 @@
 module ApplicationHelper
   include ActiveSupport::Inflector # so individual views don't need to reference explicitly
 
-  def ie8 ; request.env['HTTP_USER_AGENT'] =~ /Trident\/4.0/ ; end
-
   def default_validation_error_message ; "Please correct the following errors:" ; end
 
-  def container_for(id,label,prefix='container')
-    content_tag(:p, :id => "#{prefix}_#{id}") do
-      content_tag(:label, label, :for => id) do
-        yield
-      end
-    end
-  end
-  
   # override standard helper so we can supply our own embedded error msg strings
   def error_messages_for(*params)
     options = params.last.is_a?(Hash) ? params.pop.symbolize_keys : {}
@@ -32,11 +22,13 @@ module ApplicationHelper
       end
       header_message = options[:header_message] ||
         "#{count.to_i} error(s) prevented this #{(options[:object_name] || params.first).to_s.gsub('_', ' ')} from being processed"
-      error_messages = objects.map {|object| object.errors.full_messages.map {|msg| content_tag(:li, msg) } }
+      error_messages = objects.map do |object|
+        object.errors.full_messages.map {|msg| content_tag(:li, msg) }
+      end.join('')
       content_tag(:div,
         content_tag(options[:header_tag] || :h2, header_message) <<
-        content_tag(:p, options[:field_message] || 'There were problems with the following fields:') <<
-        content_tag(:ul, error_messages),
+        content_tag(:p, (options[:field_message] || 'There were problems with the following fields:')) <<
+        content_tag(:ul, error_messages.html_safe),
         html
         )
     else
@@ -50,10 +42,10 @@ module ApplicationHelper
     collection.each_slice(n) do |things|
       row = ''
       things.each { |l|  row << content_tag('td', yield(l)) }
-      rows << content_tag('tr', row.html_safe!)
+      rows << content_tag('tr', row.html_safe)
     end
     content_tag('table') do
-      content_tag('tbody', rows.html_safe!)
+      content_tag('tbody', rows.html_safe)
     end
   end
 
@@ -64,9 +56,11 @@ module ApplicationHelper
   end
 
   def render_multiline_message(m,sep="<br/>\n")
-    if m.respond_to?(:errors_as_html) then m.errors_as_html(sep)
-    elsif (m.kind_of? Array) then m.map { |line| content_tag(:span, render_multiline_message(line,sep)) }.join(sep)
-    else m
+    sep = sep.html_safe
+    if m.respond_to?(:errors_as_html)
+      m.errors_as_html(sep).html_safe
+    elsif (m.kind_of? Array) then m.map { |line| content_tag(:span, render_multiline_message(line,sep).html_safe) }.join(sep.html_safe)
+    else m.html_safe
     end
   end
   
@@ -81,18 +75,6 @@ module ApplicationHelper
     else
       "#{d1.strftime('%b %e')}#{separator}#{d2.strftime('%b %e')}, #{d1.year}"
     end
-  end
-
-  # does the user-agent string suggest that this is a mobile device?
-  def mobile_user_agent?(uastring)
-    !uastring.blank? && uastring.match( /iphone|palmos|palmsource|blazer/i )
-  end
-
-  # hidden image tag; if a number is appended, gives it that unique id
-  def hidden_image(name)
-    id = name
-    id << $1 if name.gsub!(/_(\d+)$/) { |s| '' }
-    image_tag("#{name}.png", :id => id, :style =>  'display: none;')
   end
 
   # if an option has some HTML text associated with it, sanitize the text;
@@ -156,21 +138,6 @@ module ApplicationHelper
     check_box_tag name, 1, checked, :onclick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
   end
 
-  # helper that generates a javascript function that submits a form 
-  # only if a certain field is zero
-  def submit_if_zero(func_name,field_name, alert)
-    return <<EJS1
-        #{func_name} = function() {
-          if (parseFloat($('#{field_name}').value) != 0.0) {
-            alert('#{alert}');
-            return false;
-          } else {
-            this.forms[0].submit();
-          }
-        }
-EJS1
-  end
-
   # helpers that generate JS to disable and then re-enable a button
   #  (eg a submit button) during AJAX form submission
   def disable_with(elt_id,new_str)
@@ -189,10 +156,6 @@ EJS1
       '[' + arr.map { |a| a.kind_of?(Fixnum) ? "#{a}" : "'#{a}'" }.join(',') + ']'
   end
 
-  def strip_rcs_header(str)
-    str.gsub( /\$\s*[^:]+:\s*([^$]+)\s*\$/, '\1' )
-  end
-
   def admin_button(name,options={},html_opts={},*parms)
     #options.merge!(:method => :get) unless options.has_key?(:method)
     #button_to(name, options, html_opts.merge(:background=>:yellow))
@@ -203,10 +166,6 @@ EJS1
     #options.merge!(:method => :get) unless options.has_key?(:method)
     #button_to(name, options, html_opts)
     link_to(name, options,html_opts.merge(:class => 'genButton'),parms)
-  end
-
-  def option_separator(name,value='')
-    "<option disabled=\"disabled\" value=#{value}>#{name}</option>"
   end
 
   def pagination_bar(thispage, f, count, htmlopts={})
@@ -400,7 +359,7 @@ EOJS
     ds << " : "
     ds << select_minute(thedate, options.merge({:prefix => sprintf(pfx,5) }))
     i = 0
-    ds.gsub!(/<select/) do |m|
+    ds.gsub(/<select/) do |m|
       i=i+1
       "<select onchange='$(\"#{child}_#{i}i\").selectedIndex=this.selectedIndex'"
     end

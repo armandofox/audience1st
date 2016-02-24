@@ -4,9 +4,9 @@ module OptionsHelper
     content_tag :table, :class => 'options_table hilite' do
       content = ''
       collection.each do |attrib|
-        content << (render :partial => 'option', :locals => {:attrib => attrib, :f => frm})
+        content << (render :partial => 'option', :locals => {:attrib => attrib, :f => frm}).html_safe
       end
-      content
+      content.html_safe
     end
   end
 

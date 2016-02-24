@@ -238,14 +238,6 @@ vouchertype_changeable: >
   corresponding to the change fee.  (At this time, the box office must
   handle such transactions.)
 
-vouchertype_bundle_promo_code:  >
-
-  A promo code (password) required to purchase; this bundle type
-  won't be visible as a choice in dropdown menu until customer enters the
-  promo code.  To specify multiple allowable promo codes, separate them
-  by commas.  If blank, no promo code is required to purchase this
-  bundle. 
-
 # Valid_vouchers
 
 valid_voucher_max_sales_for_type:  >

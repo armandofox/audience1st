@@ -32,9 +32,9 @@ module StoreHelper
     name ||= collection.empty? ? '' : collection.first.class.name.humanize
     choose = default_item ? "" :
       options_for_select({"Select #{name}..." => 0})
-    return choose +
+    return (choose +
       options_from_collection_for_select(collection, :id, :menu_selection_name,
-                                         (default_item ? default_item.id : 0))
+                                         (default_item ? default_item.id : 0))).html_safe
   end
 
   def ticket_menus(avs)

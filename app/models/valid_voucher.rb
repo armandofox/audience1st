@@ -13,6 +13,10 @@ class ValidVoucher < ActiveRecord::Base
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
 
+  attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
+  # auxiliary attributes that aren't persisted
+  attr_accessible :explanation, :visible, :supplied_promo_code, :customer
+
   belongs_to :showdate
   belongs_to :vouchertype
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
