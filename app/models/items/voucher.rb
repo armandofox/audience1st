@@ -265,8 +265,9 @@ class Voucher < Item
   #  reservation binds it to a showdate and fills in who processed it
   # 
   def unreserve
-    update_attributes!(:showdate_id => 0, :checked_in => false)
-    self
+    self.showdate = nil
+    self.checked_in = false
+    save!
   end
   def reserve(showdate,logged_in_customer,comments='')
     self.showdate = showdate
