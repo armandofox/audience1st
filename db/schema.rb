@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20151226034747) do
+ActiveRecord::Schema.define(:version => 20160223170246) do
 
   create_table "account_codes", :force => true do |t|
     t.string "name",        :limit => 40, :default => "", :null => false
@@ -108,7 +108,6 @@ ActiveRecord::Schema.define(:version => 20151226034747) do
     t.string   "comments"
     t.boolean  "fulfillment_needed",                                                                :default => false,      :null => false
     t.string   "external_key"
-    t.boolean  "no_show",                                                                           :default => false,      :null => false
     t.string   "promo_code"
     t.integer  "processed_by_id",                                                                   :default => 2146722771, :null => false
     t.integer  "bundle_id",                                                                         :default => 0,          :null => false
@@ -315,7 +314,6 @@ ActiveRecord::Schema.define(:version => 20151226034747) do
     t.integer  "offer_public",                                                                       :default => 0,     :null => false
     t.boolean  "subscription"
     t.text     "included_vouchers"
-    t.string   "promo_code",          :limit => 20,                                                  :default => "",    :null => false
     t.boolean  "walkup_sale_allowed",                                                                :default => false, :null => false
     t.boolean  "fulfillment_needed",                                                                 :default => false, :null => false
     t.enum     "category",            :limit => [:revenue, :comp, :subscriber, :bundle, :nonticket]

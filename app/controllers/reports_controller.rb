@@ -53,7 +53,7 @@ class ReportsController < ApplicationController
 
   def showdate_sales
     entity = Object.const_get(params[:klass])
-    render :status => :unprocessable_entity and return unless (entity.kind_of?(Show) || entity.kind_of?(Showdate))
+    render :status => :unprocessable_entity and return unless (entity == Show || entity == Showdate)
     entity = entity.find(params[:id])
     vouchers = entity.vouchers
     by_vtype = vouchers.group_by(&:vouchertype)
