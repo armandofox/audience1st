@@ -16,12 +16,10 @@ Then /^I should see the following details for that order:$/ do |table|
   end
 end
 
-Given /^customer "(.*) (.*)" has the following reservations:/ do |first,last,table|
-  customer =
-    Customer.find_by_first_name_and_last_name(first,last) ||
-    create(:customer, :first_name => first, :last_name => last)
+Given /^customer "(.*) (.*)" has the following (subscriber )?reservations:/ do |first,last,sub,table|
+  customer = find_or_create_customer(first,last)
   table.hashes.each do |res|
-    vtype = find_or_create_or_default res[:vouchertype]
+    vtype = find_or_create_or_default res[:vouchertype], (sub ? :vouchertype_included_in_bundle : :revenue_vouchertype)
     showdate = setup_show_and_showdate(res[:show], res[:showdate])
     vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate)
     purchasemethod = purchasemethod_from_string res[:purchasemethod]

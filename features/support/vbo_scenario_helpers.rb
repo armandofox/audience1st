@@ -1,5 +1,10 @@
 module VboScenarioHelpers
   
+  def find_or_create_customer(first,last)
+    Customer.find_by_first_name_and_last_name(first,last) ||
+      create(:customer, :first_name => first, :last_name => last)
+  end
+
   def purchasemethod_from_string(str)
     case str
     when /(at )?box office/i then Purchasemethod.find_by_shortdesc('box_cc')
@@ -8,12 +13,12 @@ module VboScenarioHelpers
     end
   end
 
-  def find_or_create_or_default(vtype_name)
+  def find_or_create_or_default(vtype_name, type = :revenue_voucher)
     if vtype_name.blank?
-      create(:revenue_vouchertype)
+      create(type)
     else
       Vouchertype.find_by_name(vtype_name) ||
-        create(:revenue_voucher, :name => vtype_name)
+        create(type, :name => vtype_name)
     end
   end
 
