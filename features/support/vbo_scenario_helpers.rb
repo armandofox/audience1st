@@ -1,6 +1,24 @@
 module VboScenarioHelpers
   
+  def purchasemethod_from_string(str)
+    case str
+    when /(at )?box office/i then Purchasemethod.find_by_shortdesc('box_cc')
+    when /credit card/i then Purchasemethod.find_by_shortdesc('web_cc')
+    else Purchasemethod.find_by_shortdesc('box_cash')
+    end
+  end
+
+  def find_or_create_or_default(vtype_name)
+    if vtype_name.blank?
+      create(:revenue_vouchertype)
+    else
+      Vouchertype.find_by_name(vtype_name) ||
+        create(:revenue_voucher, :name => vtype_name)
+    end
+  end
+
   def setup_show_and_showdate(name,time,args={})
+    time = Time.parse(time) unless time.kind_of? Time
     show = Show.find_by_name(name) ||
       create(:show,
       :name => name,

@@ -34,7 +34,7 @@
                     :complete => enable_with(svid, 'Save'), |
                     :success => "alert('Comment saved')", |
                     :failure => "alert('Comment NOT saved - error ' + request.status)") do |
-                = text_field_tag 'comments', multiple_voucher_comments(vouchers)
+                = text_field_tag 'comments', multiple_voucher_comments(vouchers), :id => "comments_#{vouchers.first.id}"
                 = submit_tag 'Save', :id => svid
         - elsif (dates = vouchers.first.redeemable_showdates(current_user.is_boxoffice)).empty?
           %td

@@ -16,6 +16,21 @@ Then /^I should see the following details for that order:$/ do |table|
   end
 end
 
+Given /^customer "(.*) (.*)" has the following reservations:/ do |first,last,table|
+  customer =
+    Customer.find_by_first_name_and_last_name(first,last) ||
+    create(:customer, :first_name => first, :last_name => last)
+  table.hashes.each do |res|
+    vtype = find_or_create_or_default res[:vouchertype]
+    showdate = setup_show_and_showdate(res[:show], res[:showdate])
+    vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate)
+    purchasemethod = purchasemethod_from_string res[:purchasemethod]
+    order = build(:order, :customer => customer, :purchaser => customer, :purchasemethod => purchasemethod)
+    order.add_tickets(vv, res[:qty].to_i)
+    order.finalize!
+  end
+end
+
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
   customer =
     Customer.find_by_first_name_and_last_name(first,last) ||
@@ -27,7 +42,7 @@ Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do 
     :purchaser => customer)
   @order.vouchers = []
   table.hashes.each do |voucher|
-    vtype = Vouchertype.find_by_name!(voucher[:name])
+    vtype = Vouchertype.find_by_name(voucher[:name]) || create(:revenue_vouchertype, :name => voucher[:name])
     vv = create(:valid_voucher, :vouchertype => vtype, :showdate => nil)
     @order.add_tickets(vv, voucher[:quantity].to_i)
   end

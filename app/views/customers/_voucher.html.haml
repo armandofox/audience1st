@@ -21,5 +21,5 @@
   - if @gAdminDisplay
     %td.admin
       - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,voucher), :success => "alert('Comment saved')", :failure => "alert('Comment NOT saved - error ' + request.status)") do
-        = text_field_tag 'comments', voucher.comments
+        = text_field_tag 'comments', voucher.comments, :id => "comments_#{voucher.id}"
         = submit_tag 'Save'
