@@ -15,7 +15,7 @@
       - vid = vouchers.first.id
       - voucherlist = vouchers.map { |v| v.id }.join(',')
       - num = vouchers.length
-      %tr
+      %tr[vouchers.first]
         - if showdate
           %td.c= num
           %td= vouchertype.name
