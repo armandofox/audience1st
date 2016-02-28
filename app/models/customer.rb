@@ -67,7 +67,7 @@ class Customer < ActiveRecord::Base
 
   attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
   :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
-  :password, :password_confirmation,
+  :password, :password_confirmation, :comments,
   :secret_question, :secret_answer,
   :company, :title, :company_url, :company_address_line_1,
   :company_address_line_2, :company_city, :company_state, :company_zip,

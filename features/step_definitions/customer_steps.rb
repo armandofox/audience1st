@@ -129,6 +129,10 @@ Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,da
     Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
 end
 
+Then /^customer "(.*) (.*)" should have the "(.*)" role$/ do |first,last,role|
+  Customer.find_by_first_name_and_last_name!(first,last).role_name.should == role
+end
+
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|
   c1 = Customer.find_by_first_name_and_last_name! f1,l1
   c2 = Customer.find_by_first_name_and_last_name! f2,l2

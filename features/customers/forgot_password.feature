@@ -10,5 +10,5 @@ Scenario: reset password and login with new one
   When I visit the forgot password page
   And I fill in "email" with "john@doe.com"
   And I press "Reset My Password By Email"
-  Then an email should be sent to "john@doe.com" containing a password
+  Then an email should be sent to "john@doe.com" matching "password" with "Your new password is:\s*(\S*)\s*"
   And I should be able to login with username "john@doe.com" and that password
