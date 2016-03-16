@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160223170246) do
+ActiveRecord::Schema.define(:version => 20160316203603) do
 
   create_table "account_codes", :force => true do |t|
     t.string "name",        :limit => 40, :default => "", :null => false
@@ -203,6 +203,7 @@ ActiveRecord::Schema.define(:version => 20160223170246) do
     t.string   "classes_order_service_charge_description"
     t.integer  "classes_order_service_charge_account_code",              :default => 0,                                                            :null => false
     t.string   "special_seating_requests",                               :default => " Please describe (electric wheelchair, walker, cane, etc.)", :null => false
+    t.integer  "limited_availability_threshold",                         :default => 40,                                                           :null => false
   end
 
   create_table "orders", :force => true do |t|

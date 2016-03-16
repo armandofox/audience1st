@@ -8,7 +8,8 @@ class Option < ActiveRecord::Base
   end
   
   validates_numericality_of :advance_sales_cutoff
-  validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
+  validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
+  validate :availability_levels_monotonically_increase
   validates_inclusion_of :season_start_month, :in => 1..12
   validates_inclusion_of :season_start_day, :in => 1..31
   validates_numericality_of :cancel_grace_period
@@ -35,5 +36,10 @@ class Option < ActiveRecord::Base
   
   validates_presence_of :classes_order_service_charge_description,
   :if => Proc.new { |o| o.classes_order_service_charge > 0 }
-  
+
+  def availability_levels_monotonically_increase
+    errors.add(:nearly_sold_out_threshold, 'must be less than Sold Out threshold') unless sold_out_threshold > nearly_sold_out_threshold
+    errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
+  end
+
 end

@@ -174,6 +174,22 @@ class Showdate < ActiveRecord::Base
 
   def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
 
+  # returns two elements indicating the lowest-priced and highest-priced
+  # publicly-available tickets.
+  def price_range
+    public_prices = valid_vouchers.select(&:public?).map(&:price)
+    public_prices.empty? ? [] : [public_prices.min, public_prices.max]
+  end
+
+  def availability_grade
+    sales = percent_sold.to_i
+    if sales >= Option.sold_out_threshold then 0
+    elsif sales >= Option.nearly_sold_out_threshold then 1
+    elsif sales >= Option.limited_availability_threshold then 2
+    else 3
+    end
+  end
+
   def availability_in_words
     pct = percent_sold
     pct >= Option.sold_out_threshold ?  :sold_out :

@@ -1,6 +1,28 @@
 require 'spec_helper'
 
 describe Showdate do
+  describe "availability grade" do
+    before(:each) do
+      @sd = create(:showdate)
+      @sd.stub(:percent_sold).and_return(70)
+    end
+    cases = {
+      [20,50,60] => 0,          # sold out
+      [20,50,70] => 0,          # sold out -boundary cond
+      [20,50,80] => 1,          # nearly sold out
+      [20,70,90] => 1,          # nearly sold out - boundary cond
+      [20,90,95] => 2,          # limited avail
+      [75,80,90] => 3
+    }
+    cases.each do |c,grade|
+      specify "with thresholds #{c.join ','}" do
+        Option.stub(:limited_availability_threshold).and_return(c[0])
+        Option.stub(:nearly_sold_out_threshold).and_return(c[1])
+        Option.stub(:sold_out_threshold).and_return(c[2])
+        @sd.availability_grade.should == grade
+      end
+    end
+  end
   describe "of next show" do
     context "for non-regular shows" do
       it 'returns correct entry' do

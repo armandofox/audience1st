@@ -1,0 +1,24 @@
+xml.instruct!
+
+xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1", "xmlns:audience1st" => "https://www.audience1st.com/audience1st" do
+  xml.channel do
+    xml.title       "#{@venue} Ticket Availability"
+    xml.link        url_for(:only_path => false, :controller => 'store')
+    xml.description "Ticket Availability for #{@venue}"
+    @showdates.each do |sd|
+      xml.item do
+        xml.title h(sd.printable_name)
+        if (sd.advance_sales? && sd.availability_grade > 0)
+          xml.link link_to_showdate_tickets(sd).html_safe
+        end
+        xml.guid link_to_showdate_tickets(sd), :isPermaLink => false
+        xml.__send__('audience1st:show', sd.show.name)
+        xml.__send__('audience1st:showDate', sd.thedate.strftime('%a, %b %e'))
+        xml.__send__('audience1st:showTime', sd.thedate.strftime('%l:%M%P'))
+        xml.__send__('audience1st:availabilityGrade', sd.availability_grade)
+        minprice,maxprice = sd.price_range
+        xml.__send__('audience1st:priceRange', "#{number_to_currency minprice} - #{number_to_currency maxprice}")
+      end
+    end
+  end
+end

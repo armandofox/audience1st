@@ -29,4 +29,16 @@ class InfoController < ApplicationController
     render :layout => false
   end
 
+  # richer availability info - using availability grades
+  def availability
+    lookahead = params[:q].to_i
+    # pin to 1 year ahead
+    lookahead = 90 if lookahead < 1 || lookahead > 366
+    now = Time.now
+    @showdates = Showdate.
+      find(:all, :conditions => ['thedate BETWEEN ? AND ?', now, now + lookahead.days]).
+      select { |sd| !sd.price_range.empty? }
+    render :layout => false
+  end
+
 end

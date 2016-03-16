@@ -6,12 +6,18 @@ advance_sales_cutoff: >
 sold_out_threshold: >
 
   Performance is listed as 'sold out' when this percentage of the house
-  is sold.
+  is sold.  Also corresponds to availability grade 0 in the RSS feed.
 
 nearly_sold_out_threshold: >
 
   Performance is listed as 'nearly sold out' when this percentage of the
-  house is sold.
+  house is sold.  Also corresponds to availability grade 1 in the RSS feed.
+
+limited_availability_threshold: >
+
+  In the RSS feed only (not the ticket sales pages), a performance is
+  listed as "limited availability" (availability grade 2) if this
+  percentage of the house is sold.
 
 allow_gift_tickets: >
 
