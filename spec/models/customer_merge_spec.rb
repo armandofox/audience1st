@@ -158,31 +158,42 @@ describe Customer, "merging" do
         c0.errors.full_messages.should include_match_for(/merges disallowed.*except anonymous/i)
       end
     end
-    describe "successfully" do
-      describe "items" do
-        before :each do
-          @from = create(:customer)
-          @to = create(:customer)
-          @random_purchaser = create(:customer)
-          @o1 = create(:order,
-            :vouchers_count => 2,
-            :contains_donation => true,
-            :customer => @from,
-            :purchaser => @random_purchaser)
-          @o2 = create(:order,
-            :vouchers_count => 1,
-            :contains_donation => false,
-            :customer => @to,
-            :purchaser => @random_purchaser)
-          debugger
-          @from.merge_automatically!(@to).should_not be_nil
-        end
-        it 'preserves donations and vouchers' do
-          @from.orders.count.should == 2
-          @from.vouchers.count.should == 3
-          @from.donations.count.should == 1
-        end
+    describe "items" do
+      before :each do
+        @from = create(:customer)
+        @to = create(:customer)
+        @random_purchaser = create(:customer)
+        @o1 = create(:order, :vouchers_count => 2, :contains_donation => true,
+          :customer => @from, :purchaser => @random_purchaser)
+        @o2 = create(:order, :vouchers_count => 1, :contains_donation => false,
+          :customer => @to, :purchaser => @to)
+        @from.merge_automatically!(@to)
+        @from.reload
       end
+      it 'preserves donations and vouchers' do
+        @from.orders.count.should == 2
+        @from.vouchers.count.should == 3
+        @from.donations.count.should == 1
+      end
+      it 'preserves separate purchaser if purchaser still exists' do
+        @o1.purchaser.should == @random_purchaser
+      end
+      it 'merges purchaser if same as owner' do
+        @o2.reload
+        @o2.purchaser.should == @from
+      end
+    end
+    it 'moves labels' do
+      from = create(:customer) ; to = create(:customer)
+      from.labels << (l1 = create(:label))
+      to.labels <<  (l2 = create(:label)) ; to.labels <<  (l3 = create(:label))
+      from.merge_automatically!(to)
+      new_labels = from.reload.labels
+      new_labels.should include(l1)
+      new_labels.should include(l2)
+      new_labels.should include(l3)
+    end
+    describe "successfully" do
       it "should keep password based on most recent" do
         @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
         @new.update_attributes!(:password => 'newerpass', :password_confirmation => 'newerpass')
