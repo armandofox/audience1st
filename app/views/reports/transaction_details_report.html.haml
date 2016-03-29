@@ -21,4 +21,4 @@
           %td= link_to_customer row['Cust#'], :content_text => row['Name']
           %td= pmt =~ /credit/i ? link_to_stripe(pmt,row['Stripe Auth']) : pmt
           %td= number_to_currency row['Total']
-          %td= row['Items'].gsub( /$/, '<br/>')
+          %td= row['Items'].gsub( /$/, '<br/>').html_safe

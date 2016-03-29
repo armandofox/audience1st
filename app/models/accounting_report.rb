@@ -26,7 +26,7 @@ class AccountingReport < Ruport::Controller
 
   formatter :html do
     def html_table
-      "\n<table class='hilite revenue_report'>\n" << yield << "</table>"
+      ("\n<table class='hilite revenue_report'>\n" << yield << "</table>")
     end
     build :itemized_groups do
       output << "<h1>#{options[:title]}</h1>"
