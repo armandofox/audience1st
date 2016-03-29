@@ -13,7 +13,6 @@ FactoryGirl.define do
     sold_on { Time.now }
 
     after_build do |order|
-      puts "***"
       if order.walkup
         order.customer = order.purchaser = Customer.walkup_customer
         order.processed_by ||= Customer.boxoffice_daemon
@@ -21,12 +20,12 @@ FactoryGirl.define do
     end
     after_create do |order,evaluator|
       1.upto evaluator.vouchers_count do
-        order.items << FactoryGirl.create(:revenue_voucher)
+        order.items << FactoryGirl.create(:revenue_voucher, :customer => order.customer)
       end
       if evaluator.contains_donation
-        order.items << FactoryGirl.create(:donation)
+        order.items << FactoryGirl.create(:donation, :customer => order.customer)
       end
     end
   end
-
+    
 end

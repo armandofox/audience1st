@@ -104,7 +104,7 @@ describe Customer, "merging" do
         @cust.forget!
         Customer.find_by_id(old_id).should be_nil
       end
-      [Donation, Voucher, Txn, Import].each do |t|
+      [Item, Txn, Import, Order].each do |t|
         it "should preserve old customer's #{t}s" do
           objs = create_records(t, @cust)
           t.count(:conditions => "customer_id = #{@cust.id}").should == objs.length
@@ -159,6 +159,30 @@ describe Customer, "merging" do
       end
     end
     describe "successfully" do
+      describe "items" do
+        before :each do
+          @from = create(:customer)
+          @to = create(:customer)
+          @random_purchaser = create(:customer)
+          @o1 = create(:order,
+            :vouchers_count => 2,
+            :contains_donation => true,
+            :customer => @from,
+            :purchaser => @random_purchaser)
+          @o2 = create(:order,
+            :vouchers_count => 1,
+            :contains_donation => false,
+            :customer => @to,
+            :purchaser => @random_purchaser)
+          debugger
+          @from.merge_automatically!(@to).should_not be_nil
+        end
+        it 'preserves donations and vouchers' do
+          @from.orders.count.should == 2
+          @from.vouchers.count.should == 3
+          @from.donations.count.should == 1
+        end
+      end
       it "should keep password based on most recent" do
         @old.update_attributes!(:password => 'olderpass', :password_confirmation => 'olderpass')
         @new.update_attributes!(:password => 'newerpass', :password_confirmation => 'newerpass')
