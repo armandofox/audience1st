@@ -165,7 +165,7 @@ class CustomersController < ApplicationController
   # list, merge, search, create, destroy
 
   def index
-    @page = params[:page]
+    @page = (params[:page] || 1).to_i
     @list_type = 'matches'
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)

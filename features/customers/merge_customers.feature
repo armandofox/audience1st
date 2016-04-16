@@ -19,7 +19,7 @@ Background:
 
 Scenario: auto merge 
   
-  And I press "Auto Merge"
+  When I press "Auto Merge"
   Then customer "Janey Weigandt" should not exist
   And customer "MaryJane Weigandt" should have the following attributes:
    | attribute | value        |
