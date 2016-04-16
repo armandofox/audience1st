@@ -47,7 +47,6 @@ group :development, :test do
   gem 'rack-test', '0.5.7'
   gem 'rdoc'
   gem 'rcov'
-  gem 'rspec', '1.3.2'
   gem 'rspec-rails', '1.3.4'
   gem 'sqlite3'
   gem 'timecop', '0.3.5'

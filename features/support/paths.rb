@@ -10,6 +10,7 @@ module NavigationHelpers
     @customer = Customer.find_by_first_name_and_last_name!($1, $2) if page_name =~ /for customer "(.*) (.*)"/
 
     case page_name
+    when /the (".*") RSS feed/      then availability_rss_path
     when /login page/i              then login_path
     when /login with secret question page/i then new_from_secret_session_path
     when /change secret question page/      then change_secret_question_customer_path(@customer)

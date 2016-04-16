@@ -44,7 +44,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect '/info/ticket_rss', :controller => 'info', :action => 'ticket_rss', :conditions => {:method => :get}
   map.connect '/rss/ticket_rss', :controller => 'info', :action => 'ticket_rss', :conditions => {:method => :get}
-  map.connect '/rss/availability', :controller => 'info', :action => 'availability', :conditions => {:method => :get}
+  map.availability_rss '/rss/availability', :controller => 'info', :action => 'availability', :conditions => {:method => :get}
 
   # AJAX responders
   map.update_shows '/ajax/update_shows', :controller => 'vouchers', :action => 'update_shows'
