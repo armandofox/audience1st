@@ -165,34 +165,21 @@ class CustomersController < ApplicationController
   # list, merge, search, create, destroy
 
   def index
-    @list_type = :all
-    @offset,@limit = get_list_params 
+    @page = params[:page]
+    @list_type = 'matches'
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
-    @customers = Customer.find(:all,
+    @customers = Customer.paginate(:page => @page,
       :conditions => conds,
-      :offset => @offset,
-      :limit => @limit,
-      :order => 'last_name,first_name'
-      )
-    @count = @customers.length
-    count_all = Customer.count(:conditions => conds)
-    @previous = (@offset <= 0 ? nil : [@offset - @limit, 0].max)
-    @next = (@offset + @count < count_all ? @offset + @count : nil)
-    @title = (@count.zero? ? "No matches" : @count == 1 ? "1 record" :
-      "Matches #{@offset+1} - #{@offset+@count} of #{count_all}")
-    @title += " for '#{@customers_filter}'" unless @customers_filter.empty?
-    render :action => 'index'
+      :order => 'last_name,first_name')
   end
 
   def list_duplicate
-    @list_type = :duplicates
-    @offset,@limit = get_list_params
-    @customers = Customer.find_suspected_duplicates(@limit,@offset)
-    @count = @customers.length
-    @previous = [@offset - @limit, 0].max
-    @next = @offset + [@limit,@count].min
-    @title = "Suspected Duplicates #{@offset+1} - #{@offset+@count}"
+    @list_type = 'possible duplicates'
+    @page = (params[:page] || 1).to_i
+    @customers = Customer.
+      find_suspected_duplicates.
+      paginate(:page => @page)
     render :action => 'index'
   end
 
@@ -274,12 +261,6 @@ class CustomersController < ApplicationController
 
   private
 
-  def get_list_params
-    offset = [params[:offset].to_i, 0].max
-    limit = [params[:limit].to_i, 20].max
-    return [offset,limit]
-  end
-
   def do_deletions(customers)
     count = 0
     flash[:alert] = ''
@@ -295,7 +276,9 @@ class CustomersController < ApplicationController
   end
 
   def redirect_to_last_list
-    redirect_to :action => (params[:action_name] || 'index'), :customers_filter => params[:customers_filter], :offset => params[:offset]
+    redirect_to :action => (params[:action_name] || 'index'),
+    :customers_filter => params[:customers_filter],
+    :page => params[:page]
   end
 
   def do_automatic_merge(id0,id1)

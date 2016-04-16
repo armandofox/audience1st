@@ -12,7 +12,8 @@
     Search any field:
     = text_field_tag 'customers_filter', @customers_filter, :size => 12
     = submit_tag 'Go'
-    = gen_button 'List All', customers_path
+    = gen_button 'All', customers_path
+    = gen_button 'Dups', list_duplicate_customers_path
     = gen_button 'New...', new_customer_path
 
 

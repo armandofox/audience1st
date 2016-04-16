@@ -92,6 +92,9 @@ class Customer < ActiveRecord::Base
 
   before_destroy :cannot_destroy_special_customers
 
+  # Paginating customer list
+  def self.per_page ;  20 ; end
+
   def active_vouchers
     now = Time.now
     vouchers.select { |v| now <= Time.at_end_of_season(v.season) }
@@ -431,11 +434,7 @@ class Customer < ActiveRecord::Base
     eval "def is_#{role}; self.role >= #{lvl}; end"
   end
 
-  def self.find_suspected_duplicates(limit=20,offset=1)
-    limit = 20 if limit.to_i < 2
-    sim = []
-    sim << 'c1.first_name LIKE c2.first_name'
-    
+  def self.find_suspected_duplicates
     # similarity: last names must match, emails must not differ,
     #  and at least one of first name or street must match.
     sql = <<EOSQL1
@@ -445,8 +444,6 @@ class Customer < ActiveRecord::Base
         (c1.email LIKE c2.email OR c1.email IS NULL OR c2.email IS NULL) AND
         (c1.first_name LIKE c2.first_name OR c1.street LIKE c2.street)
       ORDER BY c1.last_name,c1.first_name
-      LIMIT #{limit}
-      OFFSET #{offset}
 EOSQL1
     possible_dups = Customer.find_by_sql(sql)
   end

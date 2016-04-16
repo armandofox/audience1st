@@ -24,6 +24,7 @@ gem 'ruport', '1.6.3'
 gem 'rest-client', '~> 1.4'     
 gem 'json', '1.8.1'
 gem 'stripe', '1.22.0'
+gem 'will_paginate', '2.3.16'
 
 group :development, :test do
   # cucumber and capybara

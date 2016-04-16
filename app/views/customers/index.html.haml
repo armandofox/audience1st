@@ -1,16 +1,7 @@
 #customer_list_header
-  Show
-  = radio_button_tag 'show', 'all', (@list_type == :all), :onclick => "window.location='#{customers_path(:offset => @offset, :limit => @limit)}'"
-  All
-  = radio_button_tag 'show', 'dup', (@list_type == :duplicates), :onclick => "window.location='#{list_duplicate_customers_path(:offset => @offset, :limit => @limit)}'"
-  Dups
-
-  - if @customers.empty?
-    No matches
-  - else
-    = link_to('<<', {:action => @controller.action_name, :offset => @previous, :limit => @limit, :customers_filter => @customers_filter}, {:class => 'genButton'}) if @previous
-    %span.customer_list_header= h(@title)
-    = link_to('>>', {:action => @controller.action_name, :offset => @next, :limit => @limit, :customers_filter => @customers_filter}, {:class => 'genButton'}) if @next
+  %center
+    = page_entries_info @customers, :model => @list_type
+    = will_paginate @customers
 
 %br/
 
@@ -18,9 +9,8 @@
   - form_tag merge_customers_path, :method => :get do
     = render :partial => 'customers/merge_bar'
     = hidden_field_tag 'action_name', @controller.action_name
-    = hidden_field_tag 'offset', @offset
-    = hidden_field_tag 'limit', @limit
     = hidden_field_tag 'customers_filter', @customers_filter
+    = hidden_field_tag 'page', @page
     %table.hilite#customers
       %thead
         = render :partial => 'customers/customer_header'
