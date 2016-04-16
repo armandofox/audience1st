@@ -1,3 +1,4 @@
+[![Code Climate](https://codeclimate.com/github/armandofox/audience1st/badges/gpa.svg)](https://codeclimate.com/github/armandofox/audience1st)
 # Audience1st: Ticket Sales, Subscriber/Patron Management, Donation Tracking
 
 Audience1st integrates your own ticket sales, third-party ticket sales
