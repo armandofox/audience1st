@@ -15,7 +15,7 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1", "xm
         xml.link do ; xml << link_to_showdate_tickets(sd) ; end
         xml.guid :isPermaLink => false do ; xml << link_to_showdate_tickets(sd) ; end
         xml.__send__('audience1st:show', sd.show.name)
-        xml.__send__('audience1st:showDateTime', sd.thedate.strftime('%a, %b %e, %l:%M%PM'))
+        xml.__send__('audience1st:showDateTime', sd.thedate.strftime('%a, %b %e, %l:%M%p'))
         xml.__send__('audience1st:showDateTime8601', sd.thedate.strftime('%FT%R'))
         xml.__send__('audience1st:availabilityGrade', sd.availability_grade)
         minprice,maxprice = sd.price_range
