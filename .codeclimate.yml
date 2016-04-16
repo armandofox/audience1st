@@ -48,3 +48,4 @@ exclude_paths:
 - "*/**/effects.js"
 - "*/**/dragdrop.js"
 - "*/**/builder.js"
+- "*/**/slider.js"

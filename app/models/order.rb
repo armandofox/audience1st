@@ -13,6 +13,8 @@ class Order < ActiveRecord::Base
   attr_accessor :purchase_args
   attr_reader :donation
 
+  attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser
+  
   delegate :purchase_medium, :to => :purchasemethod
   
   # errors
@@ -190,10 +192,6 @@ class Order < ActiveRecord::Base
     ValidVoucher.find(valid_vouchers.keys).any? { |v| v.event_type == 'Class' }
   end
 
-  def gift?
-    include_vouchers?  &&  customer != purchaser
-  end
-
   def total_price
     return items.map(&:amount).sum if completed?
     total = self.donation.try(:amount).to_f + self.retail_items.map(&:amount).sum
@@ -311,7 +309,7 @@ class Order < ActiveRecord::Base
       end
     rescue ValidVoucher::InvalidRedemptionError => e
       raise Order::NotReadyError, e.message
-    rescue Exception => e
+    rescue StandardError => e
       workaround_rails_bug_2298!
       raise e                 # re-raise exception
     end
@@ -327,7 +325,7 @@ class Order < ActiveRecord::Base
   end
 
   def gift?
-    purchaser_id != customer_id  &&  !purchaser_id.nil?
+    purchaser  &&  customer != purchaser
   end
 
   def ship_to
