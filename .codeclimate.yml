@@ -42,9 +42,9 @@ exclude_paths:
 - script/
 - spec/
 - vendor/
-- */**/jquery.js
-- */**/prototype.js
-- */**/controls.js
-- */**/effects.js
-- */**/dragdrop.js
-- */**/builder.js
+- "*/**/jquery.js"
+- "*/**/prototype.js"
+- "*/**/controls.js"
+- "*/**/effects.js"
+- "*/**/dragdrop.js"
+- "*/**/builder.js"
