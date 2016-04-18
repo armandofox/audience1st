@@ -43,8 +43,8 @@ module CustomersHelper
   def format_collection_with_style(collection, css_class)
     # show a collection as a bunch of span's styled with css class
     collection.map do |elt|
-      content_tag 'span', h(elt), :class => css_class
-    end
+      content_tag('span', h(elt), :class => css_class)
+    end.join('').html_safe
   end
   #
   # Link to login page using remote ip address as link content

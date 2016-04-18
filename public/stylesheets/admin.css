@@ -50,13 +50,20 @@ a.tooltip:hover span{
     border:1px solid #DCA; background:#fffAF0;}
 .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
     
-/* Pagination */
+/* Pagination of customer list */
+#customer_list_header { 
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+ }
 .pagination {
   width: auto;
   margin: 0 auto; /* centered */
-  background: white;
-  cursor: default;
+  display: block;
   /* self-clearing method: */ }
+  .pagination form {
+     float: left;
+   }
   .pagination a, .pagination span, .pagination em {
     padding: 0.2em 0.5em;
     display: block;

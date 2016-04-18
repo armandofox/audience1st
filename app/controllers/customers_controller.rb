@@ -166,7 +166,7 @@ class CustomersController < ApplicationController
 
   def index
     @page = (params[:page] || 1).to_i
-    @list_type = 'matches'
+    @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
     @customers = Customer.paginate(:page => @page,
@@ -175,7 +175,7 @@ class CustomersController < ApplicationController
   end
 
   def list_duplicate
-    @list_type = 'possible duplicates'
+    @list_action = list_duplicate_customers_path
     @page = (params[:page] || 1).to_i
     @customers = Customer.
       find_suspected_duplicates.
