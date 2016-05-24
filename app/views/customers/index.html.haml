@@ -1,14 +1,15 @@
 #customer_list_header
-  .pagination
-    = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
-    - form_tag @list_action, :method => :get do
-      &nbsp;&bull;&nbsp; 
-      %b #{@customers.offset+1}-#{@customers.offset+@customers.length}
-      of 
-      %b #{@customers.total_entries}
-      &nbsp;&bull;&nbsp; Jump to page:
-      = text_field_tag 'page', '', :size => 4
-      = submit_tag 'Go'
+  - if @customers.respond_to?(:total_pages)
+    .pagination
+      = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
+      - form_tag @list_action, :method => :get do
+        &nbsp;&bull;&nbsp; 
+        %b #{@customers.offset+1}-#{@customers.offset+@customers.length}
+        of 
+        %b #{@customers.total_entries}
+        &nbsp;&bull;&nbsp; Jump to page:
+        = text_field_tag 'page', '', :size => 4
+        = submit_tag 'Go'
 
 %br/
 
