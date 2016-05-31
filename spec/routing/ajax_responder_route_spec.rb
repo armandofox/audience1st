@@ -9,7 +9,7 @@ describe "AJAX responder routes", :type => :routing do
   end
   specify 'lookup customer' do
     [:get, :post].each do |method|
-      {method => '/ajax/customer_lookup'}.should route_to (:controller => 'customers', :action => 'lookup')
+      {method => '/ajax/customer_lookup'}.should route_to(:controller => 'customers', :action => 'lookup')
     end
   end
 end
