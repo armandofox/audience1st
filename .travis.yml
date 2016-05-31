@@ -1,6 +1,14 @@
 language: ruby
+sudo: false
+cache: bundler
+before_install:
+  - gem update --system 1.8.29
+  - gem --version
 rvm:
   - 1.8.7
+env:
+  global:
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 script:
   - bundle exec rake spec
   - bundle exec rake cucumber
