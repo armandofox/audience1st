@@ -36,7 +36,9 @@ class InfoController < ApplicationController
     lookahead = 90 if lookahead < 1 || lookahead > 366
     now = Time.now
     @showdates = Showdate.
-      find(:all, :conditions => ['thedate BETWEEN ? AND ?', now, now + lookahead.days]).
+      find(:all,
+      :conditions => ['thedate BETWEEN ? AND ?', now, now + lookahead.days],
+      :order => 'thedate').
       select { |sd| !sd.price_range.empty? }
     render :layout => false
   end
