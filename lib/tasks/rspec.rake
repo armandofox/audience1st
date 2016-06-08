@@ -17,7 +17,7 @@ end
 
 # Don't load rspec if running "rake gems:*"
 #   or if production environment
-unless ARGV.any? {|a| a =~ /^gems/}  ||  RAILS_ENV =~ /production/i
+unless ARGV.any? {|a| a =~ /^gems/}  ||  RAILS_ENV =~ /production|migration/i
 
   begin
     require 'spec/rake/spectask'
