@@ -113,7 +113,7 @@ GEM
       activeresource (= 2.3.18)
       activesupport (= 2.3.18)
       rake (>= 0.8.3)
-    rake (10.3.1)
+    rake (0.8.7)
     rbx-require-relative (0.0.9)
     rcov (1.0.0)
     rdoc (4.0.1)
@@ -188,7 +188,7 @@ DEPENDENCIES
   poltergeist (~> 1.0.2)
   rack-test (= 0.5.7)
   rails (= 2.3.18)
-  rake (>= 10.0.0)
+  rake (= 0.8.7)
   rcov
   rdoc
   rest-client (~> 1.4)

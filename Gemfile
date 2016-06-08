@@ -17,7 +17,8 @@ gem 'mechanize', '1.0.0'
 gem 'mysql', '2.8.1'
 gem 'nokogiri', '1.4.3.1'
 gem 'rails', '2.3.18'
-gem 'rake', '>= 10.0.0'
+#gem 'rake', '>= 10.0.0'
+gem 'rake', '0.8.7'
 gem 'ruport', '1.6.3'
 # stripe depends on rest-client and json, but we can't use the latest version of
 # those until upgrade to ruby >= 1.9.2
