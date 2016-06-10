@@ -59,8 +59,8 @@ class StoreController < ApplicationController
     @valid_vouchers = []
     @all_shows = []
     @all_showdates = []
-    @show_url = url_for(params.merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
-    @showdate_url = url_for(params.merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @show_url = url_for(params.except(:showdate_id).merge(:show_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
+    @showdate_url = url_for(params.except(:show_id).merge(:showdate_id => 'XXXX', :only_path => true)) # will be used by javascript to construct URLs
     @reload_url = url_for(params.merge(:promo_code => 'XXXX', :only_path => true))
     @what = Show.type(params[:what])
     redirect_to store_subscribe_path and return if @what == 'Subscription'
