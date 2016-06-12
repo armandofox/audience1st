@@ -1,8 +1,6 @@
 class Vouchertype < ActiveRecord::Base
   include VouchertypesHelper
   
-  attr_protected :included_vouchers
-
   require 'ruport'
   acts_as_reportable :only => [:name, :price]
 
