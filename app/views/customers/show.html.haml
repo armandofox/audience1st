@@ -1,5 +1,6 @@
 = error_messages_for :customer, :header_message => default_validation_error_message
 
+- include_all_showdates = @gAdminDisplay && current_user.is_boxoffice
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
 
   %h1.page_heading.center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
@@ -15,13 +16,13 @@
         - if @gAdminDisplay
           %th.admin Comments
     %tbody
-      - VoucherPresenter.groups_from_vouchers(subscriber_vouchers).each do |group|
+      - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
         %tr[group.group_id]
           - if group.reserved
             = render :partial => 'reserved_subscriber_voucher', :locals => {:group => group}
-          - elsif (dates = group.vouchers[0].redeemable_showdates(current_user.is_boxoffice)).empty?
-            %td
-            %td= vouchertype.name
+          - elsif group.redeemable_showdates.empty?
+            %td.c= group.size
+            %td= group.name
             %td{:colspan=>3} Reservations unavailable for this show
           - else
             = render :partial => 'open_subscriber_voucher', :locals => {:group => group}
@@ -44,7 +45,7 @@
         - if @gAdminDisplay
           %th.admin Comment
     %tbody 
-      - VoucherPresenter.groups_from_vouchers(@other_vouchers).each do |group|
+      - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
         - if group.reserved
           = render :partial => 'reserved_regular_voucher', :locals => {:group => group}
         - else

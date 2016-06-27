@@ -1,9 +1,8 @@
 - gid = group.group_id
 %tr[gid]
 
-  - if group.vouchers[0].reservable?
-
-    - dates = group.vouchers[0].redeemable_showdates(@gAdminDisplay && current_user.is_boxoffice)
+  - first = group.vouchers[0]
+  - if first.reservable?  &&  !group.redeemable_showdates.empty?
     - form_tag confirm_multiple_customer_vouchers_path(@customer) do
       = hidden_field_tag 'voucher_ids', group.voucherlist
       %td.c= menu_or_static_text('number', group.size)
@@ -11,12 +10,12 @@
       %td.selectShowdate
         = select_tag 'showdate_id', |
           content_tag(:option, "Select show and date...", :value => 0) + |
-          options_from_collection_for_select(dates.sort, :showdate_id, :name_and_date_with_capacity_stats), |
+          options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, :name_and_date_with_capacity_stats), |
           :class => 'showdate', |
           :onchange => visual_effect(:toggle_appear, "special_seating_#{gid}") |
         = render :partial => 'special_seating', :locals => {:gid => gid}
       %td.action= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"
-      %td
+      %td.admin
 
   - else
 
@@ -24,4 +23,4 @@
     %td= group.name
     %td
     %td
-    = render :partial => 'update_voucher_comments', :locals => {:group => group}
+    %td.admin

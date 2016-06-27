@@ -11,12 +11,12 @@ class VoucherPresenter
   # VoucherPresenter objects.
   #
   require 'set'
-  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist
+  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist, :redeemable_showdates
   # Constructor takes a set of vouchers that should be part of a group, and constructs the
   # presentation logic for them.  It's an error for the provided vouchers not to "belong together"
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
   class InvalidGroupError < StandardError ; end
-  def initialize(vouchers)
+  def initialize(vouchers,ignore_cutoff=false)
     @vouchers = vouchers
     raise InvalidGroupError.new("Vouchers don't belong together") unless vouchers_belong_together
     first = @vouchers[0]
@@ -27,6 +27,7 @@ class VoucherPresenter
     @name = @vouchertype.name
     @showdate = first.showdate
     @voucherlist = @vouchers.map { |v| v.id }.join(',')
+    @redeemable_showdates = if first.reservable? then first.redeemable_showdates(ignore_cutoff) else [] end
   end
 
   def cancelable_by(user)
@@ -55,11 +56,11 @@ class VoucherPresenter
     end
   end
 
-  def self.groups_from_vouchers(vouchers)
+  def self.groups_from_vouchers(vouchers,ignore_cutoff=false)
     # Group the vouchers so that a set of vouchers sharing same vouchertype and showdate stay together
     groups = Set.new(vouchers).classify { |v| [v.showdate, v.vouchertype] }
     # Create a presenter object for each group
-    formatted_groups = groups.keys.map { |k| VoucherPresenter.new(groups[k].to_a) }
+    formatted_groups = groups.keys.map { |k| VoucherPresenter.new(groups[k].to_a, ignore_cutoff) }
     # 
     # Ordering rules:
     # Subscriber vouchers all reserved for SAME SHOW (ie, same subscriber vouchertype) are grouped.
