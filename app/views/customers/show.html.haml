@@ -2,7 +2,7 @@
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
   %h1.page_heading.center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
   %br/
-  = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
+  = render :partial => 'subscriber_voucher', :locals => {:voucher_groups => VoucherPresenter.groups_from_vouchers(subscriber_vouchers) }
   %br/
 
 %h1.page_heading.center #{@customer.full_name}'s Regular Tickets
