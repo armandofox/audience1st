@@ -31,7 +31,7 @@ class VoucherPresenter
   end
 
   def cancelable_by(user)
-    user.is_boxoffice || vouchers.all?(&:can_be_changed)
+    user.is_boxoffice || vouchers.all?(&:can_be_changed?)
   end
 
   # Within a show category, OPEN VOUCHERS are listed last, others are shown by order of showdate

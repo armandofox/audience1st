@@ -31,7 +31,7 @@ Scenario: reserve single voucher for available performance
 Scenario: customer cannot reserve sold out performance
 
   When I select "1" from "number"
-  And I select "Monday, May 3, 8:00 PM (Event is sold out)" from "showdate_id"
+  And I select "Monday, May 3, 8:00 PM (Not available)" from "showdate_id"
   And I press "Click to Confirm"
   Then I should see "Your reservations could not be completed"
   And  customer Tom Foolery should have 0 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm

@@ -17,7 +17,7 @@
           %th.admin Comments
     %tbody
       - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
-        %tr[group.group_id]
+        %tr[group.vouchers.first]
           - if group.reserved
             = render :partial => 'reserved_subscriber_voucher', :locals => {:group => group}
           - elsif group.redeemable_showdates.empty?
@@ -46,10 +46,11 @@
           %th.admin Comment
     %tbody 
       - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
-        - if group.reserved
-          = render :partial => 'reserved_regular_voucher', :locals => {:group => group}
-        - else
-          = render :partial => 'open_regular_voucher', :locals => {:group => group}
+        %tr[group.vouchers.first]
+          - if group.reserved
+            = render :partial => 'reserved_regular_voucher', :locals => {:group => group}
+          - else
+            = render :partial => 'open_regular_voucher', :locals => {:group => group}
 
 %br
 = gen_button 'Buy More Tickets', store_path(@customer)

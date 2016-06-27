@@ -223,7 +223,7 @@ class ValidVoucher < ActiveRecord::Base
     if available > 0
       "#{display_name} (#{available} available)"
     else
-        "#{display_name} (Not available)"
+      "#{display_name} (Not available)"
     end
   end
 
