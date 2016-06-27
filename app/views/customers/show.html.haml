@@ -1,19 +1,48 @@
 = error_messages_for :customer, :header_message => default_validation_error_message
+
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
+
   %h1.page_heading.center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
-  %br/
-  = render :partial => 'subscriber_voucher', :locals => {:voucher_groups => VoucherPresenter.groups_from_vouchers(subscriber_vouchers) }
-  %br/
+  %br
+
+  %table#subscriptionReservations.full_width
+    %thead
+      %tr
+        %th #Tix
+        %th Show
+        %th Your Reservation
+        %th
+        - if @gAdminDisplay
+          %th.admin Comments
+    %tbody
+      - VoucherPresenter.groups_from_vouchers(subscriber_vouchers).each do |group|
+        %tr[group.group_id]
+          - if group.reserved
+            = render :partial => 'reserved_subscriber_voucher', :locals => {:group => group}
+          - elsif (dates = group.vouchers[0].redeemable_showdates(current_user.is_boxoffice)).empty?
+            %td
+            %td= vouchertype.name
+            %td{:colspan=>3} Reservations unavailable for this show
+          - else
+            = render :partial => 'open_subscriber_voucher', :locals => {:group => group}
+
+  %br
 
 %h1.page_heading.center #{@customer.full_name}'s Regular Tickets
-%br/
+%br
 
 - if @vouchers.empty?
   %p There are no tickets in your account.
 - else
   %table#customerVoucherList.full_width.hilite
     %thead
-      = render :partial => 'voucher_header'
+      %tr
+        %th #Tix
+        %th Type
+        %th Reservation
+        %th
+        - if @gAdminDisplay
+          %th.admin Comment
     %tbody 
       - VoucherPresenter.groups_from_vouchers(@other_vouchers).each do |group|
         - if group.reserved
@@ -21,5 +50,5 @@
         - else
           = render :partial => 'open_regular_voucher', :locals => {:group => group}
 
-%br/
+%br
 = gen_button 'Buy More Tickets', store_path(@customer)

@@ -1,0 +1,6 @@
+%td.c= group.size
+%td= group.name
+%td= group.showdate.printable_date
+%td.action= render :partial => 'cancel_button', :locals => {:group => group}
+- if @gAdminDisplay
+  = render :partial => 'update_voucher_comments', :locals => {:group => group}
