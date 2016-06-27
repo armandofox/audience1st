@@ -1,4 +1,4 @@
-- if group.cancelable_by(current_user)
+- if @gAdminDisplay || group.cancelable_by(@customer)
   - form_tag cancel_multiple_customer_vouchers_path(@customer) do
     = hidden_field_tag 'voucher_ids', group.voucherlist
     = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :style => "width: 17ex", :confirm => 'Are you sure? Click OK to cancel this reservation, or Cancel to leave things as they are.'
