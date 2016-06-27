@@ -218,8 +218,13 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def date_with_explanation
-    display_name = showdate.menu_selection_name
-    max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
+    display_name = showdate.printable_date_with_description
+    available = seats_of_type_remaining
+    if available > 0
+      "#{display_name} (#{available} available)"
+    else
+        "#{display_name} (Not available)"
+    end
   end
 
   def name_with_explanation
