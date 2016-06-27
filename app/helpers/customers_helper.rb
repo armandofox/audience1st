@@ -140,5 +140,5 @@ module CustomersHelper
       content_tag('span', '1') + hidden_field_tag(name, 1)
     end
   end
-  
+
 end

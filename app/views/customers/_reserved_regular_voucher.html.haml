@@ -1,0 +1,11 @@
+- gid = group.group_id
+- first = group.vouchers.first
+%tr[gid]
+  %td.c= group.size
+  %td=   group.name
+  %td
+    %span.showName= group.showdate.name
+    %br
+    %span.showDate= group.showdate.printable_date_with_description
+  %td.action= render :partial => 'cancel_button', :locals => {:group => group}
+  = render :partial => 'update_voucher_comments', :locals => {:group => group}

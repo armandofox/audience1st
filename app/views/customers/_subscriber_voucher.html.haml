@@ -15,22 +15,9 @@
           %td.c= group.size
           %td= group.name
           %td= group.showdate.printable_date
-          %td.action
-            - if group.cancelable_by(current_user)
-              - form_tag cancel_multiple_customer_vouchers_path(@customer) do
-                = hidden_field_tag 'voucher_ids', group.voucherlist
-                = submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :style => "width: 15ex"
-
+          %td.action= render :partial => 'cancel_button', :locals => {:group => group}
           - if @gAdminDisplay
-            %td
-              - svid = "save_#{gid}"
-              - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,group.vouchers[0]), |
-                    :before => disable_with(svid,'Saving...'), |
-                    :complete => enable_with(svid, 'Save'), |
-                    :success => "alert('Comment saved')", |
-                    :failure => "alert('Comment NOT saved - error ' + request.status)") do |
-                = text_field_tag 'comments', multiple_voucher_comments(group.vouchers), :id => "comments_#{gid}"
-                = submit_tag 'Save', :id => svid
+            = render :partial => 'update_voucher_comments', :locals => {:group => group}
 
         - elsif (dates = group.vouchers[0].redeemable_showdates(current_user.is_boxoffice)).empty?
           %td
@@ -44,11 +31,5 @@
             %td= group.name
             %td.selectShowdate
               = select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(dates.sort, :showdate_id, :date_with_explanation), :class => :showdate, :onchange => visual_effect(:toggle_appear, "special_seating_#{gid}")
-              %div{:id => "special_seating_#{gid}",:style=>'display:none'}
-                %span.emphasis Special seating needs?
-                = checkbox_guard_for "special_seating_div_#{gid}"
-                %div{:id => "special_seating_div_#{gid}", :style=>'display:none'}
-                  = Option.special_seating_requests
-                  %br
-                  = text_field_tag 'comments', '', :size => '20em', :class => :showdate
+              = render :partial => 'special_seating', :locals => {:gid => gid}
             %td.action= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"

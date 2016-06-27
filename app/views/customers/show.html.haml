@@ -14,8 +14,12 @@
   %table#customerVoucherList.full_width.hilite
     %thead
       = render :partial => 'voucher_header'
-    %tbody
-      = render :partial => 'voucher', :collection => @other_vouchers.sort_by(&:reservation_status_then_showdate)
+    %tbody 
+      - VoucherPresenter.groups_from_vouchers(@other_vouchers).each do |group|
+        - if group.reserved
+          = render :partial => 'reserved_regular_voucher', :locals => {:group => group}
+        - else
+          = render :partial => 'open_regular_voucher', :locals => {:group => group}
 
 %br/
 = gen_button 'Buy More Tickets', store_path(@customer)
