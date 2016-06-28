@@ -27,10 +27,6 @@ ActionController::Routing::Routes.draw do |map|
       :only => [:index, :new, :create],
       :member => {
         :update_comment => :post,
-        :reserve => :get,
-        :confirm_reservation => :post,
-        :cancel_reservation => :post,
-        :cancel_prepaid => :post,
       },
       :collection => {
         :transfer_multiple => :post,

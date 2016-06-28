@@ -133,31 +133,11 @@ module CustomersHelper
       APP_CONFIG[:secret_questions][indx]
   end
 
-  def group_bundle_vouchers(v1,v2)
-    # each of v1 and v2 is an array of [showdate,vouchertype].
-    # showdate is nil for open voucher.
-    # this function is used to "sort" them for presenting on customer
-    # welcome page.
-    # VOuchers for SAME SHOW (ie, same vouchertype) stay together
-    # Within a show category, OPEN VOUCHERS are listed last, others
-    # are shown by order of showdate
-    # vouchers for DIFFERENT SHOWS are ordered by opening date of the show
-    # vouchers NOT VALID FOR any show are ordered by their vouchertype's display_order
-    sd1,vt1 = v1
-    sd2,vt2 = v2
-    if vt1 != vt2
-      # vouchertypes WITH assigned showdates always go first
-      if vt1.showdates.empty? && ! vt2.showdates.empty?
-        1
-      elsif !vt1.showdates.empty? && vt2.showdates.empty?
-        -1
-      elsif vt1.showdates.empty? && vt2.showdates.empty? # both empty, break ties with display order
-        (vt1.display_order <=> vt2.display_order) rescue -1
-      else                      # both have showdates, break ties with that
-        (vt1.showdates.min <=> vt2.showdates.min) rescue -1
-      end
+  def menu_or_static_text(name, num)
+    if num > 1
+      select_tag name, options_for_select((1..num), num)
     else
-      (sd1 <=> sd2) rescue -1
+      content_tag('span', '1') + hidden_field_tag(name, 1)
     end
   end
 

@@ -1,0 +1,24 @@
+- first = group.vouchers[0]
+- if first.reservable?  &&  !group.redeemable_showdates.empty?
+  - gid = group.group_id
+  - form_tag confirm_multiple_customer_vouchers_path(@customer) do
+    = hidden_field_tag 'voucher_ids', group.voucherlist
+    %td.c= menu_or_static_text('number', group.size)
+    %td= group.name
+    %td.selectShowdate
+      = select_tag 'showdate_id', |
+        content_tag(:option, "Select show and date...", :value => 0) + |
+        options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, :name_and_date_with_capacity_stats), |
+        :class => 'showdate', |
+        :onchange => visual_effect(:toggle_appear, "special_seating_#{gid}") |
+      = render :partial => 'special_seating', :locals => {:gid => gid}
+    %td.action= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"
+    %td.admin
+
+- else
+
+  %td.c= group.size
+  %td= group.name
+  %td
+  %td
+  %td.admin

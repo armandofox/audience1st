@@ -42,7 +42,7 @@ class ValidVoucher < ActiveRecord::Base
   alias_method :visible?, :visible # for convenience and more readable specs
 
   delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public, :offer_public_as_string, :category, :comp?, :subscriber_voucher?, :to => :vouchertype
-  delegate :<=>, :printable_name, :thedate, :saleable_seats_left, :to => :showdate
+  delegate :<=>, :printable_name, :name_and_date_with_capacity_stats, :thedate, :saleable_seats_left, :to => :showdate
 
   def public?
     [Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE].include?(offer_public)
@@ -223,7 +223,7 @@ class ValidVoucher < ActiveRecord::Base
     if available > 0
       "#{display_name} (#{available} available)"
     else
-        "#{display_name} (Not available)"
+      "#{display_name} (Not available)"
     end
   end
 

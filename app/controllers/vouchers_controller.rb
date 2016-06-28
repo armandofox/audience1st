@@ -1,7 +1,7 @@
 class VouchersController < ApplicationController
 
   before_filter :is_logged_in
-  before_filter :is_boxoffice_filter, :except => %w(update_shows reserve confirm_multiple confirm_reservation cancel_multiple cancel_reservation)
+  before_filter :is_boxoffice_filter, :except => %w(update_shows confirm_multiple cancel_multiple)
   before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
 
   private
@@ -12,11 +12,6 @@ class VouchersController < ApplicationController
     return if current_user.is_boxoffice
     redirect_with(customer_path(current_user), :alert => "That voucher isn't yours.") unless
       (current_user == @customer  && (@voucher.nil? || @voucher.customer == @customer))
-  end
-
-  def try_again(msg)
-    flash[:notice] = msg
-    redirect_to customer_path(@customer)
   end
 
   public
@@ -113,7 +108,7 @@ class VouchersController < ApplicationController
 
   def confirm_multiple
     the_showdate = Showdate.find_by_id params[:showdate_id]
-    try_again("Please select a date.") and return unless the_showdate
+    redirect_with(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
     num = params[:number].to_i
     count = 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
@@ -149,25 +144,6 @@ class VouchersController < ApplicationController
     redirect_to customer_path(@customer)
   end
 
-  def confirm_reservation
-    @voucher = Voucher.find(params[:id])
-    @customer = @voucher.customer
-    @is_admin = current_user.is_walkup
-    try_again("Please select a date") and return if
-      (showdate_id = params[:showdate_id].to_i).zero?
-    the_showdate = Showdate.find(showdate_id)
-    if @voucher.reserve_for(the_showdate, current_user, params[:comments])
-      @voucher.save!
-      flash[:notice] = "Reservation confirmed."
-      if params[:email_confirmation] && @customer.valid_email_address?
-        email_confirmation(:confirm_reservation, @customer, the_showdate, 1, @voucher.id)
-      end
-    else
-      flash[:notice] = ["Sorry, can't complete this reservation: ", @voucher]
-    end
-    redirect_to customer_path(@customer)
-  end
-
   def transfer_multiple
     vouchers = params[:vouchers]
     redirect_with(customer_vouchers_path(@customer), :alert => 'Nothing was transferred because you did not select any vouchers.') and return unless vouchers
@@ -182,33 +158,6 @@ class VouchersController < ApplicationController
     else
       redirect_with customer_transfer_multiple_vouchers_path(@customer), "NO changes were made because of error: #{msg}.  Try again."
     end
-  end
-
-  def cancel_prepaid
-    # A prepaid ticket can be cancelled at any time, but the voucher is
-    # NOT reused.  it is "orphaned" and not linked to any customer or
-    # show, but the record of its existence remains so that we can track
-    # the fact that it was sold.  Its ID number will still be referred
-    # to in the audit log.
-    @v = Voucher.find(params[:id])
-    @customer = @v.customer
-    try_again("Please cancel this reservation before removing the voucher.") and return if @v.reserved?
-    save_showdate = @v.showdate.id
-    save_show = @v.showdate.show.id
-    save_customer = @v.customer
-    @v.showdate = nil
-    @v.customer = nil
-    @v.processed_by = @logged_in
-    @v.save!
-    Txn.add_audit_record(:txn_type => 'res_cancl',
-                         :customer_id => save_customer.id,
-                         :voucher_id => params[:id],
-                         :logged_in_id => current_user.id,
-                         :show_id => save_show,
-                         :showdate => save_showdate,
-                         :comment => 'Prepaid, comp or other nonsubscriber ticket')
-    flash[:notice] = "Reservation cancelled, voucher unlinked from customer"
-    redirect_to customer_path(save_customer)
   end
 
   def cancel_multiple
@@ -240,33 +189,5 @@ class VouchersController < ApplicationController
                        vchs.length, a) unless current_user.is_boxoffice
     redirect_to customer_path(@customer)
   end
-
-
-  def cancel_reservation
-    flash[:notice] ||= ""
-    redirect_with(customer_path(@customer), :notice => "This reservation is not changeable") and return unless
-      @voucher.can_be_changed?(current_user)
-    redirect_with(customer_path(@customer), :alert => "This voucher is not currently reserved for any performance.") and return unless
-      @voucher.reserved?
-    showdate = @voucher.showdate
-    old_showdate = showdate.clone
-    showdate_id = showdate.id
-    show_id = showdate.show.id
-    if @voucher.cancel(current_user.id)
-      a= Txn.add_audit_record(:txn_type => 'res_cancl',
-        :customer_id => @customer.id,
-        :logged_in_id => current_user.id,
-        :showdate_id => showdate_id,
-        :show_id => show_id,
-        :voucher_id => @voucher.id)
-      flash[:notice] = "Your reservation has been cancelled. " <<
-        "Your cancellation confirmation number is #{a}. "
-      email_confirmation(:cancel_reservation, @customer, old_showdate, 1, a) unless current_user.is_boxoffice
-    else
-      flash[:notice] = 'Error - reservation could not be cancelled'
-    end
-    redirect_to customer_path(@customer)
-  end
-
 
 end

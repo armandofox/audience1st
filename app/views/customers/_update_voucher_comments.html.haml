@@ -1,0 +1,11 @@
+- if @gAdminDisplay
+  %td.admin
+    - gid = group.group_id
+    - svid = "save_#{gid}"
+    - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,group.vouchers[0]), |
+          :before => disable_with(svid,'Saving...'), |
+          :complete => enable_with(svid, 'Save'), |
+          :success => "alert('Comment saved')", |
+          :failure => "alert('Comment NOT saved - error ' + request.status)") do |
+      = text_field_tag 'comments', multiple_voucher_comments(group.vouchers), :id => "comments_#{gid}"
+      = submit_tag 'Save', :id => svid

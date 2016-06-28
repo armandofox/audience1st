@@ -1,21 +1,56 @@
 = error_messages_for :customer, :header_message => default_validation_error_message
+
+- include_all_showdates = @gAdminDisplay && current_user.is_boxoffice
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
+
   %h1.page_heading.center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
-  %br/
-  = render :partial => 'subscriber_voucher', :locals => {:vouchertypes => Set.new(subscriber_vouchers).classify { |v| [v.showdate, v.vouchertype] }}
-  %br/
+  %br
+
+  %table#subscriptionReservations.full_width
+    %thead
+      %tr
+        %th #Tix
+        %th Show
+        %th Your Reservation
+        %th
+        - if @gAdminDisplay
+          %th.admin Comments
+    %tbody
+      - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
+        %tr[group.vouchers.first]
+          - if group.reserved
+            = render :partial => 'reserved_subscriber_voucher', :locals => {:group => group}
+          - elsif group.redeemable_showdates.empty?
+            %td.c= group.size
+            %td= group.name
+            %td{:colspan=>3} Reservations unavailable for this show
+          - else
+            = render :partial => 'open_subscriber_voucher', :locals => {:group => group}
+
+  %br
 
 %h1.page_heading.center #{@customer.full_name}'s Regular Tickets
-%br/
+%br
 
 - if @vouchers.empty?
   %p There are no tickets in your account.
 - else
   %table#customerVoucherList.full_width.hilite
     %thead
-      = render :partial => 'voucher_header'
-    %tbody
-      = render :partial => 'voucher', :collection => @other_vouchers.sort_by(&:reservation_status_then_showdate)
+      %tr
+        %th #Tix
+        %th Type
+        %th Reservation
+        %th
+        - if @gAdminDisplay
+          %th.admin Comment
+    %tbody 
+      - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
+        %tr[group.vouchers.first]
+          - if group.reserved
+            = render :partial => 'reserved_regular_voucher', :locals => {:group => group}
+          - else
+            = render :partial => 'open_regular_voucher', :locals => {:group => group}
 
-%br/
+%br
 = gen_button 'Buy More Tickets', store_path(@customer)

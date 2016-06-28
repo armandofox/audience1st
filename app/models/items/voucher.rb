@@ -218,7 +218,8 @@ class Voucher < Item
       valid_vouchers
     else
       # make sure advance reservations and other constraints fulfilled
-      valid_vouchers.map(&:adjust_for_customer_reservation)
+      valid_vouchers.map(&:adjust_for_customer_reservation).delete_if { |v| v.explanation =~ /in the past/i }
+
     end
   end
   
@@ -226,7 +227,7 @@ class Voucher < Item
     errors.add_to_base "This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
     redemption = valid_voucher_adjusted_for processor,desired_showdate
     if processor.is_boxoffice || redemption.max_sales_for_type > 0
-      self.update_attributes(:comments => new_comments, :showdate => desired_showdate)
+      reserve!(desired_showdate, new_comments)
       true
     else
       errors.add_to_base redemption.explanation
@@ -315,6 +316,10 @@ class Voucher < Item
     else
       nil
     end
+  end
+
+  def reserve!(desired_showdate, new_comments='')
+    update_attributes(:comments => new_comments, :showdate => desired_showdate)
   end
 
   private
