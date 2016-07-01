@@ -33,7 +33,11 @@
 
   .explain
     %strong Transfer checked vouchers to customer
-    = customer_search_field 'customer', '', {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, :also_update => {'cid' => :id}, :select_opts => {:indicator => 'wait'}
+    = text_field_tag 'customer', '', :size => 20, :id => 'customer_autocomplete', :autocomplete => :off
+    :javascript
+      jQuery('#customer').autocomplete({
+        serviceUrl: "#{customer_autocomplete_path}",
+        })
     = hidden_field_tag 'cid'
     = spinner 'wait'
     = submit_tag 'Transfer'

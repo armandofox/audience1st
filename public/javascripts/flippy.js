@@ -7,7 +7,7 @@ var Flippy = {
     // id is "details_MODELNAME_ID", which is the content shown/hidden
     // by the flippy.
     var matched = elt.attr('id').match(/^flippy_(\S+)_(\d+)$/);
-    return(jQuery('#details_' + matched[1] + '_' + matched[2]));
+    return($('#details_' + matched[1] + '_' + matched[2]));
   },
   toggle: function(flippy) {
     var flippyContent = Flippy.getContentElementFor(flippy).first();
@@ -19,17 +19,17 @@ var Flippy = {
       flippy.html('&#x25BC' + flippy.html().substr(1));
     }
   },
-  handleClick: function(evt) { Flippy.toggle(jQuery(evt.target)); },
+  handleClick: function(evt) { Flippy.toggle($(evt.target)); },
   hideAll: function() {
-    var flippies = jQuery('.flippy');
+    var flippies = $('.flippy');
     if (flippies.length > 1) {
-      flippies.each(function(index,elt) { Flippy.toggle(jQuery(elt)); });
+      flippies.each(function(index,elt) { Flippy.toggle($(elt)); });
     }
   },
   setup: function() {
-    jQuery('.flippy').click(Flippy.handleClick);
+    $('.flippy').click(Flippy.handleClick);
     Flippy.hideAll();
   }
 };
-jQuery(Flippy.setup);
+$(Flippy.setup);
 

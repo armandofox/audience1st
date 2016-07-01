@@ -16,9 +16,6 @@
       %td= link_to_customer c, :content_text => c.first_name.name_capitalize
       %td= h vouchers.first.name
       %td
-        %span.un_check_in= link_to_remote image_tag('delete.png'), |
-          :url => {:action => 'mark_checked_in', :uncheck => 1, :vouchers => vouchers.map(&:id).join(',')}, |
-          :method => :post, |
-          :failure => 'alert("Couldn\'t communicate with server.  Un-checkin NOT recorded.")' | 
+        %span.un_check_in= link_to image_tag('delete.png'), checkin_path(@showdate, :uncheck => 1, :vouchers => ids(vouchers)), 'data-remote' => true, 'data-method' => :put, 'data-type' => 'script'
       %td.checkin_column= render :partial => 'checkin_buttons', :locals => {:vouchers => vouchers}
       %td= h comments_for_voucherlist(vouchers)

@@ -1,18 +1,27 @@
 !!! 5
 %html
   %head
+    = stylesheet_link_tag 'jquery-ui.min', :media => 'all'
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
-    = javascript_include_tag :defaults, 'jquery'
+    = javascript_include_tag 'jquery.min'
+    = javascript_include_tag 'jquery-ui.min'
+    = javascript_include_tag 'rails'
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
-    = javascript_include_tag 'stripe'
+    = javascript_include_tag 'application'
+    = javascript_include_tag 'store'
     = javascript_include_tag 'swipe'
     = javascript_include_tag 'donate'
+    = javascript_include_tag 'vouchertype'
+    = javascript_include_tag 'hide_checkbox'
 
     %title= @page_title || h(controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
     %meta{'http-equiv'=>:imagetoolbar, :content=>:no}/
     %meta{:name=>:description, :content=>''}/
+    -# Rails 3 provides the following 2 lines via csrf_meta_tag helper
+    %meta{:name => 'csrf-param', :content => Rack::Utils.escape_html(request_forgery_protection_token)}
+    %meta{:name => 'csrf-token', :content => Rack::Utils.escape_html(form_authenticity_token)}
 
   %body{:id=>"#{controller.controller_name}_#{controller.action_name}", :class=>(Figaro.env.sandbox ? 'testing.default' : 'default')}
     
@@ -28,15 +37,15 @@
           #left_sidebar
           #right_main
             #nav
-              - if controller.controller_name == 'box_office'
+              - if controller.controller_name =~ /checkins|walkup_sales/
                 = render :partial => 'navbars/box_office_tabs'
-                = render :partial => 'box_office/change_showdate'
-                = render :partial => 'box_office/show_stats', :locals => {:showdate => @showdate}
+                = render :partial => 'checkins/change_showdate'
+                = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'navbars/admin_tabs'
               - elsif existing_customer(@customer)
                 = render :partial => 'navbars/main_tabs'
-              - if current_user && @gAdminDisplay && controller.controller_name != 'box_office'
+              - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
                 = render :partial => 'navbars/season_tabs'
                 = render :partial => 'customers/quick_search'
                 = render :partial => 'navbars/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)

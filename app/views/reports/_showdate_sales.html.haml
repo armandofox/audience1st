@@ -1,16 +1,16 @@
 %table.hilite.showSalesDetail
-  - vouchers.each_pair do |vt,v|
+  - sales.vouchers.each_pair do |vt,v|
     %tr
       %td.showSalesVoucherType= vt.name
       %td.showSalesQty 
         = v.size
         (
-        = number_to_percentage(100 * v.size / entity.total_offered_for_sale, :precision => 0)
+        = number_to_percentage(100 * v.size / sales.total_offered_for_sale, :precision => 0)
         )
       %td.currency.showSalesRevenue= number_to_currency(vt.price * v.size)
       %td
   %tr
     %td.strong{:colspan => 2} Nonsubscription revenue per seat
-    %td.currency= number_to_currency revenue_per_seat
+    %td.currency= number_to_currency sales.revenue_per_seat
     %td
 

@@ -260,7 +260,7 @@ table.showdates_summary td {
 }
 
 /*
- * "No javascript!" error messag
+ * "No javascript!" error message and other warnings
  */
 div.large_warning {
     background-color: red;
@@ -270,6 +270,17 @@ div.large_warning {
     text-align: center;
     margin: 5ex 0;
     border: 3px solid yellow;
+}
+
+/* animatable background for "flashing" element */
+
+.bg_green {
+  height: inherit;
+  width: inherit;
+  background-color: #00dd00;
+}
+.bg_yellow {
+  background-color: #ffff00;
 }
 
 /*

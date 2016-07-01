@@ -116,19 +116,20 @@ class DonationsController < ApplicationController
   def update
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.now
-      c = current_user.email rescue "(ERROR)"
+      c = current_user.email rescue "(??)"
       t.update_attributes(:letter_sent => now,
-                          :processed_by => current_user)
+        :processed_by => current_user)
       Txn.add_audit_record(:cust_id => t.customer_id,
-                           :logged_in_id => current_user.id,
-                           :txn_type => 'don_ack',
-                           :comments => "Donation ID #{t.id} marked as acknowledged")
-      render :text => "#{now.strftime("%D")} by #{c}"
+        :logged_in_id => current_user.id,
+        :txn_type => 'don_ack',
+        :comments => "Donation ID #{t.id} marked as acknowledged")
+      result = now.strftime("%D by #{c}")
     else
-      render :text => "(ERROR)"
+      result = '(ERROR)'
     end
+    render :js => %Q{\$('#donation_#{params[:id]}').text('#{result}')}
   end
-
+  
   private
 
   def export(donations)

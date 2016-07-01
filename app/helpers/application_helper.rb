@@ -97,24 +97,6 @@ module ApplicationHelper
     end
   end
 
-  # return javascript that will do check-all/uncheck-all for checkboxes that have
-  # a given CSS class
-
-  def apply_to_each(selector,javascript)
-    "\$\$('#{selector}').each( #{javascript} ); return false;"
-  end
-
-  def check_all(css_class,form_id=nil)
-    selector = form_id.blank? ? "input.#{css_class}" : "##{form_id} input.#{css_class}"
-    apply_to_each(selector, "function(box) { box.checked=true }")
-  end
-
-  def uncheck_all(css_class,form_id=nil)
-    selector = form_id.blank? ? "input.#{css_class}" : "##{form_id} input.#{css_class}"
-    apply_to_each(selector, "function(box) { box.checked=false }")
-  end
-
-
   # return a checkbox that "protects" another form element by hiding/showing it
   # when checked/unchecked, given initial state.  It's the caller's responsibility
   # to ensure the initial state matches the actual display state of the
@@ -122,29 +104,12 @@ module ApplicationHelper
 
   def checkbox_guard_for(elt_name, visible=false)
     check_box_tag("show_" << elt_name.to_s, '1', visible,
-                  :onclick => visual_effect(:toggle_appear, elt_name))
-  end
-
-  # yield a checkbox-guarded element
-  def guarded_by(tag_type, tag_id, contents)
-    content_tag(tag_type, :id => tag_id,
-                :style => (contents.blank? ? 'display: none;' : '')) do
-      yield
-    end
+                  :onclick => %Q{jQuery('##{elt_name}').slideToggle();})
   end
 
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
-    check_box_tag name, 1, checked, :onclick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
-  end
-
-  # helpers that generate JS to disable and then re-enable a button
-  #  (eg a submit button) during AJAX form submission
-  def disable_with(elt_id,new_str)
-    "$('#{elt_id}').value='#{new_str}'; $('#{elt_id}').disabled=true;"
-  end
-  def enable_with(elt_id,new_str)
-    "$('#{elt_id}').value='#{new_str}'; $('#{elt_id}').disabled=false;"
+    check_box_tag name, 1, checked, :onchange => %Q{jQuery('##{elt}').text(jQuery(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}')}
   end
 
   # spinner

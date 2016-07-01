@@ -1,33 +1,20 @@
 = render :partial => 'store/check_javascript'
-:javascript
-  function whenReady() { checkForStripe('_stripe_submit'); }
-  jQuery(document).ready(whenReady);
-  function show_only(div) { 
-    // force re-enabling regular form submission.  (b/c if a txn was submitted 
-    // via Stripe JS and it failed, the form submit handler will still be 
-    // set to block "real" submission of the form.)
-    $('_stripe_payment_form').onsubmit = function(evt) { return true };
-    $('credit_card').hide(); 
-    $('cash').hide();        
-    $('check').hide();       
-    $(div).show();           
-  }
 
-- form_tag({:action => 'do_walkup_sale',:id => @showdate}, {:id => '_stripe_payment_form'}) do
+- form_tag walkup_sales_path(:id => @showdate.id), {:id => '_stripe_payment_form'} do
   #walkup_tickets
     .column
       %p.column_header 1. Select tickets & donation amount
       = render :partial => 'walkup_sales_tickets'
     #payment.column
       %p.column_header 2. Collect & record payment
-      .c= gen_button 'Whoops, I Made a Mistake', walkup_report_path(@showdate), {:id => 'whoops_button'}
+      .c= gen_button 'Whoops, I Made a Mistake', report_walkup_sale_path(@showdate), {:id => 'whoops_button'}
       #payment_types
         %label.no_float{:for => 'payment_type'} Credit Card
-        = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "show_only('credit_card')"
+        = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
         %label.no_float{:for => 'payment_type'} Cash or Zero-Revenue
-        = radio_button_tag 'payment_type', 'cash', false, :onclick => "show_only('cash')"
+        = radio_button_tag 'payment_type', 'cash', false, :onclick => "A1.show_only('cash')"
         %label.no_float{:for => 'payment_type'} Check
-        = radio_button_tag 'payment_type', 'check', false, :onclick => "show_only('check')"
+        = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
       #payment_form
         #credit_card= render :partial => 'store/credit_card_swipe'
         #cash{:style => 'display: none;'}
