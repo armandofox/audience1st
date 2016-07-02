@@ -250,13 +250,16 @@ class CustomersController < ApplicationController
   end
 
   # AJAX helpers
-  # auto-completion for customer search
+  # auto-completion for customer search - params[:term] is what user typed
   def auto_complete_for_customer_full_name
-    render :inline => "" and return if params[:__arg].blank?
+    s = params[:term].to_s
+    render :json => {} and return if s.length < 2
     @customers =
-      Customer.find_by_multiple_terms(params[:__arg].to_s.split( /\s+/ ))
-    render(:partial => 'customers/customer_search_result',
-      :locals => {:matches => @customers})
+      Customer.find_by_multiple_terms(s.split( /\s+/ )).sort_by(&:sortable_name)
+    result = @customers.map do |c|
+      {'label' => c.full_name, 'value' => c.id}
+    end
+    render :json => result
   end
 
   private

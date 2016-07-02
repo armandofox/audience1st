@@ -3,10 +3,15 @@
   %head
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
+    = stylesheet_link_tag '//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css', :media => 'all'
+
     = javascript_include_tag :defaults, 'jquery'
+    = javascript_include_tag 'jquery-ui.min'
+
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
     = javascript_include_tag 'stripe'
     = javascript_include_tag 'swipe'
+    = javascript_include_tag 'customer_search'
     = javascript_include_tag 'donate'
 
     %title= @page_title || h(controller.action_name.humanize)
