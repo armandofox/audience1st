@@ -33,12 +33,7 @@
 
   .explain
     %strong Transfer checked vouchers to customer
-    = text_field_tag 'customer', '', :size => 20, :id => 'customer_autocomplete', :autocomplete => :off
-    :javascript
-      jQuery('#customer').autocomplete({
-        serviceUrl: "#{customer_autocomplete_path}",
-        })
+    = text_field_tag 'customer', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
     = hidden_field_tag 'cid'
-    = spinner 'wait'
     = submit_tag 'Transfer'
 

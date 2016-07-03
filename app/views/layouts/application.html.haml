@@ -4,16 +4,10 @@
     = stylesheet_link_tag 'jquery-ui.min', :media => 'all'
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
-    = javascript_include_tag 'jquery.min'
-    = javascript_include_tag 'jquery-ui.min'
-    = javascript_include_tag 'rails'
+
+    -# For Rails 2, we redefine default JS files to load in config/initializers/javascript_include_tag.rb
+    = javascript_include_tags_for_jquery :all
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
-    = javascript_include_tag 'application'
-    = javascript_include_tag 'store'
-    = javascript_include_tag 'swipe'
-    = javascript_include_tag 'donate'
-    = javascript_include_tag 'vouchertype'
-    = javascript_include_tag 'hide_checkbox'
 
     %title= @page_title || h(controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/

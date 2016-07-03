@@ -2,7 +2,7 @@
   recalc_total = function() { recalculate('total', '.itemQty') }
   recalc_totaltix = function() { recalculate('totaltix', '.tktQty', null, 0, true) }
   recalc_all = function() { recalc_total(); recalc_totaltix(); }
-  jQuery(document).ready(recalc_all);
+  $(document).ready(recalc_all);
 
 %table#walkup_tickets.hilite
   %tr

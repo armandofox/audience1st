@@ -22,7 +22,6 @@ class DonationsController < ApplicationController
         (c = Customer.find_by_id(cid))
       @full_name = c.full_name
       @page_title = "Donation history: #{@full_name}"
-      flash[:notice] = "Search restricted to customer #{@full_name}"
       conds.merge!("items.customer_id = ?" => cid)
     else
       @page_title = "Donation history"
@@ -69,7 +68,7 @@ class DonationsController < ApplicationController
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label
-      export(@things.select { |thing| thing.kind_of?(Donation) })
+      export(@things)
     end
   end
 

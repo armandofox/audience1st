@@ -1,32 +1,4 @@
 module CustomersHelper
-  def customer_search_field(field_id, default_val, field_opts = {}, opts = {})
-    # default select args
-    default_select_opts = {
-      :url => customer_autocomplete_path,
-      :with => "'__arg=' + $('#{field_id}').value",
-      :select => :full_name,
-      :after_update_element => "function(e,v) { complete_#{field_id}(v) }"
-    }
-    select_opts = (opts[:select_opts] || {}).merge(default_select_opts)
-    complete_func = "function complete_#{field_id}(v) {\n"
-    opts[:also_update].each_pair do |field,attr|
-      if attr.kind_of?(Symbol)
-        complete_func << "  $('#{field}').value = Ajax.Autocompleter.extract_value(v,'#{attr}');\n"
-      elsif attr.kind_of?(Hash)
-        attr.each_pair do |elt_attr, elt_val|
-          complete_func << "  $('#{field}').#{elt_attr} = #{elt_val};\n"
-        end
-      else
-        complete_func << "  $('#{field}').value = '#{attr}';\n"
-      end
-    end
-    complete_func << "}"
-    return text_field_tag(field_id, default_val, field_opts) <<
-      javascript_tag(complete_func) << "\n" <<
-      content_tag("div", nil, {:id => field_id + "_auto_complete", :class => :auto_complete}) <<
-      auto_complete_field(field_id, select_opts)
-  end
-
   #
   # Link to user's home page
   #

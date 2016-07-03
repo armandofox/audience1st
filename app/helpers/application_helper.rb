@@ -104,12 +104,12 @@ module ApplicationHelper
 
   def checkbox_guard_for(elt_name, visible=false)
     check_box_tag("show_" << elt_name.to_s, '1', visible,
-                  :onclick => %Q{jQuery('##{elt_name}').slideToggle();})
+                  :onclick => %Q{$('##{elt_name}').slideToggle();})
   end
 
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
-    check_box_tag name, 1, checked, :onchange => %Q{jQuery('##{elt}').text(jQuery(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}')}
+    check_box_tag name, 1, checked, :onchange => %Q{$('##{elt}').text($(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}')}
   end
 
   # spinner

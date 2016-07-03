@@ -186,6 +186,19 @@ span.tooltip:hover span { /* will display just on :hover state*/
 	font-weight: bold;
 	font-size:  larger;
 }
+/* Make autocomplete menu not be infinitely long */
+.ui-autocomplete {
+  max-height: 50ex;
+  overflow-y: auto;
+  /* prevent horizontal scrollbar */
+  overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ui-autocomplete {
+  height: 50ex;
+}
 
 /*
  * Staff action buttons that appear for a customer (Contact, Prospecting, etc)

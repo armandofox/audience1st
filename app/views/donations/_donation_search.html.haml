@@ -3,16 +3,19 @@
     %tr 
       %td= check_box_tag 'use_cid', 1, @params[:use_cid]
       :javascript
-        $('#use_cid').change(function() { if (! $(this).is(':checked')) { $('#show_vouchers').prop('checked',false); } })
+        $('#use_cid').change(function() { 
+          if (! $(this).is(':checked')) { 
+            $('#show_vouchers').prop('checked',false);
+          } else {
+            $('#cid').val('');
+          };
+        });
       %td Only for this customer (type first or last name):
       %td
-        = customer_search_field 'donor_name', @full_name, |
-         {:size => 20, :autocomplete => :off, :onFocus => 'javascript:$(cid).value=""'}, |
-         :also_update => {:cid => :id, :use_cid => {:checked => 'true'}}, |
-         :select_opts => {:indicator => :wait} |
-        = spinner('wait')
-        or customer ID number: 
-        = text_field_tag 'cid', @params[:cid], :size => 14
+        = text_field_tag 'donor_name', @full_name, :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
+        = hidden_field_tag 'cid', @params[:cid]
+        :javascript
+          $('#donor_name').focus(function() { $('#use_cid').prop('checked',true); })
     %tr 
       %td 
       %td{:colspan=>2} 

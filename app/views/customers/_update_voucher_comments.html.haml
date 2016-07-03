@@ -3,8 +3,8 @@
     - gid = group.group_id
     - svid = "save_#{gid}"
     - form_remote_tag(:url => update_comment_customer_voucher_path(@customer,group.vouchers[0]), |
-          :before => %Q{jQuery('##{svid}').text('Saving...').disable()}, |
-          :complete => %Q{jQuery('##{svid}').text('Save').enable(); false; }, |
+          :before => %Q{$('##{svid}').text('Saving...').disable()}, |
+          :complete => %Q{$('##{svid}').text('Save').enable(); false; }, |
           :success => "alert('Comment saved')", |
           :failure => "alert('Comment NOT saved - error ' + request.status)") do |
       = text_field_tag 'comments', multiple_voucher_comments(group.vouchers), :id => "comments_#{gid}"
