@@ -20,6 +20,8 @@
     %meta{:name=>:description, :content=>''}/
 
   %body{:id=>"#{controller.controller_name}_#{controller.action_name}", :class=>(Figaro.env.sandbox ? 'testing.default' : 'default')}
+
+    = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     
     #outer_header
     #outer_wrapper

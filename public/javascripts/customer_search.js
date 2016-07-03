@@ -1,4 +1,3 @@
-A1.autocomplete_url = '/ajax/customer_autocomplete';
 A1.autocomplete_selector = '._autocomplete';
 
 A1.select_search_result = function(customer,textField,idField) {
@@ -12,6 +11,7 @@ A1.select_search_result = function(customer,textField,idField) {
 };
 
 A1.setup_autocomplete_fields = function() {
+  autocomplete_url = jQuery('#autocomplete_route').val().toString();
   jQuery(A1.autocomplete_selector).each(function(i,elt) {
     var e = jQuery(elt);
     // which ID field is associated with this autocomplete element?
@@ -22,7 +22,7 @@ A1.setup_autocomplete_fields = function() {
     e.attr('autocomplete', 'off');
     // set up autocompletion
     e.autocomplete({
-      source: A1.autocomplete_url,
+      source: autocomplete_url,
       minLength: 2,
       select: function(event, selection) { 
         A1.select_search_result(selection,e,idField);   
