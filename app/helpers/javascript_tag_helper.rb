@@ -7,7 +7,7 @@ module JavascriptTagHelper
     other_files = Dir["#{ActionView::Helpers::AssetTagHelper::JAVASCRIPTS_DIR}/*.js"].
       map { |s| File.basename(s).gsub(/\.js$/,'') }.
       delete_if { |s| default_files.include? s }
-    javascript_include_tag(*default_files) +
-      javascript_include_tag(other_files)
+    javascript_include_tag(default_files, :cache => true) +
+      javascript_include_tag(other_files, :cache => true)
   end
 end

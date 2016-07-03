@@ -26,7 +26,7 @@ ActionController::Routing::Routes.draw do |map|
     customer.resources(:vouchers,
       :only => [:index, :new, :create],
       :member => {
-        :update_comment => :post,
+        :update_comment => :put,
       },
       :collection => {
         :transfer_multiple => :post,
