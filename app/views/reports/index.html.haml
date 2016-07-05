@@ -26,7 +26,7 @@
 
 .pageDiv#customer_lists
   %h1 Customer Lists
-  = select_tag 'report_name', options_for_select(@special_report_names.map { |n| [n.humanize,n] }.unshift(['Select report...','']), ''), :onchange => "\$('#report_body').load('#{attendance_reports_path}', 'report_name=' + \$('#report_name').val())"
+  = select_tag 'report_name', options_for_select(@special_report_names, :selected => 'Select report...'), 'data-submit' => attendance_reports_path
   #report_body
 
 .pageDiv#subscription_counts

@@ -64,10 +64,10 @@ ActionController::Routing::Routes.draw do |map|
   map.resources(:reports,
     :only => [:index],
     :member => {
-      :showdate_sales => :get,
-      :run_special => :get
+      :showdate_sales => :get
     },
     :collection => {
+      :run_special => :get,
       :subscriber_details => :get,
       :attendance => :get,
       :advance_sales => :get,

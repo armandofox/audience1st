@@ -4,4 +4,4 @@
     - svid = "save_#{gid}"
     - form_tag update_comment_customer_voucher_path(@customer,group.vouchers[0]), :method => 'put', 'data-remote' => true, :class => 'save_comment' do
       = text_field_tag 'comments', multiple_voucher_comments(group.vouchers), :id => "comments_#{gid}"
-      = submit_tag 'Save', :id => svid
+      = submit_tag 'Save', :id => svid, 'data-disable-with' => 'Wait...'

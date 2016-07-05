@@ -25,7 +25,7 @@ class ReportsController < ApplicationController
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.now.year)
     # list of all special reports
-    @special_report_names = Report.subclasses.map { |s| s.underscore.humanize.capitalize }
+    @special_report_names = Report.subclasses.map { |s| s.underscore.humanize.capitalize }.unshift('Select report...')
   end
 
   def do_report
@@ -141,46 +141,32 @@ class ReportsController < ApplicationController
   end
 
   def run_special
-    return unless (klass = validate_report_type params[:_report])
+    return unless (klass = validate_report_type params[:report_name])
     @report = klass.__send__(:new, params[:output])
     result = @report.generate_and_postprocess(params) # error!
-    unless result
-      respond_to do |wants|
-        wants.html {
-          redirect_with(reports_path, :alert => "Errors generating report: #{@report.errors}")
-        }
-        wants.js {
-          render :text => "Error: #{@report.errors}"
-        }
-      end
-      return
-    end
+    return render(:text => (result ? "#{@report.customers.length} matches" : "(Error)")) if request.xhr?
+
+    # HTML render
+    return redirect_with(reports_path, :alert => "Errors generating report: #{@report.errors}") unless result
+
+    # Valid, but no results
+    return redirect_with(reports_path, :alert => "No matching customers.") if result.empty?
+    
     # success
-    respond_to do |wants|
-      wants.html {
-        case params[:commit]
-        when /download/i
-          @report.create_csv
-          download_to_excel(@report.output, @report.filename, false)
-        when /display/i
-          @customers = @report.customers
-          render :template => 'customers/index'
-        when /add/i
-          l = @report.customers.length
-          seg = params[:sublist]
-          result = EmailList.add_to_sublist(seg, @report.customers)
-          flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
-            EmailList.errors.to_s
-          redirect_to reports_path
-        end
-      }
-      wants.js {
-        if result
-          # just render the number of results that would be returned
-          render :text => "#{@report.customers.length} matches"
-        else # error
-        end
-      }
+    case params[:commit]
+    when /download/i
+      @report.create_csv
+      download_to_excel(@report.output, @report.filename, false)
+    when /display/i
+      @customers = @report.customers
+      render :template => 'customers/index'
+    when /add/i
+      l = @report.customers.length
+      seg = params[:sublist]
+      result = EmailList.add_to_sublist(seg, @report.customers)
+      flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
+        EmailList.errors.to_s
+      redirect_to reports_path
     end
   end
 
