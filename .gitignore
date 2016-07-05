@@ -2,3 +2,7 @@ config/database.yml
 TAGS
 log/
 .bundle/
+brakeman.*
+public/stylesheets/venue
+tmp/
+rerun.txt
