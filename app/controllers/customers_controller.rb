@@ -257,7 +257,7 @@ class CustomersController < ApplicationController
     @customers =
       Customer.find_by_multiple_terms(s.split( /\s+/ )).sort_by(&:sortable_name)
     result = @customers.map do |c|
-      {'label' => c.full_name, 'value' => c.id}
+      {'label' => c.full_name, 'value' => customer_path(c.id, :only_path => true)}
     end
     render :json => result
   end
