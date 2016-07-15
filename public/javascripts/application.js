@@ -92,19 +92,3 @@ A1.recalculate = function(total_field,selector,decplaces) {
   return(tot);
 }
 
-// Enable chaining of onLoad handlers.
-
-function addLoadEvent(func) {
-  var oldonload = window.onload;
-  if (typeof window.onload != 'function') {
-    window.onload = func;
-  } else {
-    window.onload = function() {
-      if (oldonload) {
-        oldonload();
-      }
-      func();
-    }
-  }
-}
-
