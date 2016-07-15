@@ -13,6 +13,7 @@ class DonationsController < ApplicationController
   
   def index
     @things = []
+    @total = 0
     @params = {}
     return unless params[:commit] # first time visiting page: don't do "null search"
 
@@ -26,12 +27,9 @@ class DonationsController < ApplicationController
     else
       @page_title = "Donation history"
     end
-    mindate,maxdate = Time.range_from_params(params[:donation_date_from],
-                                             params[:donation_date_to])
-    mindate = mindate.at_beginning_of_day
-    maxdate = maxdate.at_end_of_day
-    params[:donation_date_from] = mindate
-    params[:donation_date_to] = maxdate
+    mindate,maxdate = Time.range_from_params(params[:dates])
+    params[:from] = mindate
+    params[:to] = maxdate
     if params[:use_date]
       conds.merge!("orders.sold_on >= ?" => mindate, "orders.sold_on <= ?" => maxdate)
     end
@@ -65,6 +63,7 @@ class DonationsController < ApplicationController
     end
     @things = @things.sort_by { |x| (x.kind_of?(Donation) ?
                                      x.order.sold_on.to_time : x.showdate.thedate.to_time) }
+    @total = @things.sum(&:amount)
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label

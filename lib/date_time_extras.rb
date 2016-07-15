@@ -70,16 +70,12 @@ class Time
     t
   end
 
-  def self.range_from_params(minp,maxp)
-    min = Time.from_param(minp)
-    max = Time.from_param(maxp)
+  # Extract two dates from jquery-ui-datepicker formatted params field
+  def self.range_from_params(json)
+    obj = JSON(json)
+    min = Time.parse(obj['start'].to_s).at_beginning_of_day
+    max = Time.parse(obj['end'].to_s).at_end_of_day
     min,max = max,min if min > max
-    unless minp.kind_of?(Hash) && minp.has_key?(:hour)
-      min = min.at_beginning_of_day
-    end
-    unless maxp.kind_of?(Hash) && maxp.has_key?(:hour)
-      max = max.at_end_of_day
-    end
     return min, max
   end
 

@@ -1,8 +1,6 @@
 %h1
-  Listing 
-  = @things.length
-  transactions totaling $
-  = sprintf("%.02f",@things.inject(0) { |t,d| t + d.amount })
+  = if @params[:from] then date_range(@params[:from],@params[:to]) end
+  #{@things.length} transactions, #{number_to_currency @total}
 
 - form_tag donations_path, {:method => :get} do
   = render :partial => 'donation_search', :locals => {:params => @params}

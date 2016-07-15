@@ -6,3 +6,4 @@ brakeman.*
 public/stylesheets/venue
 tmp/
 rerun.txt
+config/application.yml
