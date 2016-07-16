@@ -9,6 +9,7 @@ A1.estimate_or_run_report = function(evt) {
   $(this).prop('disabled', true);
   var form = $('form#special_report');
   var url = (form.attr('action') + '?' + form.serialize());
+  $('#report_preview').text('Estimating...');
   $('#report_preview').load(form.attr('action'), form.serialize(), (function() { $('#estimate').prop('disabled', false) }));
   return(false);
 };

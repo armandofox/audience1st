@@ -5,10 +5,11 @@ module DatesHelper
   end
   
   def select_date_with_shortcuts(name, options={})
-    start_date = options[:from] || Time.now
-    end_date = options[:to] || Time.now
     t = Time.now
     t8601 = t.iso8601
+    start_date = options[:from] || 1.day.ago
+    end_date = options[:to] || t
+    start_date,end_date = end_date,start_date if start_date > end_date
     init_range = %Q{
 { start: new Date('#{start_date.iso8601}'), end: new Date('#{end_date.iso8601}') }
 }
