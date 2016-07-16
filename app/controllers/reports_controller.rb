@@ -4,17 +4,6 @@ class ReportsController < ApplicationController
 
   before_filter :is_staff_filter
 
-  private
-
-  def validate_report_type(str)
-    klass = str.camelize.constantize
-    valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
-    redirect_with(reports_path, :alert => "Invalid report name '#{str}'") unless valid
-    valid && klass
-  end
-
-  public
-
   def index
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
@@ -31,6 +20,8 @@ class ReportsController < ApplicationController
   def do_report
     # this is a dispatcher that just redirects to the correct report
     # based on a dropdown menu.
+    @report_dates = params[:report_dates]
+    @from,@to = Time.range_from_params(@report_dates)
     case params[:rep]
     when /retail/i
       retail
@@ -62,53 +53,6 @@ class ReportsController < ApplicationController
     render :partial => 'showdate_sales', :locals => { :sales => sales }
   end
 
-  def transaction_details_report
-    @from,@to = Time.range_from_params(params[:from],params[:to])
-    @report = TransactionDetailsReport.run(@from, @to)
-    return redirect_with(reports_path, :alert => 'No matching transactions found') if @report.empty?
-    case params[:format]
-    when /csv/i
-      send_data(@report.to_csv,
-        :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
-        :filename => filename_from_dates('transactions', @from, @to, 'csv'))
-    when /pdf/i
-      send_data(@report.to_pdf,
-        :type => 'application/pdf',
-        :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
-    else
-      render :action => 'transaction_details_report'
-    end
-  end
-
-  def accounting_report
-    @from,@to = Time.range_from_params(params[:from],params[:to])
-    @account_codes = params[:account_codes]
-    options = {:from => @from, :to => @to, :account_codes => @account_codes}
-    if params[:format] =~ /csv/i
-      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
-      send_data(AccountingReport.render_csv(options),
-        :type => content_type,
-        :filename => filename_from_dates('revenue', @from, @to, 'csv'))
-    elsif params[:format] =~ /pdf/i
-      send_data(AccountingReport.render_pdf(options),
-        :type => 'application/pdf',
-        :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
-    else
-      @report = AccountingReport.render_html(options)
-      render :action => 'accounting_report'
-    end
-  end
-
-  def retail
-    @from,@to = Time.range_from_params(params[:from],params[:to])
-    @items = RetailItem.find(:all,
-      :include => :order,
-      :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
-      :order => 'orders.sold_on')
-    redirect_to({:action => :index},
-      {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
-  end
-  
   def subscriber_details
     y = (params[:id] || Time.now.year).to_i
     subs = Voucher.subscription_vouchers(y)
@@ -202,4 +146,57 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
+  private
+
+  def validate_report_type(str)
+    klass = str.camelize.constantize
+    valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
+    redirect_with(reports_path, :alert => "Invalid report name '#{str}'") unless valid
+    valid && klass
+  end
+
+  def transaction_details_report
+    @report = TransactionDetailsReport.run(@from, @to)
+    return redirect_with(reports_path, :alert => 'No matching transactions found') if @report.empty?
+    case params[:format]
+    when /csv/i
+      send_data(@report.to_csv,
+        :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
+        :filename => filename_from_dates('transactions', @from, @to, 'csv'))
+    when /pdf/i
+      send_data(@report.to_pdf,
+        :type => 'application/pdf',
+        :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
+    else
+      render :action => 'transaction_details_report'
+    end
+  end
+
+  def accounting_report
+    @account_codes = params[:account_codes]
+    options = {:from => @from, :to => @to, :account_codes => @account_codes}
+    if params[:format] =~ /csv/i
+      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
+      send_data(AccountingReport.render_csv(options),
+        :type => content_type,
+        :filename => filename_from_dates('revenue', @from, @to, 'csv'))
+    elsif params[:format] =~ /pdf/i
+      send_data(AccountingReport.render_pdf(options),
+        :type => 'application/pdf',
+        :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
+    else
+      @report = AccountingReport.render_html(options)
+      render :action => 'accounting_report'
+    end
+  end
+
+  def retail
+    @items = RetailItem.find(:all,
+      :include => :order,
+      :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
+      :order => 'orders.sold_on')
+    redirect_to({:action => :index},
+      {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
+  end
+  
 end

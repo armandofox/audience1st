@@ -1,8 +1,15 @@
-- report_name ||= 'UNDEFINED'
 #pageDiv
-  #report_dates
+  #report_options_header
     - form_tag({:action => 'do_report'}, {:method => :get}) do
-      = render :partial => 'reports/date_shortcuts'
       = hidden_field_tag 'account_codes', @account_codes
-      = gen_button 'Download to Excel', :action => action_name, :from => @from, :to => @to, :rep => report_name, :account_codes => @account_codes, :format => 'csv'
-      = gen_button 'Download as PDF', :action => action_name, :from => @from, :to => @to, :rep => report_name, :account_codes => @account_codes, :format => 'pdf'
+      = hidden_field_tag 'rep', (report_name || 'UNDEFINED')
+      %label.plain Dates:
+      = select_date_with_shortcuts 'report_dates', :from => @from, :to => @to
+      %label.plain Format:
+      = radio_button_tag 'format', 'html', 1
+      %label.plain{:for => 'format_html'} Screen
+      = radio_button_tag 'format', 'csv'
+      %label.plain{:for => 'format_csv'} Excel (CSV)
+      = radio_button_tag 'format', 'pdf'
+      %label.plain{:for => 'format_pdf'} PDF
+      = submit_tag 'Run Report'
