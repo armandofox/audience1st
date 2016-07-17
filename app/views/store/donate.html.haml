@@ -3,12 +3,12 @@
   // payment amount before continuing.
   function confirmAndSubmit() {
     var amount_field = '#donation';
-    var amountStr = jQuery(amount_field).val();
+    var amountStr = $(amount_field).val();
     // ignore leading '$' sign if patron entered one
     amountStr = amountStr.replace(/^\$/, '');
     // delete everything after the first nondigit character
     amountStr = amountStr.replace(/[^0-9].*$/, '');
-    jQuery(amount_field).val(amountStr);
+    $(amount_field).val(amountStr);
     var amountInt = parseInt(amountStr);
     if (isNaN(amountInt) || amountInt == 0) {
         alert("Please specify an amount.");
@@ -51,4 +51,4 @@
 
       -# hidden field necessary for Stripe submit handler to fill in
       = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-      = submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit'
+      = submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'

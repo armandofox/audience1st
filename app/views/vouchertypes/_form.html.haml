@@ -9,7 +9,6 @@
     - @vouchertype.category ||= :revenue
     = select 'vouchertype', 'category', options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym)
     = popup_help_for :vouchertype_type
-    = observe_field 'vouchertype_category', :function => 'reset_vouchertype_fields(value)'
   - else
     = text_field_tag 'vouchertype_category', humanize(@vouchertype.category), :disabled => 'disabled'
     %span (The type of an existing vouchertype cannot be changed)
@@ -36,7 +35,7 @@
 %p#p_vouchertype_season.vtform
   %label{:for=>:vouchertype_season} Season
   - if existing_bundle
-    = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season), {}, {:onchange => "$$('input.bundle_component').map(Element.clear); $('included_vouchers').hide(); "}
+    = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season), {}, {:onchange => "$('input.bundle_component').map(Element.clear); $('#included_vouchers').hide(); "}
   - else
     = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season)
   = popup_help_for :vouchertype_season

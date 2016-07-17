@@ -4,17 +4,6 @@ class ReportsController < ApplicationController
 
   before_filter :is_staff_filter
 
-  private
-
-  def validate_report_type(str)
-    klass = str.camelize.constantize
-    valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
-    redirect_with(reports_path, :alert => "Invalid report name '#{str}'") unless valid
-    valid && klass
-  end
-
-  public
-
   def index
     # all showdates
     @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
@@ -25,12 +14,14 @@ class ReportsController < ApplicationController
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.now.year)
     # list of all special reports
-    @special_report_names = Report.subclasses.map { |s| s.underscore.humanize.capitalize }
+    @special_report_names = Report.subclasses.map { |s| s.underscore.humanize.capitalize }.unshift('Select report...')
   end
 
   def do_report
     # this is a dispatcher that just redirects to the correct report
     # based on a dropdown menu.
+    @report_dates = params[:report_dates]
+    @from,@to = Time.range_from_params(@report_dates)
     case params[:rep]
     when /retail/i
       retail
@@ -56,66 +47,12 @@ class ReportsController < ApplicationController
     render :status => :unprocessable_entity and return unless (entity == Show || entity == Showdate)
     entity = entity.find(params[:id])
     vouchers = entity.vouchers
-    by_vtype = vouchers.group_by(&:vouchertype)
-    categories = vouchers.group_by(&:class)
-    revenue_per_seat = entity.revenue_per_seat
-    render :partial => 'showdate_sales',
-    :locals => {
-      :total_vouchers => vouchers.size,
-      :vouchers => by_vtype,
-      :categories => categories,
-      :revenue_per_seat => revenue_per_seat,
-      :entity => entity
-    }
+
+    sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype),
+      entity.revenue_per_seat, entity.total_offered_for_sale)
+    render :partial => 'showdate_sales', :locals => { :sales => sales }
   end
 
-  def transaction_details_report
-    @from,@to = Time.range_from_params(params[:from],params[:to])
-    @report = TransactionDetailsReport.run(@from, @to)
-    return redirect_with(reports_path, :alert => 'No matching transactions found') if @report.empty?
-    case params[:format]
-    when /csv/i
-      send_data(@report.to_csv,
-        :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
-        :filename => filename_from_dates('transactions', @from, @to, 'csv'))
-    when /pdf/i
-      send_data(@report.to_pdf,
-        :type => 'application/pdf',
-        :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
-    else
-      render :action => 'transaction_details_report'
-    end
-  end
-
-  def accounting_report
-    @from,@to = Time.range_from_params(params[:from],params[:to])
-    @account_codes = params[:account_codes]
-    options = {:from => @from, :to => @to, :account_codes => @account_codes}
-    if params[:format] =~ /csv/i
-      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
-      send_data(AccountingReport.render_csv(options),
-        :type => content_type,
-        :filename => filename_from_dates('revenue', @from, @to, 'csv'))
-    elsif params[:format] =~ /pdf/i
-      send_data(AccountingReport.render_pdf(options),
-        :type => 'application/pdf',
-        :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
-    else
-      @report = AccountingReport.render_html(options)
-      render :action => 'accounting_report'
-    end
-  end
-
-  def retail
-    @from,@to = Time.range_from_params(params[:from],params[:to])
-    @items = RetailItem.find(:all,
-      :include => :order,
-      :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
-      :order => 'orders.sold_on')
-    redirect_to({:action => :index},
-      {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
-  end
-  
   def subscriber_details
     y = (params[:id] || Time.now.year).to_i
     subs = Voucher.subscription_vouchers(y)
@@ -131,7 +68,7 @@ class ReportsController < ApplicationController
     end
   end
 
-  def show_special_report
+  def  attendance
     report_name = params[:report_name].to_s.gsub(/\s+/, '_').downcase
     return unless report_subclass = validate_report_type(report_name)
     @report = report_subclass.__send__(:new)
@@ -147,47 +84,33 @@ class ReportsController < ApplicationController
     render :partial => 'sublist'
   end
 
-  def run_special_report
-    return unless (klass = validate_report_type params[:_report])
+  def run_special
+    return unless (klass = validate_report_type params[:report_name])
     @report = klass.__send__(:new, params[:output])
     result = @report.generate_and_postprocess(params) # error!
-    unless result
-      respond_to do |wants|
-        wants.html {
-          redirect_with(reports_path, :alert => "Errors generating report: #{@report.errors}")
-        }
-        wants.js {
-          render :text => "Error: #{@report.errors}"
-        }
-      end
-      return
-    end
+    return render(:text => (result ? "#{@report.customers.length} matches" : "(Error)")) if request.xhr?
+
+    # HTML render
+    return redirect_with(reports_path, :alert => "Errors generating report: #{@report.errors}") unless result
+
+    # Valid, but no results
+    return redirect_with(reports_path, :alert => "No matching customers.") if result.empty?
+    
     # success
-    respond_to do |wants|
-      wants.html {
-        case params[:commit]
-        when /download/i
-          @report.create_csv
-          download_to_excel(@report.output, @report.filename, false)
-        when /display/i
-          @customers = @report.customers
-          render :template => 'customers/index'
-        when /add/i
-          l = @report.customers.length
-          seg = params[:sublist]
-          result = EmailList.add_to_sublist(seg, @report.customers)
-          flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
-            EmailList.errors.to_s
-          redirect_to reports_path
-        end
-      }
-      wants.js {
-        if result
-          # just render the number of results that would be returned
-          render :text => "#{@report.customers.length} matches"
-        else # error
-        end
-      }
+    case params[:commit]
+    when /download/i
+      @report.create_csv
+      download_to_excel(@report.output, @report.filename, false)
+    when /display/i
+      @customers = @report.customers
+      render :template => 'customers/index'
+    when /add/i
+      l = @report.customers.length
+      seg = params[:sublist]
+      result = EmailList.add_to_sublist(seg, @report.customers)
+      flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
+        EmailList.errors.to_s
+      redirect_to reports_path
     end
   end
 
@@ -196,7 +119,7 @@ class ReportsController < ApplicationController
                      :include => [:customer, :vouchertype, :order],
                      :conditions => 'orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1',
                      :order => "customers.last_name")
-    redirect_to({:action => 'index'}, {:notice => 'No unfulfilled orders at this time.'}) and return if v.empty?
+    return redirect_with(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
     if params[:csv]
       output = Voucher.to_csv(v)
       download_to_excel(output, 'customers')
@@ -223,4 +146,57 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
+  private
+
+  def validate_report_type(str)
+    klass = str.camelize.constantize
+    valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
+    redirect_with(reports_path, :alert => "Invalid report name '#{str}'") unless valid
+    valid && klass
+  end
+
+  def transaction_details_report
+    @report = TransactionDetailsReport.run(@from, @to)
+    return redirect_with(reports_path, :alert => 'No matching transactions found') if @report.empty?
+    case params[:format]
+    when /csv/i
+      send_data(@report.to_csv,
+        :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
+        :filename => filename_from_dates('transactions', @from, @to, 'csv'))
+    when /pdf/i
+      send_data(@report.to_pdf,
+        :type => 'application/pdf',
+        :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
+    else
+      render :action => 'transaction_details_report'
+    end
+  end
+
+  def accounting_report
+    @account_codes = params[:account_codes]
+    options = {:from => @from, :to => @to, :account_codes => @account_codes}
+    if params[:format] =~ /csv/i
+      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
+      send_data(AccountingReport.render_csv(options),
+        :type => content_type,
+        :filename => filename_from_dates('revenue', @from, @to, 'csv'))
+    elsif params[:format] =~ /pdf/i
+      send_data(AccountingReport.render_pdf(options),
+        :type => 'application/pdf',
+        :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
+    else
+      @report = AccountingReport.render_html(options)
+      render :action => 'accounting_report'
+    end
+  end
+
+  def retail
+    @items = RetailItem.find(:all,
+      :include => :order,
+      :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
+      :order => 'orders.sold_on')
+    redirect_to({:action => :index},
+      {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
+  end
+  
 end

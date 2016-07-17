@@ -1,16 +1,18 @@
-When /^I run the special report "(.*)" with:$/ do |report_name, fields|
+When /^I fill in the special report "(.*)" with:$/ do |report_name, fields|
   visit path_to "the reports page"
   select report_name, :from => 'report_name'
+  wait_for_ajax
   within '#report_body' do
     fields.hashes.each do |form_field|
       case form_field[:action]
       when /select/
         select form_field[:value], :from => form_field[:field_name]
+      when /check/
+        check form_field[:field_name]
       else
         raise "Unknown action #{form_field[:action]}"
       end
     end
-    
   end
 end
 

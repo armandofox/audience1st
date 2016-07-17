@@ -32,6 +32,11 @@ Spec::Runner.configure do |config|
     # seed the DB with constants. Must be done before each test, since
     # use of Fixtures wipes DB for each test.
     load File.join(Rails.root, 'db', 'seeds.rb')
+    # Freeze time
+    Timecop.travel(Date.parse 'Mar 1, 2012')
+  end
+  config.after(:each) do
+    Timecop.return
   end
 
   # == Fixtures

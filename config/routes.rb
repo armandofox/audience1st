@@ -26,7 +26,7 @@ ActionController::Routing::Routes.draw do |map|
     customer.resources(:vouchers,
       :only => [:index, :new, :create],
       :member => {
-        :update_comment => :post,
+        :update_comment => :put,
       },
       :collection => {
         :transfer_multiple => :post,
@@ -61,14 +61,22 @@ ActionController::Routing::Routes.draw do |map|
 
 
   # reports
-  map.reports '/reports', :controller => 'reports', :action => 'index'
-  %w(do_report run_special_report advance_sales transaction_details_report accounting_report retail show_special_report unfulfilled_orders).each do |report_name|
-    map.connect "/reports/#{report_name}", :controller => 'reports', :action => report_name
-  end
-  # reports that consume :id
-  %w(showdate_sales subscriber_details).each do |report_name|
-    map.connect "/reports/#{report_name}/:id", :controller => 'reports', :action => report_name
-  end
+  map.resources(:reports,
+    :only => [:index],
+    :member => {
+      :showdate_sales => :get
+    },
+    :collection => {
+      :run_special => :get,
+      :subscriber_details => :get,
+      :attendance => :get,
+      :advance_sales => :get,
+      :do_report => :get,
+      :transaction_details => :get,
+      :accounting => :get,
+      :retail => :get,
+      :unfulfilled_orders => :get
+    })
 
   # customer-facing purchase pages
   #  Entry into purchase flow:
@@ -119,18 +127,14 @@ ActionController::Routing::Routes.draw do |map|
 
   # walkup sales
 
-  map.walkup_sales('/box_office/walkup/:id',
-    :id => nil,
-    :controller => 'box_office', :action => 'walkup',
-    :conditions => {:method => :get})
-  map.door_list '/box_office/:id/door_list', :controller => 'box_office', :action => 'door_list', :conditions => {:method => :get}
-  map.checkin  '/box_office/:id/checkin', :controller => 'box_office', :action => 'checkin', :conditions => {:method => :get}
-  map.walkup_report '/box_office/:id/walkup_report', :controller => 'box_office', :action => 'walkup_report', :conditions => {:method => :get}
-  %w(do_walkup_sale modify_walkup_vouchers).each do |action|
-    map.connect "/box_office/#{action}", :controller => 'box_office', :action => action, :conditions => {:method => :post}
-  end
-  map.connect '/box_office/mark_checked_in', :controller => 'box_office', :action => 'mark_checked_in', :conditions => {:method => :post}
+  map.resources(:walkup_sales,
+    :only => [:show, :create, :update],
+    :member => {:report => :get}
+    )
 
+  map.resources(:checkins,
+    :only => [:show, :update],
+    :member => { :door_list => :get })
 
   map.resource(:session,
     :only => [:new, :create],

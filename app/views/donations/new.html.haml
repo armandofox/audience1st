@@ -25,10 +25,10 @@
 %br
 
 :javascript
-  jQuery('input:radio').change(function() {
-    if (jQuery('#enable_cc').is(':checked')) {
-      jQuery('#credit_card_info').show(); jQuery('#cash_check_info').hide(); 
+  $('input:radio').change(function() {
+    if ($('#enable_cc').is(':checked')) {
+      $('#credit_card_info').show(); $('#cash_check_info').hide(); 
     } else {
-      jQuery('#credit_card_info').hide(); jQuery('#cash_check_info').show(); 
+      $('#credit_card_info').hide(); $('#cash_check_info').show(); 
     }
   });

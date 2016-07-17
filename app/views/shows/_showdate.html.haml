@@ -12,7 +12,7 @@
     = "|"
     = purchase_link_popup "Link", link_to_showdate_tickets(showdate), showdate.printable_name
     = "|"
-    = link_to_function "Ticket Details", visual_effect(:toggle_slide,"showdate_#{showdate.id}")
+    = link_to_function "Ticket Details", "$('#showdate_#{showdate.id}').slideToggle()"
     = "|"
     - if showdate.compute_total_sales.zero?
       = button_to 'Delete', show_showdate_path(showdate.show, showdate), {:method => :delete, :class => 'inline', :id => "delete_showdate_#{showdate.id}", :confirm => 'Delete this performance: are you sure?' }

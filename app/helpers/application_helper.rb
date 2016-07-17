@@ -97,24 +97,6 @@ module ApplicationHelper
     end
   end
 
-  # return javascript that will do check-all/uncheck-all for checkboxes that have
-  # a given CSS class
-
-  def apply_to_each(selector,javascript)
-    "\$\$('#{selector}').each( #{javascript} ); return false;"
-  end
-
-  def check_all(css_class,form_id=nil)
-    selector = form_id.blank? ? "input.#{css_class}" : "##{form_id} input.#{css_class}"
-    apply_to_each(selector, "function(box) { box.checked=true }")
-  end
-
-  def uncheck_all(css_class,form_id=nil)
-    selector = form_id.blank? ? "input.#{css_class}" : "##{form_id} input.#{css_class}"
-    apply_to_each(selector, "function(box) { box.checked=false }")
-  end
-
-
   # return a checkbox that "protects" another form element by hiding/showing it
   # when checked/unchecked, given initial state.  It's the caller's responsibility
   # to ensure the initial state matches the actual display state of the
@@ -122,29 +104,12 @@ module ApplicationHelper
 
   def checkbox_guard_for(elt_name, visible=false)
     check_box_tag("show_" << elt_name.to_s, '1', visible,
-                  :onclick => visual_effect(:toggle_appear, elt_name))
-  end
-
-  # yield a checkbox-guarded element
-  def guarded_by(tag_type, tag_id, contents)
-    content_tag(tag_type, :id => tag_id,
-                :style => (contents.blank? ? 'display: none;' : '')) do
-      yield
-    end
+                  :onclick => %Q{$('##{elt_name}').slideToggle();})
   end
 
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked)
-    check_box_tag name, 1, checked, :onclick => "a = $('#{elt}'); if (this.checked) { a.innerHTML = '#{escape_javascript ifchecked}'; } else { a.innerHTML = '#{escape_javascript ifnotchecked}'; } a.highlight({startcolor: '#ffff00', duration: 3});"
-  end
-
-  # helpers that generate JS to disable and then re-enable a button
-  #  (eg a submit button) during AJAX form submission
-  def disable_with(elt_id,new_str)
-    "$('#{elt_id}').value='#{new_str}'; $('#{elt_id}').disabled=true;"
-  end
-  def enable_with(elt_id,new_str)
-    "$('#{elt_id}').value='#{new_str}'; $('#{elt_id}').disabled=false;"
+    check_box_tag name, 1, checked, :onchange => %Q{$('##{elt}').text($(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}')}
   end
 
   # spinner
@@ -249,100 +214,6 @@ EOJS
     js
   end
 
-  # given an array each of whose elements is an array [parent, [child1,...childN]],
-  # generate dynamic Javascript menus where the parent menu's onchange handler
-  # constrains the child menu's choices.  id_method and text_method should be
-  # methods the parent and child respond to that yield an id and name suitable for
-  # options_ helpers.
-  def dependent_js_selects(array_of_parents,
-                           parent_name, parent_text_method,
-                           child_name, child_text_method, args = {})
-    parent_id_method = args[:parent_value_method] || 'id'
-    child_id_method =  args[:child_value_method] || 'id'
-    selected_parent = args[:selected_parent]
-    selected_child = args[:selected_child]
-    onchange_cmd = args[:on_parent_change]
-    no_parent_avail_value = args[:no_parent_available_value] || -1
-    no_parent_avail_text = args[:no_parent_available_text] || parent_name.pluralize
-    no_child_avail_value = args[:no_child_available_value] || -1
-    no_child_avail_text = args[:no_child_available_text] || child_name.pluralize
-    # sanity check: does parent array have at least 1 element? does that
-    # element consist of a parent item and an array of child items?
-    unless array_of_parents.length >= 1 &&
-        array_of_parents.first.kind_of?(Array)
-      empty = "<select name='%s_select' id='%s_select'><option disabled='disabled'>No %s available</option></select>"
-      parent_select=sprintf(empty,parent_name,parent_name,no_parent_avail_text)
-      child_select=sprintf(empty, child_name, child_name, no_child_avail_text)
-      return ['', parent_select, child_select]
-    end
-    # if no selected_parent indicated, or selected_parent not found,
-    # just pick the first one
-    par = nil
-    if selected_parent
-      par = array_of_parents.select { |p| p.first.send(parent_id_method) == selected_parent}
-    end
-    if par.nil? or par.empty?
-      par = array_of_parents.first
-    else
-      par = par.first
-    end
-    chi = nil
-    # If no selected_child indicated, pick the first child that would be
-    # valid for the selected parent
-    if selected_child
-      chi = par.last.select {|c| c.send(child_id_method) == selected_child }
-    end
-    if chi.nil? or chi.empty?
-      chi = par.last.first
-    else
-      chi = chi.first
-    end
-    unless selected_child
-      selected_child = par.last.first.send(child_id_method)
-    end
-    js = "<script language='javascript'> <!--\n" <<
-      array_of_arrays("#{child_name}_value", array_of_parents, parent_id_method, child_id_method, no_child_avail_value) <<
-      array_of_arrays("#{child_name}_text", array_of_parents, parent_id_method, child_text_method, no_child_avail_text)  <<
-      "// -->\n</script>\n"
-    #onchange_cmd = "v=this.options[this.selectedIndex].value; setOptions(\"#{child_name}_select\", #{child_name}_text[v], #{child_name}_value[v])"
-    onchange_cmd = "setOptionsFrom('#{parent_name}','#{child_name}')"
-    parent_select = "<select name=\"#{parent_name}_select\" id=\"#{parent_name}_select\" onchange=\"#{onchange_cmd}\" #{args[:parent_html_options]}>\n"
-    parent_select << options_for_select(array_of_parents.map { |p| [p.first.send(parent_text_method), p.first.send(parent_id_method)] }, par.first.send(parent_id_method))
-    parent_select << "\n</select>"
-    child_select = "<select name='#{child_name}_select' id='#{child_name}_select' #{args[:child_html_options]}>"
-    child_select << options_for_select(par.last.map { |c| [c.send(child_text_method), c.send(child_id_method)] },chi.send(child_id_method))
-    child_select << '</select>'
-    return [js, parent_select, child_select]
-  end
-
-  def dependent_js_arrays_from_collection(parent_array, child_name, *args)
-    dependent_js_arrays(parent_array.map { |p| [p, p.send(child_name)] }, args)
-  end
-
-  def make_js_array(name,keys,values)
-    s = "var #{name} = new Array();\n"
-    collection.each do |elt|
-      s <<  "#{name}" << sprintf("[\"%s\"] = '%s';\n",
-                                 escape_javascript(elt.send(keymethod)),
-                                 escape_javascript(elt.send(valuemethod)))
-    end
-  end
-
-  def name_with_quantity(str,qty)
-    qty.to_i == 1  ?  "1 #{str}" : "#{qty} #{str.pluralize}"
-  end
-
-  def select_menu_or_freeform(name, choices)
-    lastidx = choices.length
-    # should allow freeform entry as well as a menu of choices
-    #select_tag = "<select name='#{name}_sel' onchange=\"t=document.getElementById('#{name}'); if this.selectedIndex==#{lastidx} { t.value=''; t.style.display='block'; } else { t.value=this.options[this.selectedIndex].value; t.style.display='none'; }\">"
-    select_tag = "<select name='#{name}_sel' onchange=\"document.getElementById('#{name}').value=(this.selectedIndex==#{lastidx}? '':this.options[this.selectedIndex].value)\"\n"
-    select_tag << options_for_select([""]+choices, "")
-    select_tag << "\n</select>"
-    select_tag << text_field_tag(name, '', {:size => 30, :maxlength => 30})
-    select_tag
-  end
-
   # generate two datetime_selects where the second is dynamically
   # dependent on the first (when first is changed, second clones the
   # change)
@@ -375,84 +246,6 @@ EOJS
       #"<select id='#{meth}_#{i}i' "
       #"<select id='#{meth}_#{i}' name=\"#{obj}[#{meth}_#{i}i]\">"
     end
-  end
-
-  # return a SELECT with shortcuts for "today", "this week", etc. that has onSelect
-  # code to set the menus with the given prefix for the shortcuts.
-
-  def select_date_with_shortcuts(opts={})
-    default_from_date = opts[:from] || Time.now
-    default_to_date = opts[:to] || Time.now
-    sy = opts[:start_year] || Time.this_season
-    basename = opts[:prefix] || ""
-    selected_shortcut = opts[:selected] || "Custom"
-    from,to = "#{basename}_from","#{basename}_to"
-    oc = "$('shortcut_#{from}_#{to}').selectedIndex=7;"
-    [select_date_shortcuts(:start_year => sy, :from_prefix => from, :to_prefix => to, :selected_shortcut => selected_shortcut),
-     select_date(default_from_date, :prefix => from, :start_year => sy),
-     select_date(default_to_date, :prefix => to, :start_year => sy)]
-  end
-
-  def select_date_shortcuts(opts={})
-    start_year = opts[:start_year] || Time.this_season
-    from_prefix = opts[:from_prefix] || "from"
-    to_prefix = opts[:to_prefix] ||"to"
-    selected_shortcut = opts[:selected_shortcut] || "Today"
-    include_time = opts[:include_time]
-    # shortcut dates
-    t = Time.now
-    shortcuts = [["Today", t, t],
-                 ["Yesterday", t.yesterday, t.yesterday],
-                 ["Past 7 days", (t - 7.days), t],
-                 ["Month to date", t.at_beginning_of_month, t],
-                 ["Last month", (t-1.month).at_beginning_of_month, (t-1.month).at_end_of_month],
-                 ["Season to date", t.at_beginning_of_season, t],
-                 ["Last season", (t-1.year).at_beginning_of_season, (t-1.year).at_end_of_season],
-                 ["Year to date", t.at_beginning_of_year, t],
-                 ["Last year", (t-1.year).at_beginning_of_year, (t-1.year).at_end_of_year],
-                 ["Custom",t,t ]]
-    onsel = <<EOS1
-      function setShortcut(from,to,v) {
-        var fy,fm,fd,fH,fM,ty,tm,td,tH,tM;
-        switch(v) {
-EOS1
-    shortcuts.each_with_index do |e,indx|
-      s,f,t = e
-      f = f.at_beginning_of_day
-      t = t.at_end_of_day
-      onsel << <<EOS2
-          case #{indx}:
-             fy=#{f.year-start_year};  fm=#{f.month-1}; fd=#{f.day-1}; fH=#{f.hour}; fM=#{f.min};
-             ty=#{t.year-start_year};  tm=#{t.month-1}; td=#{t.day-1}; tH=#{t.hour}; tM=#{t.min};
-             break;
-EOS2
-    end
-    onsel << <<EOS3
-          default:
-             fy=-1;
-        }
-        if (fy>=0) {
-          $(from + '_year').selectedIndex=fy;
-          $(from + '_month').selectedIndex=fm;
-          $(from + '_day').selectedIndex=fd;
-          $(to + '_year').selectedIndex=ty;
-          $(to + '_month').selectedIndex=tm;
-          $(to + '_day').selectedIndex=td;
-EOS3
-    onsel << <<EOS33 if include_time
-          $(from + '_hour').selectedIndex=fH;
-          $(from + '_minute').selectedIndex=fM;
-          $(to + '_hour').selectedIndex=tH;
-          $(to + '_minute').selectedIndex=tM;
-EOS33
-    onsel << <<EOS4
-        }
-      }
-EOS4
-    javascript_tag(onsel) <<
-      select_tag("shortcut_#{from_prefix}_#{to_prefix}",
-                 options_for_select(shortcuts.each { |e| e.first }, selected_shortcut.to_s),
-                 :onchange => "setShortcut('#{from_prefix}','#{to_prefix}',this.selectedIndex)")
   end
 
   def purchase_link_popup(text,url,name=nil)
