@@ -72,6 +72,7 @@ class Time
 
   # Extract two dates from jquery-ui-datepicker formatted params field
   def self.range_from_params(json)
+    return Time.now,Time.now if json.empty?
     obj = JSON(json)
     min = Time.parse(obj['start'].to_s).at_beginning_of_day
     max = Time.parse(obj['end'].to_s).at_end_of_day
