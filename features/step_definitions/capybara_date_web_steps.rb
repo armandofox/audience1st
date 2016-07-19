@@ -67,5 +67,7 @@ When /^I select "(.*) to (.*)" as the "(.*)" date range$/ do |start,endr, select
 end
 
 Then /^"(.*) to (.*)" should be selected as the "(.*)" date range$/ do |from,to,selector|
-  page.find(:css,"##{selector}").should have_content(date_range_to_json(from,to))
+  fmt = '%b %-d, %Y' # eg "Dec 3, 2016"
+  dates = "#{Time.parse(from).strftime(fmt)} - #{Time.parse(to).strftime(fmt)}"
+  page.find(:css,"##{selector}+button.comiseo-daterangepicker-triggerbutton").should have_content(dates)
 end

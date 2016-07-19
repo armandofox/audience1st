@@ -1,4 +1,3 @@
-@javascript
 Feature: set up multiple showdates at once
 
   As a harried box office manager
@@ -10,15 +9,14 @@ Background:
   Given I am logged in as box office manager
   And there is a show named "Hamlet" opening "12/20/2011" and closing "1/10/2012"
   And I am on the new showdate page for "Hamlet"
-  Then "2011-12-20 to 2012-01-10" should be selected as the "show_run_dates" date range
 
 Scenario: set up multiple valid showdates
 
   When I select "1/1/2012 to 12/23/2011" as the "show_run_dates" date range
-  And I select "7:00 pm" as the "At" time
   And I check "Thu"
   And I check "Fri"
   And I check "Sun"
+  And I select "7:00 pm" as the "At" time
   And I fill in "Advance sales stop" with "60"
   And I fill in "Max advance sales" with "50"
   And I press "Save & Back to List of Shows"
