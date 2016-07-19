@@ -11,6 +11,7 @@ A1.select_search_result = function(customer,textField,idField) {
 };
 
 A1.setup_autocomplete_fields = function() {
+  var autocomplete_url = jQuery('#autocomplete_route').val().toString();
   $(A1.autocomplete_selector).each(function(i,elt) {
     var e = $(elt);
     // which ID field is associated with this autocomplete element?

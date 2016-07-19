@@ -51,8 +51,21 @@ def id_prefix_for(options = {})
   find(:xpath, "//label[contains(text(),'#{name}')]")['for']
 end
 
+def date_range_to_json(from,to)
+  from = Time.parse from
+  to = Time.parse to
+  %Q[{"start":"#{from.strftime('%Y-%m-%d')}","end":"#{to.strftime('%Y-%m-%d')}"}]
+end
 
 When /^(?:|I )select "([^\"]*)" as the "([^\"]*)" (date|time)$/ do |date, date_label, _|
   select_date(date, :from => date_label)
 end
 
+When /^I select "(.*) to (.*)" as the "(.*)" date range$/ do |start,endr, selector|
+  # relies on the formatting of the target field used as the datepicker; doesn't need JS
+  fill_in selector, :with => date_range_to_json(start,endr)
+end
+
+Then /^"(.*) to (.*)" should be selected as the "(.*)" date range$/ do |from,to,selector|
+  page.find(:css,"##{selector}").should have_content(date_range_to_json(from,to))
+end
