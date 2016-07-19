@@ -10,5 +10,6 @@ env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 script:
+  - ln -s config/database.yml.test config/database.yml
   - bundle exec rake spec
   - bundle exec rake cucumber
