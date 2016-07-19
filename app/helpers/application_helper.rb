@@ -117,10 +117,6 @@ module ApplicationHelper
     image_tag('wait16trans.gif', :id => id, :class => 'spinner', :style => 'display: none;')
   end
 
-  def to_js_array(arr)
-      '[' + arr.map { |a| a.kind_of?(Fixnum) ? "#{a}" : "'#{a}'" }.join(',') + ']'
-  end
-
   def admin_button(name,options={},html_opts={},*parms)
     #options.merge!(:method => :get) unless options.has_key?(:method)
     #button_to(name, options, html_opts.merge(:background=>:yellow))
@@ -131,121 +127,6 @@ module ApplicationHelper
     #options.merge!(:method => :get) unless options.has_key?(:method)
     #button_to(name, options, html_opts)
     link_to(name, options,html_opts.merge(:class => 'genButton'),parms)
-  end
-
-  def pagination_bar(thispage, f, count, htmlopts={})
-    s = ""
-    curval = eval("@"+ f.to_s)  # value of the filter isntance variable
-    s += link_to('<< ', { :page => thispage.previous, f => curval}, htmlopts) if thispage.previous
-    s += sprintf(" %d - %d of %d ", thispage.first_item, thispage.last_item, count)
-    s += link_to(' >>', { :page => thispage.next, f => curval}, htmlopts) if thispage.next
-    s
-  end
-
-  def js_quote_nonnumeric(o)
-    o.kind_of?(Fixnum) ? o: "'#{o}'"
-  end
-
-  def javascript_arrays_for(objects, child_method, child_name, child_value)
-    arrays_of_children = objects.map { |o| o.send(child_method) }.map do |showdates|
-      showdates.map { |sd|  }.join(', ')
-    end
-    arrayname = objects.first.class
-    js = "#{arrayname} = new Array;\n"
-    objects.each do |o|
-      children = o.send(child_method).map do |elt|
-        "new Option('#{elt.send(child_name)}', '#{elt.send(child_value)}', false, false)"
-      end.join(",\n   ")
-      js += "\n#{arrayname}[#{o.id}] = new Array(\n   #{children}\n);"
-    end
-    js += <<EOJS
-    document.update_#{child_method} = function(element,value,target) {
-        var s = #{arrayname}[element.options[element.selectedIndex].value];
-        var n = s.length;
-        $(target).options.length = n;
-        for (var i=0 ; i < n; i++) {
-           $(target).options[i] = s[i];
-        }
-    }
-EOJS
-    javascript_tag js
-  end
-  
-  def option_arrays(name, array_of_parents, key_method, vals_method,
-                    text_method, args={})
-    empty_val = (args[:empty_value] || -1).to_s
-    empty_text = args[:empty_text] || "No #{name.pluralize} available"
-    js = ''
-    js << "var #{name}_value = new Array(#{array_of_parents.size});\n"
-    js << "var #{name}_text = new Array(#{array_of_parents.size});\n"
-    array_of_parents.map do |p|
-      ndx = p.first.send(key_method)
-      js << "#{name}_value['#{ndx}'] = "
-      if p.last.empty?
-        js << "[#{js_quote_nonnumeric(empty_val)}];\n"
-      else
-        js << "[" << p.last.map { |c| js_quote_nonnumeric(c.send(vals_method)) }.join(',') << "];\n"
-      end
-      js << "#{name}_text['#{ndx}'] = "
-      if p.last.empty?
-        js << "[#{js_quote_nonnumeric(empty_val)}];\n"
-      else
-        js << "[" << p.last.map { |c| js_quote_nonnumeric(c.send(text_method)) }.join(',') << "];\n"
-      end
-    end
-    js
-  end
-
-
-
-  def array_of_arrays(array_name, array_of_parents, key_method, vals_method,
-                      empty_val)
-    js = ''
-    js << "var #{array_name} = new Array(#{array_of_parents.size});\n"
-    array_of_parents.map do |p|
-      js << "#{array_name}['#{p.first.send(key_method)}'] = "
-      if p.last.empty?
-        js << "[#{js_quote_nonnumeric(empty_val)}];\n"
-      else
-        js << "[" <<
-          p.last.map { |c| js_quote_nonnumeric(c.send(vals_method)) }.join(',') << "];\n"
-      end
-    end
-    js
-  end
-
-  # generate two datetime_selects where the second is dynamically
-  # dependent on the first (when first is changed, second clones the
-  # change)
-
-  def parent_datetime_select(obj,meth,child,options)
-    options = options.merge({:discard_type => true})
-    pfx = "#{obj}[#{meth}(%di)]"
-    thedate = options[:date] || Time.now
-    ds = select_year(thedate, options.merge( {:prefix => sprintf(pfx,1) } ))
-    ds << select_month(thedate, options.merge( {:prefix => sprintf(pfx,2) }))
-    ds << select_day(thedate, options.merge( {:prefix => sprintf(pfx,3) }))
-    ds << " &mdash; "
-    ds << select_hour(thedate, options.merge( {:prefix => sprintf(pfx,4) } ))
-    ds << " : "
-    ds << select_minute(thedate, options.merge({:prefix => sprintf(pfx,5) }))
-    i = 0
-    ds.gsub(/<select/) do |m|
-      i=i+1
-      "<select onchange='$(\"#{child}_#{i}i\").selectedIndex=this.selectedIndex'"
-    end
-  end
-
-  def child_datetime_select(obj,meth,options)
-    ds = datetime_select(obj, meth, options)
-    #ds = select_datetime(options[:date], options.delete(:date))
-    i = 0
-    ds.gsub(/<select /) do |m|
-      i =i +1
-      "<select "
-      #"<select id='#{meth}_#{i}i' "
-      #"<select id='#{meth}_#{i}' name=\"#{obj}[#{meth}_#{i}i]\">"
-    end
   end
 
   def purchase_link_popup(text,url,name=nil)

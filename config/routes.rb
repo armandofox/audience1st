@@ -57,8 +57,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :vouchertypes, :member => { :clone => :get }
     
   # database txns
-  map.connect '/txns', :controller => 'txn', :action => 'index', :conditions => {:method => :get}
-
+  map.resources :txns, :only => [:index]
 
   # reports
   map.resources(:reports,
