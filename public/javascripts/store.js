@@ -52,7 +52,7 @@ A1.stripeSubmit = function(event) {
   //console.log("Submitting to Stripe");
   if ($('#swipe_data')  && $('#swipe_data').val() != '') {
     // populate credit card info fields from magstripe swipe hidden field
-    parseSwipeData();
+    A1.parseSwipeData();
   }
   var key = $('#_stripe_api_key').val();
   $('#payment_errors').text('');  //  clear out errors field
@@ -75,22 +75,22 @@ A1.stripeSubmit = function(event) {
 }
 
 A1.checkPlaceOrderForm = function() {
-    alrt = '';
-    if (! $('#credit_card_number').val().match('[0-9]{15,16}')) {
-        alrt += "Credit card number appears to be too short.\n";
-    }
-    if (! $('#credit_card_verification_value').val().match('[0-9]{3,4}')) {
-        alrt += "Credit card security code appears to be too short.\n";
-    }
-    if ($('#sales_final') && !($('#sales_final').checked)) {
-        alrt += "Please indicate your acceptance of our Terms of Sale by checking the TERMS OF SALE box.\n";
-    }
-    if (alrt != '') {
-        alrt = "Please correct the following errors:\n\n" + alrt;
-    } else {
-        $('#_stripe_submit').disabled = false;
-    }
-    return alrt;
+  var alrt = '';
+  if (! $('#credit_card_number').val().match('[0-9]{15,16}')) {
+    alrt += "Credit card number appears to be too short.\n";
+  }
+  if (! $('#credit_card_verification_value').val().match('[0-9]{3,4}')) {
+    alrt += "Credit card security code appears to be too short.\n";
+  }
+  if ($('#sales_final') && !($('#sales_final').checked)) {
+    alrt += "Please indicate your acceptance of our Terms of Sale by checking the TERMS OF SALE box.\n";
+  }
+  if (alrt != '') {
+    alrt = "Please correct the following errors:\n\n" + alrt;
+  } else {
+    $('#_stripe_submit').disabled = false;
+  }
+  return alrt;
 }
 
 A1.setupForCheckout = function() {
@@ -102,13 +102,13 @@ A1.setupForCheckout = function() {
   $('#sales_final').change(A1.checkPlaceOrderForm);
   // on the checkout page, copy the billing customer info to the credit card info
 
-  if (document.querySelector('body#store_checkout')) { // only on checkout page
+  if ($('body#store_checkout')) { // only on checkout page
     $('#credit_card_first_name').val($('#billing #customer_first_name').val());
     $('#credit_card_last_name').val($('#billing #customer_last_name').val());
     if (A1.checkForStripe()) {
-       var message = $('#checkout_message').text();
-       if (message != "") { alert(message); }
-     }
+      var message = $('#checkout_message').text();
+      if (message != "") { alert(message); }
+    }
   }
 };
 
