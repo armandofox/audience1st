@@ -37,6 +37,7 @@ class ValidVoucher < ActiveRecord::Base
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance", :unless => lambda { |s| s.showdate_id.nil? }
 
   attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
+  attr_accessor :max_sales_for_this_patron      # adjusted value of max_sales_for_type
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
   alias_method :visible?, :visible # for convenience and more readable specs
@@ -93,13 +94,13 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = "Ticket sales of this type restricted to #{offer_public_as_string}"
       self.visible = false
     end
-    self.max_sales_for_type = 0 if !self.explanation.blank?
+    self.max_sales_for_this_patron = 0 if !self.explanation.blank?
     !self.explanation.blank?
   end
 
   def adjust_for_showdate
     if !showdate
-      self.max_sales_for_type = 0
+      self.max_sales_for_this_patron = 0
       return nil
     end
     if showdate.thedate < Time.now
@@ -109,7 +110,7 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = 'Event is sold out'
       self.visible = true
     end
-    self.max_sales_for_type = 0 if !self.explanation.blank?
+    self.max_sales_for_this_patron = 0 if !self.explanation.blank?
     !self.explanation.blank?
   end
 
@@ -125,25 +126,25 @@ class ValidVoucher < ActiveRecord::Base
       self.explanation = "Tickets of this type not sold after #{end_sales.to_formatted_s(:showtime)}"
       self.visible = true
     end
-    self.max_sales_for_type = 0 if !self.explanation.blank?
+    self.max_sales_for_this_patron = 0 if !self.explanation.blank?
     !self.explanation.blank?
   end
 
   def adjust_for_advance_reservations
     if Time.now > end_sales
       self.explanation = 'Advance reservations for this performance are closed'
-      self.max_sales_for_type = 0
+      self.max_sales_for_this_patron = 0
     end
     !self.explanation.blank?
   end
 
   def adjust_for_capacity
-    self.max_sales_for_type = seats_of_type_remaining()
+    self.max_sales_for_this_patron = seats_of_type_remaining()
     self.explanation =
-      case max_sales_for_type
+      case max_sales_for_this_patron
       when 0 then "No seats remaining for tickets of this type"
       when INFINITE then "No performance-specific limit applies"
-      else "#{max_sales_for_type} remaining"
+      else "#{max_sales_for_this_patron} remaining"
       end
     self.visible = true
   end
@@ -153,17 +154,12 @@ class ValidVoucher < ActiveRecord::Base
     result.id = self.id # necessary since views expect valid-vouchers to have an id...
     result.visible = true
     result.customer = customer
+    result.max_sales_for_this_patron = seats_of_type_remaining
     result.explanation = ''
     result
   end
   
   public
-
-  def inspect
-    sprintf "%s max %3d %s- %s %s", vouchertype.name, max_sales_for_type,
-    start_sales.strftime('%c'), end_sales.strftime('%c'),
-    promo_code
-  end
 
   def seats_of_type_remaining
     return INFINITE unless showdate
@@ -194,7 +190,7 @@ class ValidVoucher < ActiveRecord::Base
     bundles.sort_by(&:display_order)
   end
 
-  # returns a copy of this ValidVoucher, but with max_sales_for_type adjusted to
+  # returns a copy of this ValidVoucher, but with max_sales_for_this_patron adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to
   # THIS customer. 
   def adjust_for_customer(customer_supplied_promo_code = '')
@@ -223,8 +219,8 @@ class ValidVoucher < ActiveRecord::Base
   #  specified for the valid-voucher originally.
   def date_with_explanation
     display_name = showdate.printable_date_with_description
-    if max_sales_for_type > 0
-      "#{display_name} (#{max_sales_for_type} available)"
+    if max_sales_for_this_patron > 0
+      "#{display_name} (#{max_sales_for_this_patron} available)"
     else
       "#{display_name} (Not available)"
     end
@@ -232,7 +228,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def name_with_explanation
     display_name = showdate.printable_name
-    max_sales_for_type > 0 ? display_name : "#{display_name} (#{explanation})"
+    max_sales_for_this_patron > 0 ? display_name : "#{display_name} (#{explanation})"
   end
 
   def vouchertype_name_with_seats_of_type_remaining

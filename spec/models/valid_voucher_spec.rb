@@ -5,12 +5,12 @@ describe ValidVoucher do
     shared_examples_for 'visible, zero capacity' do
       it { should be_visible }
       its(:explanation) { should_not be_blank }
-      its(:max_sales_for_type) { should be_zero }
+      its(:max_sales_for_this_patron) { should be_zero }
     end
     shared_examples_for 'invisible, zero capacity' do
       it { should_not be_visible }
       its(:explanation) { should_not be_blank }
-      its(:max_sales_for_type) { should be_zero }
+      its(:max_sales_for_this_patron) { should be_zero }
     end
 
     describe 'for reservation using existing voucher' do
@@ -21,7 +21,7 @@ describe ValidVoucher do
           v.adjust_for_customer_reservation
         end
         its(:explanation) { should == 'Advance reservations for this performance are closed' }
-        its(:max_sales_for_type) { should be_zero }
+        its(:max_sales_for_this_patron) { should be_zero }
       end
       context 'when valid' do
         subject do
@@ -29,7 +29,7 @@ describe ValidVoucher do
           v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.from_now, :max_sales_for_type => 10)
           v.adjust_for_customer_reservation
         end
-        its(:max_sales_for_type) { should == 10 }
+        its(:max_sales_for_this_patron) { should == 10 }
         its(:explanation) { should == '10 remaining' }
       end
     end
@@ -91,7 +91,7 @@ describe ValidVoucher do
         @v
       end
       it 'should have no seats available' do
-        @v.max_sales_for_type.should be_zero
+        @v.max_sales_for_this_patron.should be_zero
       end
       it 'should say advance sales are closed' do
         @v.explanation.should == 'Advance sales for this performance are closed'
@@ -134,12 +134,12 @@ describe ValidVoucher do
       end
       describe 'when zero seats remain' do
         let(:seats) { 0 }
-        its(:max_sales_for_type) { should be_zero }
+        its(:max_sales_for_this_patron) { should be_zero }
         its(:explanation) { should == 'No seats remaining for tickets of this type' }
       end
       describe 'when one or more seats remain' do
         let(:seats) { 5 }
-        its(:max_sales_for_type) { should == 5 }
+        its(:max_sales_for_this_patron) { should == 5 }
         its(:explanation) { should == '5 remaining' }
       end
     end
