@@ -231,10 +231,6 @@ class ValidVoucher < ActiveRecord::Base
     max_sales_for_this_patron > 0 ? display_name : "#{display_name} (#{explanation})"
   end
 
-  def vouchertype_name_with_seats_of_type_remaining
-    "#{name} (#{seats_of_type_remaining} left)"
-  end
-
   def show_name_with_seats_of_type_remaining
     "#{showdate.printable_name} (#{seats_of_type_remaining} left)"
   end
