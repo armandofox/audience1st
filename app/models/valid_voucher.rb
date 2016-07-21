@@ -219,7 +219,7 @@ class ValidVoucher < ActiveRecord::Base
   #  specified for the valid-voucher originally.
   def date_with_explanation
     display_name = showdate.printable_date_with_description
-    if max_sales_for_this_patron > 0
+    if max_sales_for_this_patron.to_i > 0
       "#{display_name} (#{max_sales_for_this_patron} available)"
     else
       "#{display_name} (Not available)"
