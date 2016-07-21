@@ -217,11 +217,14 @@ class ValidVoucher < ActiveRecord::Base
     result.freeze
   end
 
+  # NOTE!!  This display helper is called to display menus visible to patron,
+  #  so the valid-voucher in question has had its max_sales_for_type ADJUSTED ALREADY
+  #  to the value applicable for THIS PATRON, which may be DIFFERENT from the value
+  #  specified for the valid-voucher originally.
   def date_with_explanation
     display_name = showdate.printable_date_with_description
-    available = seats_of_type_remaining
-    if available > 0
-      "#{display_name} (#{available} available)"
+    if max_sales_for_type > 0
+      "#{display_name} (#{max_sales_for_type} available)"
     else
       "#{display_name} (Not available)"
     end
