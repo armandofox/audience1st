@@ -55,7 +55,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def max_sales_for_this_patron
     @max_sales_for_this_patron ||= max_sales_for_type()
-    [@max_sales_for_this_patron, showdate.max_sales].min
+    [@max_sales_for_this_patron, showdate.saleable_seats_left].min
   end
 
   def self.from_params(valid_vouchers_hash)
