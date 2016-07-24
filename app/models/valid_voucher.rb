@@ -55,7 +55,11 @@ class ValidVoucher < ActiveRecord::Base
 
   def max_sales_for_this_patron
     @max_sales_for_this_patron ||= max_sales_for_type()
-    [@max_sales_for_this_patron, showdate.saleable_seats_left.to_i].min
+    if showdate # in case this is a valid-voucher for a bundle, vs for regular show
+      [@max_sales_for_this_patron, showdate.saleable_seats_left.to_i].min
+    else
+      @max_sales_for_this_patron
+    end
   end
 
   def self.from_params(valid_vouchers_hash)
@@ -191,7 +195,7 @@ class ValidVoucher < ActiveRecord::Base
       b.customer = customer
       b.adjust_for_customer promo_code
     end
-    bundles.reject! { |b| b.max_sales_for_type == 0 }
+    bundles.reject! { |b| b.max_sales_for_this_patron == 0 }
     bundles.sort_by(&:display_order)
   end
 
