@@ -70,12 +70,12 @@ describe ValidVoucher do
         v
       end
       describe 'in the past' do
-        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.ago) }
+        let(:the_showdate) { create(:showdate, :thedate => 1.day.ago) }
         it_should_behave_like 'invisible, zero capacity'
         its(:explanation) { should == 'Event date is in the past' }
       end
       describe 'that is sold out' do
-        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :really_sold_out? => true) }
+        let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 0, :really_sold_out? => true) }
         it_should_behave_like 'visible, zero capacity'
         its(:explanation) { should == 'Event is sold out' }
       end
@@ -101,7 +101,7 @@ describe ValidVoucher do
     describe 'for per-ticket-type sales dates' do
       before :all do ; ValidVoucher.send(:public, :adjust_for_sales_dates) ; end
       subject do
-        v = ValidVoucher.new(:start_sales => starts, :end_sales => ends, :showdate => mock_model(Showdate, :end_advance_sales => 1.day.from_now))
+        v = ValidVoucher.new(:start_sales => starts, :end_sales => ends, :showdate => create(:showdate, :end_advance_sales => 1.day.from_now))
         v.adjust_for_sales_dates
         v
       end
@@ -127,7 +127,7 @@ describe ValidVoucher do
     describe 'for capacity' do
       before :all do ; ValidVoucher.send(:public, :adjust_for_capacity) ; end
       subject do
-        v = ValidVoucher.new(:showdate => mock_model(Showdate))
+        v = ValidVoucher.new(:showdate => create(:showdate))
         v.stub!(:seats_of_type_remaining).and_return(seats)
         v.adjust_for_capacity
         v
