@@ -37,9 +37,9 @@ class ValidVoucher < ActiveRecord::Base
   validates_uniqueness_of :vouchertype_id, :scope => :showdate_id, :message => "already valid for this performance", :unless => lambda { |s| s.showdate_id.nil? }
 
   attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
-  attr_accessor :max_sales_for_this_patron      # adjusted value of max_sales_for_type
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
+  attr_writer :max_sales_for_this_patron
   alias_method :visible?, :visible # for convenience and more readable specs
 
   delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public, :offer_public_as_string, :category, :comp?, :subscriber_voucher?, :to => :vouchertype
@@ -51,6 +51,10 @@ class ValidVoucher < ActiveRecord::Base
   
   def event_type
     showdate.try(:show).try(:event_type)
+  end
+
+  def max_sales_for_this_patron
+    @max_sales_for_this_patron ||= max_sales_for_type()
   end
 
   def self.from_params(valid_vouchers_hash)
