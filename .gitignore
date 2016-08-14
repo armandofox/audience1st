@@ -2,3 +2,11 @@ config/database.yml
 TAGS
 log/
 .bundle/
+.*
+.#*
+brakeman.*
+config/application.yml
+#*
+tmp
+rerun.txt
+#*#
