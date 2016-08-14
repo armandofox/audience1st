@@ -18,12 +18,6 @@ Given /^a show "(.*)" with (\d+) "(.*)" tickets for \$(.*) on "(.*)"$/ do |show,
            And #{num} #{type} vouchers costing $#{price} are available for that performance}
 end
 
-Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
-  tickets.hashes.each do |t|
-    steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
-  end
-end
-
 Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
   vouchertype = Vouchertype.find_by_name! ticket_type
   showdate = Showdate.find_by_thedate! Time.parse date
@@ -39,15 +33,20 @@ Given /^my gift order contains the following tickets:/ do |tickets|
 end
 
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
-  order = build(:order, :walkup => true)
-  showdate = Showdate.find_by_thedate!(Time.parse(dt))
   tickets.hashes.each do |t|
     qty = t[:qty].to_i
-    offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
-      Vouchertype.find_by_name!(t[:type]).id,
-      showdate.id)
-    order.add_tickets(offer, qty)
+    steps %Q{Given #{t[:qty]} "#{t[:type]}" tickets have been sold for "#{dt}"}
   end
+end
+
+Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
+  order = build(:order, :walkup => true)
+  qty = qty.to_i
+  showdate = Showdate.find_by_thedate!(Time.parse(dt))
+  offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
+    Vouchertype.find_by_name!(vtype).id,
+    showdate.id)
+  order.add_tickets(offer, qty)
   order.finalize!
 end
 

@@ -37,7 +37,7 @@
             = text_field_tag fieldname, '', :size => 3, :onchange => 'recalc_total()', :class => 'itemQty'
             %span.admin= v.explanation
           - else
-            - if (max_sales = [30, v.max_sales_for_type].min).zero?
+            - if (max_sales = [30, v.max_sales_for_this_patron].min).zero?
               %span= v.explanation
             - else
               = select_tag(fieldname, options_for_select(0..max_sales), :onchange => 'recalc_total()', :class => 'itemQty')

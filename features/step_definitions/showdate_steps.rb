@@ -24,6 +24,12 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   @show = @showdate.show
 end
 
+Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
+  tickets.hashes.each do |t|
+    steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
+  end
+end
+
 Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
   Show.find_by_name!(show).showdates.count.should == num.to_i
 end
@@ -67,4 +73,38 @@ Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, _, num|
   else
     showdate.compute_total_sales.should be > showdate.max_sales
   end
+end
+
+Given /^the "(.*)" performance is sold out$/ do |dt|
+  showdate = Showdate.find_by_thedate! Time.parse(dt)
+  to_sell = showdate.max_sales - showdate.compute_total_sales
+  vtype = showdate.valid_vouchers.first.name
+  steps %Q{Given #{to_sell} "#{vtype}" tickets have been sold for "#{dt}"}
+end
+
+#  @showdate is set by the function that most recently created a showdate for a scenario
+
+Given /^sales cutoff at "(.*)", with "(.*)" tickets selling from (.*) to (.*)$/ do |end_advance_sales, vouchertype_name, start_sales, end_sales|
+  vtype = Vouchertype.find_by_name!(vouchertype_name)
+  vtype.valid_vouchers = []
+  vtype.valid_vouchers <<
+    ValidVoucher.new(
+    :showdate => @showdate,
+    :start_sales => Time.parse(start_sales),
+    :end_sales   => Time.parse(end_sales)
+    )
+  @showdate.update_attributes!(:end_advance_sales => end_advance_sales)
+end
+
+Given /^there are (\d+) "(.*)" tickets and (\d+) total seats available$/ do |per_ticket_limit, vouchertype_name, seat_limit|
+  vtype = Vouchertype.find_by_name!(vouchertype_name)
+  vtype.valid_vouchers = []
+  vtype.valid_vouchers <<
+    ValidVoucher.new(
+    :showdate => @showdate,
+    :start_sales => 1.week.ago,
+    :end_sales   => @showdate.thedate,
+    :max_sales_for_type => per_ticket_limit
+    )
+  @showdate.update_attributes!(:max_sales => seat_limit)
 end

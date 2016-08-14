@@ -124,7 +124,7 @@ class Order < ActiveRecord::Base
 
   def add_with_checking(valid_voucher, number, promo_code)
     adjusted = valid_voucher.adjust_for_customer(promo_code)
-    if number <= adjusted.max_sales_for_type
+    if number <= adjusted.max_sales_for_this_patron
       self.add_tickets(valid_voucher, number)
     else
       self.errors.add_to_base(adjusted.explanation)
