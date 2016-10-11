@@ -168,13 +168,12 @@ show_is_special: >
   and in some cases affects how customers purchase; for example, the
   enrollee name MUST be provided for a course enrollment.
 
-show_also_notify: >
- 
-  An additional email address to notify whenever someone PURCHASES a
-  ticket to this show.  (Subscriber or comp reservations do NOT result
-  in an email notification.)  Note that this is in addition to the
-  regular confirmation email that gets sent to the customer.  If blank,
-  no separate notification will be generated.
+show_patron_notes: >
+
+  When a patron purchases a ticket for any performance of this show,
+  this text can appear as part of the confirmation email.  Leave blank
+  to use a generic confirmation email with the show name and performance
+  date.
 
 # Vouchers and voucher types
 
@@ -252,8 +251,10 @@ valid_voucher_promo_code: >
 
   If you enter a promo code here, customers (but not box office staff) 
   will have to enter it in order to purchase this type of ticket for 
-  this show.  You can associated multiple promo codes with the same
-  offer, since their sales are reported separately.
+  this show.  You can associate multiple promo codes (separated by commas) with the same
+  redemption, since their sales are reported separately. 
+  Promo codes are not case-sensitive, so "Discount", "DISCOUNT", and
+  "discount" are all equivalent.
 
 valid_voucher_sales_dates: >
 

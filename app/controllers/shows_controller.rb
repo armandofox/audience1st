@@ -3,6 +3,8 @@ class ShowsController < ApplicationController
   before_filter :is_boxoffice_manager_filter
   before_filter :has_at_least_one, :except => [:new, :create]
 
+  include VouchertypesHelper    # for season formatting
+  
   def index
     unless Show.find(:first)
       flash[:notice] = "There are no shows set up yet."
@@ -14,12 +16,14 @@ class ShowsController < ApplicationController
     @earliest,@latest = Show.seasons_range
     @season = @latest unless @season.between?(@earliest,@latest)
     @shows = Show.all_for_season(@season)
+    @page_title = "#{humanize_season @season} Shows"
   end
 
   def new
     @show = Show.new(:listing_date => Date.today,
       :sold_out_dropdown_message => '(Sold Out)',
       :sold_out_customer_info => 'No tickets on sale for this performance')
+    @page_title = "Add new show"
   end
 
   def create
@@ -40,6 +44,7 @@ class ShowsController < ApplicationController
     if params[:display].blank?
       @maybe_hide = "display: none;"
     end
+    @page_title = %Q{Details: "#{@show.name}"}
   end
 
   def update
