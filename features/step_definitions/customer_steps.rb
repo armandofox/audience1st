@@ -155,5 +155,5 @@ end
 
 When /^I fill in the customer autocomplete with "(.*) (.*)"$/ do |first,last|
   c = Customer.find_by_first_name_and_last_name!(first, last)
-  find('#cid').set(c.id)
+  find('#cid').set(customer_path(c, :only_path => true))
 end

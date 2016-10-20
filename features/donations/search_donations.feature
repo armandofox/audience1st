@@ -58,3 +58,18 @@ Scenario: list all donations
   | Patrick Tracy |    800 |
   | Armando Fox   |    600 |
   | Tom Foolery   |    100 |
+
+Scenario: filter donations by donor
+
+  When I check "use_cid"
+  And I fill in the customer autocomplete with "Joe Mallon"
+  And I press "Search"
+  Then I should see the following donations:
+  | donor         | amount |
+  | Joe Mallon    |    500 |
+  But I should not see the following donations:
+  | donor         | amount |
+  | Diana Moore   |    900 |
+  | Patrick Tracy |    800 |
+  | Armando Fox   |    600 |
+  | Tom Foolery   |    100 |

@@ -204,6 +204,11 @@ class Customer < ActiveRecord::Base
   #----------------------------------------------------------------------
 
   public
+
+  def self.id_from_route(route)
+    #rails3
+    (ActionController::Routing::Routes.recognize_path(route, :method => :get))[:id]
+  end
   
   # message that will appear in flash[:notice] once only, at login
   def login_message

@@ -17,14 +17,18 @@ class DonationsController < ApplicationController
     return unless params[:commit] # first time visiting page: don't do "null search"
 
     conds = {}
-    if (params[:use_cid] &&
-        (cid = params[:cid].to_i) != 0) &&
-        (c = Customer.find_by_id(cid))
-      @full_name = c.full_name
-      @page_title = "Donation history: #{@full_name}"
-      conds.merge!("items.customer_id = ?" => cid)
-    else
-      @page_title = "Donation history"
+    begin
+      if (params[:use_cid])
+        cid = Customer.id_from_route(params[:cid])
+        c = Customer.find(cid)
+        @full_name = c.full_name
+        @page_title = "Donation history: #{@full_name}"
+        conds.merge!("items.customer_id = ?" => cid)
+      else
+        @page_title = "Donation history"
+      end
+    rescue ActionController::RoutingError, ActiveRecord::RecordNotFound
+      return redirect_with(donations_path, :alert => "Cannot limit search to customer")
     end
     mindate,maxdate = Time.range_from_params(params[:donation_date_from],
                                              params[:donation_date_to])

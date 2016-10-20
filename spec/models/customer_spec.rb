@@ -3,6 +3,9 @@ require 'spec_helper'
 
 describe Customer do
   fixtures :customers
+  it 'gets ID from route' do
+    Customer.id_from_route("/customers/3334").should == "3334"
+  end
   describe "labels" do
     before(:each) do
       @c = create(:customer)
