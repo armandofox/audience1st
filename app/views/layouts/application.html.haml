@@ -7,14 +7,16 @@
 
     %link{:rel => "icon", :type => "image/x-icon", :href => stylesheet_path('venue/favicon.ico')}
 
-    = javascript_include_tag :defaults, 'jquery'
+    = javascript_include_tag :defaults, 'jquery.min'
     = javascript_include_tag 'jquery-ui.min'
+    = javascript_include_tag 'jquery-migrate-1.4.1.min'
 
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
     = javascript_include_tag 'stripe'
     = javascript_include_tag 'swipe'
     = javascript_include_tag 'customer_search'
     = javascript_include_tag 'donate'
+    = javascript_include_tag 'hide_checkbox'
 
     %title= @page_title || h(controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
