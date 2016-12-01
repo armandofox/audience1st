@@ -211,7 +211,7 @@ class Customer < ActiveRecord::Base
     # to do the recognition, but it doesn't work in production because the production
     # server prepends the theater name /altarena or /ccct etc to the full route...ugh...
     # :BUG:
-    route =~ /\/customers\/(\d+)$/ ? $1 : nil
+    route =~ /\/customers\/(-?\d+)$/ ? $1 : nil
   end
   
   # message that will appear in flash[:notice] once only, at login
