@@ -31,7 +31,7 @@ group :development, :test do
   gem 'ruby-debug'
   gem 'ZenTest'
   gem 'autotest-rails'
-  gem 'autotest-fsevent'
+  gem 'autotest-fsevent', :git => 'https://github.com/svoop/autotest-fsevent.git'
   gem 'minitest'
   gem 'capistrano', '2.5.10'
   gem 'capybara', '~> 1.1'

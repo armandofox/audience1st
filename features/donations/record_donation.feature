@@ -17,5 +17,17 @@ Scenario: record valid check donation
   And I press "Record"
   Then customer "Tom Foolery" should have an order dated "Jan 1, 2009" containing a check donation of $55.55 to "General Fund"
 
-Scenario: attempt invalid submission
+@javascript
+Scenario: attempt donation with invalid credit card
 
+  When I fill in "Amount" with "30.00"
+  And I choose "Credit Card"
+  And I fill in the "Credit Card Information" fields as follows:
+  | field               |            value |
+  | Number (no spaces)  | 4444444444444444 |
+  | Security (CVV) Code |              111 |
+  And I press "Charge Credit Card"
+  Then I should be on the record donation page for customer "Tom Foolery"
+  And I should see "card was declined"
+
+  
