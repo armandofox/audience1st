@@ -44,6 +44,7 @@ exclude_paths:
 - script/
 - spec/
 - vendor/
+- "*/**/*.min.js"
 - "*/**/jquery.js"
 - "*/**/prototype.js"
 - "*/**/controls.js"
