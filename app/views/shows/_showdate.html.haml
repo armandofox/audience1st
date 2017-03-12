@@ -39,12 +39,7 @@
               %td= time_in_words_relative_to(v.end_sales,showdate.thedate)
               %td
                 - if nsales.zero?
-                  = link_to_remote 'Delete', |
-                    :url => {:controller => 'valid_vouchers', |
-                    :action => 'destroy', :id => v}, |
-                    :method => :delete, |
-                    :success => "Element.hide('valid_voucher_#{v.id}')", |
-                    :failure => 'alert("Deletion failed!")' |
+                  = link_to 'Delete', valid_voucher_path(v), 'data-remote' => true, 'data-method' => :delete, 'data-type' => 'script'
         %tr
           %td{:colspan=>4}
             = gen_button  "Add New...", new_valid_voucher_path(:showdate_id => showdate.id)
