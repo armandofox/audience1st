@@ -91,11 +91,11 @@ class ReportsController < ApplicationController
 
     render :js => 'alert("No matches.")' and return if @customers.empty?
 
-    case params[:commit]
+    case params[:action]
     when /display/i
       render :template => 'customers/index'
     when /estimate/i
-      render :js => %Q{\$('#report_preview').text("#{@customers.length} matches")}
+      render :js => "alert('#{@customers.length} matches')"
     when /download/i
       @report.create_csv
       download_to_excel(@report.output, @report.filename, false)

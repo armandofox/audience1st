@@ -6,11 +6,23 @@
   = render :partial => 'output_options'
   %fieldset.generate_report
     %legend What to do with the results
-    = submit_tag 'Download to Excel', 'data-disable-with' => 'Preparing download...'
-    = submit_tag 'Display on Screen', 'data-disable-with' => 'Preparing report...'
-    %span#estimate_matches
-      = submit_tag 'Estimate number of matches', :id => 'estimate', 'data-disable_with' => 'Estimating...'
-      %span#report_preview
-    #sublists
-      = render :partial => 'sublist' if @sublists
 
+    = radio_button_tag 'action', 'display', 1
+    %label.plain{:for => 'commit_display'} Display list on screen
+    %br
+    = radio_button_tag 'action', 'download'
+    %label.plain{:for => 'commit_download'} Download list to Excel
+    %br
+    = radio_button_tag 'action', 'estimate'
+    %label.plain{:for => 'commit_estimate'} Estimate number of matches
+    %br
+    - if @sublists
+      = radio_button_tag 'action', 'add'
+      %label.plain{:for => 'commit_add'} Add to existing mailing list:
+      = select_tag 'sublist', options_for_sublists(@sublists)
+      %br
+      = radio_button_tag 'action', 'create'
+      %label.plain{:for => 'commit_create'} Create new mailing list named:
+      = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
+      %br
+    = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...'
