@@ -1,4 +1,4 @@
-- form_tag run_special_reports_path, :method => :get, :id => 'special_report' do
+- form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report' do
   %fieldset{:id => name}
     %legend= name.humanize.capitalize
     = hidden_field_tag 'report_name', name
@@ -6,9 +6,11 @@
   = render :partial => 'output_options'
   %fieldset.generate_report
     %legend What to do with the results
-    = submit_tag 'Download to Excel'
-    = submit_tag 'Display on screen'
-    = submit_tag 'Estimate number of matches', :id => 'estimate'
-    %span#report_preview
-    = render :partial => 'sublist' if @sublists
+    = submit_tag 'Download to Excel', 'data-disable-with' => 'Preparing download...'
+    = submit_tag 'Display on Screen', 'data-disable-with' => 'Preparing report...'
+    %span#estimate_matches
+      = submit_tag 'Estimate number of matches', :id => 'estimate', 'data-disable_with' => 'Estimating...'
+      %span#report_preview
+    #sublists
+      = render :partial => 'sublist' if @sublists
 

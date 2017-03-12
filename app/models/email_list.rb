@@ -48,13 +48,15 @@ class EmailList
     end
     begin
       @@hominid = Hominid::Base.new :api_key => apikey
-      raise "'#{@@list}' not found" unless
-        (@@listid = hominid.find_list_id_by_name(@@list))
-      RAILS_DEFAULT_LOGGER.info "Init Mailchimp with default list '#{@@list}'"
-    rescue Exception => e
+      @@listid = hominid.find_list_id_by_name(@@list)
+    rescue NoMethodError => e   # dereference nil.[] means list not found
+      RAILS_DEFAULT_LOGGER.warn "Init Mailchimp: list '#{@@list}' not found"
+      return nil
+    rescue StandardError => e
       RAILS_DEFAULT_LOGGER.info "Init Mailchimp failed: <#{e.message}>"
       return nil
     end
+    RAILS_DEFAULT_LOGGER.info "Init Mailchimp with default list '#{@@list}'"
     return true
   end
 
@@ -117,6 +119,10 @@ class EmailList
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.info [msg,e.message].join(': ')
     end
+  end
+
+  def self.create_sublist_with_customers(name, customers)
+    self.create_sublist(name) && self.add_to_sublist(name, customers)
   end
 
   def self.create_sublist(name)

@@ -77,40 +77,40 @@ class ReportsController < ApplicationController
     render :partial => "reports/special_report", :locals => {:name => report_name}
   end
 
-  def create_sublist
-    name = params[:sublist_name]
-    @error_messages = EmailList.errors unless EmailList.create_sublist(name)
-    @sublists = EmailList.get_sublists
-    render :partial => 'sublist'
-  end
-
+  # This handler is always called as XHR GET, but for one case ("display
+  # matches on screen"), it must do a full HTTP redirect.
+  
   def run_special
     return unless (klass = validate_report_type params[:report_name])
     @report = klass.__send__(:new, params[:output])
-    result = @report.generate_and_postprocess(params) # error!
-    return render(:text => (result ? "#{@report.customers.length} matches" : "(Error)")) if request.xhr?
+    result = @report.generate_and_postprocess(params)
+    @customers = result && @report.customers
 
-    # HTML render
-    return redirect_with(reports_path, :alert => "Errors generating report: #{@report.errors}") unless result
+    # result.nil? means @report.errors contains errors from generating report
+    render :js => %Q{alert("Errors generating report: #{@report.errors}")} and return unless result
 
-    # Valid, but no results
-    return redirect_with(reports_path, :alert => "No matching customers.") if result.empty?
-    
-    # success
+    render :js => 'alert("No matches.")' and return if @customers.empty?
+
     case params[:commit]
+    when /display/i
+      render :template => 'customers/index'
+    when /estimate/i
+      render :js => %Q{\$('#report_preview').text("#{@customers.length} matches")}
     when /download/i
       @report.create_csv
       download_to_excel(@report.output, @report.filename, false)
-    when /display/i
-      @customers = @report.customers
-      render :template => 'customers/index'
     when /add/i
-      l = @report.customers.length
       seg = params[:sublist]
-      result = EmailList.add_to_sublist(seg, @report.customers)
-      flash[:notice] = "#{result} customers added to sublist '#{seg}'. " <<
-        EmailList.errors.to_s
-      redirect_to reports_path
+      result = EmailList.add_to_sublist(seg, @customers)
+      msg = "#{result} customers added to list '#{seg}'. #{EmailList.errors}"
+      render :js => alert(msg)
+    when /create/i
+      name = params[:sublist_name]
+      if (num=EmailList.create_sublist_with_customers(name, @customers))
+        render :js => %Q{alert('List "#{name}" created with #{num} customers.')}
+      else
+        render :js => %Q{alert('Error creating list "#{name}": #{EmailList.errors}')}
+      end
     end
   end
 
