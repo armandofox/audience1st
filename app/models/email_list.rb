@@ -131,8 +131,9 @@ class EmailList
       hominid.add_static_segment(@@listid, name)
       return true
     rescue Exception => e
-      RAILS_DEFAULT_LOGGER.info "Adding sublist '#{name}': #{e.message}"
-      self.errors = "Error: sublist '#{name}' could not be created"
+      error = "List segment '#{name}' could not be created: #{e.message}"
+      RAILS_DEFAULT_LOGGER.warn error
+      self.errors = error
       return nil
     end
   end
@@ -161,7 +162,7 @@ class EmailList
       end
       result = hominid.static_segment_add_members(@@listid, seg_id, emails)
       if !result['errors'].blank?
-        self.errors = "MailChimp reported #{result['errors'].length} problems (usually customers who aren't subscribed to the master list."
+        self.errors = "MailChimp was unable to add #{result['errors'].length} of the customers, usually because they aren't subscribed to the master list."
       end
       return result['success'].to_i
     rescue Exception => e

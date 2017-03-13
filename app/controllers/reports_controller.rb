@@ -82,6 +82,14 @@ class ReportsController < ApplicationController
   
   def run_special
     return unless (klass = validate_report_type params[:report_name])
+    action = params[:what]
+
+    # if we need a true redirect (for Download or Display On Screen),
+    # serialize the form and use JS to force the redirect.
+    if request.xhr? && action =~ /display|download/i
+      render :js => %Q{window.location.replace('#{request.url}')} and return
+    end
+
     @report = klass.__send__(:new, params[:output])
     result = @report.generate_and_postprocess(params)
     @customers = result && @report.customers
@@ -91,7 +99,8 @@ class ReportsController < ApplicationController
 
     render :js => 'alert("No matches.")' and return if @customers.empty?
 
-    case params[:action]
+
+    case action
     when /display/i
       render :template => 'customers/index'
     when /estimate/i
@@ -103,14 +112,17 @@ class ReportsController < ApplicationController
       seg = params[:sublist]
       result = EmailList.add_to_sublist(seg, @customers)
       msg = "#{result} customers added to list '#{seg}'. #{EmailList.errors}"
-      render :js => alert(msg)
+      render :js => %Q{alert(#{msg})}
     when /create/i
       name = params[:sublist_name]
       if (num=EmailList.create_sublist_with_customers(name, @customers))
-        render :js => %Q{alert('List "#{name}" created with #{num} customers.')}
+        msg = ActionController::Base.helpers.escape_javascript %Q{List "#{name}" created with #{num} customers. #{EmailList.errors}}
       else
-        render :js => %Q{alert('Error creating list "#{name}": #{EmailList.errors}')}
+        msg = ActionController::Base.helpers.escape_javascript %Q{Error creating list "#{name}": #{EmailList.errors}}
       end
+      render :js => %Q{alert('#{msg}')}
+    else
+      raise "Unmatched action #{action}"
     end
   end
 

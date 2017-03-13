@@ -7,21 +7,21 @@
   %fieldset.generate_report
     %legend What to do with the results
 
-    = radio_button_tag 'action', 'display', 1
+    = radio_button_tag 'what', 'display', 1
     %label.plain{:for => 'commit_display'} Display list on screen
     %br
-    = radio_button_tag 'action', 'download'
+    = radio_button_tag 'what', 'download'
     %label.plain{:for => 'commit_download'} Download list to Excel
     %br
-    = radio_button_tag 'action', 'estimate'
+    = radio_button_tag 'what', 'estimate'
     %label.plain{:for => 'commit_estimate'} Estimate number of matches
     %br
     - if @sublists
-      = radio_button_tag 'action', 'add'
+      = radio_button_tag 'what', 'add'
       %label.plain{:for => 'commit_add'} Add to existing mailing list:
       = select_tag 'sublist', options_for_sublists(@sublists)
       %br
-      = radio_button_tag 'action', 'create'
+      = radio_button_tag 'what', 'create'
       %label.plain{:for => 'commit_create'} Create new mailing list named:
       = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
       %br
