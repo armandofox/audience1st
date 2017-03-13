@@ -1,26 +1,16 @@
 !!! 5
 %html
   %head
+    %link{:rel => "icon", :type => "image/x-icon", :href => stylesheet_path('venue/favicon.ico')}
+
     = stylesheet_link_tag 'jquery-ui.min', :media => 'all'
     = stylesheet_link_tag 'jquery.comiseo.daterangepicker', :media => 'all'
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
-    = stylesheet_link_tag 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css', :media => 'all'
 
-    %link{:rel => "icon", :type => "image/x-icon", :href => stylesheet_path('venue/favicon.ico')}
-
-    = javascript_include_tag :defaults, 'jquery.min'
-    = javascript_include_tag 'jquery-ui.min'
-    = javascript_include_tag 'jquery-migrate-1.4.1.min'
-
-    -# For Rails 2, we redefine default JS files to load in config/initializers/javascript_include_tag.rb
+    -# Rails3: no need to redefine default JS files in javascript_tag_helper.rb
     = javascript_include_tags_for_jquery :all
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
-    = javascript_include_tag 'stripe'
-    = javascript_include_tag 'swipe'
-    = javascript_include_tag 'customer_search'
-    = javascript_include_tag 'donate'
-    = javascript_include_tag 'hide_checkbox'
 
     %title= @page_title || h(controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
