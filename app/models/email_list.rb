@@ -13,17 +13,6 @@ class EmailList
 
   def self.hominid ; @@hominid ; end
   
-  def self.members(what)
-    begin
-      res = hominid.members(@@listid, what, "2006-01-01", 0, 10000)
-      RAILS_DEFAULT_LOGGER.info "Retrieved #{res.size} #{what} members of #{@@list}"
-    rescue Exception => e
-      res = []
-      RAILS_DEFAULT_LOGGER.warn "Mailchimp error: #{e.message}"
-    end
-    res
-  end
-
   def self.segment_id_from_name(name)
     self.init_hominid || return
     hominid.static_segments(@@listid).detect { |s| s['name'] == name }['id']
@@ -172,31 +161,4 @@ class EmailList
     end
   end
 
-  def self.bulk_compare
-    self.init_hominid || return
-    both = []
-    remote_only = []
-    remote_emails = []
-    self.members('subscribed').each do |mem|
-      remote_emails << mem[:email]
-      if (c = Customer.find_by_email(mem[:email]))
-        both << c
-      else
-        remote_only << Customer.new(:first_name => mem[:FNAME], :last_name => mem[:LNAME],
-          :email => mem[:email])
-      end
-    end
-    local_only = Customer.find(:all,
-      :conditions => ['email != ? AND e_blacklist = ?', '', false]).reject do |c|
-      remote_emails.include?(c.email)
-    end
-    return both, remote_only, local_only
-  end
-
-  def self.remote_unsubscribes
-    self.init_hominid || return
-    m = (self.members('unsubscribed') + self.members('cleaned'))
-    m.map { |e| Customer.find_by_email(e[:email]) }.reject(&:nil?) 
-  end
-  
 end
