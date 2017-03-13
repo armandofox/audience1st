@@ -18,11 +18,11 @@ Scenario Outline: browse reports
   Then I should see /[0-9]+ matches/
 
   Examples: customer report fields
-    | report_type                   | a_report_option                                       |
-    | Attendance at specific performances | List customers attending this specific          |
-    | New customers                 | List customers who were added to the database         |
-    | Lapsed subscribers            | Find patrons who purchased                            |
-    | Subscriber open vouchers      | List customers who have open (unreserved) vouchers    |
-    | Attendance by show            | List customers who attended                           |
-    | Donor appeal                  | Donors who have made at least one donation of         |
+    | report_type                         | a_report_option                                    |
+    | Lapsed subscribers                  | Find patrons who purchased                         |
+    | Attendance at specific performances | List customers attending this specific             |
+    | New customers                       | List customers who were added to the database      |
+    | Subscriber open vouchers            | List customers who have open (unreserved) vouchers |
+    | Attendance by show                  | List customers who attended                        |
+    | Donor appeal                        | Donors who have made at least one donation of      |
 

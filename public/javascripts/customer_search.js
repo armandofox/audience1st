@@ -11,11 +11,11 @@ A1.select_search_result = function(customer,textField,idField) {
 };
 
 A1.setup_autocomplete_fields = function() {
-  autocomplete_url = jQuery('#autocomplete_route').val().toString();
-  jQuery(A1.autocomplete_selector).each(function(i,elt) {
-    var e = jQuery(elt);
+  var autocomplete_url = jQuery('#autocomplete_route').val().toString();
+  $(A1.autocomplete_selector).each(function(i,elt) {
+    var e = $(elt);
     // which ID field is associated with this autocomplete element?
-    var idField = jQuery('#' + e.data('resultfield'));
+    var idField = $('#' + e.data('resultfield'));
     // Blank out the ID field when search box gets focus
     e.focus(function(e) { idField.val(''); });
     // turn off browser autocompletion for text box
@@ -32,5 +32,5 @@ A1.setup_autocomplete_fields = function() {
   });
 };
 
-jQuery(A1.setup_autocomplete_fields);
+$(A1.setup_autocomplete_fields);
 

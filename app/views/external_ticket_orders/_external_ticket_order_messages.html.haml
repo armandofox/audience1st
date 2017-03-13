@@ -13,14 +13,14 @@
 
 - if import.matched_customers.length > 0
   %p
-    = link_to_function "#{import.matched_customers.length} existing customers", visual_effect(:toggle_blind, :matched_customers)
+    = link_to_function "#{import.matched_customers.length} existing customers", '$("#matched_customers").slideToggle()'
     were found and/or may be updated
   #matched_customers{:style => maybe_hidden}
     %table.hilite.import= render :partial => 'customers/customer', :collection => import.matched_customers.sort_by(&:sortable_name), :locals => {:read_only => true}
 
 - if import.created_customers.length > 0 
   %p
-    = link_to_function "#{import.created_customers.length} new customers", visual_effect(:toggle_blind, :created_customers)
+    = link_to_function "#{import.created_customers.length} new customers", '$("#created_customers").slideToggle()'
     will be created (you should check for duplicates after import completes)
     = popup_help_for :check_for_duplicates_after_import
   #created_customers{:style => maybe_hidden}
@@ -28,7 +28,7 @@
 
 - if import.created_showdates.length > 0
   %p
-    = link_to_function "#{import.created_showdates.length} new showdates", visual_effect(:toggle_blind, :created_showdates)
+    = link_to_function "#{import.created_showdates.length} new showdates", '$("#created_showdates").slideToggle()'
     will be created
   %ol#created_showdates{:style => maybe_hidden}
     - import.created_showdates.sort_by(&:thedate).each do |showdate|
@@ -36,7 +36,7 @@
 
 - if import.created_vouchertypes.length > 0
   %p
-    = link_to_function "#{import.created_vouchertypes.length} new voucher types", visual_effect(:toggle_blind, :created_vouchertypes)
+    = link_to_function "#{import.created_vouchertypes.length} new voucher types", '$("#created_vouchertypes").slideToggle()'
     will be created
   %ol#created_vouchertypes{:style => maybe_hidden}
     - import.created_vouchertypes.each do |vouchertype|

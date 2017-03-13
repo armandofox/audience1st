@@ -1,23 +1,22 @@
 A1.hide_checkbox = function() {
-  var elt = jQuery(this);
-  var affected_elts = jQuery(elt.data('selector'));
+  var elt = $(this);
+  var selector = elt.data('selector');
   var action_if_checked = elt.data('ifchecked');
-  if (elt.is(':checked')) {
+  if ($(self).is(':checked')) {
     if (action_if_checked == 'hide') {
-      affected_elts.hide();
+      $.hide(selector);
     } else {
-      affected_elts.show();
+      $.show(selector);
     }
   } else {
     if (action_if_checked == 'hide') {
       /* unchecked, so show all */
-      affected_elts.show();
+      $.show(selector);
     } else {
       /* unchecked, so hide all */ 
-      affected_elts.hide();
+      $.hide(selector);
     }
   }
 };
-addLoadEvent(function() {
-  jQuery('.hide_checkbox').change(A1.hide_checkbox);
-});
+
+$('.hide_checkbox').change(A1.hide_checkbox);

@@ -4,7 +4,7 @@
   %tr
     %td
       %label{:for => :showdate_thedate} Date and time
-    %td= (parent_datetime_select 'showdate', 'thedate', 'showdate_end_advance_sales', args).html_safe
+    %td= datetime_select 'showdate', 'thedate', args
   %tr
     %td
       %label{:for => :showdate_description} Description (optional)
@@ -15,7 +15,7 @@
     %td 
       %label{:for => :showdate_end_advance_sales} Advance sales cutoff
     %td
-      = (child_datetime_select 'showdate', 'end_advance_sales', args).html_safe
+      = datetime_select 'showdate', 'end_advance_sales', args
       = popup_help_for :advance_sales_cutoff
   %tr
     %td 

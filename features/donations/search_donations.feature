@@ -35,8 +35,7 @@ Scenario: filter donations by fund
 Scenario: filter donations by date
 
   When I check "use_date"
-  And I select "2/1/2012" as the "#donation_date_from" date
-  And I select "7/1/2012" as the "#donation_date_to" date
+  And I select "2/1/2012 to 7/1/2012" as the "dates" date range
   And I press "Search"
   Then I should see the following donations:
   | donor       | amount |

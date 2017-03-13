@@ -1,12 +1,17 @@
 class AttendanceAtSpecificPerformances < Report
-
+  include ActionView::Helpers::FormOptionsHelper
+  include ActionView::Helpers::JavaScriptHelper
   def initialize(output_options={})
     current_show = Show.current_or_next
+    shows = Show.all_for_seasons(Time.this_season-2, Time.this_season+1)
+    shows_showdates =
+      Hash[shows.map { |s| [s.id.to_s, escape_javascript(options_from_collection_for_select(s.showdates, :id, :printable_date))] }].
+      to_json
     @view_params = {
       :name => "Attendance at specific performances",
-      :shows => Show.all_for_seasons(Time.this_season-2, Time.this_season+1),
+      :shows => shows,
       :current_show => current_show,
-      :showdates => (current_show ? current_show.showdates : [])
+      :shows_showdates => shows_showdates,
     }
     super
   end

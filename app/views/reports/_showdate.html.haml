@@ -4,17 +4,13 @@
   %tr.showSalesRow
     %td.showSalesDate{:style=>'width: 20em;'}
       - hdr ||= "#{showdate.printable_date} (#{showdate.max_allowed_sales})"
-      = link_to_remote(hdr.html_safe, :update=> divid, |
-        :url=>{:action=>"showdate_sales",:id=>showdate,:klass=>s}, |
-        :before => "Element.show('wait_#{divid}')", |
-        :complete=> visual_effect(:toggle_slide,divid,:duration=>0.5) + "Element.hide('wait_#{divid}');") |
-      = spinner("wait_#{divid}")
+      = link_to hdr, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"
     %td.showSalesDateQty= showdate.compute_total_sales
     %td.showSalesDatePercent
       = number_to_percentage(showdate.percent_sold,:precision=>0)
       (#{number_to_percentage(showdate.percent_of_house, :precision => 0)} house)
     %td.currency.showSalesDateRevenue= number_to_currency(showdate.revenue)
 
-%div{:id=>divid,:style=>"display: none;"}
+%div{:id=>divid}
 
 

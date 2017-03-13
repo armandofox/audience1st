@@ -100,11 +100,16 @@ class ValidVouchersController < ApplicationController
   end
 
   def destroy
-    v = ValidVoucher.find(params[:id])
-    theShowID = v.showdate.show.id
-    ValidVoucher.find(params[:id]).destroy
-    render :nothing => true
-    #redirect_to :controller => 'shows', :action => 'edit', :id => theShowID
+    id = params[:id]
+    begin
+      ValidVoucher.find(id).destroy
+      # Success: hide the partial associated with this valid-voucher
+      render :js => %Q{\$('#valid_voucher_#{id}').hide();}
+    rescue ActiveRecord::RecordNotFound
+      render :js => %Q{alert("Deletion failed: valid voucher not found");}
+    rescue RuntimeError => e
+      render :js => %Q{alert("Deletion failed: #{e.message}");}
+    end
   end
 
 end

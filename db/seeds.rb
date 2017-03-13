@@ -3,10 +3,15 @@
 class Audience1stSeeder
 
   def self.seed_all
+    self.create_options
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
   end
+
+  # Options
+  # Basic options for running features and specs
+
 
   #  Special customers that must exist and cannot be deleted
 
@@ -61,7 +66,7 @@ class Audience1stSeeder
       end
     end
   end
-    
+  
   def self.create_default_account_code
     a = AccountCode.find(:first) ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
@@ -92,6 +97,30 @@ class Audience1stSeeder
     end
   end
 
+  def self.create_options
+    Option.create!(
+      :id => 1,
+      :venue_id => 111,
+      :venue_shortname => 'testing',
+      :venue => 'Test Theater',
+      :advance_sales_cutoff => 60,
+      :sold_out_threshold => 90,
+      :nearly_sold_out_threshold => 80,
+      :allow_gift_tickets => false,
+      :allow_gift_subscriptions => false,
+      :season_start_month => 1,
+      :season_start_day => 1,
+      :cancel_grace_period => 1440,
+      :venue => 'Test Theater',
+      :send_birthday_reminders => 0,
+      :terms_of_sale => 'Sales Final',
+      :precheckout_popup => 'Please double check dates',
+      :venue_homepage_url => 'http => //test.org',
+      :default_retail_account_code =>  9999,
+      :default_donation_account_code => 9999,
+      :default_donation_account_code_with_subscriptions => 9999
+      )
+  end 
   self.seed_all
 
 end
