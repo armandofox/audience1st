@@ -73,7 +73,7 @@ describe Voucher do
       @v = Voucher.new_from_vouchertype(@vt_regular)
       @c.vouchers << @v
       @sd = create(:showdate, :date => 1.day.from_now)
-      @v.stub(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_type => 0, :explanation => 'Event is sold out'))
+      @v.stub(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_this_patron => 0, :explanation => 'Event is sold out'))
       @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
     end
     it 'should not succeed' do

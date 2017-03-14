@@ -74,7 +74,7 @@ describe Customer, "merging" do
     before :each do ;  @cust = create(:customer) ;  end
     def create_records(type,cust)
       Array.new(1+rand(4)) do |idx|
-        e = type.new(:customer_id => cust.id)
+        e = cust.send(type.to_s.downcase.pluralize).new()
         e.save(false)
         e.id
       end
@@ -104,7 +104,7 @@ describe Customer, "merging" do
         @cust.forget!
         Customer.find_by_id(old_id).should be_nil
       end
-      [Item, Txn, Import, Order].each do |t|
+      [Item, Txn, Order].each do |t|
         it "should preserve old customer's #{t}s" do
           objs = create_records(t, @cust)
           t.count(:conditions => "customer_id = #{@cust.id}").should == objs.length
