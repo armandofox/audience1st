@@ -12,12 +12,10 @@ Background:
 
 Scenario Outline: browse reports
 
-  When I select "<report_type>" from "report_name"
-  Then show me the page
+  When I select "<report_type>" from "special_report_name"
   Then I should see "<a_report_option>"
-  Then show me the page
   When I choose "Estimate number of matches"
-  And I press "Run report"
+  And I press "Run Report"
   Then I should see an alert matching /[0-9]+ matches/
 
   Examples: customer report fields

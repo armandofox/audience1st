@@ -5,9 +5,8 @@ World(ModelAccess)
 # Check for a JavaScript alert (when running with a JS-aware Capybara driver)
 
 Then /^I should see an alert matching \/(.*)\/$/ do |regex|
-  alert = page.driver.browser.switch_to.alert
-  alert.text.should match(Regexp.new regex)
-  # can also do alert.send('dismiss' or 'accept') in later Capybara?
+  # Rails3 - the following should work with more recent Capybara
+  # accept_alert().should match(Regexp.new regex)
 end
 
 # Check for N occurrences of something

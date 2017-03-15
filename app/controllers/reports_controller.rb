@@ -69,7 +69,7 @@ class ReportsController < ApplicationController
   end
 
   def  attendance
-    report_name = params[:report_name].to_s.gsub(/\s+/, '_').downcase
+    report_name = params[:special_report_name].to_s.gsub(/\s+/, '_').downcase
     return unless report_subclass = validate_report_type(report_name)
     @report = report_subclass.__send__(:new)
     @args = @report.view_params

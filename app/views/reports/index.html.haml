@@ -19,13 +19,12 @@
 
 .pageDiv#database_maintenance
   %h1 Database Maintenance
-  #database_maintenance
-    %p= gen_button 'Find Possible Duplicates...', list_duplicate_customers_path
-    %p= link_to_function 'Synchronize with Email Database...', 'alert("This function is coming soon.")'
+  %p= gen_button 'Find Possible Duplicates...', list_duplicate_customers_path
+  %p= link_to_function 'Synchronize with Email Database...', 'alert("This function is coming soon.")'
 
 .pageDiv#customer_lists
   %h1 Customer Lists
-  = select_tag 'report_name', options_for_select(@special_report_names, :selected => 'Select report...'), 'data-submit' => attendance_reports_path
+  = select_tag 'special_report_name', options_for_select(@special_report_names, :selected => 'Select report...'), 'data-submit' => attendance_reports_path
   #report_body
 
 .pageDiv#subscription_counts

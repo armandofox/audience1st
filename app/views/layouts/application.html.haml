@@ -14,9 +14,8 @@
 
     %title= @page_title || h(controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
-    %meta{'http-equiv'=>:imagetoolbar, :content=>:no}/
     %meta{:name=>:description, :content=>''}/
-    -# Rails 3 provides the following 2 lines via csrf_meta_tag helper
+    -# Rails3 provides the following 2 lines via csrf_meta_tag helper
     %meta{:name => 'csrf-param', :content => Rack::Utils.escape_html(request_forgery_protection_token)}
     %meta{:name => 'csrf-token', :content => Rack::Utils.escape_html(form_authenticity_token)}
 
