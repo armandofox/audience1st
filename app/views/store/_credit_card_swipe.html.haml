@@ -5,7 +5,7 @@
   = hidden_field_tag '_stripe_api_key', Figaro.env.stripe_key, :class => 'unsubmitted'
 
   %label.strong{:for => 'credit_card_verification_value'} Enter CVV code manually FIRST!
-  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :autocomplete => :off, :class => 'fieldWithErrors unsubmitted'
+  = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'fieldWithErrors unsubmitted'
 
   %br
   #ccReady
@@ -25,7 +25,7 @@
   = text_field_tag 'credit_card_last_name', '', :size => 20
   %br
   %label{:for => 'credit_card_number'} Number (no spaces)
-  = text_field_tag 'credit_card_number', '', :size => 20, :max_length => 16, :autocomplete => :off, :class => 'unsubmitted'
+  = text_field_tag 'credit_card_number', '', :size => 20, :maxlength => 16, :autocomplete => :off, :class => 'unsubmitted'
 
   %br
   %label{:for => 'credit_card_month'} Expiration Month

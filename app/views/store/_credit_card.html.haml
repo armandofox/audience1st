@@ -11,7 +11,7 @@
   = hidden_field_tag '_stripe_api_key', Figaro.env.stripe_key, :class => 'unsubmitted'
 
   %label{:for => 'credit_card_number'} Number (no spaces)
-  = text_field_tag 'credit_card_number', '', :size => 24, :max_length => 16, :autocomplete => :off, :class => 'unsubmitted'
+  = text_field_tag 'credit_card_number', '', :size => 24, :maxlength => 16, :autocomplete => :off, :class => 'unsubmitted'
   = image_tag 'credit_card_logos_horizontal.png'
 
   %br
@@ -22,7 +22,7 @@
 
   %br
   %label{:for => 'credit_card_verification_value'} Security (CVV) code
-  = text_field_tag 'credit_card_verification_value', '', :size => 4, :max_length => 4, :class => 'unsubmitted'
+  = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'unsubmitted'
   = popup_help_for 'credit_card_verification_value'
   %br
 
