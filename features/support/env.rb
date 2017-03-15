@@ -19,7 +19,6 @@ require 'capybara/cucumber'
 require 'capybara/session'
 
 
-# require 'cucumber/rails/capybara_javascript_emulation' # Lets you click links with onclick javascript handlers without using @culerity or @javascript
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
 # order to ease the transition to Capybara we set the default here. If you'd
 # prefer to use XPath just remove this line and adjust any selectors in your
@@ -27,11 +26,13 @@ require 'capybara/session'
 Capybara.default_selector = :css
 
 require 'capybara/poltergeist'
-Capybara.register_driver :poltergeist_debug do |app|
-  Capybara::Poltergeist::Driver.new(app, :inspector => true)
+Capybara.register_driver :poltergeist do |app|
+  options = {
+  }
+  Capybara::Poltergeist::Driver.new(app, options)
 end
-Capybara.javascript_driver = :poltergeist_debug
-#Capybara.javascript_driver = :poltergeist
+#Capybara.javascript_driver = :poltergeist_debug
+Capybara.javascript_driver = :poltergeist
 
 # If you set this to false, any error raised from within your app will bubble 
 # up to your step definition and out to cucumber unless you catch it somewhere

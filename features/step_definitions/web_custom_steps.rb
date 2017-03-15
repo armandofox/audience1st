@@ -2,6 +2,14 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 World(ModelAccess)
 
+# Check for a JavaScript alert (when running with a JS-aware Capybara driver)
+
+Then /^I should see an alert matching \/(.*)\/$/ do |regex|
+  alert = page.driver.browser.switch_to.alert
+  alert.text.should match(Regexp.new regex)
+  # can also do alert.send('dismiss' or 'accept') in later Capybara?
+end
+
 # Check for N occurrences of something
 Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, _, selector, count|
   regexp = Regexp.new(regexp, Regexp::MULTILINE)
