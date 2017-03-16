@@ -21,12 +21,14 @@ Background:
 
 Scenario: estimate number of matches
 
-  When I press "Estimate number of matches"
-  Then I should see "2 matches" within "#report_preview"
+  When I choose "Estimate number of matches"
+  And I press "Run Report"
+  Then I should see an alert matching /2 matches/
 
 Scenario: display results
 
-  When I press "Display on screen"
+  When I choose "Display list on screen"
+  And I press "Run Report"
   Then table "#customers" should include:
     | First name | Last name |
     | Armando    | Fox       |

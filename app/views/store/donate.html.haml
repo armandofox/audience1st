@@ -15,7 +15,7 @@
         return false;
     }
     if (confirm("Please confirm amount: OK to continue with payment of $" + amountInt.toString() + ".00 ?")) {
-        stripeSubmit();
+        A1.stripeSubmit();
     } 
     return false;   // disable form submission, since stripeResponseHandler will do it
   } 

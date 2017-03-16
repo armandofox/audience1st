@@ -34,10 +34,10 @@ group :development, :test do
   gem 'autotest-fsevent', :git => 'https://github.com/svoop/autotest-fsevent.git'
   gem 'minitest'
   gem 'capistrano', '2.5.10'
-  gem 'capybara', '~> 1.1'
 
   # for Ruby 1.8.7/Rails 2.3, we need phantomjs <=1.9.8 and faye-websocket 0.4.7
   # (https://github.com/teampoltergeist/poltergeist/issues/320)
+  gem 'capybara', '1.1.4'
   gem 'poltergeist', '1.0.2'
   gem 'faye-websocket', '0.4.7'
 

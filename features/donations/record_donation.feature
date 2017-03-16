@@ -24,10 +24,11 @@ Scenario: attempt donation with invalid credit card
   And I choose "Credit Card"
   And I fill in the "Credit Card Information" fields as follows:
   | field               |            value |
-  | Number (no spaces)  | 4444444444444444 |
-  | Security (CVV) Code |              111 |
+  | Number (no spaces)  | 4000000000000002 |
+  | Security (CVV) code |              111 |
   And I press "Charge Credit Card"
   Then I should be on the record donation page for customer "Tom Foolery"
-  And I should see "card was declined"
+  Then I should see /declined/
+
 
   

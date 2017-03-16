@@ -1,6 +1,6 @@
 When /^I fill in the special report "(.*)" with:$/ do |report_name, fields|
   visit path_to "the reports page"
-  select report_name, :from => 'report_name'
+  select report_name, :from => 'special_report_name'
   wait_for_ajax
   within '#report_body' do
     fields.hashes.each do |form_field|

@@ -35,11 +35,13 @@ A1.stripeResponseHandler = function(status, response) {
   if (response.error) {
     // re-enable submit button
     $('#_stripe_submit').prop('disabled', false);
-    $('#payment_errors').text('Please correct the following problems:<br/>' +   response.error.message);
+    $('#payment_errors').html('Please correct the following problems:<br/>' +   response.error.message);
   } else {
     $('#credit_card_token').val(response['id']);
     $('#_stripe_commit').val('credit');
-    $('#_stripe_payment_form').submit();
+    // we have to "unwrap" the jQuery form element or else submit() won't work (http://stackoverflow.com/a/22950376/558723)
+    // $('#_stripe_payment_form')[0].submit();
+    document.getElementById('_stripe_payment_form').submit();
   }
 };
 
@@ -50,7 +52,7 @@ A1.stripeSubmit = function(event) {
   // disable regular form submit action (needed for Firefox <4)
   $('#_stripe_payment_form').submit(function(evt) { return false });
   //console.log("Submitting to Stripe");
-  if ($('#swipe_data')  && $('#swipe_data').val() != '') {
+  if ($('#swipe_data').length > 0) {
     // populate credit card info fields from magstripe swipe hidden field
     A1.parseSwipeData();
   }
@@ -58,51 +60,29 @@ A1.stripeSubmit = function(event) {
   $('#payment_errors').text('');  //  clear out errors field
   $('#_stripe_submit').prop('disabled', true); // disable submit button
   var card = {
-        number: $('#credit_card_number').val(),
-        cvc: $('#credit_card_verification_value').val(),
-        exp_month: $('#credit_card_month').val(),
-        exp_year: $('#credit_card_year').val(),
-        name: ($('#credit_card_first_name').val() + ' ' + $('#credit_card_last_name').val())
+    number: $('#credit_card_number').val(),
+    cvc: $('#credit_card_verification_value').val(),
+    exp_month: $('#credit_card_month').val(),
+    exp_year: $('#credit_card_year').val(),
+    name: ($('#credit_card_first_name').val() + ' ' + $('#credit_card_last_name').val())
   };
-  if ($('#billing')) {             // billing name/addr available on form?
-      card.address_line1 = $('#billing #customer_street')[0].val();
-      card.address_zip = $('#billing #customer_zip')[0].val();
-      card.address_state = $('#billing #customer_state')[0].val();
+  if ($('#billing').length > 0) {             // billing name/addr available on form?
+    card.address_line1 = $('#billing #customer_street')[0].val();
+    card.address_zip = $('#billing #customer_zip')[0].val();
+    card.address_state = $('#billing #customer_state')[0].val();
   }
   Stripe.setPublishableKey(key);
   Stripe.createToken(card, A1.stripeResponseHandler);
   return(false);
 }
 
-A1.checkPlaceOrderForm = function() {
-  var alrt = '';
-  if (! $('#credit_card_number').val().match('[0-9]{15,16}')) {
-    alrt += "Credit card number appears to be too short.\n";
-  }
-  if (! $('#credit_card_verification_value').val().match('[0-9]{3,4}')) {
-    alrt += "Credit card security code appears to be too short.\n";
-  }
-  if ($('#sales_final') && !($('#sales_final').checked)) {
-    alrt += "Please indicate your acceptance of our Terms of Sale by checking the TERMS OF SALE box.\n";
-  }
-  if (alrt != '') {
-    alrt = "Please correct the following errors:\n\n" + alrt;
-  } else {
-    $('#_stripe_submit').disabled = false;
-  }
-  return alrt;
-}
-
 A1.setupForCheckout = function() {
   // make credit card fields unsubmittable to server....
   $('.unsubmitted').removeAttr('name');                // always do this
-  // ...and whenever they change, check if order form is valid
-  $('#credit_card_number').change(A1.checkPlaceOrderForm);
-  $('#credit_card_verification_value').change(A1.checkPlaceOrderForm);
-  $('#sales_final').change(A1.checkPlaceOrderForm);
+
   // on the checkout page, copy the billing customer info to the credit card info
 
-  if ($('body#store_checkout')) { // only on checkout page
+  if ($('body#store_checkout').length > 0) { // only on checkout page
     $('#credit_card_first_name').val($('#billing #customer_first_name').val());
     $('#credit_card_last_name').val($('#billing #customer_last_name').val());
     if (A1.checkForStripe()) {
