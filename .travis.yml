@@ -12,5 +12,5 @@ env:
 script:
   - cp config/database.yml.test config/database.yml
   - bundle exec rake db:setup
-  - cucumber
+  - bundle exec cucumber
   - bundle exec rake spec
