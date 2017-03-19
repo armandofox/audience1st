@@ -33,9 +33,14 @@ ActionController::Routing::Routes.draw do |map|
         :confirm_multiple => :post,
         :cancel_multiple => :post,
       })
-    
+
+    customer.resources(:donations, :only => [:new, :create])
   end
       
+  # list all donations management
+
+  map.resources(:donations, :only  => [:index, :update])
+  
   # RSS
 
   map.connect '/info/ticket_rss', :controller => 'info', :action => 'ticket_rss', :conditions => {:method => :get}
@@ -116,10 +121,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.quick_donate '/donate', :controller => 'store', :action => 'donate', :conditions => {:method => [:get, :post]}
 
-  # donations management
-
-  map.resources(:donations, :only  => [:index, :new, :create, :update])
-  
   # config options
 
   map.options '/options', :controller => 'options', :action => 'options'

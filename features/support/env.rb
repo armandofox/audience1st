@@ -56,16 +56,17 @@ ActionController::Base.allow_rescue = false
 # after each scenario, which can lead to hard-to-debug failures in 
 # subsequent scenarios. If you do this, we recommend you create a Before
 # block that will explicitly put your database in a known state.
-Cucumber::Rails::World.use_transactional_fixtures = true
+Cucumber::Rails::World.use_transactional_fixtures = false
 
 # How to clean your database when transactions are turned off. See
 # http://github.com/bmabey/database_cleaner for more info.
 require 'database_cleaner'
 require 'database_cleaner/cucumber'
 DatabaseCleaner.strategy = :truncation
-
+DatabaseCleaner.clean_with(:truncation)
 
 Before do
+  DatabaseCleaner.start
   Fixtures.reset_cache
   fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
   fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
@@ -81,6 +82,7 @@ Before do
 end
 
 After do
+  DatabaseCleaner.clean
   begin
     $rspec_mocks.verify_all
   ensure

@@ -16,10 +16,23 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 include AuthenticatedTestHelper
 
 Spec::Runner.configure do |config|
-  # If you're not using ActiveRecord you should remove these
-  # lines, delete config/database.yml and disable :active_record
-  # in your config/boot.rb
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+  config.before(:each) do 
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.start
+    # seed the DB with seed data - necessary for Options and config info
+    load File.join(Rails.root, 'db', 'seeds.rb')
+    # Freeze time
+    Timecop.travel(Date.parse 'Mar 1, 2012')
+  end
+  config.after(:each) do
+    DatabaseCleaner.clean
+    Timecop.return
+  end
+
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
   config.global_fixtures = :options
@@ -28,16 +41,6 @@ Spec::Runner.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include ApplicationHelper
   config.include ActionView::Helpers
-  config.before(:each) do
-    # seed the DB with constants. Must be done before each test, since
-    # use of Fixtures wipes DB for each test.
-    load File.join(Rails.root, 'db', 'seeds.rb')
-    # Freeze time
-    Timecop.travel(Date.parse 'Mar 1, 2012')
-  end
-  config.after(:each) do
-    Timecop.return
-  end
 
   # == Fixtures
   #

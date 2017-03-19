@@ -12,3 +12,4 @@ rerun.txt
 public/stylesheets/venue
 tmp/
 
+db/*.sqlite3

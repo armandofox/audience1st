@@ -22,7 +22,7 @@ module NavigationHelpers
     when /change password page/i            then change_password_for_customer_path(@customer)
     when /the forgot password page/i        then forgot_password_customers_path
       # customer donations.  See notes in routes.rb
-    when /the record donation page/         then new_donation_path(:customer_id => @customer)
+    when /the record donation page/         then new_customer_donation_path(@customer)
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management and customer help
     when /the list of customers page/i      then customers_path
