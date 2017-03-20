@@ -1,11 +1,11 @@
 module CustomerLoginHelper
-  def verify_successful_login(username,pass,admin=false)
+  def verify_successful_login(customer,pass,admin=false)
     visit logout_path
     visit login_path
-    fill_in 'email', :with => username
+    fill_in 'email', :with => customer.email
     fill_in 'password', :with => pass
     click_button 'Login'
-    page.should have_content("Signed in as #{@customer.first_name}")
+    page.should have_content("Signed in as #{customer.first_name}")
     page.should have_css('#customer_quick_search') if admin
   end
 end
@@ -28,12 +28,12 @@ Given /^I (am logged in|login) as (.*)?$/ do |_,who|
   when /customer "(.*) (.*)"/ then customer = Customer.find_by_first_name_and_last_name!($1,$2)
   else raise "No such user '#{who}'"
   end
-  verify_successful_login(customer.email, 'pass', is_admin)
+  verify_successful_login(customer, 'pass', is_admin)
 end
 
 
 Then /^I should be able to login with username "(.*)" and (that password|password "(.*)")$/ do |username,use_prev,password|
   @password = password if use_prev !~ /that/
   customer = Customer.find(:first, :conditions => ['email LIKE ?',username.downcase])
-  verify_successful_login(username, @password)
+  verify_successful_login(customer, @password)
 end
