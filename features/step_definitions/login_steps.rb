@@ -2,7 +2,7 @@ module CustomerLoginHelper
   def verify_successful_login(username,pass,admin=false)
     visit logout_path
     visit login_path
-    fill_in 'email', :with => @customer.email
+    fill_in 'email', :with => username
     fill_in 'password', :with => pass
     click_button 'Login'
     page.should have_content("Signed in as #{@customer.first_name}")
