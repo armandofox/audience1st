@@ -59,8 +59,12 @@ module ApplicationHelper
     sep = sep.html_safe
     if m.respond_to?(:errors_as_html)
       m.errors_as_html(sep).html_safe
-    elsif (m.kind_of? Array) then m.map { |line| content_tag(:span, render_multiline_message(line,sep).html_safe) }.join(sep.html_safe)
-    else m.html_safe
+    elsif (m.kind_of? Array)
+      m.map do |line|
+        content_tag(:span, render_multiline_message(line,sep).html_safe)
+      end.join(sep).html_safe
+    else
+      m.html_safe
     end
   end
   
