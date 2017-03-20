@@ -82,11 +82,11 @@ Before do
 end
 
 After do
-  DatabaseCleaner.clean
   begin
     $rspec_mocks.verify_all
   ensure
     $rspec_mocks.reset_all
+    DatabaseCleaner.clean
   end
 end
 

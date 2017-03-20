@@ -17,49 +17,6 @@ Then /^account creation should fail with "(.*)"$/ do |msg|
 }
 end
 
-Given /^I am not logged in$/ do
-  visit logout_path
-  page.should have_content("logged out")
-end
-
-Given /^I am logged in as (.*)?$/ do |who|
-  visit logout_path
-  visit login_path
-  steps %Q{When I login as #{who}}
-  page.should have_content("Signed in as #{@customer.first_name}")
-  page.should have_css('#customer_quick_search') if @is_admin
-end
-
-When /^I login as (.*)$/ do |who|
-  @is_admin = false
-  case who
-  when /administrator/i
-    @customer = Customer.find_by_role!(100)
-  when /nonsubscriber/i
-    @customer = customers(:tom)
-  when /subscriber/i
-    @customer = customers(:tom)
-    make_subscriber!(@customer)
-  when /box ?office manager/i
-    @customer = customers(:boxoffice_manager)
-    @is_admin = true
-  when /box ?office/i
-    @customer = customers(:boxoffice_user)
-    @is_admin = true
-  when /staff/i
-    @customer = customers(:staff)
-    @is_admin = true
-  when /customer "(.*) (.*)"/
-    @customer = Customer.find_by_first_name_and_last_name!($1,$2)
-  else
-    raise "No such user '#{who}'"
-  end
-  fill_in 'email', :with => @customer.email
-  fill_in 'password', :with => 'pass'
-  click_button 'Login'
-  page.should have_content("Signed in as #{customer.first_name}")
-end
-
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
   customer = Customer.find_by_first_name_and_last_name!(first,last)
   visit customer_path(customer)
@@ -72,17 +29,6 @@ Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
   with_scope('#onBehalfOfName') do
     page.should have_content(full_name)
   end
-end
-
-Then /^I should be able to login with username "(.*)" and (that password|password "(.*)")$/ do |username,use_prev,password|
-  @password = password if use_prev !~ /that/
-  visit logout_path
-  visit login_path
-  customer = Customer.find(:first, :conditions => ['email LIKE ?',username.downcase])
-  fill_in 'email', :with => username
-  fill_in 'password', :with => @password
-  click_button 'Login'
-  page.should have_content("Signed in as #{customer.first_name}")
 end
 
 Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
