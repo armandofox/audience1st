@@ -6,4 +6,4 @@
   #warning.warning.message.clear{'data-hilite' => '#ffff00'}
     %p= render_multiline_message(flash[:alert])
 
-= javascript_tag %q{$('.message').effect('highlight', {color: $('.message').data('hilite')}, 3000);}
+= javascript_tag %q{$('.message').animate({color: $('.message').data('hilite')}, 3000);}
