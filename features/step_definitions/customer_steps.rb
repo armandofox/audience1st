@@ -57,6 +57,7 @@ When /^I login as (.*)$/ do |who|
   fill_in 'email', :with => @customer.email
   fill_in 'password', :with => 'pass'
   click_button 'Login'
+  page.should have_content("Signed in as #{customer.first_name}")
 end
 
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
