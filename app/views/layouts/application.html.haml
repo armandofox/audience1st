@@ -9,7 +9,7 @@
     = stylesheet_link_tag 'venue/default', :media => 'all'
 
     -# Rails3: no need to redefine default JS files in javascript_tag_helper.rb
-    = javascript_include_tags_for_jquery :all
+    = javascript_include_tag :all
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
 
     %title= @page_title || h(controller.action_name.humanize)
