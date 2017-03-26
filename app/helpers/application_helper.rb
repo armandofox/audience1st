@@ -101,6 +101,12 @@ module ApplicationHelper
     end
   end
 
+  # Return a disabled 'default' menu selection for a dropdown
+  def disabled_select_default(str)
+    str = [str]
+    options_for_select(str, :selected => str, :disabled => str).html_safe
+  end
+
   # return a checkbox that "protects" another form element by hiding/showing it
   # when checked/unchecked, given initial state.  It's the caller's responsibility
   # to ensure the initial state matches the actual display state of the

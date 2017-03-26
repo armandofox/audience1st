@@ -7,7 +7,7 @@
   %br
 
   %label{:for => 'vouchertype_id'} What type:
-  = select_tag('vouchertype_id', options_from_collection_for_select(@vouchers,'id','name_with_season'))
+  = select_tag('vouchertype_id', disabled_select_default('Select type...') + options_from_collection_for_select(@vouchers,'id','name_with_season'))
   = spinner('wait_showdate')
   %br
     
@@ -15,11 +15,7 @@
   = text_field_tag 'comments', '', {:size => 30, :maxlength => 30}
   %br
 
-  #reserve_for= render(:partial => 'reserve_for') if @valid_vouchers
-  = observe_form 'addcomps', :url => update_shows_path, |
-    :update => 'reserve_for', |
-    :before => "Element.show('wait_showdate')", |
-    :complete => "Element.hide('wait_showdate')" |
+  #reserve_for= render :partial => 'reserve_for'
     
   = submit_tag "Add Vouchers"
 
