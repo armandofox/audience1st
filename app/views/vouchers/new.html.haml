@@ -8,7 +8,6 @@
 
   %label{:for => 'vouchertype_id'} What type:
   = select_tag('vouchertype_id', disabled_select_default('Select type...') + options_from_collection_for_select(@vouchers,'id','name_with_season'))
-  = spinner('wait_showdate')
   %br
     
   %label{:for => 'comments'}  Optional comments:
