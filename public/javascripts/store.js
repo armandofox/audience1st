@@ -82,7 +82,7 @@ A1.setupForCheckout = function() {
 
   // on the checkout page, copy the billing customer info to the credit card info
 
-  if ($('body#store_checkout').length > 0) { // only on checkout page
+  if ($('#store_checkout').length > 0) { // only on checkout page
     $('#credit_card_first_name').val($('#billing #customer_first_name').val());
     $('#credit_card_last_name').val($('#billing #customer_last_name').val());
     if (A1.checkForStripe()) {
