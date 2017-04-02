@@ -67,9 +67,9 @@ A1.stripeSubmit = function(event) {
     name: ($('#credit_card_first_name').val() + ' ' + $('#credit_card_last_name').val())
   };
   if ($('#billing').length > 0) {             // billing name/addr available on form?
-    card.address_line1 = $('#billing #customer_street')[0].val();
-    card.address_zip = $('#billing #customer_zip')[0].val();
-    card.address_state = $('#billing #customer_state')[0].val();
+    card.address_line1 = $('#billing #customer_street').val();
+    card.address_zip = $('#billing #customer_zip').val();
+    card.address_state = $('#billing #customer_state').val();
   }
   Stripe.setPublishableKey(key);
   Stripe.createToken(card, A1.stripeResponseHandler);
