@@ -8,6 +8,7 @@ A1.select_search_result = function(customer,textField,idField) {
   //   with the chosen name.
   textField.val(customer.item.label);
   idField.val(customer.item.value);
+  window.location.assign($('#id').val());
 };
 
 A1.setup_autocomplete_fields = function() {
