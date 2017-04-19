@@ -47,6 +47,7 @@ class Audience1stSeeder
   }
 
   def self.create_special_customers
+    puts "Creating special customers"
     # Create Admin (God) login
     unless Customer.find_by_role(100)
       admin = Customer.new(:first_name => 'Super',
@@ -68,6 +69,7 @@ class Audience1stSeeder
   end
   
   def self.create_default_account_code
+    puts "Creating default account code"
     a = AccountCode.find(:first) ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
@@ -82,6 +84,7 @@ class Audience1stSeeder
   end
 
   def self.create_purchasemethods
+    puts "Creating purchasemethods"
     ["Web - Credit Card","web_cc",false,
       "No payment required","none",true,
       "Box office - Credit Card","box_cc",false,
@@ -98,8 +101,8 @@ class Audience1stSeeder
   end
 
   def self.create_options
+    puts "Creating default options"
     Option.create!(
-      :id => 1,
       :venue_id => 111,
       :venue_shortname => 'testing',
       :venue => 'Test Theater',
