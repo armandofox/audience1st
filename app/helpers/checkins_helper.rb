@@ -12,7 +12,7 @@ module CheckinsHelper
 
   def showdates_with_urls
     year = Time.now.year
-    showdates = Showdate.all_showdates_for_seasons(year, year+1)
+    showdates = Showdate.all_showdates_for_seasons(year-1, year+1)
     choices = showdates.map do |sd|
       [sd.name_and_date_with_capacity_stats, walkup_sale_path(sd)]
     end
