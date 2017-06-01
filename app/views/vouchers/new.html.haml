@@ -11,7 +11,7 @@
   %br
     
   %label{:for => 'comments'}  Optional comments:
-  = text_field_tag 'comments', '', {:size => 30, :maxlength => 30}
+  = text_area_tag 'comments', '', {:size => '40x2'}
   %br
 
   #reserve_for= render :partial => 'reserve_for'
