@@ -1,2 +1,12 @@
-%p Search for customers with ANY of these labels: (Command-click on Mac or Control-click on Windows to select multiple)
-= select_tag 'labels', options_from_collection_for_select(Label.all, :id, :name), :multiple => true, :size => [10, Label.count].min
+%p Search for customers with ANY of these labels:
+- labels = Label.all.sort_by(&:name)
+- columns = 5
+%table
+  %tr
+    - labels.in_groups_of(labels.size / columns + 1) do |l|
+      %td
+        - l.each do |label|
+          - next if label.nil?
+          = check_box_tag "labels[#{label.id}]"
+          %label.plain{:for => "labels_#{label.id}"}= label.name
+          %br

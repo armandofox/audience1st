@@ -3,11 +3,11 @@
     %tr 
       %td= check_box_tag 'use_cid', 1, @params[:use_cid]
       :javascript
-        jQuery('#use_cid').change(function() { 
-          if (! jQuery(this).is(':checked')) { 
-            jQuery('#show_vouchers').prop('checked',false);
+        $('#use_cid').change(function() { 
+          if (! $(this).is(':checked')) { 
+            $('#show_vouchers').prop('checked',false);
           } else {
-            jQuery('#cid').val('');
+            $('#cid').val('');
           };
         });
       %td Only for this customer (type first or last name):
@@ -15,7 +15,7 @@
         = text_field_tag 'donor_name', @full_name, :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
         = hidden_field_tag 'cid', @params[:cid]
         :javascript
-          jQuery('#donor_name').focus(function() { jQuery('#use_cid').prop('checked',true); })
+          $('#donor_name').focus(function() { $('#use_cid').prop('checked',true); })
     %tr 
       %td 
       %td{:colspan=>2} 
@@ -24,15 +24,8 @@
     %tr 
       %td= check_box_tag 'use_date', 1, @params[:use_date] 
       %td Date is in the range:
-      %td
-        - d1,d2,d3 = select_date_with_shortcuts( |
-          :from => @params[:donation_date_from], :to =>  @params[:donation_date_to], |
-          :start_year => Date.today.year - 10, :prefix => 'donation_date', |
-          :selected => @params[:date_shortcut]) |
-        = d1
-        %br
-        or
-        = "#{d2} to #{d3}".html_safe
+      %td= select_date_with_shortcuts 'dates', :from => @params[:from], :to => @params[:to], :enables => '#use_date'
+
     %tr 
       %td= check_box_tag 'use_amount', 1, @params[:use_amount]
       %td  Donation amount between:

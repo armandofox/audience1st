@@ -78,7 +78,7 @@ end
 Given /^the "(.*)" performance is sold out$/ do |dt|
   showdate = Showdate.find_by_thedate! Time.parse(dt)
   to_sell = showdate.max_sales - showdate.compute_total_sales
-  vtype = showdate.valid_vouchers.first.name
+  vtype = create(:valid_voucher, :showdate => showdate).name
   steps %Q{Given #{to_sell} "#{vtype}" tickets have been sold for "#{dt}"}
 end
 

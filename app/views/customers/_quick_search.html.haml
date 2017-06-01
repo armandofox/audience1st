@@ -5,9 +5,8 @@
       %span#onBehalfOfName= link_to @customer.full_name, customer_path(@customer)
       (last login: #{@customer.last_login.to_formatted_s(:month_day_year)})
   Quick search first or last name:
-  = text_field_tag 'autocomplete', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => 'id'
+  = text_field_tag 'autocomplete', '', :size => 20, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
   = hidden_field_tag 'id'
-  = submit_tag 'Go', :onclick => 'window.location.assign(jQuery("#id").val()); return(false)'
   - form_tag(customers_path,{:method =>:get, :id => 'search_on_any_field'}) do
     Search any field:
     = text_field_tag 'customers_filter', @customers_filter, :size => 12

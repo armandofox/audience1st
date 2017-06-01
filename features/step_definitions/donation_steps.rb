@@ -63,11 +63,11 @@ Then /^I should (not )?see the following donations:$/ do |no,donations|
   end
 end
 
-Then /^customer "(.*)" should have a donation of \$([0-9.]+) to "(.*)"$/ do |customer_name,amount,fund|
+Then /^customer "(.*)" should (not )?have a donation of \$([0-9.]+) to "(.*)"$/ do |customer_name,no,amount,fund|
   steps %Q{
     Given I am logged in as staff
     And I visit the donations page
     And I press "Search"
-    Then I should see a row "#{customer_name}|||#{amount}||||" within "table[@id='donations']"
+    Then I should #{no}see a row "#{customer_name}|||#{amount}||||" within "table[@id='donations']"
   }
 end

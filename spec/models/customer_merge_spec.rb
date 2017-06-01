@@ -211,7 +211,7 @@ describe Customer, "merging" do
         Customer.find_by_id(@old.id).should be_a(Customer)
       end
     end
-    describe "unsuccessfully" do
+    describe "unsuccessfully", :no_txn => true do
       before(:each) do
         @new.first_name = ''
         @new.should_not be_valid

@@ -1,14 +1,5 @@
-:javascript
-  function whenReady() {
-     $('credit_card_first_name').setValue($$('#billing #customer_first_name')[0].getValue());
-     $('credit_card_last_name').setValue($$('#billing #customer_last_name')[0].getValue());
-     if (checkForStripe('_stripe_submit')) {
-       var message = "#{escape_javascript @checkout_message}";
-       if (message != "") { alert(message); }
-     }
-  }
-  jQuery(document).ready(whenReady);
-  
+#checkout_message.hidden= @checkout_message
+
 - if @cart.gift?
   #gift_recipient
     %h2 This Order is a Gift For...
@@ -47,7 +38,7 @@
   
   %p.strong 
     YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'disableRegularFormSubmit(); stripeSubmit()'
+    = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
     -# hidden field 'commit' filled in by javascript on cc purchase
     = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
     = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
@@ -62,6 +53,3 @@
         Send email confirmation
   - elsif @cart.purchaser.valid_email_address?
     = hidden_field_tag 'email_confirmation', 1
-= observe_field 'credit_card_number', :function => 'checkPlaceOrderForm()'
-= observe_field 'credit_card_verification_value', :function => 'checkPlaceOrderForm()'
-= observe_field 'sales_final', :function => 'checkPlaceOrderForm()'

@@ -52,5 +52,9 @@
           - else
             = render :partial => 'open_regular_voucher', :locals => {:group => group}
 
+:javascript
+  $('.save_comment').on('ajax:success', function(e,s,x) { alert("Comment saved") });
+  $('.save_comment').on('ajax:error', function(e,s,x) { alert("Error, comment NOT saved") });
+
 %br
 = gen_button 'Buy More Tickets', store_path(@customer)

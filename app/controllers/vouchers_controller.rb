@@ -16,7 +16,7 @@ class VouchersController < ApplicationController
 
   public
 
-  # AJAX helper for addvoucher
+  # AJAX helper for adding comps
   def update_shows
     @valid_vouchers = Vouchertype.find(params[:vouchertype_id]).valid_vouchers.sort_by(&:showdate)
     render :partial => 'reserve_for', :locals => {:valid_vouchers => @valid_vouchers}
@@ -37,26 +37,24 @@ class VouchersController < ApplicationController
       redirect_to vouchertypes_path
       return
     end
-    @valid_vouchers = @vouchers.first.valid_vouchers.sort_by(&:showdate)
   end
 
   def create
     # post: add the actual comps, and possibly reserve
     thenumtoadd = params[:howmany].to_i
-    thevouchertype = Vouchertype.find(params[:vouchertype_id])
+    thevouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
     thecomment = params[:comments].to_s
     theshowdate = Showdate.find_by_id(params[:showdate_id])
 
-    flash[:alert] = 'Only comp vouchers can be added this way. For revenue vouchers,' <<
-      'use the Buy Tickets purchase flow, and choose Check or Cash Payment.' unless
+    redir = new_customer_voucher_path(@customer)
+    return redirect_with(redir, :alert => 'Please select number and type of vouchers to add.') unless
+      thevouchertype && thenumtoadd > 0
+    return redirect_with(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
       thevouchertype.comp?
-    flash[:alert] ||= 'Please select number of vouchers.' unless thenumtoadd > 0
-    flash[:alert] ||= 'Please select a performance.' unless theshowdate
-    flash[:alert] ||= 'This comp ticket type not valid for this performance.' unless
+    return redirect_with(redir, 'Please select a performance.') unless theshowdate
+    return redirect_with(redir, 'This comp ticket type not valid for this performance.') unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
-    redirect_to new_customer_voucher_path(@customer) and return if flash[:alert]
-
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
       :comments => thecomment,
       :processed_by => current_user,

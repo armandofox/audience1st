@@ -218,7 +218,7 @@ describe ValidVoucher do
   describe 'bundle availability' do
     before :each do
       @anyone_bundle = create(:bundle)
-      @anyone_bundle_availability = ValidVoucher.new(
+      ValidVoucher.create(
         :vouchertype => @anyone_bundle,
         :max_sales_for_type => ValidVoucher::INFINITE,
         :start_sales => 1.week.ago,

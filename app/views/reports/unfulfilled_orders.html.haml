@@ -2,8 +2,8 @@
 
 %p{:align=>:top}
   = gen_button 'Download to Excel', {:action => 'unfulfilled_orders', :csv => true}, {:method => :get}
-  = button_to_function 'Check All', "checkBoxes('uf',true)"
-  = button_to_function 'Clear All', "checkBoxes('uf',false)"
+  = button_to_function 'Check All', %q{$('#uf input.check').prop('checked', false)}
+  = button_to_function 'Clear All', %q{$('#uf input.check').prop('checked', true)}
 
 - form_tag mark_fulfilled_path, :id=>'uf' do
   = submit_tag 'Mark Checked Orders as Fulfilled'

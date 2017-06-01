@@ -1,14 +1,14 @@
-- form_tag donations_path(:customer_id => @customer), :id => '_stripe_payment_form' do
+- form_tag customer_donations_path(@customer), :id => '_stripe_payment_form' do
   
   = render :partial => 'donation'
  
-  %label{:for => 'payment'} Payment Method:
+  %label Payment Method:
   = radio_button_tag 'payment', 'check', true
   %label.no_float{:for => 'payment_check'} Check
   = radio_button_tag 'payment', 'cash', false
   %label.no_float{:for => 'payment_cash'} Cash
   = radio_button_tag 'payment', 'credit_card', false, :id => 'enable_cc'
-  %label.no_float{:for => 'payment_credit_card'} Credit Card
+  %label.no_float{:for => 'enable_cc'} Credit Card
   %br
   = hidden_field_tag 'customer_id', @customer.id
 
@@ -16,7 +16,7 @@
     = render :partial => 'store/credit_card', :locals => {:first_name => @customer.first_name, :last_name => @customer.last_name}
     = hidden_field_tag '_stripe_commit'
     %label &nbsp;
-    = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'stripeSubmit()'
+    = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
 
   #cash_check_info
     %label &nbsp;
@@ -25,10 +25,10 @@
 %br
 
 :javascript
-  jQuery('input:radio').change(function() {
-    if (jQuery('#enable_cc').is(':checked')) {
-      jQuery('#credit_card_info').show(); jQuery('#cash_check_info').hide(); 
+  $('input:radio').change(function() {
+    if ($('#enable_cc').is(':checked')) {
+      $('#credit_card_info').show(); $('#cash_check_info').hide(); 
     } else {
-      jQuery('#credit_card_info').hide(); jQuery('#cash_check_info').show(); 
+      $('#credit_card_info').hide(); $('#cash_check_info').show(); 
     }
   });

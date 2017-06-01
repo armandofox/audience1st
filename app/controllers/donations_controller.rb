@@ -13,6 +13,7 @@ class DonationsController < ApplicationController
   
   def index
     @things = []
+    @total = 0
     @params = {}
     return unless params[:commit] # first time visiting page: don't do "null search"
 
@@ -30,12 +31,9 @@ class DonationsController < ApplicationController
     rescue ActionController::RoutingError, ActiveRecord::RecordNotFound
       return redirect_with(donations_path, :alert => "Cannot limit search to customer")
     end
-    mindate,maxdate = Time.range_from_params(params[:donation_date_from],
-                                             params[:donation_date_to])
-    mindate = mindate.at_beginning_of_day
-    maxdate = maxdate.at_end_of_day
-    params[:donation_date_from] = mindate
-    params[:donation_date_to] = maxdate
+    mindate,maxdate = Time.range_from_params(params[:dates])
+    params[:from] = mindate
+    params[:to] = maxdate
     if params[:use_date]
       conds.merge!("orders.sold_on >= ?" => mindate, "orders.sold_on <= ?" => maxdate)
     end
@@ -69,6 +67,7 @@ class DonationsController < ApplicationController
     end
     @things = @things.sort_by { |x| (x.kind_of?(Donation) ?
                                      x.order.sold_on.to_time : x.showdate.thedate.to_time) }
+    @total = @things.sum(&:amount)
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label
@@ -109,7 +108,7 @@ class DonationsController < ApplicationController
       flash[:notice] = "Donation successfully recorded."
       redirect_to customer_path(@customer)
     rescue Order::PaymentFailedError => e
-      redirect_with(new_donation_path(:customer_id => @customer),
+      redirect_with(new_customer_donation_path(@customer),
         :alert => e.message)
     rescue Exception => e
       raise e
@@ -122,19 +121,20 @@ class DonationsController < ApplicationController
   def update
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
       now = Time.now
-      c = current_user.email rescue "(ERROR)"
+      c = current_user.email rescue "(??)"
       t.update_attributes(:letter_sent => now,
-                          :processed_by => current_user)
+        :processed_by => current_user)
       Txn.add_audit_record(:cust_id => t.customer_id,
-                           :logged_in_id => current_user.id,
-                           :txn_type => 'don_ack',
-                           :comments => "Donation ID #{t.id} marked as acknowledged")
-      render :text => "#{now.strftime("%D")} by #{c}"
+        :logged_in_id => current_user.id,
+        :txn_type => 'don_ack',
+        :comments => "Donation ID #{t.id} marked as acknowledged")
+      result = now.strftime("%D by #{c}")
     else
-      render :text => "(ERROR)"
+      result = '(ERROR)'
     end
+    render :js => %Q{\$('#donation_#{params[:id]}').text('#{result}')}
   end
-
+  
   private
 
   def export(donations)

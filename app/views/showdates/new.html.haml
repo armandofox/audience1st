@@ -40,10 +40,11 @@
   = select_time(Time.parse("8:00pm"), :time_separator => ':', :prefix => 'time')
   %br
   %label{:for => 'start'} From
-  = select_date(@show.opening_date, :order => [:month,:day,:year], :prefix => 'start')
-  %br
-  %label{:for => 'end'} Until
-  = select_date(@show.closing_date, :order => [:month,:day,:year], :prefix => 'end')
+  = text_field_tag 'show_run_dates'
+  :javascript
+    $('#show_run_dates').daterangepicker({  initialText: 'Select date range...',  clearButtonText: '',  cancelButtonText: '',  applyButtonText: 'OK',  datepickerOptions : {  numberOfMonths : 2  }});
+    $('#show_run_dates').daterangepicker('setRange', {start: new Date('#{@show.opening_date.at_beginning_of_day}'), end: new Date('#{@show.closing_date.at_beginning_of_day}')});
+
   %br
   %p.feedback
     

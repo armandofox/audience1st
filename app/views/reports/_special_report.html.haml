@@ -1,18 +1,28 @@
-- form_tag({:action => 'run_special_report'}, {:method => :get}) do
-  = render :partial => "reports/special/#{name}"
+- form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report' do
+  %fieldset{:id => name}
+    %legend= name.humanize.capitalize
+    = hidden_field_tag 'report_name', name
+    = render :partial => "reports/special/#{name}"
   = render :partial => 'output_options'
-  = hidden_field_tag '_report', name
   %fieldset.generate_report
     %legend What to do with the results
-    = submit_tag 'Download to Excel'
-    = submit_tag 'Display on screen'
-    = submit_to_remote 'count', 'Estimate number of matches', |
-      :url => {:action => 'run_special_report'},  |
-      :method => :get, |
-      :before => "Element.show('report_spinner')", |
-      :complete => "Element.hide('report_spinner')", |
-      :update => 'report_preview' |
-    = spinner('report_spinner')
-    %span#report_preview
-    = render :partial => 'sublist' if @sublists
 
+    = radio_button_tag 'what', 'display', 1
+    %label.plain{:for => 'what_display'} Display list on screen
+    %br
+    = radio_button_tag 'what', 'download'
+    %label.plain{:for => 'what_download'} Download list to Excel
+    %br
+    = radio_button_tag 'what', 'estimate'
+    %label.plain{:for => 'what_estimate'} Estimate number of matches
+    %br
+    - if @sublists
+      = radio_button_tag 'what', 'add'
+      %label.plain{:for => 'what_add'} Add to existing mailing list:
+      = select_tag 'sublist', options_for_sublists(@sublists)
+      %br
+      = radio_button_tag 'what', 'create'
+      %label.plain{:for => 'what_create'} Create new mailing list named:
+      = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
+      %br
+    = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...'

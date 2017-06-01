@@ -7,6 +7,9 @@ log/
 brakeman.*
 config/application.yml
 #*
-tmp
 rerun.txt
 #*#
+public/stylesheets/venue
+tmp/
+
+db/*.sqlite3

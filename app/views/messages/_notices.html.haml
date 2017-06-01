@@ -1,9 +1,9 @@
 - unless flash[:notice].blank?
-  #notice.notice.feedback.clear
-    %p= raw(render_multiline_message(flash[:notice]))
-    = javascript_tag("addLoadEvent(function() { $('notice').highlight({startcolor: '#00dd00', duration: 3}); })")
+  #notice.notice.message.feedback.clear{'data-hilite' => '#00dd00'}
+    %p= render_multiline_message(flash[:notice])
 
 - unless flash[:alert].blank?
-  #warning.warning.clear
-    %p= raw(render_multiline_message(flash[:alert]))
-  = javascript_tag("addLoadEvent(function() { $('warning').highlight({startcolor: '#ffff00', duration: 3}); })")
+  #warning.warning.message.clear{'data-hilite' => '#ffff00'}
+    %p= render_multiline_message(flash[:alert])
+
+= javascript_tag %q{$('.message').animate({backgroundColor: $('.message').data('hilite')}, 3000);}

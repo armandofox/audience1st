@@ -12,17 +12,18 @@ Background:
 
 Scenario Outline: browse reports
 
-  When I select "<report_type>" from "report_name"
+  When I select "<report_type>" from "special_report_name"
   Then I should see "<a_report_option>"
-  When I press "Estimate number of matches"
-  Then I should see /[0-9]+ matches/
+  When I choose "Estimate number of matches"
+  And I press "Run Report"
+  Then I should see an alert matching /[0-9]+ matches/
 
   Examples: customer report fields
-    | report_type                   | a_report_option                                       |
-    | Attendance at specific performances | List customers attending this specific          |
-    | New customers                 | List customers who were added to the database         |
-    | Lapsed subscribers            | Find patrons who purchased                            |
-    | Subscriber open vouchers      | List customers who have open (unreserved) vouchers    |
-    | Attendance by show            | List customers who attended                           |
-    | Donor appeal                  | Donors who have made at least one donation of         |
+    | report_type                         | a_report_option                                    |
+    | Lapsed subscribers                  | Find patrons who purchased                         |
+    | Attendance at specific performances | List customers attending this specific             |
+    | New customers                       | List customers who were added to the database      |
+    | Subscriber open vouchers            | List customers who have open (unreserved) vouchers |
+    | Attendance by show                  | List customers who attended                        |
+    | Donor appeal                        | Donors who have made at least one donation of      |
 

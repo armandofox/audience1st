@@ -13,17 +13,6 @@ class EmailList
 
   def self.hominid ; @@hominid ; end
   
-  def self.members(what)
-    begin
-      res = hominid.members(@@listid, what, "2006-01-01", 0, 10000)
-      RAILS_DEFAULT_LOGGER.info "Retrieved #{res.size} #{what} members of #{@@list}"
-    rescue Exception => e
-      res = []
-      RAILS_DEFAULT_LOGGER.warn "Mailchimp error: #{e.message}"
-    end
-    res
-  end
-
   def self.segment_id_from_name(name)
     self.init_hominid || return
     hominid.static_segments(@@listid).detect { |s| s['name'] == name }['id']
@@ -48,13 +37,15 @@ class EmailList
     end
     begin
       @@hominid = Hominid::Base.new :api_key => apikey
-      raise "'#{@@list}' not found" unless
-        (@@listid = hominid.find_list_id_by_name(@@list))
-      RAILS_DEFAULT_LOGGER.info "Init Mailchimp with default list '#{@@list}'"
-    rescue Exception => e
+      @@listid = hominid.find_list_id_by_name(@@list)
+    rescue NoMethodError => e   # dereference nil.[] means list not found
+      RAILS_DEFAULT_LOGGER.warn "Init Mailchimp: list '#{@@list}' not found"
+      return nil
+    rescue StandardError => e
       RAILS_DEFAULT_LOGGER.info "Init Mailchimp failed: <#{e.message}>"
       return nil
     end
+    RAILS_DEFAULT_LOGGER.info "Init Mailchimp with default list '#{@@list}'"
     return true
   end
 
@@ -119,14 +110,19 @@ class EmailList
     end
   end
 
+  def self.create_sublist_with_customers(name, customers)
+    self.create_sublist(name) && self.add_to_sublist(name, customers)
+  end
+
   def self.create_sublist(name)
     self.init_hominid || return
     begin
       hominid.add_static_segment(@@listid, name)
       return true
     rescue Exception => e
-      RAILS_DEFAULT_LOGGER.info "Adding sublist '#{name}': #{e.message}"
-      self.errors = "Error: sublist '#{name}' could not be created"
+      error = "List segment '#{name}' could not be created: #{e.message}"
+      RAILS_DEFAULT_LOGGER.warn error
+      self.errors = error
       return nil
     end
   end
@@ -155,7 +151,7 @@ class EmailList
       end
       result = hominid.static_segment_add_members(@@listid, seg_id, emails)
       if !result['errors'].blank?
-        self.errors = "MailChimp reported #{result['errors'].length} problems (usually customers who aren't subscribed to the master list."
+        self.errors = "MailChimp was unable to add #{result['errors'].length} of the customers, usually because they aren't subscribed to the master list."
       end
       return result['success'].to_i
     rescue Exception => e
@@ -165,31 +161,4 @@ class EmailList
     end
   end
 
-  def self.bulk_compare
-    self.init_hominid || return
-    both = []
-    remote_only = []
-    remote_emails = []
-    self.members('subscribed').each do |mem|
-      remote_emails << mem[:email]
-      if (c = Customer.find_by_email(mem[:email]))
-        both << c
-      else
-        remote_only << Customer.new(:first_name => mem[:FNAME], :last_name => mem[:LNAME],
-          :email => mem[:email])
-      end
-    end
-    local_only = Customer.find(:all,
-      :conditions => ['email != ? AND e_blacklist = ?', '', false]).reject do |c|
-      remote_emails.include?(c.email)
-    end
-    return both, remote_only, local_only
-  end
-
-  def self.remote_unsubscribes
-    self.init_hominid || return
-    m = (self.members('unsubscribed') + self.members('cleaned'))
-    m.map { |e| Customer.find_by_email(e[:email]) }.reject(&:nil?) 
-  end
-  
 end

@@ -6,6 +6,9 @@ module NavigationHelpers
   #
   # step definition in webrat_steps.rb
   #
+  def sd(time)
+    Showdate.find_by_thedate!(Time.parse time)
+  end
   def path_to(page_name)
     @customer = Customer.find_by_first_name_and_last_name!($1, $2) if page_name =~ /for customer "(.*) (.*)"/
 
@@ -19,7 +22,7 @@ module NavigationHelpers
     when /change password page/i            then change_password_for_customer_path(@customer)
     when /the forgot password page/i        then forgot_password_customers_path
       # customer donations.  See notes in routes.rb
-    when /the record donation page/         then new_donation_path(@customer)
+    when /the record donation page/         then new_customer_donation_path(@customer)
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management and customer help
     when /the list of customers page/i      then customers_path
@@ -43,10 +46,10 @@ module NavigationHelpers
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes?season=$1"
 
-    when /the (walkup report|walkup sales|checkin|door list) page (:?for (.*))?$/
-      @showdate = Showdate.find_by_thedate!(Time.parse $2) if !$2.blank?
-      page = $1.gsub(/\s+/, '_')
-      self.send("#{page}_path", @showdate)
+    when /the walkup sales page for (.*)$/ then walkup_sale_path(sd $1)
+    when /the walkup report page for (.*)$/ then report_walkup_sale_path(sd $1)
+    when /the checkin page for (.*)$/ then checkin_path(sd $1)
+    when /the door list page for (.*)$/ then door_list_checkin_path(sd $1)
 
     when /the admin:(.*) page/i
       page = $1
