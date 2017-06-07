@@ -280,6 +280,11 @@ sublists: >
   MailChimp or ConstantContact.  By saving the result of a report as a
   sublist, you can then send an email campaign to just those patrons.
 
+select_dates: >
+
+  To select custom dates, click on the menu dropdown, select the
+  starting date, then select the ending date, then click OK.
+
 # Box office
 
 checkin: >

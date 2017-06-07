@@ -5,6 +5,7 @@
       = hidden_field_tag 'rep', (report_name || 'UNDEFINED')
       %label.plain Dates:
       = select_date_with_shortcuts 'report_dates', :from => @from, :to => @to
+      = popup_help_for 'select_dates'
       %label.plain Format:
       = radio_button_tag 'format', 'html', 1
       %label.plain{:for => 'format_html'} Screen

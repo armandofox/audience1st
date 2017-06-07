@@ -7,6 +7,7 @@
     - form_tag({:action => 'do_report'}, {:method => :get}) do
       %label Select Dates
       = select_date_with_shortcuts 'report_dates', :from => @from, :to => @to
+      = popup_help_for 'select_dates'
       %br
       %label{:for => 'rep'} Report type
       = select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Retail Sales"])

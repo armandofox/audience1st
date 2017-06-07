@@ -24,8 +24,9 @@
     %tr 
       %td= check_box_tag 'use_date', 1, @params[:use_date] 
       %td Date is in the range:
-      %td= select_date_with_shortcuts 'dates', :from => @params[:from], :to => @params[:to], :enables => '#use_date'
-
+      %td
+        = select_date_with_shortcuts 'dates', :from => @params[:from], :to => @params[:to], :enables => '#use_date'
+        = popup_help_for 'select_dates'
     %tr 
       %td= check_box_tag 'use_amount', 1, @params[:use_amount]
       %td  Donation amount between:

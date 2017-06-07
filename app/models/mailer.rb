@@ -102,15 +102,15 @@ class Mailer < ActionMailer::Base
       :phone => Option.boxoffice_telephone,
       :venue => Option.venue,
       :how_to_contact_us =>  <<EOS
-If this isn't correct, or if you have questions about your order or
+If this is not correct, or if you have questions about your order or
 any problems using our Web site, PLEASE DO NOT REPLY to this email
 as it was generated automatically.
 
 Instead, please #{contact}.
-Please include your name and login (as shown above), and if you're
+Please include your name and login (as shown above), and if you are
 experiencing technical problems, a description of the problem and the
-type of browser and operating system you're using (Internet Explorer on
-Windows, Safari or Firefox on Mac, etc.)
+type of browser and operating system you use (Internet Explorer on
+Windows, Chrome on Mac, etc.)
 
 Thanks for your patronage!
 
