@@ -4,15 +4,15 @@
 // after 10 secs, go back to original state.
 A1.waitForSwipe = function() {
     var timeout = 8;            // in seconds
-    $('#ccReady').style.display = 'none';
-    $('#ccWaiting').style.display = 'block';
-    $('#swipe_data').value = '';
+    $('#ccReady').css('display', 'none');
+    $('#ccWaiting').css('display', 'block');
+    $('#swipe_data').value('');
     $('#swipe_data').focus();
     setTimeout('A1.resetSwipe()', 1000*timeout);
 }
 A1.resetSwipe = function() {
-    $('#ccWaiting').style.display = 'none';
-    $('#ccReady').style.display = 'block';
+    $('#ccWaiting').css('display', 'none');
+    $('#ccReady').css('display', 'block');
     $('#credit_card_verification_value').focus();
 }
 
@@ -26,11 +26,11 @@ A1.parseSwipeData = function() {
       $('#credit_card_number').val(elts[1]);
       $('#credit_card_last_name').val(elts[2].replace(/^\s+|\s+$/g, ''));
       $('#credit_card_first_name').val(elts[3].replace(/^\s+|\s+$/g, ''));
-      setSelectedYear('credit_card_year', 2000+Number(elts[4]));
+      A1.setSelectedYear('#credit_card_year', 2000+Number(elts[4]));
       $('#credit_card_month').selectedIndex = Number(elts[5]) - 1;
     } else if (elts = swipe.match(trk2)) {
       $('#credit_card_number').val(elts[1]);
-      setSelectedYear('#credit_card_year', 2000+Number(elts[2]));
+      A1.setSelectedYear('#credit_card_year', 2000+Number(elts[2]));
       $('#credit_card_month').selectedIndex = Number(elts[3]) - 1;
       $('#credit_card_last_name').val('');
       $('#credit_card_first_name').val('');

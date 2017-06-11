@@ -52,7 +52,7 @@ A1.stripeSubmit = function(event) {
   // disable regular form submit action (needed for Firefox <4)
   $('#_stripe_payment_form').submit(function(evt) { return false });
   //console.log("Submitting to Stripe");
-  if ($('#swipe_data').length > 0) {
+  if ($('#swipe_data').length > 1) {
     // populate credit card info fields from magstripe swipe hidden field
     A1.parseSwipeData();
   }
