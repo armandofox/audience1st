@@ -23,7 +23,7 @@ module ApplicationHelper
       header_message = options[:header_message] ||
         "#{count.to_i} error(s) prevented this #{(options[:object_name] || params.first).to_s.gsub('_', ' ')} from being processed"
       error_messages = objects.map do |object|
-        object.errors.full_messages.map {|msg| content_tag(:li, msg) }
+        object.errors.full_messages.map {|msg| content_tag(:li, msg.html_safe) }
       end.join('')
       content_tag(:div,
         content_tag(options[:header_tag] || :h2, header_message) <<
