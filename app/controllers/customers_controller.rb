@@ -145,7 +145,7 @@ class CustomersController < ApplicationController
   def user_create
     @customer = Customer.new(params[:customer])
     if @gCheckoutInProgress && @customer.day_phone.blank?
-      flash[:notice] = "Please provide a contact phone number in case we need to contact you about your order."
+      flash[:alert] = "Please provide a contact phone number in case we need to contact you about your order."
       render :action => 'new'
       return
     end
@@ -156,7 +156,7 @@ class CustomersController < ApplicationController
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
     else
-      flash[:notice] = ["There was a problem creating your account: ", @customer]
+      flash[:alert] = ["There was a problem creating your account: ", @customer]
       render :action => 'new'
     end
   end

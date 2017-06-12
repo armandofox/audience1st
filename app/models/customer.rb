@@ -32,13 +32,17 @@ class Customer < ActiveRecord::Base
   has_many :items               # the superclass of vouchers,donations,retail_items
   
   validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
+
+  EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered'
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
-  :message => "address %{value} has already been registered.
-    <a href='/login?email=%{value}'>Sign in with this email address</a>
-    (if you forgot your password, use the 'Reset my password' link on sign-in page)"
-  
+  :message => EMAIL_UNIQUENESS_ERROR_MESSAGE
+
+  def unique_email_error
+    self.errors.on(:email) == EMAIL_UNIQUENESS_ERROR_MESSAGE
+  end
+    
   validates_format_of :zip, :if => :self_created?, :with => /\A^[0-9]{5}-?([0-9]{4})?\z/, :allow_blank => true
   validate :valid_or_blank_address?, :if => :self_created?
   validate :valid_as_gift_recipient?, :if => :gift_recipient_only
