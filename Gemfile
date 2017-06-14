@@ -11,6 +11,7 @@ gem 'dbi'
 gem 'figaro'
 gem 'sslrequirement'
 gem 'haml'
+gem 'hominid'
 gem 'i18n'
 gem 'jbuilder', '~> 2.0'        # 4
 gem 'jquery-rails'              # 4
@@ -28,6 +29,7 @@ gem 'sass-rails', '~> 5.0'      # 4
 gem 'turbolinks'                # 4
 gem 'uglifier', '>= 1.3.0'      # 4
 gem 'stripe'
+gem 'thor', '0.19.1'
 gem 'will_paginate'
 
 group :development do
@@ -53,6 +55,7 @@ group :development, :test do
   gem 'faye-websocket'
   gem 'database_cleaner'
   gem 'factory_girl'
+  gem 'rb-readline'
   gem 'rubyzip'
   gem 'mime-types'
   gem 'chronic'
