@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fakeweb'
 
-@@testdir = "#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer"
+@@testdir = "#{Rails.root}/spec/import_test_files/goldstar_auto_importer"
 
 def parse_file(f)
   TMail::Mail.parse(IO.read(File.join(@@testdir,f)))
@@ -10,7 +10,7 @@ end
 
 describe GoldstarAutoImporter do
   before(:each) do
-    @testdir = "#{RAILS_ROOT}/spec/import_test_files/goldstar_auto_importer"
+    @testdir = "#{Rails.root}/spec/import_test_files/goldstar_auto_importer"
     @e = GoldstarAutoImporter.new
     ActionMailer::Base.deliveries = []
     FakeWeb.allow_net_connect = false
@@ -44,7 +44,7 @@ describe GoldstarAutoImporter do
     end
     it "should get through prep step with no errors if happy path" do
       @e.email = parse_file("valid.eml")
-      @e.stub!(:fetch_xml).and_return(IO.read(File.join("#{RAILS_ROOT}/spec/import_test_files/goldstar_xml/goldstar-valid.xml")))
+      @e.stub!(:fetch_xml).and_return(IO.read(File.join("#{Rails.root}/spec/import_test_files/goldstar_xml/goldstar-valid.xml")))
       GoldstarAutoImporter.send(:public, :prepare_import)
       lambda { @e.prepare_import }.should_not raise_error
       @e.messages.should be_empty

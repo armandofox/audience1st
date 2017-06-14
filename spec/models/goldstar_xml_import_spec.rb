@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'builder'
 
 def xml(str) ; Nokogiri::XML::Document.parse(str) ; end
-def xml_from_file(file) ; Nokogiri::XML::Document.parse(IO.read("#{RAILS_ROOT}/spec/import_test_files/goldstar_xml/#{file}.xml")) ; end
+def xml_from_file(file) ; Nokogiri::XML::Document.parse(IO.read("#{Rails.root}/spec/import_test_files/goldstar_xml/#{file}.xml")) ; end
 
 describe GoldstarXmlImport do
   before(:each) do

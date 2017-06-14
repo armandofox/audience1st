@@ -3,7 +3,7 @@ module FixtureAccess
   def self.extended(base)
 
     Fixtures.reset_cache
-    fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
+    fixtures_folder = File.join(Rails.root, 'spec', 'fixtures')
     fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
     fixtures += Dir[File.join(fixtures_folder, '*.csv')].map {|f| File.basename(f, '.csv') }
 

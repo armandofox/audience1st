@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-TESTFILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files', 'brownpapertickets')
+TESTFILES_DIR = File.join(Rails.root, 'spec', 'import_test_files', 'brownpapertickets')
 
 describe "BPT import" do
   before :each do

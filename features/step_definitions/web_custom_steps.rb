@@ -171,7 +171,7 @@ When /^I upload (.*) import list "(.*)"$/ do |type,file|
   else
     raise "Unknown import type #{type}; try 'customer list', 'Brown Paper Tickets', or 'Goldstar'"
   end
-  attach_file :import_uploaded_data, File.join(RAILS_ROOT, 'spec', 'import_test_files', path, file)
+  attach_file :import_uploaded_data, File.join(Rails.root, 'spec', 'import_test_files', path, file)
   click_button "Preview Import"
 end
 

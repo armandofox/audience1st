@@ -8,15 +8,17 @@
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
-require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
-require 'cucumber/rails/rspec'
-require 'cucumber/rails/world'
-require 'cucumber/rails/active_record'
-require 'cucumber/web/tableish'
+require 'cucumber/rails'
 
-require 'capybara/rails'
-require 'capybara/cucumber'
-require 'capybara/session'
+# require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
+# require 'cucumber/rails/rspec'
+# require 'cucumber/rails/world'
+# require 'cucumber/rails/active_record'
+# require 'cucumber/web/tableish'
+
+# require 'capybara/rails'
+# require 'capybara/cucumber'
+# require 'capybara/session'
 
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
@@ -60,18 +62,16 @@ Cucumber::Rails::World.use_transactional_fixtures = false
 
 # How to clean your database when transactions are turned off. See
 # http://github.com/bmabey/database_cleaner for more info.
-require 'database_cleaner'
-require 'database_cleaner/cucumber'
 DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean_with(:truncation)
 
 Before do
   DatabaseCleaner.start
   Fixtures.reset_cache
-  fixtures_folder = File.join(RAILS_ROOT, 'spec', 'fixtures')
+  fixtures_folder = File.join(Rails.root, 'spec', 'fixtures')
   fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
   Fixtures.create_fixtures(fixtures_folder, fixtures)
-  load File.join(RAILS_ROOT, 'db', 'seeds.rb') # load static seed data that isn't fixtured
+  load File.join(Rails.root, 'db', 'seeds.rb') # load static seed data that isn't fixtured
   # make rspec mocks/stubs work
   require 'spec/stubs/cucumber'
   $rspec_mocks ||= Spec::Mocks::Space.new

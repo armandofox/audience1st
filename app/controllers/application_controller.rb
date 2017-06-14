@@ -9,8 +9,6 @@ class ApplicationController < ActionController::Base
   include FilenameUtils
   include SslRequirement
   
-  filter_parameter_logging :password
-
   if (RAILS_ENV == 'production')
     SslRequirement.ssl_all = true
   else

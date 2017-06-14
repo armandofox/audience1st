@@ -1,13 +1,10 @@
 # Be sure to restart your server when you modify this file
 
-# Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.3.18'
-
-# Bootstrap the Rails environment, frameworks, and default configuration
-require File.join(File.dirname(__FILE__), 'boot')
+# Load the Rails application.
+require File.expand_path('../application', __FILE__)
 
 
-Rails::Initializer.run do |config|
+Rails.application.configure do
   # Only load the plugins named here, in the order given (default is alphabetical).
   # :all can be used as a placeholder for all plugins not explicitly named
   # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
@@ -42,3 +39,7 @@ Rails::Initializer.run do |config|
   config.active_record.timestamped_migrations = true
 
 end
+
+# Initialize the Rails application.
+Rails.application.initialize!
+

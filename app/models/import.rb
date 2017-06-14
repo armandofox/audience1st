@@ -2,7 +2,7 @@ class Import < ActiveRecord::Base
   require 'csv'
   include Comparable
   
-  UPLOADED_FILES_PATH = File.join(RAILS_ROOT, 'tmp')
+  UPLOADED_FILES_PATH = File.join(Rails.root, 'tmp')
 
   belongs_to :customer
   def self.foreign_keys_to_customer ;  [:customer_id] ;  end

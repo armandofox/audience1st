@@ -1,78 +1,52 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
 ENV["RAILS_ENV"] ||= 'test'
-require File.dirname(__FILE__) + "/../config/environment" unless defined?(RAILS_ROOT)
+require File.dirname(__FILE__) + "/../config/environment" unless defined?(Rails.root)
 require 'spec/autorun'
 require 'spec/rails'
 require 'timecop'
 require 'spec/support/redirect_to_path.rb'
 
-TEST_FILES_DIR = File.join(RAILS_ROOT, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
+TEST_FILES_DIR = File.join(Rails.root, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
-include AuthenticatedTestHelper
-
-Spec::Runner.configure do |config|
-  config.use_transactional_fixtures = false
-  config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation)
-  end
-  config.before(:each) do 
-    DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.start
-    # seed the DB with seed data - necessary for Options and config info
-    load File.join(Rails.root, 'db', 'seeds.rb')
-    # Freeze time
-    Timecop.travel(Date.parse 'Mar 1, 2012')
-  end
-  config.after(:each) do
-    DatabaseCleaner.clean
-    Timecop.return
-  end
-
-  config.use_instantiated_fixtures  = false
-  config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
-  config.global_fixtures = :options
+RSpec.configure do |config|
   config.include AuthenticatedTestHelper
   config.include CustomMatchers
   config.include FactoryGirl::Syntax::Methods
   config.include ApplicationHelper
   config.include ActionView::Helpers
 
-  # == Fixtures
-  #
-  # You can declare fixtures for each example_group like this:
-  #   describe "...." do
-  #     fixtures :table_a, :table_b
-  #
-  # Alternatively, if you prefer to declare them only once, you can
-  # do so right here. Just uncomment the next line and replace the fixture
-  # names with your fixtures.
-  #
-  # config.global_fixtures = :table_a, :table_b
-  #
-  # If you declare global fixtures, be aware that they will be declared
-  # for all of your examples, even those that don't use them.
-  #
-  # You can also declare which fixtures to use (for example fixtures for test/fixtures):
-  #
-  # config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
-  #
-  # == Mock Framework
-  #
-  # RSpec uses it's own mocking framework by default. If you prefer to
-  # use mocha, flexmock or RR, uncomment the appropriate line:
-  #
-  # config.mock_with :mocha
-  # config.mock_with :flexmock
-  # config.mock_with :rr
-  #
-  # == Notes
-  #
-  # For more information take a look at Spec::Runner::Configuration and Spec::Runner
+  config.expect_with :rspec do |expectations|
+    # This option will default to `true` in RSpec 4. It makes the `description`
+    # and `failure_message` of custom matchers include text for helper methods
+    # defined using `chain`, e.g.:
+    #     be_bigger_than(2).and_smaller_than(4).description
+    #     # => "be bigger than 2 and smaller than 4"
+    # ...rather than:
+    #     # => "be bigger than 2"
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+
+  # rspec-mocks config goes here. You can use an alternate test double
+  # library (such as bogus or mocha) by changing the `mock_with` option here.
+  config.mock_with :rspec do |mocks|
+    # Prevents you from mocking or stubbing a method that does not exist on
+    # a real object. This is generally recommended, and will default to
+    # `true` in RSpec 4.
+    mocks.verify_partial_doubles = true
+  end
+
+  # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
+  # have no way to turn it off -- the option exists only for backwards
+  # compatibility in RSpec 3). It causes shared context metadata to be
+  # inherited by the metadata hash of host groups and examples, rather than
+  # triggering implicit auto-inclusion in groups with matching metadata.
+  config.shared_context_metadata_behavior = :apply_to_host_groups
+
 end
 
 ActiveRecord::Base.colorize_logging = false

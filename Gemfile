@@ -1,59 +1,67 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '1.8.7'
+ruby '2.3.1'
 
-gem 'acts_as_reportable', '1.1.1'
+gem 'acts_as_reportable'
 gem 'builder'
 gem 'bundler'
-gem 'constant_contact', '1.4.0'
-gem 'dbf', '1.2.8'
-gem 'dbi', '0.4.5'
-gem 'erubis'                    # for html-escape XSS protection; not needed for Rails >=3
-gem 'figaro', '~> 1.0'
+# gem 'constant_contact'
+gem 'dbf'
+gem 'dbi'
+gem 'figaro'
 gem 'sslrequirement'
-gem 'haml', '~> 3.1.8'
-gem 'i18n', '0.4.1'
-gem 'mechanize', '1.0.0'
-gem 'mysql', '2.8.1'
-gem 'nokogiri', '1.4.3.1'
-gem 'rails', '2.3.18'
-gem 'rake', '10.3.1'
-gem 'ruport', '1.6.3'
+gem 'haml'
+gem 'i18n'
+gem 'jbuilder', '~> 2.0'        # 4
+gem 'jquery-rails'              # 4
+gem 'json'
+gem 'mechanize'
+gem 'mysql'
+gem 'nokogiri'
+gem 'rails', '4.2.6'            # 4
+gem 'rake'
+gem 'ruport'
 # stripe depends on rest-client and json, but we can't use the latest version of
 # those until upgrade to ruby >= 1.9.2
-gem 'rest-client', '~> 1.4'     
-gem 'json', '1.8.1'
-gem 'stripe', '1.22.0'
-gem 'will_paginate', '2.3.16'
+gem 'rest-client'
+gem 'sass-rails', '~> 5.0'      # 4
+gem 'turbolinks'                # 4
+gem 'uglifier', '>= 1.3.0'      # 4
+gem 'stripe'
+gem 'will_paginate'
+
+group :development do
+  gem 'web-console', '~> 2.0'
+  gem 'spring'
+end
+
+group :test do
+  gem 'cucumber'
+  gem 'cucumber-rails', :require => false
+  gem 'capybara'
+  gem 'poltergeist'
+end
 
 group :development, :test do
   # cucumber and capybara
-  gem 'ruby-debug'
+  gem 'byebug'                  # 4
   gem 'ZenTest'
   gem 'autotest-rails'
   gem 'autotest-fsevent', :git => 'https://github.com/svoop/autotest-fsevent.git'
   gem 'minitest'
-  gem 'capistrano', '2.5.10'
-
-  # for Ruby 1.8.7/Rails 2.3, we need phantomjs <=1.9.8 and faye-websocket 0.4.7
-  # (https://github.com/teampoltergeist/poltergeist/issues/320)
-  gem 'capybara', '1.1.4'
-  gem 'poltergeist', '1.0.2'
-  gem 'faye-websocket', '0.4.7'
-
-  gem 'database_cleaner', '1.0.1'
-  gem 'factory_girl', '~> 2.6.4'
-  gem 'rubyzip', '~> 0.9.9'
-  gem 'mime-types', '1.24'
-  gem 'chronic', '0.9.1'
-  gem 'cucumber'
-  gem 'cucumber-rails'
+  gem 'capistrano'
+  gem 'faye-websocket'
+  gem 'database_cleaner'
+  gem 'factory_girl'
+  gem 'rubyzip'
+  gem 'mime-types'
+  gem 'chronic'
   gem 'fakeweb'
   gem 'launchy'
-  gem 'rack-test', '0.5.7'
-  gem 'rdoc'
-  gem 'rcov'
-  gem 'rspec-rails', '1.3.4'
+  gem 'rack-test'
+  gem 'sdoc', '~> 0.4.0'
+  gem 'rspec-rails'
+  gem 'simplecov'
   gem 'sqlite3'
-  gem 'timecop', '0.3.5'
+  gem 'timecop'
 end

@@ -34,7 +34,7 @@ end
 def retrieve_db_info
   # read the remote database file....
   # there must be a better way to do this...
-  result = File.read "#{RAILS_ROOT}/config/database.yml"
+  result = File.read "#{Rails.root}/config/database.yml"
   result.strip!
   config_file = YAML::load(ERB.new(result).result)
   str = %Q['-u#{config_file[RAILS_ENV]["username"]}' ]
