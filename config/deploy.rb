@@ -10,7 +10,7 @@ set :default_environment, {
 set :venue, variables[:venue]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
 
-set :debugging_ips, %w[199.116.74.100]
+set :debugging_ips, %w[52.119.117.99]
 
 set :application,     "audience1st"
 set :user,            "audienc"
