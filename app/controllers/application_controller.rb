@@ -17,7 +17,6 @@ class ApplicationController < ActionController::Base
 
   require 'csv.rb'
   require 'string_extras.rb'
-  require 'date_time_extras.rb'
 
   # Session keys
   #  :cid               id of logged in user; if absent, nobody logged in

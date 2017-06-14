@@ -30,12 +30,11 @@ class Show < ActiveRecord::Base
     Showdate.current_or_next.try(:show)
   end
 
-  named_scope :current_and_future, lambda {
-    {:joins => :showdates,
-      :select => 'DISTINCT shows.*',
-      :conditions => ['showdates.thedate >= ?', 1.day.ago],
-      :order => 'opening_date ASC'
-    }
+  scope :current_and_future, -> {
+    joins(:showdates).
+    where('showdates.thedate >= ?', 1.day.ago).
+    select('DISTINCT shows.*').
+    order('opening_date ASC')
   }
 
   def has_showdates? ; !showdates.empty? ; end
@@ -60,9 +59,9 @@ class Show < ActiveRecord::Base
       :include => :showdates)
   end
 
-  named_scope :all_for_seasons, lambda { |from,to|
-    {:conditions =>  ['opening_date BETWEEN ? AND ?',
-        Time.at_beginning_of_season(from), Time.at_end_of_season(to)] }
+  scope :all_for_seasons, ->(from,to) {
+    where('opening_date BETWEEN ? AND ?',
+        Time.at_beginning_of_season(from), Time.at_end_of_season(to))
   }
 
   def self.seasons_range
@@ -77,8 +76,8 @@ class Show < ActiveRecord::Base
     TYPES.include?(arg) ? arg : REGULAR_SHOW
   end
   
-  named_scope :of_type, lambda { |type|
-    {:conditions => ["event_type = ?", self.type(type) ] }
+  scope :of_type, ->(type) {
+    where('event_type = ?', self.type(type))
   }
   
   def season

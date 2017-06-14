@@ -31,9 +31,12 @@ module Audience1st
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
-    # Use Rspec
-    config.generators do |g|
-      g.test_framework :rspec
+    config.autoload_paths << Rails.root.join('lib')
+    
+    config.after_initialize do
+      Time.include CoreExtensions::Time::Season
+      Date.include CoreExtensions::Date::Season
+      String.include CoreExtensions::String::Name
     end
   end
 end

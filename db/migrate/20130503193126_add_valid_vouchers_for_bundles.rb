@@ -1,4 +1,3 @@
-require 'lib/date_time_extras'
 class AddValidVouchersForBundles < ActiveRecord::Migration
   def self.up
     # for each Bundle voucher, add a valid-voucher that enables it

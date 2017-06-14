@@ -19,6 +19,7 @@ gem 'json'
 gem 'mechanize'
 gem 'mysql'
 gem 'nokogiri'
+gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'rails', '4.2.6'            # 4
 gem 'rake'
 gem 'ruport'
@@ -65,6 +66,8 @@ group :development, :test do
   gem 'sdoc', '~> 0.4.0'
   gem 'rspec-rails'
   gem 'simplecov'
+  gem 'spring'
   gem 'sqlite3'
   gem 'timecop'
+  gem 'web-console', '~> 2.0'
 end

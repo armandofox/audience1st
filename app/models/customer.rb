@@ -6,7 +6,6 @@ class Customer < ActiveRecord::Base
   require_dependency 'customer/scopes'
   require_dependency 'customer/birthday'
   require_dependency 'customer/merge'
-  require_dependency '../lib/date_time_extras'
 
   include Authentication
   include Authentication::ByPassword

@@ -8,16 +8,14 @@
     = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
 
-    -# Rails3: no need to redefine default JS files in javascript_tag_helper.rb
-    = javascript_include_tag_for_jquery :all
+    = javascript_include_tag 'application'
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
 
     %title= @page_title || h(controller.action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
     %meta{:name=>:description, :content=>''}/
-    -# Rails3 provides the following 2 lines via csrf_meta_tag helper
-    %meta{:name => 'csrf-param', :content => Rack::Utils.escape_html(request_forgery_protection_token)}
-    %meta{:name => 'csrf-token', :content => Rack::Utils.escape_html(form_authenticity_token)}
+
+    = csrf_meta_tags
 
   %body{:id=>"#{controller.controller_name}_#{controller.action_name}", :class=>(Figaro.env.sandbox ? 'testing.default' : 'default')}
 
