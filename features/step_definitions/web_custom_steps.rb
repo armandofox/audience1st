@@ -2,6 +2,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 World(ModelAccess)
 
+# Field should have value
+Then /^the "(.*)" field should be "(.*)"$/ do |field,val|
+  page.should have_field(field, :with => val)
+end
 # Check for a JavaScript alert (when running with a JS-aware Capybara driver)
 
 Then /^I should see an alert matching \/(.*)\/$/ do |regex|

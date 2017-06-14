@@ -10,8 +10,6 @@
   - else
     %p Previewing #{@collection.size} of #{@import.number_of_records} total records
 
-%p= error_messages_for :import
-
 #import_preview
   #import_messages
     - if @import.messages

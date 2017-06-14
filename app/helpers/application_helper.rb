@@ -3,39 +3,6 @@
 module ApplicationHelper
   include ActiveSupport::Inflector # so individual views don't need to reference explicitly
 
-  def default_validation_error_message ; "Please correct the following errors:" ; end
-
-  # override standard helper so we can supply our own embedded error msg strings
-  def error_messages_for(*params)
-    options = params.last.is_a?(Hash) ? params.pop.symbolize_keys : {}
-    objects = params.collect {|object_name| instance_variable_get("@#{object_name}") }.compact
-    count   = objects.inject(0) {|sum, object| sum + object.errors.count }
-    unless count.zero?
-      html = {}
-      [:id, :class].each do |key|
-        if options.include?(key)
-          value = options[key]
-          html[key] = value unless value.blank?
-        else
-          html[key] = 'errorExplanation'
-        end
-      end
-      header_message = options[:header_message] ||
-        "#{count.to_i} error(s) prevented this #{(options[:object_name] || params.first).to_s.gsub('_', ' ')} from being processed"
-      error_messages = objects.map do |object|
-        object.errors.full_messages.map {|msg| content_tag(:li, msg.html_safe) }
-      end.join('')
-      content_tag(:div,
-        content_tag(options[:header_tag] || :h2, header_message) <<
-        content_tag(:p, (options[:field_message] || 'There were problems with the following fields:')) <<
-        content_tag(:ul, error_messages.html_safe),
-        html
-        )
-    else
-      ''
-    end
-  end
-
   def in_rows_of(n,collection)
     return '' if (collection.nil? || collection.empty?)
     rows = ''
@@ -60,6 +27,8 @@ module ApplicationHelper
     if m.respond_to?(:errors_as_html)
       m.errors_as_html(sep).html_safe
     elsif (m.kind_of? Array)
+      # each element is either a string, or something that responds
+      #  to errors_as_html.  Render them recursively.
       m.map do |line|
         content_tag(:span, render_multiline_message(line,sep).html_safe)
       end.join(sep).html_safe

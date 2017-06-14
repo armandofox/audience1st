@@ -14,9 +14,9 @@ Scenario: quick search with multiple match
 
   When I fill autocomplete field "autocomplete" with "Bagg"
   Then I should see autocomplete choice "Bilbo Baggins" 
+  And I should see autocomplete choice "Frodo Baggins"
   But I should not see autocomplete choice "Bob Bag"
   When I select autocomplete choice "Bilbo Baggins"
-  And I press "Go"
   Then I should be on the home page for customer "Bilbo Baggins"
 
 Scenario: quick search with no matches

@@ -33,9 +33,7 @@ class VouchersController < ApplicationController
       Vouchertype.comp_vouchertypes(this_season + 1) +
       Vouchertype.comp_vouchertypes(this_season)).delete_if(&:external?)
     if @vouchers.empty?
-      flash[:alert] = 'You must define some comp voucher types first.'
-      redirect_to vouchertypes_path
-      return
+      redirect_with(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
     end
   end
 
@@ -99,7 +97,7 @@ class VouchersController < ApplicationController
     @valid_vouchers = @voucher.redeemable_showdates(@is_admin)
     @valid_vouchers = @valid_vouchers.select(&:visible?) unless @is_admin
     if @valid_vouchers.empty?
-      flash[:notice] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
+      flash[:alert] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
       redirect_to customer_path(@customer)
     end
   end
@@ -129,12 +127,12 @@ class VouchersController < ApplicationController
     errors = errors.flatten.join ','
     case count
     when 0
-      flash[:notice] = "Your reservations could not be completed (#{errors})."
+      flash[:alert] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
       email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     else
-      flash[:notice] = "Some of your reservations could not be completed: " <<
+      flash[:alert] = "Some of your reservations could not be completed: " <<
         errors <<
         "<br/>Please check the results below carefully before continuing."
       email_confirmation(:confirm_reservation, @customer, the_showdate, count)
@@ -144,17 +142,17 @@ class VouchersController < ApplicationController
 
   def transfer_multiple
     vouchers = params[:vouchers]
-    redirect_with(customer_vouchers_path(@customer), :alert => 'Nothing was transferred because you did not select any vouchers.') and return unless vouchers
+    return redirect_with(customer_vouchers_path(@customer),
+      :alert => 'Nothing was transferred because you did not select any vouchers.') unless vouchers
     cid = Customer.id_from_route(params[:cid]) # extract id from URL matching customer_path(params[:cid])
     new_customer = Customer.find_by_id(cid)
-    redirect_with(customer_vouchers_path(@customer),
-      :alert => 'Nothing was transferred because you must select valid customer to transfer to.') and
-      return unless new_customer.kind_of? Customer
+    return redirect_with(customer_vouchers_path(@customer),
+      :alert => 'Nothing was transferred because you must select valid customer to transfer to.') unless new_customer.kind_of? Customer
     result,num_transferred = Voucher.transfer_multiple(vouchers.keys, new_customer, current_user)
     if result
       redirect_with customer_path(new_customer), :notice => "#{num_transferred} items transferred.  Now viewing #{new_customer.full_name}'s account."
     else
-      redirect_with customer_transfer_multiple_vouchers_path(@customer), "NO changes were made because of error: #{msg}.  Try again."
+      redirect_with customer_transfer_multiple_vouchers_path(@customer), :alert => "NO changes were made because of error: #{msg}.  Try again."
     end
   end
 
@@ -176,7 +174,7 @@ class VouchersController < ApplicationController
                                  :show_id => show_id,
                                  :voucher_id => v.id)
       else
-        flash[:notice] << "Some reservations could NOT be cancelled. " <<
+        flash[:alert] << "Some reservations could NOT be cancelled. " <<
           "Please review your reservations below and contact a " <<
           "box office agent if you need assistance."
       end

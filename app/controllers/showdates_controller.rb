@@ -59,7 +59,7 @@ class ShowdatesController < ApplicationController
     if @showdate.update_attributes(params[:showdate])
       flash[:notice] = 'Showdate ID ' + params[:id].to_s + ' was successfully updated.'
     else
-      flash[:notice] = ["Your changes were not saved because of errors:<br>", @showdate]
+      flash[:alert] = ["Your changes were not saved because of errors:<br>", @showdate]
     end
     redirect_to edit_show_path(@showdate.show)
   end

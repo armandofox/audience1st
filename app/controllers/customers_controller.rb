@@ -1,6 +1,5 @@
 class CustomersController < ApplicationController
 
-
   # Actions requiring no login, customer login, and staff login respectively
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
@@ -91,10 +90,10 @@ class CustomersController < ApplicationController
       end
       redirect_to customer_path(@customer)
     rescue ActiveRecord::RecordInvalid
-      flash[:notice] = ["Update failed: ", @customer, "Please fix error(s) and try again."]
+      flash[:alert] = ["Update failed: ", @customer, "Please fix error(s) and try again."]
       redirect_to edit_customer_path(@customer)
     rescue Exception => e
-      flash[:notice] = "Update failed: #{e.message}"
+      flash[:alert] = "Update failed: #{e.message}"
       redirect_to edit_customer_path(@customer)
     end
   end
@@ -110,6 +109,7 @@ class CustomersController < ApplicationController
       :comments => 'Change password')
       redirect_to customer_path(@customer)
     else
+      flash[:alert] = ['Changing password failed: ', @customer]
       render :action => 'change_password_for'
     end
   end
@@ -130,10 +130,11 @@ class CustomersController < ApplicationController
   # actions NOT requiring @customer to be set
   def forgot_password
     return if request.get?
-    if send_new_password(params[:email])
-      redirect_to login_path
+    email = params[:email]
+    if send_new_password(email)
+      redirect_to login_path(:email => email)
     else
-      redirect_to forgot_password_customers_path
+      redirect_to forgot_password_customers_path(:email => email)
     end
   end
 
@@ -157,6 +158,8 @@ class CustomersController < ApplicationController
       create_session(@customer) # will redirect to next action
     else
       flash[:alert] = ["There was a problem creating your account: ", @customer]
+      # for special case of duplicate (existing) email, offer login
+      flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email))
       render :action => 'new'
     end
   end
@@ -185,12 +188,12 @@ class CustomersController < ApplicationController
 
   def merge
     if !params[:merge] || params[:merge].keys.length < 1
-      flash[:notice] = 'You have not selected any customers.'
+      flash[:alert] = 'You have not selected any customers.'
       redirect_to_last_list and return
     end
     ids = params[:merge].keys
     if (params[:commit] =~ /merge/i) && (ids.length != 2)
-      flash[:notice] = 'You must select exactly 2 records at a time to merge.'
+      flash[:alert] = 'You must select exactly 2 records at a time to merge.'
       redirect_to_last_list and return
     end
     @cust = ids.map { |x| Customer.find_by_id(x.to_i) }
@@ -236,7 +239,10 @@ class CustomersController < ApplicationController
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
-    render(:action => 'new') and return unless @customer.save
+    unless @customer.save
+      flash[:alert] = ['Creating customer failed: ', @customer]
+      return render(:action => 'new')
+    end
     (flash[:notice] ||= '') <<  'Account was successfully created.'
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,

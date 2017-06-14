@@ -1,4 +1,3 @@
-= error_messages_for :bulk_download
 %p
   %label{:for => :vendor} Vendor:
   = f.select :vendor, options_for_select(BulkDownload.vendors, (bulk_download.vendor if bulk_download))

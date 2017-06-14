@@ -105,11 +105,9 @@ class DonationsController < ApplicationController
     end
     begin
       @order.finalize!(sold_on)
-      flash[:notice] = "Donation successfully recorded."
-      redirect_to customer_path(@customer)
+      redirect_with(customer_path(@customer), :notice => 'Donation recorded.')
     rescue Order::PaymentFailedError => e
-      redirect_with(new_customer_donation_path(@customer),
-        :alert => e.message)
+      redirect_with(new_customer_donation_path(@customer), :alert => e.message)
     rescue Exception => e
       raise e
       # rescue ActiveRecord::RecordInvalid => e

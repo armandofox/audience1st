@@ -42,7 +42,7 @@ describe VouchersController do
       end
       describe 'for 3 vouchers' do
         before :each do ; @successful = 2; post :confirm_multiple, @params.merge(:number => 3) ; end
-        it 'notifies' do ; flash[:notice].should match(/could not be completed: An error occurred/) ; end
+        it 'notifies' do ; flash[:alert].should match(/could not be completed: An error occurred/) ; end
         it_should_behave_like 'all reservations'
       end
     end

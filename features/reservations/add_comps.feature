@@ -1,3 +1,4 @@
+@javascript
 Feature: add comps and reserve for a show
 
   As a box office worker

@@ -52,7 +52,10 @@ Feature: Creating an account
     | Password         | tom             |
     | Confirm Password | tom             |
     And I press "Create My Account"
-    Then account creation should fail with "address tom@foolery.com has already been registered"
+    Then account creation should fail with "Email has already been registered"
+    When I follow "Sign in as tom@foolery.com"
+    Then I should be on the login page
+    And the "email" field should be "tom@foolery.com"
 
   Scenario: New customer cannot create account without providing password
 

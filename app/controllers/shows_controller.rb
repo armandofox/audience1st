@@ -7,8 +7,7 @@ class ShowsController < ApplicationController
   
   def index
     unless Show.find(:first)
-      flash[:notice] = "There are no shows set up yet."
-      redirect_to new_show_path
+      redirect_with new_show_path, :alert => "There are no shows set up yet."
       return
     end
     @superadmin = current_user.is_admin
@@ -29,10 +28,10 @@ class ShowsController < ApplicationController
   def create
     @show = Show.new(params[:show])
     if @show.save
-      flash[:notice] = 'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
-      redirect_to edit_show_path(@show)
+      redirect_with edit_show_path(@show),
+      :notice =>  'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
     else
-      flash[:notice] = "There were errors creating the show."
+      flash[:alert] = ["There were errors creating the show: ", @show]
       render :action => 'new'
     end
   end
@@ -51,10 +50,9 @@ class ShowsController < ApplicationController
     @show = Show.find(params[:id])
     @showdates = @show.showdates
     if @show.update_attributes(params[:show])
-      flash[:notice] = 'Show details successfully updated.'
-      redirect_to edit_show_path(@show)
+      redirect_with edit_show_path(@show), :notice => 'Show details successfully updated.'
     else
-      flash[:alert] = ["Show details were not updated: ", @show]
+      flash[:alert] = ["Show details could not be updated: ", @show]
       render :action => 'edit', :id => @show
     end
   end

@@ -11,9 +11,7 @@ class ValidVouchersController < ApplicationController
   def new
     @showdate_id = params[:showdate_id]
     unless (@showdate = Showdate.find_by_id(@showdate_id))
-      flash[:notice] = "New voucher must be associated with a showdate"
-      redirect_to shows_path
-      return
+      return redirect_to(shows_path, :alert => "New voucher must be associated with a showdate")
     end
     @add_to_all = params[:add_to_all]
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@showdate.season)
@@ -26,7 +24,7 @@ class ValidVouchersController < ApplicationController
   def create
     msgs = ''
     vouchertypes = params[:valid_voucher].delete(:vouchertypes)
-    redirect_to(:back, :flash => {:notice => 'You must select 1 or more show dates.'}) and return unless (vouchertypes && !vouchertypes.empty?)
+    return redirect_with(:back, :alert => 'You must select 1 or more show dates.') unless (vouchertypes && !vouchertypes.empty?)
     args = params[:valid_voucher]
     hours_before = (params[:end_is_relative].to_i > 0 ?
                     params[:hours_before].to_f.hours :
@@ -94,7 +92,7 @@ class ValidVouchersController < ApplicationController
       end
       flash[:notice] = 'Update successful'
     rescue Exception => e
-      flash[:notice] = [e.message, @valid_voucher]
+      flash[:alert] = [e.message, @valid_voucher]
     end
     redirect_to edit_show_path(@valid_voucher.showdate.show)
   end

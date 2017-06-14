@@ -37,8 +37,7 @@ class ReportsController < ApplicationController
   def advance_sales
     if (params[:shows].blank? ||
         (@shows = params[:shows].map { |s| Show.find_by_id(s) }.flatten).empty?)
-      flash[:alert] = "Please select one or more shows."
-      redirect_to :action => :index
+      redirect_to reports_path, :alert => "Please select one or more shows."
     end
   end
 
@@ -207,8 +206,8 @@ class ReportsController < ApplicationController
       :include => :order,
       :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
       :order => 'orders.sold_on')
-    redirect_to({:action => :index},
-      {:notice => 'No retail purchases match these criteria.'}) and return if @items.empty?
+    redirect_with({:action => :index}, {:notice => 'No retail purchases match these criteria.'}) and return if
+      @items.empty?
   end
   
 end

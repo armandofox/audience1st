@@ -74,6 +74,7 @@ class VouchertypesController < ApplicationController
         end
       end
     else
+      flash[:notice] = ['Vouchertype could not be created: ', @vouchertype]
       render :action => 'new'
     end
   end

@@ -33,7 +33,7 @@ class Customer < ActiveRecord::Base
   
   validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
 
-  EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered'
+  EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
