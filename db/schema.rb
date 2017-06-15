@@ -11,13 +11,13 @@
 
 ActiveRecord::Schema.define(:version => 20160316203603) do
 
-  create_table "account_codes", :force => true do |t|
+  create_table "account_codes", :force => :cascade do |t|
     t.string "name",        :limit => 40, :default => "", :null => false
     t.string "code"
     t.string "description"
   end
 
-  create_table "bulk_downloads", :force => true do |t|
+  create_table "bulk_downloads", :force => :cascade do |t|
     t.string "vendor"
     t.string "username"
     t.string "password"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.text   "report_names"
   end
 
-  create_table "customers", :force => true do |t|
+  create_table "customers", :force => :cascade do |t|
     t.string   "first_name",                :limit => 64,         :default => "",                    :null => false
     t.string   "last_name",                 :limit => 64,         :default => "",                    :null => false
     t.string   "street"
@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
   add_index "customers", ["street"], :name => "index_customers_on_street"
   add_index "customers", ["zip"], :name => "index_customers_on_zip"
 
-  create_table "customers_labels", :id => false, :force => true do |t|
+  create_table "customers_labels", :id => false, :force => :cascade do |t|
     t.integer "customer_id"
     t.integer "label_id"
   end
@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
   add_index "customers_labels", ["customer_id"], :name => "index_customers_labels_on_customer_id"
   add_index "customers_labels", ["label_id"], :name => "index_customers_labels_on_label_id"
 
-  create_table "imports", :force => true do |t|
+  create_table "imports", :force => :cascade do |t|
     t.string   "name"
     t.string   "type"
     t.integer  "number_of_records", :default => 0, :null => false
@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.integer  "showdate_id"
   end
 
-  create_table "items", :force => true do |t|
+  create_table "items", :force => :cascade do |t|
     t.integer  "vouchertype_id",                                                                    :default => 0,          :null => false
     t.integer  "customer_id",                                                                       :default => 0,          :null => false
     t.integer  "showdate_id"
@@ -112,7 +112,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.integer  "processed_by_id",                                                                   :default => 2146722771, :null => false
     t.integer  "bundle_id",                                                                         :default => 0,          :null => false
     t.boolean  "checked_in",                                                                        :default => false,      :null => false
-    t.enum     "category",           :limit => [:revenue, :comp, :subscriber, :bundle, :nonticket]
+    t.string     "category"
     t.boolean  "walkup",                                                                            :default => false,      :null => false
     t.float    "amount",                                                                            :default => 0.0
     t.integer  "account_code_id"
@@ -131,11 +131,11 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
   add_index "items", ["type"], :name => "index_items_on_type"
   add_index "items", ["vouchertype_id"], :name => "index_items_on_vouchertype_id"
 
-  create_table "labels", :force => true do |t|
+  create_table "labels", :force => :cascade do |t|
     t.string "name"
   end
 
-  create_table "options", :force => true do |t|
+  create_table "options", :force => :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "venue_id"
@@ -206,7 +206,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.integer  "limited_availability_threshold",                         :default => 40,                                                           :null => false
   end
 
-  create_table "orders", :force => true do |t|
+  create_table "orders", :force => :cascade do |t|
     t.string   "authorization"
     t.integer  "customer_id"
     t.integer  "purchasemethod_id"
@@ -228,17 +228,17 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
   add_index "orders", ["purchaser_id"], :name => "index_orders_on_purchaser_id"
   add_index "orders", ["walkup"], :name => "index_orders_on_walkup"
 
-  create_table "purchasemethods", :force => true do |t|
+  create_table "purchasemethods", :force => :cascade do |t|
     t.string  "description",               :default => "",        :null => false
     t.string  "shortdesc",   :limit => 10, :default => "?purch?", :null => false
     t.boolean "nonrevenue",                :default => false
   end
 
-  create_table "schema_info", :id => false, :force => true do |t|
+  create_table "schema_info", :id => false, :force => :cascade do |t|
     t.integer "version"
   end
 
-  create_table "sessions", :force => true do |t|
+  create_table "sessions", :force => :cascade do |t|
     t.string   "session_id"
     t.text     "data",       :limit => 2147483647
     t.datetime "updated_at"
@@ -246,7 +246,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
 
   add_index "sessions", ["session_id"], :name => "sessions_session_id_index"
 
-  create_table "showdates", :force => true do |t|
+  create_table "showdates", :force => :cascade do |t|
     t.datetime "thedate"
     t.datetime "end_advance_sales"
     t.integer  "max_sales",         :default => 0, :null => false
@@ -259,7 +259,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
   add_index "showdates", ["end_advance_sales"], :name => "end_advance_sales"
   add_index "showdates", ["show_id"], :name => "index_showdates_on_show_id"
 
-  create_table "shows", :force => true do |t|
+  create_table "shows", :force => :cascade do |t|
     t.string   "name"
     t.date     "opening_date"
     t.date     "closing_date"
@@ -275,7 +275,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.string   "sold_out_customer_info"
   end
 
-  create_table "txns", :force => true do |t|
+  create_table "txns", :force => :cascade do |t|
     t.integer  "customer_id",       :default => 1,   :null => false
     t.integer  "entered_by_id",     :default => 1,   :null => false
     t.datetime "txn_date"
@@ -291,7 +291,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
 
   add_index "txns", ["customer_id"], :name => "index_txns_on_customer_id"
 
-  create_table "valid_vouchers", :force => true do |t|
+  create_table "valid_vouchers", :force => :cascade do |t|
     t.integer  "showdate_id"
     t.integer  "vouchertype_id"
     t.string   "promo_code"
@@ -307,7 +307,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
   add_index "valid_vouchers", ["start_sales"], :name => "index_valid_vouchers_on_start_sales"
   add_index "valid_vouchers", ["vouchertype_id"], :name => "index_valid_vouchers_on_vouchertype_id"
 
-  create_table "vouchertypes", :force => true do |t|
+  create_table "vouchertypes", :force => :cascade do |t|
     t.string   "name"
     t.float    "price",                                                                              :default => 0.0
     t.datetime "created_at"
@@ -317,7 +317,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.text     "included_vouchers"
     t.boolean  "walkup_sale_allowed",                                                                :default => false, :null => false
     t.boolean  "fulfillment_needed",                                                                 :default => false, :null => false
-    t.enum     "category",            :limit => [:revenue, :comp, :subscriber, :bundle, :nonticket]
+    t.string     "category"
     t.integer  "season",                                                                             :default => 2011,  :null => false
     t.boolean  "changeable",                                                                         :default => false, :null => false
     t.integer  "account_code_id",                                                                    :default => 1,     :null => false
