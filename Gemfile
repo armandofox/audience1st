@@ -69,5 +69,4 @@ group :development, :test do
   gem 'spring'
   gem 'sqlite3'
   gem 'timecop'
-  gem 'web-console', '~> 2.0'
 end
