@@ -6,8 +6,8 @@ class Show < ActiveRecord::Base
   REGULAR_SHOW = 'Regular Show'
   TYPES = [REGULAR_SHOW, 'Special Event', 'Class', 'Subscription']
 
-  has_many :showdates, :dependent => :destroy, :order => 'thedate'
-  has_one :latest_showdate, :class_name => 'Showdate', :order => 'thedate DESC'
+  has_many :showdates, -> { order('thedate') }, :dependent => :destroy
+  has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
   # NOTE: We can't do the trick below because the database's timezone
   #  may not be the same as the appserver's timezone.
   #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
@@ -40,23 +40,20 @@ class Show < ActiveRecord::Base
   def has_showdates? ; !showdates.empty? ; end
   
   def upcoming_showdates
-    showdates.find(:all, :conditions => ['thedate > ?', Time.now],
-      :include => :valid_vouchers)
+    showdates.where('thedate > ?', Time.now).include(:valid_vouchers)
   end
 
   def next_showdate
-    showdates.find(:first, :conditions => ['thedate > ?', Time.now],
-      :include => :valid_vouchers)
+    showdates.where('thedate > ?', Time.now).include(:valid_vouchers).first
   end
 
   def self.all_for_season(season=Time.this_season)
     startdate = Time.at_beginning_of_season(season)
     enddate = startdate + 1.year - 1.day
-    Show.find(:all,
-      :order => 'opening_date',
-      :select => 'DISTINCT shows.*',
-      :conditions => ['opening_date BETWEEN ? AND ?', startdate, enddate],
-      :include => :showdates)
+    Show.where('opening_date BETWEEN ? AND ?', startdate, enddate).
+      order('opening_date').
+      select('DISTINCT shows.*').
+      include(:showdates)
   end
 
   scope :all_for_seasons, ->(from,to) {
@@ -65,8 +62,8 @@ class Show < ActiveRecord::Base
   }
 
   def self.seasons_range
-    [Show.find(:first, :order => 'opening_date').opening_date.year,
-      Show.find(:first, :order => 'opening_date DESC').opening_date.year]
+    [Show.order('opening_date').first.opening_date.year,
+      Show.order('opening_date DESC').first.opening_date.year]
   end
   
   def special? ; event_type != 'Regular Show' ; end
@@ -86,7 +83,7 @@ class Show < ActiveRecord::Base
   end
 
   def future_showdates
-    self.showdates.find(:all,:conditions => ['end_advance_sales >= ?', Time.now],:order => 'thedate')
+    self.showdates.where('end_advance_sales >= ?', Time.now).order('thedate')
   end
 
     
@@ -154,7 +151,7 @@ class Show < ActiveRecord::Base
   end
 
   def self.find_unique(name)
-    Show.find(:first, :conditions => ['name LIKE ?', name.strip])
+    Show.where('name LIKE ?', name.strip).first
   end
 
   # return placeholder entity that will pass basic validations if saved

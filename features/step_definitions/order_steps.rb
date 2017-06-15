@@ -30,9 +30,7 @@ Given /^customer "(.*) (.*)" has the following (subscriber )?reservations:/ do |
 end
 
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
-  customer =
-    Customer.find_by_first_name_and_last_name(first,last) ||
-    create(:customer, :first_name => first, :last_name => last)
+  customer = find_or_create_customer(first,last)
   # make it legal for customer to buy the things
   @order = build(:order,
     :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
@@ -48,7 +46,7 @@ Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do 
 end
 
 Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,_,comments,table|
-  @customer = Customer.find_by_first_name_and_last_name(first,last)
+  @customer = find_customer!(first,last)
   order = @customer.orders.first
   order.comments.should == comments
   table.hashes.each do |item|

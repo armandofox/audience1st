@@ -158,8 +158,7 @@ class TicketSalesImport < Import
 
   def get_or_create_vouchertype(price,name,valid_year=Time.now.year)
     name_match = "%#{name}%"
-    if (v = Vouchertype.find(:first,
-          :conditions => ["price = #{price} AND name LIKE ?", name_match]))
+    if (v = Vouchertype.where("price = #{price} AND name LIKE ?", name_match).first)
       @vouchertype = v
     else
       count_existing_vouchertypes =

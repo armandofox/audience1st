@@ -26,7 +26,7 @@ class Customer < ActiveRecord::Base
     if email.blank? || answer.blank?
       u = Customer.new
       u.errors.add(:login_failed, 'Please provide your email and the answer to your chosen secret question.')
-    elsif (u = Customer.find(:first, :conditions => ['email LIKE ?', email.downcase])).nil?
+    elsif (u = Customer.where('email LIKE ?', email.downcase).limit(1)).nil?
       u = Customer.new
       u.errors.add(:login_failed,
         'Can\'t find that email address.  Maybe you registered with a different one?')

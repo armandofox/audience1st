@@ -248,7 +248,7 @@ class StoreController < ApplicationController
   end
 
   def showdate_from_params
-    Showdate.find_by_id(params[:showdate_id], :include => [:show, :valid_vouchers])
+    Showdate.find_by_id(params[:showdate_id]).include(:show, :valid_vouchers)
   end
   def showdate_from_show_params
     (s = Show.find_by_id(params[:show_id])) &&

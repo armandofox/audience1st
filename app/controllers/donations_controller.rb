@@ -52,14 +52,13 @@ class DonationsController < ApplicationController
     keys = conds.keys
     conds_array = ([keys.join(" AND ")] + keys.map { |k| conds[k] }).compact
     if conds.empty?
-      @things = Donation.find(:all)
+      @things = Donation.all
     else
-      @things = Donation.find(:all, :include => 'order', :conditions => conds_array)
+      @things = Donation.where(*conds_array).include(:order)
     end
     # also show ticket purchases?
     if (params[:show_vouchers] && c)
-      vouchers = c.vouchers.find(:all, :conditions => "showdate_id > 0",
-                                 :include => :showdate)
+      vouchers = c.vouchers.where("showdate_id > 0").include(:showdate)
       if params[:use_date]
         vouchers = vouchers.select { |v| v.showdate.thedate.between?(mindate, maxdate) }
       end

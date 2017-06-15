@@ -15,17 +15,17 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  has_many :vouchers, :include => :vouchertype, :order => 'created_at DESC'
+  has_many :vouchers, -> { includes(:vouchertype).order('created_at DESC') }
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :orders, :order => 'sold_on DESC', :conditions => 'sold_on IS NOT NULL'
+  has_many :orders, -> { where( 'sold_on IS NOT NULL').order('sold_on DESC') }
   
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
   def shows ; self.showdates.map(&:show).uniq ; end
 
   has_many :txns
-  has_one  :most_recent_txn, :class_name=>'Txn', :order=>'txn_date DESC'
+  has_one  :most_recent_txn, -> { order('txn_date DESC') }, :class_name=>'Txn'
   has_many :donations
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
@@ -89,7 +89,7 @@ class Customer < ActiveRecord::Base
      :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
      :work_fax, :company_url]
 
-  before_validation_on_create :force_valid_fields
+  before_validation :force_valid_fields, :on => :create
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
 
@@ -133,7 +133,7 @@ class Customer < ActiveRecord::Base
     elsif !email.match(/^[\w\d]+@[\w\d]+/)
       false
     else
-      !(Customer.find(:first, :conditions => ['email LIKE ?', email.downcase]))
+      !(Customer.where('email LIKE ?', email.downcase).limit(1))
     end
   end
 
@@ -353,7 +353,7 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
+    unless (u = Customer.where("email LIKE ?", email.downcase).first) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
@@ -366,7 +366,7 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
+    unless (u = Customer.where("email LIKE ?", email.downcase).first) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
@@ -513,7 +513,7 @@ EOSQL1
     c.force_valid = true      # make sure will pass validation checks
     # precaution: make sure email is unique.
     c.email = nil if (!c.email.blank? &&
-      Customer.find(:first,:conditions => ['email like ?',c.email]))
+      Customer.where('email like ?',c.email.downcase).first
     c.save!
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => c.id,
@@ -529,7 +529,7 @@ EOSQL1
     conds =
       Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
     conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
-    Customer.find(:all, :conditions => conds_ary, :order =>'last_name')
+    Customer.where(*conds_ary).order('last_name')
   end
 
   
@@ -592,22 +592,17 @@ EOSQL1
 
   def self.match_email_and_last_name(email,last_name)
     !email.blank? && !last_name.blank? &&
-      Customer.find(:first,:conditions => ['email LIKE ? AND last_name LIKE ?',
-        email.strip, last_name.strip])
+      Customer.where('email LIKE ? AND last_name LIKE ?', email.strip, last_name.strip).first
   end
 
   def self.match_first_last_and_address(first_name,last_name,street)
     !first_name.blank? && !last_name.blank? && !street.blank? &&
-      Customer.find(:first,
-      :conditions => ['first_name LIKE ? AND last_name LIKE ? AND street like ?',
-        first_name, last_name, street])
+      Customer.where('first_name LIKE ? AND last_name LIKE ? AND street like ?', first_name, last_name, street).first
   end
 
   def self.match_uniquely_on_names_only(first_name, last_name)
     return nil if first_name.blank? || last_name.blank?
-    m = Customer.find(:all, 
-      :conditions => ['last_name LIKE ? AND first_name LIKE ?',
-        last_name, first_name])
+    m = Customer.where('last_name LIKE ? AND first_name LIKE ?',  last_name, first_name)
     m && m.length == 1 ?  m.first : nil
   end
 end

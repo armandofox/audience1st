@@ -18,7 +18,7 @@ Then /^account creation should fail with "(.*)"$/ do |msg|
 end
 
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
-  customer = Customer.find_by_first_name_and_last_name!(first,last)
+  customer = find_customer! first,last
   visit customer_path(customer)
   with_scope('div#on_behalf_of_customer') do
     page.should have_content("Customer: #{first} #{last}")
@@ -32,15 +32,13 @@ Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
 end
 
 Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
-  @customer = Customer.find_by_first_name_and_last_name(first,last)
+  @customer = find_customer first,last
   if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
 end
 
 Given /^customer "(.*) (.*)" exists( and was created by admin)?$/ do |first,last,admin|
-  @customer =
-    Customer.find_by_first_name_and_last_name(first,last) ||
-    create(:customer, :first_name => first, :last_name => last,
-    :email => "#{first.downcase}@#{last.downcase}.com")
+  @customer = find_customer(first,last) ||
+    create(:customer, :first_name => first, :last_name => last, :email => "#{first.downcase}@#{last.downcase}.com")
   @customer.update_attribute(:created_by_admin, true) if admin
 end
 
@@ -63,7 +61,7 @@ Given /^my birthday is set to "(.*)"/ do |date|
 end
 
 Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
-  customer = Customer.find_by_first_name_and_last_name! first,last
+  customer = find_customer! first,last
   dummy = Customer.new
   attribs.hashes.each do |attr|
     name,val = attr[:attribute], attr[:value]
@@ -72,24 +70,24 @@ Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,la
 end
 
 Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,date|
-  Customer.find_by_first_name_and_last_name!(first,last).birthday.should ==
+  Customer.find_customer!(first,last).birthday.should ==
     Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
 end
 
 Then /^customer "(.*) (.*)" should have the "(.*)" role$/ do |first,last,role|
-  Customer.find_by_first_name_and_last_name!(first,last).role_name.should == role
+  Customer.find_customer!(first,last).role_name.should == role
 end
 
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|
-  c1 = Customer.find_by_first_name_and_last_name! f1,l1
-  c2 = Customer.find_by_first_name_and_last_name! f2,l2
+  c1 = find_customer! f1,l1
+  c2 = find_customer! f2,l2
   visit customers_path
   check "merge[#{c1.id}]"
   check "merge[#{c2.id}]"
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|
-  @customer = Customer.find_by_first_name_and_last_name!(first,last)
+  @customer = find_customer! first,last
   if assert =~ /should/
     @customer.secret_question.should == get_secret_question_index(question)
     @customer.secret_answer.should == answer
@@ -100,7 +98,3 @@ Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answe
   end
 end
 
-When /^I fill in the customer autocomplete with "(.*) (.*)"$/ do |first,last|
-  c = Customer.find_by_first_name_and_last_name!(first, last)
-  find('#cid').set(customer_path(c, :only_path => true))
-end

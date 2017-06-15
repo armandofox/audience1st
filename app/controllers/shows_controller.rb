@@ -6,7 +6,7 @@ class ShowsController < ApplicationController
   include VouchertypesHelper    # for season formatting
   
   def index
-    unless Show.find(:first)
+    unless Show.count > 0
       redirect_with new_show_path, :alert => "There are no shows set up yet."
       return
     end

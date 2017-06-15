@@ -9,7 +9,8 @@ class NewCustomers < Report
     conds = 'created_at BETWEEN ? AND ?'
     conds << " AND email LIKE '%@%'" if params[:require_valid_email]
     conds << ' AND street IS NOT NULL' if params[:require_valid_address]
-    Customer.find(:all, :conditions => [conds, from, to], :order => 'created_at')
+    conds_array = conds+from+to
+    Customer.where(*conds_array).:order => 'created_at'
   end
 
 end

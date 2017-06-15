@@ -25,7 +25,7 @@ Given /^I (am logged in|login) as (.*)?$/ do |_,who|
   when /box ?office manager/i then @customer,@is_admin = customers(:boxoffice_manager),true
   when /box ?office/i   then @customer,@is_admin = customers(:boxoffice_user),true
   when /staff/i         then @customer,@is_admin = customers(:staff),true
-  when /customer "(.*) (.*)"/ then @customer = Customer.find_by_first_name_and_last_name!($1,$2)
+  when /customer "(.*) (.*)"/ then @customer = find_customer! $1,$2
   else raise "No such user '#{who}'"
   end
   @password = 'pass'

@@ -1,8 +1,15 @@
 module VboScenarioHelpers
   
+  def find_customer(first,last)
+    Customer.where('first_name = ? AND last_name = ?',first,last).first
+  end
+
+  def find_customer!(first,last)
+    Customer.where('first_name = ? AND last_name = ?',first,last).first!
+  end
+
   def find_or_create_customer(first,last)
-    Customer.find_by_first_name_and_last_name(first,last) ||
-      create(:customer, :first_name => first, :last_name => last)
+    find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
   end
 
   def purchasemethod_from_string(str)

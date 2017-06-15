@@ -6,11 +6,11 @@ class ReportsController < ApplicationController
 
   def index
     # all showdates
-    @all_showdates = Showdate.find(:all).sort_by { |s| s.thedate }
+    @all_showdates = Showdate.all.order(:thedate)
     # next showdate
     @next_showdate = Showdate.current_or_next
     # all show names
-    @all_shows = Show.find(:all)
+    @all_shows = Show.all
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.now.year)
     # list of all special reports
@@ -126,10 +126,10 @@ class ReportsController < ApplicationController
   end
 
   def unfulfilled_orders
-    v = Voucher.find(:all,
-                     :include => [:customer, :vouchertype, :order],
-                     :conditions => 'orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1',
-                     :order => "customers.last_name")
+    v = Voucher.
+      where('orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1').
+      include(:customer, :vouchertype, :order).
+      order('customers.last_name')
     return redirect_with(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
     if params[:csv]
       output = Voucher.to_csv(v)
@@ -145,7 +145,7 @@ class ReportsController < ApplicationController
     flash[:notice] = ''
     params[:voucher].each_pair do |vid,do_update|
       next if do_update.to_i.zero?
-      if (v = Voucher.find(:first, :conditions => ['id = ?', vid.to_i]))
+      if (v = Voucher.find_by_id(vid))
         unless v.fulfillment_needed
           flash[:notice] << "Warning: voucher ID #{vid} was already marked fulfilled<br/>"
         end
@@ -202,10 +202,10 @@ class ReportsController < ApplicationController
   end
 
   def retail
-    @items = RetailItem.find(:all,
-      :include => :order,
-      :conditions => ['orders.sold_on BETWEEN ? and ?', @from, @to],
-      :order => 'orders.sold_on')
+    @items = RetailItem.
+      include(:order).
+      where('orders.sold_on BETWEEN ? and ?', @from, @to).
+      order('orders.sold_on')
     redirect_with({:action => :index}, {:notice => 'No retail purchases match these criteria.'}) and return if
       @items.empty?
   end

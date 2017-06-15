@@ -1,6 +1,6 @@
 class AccountCode < ActiveRecord::Base
 
-  default_scope :order => 'code'
+  default_scope { order('code') }
 
   has_many :donations
   has_many :vouchertypes

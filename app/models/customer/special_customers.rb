@@ -36,7 +36,7 @@ class Customer < ActiveRecord::Base
   
   def real_customer? ; !special_customer? ; end
 
-  def self.all_customers ; Customer.find(:all, :conditions => 'role >= 0') ; end
+  def self.all_customers ; Customer.where('role >= 0') ; end
   
   private
 

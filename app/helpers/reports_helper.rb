@@ -7,7 +7,8 @@ module ReportsHelper
 
   def vouchertypes_for_account_code(acc_code)
     "Account code #{acc_code} includes:\n" <<
-      Vouchertype.find(:all, :conditions => ['account_code = ?', acc_code]).map { |vt| vt.name }.join("\n")
+      Vouchertype.where('account_code = ?', acc_code).
+      map { |vt| vt.name }.join("\n")
   end
 
   def select_dates_with_defaults(div_name,select_name)

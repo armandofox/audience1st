@@ -1,7 +1,7 @@
 class Goldstar < ActiveRecord::Migration
   def self.up
     add_column :vouchers, :external_key, :integer, :default => 0
-    unless Vouchertype.find(:first, :conditions => "name LIKE '%goldstar%'")
+    unless Vouchertype.where("name LIKE '%goldstar%'").first
       Vouchertype.create(:name => "Goldstar 1/2 price",
                          :price => 10.00,
                          :offer_public => false,

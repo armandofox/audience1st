@@ -178,41 +178,51 @@ class Vouchertype < ActiveRecord::Base
 
   def self.bundle_vouchertypes(season=nil)
     if season
-      Vouchertype.find_all_by_category_and_season(:bundle, season, :order => 'display_order,created_at')
+      Vouchertype.where('category = ? AND season = ?', :bundle, season).
+        order('display_order,created_at')
     else
-      Vouchertype.find_all_by_category(:bundle, :order => 'season DESC,display_order,created_at')
+      Vouchertype.where('category = ?', :bundle).
+        order('season DESC,display_order,created_at')
     end
   end
 
   def self.subscription_vouchertypes(season=nil)
     if season
-      Vouchertype.find_all_by_category_and_subscription_and_season(:bundle, true, season, :order => 'display_order,created_at')
+      Vouchertype.where('category = ? AND subscription = ? AND season = ?', :bundle, true, season).
+        order('display_order,created_at')
     else
-      Vouchertype.find_all_by_category_and_subscription(:bundle, true, :order => 'season DESC,display_order,created_at')
+      Vouchertype.where('category = ? AND subscription = ?', :bundle, true).
+        order('season DESC,display_order,created_at')
     end
   end
 
   def self.revenue_vouchertypes(season=nil)
     if season
-      Vouchertype.find_all_by_category_and_season(:revenue, season, :order => 'display_order,created_at')
+      Vouchertype.where('category = ? AND season = ?', :revenue, season).
+        order('display_order,created_at')
     else
-      Vouchertype.find_all_by_category(:revenue, season, :order => 'season DESC,display_order,created_at')
+      Vouchertype.where('category = ?', :revenue).
+        order('season DESC,display_order,created_at')
     end
   end
   
   def self.nonticket_vouchertypes(season=nil)
     if season
-      Vouchertype.find_all_by_category_and_season(:nonticket, season, :order => 'display_order,created_at')
+      Vouchertype.where('category = ? AND season = ?', :nonticket, season).
+        order('display_order,created_at')
     else
-      Vouchertype.find_all_by_category(:nonticket, :order => 'season DESC,display_order,created_at')
+      Vouchertype.where('category = ?', :nonticket).
+        order('season DESC,display_order,created_at')
     end
   end
 
   def self.zero_cost_vouchertypes(season=nil)
     if season
-      Vouchertype.find_all_by_price_and_season(0.0, season, :order => 'display_order,created_at')
+      Vouchertype.where('price = ? AND season = ?', 0, season).
+        order('display_order,created_at')
     else
-      Vouchertype.find_all_by_price(0.0, :order => 'season DESC,created_at')
+      Vouchertype.where('price = ?', 0).
+        order('season DESC,created_at')
     end
   end
 
@@ -253,7 +263,7 @@ class Vouchertype < ActiveRecord::Base
       end
     end
     arglist.unshift(restrict.join(" AND "))
-    Vouchertype.find(:all, :conditions => arglist)
+    Vouchertype.where(*arglist)
   end
 
   def numseats_for_showdate(showdate)
@@ -332,7 +342,7 @@ class Vouchertype < ActiveRecord::Base
   def name_with_season_and_price; sprintf("%s - $%0.2f", name_with_season, price) ; end
 
   def self.walkup_vouchertypes
-    Vouchertype.find(:all, :conditions => ['subscription = ? AND walkup_sale_allowed = ?', false, true])
+    Vouchertype.where('subscription = ? AND walkup_sale_allowed = ?', false, true)
   end
   
   # Override content_columns to not display included vouchers (since

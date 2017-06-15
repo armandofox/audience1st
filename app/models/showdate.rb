@@ -9,12 +9,12 @@ class Showdate < ActiveRecord::Base
 
   delegate :house_capacity, :patron_notes, :name, :to => :show
 
-  has_many :vouchers, :conditions => "category != 'nonticket'"
+  has_many :vouchers, -> { where("category != ?", 'nonticket') }
   has_many :all_vouchers, :class_name => 'Voucher'
-  has_many :walkup_vouchers, :class_name => 'Voucher', :conditions => ['walkup = ?', true]
-  has_many :customers, :through => :vouchers, :uniq => true, :conditions => 'customers.role >= 0'
-  has_many :vouchertypes, :through => :vouchers, :uniq => true
-  has_many :available_vouchertypes, :source => :vouchertype, :through => :valid_vouchers, :uniq => true
+  has_many :walkup_vouchers, -> { where('walkup = ?', true) }, :class_name => 'Voucher'
+  has_many :customers, -> { where('customers.role >= 0').uniq(true) }, :through => :vouchers
+  has_many :vouchertypes, -> { uniq(true) }, :through => :vouchers
+  has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
   validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
@@ -56,29 +56,26 @@ class Showdate < ActiveRecord::Base
   # finders
   
   def self.current_and_future
-    Showdate.find(:all, :conditions => ["thedate >= ?", Time.now - 1.day],
-      :order => 'thedate')
+    Showdate.where("thedate >= ?", Time.now - 1.day).order => 'thedate'
   end
 
   def self.current_or_next(opts={})
     buffer = opts[:grace_period] || 0
     type = opts[:type] || 'Regular Show'
-    Showdate.find(:first,
-      :include => :show,
-      :conditions => ["showdates.thedate >= ? AND shows.event_type=?", Time.now - buffer, type],
-      :order => "thedate") ||
+    Showdate.where("showdates.thedate >= ? AND shows.event_type=?", Time.now - buffer, type).
+      include(:show).
+      order("thedate").
+      first  ||
 
-      Showdate.find(:first,
-      :include => :show,
-      :conditions => ["shows.event_type = ?", type],
-      :order => 'thedate DESC')
+      Showdate.where("shows.event_type = ?", type).
+      include(:show).
+      order('thedate DESC')
   end
 
   def self.all_showdates_for_seasons(first=Time.now.year, last=Time.now.year)
     first = Time.now.at_beginning_of_season(first)
     last = Time.now.at_end_of_season(last)
-    Showdate.find(:all, :order => 'thedate ASC',
-                  :conditions => ['thedate BETWEEN ? and ?', first, last])
+    Showdate.where('thedate BETWEEN ? and ?', first, last).order('thedate')
   end
 
   # reporting, comparisons
@@ -204,7 +201,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def advance_sales_vouchers
-    self.vouchers.find(:all,:conditions => ['customer_id != ?', Customer.walkup_customer.id])
+    self.vouchers.where('customer_id != ?', Customer.walkup_customer.id)
   end
   def compute_advance_sales
     self.vouchers.count(:conditions => ['customer_id != ?', Customer.walkup_customer.id])

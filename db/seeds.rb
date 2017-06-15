@@ -70,7 +70,7 @@ class Audience1stSeeder
   
   def self.create_default_account_code
     puts "Creating default account code"
-    a = AccountCode.find(:first) ||
+    a = AccountCode.first ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
     # set it as default account code for various things
