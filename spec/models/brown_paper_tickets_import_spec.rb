@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 TESTFILES_DIR = File.join(Rails.root, 'spec', 'import_test_files', 'brownpapertickets')
 

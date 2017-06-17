@@ -13,7 +13,7 @@ class Report
 
   cattr_accessor :logger
 
-  @@logger = RAILS_DEFAULT_LOGGER
+  @@logger = logger
 
   QUERY_TEMPLATE = %{
         SELECT DISTINCT %s

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 require 'fakeweb'
 
 @@testdir = "#{Rails.root}/spec/import_test_files/goldstar_auto_importer"

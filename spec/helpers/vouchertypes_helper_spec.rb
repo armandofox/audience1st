@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe VouchertypesHelper do
   def stub_month_and_day(month,day)

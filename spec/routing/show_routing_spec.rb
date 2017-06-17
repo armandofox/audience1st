@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'Show routing', :type => :routing do
   before :all do ; @r = {:controller => 'shows'} ; end

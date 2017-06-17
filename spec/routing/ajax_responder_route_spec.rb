@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "AJAX responder routes", :type => :routing do
   specify 'autocomplete' do

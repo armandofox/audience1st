@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'Showdate routing', :type => :routing do
   before :all do ; @r = {:controller => 'showdates'} ; end

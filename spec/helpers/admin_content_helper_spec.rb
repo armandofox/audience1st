@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe AdminContentHelper do
   it "should be able to inspect if current user is an admin" do

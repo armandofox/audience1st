@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-# Be sure to include AuthenticatedTestHelper in spec/spec_helper.rb instead
+# Be sure to include AuthenticatedTestHelper in spec/rails_helper.rb instead
 # Then, you can remove it from this and the units test.
 
 describe SessionsController do

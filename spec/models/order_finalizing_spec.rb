@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Order, 'finalizing' do
   # Simplify matching Customer vouchers for a particular showdate and vouchertype

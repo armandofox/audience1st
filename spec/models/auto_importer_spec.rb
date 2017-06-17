@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 def email_body ;  ActionMailer::Base.deliveries[0].body ; end
 def email_header(arg) ; ActionMailer::Base.deliveries[0][arg].to_s ; end

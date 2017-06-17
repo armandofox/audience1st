@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'Customer routes for', :type => :routing do
   before :all do ; @r = {:controller => 'customers'}; end

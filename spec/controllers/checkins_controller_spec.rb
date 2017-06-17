@@ -1,8 +1,8 @@
-require 'spec_helper'
-fixtures :customers
-
+require 'rails_helper'
 
 describe CheckinsController do
+
+  fixtures :customers
 
   before(:each) do
     login_as(:boxoffice_manager)

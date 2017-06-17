@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Report do
   describe 'workaround parsing bug in Rack or Rails for multi-select box' do

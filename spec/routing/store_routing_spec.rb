@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'store', :type => :routing do
   describe 'index route' do

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'vouchertype routes', :type => :routing do
   specify 'for cloning' do

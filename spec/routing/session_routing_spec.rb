@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'Session routes', :type => :routing do
   before :all do ; @r = {:controller => 'sessions'}; end

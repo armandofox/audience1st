@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
 
   include AuthenticatedSystem
-  include ExceptionNotifiable
   include FilenameUtils
   include SslRequirement
   

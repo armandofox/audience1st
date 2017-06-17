@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 require 'builder'
 
 def xml(str) ; Nokogiri::XML::Document.parse(str) ; end

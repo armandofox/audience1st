@@ -106,7 +106,7 @@ class TicketSalesImport < Import
       self.errors.add_to_base(e.message)
     rescue Exception => e
       self.errors.add_to_base("Unexpected error: #{e.message}")
-      RAILS_DEFAULT_LOGGER.info "Importing id #{self.id || '<none>'} at record #{self.number_of_records}: #{e.message}\n#{e.backtrace}"
+      logger.info "Importing id #{self.id || '<none>'} at record #{self.number_of_records}: #{e.message}\n#{e.backtrace}"
     end
     @vouchers
   end

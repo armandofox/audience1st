@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Donation do
   describe 'creating from amount and account code' do

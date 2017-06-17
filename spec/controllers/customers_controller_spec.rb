@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe CustomersController do
   describe "admin creating or updating valid customer" do

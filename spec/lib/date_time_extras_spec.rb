@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "Date/time extras" do
   def stub_month_and_day(month,day)
