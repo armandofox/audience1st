@@ -10,7 +10,7 @@ class NewCustomers < Report
     conds << " AND email LIKE '%@%'" if params[:require_valid_email]
     conds << ' AND street IS NOT NULL' if params[:require_valid_address]
     conds_array = conds+from+to
-    Customer.where(*conds_array).:order => 'created_at'
+    Customer.where(*conds_array).order('created_at')
   end
 
 end

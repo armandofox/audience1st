@@ -181,6 +181,7 @@ GEM
       capybara (~> 2.1)
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
+    pothoven-attachment_fu (3.3.0)
     prawn (0.12.0)
       pdf-reader (>= 0.9.0)
       ttfunk (~> 1.0.2)
@@ -226,6 +227,9 @@ GEM
     rspec-expectations (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.6.0)
+    rspec-its (1.2.0)
+      rspec-core (>= 3.0.0)
+      rspec-expectations (>= 3.0.0)
     rspec-mocks (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.6.0)
@@ -342,12 +346,14 @@ DEPENDENCIES
   mysql
   nokogiri
   poltergeist
+  pothoven-attachment_fu
   protected_attributes
   rack-test
   rails (= 4.2.6)
   rake
   rb-readline
   rest-client
+  rspec-its
   rspec-rails
   rubyzip
   ruport

@@ -19,6 +19,7 @@ gem 'json'
 gem 'mechanize'
 gem 'mysql'
 gem 'nokogiri'
+gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'rails', '4.2.6'            # 4
 gem 'rake'
@@ -43,6 +44,7 @@ group :test do
   gem 'cucumber-rails', :require => false
   gem 'capybara'
   gem 'poltergeist'
+  gem 'rspec-its'
 end
 
 group :development, :test do
@@ -66,7 +68,6 @@ group :development, :test do
   gem 'sdoc', '~> 0.4.0'
   gem 'rspec-rails'
   gem 'simplecov'
-  gem 'spring'
   gem 'sqlite3'
   gem 'timecop'
 end

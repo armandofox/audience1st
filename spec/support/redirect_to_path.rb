@@ -1,4 +1,6 @@
 # rspec-rails 1.3.x redirect_to matcher doesn't work if the 
+if false
+
 module Spec
   module Rails
     module Matchers
@@ -15,4 +17,6 @@ module Spec
       end
     end
   end
+end
+
 end

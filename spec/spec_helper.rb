@@ -2,10 +2,7 @@
 # from the project root directory.
 ENV["RAILS_ENV"] ||= 'test'
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(Rails.root)
-require 'spec/autorun'
-require 'spec/rails'
 require 'timecop'
-require 'spec/support/redirect_to_path.rb'
 
 TEST_FILES_DIR = File.join(Rails.root, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
 
@@ -49,5 +46,4 @@ RSpec.configure do |config|
 
 end
 
-ActiveRecord::Base.colorize_logging = false
 

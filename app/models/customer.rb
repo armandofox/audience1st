@@ -513,7 +513,7 @@ EOSQL1
     c.force_valid = true      # make sure will pass validation checks
     # precaution: make sure email is unique.
     c.email = nil if (!c.email.blank? &&
-      Customer.where('email like ?',c.email.downcase).first
+      Customer.where('email like ?',c.email.downcase).first)
     c.save!
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => c.id,

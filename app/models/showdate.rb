@@ -56,7 +56,7 @@ class Showdate < ActiveRecord::Base
   # finders
   
   def self.current_and_future
-    Showdate.where("thedate >= ?", Time.now - 1.day).order => 'thedate'
+    Showdate.where("thedate >= ?", Time.now - 1.day).order('thedate')
   end
 
   def self.current_or_next(opts={})
