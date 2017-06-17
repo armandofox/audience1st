@@ -134,7 +134,7 @@ describe Showdate do
       end
     end
     describe "capacity computations" do
-      describe "for normal sales", :shared => true do
+      shared_examples "for normal sales" do
         # house cap 12, max sales 10, sold 9
         it "should compute total sales" do
           @showdate.compute_total_sales.should == @total_sold

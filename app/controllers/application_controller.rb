@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
 
   include AuthenticatedSystem
   include FilenameUtils
-  include SslRequirement
   
   if (RAILS_ENV == 'production')
     SslRequirement.ssl_all = true
