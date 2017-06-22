@@ -1,5 +1,7 @@
 class Customer < ActiveRecord::Base
 
+  class CannotDestroySpecialCustomersError < RuntimeError ;  end
+
   ROLES = {
     :walkup => -1,
     :boxoffice_daemon => -2,
@@ -24,7 +26,7 @@ class Customer < ActiveRecord::Base
   def self.anonymous_customer ; special_customer(:anonymous) ; end
 
   def cannot_destroy_special_customers
-    raise "Cannot destroy special customer entries" if self.special_customer?
+    raise CannotDestroySpecialCustomersError.new("Cannot destroy special customer entries") if self.special_customer?
   end
 
   def special_customer?

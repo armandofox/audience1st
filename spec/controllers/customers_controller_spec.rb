@@ -67,7 +67,7 @@ describe CustomersController do
         put :update, params
       end
       it "should not update the password" do
-        @customer.crypted_password_changed?.should be_false
+        @customer.crypted_password_changed?.should be falsey
       end
       it "should update the address" do
         @customer.reload

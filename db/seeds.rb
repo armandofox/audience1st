@@ -47,7 +47,7 @@ class Audience1stSeeder
   }
 
   def self.create_special_customers
-    puts "Creating special customers"
+    Rails.logger.info "Creating special customers"
     # Create Admin (God) login
     unless Customer.find_by_role(100)
       admin = Customer.new(:first_name => 'Super',
@@ -69,7 +69,7 @@ class Audience1stSeeder
   end
   
   def self.create_default_account_code
-    puts "Creating default account code"
+    Rails.logger.info "Creating default account code"
     a = AccountCode.first ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
@@ -84,7 +84,7 @@ class Audience1stSeeder
   end
 
   def self.create_purchasemethods
-    puts "Creating purchasemethods"
+    Rails.logger.info "Creating purchasemethods"
     ["Web - Credit Card","web_cc",false,
       "No payment required","none",true,
       "Box office - Credit Card","box_cc",false,
@@ -101,7 +101,7 @@ class Audience1stSeeder
   end
 
   def self.create_options
-    puts "Creating default options"
+    Rails.logger.info "Creating default options"
     Option.create!(
       :venue_id => 111,
       :venue_shortname => 'testing',
@@ -114,7 +114,6 @@ class Audience1stSeeder
       :season_start_month => 1,
       :season_start_day => 1,
       :cancel_grace_period => 1440,
-      :venue => 'Test Theater',
       :send_birthday_reminders => 0,
       :terms_of_sale => 'Sales Final',
       :precheckout_popup => 'Please double check dates',

@@ -27,31 +27,31 @@ class EmailList
   def self.enabled? ; !self.disabled? ; end
 
   def self.init_hominid
-    logger.info("NOT initializing mailchimp") and return nil if self.disabled?
+    Rails.logger.info("NOT initializing mailchimp") and return nil if self.disabled?
     return true if hominid
     apikey = Figaro.env.mailchimp_key
     @@list = Option.mailchimp_default_list_name
     if (apikey.blank? || @@list.blank?)
-      logger.warn("NOT using Mailchimp, one or more necessary options are blank")
+      Rails.logger.warn("NOT using Mailchimp, one or more necessary options are blank")
       return nil
     end
     begin
       @@hominid = Hominid::Base.new :api_key => apikey
       @@listid = hominid.find_list_id_by_name(@@list)
     rescue NoMethodError => e   # dereference nil.[] means list not found
-      logger.warn "Init Mailchimp: list '#{@@list}' not found"
+      Rails.logger.warn "Init Mailchimp: list '#{@@list}' not found"
       return nil
     rescue StandardError => e
-      logger.info "Init Mailchimp failed: <#{e.message}>"
+      Rails.logger.info "Init Mailchimp failed: <#{e.message}>"
       return nil
     end
-    logger.info "Init Mailchimp with default list '#{@@list}'"
+    Rails.logger.info "Init Mailchimp with default list '#{@@list}'"
     return true
   end
 
   def self.subscribe(cust, email=cust.email)
     self.init_hominid || return
-    logger.info "Subscribe #{cust.full_name} as #{email}"
+    Rails.logger.info "Subscribe #{cust.full_name} as #{email}"
     msg = "Subscribing #{cust.full_name} <#{email}> to '#{@@list}'"
     begin
       hominid.subscribe(
@@ -59,15 +59,15 @@ class EmailList
         email,
         {:FNAME => cust.first_name, :LNAME => cust.last_name},
         {:email_type => 'html'})
-      logger.info msg
+      Rails.logger.info msg
     rescue Exception => e
-      logger.info [msg,e.message].join(': ')
+      Rails.logger.info [msg,e.message].join(': ')
     end
   end
 
   def self.update(cust, old_email)
     self.init_hominid || return
-    logger.info "Update email for #{cust.full_name} from #{old_email} to #{cust.email}"
+    Rails.logger.info "Update email for #{cust.full_name} from #{old_email} to #{cust.email}"
     begin
       # update existing entry
       msg = "Changing <#{old_email}> to <#{cust.email}> " <<
@@ -92,21 +92,21 @@ class EmailList
         end
       end
       # here if all went well...
-      logger.info msg
+      Rails.logger.info msg
     rescue Exception => e
-      logger.info [msg,e.message].join(': ')
+      Rails.logger.info [msg,e.message].join(': ')
     end
   end
 
   def self.unsubscribe(cust, email=cust.email)
     self.init_hominid || return
-    logger.info "Unsubscribe #{cust.full_name} as #{email}"
+    Rails.logger.info "Unsubscribe #{cust.full_name} as #{email}"
     msg = "Unsubscribing #{cust.full_name} <#{email}> from '#{@@list}'"
     begin
       hominid.unsubscribe(@@listid, email)
-      logger.info msg
+      Rails.logger.info msg
     rescue Exception => e
-      logger.info [msg,e.message].join(': ')
+      Rails.logger.info [msg,e.message].join(': ')
     end
   end
 
@@ -121,7 +121,7 @@ class EmailList
       return true
     rescue Exception => e
       error = "List segment '#{name}' could not be created: #{e.message}"
-      logger.warn error
+      Rails.logger.warn error
       self.errors = error
       return nil
     end
@@ -135,7 +135,7 @@ class EmailList
       puts "Returning static segments: #{segs}"
       segs
     rescue Exception => e
-      logger.info "Getting sublists: #{e.message}"
+      Rails.logger.info "Getting sublists: #{e.message}"
       []
     end
   end
@@ -156,7 +156,7 @@ class EmailList
       return result['success'].to_i
     rescue Exception => e
       self.errors = e.message
-      RAILS_DEFAULT_LOGGER.info "Adding #{customers.length} customers to sublist '#{sublist}': #{e.message}"
+      Rails.logger.info "Adding #{customers.length} customers to sublist '#{sublist}': #{e.message}"
       return 0
     end
   end

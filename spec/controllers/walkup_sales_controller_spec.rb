@@ -10,7 +10,7 @@ describe WalkupSalesController do
 
   
   describe "transferring already-sold walkup vouchers" do
-    context "no transfer is attempted", :shared => true do
+    shared_examples "no transfer is attempted" do
       it "should not attempt to transfer" do
         Voucher.should_not_receive(:change_showdate_multiple)
         put :update, @params

@@ -8,7 +8,7 @@ describe AccountCode do
     end
     it 'includes error message' do
       @a.destroy
-      @a.errors.on(:base).should == 'at least one account code must exist'
+      @a.errors[:base].should == 'at least one account code must exist'
     end
     it 'does not do the deletion' do
       expect { @a.destroy }.to_not change { AccountCode.count }
@@ -21,7 +21,7 @@ describe AccountCode do
     end
     it 'includes error message' do
       @a.destroy
-      @a.errors.on(:base).should == "it's the default donation account code"
+      @a.errors[:base].should == "it's the default donation account code"
     end
     it 'does not delete' do
       expect { @a.destroy }.to_not change { AccountCode.count }

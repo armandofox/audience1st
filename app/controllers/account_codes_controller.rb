@@ -38,7 +38,7 @@ class AccountCodesController < ApplicationController
 
   def destroy
     @account_code = AccountCode.find(params[:id])
-    @account_code.destroy or flash[:alert] = @account_code.errors_on(:base) 
+    @account_code.destroy or flash[:alert] = @account_code.errors[:base] 
     redirect_to account_codes_path
   end
 end

@@ -13,7 +13,7 @@ class Report
 
   cattr_accessor :logger
 
-  @@logger = logger
+  @@logger = Rails.logger
 
   QUERY_TEMPLATE = %{
         SELECT DISTINCT %s
@@ -46,7 +46,7 @@ class Report
   
   def execute_query
     res = Customer.find_by_sql(query)
-    logger.info "Report Query:\n  #{query.join("\n>> ")} \n==> #{@customers.length} results"
+    Rails.logger.info "Report Query:\n  #{query.join("\n>> ")} \n==> #{@customers.length} results"
     @customers = postprocess(res)
   end
 
@@ -90,7 +90,7 @@ class Report
       rescue Exception => e
         err = "Error in create_csv: #{e.message}"
         add_error(err)
-        logger.error err
+        Rails.logger.error err
       end
     end
     @filename = filename_from_object(self)

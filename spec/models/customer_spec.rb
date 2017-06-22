@@ -69,7 +69,7 @@ describe Customer do
     %w[walkup_customer generic_customer anonymous_customer boxoffice_daemon].each do |c|
       it "#{c.humanize} cannot be destroyed" do
         cust = Customer.send(c)
-        lambda { cust.destroy }.should raise_error
+        lambda { cust.destroy }.should raise_error(Customer::CannotDestroySpecialCustomersError)
       end
     end
   end
@@ -189,7 +189,7 @@ describe Customer do
         end
       end
     end
-    context "when email cannot break ties", :shared => true do
+    shared_examples "when email cannot break ties" do
       before(:each) do
         @attrs = {:first_name => 'Bob', :last_name => 'Smith',
           :street => '99 Fake Blvd', :city => 'New York',
@@ -247,12 +247,12 @@ describe Customer do
   end
 
   it 'resets password' do
-    customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_false
+    customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be falsey
     Customer.authenticate(customers(:quentin).email, 'new password').should == customers(:quentin)
   end
 
   it 'does not rehash password' do
-    customers(:quentin).update_attributes(:email => 'quentin2@email.com').should_not be_false
+    customers(:quentin).update_attributes(:email => 'quentin2@email.com').should_not be falsey
     Customer.authenticate('quentin2@email.com', 'monkey').should == customers(:quentin)
   end
 
@@ -271,7 +271,7 @@ describe Customer do
         should match(/password incorrect/i)
     end
     it "should display an unknown-username message for bad username" do
-      Customer.authenticate('asdkfljhadf@email.com', 'pass').errors.on(:login_failed).
+      Customer.authenticate('asdkfljhadf@email.com', 'pass').errors[:login_failed].
         should match(/can't find that email/i)
     end
   end

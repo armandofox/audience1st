@@ -98,9 +98,9 @@ class ImportsController < ApplicationController
   def delete_original_attachment
     begin
       FileUtils.rm_rf @import.full_filename
-      logger.info "Deleting #{@import.full_filename}"
+      Rails.logger.info "Deleting #{@import.full_filename}"
     rescue Exception => e
-      logger.info "Deleting original attachment for import ID #{@import.id}: #{e.message}"
+      Rails.logger.info "Deleting original attachment for import ID #{@import.id}: #{e.message}"
     end
   end
 

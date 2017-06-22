@@ -64,7 +64,7 @@ describe Customer, "merging" do
         if keep_new == 1
           @old.send(attr).should == @new.send(attr)
         else
-          @old.send("#{attr}_changed?").should be_false
+          @old.send("#{attr}_changed?").should be falsey
         end
       end
     end
@@ -86,7 +86,7 @@ describe Customer, "merging" do
         obj.customer_id.should == Customer.anonymous_customer.id
       end
     end        
-    context ",", :shared => true do
+    shared_examples "," do
       it "should do nothing if customer is a special customer" do
         Customer.boxoffice_daemon.forget!.should be_nil
       end
@@ -135,7 +135,7 @@ describe Customer, "merging" do
       @old.merge_automatically!(@new).should_not be_nil
       @old.reload
       @old.email.should == 'dupe@email.com'
-      @old.created_by_admin.should be_false
+      @old.created_by_admin.should be falsey
     end
     describe "disallowed cases" do
       before :each do

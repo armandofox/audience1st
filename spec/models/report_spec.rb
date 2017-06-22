@@ -22,15 +22,15 @@ describe Report do
     end
   end
   
-  describe "SQL query for constraint" do
-    describe "a valid SQL query", :shared => true do
-      it "should be valid SQL" do
-        lambda { @r.execute_query }.should_not raise_error
-      end
-      it "should be an array plus bind variables" do
-        @r.query.should be_an(Array)
-      end
+  shared_examples "a valid SQL query" do
+    it "should be valid SQL" do
+      lambda { @r.execute_query }.should_not raise_error
     end
+    it "should be an array plus bind variables" do
+      @r.query.should be_an(Array)
+    end
+  end
+  describe "SQL query for constraint" do
     describe "with no constraints" do
       it_should_behave_like "a valid SQL query"
       before(:each) do ; @r = Report.new ; end

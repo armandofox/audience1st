@@ -1,7 +1,7 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
-ENV["RAILS_ENV"] ||= 'test'
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(Rails.root)
+require 'rspec/its'
 require 'timecop'
 
 TEST_FILES_DIR = File.join(Rails.root, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
@@ -26,6 +26,7 @@ RSpec.configure do |config|
     # ...rather than:
     #     # => "be bigger than 2"
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+    expectations.syntax = :should
   end
 
   # rspec-mocks config goes here. You can use an alternate test double

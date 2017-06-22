@@ -9,7 +9,7 @@ describe Order, 'deleting' do
       @o.destroy
     end
     it 'destroys the donation' do ; Donation.find_by_id(@donation.id).should be_nil ;  end
-    it 'destroys the vouchers' do ; @vouchers.any? { |v| Voucher.find_by_id(v.id) }.should be_false ; end
+    it 'destroys the vouchers' do ; @vouchers.any? { |v| Voucher.find_by_id(v.id) }.should be falsey ; end
     it 'should summarize prices and ids of deleted things' do
       s = @o.summary_for_audit_txn
       (@vouchers + [@donation]).each do |item|

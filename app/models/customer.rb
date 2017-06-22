@@ -1,4 +1,5 @@
 class Customer < ActiveRecord::Base
+
   acts_as_reportable
   
   require_dependency 'customer/special_customers'
@@ -39,7 +40,7 @@ class Customer < ActiveRecord::Base
   :message => EMAIL_UNIQUENESS_ERROR_MESSAGE
 
   def unique_email_error
-    self.errors.on(:email) == EMAIL_UNIQUENESS_ERROR_MESSAGE
+    self.errors[:email] == EMAIL_UNIQUENESS_ERROR_MESSAGE
   end
     
   validates_format_of :zip, :if => :self_created?, :with => /\A^[0-9]{5}-?([0-9]{4})?\z/, :allow_blank => true
@@ -501,13 +502,13 @@ EOSQL1
 
   def self.find_or_create!(cust, loggedin_id=0)
     if (c = Customer.find_unique(cust))
-      logger.info "Copying nonblank attribs for unique #{cust}\n from #{c}"
+      Rails.logger.info "Copying nonblank attribs for unique #{cust}\n from #{c}"
       c.copy_nonblank_attributes(cust)
       c.created_by_admin = true # ensure some validations are skipped
       txn = "Customer found and possibly updated"
     else
       c = cust
-      logger.info "Creating customer #{cust}"
+      Rails.logger.info "Creating customer #{cust}"
       txn = "Customer not found, so created"
     end
     c.force_valid = true      # make sure will pass validation checks

@@ -1,7 +1,7 @@
 namespace :db do
   desc "Given ENV[FILE] is a CSV with columns <last, first, street, phone, email>, repopulates development DB with fake data, skipping any superadmins."
   task :fake_names => :environment do
-    abort "Only works for RAILS_ENV=development" unless ENV['RAILS_ENV']=='development'
+    abort "Only works for RAILS_ENV=development" unless Rails.env.development?
     require 'string_extras'
     require 'generator'
     require 'csv'

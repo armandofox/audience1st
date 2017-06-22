@@ -120,22 +120,22 @@ describe Customer do
     it "should reject invalid email address" do
       @customer.email = "NotValidAddress"
       @customer.should_not be_valid
-      @customer.errors.on(:email).should_not be_empty
+      @customer.errors[:email].should_not be_empty
     end
     it "should require password" do
       @customer.password = @customer.password_confirmation = ''
       @customer.should_not be_valid
-      @customer.errors_on(:password).join(",").should match(/too short/i)
+      @customer.errors[:password].join(",").should match(/too short/i)
     end
     it "should require nonblank password confirmation" do
       @customer.password_confirmation = ''
       @customer.should_not be_valid
-      @customer.errors.on(:password).should match(/doesn't match confirmation/i)
+      @customer.errors[:password].should match(/doesn't match confirmation/i)
     end
     it "should require matching password confirmation" do
       @customer.password_confirmation = "DoesNotMatch"
       @customer.should_not be_valid
-      @customer.errors.on(:password).should match(/doesn't match confirmation/i)
+      @customer.errors[:password].should match(/doesn't match confirmation/i)
     end
   end
 end

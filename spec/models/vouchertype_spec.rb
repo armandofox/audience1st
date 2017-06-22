@@ -173,9 +173,9 @@ describe Vouchertype do
       before :each do
         @result = @v.update_attributes(:category => :revenue)
       end
-      it 'should fail' do ; @result.should be_false ; end
+      it 'should fail' do ; @result.should be falsey ; end
       it 'should explain why' do
-        @v.errors.on(:category).should include_match_for(/cannot be changed/)
+        @v.errors[:category].should include_match_for(/cannot be changed/)
       end
       it 'should not change the category' do
         @v.reload

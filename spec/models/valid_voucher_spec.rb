@@ -202,7 +202,7 @@ describe ValidVoucher do
       it 'should match exact string' do ;     @v.match_promo_code('foo').should be_true ; end
       it 'should be case-insensitive' do ;    @v.match_promo_code('FoO').should be_true ; end
       it 'should ignore whitespace' do ;      @v.match_promo_code(' Foo ').should be_true ; end
-      it 'should not match partial string' do;@v.match_promo_code('fo').should be_false ; end
+      it 'should not match partial string' do;@v.match_promo_code('fo').should be falsey ; end
     end
     context '"foo"' do
       before :each do ; @v = ValidVoucher.new(:promo_code => 'foo') ; end

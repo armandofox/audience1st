@@ -7,14 +7,9 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include FilenameUtils
   
-  if (RAILS_ENV == 'production')
-    SslRequirement.ssl_all = true
-  else
-    SslRequirement.disable_ssl_check = true
-  end
+  force_ssl if Rails.env.production?
 
-  require 'csv.rb'
-  require 'string_extras.rb'
+  require 'csv'
 
   # Session keys
   #  :cid               id of logged in user; if absent, nobody logged in
@@ -143,11 +138,11 @@ class ApplicationController < ActionController::Base
       begin
         Mailer.send("deliver_"<< method.to_s,*args)
         flash[:notice] << " An email confirmation was sent to #{addr}.  If you don't receive it in a few minutes, please make sure 'audience1st.com' is on your trusted senders list, or the confirmation email may end up in your Junk Mail or Spam folder."
-        logger.info("Confirmation email sent to #{addr}")
+        Rails.logger.info("Confirmation email sent to #{addr}")
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "
         flash[:notice] << "send an email confirmation to #{addr}."
-        logger.error("Emailing #{addr}: #{e.message} \n #{e.backtrace}")
+        Rails.logger.error("Emailing #{addr}: #{e.message} \n #{e.backtrace}")
       end
     else
       flash[:notice] << " Email confirmation was NOT sent because there isn't"

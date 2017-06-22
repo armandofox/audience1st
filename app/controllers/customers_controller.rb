@@ -231,7 +231,7 @@ class CustomersController < ApplicationController
     result = c0.merge_with_params!(c1, params)
     # result is nil if merge failed, else string describing result
     flash[:notice] = result || c0
-    logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
+    Rails.logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
     redirect_to_last_list
   end
 

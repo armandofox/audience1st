@@ -24,10 +24,10 @@ describe "Date/time extras" do
         Date.civil(2009,12,31).within_season?(2009).should be_true
       end
       it "should NOT include a date in next season" do
-        Date.civil(2010,1,1).within_season?(2009).should be_false
+        Date.civil(2010,1,1).within_season?(2009).should be falsey
       end
       it "should NOT include a date in past season" do
-        Date.civil(2008,1,1).within_season?(2009).should be_false
+        Date.civil(2008,1,1).within_season?(2009).should be falsey
       end
       it "should compute current season year" do
         @now.this_season.should == 2009
@@ -76,10 +76,10 @@ describe "Date/time extras" do
         (@end - 1.day).at_end_of_season.should == @end
       end
       it "should exclude a date that is within next calendar year but not season" do
-        (@end + 1.day).within_season?(2009).should be_false
+        (@end + 1.day).within_season?(2009).should be falsey
       end
       it "should exclude a date that is within this calendar year but not season" do
-        (@start - 1.day).within_season?(2009).should be_false
+        (@start - 1.day).within_season?(2009).should be falsey
       end
       it "should include a date that is this calendar year and season" do
         (@start + 1.day).within_season?(2009).should be_true

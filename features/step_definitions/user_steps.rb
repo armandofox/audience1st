@@ -96,7 +96,7 @@ end
 
 def log_out
   visit logout_path
-  #controller.send(:current_user).should be_false
+  #controller.send(:current_user).should be falsey
 end
 
 def log_out! ; log_out ; end

@@ -14,7 +14,7 @@ describe Order do
     its(:items) { should be_empty }
     its(:cart_empty?) { should be_true }
     its(:total_price) { should be_zero }
-    its(:refundable_to_credit_card?) { should be_false }
+    its(:refundable_to_credit_card?) { should be falsey }
     its(:errors) { should be_empty }
     its(:comments) { should be_blank }
   end

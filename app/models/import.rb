@@ -64,8 +64,8 @@ class Import < ActiveRecord::Base
     full_filename = f.path
     short_filename = full_filename.split('/').last
     length = f.write(data)
-    logger.info "Wrote #{length} of #{data.size} bytes to #{full_filename}"
-    logger.info data
+    Rails.logger.info "Wrote #{length} of #{data.size} bytes to #{full_filename}"
+    Rails.logger.info data
     f.close
     io = open(full_filename)
     (class << io; self; end;).class_eval do
@@ -91,7 +91,7 @@ class Import < ActiveRecord::Base
     rescue Exception => e
       msg = "Getting/parsing attachment data for #{fn}: #{e.message}"
       self.errors.add_to_base(msg)
-      logger.error msg
+      Rails.logger.error msg
       []
     end
   end

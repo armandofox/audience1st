@@ -75,7 +75,7 @@ class VouchersController < ApplicationController
       flash[:alert] = ["Error adding comps: ", order]
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
-      logger.error e.backtrace.inspect
+      Rails.logger.error e.backtrace.inspect
     end
     
     redirect_to customer_path(@customer)
