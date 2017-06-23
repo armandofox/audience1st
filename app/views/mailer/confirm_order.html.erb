@@ -8,21 +8,21 @@ Please check this information carefully:
 ------------------------------------------------------------
 ORDER SUMMARY:
 
-<%= @description %>
+<%= @order.summary %>
 
 ------------------------------------------------------------
-PAYMENT AMOUNT: <%= number_to_currency(@amount) %>
+PAYMENT AMOUNT: <%= number_to_currency(@order.total_price) %>
 
-PAYMENT METHOD: <%= @payment_desc %>
+PAYMENT METHOD: <%= @order.purchasemethod.description %>
 ------------------------------------------------------------
 
 <%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)), :line_width => 60) %>
 
 <%= word_wrap(strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
 
-<% unless @special_instructions.blank? %>
+<% unless @order.comments.blank? %>
 ------------------------------------------------------------
-<%= strip_tags(@special_instructions) %>
+<%= strip_tags(@order.comments) %>
 ------------------------------------------------------------
 <% end %>
 <% if @recipient %>

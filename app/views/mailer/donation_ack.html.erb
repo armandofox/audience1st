@@ -1,5 +1,5 @@
 
-Dear <%= @customer.full_name %>,
+Dear <%= @greeting %>,
 
 Thank you for your donation to <%= @venue %>
 on <%= Date.today.to_formatted_s(:date_only) %> in the amount of <%= number_to_currency(@amount) %>.
