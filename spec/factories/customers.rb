@@ -1,8 +1,8 @@
 FactoryGirl.define do
 
   factory :customer do
-    ignore do
-      role :patron
+    transient do
+      customer_role :patron
     end
     sequence(:first_name) { |n| "Joe#{n}" }
     sequence(:last_name) { |n| "Doe#{n}" }
@@ -16,8 +16,8 @@ FactoryGirl.define do
     zip '10019'
     created_by_admin false
 
-    after_build do |customer,evaluator|
-      customer.role = Customer.role_value(evaluator.role) unless evaluator.role == :patron
+    after(:build) do |customer,e|
+      customer.role = Customer.role_value(e.customer_role) unless e.customer_role == :patron
     end
   end
 

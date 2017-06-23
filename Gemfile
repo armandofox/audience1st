@@ -57,7 +57,7 @@ group :development, :test do
   gem 'capistrano'
   gem 'faye-websocket'
   gem 'database_cleaner'
-  gem 'factory_girl'
+  gem 'factory_girl_rails', '~> 4.0'
   gem 'rb-readline'
   gem 'rubyzip'
   gem 'mime-types'
