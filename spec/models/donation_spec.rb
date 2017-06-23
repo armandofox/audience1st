@@ -4,7 +4,7 @@ describe Donation do
   describe 'creating from amount and account code' do
     before :each do
       @default = AccountCode.new
-      Donation.stub!(:default_code).and_return(@default)
+      allow(Donation).to_receive(:default_code).and_return(@default)
     end
     it 'should use default when account code is nil' do
       Donation.from_amount_and_account_code_id(15, nil).account_code.should == @default

@@ -9,7 +9,7 @@ describe SessionsController do
     ApplicationController.send(:public, :current_user, :current_user)
     @user  = mock_user
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
-    Customer.stub!(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
+    allow(Customer).to_receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
   end
   # Login for an admin
   describe 'admin view' do
@@ -38,19 +38,19 @@ describe SessionsController do
         describe "my request cookie token is #{has_request_token.to_s}," do
           describe "and ask #{want_remember_me ? 'to' : 'not to'} be remembered" do 
             before do
-              @user.stub!(:login_message).and_return ""
+              @allow(user).to_receive(:login_message).and_return ""
               @home_page = customer_path(@user)
               @ccookies = mock('cookies')
-              controller.stub!(:cookies).and_return(@ccookies)
+              allow(controller).to_receive(:cookies).and_return(@ccookies)
               @ccookies.stub!(:[]).with(:auth_token).and_return(token_value)
-              @ccookies.stub!(:delete).with(:auth_token)
+              @allow(ccookies).to_receive(:delete).with(:auth_token)
               @ccookies.stub!(:[]=)
-              @user.stub!(:remember_me) 
-              @user.stub!(:refresh_token) 
-              @user.stub!(:forget_me)
-              @user.stub!(:remember_token).and_return(token_value) 
-              @user.stub!(:remember_token_expires_at).and_return(token_expiry)
-              @user.stub!(:remember_token?).and_return(has_request_token == :valid)
+              @allow(user).to_receive(:remember_me) 
+              @allow(user).to_receive(:refresh_token) 
+              @allow(user).to_receive(:forget_me)
+              @allow(user).to_receive(:remember_token).and_return(token_value) 
+              @allow(user).to_receive(:remember_token_expires_at).and_return(token_expiry)
+              @allow(user).to_receive(:remember_token?).and_return(has_request_token == :valid)
               if want_remember_me
                 @login_params[:remember_me] = '1'
               else 

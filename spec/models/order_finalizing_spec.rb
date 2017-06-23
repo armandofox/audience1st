@@ -51,13 +51,13 @@ describe Order, 'finalizing' do
       verify_error /No purchaser information/i
     end
     it 'should fail if purchaser invalid as purchaser' do
-      @order.purchaser.stub(:valid_as_purchaser?).and_return(nil)
+      @order.allow(purchaser).to_receive(:valid_as_purchaser?).and_return(nil)
       @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
       verify_error /ERROR/
     end
     it 'should pass if purchaser invalid but order is placed by admin' do
       @order.processed_by = create(:customer, :role => :boxoffice)
-      @order.purchaser.stub(:valid_as_purchaser?).and_return(nil)
+      @order.allow(purchaser).to_receive(:valid_as_purchaser?).and_return(nil)
       @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
       @order.should be_ready_for_purchase
     end
@@ -66,7 +66,7 @@ describe Order, 'finalizing' do
       verify_error /No recipient information/
     end
     it 'should fail if zero amount for purchasemethod other than cash' do
-      @order.stub(:total_price).and_return(0.0)
+      @allow(order).to_receive(:total_price).and_return(0.0)
       @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :check)
       verify_error /Zero amount/i
     end
@@ -81,8 +81,8 @@ describe Order, 'finalizing' do
       verify_error /Invalid credit card transaction/i
     end
     it 'should fail if recipient not a valid recipient' do
-      @order.customer.stub(:valid_as_gift_recipient?).and_return(nil)
-      @order.customer.stub(:errors_as_html).and_return(['Recipient error'])
+      @order.allow(customer).to_receive(:valid_as_gift_recipient?).and_return(nil)
+      @order.allow(customer).to_receive(:errors_as_html).and_return(['Recipient error'])
       verify_error /Recipient error/
     end
     it 'should fail if no purchase method' do
@@ -95,20 +95,20 @@ describe Order, 'finalizing' do
     end
     it 'should fail if contains a course enrollment without enrollee name' do
       @order.comments = nil
-      @order.stub!(:contains_enrollment?).and_return(true)
+      @allow(order).to_receive(:contains_enrollment?).and_return(true)
       verify_error /You must specify the enrollee's name for classes/ # '
     end
   end
 
   context 'when not ready' do
     it 'should fail if order is not ready for purchase' do
-      @order.stub(:ready_for_purchase?).and_return(nil)
+      @allow(order).to_receive(:ready_for_purchase?).and_return(nil)
       lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
     end
     describe 'should not update' do
       before(:each) do
-        @order.stub(:ready_for_purchase?).and_return(true)
-        @order.customer.stub(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
+        @allow(order).to_receive(:ready_for_purchase?).and_return(true)
+        @order.allow(customer).to_receive(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
       end
       it "completion status" do
         lambda { @order.finalize! }.should raise_error
@@ -187,13 +187,13 @@ describe Order, 'finalizing' do
         :customer       => @the_customer,
         :purchaser      => @the_customer
         )
-      @order.stub!(:ready_for_purchase?).and_return(true)
+      @allow(order).to_receive(:ready_for_purchase?).and_return(true)
       @order.add_tickets(@vv,2)
       @order.add_tickets(@vv2,1)
       @order.add_donation(@donation)
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count
-      Store.stub(:pay_with_credit_card).and_return(nil)
+      allow(Store).to_receive(:pay_with_credit_card).and_return(nil)
       lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
     end
     it 'should leave authorization field blank' do

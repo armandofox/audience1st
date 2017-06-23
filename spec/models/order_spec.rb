@@ -54,7 +54,7 @@ describe Order do
   describe 'walkup confirmation' do
     before :each do
       @o = Order.new
-      @o.stub(:purchase_medium).and_return("Cash")
+      @allow(o).to_receive(:purchase_medium).and_return("Cash")
       @v = create(:revenue_vouchertype,:price => 7)
       @vv = @v.valid_vouchers.create!(:start_sales => 1.day.ago, :end_sales => 1.day.from_now)
     end

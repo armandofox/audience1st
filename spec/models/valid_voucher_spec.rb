@@ -38,9 +38,9 @@ describe ValidVoucher do
       before :all do ; ValidVoucher.send(:public, :adjust_for_visibility) ; end
       subject do
         v = ValidVoucher.new
-        v.stub!(:match_promo_code).and_return(promo_matched)
-        v.stub!(:visible_to?).and_return(visible_to_customer)
-        v.stub!(:offer_public_as_string).and_return('NOT YOU')
+        allow(v).to_receive(:match_promo_code).and_return(promo_matched)
+        allow(v).to_receive(:visible_to?).and_return(visible_to_customer)
+        allow(v).to_receive(:offer_public_as_string).and_return('NOT YOU')
         v.adjust_for_visibility
         v
       end
@@ -128,7 +128,7 @@ describe ValidVoucher do
       before :all do ; ValidVoucher.send(:public, :adjust_for_capacity) ; end
       subject do
         v = ValidVoucher.new(:showdate => create(:showdate))
-        v.stub!(:seats_of_type_remaining).and_return(seats)
+        allow(v).to_receive(:seats_of_type_remaining).and_return(seats)
         v.adjust_for_capacity
         v
       end

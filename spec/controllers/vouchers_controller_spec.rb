@@ -7,11 +7,11 @@ describe VouchersController do
       login_as @customer
       @vouchers = Array.new(3) { Voucher.new }
       @vouchers.each do |v|
-        v.stub(:customer).and_return(@customer)
-        v.stub(:reserve_for).and_return(true)
+        allow(v).to_receive(:customer).and_return(@customer)
+        allow(v).to_receive(:reserve_for).and_return(true)
       end
       @showdate = create(:showdate, :thedate => 1.week.from_now)
-      Voucher.stub(:find).and_return(@vouchers)
+      allow(Voucher).to_receive(:find).and_return(@vouchers)
       @params = {:customer_id => @customer.id, :voucher_ids => @vouchers.map(&:id), :showdate_id => @showdate.id}
     end
     shared_examples_for 'all reservations' do

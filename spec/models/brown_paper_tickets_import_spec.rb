@@ -9,7 +9,7 @@ describe "BPT import" do
   end
   describe "parsing attachment with embedded CR's" do
     it "should have 18 records" do
-      @imp.stub!(:public_filename).and_return(File.join(TESTFILES_DIR, "tabsep_with_embedded_cr.xls"))
+      @allow(imp).to_receive(:public_filename).and_return(File.join(TESTFILES_DIR, "tabsep_with_embedded_cr.xls"))
       @imp.preview
       @imp.number_of_records.should == 18
     end
@@ -22,7 +22,7 @@ describe "BPT import" do
     end
     it "should match existing showdate if one exists" do
       showdate = mock_model(Showdate, :thedate => Time.parse("21 May 2009 8:00pm"))
-      @imp.show.stub!(:showdates).and_return([showdate])
+      @imp.allow(show).to_receive(:showdates).and_return([showdate])
       @imp.showdate_from_row(@row).should == showdate
     end
   end
@@ -32,7 +32,7 @@ describe "BPT import" do
     end
     context "when no unique match" do
       before :each do
-        Customer.stub!(:find_unique).and_return(nil)
+        allow(Customer).to_receive(:find_unique).and_return(nil)
         @new = build(:customer)
         Customer.should_receive(:new).and_return(@new)
       end

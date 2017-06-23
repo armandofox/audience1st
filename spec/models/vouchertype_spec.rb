@@ -12,7 +12,7 @@ describe Vouchertype do
         @customers[name = (c + '_subscriber').to_sym] = Customer.new do |cust|
           cust.role = Customer.role_value(c)
         end
-        @customers[name].stub!(:subscriber?).and_return(true)
+        allow(@customers[name]).to_receive(:subscriber?).and_return(true)
       end
     end
     context 'of boxoffice voucher' do

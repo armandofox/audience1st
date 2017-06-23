@@ -4,14 +4,14 @@ describe Store, "credit card" do
   before(:each) do
     @purchaser = create(:customer) 
     @order = Order.new(:purchaser => @purchaser)
-    @order.stub(:total_price).and_return(25.00)
+    @allow(order).to_receive(:total_price).and_return(25.00)
   end
   describe 'refund' do
     
   end
   describe 'successful payment' do
     before :each do
-      Stripe::Charge.stub!(:create).and_return(mock('result', :id => 'auth'))
+      Stripe::allow(Charge).to_receive(:create).and_return(mock('result', :id => 'auth'))
     end
     it 'processes charge thru Stripe' do
       @order.purchase_args = {:credit_card_token => 'xyz'}
@@ -27,7 +27,7 @@ describe Store, "credit card" do
   end
   describe 'unsuccessful purchase' do
     before :each do
-      Stripe::Charge.stub!(:create).and_raise(Stripe::StripeError.new('BOOM'))
+      Stripe::allow(Charge).to_receive(:create).and_raise(Stripe::StripeError.new('BOOM'))
     end
     it 'should return nil' do
       Store.pay_with_credit_card(@order).should be_nil

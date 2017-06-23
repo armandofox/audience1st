@@ -26,7 +26,7 @@ describe CustomerImport do
     describe "of file with CSV formatting error at row 1" do
       before(:each) do
         @import = CustomerImport.new
-        @import.stub!(:public_filename).and_return @file_with_errors
+        @allow(import).to_receive(:public_filename).and_return @file_with_errors
       end
       it "should have no records" do
         @import.preview.should be_empty
@@ -39,7 +39,7 @@ describe CustomerImport do
     describe "for file containing 2 valid customers plus header row" do
       before(:each) do 
         @import = CustomerImport.new
-        @import.stub!(:public_filename).and_return @file_with_2_customers
+        @allow(import).to_receive(:public_filename).and_return @file_with_2_customers
       end
       it "should have 3 rows" do
         CustomerImport.send(:public, :csv_rows)
@@ -59,7 +59,7 @@ describe CustomerImport do
       before(:each) do
         @customer = build(:customer)
         @import = CustomerImport.new
-        @import.stub!(:get_customers_to_import).and_return([@customer])
+        @allow(import).to_receive(:get_customers_to_import).and_return([@customer])
         @imports,@rejects = @import.import!
       end
       it "should be saved" do
@@ -81,7 +81,7 @@ describe CustomerImport do
         @customer.last_name = '' # makes invalid
         @customer.should_not be_valid
         @import = CustomerImport.new
-        @import.stub!(:get_customers_to_import).and_return([@customer])
+        @allow(import).to_receive(:get_customers_to_import).and_return([@customer])
         @imports,@rejects = @import.import!
       end
       it "should not be saved" do
