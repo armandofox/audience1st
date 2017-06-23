@@ -6,21 +6,21 @@ describe SessionsController do
   
   before do
     # FIXME -- sessions controller not testing xml logins 
-    stub!(:authenticate_with_http_basic).and_return nil
-    stub!(:reset_shopping)
-    stub!(:logger).and_return(mock('logger',:null_object => true))
+    allow(self).to_receive(:authenticate_with_http_basic).and_return nil
+    allow(self).to_receive(:reset_shopping)
+    allow(self).to_receive(:logger).and_return(mock('logger',:null_object => true))
   end    
   describe "logout_killing_session!" do
     before do
       login_as :quentin
-      stub!(:reset_session)
+      allow(self).to_receive(:reset_session)
     end
     it 'resets the session'         do should_receive(:reset_session);         logout_killing_session! end
     it 'kills my auth_token cookie' do should_receive(:kill_remember_cookie!); logout_killing_session! end
     it 'nils the current user'      do logout_killing_session!; current_user.should be falsey end
     it 'kills :user_id session' do
-      session.stub!(:[]=)
-      session.should_receive(:[]=).with(:cid, nil).at_least(:once)
+      allow(session).to_receive(:[]=)
+      expect(session).to_receive(:[]=).with(:cid, nil).at_least(:once)
       logout_killing_session!
     end
     it 'forgets me' do    
@@ -37,7 +37,7 @@ describe SessionsController do
   describe "logout_keeping_session!" do
     before do
       login_as :quentin
-      stub!(:reset_session)
+      allow(self).to_receive(:reset_session)
     end
     it 'does not reset the session' do should_not_receive(:reset_session);   logout_keeping_session! end
     it 'kills my auth_token cookie' do should_receive(:kill_remember_cookie!); logout_keeping_session! end
@@ -72,7 +72,7 @@ describe SessionsController do
       set_remember_token 'hello!', 5.minutes.from_now
     end    
     it 'logs in with cookie' do
-      stub!(:cookies).and_return({ :auth_token => 'hello!' })
+      allow(self).to_receive(:cookies).and_return({ :auth_token => 'hello!' })
       logged_in?.should be_true
     end
     
@@ -89,7 +89,7 @@ describe SessionsController do
     
     it 'fails expired cookie login' do
       set_remember_token 'hello!', 5.minutes.ago
-      stub!(:cookies).and_return({ :auth_token => 'hello!' })
+      allow(self).to_receive(:cookies).and_return({ :auth_token => 'hello!' })
       logged_in?.should_not be_true
     end
   end

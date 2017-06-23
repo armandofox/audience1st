@@ -4,7 +4,7 @@ describe Showdate do
   describe "availability grade" do
     before(:each) do
       @sd = create(:showdate)
-      @allow(sd).to_receive(:percent_sold).and_return(70)
+      allow(@sd).to_receive(:percent_sold).and_return(70)
     end
     cases = {
       [20,50,60] => 0,          # sold out

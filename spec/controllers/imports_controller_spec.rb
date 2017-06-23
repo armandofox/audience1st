@@ -55,12 +55,12 @@ describe ImportsController, :pending => true do
     end
     context "valid Customer data" do
       it "should use customer/customer_with_errors template for Customer import" do
-        @allow(import).to_receive(:class).and_return(CustomerImport)
+        allow(@import).to_receive(:class).and_return(CustomerImport)
         get :edit, :id => @import
         assigns[:partial].should == 'customers/customer_with_errors'
       end
       it "should use external_ticket_orders template for BPT import" do
-        @allow(import).to_receive(:class).and_return(BrownPaperTicketsImport)
+        allow(@import).to_receive(:class).and_return(BrownPaperTicketsImport)
         get :edit, :id => @import
         assigns[:partial].should == 'external_ticket_orders/external_ticket_order'
       end
@@ -77,7 +77,7 @@ describe ImportsController, :pending => true do
   describe "import" do
     before(:each) do
       @import = TicketSalesImport.new
-      @import.stub(:import!).and_return([[:a,:b],[:c]])
+      allow(@import).to_receive(:import!).and_return([[:a,:b],[:c]])
       allow(Import).to_receive(:find).and_return(@import)
     end
     it "should get finalized if successful" do
@@ -87,7 +87,7 @@ describe ImportsController, :pending => true do
       put :update, :id => @import
     end
     it "should not get finalized if unsuccessful" do
-      @allow(import).to_receive(:errors).and_return(["An error"])
+      allow(@import).to_receive(:errors).and_return(["An error"])
       @import.should_not_receive(:finalize)
       put :update, :id => @import
     end

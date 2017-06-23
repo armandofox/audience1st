@@ -38,13 +38,13 @@ describe GoldstarAutoImporter do
     end
     it "should raise error if XML is malformed" do
       @e.email = parse_file("valid.eml")
-      @allow(e).to_receive(:fetch_xml).and_return("This is not valid XML")
+      allow(@e).to_receive(:fetch_xml).and_return("This is not valid XML")
       @e.execute!.should be_nil
       @e.messages.should include_match_for(/malformed xml/i)
     end
     it "should get through prep step with no errors if happy path" do
       @e.email = parse_file("valid.eml")
-      @allow(e).to_receive(:fetch_xml).and_return(IO.read(File.join("#{Rails.root}/spec/import_test_files/goldstar_xml/goldstar-valid.xml")))
+      allow(@e).to_receive(:fetch_xml).and_return(IO.read(File.join("#{Rails.root}/spec/import_test_files/goldstar_xml/goldstar-valid.xml")))
       GoldstarAutoImporter.send(:public, :prepare_import)
       lambda { @e.prepare_import }.should_not raise_error
       @e.messages.should be_empty

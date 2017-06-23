@@ -22,7 +22,7 @@ describe Voucher do
         @logged_in = mock_model(Customer)
         @customer = create(:customer)
         @invalid_voucher = Voucher.new
-        @allow(invalid_voucher).to_receive(:valid?).and_return(nil)
+        allow(@invalid_voucher).to_receive(:valid?).and_return(nil)
         v = Voucher.new_from_vouchertype(@vt_regular)
         v.reserve(@from,@logged_in).update_attribute(:customer_id, @customer.id)
         v
@@ -73,7 +73,7 @@ describe Voucher do
       @v = Voucher.new_from_vouchertype(@vt_regular)
       @c.vouchers << @v
       @sd = create(:showdate, :date => 1.day.from_now)
-      @allow(v).to_receive(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_this_patron => 0, :explanation => 'Event is sold out'))
+      allow(@v).to_receive(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_this_patron => 0, :explanation => 'Event is sold out'))
       @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
     end
     it 'should not succeed' do

@@ -107,8 +107,8 @@ describe Customer do
         @customer = Customer.new(:first_name => "John", :last_name => "Doe",
           :day_phone => "555-1212",
           :eve_phone => "666-2323")
-        @allow(customer).to_receive(:invalid_mailing_address?).and_return(false)
-        @allow(customer).to_receive(:valid_email_address?).and_return(true)
+        allow(@customer).to_receive(:invalid_mailing_address?).and_return(false)
+        allow(@customer).to_receive(:valid_email_address?).and_return(true)
       end
       it "should be valid with valid attributes" do
         @customer.should be_valid_as_gift_recipient
@@ -126,7 +126,7 @@ describe Customer do
         @customer.should_not be_valid_as_gift_recipient
       end
       it "should have a valid mailing address" do
-        @allow(customer).to_receive(:invalid_mailing_address?).and_return(true)
+        allow(@customer).to_receive(:invalid_mailing_address?).and_return(true)
         @customer.should_not be_valid_as_gift_recipient
       end
       it "should have email if no day phone or eve phone" do
@@ -135,18 +135,18 @@ describe Customer do
         @customer.should be_valid_as_gift_recipient
       end
       it "should have day phone if no email or eve phone" do
-        @allow(customer).to_receive(:valid_email_address?).and_return(false)
+        allow(@customer).to_receive(:valid_email_address?).and_return(false)
         @customer.eve_phone = nil
         @customer.should be_valid_as_gift_recipient
       end
       it "should have eve phone if no email or day phone" do
-        @allow(customer).to_receive(:valid_email_address?).and_return(false)
+        allow(@customer).to_receive(:valid_email_address?).and_return(false)
         @customer.day_phone = nil
         @customer.should be_valid_as_gift_recipient
       end
       it "should not be missing both phone numbers AND email" do
         @customer.day_phone = @customer.eve_phone = ''
-        @allow(customer).to_receive(:valid_email_address?).and_return(false)
+        allow(@customer).to_receive(:valid_email_address?).and_return(false)
         @customer.should_not be_valid_as_gift_recipient
       end
     end

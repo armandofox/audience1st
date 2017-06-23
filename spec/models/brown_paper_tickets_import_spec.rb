@@ -9,7 +9,7 @@ describe "BPT import" do
   end
   describe "parsing attachment with embedded CR's" do
     it "should have 18 records" do
-      @allow(imp).to_receive(:public_filename).and_return(File.join(TESTFILES_DIR, "tabsep_with_embedded_cr.xls"))
+      allow(@imp).to_receive(:public_filename).and_return(File.join(TESTFILES_DIR, "tabsep_with_embedded_cr.xls"))
       @imp.preview
       @imp.number_of_records.should == 18
     end

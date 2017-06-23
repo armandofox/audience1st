@@ -5,8 +5,8 @@ describe Customer, "merging" do
     before(:each) do
       @old = create(:customer)
       @new = create(:customer)
-      @allow(old).to_receive(:fresher_than?).and_return(nil)
-      @allow(new).to_receive(:fresher_than?).and_return(true)
+      allow(@old).to_receive(:fresher_than?).and_return(nil)
+      allow(@new).to_receive(:fresher_than?).and_return(true)
       allow(Customer).to_receive(:save_and_update_foreign_keys).and_return(true)
     end
     def try_merge(param,value_to_keep,value_to_discard)
@@ -122,8 +122,8 @@ describe Customer, "merging" do
       now = Time.now.change(:usec => 0)
       @old = create(:customer)
       @new = create(:customer)
-      @allow(old).to_receive(:fresher_than?).and_return(nil)
-      @allow(new).to_receive(:fresher_than?).and_return(true)
+      allow(@old).to_receive(:fresher_than?).and_return(nil)
+      allow(@new).to_receive(:fresher_than?).and_return(true)
     end
     it "should work when a third record has a duplicate email" do
       pending "Need to handle this as a separate special case in merge"
@@ -143,7 +143,7 @@ describe Customer, "merging" do
         @c1 = create(:customer)
       end
       it "should refuse if RHS is any Special customer" do
-        @allow(c1).to_receive(:special_customer?).and_return true
+        allow(@c1).to_receive(:special_customer?).and_return true
         @c0.merge_automatically!(@c1).should be_nil
         @c0.errors.full_messages.should include_match_for(/special customers cannot be merged/i)
       end

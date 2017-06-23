@@ -4,7 +4,7 @@ describe Store, "credit card" do
   before(:each) do
     @purchaser = create(:customer) 
     @order = Order.new(:purchaser => @purchaser)
-    @allow(order).to_receive(:total_price).and_return(25.00)
+    allow(@order).to_receive(:total_price).and_return(25.00)
   end
   describe 'refund' do
     

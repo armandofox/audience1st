@@ -38,19 +38,19 @@ describe SessionsController do
         describe "my request cookie token is #{has_request_token.to_s}," do
           describe "and ask #{want_remember_me ? 'to' : 'not to'} be remembered" do 
             before do
-              @allow(user).to_receive(:login_message).and_return ""
+              allow(@user).to_receive(:login_message).and_return ""
               @home_page = customer_path(@user)
               @ccookies = mock('cookies')
               allow(controller).to_receive(:cookies).and_return(@ccookies)
-              @ccookies.stub!(:[]).with(:auth_token).and_return(token_value)
-              @allow(ccookies).to_receive(:delete).with(:auth_token)
-              @ccookies.stub!(:[]=)
-              @allow(user).to_receive(:remember_me) 
-              @allow(user).to_receive(:refresh_token) 
-              @allow(user).to_receive(:forget_me)
-              @allow(user).to_receive(:remember_token).and_return(token_value) 
-              @allow(user).to_receive(:remember_token_expires_at).and_return(token_expiry)
-              @allow(user).to_receive(:remember_token?).and_return(has_request_token == :valid)
+              allow(@ccookies).to_receive(:[]).with(:auth_token).and_return(token_value)
+              allow(@ccookies).to_receive(:delete).with(:auth_token)
+              allow(@ccookies).to_receive(:[]=)
+              allow(@user).to_receive(:remember_me) 
+              allow(@user).to_receive(:refresh_token) 
+              allow(@user).to_receive(:forget_me)
+              allow(@user).to_receive(:remember_token).and_return(token_value) 
+              allow(@user).to_receive(:remember_token_expires_at).and_return(token_expiry)
+              allow(@user).to_receive(:remember_token?).and_return(has_request_token == :valid)
               if want_remember_me
                 @login_params[:remember_me] = '1'
               else 

@@ -66,7 +66,7 @@ describe Order, 'finalizing' do
       verify_error /No recipient information/
     end
     it 'should fail if zero amount for purchasemethod other than cash' do
-      @allow(order).to_receive(:total_price).and_return(0.0)
+      allow(@order).to_receive(:total_price).and_return(0.0)
       @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :check)
       verify_error /Zero amount/i
     end
@@ -95,19 +95,19 @@ describe Order, 'finalizing' do
     end
     it 'should fail if contains a course enrollment without enrollee name' do
       @order.comments = nil
-      @allow(order).to_receive(:contains_enrollment?).and_return(true)
+      allow(@order).to_receive(:contains_enrollment?).and_return(true)
       verify_error /You must specify the enrollee's name for classes/ # '
     end
   end
 
   context 'when not ready' do
     it 'should fail if order is not ready for purchase' do
-      @allow(order).to_receive(:ready_for_purchase?).and_return(nil)
+      allow(@order).to_receive(:ready_for_purchase?).and_return(nil)
       lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
     end
     describe 'should not update' do
       before(:each) do
-        @allow(order).to_receive(:ready_for_purchase?).and_return(true)
+        allow(@order).to_receive(:ready_for_purchase?).and_return(true)
         @order.allow(customer).to_receive(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
       end
       it "completion status" do
@@ -187,7 +187,7 @@ describe Order, 'finalizing' do
         :customer       => @the_customer,
         :purchaser      => @the_customer
         )
-      @allow(order).to_receive(:ready_for_purchase?).and_return(true)
+      allow(@order).to_receive(:ready_for_purchase?).and_return(true)
       @order.add_tickets(@vv,2)
       @order.add_tickets(@vv2,1)
       @order.add_donation(@donation)
