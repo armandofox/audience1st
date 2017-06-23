@@ -14,7 +14,7 @@ module CoreExtensions
         startday = Option.season_start_day
         if (oldyear)
           # year given: just return start of that season
-          Time.local(oldyear.to_i, startmon, startday)
+          ::Time.local(oldyear.to_i, startmon, startday)
         else
           startmon = 1 unless (1..12).include?(startmon)
           startday = 1 unless (1..31).include?(startday)
@@ -36,7 +36,7 @@ module CoreExtensions
 
       def within_season?(year)
         year = year.year unless year.kind_of?(Numeric)
-        start = Time.local(year,Option.season_start_month,
+        start = ::Time.local(year,Option.season_start_month,
           Option.season_start_day).at_beginning_of_season
         (start <= self) && (self <= start.at_end_of_season)
       end
