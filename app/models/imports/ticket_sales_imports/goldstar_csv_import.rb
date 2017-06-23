@@ -18,7 +18,7 @@ class GoldstarCsvImport < TicketSalesImport
 
   def get_ticket_orders
     unless (@showdate = Showdate.find_by_id(self.showdate_id))
-      errors.add_to_base "Invalid showdate ID #{showdate_id}"
+      errors.add :base,"Invalid showdate ID #{showdate_id}"
       return []
     end
     messages << "Date: #{@showdate.printable_date}"
@@ -36,7 +36,7 @@ class GoldstarCsvImport < TicketSalesImport
       end
     end
     unless @format_looks_ok
-      errors.add_to_base "Expected header row not found"
+      errors.add :base,"Expected header row not found"
     end
     messages << "#{@comp_vouchers} comp and #{@half_price_vouchers} half-price vouchers will be entered"
     vouchers

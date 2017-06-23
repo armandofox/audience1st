@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :valid_voucher do
-    ignore do
+    transient do
       price 7
     end
     start_sales { Time.now }
@@ -46,7 +46,7 @@ FactoryGirl.define do
     end
 
     factory :bundle do
-      ignore do
+      transient do
         including { Hash.new }
       end
       name 'Bundle'
@@ -85,7 +85,7 @@ FactoryGirl.define do
     end
 
     factory :bundle_voucher do
-      ignore do
+      transient do
         including Hash.new
         subscription false
         season Time.now.year

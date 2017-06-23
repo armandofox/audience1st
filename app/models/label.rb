@@ -9,7 +9,7 @@ class Label < ActiveRecord::Base
   attr_accessible :name
 
   def remove_from_join_table
-    connection.execute("DELETE FROM customers_labels WHERE label_id=#{id}")
+    ActiveRecord::Base.connection.execute("DELETE FROM customers_labels WHERE label_id=#{id}")
   end
 
   def self.rename_customer(old_id, new_id)
@@ -17,6 +17,6 @@ class Label < ActiveRecord::Base
   end
 
   def self.all_labels
-    Label.find(:all)
+    Label.all
   end
 end

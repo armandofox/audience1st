@@ -12,7 +12,7 @@ class Customer < ActiveRecord::Base
   def self.birthdays_in_range(from,to)
     from = from.change(:year => BIRTHDAY_YEAR)
     to = to.change(:year => BIRTHDAY_YEAR)
-    Customer.find(:all, :conditions => ["birthday BETWEEN ? AND ?", from, to])
+    Customer.where("birthday BETWEEN ? AND ?", from, to)
   end
 
   def self.notify_upcoming_birthdays

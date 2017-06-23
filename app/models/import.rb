@@ -47,7 +47,7 @@ class Import < ActiveRecord::Base
   def valid_type?
     allowed_types = Import.import_types.values
     unless allowed_types.include?(self.type.to_s)
-      errors.add_to_base "I don't understand how to import '#{self.type}' (possibilities are #{allowed_types.join(',')})"
+      errors.add :base,"I don't understand how to import '#{self.type}' (possibilities are #{allowed_types.join(',')})"
     end
   end
 
@@ -90,7 +90,7 @@ class Import < ActiveRecord::Base
       yield fh
     rescue Exception => e
       msg = "Getting/parsing attachment data for #{fn}: #{e.message}"
-      self.errors.add_to_base(msg)
+      self.errors.add(:base,msg)
       Rails.logger.error msg
       []
     end

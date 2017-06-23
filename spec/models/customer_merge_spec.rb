@@ -5,9 +5,9 @@ describe Customer, "merging" do
     before(:each) do
       @old = create(:customer)
       @new = create(:customer)
-      @old.stub!(:fresher_than?).and_return(nil)
-      @new.stub!(:fresher_than?).and_return(true)
-      Customer.stub!(:save_and_update_foreign_keys).and_return(true)
+      allow(@old).to receive(:fresher_than?).and_return(nil)
+      allow(@new).to receive(:fresher_than?).and_return(true)
+      allow(Customer).to receive(:save_and_update_foreign_keys).and_return(true)
     end
     def try_merge(param,value_to_keep,value_to_discard)
       @old.update_attribute(param, value_to_keep)
@@ -64,7 +64,7 @@ describe Customer, "merging" do
         if keep_new == 1
           @old.send(attr).should == @new.send(attr)
         else
-          @old.send("#{attr}_changed?").should be falsey
+          @old.send("#{attr}_changed?").should be_falsey
         end
       end
     end
@@ -75,7 +75,7 @@ describe Customer, "merging" do
     def create_records(type,cust)
       Array.new(1+rand(4)) do |idx|
         e = cust.send(type.to_s.downcase.pluralize).new()
-        e.save(false)
+        e.save(:validate => false)
         e.id
       end
     end
@@ -93,8 +93,8 @@ describe Customer, "merging" do
       it "should not change any of special customer's attribute values" do
         @cust.update_attributes!(:blacklist => false, :e_blacklist => false)
         @cust.forget!
-        Customer.anonymous_customer.blacklist.should be_true
-        Customer.anonymous_customer.e_blacklist.should be_true
+        Customer.anonymous_customer.blacklist.should be_truthy
+        Customer.anonymous_customer.e_blacklist.should be_truthy
       end
     end
     context "using forget!" do
@@ -122,20 +122,20 @@ describe Customer, "merging" do
       now = Time.now.change(:usec => 0)
       @old = create(:customer)
       @new = create(:customer)
-      @old.stub!(:fresher_than?).and_return(nil)
-      @new.stub!(:fresher_than?).and_return(true)
+      allow(@old).to receive(:fresher_than?).and_return(nil)
+      allow(@new).to receive(:fresher_than?).and_return(true)
     end
     it "should work when a third record has a duplicate email" do
       pending "Need to handle this as a separate special case in merge"
       @triplicate = create(:customer)
-      [@old, @new, @triplicate].each { |c| c.email = 'dupe@email.com' ; c.save(false) }
+      [@old, @new, @triplicate].each { |c| c.email = 'dupe@email.com' ; c.save(:validate => false) }
       # Since the 'triplicate' workaround relies on temporarily setting
       # the created-by-admin bit, make sure that bit gets properly reset.
       @old.update_attribute(:created_by_admin, false)
       @old.merge_automatically!(@new).should_not be_nil
       @old.reload
       @old.email.should == 'dupe@email.com'
-      @old.created_by_admin.should be falsey
+      @old.created_by_admin.should be_falsey
     end
     describe "disallowed cases" do
       before :each do
@@ -143,13 +143,13 @@ describe Customer, "merging" do
         @c1 = create(:customer)
       end
       it "should refuse if RHS is any Special customer" do
-        @c1.stub!(:special_customer?).and_return true
+        allow(@c1).to receive(:special_customer?).and_return true
         @c0.merge_automatically!(@c1).should be_nil
         @c0.errors.full_messages.should include_match_for(/special customers cannot be merged/i)
       end
       it "should allow if LHS is Anonymous customer" do
         c0 = Customer.anonymous_customer
-        c0.merge_automatically!(@c1).should be_true
+        c0.merge_automatically!(@c1).should be_truthy
         lambda { Customer.find(@c1.id) }.should raise_error(ActiveRecord::RecordNotFound)
       end
       it "should refuse if LHS is any special customer other than Anonymous" do

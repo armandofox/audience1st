@@ -15,7 +15,7 @@ describe CheckinsController do
         @m = create(:showdate, :date => 1.day.from_now)
       end
       it 'should instead use current-or-next showdate if there is one' do
-        Showdate.stub!(:current_or_next).and_return(@m)
+        allow(Showdate).to receive(:current_or_next).and_return(@m)
         get :show, :id => @id
         assigns(:showdate).should == @m
       end

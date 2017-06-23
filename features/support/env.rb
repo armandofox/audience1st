@@ -106,7 +106,7 @@ end
 Before('@stubs_failed_credit_card_payment') do
   Store.stub(:pay_with_credit_card) do |order|
     order.authorization = nil
-    order.errors.add_to_base "Credit card payment error: Forced failure in test mode"
+    order.errors.add :base,"Credit card payment error: Forced failure in test mode"
     nil
   end
 end

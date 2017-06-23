@@ -63,13 +63,13 @@ describe Customer do
         @c.check_secret_answer('').should be_nil
       end
       it 'should match case-insensitively' do
-        @c.check_secret_answer('the foo bar').should be_true
+        @c.check_secret_answer('the foo bar').should be_truthy
       end
       it 'should match if whitespace collapsed' do
-        @c.check_secret_answer('The Foo bar').should be_true
+        @c.check_secret_answer('The Foo bar').should be_truthy
       end
       it 'should match if whitespace expanded' do
-        @c.check_secret_answer('The Foo bar').should be_true
+        @c.check_secret_answer('The Foo bar').should be_truthy
       end
     end
     context 'when there is no secret question' do

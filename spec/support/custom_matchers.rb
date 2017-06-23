@@ -12,7 +12,7 @@ module CustomMatchers
     def failure_message
       "expected #{@target.inspect} to include at least 1 element matching #{@regex.inspect}"
     end
-    def negative_failure_message
+    def failure_message_when_negated
       "expected #{@target.inspect} not to include any element matching #{@regex.inspect}"
     end
   end
@@ -37,7 +37,7 @@ module CustomMatchers
     def failure_message
       "expected to find #{@num} vouchers matching #{@attribs.inspect}, but found #{@matched}"
     end
-    def negative_failure_message
+    def failure_message_when_negated
       "expected not to find #{@num} vouchers matching #{@attribs.inspect}, but I did"      
     end
   end

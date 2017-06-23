@@ -47,7 +47,7 @@ describe ImportsController, :pending => true do
   describe "preview" do
     before(:each) do
       @import = TicketSalesImport.new
-      Import.stub!(:find).and_return(@import)
+      allow(Import).to receive(:find).and_return(@import)
     end
     it "should not mark import as completed" do
       get :edit, :id => @import
@@ -55,19 +55,19 @@ describe ImportsController, :pending => true do
     end
     context "valid Customer data" do
       it "should use customer/customer_with_errors template for Customer import" do
-        @import.stub!(:class).and_return(CustomerImport)
+        allow(@import).to receive(:class).and_return(CustomerImport)
         get :edit, :id => @import
         assigns[:partial].should == 'customers/customer_with_errors'
       end
       it "should use external_ticket_orders template for BPT import" do
-        @import.stub!(:class).and_return(BrownPaperTicketsImport)
+        allow(@import).to receive(:class).and_return(BrownPaperTicketsImport)
         get :edit, :id => @import
         assigns[:partial].should == 'external_ticket_orders/external_ticket_order'
       end
     end
     context "for invalid data" do
       it "should display a message if no template for import class" do
-        controller.stub!(:partial_for_import).and_return nil
+        allow(controller).to receive(:partial_for_import).and_return nil
         get :edit, :id => @import
         response.should redirect_to(:action => :new)
         flash[:alert].should match(/Don't know how to preview/)
@@ -77,17 +77,17 @@ describe ImportsController, :pending => true do
   describe "import" do
     before(:each) do
       @import = TicketSalesImport.new
-      @import.stub(:import!).and_return([[:a,:b],[:c]])
-      Import.stub(:find).and_return(@import)
+      allow(@import).to receive(:import!).and_return([[:a,:b],[:c]])
+      allow(Import).to receive(:find).and_return(@import)
     end
     it "should get finalized if successful" do
       admin = create(:customer, :role => :boxoffice)
-      controller.stub(:logged_in_user).and_return(admin)
+      allow(controller).to receive(:logged_in_user).and_return(admin)
       @import.should_receive(:finalize).with(admin)
       put :update, :id => @import
     end
     it "should not get finalized if unsuccessful" do
-      @import.stub(:errors).and_return(["An error"])
+      allow(@import).to receive(:errors).and_return(["An error"])
       @import.should_not_receive(:finalize)
       put :update, :id => @import
     end

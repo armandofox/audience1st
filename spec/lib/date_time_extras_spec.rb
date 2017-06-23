@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe "Date/time extras" do
   def stub_month_and_day(month,day)
-    Option.stub(:season_start_month).and_return(month)
-    Option.stub(:season_start_day).and_return(day)
+    allow(Option).to receive(:season_start_month).and_return(month)
+    allow(Option).to receive(:season_start_day).and_return(day)
   end    
   describe "season calculations" do
     context "for season 1/1/09 - 12/31/09" do
@@ -18,16 +18,16 @@ describe "Date/time extras" do
         @now.at_end_of_season.to_date.should == Date.civil(2009,12,31)
       end
       it "should include first day of season" do
-        Date.civil(2009,1,1).within_season?(2009).should be_true
+        Date.civil(2009,1,1).within_season?(2009).should be_truthy
       end
       it "should include last day of season is part of the season" do
-        Date.civil(2009,12,31).within_season?(2009).should be_true
+        Date.civil(2009,12,31).within_season?(2009).should be_truthy
       end
       it "should NOT include a date in next season" do
-        Date.civil(2010,1,1).within_season?(2009).should be falsey
+        Date.civil(2010,1,1).within_season?(2009).should be_falsey
       end
       it "should NOT include a date in past season" do
-        Date.civil(2008,1,1).within_season?(2009).should be falsey
+        Date.civil(2008,1,1).within_season?(2009).should be_falsey
       end
       it "should compute current season year" do
         @now.this_season.should == 2009
@@ -76,16 +76,16 @@ describe "Date/time extras" do
         (@end - 1.day).at_end_of_season.should == @end
       end
       it "should exclude a date that is within next calendar year but not season" do
-        (@end + 1.day).within_season?(2009).should be falsey
+        (@end + 1.day).within_season?(2009).should be_falsey
       end
       it "should exclude a date that is within this calendar year but not season" do
-        (@start - 1.day).within_season?(2009).should be falsey
+        (@start - 1.day).within_season?(2009).should be_falsey
       end
       it "should include a date that is this calendar year and season" do
-        (@start + 1.day).within_season?(2009).should be_true
+        (@start + 1.day).within_season?(2009).should be_truthy
       end
       it "should include a date that is next calendar year and in season" do
-        (@end - 1.day).within_season?(2009).should be_true
+        (@end - 1.day).within_season?(2009).should be_truthy
       end
     end
     describe "should give same result for date or time object" do

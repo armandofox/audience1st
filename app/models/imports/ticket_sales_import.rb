@@ -22,7 +22,7 @@ class TicketSalesImport < Import
   def show_is_part_of_import? ; nil ; end
 
   def show_exists?
-    errors.add_to_base('You must specify an existing show.')  and return nil unless  self.show_id && Show.find_by_id(show_id)
+    errors.add(:base,'You must specify an existing show.')  and return nil unless  self.show_id && Show.find_by_id(show_id)
     true
   end    
 
@@ -72,7 +72,7 @@ class TicketSalesImport < Import
 
   def do_import(really_import=false)
     unless (show_is_part_of_import? || show_exists?)
-      self.errors.add_to_base "No show name given, or show does not exist"
+      self.errors.add :base,"No show name given, or show does not exist"
       return []
     end
     begin
@@ -89,23 +89,23 @@ class TicketSalesImport < Import
         self.save!
       end
     rescue CSV::IllegalFormatError
-      self.errors.add_to_base("Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
+      self.errors.add(:base,"Format error in .CSV file.  If you created this file on a Mac, be sure it's saved as Windows CSV.")
     rescue TicketSalesImport::PreviewOnly
       ;
     rescue TicketSalesImport::BadOrderFormat => e
-      self.errors.add_to_base("Malformed individual order: #{e.message}")
+      self.errors.add(:base,"Malformed individual order: #{e.message}")
     rescue TicketSalesImport::CustomerNameNotFound => e
-      self.errors.add_to_base("Customer name not found for #{e.message}")
+      self.errors.add(:base,"Customer name not found for #{e.message}")
     rescue TicketSalesImport::ShowNotFound => e
-      self.errors.add_to_base("Couldn't find production name/date matching '#{e.message}'")
+      self.errors.add(:base,"Couldn't find production name/date matching '#{e.message}'")
     rescue TicketSalesImport::DateTimeNotFound => e
-      self.errors.add_to_base("Couldn't find valid date and time in import document (#{e.message})")
+      self.errors.add(:base,"Couldn't find valid date and time in import document (#{e.message})")
     rescue TicketSalesImport::MultipleShowMatches => e
-      self.errors.add_to_base("Multiple showdates match import file: #{e.message}")
+      self.errors.add(:base,"Multiple showdates match import file: #{e.message}")
     rescue TicketSalesImport::ImportError => e
-      self.errors.add_to_base(e.message)
+      self.errors.add(:base,e.message)
     rescue Exception => e
-      self.errors.add_to_base("Unexpected error: #{e.message}")
+      self.errors.add(:base,"Unexpected error: #{e.message}")
       Rails.logger.info "Importing id #{self.id || '<none>'} at record #{self.number_of_records}: #{e.message}\n#{e.backtrace}"
     end
     @vouchers

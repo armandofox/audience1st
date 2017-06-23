@@ -6,9 +6,7 @@ class InfoController < ApplicationController
     # end_date = now.next_year.at_beginning_of_year
     end_date = now + 3.months
     showdates =
-      Showdate.find(:all,
-                    :conditions => ["thedate BETWEEN ? AND ?", now, end_date],
-                    :order => "thedate")
+      Showdate.where("thedate BETWEEN ? AND ?", now, end_date).order('thedate')
     @showdate_avail = []
     showdates.each do |sd|
       case sd.availability_in_words
@@ -36,9 +34,7 @@ class InfoController < ApplicationController
     lookahead = 90 if lookahead < 1 || lookahead > 366
     now = Time.now
     @showdates = Showdate.
-      find(:all,
-      :conditions => ['thedate BETWEEN ? AND ?', now, now + lookahead.days],
-      :order => 'thedate').
+      where('thedate BETWEEN ? AND ?', now, now + lookahead.days).order('thedate').
       select { |sd| !sd.price_range.empty? }
     render :layout => false
   end

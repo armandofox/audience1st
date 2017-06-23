@@ -17,7 +17,7 @@ class Customer < ActiveRecord::Base
         self.destroy
       end
     rescue Exception => e
-      self.errors.add_to_base "Cannot forget customer #{id} (#{full_name}): #{e.message}"
+      self.errors.add :base,"Cannot forget customer #{id} (#{full_name}): #{e.message}"
     end
     return self.errors.empty?
   end
@@ -45,9 +45,9 @@ class Customer < ActiveRecord::Base
         
   def mergeable_with?(other)
     if other.special_customer?
-      self.errors.add_to_base "Special customers cannot be merged away"
+      self.errors.add :base,"Special customers cannot be merged away"
     elsif (self.special_customer? && self != Customer.anonymous_customer)
-      self.errors.add_to_base "Merges disallowed into all special customers except Anonymous customer"
+      self.errors.add :base,"Merges disallowed into all special customers except Anonymous customer"
     end
     self.errors.empty?
   end
@@ -94,7 +94,7 @@ class Customer < ActiveRecord::Base
     [Order, Item, Txn, Import].each do |t|
       howmany = 0
       t.foreign_keys_to_customer.each do |field|
-        howmany += t.update_all("#{field} = '#{new}'", "#{field} = '#{old}'")
+        howmany += t.where("#{field} = ?", old).update_all(field => new)
       end
       msg << "#{howmany} #{t}s"
     end
@@ -134,7 +134,7 @@ class Customer < ActiveRecord::Base
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
     rescue Exception => e
-      c0.errors.add_to_base "Customers NOT merged: #{e.message}"
+      c0.errors.add :base,"Customers NOT merged: #{e.message}"
     end
     return ok
   end

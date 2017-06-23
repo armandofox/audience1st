@@ -69,16 +69,15 @@ class Vouchertype < ActiveRecord::Base
   
   def subscriptions_shouldnt_be_walkups
     if walkup_sale_allowed?
-      errors.add_to_base "Subscription vouchers can't be sold via
-                walkup sales screen, since address must be captured."
+      errors.add :base, "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
     end
   end
   
   def restrict_if_free
     if offer_public == ANYONE
-      errors.add_to_base "Free vouchers can't be available to public"
+      errors.add :base, "Free vouchers can't be available to public"
     elsif category == :subscription
-      errors.add_to_base "Free vouchers can't qualify recipient as Subscriber"
+      errors.add :base, "Free vouchers can't qualify recipient as Subscriber"
     end
   end
 
@@ -88,10 +87,10 @@ class Vouchertype < ActiveRecord::Base
     self.get_included_vouchers.each_pair do |id,num|
       next if num.to_i.zero?
       unless v = Vouchertype.find_by_id(id)
-        errors.add_to_base "Vouchertype #{id} doesn't exist"
+        errors.add :base,"Vouchertype #{id} doesn't exist"
       else
         unless v.price.to_i.zero?
-          errors.add_to_base "Bundle can't include revenue voucher #{id} (#{v.name})"
+          errors.add :base,"Bundle can't include revenue voucher #{id} (#{v.name})"
         end
       end
     end
@@ -172,8 +171,9 @@ class Vouchertype < ActiveRecord::Base
 
   def self.nonbundle_vouchertypes(season=nil)
     season_constraint = season ? " AND season = #{season.to_i}" : ""
-    Vouchertype.find(:all, :conditions => ["category != ?  #{season_constraint}", :bundle],
-      :order => 'season DESC,display_order,created_at')
+    Vouchertype.
+      where("category != ?  #{season_constraint}", :bundle).
+      order('season DESC,display_order,created_at')
   end
 
   def self.bundle_vouchertypes(season=nil)

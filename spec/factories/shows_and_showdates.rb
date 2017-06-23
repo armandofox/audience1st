@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :showdate do
-    ignore do
+    transient do
       date { 1.day.from_now.change(:hour => 20, :min => 0) } # tomorrow at 8p
       show_name "Show"
     end
@@ -12,7 +12,7 @@ FactoryGirl.define do
   end
 
   factory :show do
-    ignore do
+    transient do
       including Time.now
     end
     house_capacity 200

@@ -324,7 +324,7 @@ class CustomersController < ApplicationController
       @customer.password = @customer.password_confirmation = newpass
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
-      @customer.save(false)
+      @customer.save(:validate => false)
       email_confirmation(:send_new_password,@customer, newpass,
         "requested your password for logging in")
       # will reach this point (and change password) only if mail delivery

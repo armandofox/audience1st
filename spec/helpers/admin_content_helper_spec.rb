@@ -9,7 +9,7 @@ describe AdminContentHelper do
   end
   context "when privilege level is high enough" do
     before :each do
-      helper.stub(:current_user).and_return(mock_model(Customer, :is_boxoffice => true))
+      allow(helper).to receive(:current_user).and_return(mock_model(Customer, :is_boxoffice => true))
     end
     it "yields content if viewing as admin" do
       assigns[:gAdminDisplay] = true
@@ -21,11 +21,11 @@ describe AdminContentHelper do
     end
   end
   it "should yield nothing if privilege level is lower" do
-    helper.stub(:current_user).and_return(mock_model(Customer, :is_boxoffice => nil))
+    allow(helper).to receive(:current_user).and_return(mock_model(Customer, :is_boxoffice => nil))
     (helper.privileged_content_for :boxoffice do ; "content" ; end).should be_nil
   end
   it "should yield nothing if privilege level is invalid" do
-    helper.stub(:current_user).and_return(mock_model(Customer))
+    allow(helper).to receive(:current_user).and_return(mock_model(Customer))
     (helper.privileged_content_for :boxoffice do ; "content" ; end).should be_nil
   end
 end

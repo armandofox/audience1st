@@ -4,7 +4,7 @@ describe Showdate do
   describe "availability grade" do
     before(:each) do
       @sd = create(:showdate)
-      @sd.stub(:percent_sold).and_return(70)
+      allow(@sd).to receive(:percent_sold).and_return(70)
     end
     cases = {
       [20,50,60] => 0,          # sold out
@@ -16,9 +16,9 @@ describe Showdate do
     }
     cases.each do |c,grade|
       specify "with thresholds #{c.join ','}" do
-        Option.stub(:limited_availability_threshold).and_return(c[0])
-        Option.stub(:nearly_sold_out_threshold).and_return(c[1])
-        Option.stub(:sold_out_threshold).and_return(c[2])
+        allow(Option).to receive(:limited_availability_threshold).and_return(c[0])
+        allow(Option).to receive(:nearly_sold_out_threshold).and_return(c[1])
+        allow(Option).to receive(:sold_out_threshold).and_return(c[2])
         @sd.availability_grade.should == grade
       end
     end
@@ -119,7 +119,7 @@ describe Showdate do
     describe "revenue" do
       before(:each) do
         @showdate.vouchers.each do |v|
-          v.stub!(:amount).and_return(11.00)
+          allow(v).to receive(:amount).and_return(11.00)
         end
       end
       it "should be based on total seats sold" do

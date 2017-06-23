@@ -8,7 +8,7 @@ describe "Goldstar new CSV format importing" do
     @imp = GoldstarCsvImport.new(:show => @show)
   end
   def use_file(f)
-    @imp.stub!(:public_filename).and_return(File.join(Rails.root, 'spec', 'import_test_files', 'goldstar_csv', f))
+    allow(@imp).to receive(:public_filename).and_return(File.join(Rails.root, 'spec', 'import_test_files', 'goldstar_csv', f))
   end
   describe "format sanity checks" do
     it "should reject if column headers invalid" do
@@ -41,7 +41,7 @@ describe "Goldstar new CSV format importing" do
       end
       it "should pass sanity check" do
         @imp.preview
-        @imp.sanity_check.should be_true
+        @imp.sanity_check.should be_truthy
       end
       it "should not have any already-entered records" do
         @imp.preview

@@ -30,21 +30,21 @@ describe Customer, "birthdays" do
   end
   describe "delivering email" do
     before :each do
-      Option.stub!(:send_birthday_reminders).and_return(5)
-      Option.stub!(:boxoffice_daemon_notify).and_return('n@ai')
+      allow(Option).to receive(:send_birthday_reminders).and_return(5)
+      allow(Option).to receive(:boxoffice_daemon_notify).and_return('n@ai')
     end
     context "should not be attempted" do
       before :each do ; Mailer.should_not_receive :deliver_upcoming_birthdays ; end
       it 'when feature is turned off' do
-        Option.stub!(:send_birthday_reminders).and_return(0)
+        allow(Option).to receive(:send_birthday_reminders).and_return(0)
         Customer.notify_upcoming_birthdays
       end
       it 'when every-n value is negative' do
-        Option.stub!(:send_birthday_reminders).and_return(-2)
+        allow(Option).to receive(:send_birthday_reminders).and_return(-2)
         Customer.notify_upcoming_birthdays
       end
       it 'when no recipient specified in options' do
-        Option.stub!(:boxoffice_daemon_notify).and_return('')
+        allow(Option).to receive(:boxoffice_daemon_notify).and_return('')
         Customer.notify_upcoming_birthdays
       end
       it 'when day modulo n doesn\'t match up' do
@@ -54,14 +54,14 @@ describe Customer, "birthdays" do
       end
       it 'when there are no customers with birthdays' do
         Timecop.travel(Date.parse('Jan 5, 2012')) do
-          Customer.stub!(:birthdays_in_range).and_return([])
+          allow(Customer).to receive(:birthdays_in_range).and_return([])
           Customer.notify_upcoming_birthdays
         end
       end
     end
     context "when there are customers with birthdays" do
       before :each do
-        Customer.stub!(:birthdays_in_range).and_return([@c1,@c2])
+        allow(Customer).to receive(:birthdays_in_range).and_return([@c1,@c2])
       end
       it 'should email report' do
         Mailer.should_receive(:deliver_upcoming_birthdays).with(

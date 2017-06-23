@@ -13,8 +13,7 @@ class Purchasemethod < ActiveRecord::Base
   end
 
   def self.walkup_purchasemethods
-    Purchasemethod.find(:all, :conditions => ["shortdesc LIKE ? AND nonrevenue=?", 'box_%', false]) +
-      [Purchasemethod.find_by_shortdesc('none') ]
+    Purchasemethod.where("(shortdesc LIKE ? AND nonrevenue=?) OR shortdesc=?", 'box_%', false, 'none')
   end
 
   def self.get_type_by_name(str)

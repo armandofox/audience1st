@@ -27,12 +27,12 @@ describe Label do
       @c.save!
     end      
     it "should be deleted when that customer is forgotten" do
-      @c.forget!.should be_true
+      @c.forget!.should be_truthy
       @foo_label.customers.should_not include(@c)
     end
     it "should be moved to surviving customer if merged" do
       @c2 = create(:customer)
-      @c2.merge_automatically!(@c).should be_true
+      @c2.merge_automatically!(@c).should be_truthy
       @foo_label.customers.should_not include(@c)
       @foo_label.customers.should include(@c2)
     end

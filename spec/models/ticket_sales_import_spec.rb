@@ -58,7 +58,7 @@ describe TicketSalesImport do
   describe "when an error happens during import or preview process" do
     before :all do
       @imp = BrownPaperTicketsImport.new(:show => mock_model(Show, :name => 'XXX'))
-      @imp.stub!(:get_ticket_orders).and_raise "Error"
+      allow(@imp).to receive(:get_ticket_orders).and_raise "Error"
     end
     it "should indicate number of good records processed" do
       @imp.preview

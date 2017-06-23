@@ -55,7 +55,7 @@ describe CustomersController do
     before(:each) do
       @customer = create(:customer)
       login_as @customer
-      ApplicationController.stub!(:find_cart).and_return(mock_model(Order).as_null_object)
+      allow(ApplicationController).to receive(:find_cart).and_return(mock_model(Order).as_null_object)
       controller.set_checkout_in_progress(true)
       @target = {:controller => 'store', :action => 'checkout'}
       @controller.return_after_login @target
@@ -67,7 +67,7 @@ describe CustomersController do
         put :update, params
       end
       it "should not update the password" do
-        @customer.crypted_password_changed?.should be falsey
+        @customer.crypted_password_changed?.should be_falsey
       end
       it "should update the address" do
         @customer.reload

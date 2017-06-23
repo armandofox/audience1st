@@ -10,7 +10,7 @@ describe AutoImporter do
       Option.update_attributes!(:venue => "Eat Cake Theater",
         :boxoffice_daemon_notify => "help@eatcake.org")
       @e = AutoImporter.new
-      @e.stub!(:prepare_import).and_raise("Boom!")
+      allow(@e).to receive(:prepare_import).and_raise("Boom!")
     end
     it "should include error messages" do
       @e.execute!

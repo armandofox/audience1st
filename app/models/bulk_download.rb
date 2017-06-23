@@ -5,7 +5,7 @@ class BulkDownload < ActiveRecord::Base
   validate :report_names_retrieved
 
   def report_names_retrieved
-    errors.add_to_base "No report names could be retrieved.  Make sure your login and password are correct." unless report_names && report_names.is_a?(Hash)
+    errors.add(:base, "No report names could be retrieved.  Make sure your login and password are correct.") unless report_names && report_names.is_a?(Hash)
   end
 
   cattr_reader :vendors

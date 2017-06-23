@@ -12,9 +12,9 @@ describe Order do
     it { should_not be_completed }
     it { should_not be_walkup }
     its(:items) { should be_empty }
-    its(:cart_empty?) { should be_true }
+    its(:cart_empty?) { should be_truthy }
     its(:total_price) { should be_zero }
-    its(:refundable_to_credit_card?) { should be falsey }
+    its(:refundable_to_credit_card?) { should be_falsey }
     its(:errors) { should be_empty }
     its(:comments) { should be_blank }
   end
@@ -22,7 +22,7 @@ describe Order do
   describe 'creating from bare donation' do
     before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, create(:customer)) }
     it 'should not be completed' do ; @order.should_not be_completed ; end
-    it 'should include a donation' do ; @order.include_donation?.should be_true  ; end
+    it 'should include a donation' do ; @order.include_donation?.should be_truthy  ; end
     it 'should_not be_a_gift' do ; @order.should_not be_a_gift ; end
     it 'should not be ready' do ; @order.should_not be_ready_for_purchase, @order.errors.full_messages ; end
     it 'should be ready when purchasemethod and processed_by are set' do
@@ -54,7 +54,7 @@ describe Order do
   describe 'walkup confirmation' do
     before :each do
       @o = Order.new
-      @o.stub(:purchase_medium).and_return("Cash")
+      allow(@o).to receive(:purchase_medium).and_return("Cash")
       @v = create(:revenue_vouchertype,:price => 7)
       @vv = @v.valid_vouchers.create!(:start_sales => 1.day.ago, :end_sales => 1.day.from_now)
     end
