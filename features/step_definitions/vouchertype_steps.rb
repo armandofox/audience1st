@@ -5,7 +5,7 @@ Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,pri
     :price => price,
     :season => season,
     :walkup_sale_allowed => true,
-    :category => (price.to_f.zero? ? :comp : :revenue),
+    :category => (price.to_f.zero? ? 'comp' : 'revenue'),
     :offer_public => (price.to_f.zero? ? Vouchertype::BOXOFFICE : Vouchertype::ANYONE)
     )
 end

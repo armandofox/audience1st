@@ -44,12 +44,19 @@ class Voucher < Item
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
+  # scopes that hide implementation of category
+  scope :comp, -> { where('category = ?', 'comp') }
+  scope :revenue, -> { where('category = ?', 'revenue') }
+  scope :subscriber, -> { where('category = ?', 'subscriber') }
+  scope :advance_sales, -> { where('customer_id != ?', Customer.walkup_customer.id) }
+  scope :walkup_sales, -> { where('customer_id = ?', Customer.walkup_customer.id) }
+  scope :checked_in, -> { where('checked_in = ?', true) }
   
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)
     season_start = Time.now.at_beginning_of_season(year)
     v = Vouchertype.subscription_vouchertypes(year)
-    v.map { |t| [t.name, t.price.round, Voucher.count(:all, :conditions => "vouchertype_id = #{t.id}")] }
+    v.map { |t| [t.name, t.price.round, Voucher.where('vouchertype_id = ?',t.id).count] }
   end
 
   def item_description
@@ -171,7 +178,7 @@ class Voucher < Item
       Voucher.transaction do
         others.each do |v|
           raise "#{v} is not an orphan!" unless
-            v.category == :subscriber && v.bundle_id == 0
+            v.category == 'subscriber' && v.bundle_id == 0
           v.update_attributes!(:bundle_id => self.id, :order_id => self.order_id)
         end
       end

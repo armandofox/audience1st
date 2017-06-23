@@ -107,10 +107,10 @@ describe Customer, "merging" do
       [Item, Txn, Order].each do |t|
         it "should preserve old customer's #{t}s" do
           objs = create_records(t, @cust)
-          t.count(:conditions => "customer_id = #{@cust.id}").should == objs.length
+          t.where("customer_id = ?",@cust.id).count.should == objs.length
           @cust.forget!
           @cust.errors.should be_empty
-          t.count(:conditions => "customer_id = #{@cust.id}").should be_zero
+          t.where("customer_id = ?",@cust.id).count.should be_zero
           check_exists_and_linked_to_anonymous(t,objs)
         end
       end

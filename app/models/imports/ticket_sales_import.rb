@@ -162,7 +162,7 @@ class TicketSalesImport < Import
       @vouchertype = v
     else
       count_existing_vouchertypes =
-        Vouchertype.count(:conditions => ["name LIKE ?", name_match])
+        Vouchertype.where('name LIKE ?', name_match).count
       new_vouchertype_name =
         "#{name} #{count_existing_vouchertypes+1}"
       @vouchertype =

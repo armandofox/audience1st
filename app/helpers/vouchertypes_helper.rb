@@ -22,11 +22,11 @@ module VouchertypesHelper
     Vouchertype::CATEGORIES.map do |category|
       name =
         case category
-        when :bundle     then 'Bundle'
-        when :comp       then 'Comp (single ticket)'
-        when :subscriber then 'Single subscriber voucher'
-        when :revenue    then 'Regular revenue voucher'
-        when :nonticket  then 'Nonticket product'
+        when 'bundle'     then 'Bundle'
+        when 'comp'       then 'Comp (single ticket)'
+        when 'subscriber' then 'Single subscriber voucher'
+        when 'revenue'    then 'Regular revenue voucher'
+        when 'nonticket'  then 'Nonticket product'
         else '???'
         end
       [name,category]

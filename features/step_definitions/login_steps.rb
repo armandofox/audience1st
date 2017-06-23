@@ -35,6 +35,6 @@ end
 
 Then /^I should be able to login with username "(.*)" and (that password|password "(.*)")$/ do |username,use_prev,password|
   @password = password if use_prev !~ /that/
-  @customer = Customer.find(:first, :conditions => ['email LIKE ?',username.downcase])
+  @customer = Customer.where('email LIKE ?',username.downcase).first
   verify_successful_login
 end

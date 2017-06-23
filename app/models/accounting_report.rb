@@ -11,7 +11,7 @@ class AccountingReport < Ruport::Controller
     @account_code_ids = options[:account_codes]
     options[:title] = "Earned and unearned revenue:<br/> #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}"
     @exclude_purchasemethods = Purchasemethod.where('nonrevenue = ?', true).map(&:id)
-    @exclude_categories = [:comp,:subscriber]
+    @exclude_categories = ['comp','subscriber']
     @report = self.generate_vouchers_report()
     if @report.empty?
       @report.column_names = %w(description code name show_name num_units total_amount)

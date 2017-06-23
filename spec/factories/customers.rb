@@ -17,7 +17,7 @@ FactoryGirl.define do
     created_by_admin false
 
     after(:build) do |customer,e|
-      customer.role = Customer.role_value(e.customer_role) unless e.customer_role == :patron
+      customer.role = Customer.role_value(e.customer_role)
     end
   end
 

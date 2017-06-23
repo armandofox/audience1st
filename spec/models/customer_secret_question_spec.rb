@@ -15,7 +15,7 @@ describe Customer do
     it 'should make customer invalid if question selected but no answer' do
       @c.secret_question = 1
       @c.should_not be_valid
-      @c.errors.on(:secret_answer).should include_match_for(/must be given if you specify a question/)
+      @c.errors[:secret_answer].should include_match_for(/must be given if you specify a question/)
     end
   end
   describe 'authenticating with secret question' do
@@ -27,18 +27,18 @@ describe Customer do
       scenarios.each do |s|
         it "if #{s[0]}" do
           u = Customer.authenticate_from_secret_question(s[1], s[2], s[3])
-          u.errors.on(:login_failed).should include_match_for(s[4])
+          u.errors[:login_failed].should include_match_for(s[4])
         end
       end
       it 'if user hasn\'t setup a secret question' do
         c = create(:customer, :secret_question => 0)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'foo')
-        u.errors.on(:login_failed).should include("Sorry, but '#{c.email}' never set up a secret question.")
+        u.errors[:login_failed].should include("Sorry, but '#{c.email}' never set up a secret question.")
       end
       it 'if answer incorrect' do
         c = create(:customer, :secret_answer => 'blah',:secret_question => 2)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'answer')
-        u.errors.on(:login_failed).should include("Sorry, that isn't the answer you provided when you selected your secret question.")
+        u.errors[:login_failed].should include("Sorry, that isn't the answer you provided when you selected your secret question.")
       end
     end
   end
@@ -53,7 +53,7 @@ describe Customer do
     it 'should be invalid if too long' do
       @c.secret_answer = 'foo' * 30
       @c.should_not be_valid
-      @c.errors.on(:secret_answer).should include_match_for(/too long/)
+      @c.errors[:secret_answer].should include_match_for(/too long/)
     end
     context 'when there is a secret question' do
       before(:each) do
@@ -82,7 +82,7 @@ describe Customer do
       it 'should make customer invalid if secret answer provided' do
         @c.secret_answer = 'foo'
         @c.should_not be_valid
-        @c.errors.on(:secret_answer).should include_match_for(/specify a question/i)
+        @c.errors[:secret_answer].should include_match_for(/specify a question/i)
       end
     end
   end

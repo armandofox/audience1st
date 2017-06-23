@@ -176,7 +176,7 @@ class Order < ActiveRecord::Base
     if completed?
       items.any? { |v| v.kind_of?(Voucher) && !v.bundle? }
     else
-      ValidVoucher.find(valid_vouchers.keys).any? { |vv| vv.vouchertype.category == :revenue }
+      ValidVoucher.find(valid_vouchers.keys).any? { |vv| vv.vouchertype.category == 'revenue' }
     end
   end
 

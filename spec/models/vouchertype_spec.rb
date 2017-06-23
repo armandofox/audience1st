@@ -43,7 +43,7 @@ describe Vouchertype do
     before(:each) do
       @vt = Vouchertype.new(:price => 1.0,
         :offer_public => Vouchertype::ANYONE,
-        :category => :revenue,
+        :category => 'revenue',
         :name => "Example",
         :subscription => false,
         :walkup_sale_allowed => true,
@@ -98,7 +98,7 @@ describe Vouchertype do
       it "should be valid" do
         @vtn = Vouchertype.new(
           :price => 5.0,
-          :category => :nonticket,
+          :category => 'nonticket',
           :offer_public => Vouchertype::BOXOFFICE,
           :name => "Fee",
           :subscription => false,
@@ -122,7 +122,7 @@ describe Vouchertype do
         }
         @vt_free = create(:comp_vouchertype)
         @vt_notfree = create(:revenue_vouchertype)
-        @vtb = Vouchertype.new(args.merge({ :category => :bundle, :name => "Bundle"}))
+        @vtb = Vouchertype.new(args.merge({ :category => 'bundle', :name => "Bundle"}))
       end
       it "should be invalid if contains any nonzero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 1}
@@ -171,7 +171,7 @@ describe Vouchertype do
     end
     describe 'attempting to change to a non-bundle after creation' do
       before :each do
-        @result = @v.update_attributes(:category => :revenue)
+        @result = @v.update_attributes(:category => 'revenue')
       end
       it 'should fail' do ; @result.should be_falsey ; end
       it 'should explain why' do
@@ -179,7 +179,7 @@ describe Vouchertype do
       end
       it 'should not change the category' do
         @v.reload
-        @v.category.should == :bundle
+        @v.category.should == 'bundle'
       end
     end
   end

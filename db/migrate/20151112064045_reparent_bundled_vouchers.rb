@@ -61,7 +61,7 @@ class ReparentBundledVouchers < ActiveRecord::Migration
     end
     private
     def stopping_point?(v)
-      v.category != :subscriber && v.category != :bundle
+      v.category != 'subscriber' && v.category != 'bundle'
     end
     def get_next_voucher(curr_id)
       # stop if we hit a voucher that is neither a bundle nor a subscriber-voucher        
@@ -71,7 +71,7 @@ class ReparentBundledVouchers < ActiveRecord::Migration
         return nil,curr_id+1 if curr_id >= 137000
         v = Voucher.find_by_id(curr_id)
         next if v.nil?
-        return v,curr_id if v.category == :subscriber && v.bundle_id == 0 # candidate
+        return v,curr_id if v.category == 'subscriber' && v.bundle_id == 0 # candidate
         return nil,curr_id if stopping_point?(v)
       end
     end

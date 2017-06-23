@@ -14,7 +14,7 @@ class Vouchertype < ActiveRecord::Base
   serialize :included_vouchers, Hash
 
   NAME_LIMIT = 80
-  CATEGORIES = [:revenue, :comp, :subscriber, :bundle, :nonticket]
+  CATEGORIES = %w(revenue comp subscriber bundle nonticket)
   
   validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
   validates_numericality_of :price, :greater_than_or_equal_to => 0
@@ -149,11 +149,11 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def bundle? ; category == :bundle ; end
-  def comp? ; category == :comp ; end
+  def bundle? ; category == 'bundle' ; end
+  def comp? ; category == 'comp' ; end
   def external? ; offer_public == EXTERNAL ; end
 
-  def subscriber_voucher? ; category == :subscriber ; end
+  def subscriber_voucher? ; category == 'subscriber' ; end
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
@@ -163,55 +163,55 @@ class Vouchertype < ActiveRecord::Base
 
   def self.comp_vouchertypes(season=nil)
     if season 
-      Vouchertype.find_all_by_category_and_season(:comp, season, :order => 'created_at')
+      Vouchertype.find_all_by_category_and_season('comp', season, :order => 'created_at')
     else
-      Vouchertype.find_all_by_category(:comp, :order => 'created_at')
+      Vouchertype.find_all_by_category('comp', :order => 'created_at')
     end
   end
 
   def self.nonbundle_vouchertypes(season=nil)
     season_constraint = season ? " AND season = #{season.to_i}" : ""
     Vouchertype.
-      where("category != ?  #{season_constraint}", :bundle).
+      where("category != ?  #{season_constraint}", 'bundle').
       order('season DESC,display_order,created_at')
   end
 
   def self.bundle_vouchertypes(season=nil)
     if season
-      Vouchertype.where('category = ? AND season = ?', :bundle, season).
+      Vouchertype.where('category = ? AND season = ?', 'bundle', season).
         order('display_order,created_at')
     else
-      Vouchertype.where('category = ?', :bundle).
+      Vouchertype.where('category = ?', 'bundle').
         order('season DESC,display_order,created_at')
     end
   end
 
   def self.subscription_vouchertypes(season=nil)
     if season
-      Vouchertype.where('category = ? AND subscription = ? AND season = ?', :bundle, true, season).
+      Vouchertype.where('category = ? AND subscription = ? AND season = ?', 'bundle', true, season).
         order('display_order,created_at')
     else
-      Vouchertype.where('category = ? AND subscription = ?', :bundle, true).
+      Vouchertype.where('category = ? AND subscription = ?', 'bundle', true).
         order('season DESC,display_order,created_at')
     end
   end
 
   def self.revenue_vouchertypes(season=nil)
     if season
-      Vouchertype.where('category = ? AND season = ?', :revenue, season).
+      Vouchertype.where('category = ? AND season = ?', 'revenue', season).
         order('display_order,created_at')
     else
-      Vouchertype.where('category = ?', :revenue).
+      Vouchertype.where('category = ?', 'revenue').
         order('season DESC,display_order,created_at')
     end
   end
   
   def self.nonticket_vouchertypes(season=nil)
     if season
-      Vouchertype.where('category = ? AND season = ?', :nonticket, season).
+      Vouchertype.where('category = ? AND season = ?', 'nonticket', season).
         order('display_order,created_at')
     else
-      Vouchertype.where('category = ?', :nonticket).
+      Vouchertype.where('category = ?', 'nonticket').
         order('season DESC,display_order,created_at')
     end
   end
@@ -291,7 +291,7 @@ class Vouchertype < ActiveRecord::Base
     return Vouchertype.create!(:name => name,
       :price => price,
       :offer_public => Vouchertype::EXTERNAL,
-      :category => (price.to_i.zero? ? :comp : :revenue),
+      :category => (price.to_i.zero? ? 'comp' : 'revenue'),
       :subscription => false,
       :season => year)
   end

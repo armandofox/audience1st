@@ -1,5 +1,5 @@
 Given /^(?:my cart contains|I add) (\d+) "(.*)" (bundles|subscriptions)$/ do |qty,name,_|
-  unless Vouchertype.where('name = ? AND category = ?', name, :bundle).first
+  unless Vouchertype.where('name = ? AND category = ?', name, 'bundle').first
     steps "Given a \"#{name}\" subscription available to anyone for $50.00"
   end
   visit path_to(%Q{the subscriptions page})

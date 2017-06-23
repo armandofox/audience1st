@@ -45,7 +45,7 @@ Then /^customer "(.*) (.*)" should have the following items:$/ do |first,last,it
       conds_clause << ' AND account_code_id = ?'
       conds_values << AccountCode.find_by_code!(item[:account_code]).id
     end
-    Item.find(:first, :conditions => [conds_clause] + conds_values).should_not be_nil
+    Item.where(conds_clause,*conds_values).first.should_not be_nil
   end
 end
 
@@ -59,8 +59,7 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,typ
   @showdate = Showdate.find_by_thedate!(Time.parse(date))
   @showdate.show.name.should == show
   @vouchertype = Vouchertype.find_by_name!(type)
-  @customer.vouchers.count(
-    :conditions => ['vouchertype_id = ? AND showdate_id = ?', @vouchertype.id,@showdate.id]).
+  @customer.vouchers.where('vouchertype_id = ? AND showdate_id = ?', @vouchertype.id,@showdate.id).count.
     should == num.to_i
 end
 
@@ -85,7 +84,7 @@ end
 Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype_name,date|
   vtype = Vouchertype.find_by_name!(vtype_name)
   showdate = Showdate.find_by_thedate!(Time.parse(date))
-  showdate.vouchers.count(:conditions => ['vouchertype_id = ?', vtype.id]).should == qty.to_i
+  showdate.where('vouchertype_id = ?', vtype.id).count.should == qty.to_i
 end
 
 Then /^ticket sales should be as follows:$/ do |tickets|
@@ -97,7 +96,7 @@ end
 Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |name, to_whom, price| # "
   @sub = Vouchertype.create!(
     :name => name,
-    :category => :bundle,
+    :category => 'bundle',
     :subscription => true,
     :price => price,
     :walkup_sale_allowed => false,
@@ -120,7 +119,7 @@ end
 
 Given /^the "(.*)" subscription includes the following vouchers:/ do |name, vouchers|
   sub =
-    Vouchertype.find_by_category_and_name(:bundle, name) ||
+    Vouchertype.find_by_category_and_name('bundle', name) ||
     create(:bundle, :name => name, :subscription => true)
   sub.included_vouchers ||= {}
   vouchers.hashes.each do |voucher|
@@ -130,7 +129,3 @@ Given /^the "(.*)" subscription includes the following vouchers:/ do |name, vouc
   sub.save!
 end
 
-Given /^customer "(.*) (.*)" has purchased (\d+) "(.*)" subscriptions?$/ do |first,last,num,name|
-  customer = find_or_create_customer first,last
-  sub = Vouchertype.find_by_type_and_name!(:bundle, name)
-end

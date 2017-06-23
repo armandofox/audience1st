@@ -93,7 +93,7 @@ class Showdate < ActiveRecord::Base
   end
   
   def sales_by_type(vouchertype_id)
-    return self.vouchers.count(:conditions => ['vouchertype_id = ?', vouchertype_id])
+    return self.vouchers.where('vouchertype_id = ?', vouchertype_id)
   end
 
   def revenue_by_type(vouchertype_id)
@@ -110,15 +110,15 @@ class Showdate < ActiveRecord::Base
   end
 
   def comp_seats
-    self.vouchers.count(:conditions => ['category = ?', :comp])
+    self.vouchers.comp.count
   end
 
   def nonsubscriber_revenue_seats
-    self.vouchers.count(:conditions => ['category = ?', :revenue])
+    self.vouchers.revenue.count
   end
 
   def subscriber_seats
-    self.vouchers.count(:conditions => ['category = ?', :subscriber])
+    self.vouchers.subscriber.count
   end
 
   def advance_sales?
@@ -201,17 +201,17 @@ class Showdate < ActiveRecord::Base
   end
 
   def advance_sales_vouchers
-    self.vouchers.where('customer_id != ?', Customer.walkup_customer.id)
+    self.vouchers.advance_sales
   end
   def compute_advance_sales
-    self.vouchers.count(:conditions => ['customer_id != ?', Customer.walkup_customer.id])
+    self.vouchers.advance_sales.count
   end
   def compute_walkup_sales
-    self.vouchers.count(:conditions => ['customer_id = ?', Customer.walkup_customer.id])
+    self.vouchers.walkup_sales.count
   end
 
   def checked_in
-    self.vouchers.count(:conditions => ['checked_in = ?', true])
+    self.vouchers.checked_in.count
   end
   def waiting_for
     [0, compute_advance_sales - checked_in].max

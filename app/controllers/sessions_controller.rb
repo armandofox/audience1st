@@ -35,7 +35,7 @@ class SessionsController < ApplicationController
       u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
       if u.nil? || !u.errors.empty?
         note_failed_signin(u)
-        if u.errors.on(:login_failed) =~ /never set up a secret question/i
+        if u.errors[:login_failed] =~ /never set up a secret question/i
           redirect_to login_path
         else
           redirect_to new_from_secret_session_path
@@ -70,7 +70,7 @@ class SessionsController < ApplicationController
   # Track failed login attempts
   def note_failed_signin(user)
     flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:alert] << ": #{user.errors.on(:login_failed)}" if user
+    flash[:alert] << ": #{user.errors[:login_failed]}" if user
     Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
   end
 

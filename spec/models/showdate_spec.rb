@@ -91,12 +91,12 @@ describe Showdate do
         :max_sales => @max_sales)
       @showdate.show.update_attributes!(:house_capacity => @house_cap)
       @vouchers = {
-        :subscriber => 4,
-        :comp => 3,
-        :revenue => 2,
+        'subscriber' => 4,
+        'comp' => 3,
+        'revenue' => 2,
       }
       @nonticket_vouchers = {
-        :nonticket => 1
+        'nonticket' => 1
       }
       @total_sold = @vouchers.values.inject(0) { |sum,n| sum + n }
       (@vouchers.merge(@nonticket_vouchers)).each_pair do |type,qty|
