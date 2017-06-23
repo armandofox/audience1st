@@ -15,7 +15,7 @@ class Store
         )
       order.update_attribute(:authorization, result.id)
     rescue Stripe::StripeError => e
-      order.errors.add_to_base "Credit card payment error: #{e.message}"
+      order.errors.add :base, "Credit card payment error: #{e.message}"
       nil
     end
   end

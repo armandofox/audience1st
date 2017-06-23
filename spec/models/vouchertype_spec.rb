@@ -12,7 +12,7 @@ describe Vouchertype do
         @customers[name = (c + '_subscriber').to_sym] = Customer.new do |cust|
           cust.role = Customer.role_value(c)
         end
-        allow(@customers[name]).to_receive(:subscriber?).and_return(true)
+        allow(@customers[name]).to receive(:subscriber?).and_return(true)
       end
     end
     context 'of boxoffice voucher' do
@@ -173,7 +173,7 @@ describe Vouchertype do
       before :each do
         @result = @v.update_attributes(:category => :revenue)
       end
-      it 'should fail' do ; @result.should be falsey ; end
+      it 'should fail' do ; @result.should be_falsey ; end
       it 'should explain why' do
         @v.errors[:category].should include_match_for(/cannot be changed/)
       end

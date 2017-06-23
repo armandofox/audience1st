@@ -119,7 +119,7 @@ describe StoreController do
     context 'when credit card token invalid' do
       before :each do
         @alert = /Invalid credit card transaction/
-        Stripe::allow(Charge).to_receive(:create).and_raise(Stripe::StripeError)
+        Stripe::allow(Charge).to receive(:create).and_raise(Stripe::StripeError)
         post :donate, {:customer => @new_valid_customer, :donation => 5}
       end
       it_should_behave_like 'failure'
@@ -165,7 +165,7 @@ describe StoreController do
         response.should redirect_to(:action => 'checkout')
       end
       it "should add the donation to the cart" do
-        allow(controller).to_receive(:find_cart).and_return(@cart = Order.new)
+        allow(controller).to receive(:find_cart).and_return(@cart = Order.new)
         Donation.should_receive(:from_amount_and_account_code_id).with(13, nil, nil).and_return(d = Donation.new)
         @cart.should_receive(:add_donation).with(d)
         post :process_cart, @params
@@ -196,7 +196,7 @@ describe StoreController do
       @customer = {:first_name => "John", :last_name => "Bob",
         :street => "742 Evergreen Terrace", :city => "Springfield",
         :state => "IL", :zip => "09091"}
-      allow(controller).to_receive(:find_cart).and_return(mock_model(Order).as_null_object)
+      allow(controller).to receive(:find_cart).and_return(mock_model(Order).as_null_object)
     end
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"

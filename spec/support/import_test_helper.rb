@@ -6,7 +6,7 @@ module ImportTestHelper
   end
 
   def pretend_uploaded(file,type='text/csv')
-    allow(self).to_receive(:uploaded_data).and_return IO.read(file)
+    allow(self).to receive(:uploaded_data).and_return IO.read(file)
     self
   end
 

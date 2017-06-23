@@ -29,7 +29,7 @@ describe Show do
       @s.adjust_metadata_from_showdates
     end
     it "should not change house cap" do
-      @s.house_capacity_changed?.should_not be_true
+      @s.house_capacity_changed?.should_not be_truthy
     end
     it "should set opening date" do
       @s.opening_date.should == @now.to_date

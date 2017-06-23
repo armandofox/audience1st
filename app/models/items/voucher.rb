@@ -224,13 +224,13 @@ class Voucher < Item
   end
   
   def reserve_for(desired_showdate, processor, new_comments='')
-    errors.add_to_base "This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
+    errors.add :base,"This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
     redemption = valid_voucher_adjusted_for processor,desired_showdate
     if processor.is_boxoffice || redemption.max_sales_for_this_patron > 0
       reserve!(desired_showdate, new_comments)
       true
     else
-      errors.add_to_base redemption.explanation
+      errors.add :base,redemption.explanation
       false
     end
   end

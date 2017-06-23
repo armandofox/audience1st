@@ -13,7 +13,7 @@ describe GoldstarXmlImport do
   end
   describe "valid import" do
     before(:each) do
-      allow(@import).to_receive(:public_filename).and_return(File.join(TEST_FILES_DIR,
+      allow(@import).to receive(:public_filename).and_return(File.join(TEST_FILES_DIR,
           'goldstar_xml', 'goldstar-valid.xml'))
     end
     it "should return an XML reader object" do
@@ -73,11 +73,11 @@ describe GoldstarXmlImport do
   describe "getting date and time" do
     GoldstarXmlImport.send(:public, :extract_date_and_time)
     it "should raise error if no showdate" do
-      allow(@import).to_receive(:xml).and_return( xml("<x></x>"))
+      allow(@import).to receive(:xml).and_return( xml("<x></x>"))
       lambda { @import.extract_date_and_time }.should raise_error(TicketSalesImport::DateTimeNotFound)
     end
     it "should raise error if no time" do
-      allow(@import).to_receive(:xml).and_return xml( <<EOS1
+      allow(@import).to receive(:xml).and_return xml( <<EOS1
         <willcall>
           <on_date>Thursday, April 25</on_date>
         </willcall>
@@ -86,7 +86,7 @@ EOS1
       lambda { @import.extract_date_and_time }.should raise_error(TicketSalesImport::DateTimeNotFound)
     end
     it "should parse into a Time when time appears as child of willcall" do
-      allow(@import).to_receive(:xml).and_return xml( <<EOS2
+      allow(@import).to receive(:xml).and_return xml( <<EOS2
       <willcall>
         <on_date>Friday, January 21, 2011</on_date>
         <time_note>8:00 pm</time_note>
@@ -97,11 +97,11 @@ EOS2
     end
     describe "should ignore spurious Time that is a child of Inventory" do
       it "when Time appears properly" do
-        allow(@import).to_receive(:xml).and_return xml_from_file('fragments/inventory-with-time')
+        allow(@import).to receive(:xml).and_return xml_from_file('fragments/inventory-with-time')
         @import.extract_date_and_time.should == Time.parse("1/21/11 8:00pm")
       end
       it "when Time is otherwise missing" do
-        allow(@import).to_receive(:xml).and_return xml_from_file('fragments/inventory-without-time')
+        allow(@import).to receive(:xml).and_return xml_from_file('fragments/inventory-without-time')
         lambda { @import.extract_date_and_time }.
           should raise_error(TicketSalesImport::DateTimeNotFound)
       end
@@ -109,9 +109,9 @@ EOS2
   end
   describe "parsing valid will-call list (without already-entered orders)" do
     before :each do
-      allow(@import).to_receive(:xml).and_return(xml_from_file('goldstar-valid'))
-      allow(@import).to_receive(:get_showdate).and_return(mock_model(Showdate, :show => mock_model(Show)))
-      allow(@import).to_receive(:already_entered?).and_return(nil)
+      allow(@import).to receive(:xml).and_return(xml_from_file('goldstar-valid'))
+      allow(@import).to receive(:get_showdate).and_return(mock_model(Showdate, :show => mock_model(Show)))
+      allow(@import).to receive(:already_entered?).and_return(nil)
       GoldstarXmlImport.send(:public, :get_ticket_orders)
       @import.get_ticket_orders
     end

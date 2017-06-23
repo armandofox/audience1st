@@ -7,11 +7,11 @@ describe VouchersController do
       login_as @customer
       @vouchers = Array.new(3) { Voucher.new }
       @vouchers.each do |v|
-        allow(v).to_receive(:customer).and_return(@customer)
-        allow(v).to_receive(:reserve_for).and_return(true)
+        allow(v).to receive(:customer).and_return(@customer)
+        allow(v).to receive(:reserve_for).and_return(true)
       end
       @showdate = create(:showdate, :thedate => 1.week.from_now)
-      allow(Voucher).to_receive(:find).and_return(@vouchers)
+      allow(Voucher).to receive(:find).and_return(@vouchers)
       @params = {:customer_id => @customer.id, :voucher_ids => @vouchers.map(&:id), :showdate_id => @showdate.id}
     end
     shared_examples_for 'all reservations' do
@@ -36,7 +36,7 @@ describe VouchersController do
     describe 'reservation with errors' do
       before :each do
         @vouchers[1].stub(:reserve_for) do |*args|
-          @vouchers[1].errors.add_to_base "An error occurred"
+          @vouchers[1].errors.add :base,"An error occurred"
           false
         end
       end

@@ -13,7 +13,7 @@ end
 
 describe EmailList do
   before(:each) do
-    allow(EmailList).to_receive(:init_hominid).and_return(true)
+    allow(EmailList).to receive(:init_hominid).and_return(true)
   end
   describe "segments" do
   end

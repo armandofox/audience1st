@@ -43,7 +43,7 @@ describe Customer do
       it "should keep union of labels when merging automatically" do
         @c2.labels = [@l1] ; @c2.save!
         @c.labels =  [@l2] ; @c.save!
-        @c.merge_automatically!(@c2).should be_true
+        @c.merge_automatically!(@c2).should be_truthy
         @c.reload
         @c.labels.should include(@l1)
         @c.labels.should include(@l2)
@@ -51,14 +51,14 @@ describe Customer do
       it "should not barf if dupes already have overlapping label" do
         @c2.labels = [@l1] ; @c2.save!
         @c.labels  = [@l1] ; @c.save!
-        @c2.merge_automatically!(@c).should be_true
+        @c2.merge_automatically!(@c).should be_truthy
         @c2.reload
         @c2.labels.should include(@l1)
       end
       it "should move the labels to the customer surviving a merge" do
         @c2.update_labels!([@l1.id])
         @c2.labels.should include(@l1)
-        @c.merge_automatically!(@c2).should be_true
+        @c.merge_automatically!(@c2).should be_truthy
         @c.reload
         @c.labels.should include(@l1)
       end
@@ -107,8 +107,8 @@ describe Customer do
         @customer = Customer.new(:first_name => "John", :last_name => "Doe",
           :day_phone => "555-1212",
           :eve_phone => "666-2323")
-        allow(@customer).to_receive(:invalid_mailing_address?).and_return(false)
-        allow(@customer).to_receive(:valid_email_address?).and_return(true)
+        allow(@customer).to receive(:invalid_mailing_address?).and_return(false)
+        allow(@customer).to receive(:valid_email_address?).and_return(true)
       end
       it "should be valid with valid attributes" do
         @customer.should be_valid_as_gift_recipient
@@ -126,7 +126,7 @@ describe Customer do
         @customer.should_not be_valid_as_gift_recipient
       end
       it "should have a valid mailing address" do
-        allow(@customer).to_receive(:invalid_mailing_address?).and_return(true)
+        allow(@customer).to receive(:invalid_mailing_address?).and_return(true)
         @customer.should_not be_valid_as_gift_recipient
       end
       it "should have email if no day phone or eve phone" do
@@ -135,18 +135,18 @@ describe Customer do
         @customer.should be_valid_as_gift_recipient
       end
       it "should have day phone if no email or eve phone" do
-        allow(@customer).to_receive(:valid_email_address?).and_return(false)
+        allow(@customer).to receive(:valid_email_address?).and_return(false)
         @customer.eve_phone = nil
         @customer.should be_valid_as_gift_recipient
       end
       it "should have eve phone if no email or day phone" do
-        allow(@customer).to_receive(:valid_email_address?).and_return(false)
+        allow(@customer).to receive(:valid_email_address?).and_return(false)
         @customer.day_phone = nil
         @customer.should be_valid_as_gift_recipient
       end
       it "should not be missing both phone numbers AND email" do
         @customer.day_phone = @customer.eve_phone = ''
-        allow(@customer).to_receive(:valid_email_address?).and_return(false)
+        allow(@customer).to receive(:valid_email_address?).and_return(false)
         @customer.should_not be_valid_as_gift_recipient
       end
     end
@@ -247,12 +247,12 @@ describe Customer do
   end
 
   it 'resets password' do
-    customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be falsey
+    customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_falsey
     Customer.authenticate(customers(:quentin).email, 'new password').should == customers(:quentin)
   end
 
   it 'does not rehash password' do
-    customers(:quentin).update_attributes(:email => 'quentin2@email.com').should_not be falsey
+    customers(:quentin).update_attributes(:email => 'quentin2@email.com').should_not be_falsey
     Customer.authenticate('quentin2@email.com', 'monkey').should == customers(:quentin)
   end
 
@@ -267,12 +267,12 @@ describe Customer do
 
   context "invalid login" do
     it "should display a password-incorrect message for bad password" do
-      Customer.authenticate(customers(:quentin).email, 'invalid_password').errors.on(:login_failed).
-        should match(/password incorrect/i)
+      Customer.authenticate(customers(:quentin).email, 'invalid_password').errors[:login_failed].
+        should include_match_for(/password incorrect/i)
     end
     it "should display an unknown-username message for bad username" do
       Customer.authenticate('asdkfljhadf@email.com', 'pass').errors[:login_failed].
-        should match(/can't find that email/i)
+        should include_match_for(/can't find that email/i)
     end
   end
 
@@ -319,7 +319,7 @@ describe Customer do
     after = 1.week.from_now.utc
     customers(:quentin).remember_token.should_not be_nil
     customers(:quentin).remember_token_expires_at.should_not be_nil
-    customers(:quentin).remember_token_expires_at.between?(before, after).should be_true
+    customers(:quentin).remember_token_expires_at.between?(before, after).should be_truthy
   end
 
   it 'remembers me until one week' do
@@ -336,7 +336,7 @@ describe Customer do
     after = 2.weeks.from_now.utc
     customers(:quentin).remember_token.should_not be_nil
     customers(:quentin).remember_token_expires_at.should_not be_nil
-    customers(:quentin).remember_token_expires_at.between?(before, after).should be_true
+    customers(:quentin).remember_token_expires_at.between?(before, after).should be_truthy
   end
 
   protected

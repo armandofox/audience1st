@@ -38,9 +38,9 @@ describe ValidVoucher do
       before :all do ; ValidVoucher.send(:public, :adjust_for_visibility) ; end
       subject do
         v = ValidVoucher.new
-        allow(v).to_receive(:match_promo_code).and_return(promo_matched)
-        allow(v).to_receive(:visible_to?).and_return(visible_to_customer)
-        allow(v).to_receive(:offer_public_as_string).and_return('NOT YOU')
+        allow(v).to receive(:match_promo_code).and_return(promo_matched)
+        allow(v).to receive(:visible_to?).and_return(visible_to_customer)
+        allow(v).to receive(:offer_public_as_string).and_return('NOT YOU')
         v.adjust_for_visibility
         v
       end
@@ -128,7 +128,7 @@ describe ValidVoucher do
       before :all do ; ValidVoucher.send(:public, :adjust_for_capacity) ; end
       subject do
         v = ValidVoucher.new(:showdate => create(:showdate))
-        allow(v).to_receive(:seats_of_type_remaining).and_return(seats)
+        allow(v).to receive(:seats_of_type_remaining).and_return(seats)
         v.adjust_for_capacity
         v
       end
@@ -194,15 +194,15 @@ describe ValidVoucher do
     after :all do ; ValidVoucher.send(:protected, :match_promo_code) ; end
     context 'when promo code is blank' do
       before :each do ; @v = ValidVoucher.new(:promo_code => nil) ; end
-      it 'should match empty string' do ;     @v.match_promo_code('').should be_true ; end
-      it 'should match arbitrary string' do ; @v.match_promo_code('foo!').should be_true ; end
-      it 'should match nil' do ;              @v.match_promo_code(nil).should be_true ; end
+      it 'should match empty string' do ;     @v.match_promo_code('').should be_truthy ; end
+      it 'should match arbitrary string' do ; @v.match_promo_code('foo!').should be_truthy ; end
+      it 'should match nil' do ;              @v.match_promo_code(nil).should be_truthy ; end
     end
     shared_examples_for 'nonblank promo code' do
-      it 'should match exact string' do ;     @v.match_promo_code('foo').should be_true ; end
-      it 'should be case-insensitive' do ;    @v.match_promo_code('FoO').should be_true ; end
-      it 'should ignore whitespace' do ;      @v.match_promo_code(' Foo ').should be_true ; end
-      it 'should not match partial string' do;@v.match_promo_code('fo').should be falsey ; end
+      it 'should match exact string' do ;     @v.match_promo_code('foo').should be_truthy ; end
+      it 'should be case-insensitive' do ;    @v.match_promo_code('FoO').should be_truthy ; end
+      it 'should ignore whitespace' do ;      @v.match_promo_code(' Foo ').should be_truthy ; end
+      it 'should not match partial string' do;@v.match_promo_code('fo').should be_falsey ; end
     end
     context '"foo"' do
       before :each do ; @v = ValidVoucher.new(:promo_code => 'foo') ; end
@@ -230,7 +230,7 @@ describe ValidVoucher do
         any? do |offer|
         offer.vouchertype == @anyone_bundle &&
           offer.max_sales_for_type == ValidVoucher::INFINITE
-      end.should be_true
+      end.should be_truthy
     end
   end
 

@@ -54,12 +54,12 @@ class Order < ActiveRecord::Base
     # walkup orders only need purchaser & recipient info to point to walkup
     #  customer, but regular orders need full purchaser & recipient info.
     if walkup?
-      errors.add_to_base "Walkup order requires purchaser & recipient to be walkup customer" unless
+      errors.add(:base, "Walkup order requires purchaser & recipient to be walkup customer") unless
         (purchaser == Customer.walkup_customer && customer == purchaser)
     else
-      errors.add_to_base "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}" if
+      errors.add(:base, "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}") if
         purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
-      errors.add_to_base 'No recipient information' unless customer.kind_of?(Customer)
+      errors.add(:base, 'No recipient information') unless customer.kind_of?(Customer)
       errors.add(:customer, customer.errors_as_html) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
     end
   end
@@ -127,7 +127,7 @@ class Order < ActiveRecord::Base
     if number <= adjusted.max_sales_for_this_patron
       self.add_tickets(valid_voucher, number)
     else
-      self.errors.add_to_base(adjusted.explanation)
+      self.errors.add(:base,adjusted.explanation)
     end
   end
 
@@ -241,21 +241,21 @@ class Order < ActiveRecord::Base
 
   def ready_for_purchase?
     errors.clear
-    errors.add_to_base 'Shopping cart is empty' if cart_empty?
-    errors.add_to_base 'No purchaser information' unless purchaser.kind_of?(Customer)
-    errors.add_to_base "You must specify the enrollee's name for classes" if
+    errors.add(:base, 'Shopping cart is empty') if cart_empty?
+    errors.add(:base, 'No purchaser information') unless purchaser.kind_of?(Customer)
+    errors.add(:base, "You must specify the enrollee's name for classes") if
       contains_enrollment? && comments.blank?
     check_purchaser_info unless processed_by.try(:is_boxoffice)
     if purchasemethod.kind_of?(Purchasemethod)
-      errors.add_to_base('Invalid credit card transaction') if
+      errors.add(:base,'Invalid credit card transaction') if
         purchase_args && purchase_args[:credit_card_token].blank?       &&
         purchase_medium == :credit_card 
-      errors.add_to_base('Zero amount') if
+      errors.add(:base,'Zero amount') if
         total_price.zero? && purchase_medium != :cash
     else
-      errors.add_to_base('No payment method specified')
+      errors.add(:base,'No payment method specified')
     end
-    errors.add_to_base 'No information on who processed order' unless processed_by.kind_of?(Customer)
+    errors.add(:base, 'No information on who processed order') unless processed_by.kind_of?(Customer)
     errors.empty?
   end
 

@@ -35,13 +35,13 @@ describe Customer do
         @customer.e_blacklist = true # so it's marked dirty
       end
       it "should be unsubscribed using old email" do
-        @customer.email_changed?.should_not be_true
+        @customer.email_changed?.should_not be_truthy
         EmailList.should_receive(:unsubscribe).with(@customer,@email)
         @customer.save!
       end
       it "should be unsubscribed using old email even if email changed" do
         @customer.email = "newjohn@doe.com"
-        @customer.email_changed?.should be_true
+        @customer.email_changed?.should be_truthy
         EmailList.should_receive(:unsubscribe).with(@customer,@email)
         @customer.save!
       end

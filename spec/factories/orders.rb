@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   factory :order do
-    ignore do
+    transient do
       vouchers_count 0
       contains_donation false
     end

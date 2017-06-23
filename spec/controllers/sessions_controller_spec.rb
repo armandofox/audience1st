@@ -9,7 +9,7 @@ describe SessionsController do
     ApplicationController.send(:public, :current_user, :current_user)
     @user  = mock_user
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
-    allow(Customer).to_receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
+    allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
   end
   # Login for an admin
   describe 'admin view' do
@@ -20,11 +20,11 @@ describe SessionsController do
     end
     it 'can be disabled' do
       get :temporarily_disable_admin
-      @controller.send(:is_boxoffice).should_not be_true
+      @controller.send(:is_boxoffice).should_not be_truthy
     end
     it 'can be reenabled' do
       get :reenable_admin
-      @controller.send(:is_boxoffice).should be_true
+      @controller.send(:is_boxoffice).should be_truthy
     end
   end
 
@@ -38,19 +38,19 @@ describe SessionsController do
         describe "my request cookie token is #{has_request_token.to_s}," do
           describe "and ask #{want_remember_me ? 'to' : 'not to'} be remembered" do 
             before do
-              allow(@user).to_receive(:login_message).and_return ""
+              allow(@user).to receive(:login_message).and_return ""
               @home_page = customer_path(@user)
               @ccookies = mock('cookies')
-              allow(controller).to_receive(:cookies).and_return(@ccookies)
-              allow(@ccookies).to_receive(:[]).with(:auth_token).and_return(token_value)
-              allow(@ccookies).to_receive(:delete).with(:auth_token)
-              allow(@ccookies).to_receive(:[]=)
-              allow(@user).to_receive(:remember_me) 
-              allow(@user).to_receive(:refresh_token) 
-              allow(@user).to_receive(:forget_me)
-              allow(@user).to_receive(:remember_token).and_return(token_value) 
-              allow(@user).to_receive(:remember_token_expires_at).and_return(token_expiry)
-              allow(@user).to_receive(:remember_token?).and_return(has_request_token == :valid)
+              allow(controller).to receive(:cookies).and_return(@ccookies)
+              allow(@ccookies).to receive(:[]).with(:auth_token).and_return(token_value)
+              allow(@ccookies).to receive(:delete).with(:auth_token)
+              allow(@ccookies).to receive(:[]=)
+              allow(@user).to receive(:remember_me) 
+              allow(@user).to receive(:refresh_token) 
+              allow(@user).to receive(:forget_me)
+              allow(@user).to receive(:remember_token).and_return(token_value) 
+              allow(@user).to receive(:remember_token_expires_at).and_return(token_expiry)
+              allow(@user).to receive(:remember_token?).and_return(has_request_token == :valid)
               if want_remember_me
                 @login_params[:remember_me] = '1'
               else 
@@ -65,7 +65,7 @@ describe SessionsController do
               post(:create, @login_params)
             end
             it "kills existing login"        do controller.should_receive(:logout_keeping_session!); post(:create, @login_params); end    
-            it "logs me in"                  do post(:create, @login_params); controller.send(:logged_in?).should  be_true  end    
+            it "logs me in"                  do post(:create, @login_params); controller.send(:logged_in?).should  be_truthy  end    
             it "sets/resets/expires cookie"  do controller.should_receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
             it "sends a cookie"              do controller.should_receive(:send_remember_cookie!);  post(:create, @login_params) end
             it 'redirects to the home page'  do post(:create, @login_params); response.should redirect_to(@home_page)   end
