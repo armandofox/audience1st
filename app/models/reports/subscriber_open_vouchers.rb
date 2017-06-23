@@ -5,7 +5,7 @@ class SubscriberOpenVouchers < Report
   def initialize(output_options={})
     @view_params = {
       :name => "Open vouchers report",
-      :vouchertypes => Vouchertype.find_products(:type => :bundled_voucher,:for_purchase_by => :boxoffice)
+      :vouchertypes => Vouchertype.subscriber_vouchertypes_in_bundles
     }
     super
   end

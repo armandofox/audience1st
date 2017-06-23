@@ -12,13 +12,13 @@ FactoryGirl.define do
     purchasemethod { Purchasemethod.find_by_shortdesc(:box_cash) }
     sold_on { Time.now }
 
-    after_build do |order|
+    after(:build) do |order|
       if order.walkup
         order.customer = order.purchaser = Customer.walkup_customer
         order.processed_by ||= Customer.boxoffice_daemon
       end
     end
-    after_create do |order,evaluator|
+    after(:create) do |order,evaluator|
       1.upto evaluator.vouchers_count do
         order.items << FactoryGirl.create(:revenue_voucher, :customer => order.customer)
       end

@@ -55,7 +55,7 @@ FactoryGirl.define do
       offer_public Vouchertype::ANYONE
       subscription false
       included_vouchers { Hash.new }
-      after_build do |vt,evaluator|
+      after(:build) do |vt,evaluator|
         evaluator.including.each_pair do |vtype, count|
           vt.included_vouchers[vtype.id] = count
         end

@@ -40,6 +40,11 @@ class Vouchertype < ActiveRecord::Base
   before_update :cannot_change_category
   after_create :setup_valid_voucher_for_bundle, :if => :bundle?
   
+  # Stackable scopes
+  scope :for_season, ->(season) { where('season = ?', season) }
+  scope :of_categories, ->(*cats)   { where('category IN ?', cats.map(&:to_s)) }
+  scope :except_categories, ->(*cats) { where('category NOT IN ?', cats.map(&:to_s)) }
+
   protected
 
   # can't change the category of an existing bundle
@@ -124,16 +129,11 @@ class Vouchertype < ActiveRecord::Base
   
   def offer_public_as_string
     case offer_public
-    when BOXOFFICE
-      "Box office only"
-    when SUBSCRIBERS
-      "Subscribers"
-    when ANYONE
-      "Anyone"
-    when EXTERNAL
-      "External Resellers"
-    else
-      "Unknown (#{offer_public})"
+    when BOXOFFICE then "Box office only"
+    when SUBSCRIBERS then "Subscribers"
+    when ANYONE then "Anyone"
+    when EXTERNAL then "External Resellers"
+    else "Unknown (#{offer_public})"
     end
   end
 
@@ -162,108 +162,48 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.comp_vouchertypes(season=nil)
-    if season 
-      Vouchertype.find_all_by_category_and_season('comp', season, :order => 'created_at')
-    else
-      Vouchertype.find_all_by_category('comp', :order => 'created_at')
-    end
+    vtypes =  season ? for_season(season) : all
+    vtypes.of_categories('comp').order('created_at')
   end
 
   def self.nonbundle_vouchertypes(season=nil)
-    season_constraint = season ? " AND season = #{season.to_i}" : ""
-    Vouchertype.
-      where("category != ?  #{season_constraint}", 'bundle').
+    vtypes = season ? for_season(season) : all
+    vtypes.except_categories('bundle').
       order('season DESC,display_order,created_at')
   end
 
   def self.bundle_vouchertypes(season=nil)
-    if season
-      Vouchertype.where('category = ? AND season = ?', 'bundle', season).
-        order('display_order,created_at')
-    else
-      Vouchertype.where('category = ?', 'bundle').
-        order('season DESC,display_order,created_at')
-    end
+    vtypes = season ? for_season(season) : all
+    vtypes.of_categories('bundle').order('season DESC,display_order,created_at')
   end
 
   def self.subscription_vouchertypes(season=nil)
-    if season
-      Vouchertype.where('category = ? AND subscription = ? AND season = ?', 'bundle', true, season).
-        order('display_order,created_at')
-    else
-      Vouchertype.where('category = ? AND subscription = ?', 'bundle', true).
-        order('season DESC,display_order,created_at')
-    end
+    vtypes = season ? for_season(season) : all
+    vtypes.of_categories('bundle').where('subscription = ?', true).
+      order('season DESC,display_order,created_at')
   end
 
   def self.revenue_vouchertypes(season=nil)
-    if season
-      Vouchertype.where('category = ? AND season = ?', 'revenue', season).
-        order('display_order,created_at')
-    else
-      Vouchertype.where('category = ?', 'revenue').
-        order('season DESC,display_order,created_at')
-    end
+    vtypes = season ? for_season(season) : all
+    vtypes.of_categories('revenue').order('season DESC,display_order,created_at')
   end
-  
+
+  def self.subscriber_vouchertypes_in_bundles(season=nil)
+    vtypes = season ? for_season(season) : all
+    # bug: should really check for vouchertypes that are components of
+    #  a bundle that is a subscription, but this is hard to do since
+    #  the included_vouchers property is serialized as a hash
+    vtypes.of_categories('subscriber').order('season DESC,display_order,created_at')
+  end
+
   def self.nonticket_vouchertypes(season=nil)
-    if season
-      Vouchertype.where('category = ? AND season = ?', 'nonticket', season).
-        order('display_order,created_at')
-    else
-      Vouchertype.where('category = ?', 'nonticket').
-        order('season DESC,display_order,created_at')
-    end
+    vtypes = season ? for_season(season) : all
+    vtypes.of_categories('nonticket').order('season DESC,display_order,created_at')
   end
 
   def self.zero_cost_vouchertypes(season=nil)
-    if season
-      Vouchertype.where('price = ? AND season = ?', 0, season).
-        order('display_order,created_at')
-    else
-      Vouchertype.where('price = ?', 0).
-        order('season DESC,created_at')
-    end
-  end
-
-
-  def self.find_products(args={})
-    restrict = []
-    arglist = []
-    case args[:for_purchase_by]
-    when :subscribers
-      restrict << "(offer_public = #{SUBSCRIBERS} OR offer_public = #{ANYONE})"
-    when :boxoffice
-      restrict << "offer_public = #{BOXOFFICE}"
-    when :external
-      restrict << "offer_public = #{EXTERNAL}"
-    else
-      restrict << "offer_public = #{ANYONE}"
-    end
-    if (created_at = args[:since])
-      restrict << "created_at >= ?"
-      arglist << created_at
-    end
-    case args[:type]
-    when :subscription
-      restrict << "category = 'bundle' AND subscription = 1"
-      restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
-        (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
-    when :bundle
-      restrict << "category = 'bundle'"
-      restrict << "#{Time.db_now} BETWEEN bundle_sales_start AND bundle_sales_end" unless
-        (args[:for_purchase_by] == :boxoffice || args[:ignore_cutoff])
-    end
-    if args.has_key?(:walkup)
-      case args[:walkup]
-      when true
-        restrict << "walkup_sale_allowed = 1"
-      when false
-        restrict << "walkup_sale_allowed = 0"
-      end
-    end
-    arglist.unshift(restrict.join(" AND "))
-    Vouchertype.where(*arglist)
+    vtypes = season ? for_season(season) : all
+    vtypes.where('price = ?', 0).order('season DESC,display_order,created_at')
   end
 
   def numseats_for_showdate(showdate)
