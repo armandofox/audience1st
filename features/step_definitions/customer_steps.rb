@@ -62,17 +62,17 @@ Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,la
   dummy = Customer.new
   attribs.hashes.each do |attr|
     name,val = attr[:attribute], attr[:value]
-    customer.send(name).should == Customer.columns_hash[name].type_cast(val)
+    customer.send(name).should == Customer.columns_hash[name].cast_type.type_cast_from_database(val)
   end
 end
 
 Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,date|
-  Customer.find_customer!(first,last).birthday.should ==
+  find_customer!(first,last).birthday.should ==
     Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
 end
 
 Then /^customer "(.*) (.*)" should have the "(.*)" role$/ do |first,last,role|
-  Customer.find_customer!(first,last).role_name.should == role
+  find_customer!(first,last).role_name.should == role
 end
 
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|

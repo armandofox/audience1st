@@ -68,7 +68,7 @@ end
 Then "$actor should not be logged in" do |email|
   customer = Customer.find_by_email!(email)
   page.should_not have_content("Signed in as #{customer.full_name}")
-  #controller.send(:logged_in?).should_not be_true
+  #controller.send(:logged_in?).should_not be_truthy
 end
 
 Then "$login should be logged in" do |email|
@@ -96,7 +96,7 @@ end
 
 def log_out
   visit logout_path
-  #controller.send(:current_user).should be falsey
+  #controller.send(:current_user).should be_falsey
 end
 
 def log_out! ; log_out ; end

@@ -9,5 +9,5 @@ Given /a valid Goldstar will-call email "(.*).eml" for "(.*)" on (.*)/ do |raw_e
 end
 
 When /^that valid email is received and processed by (.*)$/ do |klass|
-  GoldstarAutoImporter.import_from_email(@email).should be_true
+  GoldstarAutoImporter.import_from_email(@email).should be_truthy
 end

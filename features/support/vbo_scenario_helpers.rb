@@ -8,6 +8,18 @@ module VboScenarioHelpers
     Customer.where('first_name = ? AND last_name = ?',first,last).first!
   end
 
+  def make_subscriber!(customer)
+    vtype = create(:bundle, :subscription => true)
+    voucher = Voucher.new_from_vouchertype(vtype)
+    customer.vouchers << voucher
+    customer.save!
+    customer.should be_a_subscriber
+  end
+
+  def find_customer_by_fullname(name)
+    c = Customer.find_by_first_name_and_last_name(*(name.split(/ +/))) or raise ActiveRecord::RecordNotFound
+  end
+
   def find_or_create_customer(first,last)
     find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
   end

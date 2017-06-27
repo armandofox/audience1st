@@ -2,8 +2,8 @@
 
 %p{:align=>:top}
   = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'genButton'
-  = button_to_function 'Check All', %q{$('#uf input.check').prop('checked', false)}
-  = button_to_function 'Clear All', %q{$('#uf input.check').prop('checked', true)}
+  = check_box_tag 'Check/Clear All', :id => 'all'
+  = javascript_tag %q{$('#all').change(function() { $('#uf input.check').prop('checked', $(this).prop('checked')) }) }
 
 = form_tag mark_fulfilled_path, :id=>'uf' do
   = submit_tag 'Mark Checked Orders as Fulfilled'

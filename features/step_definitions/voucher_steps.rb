@@ -72,10 +72,10 @@ Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last
     found_vouchers.length.should == v[:quantity].to_i
     if v.has_key?(:showdate)
       if v[:showdate].blank?
-        found_vouchers.all? { |v| v.showdate.should be_nil }.should be_true
+        found_vouchers.all? { |v| v.showdate.should be_nil }.should be_truthy
       else
         date = Time.parse v[:showdate]
-        found_vouchers.all? { |v| v.showdate.thedate.should == date }.should be_true
+        found_vouchers.all? { |v| v.showdate.thedate.should == date }.should be_truthy
       end
     end
   end

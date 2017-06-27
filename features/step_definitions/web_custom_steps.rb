@@ -127,9 +127,9 @@ Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
     match
   end
   if flag =~ /not/
-    matched.should be falsey, "Expected #{table} NOT to contain a row matching <#{row}>"
+    matched.should be_falsey, "Expected #{table} NOT to contain a row matching <#{row}>"
   else
-    matched.should be_true, "Expected #{table} to contain a row matching <#{row}>"
+    matched.should be_truthy, "Expected #{table} to contain a row matching <#{row}>"
   end
 end
 

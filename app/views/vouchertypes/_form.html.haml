@@ -71,7 +71,7 @@
   /This part of form is for bundle vouchers
 
   #for_bundles
-    - fields_for @valid_voucher do |vv|
+    = fields_for @valid_voucher do |vv|
 
       %p
         %label{:for => :valid_voucher_max_sales_for_type} Max sales (Leave blank for unlimited)

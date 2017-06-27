@@ -12,7 +12,7 @@
       %span.strong like this
       are required.
       = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
-    - fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
+    = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
       %label.strong{:for => 'customer_first_name'} First name
       = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled
       %br/

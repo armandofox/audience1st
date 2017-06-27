@@ -34,7 +34,7 @@ Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) 
       order.donations.length > 0 &&
       (d = order.donations.first).amount == amount &&
       d.account_code == account_code
-  end.should be_true
+  end.should be_truthy
 end
 
 
