@@ -1,10 +1,10 @@
 #welcome_header
   Signed in as 
   = link_to current_user.full_name, customer_path(current_user)
-  = gen_button 'Log Out', logout_path
+  = link_to 'Log Out', logout_path, :class => 'genButton'
   - if @gAdminDisplay
-    = gen_button('Regular Patron View', temporarily_disable_admin_session_path)
+    = link_to 'Regular Patron View', temporarily_disable_admin_session_path, :class => 'genButton'
     = popup_help_for :disable_admin
   - elsif current_user().is_staff
-    = gen_button('Admin View', reenable_admin_session_path)
+    = link_to 'Admin View', reenable_admin_session_path, :class => 'genButton'
     = popup_help_for :disable_admin

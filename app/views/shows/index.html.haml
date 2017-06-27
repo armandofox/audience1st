@@ -25,4 +25,4 @@
         - else
           %td
           %td= button_to 'Delete', show_path(show), :method => :delete, :confirm => "Delete '#{show.name}': are you sure?" 
-= gen_button 'Add New Show', new_show_path
+= link_to 'Add New Show', new_show_path, :class => 'genButton'

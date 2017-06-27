@@ -23,7 +23,7 @@
       %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
     = render :partial => 'customers/form', :locals => {:customer => @recipient, :legend => "Gift Recipient"}
-    = gen_button '<< Go Back', :action => (@redirect_to || :index)
+    = link_to '<< Go Back', :action => (@redirect_to || :index), { :class => 'genButton' }
     to change or cancel order, or
     = submit_tag 'CONTINUE >>'
     %span#nextstep to Billing Information

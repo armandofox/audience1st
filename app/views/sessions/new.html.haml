@@ -8,9 +8,9 @@
 #new_customer
   %h2 New Customers
   - if @gCheckoutInProgress
-    %span#enter_billing.new_account= gen_button "Enter Billing Information",  new_customer_path
+    %span#enter_billing.new_account= link_to "Enter Billing Information",  new_customer_path, :class => 'genButton'
   - else
-    %span#new_account.new_account= gen_button "Create Account", new_customer_path
+    %span#new_account.new_account= link_to "Create Account", new_customer_path, :class => 'genButton'
     %br
     = link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'genButton'}
     %br

@@ -13,7 +13,7 @@
         
   .pageDiv
     %h1 Accepting Donations and Retail Sales Online
-    = gen_button 'Create/Edit Account Codes', account_codes_path
+    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'genButton'
     = render_collection_of_options f, %w( |
       default_retail_account_code |
       default_donation_account_code |
@@ -70,7 +70,7 @@
 
   .pageDiv
     %h1 Order Service Charges
-    = gen_button 'Create/Edit Account Codes', account_codes_path
+    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'genButton'
     = render_collection_of_options f, %w( |
       subscription_order_service_charge |
       subscription_order_service_charge_description |
