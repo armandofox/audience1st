@@ -12,7 +12,7 @@
   = check_box_tag 'hide', 1, false, :class => 'hide_checkbox', 'data-selector' => '.nontransferable', 'data-ifchecked' => 'hide'
   Show only transferable vouchers
 
-- form_tag transfer_multiple_customer_vouchers_path(@customer) do
+= form_tag transfer_multiple_customer_vouchers_path(@customer) do
   %table.hilite#transfer_vouchers_table
     %thead
       %th 

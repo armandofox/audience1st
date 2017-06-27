@@ -5,7 +5,7 @@
   = button_to_function 'Check All', %q{$('#uf input.check').prop('checked', false)}
   = button_to_function 'Clear All', %q{$('#uf input.check').prop('checked', true)}
 
-- form_tag mark_fulfilled_path, :id=>'uf' do
+= form_tag mark_fulfilled_path, :id=>'uf' do
   = submit_tag 'Mark Checked Orders as Fulfilled'
 
   %table.hilite.ordersTable

@@ -2,7 +2,7 @@
   - if @customers.respond_to?(:total_pages)
     .pagination
       = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
-      - form_tag @list_action, :method => :get do
+      = form_tag @list_action, :method => :get do
         &nbsp;&bull;&nbsp; 
         %b #{@customers.offset+1}-#{@customers.offset+@customers.length}
         of 
@@ -14,7 +14,7 @@
 %br/
 
 - unless @customers.empty?
-  - form_tag merge_customers_path, :method => :get do
+  = form_tag merge_customers_path, :method => :get do
     = render :partial => 'customers/merge_bar'
     = hidden_field_tag 'action_name', @controller.action_name
     = hidden_field_tag 'customers_filter', @customers_filter

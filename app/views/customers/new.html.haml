@@ -7,14 +7,14 @@
     to use your existing billing information.
 
   - if @is_admin
-    - form_tag customers_path do
+    = form_tag customers_path do
       = render :partial => 'form', :object => @customer
       = render :partial => 'password' 
       = render :partial => 'form_admin'
       = submit_tag "Create New Customer Account"
       = link_to 'Cancel', customers_path, :class => 'genButton'
   - else
-    - form_tag user_create_customers_path do
+    = form_tag user_create_customers_path do
       = render :partial => 'form', :object => @customer
       = render :partial => 'password'
       - if @gCheckoutInProgress

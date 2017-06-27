@@ -4,7 +4,7 @@
   %br
   .pagination
     = will_paginate @txns,:previous_label => '&laquo;', :next_label => '&raquo;', :container => false
-    - form_tag txns_path, :method => :get do
+    = form_tag txns_path, :method => :get do
       &nbsp;&bull;&nbsp; 
       %b #{@txns.offset+1}-#{@txns.offset+@txns.length}
       of 

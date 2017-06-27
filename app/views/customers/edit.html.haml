@@ -1,7 +1,7 @@
 %h1.page_heading.center Contact Info for #{h @customer.full_name}
 
 %br/
-- form_tag customer_path(@customer), :method => :put do
+= form_tag customer_path(@customer), :method => :put do
   = render :partial => 'form' 
   - if @gAdminDisplay
     = render :partial => 'form_admin'

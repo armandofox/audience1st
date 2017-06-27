@@ -1,6 +1,6 @@
 %p.infoMsg  Select which value will be retained from each record.  Unselected values will be discarded.
 
-- form_tag finalize_merge_customers_path do
+= form_tag finalize_merge_customers_path do
   = hidden_field_tag 'action_name', @last_action_name
   = hidden_field_tag 'offset', @offset
   = hidden_field_tag 'cust0', @cust[0].id

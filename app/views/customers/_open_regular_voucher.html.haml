@@ -1,7 +1,7 @@
 - first = group.vouchers[0]
 - if first.reservable?  &&  !group.redeemable_showdates.empty?
   - gid = group.group_id
-  - form_tag confirm_multiple_customer_vouchers_path(@customer) do
+  = form_tag confirm_multiple_customer_vouchers_path(@customer) do
     = hidden_field_tag 'voucher_ids', group.voucherlist
     %td.c= menu_or_static_text('number', group.size)
     %td{:title => (group.voucherlist if @gAdminDisplay)}= group.name

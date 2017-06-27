@@ -1,6 +1,6 @@
 %h2 Make Reservation for #{@customer.full_name}
 
-- form_tag confirm_reservation_customer_voucher_path(@customer,@voucher) do
+= form_tag confirm_reservation_customer_voucher_path(@customer,@voucher) do
   = render(:partial => 'reserve_for') if @valid_vouchers
 
   %label.emphasis{:for => 'accessible_seating'} Special seating needs?

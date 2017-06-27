@@ -3,7 +3,7 @@
     %a.flippy[order, :flippy]{:href=>'#'} &#x25BC;
     Order ##{order.id}, by #{staff_name(order.processed_by)} on #{order.sold_on.strftime('%c')}
   %div.order_info[order, :details]
-    - form_tag order_path(order), :method => :put do
+    = form_tag order_path(order), :method => :put do
       %p 
         %span.label Purchaser: 
         = link_to_customer order.purchaser

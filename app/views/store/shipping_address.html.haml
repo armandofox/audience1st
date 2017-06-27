@@ -1,7 +1,7 @@
 #store
   %h1.page_heading.center Gift Order
 
-  - form_tag shipping_address_path(@customer) do
+  = form_tag shipping_address_path(@customer) do
     - if @mailable
       = hidden_field_tag 'mailable_gift_order', 1
       %p

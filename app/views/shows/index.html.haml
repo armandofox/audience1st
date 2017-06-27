@@ -1,4 +1,4 @@
-- form_tag shows_path, :method => :get do
+= form_tag shows_path, :method => :get do
   %h1 
     Listing shows for season:
     = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onchange => 'this.form.submit();'

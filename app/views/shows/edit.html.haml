@@ -2,7 +2,7 @@
   Details for 
   %span.show_name= @show.name
 
-- form_tag show_path(@show), :method => :put do
+= form_tag show_path(@show), :method => :put do
   = render :partial => 'form'
   = submit_tag 'Save Changes'
   = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'genButton'

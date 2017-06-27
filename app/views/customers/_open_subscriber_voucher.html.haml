@@ -1,4 +1,4 @@
-- form_tag confirm_multiple_customer_vouchers_path(@customer) do
+= form_tag confirm_multiple_customer_vouchers_path(@customer) do
   - gid = group.group_id
   = hidden_field_tag 'voucher_ids', group.voucherlist
   %td.c= menu_or_static_text('number', group.size)

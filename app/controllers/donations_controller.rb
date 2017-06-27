@@ -54,7 +54,7 @@ class DonationsController < ApplicationController
     if conds.empty?
       @things = Donation.all
     else
-      @things = Donation.where(*conds_array).includes(:order)
+      @things = Donation.includes(:order).references(:orders).where(*conds_array)
     end
     # also show ticket purchases?
     if (params[:show_vouchers] && c)

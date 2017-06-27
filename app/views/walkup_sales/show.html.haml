@@ -1,6 +1,6 @@
 = render :partial => 'store/check_javascript'
 
-- form_tag walkup_sales_path(:id => @showdate.id), {:id => '_stripe_payment_form'} do
+= form_tag walkup_sales_path(:id => @showdate.id), {:id => '_stripe_payment_form'} do
   #walkup_tickets
     .column
       %p.column_header 1. Select tickets & donation amount

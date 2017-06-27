@@ -62,14 +62,17 @@ class Showdate < ActiveRecord::Base
   def self.current_or_next(opts={})
     buffer = opts[:grace_period] || 0
     type = opts[:type] || 'Regular Show'
-    Showdate.where("showdates.thedate >= ? AND shows.event_type=?", Time.now - buffer, type).
-      includes(:show).
+    Showdate.
+      includes(:show).references(:shows).
+      where("showdates.thedate >= ? AND shows.event_type=?",Time.now-buffer, type).
       order("thedate").
       first  ||
 
-      Showdate.where("shows.event_type = ?", type).
-      includes(:show).
-      order('thedate DESC')
+      Showdate.
+      includes(:show).references(:shows).
+      where("shows.event_type = ?", type).
+      order('thedate DESC').
+      first
   end
 
   def self.all_showdates_for_seasons(first=Time.now.year, last=Time.now.year)

@@ -1,6 +1,6 @@
 #store
   #donation_panel
-    - form_tag process_cart_path(@customer) do
+    = form_tag process_cart_path(@customer) do
       - if @is_admin
         %h1.page_heading.center Record Donation
         %label{:for => :account_code_id} Fund or Account:

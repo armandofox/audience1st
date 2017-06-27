@@ -1,4 +1,4 @@
-- form_tag vouchertypes_path, :method=>:get do
+= form_tag vouchertypes_path, :method=>:get do
   %h1 
     Listing
     = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)", "Nonticket Products"],@filter), :onchange => 'this.form.submit();'

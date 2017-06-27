@@ -17,7 +17,7 @@
       = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'genButton'
 
   #ticket_menus
-    - form_tag process_cart_path(@customer) do
+    = form_tag process_cart_path(@customer) do
       = hidden_field_tag 'what', h(@what)
       - if @valid_vouchers.empty? && @all_shows.length == 1
         #show_description.explanation There are no #{label_for_page_header @what} on sale at this time.
