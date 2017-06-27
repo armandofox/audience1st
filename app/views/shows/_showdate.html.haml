@@ -42,4 +42,4 @@
                   = link_to 'Delete', valid_voucher_path(v), 'data-remote' => true, 'data-method' => :delete, 'data-type' => 'script'
         %tr
           %td{:colspan=>4}
-            = gen_button  "Add New...", new_valid_voucher_path(:showdate_id => showdate.id)
+            = link_to  "Add New...", new_valid_voucher_path(:showdate_id => showdate.id), :class => 'genButton'

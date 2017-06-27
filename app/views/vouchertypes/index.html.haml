@@ -38,7 +38,7 @@
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
               = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name).html_safe if qty>0 
         %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
-        %td= gen_button 'Clone', {:action => :clone, :id => vouchertype.id}, {:title => 'Prepopulate a new vouchertype with attributes based on this one'}
+        %td= link_to 'Clone', clone_vouchertype_path(vouchertype), :class => 'genButton'
 
 %br/
-= gen_button  'New Voucher Type', new_vouchertype_path
+= link_to  'New Voucher Type', new_vouchertype_path, :class => 'genButton'

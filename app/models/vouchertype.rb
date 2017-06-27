@@ -162,34 +162,34 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.comp_vouchertypes(season=nil)
-    vtypes =  season ? for_season(season) : all
+    vtypes =  season ? for_season(season) : self
     vtypes.of_categories('comp').order('created_at')
   end
 
   def self.nonbundle_vouchertypes(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     vtypes.except_categories('bundle').
       order('season DESC,display_order,created_at')
   end
 
   def self.bundle_vouchertypes(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     vtypes.of_categories('bundle').order('season DESC,display_order,created_at')
   end
 
   def self.subscription_vouchertypes(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     vtypes.of_categories('bundle').where('subscription = ?', true).
       order('season DESC,display_order,created_at')
   end
 
   def self.revenue_vouchertypes(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     vtypes.of_categories('revenue').order('season DESC,display_order,created_at')
   end
 
   def self.subscriber_vouchertypes_in_bundles(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     # bug: should really check for vouchertypes that are components of
     #  a bundle that is a subscription, but this is hard to do since
     #  the included_vouchers property is serialized as a hash
@@ -197,12 +197,12 @@ class Vouchertype < ActiveRecord::Base
   end
 
   def self.nonticket_vouchertypes(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     vtypes.of_categories('nonticket').order('season DESC,display_order,created_at')
   end
 
   def self.zero_cost_vouchertypes(season=nil)
-    vtypes = season ? for_season(season) : all
+    vtypes = season ? for_season(season) : self
     vtypes.where('price = ?', 0).order('season DESC,display_order,created_at')
   end
 

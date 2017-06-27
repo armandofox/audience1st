@@ -12,14 +12,14 @@
       = render :partial => 'password' 
       = render :partial => 'form_admin'
       = submit_tag "Create New Customer Account"
-      = gen_button 'Cancel', customers_path
+      = link_to 'Cancel', customers_path, :class => 'genButton'
   - else
     - form_tag user_create_customers_path do
       = render :partial => 'form', :object => @customer
       = render :partial => 'password'
       - if @gCheckoutInProgress
         = submit_tag 'CONTINUE >>'
-        = gen_button 'Cancel', store_path
+        = link_to 'Cancel', store_path, :class => 'genButton'
       - else
         = submit_tag 'Create My Account'
-        = gen_button 'Cancel', login_path
+        = link_to 'Cancel', login_path, :class => 'genButton'

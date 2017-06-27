@@ -55,4 +55,4 @@
   $('.save_comment').on('ajax:error', function(e,s,x) { alert("Error, comment NOT saved") });
 
 %br
-= gen_button 'Buy More Tickets', store_path(@customer)
+= link_to 'Buy More Tickets', store_path(@customer), :class => 'genButton'

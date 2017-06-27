@@ -10,7 +10,6 @@
      'sold_out_threshold' => "90",
      'nearly_sold_out_threshold' => "80",
      'cancel_grace_period' => "1440",
-     'venue' => "Test Theater",
      'send_birthday_reminders' => "0",
      'terms_of_sale' => 'Sales Final',
      'precheckout_popup' => 'Please double check dates',

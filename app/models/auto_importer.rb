@@ -47,7 +47,7 @@ class AutoImporter
       @messages << e.message
       success = nil
     ensure
-      AutoImporterMailer.deliver_auto_importer_report(@messages, import)
+      AutoImporterMailer.auto_importer_report(@messages, import).deliver_now
       return success
     end
   end

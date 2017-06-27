@@ -130,7 +130,7 @@ class GoldstarXmlImport < TicketSalesImport
 
   def get_showdate
     datetime = extract_date_and_time
-    showdates = Showdate.find_all_by_thedate(datetime)
+    showdates = Showdate.where('thedate = ?', datetime)
     raise(TicketSalesImport::ShowNotFound, datetime.to_formatted_s) if showdates.empty?
     raise(TicketSalesImport::MultipleShowMatches, showdates.map { |s| s.printable_name }.join(', ')) if showdates.length > 1
     showdates.first

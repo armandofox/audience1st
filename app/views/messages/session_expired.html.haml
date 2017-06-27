@@ -8,9 +8,9 @@
 
   %p#restart_session
     To resume with a new session, you can go to the
-    = gen_button 'Buy Tickets', store_path
+    = link_to 'Buy Tickets', store_path, :class => 'genButton'
     page, or visit
-    = gen_button 'My Account', customer_path
+    = link_to 'My Account', customer_path, :class => 'genButton'
     to check on the status of a purchase or reservation.
 
   %p Sorry for the inconvenience!

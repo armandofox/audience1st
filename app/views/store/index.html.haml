@@ -14,7 +14,7 @@
 
   #event_types.center
     - (Show::TYPES - [@what]).each do |type|
-      = gen_button label_for_page_header(type), store_path(@customer, :what => type)
+      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'genButton'
 
   #ticket_menus
     - form_tag process_cart_path(@customer) do

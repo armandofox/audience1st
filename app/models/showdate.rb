@@ -63,12 +63,12 @@ class Showdate < ActiveRecord::Base
     buffer = opts[:grace_period] || 0
     type = opts[:type] || 'Regular Show'
     Showdate.where("showdates.thedate >= ? AND shows.event_type=?", Time.now - buffer, type).
-      include(:show).
+      includes(:show).
       order("thedate").
       first  ||
 
       Showdate.where("shows.event_type = ?", type).
-      include(:show).
+      includes(:show).
       order('thedate DESC')
   end
 
@@ -93,7 +93,7 @@ class Showdate < ActiveRecord::Base
   end
   
   def sales_by_type(vouchertype_id)
-    return self.vouchers.where('vouchertype_id = ?', vouchertype_id)
+    return self.vouchers.where('vouchertype_id = ?', vouchertype_id).count
   end
 
   def revenue_by_type(vouchertype_id)

@@ -65,6 +65,7 @@ class Order < ActiveRecord::Base
   end
 
   def workaround_rails_bug_2298!
+    return
     # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
     # that were not saved are NOT reset to nil, which causes problems when they are
     # successfully saved later on (eg when transaction is rerun).  Also, new_record is

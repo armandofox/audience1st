@@ -40,11 +40,11 @@ class Show < ActiveRecord::Base
   def has_showdates? ; !showdates.empty? ; end
   
   def upcoming_showdates
-    showdates.where('thedate > ?', Time.now).include(:valid_vouchers)
+    showdates.where('thedate > ?', Time.now).includes(:valid_vouchers)
   end
 
   def next_showdate
-    showdates.where('thedate > ?', Time.now).include(:valid_vouchers).first
+    showdates.where('thedate > ?', Time.now).includes(:valid_vouchers).first
   end
 
   def self.all_for_season(season=Time.this_season)
@@ -53,7 +53,7 @@ class Show < ActiveRecord::Base
     Show.where('opening_date BETWEEN ? AND ?', startdate, enddate).
       order('opening_date').
       select('DISTINCT shows.*').
-      include(:showdates)
+      includes(:showdates)
   end
 
   scope :all_for_seasons, ->(from,to) {

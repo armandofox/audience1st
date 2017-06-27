@@ -6,7 +6,7 @@
   = render :partial => 'donation_search', :locals => {:params => @params}
   = submit_tag "Search"
   = submit_tag(@export_label) unless @things.empty?
-  = gen_button "Add/Edit Account Codes", account_codes_path
+  = link_to "Add/Edit Account Codes", account_codes_path, :class => 'genButton'
 
 - unless @things.empty?
   %table#donations.hilite

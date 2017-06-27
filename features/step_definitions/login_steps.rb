@@ -2,6 +2,7 @@ module CustomerLoginHelper
   def verify_successful_login
     visit logout_path
     visit login_path
+    save_and_open_page
     fill_in 'email', :with => @customer.email
     fill_in 'password', :with => @password
     click_button 'Login'

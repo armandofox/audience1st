@@ -26,7 +26,7 @@
       %li All shows for which it's valid may be sold out
       %li All seats allocated for this type of ticket may be sold out 
       %li Seats allocated for this type of ticket may not be available for reservation until a future date
-  = gen_button back_label, customer_path(@customer)
+  = link_to back_label, customer_path(@customer), :class => 'genButton'
 
 
 

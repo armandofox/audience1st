@@ -28,7 +28,7 @@ gem 'ruport'
 # those until upgrade to ruby >= 1.9.2
 gem 'rest-client'
 gem 'sass-rails', '~> 5.0'      # 4
-gem 'turbolinks'                # 4
+# gem 'turbolinks'                # 4 - disabling for now to avoid unexpected issues with different <HEAD> sections and to allow Google Analytics to work. Also requires modifying application.js
 gem 'uglifier', '>= 1.3.0'      # 4
 gem 'stripe'
 gem 'thor', '0.19.1'
@@ -67,6 +67,8 @@ group :development, :test do
   gem 'rack-test'
   gem 'sdoc', '~> 0.4.0'
   gem 'rspec-rails'
+  gem 'rspec-collection_matchers' # should have(n).items, etc
+  gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'simplecov'
   gem 'sqlite3'
   gem 'timecop'

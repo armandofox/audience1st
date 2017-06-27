@@ -1,6 +1,3 @@
-World(FixtureAccess)
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
-
 module CustomerStepsHelper
   def get_secret_question_index(question)
     indx = APP_CONFIG[:secret_questions].index(question)

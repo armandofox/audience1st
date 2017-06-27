@@ -103,9 +103,9 @@ Rails.application.routes.draw do
     #    -  via :donate (quick donation) - no customer ID needed nor set; the only other page in
     #       the flow is the POST back to this same URL
 
-    get '/store/:customer_id' => 'store#index', :defaults => {:customer_id => nil}, :as => 'store'
-    get '/subscribe/:customer_id' => 'store#subscribe', :defaults => {:customer_id => nil}, :as => 'store_subscribe'
-    get '/donate_to_fund/:id/:customer_id' => 'store#donate_to_fund', :defaults => {:customer_id => nil}, :as => 'donate_to_fund'
+    get '/store/(:customer_id)' => 'store#index', :defaults => {:customer_id => nil}, :as => 'store'
+    get '/subscribe/(:customer_id)' => 'store#subscribe', :defaults => {:customer_id => nil}, :as => 'store_subscribe'
+    get '/donate_to_fund/:id/(:customer_id)' => 'store#donate_to_fund', :defaults => {:customer_id => nil}, :as => 'donate_to_fund'
 
     # subsequent actions in the above flow require a customer_id in the URL:
 

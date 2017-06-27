@@ -91,23 +91,6 @@ module ApplicationHelper
     check_box_tag name, 1, checked, :onchange => %Q{$('##{elt}').text($(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}')}
   end
 
-  # spinner
-  def spinner(id='wait')
-    image_tag('wait16trans.gif', :id => id, :class => 'spinner', :style => 'display: none;')
-  end
-
-  def admin_button(name,options={},html_opts={},*parms)
-    #options.merge!(:method => :get) unless options.has_key?(:method)
-    #button_to(name, options, html_opts.merge(:background=>:yellow))
-    link_to(name, options,html_opts.merge(:class => 'adminButton'),parms)
-  end
-
-  def gen_button(name,options={},html_opts={},*parms)
-    #options.merge!(:method => :get) unless options.has_key?(:method)
-    #button_to(name, options, html_opts)
-    link_to(name, options,html_opts.merge(:class => 'genButton'),parms)
-  end
-
   def purchase_link_popup(text,url,name=nil)
     msg = "This link points to a prepopulated Store page"
     msg << " for #{name}" if name
