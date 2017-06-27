@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Vouchertype do
   before :each do
-    @@now = Time.now.at_end_of_season - 6.months
+    @now = Time.now.at_end_of_season - 6.months
   end
   describe 'visibility' do
     before :each do
@@ -49,7 +49,7 @@ describe Vouchertype do
         :walkup_sale_allowed => true,
         :comments => "A comment",
         :account_code => AccountCode.default_account_code,
-        :season => @@now.year
+        :season => @now.year
         )
     end
     describe "vouchertypes in general" do
@@ -91,7 +91,7 @@ describe Vouchertype do
         @vt.subscription = true
         @vt.walkup_sale_allowed = true
         @vt.should_not be_valid
-        @vt.errors[:base].should match(/walkup sales/i)
+        @vt.errors[:base].should include_match_for(/walkup sales/i)
       end
     end
     describe "nonticket vouchertypes" do
@@ -105,7 +105,7 @@ describe Vouchertype do
           :walkup_sale_allowed => true,
           :comments => "A comment",
           :account_code => AccountCode.default_account_code,
-          :season => @@now.year
+          :season => @now.year
           )
         @vtn.should be_valid
       end
@@ -118,7 +118,7 @@ describe Vouchertype do
           :walkup_sale_allowed => true,
           :comments => "A comment",
           :account_code => AccountCode.default_account_code,
-          :season => @@now.year
+          :season => @now.year
         }
         @vt_free = create(:comp_vouchertype)
         @vt_notfree = create(:revenue_vouchertype)
@@ -147,7 +147,7 @@ describe Vouchertype do
       it 'should set bundle-id when saved' do
         all_vouchers = @vt_bundle.instantiate(2)
         all_vouchers.map(&:save!)
-        saved_bundles = Voucher.find_all_by_vouchertype_id(@vt_bundle.id)
+        saved_bundles = Voucher.where('vouchertype_id = ?', @vt_bundle.id)
         all_vouchers.should have_vouchers_matching(quantity=2, :vouchertype_id => @vt_bundle.id)
         all_vouchers.should have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[0].id)
         all_vouchers.should have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[1].id)

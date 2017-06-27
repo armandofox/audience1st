@@ -68,7 +68,7 @@ Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last
   @vouchers = @customer.vouchers
   vouchers.hashes.each do |v|
     vtype = Vouchertype.find_by_name!(v[:vouchertype])
-    found_vouchers = @vouchers.find_all_by_vouchertype_id(vtype.id)
+    found_vouchers = @vouchers.where('vouchertype_id = ?',vtype.id)
     found_vouchers.length.should == v[:quantity].to_i
     if v.has_key?(:showdate)
       if v[:showdate].blank?

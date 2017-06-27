@@ -28,7 +28,7 @@ Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) 
   date = Time.parse(date)
   account_code = AccountCode.find_by_name!(fund)
   amount = amount.to_f
-  find_customer!(first,last).orders.find_all_by_sold_on(date) do |order|
+  find_customer!(first,last).orders.where('sold_on = ?',date) do |order|
   #find(:all,:conditions => ['sold_on = ?',date]).any? do |order|
     order.purchase_medium == type.to_sym &&
       order.donations.length > 0 &&

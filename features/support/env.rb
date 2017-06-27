@@ -65,16 +65,24 @@ Cucumber::Rails::World.use_transactional_fixtures = false
 DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean_with(:truncation)
 
+World(RSpec::Mocks::ExampleMethods)
+
 Before do
   DatabaseCleaner.start
-  Fixtures.reset_cache
+
+  # fixture access.  Should really get rid of this altogether
+  ActiveRecord::FixtureSet.reset_cache
   fixtures_folder = File.join(Rails.root, 'spec', 'fixtures')
   fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-  Fixtures.create_fixtures(fixtures_folder, fixtures)
-  load File.join(Rails.root, 'db', 'seeds.rb') # load static seed data that isn't fixtured
+  ActiveRecord::FixtureSet.create_fixtures(fixtures_folder, fixtures)
+
+  # static seed data - root user, venue options, etc.
+  load File.join(Rails.root, 'db', 'seeds.rb')
+  
   # make rspec mocks/stubs work
-  require 'spec/stubs/cucumber'
-  $rspec_mocks ||= Spec::Mocks::Space.new
+  #require 'cucumber/rspec/doubles'
+  RSpec::Mocks::setup
+
   # Allow testing of emails
   ActionMailer::Base.delivery_method = :test
   ActionMailer::Base.perform_deliveries = true
@@ -83,9 +91,9 @@ end
 
 After do
   begin
-    $rspec_mocks.verify_all
+    RSpec::Mocks.verify
   ensure
-    $rspec_mocks.reset_all
+    RSpec::Mocks.teardown
     DatabaseCleaner.clean
   end
 end

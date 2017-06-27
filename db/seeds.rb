@@ -15,6 +15,7 @@ class Audience1stSeeder
 
   #  Special customers that must exist and cannot be deleted
 
+  require 'customer'
   @@special_customers = {
     :walkup => {
       :role => Customer::ROLES[:walkup],

@@ -17,5 +17,5 @@ var A1 = {};                    // toplevel namespace for all our stuff
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
+/*  disable turbolinks for now: see comment in Gemfile //= require turbolinks */
 //= require_tree .

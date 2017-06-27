@@ -2,7 +2,7 @@ FactoryGirl.define do
 
   factory :customer do
     transient do
-      customer_role :patron
+      role :patron
     end
     sequence(:first_name) { |n| "Joe#{n}" }
     sequence(:last_name) { |n| "Doe#{n}" }
@@ -17,7 +17,7 @@ FactoryGirl.define do
     created_by_admin false
 
     after(:build) do |customer,e|
-      customer.role = Customer.role_value(e.customer_role)
+      customer.role = Customer.role_value(e.role)
     end
   end
 

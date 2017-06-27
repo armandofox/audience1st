@@ -4,7 +4,7 @@ describe Order, 'finalizing' do
   # Simplify matching Customer vouchers for a particular showdate and vouchertype
   class Customer < ActiveRecord::Base
     def vouchers_for(showdate, vouchertype)
-      self.vouchers.find_all_by_showdate_id_and_vouchertype_id(showdate.id, vouchertype.id)
+      self.vouchers.where('showdate_id = ? and vouchertype_id = ?', showdate.id, vouchertype.id)
     end
   end
 
@@ -51,13 +51,13 @@ describe Order, 'finalizing' do
       verify_error /No purchaser information/i
     end
     it 'should fail if purchaser invalid as purchaser' do
-      @order.allow(purchaser).to receive(:valid_as_purchaser?).and_return(nil)
+      allow(@order.purchaser).to receive(:valid_as_purchaser?).and_return(nil)
       @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
       verify_error /ERROR/
     end
     it 'should pass if purchaser invalid but order is placed by admin' do
       @order.processed_by = create(:customer, :role => :boxoffice)
-      @order.allow(purchaser).to receive(:valid_as_purchaser?).and_return(nil)
+      allow(@order.purchaser).to receive(:valid_as_purchaser?).and_return(nil)
       @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
       @order.should be_ready_for_purchase
     end
@@ -81,8 +81,8 @@ describe Order, 'finalizing' do
       verify_error /Invalid credit card transaction/i
     end
     it 'should fail if recipient not a valid recipient' do
-      @order.allow(customer).to receive(:valid_as_gift_recipient?).and_return(nil)
-      @order.allow(customer).to receive(:errors_as_html).and_return(['Recipient error'])
+      allow(@order.customer).to receive(:valid_as_gift_recipient?).and_return(nil)
+      allow(@order.customer).to receive(:errors_as_html).and_return(['Recipient error'])
       verify_error /Recipient error/
     end
     it 'should fail if no purchase method' do
@@ -108,15 +108,16 @@ describe Order, 'finalizing' do
     describe 'should not update' do
       before(:each) do
         allow(@order).to receive(:ready_for_purchase?).and_return(true)
-        @order.allow(customer).to receive(:add_items).and_raise(ActiveRecord::RecordInvalid) # force fail
+        @order.customer = create(:customer)
+        allow(@order.customer).to receive(:add_items).with(anything).and_raise(ActiveRecord::RecordInvalid) # force fail
       end
       it "completion status" do
-        lambda { @order.finalize! }.should raise_error
+        lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
         @order.should_not be_completed
       end
       it "items' properties" do
         @order.add_tickets(@vv,1)
-        lambda { @order.finalize! }.should raise_error
+        lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
       end
     end
   end

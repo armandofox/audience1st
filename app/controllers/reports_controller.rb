@@ -128,7 +128,7 @@ class ReportsController < ApplicationController
   def unfulfilled_orders
     v = Voucher.
       where('orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1').
-      include(:customer, :vouchertype, :order).
+      includes(:customer, :vouchertype, :order).
       order('customers.last_name')
     return redirect_with(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
     if params[:csv]
@@ -203,8 +203,8 @@ class ReportsController < ApplicationController
 
   def retail
     @items = RetailItem.
-      include(:order).
-      where('orders.sold_on BETWEEN ? and ?', @from, @to).
+      includes(:order).
+      where('orders.sold_on BETWEEN ? and ?', @from, @to).references(:orders).
       order('orders.sold_on')
     redirect_with({:action => :index}, {:notice => 'No retail purchases match these criteria.'}) and return if
       @items.empty?
