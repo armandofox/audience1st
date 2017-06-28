@@ -28,69 +28,63 @@ describe Customer, "birthdays" do
       birthdays('Feb 5', 'Jan 3').should be_empty
     end
   end
-  describe "delivering email" do
+  describe "no email should be created" do
     before :each do
-      allow(Option).to receive(:send_birthday_reminders).and_return(5)
-      allow(Option).to receive(:boxoffice_daemon_notify).and_return('n@ai')
+      Option.first.update_attributes!(:send_birthday_reminders => 5,
+        :boxoffice_daemon_notify => 'n@ai')
+      expect(Mailer).not_to receive(:upcoming_birthdays)
     end
-    context "should not be attempted" do
-      before :each do ; Mailer.should_not_receive :deliver_upcoming_birthdays ; end
-      it 'when feature is turned off' do
-        allow(Option).to receive(:send_birthday_reminders).and_return(0)
+    specify 'when feature is turned off' do
+      Option.first.update_attributes!(:send_birthday_reminders => 0)
+      Customer.notify_upcoming_birthdays
+    end
+    specify 'when every-n value is negative' do
+      Option.first.update_attributes!(:send_birthday_reminders => -2)
+      Customer.notify_upcoming_birthdays
+    end
+    specify 'when no recipient specified in options' do
+      Option.first.update_attributes!(:send_birthday_reminders => 5,
+        :boxoffice_daemon_notify => '')
+      Customer.notify_upcoming_birthdays
+    end
+    specify 'when day modulo n doesn\'t match up' do
+      Timecop.travel(Date.parse('Jan 1, 2012')) do
         Customer.notify_upcoming_birthdays
-      end
-      it 'when every-n value is negative' do
-        allow(Option).to receive(:send_birthday_reminders).and_return(-2)
-        Customer.notify_upcoming_birthdays
-      end
-      it 'when no recipient specified in options' do
-        allow(Option).to receive(:boxoffice_daemon_notify).and_return('')
-        Customer.notify_upcoming_birthdays
-      end
-      it 'when day modulo n doesn\'t match up' do
-        Timecop.travel(Date.parse('Jan 1, 2012')) do
-          Customer.notify_upcoming_birthdays
-        end
-      end
-      it 'when there are no customers with birthdays' do
-        Timecop.travel(Date.parse('Jan 5, 2012')) do
-          allow(Customer).to receive(:birthdays_in_range).and_return([])
-          Customer.notify_upcoming_birthdays
-        end
       end
     end
-    context "when there are customers with birthdays" do
+    specify 'when there are no customers with birthdays' do
+      Timecop.travel(Date.parse('Jan 5, 2012')) do
+        allow(Customer).to receive(:birthdays_in_range).and_return([])
+        Customer.notify_upcoming_birthdays
+      end
+    end
+  end
+  context "when there are customers with birthdays and valid settings" do
+    before :each do
+      expect(Customer).to receive(:birthdays_in_range).and_return([@c1,@c2])
+      Option.first.update_attributes!(:send_birthday_reminders => 5,
+        :boxoffice_daemon_notify => 'n@ai')
+    end
+    it 'should create the email' do
+      expect(Mailer).to receive(:upcoming_birthdays).with(
+        'n@ai',Date.parse('Jan 10, 2012'),Date.parse('Jan 15, 2012'),[@c1,@c2])
+      Timecop.travel(Date.parse('Jan 5, 2012')) { Customer.notify_upcoming_birthdays }
+    end
+    describe 'it should generate an email' do
       before :each do
-        allow(Customer).to receive(:birthdays_in_range).and_return([@c1,@c2])
+        ActionMailer::Base.deliveries = []
+        Timecop.travel(Date.parse('Jan 5, 2012')) { Customer.notify_upcoming_birthdays }
+        @sent = ActionMailer::Base.deliveries
       end
-      it 'should email report' do
-        Mailer.should_receive(:deliver_upcoming_birthdays).with(
-          'n@ai',
-          Date.parse('Jan 10, 2012'),
-          Date.parse('Jan 15, 2012'),
-          [@c1,@c2])
-        Timecop.travel(Date.parse('Jan 5, 2012')) do
-          Customer.notify_upcoming_birthdays
-        end
+      specify 'just once' do
+        @sent.length.should == 1
       end
-      describe 'should generate an email' do
-        before :each do
-          ActionMailer::Base.deliveries = []
-          Timecop.travel(Date.parse('Jan 5, 2012')) do
-            Customer.notify_upcoming_birthdays
-          end
-          @sent = ActionMailer::Base.deliveries
-        end
-        it 'just once' do
-          @sent.length.should == 1
-        end
-        it 'with a proper subject line' do
-          @sent.first.subject.should match(Regexp.new 'Birthdays between 01/10/12 and 01/15/12')
-        end
-        it 'with both customers' do
-          @sent.first.body.should include(@c1.full_name)
-          @sent.first.body.should include(@c2.full_name)
-        end
+      specify 'with a proper subject line' do
+        @sent.first.subject.should match(Regexp.new 'Birthdays between 01/10/12 and 01/15/12')
+      end
+      specify 'with both customers' do
+        @sent.first.body.should include(@c1.full_name)
+        @sent.first.body.should include(@c2.full_name)
       end
     end
   end

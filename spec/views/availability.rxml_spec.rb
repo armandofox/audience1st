@@ -13,7 +13,7 @@ describe 'info/availability.rxml' do
     response.body.should_not match(/&amp/)
   end
   it 'does not include spurious newlines with URLs' do
-    pending
+    skip
     response.body.should_not match(/\nhttp:/)
   end
 end

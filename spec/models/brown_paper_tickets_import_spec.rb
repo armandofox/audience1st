@@ -4,7 +4,7 @@ TESTFILES_DIR = File.join(Rails.root, 'spec', 'import_test_files', 'brownpaperti
 
 describe "BPT import" do
   before :each do
-    pending "Refactoring of import base code"
+    skip "Refactoring of import base code"
     @imp = BrownPaperTicketsImport.new(:show => create(:show))
   end
   describe "parsing attachment with embedded CR's" do

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe "Goldstar new CSV format importing" do
   before(:each) do
-    pending "Importing must be refactored to use Orders, not Vouchers"
+    skip "Importing must be refactored to use Orders, not Vouchers"
     @showdate = create(:showdate, :date => Time.at_beginning_of_season(2012) + 1.week)
     @show = @showdate.show
     @imp = GoldstarCsvImport.new(:show => @show)

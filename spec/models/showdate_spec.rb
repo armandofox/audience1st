@@ -49,7 +49,7 @@ describe Showdate do
     end
     context "when there is only 1 showdate and it's in the past" do
       it "should return that showdate" do
-        pending 'debug'
+        skip 'debug'
         @showdate  = Showdate.create!(:thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
         Showdate.current_or_next.id.should == @showdate.id
       end

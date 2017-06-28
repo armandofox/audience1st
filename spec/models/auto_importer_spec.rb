@@ -26,12 +26,8 @@ describe AutoImporter do
     end
   end
   describe "finalizing" do
-    it "should happen for successful import" do
-      pending
-    end
-    it "should not happen for unsuccessful import" do
-      pending
-    end
+    skip "shoulad happen for successful import" 
+    skip "should not happen for unsuccessful import" 
   end
 end
 

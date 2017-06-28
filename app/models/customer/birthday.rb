@@ -24,7 +24,7 @@ class Customer < ActiveRecord::Base
       from.strftime('%j').to_i % n == 0
     customers = self.birthdays_in_range(from, to)
     unless customers.empty?
-      Mailer.deliver_upcoming_birthdays(recipient, from, to, customers)
+      Mailer.upcoming_birthdays(recipient, from, to, customers).deliver_now
     end
   end
 end

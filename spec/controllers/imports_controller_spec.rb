@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-describe ImportsController, :pending => true do
+describe ImportsController, :skip => true do
   before :each do
-    pending
+    skip
     ImportsController.send(:public, :partial_for_import)
   end
   describe "creating new" do

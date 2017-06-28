@@ -7,7 +7,7 @@ describe Customer, "merging" do
       @new = create(:customer)
       allow(@old).to receive(:fresher_than?).and_return(nil)
       allow(@new).to receive(:fresher_than?).and_return(true)
-      allow(Customer).to receive(:save_and_update_foreign_keys).and_return(true)
+      allow(Customer).to receive(:save_and_update_foreign_keys!).and_return(true)
     end
     def try_merge(param,value_to_keep,value_to_discard)
       @old.update_attribute(param, value_to_keep)
@@ -126,7 +126,7 @@ describe Customer, "merging" do
       allow(@new).to receive(:fresher_than?).and_return(true)
     end
     it "should work when a third record has a duplicate email" do
-      pending "Need to handle this as a separate special case in merge"
+      skip "Need to handle this as a separate special case in merge"
       @triplicate = create(:customer)
       [@old, @new, @triplicate].each { |c| c.email = 'dupe@email.com' ; c.save(:validate => false) }
       # Since the 'triplicate' workaround relies on temporarily setting
