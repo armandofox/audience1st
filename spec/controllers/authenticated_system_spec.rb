@@ -6,9 +6,9 @@ describe SessionsController do
   
   before do
     # FIXME -- sessions controller not testing xml logins 
-    allow(self).to receive(:authenticate_with_http_basic).and_return nil
+    #allow(self).to receive(:authenticate_with_http_basic).and_return nil
     allow(self).to receive(:reset_shopping)
-    allow(self).to receive(:logger).and_return(mock('logger',:null_object => true))
+    allow(self).to receive(:logger).and_return(double('logger',:null_object => true))
   end    
   describe "logout_killing_session!" do
     before do

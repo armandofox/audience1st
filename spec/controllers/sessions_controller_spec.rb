@@ -40,7 +40,7 @@ describe SessionsController do
             before do
               allow(@user).to receive(:login_message).and_return ""
               @home_page = customer_path(@user)
-              @ccookies = mock('cookies')
+              @ccookies = double('cookies')
               allow(controller).to receive(:cookies).and_return(@ccookies)
               allow(@ccookies).to receive(:[]).with(:auth_token).and_return(token_value)
               allow(@ccookies).to receive(:delete).with(:auth_token)

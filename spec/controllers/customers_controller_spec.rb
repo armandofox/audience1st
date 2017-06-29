@@ -55,7 +55,7 @@ describe CustomersController do
     before(:each) do
       @customer = create(:customer)
       login_as @customer
-      allow(ApplicationController).to receive(:find_cart).and_return(mock_model(Order).as_null_object)
+      allow(controller).to receive(:find_cart).and_return(mock_model(Order).as_null_object)
       controller.set_checkout_in_progress(true)
       @target = {:controller => 'store', :action => 'checkout'}
       @controller.return_after_login @target

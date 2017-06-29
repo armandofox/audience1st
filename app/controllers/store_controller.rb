@@ -39,7 +39,8 @@ class StoreController < ApplicationController
                 elsif logged_in.is_staff then desired || logged_in
                 else logged_in
                 end
-      redirect_to params.merge(:customer_id => desired, :only_path => true)
+      p = params.to_h
+      redirect_to p.merge(:customer_id => desired, :only_path => true)
     end
   end
 
@@ -235,7 +236,7 @@ class StoreController < ApplicationController
     begin
       order.finalize!
       Rails.logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
-      email_confirmation(:confirm_order, order) if params[:email_confirmation]
+      email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
       success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
       flash[:alert] = (order.errors.full_messages + [e.message]).join(', ')

@@ -11,9 +11,9 @@ class Mailer < ActionMailer::Base
   end
 
     
-  def confirm_order(order) 
+  def confirm_order(purchaser,order) 
     @order = order
-    mail(:to => @order.purchaser, :subject => "#{@subject} order confirmation")
+    mail(:to => purchaser, :subject => "#{@subject} order confirmation")
   end
 
   def confirm_reservation(customer,showdate,num=1)

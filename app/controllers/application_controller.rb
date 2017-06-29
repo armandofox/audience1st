@@ -132,7 +132,7 @@ class ApplicationController < ActionController::Base
 
   def email_confirmation(method,*args)
     flash[:notice] ||= ""
-    customer = *args.first
+    customer = args.first
     addr = customer.email
     if customer.valid_email_address?
       begin
