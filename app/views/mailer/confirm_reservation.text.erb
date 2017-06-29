@@ -1,0 +1,18 @@
+
+Dear <%= greet(@customer) -%>,
+
+Hello from the online box office at <%= @venue -%>!
+
+We're confirming your reservation for the following performance:
+
+  <%= @showdate.printable_name %>
+
+  Number of seats: <%= @num %>
+
+<%= word_wrap(@notes, :line_width => 60) unless @notes.blank? %>
+
+<%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)), :line_width => 60) %>
+
+<%= word_wrap(strip_tags(sanitize_option_text((@customer.subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
+
+<%= render 'contact_us' %>

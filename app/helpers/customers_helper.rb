@@ -1,4 +1,8 @@
 module CustomersHelper
+  # Greeting for a customer
+  def greet(customer)
+    customer.first_name.blank? ? customer.full_name : customer.first_name
+  end
   #
   # Link to user's home page
   #

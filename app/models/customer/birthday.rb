@@ -16,15 +16,15 @@ class Customer < ActiveRecord::Base
   end
 
   def self.notify_upcoming_birthdays
-    n = Option.send_birthday_reminders.to_i
-    recipient = Option.boxoffice_daemon_notify.to_s
-    from = Date.today + n.days
-    to = from + n.days
-    return unless n > 0 && recipient.match(/\S+@\S+/) &&
-      from.strftime('%j').to_i % n == 0
-    customers = self.birthdays_in_range(from, to)
+    n = Option.send_birthday_reminders
+    recipient = Option.boxoffice_daemon_notify
+    now = Time.now.at_beginning_of_day
+    return if n <= 0 || now.strftime('%j').to_i % n != 0 || recipient.blank?
+    from_date = now + n.days
+    to_date = from_date + n.days
+    customers = Customer.birthdays_in_range(from_date, to_date)
     unless customers.empty?
-      Mailer.upcoming_birthdays(recipient, from, to, customers).deliver_now
+      Mailer.upcoming_birthdays(n, recipient, from_date, to_date, customers).deliver_now
     end
   end
 end

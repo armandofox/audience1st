@@ -1,23 +1,29 @@
 
-Dear <%= @greeting %>,
+Dear <%= greet(@customer) -%>,
 
 Hello from the online box office at <%= @venue -%>!
 
 You're receiving this message because you, or someone on your behalf, 
 <%= @whathappened %>.
 
-Your account login name is your email:   <%= @email %>
+Your account login name is your email:   <%= @customer.email %>
 
-<% unless @question.blank? -%>
+<% unless @newpass.blank? -%>
+Your new password is:
+<%= @newpass %>
+<% end %>
+
+<% unless (question = secret_question_text(@customer.secret_question)).blank? -%>
 The secret question you chose is:
-  <%= @question %>
+  "<%= question %>"
 
 The answer you provided is:
-  <%= @answer %>
+  "<%= @customer.secret_answer %>"
 
 If you ever forget your password, click the Reset My Password
 link on our login screen and verify the answer to the above 
 question.
 <% end %>
 
-<%= @how_to_contact_us %>
+<%= render  'contact_us' %>
+

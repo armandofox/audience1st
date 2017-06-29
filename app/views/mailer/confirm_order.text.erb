@@ -1,7 +1,8 @@
 
-Dear <%= @greeting %>,
+Dear <%= greet(@order.purchaser) %>,
 
-This email confirms your recent order from <%= @venue %>.
+Hello from the online box office at <%= @venue %>!
+This email confirms your recent order.
 
 Please check this information carefully:
 
@@ -18,26 +19,23 @@ PAYMENT METHOD: <%= @order.purchasemethod.description %>
 
 <%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)), :line_width => 60) %>
 
-<%= word_wrap(strip_tags(sanitize_option_text((@subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
+<%= word_wrap(strip_tags(sanitize_option_text((@order.purchaser.subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
 
 <% unless @order.comments.blank? %>
 ------------------------------------------------------------
 <%= strip_tags(@order.comments) %>
 ------------------------------------------------------------
 <% end %>
-<% if @recipient %>
+<% if @order.gift? %>
 This order is a GIFT for the following recipient.
 NOTE: The recipient HAS NOT BEEN notified of your gift!
 
-  <%= @recipient.full_name %>
-  <%= @recipient.street %>
-  <%= @recipient.city %>, <%= @recipient.state %>  <%= @recipient.zip %>
-  <%= [@recipient.day_phone,@recipient.eve_phone,@recipient.email].compact.join(' - ') %>
+  <%  r = @order.customer -%>
+  <%= r.full_name %>
+  <%= r.street %>
+  <%= r.city -%>, <%= r.state -%>  <%= r.zip %>
+  <%= [r.day_phone,r.eve_phone,r.email].compact.join(' - ') %>
 
 <% end %>
 
-(Please DO NOT REPLY to this email...it was generated automatically,
-not by a human being, and our computer isn't smart enough to
-understand your reply!)
-
-<%= strip_tags(@how_to_contact_us) %>
+<%= render :partial => 'contact_us' %>

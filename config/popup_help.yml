@@ -237,6 +237,15 @@ vouchertype_changeable: >
   corresponding to the change fee.  (At this time, the box office must
   handle such transactions.)
 
+vouchertype_clone: >
+
+  Cloning a vouchertype saves time when creating similar
+  vouchertypes each season.  Cloning creates a new vouchertype with the same
+  account code, price, availability, and other attributes copied from
+  the current vouchertype; you can then adjust manually.  For
+  example, you can clone this season's "General admission" voucher for
+  next season, and then just modify the price.
+
 # Valid_vouchers
 
 valid_voucher_max_sales_for_type:  >

@@ -1,8 +1,9 @@
+Dear <%= greet(@customer) -%>,
 
-Dear <%= @greeting %>,
+Hello from the online box office at <%= @venue -%>!
 
-Thank you for your donation to <%= @venue %>
-on <%= Date.today.to_formatted_s(:date_only) %> in the amount of <%= number_to_currency(@amount) %>.
+Thank you so much for your donation to <%= @venue %>
+on <%= Date.today.to_formatted_s(:date_only) -%> in the amount of <%= number_to_currency(@amount) %>.
 
 <% if @nonprofit %>
 As a 501(c)(3) nonprofit, we rely on donations from patrons 
@@ -17,7 +18,4 @@ Sincerely,
 <%= @donation_chair %>
 <%= @venue %>
 
-(Please DO NOT REPLY to this email...it was generated automatically,
-not by a human being, and our computer isn't smart enough to
-understand your reply!)
-
+<%= render 'contact_us' %>

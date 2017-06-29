@@ -1,123 +1,56 @@
 class Mailer < ActionMailer::Base
 
-  helper :application
-  helper :customers
+  default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
   
-  include CustomersHelper
+  before_filter :setup_defaults
 
-  def confirm_account_change(customer, whathappened)
-    sending_to(customer)
-    @subject    << "#{customer.full_name}'s account"
-    @body.merge!(
-      :email         => customer.email,
-      :question      => secret_question_text(customer.secret_question),
-      :answer        => customer.secret_answer,
-      :greeting      => customer.full_name,
-      :whathappened  => whathappened,
-      :provide_logout_url => true
-    )
+  def confirm_account_change(customer, whathappened, newpass=nil)
+    @whathappened = whathappened
+    @newpass = newpass
+    mail(:to => @email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 
-  def send_new_password(customer, newpass, whathappened)
-    sending_to(customer)
-    @subject    << "#{customer.full_name}'s account"
-    @body.merge!(
-      :email         => customer.email,
-      :newpass       => newpass,
-      :question      => secret_question_text(customer.secret_question),
-      :answer        => customer.secret_answer,
-      :greeting      => customer.full_name,
-      :whathappened  => whathappened,
-      :provide_logout_url => true
-    )
+    
+  def confirm_order(order) 
+    @order = order
+    mail(:to => @order.purchaser, :subject => "#{@subject} order confirmation")
+  end
+
+  def confirm_reservation(customer,showdate,num=1)
+    @customer = customer
+    @showdate = showdate
+    @num = num
+    @notes = @showdate.show.patron_notes
+    mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end
     
-  def confirm_order(customer, order) 
-    sending_to(customer)
-    @subject << "order confirmation"
-    @body.merge!(:greeting => customer.full_name,
-                 :description => order.summary,
-                 :amount => order.total_price,
-                 :payment_desc => order.purchasemethod.description,
-                 :special_instructions => order.comments
-                 )
-    @body[:recipient] = order.customer if order.gift?
-  end
-
-  def confirm_reservation(customer,showdate_id,num=1,confnum=0)
-    sending_to(customer)
-    begin
-      showdate = Showdate.find(showdate_id)
-    rescue
-      raise "No such showdate #{showdate_id} confirming to #{@recipients}"
-      return
-    end
-    @subject  << "reservation confirmation"
-    @body.merge!(:greeting => customer.full_name,
-                 :performance => showdate.printable_name,
-                 :num => num,
-                 :venue => Option.venue,       
-                 :confnum => confnum,
-                 :subscriber => customer.subscriber?,
-                 :notes => showdate.show.patron_notes
-                  )
-  end
-    
-  def cancel_reservation(old_customer, old_showdate, num = 1, confnum = 0)
-    sending_to(old_customer)
-    @subject << "CANCELLED reservation"
-    @body.merge!(:showdate => old_showdate,
-                 :num => num,
-                 :confnum => confnum)
+  def cancel_reservation(old_customer, old_showdate, num = 1, confnum)
+    @showdate,@customer = old_showdate, old_customer
+    @num,@confnum = num,confnum
+    mail(:to => @customer.email, :subject => "#{@subject} CANCELLED reservation")
   end
 
   def donation_ack(customer,amount,nonprofit=true)
-    sending_to(customer)
-    @subject << "donation receipt"
-    @body.merge!(:customer => customer,
-                 :amount   => amount,
-                 :nonprofit=> nonprofit,
-                 :donation_chair => Option.donation_ack_from
-                 )
+    @customer,@amount,@nonprofit = customer, amount, nonprofit
+    @donation_chair = Option.donation_ack_from
+    mail(:to => @customer.email, :subject => "#{@subject} Thank you for your donation!")
   end
   
-  def upcoming_birthdays(recipients, from, to, customers)
-    sending_to(recipients)
-    @from = APP_CONFIG[:boxoffice_daemon_address] # override
-    @subject << "Birthdays between #{from.strftime('%x')} and #{to.strftime('%x')}"
-    @body.merge!( {:customers => customers} )
+  def upcoming_birthdays(send_to, num, from_date, to_date, customers)
+    @num,@from_date,@to_date,@customers = num,from_date,to_date,customers
+    @subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
+    mail(:to => send_to, :subject => @subject)
   end
 
-  def sending_to(recipient)
-    @recipients = recipient.kind_of?(Customer)? recipient.email : recipient.to_s
-    @from = "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
-    @headers = {}
-    @subject = "#{Option.venue} - "
-    contact = if Option.help_email.blank?
-              then "call #{Option.boxoffice_telephone}"
-              else "email #{Option.help_email} or call #{Option.boxoffice_telephone}"
-              end
-    @body = {
-      :email => Option.help_email,
-      :phone => Option.boxoffice_telephone,
-      :venue => Option.venue,
-      :how_to_contact_us =>  <<EOS
-If this is not correct, or if you have questions about your order or
-any problems using our Web site, PLEASE DO NOT REPLY to this email
-as it was generated automatically.
-
-Instead, please #{contact}.
-Please include your name and login (as shown above), and if you are
-experiencing technical problems, a description of the problem and the
-type of browser and operating system you use (Internet Explorer on
-Windows, Chrome on Mac, etc.)
-
-Thanks for your patronage!
-
-#{Option.venue}
-Powered by Audience1st
-EOS
-    }
+  protected
+  
+  def setup_defaults
+    @venue = Option.venue
+    @subject = "#{@venue} - "
+    @contact = if Option.help_email.blank?
+               then "call #{Option.boxoffice_telephone}"
+               else "email #{Option.help_email} or call #{Option.boxoffice_telephone}"
+               end
   end
 end
 
