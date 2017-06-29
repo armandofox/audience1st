@@ -61,7 +61,7 @@ class Audience1stSeeder
     end
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])
-        c = Customer.new(attrs)
+        c = Customer.new(attrs.except(:role))
         c.role = attrs[:role]
         c.created_by_admin = true
         c.save!
@@ -103,9 +103,7 @@ class Audience1stSeeder
 
   def self.create_options
     Rails.logger.info "Creating default options"
-    Option.create!(
-      :venue_id => 111,
-      :venue_shortname => 'testing',
+    option = Option.new(
       :venue => 'Test Theater',
       :advance_sales_cutoff => 60,
       :sold_out_threshold => 90,
@@ -123,6 +121,9 @@ class Audience1stSeeder
       :default_donation_account_code => 9999,
       :default_donation_account_code_with_subscriptions => 9999
       )
+    option.venue_id = 111
+    option.venue_shortname = 'testing'
+    option.save!
   end 
   self.seed_all
 

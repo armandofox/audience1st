@@ -21,7 +21,7 @@ gem 'mysql'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
-gem 'rails', '4.2.6'            # 4
+gem 'rails', '4.2.9'            # 4
 gem 'rake'
 gem 'ruport'
 # stripe depends on rest-client and json, but we can't use the latest version of
@@ -50,6 +50,7 @@ end
 group :development, :test do
   # cucumber and capybara
   gem 'byebug'                  # 4
+  gem 'pry'
   gem 'ZenTest'
   gem 'autotest-rails'
   gem 'autotest-fsevent', :git => 'https://github.com/svoop/autotest-fsevent.git'

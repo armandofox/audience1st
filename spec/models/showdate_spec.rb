@@ -50,8 +50,7 @@ describe Showdate do
     end
     context "when there is only 1 showdate and it's in the past" do
       it "should return that showdate" do
-        skip 'debug'
-        @showdate  = Showdate.create!(:thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
+        @showdate  = create(:showdate, :thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
         Showdate.current_or_next.id.should == @showdate.id
       end
     end
@@ -102,12 +101,12 @@ describe Showdate do
       @total_sold = @vouchers.values.inject(0) { |sum,n| sum + n }
       (@vouchers.merge(@nonticket_vouchers)).each_pair do |type,qty|
         qty.times do
-          @showdate.vouchers.create!(:category => type,
+          Voucher.create!(:category => type,
+            :showdate_id => @showdate.id,
             :vouchertype => mock_model(Vouchertype, :category => type))
         end
       end
     end
-
     describe "vouchers" do
       it "should have 9 vouchers" do
         @showdate.vouchers.count.should == 9
@@ -170,7 +169,8 @@ describe Showdate do
       describe "when house is oversold" do
         before(:each) do
           (@house_cap - @total_sold + 2).times do
-            @showdate.vouchers.create!(:category => 'revenue',
+            Voucher.create!(:category => 'revenue',
+              :showdate_id => @showdate.id,
               :vouchertype => mock_model(Vouchertype, :category => 'revenue'))
           end
         end
