@@ -142,7 +142,7 @@ describe Vouchertype do
         @vt_bundle = create(:bundle, :including => {@v[0] => 1, @v[1] => 2, @v[2] => 3})
       end
       it('should instantiate all vouchers in bundle') do
-        @vt_bundle.instantiate(2).should have(14).vouchers
+        @vt_bundle.instantiate(2).size.should == 14
       end
       it 'should set bundle-id when saved' do
         all_vouchers = @vt_bundle.instantiate(2)
@@ -162,7 +162,7 @@ describe Vouchertype do
         :subscription => false, :season => Time.now.year)
     end
     it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
-      @v.should have(1).valid_voucher
+      @v.valid_vouchers.length.should == 1
     end
     it 'should destroy its valid-voucher when destroyed' do
       saved_id = @v.id

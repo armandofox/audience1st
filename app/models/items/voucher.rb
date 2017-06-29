@@ -7,6 +7,8 @@ class Voucher < Item
 
   validates_presence_of :vouchertype_id
 
+  validates_inclusion_of :category, :in => Vouchertype::CATEGORIES
+
   delegate :gift?, :ship_to, :to => :order
 
   # when a bundle voucher is cancelled, we must also cancel all its
@@ -45,12 +47,12 @@ class Voucher < Item
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
   # scopes that hide implementation of category
-  scope :comp, -> { where('category = ?', 'comp') }
-  scope :revenue, -> { where('category = ?', 'revenue') }
-  scope :subscriber, -> { where('category = ?', 'subscriber') }
-  scope :advance_sales, -> { where('customer_id != ?', Customer.walkup_customer.id) }
-  scope :walkup_sales, -> { where('customer_id = ?', Customer.walkup_customer.id) }
-  scope :checked_in, -> { where('checked_in = ?', true) }
+  scope :comp, -> { where(:category => 'comp') }
+  scope :revenue, -> { where(:category => 'revenue') }
+  scope :subscriber, -> { where(:category => 'subscriber') }
+  scope :advance_sales, -> { where.not(:customer_id => Customer.walkup_customer.id) }
+  scope :walkup_sales, -> { where(:customer_id => Customer.walkup_customer.id) }
+  scope :checked_in, -> { where(:checked_in => true) }
   
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)

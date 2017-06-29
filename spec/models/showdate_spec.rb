@@ -16,9 +16,10 @@ describe Showdate do
     }
     cases.each do |c,grade|
       specify "with thresholds #{c.join ','}" do
-        allow(Option).to receive(:limited_availability_threshold).and_return(c[0])
-        allow(Option).to receive(:nearly_sold_out_threshold).and_return(c[1])
-        allow(Option).to receive(:sold_out_threshold).and_return(c[2])
+        Option.first.update_attributes(
+          :limited_availability_threshold => c[0],
+          :nearly_sold_out_threshold => c[1],
+          :sold_out_threshold => c[2])
         @sd.availability_grade.should == grade
       end
     end
@@ -109,11 +110,15 @@ describe Showdate do
 
     describe "vouchers" do
       it "should have 9 vouchers" do
-        @showdate.should have(9).vouchers
+        @showdate.vouchers.count.should == 9
       end
-      it "should have 10 actual vouchers including nonticket" do
-        @showdate.should have(10).all_vouchers
-        (@showdate.all_vouchers - @showdate.vouchers).first.category.to_s.should == 'nonticket'
+      it "should have 10 actual vouchers" do
+        @showdate.all_vouchers.count.should ==  10
+      end
+      it "should have 1 nonticket product" do
+        nonticket = @showdate.all_vouchers - @showdate.vouchers
+        nonticket.size.should == 1
+        nonticket.first.category.should == 'nonticket'
       end
     end
     describe "revenue" do

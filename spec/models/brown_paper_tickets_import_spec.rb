@@ -76,7 +76,7 @@ describe "BPT import" do
         it "should instantiate a new vouchertype" do
           @imp.created_vouchertypes.should be_empty
           @imp.vouchertype_from_row(make_row('Nonexistent',1),2010)
-          @imp.created_vouchertypes.should have(1).vouchertype
+          @imp.created_vouchertypes.size.should == 1
         end
         it "should have the correct price and name" do
           v = @imp.vouchertype_from_row(make_row('Voucher', 13.0),2010)

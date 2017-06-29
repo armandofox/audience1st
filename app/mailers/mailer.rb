@@ -20,7 +20,7 @@ class Mailer < ActionMailer::Base
     @customer = customer
     @showdate = showdate
     @num = num
-    @notes = @showdate.show.patron_notes
+    @notes = @showdate.patron_notes
     mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end
     

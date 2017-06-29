@@ -116,7 +116,7 @@ EOS2
       @import.get_ticket_orders
     end
     it "should include 8 vouchers" do
-      @import.should have(8).vouchers
+      @import.vouchers.size.should == 8
     end
     it "should associate each voucher with a valid customer" do
       @import.vouchers.each do |v|

@@ -9,9 +9,9 @@ class Showdate < ActiveRecord::Base
 
   delegate :house_capacity, :patron_notes, :name, :to => :show
 
-  has_many :vouchers, -> { where("category != ?", 'nonticket') }
+  has_many :vouchers, -> { where.not(:category => 'nonticket') }
   has_many :all_vouchers, :class_name => 'Voucher'
-  has_many :walkup_vouchers, -> { where('walkup = ?', true) }, :class_name => 'Voucher'
+  has_many :walkup_vouchers, -> { where(:walkup => true) }, :class_name => 'Voucher'
   has_many :customers, -> { where('customers.role >= 0').uniq(true) }, :through => :vouchers
   has_many :vouchertypes, -> { uniq(true) }, :through => :vouchers
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers

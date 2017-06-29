@@ -141,7 +141,7 @@ describe Order, 'finalizing' do
     describe 'web order' do
       shared_examples_for 'when valid' do
         it 'should be saved' do ; @order.should_not be_a_new_record ; end
-        it 'should include the items' do ; @order.should have(4).items ; end
+        it 'should include the items' do ; @order.item_count.should == 4 ; end
         it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
         it 'should set purchasemethod on its items' do ; @order.items.each { |i| i.purchasemethod.should == @order.purchasemethod } ; end
         it 'should set order ID on its items' do ; @order.items.each { |i| i.order_id.should == @order.id } ; end
@@ -175,7 +175,7 @@ describe Order, 'finalizing' do
         @order.walkup = true
         @order.finalize!
       end
-      it 'should assign all vouchers to walkup customer' do ; Customer.walkup_customer.should have(3).vouchers ; end
+      it 'should assign all vouchers to walkup customer' do ; Customer.walkup_customer.vouchers.size.should == 3 ; end
       it 'should mark all vouchers as walkup' do ; Customer.walkup_customer.vouchers.all? { |v| v.walkup? }.should be_truthy ; end
     end
   end
@@ -204,7 +204,7 @@ describe Order, 'finalizing' do
       Voucher.count.should == @previous_vouchers_count
       Donation.count.should == @previous_donations_count
     end
-    it 'should not add vouchers to customer' do ; @the_customer.reload.should have(0).vouchers ; end
+    it 'should not add vouchers to customer' do ; @the_customer.reload.vouchers.should be_empty ; end
     it 'should not complete the order' do ; @order.should_not be_completed ; end
   end
 end

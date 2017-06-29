@@ -53,7 +53,7 @@ describe "Goldstar new CSV format importing" do
       end
       it "should have 20 vouchers" do
         @imp.preview
-        @imp.should have(20).vouchers
+        @imp.vouchers.size.should == 20
       end
     end
     context "when Goldstar vouchertypes do not exist" do

@@ -32,7 +32,7 @@ describe DatetimeRange do
         @range.count.should == 4
       end
       it "should include boundary dates" do
-        @dates.should have(4).elements
+        @dates.size.should == 4
       end
       it "should set the time correctly" do
         @dates.each do |d|

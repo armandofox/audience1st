@@ -35,7 +35,7 @@ describe Report do
       it_should_behave_like "a valid SQL query"
       before(:each) do ; @r = Report.new ; end
       it "should have no bind slots" do
-        @r.query.should have(1).element
+        @r.query.size.should == 1
       end
       it "should dump the whole customers table" do
         @r.query.first.should match(/where\s+1\b/i)
@@ -53,7 +53,7 @@ describe Report do
         @r.query.first.should_not match(/like.*like/i)
       end
       it "should generate an array with one bind slot" do
-        @r.query.should have(2).elements
+        @r.query.size.should == 2
       end
       it "should fill the single bind slot correctly" do
         @r.query[1].should match(/945%/)
@@ -71,7 +71,7 @@ describe Report do
       end
       it_should_behave_like "a valid SQL query"
       it "should generate two bind slots" do
-        @r.query.should have(3).elements
+        @r.query.size.should == 3
       end
       it "should fill in the bind slots correctly" do
         @r.query[1].should match(/945%/)
