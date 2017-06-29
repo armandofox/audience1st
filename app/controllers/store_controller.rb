@@ -39,7 +39,7 @@ class StoreController < ApplicationController
                 elsif logged_in.is_staff then desired || logged_in
                 else logged_in
                 end
-      p = params.to_h
+      p = params.to_hash
       redirect_to p.merge(:customer_id => desired, :only_path => true)
     end
   end
@@ -249,7 +249,7 @@ class StoreController < ApplicationController
   end
 
   def showdate_from_params
-    Showdate.find_by_id(params[:showdate_id]).includes(:show, :valid_vouchers)
+    Showdate.includes(:show, :valid_vouchers).find_by_id(params[:showdate_id])
   end
   def showdate_from_show_params
     (s = Show.find_by_id(params[:show_id])) &&

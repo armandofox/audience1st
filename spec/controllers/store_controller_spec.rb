@@ -16,28 +16,28 @@ describe StoreController do
       before :each do ; login_as(nil) ; end
       it 'redirects as generic customer' do
         get :index
-        response.should redirect_to_path(store_path(@anon))
+        response.should redirect_to(store_path(@anon))
       end
       it 'preserves params' do
         get :index, @extra
-        response.should redirect_to_path(store_path(@anon, @extra))
+        response.should redirect_to(store_path(@anon, @extra))
       end
 
       it 'prevents switching to a different user' do
         get :index, {:customer_id => @c.id}
-        response.should redirect_to_path(store_path(@anon))
+        response.should redirect_to(store_path(@anon))
       end
     end
     context 'when logged in as regular user' do
       before :each do ; login_as(@c) ;  end
       it 'redirects to your login keeping params' do
         get :index, @extra
-        response.should redirect_to_path(store_path(@c, @extra))
+        response.should redirect_to(store_path(@c, @extra))
       end
       it 'prevents you from switching to different user' do
         other = create(:customer)
         get :index, @extra.merge(:customer_id => other)
-        response.should redirect_to_path(store_path(@c, @extra))
+        response.should redirect_to(store_path(@c, @extra))
       end
       it 'lets you view store as yourself' do
         get :index, @extra.merge(:customer_id => @c)
@@ -48,7 +48,7 @@ describe StoreController do
       before :each do ; login_as(@b = customers(:boxoffice_user)) ; end
       it 'redirects to you if no customer specified' do
         get :index, @extra
-        response.should redirect_to_path(store_path(@b,@extra))
+        response.should redirect_to(store_path(@b,@extra))
       end
       it 'redirects to another customer' do
         get :index, @extra.merge(:customer_id => @c)
@@ -74,14 +74,14 @@ describe StoreController do
 
   describe "on InvalidAuthenticityToken exception" do
     before(:each) do
-      @controller.allow_forgery_protection = true
+      controller.allow_forgery_protection = true
     end
     it 'should check the authenticity token' do
-      @controller.should_receive(:verify_authenticity_token)
+      expect(controller).to receive(:verify_authenticity_token)
       post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
     end
     it "should show the Session Expired page rather than throwing error" do
-      @controller.should_receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
+      expect(controller).to receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
       post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
       response.should render_template 'messages/session_expired'
     end
@@ -119,7 +119,7 @@ describe StoreController do
     context 'when credit card token invalid' do
       before :each do
         @alert = /Invalid credit card transaction/
-        Stripe::allow(Charge).to receive(:create).and_raise(Stripe::StripeError)
+        allow(Stripe::Charge).to receive(:create).and_raise(Stripe::StripeError)
         post :donate, {:customer => @new_valid_customer, :donation => 5}
       end
       it_should_behave_like 'failure'
@@ -166,8 +166,8 @@ describe StoreController do
       end
       it "should add the donation to the cart" do
         allow(controller).to receive(:find_cart).and_return(@cart = Order.new)
-        Donation.should_receive(:from_amount_and_account_code_id).with(13, nil, nil).and_return(d = Donation.new)
-        @cart.should_receive(:add_donation).with(d)
+        expect(Donation).to receive(:from_amount_and_account_code_id).with(13, nil, nil).and_return(d = Donation.new)
+        expect(@cart).to receive(:add_donation).with(d)
         post :process_cart, @params
       end
     end
