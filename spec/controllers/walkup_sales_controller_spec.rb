@@ -12,7 +12,7 @@ describe WalkupSalesController do
   describe "transferring already-sold walkup vouchers" do
     shared_examples "no transfer is attempted" do
       it "should not attempt to transfer" do
-        Voucher.should_not_receive(:change_showdate_multiple)
+        expect(Voucher).not_to receive(:change_showdate_multiple)
         put :update, @params
       end
       it "should redirect" do
@@ -30,7 +30,7 @@ describe WalkupSalesController do
     end
     context "when at least one voucher is not found" do
       before(:each) do
-        found_voucher_id = Voucher.create!.id
+        found_voucher_id = create(:revenue_voucher).id
         not_found_id = 9999999
         @params = {:vouchers => [found_voucher_id, not_found_id], :id => @showdate.id }
       end
@@ -50,12 +50,12 @@ describe WalkupSalesController do
       it_should_behave_like "no transfer is attempted"
       it "should display error if showdate not found" do
         put :update, @params
-        flash[:alert].should match(/couldn't find showdate with id=99999/i)
+        flash[:alert].should match(/couldn't find showdate with 'id'=99999/i)
       end
       it "should display error if showdate not specified" do
         @params.delete(:to_showdate)
         put :update, @params
-        flash[:alert].should match(/couldn't find showdate without an ID/i)
+        flash[:alert].should match(/couldn't find showdate with 'id'=/i)
       end
     end
     context "when all vouchers exist" do
@@ -69,7 +69,7 @@ describe WalkupSalesController do
       end
       context "and no errors" do
         before(:each) do
-          Voucher.should_receive(:change_showdate_multiple).with(kind_of(Array), kind_of(Showdate), anything())
+          expect(Voucher).to receive(:change_showdate_multiple).with(kind_of(Array), kind_of(Showdate), anything())
         end
         it "should do the transfer" do
           put :update, @params
@@ -80,7 +80,7 @@ describe WalkupSalesController do
         end
       end
       specify "and errors occur should display a message" do
-        Voucher.should_receive(:change_showdate_multiple).and_raise("boom!")
+        expect(Voucher).to receive(:change_showdate_multiple).and_raise("boom!")
         put :update, @params
         flash[:alert].should match(/no changes were made/i)
         flash[:alert].should match(/boom!/)

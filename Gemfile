@@ -53,6 +53,7 @@ group :development, :test do
   gem 'pry'
   gem 'ZenTest'
   gem 'autotest-rails'
+  gem 'rspec-autotest'
   gem 'autotest-fsevent', :git => 'https://github.com/svoop/autotest-fsevent.git'
   gem 'minitest'
   gem 'capistrano'

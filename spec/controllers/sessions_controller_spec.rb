@@ -58,31 +58,31 @@ describe SessionsController do
               end
             end
             it "updates my last_login" do
-              @user.should_receive(:update_attribute) do |meth,arg|
+              expect(@user).to receive(:update_attribute) do |meth,arg|
                 meth.should == :last_login
                 arg.should be_a_kind_of(Time)
               end
               post(:create, @login_params)
             end
-            it "kills existing login"        do controller.should_receive(:logout_keeping_session!); post(:create, @login_params); end    
+            it "kills existing login"        do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params); end    
             it "logs me in"                  do post(:create, @login_params); controller.send(:logged_in?).should  be_truthy  end    
-            it "sets/resets/expires cookie"  do controller.should_receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
-            it "sends a cookie"              do controller.should_receive(:send_remember_cookie!);  post(:create, @login_params) end
+            it "sets/resets/expires cookie"  do expect(controller).to receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
+            it "sends a cookie"              do expect(controller).to receive(:send_remember_cookie!);  post(:create, @login_params) end
             it 'redirects to the home page'  do post(:create, @login_params); response.should redirect_to(@home_page)   end
-            it "does not reset my session"   do controller.should_not_receive(:reset_session).and_return nil; post(:create, @login_params) end # change if you uncomment the reset_session path
+            it "does not reset my session"   do expect(controller).not_to receive(:reset_session); post(:create, @login_params) end # change if you uncomment the reset_session path
             if (has_request_token == :valid)
-              it 'does not make new token'   do @user.should_not_receive(:remember_me);   post(:create, @login_params) end
-              it 'does refresh token'        do @user.should_receive(:refresh_token);     post(:create, @login_params) end 
+              it 'does not make new token'   do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
+              it 'does refresh token'        do expect(@user).to receive(:refresh_token);     post(:create, @login_params) end 
               it "sets an auth cookie"       do post(:create, @login_params);  end
             else
               if want_remember_me
-                it 'makes a new token'       do @user.should_receive(:remember_me);       post(:create, @login_params) end 
-                it "does not refresh token"  do @user.should_not_receive(:refresh_token); post(:create, @login_params) end
+                it 'makes a new token'       do expect(@user).to receive(:remember_me);       post(:create, @login_params) end 
+                it "does not refresh token"  do expect(@user).not_to receive(:refresh_token); post(:create, @login_params) end
                 it "sets an auth cookie"       do post(:create, @login_params);  end
               else 
-                it 'does not make new token' do @user.should_not_receive(:remember_me);   post(:create, @login_params) end
-                it 'does not refresh token'  do @user.should_not_receive(:refresh_token); post(:create, @login_params) end 
-                it 'kills user token'        do @user.should_receive(:forget_me);         post(:create, @login_params) end 
+                it 'does not make new token' do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
+                it 'does not refresh token'  do expect(@user).not_to receive(:refresh_token); post(:create, @login_params) end 
+                it 'kills user token'        do expect(@user).not_to receive(:forget_me);         post(:create, @login_params) end 
               end
             end
           end # inner describe
@@ -93,10 +93,10 @@ describe SessionsController do
   
   describe "on failed login" do
     before do
-      Customer.should_receive(:authenticate).with(anything(), anything()).and_return(nil)
+      expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(nil)
       login_as :quentin
     end
-    it 'logs out keeping session'   do controller.should_receive(:logout_keeping_session!); post(:create, @login_params) end
+    it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
     it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /Couldn't log you in as 'quentin@email.com'/ end
     it 'renders the log in page'    do post(:create, @login_params); response.should render_template('new')  end
     it "doesn't log me in"          do post(:create, @login_params); controller.send(:logged_in?).should == false end
@@ -114,7 +114,7 @@ describe SessionsController do
     before do 
       login_as :quentin
     end
-    it 'logs me out'                   do controller.should_receive(:logout_killing_session!); do_destroy end
+    it 'logs me out'                   do expect(controller).to receive(:logout_killing_session!); do_destroy end
     it 'redirects me to the home page' do do_destroy; response.should be_redirect     end
   end
   
