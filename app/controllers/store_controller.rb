@@ -324,7 +324,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_admin
     @valid_vouchers =
-      @sd.valid_vouchers.
+      @sd.valid_vouchers.to_a.
       delete_if(&:comp?).
       delete_if(&:subscriber_voucher?).
       map do |v|
