@@ -51,10 +51,8 @@ group :development, :test do
   # cucumber and capybara
   gem 'byebug'                  # 4
   gem 'pry'
-  gem 'ZenTest'
-  gem 'autotest-rails'
-  gem 'rspec-autotest'
-  gem 'autotest-fsevent', :git => 'https://github.com/svoop/autotest-fsevent.git'
+  gem 'guard-rspec', :require => false
+  gem 'guard-cucumber'
   gem 'minitest'
   gem 'capistrano'
   gem 'faye-websocket'

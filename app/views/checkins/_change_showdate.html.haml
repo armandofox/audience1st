@@ -1,9 +1,6 @@
 #change_showdate.clear
   %h1.floatleft= @showdate.printable_name
-  .floatleft.h1= link_to_function 'Change', |
-    '$("#select_show").slideToggle()',  |
-    {:class => 'genButton'}                 |
-  .clear
+  .floatleft.clear.h1= link_to 'Change', '#', :onclick => '$("#select_show").slideToggle()', {:class => 'genButton'}
 
   #select_show{:style => "display: none;"}
     %label{:for=>:showdate_thedate} Show and Date:

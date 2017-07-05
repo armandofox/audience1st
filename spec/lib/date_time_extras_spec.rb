@@ -2,8 +2,7 @@ require 'rails_helper'
 
 describe "Date/time extras" do
   def stub_month_and_day(month,day)
-    allow(Option).to receive(:season_start_month).and_return(month)
-    allow(Option).to receive(:season_start_day).and_return(day)
+    Option.first.update_attributes!(:season_start_month => month, :season_start_day => day)
   end    
   describe "season calculations" do
     context "for season 1/1/09 - 12/31/09" do
@@ -125,7 +124,7 @@ describe "Date/time extras" do
       it "should raise an exception if given garbage" do
         lambda {
           Time.from_param("00")
-        }.should raise_error
+        }.should raise_error(ArgumentError)
       end
     end
     context "when param is a hash" do

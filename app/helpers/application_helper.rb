@@ -95,7 +95,7 @@ module ApplicationHelper
     msg = "This link points to a prepopulated Store page"
     msg << " for #{name}" if name
     msg << ":"
-    link_to_function(text, "prompt('#{escape_javascript(msg)}', '#{escape_javascript(url)}')")
+    link_to(text, '#', :onclick => "prompt('#{escape_javascript(msg)}', '#{escape_javascript(url)}')")
   end
 
   def link_to_subscription_purchase(vouchertype_id)

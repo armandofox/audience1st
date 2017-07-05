@@ -2,37 +2,31 @@ require 'rails_helper'
 
 describe RetailItem do
   before :each do
-    @account1 = AccountCode.default_account_code
+    @account1 = AccountCode.create!(:code => "5678", :name => "Default")
     @account2 = AccountCode.create!(:code => "1234", :name => "Fake")
+    Option.first.update_attributes!(:default_retail_account_code => @account1.id)
   end
   describe 'new' do
-    subject { RetailItem.from_amount_description_and_account_code_id(amount,description,ac_id) }
-    describe 'valid item' do
-      let(:amount) { 1 }
-      let(:description) { 'Item' }
-      let(:ac_id) { nil }
-      it { should be_valid }
-      its(:account_code_id) { should == @account1.id }
+    it 'gets default account code' do
+      @i = RetailItem.from_amount_description_and_account_code_id(1,'Item',nil)
+      expect(@i).to be_valid
+      expect(@i.account_code_id).to eq(@account1.id)
     end
-    describe 'invalid amount' do
-      let(:amount) { 0 }
-      let(:description) { 'Item' }
-      let(:ac_id) { nil }
-      it { should_not be_valid }
-      its { errors_on(:amount).size }.should == 1
+    it 'rejects invalid amount' do
+      @i = RetailItem.from_amount_description_and_account_code_id(0,'Item',nil)
+      expect(@i).not_to be_valid
+      expect(@i.errors[:amount].size).to eq(1)
     end
-    describe 'blank description' do
-      let(:amount) { 1 }
-      let(:description) { nil }
-      let(:ac_id) { nil }
-      it { should_not be_valid }
-      its { errors_on(:comment).size }.should == 1
+    it 'rejects blank description' do
+      @i = RetailItem.from_amount_description_and_account_code_id(1,nil,nil)
+      expect(@i).not_to be_valid
+      expect(@i.errors[:comments].size).to eq(1)
     end
   end
-  describe 'valid item' do
-    subject { RetailItem.from_amount_description_and_account_code_id(3.51, 'Auction', @account2.id) }
-    its(:account_code) { should == @account2 }
-    its(:amount) { should == 3.51 }
-    its(:one_line_description) { should match(/\$\s*3.51\s+Auction$/) }
+  it 'gets correct attributes when valid' do
+    @i = RetailItem.from_amount_description_and_account_code_id(3.51, 'Auction', @account2.id)
+    expect(@i.account_code).to eq(@account2)
+    expect(@i.amount).to eq(3.51)
+    expect(@i.one_line_description).to match(/\$\s*3.51\s+Auction$/)
   end
 end
