@@ -172,9 +172,10 @@ class CustomersController < ApplicationController
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
-    @customers = Customer.paginate(:page => @page,
-      :conditions => conds,
-      :order => 'last_name,first_name')
+    @customers = Customer.
+      where(conds).
+      order('last_name,first_name').
+      paginate(:page => @page)
   end
 
   def list_duplicate

@@ -7,10 +7,13 @@ class TxnsController < ApplicationController
     @page = (params[:page] || 1).to_i
     @txn_filter = params[:txn_filter]
     if (@customer = Customer.find_by_id(@txn_filter))
-      @txns = Txn.paginate(:page => @page, :order => "txn_date DESC", :conditions => ["customer_id = ?", @customer.id])
+      @txns = Txn.
+        where("customer_id = ?", @customer.id).
+        order("txn_date DESC").
+        paginate(:page => @page)
       @header = "Transactions for #{@customer.full_name}"
     else
-      @txns = Txn.paginate(:page => @page, :order => "txn_date DESC")
+      @txns = Txn.all.order("txn_date DESC").paginate(:page => @page)
       @header = "Transactions"
     end
     @header = "No #{@header}" if @txns.empty?
