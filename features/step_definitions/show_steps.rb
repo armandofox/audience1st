@@ -13,6 +13,14 @@ Given /^a show "(.*)" with tickets on sale for today$/ do |name|
   }
 end
 
+Given /^show "(.*)" (has|should have) description "(.*)"$/ do |name,exists,desc|
+  if exists
+    Show.find_by_name!(name).update_attributes!(:description => desc)
+  else
+    expect(Show.find_by_name!(name).description).to eq(desc)
+  end
+end
+
 Given /^a class "(.*)" available for enrollment now$/ do |name|
   steps %Q{Given a show "#{name}" with tickets on sale for today}
   @show.update_attributes!(:event_type => "Class")
