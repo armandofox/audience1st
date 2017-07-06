@@ -48,12 +48,12 @@ class SessionsController < ApplicationController
 
   def destroy
     logout_killing_session!
-    redirect_with login_path, :notice => "You have been logged out."
+    redirect_to login_path, :notice => "You have been logged out."
   end
 
   def temporarily_disable_admin
     session[:admin_disabled] = true
-    redirect_with :back, :notice => "Switched to non-admin user view."
+    redirect_to :back, :notice => "Switched to non-admin user view."
   end
 
   def reenable_admin

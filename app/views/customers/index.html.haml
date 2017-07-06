@@ -16,7 +16,7 @@
 - unless @customers.empty?
   = form_tag merge_customers_path, :method => :get do
     = render :partial => 'customers/merge_bar'
-    = hidden_field_tag 'action_name', @controller.action_name
+    = hidden_field_tag 'action_name', action_name
     = hidden_field_tag 'customers_filter', @customers_filter
     = hidden_field_tag 'page', @page
     %table.hilite#customers

@@ -28,7 +28,7 @@ class ImportsController < ApplicationController
     @import = type.new(params[:import])
     if !(new = params[:new_show_name]).blank?
       if Show.find_by_name(new)
-        redirect_with(new_import_path, :alert => "Show \"#{new}\" already exists.")
+        redirect_to(new_import_path, :alert => "Show \"#{new}\" already exists.")
       end
       @import.show = Show.create_placeholder!(new)
     end
@@ -44,7 +44,7 @@ class ImportsController < ApplicationController
     @import = Import.find(params[:id])
     @collection = @import.preview
     if (@partial = partial_for_import(@import)).nil?
-      return redirect_with(new_import_path, :alert => "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}.")
+      return redirect_to(new_import_path, :alert => "Don't know how to preview a collection of #{ActiveSupport::Inflector.pluralize(@import.class.to_s)}.")
     end
   end
 

@@ -4,14 +4,14 @@ class CustomersController < ApplicationController
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(create search merge finalize_merge index list_duplicate
-                             auto_complete_for_customer_full_name lookup)
+                             auto_complete_for_customer_full_name)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
   before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
   before_filter :is_myself_or_staff, :only => CUSTOMER_ACTIONS
   before_filter :is_staff_filter, :only => ADMIN_ACTIONS
 
-  skip_before_filter :verify_authenticity_token, %w(lookup auto_complete_for_customer_full_name)
+  skip_before_filter :verify_authenticity_token, %w(auto_complete_for_customer_full_name)
 
   private
 
@@ -157,9 +157,12 @@ class CustomersController < ApplicationController
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
     else
-      flash[:alert] = ["There was a problem creating your account: ", @customer]
+      flash[:alert] = ["There was a problem creating your account:<br/>"] +
+        @customer.errors.full_messages
       # for special case of duplicate (existing) email, offer login
-      flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email))
+      if @customer.unique_email_error
+        flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email))
+      end
       render :action => 'new'
     end
   end

@@ -30,7 +30,7 @@ class ReportsController < ApplicationController
     when /earned/i
       accounting_report
     else
-      redirect_with(reports_path, :alert => "Please select a valid report.")
+      redirect_to(reports_path, :alert => "Please select a valid report.")
     end
   end
 
@@ -131,7 +131,7 @@ class ReportsController < ApplicationController
       references(:customers, :orders).
       where('orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1').
       order('customers.last_name')
-    return redirect_with(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
+    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
     if params[:csv]
       output = Voucher.to_csv(v)
       download_to_excel(output, 'customers')
@@ -163,13 +163,13 @@ class ReportsController < ApplicationController
   def validate_report_type(str)
     klass = str.camelize.constantize
     valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
-    redirect_with(reports_path, :alert => "Invalid report name '#{str}'") unless valid
+    redirect_to(reports_path, :alert => "Invalid report name '#{str}'") unless valid
     valid && klass
   end
 
   def transaction_details_report
     @report = TransactionDetailsReport.run(@from, @to)
-    return redirect_with(reports_path, :alert => 'No matching transactions found') if @report.empty?
+    return redirect_to(reports_path, :alert => 'No matching transactions found') if @report.empty?
     case params[:format]
     when /csv/i
       send_data(@report.to_csv,
@@ -207,7 +207,7 @@ class ReportsController < ApplicationController
       includes(:order).references(:orders).
       where('orders.sold_on BETWEEN ? and ?', @from, @to).references(:orders).
       order('orders.sold_on')
-    return redirect_with(reports_path, {:notice => 'No retail purchases match these criteria.'}) if @items.empty?
+    return redirect_to(reports_path, {:notice => 'No retail purchases match these criteria.'}) if @items.empty?
   end
   
 end

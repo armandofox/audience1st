@@ -10,7 +10,7 @@ class VouchersController < ApplicationController
     @voucher = Voucher.find(params[:id]) if params[:id]
     @customer = Customer.find params[:customer_id]
     return if current_user.is_boxoffice
-    redirect_with(customer_path(current_user), :alert => "That voucher isn't yours.") unless
+    redirect_to(customer_path(current_user), :alert => "That voucher isn't yours.") unless
       (current_user == @customer  && (@voucher.nil? || @voucher.customer == @customer))
   end
 
@@ -33,7 +33,7 @@ class VouchersController < ApplicationController
       Vouchertype.comp_vouchertypes(this_season + 1) +
       Vouchertype.comp_vouchertypes(this_season)).delete_if(&:external?)
     if @vouchers.empty?
-      redirect_with(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
+      redirect_to(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
     end
   end
 
@@ -45,12 +45,12 @@ class VouchersController < ApplicationController
     theshowdate = Showdate.find_by_id(params[:showdate_id])
 
     redir = new_customer_voucher_path(@customer)
-    return redirect_with(redir, :alert => 'Please select number and type of vouchers to add.') unless
+    return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
       thevouchertype && thenumtoadd > 0
-    return redirect_with(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
+    return redirect_to(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
       thevouchertype.comp?
-    return redirect_with(redir, 'Please select a performance.') unless theshowdate
-    return redirect_with(redir, 'This comp ticket type not valid for this performance.') unless
+    return redirect_to(redir, 'Please select a performance.') unless theshowdate
+    return redirect_to(redir, 'This comp ticket type not valid for this performance.') unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
     
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
@@ -93,7 +93,7 @@ class VouchersController < ApplicationController
 
   def reserve
     @is_admin = current_user.is_boxoffice
-    redirect_with(customer_path(@customer), :alert => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
+    redirect_to(customer_path(@customer), :alert => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
     @valid_vouchers = @voucher.redeemable_showdates(@is_admin)
     @valid_vouchers = @valid_vouchers.select(&:visible?) unless @is_admin
     if @valid_vouchers.empty?
@@ -104,7 +104,7 @@ class VouchersController < ApplicationController
 
   def confirm_multiple
     the_showdate = Showdate.find_by_id params[:showdate_id]
-    redirect_with(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
+    redirect_to(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
     num = params[:number].to_i
     count = 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
@@ -142,17 +142,17 @@ class VouchersController < ApplicationController
 
   def transfer_multiple
     vouchers = params[:vouchers]
-    return redirect_with(customer_vouchers_path(@customer),
+    return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you did not select any vouchers.') unless vouchers
     cid = Customer.id_from_route(params[:cid]) # extract id from URL matching customer_path(params[:cid])
     new_customer = Customer.find_by_id(cid)
-    return redirect_with(customer_vouchers_path(@customer),
+    return redirect_to(customer_vouchers_path(@customer),
       :alert => 'Nothing was transferred because you must select valid customer to transfer to.') unless new_customer.kind_of? Customer
     result,num_transferred = Voucher.transfer_multiple(vouchers.keys, new_customer, current_user)
     if result
-      redirect_with customer_path(new_customer), :notice => "#{num_transferred} items transferred.  Now viewing #{new_customer.full_name}'s account."
+      redirect_to customer_path(new_customer), :notice => "#{num_transferred} items transferred.  Now viewing #{new_customer.full_name}'s account."
     else
-      redirect_with customer_transfer_multiple_vouchers_path(@customer), :alert => "NO changes were made because of error: #{msg}.  Try again."
+      redirect_to customer_transfer_multiple_vouchers_path(@customer), :alert => "NO changes were made because of error: #{msg}.  Try again."
     end
   end
 

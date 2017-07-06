@@ -64,7 +64,7 @@ class WalkupSalesController < ApplicationController
   # process a change of walkup vouchers by moving them to another showdate, as directed
   def update
     @showdate = Showdate.find params[:id]
-    return redirect_with(walkup_sale_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
+    return redirect_to(walkup_sale_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
     voucher_ids = params[:vouchers]
     begin
       vouchers = Voucher.find(voucher_ids)

@@ -2,9 +2,9 @@ class OrdersController < ApplicationController
   before_filter :is_boxoffice_filter
 
   def index
-    redirect_with(root_path, :alert => 'No customer specified'
+    redirect_to(root_path, :alert => 'No customer specified'
       ) and return unless @customer = Customer.find_by_id(params[:customer_id])
-    redirect_with(root_path, :notice => "#{@customer.full_name} has no orders."
+    redirect_to(root_path, :notice => "#{@customer.full_name} has no orders."
       ) and return if (@orders = @customer.orders).empty?
     render :partial => 'order', :collection => @orders, :layout => true
   end
@@ -25,11 +25,11 @@ class OrdersController < ApplicationController
     @order = Order.find params[:id]
     items = Item.find(params[:items].keys) rescue []
     if items.empty?
-      redirect_with(order_path(@order), :alert => 'No items selected for refund.') and return
+      redirect_to(order_path(@order), :alert => 'No items selected for refund.') and return
     elsif items.any? { |i| i.order_id != @order.id }
-      redirect_with(order_path(@order), :alert => 'Some items not part of this order.') and return
+      redirect_to(order_path(@order), :alert => 'Some items not part of this order.') and return
     elsif items.any? { |i| !i.cancelable? }
-      redirect_with(order_path(@order), :alert => 'Some items are not refundable.') and return
+      redirect_to(order_path(@order), :alert => 'Some items are not refundable.') and return
     end
     amount_to_refund = items.map(&:amount).sum
     by_whom = current_user()
@@ -47,9 +47,9 @@ class OrdersController < ApplicationController
         Store.refund_credit_card(@order, amount_to_refund) if @order.purchase_medium == :credit_card
       end
     rescue Stripe::StripeError => e
-      redirect_with(order_path(@order), :alert => "Could not process credit card refund: #{e.message}") and return
+      redirect_to(order_path(@order), :alert => "Could not process credit card refund: #{e.message}") and return
     rescue RuntimeError => e
-      redirect_with(order_path(@order), :alert => "Error destroying order: #{e}") and return
+      redirect_to(order_path(@order), :alert => "Error destroying order: #{e}") and return
     end
     formatted_amount = sprintf("$%.2f", amount_to_refund)
     notice =
@@ -58,7 +58,7 @@ class OrdersController < ApplicationController
       when :check then "Please destroy or return customer's original check for #{formatted_amount}."
       else "Please refund #{formatted_amount} in cash to customer."
       end
-    redirect_with(order_path(@order), :notice => notice)
+    redirect_to(order_path(@order), :notice => notice)
   end
 
 end

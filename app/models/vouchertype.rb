@@ -42,8 +42,8 @@ class Vouchertype < ActiveRecord::Base
   
   # Stackable scopes
   scope :for_season, ->(season) { where('season = ?', season) }
-  scope :of_categories, ->(*cats)   { where('category IN ?', cats.map(&:to_s)) }
-  scope :except_categories, ->(*cats) { where('category NOT IN ?', cats.map(&:to_s)) }
+  scope :of_categories, ->(*cats)   { where('category IN (?)', cats.map(&:to_s)) }
+  scope :except_categories, ->(*cats) { where('category NOT IN (?)', cats.map(&:to_s)) }
 
   protected
 
@@ -117,9 +117,7 @@ class Vouchertype < ActiveRecord::Base
   public
   
   def inspect
-    sprintf "%s, %s, $%.02f", name, category, price
-    if bundle?
-    end
+    sprintf "[%d] %s, %s, $%.02f", id, name, category, price
   end
 
   def <=>(other)

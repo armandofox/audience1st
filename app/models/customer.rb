@@ -40,7 +40,7 @@ class Customer < ActiveRecord::Base
   :message => EMAIL_UNIQUENESS_ERROR_MESSAGE
 
   def unique_email_error
-    self.errors[:email] == EMAIL_UNIQUENESS_ERROR_MESSAGE
+    self.errors[:email].include? EMAIL_UNIQUENESS_ERROR_MESSAGE
   end
     
   validates_format_of :zip, :if => :self_created?, :with => /\A^[0-9]{5}-?([0-9]{4})?\z/, :allow_blank => true

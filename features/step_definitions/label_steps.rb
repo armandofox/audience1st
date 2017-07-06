@@ -9,7 +9,7 @@ Given /the following customers and labels exist/ do |customers_labels|
 end
 
 Given /the label "(.*)" exists/ do |name|
-  Label.find_or_create_by_name(name)
+  Label.find_or_create_by!(:name => name)
 end
 
 Given /the label "(.*)" does not exist/ do |name|
@@ -19,7 +19,7 @@ end
 
 Given /customer "(.*)" has label "(.*)"/i do |cust,label|
   c = find_customer_by_fullname(cust)
-  c.labels  << Label.find_or_create_by_name(label)
+  c.labels  << Label.find_or_create_by!(:name => label)
 end
 
 Then /customer "(.*)" should have label "(.*)"/i do |cust,label|

@@ -6,7 +6,7 @@ class DonationsController < ApplicationController
   private
 
   def load_customer
-    return redirect_with(donations_path, :alert => 'You must select a customer.') unless @customer = Customer.find(params[:customer_id])
+    return redirect_to(donations_path, :alert => 'You must select a customer.') unless @customer = Customer.find(params[:customer_id])
   end
 
   public
@@ -29,7 +29,7 @@ class DonationsController < ApplicationController
         @page_title = "Donation history"
       end
     rescue ActionController::RoutingError, ActiveRecord::RecordNotFound
-      return redirect_with(donations_path, :alert => "Cannot limit search to customer")
+      return redirect_to(donations_path, :alert => "Cannot limit search to customer")
     end
     mindate,maxdate = Time.range_from_params(params[:dates])
     params[:from] = mindate
@@ -104,9 +104,9 @@ class DonationsController < ApplicationController
     end
     begin
       @order.finalize!(sold_on)
-      redirect_with(customer_path(@customer), :notice => 'Donation recorded.')
+      redirect_to(customer_path(@customer), :notice => 'Donation recorded.')
     rescue Order::PaymentFailedError => e
-      redirect_with(new_customer_donation_path(@customer), :alert => e.message)
+      redirect_to(new_customer_donation_path(@customer), :alert => e.message)
     rescue Exception => e
       raise e
       # rescue ActiveRecord::RecordInvalid => e

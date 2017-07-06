@@ -72,7 +72,7 @@ end
 cucumber_options = {
   # Below are examples overriding defaults
 
-  cmd: 'spring cucumber',
+  # cmd: 'spring script/cucumber',
   # cmd_additional_args: '--profile guard',
 
   # all_after_pass: false,

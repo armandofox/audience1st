@@ -6,10 +6,6 @@ class ShowsController < ApplicationController
   include VouchertypesHelper    # for season formatting
   
   def index
-    unless Show.count > 0
-      redirect_with new_show_path, :alert => "There are no shows set up yet."
-      return
-    end
     @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
     @earliest,@latest = Show.seasons_range
@@ -28,7 +24,7 @@ class ShowsController < ApplicationController
   def create
     @show = Show.new(params[:show])
     if @show.save
-      redirect_with edit_show_path(@show),
+      redirect_to edit_show_path(@show),
       :notice =>  'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
     else
       flash[:alert] = ["There were errors creating the show: ", @show]
@@ -50,7 +46,7 @@ class ShowsController < ApplicationController
     @show = Show.find(params[:id])
     @showdates = @show.showdates
     if @show.update_attributes(params[:show])
-      redirect_with edit_show_path(@show), :notice => 'Show details successfully updated.'
+      redirect_to edit_show_path(@show), :notice => 'Show details successfully updated.'
     else
       flash[:alert] = ["Show details could not be updated: ", @show]
       render :action => 'edit', :id => @show

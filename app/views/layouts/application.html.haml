@@ -11,13 +11,13 @@
     = javascript_include_tag 'application'
     %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
 
-    %title= @page_title || h(controller.action_name.humanize)
+    %title= @page_title || h(action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
     %meta{:name=>:description, :content=>''}/
 
     = csrf_meta_tags
 
-  %body{:id=>"#{controller.controller_name}_#{controller.action_name}", :class=>(Figaro.env.sandbox ? 'testing.default' : 'default')}
+  %body{:id=>"#{controller.controller_name}_#{action_name}", :class=>(Figaro.env.sandbox ? 'testing.default' : 'default')}
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     
@@ -44,7 +44,7 @@
               - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
                 = render :partial => 'navbars/season_tabs'
                 = render :partial => 'customers/quick_search'
-                = render :partial => 'navbars/staff_buttons' if (controller.controller_name == 'customers' && controller.action_name !~ /^index|list_duplicate/)
+                = render :partial => 'navbars/staff_buttons' if display_customer_actions?
             #content.clear
               = render :partial => 'messages/notices'
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller.controller_name)

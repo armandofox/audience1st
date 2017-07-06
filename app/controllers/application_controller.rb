@@ -29,11 +29,6 @@ class ApplicationController < ActionController::Base
     ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE session_id = '#{request.session_options[:id]}'")
   end
 
-  def redirect_with(path,parms)
-    [:alert, :notice].each { |key| flash[key] = parms[key] }
-    redirect_to path
-  end
-  
   # set_globals tries to set globals based on current_user, among other things.
   before_filter :set_globals
 
@@ -118,7 +113,7 @@ class ApplicationController < ActionController::Base
       !session[:admin_disabled] && current_user && current_user.send("is_#{r}")
     end
     define_method "is_#{r}_filter" do
-      redirect_with(login_path, :alert => "You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.") unless
+      redirect_to(login_path, :alert => "You must have at least #{ActiveSupport::Inflector.humanize(r)} privilege for this action.") unless
         !session[:admin_disabled] && current_user && current_user.send("is_#{r}")
     end
   end
