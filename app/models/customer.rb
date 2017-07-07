@@ -367,7 +367,7 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.downcase])) # need to get the salt
+    unless (u = Customer.find(:first, :conditions => ["email LIKE ?", email.strip.downcase])) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
