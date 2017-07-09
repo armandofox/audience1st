@@ -19,7 +19,7 @@ Background:
 
 Scenario: auto merge 
   
-  When I press "Auto Merge"
+  When I press "Auto Merge" within "#mergebar1"
   Then customer "Janey Weigandt" should not exist
   And customer "MaryJane Weigandt" should have the following attributes:
    | attribute | value        |
@@ -32,7 +32,7 @@ Scenario: auto merge
 @no-txn
 Scenario: manual merge
   # MaryJane appears in column 0 (left), Janey in column 1 (right)
-  When I press "Manual Merge"
+  When I press "Manual Merge" within "#mergebar1"
   And I choose "first_name_1"
   And I choose "email_1"
   And I choose "street_0"

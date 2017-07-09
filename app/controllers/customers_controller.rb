@@ -195,7 +195,7 @@ class CustomersController < ApplicationController
       flash[:alert] = 'You have not selected any customers.'
       redirect_to_last_list and return
     end
-    ids = params[:merge].keys
+    ids = params[:merge].keys.sort
     if (params[:commit] =~ /merge/i) && (ids.length != 2)
       flash[:alert] = 'You must select exactly 2 records at a time to merge.'
       redirect_to_last_list and return
@@ -214,7 +214,7 @@ class CustomersController < ApplicationController
       flash[:notice] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:notice]}"
       redirect_to_last_list and return
     when /auto/i
-      do_automatic_merge(*params[:merge].keys)
+      do_automatic_merge(*ids)
       redirect_to_last_list and return
     when /manual/i
       @customer = @cust.first   # needed for layout setup
@@ -298,8 +298,8 @@ class CustomersController < ApplicationController
     c0 = Customer.find_by_id(id0)
     c1 = Customer.find_by_id(id1)
     flash[:notice] ||= ''
-    if c0.merge_automatically!(c1)
-      flash[:notice] << "Successful merge"
+    if (result = c0.merge_automatically!(c1))
+      flash[:notice] = result
     else
       flash[:notice] = ["Automatic merge failed, try merging manually to resolve the following errors:" , c0]
     end
@@ -318,7 +318,7 @@ class CustomersController < ApplicationController
       flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
       return nil
     end
-    @customer = Customer.where('email LIKE ?', email).limit(1)
+    @customer = Customer.where('email LIKE ?', email).first
     unless @customer
       flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
       return nil

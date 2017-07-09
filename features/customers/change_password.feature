@@ -21,7 +21,6 @@ Scenario: confirmation mismatch
   When I fill in "New Password" with "syzygy"
   And I fill in "Confirm New Password" with "yzy"
   And I press "Save Changes"
-  Then show me the page
   Then I should see "Password confirmation doesn't match Password"
   And I should be able to login with username "tom@foolery.com" and password "pass"
 

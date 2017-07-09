@@ -1,8 +1,7 @@
-.merge_bar
-  %p
-    Select customers to:
-    = submit_tag 'Manual Merge'
-    = submit_tag 'Auto Merge'
-    = popup_help_for 'merge_customers'
-    = submit_tag 'Forget',  :onclick => "return confirm('#{escape_javascript APP_CONFIG[:confirm_delete_customers]}')"
-    = popup_help_for 'delete_customers'
+%p
+  Select customers to:
+  = submit_tag 'Manual Merge'
+  = submit_tag 'Auto Merge'
+  = popup_help_for 'merge_customers'
+  = submit_tag 'Forget',  :onclick => "return confirm('#{escape_javascript APP_CONFIG[:confirm_delete_customers]}')"
+  = popup_help_for 'delete_customers'
