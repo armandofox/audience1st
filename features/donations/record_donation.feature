@@ -12,6 +12,7 @@ Background:
 
 Scenario: record valid check donation
 
+  Then show me the page
   When I record a check donation of $55.55 to "General Fund" on Jan 1, 2009 with comment "Check #2222"
   And I press "Record"
   Then customer "Tom Foolery" should have an order dated "Jan 1, 2009" containing a check donation of $55.55 to "General Fund"
