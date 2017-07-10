@@ -29,7 +29,6 @@ Scenario: auto merge
   And customer "MaryJane Weigandt" should have a donation of $35.00 to "General"
   And customer "MaryJane Weigandt" should have a donation of $12.00 to "General"
 
-@no-txn
 Scenario: manual merge
   # MaryJane appears in column 0 (left), Janey in column 1 (right)
   When I press "Manual Merge" within "#mergebar1"

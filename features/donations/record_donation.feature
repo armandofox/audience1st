@@ -1,4 +1,3 @@
-@no-txn
 Feature: record donation
 
   As the development manager
