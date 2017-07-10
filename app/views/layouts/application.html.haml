@@ -3,13 +3,10 @@
   %head
     %link{:rel => "icon", :type => "image/x-icon", :href => stylesheet_path('venue/favicon.ico')}
 
-    = stylesheet_link_tag 'jquery-ui.min', :media => 'all'
-    = stylesheet_link_tag 'jquery.comiseo.daterangepicker', :media => 'all'
-    = stylesheet_link_tag 'admin', :media => 'all'
     = stylesheet_link_tag 'venue/default', :media => 'all'
-
-    = javascript_include_tag 'application'
-    %script{:type => 'text/javascript', :src => 'https://js.stripe.com/v1'}
+    = stylesheet_link_tag 'admin', :media => 'all'
+    = javascript_include_tag 'application', 'jquery.min', 'jquery-ui.min', 'jquery.comiseo.daterangepicker.min', 'jquery-migrate-1.4.1.min', 'customer_search', 'donate', 'flippy', 'hide_checkbox', 'moment.min', 'rails', 'reports', 'store', 'swipe', 'vouchertype', 'walkup_sales'
+    = javascript_include_tag 'https://js.stripe.com/v1'
 
     %title= @page_title || h(action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/

@@ -15,6 +15,11 @@ body.testing {
   margin: 4px;
 }
 
+.enterCVV {
+  padding: 2px;
+  background-color: red;
+}
+
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/

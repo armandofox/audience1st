@@ -27,9 +27,6 @@ gem 'ruport'
 # stripe depends on rest-client and json, but we can't use the latest version of
 # those until upgrade to ruby >= 1.9.2
 gem 'rest-client'
-gem 'sass-rails', '~> 5.0'      # 4
-# gem 'turbolinks'                # 4 - disabling for now to avoid unexpected issues with different <HEAD> sections and to allow Google Analytics to work. Also requires modifying application.js
-gem 'uglifier', '>= 1.3.0'      # 4
 gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
