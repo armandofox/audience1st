@@ -48,6 +48,7 @@ group :development, :test do
   # cucumber and capybara
   gem 'byebug'                  # 4
   gem 'pry'
+  gem 'listen', '~> 2.2'
   gem 'guard-rspec', :require => false
   gem 'guard-cucumber'
   gem 'minitest'

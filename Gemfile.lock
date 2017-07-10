@@ -60,6 +60,8 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+    celluloid (0.16.0)
+      timers (~> 4.0.0)
     chronic (0.10.2)
     cliver (0.3.2)
     coderay (1.1.1)
@@ -134,10 +136,11 @@ GEM
       temple (>= 0.8.0)
       tilt
     hashery (2.1.2)
+    hitimes (1.2.5)
     hominid (3.0.5)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (0.8.4)
+    i18n (0.8.6)
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
@@ -148,10 +151,10 @@ GEM
     json (1.8.6)
     launchy (2.4.3)
       addressable (~> 2.3)
-    listen (3.1.5)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
-      ruby_dep (~> 1.2)
+    listen (2.10.1)
+      celluloid (~> 0.16.0)
+      rb-fsevent (>= 0.9.3)
+      rb-inotify (>= 0.9)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     lumberjack (1.0.12)
@@ -281,7 +284,6 @@ GEM
       rspec-support (~> 3.6.0)
     rspec-support (3.6.0)
     ruby-rc4 (0.1.5)
-    ruby_dep (1.5.0)
     rubyzip (1.2.1)
     ruport (1.7.1)
       pdf-writer (= 1.1.8)
@@ -316,7 +318,9 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.6)
     tilt (2.0.7)
-    timecop (0.9.0)
+    timecop (0.9.1)
+    timers (4.0.4)
+      hitimes
     transaction-simple (1.4.0.2)
     ttfunk (1.0.3)
     tzinfo (1.2.3)
@@ -366,6 +370,7 @@ DEPENDENCIES
   jquery-rails
   json
   launchy
+  listen (~> 2.2)
   mechanize
   mime-types
   minitest
@@ -398,7 +403,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 2.3.1p112
+   ruby 2.2.2p95
 
 BUNDLED WITH
    1.15.1
