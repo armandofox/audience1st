@@ -3,7 +3,7 @@ sudo: false
 cache: bundler
 bundler_args: --without production
 before_install:
-  - gpg -d -o config/application.yml config/application.yml.asc
+  - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
 rvm:
   - 2.2.2
 env:
