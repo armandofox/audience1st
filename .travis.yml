@@ -1,6 +1,9 @@
 language: ruby
 sudo: false
 cache: bundler
+bundler_args: --without production
+before_install:
+  - gpg -d -o config/application.yml config/application.yml.asc
 rvm:
   - 2.3.1
 env:
@@ -11,3 +14,5 @@ script:
   - bundle exec rake db:setup
   - bundle exec cucumber
   - bundle exec rake spec
+after_script:
+  - rm -f config/application.yml
