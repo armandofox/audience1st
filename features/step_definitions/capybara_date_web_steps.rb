@@ -24,7 +24,7 @@ def select_date_matching(date_to_select, options={})
   choice.select_option
 end
 
-def select_date(date_to_select, options ={})
+def select_date_from_dropdowns(date_to_select, options ={})
   date = to_date(date_to_select)
   id_prefix = options[:from] =~ /^#(.*)/ ? $1 : id_prefix_for(options)
   select_if id_prefix, :year, date.year
@@ -58,7 +58,7 @@ def date_range_to_json(from,to)
 end
 
 When /^(?:|I )select "([^\"]*)" as the "([^\"]*)" (date|time)$/ do |date, date_label, _|
-  select_date(date, :from => date_label)
+  select_date_from_dropdowns(date, :from => date_label)
 end
 
 When /^I select "(.*) to (.*)" as the "(.*)" date range$/ do |start,endr, selector|

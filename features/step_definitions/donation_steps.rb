@@ -14,7 +14,7 @@ When /^I record a (check|cash) donation of \$([\d.]+) to "(.*)" on (.*)(?: with 
   fill_in "Amount", :with => amount
   choose type.capitalize
   select (find_or_create_account_code(fund).name_with_code.gsub(/\s+/, ' ')), :from => 'Fund'
-  select_date date, :from => 'Date Posted'
+  select_date_from_dropdowns date, :from => 'Date Posted'
   fill_in "Comments/Check no.", :with => comment.to_s
 end
 

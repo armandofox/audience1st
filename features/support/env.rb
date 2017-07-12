@@ -68,8 +68,6 @@ DatabaseCleaner.clean_with(:truncation)
 World(RSpec::Mocks::ExampleMethods)
 
 Before do
-  DatabaseCleaner.start
-
   # fixture access.  Should really get rid of this altogether
   ActiveRecord::FixtureSet.reset_cache
   fixtures_folder = File.join(Rails.root, 'spec', 'fixtures')
@@ -94,7 +92,6 @@ After do
     RSpec::Mocks.verify
   ensure
     RSpec::Mocks.teardown
-    DatabaseCleaner.clean
   end
 end
 
