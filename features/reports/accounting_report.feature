@@ -11,10 +11,10 @@ Background:
 Scenario: View donations by date and account code
 
   Given the following donations:
-    | date    | amount | fund          | donor       | payment     |
-    | 3/10/11 |  25.00 | 2222 Donation | Tom Foolery | credit card |
-    | 3/12/11 |     20 | 3333 Capital  | Tom Foolery | cash        |
-    | 3/12/11 |     15 | 2222 Donation | Joe Mallon  | credit_card |
-  When I run the accounting report from "3/10/11 10:00am" to "3/12/11 11:45PM"
+    |       date | amount | fund          | donor       | payment     |
+    | 2011-03-10 |  25.00 | 2222 Donation | Tom Foolery | credit card |
+    | 2011-03-12 |     20 | 3333 Capital  | Tom Foolery | cash        |
+    | 2011-03-12 |     15 | 2222 Donation | Joe Mallon  | credit_card |
+  When I run the accounting report from "2011-03/10 10:00am" to "2011-03-12 11:45PM"
 
   

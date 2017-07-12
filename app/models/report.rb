@@ -197,7 +197,7 @@ class Report
       end
     end
     conds = reject.join(' || ')
-    eval("arr.reject! { |c| #{conds} }")
+    eval("arr.to_a.reject! { |c| #{conds} }")
     if @output_options[:remove_dups]
       # remove duplicate mailing addresses
       hshtemp = Hash.new

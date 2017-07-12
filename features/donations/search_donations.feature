@@ -8,12 +8,12 @@ Background:
 
   Given I am logged in as staff
   And the following donations:
-   | donor         | amount  | fund              | date     |
-   | Tom Foolery   | $100.00 | 9999 General Fund | 1/3/2012 |
-   | Joe Mallon    | $500.00 | 9998 History Fund | 1/4/2012 |
-   | Armando Fox   | $600.00 | 9999 General Fund | 3/5/2012 |
-   | Diana Moore   | $900.00 | 9998 History Fund | 7/1/2012 |
-   | Patrick Tracy | $800.00 | 9997 Misc Fund    | 8/1/2012 |
+   | donor         | amount  | fund              |       date |
+   | Tom Foolery   | $100.00 | 9999 General Fund | 2012-01-03 |
+   | Joe Mallon    | $500.00 | 9998 History Fund | 2012-01-04 |
+   | Armando Fox   | $600.00 | 9999 General Fund | 2012-03-05 |
+   | Diana Moore   | $900.00 | 9998 History Fund | 2012-07-01 |
+   | Patrick Tracy | $800.00 | 9997 Misc Fund    | 2012-08-01 |
   And I visit the donations page
 
 Scenario: filter donations by fund
@@ -35,7 +35,7 @@ Scenario: filter donations by fund
 Scenario: filter donations by date
 
   When I check "use_date"
-  And I select "2/1/2012 to 7/1/2012" as the "dates" date range
+  And I select "2012-02-02 to 2012-07-01" as the "dates" date range
   And I press "Search"
   Then I should see the following donations:
   | donor       | amount |

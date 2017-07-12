@@ -136,6 +136,7 @@ class TicketSalesImport < Import
   end
 
   def import_showdate(time_as_str)
+    raise TicketSalesImport::ImportError, "Time parsing needs to be updated"
     event_date = Time.parse(time_as_str)
     unless (self.show.showdates &&
         sd = self.show.showdates.detect { |sd| sd.thedate == event_date })

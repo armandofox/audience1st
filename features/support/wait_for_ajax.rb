@@ -4,7 +4,7 @@ module WaitForAjax
   end
   def wait_for_ajax
     return unless javascript_test?
-    Timeout.timeout(Capybara.default_wait_time) do
+    Timeout.timeout(Capybara.default_max_wait_time) do
       1 until finished_all_ajax_requests?
     end
   end

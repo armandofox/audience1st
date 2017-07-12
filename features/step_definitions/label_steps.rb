@@ -1,6 +1,6 @@
 Given /the following customers and labels exist/ do |customers_labels|
   customers_labels.hashes.each do |entry|
-    customer = Customer.where('first_name = ? AND last_name = ?',entry[:first_name], entry[:last_name]) ||
+    customer = Customer.where('first_name = ? AND last_name = ?',entry[:first_name], entry[:last_name]).first ||
       create(:customer, :first_name => entry[:first_name], :last_name => entry[:last_name])
     entry[:labels].split(/\s*,\s*/).each do |label|
       customer.labels << (Label.find_by_name(label) || create(:label, :name => label))

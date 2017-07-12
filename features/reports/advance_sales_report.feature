@@ -9,8 +9,8 @@ Background:
   Given I am logged in as box office manager
   And   the following Shows exist:
   | name      | opening_date | closing_date | house_capacity |
-  | Hamlet    | 1/1/2010     | 1/31/2010    |             50 |
-  | King Lear | 1/20/2012    | 1/31/2012    |             50 |
+  | Hamlet    |   2010-01-01 |   2010-01-31 |             50 |
+  | King Lear |   2012-01-20 |   2012-01-31 |             50 |
   And   a performance of "Hamlet" on "January 21, 2010, 8:00pm"
   And   a performance of "King Lear" on "January 23, 2012, 8:00pm"
   And   a performance of "King Lear" on "January 24, 2012, 8:00pm"

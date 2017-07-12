@@ -12,7 +12,7 @@ module StoreHelper
     else
       option, id = 'sales_banner_for_nonsubscribers', 'BannerNonSubscriber'
     end
-    prefix = if for_what == :subscription then 'subscription' else for_what.tr(' ','').underscore end
+    prefix = if for_what == :subscription then 'subscription' else for_what.to_s.tr(' ','').underscore end
     sanitize_option_text("#{prefix}_#{option}",
       'div', :id => "#{prefix.camelize(:lower)}_#{id}", :class => 'storeBanner')
   end
