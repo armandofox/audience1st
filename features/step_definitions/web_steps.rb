@@ -29,7 +29,11 @@ end
 
 When /^(?:|I )press "([^\"]*)"(?: within "([^\"]*)")?$/ do |button, selector|
   with_scope(selector) do
-    click_button(button)
+    begin
+      click_button(button)
+    rescue Capybara::ElementNotFound
+      click_button(button, :disabled => true)
+    end
   end
 end
 

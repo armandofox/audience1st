@@ -104,7 +104,7 @@ end
 # Stub Stripe for certain scenarios
 Before('@stubs_successful_credit_card_payment') do
   Store.stub(:pay_with_credit_card) do |order|
-    order.update_attribute(:authorization, 'ABC123')
+    order.update_attributes!(:authorization => 'ABC123')
   end
 end
 

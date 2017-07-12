@@ -61,13 +61,12 @@ end
 When /^I place my order with a valid credit card$/ do
   # relies on stubbing Store.purchase_with_credit_card method
   steps %Q{When I press "Charge Credit Card"}
-  match = page.first('title').text.match(/confirmation of order (\d+)/i)
-  match.should_not be_nil
+  page.title.match(/confirmation of order (\d+)/i).should be_truthy
   @order = Order.find($1)
 end
 
 When /^the order is placed successfully$/ do
-  Store.stub!(:pay_with_credit_card).and_return(true)
+  allow(Store).to receive(:pay_with_credit_card).and_return(true)
   click_button 'Charge Credit Card' # but will be handled as Cash sale in 'test' environment
 end
 

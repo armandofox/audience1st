@@ -25,13 +25,6 @@ Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_typ
     update_attributes!(:promo_code => promo)
 end
 
-Given /^my gift order contains the following tickets:/ do |tickets|
-  Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
-  create_tickets(tickets.hashes)
-  check 'gift'
-  click_button 'CONTINUE >>'
-end
-
 Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
   tickets.hashes.each do |t|
     qty = t[:qty].to_i

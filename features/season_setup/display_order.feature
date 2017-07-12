@@ -10,7 +10,7 @@ Background:
   And   3 General vouchers costing $10 are available for that performance
   And   2 Senior vouchers costing $8 are available for that performance
  
-Scenario outline: display vouchers in correct order
+Scenario Outline: display vouchers in correct order
 
   Given the display orders of "General" and "Senior" are set to <general> and <senior>
   When I visit the Store page

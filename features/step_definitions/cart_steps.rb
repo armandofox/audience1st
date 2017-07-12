@@ -4,16 +4,23 @@ Given /^(?:my cart contains|I add) (\d+) "(.*)" (bundles|subscriptions)$/ do |qt
   end
   visit path_to(%Q{the subscriptions page})
   select qty.to_s, :from => name
-  click_button 'CONTINUE >>'
-end
-
-Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
-  steps %Q{Then I should see /#{type}/ within "#cart_items" #{num} times}
+  click_button 'CONTINUE >>', :disabled => true
 end
 
 Given /^(?:my cart contains|I add) the following tickets:/ do |tickets|
   create_tickets(tickets.hashes)
-  click_button 'CONTINUE >>'
+  click_button 'CONTINUE >>', :disabled => true
+end
+
+Given /^my gift order contains the following tickets:/ do |tickets|
+  Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
+  create_tickets(tickets.hashes)
+  check 'gift'
+  click_button 'CONTINUE >>', :disabled => true
+end
+
+Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
+  steps %Q{Then I should see /#{type}/ within "#cart_items" #{num} times}
 end
 
 Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|

@@ -51,7 +51,6 @@ Scenario: service charge is not added twice if order error first time
 
   Given I am on the subscriptions page for customer "Tom Foolery"
   And I press "CONTINUE >>"
-
   Then I should be on the subscriptions page for customer "Tom Foolery"
   And I should see "There is nothing in your order"
   When I add 1 "Regular Sub" subscriptions

@@ -125,7 +125,7 @@ class StoreController < ApplicationController
     @order.processed_by = @customer
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
-      flash[:alert] = @order
+      flash[:alert] = @order.errors.full_messages
       @customer =  (current_user() || Customer.new)
       render(:action => 'donate') and return
     end
@@ -140,9 +140,9 @@ class StoreController < ApplicationController
   def process_cart
     @cart.add_comment params[:comments].to_s
     add_tickets_to_cart
-    redirect_to_referer(@cart) and return unless @cart.errors.empty?
+    redirect_to_referer(@cart.errors.full_messages) and return unless @cart.errors.empty?
     add_retail_items_to_cart
-    redirect_to_referer(@cart) and return unless @cart.errors.empty?
+    redirect_to_referer(@cart.errors.full_messages) and return unless @cart.errors.empty?
     # all well with cart, try to process donation if any
     add_donation_to_cart
     redirect_to_referer('There is nothing in your order.') and return if @cart.cart_empty?
@@ -176,7 +176,7 @@ class StoreController < ApplicationController
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
-      flash[:alert] = @recipient
+      flash[:alert] = @recipient.errors.full_messages
       render :action => :shipping_address
       return
     end
@@ -216,7 +216,7 @@ class StoreController < ApplicationController
       @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
     unless @order.ready_for_purchase?
-      flash[:alert] = @order
+      flash[:alert] = @order.errors.full_messages
       redirect_to_checkout
       return
     end
