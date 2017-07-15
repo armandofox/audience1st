@@ -6,8 +6,9 @@ A1.recalc_store_total = function() {
 };
 
 A1.recalc_all_walkup_sales = function() {
+  var total = A1.recalculate('#total', '.item', 2, 'price');
+  $('#_stripe_submit').prop('disabled', (total <= 0.0));
   A1.recalculate('#totaltix', '.itemCount', 0);
-  A1.recalculate('#total', '.item', 2, 'price');
 }
 
 A1.recalculate = function(total_field,selector,decplaces,attrib) {
@@ -39,5 +40,9 @@ $(function() {
   $('#store_subscribe .itemQty').change(A1.recalc_store_total);
   // for walkup sales page
   $('#walkup_tickets .item').change(A1.recalc_all_walkup_sales);
+  // if page reloaded due to failed payment txn, recalculate totals
+  if ($('#walkup_tickets').length) { // walkup sales page
+    A1.recalc_all_walkup_sales();
+  }
 });
 
