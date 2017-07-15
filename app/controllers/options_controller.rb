@@ -12,4 +12,8 @@ class OptionsController < ApplicationController
     end
     redirect_to options_path
   end
+
+  def swipe_test
+  end
+  
 end

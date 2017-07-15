@@ -102,5 +102,10 @@
     = render_collection_of_options f, %w(mailchimp_default_list_name)
 
   .pageDiv
+    %h1 Test Your Card Swipe
+    %p If you have a USB card swipe, you can test it here.
+    = link_to 'Test Card Swipe', swipe_test_path, :class => 'genButton'
+
+  .pageDiv
     %h1 Save Your Changes
     %p.c= submit_tag  "Update Settings"

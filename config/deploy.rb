@@ -41,18 +41,13 @@ namespace :provision do
   abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
   task :create_database do
     "For new venue, create new database and user, and grant migration privileges to migration user.  Set venue password in venues.yml first."
-    abort "Need MySQL root password" unless (pass = variables[:password])
+    abort "Need MySQL root password" unless (passw = variables[:password])
     venuepass = config['password']
     abort "Need to set venue password in venues.yaml" unless venuepass.to_s != ''
-    mysql = "mysql -uroot '-p#{pass}' -e \"%s;\""
+    mysql = "mysql -uroot '-p#{passw}' -e \"%s;\""
     run (mysql % "create database #{venue}")
     run (mysql % "create user '#{venue}'@'localhost' identified by '#{venuepass}'")
     run (mysql % "grant select,insert,update,delete,lock tables on #{venue}.* to '#{venue}'@'localhost'")
-  end
-
-  task :initial_deploy do
-    "Setup symlinks etc for initial deployment of new venue"
-    run "ln -s #{home}/rails/#{venue}/current/public #{home}/public_html"
   end
 
 end
@@ -102,8 +97,7 @@ namespace :deploy do
     run "touch #{release_path}/log/production.log"
     run "chmod 0666 #{release_path}/log/production.log"
     run "chmod 0777 #{release_path}/tmp"
-  end
-
+  end    
 
   namespace :web do
     desc "Protect app by requiring valid-user in htaccess."

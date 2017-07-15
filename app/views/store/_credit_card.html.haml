@@ -2,10 +2,10 @@
   %legend= defined?(legend) ? legend : 'Credit Card Information'
   %p#payment_errors
   %label{:for => 'credit_card_first_name'} First Name
-  = text_field_tag 'credit_card_first_name', (first_name ||= ''), :size => 20
+  = text_field_tag 'credit_card_first_name', (first_name ||= ''), :size => 20, :class => 'unsubmitted'
   %br
   %label{:for => 'credit_card_last_name'} Last Name
-  = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20
+  = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20, :class => 'unsubmitted'
   %br
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Figaro.env.stripe_key, :class => 'unsubmitted'
@@ -15,10 +15,10 @@
   = image_tag 'credit_card_logos_horizontal.png'
 
   %br
-  %label Expiration
-  = select_month Time.now.month, :add_month_numbers => true, :prefix => 'credit_card', :class => 'unsubmitted'
-  - y = Time.now.year
-  = select_year y, :start_year => y, :end_year => y+5, :prefix => 'credit_card', :class => 'unsubmitted'
+  %label Expiration MM/YYYY
+  = text_field_tag 'credit_card_month', '', :size => 2, :maxlength => 2, :autocomplete => :off, :class => 'unsubmitted'
+  &nbsp;/&nbsp;
+  = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'unsubmitted'
 
   %br
   %label{:for => 'credit_card_verification_value'} Security (CVV) code
