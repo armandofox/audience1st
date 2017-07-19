@@ -6,8 +6,6 @@
     = link_to "Sign in to your account", login_path
     to manage your reservations and get your Subscriber benefits.
 
-= javascript_tag "recalc_total = function() { recalculate('total','.itemQty', '#{@is_admin ? '': 'submit'}') }"
-
 #store
   #subscription_menus
     %h1.page_heading.center 
@@ -22,11 +20,11 @@
 
       - @subs_to_offer.each do |v|
         %label.wide_label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
-        = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :onchange => 'recalc_total()', :class => 'itemQty')
+        = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty', 'data-price' => v.price)
         %br/
-        = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
+
       %label.wide_label{:for => :donation} Additional tax-deductible donation
-      = text_field_tag 'donation', '', :size => 5, :onchange => 'recalc_total()', :class => 'itemQty'
+      = text_field_tag 'donation', '', :size => 5, :class => 'itemQty'
       \.00
       %br
       #orderTotal
