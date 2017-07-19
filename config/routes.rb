@@ -111,7 +111,7 @@ Rails.application.routes.draw do
 
     post '/store/:customer_id/process_cart' => 'store#process_cart', :as => 'process_cart'
     # process_cart redirects to either shipping_address (if a gift) or checkout (if not) a gift:
-    get '/store/:customer_id/shipping_address' => 'store#shipping_address', :as => 'shipping_address'
+    match '/store/:customer_id/shipping_address' => 'store#shipping_address', :via => [:get,:post], :as => 'shipping_address'
 
     # checkout requires you to be logged in:
     get '/store/:customer_id/checkout' => 'store#checkout', :as => 'checkout'

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe LapsedSubscribers do
   before :each do ;  @report = LapsedSubscribers.new ; end

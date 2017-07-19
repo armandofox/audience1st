@@ -18,9 +18,9 @@ Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regex
   regexp = Regexp.new(regexp, Regexp::MULTILINE)
   count = count.to_i
   if selector
-    within(selector) { page.find(:xpath, '//*').text.split(regexp).length.should == 1+count }
+    within(selector) { page.find(:xpath, '/*').text.split(regexp).length.should == 1+count }
   else
-    page.find(:xpath, '//*').text.split(regexp).length.should == 1+count
+    page.find(:xpath, '/*').text.split(regexp).length.should == 1+count
   end
 end
 

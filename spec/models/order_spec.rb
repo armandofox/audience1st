@@ -25,12 +25,24 @@ describe Order do
     it 'should include a donation' do ; @order.include_donation?.should be_truthy  ; end
     it 'should_not be_a_gift' do ; @order.should_not be_a_gift ; end
     it 'should not be ready' do ; @order.should_not be_ready_for_purchase, @order.errors.full_messages ; end
+    it 'should not show as empty' do ; @order.cart_empty?.should be_falsey ; end
     it 'should be ready when purchasemethod and processed_by are set' do
       @order.purchasemethod = Purchasemethod.default
       @order.processed_by = @the_customer
       @order.should be_ready_for_purchase
     end
   end
+
+  describe 'marshalling' do
+    it 'deserializes donation' do
+      @order = Order.new
+      @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
+      @order.save!
+      @unserialized = Order.find(@order.id)
+      @unserialized.cart_empty?.should be_falsey
+    end
+  end
+
 
   describe 'gift' do
     before :each do ; @c = create(:customer) ; @p = create(:customer) ; end

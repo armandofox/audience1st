@@ -8,26 +8,25 @@
   - if !(@sh.try(:description).blank?)
     #show_description.explanation= @sh.description
 
-  %label{:for => "show"}= label_for_event_type(@what)
-  = select_tag('show', options_with_default(@sh, @all_shows),                |
-    :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('#show').val())") |
-  %br/
+  .voucher_row
+    %label{:for => "show"}= label_for_event_type(@what)
+    = select_tag('show', options_with_default(@sh, @all_shows),                |
+      :onchange => "window.location = '#{@show_url}'.replace(/XXXX/,$('#show').val())") |
+    %br/
 
-  %label{:for => "showdate"} Date
-  = select_tag('showdate', options_with_default(@sd, @all_showdates),        |
-    :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('#showdate').val())") |
-  - privileged_content_for :staff do
-    - if (@sd.kind_of?(Showdate))
-      %span.admin= "#{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
-  %br/
+  .voucher_row
+    %label{:for => "showdate"} Date
+    = select_tag('showdate', options_with_default(@sd, @all_showdates),        |
+      :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('#showdate').val())") |
+    - privileged_content_for :staff do
+      - if (@sd.kind_of?(Showdate))
+        %span.admin= "#{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
+    %br/
 
   #voucher_menus
     - if @valid_vouchers.empty? && @sd
-
       %p.explanation= @sd.show.sold_out_customer_info
-
     - else
-
       - @valid_vouchers.each do |v|
         %div{:id => "vouchertype_#{v.vouchertype_id}"}
           - fieldname = "valid_voucher[#{v.id}]"
@@ -44,8 +43,9 @@
           = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
     - unless @valid_vouchers.empty?
-      %label.emphasis Accessible seating requested?
-      = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
-      #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}
-        %label{:for => :comments}= Option.special_seating_requests
-        = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)
+      .voucher_row
+        %label.emphasis Accessible seating requested?
+        = checkbox_guard_for 'comments_div', !(@cart.comments.blank?)
+        #comments_div{:style => @cart.comments.blank? ? 'display: none' : ''}
+          %label{:for => :comments}= Option.special_seating_requests
+          = text_area_tag('comments', @cart.comments, :rows => 1, :cols => 30)

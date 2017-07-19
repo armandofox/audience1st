@@ -39,7 +39,11 @@ class Order < ActiveRecord::Base
     super
   end
 
-  def after_initialize
+  after_initialize :unserialize_items
+
+  private
+
+  def unserialize_items
     self.donation_data ||= {}
     unless donation_data.empty?
       @donation = Donation.new(:amount => donation_data[:amount], :account_code_id => donation_data[:account_code_id], :comments => donation_data[:comments])
@@ -47,8 +51,6 @@ class Order < ActiveRecord::Base
     self.valid_vouchers ||= {}
     self.retail_items ||= []
   end
-
-  private
 
   def check_purchaser_info
     # walkup orders only need purchaser & recipient info to point to walkup

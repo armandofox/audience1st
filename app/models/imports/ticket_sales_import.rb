@@ -45,6 +45,8 @@ class TicketSalesImport < Import
   def valid_records ; number_of_records ; end
   def invalid_records ; 0 ; end
 
+  after_initialize :init_attributes
+
   protected
 
   def sanity_check ; nil ; end
@@ -57,7 +59,7 @@ class TicketSalesImport < Import
   end
   def col_index(letters) ; TicketSalesImport.col_index(letters) ; end
   
-  def after_initialize          # called after AR::Base makes a new obj
+  def init_attribues          # called after AR::Base makes a new obj
     self.messages ||= []
     self.messages << "Show: #{show.name}" if show
     self.vouchers = []
