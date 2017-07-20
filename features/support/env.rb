@@ -9,6 +9,7 @@ ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
 require 'cucumber/rails'
+require 'webmock/cucumber'
 
 # require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
 # require 'cucumber/rails/rspec'
@@ -81,6 +82,8 @@ Before do
   #require 'cucumber/rspec/doubles'
   RSpec::Mocks::setup
 
+  WebMock.enable!
+  WebMock.disable_net_connect!(:allow_localhost => true)
   # Allow testing of emails
   ActionMailer::Base.delivery_method = :test
   ActionMailer::Base.perform_deliveries = true
@@ -88,6 +91,7 @@ Before do
 end
 
 After do
+  WebMock.reset!
   begin
     RSpec::Mocks.verify
   ensure
@@ -103,6 +107,7 @@ end
 
 # Stub Stripe for certain scenarios
 Before('@stubs_successful_credit_card_payment') do
+  stub_request(:post, 'stripe.com')
   Store.stub(:pay_with_credit_card) do |order|
     order.update_attributes!(:authorization => 'ABC123')
   end

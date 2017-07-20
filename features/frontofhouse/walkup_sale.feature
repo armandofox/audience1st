@@ -1,3 +1,4 @@
+@javascript
 Feature: Sell walkup tickets
 
   As a boxoffice worker
@@ -14,6 +15,7 @@ Feature: Sell walkup tickets
   Scenario: purchase 2 tickets with cash
 
     When I select "2" from "General"
+    And I choose "Cash or Zero-Revenue"
     And I press "Record Cash Payment or Zero Revenue Transaction"
     Then I should see "2 tickets (total $22.00) paid by Cash"
     And I should see "General (1 left)"
@@ -22,6 +24,7 @@ Feature: Sell walkup tickets
   Scenario: purchase 2 tickets with check
   
     When I select "2" from "General"
+    And I choose "Check"
     And I press "Record Check Payment"
     Then I should see "2 tickets (total $22.00) paid by Check"
     And I should see "General (1 left)"
@@ -31,14 +34,8 @@ Feature: Sell walkup tickets
   Scenario: purchase 2 tickets with valid credit card info
 
     When I select "2" from "General"
-    And I fill in the "Credit Card Payment" fields as follows:
-    | field              | value         |
-    | First Name         | John          |
-    | Last Name          | Doe           |
-    | Number (no spaces) | 1             |
-    | Expiration Month   | select "12"   |
-    | Expiration Year    | select "2013"   |
-    And I fill in "Enter CVV code manually FIRST!" with "111"
+    And I choose "Credit Card"
+    And I fill in a valid credit card for "John Doe"
     And I press "Charge Credit Card"
     Then I should see "2 tickets (total $22.00) paid by Credit card"
     And I should see "General (1 left)"
@@ -48,21 +45,8 @@ Feature: Sell walkup tickets
   Scenario: attempt purchase with invalid credit card
 
     When I select "2" from "General"
-    And I fill in the "Credit Card Payment" fields as follows:
-    | field            | value         |
-    | First Name       | John          |
-    | Last Name        | Doe           |
-    | Expiration Month | select "12"   |
-    | Expiration Year  | select "2013" |
+    And I fill in an invalid credit card for "John Doe"
     And I press "Charge Credit Card"
     Then I should see "Transaction NOT processed"
     And I should see "General (3 left)"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
-
-  Scenario: attempt zero-revenue purchase by check
-
-    When I press "Record Check Payment"
-    Then I should see "There are no items to purchase"
-    And I should see "General (3 left)"
-    And I should be on the walkup sales page for October 1, 2015, 7:00pm
-

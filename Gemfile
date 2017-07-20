@@ -42,6 +42,7 @@ group :test do
   gem 'capybara'
   gem 'poltergeist'
   gem 'rspec-its'
+  gem 'webmock'
 end
 
 group :development, :test do

@@ -84,7 +84,7 @@ end
 Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype_name,date|
   vtype = Vouchertype.find_by_name!(vtype_name)
   showdate = Showdate.find_by_thedate!(Time.parse(date))
-  showdate.where('vouchertype_id = ?', vtype.id).count.should == qty.to_i
+  showdate.vouchers.where('vouchertype_id = ?', vtype.id).count.should == qty.to_i
 end
 
 Then /^ticket sales should be as follows:$/ do |tickets|

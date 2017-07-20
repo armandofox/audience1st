@@ -24,6 +24,8 @@ class SessionsController < ApplicationController
         @email = params[:email]
         @remember_me = params[:remember_me]
         render :action => :new
+      else
+        session[:exists] = true
       end
       u
     end
@@ -41,6 +43,8 @@ class SessionsController < ApplicationController
           redirect_to new_from_secret_session_path
         end
         return
+      else
+        session[:exists] = true
       end
       u
     end

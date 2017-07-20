@@ -67,6 +67,8 @@ GEM
     coderay (1.1.1)
     color (1.8)
     concurrent-ruby (1.0.5)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     cucumber (2.4.0)
       builder (>= 2.1.2)
       cucumber-core (~> 1.5.0)
@@ -135,6 +137,7 @@ GEM
     haml (5.0.1)
       temple (>= 0.8.0)
       tilt
+    hashdiff (0.3.0)
     hashery (2.1.2)
     hitimes (1.2.5)
     hominid (3.0.5)
@@ -288,6 +291,7 @@ GEM
     ruport (1.7.1)
       pdf-writer (= 1.1.8)
       prawn (= 0.12.0)
+    safe_yaml (1.0.4)
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
@@ -333,6 +337,10 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
+    webmock (2.1.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
     webrobots (0.1.2)
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
@@ -400,6 +408,7 @@ DEPENDENCIES
   thor (= 0.19.1)
   timecop
   web-console (~> 2.0)
+  webmock
   will_paginate
 
 RUBY VERSION

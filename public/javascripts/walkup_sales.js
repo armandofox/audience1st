@@ -1,5 +1,16 @@
 // walkup sales - calculator
 
+A1.show_only = function(div) {
+  // force re-enabling regular form submission.  (b/c if a txn was submitted 
+  // via Stripe JS and it failed, the form submit handler will still be 
+  // set to block "real" submission of the form.)
+  $('#_stripe_payment_form').submit(function(evt) { return true });
+  $('#credit_card_payment').hide(); 
+  $('#cash_payment').hide();        
+  $('#check_payment').hide();       
+  $('#'+div+'_payment').show();           
+}
+
 A1.recalc_store_total = function() {
   var total = A1.recalculate('#total', '.itemQty', 2, 'price');
   $('#submit').prop('disabled', (total <= 0.0));
