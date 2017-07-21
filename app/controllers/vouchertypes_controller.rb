@@ -13,7 +13,7 @@ class VouchertypesController < ApplicationController
   public
   
   def index
-    return redirect_to(params.merge(:season => Time.this_season, :only_path => true)) unless (@season = params[:season].to_i) > 0
+    return redirect_to url_for(params.merge(:season => Time.this_season, :only_path => true)) unless (@season = params[:season].to_i) > 0
     @superadmin = current_user().is_admin
     # possibly limit pagination to only bundles or only subs
     @earliest = Vouchertype.order('season').first.season
@@ -32,10 +32,10 @@ class VouchertypesController < ApplicationController
     when "Nonticket Products"
       @vouchertypes = Vouchertype.nonticket_vouchertypes(limit_to_season)
     else # ALL
-      @vouchertypes = Vouchertype.all
-      if (limit_to_season)
-        @vouchertypes.reject! { |vt| vt.season && (vt.season != limit_to_season) }
-      end
+      @vouchertypes = if limit_to_season
+                      then Vouchertype.where(:season => limit_to_season)
+                      else Vouchertype.all
+                      end
     end
     @vouchertypes = @vouchertypes.sort_by do |v|
       (v.bundle? ? 0 : 1e6) + v.season*1000 + v.display_order

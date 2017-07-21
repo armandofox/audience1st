@@ -90,9 +90,9 @@ Then /^(.*):"(.*)" should come (before|after) (.*):"(.*)" within "(.*)"$/ do |ta
   elt2 = html.xpath("//#{sel}//#{tag2}[contains(.,'#{val2}')]").first
   sequence = (elt1 <=> elt2)
   if order =~ /before/
-    assert sequence == -1
+    sequence.should == -1
   else
-    assert sequence == 1
+    sequence.should == 1
   end
 end
 

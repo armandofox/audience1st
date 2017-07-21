@@ -2,11 +2,10 @@ class OrdersController < ApplicationController
   before_filter :is_boxoffice_filter
 
   def index
-    redirect_to(root_path, :alert => 'No customer specified'
-      ) and return unless @customer = Customer.find_by_id(params[:customer_id])
-    redirect_to(root_path, :notice => "#{@customer.full_name} has no orders."
-      ) and return if (@orders = @customer.orders).empty?
-    render :partial => 'order', :collection => @orders, :layout => true
+    return redirect_to(root_path, :alert => 'No customer specified') unless
+      @customer = Customer.find_by_id(params[:customer_id])
+    return redirect_to(root_path, :notice => "#{@customer.full_name} has no orders.") if
+      (@orders = @customer.orders).empty?
   end
 
   def show

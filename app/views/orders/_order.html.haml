@@ -1,5 +1,5 @@
 %div[order]
-  %h1 
+  %h3 
     %a.flippy[order, :flippy]{:href=>'#'} &#x25BC;
     Order ##{order.id}, by #{staff_name(order.processed_by)} on #{order.sold_on.strftime('%c')}
   %div.order_info[order, :details]
@@ -20,6 +20,10 @@
       %p
         %span.label Payment method:
         = humanize(order.purchase_medium)
+
+      %p
+        %span.label Refundable:
+        = order.refundable? ? "Yes" : "No"
 
       %p
         %span.label Order comments:
@@ -46,7 +50,7 @@
       - if @printable
         %h2.center #{Option.venue} thanks you for your order!
       - else
-        = link_to 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank'}, :class => 'genButton'
+        = link_to 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank', :class => 'genButton'}
         = link_to 'Back to Customer', customer_path(order.customer), :class => 'genButton'
         - if order.refundable?
           - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Delete')

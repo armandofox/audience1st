@@ -1,8 +1,3 @@
-%h1 
-  Editing 
-  = h(@account_code.name)
+%h1 Editing #{@account_code.name}
 
-- form_for(@account_code) do |f| 
-  = render :partial => 'form', :locals => {:f => f}
-  = f.submit 'Update' 
-  = link_to 'Cancel', account_codes_path, :class => 'genButton'
+= render :partial => 'form'

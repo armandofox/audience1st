@@ -17,7 +17,7 @@ class AccountCodesController < ApplicationController
   end
 
   def create
-    @account_code = AccountCode.new(params[:account_code])
+    @account_code = AccountCode.new(account_code_params)
     if @account_code.save
       flash[:notice] = 'Account code was successfully created.'
     else
@@ -28,7 +28,7 @@ class AccountCodesController < ApplicationController
 
   def update
     @account_code = AccountCode.find(params[:id])
-    if @account_code.update_attributes(params[:account_code])
+    if @account_code.update_attributes(account_code_params)
       flash[:notice] = 'AccountCode was successfully updated.'
     else
       flash[:alert] = ['AccountCode could not be updated:', @account_code]
@@ -40,5 +40,11 @@ class AccountCodesController < ApplicationController
     @account_code = AccountCode.find(params[:id])
     @account_code.destroy or flash[:alert] = @account_code.errors[:base] 
     redirect_to account_codes_path
+  end
+
+  private
+
+  def account_code_params
+    params.require(:account_code).permit(:name, :code, :description)
   end
 end

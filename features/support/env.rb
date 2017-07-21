@@ -109,7 +109,8 @@ end
 Before('@stubs_successful_credit_card_payment') do
   stub_request(:post, 'stripe.com')
   Store.stub(:pay_with_credit_card) do |order|
-    order.update_attributes!(:authorization => 'ABC123')
+    order.update_attribute(:authorization, 'ABC123')
+    true
   end
 end
 

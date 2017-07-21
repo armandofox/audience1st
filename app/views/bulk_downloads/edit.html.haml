@@ -11,7 +11,7 @@
 
 
 - shows = options_for_select({'' => 0}) + options_from_collection_for_select(Show.all.sort_by(&:name), :id, :name)
-- form_for @download.becomes(BulkDownload) do |f|
+= form_for @download.becomes(BulkDownload) do |f|
   = render :partial => 'bulk_download', :locals => {:bulk_download => @download, :f => f}
   %table
     %thead

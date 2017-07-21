@@ -19,7 +19,7 @@ class VouchersController < ApplicationController
   # AJAX helper for adding comps
   def update_shows
     @valid_vouchers = Vouchertype.find(params[:vouchertype_id]).valid_vouchers.sort_by(&:showdate)
-    render :partial => 'reserve_for', :locals => {:valid_vouchers => @valid_vouchers}
+    render :partial => 'reserve_for'
   end
 
   def index
@@ -35,6 +35,7 @@ class VouchersController < ApplicationController
     if @vouchers.empty?
       redirect_to(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
     end
+    @valid_vouchers = []
   end
 
   def create

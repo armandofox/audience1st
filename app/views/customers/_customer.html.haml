@@ -1,8 +1,9 @@
 - read_only = false unless defined?(read_only)
+- editable = customer.id && !read_only
 %tr{:valign=>:top,:class=>display_class(customer)}
-  %td= check_box_tag "merge[#{customer.id}]" if customer.id && !read_only
+  %td= check_box_tag("merge[#{customer.id}]",1,nil,:class => 'selectForMerge') if editable
   - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize
-  - if customer.id && !read_only
+  - if editable
     - last_login = "Last login: " << h(customer.last_login.to_formatted_s(:long))
     %td= link_to first, customer_path(customer), {:title => last_login}
     %td= link_to last, customer_path(customer), {:title => last_login}

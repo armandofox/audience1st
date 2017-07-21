@@ -9,6 +9,6 @@
   This feature only downloads the lists; you must then preview and approve 
   each list to finalize the import of that list.
 
-- form_for :bulk_download, :url => bulk_downloads_path do |f|
+= form_for :bulk_download, :url => bulk_downloads_path do |f|
   = render :partial => 'bulk_download', :locals => {:f => f}
   = f.submit "Find Sales Reports"

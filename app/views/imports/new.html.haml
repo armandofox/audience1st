@@ -1,4 +1,4 @@
-- form_for :import, :url => imports_path, :html => {:multipart => true} do |f|
+= form_for :import, :url => imports_path, :html => {:multipart => true} do |f|
   %p
     %label{:for => :import_type} What do you want to import?
     = f.select :type, options_for_select(Import.import_types, @import.type.to_s), :id => 'import_type'
