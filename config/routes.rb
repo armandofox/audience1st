@@ -124,8 +124,9 @@ Rails.application.routes.draw do
 
     # config options
 
-    match '/options' => 'options#options', :via => [:get, :post]
-    get 'options/swipe_test' => 'options#swipe_test', :as => 'swipe_test'
+    resources :options, :only => [:index, :update]
+    get 'swipe_test' => 'options#swipe_test', :as => 'swipe_test'
+
     # walkup sales
 
     resources :walkup_sales, :only => [:show, :create, :update] do

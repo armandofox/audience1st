@@ -1,5 +1,5 @@
 %p Click on the name of each configuration option for more information.
-= form_tag options_path, :method => :post do |f|
+= form_for @o do |f|
   .pageDiv
     %h1 Your Venue Info As Seen By Customers
     = render_collection_of_options f, |

@@ -41,6 +41,7 @@ module Audience1st
       Time.include CoreExtensions::Time::Season
       Date.include CoreExtensions::Date::Season
       String.include CoreExtensions::String::Name
+      String.include CoreExtensions::String::Colorize
     end
   end
 end
