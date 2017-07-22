@@ -20,7 +20,10 @@ This is a stock Rails app, with the following exceptions/additions:
 
 # Required external integrations
 
-You will need to create a file `config/application.yml` containing the following:
+Audience1st uses [Figaro](https://github.com/laserlemon/figaro) to manage secrets, so you must arrange for the file `config/application.yml` to exist in the app root directory on the deploy server (or if using Heroku, use Figaro's built-in Heroku integration to make the config values available on that platform).
+
+A minimal `config/application.yml` should look like this.  Remember that Figaro lets you override these values per-environment, so
+(e.g.) you could have a `test:` section that overrides the Stripe and email-integration API keys with test account keys.
 
 ```yaml
 session_secret: "30 or more random characters string"
