@@ -74,7 +74,7 @@ class VouchertypesController < ApplicationController
         end
       end
     else
-      flash[:notice] = ['Vouchertype could not be created: ', @vouchertype]
+      flash[:notice] = ['Vouchertype could not be created: ', @vouchertype.errors.as_html]
       render :action => 'new'
     end
   end
@@ -104,7 +104,7 @@ class VouchertypesController < ApplicationController
       flash[:notice] = 'Vouchertype was successfully updated.'
       redirect_to vouchertypes_path, :season => @vouchertype.season
     else
-      flash[:alert] = ['Update failed, please re-check information and try again: ', @vouchertype]
+      flash[:alert] = ['Update failed, please re-check information and try again: ', @vouchertype.errors.as_html]
       redirect_to edit_vouchertype_path(@vouchertype)
     end
   end

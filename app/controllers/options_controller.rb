@@ -11,7 +11,7 @@ class OptionsController < ApplicationController
     if (@o.update_attributes(option_params))
       flash[:notice] = "Update successful, your changes should take effect in the next 15 minutes."
     else
-      flash[:alert] = @o.errors.full_messages
+      flash[:alert] = @o.errors.as_html
     end
     redirect_to options_path
   end

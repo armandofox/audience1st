@@ -92,7 +92,7 @@ class ValidVouchersController < ApplicationController
       end
       flash[:notice] = 'Update successful'
     rescue Exception => e
-      flash[:alert] = [e.message, @valid_voucher]
+      flash[:alert] = [e.message, @valid_voucher.errors.as_html]
     end
     redirect_to edit_show_path(@valid_voucher.showdate.show)
   end

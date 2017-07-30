@@ -98,7 +98,7 @@ class DonationsController < ApplicationController
     end
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
-      flash[:alert] = @order.errors.full_messages.join(',')
+      flash[:alert] = @order.errors.as_html
       render :action => 'new'
       return
     end

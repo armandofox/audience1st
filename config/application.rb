@@ -42,6 +42,7 @@ module Audience1st
       Date.include CoreExtensions::Date::Season
       String.include CoreExtensions::String::Name
       String.include CoreExtensions::String::Colorize
+      ActiveModel::Errors.include(ActiveModel::Errors::HtmlFormatter)
     end
   end
 end

@@ -28,19 +28,11 @@ module ApplicationHelper
       :class => 'tooltip') 
   end
 
-  def render_multiline_message(m,sep="<br/>\n")
-    sep = sep.html_safe
-    if m.respond_to?(:errors_as_html)
-      m.errors_as_html(sep).html_safe
-    elsif (m.kind_of? Array)
-      # each element is either a string, or something that responds
-      #  to errors_as_html.  Render them recursively.
-      m.map do |line|
-        content_tag(:span, render_multiline_message(line,sep).html_safe)
-      end.join(sep).html_safe
-    else
-      m.html_safe
-    end
+  # Render as HTML a multiline message passed as an array.
+  # String elements are separated with +sep+.
+  # Array elements become embedded lists.
+  def render_multiline_message(msg,sep="<br/>\n")
+    if msg.kind_of?(Array) then msg.flatten.join(sep.html_safe) else msg end
   end
   
   # gracefully show a range of dates

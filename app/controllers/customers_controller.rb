@@ -90,7 +90,7 @@ class CustomersController < ApplicationController
       end
       redirect_to customer_path(@customer)
     rescue ActiveRecord::RecordInvalid
-      flash[:alert] = ["Update failed: ", @customer, "Please fix error(s) and try again."]
+      flash[:alert] = ["Update failed: ", @customer.errors.as_html, "Please fix error(s) and try again."]
       redirect_to edit_customer_path(@customer)
     rescue Exception => e
       flash[:alert] = "Update failed: #{e.message}"
@@ -109,7 +109,7 @@ class CustomersController < ApplicationController
       :comments => 'Change password')
       redirect_to customer_path(@customer)
     else
-      flash[:alert] = ['Changing password failed: ', @customer]
+      flash[:alert] = ['Changing password failed: ', @customer.errors.as_html]
       render :action => 'change_password_for'
     end
   end
@@ -122,7 +122,7 @@ class CustomersController < ApplicationController
       flash[:notice] = 'Secret question change confirmed.'
       redirect_to customer_path(@customer)
     else
-      flash[:alert] = ["Could not update secret question: ", @customer]
+      flash[:alert] = ["Could not update secret question: ", @customer.errors.as_html]
       render :action => :change_secret_question, :id => @customer
     end
   end
@@ -244,7 +244,7 @@ class CustomersController < ApplicationController
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
     unless @customer.save
-      flash[:alert] = ['Creating customer failed: ', @customer]
+      flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
       return render(:action => 'new')
     end
     (flash[:notice] ||= '') <<  'Account was successfully created.'
@@ -267,7 +267,7 @@ class CustomersController < ApplicationController
     @customers =
       Customer.find_by_multiple_terms(s.split( /\s+/ )).sort_by(&:sortable_name)
     result = @customers.map do |c|
-      {'label' => c.full_name, 'value' => customer_path(c.id, :only_path => true)}
+      {'label' => c.full_name, 'value' => customer_path(c)}
     end
     render :json => result
   end

@@ -27,7 +27,7 @@ class ShowsController < ApplicationController
       redirect_to edit_show_path(@show),
       :notice =>  'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
     else
-      flash[:alert] = ["There were errors creating the show: ", @show]
+      flash[:alert] = ["There were errors creating the show: ", @show.errors.as_html]
       render :action => 'new'
     end
   end
@@ -48,7 +48,7 @@ class ShowsController < ApplicationController
     if @show.update_attributes(params[:show])
       redirect_to edit_show_path(@show), :notice => 'Show details successfully updated.'
     else
-      flash[:alert] = ["Show details could not be updated: ", @show]
+      flash[:alert] = ["Show details could not be updated: ", @show.errors.as_html]
       render :action => 'edit', :id => @show
     end
   end

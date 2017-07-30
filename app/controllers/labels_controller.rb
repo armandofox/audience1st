@@ -25,7 +25,7 @@ class LabelsController < ApplicationController
       next_action = (params[:commit] =~ /another/i ? new_label_path : labels_path)
       redirect_to next_action, :notice => 'Label was successfully created.'
     else
-      flash[:alert] = ['Creating label failed: ', @label]
+      flash[:alert] = ['Creating label failed: ', @label.errors.as_html]
       render :action => "new"
     end
   end
@@ -37,7 +37,7 @@ class LabelsController < ApplicationController
     if @label.update_attributes(params[:label])
       redirect_to(@label, :notice => 'Label was successfully updated.')
     else
-      flash[:alert] = ['Editing label failed: ', @label]
+      flash[:alert] = ['Editing label failed: ', @label.errors.as_html]
       render :action => "edit"
     end
   end

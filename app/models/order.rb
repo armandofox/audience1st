@@ -62,7 +62,7 @@ class Order < ActiveRecord::Base
       errors.add(:base, "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}") if
         purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
       errors.add(:base, 'No recipient information') unless customer.kind_of?(Customer)
-      errors.add(:customer, customer.errors_as_html) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
+      errors.add(:customer, customer.errors.as_html) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
     end
   end
 
@@ -282,12 +282,12 @@ class Order < ActiveRecord::Base
         # add retail items to recipient's account
         customer.add_items(retail_items) if !retail_items.empty?
         unless customer.save
-          raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors_as_html)
+          raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors.as_html)
         end
         # add donation items to purchaser's account
         purchaser.add_items([donation]) if donation
         unless purchaser.save
-          raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors_as_html)
+          raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors.as_html)
         end
         self.sold_on = sold_on_date
         self.items += vouchers
@@ -300,7 +300,7 @@ class Order < ActiveRecord::Base
         end
         self.save!
         if purchase_medium == :credit_card
-          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors_as_html)
+          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
         end
         # Log the order
         Txn.add_audit_record(:txn_type => 'oth_purch',

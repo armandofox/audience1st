@@ -7,20 +7,25 @@ end
 
 Then /^I should (not )?see autocomplete choice "(.*)"/ do |no, text|
   wait_for_ajax
-  selector = %Q{ul.ui-autocomplete li.ui-menu-item:contains('#{text}')}
+  autocomplete_choices = %Q{//ul[contains(@class,"ui-autocomplete")]}
+  item = autocomplete_choices + %Q{/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}')]}
+  page.should have_xpath(autocomplete_choices)
   if no
-    page.should_not have_selector(selector)
+    page.should_not have_xpath(item)
   else
-    page.should have_selector(selector)
+    page.should have_xpath(item)
   end
 end
 
 When /^I select autocomplete choice "(.*)"$/ do |text|
   wait_for_ajax
-  selector = %{ ul.ui-autocomplete li.ui-menu-item:contains('#{text}') }
-  page.execute_script %Q{$("#{selector}").trigger('mouseenter').click() }
+  xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}')]}
+  element = page.all(:xpath,xpath).first
+  #page.execute_script %Q{$("#{selector}").trigger('mouseenter').click() }
+  element.click
 end
 
 Then /^I should not see any autocomplete choices$/ do
-  page.should_not have_selector('ui.ui-autocomplete li.ui-menu-item')
+  xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item")]}
+  page.should_not have_xpath(xpath)
 end

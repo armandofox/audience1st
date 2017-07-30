@@ -43,7 +43,7 @@ class WalkupSalesController < ApplicationController
     end
     
     flash[:alert] = 'There are no items to purchase.' if @order.item_count.zero?
-    flash[:alert] ||= @order unless @order.ready_for_purchase?
+    flash[:alert] ||= @order.errors.as_html unless @order.ready_for_purchase?
     return redirect_to(walkup_sale_path(@showdate)) if flash[:alert]
 
     # all set to try the purchase
@@ -57,7 +57,7 @@ class WalkupSalesController < ApplicationController
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:alert] = ["Transaction NOT processed: "] + @order.errors.full_messages
+      flash[:alert] = ["Transaction NOT processed: ", @order.errors.as_html]
       redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
   end

@@ -1,7 +1,5 @@
-# This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
 
-  # render new.rhtml
   def new
     redirect_to customer_path(current_user) and return if logged_in?
     @page_title = "Login or Create Account"

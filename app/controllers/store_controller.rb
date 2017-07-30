@@ -115,7 +115,7 @@ class StoreController < ApplicationController
     end
     @customer = Customer.for_donation(params[:customer])
     unless @customer.valid_as_purchaser?
-      flash[:alert] = ["Incomplete or invalid donor information: ", @customer]
+      flash[:alert] = ["Incomplete or invalid donor information: ", @customer.errors.as_html]
       render(:action => 'donate') and return
     end
     # Given valid donation, customer, and charge token, create & place credit card order.
@@ -125,7 +125,7 @@ class StoreController < ApplicationController
     @order.processed_by = @customer
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
-      flash[:alert] = @order.errors.full_messages
+      flash[:alert] = @order.errors.as_html
       @customer =  (current_user() || Customer.new)
       render(:action => 'donate') and return
     end
@@ -176,7 +176,7 @@ class StoreController < ApplicationController
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
-      flash[:alert] = @recipient.errors.full_messages
+      flash[:alert] = @recipient.errors.as_html
       render :action => :shipping_address
       return
     end
@@ -216,7 +216,7 @@ class StoreController < ApplicationController
       @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
     unless @order.ready_for_purchase?
-      flash[:alert] = @order.errors.full_messages
+      flash[:alert] = @order.errors.as_html
       redirect_to_checkout
       return
     end

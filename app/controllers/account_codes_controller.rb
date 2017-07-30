@@ -21,7 +21,7 @@ class AccountCodesController < ApplicationController
     if @account_code.save
       flash[:notice] = 'Account code was successfully created.'
     else
-      flash[:alert] = ['Account code could not be created:', @account_code]
+      flash[:alert] = ['Account code could not be created:', @account_code.errors.as_html]
     end
     redirect_to account_codes_path
   end
@@ -31,7 +31,7 @@ class AccountCodesController < ApplicationController
     if @account_code.update_attributes(account_code_params)
       flash[:notice] = 'AccountCode was successfully updated.'
     else
-      flash[:alert] = ['AccountCode could not be updated:', @account_code]
+      flash[:alert] = ['AccountCode could not be updated:', @account_code.errors.as_html]
     end
     redirect_to account_codes_path
   end
