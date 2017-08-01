@@ -166,5 +166,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  protected
+
+  def new_session?
+    # returns true the FIRST time it's called on a session.  Used for
+    # displaying login-time messages, etc.
+    session.delete(:new_session)
+  end
+  
 end
 

@@ -31,7 +31,7 @@
           %td= link_to v.order_id, order_path(v.order)
           %td= v.purchaser.full_name
 
-  .explain
+  #transfer.explain
     %strong Transfer checked vouchers to customer
     = text_field_tag 'customer', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
     = hidden_field_tag 'cid'

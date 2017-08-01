@@ -12,7 +12,7 @@ Background: I am logged in as boxoffice
 
 Scenario: quick search with multiple match
 
-  When I fill autocomplete field "autocomplete" with "Bagg"
+  When I fill "quicksearch" autocomplete field with "Bagg"
   Then I should see autocomplete choice "Bilbo Baggins" 
   And I should see autocomplete choice "Frodo Baggins"
   But I should not see autocomplete choice "Bob Bag"
@@ -21,5 +21,5 @@ Scenario: quick search with multiple match
 
 Scenario: quick search with no matches
 
-  When I fill autocomplete field "autocomplete" with "xyz"
+  When I fill "quicksearch" autocomplete field with "xyz"
   Then I should not see any autocomplete choices

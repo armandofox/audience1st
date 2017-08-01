@@ -101,5 +101,5 @@ When /^I check the transfer box for the (\d)(?:th|st|rd) "(.*)" voucher$/ do |or
   td = "//table[@id='transfer_vouchers_table']//td[contains(text(),'#{voucher_name}')]"
   # navigate from the td to the checkbox at the beginning of its row
   checkbox = "#{td}/..//input[@type='checkbox']"
-  find(:xpath, checkbox).set(true)
+  find_all(:xpath, checkbox)[ordinal - 1].set(true)
 end
