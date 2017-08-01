@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
   #  :admin_disabled    admin is logged in but wants to see regular patron view. Causes is_admin, etc to return nil
   #  :checkout_in_progress  true if cart holds valid-looking order, which should be displayed throughout checkout flow
   #  :cart              ID of the order in progress (BUG: redundant with checkout_in_progress??)
-  #  :exists            true the first time it's called on a session (for displaying login messages); false thereafter
+  #  :new_session       true when session is created, reset when checking if this is a new session
   #                        (BUG: logic should be moved to the session create logic for interactive login)
 
   def session_expired
@@ -161,6 +161,7 @@ class ApplicationController < ActionController::Base
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
+      session[:new_session] = true
       redirect_after_login(@user)
     end
   end

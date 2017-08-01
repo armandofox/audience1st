@@ -1,6 +1,7 @@
 module CustomersHelper
   # Greeting for a customer
   def greet(customer)
+    return "Customer" if customer.nil?
     customer.first_name.blank? ? customer.full_name : customer.first_name
   end
   #

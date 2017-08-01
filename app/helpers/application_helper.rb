@@ -32,7 +32,8 @@ module ApplicationHelper
   # String elements are separated with +sep+.
   # Array elements become embedded lists.
   def render_multiline_message(msg,sep="<br/>\n")
-    if msg.kind_of?(Array) then msg.flatten.join(sep.html_safe) else msg end
+    (msg.kind_of?(Array) ? msg.flatten.join(sep.html_safe) : msg).
+      html_safe
   end
   
   # gracefully show a range of dates

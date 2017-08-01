@@ -157,11 +157,11 @@ class CustomersController < ApplicationController
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
     else
-      flash[:alert] = ["There was a problem creating your account:<br/>"] +
+      flash[:alert] = ["There was a problem creating your account: "] +
         @customer.errors.full_messages
       # for special case of duplicate (existing) email, offer login
       if @customer.unique_email_error
-        flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email))
+        flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email)).html_safe
       end
       render :action => 'new'
     end

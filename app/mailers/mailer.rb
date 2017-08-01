@@ -1,5 +1,7 @@
 class Mailer < ActionMailer::Base
 
+  helper :customers
+
   default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
   
   before_filter :setup_defaults
@@ -7,13 +9,14 @@ class Mailer < ActionMailer::Base
   def confirm_account_change(customer, whathappened, newpass=nil)
     @whathappened = whathappened
     @newpass = newpass
-    mail(:to => @email, :subject => "#{@subject} #{customer.full_name}'s account")
+    @customer = customer
+    mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 
     
   def confirm_order(purchaser,order) 
     @order = order
-    mail(:to => purchaser, :subject => "#{@subject} order confirmation")
+    mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
   end
 
   def confirm_reservation(customer,showdate,num=1)
@@ -37,7 +40,7 @@ class Mailer < ActionMailer::Base
   end
   
   def upcoming_birthdays(send_to, num, from_date, to_date, customers)
-    @num,@from_date,@to_date,@customers = num,from_date,to_date,customers
+    @num,@customers = num,customers
     @subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
     mail(:to => send_to, :subject => @subject)
   end

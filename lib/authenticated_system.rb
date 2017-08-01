@@ -30,9 +30,8 @@ module AuthenticatedSystem
   def new_session?
     # returns true the FIRST time it's called on a session.  Used for
     # displaying login-time messages, etc.
-    retval = !session[:exists]
-    session[:exists] = true
-    retval
+    puts "** in new_session"
+    session.delete(:new_session)
   end
   
     # Inclusion hook to make #current_user and #logged_in?

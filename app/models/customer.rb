@@ -193,10 +193,6 @@ class Customer < ActiveRecord::Base
     end
   end
 
-  def setup_secret_question_message
-    'You can now setup a secret question to verify your identity in case you forget your password.  Click Change Password above to setup your secret question.'
-  end
-
   def welcome_message
     subscriber? ? Option.welcome_page_subscriber_message.to_s :
       Option.welcome_page_nonsubscriber_message.to_s

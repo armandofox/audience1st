@@ -14,6 +14,10 @@ class Customer < ActiveRecord::Base
     :is => 0, :allow_nil => true,
     :message => 'cannot be given unless you specify a question')
 
+  def setup_secret_question_message
+    'You can now setup a secret question to verify your identity in case you forget your password.  Click Change Password above to setup your secret question.'
+  end
+
   def has_secret_question? ; !self.secret_question.zero? ; end
   
   def check_secret_answer(str)
@@ -31,9 +35,9 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed,
         'Can\'t find that email address.  Maybe you registered with a different one?')
     elsif !u.has_secret_question?
-      u.errors.add(:login_failed, "Sorry, but '#{email}' never set up a secret question.")
+      u.errors.add(:no_secret_question, "Sorry, but '#{email}' never set up a secret question.")
     elsif !(u.check_secret_answer(answer))
-      u.errors.add(:login_failed, "Sorry, that isn't the answer you provided when you selected your secret question.")
+      u.errors.add(:incorrect_secret_question_answer, "Sorry, that isn't the answer you provided when you selected your secret question.")
     end
     u
   end

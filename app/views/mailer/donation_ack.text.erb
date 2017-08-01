@@ -1,7 +1,5 @@
 Dear <%= greet(@customer) -%>,
 
-Hello from the online box office at <%= @venue -%>!
-
 Thank you so much for your donation to <%= @venue %>
 on <%= Date.today.to_formatted_s(:date_only) -%> in the amount of <%= number_to_currency(@amount) %>.
 

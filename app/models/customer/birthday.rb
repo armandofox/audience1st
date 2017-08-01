@@ -24,7 +24,7 @@ class Customer < ActiveRecord::Base
     to_date = from_date + n.days
     customers = Customer.birthdays_in_range(from_date, to_date)
     unless customers.empty?
-      Mailer.upcoming_birthdays(n, recipient, from_date, to_date, customers).deliver_now
+      Mailer.upcoming_birthdays(recipient, n, from_date, to_date, customers).deliver_now
     end
   end
 end
