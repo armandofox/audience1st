@@ -14,6 +14,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
   config.include AuthenticatedTestHelper
+  config.include RSpecHtmlMatchers
   config.include CustomMatchers
   config.include FactoryGirl::Syntax::Methods
   config.include ApplicationHelper

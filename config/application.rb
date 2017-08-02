@@ -38,7 +38,7 @@ module Audience1st
     config.assets.enabled = false
     
     config.after_initialize do
-      load 'lib/core_extensions/time/time.rb' # to get new to_formatted_s formats
+      Time.include CoreExtensions::Time::ShowtimeDateFormats
       Time.include CoreExtensions::Time::Season
       Date.include CoreExtensions::Date::Season
       String.include CoreExtensions::String::Name

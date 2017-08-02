@@ -5,7 +5,7 @@ describe TicketSalesImport do
   describe "importing showdate" do
     before(:each) do
       TicketSalesImport.send(:public, :import_showdate)
-      @imp = TicketSalesImport.new(:show => create(:show))
+      @imp = build(:ticket_sales_import)
       @date = "Tue, Oct 31, 8:00pm"
     end
     context "when no match" do
@@ -24,7 +24,7 @@ describe TicketSalesImport do
   describe "checking duplicate order" do
     before :all do ; TicketSalesImport.send(:public, :already_entered?) ; end
     before :each do
-      @imp = TicketSalesImport.new(:show => mock_model(Show, :name => 'XXX'))
+      @imp = build(:ticket_sales_import)
       @existing_order_id = '12345678'
     end
     it "should raise error if already entered for different show" do
@@ -41,7 +41,7 @@ describe TicketSalesImport do
 
   describe "preview" do
     describe "should bail out with errors" do
-      before :each do ; @imp = BrownPaperTicketsImport.new ; end
+      before :each do ; @imp = build(:brown_paper_tickets_import) ; end
       it "if no show specified" do
         @imp.preview
         @imp.errors.full_messages.should include_match_for(/show does not exist/i)
@@ -57,7 +57,7 @@ describe TicketSalesImport do
   
   describe "when an error happens during import or preview process" do
     before :all do
-      @imp = BrownPaperTicketsImport.new(:show => mock_model(Show, :name => 'XXX'))
+      @imp = build(:brown_paper_tickets_import)
       allow(@imp).to receive(:get_ticket_orders).and_raise "Error"
     end
     it "should indicate number of good records processed" do

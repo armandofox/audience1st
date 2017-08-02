@@ -12,11 +12,11 @@ describe AdminContentHelper do
       allow(helper).to receive(:current_user).and_return(mock_model(Customer, :is_boxoffice => true))
     end
     it "yields content if viewing as admin" do
-      assigns[:gAdminDisplay] = true
+      assign(:gAdminDisplay, true)
       (helper.privileged_content_for :boxoffice do ; "content" ; end).should == "content"
     end
     it "yields nothing if viewing as patron" do
-      assigns[:gAdminDisplay] = false
+      assign(:gAdminDisplay, nil)
       (helper.privileged_content_for :boxoffice do ; "content" ; end).should be_nil
     end
   end

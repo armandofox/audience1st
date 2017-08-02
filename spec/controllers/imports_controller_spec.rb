@@ -57,12 +57,12 @@ describe ImportsController, :skip => true do
       it "should use customer/customer_with_errors template for Customer import" do
         allow(@import).to receive(:class).and_return(CustomerImport)
         get :edit, :id => @import
-        assigns[:partial].should == 'customers/customer_with_errors'
+        assigns(:partial).should == 'customers/customer_with_errors'
       end
       it "should use external_ticket_orders template for BPT import" do
         allow(@import).to receive(:class).and_return(BrownPaperTicketsImport)
         get :edit, :id => @import
-        assigns[:partial].should == 'external_ticket_orders/external_ticket_order'
+        assigns(:partial).should == 'external_ticket_orders/external_ticket_order'
       end
     end
     context "for invalid data" do

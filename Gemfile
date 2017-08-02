@@ -42,6 +42,8 @@ group :test do
   gem 'capybara'
   gem 'poltergeist'
   gem 'rspec-its'
+  gem 'rspec-html-matchers'
+  gem 'simplecov', :require => false
   gem 'webmock'
 end
 
@@ -68,7 +70,6 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'rspec-collection_matchers' # should have(n).items, etc
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
-  gem 'simplecov'
   gem 'sqlite3'
   gem 'timecop'
 end

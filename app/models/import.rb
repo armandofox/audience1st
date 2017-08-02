@@ -1,6 +1,8 @@
 class Import < ActiveRecord::Base
   require 'csv'
   include Comparable
+
+  attr_accessible %w(name type number_of_records filename content_type size customer_id show_id showdate_id)
   
   UPLOADED_FILES_PATH = File.join(Rails.root, 'tmp')
 

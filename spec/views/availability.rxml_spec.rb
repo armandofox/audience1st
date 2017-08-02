@@ -2,10 +2,10 @@ require 'rails_helper'
 
 describe 'info/availability.rxml' do
   before :each do
-    assigns[:showdates] =
+    assigns(:showdates,
       [sd = create(:showdate,
-        :show => create(:show, :event_type => 'Special Event'),
-        :thedate => 1.week.from_now)]
+          :show => create(:show, :event_type => 'Special Event'),
+          :thedate => 1.week.from_now)])
     create(:valid_voucher, :showdate => sd)
     render
   end

@@ -271,6 +271,9 @@ GEM
     rspec-expectations (3.6.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.6.0)
+    rspec-html-matchers (0.9.1)
+      nokogiri (~> 1)
+      rspec (>= 3.0.0.a, < 4)
     rspec-its (1.2.0)
       rspec-core (>= 3.0.0)
       rspec-expectations (>= 3.0.0)
@@ -395,6 +398,7 @@ DEPENDENCIES
   rest-client
   rspec-activemodel-mocks
   rspec-collection_matchers
+  rspec-html-matchers
   rspec-its
   rspec-rails
   rubyzip

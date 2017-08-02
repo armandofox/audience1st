@@ -3,7 +3,7 @@ require 'rails_helper'
 describe 'store', :type => :routing do
   describe 'index route' do
     before :each do
-      @r = {:controller => 'store', :action => 'index'}
+      @r = {:controller => 'store', :action => 'index', :customer_id => nil}
       @c=mock_model(Customer)
     end
     specify 'bare' do
