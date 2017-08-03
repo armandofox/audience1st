@@ -58,7 +58,7 @@ class ValidVoucher < ActiveRecord::Base
     if showdate # in case this is a valid-voucher for a bundle, vs for regular show
       [@max_sales_for_this_patron, showdate.saleable_seats_left.to_i].min
     else
-      @max_sales_for_this_patron
+      @max_sales_for_this_patron.to_i
     end
   end
 
@@ -228,7 +228,13 @@ class ValidVoucher < ActiveRecord::Base
   #  specified for the valid-voucher's max_sales_for_type originally.
   def date_with_explanation
     display_name = showdate.printable_date_with_description
-    if max_sales_for_this_patron.to_i > 0
+    display_name << " (Not available)" if max_sales_for_this_patron.zero?
+    display_name
+  end
+
+  def date_with_explanation_for_admin
+    display_name = showdate.printable_date_with_description
+    if max_sales_for_this_patron > 0
       "#{display_name} (#{max_sales_for_this_patron} available)"
     else
       "#{display_name} (Not available)"

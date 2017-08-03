@@ -7,6 +7,7 @@ class WalkupSalesController < ApplicationController
     @valid_vouchers = @showdate.valid_vouchers_for_walkup
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
+    @donation = params[:donation]
   end
 
   def create

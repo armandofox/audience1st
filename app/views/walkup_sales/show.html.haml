@@ -16,7 +16,11 @@
         %label.no_float{:for => 'payment_type'} Check
         = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
       #payment_form
-        #credit_card= render :partial => 'store/credit_card_swipe'
+        #credit_card
+          = render :partial => 'store/credit_card'
+          -# hidden field 'commit' filled in by javascript on cc purchase
+          = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
+          = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
         #cash{:style => 'display: none;'}
           %fieldset
             %legend Cash Payment

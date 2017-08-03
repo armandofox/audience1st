@@ -1,3 +1,4 @@
+@javascript
 Feature: Add subscriptions to cart
 
   As a patron
@@ -8,9 +9,15 @@ Feature: Add subscriptions to cart
     Given I am not logged in
 
   Scenario: Add subscription to order when not logged in
-    Given a "Regular Sub" subscription available to anyone for $50.00
+
+    Given a "Regular" subscription available to anyone for $50.00
+    And a "Discount" subscription available to anyone for $20.00
     When I go to the subscriptions page
     Then I should see "Buy Subscriptions"
-    When I select "2" from "Regular Sub"
+
+    When I select "2" from "Regular"
+    And I select "1" from "Discount"
     And I press "CONTINUE >>"
-    Then the cart should contain 2 "Regular Sub" subscriptions
+    Then the cart should contain 2 "Regular" subscriptions
+    And  the cart should contain 1 "Discount" subscriptions
+    And the cart total price should be $120.00

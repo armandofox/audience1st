@@ -124,6 +124,7 @@ ActionController::Routing::Routes.draw do |map|
   # config options
 
   map.options '/options', :controller => 'options', :action => 'options'
+  map.swipe_test '/options/swipe_test', :controller => 'options', :action => 'swipe_test'
 
   # walkup sales
 

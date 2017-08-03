@@ -30,6 +30,19 @@ A1.show_only = function(div) {
   $('#'+div).show();           
 }
 
+A1.clearCreditCardFields = function() {
+  $('.unsubmitted').val('');
+}
+A1.swipeFail = function() { 
+  alert('Error reading card.'); 
+}
+A1.copySwipe = function(data) {
+  $('#credit_card_first_name').val(data.firstName);
+  $('#credit_card_last_name').val(data.lastName);
+  $('#credit_card_number').val(data.account);
+  $('#credit_card_month').val(data.expMonth);
+  $('#credit_card_year').val("20" + data.expYear);
+}
 
 A1.stripeResponseHandler = function(status, response) {
   if (response.error) {
@@ -52,10 +65,6 @@ A1.stripeSubmit = function(event) {
   // disable regular form submit action (needed for Firefox <4)
   $('#_stripe_payment_form').submit(function(evt) { return false });
   //console.log("Submitting to Stripe");
-  if ($('#swipe_data').length > 1) {
-    // populate credit card info fields from magstripe swipe hidden field
-    A1.parseSwipeData();
-  }
   var key = $('#_stripe_api_key').val();
   $('#payment_errors').text('');  //  clear out errors field
   $('#_stripe_submit').prop('disabled', true); // disable submit button
@@ -79,6 +88,13 @@ A1.stripeSubmit = function(event) {
 A1.setupForCheckout = function() {
   // make credit card fields unsubmittable to server....
   $('.unsubmitted').removeAttr('name');                // always do this
+
+  // setup swipe listener to wait for full swipe before passing keystrokes on
+  $.cardswipe({
+    success: A1.copySwipe,
+    failure: A1.swipeFail,
+    parsers: ["visa", "amex", "mastercard", "discover"],
+  });
 
   // on the checkout page, copy the billing customer info to the credit card info
 
