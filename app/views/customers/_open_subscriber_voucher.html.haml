@@ -4,7 +4,8 @@
   %td.c= menu_or_static_text('number', group.size)
   %td{:title => (group.voucherlist if @gAdminDisplay)}= group.name
   %td.selectShowdate
-    = select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, :date_with_explanation), :class => :showdate, :onchange => %Q{$('#special_seating_#{gid}').slideToggle()}
+    - label_function = @gAdminDisplay ? :date_with_explanation_for_admin : :date_with_explanation
+    = select_tag 'showdate_id', content_tag(:option, "Select date to reserve...", :value => 0) + options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, label_function), :class => :showdate, :onchange => %Q{$('#special_seating_#{gid}').slideToggle()}
     = render :partial => 'special_seating', :locals => {:gid => gid}
   %td.action= submit_tag 'Click to Confirm', :disable_with => 'Confirming...', :style => "width: 17ex"
   %td.admin
