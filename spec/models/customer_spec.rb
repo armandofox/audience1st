@@ -193,10 +193,11 @@ describe Customer do
       before(:each) do
         @attrs = {:first_name => 'Bob', :last_name => 'Smith',
           :street => '99 Fake Blvd', :city => 'New York',
-          :state => 'NY', :zip => '99999',
-        :created_by_admin => true}
+          :state => 'NY', :zip => '99999'}
         @old = create(:customer, @attrs.merge(:email => @old_email))
+        @old.update_attribute(:created_by_admin, true)
         @new = Customer.new(@attrs.merge(:email => @new_email))
+        @new.update_attribute(:created_by_admin, true)
       end
       it "should match if first, last and address all match" do
         Customer.find_unique(@new).should == @old
@@ -244,106 +245,6 @@ describe Customer do
         Customer.find_unique(Customer.new(:first_name => 'Joe', :last_name => 'Jones')).should be_nil
       end
     end
-  end
-
-  it 'resets password' do
-    customers(:quentin).update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_falsey
-    Customer.authenticate(customers(:quentin).email, 'new password').should == customers(:quentin)
-  end
-
-  it 'does not rehash password' do
-    customers(:quentin).update_attributes(:email => 'quentin2@email.com').should_not be_falsey
-    Customer.authenticate('quentin2@email.com', 'monkey').should == customers(:quentin)
-  end
-
-  #
-  # Authentication
-  #
-
-  it 'authenticates user' do
-    Customer.authenticate(customers(:quentin).email, 'monkey').should == customers(:quentin)
-    Customer.authenticate(customers(:quentin).email, 'monkey').errors.should be_empty
-  end
-
-  context "invalid login" do
-    it "should display a password-incorrect message for bad password" do
-      Customer.authenticate(customers(:quentin).email, 'invalid_password').errors[:login_failed].
-        should include_match_for(/password incorrect/i)
-    end
-    it "should display an unknown-username message for bad username" do
-      Customer.authenticate('asdkfljhadf@email.com', 'pass').errors[:login_failed].
-        should include_match_for(/can't find that email/i)
-    end
-  end
-
-  if (!defined?(REST_AUTH_SITE_KEY) || REST_AUTH_SITE_KEY.blank?)
-    # old-school passwords
-    it "authenticates a user against a hard-coded old-style password" do
-      Customer.authenticate(customers(:old_password_holder).email, 'test').should == customers(:old_password_holder)
-    end
-  else
-    it "doesn't authenticate a user against a hard-coded old-style password" do
-      Customer.authenticate(customers(:old_password_holder).email, 'test').should be_nil
-    end
-
-    # New installs should bump this up and set REST_AUTH_DIGEST_STRETCHES to give a 10ms encrypt time or so
-    desired_encryption_expensiveness_ms = 0.1
-    it "takes longer than #{desired_encryption_expensiveness_ms}ms to encrypt a password" do
-      test_reps = 100
-      start_time = Time.now; test_reps.times{ Customer.authenticate('quentin', 'monkey'+rand.to_s) }; end_time   = Time.now
-      auth_time_ms = 1000 * (end_time - start_time)/test_reps
-      auth_time_ms.should > desired_encryption_expensiveness_ms
-    end
-  end
-
-  #
-  # Authentication
-  #
-
-  it 'sets remember token' do
-    customers(:quentin).remember_me
-    customers(:quentin).remember_token.should_not be_nil
-    customers(:quentin).remember_token_expires_at.should_not be_nil
-  end
-
-  it 'unsets remember token' do
-    customers(:quentin).remember_me
-    customers(:quentin).remember_token.should_not be_nil
-    customers(:quentin).forget_me
-    customers(:quentin).remember_token.should be_nil
-  end
-
-  it 'remembers me for one week' do
-    before = 1.week.from_now.utc
-    customers(:quentin).remember_me_for 1.week
-    after = 1.week.from_now.utc
-    customers(:quentin).remember_token.should_not be_nil
-    customers(:quentin).remember_token_expires_at.should_not be_nil
-    customers(:quentin).remember_token_expires_at.between?(before, after).should be_truthy
-  end
-
-  it 'remembers me until one week' do
-    time = 1.week.from_now.utc
-    customers(:quentin).remember_me_until time
-    customers(:quentin).remember_token.should_not be_nil
-    customers(:quentin).remember_token_expires_at.should_not be_nil
-    customers(:quentin).remember_token_expires_at.should == time
-  end
-
-  it 'remembers me default two weeks' do
-    before = 2.weeks.from_now.utc
-    customers(:quentin).remember_me
-    after = 2.weeks.from_now.utc
-    customers(:quentin).remember_token.should_not be_nil
-    customers(:quentin).remember_token_expires_at.should_not be_nil
-    customers(:quentin).remember_token_expires_at.between?(before, after).should be_truthy
-  end
-
-  protected
-  def create_user(options = {})
-    record = Customer.new({ :email => 'quire@example.com', :password => 'quire69', :password_confirmation => 'quire69' }.merge(options))
-    record.save
-    record
   end
 
 end

@@ -77,7 +77,7 @@ describe SessionsController do
       @user.save!
     end    
     before do 
-      @user = customers(:tom)
+      @user = create :customer
       set_remember_token 'hello!', 5.minutes.from_now
     end    
     it 'logs in with cookie' do

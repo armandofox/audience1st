@@ -61,13 +61,13 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+    # seed the DB with seed data - necessary for Options and config info
   end
   config.around(:each) do |ex|
     DatabaseCleaner.cleaning do
-      # seed the DB with seed data - necessary for Options and config info
-      load File.join(Rails.root, 'db', 'seeds.rb')
       # Freeze time
       Timecop.travel(Date.parse 'Mar 1, 2012')
+      load File.join(Rails.root, 'db', 'seeds.rb')
       ex.run
       Timecop.return
     end

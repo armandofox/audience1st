@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe ValidVouchersController do
   fixtures :customers
-  before(:each) { login_as :boxoffice_manager }
+  before(:each) { login_as_boxoffice_manager }
   describe 'create' do
     context 'when no valid-vouchers are specified' do
       before(:each) do

@@ -64,7 +64,13 @@ class CustomersController < ApplicationController
     # unless admin, remove "extra contact" fields
     params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
     begin
-      # update generic attribs first
+      if ((newrole = params[:customer].delete(:role))  &&
+          newrole != @customer.role_name  &&
+          current_user.can_grant(newrole))
+        @customer.update_attribute(:role, Customer.role_value(newrole))
+        flash[:notice] << "  Privilege level set to '#{newrole}.'"
+      end
+      # update generic attribs
       @customer.created_by_admin = @is_admin # to skip validations if admin is editing
       @customer.update_attributes!(params[:customer])
       @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
@@ -72,12 +78,6 @@ class CustomersController < ApplicationController
       # clear the created-by-admin flag
       @customer.update_attribute(:created_by_admin, false) if current_user == @customer
       flash[:notice] = "Contact information for #{@customer.full_name} successfully updated."
-      if ((newrole = params[:customer][:role])  &&
-          newrole != @customer.role_name  &&
-          current_user.can_grant(newrole))
-        @customer.update_attribute(:role, Customer.role_value(newrole))
-        flash[:notice] << "  Privilege level set to '#{newrole}.'"
-      end
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :logged_in_id => current_user.id,
@@ -92,7 +92,7 @@ class CustomersController < ApplicationController
     rescue ActiveRecord::RecordInvalid
       flash[:alert] = ["Update failed: ", @customer.errors.as_html, "Please fix error(s) and try again."]
       redirect_to edit_customer_path(@customer)
-    rescue Exception => e
+    rescue StandardError => e
       flash[:alert] = "Update failed: #{e.message}"
       redirect_to edit_customer_path(@customer)
     end
@@ -310,6 +310,7 @@ class CustomersController < ApplicationController
   def delete_admin_only_attributes(params)
     Customer.extra_attributes.each { |a| params.delete(a) }
     params.delete(:comments)
+    params.delete(:role)
     params
   end
 

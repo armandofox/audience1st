@@ -4,10 +4,8 @@ FactoryGirl.define do
     association :show
     association :showdate
     association :customer
-
-    factory :brown_paper_tickets_import do
-    end
-
+    type 'TicketSalesImport'
+    
   end
 
 end

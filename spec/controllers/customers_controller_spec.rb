@@ -2,10 +2,9 @@ require 'rails_helper'
 
 describe CustomersController do
   describe "admin creating or updating valid customer" do
-    fixtures :customers
     before(:each) do
       @params = attributes_for(:customer)
-      login_as :boxoffice_manager
+      login_as_boxoffice_manager
       post :create, {:customer => @params}
     end
     it "should create the customer" do

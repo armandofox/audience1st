@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 describe StoreController do
-  fixtures :customers
-  fixtures :purchasemethods
   before :each do ; @buyer = create(:customer) ;  end
   
   shared_examples_for 'initial visit' do
@@ -45,7 +43,10 @@ describe StoreController do
       end
     end
     context 'when logged in as admin' do
-      before :each do ; login_as(@b = customers(:boxoffice_user)) ; end
+      before :each do
+        @b = create(:boxoffice_manager)
+        login_as @b
+      end
       it 'redirects to you if no customer specified' do
         get :index, @extra
         response.should redirect_to(store_path(@b,@extra))

@@ -18,17 +18,15 @@ end
 
 Given /^I (am logged in|login) as (.*)?$/ do |_,who|
   @is_admin = false
+  @password = 'pass'
   case who
-  when /administrator/i then @customer = Customer.find_by_role!(100)
-  when /nonsubscriber/i then @customer = customers(:tom)
-  when /subscriber/i    then make_subscriber!(@customer = customers(:tom))
-  when /box ?office manager/i then @customer,@is_admin = customers(:boxoffice_manager),true
-  when /box ?office/i   then @customer,@is_admin = customers(:boxoffice_user),true
-  when /staff/i         then @customer,@is_admin = customers(:staff),true
-  when /customer "(.*) (.*)"/ then @customer = find_customer! $1,$2
+  when /administrator/i then @customer,@password = Customer.find_by_role!(100),'admin'
+  when /box ?office manager/i then @customer,@is_admin = create(:boxoffice_manager),true
+  when /box ?office/i then @customer,@is_admin = create(:boxoffice),true
+  when /staff/i         then @customer,@is_admin = create(:staff), true
+  when /customer "(.*) (.*)"/ then @customer = find_customer $1,$2
   else raise "No such user '#{who}'"
   end
-  @password = 'pass'
   verify_successful_login
 end
 

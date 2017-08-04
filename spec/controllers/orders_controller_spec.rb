@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 describe OrdersController do
-  fixtures :customers
   before do
-    login_as :boxoffice_manager
+    login_as_boxoffice_manager
   end
   describe "viewing nonexistent order" do
     before :each do ; allow(Order).to receive(:find_by_id).and_return nil ; end

@@ -30,8 +30,8 @@ Scenario: partial refund credit card order
   And I refund that order
   Then I should see "Credit card refund of $12.00 successfully processed"
   And I should see "Order total: $11.00"
-  And I should see /CANCELED Barbara Boxoffice.*7.00 General/
-  But I should not see /CANCELED Barbara Boxoffice.*4.00 Senior/
+  And I should see /CANCELED Mary Manager.*7.00 General/
+  But I should not see /CANCELED Mary Manager.*4.00 Senior/
 
 @stubs_successful_refund
 Scenario: refund multiple items in separate transactions

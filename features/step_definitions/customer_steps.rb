@@ -15,7 +15,7 @@ Then /^account creation should fail with "(.*)"$/ do |msg|
 end
 
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
-  customer = find_customer! first,last
+  customer = find_customer first,last
   visit customer_path(customer)
   with_scope('div#on_behalf_of_customer') do
     page.should have_content("Customer: #{first} #{last}")
@@ -58,7 +58,7 @@ Given /^my birthday is set to "(.*)"/ do |date|
 end
 
 Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,last,attribs|
-  customer = find_customer! first,last
+  customer = find_customer first,last
   dummy = Customer.new
   attribs.hashes.each do |attr|
     name,val = attr[:attribute], attr[:value]
@@ -67,24 +67,24 @@ Then /^customer "(.*) (.*)" should have the following attributes:$/ do |first,la
 end
 
 Then /^customer "(.*) (.*)" should have a birthday of "(.*)"$/ do |first,last,date|
-  find_customer!(first,last).birthday.should ==
+  find_customer(first,last).birthday.should ==
     Date.parse(date).change(:year => Customer::BIRTHDAY_YEAR)
 end
 
 Then /^customer "(.*) (.*)" should have the "(.*)" role$/ do |first,last,role|
-  find_customer!(first,last).role_name.should == role
+  find_customer(first,last).role_name.should == role
 end
 
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|
-  c1 = find_customer! f1,l1
-  c2 = find_customer! f2,l2
+  c1 = find_customer f1,l1
+  c2 = find_customer f2,l2
   visit customers_path
   check "merge[#{c1.id}]"
   check "merge[#{c2.id}]"
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|
-  @customer = find_customer! first,last
+  @customer = find_customer first,last
   if assert =~ /should/
     @customer.secret_question.should == get_secret_question_index(question)
     @customer.secret_answer.should == answer

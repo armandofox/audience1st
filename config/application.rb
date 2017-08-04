@@ -36,6 +36,9 @@ module Audience1st
 
     # Disable the painful asset pipeline
     config.assets.enabled = false
+
+    # Raise exceptiosn when mass-assignment issues arise, to surface them
+    config.active_record.mass_assignment_sanitizer = :strict
     
     config.after_initialize do
       Time.include CoreExtensions::Time::ShowtimeDateFormats
@@ -43,7 +46,7 @@ module Audience1st
       Date.include CoreExtensions::Date::Season
       String.include CoreExtensions::String::Name
       String.include CoreExtensions::String::Colorize
-      ActiveModel::Errors.include(ActiveModel::Errors::HtmlFormatter)
+      ActiveModel::Errors.include ActiveModel::Errors::HtmlFormatter
     end
   end
 end

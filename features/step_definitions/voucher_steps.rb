@@ -26,14 +26,14 @@ Given /^customer "(.*) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.
 end
 
 Given /^customer "(.*) (.*)" has (\d+) subscriber reservations for (.*)$/ do |first,last,num,date|
-  @customer = find_customer! first,last
+  @customer = find_customer first,last
   @showdate = Showdate.find_by_thedate! Time.parse(date) unless date =~ /that performance/
   sub_vouchers = setup_subscriber_tickets(@customer, @showdate.show, num)
   sub_vouchers.each { |v| v.reserve_for(@showdate, Customer.boxoffice_daemon) }
 end
 
 Then /^customer "(.*) (.*)" should have the following items:$/ do |first,last,items|
-  @customer = find_customer! first,last
+  @customer = find_customer first,last
   items.hashes.each do |item|
     conds_clause = 'type = ? AND amount BETWEEN ? AND ?  AND customer_id = ?'
     conds_values = [item[:type], item[:amount].to_f-0.01, item[:amount].to_f+0.01, @customer.id]
@@ -51,7 +51,7 @@ end
 
 
 Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
-  @customer = find_customer! first,last
+  @customer = find_customer first,last
   steps %Q{Then he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
 
@@ -64,7 +64,7 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,typ
 end
 
 Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last,vouchers|
-  @customer = find_customer! first,last
+  @customer = find_customer first,last
   @vouchers = @customer.vouchers
   vouchers.hashes.each do |v|
     vtype = Vouchertype.find_by_name!(v[:vouchertype])

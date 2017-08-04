@@ -48,33 +48,6 @@ cust_with_real_address:
   zip: 94131
   role: 0
 
-admin:
-  id: 1
-  first_name: Super
-  last_name:  Admin
-  role: 100
-  email: admin@mail.com
-  salt: abcdefghij
-  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
-
-staff_user:
-  id: 2
-  first_name: Staff
-  last_name: User
-  role: 11
-  salt: abcdefghij
-  email: staff@example.com
-  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
-
-boxoffice_user:
-  id: 3
-  first_name: Barbara
-  last_name: Boxoffice
-  role: 21
-  email: boxoffice@example.com
-  salt: abcdefghij
-  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
-
 boxoffice_manager:
   id: 4
   first_name: Mary
@@ -97,33 +70,11 @@ staff:
   salt: abcdefghij
   crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
         
-
-walkup_sales_user:
-  id: 5
-  first_name: Walkup
-  last_name: Clerk
-  role: 15
-  salt: abcdefghij
-  crypted_password: <%= Customer.password_digest('pass', 'abcdefghij') %>
-
 customer_with_empty_login:
   id: 6
   first_name: Nobody
   last_name: NoLogin
   
-# fixtures for rspec tests included with restful_authentication plugin
-
-quentin:
-  id:                        9991
-  first_name: quentin
-  last_name:  q
-  email:                     quentin@example.com
-  salt:                      'abcdefghij'
-  crypted_password:          <%= Customer.password_digest('monkey',  'abcdefghij') %>
-  created_at:                <%= 5.days.ago.to_s :db  %>
-  remember_token_expires_at: <%= 1.days.from_now.to_s :db %>
-  remember_token:            77de68daecd823babbb58edb1c8e14d7106e83bb
-      
 aaron:
   id:                        9992
   first_name: aaron
@@ -134,12 +85,4 @@ aaron:
   created_at:                <%= 1.days.ago.to_s :db %>
   remember_token_expires_at: 
   remember_token:            
-
-
-old_password_holder:
-  id:                        9993
-  email:                     salty_dog@example.com
-  salt:                      7e3041ebc2fc05a40c60028e2c4901a81035d3cd
-  crypted_password:          00742970dc9e6319f8019fd54864d3ea740f04b1 # test
-  created_at:                <%= 1.days.ago.to_s :db %>
 

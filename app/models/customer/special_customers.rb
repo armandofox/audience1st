@@ -45,7 +45,7 @@ class Customer < ActiveRecord::Base
   def deletable? ; !self.special_customer? ; end
 
   def self.special_customer(which)
-    Customer.find_by_role!(ROLES[which])
+    Customer.find_by_role!(ROLES[which.to_sym])
   end
 
 end

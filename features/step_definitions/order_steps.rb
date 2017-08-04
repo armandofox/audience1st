@@ -46,7 +46,7 @@ Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do 
 end
 
 Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,_,comments,table|
-  @customer = find_customer!(first,last)
+  @customer = find_customer(first,last)
   order = @customer.orders.first
   order.comments.should == comments
   table.hashes.each do |item|

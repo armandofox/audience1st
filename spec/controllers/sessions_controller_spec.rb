@@ -7,14 +7,14 @@ describe SessionsController do
   fixtures        :customers
   before(:each) do 
     ApplicationController.send(:public, :current_user, :current_user)
-    @user  = mock_user
+    @user  = build(:customer)
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
     allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
   end
   # Login for an admin
   describe 'admin view' do
     before(:each) do
-      login_as customers(:boxoffice_manager)
+      login_as_boxoffice_manager
       # we must set an action FROM WHICH this request was given
       request.env['HTTP_REFERER'] = customer_path(:boxoffice_manager)
     end
@@ -94,7 +94,7 @@ describe SessionsController do
   describe "on failed login" do
     before do
       expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(nil)
-      login_as :quentin
+      login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
     it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /Couldn't log you in as 'quentin@email.com'/ end
@@ -112,7 +112,7 @@ describe SessionsController do
       get :destroy
     end
     before do 
-      login_as :quentin
+      login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs me out'                   do expect(controller).to receive(:logout_killing_session!); do_destroy end
     it 'redirects me to the home page' do do_destroy; response.should be_redirect     end

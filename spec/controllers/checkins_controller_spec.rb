@@ -2,10 +2,8 @@ require 'rails_helper'
 
 describe CheckinsController do
 
-  fixtures :customers
-
   before(:each) do
-    login_as(:boxoffice_manager)
+    login_as_boxoffice_manager
   end
     
   describe "showdate-dependent boxoffice action" do
