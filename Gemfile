@@ -67,6 +67,7 @@ group :development, :test do
   gem 'launchy'
   gem 'rack-test'
   gem 'sdoc', '~> 0.4.0'
+  gem 'coveralls', :require => false
   gem 'rspec-rails'
   gem 'rspec-collection_matchers' # should have(n).items, etc
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc

@@ -6,8 +6,8 @@ abort("The Rails environment is running in #{Rails.env}!") unless Rails.env.test
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
-require 'simplecov'
-SimpleCov.start 'rails'
+require 'coveralls'
+Coveralls.wear_merged! 'rails'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -59,19 +59,18 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
   end
-  config.before(:each) do 
-    DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.start
-    # seed the DB with seed data - necessary for Options and config info
-    load File.join(Rails.root, 'db', 'seeds.rb')
-    # Freeze time
-    Timecop.travel(Date.parse 'Mar 1, 2012')
-  end
-  config.after(:each) do
-    DatabaseCleaner.clean
-    Timecop.return
+  config.around(:each) do |ex|
+    DatabaseCleaner.cleaning do
+      # seed the DB with seed data - necessary for Options and config info
+      load File.join(Rails.root, 'db', 'seeds.rb')
+      # Freeze time
+      Timecop.travel(Date.parse 'Mar 1, 2012')
+      ex.run
+      Timecop.return
+    end
   end
 
 end

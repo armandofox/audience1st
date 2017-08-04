@@ -10,8 +10,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
 require 'cucumber/rails'
 require 'webmock/cucumber'
-require 'simplecov'
-SimpleCov.start 'rails'
+require 'coveralls'
+Coveralls.wear_merged!
 
 # require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
 # require 'cucumber/rails/rspec'

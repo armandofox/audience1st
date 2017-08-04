@@ -1,5 +1,6 @@
 [![Code Climate](https://codeclimate.com/github/armandofox/audience1st/badges/gpa.svg)](https://codeclimate.com/github/armandofox/audience1st)
-
+[![Build Status](https://travis-ci.org/armandofox/audience1st.svg?branch=master)](https://travis-ci.org/armandofox/audience1st)
+[![Coverage Status](https://coveralls.io/repos/github/armandofox/audience1st/badge.svg?branch=master)](https://coveralls.io/github/armandofox/audience1st?branch=master)
 # This information is for developers and deployers
 
 Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://armandofox.github.io/audience1st/)?
