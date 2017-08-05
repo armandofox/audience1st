@@ -107,8 +107,7 @@ class DonationsController < ApplicationController
       redirect_to(customer_path(@customer), :notice => 'Donation recorded.')
     rescue Order::PaymentFailedError => e
       redirect_to(new_customer_donation_path(@customer), :alert => e.message)
-    rescue Exception => e
-      raise e
+    rescue StandardError => e
       # rescue ActiveRecord::RecordInvalid => e
       # rescue Order::OrderFinalizeError => e
       # rescue RuntimeError => e

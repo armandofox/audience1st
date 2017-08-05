@@ -4,10 +4,9 @@ require 'rails_helper'
 # Then, you can remove it from this and the units test.
 
 describe SessionsController do
-  fixtures        :customers
   before(:each) do 
     ApplicationController.send(:public, :current_user, :current_user)
-    @user  = build(:customer)
+    @user  = create(:customer)
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
     allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
   end

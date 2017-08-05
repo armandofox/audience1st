@@ -52,13 +52,13 @@ describe Order, 'finalizing' do
     end
     it 'should fail if purchaser invalid as purchaser' do
       allow(@order.purchaser).to receive(:valid_as_purchaser?).and_return(nil)
-      @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
+      allow(@order.purchaser).to receive_message_chain(:errors, :full_messages => ['ERROR'])
       verify_error /ERROR/
     end
     it 'should pass if purchaser invalid but order is placed by admin' do
       @order.processed_by = create(:customer, :role => :boxoffice)
       allow(@order.purchaser).to receive(:valid_as_purchaser?).and_return(nil)
-      @order.purchaser.stub_chain(:errors, :full_messages).and_return(['ERROR'])
+      allow(@order.purchaser).to receive_message_chain(:errors, :full_messages => ['ERROR'])
       @order.should be_ready_for_purchase
     end
     it 'should fail if no recipient' do
@@ -100,28 +100,6 @@ describe Order, 'finalizing' do
     end
   end
 
-  context 'when not ready' do
-    it 'should fail if order is not ready for purchase' do
-      allow(@order).to receive(:ready_for_purchase?).and_return(nil)
-      lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
-    end
-    describe 'should not update' do
-      before(:each) do
-        allow(@order).to receive(:ready_for_purchase?).and_return(true)
-        @order.customer = create(:customer)
-        allow(@order.customer).to receive(:add_items).with(anything).and_raise(ActiveRecord::RecordInvalid) # force fail
-      end
-      it "completion status" do
-        lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
-        @order.should_not be_completed
-      end
-      it "items' properties" do
-        @order.add_tickets(@vv,1)
-        lambda { @order.finalize! }.should raise_error(Order::NotReadyError)
-      end
-    end
-  end
-
   context 'successful' do
     before :each do
       @cust = @the_customer
@@ -136,7 +114,7 @@ describe Order, 'finalizing' do
       @order.add_tickets(@vv,2)
       @order.add_tickets(@vv2,1)
       @order.add_donation(@donation)
-      Store.should_not_receive(:pay_with_credit_card) # stub this out, it has its own tests
+      expect(Store).not_to receive(:pay_with_credit_card) # stub this out, it has its own tests
     end
     describe 'web order' do
       shared_examples_for 'when valid' do

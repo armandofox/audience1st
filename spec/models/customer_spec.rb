@@ -2,7 +2,6 @@
 require 'rails_helper'
 
 describe Customer do
-  fixtures :customers
   it 'gets ID from route' do
     Customer.id_from_route("/customers/3334").should == "3334"
   end
@@ -197,7 +196,7 @@ describe Customer do
         @old = create(:customer, @attrs.merge(:email => @old_email))
         @old.update_attribute(:created_by_admin, true)
         @new = Customer.new(@attrs.merge(:email => @new_email))
-        @new.update_attribute(:created_by_admin, true)
+        @new.created_by_admin =  true
       end
       it "should match if first, last and address all match" do
         Customer.find_unique(@new).should == @old

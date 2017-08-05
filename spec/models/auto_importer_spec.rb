@@ -7,7 +7,7 @@ describe AutoImporter do
   describe "email template" do
     before(:each) do
       ActionMailer::Base.deliveries = []
-      Option.update_attributes!(:venue => "Eat Cake Theater",
+      Option.first.update_attributes!(:venue => "Eat Cake Theater",
         :boxoffice_daemon_notify => "help@eatcake.org")
       @e = AutoImporter.new
       allow(@e).to receive(:prepare_import).and_raise("Boom!")
@@ -26,7 +26,7 @@ describe AutoImporter do
     end
   end
   describe "finalizing" do
-    skip "shoulad happen for successful import" 
+    skip "should happen for successful import" 
     skip "should not happen for unsuccessful import" 
   end
 end

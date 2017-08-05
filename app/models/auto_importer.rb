@@ -43,7 +43,7 @@ class AutoImporter
       prepare_summary_messages
       import.finalize(Customer.boxoffice_daemon)
       success = true
-    rescue Exception => e
+    rescue StandardError => e
       @messages << e.message
       success = nil
     ensure

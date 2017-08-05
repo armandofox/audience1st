@@ -16,10 +16,9 @@ FactoryGirl.define do
     state 'NY'
     zip '10019'
 
-    salt 'abcdefghij'
-    crypted_password { Customer.password_digest(password, salt) }
-
     after(:build) do |customer,e|
+      customer.salt = 'abcdefghij'
+      customer.crypted_password = Customer.password_digest(customer.password, customer.salt)
       customer.role = Customer.role_value(e.role)
       customer.created_by_admin = e.created_by_admin
     end

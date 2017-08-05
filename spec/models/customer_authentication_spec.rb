@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Customer, 'authentication' do
   before :each do
-    @quentin = create :customer, first_name: 'quentin', last_name: 'q', email: 'quentin@example.com', salt: 'abcdefghij', crypted_password: Customer.password_digest('monkey',  'abcdefghij'), created_at: 5.days.ago, remember_token_expires_at: 1.day.from_now, remember_token: '77de68daecd823babbb58edb1c8e14d7106e83bb'
+    @quentin = create :customer, first_name: 'quentin', last_name: 'q', email: 'quentin@example.com', password: 'monkey', password_confirmation: 'monkey', created_at: 5.days.ago, remember_token_expires_at: 1.day.from_now, remember_token: '77de68daecd823babbb58edb1c8e14d7106e83bb'
   end
   it 'resets password' do
     @quentin.update_attributes!(:password => 'new password', :password_confirmation => 'new password').should_not be_falsey

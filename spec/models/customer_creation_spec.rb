@@ -130,12 +130,12 @@ describe Customer do
     it "should require nonblank password confirmation" do
       @customer.password_confirmation = ''
       @customer.should_not be_valid
-      @customer.errors[:password].should match(/doesn't match confirmation/i)
+      @customer.errors[:password_confirmation].should include_match_for(/doesn't match/i)
     end
     it "should require matching password confirmation" do
       @customer.password_confirmation = "DoesNotMatch"
       @customer.should_not be_valid
-      @customer.errors[:password].should match(/doesn't match confirmation/i)
+      @customer.errors[:password_confirmation].should include_match_for(/doesn't match/i)
     end
   end
 end

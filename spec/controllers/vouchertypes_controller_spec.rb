@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe VouchertypesController do
-  fixtures :customers
   before(:each) do
     login_as_boxoffice_manager
     @vtype = create(:revenue_vouchertype)

@@ -135,7 +135,6 @@ describe Vouchertype do
     end
   end
   describe 'instantiating' do
-    fixtures :customers
     describe 'bundle' do
       before :each do
         @v = Array.new(3) { create(:vouchertype_included_in_bundle) }

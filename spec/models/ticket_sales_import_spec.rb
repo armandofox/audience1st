@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe TicketSalesImport do
+describe TicketSalesImport, :pending => 'refactor import logic' do
 
   describe "importing showdate" do
     before(:each) do

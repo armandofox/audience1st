@@ -2,7 +2,6 @@ require 'rails_helper'
 
 describe WalkupSalesController do
 
-  fixtures :customers
   before(:each) do
     login_as_boxoffice_manager
     @showdate = create(:showdate, :date => 1.day.from_now)

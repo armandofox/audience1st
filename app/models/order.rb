@@ -66,38 +66,8 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def workaround_rails_bug_2298!
-    return
-    # Rails Bug 2298: when a db txn fails, the id's of the instantiated objects
-    # that were not saved are NOT reset to nil, which causes problems when they are
-    # successfully saved later on (eg when transaction is rerun).  Also, new_record is
-    # not correctly reset to true.
-    # the fix is based on a patch shown here:
-    # http://s3.amazonaws.com/activereload-lighthouse/assets/fe67deaf98bb15d58218acdbbdf7d4f166255ad3/after_transaction.diff?AWSAccessKeyId=1AJ9W2TX1B2Z7C2KYB82&Expires=1263784877&Signature=ZxQebT1e9lG8hqexXb6IMvlfw4Q%3D
-    # If any of the saves was on a record that had already been saved previously,
-    #   we can just reload it instead; but we have to force trying this since we can't
-    #   trust @new_record to tell us this fact.
-    # If reload fails, and it really was a new record, we have to apply the fix.
-    reset_primary_key_and_new_record_on(self)
-    reset_primary_key_and_new_record_on(self.purchaser)
-    reset_primary_key_and_new_record_on(self.customer)
-    self.items.each { |i| reset_primary_key_and_new_record_on(i) }
-  end
-
-  def reset_primary_key_and_new_record_on(thing)
-    begin
-      thing.reload
-    rescue ActiveRecord::RecordNotFound
-      thing.instance_eval do
-        @attributes.delete(self.class.primary_key)
-        @attributes_cache.delete(self.class.primary_key)
-        @new_record = true
-      end
-    end
-  end
-  
   public
-
+  
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
     other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
     order = Order.new(other_args)
@@ -313,7 +283,6 @@ class Order < ActiveRecord::Base
     rescue ValidVoucher::InvalidRedemptionError => e
       raise Order::NotReadyError, e.message
     rescue StandardError => e
-      workaround_rails_bug_2298!
       raise e                 # re-raise exception
     end
   end
