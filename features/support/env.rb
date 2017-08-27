@@ -71,12 +71,6 @@ DatabaseCleaner.clean_with(:truncation)
 World(RSpec::Mocks::ExampleMethods)
 
 Before do
-  # fixture access.  Should really get rid of this altogether
-  ActiveRecord::FixtureSet.reset_cache
-  fixtures_folder = File.join(Rails.root, 'spec', 'fixtures')
-  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-  ActiveRecord::FixtureSet.create_fixtures(fixtures_folder, fixtures)
-
   # static seed data - root user, venue options, etc.
   load File.join(Rails.root, 'db', 'seeds.rb')
   

@@ -7,10 +7,9 @@ Feature: Class enrollment requires attendee name
 Background:
 
   Given a class "Acting 101" available for enrollment now
-  And I am logged in as customer "Mary Manager"
+  And I am logged in as boxoffice manager
   When I visit the classes and camps page
   And I select "Acting 101" from "Class"
-  Then show me the page
   And I fill in "General - $20.00" with "1"
   And I press "CONTINUE >>"
   Then I should be on the checkout page
