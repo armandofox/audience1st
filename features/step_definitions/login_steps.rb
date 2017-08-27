@@ -24,7 +24,7 @@ Given /^I (am logged in|login) as (.*)?$/ do |_,who|
   when /box ?office manager/i then @customer,@is_admin = create(:boxoffice_manager),true
   when /box ?office/i then @customer,@is_admin = create(:boxoffice),true
   when /staff/i         then @customer,@is_admin = create(:staff), true
-  when /customer "(.*) (.*)"/ then @customer = find_customer $1,$2
+  when /customer "(.*) (.*)"/ then @customer = find_or_create_customer $1,$2
   else raise "No such user '#{who}'"
   end
   verify_successful_login
@@ -36,3 +36,13 @@ Then /^I should be able to login with username "(.*)" and (that password|passwor
   @customer = Customer.where('email LIKE ?',username.downcase).first
   verify_successful_login
 end
+
+Then /(?:customer )"(.*) (.*)" should (not )?be logged in$/ do |first,last,no|
+  customer = find_customer first,last
+  if no
+    page.should_not have_content("Signed in as #{customer.full_name}")
+  else
+    page.should have_content("Signed in as #{customer.full_name}")
+  end
+end
+

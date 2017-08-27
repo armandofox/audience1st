@@ -92,20 +92,22 @@ class VouchertypesController < ApplicationController
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
     end
-    # this is a hack, since we should really use the nested-attribute
-    #  form tags to do this, but the view is messy right now.
-    if params[:valid_voucher]
-      params[:valid_voucher][:id] = @vouchertype.valid_vouchers.first.id
-      params[:vouchertype][:valid_vouchers_attributes] = [ params[:valid_voucher] ]
-    end
-    if @vouchertype.update_attributes(params[:vouchertype])
-      Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
-                           :comments => "Modify voucher type #{@vouchertype.name}")
-      flash[:notice] = 'Vouchertype was successfully updated.'
-      redirect_to vouchertypes_path, :season => @vouchertype.season
-    else
-      flash[:alert] = ['Update failed, please re-check information and try again: ', @vouchertype.errors.as_html]
-      redirect_to edit_vouchertype_path(@vouchertype)
+
+    Vouchertype.transaction do
+      begin
+        if params[:valid_voucher]
+          valid_voucher = @vouchertype.valid_vouchers.first
+          valid_voucher.update_attributes!(params[:valid_voucher])
+        end
+        @vouchertype.update_attributes!(params[:vouchertype].except(:valid_voucher))
+        Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
+          :comments => "Modify voucher type #{@vouchertype.name}")
+        flash[:notice] = 'Vouchertype was successfully updated.'
+        redirect_to vouchertypes_path, :season => @vouchertype.season
+      rescue StandardError => e
+        flash[:alert] = "Update failed: #{e.message}"
+        redirect_to edit_vouchertype_path(@vouchertype)
+      end
     end
   end
 

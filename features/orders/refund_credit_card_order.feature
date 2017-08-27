@@ -12,7 +12,7 @@ Background: customer has placed a credit card order
   | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
   | Chicago |   1 | Special |  5.00 | May 15, 2010, 8:00pm |
   | Chicago |   1 | Senior  |  4.00 | May 15, 2010, 8:00pm |
-  And I am logged in as boxoffice
+  And I am logged in as boxoffice manager
   And I am on the orders page for customer "Tom Foolery"
 
 @stubs_successful_refund

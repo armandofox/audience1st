@@ -65,17 +65,6 @@ Then "$actor should be invited to sign in" do |_|
   response.should render_template('/sessions/new')
 end
 
-Then "$actor should not be logged in" do |email|
-  customer = Customer.find_by_email!(email)
-  page.should_not have_content("Signed in as #{customer.full_name}")
-  #controller.send(:logged_in?).should_not be_truthy
-end
-
-Then "$login should be logged in" do |email|
-  customer = Customer.find_by_email!(email)
-  page.should have_content("Signed in as #{customer.full_name}")
-end
-
 def named_user login
   user_params = {
     'admin'   => {'id' => 1, 'password' => '1234addie', 'email' => 'admin@example.com', :first_name => 'Addie', :last_name => 'Admin'    },

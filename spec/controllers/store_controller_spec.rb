@@ -211,7 +211,7 @@ describe StoreController do
     end
     it "should not be valid if neither phone nor email given" do
       post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
-      flash[:alert].should be_a_kind_of(Customer)
+      flash[:alert].should match(/at least one phone number or email/i)
       response.should render_template(:shipping_address)
       response.should_not be_redirect
     end

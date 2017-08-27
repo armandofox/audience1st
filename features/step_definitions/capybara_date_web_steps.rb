@@ -30,8 +30,8 @@ def select_date_from_dropdowns(date_to_select, options ={})
   select_if id_prefix, :year, date.year
   select_if id_prefix, :month, date.strftime('%B')
   select_if id_prefix, :day, date.day
-  select_if id_prefix, :hour, date.hour
-  select_if id_prefix, :minute, sprintf("%02d",date.min)
+  select_if id_prefix, :hour,  "%02d" % date.hour
+  select_if id_prefix, :minute,"%02d" % date.min
 end
 
 def select_if(id_prefix, thing, val)

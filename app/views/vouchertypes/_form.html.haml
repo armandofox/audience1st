@@ -68,37 +68,31 @@
   = text_area 'vouchertype', 'comments', 'cols' => 40, 'rows' => 3
 
 - if existing_bundle
-  /This part of form is for bundle vouchers
-
   #for_bundles
     = fields_for @valid_voucher do |vv|
-
       %p
         %label{:for => :valid_voucher_max_sales_for_type} Max sales (Leave blank for unlimited)
         = vv.text_field :max_sales_for_type
-
       %p
         = vv.label :start_sales
         = vv.datetime_select 'start_sales'
-
       %p
         = vv.label :end_sales
         = vv.datetime_select 'end_sales'
-
       %p
         = vv.label :promo_code
         = vv.text_field 'promo_code', :size => 40
 
-    %p#p_vouchertype_vouchertype_included_vouchers
-      %label Included vouchers:
-      %br/
-
-    #included_vouchers= render :partial => 'included_vouchers', :locals => {:season => @vouchertype.season }
+    %fieldset#included_vouchers
+      %legend Included vouchers:
+      - Vouchertype.zero_cost_vouchertypes(@vouchertype.season).reject { |v| v.bundle? }.each do |v|
+        - input_name = "vouchertype[included_vouchers][#{v.id}]"
+        - input_id = "vouchertype_included_vouchers[#{v.id}]"
+        %label{:for => input_id}= v.name
+        = text_field_tag input_name, @vouchertype.included_vouchers[v.id], :size => 4, :id => input_id, :class => 'bundle_component'
+        %br
 
 - else
 
   %p.strong Note: You  must first define a voucher to be a  bundle, then go back and edit to add the appropriate tickets to the bundle.
-
-/[eoform:vouchertype]
-
 

@@ -9,7 +9,7 @@ Background:
   Given the following Account Codes exist:
   | name         | code | description                                                     |
   | History Fund | 7575 | The History Fund supports exhibits about the theater's history. |
-  | Default Fund | 4040 |                                                                 |
+
   And I am logged in as customer "Tom Foolery"
 
 Scenario: landing on donation page with valid account code
@@ -29,4 +29,4 @@ Scenario: not filling in a donation amount should return you to donation page
 
 Scenario: landing on donation page with invalid account code
   When I visit the donation landing page coded for a nonexistent fund
-  Then I should see "Donation to Default Fund"
+  Then I should see "Donation to General Fund"

@@ -29,7 +29,7 @@ Scenario: service charge on subscription order
   | Regular Sub |        1 |
   And  customer "Tom Foolery" should have the following items:
   | type       | amount | comments | account_code |
-  | RetailItem |   2.50 | Sub Fee  |         9999 |
+  | RetailItem |   2.50 | Sub Fee  |         0000 |
 
 Scenario: service charge on regular order
   
@@ -44,7 +44,7 @@ Scenario: service charge on regular order
   Then customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 8pm
   And  customer "Tom Foolery" should have the following items:
   | type       | amount | comments  | account_code |
-  | RetailItem |   3.50 | Order Fee |         9999 |
+  | RetailItem |   3.50 | Order Fee |         0000 |
 
 
 Scenario: service charge is not added twice if order error first time

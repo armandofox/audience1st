@@ -17,7 +17,6 @@ describe CheckinsController do
         get :show, :id => @id
         assigns(:showdate).should == @m
       end
-      it 'should use any existing showdate if no next showdate' 
       it 'should redirect to shows controller if no showdates at all' do
         Showdate.delete_all
         get :show, :id => @id

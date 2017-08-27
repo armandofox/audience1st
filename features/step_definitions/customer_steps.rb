@@ -1,4 +1,25 @@
 module CustomerStepsHelper
+  
+  def find_customer(first,last)
+    Customer.find_by(:first_name => first, :last_name => last)
+  end
+
+  def make_subscriber!(customer)
+    vtype = create(:bundle, :subscription => true)
+    voucher = Voucher.new_from_vouchertype(vtype)
+    customer.vouchers << voucher
+    customer.save!
+    customer.should be_a_subscriber
+  end
+
+  def find_customer_by_fullname(name)
+    c = Customer.find_by_first_name_and_last_name(*(name.split(/ +/))) or raise ActiveRecord::RecordNotFound
+  end
+
+  def find_or_create_customer(first,last)
+    find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
+  end
+
   def get_secret_question_index(question)
     indx = APP_CONFIG[:secret_questions].index(question)
     indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
@@ -15,7 +36,7 @@ Then /^account creation should fail with "(.*)"$/ do |msg|
 end
 
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
-  customer = find_customer first,last
+  customer = find_or_create_customer first,last
   visit customer_path(customer)
   with_scope('div#on_behalf_of_customer') do
     page.should have_content("Customer: #{first} #{last}")
@@ -76,15 +97,20 @@ Then /^customer "(.*) (.*)" should have the "(.*)" role$/ do |first,last,role|
 end
 
 When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f2,l2|
-  c1 = find_customer f1,l1
-  c2 = find_customer f2,l2
+  c1 = find_or_create_customer f1,l1
+  c2 = find_or_create_customer f2,l2
   visit customers_path
   check "merge[#{c1.id}]"
   check "merge[#{c2.id}]"
 end
 
+Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
+  c = find_or_create_customer first,last
+  c.update_attributes!(:email => email, :password => pass)
+end
+
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|
-  @customer = find_customer first,last
+  @customer = find_or_create_customer first,last
   if assert =~ /should/
     @customer.secret_question.should == get_secret_question_index(question)
     @customer.secret_answer.should == answer

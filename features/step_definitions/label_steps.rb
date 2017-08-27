@@ -17,17 +17,17 @@ Given /the label "(.*)" does not exist/ do |name|
   l.destroy if l
 end
 
-Given /customer "(.*)" has label "(.*)"/i do |cust,label|
-  c = find_customer_by_fullname(cust)
+Given /customer "(.*) (.*)" has label "(.*)"/i do |first,last,label|
+  c = find_or_create_customer first,last
   c.labels  << Label.find_or_create_by!(:name => label)
 end
 
-Then /customer "(.*)" should have label "(.*)"/i do |cust,label|
-  c = find_customer_by_fullname(cust)
+Then /customer "(.*) (.*)" should have label "(.*)"/i do |first,last,label|
+  c = find_customer first,last
   c.labels.map { |l| l.name }.should include(label)
 end
 
-Then /customer "(.*)" should not have label "(.*)"/i do |cust,label|
-  c = find_customer_by_fullname(cust)
+Then /customer "(.*) (.*)" should not have label "(.*)"/i do |first,last,label|
+  c = find_customer first,last
   c.labels.map { |l| l.name }.should_not include(label)
 end

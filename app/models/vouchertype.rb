@@ -4,6 +4,9 @@ class Vouchertype < ActiveRecord::Base
   require 'ruport'
   acts_as_reportable :only => [:name, :price]
 
+  attr_accessible :category, :name, :price, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :included_vouchers
+  attr_accessible :account_code_id, :account_code
+
   belongs_to :account_code
   validates_associated :account_code
 
@@ -37,6 +40,7 @@ class Vouchertype < ActiveRecord::Base
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
+  before_save :convert_bundle_quantities_to_ints
   before_update :cannot_change_category
   after_create :setup_valid_voucher_for_bundle, :if => :bundle?
   
@@ -46,6 +50,14 @@ class Vouchertype < ActiveRecord::Base
   scope :except_categories, ->(*cats) { where('category NOT IN (?)', cats.map(&:to_s)) }
 
   protected
+
+  # for bundle vouchers, the included_vouchers values should be ints
+  def convert_bundle_quantities_to_ints
+    if included_vouchers
+      included_vouchers.delete_if { |id,qty| qty.to_i.zero? }
+      included_vouchers.transform_values!(&:to_i) 
+    end
+  end
 
   # can't change the category of an existing bundle
   def cannot_change_category

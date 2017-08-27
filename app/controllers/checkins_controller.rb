@@ -19,7 +19,7 @@ class CheckinsController < ApplicationController
         flash[:alert] = "There are no shows this season eligible for check-in right now.  Please add some."
         redirect_to shows_path
       else
-        redirect_to params.merge(:id => @showdate)
+        redirect_to params.to_hash.merge(:id => @showdate.id)
       end
     else
       year = Time.now.year

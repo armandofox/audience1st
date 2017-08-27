@@ -9,9 +9,9 @@ Background:
   Given I am logged in as staff
   And the following donations:
    | donor         | amount  | fund              |       date |
-   | Tom Foolery   | $100.00 | 9999 General Fund | 2012-01-03 |
+   | Tom Foolery   | $100.00 | 0000 General Fund | 2012-01-03 |
    | Joe Mallon    | $500.00 | 9998 History Fund | 2012-01-04 |
-   | Armando Fox   | $600.00 | 9999 General Fund | 2012-03-05 |
+   | Armando Fox   | $600.00 | 0000 General Fund | 2012-03-05 |
    | Diana Moore   | $900.00 | 9998 History Fund | 2012-07-01 |
    | Patrick Tracy | $800.00 | 9997 Misc Fund    | 2012-08-01 |
   And I visit the donations page

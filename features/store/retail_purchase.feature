@@ -11,7 +11,7 @@ Background: logged in as administrator acting on behalf of a patron
   When I visit the store page for customer "Tom Foolery"
   Then I should see "Retail purchase amount"
   When I fill in "Retail purchase amount" with "237.88"
-  And I select "9999 General Fund" from "retail_account_code_id"
+  And I select "0000 General Fund" from "retail_account_code_id"
 
 Scenario: successful retail purchase
 
@@ -22,7 +22,7 @@ Scenario: successful retail purchase
   When the order is placed successfully
   Then customer "Tom Foolery" should have the following items:
   | type       | amount | comments     | account_code |
-  | RetailItem | 237.88 | Auction item |         9999 |
+  | RetailItem | 237.88 | Auction item |         0000 |
   And I should be on the order confirmation page for customer "Tom Foolery"
   And I should see /237\.88\s+Auction item/
 

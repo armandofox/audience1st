@@ -6,7 +6,8 @@ Feature: customer can change password
 
 Background: I am logged in
 
-  Given I am logged in as customer "Tom Foolery"
+  Given customer "Tom Foolery" has email "tom@foolery.com" and password "pass"
+  And I am logged in as customer "Tom Foolery"
   And I visit the change password page
 
 Scenario: supply new valid password

@@ -18,7 +18,7 @@ Scenario: Create new subscription vouchertype
   | Name                            | NewSub                       |
   | Price                           | 15                           |
   | Display order                   | 8                            |
-  | Account Code                    | select "9999 General Fund"   |
+  | Account Code                    | select "0000 General Fund"   |
   | Availability                    | select "Anyone may purchase" |
   | Season                          | select "2011-2012"           |
   | Mail fulfillment needed         | checked                      |

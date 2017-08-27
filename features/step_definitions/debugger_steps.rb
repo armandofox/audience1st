@@ -1,5 +1,5 @@
-Then /^debug$/ do
-  require "rubygems"; require "ruby-debug"; debugger 
+Then /^debug/ do
+  require "rubygems"; require "byebug"; byebug
   1 #intentionally force debugger context in this method 
 end
 

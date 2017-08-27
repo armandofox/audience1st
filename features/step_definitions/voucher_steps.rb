@@ -26,7 +26,7 @@ Given /^customer "(.*) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.
 end
 
 Given /^customer "(.*) (.*)" has (\d+) subscriber reservations for (.*)$/ do |first,last,num,date|
-  @customer = find_customer first,last
+  @customer = find_or_create_customer first,last
   @showdate = Showdate.find_by_thedate! Time.parse(date) unless date =~ /that performance/
   sub_vouchers = setup_subscriber_tickets(@customer, @showdate.show, num)
   sub_vouchers.each { |v| v.reserve_for(@showdate, Customer.boxoffice_daemon) }

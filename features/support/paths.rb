@@ -10,7 +10,7 @@ module NavigationHelpers
     Showdate.find_by_thedate!(Time.parse time)
   end
   def path_to(page_name)
-    @customer = Customer.find_by_first_name_and_last_name!($1, $2) if page_name =~ /for customer "(.*) (.*)"/
+    @customer = find_or_create_customer($1,$2) if page_name =~ /for customer "(.*) (.*)"/
 
     case page_name
     when /the (".*") RSS feed/      then availability_rss_path
