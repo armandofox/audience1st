@@ -2,8 +2,6 @@ class ImportsController < ApplicationController
   include ActiveSupport::Inflector
   before_filter :is_boxoffice_manager_filter
 
-  before_filter :temporarily_unavailable
-
   def new
     @import ||= Import.new
     yr = Time.now.this_season
