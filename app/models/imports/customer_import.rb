@@ -26,12 +26,6 @@ class CustomerImport < Import
     return [imports,rejects]
   end
   
-  def csv_rows
-    with_attachment_data do |fh|
-      CSV::Reader.create(fh.read, ',')
-    end
-  end
-  
   protected
 
   def import(customer)
@@ -42,16 +36,16 @@ class CustomerImport < Import
     customers = []
     self.number_of_records = 0
     begin
-      self.csv_rows.each do |row|
+      CSV.foreach(self.attachment_filename, :headers => true, :skip_blanks => true, :converters => []) do |row|
         if (c = customer_from_csv_row(row))
           customers << c
           self.number_of_records += 1
         end
         break if number_of_records == max
       end
-    rescue CSV::IllegalFormatError
+    rescue CSV::MalformedCSVError
       self.errors.add :base,"CSV file format is invalid starting at row #{number_of_records+1}.  If you created this CSV file on a Mac, be sure to select 'Windows Comma-Separated' as the file type to save."
-    rescue Exception => e
+    rescue StandardError => e
       self.errors.add :base,e.message
       Rails.logger.info e.backtrace
     end
@@ -59,19 +53,18 @@ class CustomerImport < Import
   end
   
   def customer_from_csv_row(row)
-    return nil if (!row || row.empty? || row[0].to_s.match(/first name/i))
     c = Customer.new(
-      :first_name       => row[0],
-      :last_name        => row[1],
-      :email            => row[2],
-      :street           => row[3],
-      :city             => row[4],
-      :state            => row[5],
-      :zip              => row[6],
-      :day_phone        => row[7],
-      :eve_phone        => row[8],
-      :blacklist        => !row[9].blank? ,
-      :e_blacklist      => !row[10].blank? 
+      :first_name       => row["First name"],
+      :last_name        => row["Last name"],
+      :email            => row["Email"],
+      :street           => row["Street"],
+      :city             => row["City"],
+      :state            => row["State"],
+      :zip              => row["Zip"],
+      :day_phone        => row["Day/primary phone"],
+      :eve_phone        => row["Eve/secondary phone"],
+      :blacklist        => ! row["Don't mail"].blank?,
+      :e_blacklist      => ! row["Don't email"].blank? 
       )
     c.created_by_admin = true
     c

@@ -5,7 +5,6 @@ describe CustomerImport do
   before(:all) do
     @testfiles_dir = File.join(Rails.root, 'spec', 'import_test_files', 'customer_list')
     @file_with_2_customers = File.join(@testfiles_dir, 'list_with_2_customers.csv')
-    @file_with_errors = File.join(@testfiles_dir, '..', 'invalid_files', 'file_with_csv_format_errors.csv')
   end
   
   it "should register its type" do
@@ -23,27 +22,10 @@ describe CustomerImport do
   end
   
   describe "preview" do
-    describe "of file with CSV formatting error at row 1" do
-      before(:each) do
-        @import = CustomerImport.new
-        allow(@import).to receive(:public_filename).and_return @file_with_errors
-      end
-      it "should have no records" do
-        @import.preview.should be_empty
-      end
-      it "should produce an error message" do
-        @import.preview
-        @import.errors.full_messages.should include_match_for(/invalid starting at row 1/)
-      end
-    end
     describe "for file containing 2 valid customers plus header row" do
       before(:each) do 
         @import = CustomerImport.new
         allow(@import).to receive(:public_filename).and_return @file_with_2_customers
-      end
-      it "should have 3 rows" do
-        CustomerImport.send(:public, :csv_rows)
-        @import.csv_rows.entries.length.should == 3
       end
       it "should have 2 records, not counting header line" do
         @import.preview
@@ -51,6 +33,7 @@ describe CustomerImport do
       end
       it "should have Customers as the records" do
         @import.preview[0].should be_a_kind_of(Customer)
+        @import.preview[1].should be_a_kind_of(Customer)
       end
     end
   end

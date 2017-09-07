@@ -26,16 +26,6 @@ class BrownPaperTicketsImport < TicketSalesImport
       number_of_records > 0
   end
 
-  def each_row
-    with_attachment_data do |fh|
-      # strip stray ^M's from DOS files
-      rows = CSV::Reader.create(fh.read.gsub(/\r\n/,' '), "\t")
-      rows.each do |row|
-        yield row.map(&:to_s)
-      end
-    end
-  end
-
   private
 
   def digest_from_string(str) ;  Digest::SHA1.hexdigest(str)[-3,3].hex ; end
@@ -43,7 +33,8 @@ class BrownPaperTicketsImport < TicketSalesImport
   def get_ticket_orders
     # production name is in cell A2; be sure "All Dates" is B2
     @format_looks_ok = nil
-    self.each_row do |row|
+    CSV.foreach(self.attachment_filename) do |row|
+      row.map! { |s| s.gsub(/\r\n/, ' ') }
       @format_looks_ok = true and next if
         row[0] =~ /^Will Call Tickets$/ || row[1] =~ /^All Dates$/
       if (content_row?(row))

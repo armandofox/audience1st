@@ -85,23 +85,8 @@ class Import < ActiveRecord::Base
     fn
   end
   
-  def with_attachment_data
-    fn = self.attachment_filename
-    begin
-      fh = File.open(fn)
-      yield fh
-    rescue Exception => e
-      msg = "Getting/parsing attachment data for #{fn}: #{e.message}"
-      self.errors.add(:base,msg)
-      Rails.logger.error msg
-      []
-    end
-  end
-
   def as_xml
-    with_attachment_data do |fh|
-      return Nokogiri::XML::Document.parse(fh)
-    end
+    return Nokogiri::XML::Document.parse(IO.read(self.attachment_filename))
   end
 
 end

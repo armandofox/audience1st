@@ -102,6 +102,7 @@ describe Voucher do
       end
       it "should remove the voucher from the transferor's account" do
         @v.transfer_to_customer(@to)
+        @from.reload
         @from.vouchers.should_not include(@v)
       end
     end

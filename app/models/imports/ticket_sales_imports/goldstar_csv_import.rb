@@ -9,13 +9,6 @@ class GoldstarCsvImport < TicketSalesImport
 
   protected
 
-  def each_row
-    with_attachment_data do |fh|
-      rows = CSV::Reader.create(fh.read)
-      rows.each { |row| yield row.map(&:to_s) }
-    end
-  end
-
   def get_ticket_orders
     unless (@showdate = Showdate.find_by_id(self.showdate_id))
       errors.add :base,"Invalid showdate ID #{showdate_id}"
@@ -24,7 +17,7 @@ class GoldstarCsvImport < TicketSalesImport
     messages << "Date: #{@showdate.printable_date}"
     @format_looks_ok = nil
     @comp_vouchers = @half_price_vouchers = 0
-    self.each_row do |row|
+    CSV.foreach(self.attachment_filename).each do |row|
       @format_looks_ok = true and next if
         row[1..9] == [' Last Name', ' First Name', ' Qty', ' Date', ' Time Note', ' Offer', ' Purchase #', ' Note']
       if content_row?(row)
