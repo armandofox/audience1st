@@ -2,9 +2,14 @@ module ActiveModel
   class Errors
     module HtmlFormatter
       def as_html
-        "<ul class=\"errors\">\n" <<
+        messages = self.full_messages
+        if messages.length <= 1
+          '<p class="errors">' << messages[0] << '</p>'
+        else
+          "<ul class=\"errors\">\n" <<
           self.full_messages.map { |m| "  <li>#{m}</li>" }.join("\n") <<
-          "</ul>"
+            "</ul>"
+        end
       end
     end
   end

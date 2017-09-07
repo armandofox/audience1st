@@ -16,8 +16,8 @@ describe Label do
   describe "when deleted" do
     it "should no longer be attached to any customer" do
       @c.labels << @foo_label
-      @c.save!
       @foo_label.destroy
+      @c.reload
       @c.labels.should_not include(@foo_label)
     end
   end

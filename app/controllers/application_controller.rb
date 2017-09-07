@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
 
   require 'csv'
 
+  rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
   # Session keys
   #  :cid               id of logged in user; if absent, nobody logged in
   #  :return_to         route params (for url_for) to return to after valid login

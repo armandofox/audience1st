@@ -33,12 +33,12 @@ describe Customer do
       it 'if user hasn\'t setup a secret question' do
         c = create(:customer, :secret_question => 0)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'foo')
-        u.errors[:login_failed].should include("Sorry, but '#{c.email}' never set up a secret question.")
+        u.errors.as_html.should include("Sorry, but '#{c.email}' never set up a secret question.")
       end
       it 'if answer incorrect' do
         c = create(:customer, :secret_answer => 'blah',:secret_question => 2)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'answer')
-        u.errors[:login_failed].should include("Sorry, that isn't the answer you provided when you selected your secret question.")
+        u.errors.as_html.should include("Sorry, that isn't the answer you provided when you selected your secret question.")
       end
     end
   end
