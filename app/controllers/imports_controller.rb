@@ -71,7 +71,7 @@ class ImportsController < ApplicationController
   end
 
   def index
-    @imports = Import.all_by_date
+    @imports = Import.all
     if @imports.empty?
       flash.keep
       redirect_to new_import_path

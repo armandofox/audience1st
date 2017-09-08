@@ -2,6 +2,8 @@ class Import < ActiveRecord::Base
   require 'csv'
   include Comparable
 
+  default_scope { order('completed_at DESC,created_at DESC') }
+  
   attr_accessible :name, :type, :number_of_records, :filename, :content_type, :size, :customer_id, :show_id, :showdate_id
   
   UPLOADED_FILES_PATH = File.join(Rails.root, 'tmp')
@@ -14,10 +16,6 @@ class Import < ActiveRecord::Base
       (other.completed_at || other.updated_at || other.created_at || Time.now)
   end
   
-  def self.all_by_date
-    Import.all.sort.reverse
-  end
-
   def import! ; raise "Must override this method" ; end
 
   def finalize(bywhom = Customer.boxoffice_daemon)
@@ -29,7 +27,6 @@ class Import < ActiveRecord::Base
   @@import_types = {
     'Customer/mailing list' => 'CustomerImport',
     'Brown Paper Tickets sales for 1 production' => 'BrownPaperTicketsImport',
-    'TBA sales list for Run of Show' => 'TbaWebtixImport',
     'Goldstar sales for one performance (CSV format)' => 'GoldstarCsvImport',
     'Goldstar sales for one performance (XML format)' => 'GoldstarXmlImport'
     }
