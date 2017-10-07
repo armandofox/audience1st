@@ -1,7 +1,6 @@
 namespace :import do
   task :customers => :environment do
     require 'csv'
-    require 'ruby-debug'
     count = 1
     begin
       ActiveRecord::Base.transaction do
