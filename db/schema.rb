@@ -69,24 +69,24 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.date     "birthday"
   end
 
-  add_index "customers", ["city"], name: "index_customers_on_city", using: :btree
-  add_index "customers", ["day_phone"], name: "index_customers_on_day_phone", using: :btree
-  add_index "customers", ["email"], name: "index_customers_on_email", using: :btree
-  add_index "customers", ["eve_phone"], name: "index_customers_on_eve_phone", using: :btree
-  add_index "customers", ["first_name"], name: "index_customers_on_first_name", using: :btree
-  add_index "customers", ["last_name"], name: "index_customers_on_last_name", using: :btree
-  add_index "customers", ["role"], name: "index_customers_on_role", using: :btree
-  add_index "customers", ["state"], name: "index_customers_on_state", using: :btree
-  add_index "customers", ["street"], name: "index_customers_on_street", using: :btree
-  add_index "customers", ["zip"], name: "index_customers_on_zip", using: :btree
+  add_index "customers", ["city"], name: "index_customers_on_city"
+  add_index "customers", ["day_phone"], name: "index_customers_on_day_phone"
+  add_index "customers", ["email"], name: "index_customers_on_email"
+  add_index "customers", ["eve_phone"], name: "index_customers_on_eve_phone"
+  add_index "customers", ["first_name"], name: "index_customers_on_first_name"
+  add_index "customers", ["last_name"], name: "index_customers_on_last_name"
+  add_index "customers", ["role"], name: "index_customers_on_role"
+  add_index "customers", ["state"], name: "index_customers_on_state"
+  add_index "customers", ["street"], name: "index_customers_on_street"
+  add_index "customers", ["zip"], name: "index_customers_on_zip"
 
   create_table "customers_labels", id: false, force: :cascade do |t|
     t.integer "customer_id", limit: 4
     t.integer "label_id",    limit: 4
   end
 
-  add_index "customers_labels", ["customer_id"], name: "index_customers_labels_on_customer_id", using: :btree
-  add_index "customers_labels", ["label_id"], name: "index_customers_labels_on_label_id", using: :btree
+  add_index "customers_labels", ["customer_id"], name: "index_customers_labels_on_customer_id"
+  add_index "customers_labels", ["label_id"], name: "index_customers_labels_on_label_id"
 
   create_table "imports", force: :cascade do |t|
     t.string   "name",              limit: 255
@@ -125,13 +125,13 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.integer  "order_id",           limit: 4
   end
 
-  add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
-  add_index "items", ["bundle_id"], name: "index_items_on_bundle_id", using: :btree
-  add_index "items", ["customer_id"], name: "customer_id", using: :btree
-  add_index "items", ["order_id"], name: "index_items_on_order_id", using: :btree
-  add_index "items", ["showdate_id"], name: "index_vouchers_on_showdate_id", using: :btree
-  add_index "items", ["type"], name: "index_items_on_type", using: :btree
-  add_index "items", ["vouchertype_id"], name: "index_items_on_vouchertype_id", using: :btree
+  add_index "items", ["account_code_id"], name: "index_items_on_account_code_id"
+  add_index "items", ["bundle_id"], name: "index_items_on_bundle_id"
+  add_index "items", ["customer_id"], name: "customer_id"
+  add_index "items", ["order_id"], name: "index_items_on_order_id"
+  add_index "items", ["showdate_id"], name: "index_vouchers_on_showdate_id"
+  add_index "items", ["type"], name: "index_items_on_type"
+  add_index "items", ["vouchertype_id"], name: "index_items_on_vouchertype_id"
 
   create_table "labels", force: :cascade do |t|
     t.string "name", limit: 255
@@ -225,10 +225,10 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.text     "retail_items",      limit: 65535
   end
 
-  add_index "orders", ["authorization"], name: "index_orders_on_authorization", using: :btree
-  add_index "orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
-  add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
-  add_index "orders", ["walkup"], name: "index_orders_on_walkup", using: :btree
+  add_index "orders", ["authorization"], name: "index_orders_on_authorization"
+  add_index "orders", ["customer_id"], name: "index_orders_on_customer_id"
+  add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id"
+  add_index "orders", ["walkup"], name: "index_orders_on_walkup"
 
   create_table "purchasemethods", force: :cascade do |t|
     t.string  "description", limit: 255, default: "",        null: false
@@ -246,7 +246,7 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.datetime "updated_at"
   end
 
-  add_index "sessions", ["session_id"], name: "sessions_session_id_index", using: :btree
+  add_index "sessions", ["session_id"], name: "sessions_session_id_index"
 
   create_table "showdates", force: :cascade do |t|
     t.datetime "thedate"
@@ -258,8 +258,8 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.datetime "updated_at",                                null: false
   end
 
-  add_index "showdates", ["end_advance_sales"], name: "end_advance_sales", using: :btree
-  add_index "showdates", ["show_id"], name: "index_showdates_on_show_id", using: :btree
+  add_index "showdates", ["end_advance_sales"], name: "end_advance_sales"
+  add_index "showdates", ["show_id"], name: "index_showdates_on_show_id"
 
   create_table "shows", force: :cascade do |t|
     t.string   "name",                      limit: 255
@@ -291,7 +291,7 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.string   "txn_type",          limit: 255
   end
 
-  add_index "txns", ["customer_id"], name: "index_txns_on_customer_id", using: :btree
+  add_index "txns", ["customer_id"], name: "index_txns_on_customer_id"
 
   create_table "valid_vouchers", force: :cascade do |t|
     t.integer  "showdate_id",        limit: 4
@@ -304,10 +304,10 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.datetime "updated_at",                     null: false
   end
 
-  add_index "valid_vouchers", ["showdate_id", "vouchertype_id"], name: "index_valid_vouchers_on_showdate_id_and_vouchertype_id", using: :btree
-  add_index "valid_vouchers", ["showdate_id"], name: "index_valid_vouchers_on_showdate_id", using: :btree
-  add_index "valid_vouchers", ["start_sales"], name: "index_valid_vouchers_on_start_sales", using: :btree
-  add_index "valid_vouchers", ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id", using: :btree
+  add_index "valid_vouchers", ["showdate_id", "vouchertype_id"], name: "index_valid_vouchers_on_showdate_id_and_vouchertype_id"
+  add_index "valid_vouchers", ["showdate_id"], name: "index_valid_vouchers_on_showdate_id"
+  add_index "valid_vouchers", ["start_sales"], name: "index_valid_vouchers_on_start_sales"
+  add_index "valid_vouchers", ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id"
 
   create_table "vouchertypes", force: :cascade do |t|
     t.string   "name",                limit: 255
@@ -326,10 +326,10 @@ ActiveRecord::Schema.define(version: 20170628202024) do
     t.integer  "display_order",       limit: 4,     default: 0,     null: false
   end
 
-  add_index "vouchertypes", ["category", "season"], name: "index_vouchertypes_on_category_and_season", using: :btree
-  add_index "vouchertypes", ["category"], name: "index_vouchertypes_on_category", using: :btree
-  add_index "vouchertypes", ["season"], name: "index_vouchertypes_on_season", using: :btree
-  add_index "vouchertypes", ["subscription"], name: "index_vouchertypes_on_subscription", using: :btree
-  add_index "vouchertypes", ["walkup_sale_allowed"], name: "index_vouchertypes_on_walkup_sale_allowed", using: :btree
+  add_index "vouchertypes", ["category", "season"], name: "index_vouchertypes_on_category_and_season"
+  add_index "vouchertypes", ["category"], name: "index_vouchertypes_on_category"
+  add_index "vouchertypes", ["season"], name: "index_vouchertypes_on_season"
+  add_index "vouchertypes", ["subscription"], name: "index_vouchertypes_on_subscription"
+  add_index "vouchertypes", ["walkup_sale_allowed"], name: "index_vouchertypes_on_walkup_sale_allowed"
 
 end
