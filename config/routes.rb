@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  # :format => false means that this app only returns 'html'
   scope :format => false do
 
     root :to => 'customers#show'
