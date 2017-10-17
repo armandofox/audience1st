@@ -1,6 +1,7 @@
 class Mailer < ActionMailer::Base
 
   helper :customers
+  helper :application
 
   default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
   
