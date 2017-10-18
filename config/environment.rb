@@ -3,7 +3,6 @@
 # Load the Rails application.
 require File.expand_path('../application', __FILE__)
 
-
 Rails.application.configure do
   config.after_initialize do
     config.action_mailer.delivery_method = :test if Figaro.env.sandbox

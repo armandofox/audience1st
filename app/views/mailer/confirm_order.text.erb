@@ -17,9 +17,9 @@ PAYMENT AMOUNT: <%= number_to_currency(@order.total_price) %>
 PAYMENT METHOD: <%= @order.purchasemethod.description %>
 ------------------------------------------------------------
 
-<%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, :spanify=> false)), :line_width => 60) %>
+<%= word_wrap(strip_tags(sanitize_option_text(:general_confirmation_email_notes, 'p', {:spanify => false})), :line_width => 60) %>
 
-<%= word_wrap(strip_tags(sanitize_option_text((@order.purchaser.subscriber ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), :spanify => false)), :line_width => 60) %>
+<%= word_wrap(strip_tags(sanitize_option_text((@order.purchaser.subscriber? ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), 'p', {:spanify => false})), :line_width => 60) %>
 
 <% unless @order.comments.blank? %>
 ------------------------------------------------------------
