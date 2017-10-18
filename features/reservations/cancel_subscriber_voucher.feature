@@ -18,6 +18,7 @@ Scenario: Cancel/change multiple reservation the customer want
   And customer "Tom Foolery" has 2 subscriber reservations for that performance
   And I am logged in as customer "Tom Foolery"
   When I select "1" from "cancelnumber"
+  And I select "Saturday, May 1, 8:00 PM" from "showdate_id"
   And I press "Click to Cancel"
   Then I should see "1 of Your reservations have been cancelled"
   And  customer Tom Foolery should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
