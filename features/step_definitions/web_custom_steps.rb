@@ -191,4 +191,3 @@ When /^I fill in the "(.*)" fields as follows:$/ do |fieldset, table|
   end
 end
 
-end
