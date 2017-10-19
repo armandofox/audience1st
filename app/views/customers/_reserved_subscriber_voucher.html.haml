@@ -1,5 +1,13 @@
-%td.c= group.size
-%td{:title => (group.voucherlist if @gAdminDisplay)}= group.name
-%td= group.showdate.printable_date
-%td.action= render :partial => 'cancel_button', :locals => {:group => group}
-= render :partial => 'update_voucher_comments', :locals => {:group => group}
+- if @gAdminDisplay || group.cancelable_by(@customer)
+  = form_tag cancel_multiple_customer_vouchers_path(@customer) do
+    = hidden_field_tag 'voucher_ids', group.voucherlist
+    %td.c= menu_or_static_text('cancelnumber_subscription', group.size)
+    %td{:title => (group.voucherlist if @gAdminDisplay)}= group.name
+    %td= group.showdate.printable_date
+    %td.action= submit_tag 'Click to Cancel', :disable_with => 'Cancelling...', :locals => {:group => group}, :style => "width: 17ex", :confirm => 'Are you sure? Click OK to cancel this reservation, or Cancel to leave things as they are.'
+    = render :partial => 'update_voucher_comments', :locals => {:group => group}
+- else
+  %td.c= group.size
+  %td= group.name
+  %td= group.showdate.printable_date
+  %td
