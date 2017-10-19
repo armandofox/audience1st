@@ -48,7 +48,7 @@ class StoreController < ApplicationController
     anon = Customer.anonymous_customer
     # we can proceed without a redirect if:
     return (desired == anon) if !logged_in # not logged in, & anonymous customer specified
-    staff_login = logged_in.is_boxoffice   
+    staff_login = logged_in.is_boxoffice
     (staff_login && desired && desired != anon) || # staff login, and any non-anon customer specified
       ( ! staff_login && desired == logged_in) # or regular login, and self specified
   end
@@ -188,7 +188,7 @@ class StoreController < ApplicationController
   end
 
   # Beyond this point, purchaser is logged in (or admin is logged in and acting on behalf of purchaser)
-  
+
   def checkout
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
@@ -336,18 +336,20 @@ class StoreController < ApplicationController
       of_type(@what)  ||  []
     # ensure default show is included in list of shows
     if (@what == 'Regular Show' && !@all_shows.include?(@sh))
-      @all_shows << @sh 
+      @all_shows << @sh
     end
   end
 
   def setup_ticket_menus_for_patron
+
     @valid_vouchers = @sd.valid_vouchers.map do |v|
       v.customer = @customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)
+  
     @all_shows = Show.current_and_future.of_type(@what) || []
     if (@what == 'Regular Show' && !@all_shows.include?(@sh))
-      @all_shows << @sh 
+      @all_shows << @sh
     end
   end
 

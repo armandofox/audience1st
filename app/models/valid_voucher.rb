@@ -48,7 +48,7 @@ class ValidVoucher < ActiveRecord::Base
   def public?
     [Vouchertype::SUBSCRIBERS, Vouchertype::ANYONE].include?(offer_public)
   end
-  
+
   def event_type
     showdate.try(:show).try(:event_type)
   end
@@ -94,7 +94,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   protected
-  
+
   def adjust_for_visibility
     if !match_promo_code(supplied_promo_code)
       self.explanation = 'Promo code required'
@@ -167,7 +167,7 @@ class ValidVoucher < ActiveRecord::Base
     result.explanation = ''
     result
   end
-  
+
   public
 
   def seats_of_type_remaining
@@ -203,7 +203,7 @@ class ValidVoucher < ActiveRecord::Base
 
   # returns a copy of this ValidVoucher, but with max_sales_for_this_patron adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to
-  # THIS customer. 
+  # THIS customer.
   def adjust_for_customer(customer_supplied_promo_code = '')
     result = self.clone_with_id
     result.supplied_promo_code = customer_supplied_promo_code.to_s

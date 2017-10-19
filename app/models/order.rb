@@ -1,6 +1,6 @@
 class Order < ActiveRecord::Base
   acts_as_reportable
-  
+
   belongs_to :customer
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
@@ -9,14 +9,14 @@ class Order < ActiveRecord::Base
   has_many :vouchers, :dependent => :destroy
   has_many :donations, :dependent => :destroy
   has_many :retail_items, :dependent => :destroy
-  
+
   attr_accessor :purchase_args
   attr_reader :donation
 
   attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser
-  
+
   delegate :purchase_medium, :to => :purchasemethod
-  
+
   # errors
 
   class Order::OrderFinalizeError < StandardError ; end
@@ -67,7 +67,7 @@ class Order < ActiveRecord::Base
   end
 
   public
-  
+
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
     other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
     order = Order.new(other_args)
@@ -106,6 +106,9 @@ class Order < ActiveRecord::Base
 
   def add_tickets(valid_voucher, number)
     key = valid_voucher.id
+    puts(valid_voucher)
+    puts(valid_voucher.id)
+    puts("is key")
     self.valid_vouchers[key] ||= 0
     self.valid_vouchers[key] += number
   end
@@ -117,7 +120,7 @@ class Order < ActiveRecord::Base
     self.donation_data[:comments] = d.comments
     @donation = d
   end
-  
+
   def add_retail_item(r)
     self.retail_items << r if r
   end
@@ -127,7 +130,7 @@ class Order < ActiveRecord::Base
   end
 
   def item_count ; ticket_count + (include_donation? ? 1 : 0) + retail_items.size; end
-  
+
   def has_mailable_items?
     # do any of the items require fulfillment?
     if completed?
@@ -168,12 +171,12 @@ class Order < ActiveRecord::Base
   def total_price
     return items.map(&:amount).sum if completed?
     total = self.donation.try(:amount).to_f + self.retail_items.map(&:amount).sum
-    valid_vouchers.each_pair do |vv_id, qty| 
+    valid_vouchers.each_pair do |vv_id, qty|
       total += ValidVoucher.find(vv_id).price * qty
     end
     total
   end
-  
+
   def walkup_confirmation_notice
     notice = []
     notice << "#{'$%.02f' % donation.amount} donation" if include_donation?
@@ -185,7 +188,7 @@ class Order < ActiveRecord::Base
       message = "Issued #{message} as zero-revenue order"
     else
       if include_vouchers?
-        message << " (total #{'$%.02f' % total_price})" 
+        message << " (total #{'$%.02f' % total_price})"
       end
       message << " paid by #{ActiveSupport::Inflector::humanize(purchase_medium)}"
     end
@@ -222,7 +225,7 @@ class Order < ActiveRecord::Base
     if purchasemethod.kind_of?(Purchasemethod)
       errors.add(:base,'Invalid credit card transaction') if
         purchase_args && purchase_args[:credit_card_token].blank?       &&
-        purchase_medium == :credit_card 
+        purchase_medium == :credit_card
       errors.add(:base,'Zero amount') if
         total_price.zero? && purchase_medium != :cash
     else
@@ -305,12 +308,12 @@ class Order < ActiveRecord::Base
   end
 
   def total
-    # :BUG: 79120088: this should be replaceable by 
+    # :BUG: 79120088: this should be replaceable by
     #    items.sum(:amount)
     # when every Item's 'amount' field is correctly filled in at order time
     items.map(&:amount).sum
   end
-  
+
   def purchasemethod_description
     purchasemethod.description
   end
