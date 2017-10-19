@@ -12,10 +12,13 @@ Background: I have 2 subscriber vouchers reserved for a show called "Hairspray"
   And customer "Tom Foolery" has 2 cancelable subscriber reservations for May 1, 8pm
   And I am logged in as customer "Tom Foolery"
 <<<<<<< HEAD
+<<<<<<< HEAD
   And I press "Click to Cancel"
   Then I should see "Your reservations have been cancelled"
   And  customer Tom Foolery should have 0 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 =======
+=======
+>>>>>>> bd1e4e5... Trying to modify the view
   And I am on the home page for customer "Tom Foolery"
 
 Scenario: Cancel/change multiple reservation the customer want
