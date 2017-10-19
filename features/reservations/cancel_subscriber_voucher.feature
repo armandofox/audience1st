@@ -11,14 +11,6 @@ Background: I have 2 subscriber vouchers reserved for a show called "Hairspray"
     | May 3, 8pm |           10 |
   And customer "Tom Foolery" has 2 cancelable subscriber reservations for May 1, 8pm
   And I am logged in as customer "Tom Foolery"
-<<<<<<< HEAD
-<<<<<<< HEAD
-  And I press "Click to Cancel"
-  Then I should see "Your reservations have been cancelled"
-  And  customer Tom Foolery should have 0 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
-=======
-=======
->>>>>>> bd1e4e5... Trying to modify the view
   And I am on the home page for customer "Tom Foolery"
 
 Scenario: Cancel/change multiple reservation the customer want
@@ -26,9 +18,5 @@ Scenario: Cancel/change multiple reservation the customer want
   And I press "Click to Cancel"
   Then I should see "1 of Your reservations have been cancelled"
   And  customer Tom Foolery should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
-  
-  
->>>>>>> bd1e4e5... Trying to modify the view
-  
 
 
