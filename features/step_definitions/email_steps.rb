@@ -14,7 +14,3 @@ Then /^no email should be sent to( customer)? "(.*)"$/ do |cust,recipient|
   recipient = find_customer(*recipient.split(/\s+/)).email if cust
   ActionMailer::Base.deliveries.any? { |e| e.to.include?(recipient) }.should be_falsey
 end
-
-Given /^customer "(.*)" has email "(.*)"$/ do |customer,email|
-  
-end

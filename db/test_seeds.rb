@@ -1,17 +1,14 @@
-customer = Customer.create(:first_name => "a", :last_name => "l", :email => "b@gmail.com", :password => "jjjjjj")
-time = Time.new(2017, 10, 16, 2, 2, 2, "+02:00")
-showtime = Time.now + 30.minutes
-
+time = Time.new(2017, 9, 31, 2, 2, 2, "+02:00")
 #NOT SURE IF LISTING DATE IS RIGHT ASK FOX 
 show = Show.create(
-      :name => "Full Season",
+      :name => "New Show",
       :house_capacity =>  10,
       :opening_date =>  (time - 2.month),
       :closing_date => (time + 2.month), 
       :listing_date => time)
 show.save
 showdate = show.showdates.create!(
-      :thedate => showtime,
+      :thedate => time,
       :end_advance_sales => time - 5.minutes,
       :max_sales => 100)
 showdate.save
@@ -31,30 +28,47 @@ vtype2 = Vouchertype.create!(
     :walkup_sale_allowed => true,
     :category => 'revenue',
     :offer_public => Vouchertype::ANYONE)
-
+    
 showdate.valid_vouchers.create!(:vouchertype => vtype,
       :max_sales_for_type => 100,
       :end_sales => showdate.thedate + 5.minutes,
       :start_sales => [Time.now - 1.day, showdate.thedate - 1.week].min
       )
-
 showdate.valid_vouchers.create!(:vouchertype => vtype2,
       :max_sales_for_type => 100,
       :end_sales => showdate.thedate + 5.minutes,
       :start_sales => [Time.now - 1.day, showdate.thedate - 1.week].min
       )
 
-  
-  order = Order.create(
+  customer = create(:customer, :first_name => first, :last_name => last)
+  vtype = Vouchertype.find_by_name(type) || create(:revenue_vouchertype, :name => type)
+  vv = ValidVoucher.find_by_vouchertype_id_and_showdate_id(vtype.id,@showdate.id) ||
+    create(:valid_voucher, :vouchertype => vtype, :showdate => @showdate)
+  order = build(:order,
     :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
     :customer => customer,
     :purchaser => customer)
-  order.vouchers = []
-  vtype3 = Vouchertype.create(:category => "revenue", :name => "Full Season", :season => time)
-  vv = ValidVoucher.create(:vouchertype => vtype3, :showdate => nil, :start_sales => time-1.days, :end_sales => time + 30.days)
-  puts(vv.save)
-  puts(vv.errors.full_messages)
-  vtype3.save
-  order.add_tickets(vv, 5)
+  order.add_tickets(vv, num.to_i)
   order.finalize!
-  puts(order.errors.full_messages)
+
+
+
+  order = Order.new(
+    :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
+    :customer => customer,
+    :purchaser => customer)
+
+order.add_tickets(vv, 100)
+  order.finalize!
+
+
+
+
+
+
+
+
+
+
+
+
