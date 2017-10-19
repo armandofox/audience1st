@@ -106,9 +106,6 @@ class Order < ActiveRecord::Base
 
   def add_tickets(valid_voucher, number)
     key = valid_voucher.id
-    puts(valid_voucher)
-    puts(valid_voucher.id)
-    puts("is key")
     self.valid_vouchers[key] ||= 0
     self.valid_vouchers[key] += number
   end
