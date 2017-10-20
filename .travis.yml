@@ -5,7 +5,7 @@ sudo: false
 cache: bundler
 bundler_args: --without production
 before_install:
-  - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
+  - gpg --passphrase $GROUPX -d -o config/application.yml config/application.yml.asc
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
