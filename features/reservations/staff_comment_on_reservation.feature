@@ -19,7 +19,7 @@ Scenario: add comment to revenue reservation
   And I fill in "comments" with "Will be late" within "#voucher_1"
   And I press "Save" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"
-  Then the "comments" field within "#voucher_1" should contain "Will be late" 
+  Then the "comments" field within "#voucher_1" should contain "Will be late"
 
 Scenario: add comment to subscriber reservation
 
@@ -31,5 +31,5 @@ Scenario: add comment to subscriber reservation
   And I fill in "comments" with "Will be late" within "#voucher_1"
   And I press "Save" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"
-  Then the "comments" field within "#voucher_1" should contain "Will be late" 
+  Then the "comments" field within "#voucher_1" should contain "Will be late"
     

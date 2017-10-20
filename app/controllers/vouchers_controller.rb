@@ -36,6 +36,7 @@ class VouchersController < ApplicationController
       redirect_to(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
     end
     @valid_vouchers = []
+    @email_disabled = @customer.email.blank?
   end
 
   def create
@@ -44,7 +45,8 @@ class VouchersController < ApplicationController
     thevouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
     thecomment = params[:comments].to_s
     theshowdate = Showdate.find_by_id(params[:showdate_id])
-
+    shouldEmail = params[:customer_email]
+    
     redir = new_customer_voucher_path(@customer)
     return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
       thevouchertype && thenumtoadd > 0
@@ -53,7 +55,7 @@ class VouchersController < ApplicationController
     return redirect_to(redir, 'Please select a performance.') unless theshowdate
     return redirect_to(redir, 'This comp ticket type not valid for this performance.') unless
       vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
-    
+
     order = Order.new_from_valid_voucher(vv, thenumtoadd,
       :comments => thecomment,
       :processed_by => current_user,
@@ -77,6 +79,9 @@ class VouchersController < ApplicationController
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
       Rails.logger.error e.backtrace.inspect
+    end
+    if shouldEmail
+      email_confirmation(:confirm_reservation, @customer, theshowdate, thenumtoadd)
     end
     
     redirect_to customer_path(@customer)

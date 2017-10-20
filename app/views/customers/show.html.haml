@@ -3,7 +3,7 @@
 
   %h1.page_heading.center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
   %br
-
+  
   %table#subscriptionReservations.full_width
     %thead
       %tr
@@ -42,7 +42,7 @@
         %th
         - if @gAdminDisplay
           %th.admin Comment
-    %tbody 
+    %tbody
       - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
         %tr[group.vouchers.first]
           - if group.reserved
