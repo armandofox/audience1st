@@ -228,6 +228,7 @@ GEM
     rack (1.6.8)
     rack-test (0.6.3)
       rack (>= 1.0)
+    railroady (1.5.3)
     rails (4.2.9)
       actionmailer (= 4.2.9)
       actionpack (= 4.2.9)
@@ -402,6 +403,7 @@ DEPENDENCIES
   protected_attributes
   pry
   rack-test
+  railroady
   rails (= 4.2.9)
   rake
   rb-readline
@@ -429,4 +431,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.15.3
+   1.16.0.pre.3
