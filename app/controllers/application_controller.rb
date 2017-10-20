@@ -131,12 +131,13 @@ class ApplicationController < ActionController::Base
     addr = customer.email
     if customer.valid_email_address?
       begin
-        Mailer.send(method,*args).deliver_now
+        m = Mailer.send(method, *args).deliver_now
         flash[:notice] << " An email confirmation was sent to #{addr}.  If you don't receive it in a few minutes, please make sure 'audience1st.com' is on your trusted senders list, or the confirmation email may end up in your Junk Mail or Spam folder."
         Rails.logger.info("Confirmation email sent to #{addr}")
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "
         flash[:notice] << "send an email confirmation to #{addr}."
+        flash[:notice] << "The error message was: #{e.message}"
         Rails.logger.error("Emailing #{addr}: #{e.message} \n #{e.backtrace}")
       end
     else
