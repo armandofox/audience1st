@@ -4,14 +4,15 @@ rvm:
 sudo: false
 cache: bundler
 bundler_args: --without production
+before_script:
+  - gpg --passphrase "$GROUPX" --output config/application.yml \
+       --decrypt config/application.yml.asc
 before_install:
   - gpg --passphrase $GROUPX -d -o config/application.yml config/application.yml.asc
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-before_script:
-  - gpg --passphrase "$GROUPX" --output config/application.yml \
-       --decrypt config/application.yml.asc
+
 script:
   - cp config/database.yml.test config/database.yml
   - bundle exec rake db:setup
