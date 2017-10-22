@@ -11,6 +11,7 @@ env:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 script:
   - cp config/database.yml.test config/database.yml
+  - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
   - bundle exec rake db:setup
   - bundle exec rake ci:tests
 after_script:
