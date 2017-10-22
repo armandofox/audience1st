@@ -2,6 +2,8 @@ require 'rails_helper'
 
 describe TicketSalesImport, :pending => 'refactor import logic' do
 
+  before { skip "Awaiting refactoring of import logic" }
+  
   describe "importing showdate" do
     before(:each) do
       TicketSalesImport.send(:public, :import_showdate)
