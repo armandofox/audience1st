@@ -2,9 +2,7 @@ require 'rails_helper'
 
 describe TicketSalesImport, :pending => 'refactor import logic' do
 
-  before { skip "Awaiting refactoring of import logic" }
-  
-  describe "importing showdate" do
+  xdescribe "importing showdate" do
     before(:each) do
       TicketSalesImport.send(:public, :import_showdate)
       @imp = build(:ticket_sales_import)
@@ -23,7 +21,7 @@ describe TicketSalesImport, :pending => 'refactor import logic' do
     end
   end
 
-  describe "checking duplicate order" do
+  xdescribe "checking duplicate order" do
     before :all do ; TicketSalesImport.send(:public, :already_entered?) ; end
     before :each do
       @imp = build(:ticket_sales_import)
@@ -41,7 +39,7 @@ describe TicketSalesImport, :pending => 'refactor import logic' do
     end
   end
 
-  describe "preview" do
+  xdescribe "preview" do
     describe "should bail out with errors" do
       before :each do ; @imp = build(:brown_paper_tickets_import) ; end
       it "if no show specified" do
@@ -57,8 +55,8 @@ describe TicketSalesImport, :pending => 'refactor import logic' do
     end
   end
   
-  describe "when an error happens during import or preview process" do
-    before :all do
+  xdescribe "when an error happens during import or preview process" do
+    before :each do
       @imp = build(:brown_paper_tickets_import)
       allow(@imp).to receive(:get_ticket_orders).and_raise "Error"
     end
