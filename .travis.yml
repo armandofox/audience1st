@@ -5,6 +5,7 @@ sudo: false
 cache: bundler
 bundler_args: --without production
 before_install:
+  - export TZ=America/Los_Angeles
   - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
 env:
   global:
