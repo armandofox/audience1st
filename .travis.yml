@@ -17,9 +17,8 @@ script:
   - cp config/database.yml.test config/database.yml
   - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
   - bundle exec rake db:setup
-  - bundle exec rake ci:tests
   - ./cc-test-reporter before-build
-  - bundle exec rake features
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - bundle exec rake ci:tests
 after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - rm -f config/application.yml
