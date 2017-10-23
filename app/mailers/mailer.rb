@@ -1,6 +1,7 @@
 class Mailer < ActionMailer::Base
 
   helper :customers
+  helper :application
 
   default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
   
@@ -14,7 +15,7 @@ class Mailer < ActionMailer::Base
   end
 
     
-  def confirm_order(purchaser,order) 
+  def confirm_order(purchaser,order)
     @order = order
     mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
   end

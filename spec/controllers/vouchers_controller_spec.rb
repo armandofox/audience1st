@@ -25,7 +25,7 @@ describe VouchersController do
       end
       describe 'for 2 vouchers' do
         before :each do
-          @vouchers[2].stub(:reserve_for).and_raise("Shouldn't have tried to reserve this one")
+          allow(@vouchers[2]).to receive(:reserve_for).and_raise("Shouldn't have tried to reserve this one")
           @successful = 2
           post :confirm_multiple, @params.merge(:number => 2)
         end
@@ -35,7 +35,7 @@ describe VouchersController do
     end
     describe 'reservation with errors' do
       before :each do
-        @vouchers[1].stub(:reserve_for) do |*args|
+        allow(@vouchers[1]).to receive(:reserve_for) do |*args|
           @vouchers[1].errors.add :base,"An error occurred"
           false
         end

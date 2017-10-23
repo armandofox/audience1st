@@ -9,6 +9,7 @@ gem 'bundler'
 gem 'dbf'
 gem 'dbi'
 gem 'figaro'
+gem 'travis'
 gem 'sslrequirement'
 gem 'haml'
 gem 'hominid'
@@ -73,4 +74,5 @@ group :development, :test do
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'sqlite3'
   gem 'timecop'
+  gem 'railroady'
 end

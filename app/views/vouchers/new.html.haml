@@ -13,9 +13,14 @@
   %label{:for => 'comments'}  Optional comments:
   = text_area_tag 'comments', '', {:size => '40x2'}
   %br
-
+  
   #reserve_for= render :partial => 'reserve_for'
+  %br
     
+  %label  Send Email Confirmation:
+  = check_box_tag 'customer_email', 1, false, :disabled => @email_disabled
+  %br
+  
   = submit_tag "Add Vouchers"
 
   = link_to  "Cancel", customer_path(@customer), :class => 'genButton'

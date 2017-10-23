@@ -13,7 +13,6 @@ Rails.application.configure do
   config.whiny_nils = true
 
   # Show full error reports and disable caching
-  # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
 
@@ -39,5 +38,4 @@ Rails.application.configure do
   # Stripe payments: disable SSL verification for local testing
   require 'stripe'
   Stripe.verify_ssl_certs = false
-
 end
