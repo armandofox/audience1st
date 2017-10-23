@@ -137,7 +137,6 @@ class ApplicationController < ActionController::Base
       rescue Exception => e
         flash[:notice] << " Your transaction was successful, but we couldn't "
         flash[:notice] << "send an email confirmation to #{addr}."
-        flash[:notice] << "The error message was: #{e.message}"
         Rails.logger.error("Emailing #{addr}: #{e.message} \n #{e.backtrace}")
       end
     else

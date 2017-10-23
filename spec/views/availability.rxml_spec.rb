@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-describe 'info/availability.rxml' do
+describe 'info/availability.rxml', :type => :view do
   before :each do
-    assigns(:showdates,
+    assign(:showdates,
       [sd = create(:showdate,
           :show => create(:show, :event_type => 'Special Event'),
           :thedate => 1.week.from_now)])
@@ -10,11 +10,10 @@ describe 'info/availability.rxml' do
     render
   end
   it 'includes unescaped routes' do
-    response.body.should_not match(/&amp/)
+    expect(response.body).not_to match(/&amp/)
   end
   it 'does not include spurious newlines with URLs' do
-    skip
-    response.body.should_not match(/\nhttp:/)
+    expect(response.body).not_to match(/\nhttp:/)
   end
 end
 

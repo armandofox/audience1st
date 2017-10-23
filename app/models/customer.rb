@@ -451,7 +451,8 @@ class Customer < ActiveRecord::Base
       FROM customers c1 INNER JOIN customers c2 ON c1.last_name=c2.last_name
       WHERE c1.id != c2.id AND
         (c1.email LIKE c2.email OR c1.email IS NULL OR c2.email IS NULL) AND
-        (c1.first_name LIKE c2.first_name OR c1.street LIKE c2.street)
+        (c1.first_name LIKE c2.first_name OR
+          (c1.street LIKE c2.street AND c1.street IS NOT NULL AND c1.street != ''))
       ORDER BY c1.last_name,c1.first_name
 EOSQL1
     possible_dups = Customer.find_by_sql(sql)

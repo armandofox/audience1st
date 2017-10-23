@@ -81,7 +81,7 @@ describe SessionsController do
               else 
                 it 'does not make new token' do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
                 it 'does not refresh token'  do expect(@user).not_to receive(:refresh_token); post(:create, @login_params) end 
-                it 'kills user token'        do expect(@user).not_to receive(:forget_me);         post(:create, @login_params) end 
+                it 'kills user token'        do expect(@user).to receive(:forget_me);         post(:create, @login_params) end 
               end
             end
           end # inner describe
