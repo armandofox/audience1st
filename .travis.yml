@@ -9,8 +9,6 @@ before_install:
   - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
@@ -20,7 +18,8 @@ script:
   - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
   - bundle exec rake db:setup
   - bundle exec rake ci:tests
+  - ./cc-test-reporter before-build
   - bundle exec rake features
-after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+after_script:
   - rm -f config/application.yml
