@@ -38,12 +38,12 @@ Rails.application.routes.draw do
       resources :vouchers, :only => [:index, :new, :create] do
         member do
           put :update_comment
+
         end
         collection do
           post :transfer_multiple
           post :confirm_multiple
           post :cancel_multiple
-          put :cancel_multiple
         end
       end
     end
