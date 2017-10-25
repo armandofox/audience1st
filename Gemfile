@@ -48,7 +48,9 @@ group :test do
   gem 'simplecov', :require => false
   gem 'webmock'
 end
-
+group :production do
+  gem 'mysql2', '~> 0.3.18'
+end
 group :development, :test do
   # cucumber and capybara
   gem 'byebug'                  # 4
