@@ -1,0 +1,1 @@
+../_posts/2017-10-28-recording-mailedin-donations.md
