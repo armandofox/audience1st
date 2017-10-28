@@ -9,24 +9,34 @@ Background: I am logged in as boxoffice
   Given I am logged in as box office
   And I am on the list of customers page
 
-Scenario: search by last name
+Scenario: Show details for all matches
 
-  Given the following customers exist: Frodo Baggins, Bilbo Baggins, Bob Bag
-  When I search any field for "Baggins"  
+  Given the following customers exist: Alex Fox, Armando Fox, Bob Bag
+  Given customer "Dianne Feinstein" whose address street is: "123 Fox Hill Road"
+  When I search for "Fox"  
   Then table "#customers" should include:
   | First name | Last name |
-  | Frodo      | Baggins   |
-  | Bilbo      | Baggins   |
+  | Alex       | Fox       |
+  | Armando    | Fox       |
+  | Dianne     | Feinstein |
   But table "#customers" should not include:
   | First name | Last name |
   | Bob        | Bag       |
 
-Scenario: partial match last name
+Scenario: Show details for all matches
 
-  Given the following customers exist: Frodo Baggins, Bilbo Baggins, Bob Bag
-  When I search any field for "Bag"  
+  Given the following customers exist: Alex Fox, Armando Fox Bob Bag
+  Given customer "Barbara Boxer" whose address street is: "200 Alexander Ave."
+  When I search for "fox alex"
   Then table "#customers" should include:
   | First name | Last name |
-  | Frodo      | Baggins   |
-  | Bilbo      | Baggins   |
-  | Bob        | Bag       |
+  | Alex       | Fox       |
+  But table "#customers" should not include:
+  | First name | Last name |
+  | Barbara    | Boxer     |
+  
+  When I search for "alex"
+  Then table "#customers" should include:
+  | First name | Last name |
+  | Alex       | Fox       |
+  | Barbara    | Boxer     |
