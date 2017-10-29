@@ -524,10 +524,14 @@ EOSQL1
   # all must match, though each term can match either first or last name
   def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
-    conds =
-      Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
-    conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
-    Customer.where(*conds_ary).order('last_name')
+    cols = self.content_columns
+    result = Customer.all
+    terms.each do |term|
+      term_s = term.to_s
+      conds_ary = Customer.match_any_content_column(term_s)
+      result = result & Customer.where(conds_ary)
+    end
+    return result
   end
 
   
