@@ -25,7 +25,7 @@ Scenario: Show details for all matches
 
 Scenario: Show details for all matches
 
-  Given the following customers exist: Alex Fox, Armando Fox Bob Bag
+  Given the following customers exist: Alex Fox, Armando Fox, Bob Bag
   Given customer "Barbara Boxer" whose address street is: "200 Alexander Ave."
   When I search for "fox alex"
   Then table "#customers" should include:

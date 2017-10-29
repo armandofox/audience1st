@@ -12,7 +12,7 @@ Background: I am logged in as boxoffice
 
 Scenario: search with multiple match
 
-  When I fill "search" autocomplete field with "Bagg"
+  When I fill "search_field" autocomplete field with "Bagg"
   Then I should see autocomplete choice "Bilbo Baggins" 
   And I should see autocomplete choice "Frodo Baggins"
   But I should not see autocomplete choice "Bob Bag"
@@ -21,7 +21,7 @@ Scenario: search with multiple match
 
 Scenario: search with no matches
 
-  When I fill "search" autocomplete field with "xyz"
+  When I fill "search_field" autocomplete field with "xyz"
   Then I should not see any autocomplete choices
 
 
@@ -31,7 +31,7 @@ Scenario:
   Given customer "Dianne Feinstein" whose address street is: "123 Fox Hill Road"
   Given customer "Barbara Boxer" whose address street is: "200 Alexander Ave."
   
-  When I fill "search" autocomplete field with "Fox"
+  When I fill "search_field" autocomplete field with "Fox"
   Then I should see autocomplete choice "Armando Fox" 
   And I should see autocomplete choice "Alex Fox"
   And I should see autocomplete choice "Dianne Feinstein(123 Fox Hill Road)"
