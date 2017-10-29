@@ -264,10 +264,25 @@ class CustomersController < ApplicationController
   def auto_complete_for_customer_full_name
     s = params[:term].to_s
     render :json => {} and return if s.length < 2
+    s = s.split( /\s+/ )
     @customers =
-      Customer.find_by_multiple_terms(s.split( /\s+/ )).sort_by(&:sortable_name)
+      Customer.find_by_multiple_terms(s).sort_by(&:sortable_name)
+    additional = nil
     result = @customers.map do |c|
-      {'label' => c.full_name, 'value' => customer_path(c)}
+      s.each do |term|
+        columns = Customer.content_columns
+        columns.each do |col|
+          col_name = col.name
+          c_name = c.name
+          if Customer.where(first_name: c_name, col_name: term)
+            if col_name != "first_name" && col_name != "last_name" && additional == nil
+              additional = Customer.select(col_name).where(first_name: c_name)
+              break
+            end
+          end
+        end
+      end
+      {'label' => c.full_name, 'value' => customer_path(c), 'additional' => additional}
     end
     render :json => result
   end
