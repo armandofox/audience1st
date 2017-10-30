@@ -7,8 +7,8 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
+    #self.create_customers
   end
-
   # Options
   # Basic options for running features and specs
 
@@ -44,7 +44,40 @@ class Audience1stSeeder
       :last_name => 'CUSTOMER',
       :blacklist => true,
       :e_blacklist => true
+    },
+    :anonymous1 => {
+      :role => Customer::ROLES[:anonymous],
+      :first_name => 'Alice',
+      :last_name => 'Fox',
+      :email => 'Afox@gmail.com',
+      :blacklist => true,
+      :e_blacklist => true
+    },
+    :anonymous2 => {
+      :role => Customer::ROLES[:anonymous],
+      :first_name => 'Alex',
+      :last_name => 'Fox',
+      :email => 'alexfox@gmail.com',
+      :blacklist => true,
+      :e_blacklist => true
+    },
+    :anonymous3 => {
+      :role => Customer::ROLES[:anonymous],
+      :first_name => 'Alex',
+      :last_name => 'Fox',
+      :email => 'alexfox@gmail.com',
+      :blacklist => true,
+      :e_blacklist => true
+    },
+    :anonymous4 => {
+      :role => Customer::ROLES[:anonymous],
+      :first_name => 'Bilbo',
+      :last_name => 'Baggins',
+      :email => '123 fox hill',
+      :blacklist => true,
+      :e_blacklist => true
     }
+
   }
 
   def self.create_special_customers
@@ -60,7 +93,7 @@ class Audience1stSeeder
       admin.save!
     end
     @@special_customers.each_pair do |which, attrs|
-      unless Customer.find_by_role(attrs[:role])
+      unless Customer.find_by_first_name(attrs[:first_name])
         c = Customer.new(attrs.except(:role))
         c.role = attrs[:role]
         c.created_by_admin = true
@@ -126,6 +159,5 @@ class Audience1stSeeder
     option.save!
   end 
   self.seed_all
-
 end
 
