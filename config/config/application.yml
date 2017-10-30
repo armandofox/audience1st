@@ -1,8 +1,0 @@
-test:
-  session_secret: "2911b82f28cc8babc4e5448282a76e00011f8ec9d1a5dad6c92b1a4e12c1233460d48bb2b9c82bd61e821f74a1f7bad9c60116c97f28581c1140082c38509bbb"
-  stripe_key: "pk_test_CUzukTJXulRZm3cq8iay0mHA"
-  stripe_secret: "sk_test_gCKnHhjZzsM4AGZ8sL6SD8rU"
-development:
-  session_secret: "2911b82f28cc8babc4e5448282a76e00011f8ec9d1a5dad6c92b1a4e12c1233460d48bb2b9c82bd61e821f74a1f7bad9c60116c97f28581c1140082c38509bbb"
-  stripe_key: "pk_test_CUzukTJXulRZm3cq8iay0mHA"
-  stripe_secret: "sk_test_gCKnHhjZzsM4AGZ8sL6SD8rU"
