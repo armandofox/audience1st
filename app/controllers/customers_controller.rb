@@ -267,22 +267,8 @@ class CustomersController < ApplicationController
     s = s.split( /\s+/ )
     @customers =
       Customer.find_by_multiple_terms(s).sort_by(&:sortable_name)
-    additional = nil
     result = @customers.map do |c|
-      s.each do |term|
-        columns = Customer.content_columns
-        columns.each do |col|
-          col_name = col.name
-          c_name = c.name
-          if Customer.where(first_name: c_name, col_name: term)
-            if col_name != "first_name" && col_name != "last_name" && additional == nil
-              additional = Customer.select(col_name).where(first_name: c_name)
-              break
-            end
-          end
-        end
-      end
-      {'label' => c.full_name, 'value' => customer_path(c), 'additional' => additional}
+      {'label' => c.full_name, 'value' => customer_path(c)}
     end
     render :json => result
   end
