@@ -531,10 +531,38 @@ EOSQL1
       conds_ary = Customer.match_any_content_column(term_s)
       result = result & Customer.where(conds_ary)
     end
-    return result
+    result
   end
 
-  
+  def self.find_by_terms_col(terms)
+    return [] if terms.empty?
+    cols = Customer.column_names
+    col_hash = Hash.new
+    nonamecustomer = Customer.find_by_multiple_terms([terms])
+    nonamecustomer.each do |customer|
+      showingstr = ''
+      cols.each do |col|
+        if (customer.attributes[col] != nil) && (customer.attributes[col].is_a? String)
+          if customer.attributes[col].include?("fox")
+            showingstr += "(#{customer[col]})"
+            print customer[col]
+          end
+        end
+      end
+      col_hash[customer] = showingstr
+    end
+    col_hash
+  end
+
+
+  def self.find_by_name(terms)
+    conds =
+        Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
+    conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
+    Customer.where(*conds_ary).order('last_name')
+  end
+
+
   # Match on any content column of a class
 
   def self.match_any_content_column(string)
