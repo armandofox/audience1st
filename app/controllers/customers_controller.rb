@@ -181,7 +181,6 @@ class CustomersController < ApplicationController
     @customers_s =
         Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
             reject {|customer| @customers.include?(customer)}
-
     @customers = @customers + @customers_s
     @customers = @customers.paginate(:page => @page)
   end
