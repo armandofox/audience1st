@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
@@ -175,10 +177,13 @@ class CustomersController < ApplicationController
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
     conds = Customer.match_any_content_column(@customers_filter)
-    @customers = Customer.
-      where(conds).
-      order('last_name,first_name').
-      paginate(:page => @page)
+    @customers = Customer.find_by_name(@customers_filter.split( /\s+/ ))
+    @customers_s =
+        Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
+            reject {|customer| @customers.include?(customer)}
+
+    @customers = @customers + @customers_s
+    @customers = @customers.paginate(:page => @page)
   end
 
   def list_duplicate
@@ -266,7 +271,8 @@ class CustomersController < ApplicationController
     render :json => {} and return if s.length < 2
     @customers = Customer.find_by_name(s.split( /\s+/ ))
     @customers_s =
-      Customer.find_by_multiple_terms(s.split( /\s+/)).reject {|customer| Customer.find_by_name(s.split( /\s+/ )).include?(customer)}
+      Customer.find_by_multiple_terms(s.split( /\s+/)).
+          reject {|customer| Customer.find_by_name(s.split( /\s+/ )).include?(customer)}
     result = @customers.map do |c|
       {'label' => c.full_name, 'value' => customer_path(c)}
     end
