@@ -543,7 +543,7 @@ EOSQL1
       showingstr = ''
       cols.each do |col|
         if (customer.attributes[col] != nil) && (customer.attributes[col].is_a? String)
-          if customer.attributes[col].include?("fox")
+          if customer.attributes[col].downcase.include?(terms.downcase)
             showingstr += "(#{customer[col]})"
             print customer[col]
           end
