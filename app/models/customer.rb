@@ -534,26 +534,29 @@ EOSQL1
     result
   end
 
+  # return a hash include information containing searching term in auto
+  # complete
   def self.find_by_terms_col(terms)
     return [] if terms.empty?
-    cols = Customer.column_names
     col_hash = Hash.new
     nonamecustomer = Customer.find_by_multiple_terms([terms])
     nonamecustomer.each do |customer|
-      showingstr = ''
-      cols.each do |col|
-        if (customer.attributes[col] != nil) && (customer.attributes[col].is_a? String)
-          if customer.attributes[col].downcase.include?(terms.downcase)
-            showingstr += "(#{customer[col]})"
-            print customer[col]
-          end
-        end
-      end
+      showingstr = self.match_attr_info(customer,terms)
       col_hash[customer] = showingstr
     end
     col_hash
   end
 
+  def self.match_attr_info(customer,terms)
+    matching_info = ''
+    Customer.column_names.each do |col|
+      if (customer.attributes[col] != nil) && (customer.attributes[col].is_a? String) &&
+          customer.attributes[col].downcase.include?(terms.downcase)
+        matching_info += "(#{customer[col]})"
+      end
+    end
+    matching_info
+  end
 
   def self.find_by_name(terms)
     conds =
