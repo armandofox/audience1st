@@ -274,7 +274,7 @@ class CustomersController < ApplicationController
     @customers = Customer.find_by_name(s.split( /\s+/ ))
     @customers_s =
       Customer.find_by_multiple_terms(s.split( /\s+/)).
-          reject {|customer| Customer.find_by_name(s.split( /\s+/ )).include?(customer)}
+          reject {|customer| @customers.include?(customer)}
     result = @customers.map do |c|
       {'label' => c.full_name, 'value' => customer_path(c)}
     end
