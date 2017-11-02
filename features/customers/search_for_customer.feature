@@ -9,7 +9,7 @@ Background: I am logged in as boxoffice
   Given I am logged in as box office
   And I am on the list of customers page
 
-Scenario: Show details for all matches
+  Scenario: Show details for all matches
 
   Given the following customers exist: Alex Fox, Armando Fox, Bob Bag
   Given customer "Dianne Feinstein" whose address street is: "123 Fox Hill Road"
