@@ -179,10 +179,9 @@ class CustomersController < ApplicationController
 
     if @customers_filter!=nil
       @customers = Customer.find_by_name(@customers_filter.split( /\s+/ ))
-      @customers_s =
+      @customers = @customers +
           Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
               reject {|customer| @customers.include?(customer)}
-      @customers = @customers + @customers_s
     else
       @customers = Customer.all
     end
