@@ -44,40 +44,7 @@ class Audience1stSeeder
       :last_name => 'CUSTOMER',
       :blacklist => true,
       :e_blacklist => true
-    },
-    :anonymous1 => {
-      :role => Customer::ROLES[:anonymous],
-      :first_name => 'Alice',
-      :last_name => 'Fox',
-      :email => 'Afox@gmail.com',
-      :blacklist => true,
-      :e_blacklist => true
-    },
-    :anonymous2 => {
-      :role => Customer::ROLES[:anonymous],
-      :first_name => 'Alex',
-      :last_name => 'Fox',
-      :email => 'alexfox@gmail.com',
-      :blacklist => true,
-      :e_blacklist => true
-    },
-    :anonymous3 => {
-      :role => Customer::ROLES[:anonymous],
-      :first_name => 'Alex',
-      :last_name => 'Fox',
-      :email => 'alexfox@gmail.com',
-      :blacklist => true,
-      :e_blacklist => true
-    },
-    :anonymous4 => {
-      :role => Customer::ROLES[:anonymous],
-      :first_name => 'Bilbo',
-      :last_name => 'Baggins',
-      :email => '123 fox hill',
-      :blacklist => true,
-      :e_blacklist => true
     }
-
   }
 
   def self.create_special_customers

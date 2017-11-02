@@ -176,13 +176,15 @@ class CustomersController < ApplicationController
     @page = (params[:page] || 1).to_i
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
-    conds = Customer.match_any_content_column(@customers_filter)
+
     if @customers_filter!=nil
       @customers = Customer.find_by_name(@customers_filter.split( /\s+/ ))
       @customers_s =
           Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
               reject {|customer| @customers.include?(customer)}
       @customers = @customers + @customers_s
+    else
+      @customers = Customer.all
     end
     @customers = @customers.paginate(:page => @page)
   end
