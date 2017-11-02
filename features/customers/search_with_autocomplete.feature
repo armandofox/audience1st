@@ -27,13 +27,16 @@ Scenario: search with no matches
 
   
 Scenario:search with other information
-  Given the following customers exist: Alex Fox, Armando Fox, Bob Bag
-  Given customer "Bilbo Baggins" whose address street is: "123 Fox Hill"
-  Given customer "Barbara Boxer" whose address street is: "200 Alexander Ave."
-  
+  Given the following Customers exist:
+    | first_name | last_name | email          | street        | city | state |
+    | Alex       | Fox       | afox@mail.com  | 11 Main St #1 |  SAF | CA    |
+    | Armando    | Fox       | arfox@mail.com | 11 Main St    |  SAF | CA    |
+    | Bilbo      | Baggins   | BB@email.com   | 123 Fox Hill  |  SAF | CA    |
+    | Bob        | Bag       | BBB@email.com  | 23 Alexander  |  SAF | CA    |
+
   When I fill "search_field" autocomplete field with "Fox"
   Then I should see autocomplete choice "Armando Fox"
   And I should see autocomplete choice "Bilbo Baggins(123 Fox Hill)"
   But I should not see autocomplete choice "Bob Bag"
-  When I select autocomplete choice "Alex Fox"
-  Then I should be on the home page for customer "Alex Fox"
+  When I select autocomplete choice "Bilbo Baggins(123 Fox Hill)"
+  Then I should be on the home page for customer "Bilbo Baggins"
