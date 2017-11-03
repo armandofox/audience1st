@@ -524,7 +524,6 @@ EOSQL1
   # all must match, though each term can match either first or last name
   def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
-    cols = self.content_columns
     result = Customer.all
     terms.each do |term|
       term_s = term.to_s
