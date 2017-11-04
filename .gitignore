@@ -1,2 +1,5 @@
 _site/
 .bundle*
+TAGS
+config/
+log/

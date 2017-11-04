@@ -1,1 +1,0 @@
-../_posts/2017-10-28-manually-adding-a-new-customer.md

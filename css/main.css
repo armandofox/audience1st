@@ -82,6 +82,10 @@ body.rtl ul, body.rtl ol {
     margin: 0 25px 10px 0;
 }
 
+#content .page-header h2 { font-size: 200%; color: blue; }
+#content h2 { font-size: 125%; }
+#content h1 { font-size: 150%; }
+
 table {
   margin-bottom: 1rem;
   border: 1px solid #e5e5e5;

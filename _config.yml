@@ -20,10 +20,10 @@ codeurl: 'https://github.com/armandofox/audience1st'
 # Default categories (in order) to appear in the navigation
 sections: [
     ['setup', 'First Time Setup'],
+    ['customers', 'Working With Patron Records'],
     ['season', 'Season Setup'],
     ['donations', 'Donations'],
-    ['customers', 'Working With Patron Records'],
-    ['customer_lists', 'Generating Customer Reports'],
+    ['reports', 'Generating Customer Reports'],
     ['financial', 'Generating Financial Reports'],
     ['foh', 'Front of House Operations']
 ]
