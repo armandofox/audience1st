@@ -1,6 +1,7 @@
 module Authentication
   module ByPassword
     require 'digest/sha1'
+    require 'bcrypt'
 
     # Stuff directives into including module
     def self.included(recipient)
@@ -50,7 +51,7 @@ module Authentication
       end
       
       def authenticated?(password)
-        crypted_password == encrypt(password)
+         bcrypted? ? crypted_password == encrypt(password) : BCrypt::Password.new(bcrypted_password) == password
       end
       
       # before filter 
@@ -58,12 +59,24 @@ module Authentication
         # allow using update_attribute to save crypted_password directly if it
         # has been changed. Otherwise the before_save will clobber it.
         return if (password.blank? ||  crypted_password_changed?)
-        self.salt = self.class.make_token if new_record?
-        self.crypted_password = encrypt(password)
+        # self.salt = self.class.make_token if new_record?
+        # self.crypted_password = encrypt(password)
+        update_password_storage(password)
       end
+
       def password_required?
         crypted_password.blank? || !password.blank?
       end
+
+      def update_password_storage(password)
+        self.bcrypted_password = BCrypt::Password.create(password).to_s
+        self.crypted_password = nil
+      end
+
+      def bcrypted?
+        return self.crypted_password.nil? && !!self.bcrypted_password
+      end
+
     end # instance methods
   end
 end

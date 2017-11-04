@@ -17,6 +17,7 @@ class SessionsController < ApplicationController
   def create
     create_session do |params|
       u = Customer.authenticate(params[:email], params[:password])
+      u.update_password_storage(params[:password]) unless u.bcrypted?
       if u.nil? || !u.errors.empty?
         note_failed_signin(u)
         @email = params[:email]
