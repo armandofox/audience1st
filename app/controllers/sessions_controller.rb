@@ -18,8 +18,6 @@ class SessionsController < ApplicationController
   def create
     create_session do |params|
       auth = request.env['omniauth.auth']
-      puts "auth: "
-      puts auth.info
       if auth
         if logged_in?
           current_user.add_provider(auth) #if customer is logged in, add new auth to their account
@@ -33,9 +31,6 @@ class SessionsController < ApplicationController
       end
 
       if u.nil? || !u.errors.empty?
-        puts "Sign-in failed"
-        puts "because u.nil" if u.nil?
-        puts "because u has errors" unless u.nil?
         note_failed_signin(u)
         @email = params[:email]
         @remember_me = params[:remember_me]

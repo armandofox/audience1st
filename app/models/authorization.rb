@@ -5,11 +5,9 @@ validates :provider, :uid, :presence => true
   # creates a customer and an auth belonging to that customer. Return the customer
   def self.find_or_create_user auth
     if user_auth = find_by_provider_and_uid(auth["provider"], auth["uid"])
-      puts "found uid"
       c = user_auth.customer      
     else
       # create customer
-      puts "couldn't find uid, creating provider for " << auth["info"]["email"]
       c = Customer.new
       c.email = auth["info"]["email"]
       customer_name = auth["info"]["name"].split(" ")
