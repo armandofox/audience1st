@@ -1,0 +1,1 @@
+../_posts/2017-11-04-front-of-house-dashboard.md
