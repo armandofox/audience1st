@@ -469,29 +469,7 @@ EOSQL1
       )
   end
 
-  # under what circumstances do we consider a customer's name "the same" as a given first/last?
-  def name_word_matches(ours,given)
-    ours == given ||
-      ours[0,1] == given.gsub(/[^A-Za-z]/,'') ||
-      given[0,1] == ours.gsub(/[^A-Za-z]/,'')
-  end
-  def name_matches(first,last)
-    our_first = self.first_name.to_s.downcase
-    our_last = self.last_name.to_s.downcase
-    first.to_s.downcase!
-    last.to_s.downcase!
-    return nil if (first.blank? && last.blank? && our_first.blank? && our_last.blank?)
-    return (our_last == last) &&
-      (name_word_matches(our_first, first) || our_first.blank? || first.blank?)
-  end
 
-  def copy_nonblank_attributes(from)
-    Customer.replaceable_attributes.each do |attr|
-      if !(val = from.send(attr)).blank?
-        self.send("#{attr}=", val)
-      end
-    end
-  end
 
   # If customer can be uniquely identified in DB, return match from DB
   # and fill in blank attributes with nonblank values from provided attrs.
@@ -573,7 +551,6 @@ EOSQL1
     a.unshift(cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR "))
   end
 
-    
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns
