@@ -1,8 +1,8 @@
 ---
 layout: page
-title: "First Time Setup"
+title: "First-Time Setup"
 category: intro
-date: 2017-11-03 17:52:04
+date: 2017-11-04 12:23:42
 order: 20
 ---
 

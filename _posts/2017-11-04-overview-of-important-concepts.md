@@ -2,12 +2,11 @@
 layout: page
 title: "Overview of Important Concepts"
 category: intro
-date: 2017-11-03 17:50:44
+date: 2017-11-04 12:23:35
 order: 10
 ---
 
-
-## Patrons and Orders
+# Patrons and Orders
 
 * The _patron_ is the unit to which most operations are indexed.
 
@@ -15,7 +14,7 @@ order: 10
 
 * A patron's view of their account is that it holds some number of _vouchers_.  Some of these may be _reserved_, for example if they bought tickets to a particular performance.  Some may be _open_, for example if they bought a subscription and want to reserve performance dates for specific shows.  Of those that are reserved, you may choose to allow patrons to self-cancel or self-change their reservations, or not.
 
-## Voucher Types and Redemptions
+# Voucher Types and Redemptions
 
 During season setup, you specify one or more _voucher types_.  Typically, a voucher type is either a specific kind of ticket at a specific price point (e.g. "Adult General Admission" at $35.00; "Press Comp" at $0.00), or one of several tickets included in a bundle (see below).
 
@@ -30,7 +29,7 @@ Subscribers.  This makes it easy to offer premium tickets available only
 for Subscribers, or a  general-admission ticket offered at a discount but only to
 Subscribers.
 
-## Privilege model
+# Privilege model
 
 Each user of the system has one of six privilege levels.  A user of a higher level can do everything that a user of lower levels can do.  The levels in order of increasing privilege are:
 
@@ -48,13 +47,13 @@ Each user of the system has one of six privilege levels.  A user of a higher lev
 
 In this guide, "admin" refers loosely to any non-patron privilege level.
 
-## Act on behalf of
+# Act on behalf of
 
 All privilege levels Staff or higher can act on behalf of a patron. That is, they can search for a patron by name, view that account as if they were the patron, and generally do all the things the patron could do, acting on behalf of the patron.  
 
 The user interface seen by staff and patrons is the same, but Staff see some additional controls and tabs that patrons do not see.  At the bottom of every page is a button "Regular Patron View" that lets the logged-in admin see that page as a regular patron would see it (if the page is accessible to patrons at all).
 
-## Admins can override everything
+# Admins can override everything
 
 Various features of Audience1st are designed to limit what patrons can do: how far in advance of a show they can reserve tickets, whether they can cancel their own reservations, and enforcement of capacity controls on both overall house size and ticket type inventories.
 

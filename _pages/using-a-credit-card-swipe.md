@@ -1,0 +1,1 @@
+../_posts/2017-11-04-using-a-credit-card-swipe.md
