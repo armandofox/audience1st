@@ -51,7 +51,7 @@ module Authentication
       end
       
       def authenticated?(password)
-         bcrypted? ? crypted_password == encrypt(password) : BCrypt::Password.new(bcrypted_password) == password
+         bcrypted? ? BCrypt::Password.new(bcrypted_password) == password : crypted_password == encrypt(password)
       end
       
       # before filter 
@@ -61,14 +61,14 @@ module Authentication
         return if (password.blank? ||  crypted_password_changed?)
         # self.salt = self.class.make_token if new_record?
         # self.crypted_password = encrypt(password)
-        update_password_storage(password)
+        bcrypt_password_storage(password)
       end
 
       def password_required?
         crypted_password.blank? || !password.blank?
       end
 
-      def update_password_storage(password)
+      def bcrypt_password_storage(password)
         self.bcrypted_password = BCrypt::Password.create(password).to_s
         self.crypted_password = nil
       end
