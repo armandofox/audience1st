@@ -2,6 +2,7 @@
 source 'https://rubygems.org'
 ruby '2.3.1'
 
+gem 'pg'
 gem 'acts_as_reportable'
 gem 'builder'
 gem 'bundler'
@@ -31,7 +32,7 @@ gem 'rest-client'
 gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
-
+gem 'simplecov'
 group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
@@ -47,7 +48,9 @@ group :test do
   gem 'simplecov', :require => false
   gem 'webmock'
 end
-
+group :production do
+  gem 'mysql2', '~> 0.3.18'
+end
 group :development, :test do
   # cucumber and capybara
   gem 'byebug'                  # 4

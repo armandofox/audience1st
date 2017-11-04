@@ -201,6 +201,7 @@ GEM
     multi_test (0.1.2)
     multipart-post (2.0.0)
     mysql (2.9.1)
+    mysql2 (0.3.21)
     nenv (0.3.0)
     net-http-digest_auth (1.4.1)
     net-http-persistent (2.9.4)
@@ -224,6 +225,7 @@ GEM
     pdf-writer (1.1.8)
       color (>= 1.4.0)
       transaction-simple (~> 1.3)
+    pg (0.21.0)
     poltergeist (1.15.0)
       capybara (~> 2.1)
       cliver (~> 0.3.1)
@@ -426,7 +428,9 @@ DEPENDENCIES
   mime-types
   minitest
   mysql
+  mysql2 (~> 0.3.18)
   nokogiri
+  pg
   poltergeist
   pothoven-attachment_fu
   protected_attributes
