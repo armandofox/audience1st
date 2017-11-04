@@ -48,25 +48,25 @@ any additional donation.
 Then in the rightmost column, you can enter payment:
 
 * To accept a cash payment, take the customer's money and select _Cash
-* or Zero-Revenue_, then click _Record Cash Payment or Zero Revenue
-* Transaction_.  (The latter option allows you to use the walkup screen
-* to issue comps, though we don't advise it because then you have no way
-* to track who used the comp.)
+or Zero-Revenue_, then click _Record Cash Payment or Zero Revenue
+Transaction_.  (The latter option allows you to use the walkup screen
+to issue comps, though we don't advise it because then you have no way
+to track who used the comp.)
 
 * To accept a check, select _Check_ and optionally enter the check
-* number or other info, then click _Record Check Payment_.
+number or other info, then click _Record Check Payment_.
 
 * To accept a credit card if you **do not** have a swipe reader, select
-* _Credit Card_, then enter the credit card information (CVV code in the
-* red field, followed by first and last name, card number, and
-* expiration date), then click _Charge Credit Card_.
+_Credit Card_, then enter the credit card information (CVV code in the
+red field, followed by first and last name, card number, and
+expiration date), then click _Charge Credit Card_.
 
-* To accept a credit card payment if you **do have** a MagTek 2104-0108
-* or compatible (3-track reader that emulates an unencrypted USB
-* keyboard), **first** manually enter the CVV code in the red field
-* (since this code number is not present on the magnetic stripe),
-* **then** swipe the credit card through the reader to record the
-* charge.
+* To accept a credit card payment if you **do have** a 
+a [card swipe reader](../setup/using-a-credit-card-swipe.html), **you must** still manually enter the CVV code in
+the red field 
+(since this code number is not present on the magnetic stripe).
+Then swipe the credit card through the reader to record the
+charge.
 
 After every walkup sale, the available-seat count and walkup-sales count
 are adjusted.
