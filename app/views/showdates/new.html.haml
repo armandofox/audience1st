@@ -42,8 +42,9 @@
   %label{:for => 'start'} From
   = text_field_tag 'show_run_dates'
   :javascript
-    $('#show_run_dates').daterangepicker({  initialText: 'Select date range...',  clearButtonText: '',  cancelButtonText: '',  applyButtonText: 'OK',  datepickerOptions : {  numberOfMonths : 2  }});
-    $('#show_run_dates').daterangepicker('setRange', {start: new Date('#{@show.opening_date.at_beginning_of_day}'), end: new Date('#{@show.closing_date.at_beginning_of_day}')});
+    $('#show_run_dates')
+    .daterangepicker({  initialText: 'Select date range...',  clearButtonText: '',  cancelButtonText: '',  applyButtonText: 'OK',  datepickerOptions : {  numberOfMonths : 2, maxDate: new Date('#{@show.closing_date.at_beginning_of_day}')  }})
+    .daterangepicker('setRange', {start: new Date('#{@show.opening_date.at_beginning_of_day}'), end: new Date('#{@show.closing_date.at_beginning_of_day}')});
 
   %br
   %p.feedback

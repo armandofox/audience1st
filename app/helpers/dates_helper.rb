@@ -19,7 +19,7 @@ module DatesHelper
   clearButtonText: '',
   cancelButtonText: '',
   applyButtonText: 'OK',
-  datepickerOptions : {  numberOfMonths : 1  },
+  datepickerOptions : {  numberOfMonths : 1, maxDate: 0  },
   presetRanges: [{
     text:      'Today',
     dateStart: function() { return moment('#{t8601}') },
