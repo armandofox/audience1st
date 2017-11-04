@@ -1,5 +1,12 @@
 [![Code Climate](https://codeclimate.com/github/armandofox/audience1st/badges/gpa.svg)](https://codeclimate.com/github/armandofox/audience1st)
 
+Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from
+[Xiao Fu](https://github.com/fxdawnn),
+[Wayne Leung](https://github.com/WayneLeung12),
+[Sanket Padmanabhan](https://github.com/sanketq),
+[Andrew Sun](https://github.com/andrewsun98),
+[Jack Wan](https://github.com/WanNJ)
+
 # This information is for developers and deployers
 
 Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://armandofox.github.io/audience1st/)?
