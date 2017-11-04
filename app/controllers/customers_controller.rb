@@ -1,5 +1,5 @@
 class CustomersController < ApplicationController
-
+  skip_before_filter :verify_authenticity_token
   # Actions requiring no login, customer login, and staff login respectively
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
