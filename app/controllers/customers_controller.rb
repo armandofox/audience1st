@@ -268,7 +268,7 @@ class CustomersController < ApplicationController
 
   # AJAX helpers
   # auto-completion for customer search - params[:term] is what user typed
-  def auto_complete_for_customer_full_name
+  def auto_complete_for_customer
     s = params[:term].to_s
     render :json => {} and return if s.length < 2
     @customers = Customer.find_by_name(s.split( /\s+/ ))
