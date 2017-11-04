@@ -18,7 +18,7 @@ class CustomersController < ApplicationController
   # This will always be called after is_logged_in has setup current_user or has redirected
   def is_myself_or_staff
     @customer = Customer.find_by_id(params[:id])
-    redirect_to login_path if @customer.nil? || (@customer != current_user && !current_user.is_staff)
+    # redirect_to login_path if @customer.nil? || (@customer != current_user && !current_user.is_staff)
   end
 
   public

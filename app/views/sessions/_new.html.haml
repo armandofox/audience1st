@@ -6,6 +6,9 @@
   %label{:for=>:customer_password} Password
   = password_field_tag 'password', nil, :size => 20
   %br/
+  
+  = link_to "Connect with Facebook", "/auth/developer"
+  %br/
 
   .indented
     .small
@@ -18,4 +21,3 @@
       = check_box_tag 'remember_me', '1', @remember_me
       Remember me for next time (Don't use on public/shared computers)
     = submit_tag 'Login', :disable_with => 'Logging in...'
-

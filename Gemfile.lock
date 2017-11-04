@@ -160,12 +160,14 @@ GEM
       tilt
     hashdiff (0.3.0)
     hashery (2.1.2)
+    hashie (3.5.6)
     highline (1.7.8)
     hitimes (1.2.6)
     hominid (3.0.5)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (0.8.6)
+    i18n (0.9.1)
+      concurrent-ruby (~> 1.0)
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
@@ -218,6 +220,9 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     ntlm-http (0.1.1)
+    omniauth (1.7.1)
+      hashie (>= 3.4.6, < 3.6.0)
+      rack (>= 1.6.2, < 3)
     pdf-reader (2.0.0)
       Ascii85 (~> 1.0.0)
       afm (~> 0.2.1)
@@ -371,7 +376,7 @@ GEM
     ttfunk (1.0.3)
     typhoeus (0.8.0)
       ethon (>= 0.8.0)
-    tzinfo (1.2.3)
+    tzinfo (1.2.4)
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
@@ -431,6 +436,7 @@ DEPENDENCIES
   minitest
   mysql
   nokogiri
+  omniauth
   poltergeist
   pothoven-attachment_fu
   protected_attributes

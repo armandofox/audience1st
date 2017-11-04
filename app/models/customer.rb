@@ -20,7 +20,7 @@ class Customer < ActiveRecord::Base
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
   has_many :orders, -> { where( 'sold_on IS NOT NULL').order('sold_on DESC') }
-  
+  has_many :authorizations
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
   def shows ; self.showdates.map(&:show).uniq ; end
@@ -234,7 +234,7 @@ class Customer < ActiveRecord::Base
     self.set_labels(hash)
     self.save! 
   end
-  
+
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email
@@ -372,6 +372,12 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, click 'Reset my password' and we will email you a new password within 1 minute.")
     end
     return u
+  end
+
+  def add_provider(auth)
+    unless authorizations.find_by_provider_and_uid(auth["provider"], auth["uid"])
+      Authorization.create :user => self, :provider => auth["provider"], :uid => auth["uid"] 
+    end
   end
 
   # Values of the role field:

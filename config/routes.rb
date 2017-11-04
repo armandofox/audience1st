@@ -157,6 +157,9 @@ Rails.application.routes.draw do
     get '/login' => 'sessions#new', :as => 'login'
     match '/logout' => 'sessions#destroy', :as => 'logout', :via => [:get, :post]
 
+    match 'auth/:provider/callback', :to => 'sessions#create', :via => [:get, :post]
+    match 'auth/failure', :to => 'sessions#failure', :via => [:get, :post]
+
     # Routes for viewing and refunding orders
     resources :orders, :only => [:index, :show, :update]
 

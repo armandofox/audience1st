@@ -16,13 +16,25 @@ class SessionsController < ApplicationController
 
   def create
     create_session do |params|
-      u = Customer.authenticate(params[:email], params[:password])
-      u.bcrypt_password_storage(params[:password]) unless u.bcrypted?
+      auth = request.env['omniauth.auth']
+      if auth
+        if logged_in?
+          current_user.add_provider(auth) #if customer is logged in, add new auth to their account
+          u = current_user
+        else
+          u = Authorization.find_or_create_user(auth) # otherwise login using an existing auth or create a new account
+        end
+      else
+        u = Customer.authenticate(params[:email], params[:password])
+        u.bcrypt_password_storage(params[:password]) unless u.bcrypted?
+      end
+
       if u.nil? || !u.errors.empty?
-        note_failed_signin(u)
-        @email = params[:email]
-        @remember_me = params[:remember_me]
-        render :action => :new
+          puts "Sign-in failed"
+          note_failed_signin(u)
+          @email = params[:email]
+          @remember_me = params[:remember_me]
+          render :action => :new
       end
       u
     end
