@@ -13,3 +13,4 @@ public/stylesheets/venue
 tmp/
 
 db/*.sqlite3
+_site/
