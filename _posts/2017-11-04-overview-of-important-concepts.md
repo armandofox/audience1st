@@ -1,10 +1,18 @@
 ---
 layout: page
 title: "Overview of Important Concepts"
-category: intro
+category: setup
 date: 2017-11-04 12:23:35
 order: 10
 ---
+
+# Built-in Help
+
+Whenever you see this icon
+![questionmark](../assets/question.png) on an Audience1st screen, hovering
+over it will show context-specific help about that field, menu, or
+feature.
+
 
 # Patrons and Orders
 
