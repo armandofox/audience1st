@@ -7,8 +7,8 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
+    #self.create_customers
   end
-
   # Options
   # Basic options for running features and specs
 
@@ -60,7 +60,7 @@ class Audience1stSeeder
       admin.save!
     end
     @@special_customers.each_pair do |which, attrs|
-      unless Customer.find_by_role(attrs[:role])
+      unless Customer.find_by_first_name(attrs[:first_name])
         c = Customer.new(attrs.except(:role))
         c.role = attrs[:role]
         c.created_by_admin = true
@@ -126,6 +126,5 @@ class Audience1stSeeder
     option.save!
   end 
   self.seed_all
-
 end
 

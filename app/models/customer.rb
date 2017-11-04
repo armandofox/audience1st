@@ -524,15 +524,49 @@ EOSQL1
   # all must match, though each term can match either first or last name
   def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
+    result = Customer.all
+    terms.each do |term|
+      term_s = term.to_s
+      conds_ary = Customer.match_any_content_column(term_s)
+      result = result & Customer.where(conds_ary)
+    end
+    result
+  end
+
+  # return a hash include information containing searching term in auto
+  # complete
+  def self.find_by_terms_col(terms)
+    return [] if terms.empty?
+    col_hash = Hash.new
+    Customer.find_by_multiple_terms([terms]).each do |customer|
+      matching_info = self.match_attr_info(customer,terms)
+      col_hash[customer] = matching_info
+    end
+    col_hash
+  end
+
+  # method find info containing seaching terms in an object
+  def self.match_attr_info(customer,terms)
+    matching_info = ''
+    Customer.column_names.each do |col|
+      if (customer.attributes[col] != nil) && (customer.attributes[col].is_a? String) &&
+          customer.attributes[col].downcase.include?(terms.downcase)
+        matching_info += "(#{customer[col]})"
+      end
+    end
+    matching_info
+  end
+
+  # method find customers whose name containing the searching term
+  def self.find_by_name(terms)
     conds =
-      Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
+        Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
     conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
     Customer.where(*conds_ary).order('last_name')
   end
 
-  
-  # Match on any content column of a class
 
+  # Match on any content column of a class
   def self.match_any_content_column(string)
     cols = self.content_columns
     a = Array.new(cols.size) { "%#{string}%" }

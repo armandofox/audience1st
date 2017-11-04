@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
@@ -174,11 +176,16 @@ class CustomersController < ApplicationController
     @page = (params[:page] || 1).to_i
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
-    conds = Customer.match_any_content_column(@customers_filter)
-    @customers = Customer.
-      where(conds).
-      order('last_name,first_name').
-      paginate(:page => @page)
+
+    if @customers_filter!=nil
+      @customers = Customer.find_by_name(@customers_filter.split( /\s+/ ))
+      @customers = @customers +
+          Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
+              reject {|customer| @customers.include?(customer)}
+    else
+      @customers = Customer.all
+    end
+    @customers = @customers.paginate(:page => @page)
   end
 
   def list_duplicate
@@ -264,10 +271,16 @@ class CustomersController < ApplicationController
   def auto_complete_for_customer_full_name
     s = params[:term].to_s
     render :json => {} and return if s.length < 2
-    @customers =
-      Customer.find_by_multiple_terms(s.split( /\s+/ )).sort_by(&:sortable_name)
+    @customers = Customer.find_by_name(s.split( /\s+/ ))
+    @customers_s =
+      Customer.find_by_multiple_terms(s.split( /\s+/)).
+          reject {|customer| @customers.include?(customer)}
     result = @customers.map do |c|
       {'label' => c.full_name, 'value' => customer_path(c)}
+    end
+    customer_hash = Customer.find_by_terms_col(s)
+    @customers_s.each do |c|
+      result.push({'label' => c.full_name + customer_hash[c], 'value' => customer_path(c)})
     end
     render :json => result
   end
