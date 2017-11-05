@@ -59,12 +59,11 @@ describe SessionsController do
             end
              describe "on omniauth login" do
               before(:each) do
-                auth_hash = {'omniauth.auth' => 4}
-                expect(request).to receive(env).and_return(auth_hash)
+                request.env["omniauth.auth"] = 4
               end
               it "pairs logged in users with omniauth" do
                 allow(controller).to receive(:logged_in?).and_return(true)
-                expect(controller).to receive(current_user).and_return(@user)
+                expect(controller).to receive(:current_user).and_return(@user)
                 expect(@user).to receive(:add_provider).with(4)
               end
               it "finds or creates a new user if not logged in" do 
