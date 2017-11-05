@@ -9,6 +9,7 @@ describe SessionsController do
     @user  = create(:customer)
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
     allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
+    allow(@user).to receive(:bcrypted?).and_return(true)
   end
   # Login for an admin
   describe 'admin view' do
@@ -50,29 +51,24 @@ describe SessionsController do
               allow(@user).to receive(:remember_token).and_return(token_value) 
               allow(@user).to receive(:remember_token_expires_at).and_return(token_expiry)
               allow(@user).to receive(:remember_token?).and_return(has_request_token == :valid)
-              allow(@user).to receive(:bcrypted?).and_return(true)
               if want_remember_me
                 @login_params[:remember_me] = '1'
               else 
                 @login_params[:remember_me] = '0'
               end
             end
-             describe "on omniauth login" do
-              before(:each) do
-                request.env["omniauth.auth"] = 4
-              end
-              it "pairs logged in users with omniauth" do
-                allow(controller).to receive(:logged_in?).and_return(true)
-                expect(controller).to receive(:current_user).and_return(@user)
-                expect(@user).to receive(:add_provider).with(4)
-              end
-              it "finds or creates a new user if not logged in" do 
-                allow(controller).to receive(:logged_in?).and_return(false)
-                expect(Authorization).to receive(:find_or_create_user).with(4)
-              end
-              after(:each) do
-                login_as create(:customer)
-              end
+            it "pairs logged in users with omniauth" do
+              request.env["omniauth.auth"] = 4
+              allow(controller).to receive(:logged_in?).and_return(true)
+              expect(controller).to receive(:current_user).and_return(@user)
+              expect(@user).to receive(:add_provider).with(4)
+              login_as create(:customer)
+            end
+            it "finds or creates a new user if not logged in" do 
+              request.env["omniauth.auth"] = 4
+              allow(controller).to receive(:logged_in?).and_return(false)
+              expect(Authorization).to receive(:find_or_create_user).with(4)
+              login_as create(:customer)
             end
             it "updates password storage when necessary" do
               allow(@user).to receive(:bcrypted?).and_return(false)
