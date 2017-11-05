@@ -96,7 +96,6 @@ describe SessionsController do
       @user = create(:customer)
       expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(@user)
       allow(@user).to receive(:bcrypted?).and_return(true)
-      allow()
       login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
