@@ -94,8 +94,7 @@ describe SessionsController do
   describe "on failed login" do
     before do
       var = 4
-      expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(4)
-      allow(4).to receive(:bcrypted?).and_return(true)
+      expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(nil)
       login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end

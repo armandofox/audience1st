@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
         end
       else
         u = Customer.authenticate(params[:email], params[:password])
-        u.bcrypt_password_storage(params[:password]) unless u.bcrypted?
+        u.bcrypt_password_storage(params[:password]) if u && !u.bcrypted?
       end
 
       if u.nil? || !u.errors.empty?
