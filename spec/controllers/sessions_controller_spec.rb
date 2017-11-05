@@ -50,7 +50,7 @@ describe SessionsController do
               allow(@user).to receive(:remember_token).and_return(token_value) 
               allow(@user).to receive(:remember_token_expires_at).and_return(token_expiry)
               allow(@user).to receive(:remember_token?).and_return(has_request_token == :valid)
-              allow(@user).to recieve(:bcrypted?).and_return(true)
+              allow(@user).to receive(:bcrypted?).and_return(true)
               if want_remember_me
                 @login_params[:remember_me] = '1'
               else 
@@ -60,24 +60,24 @@ describe SessionsController do
              describe "on omniauth login" do
               before(:each) do
                 auth_hash = {'omniauth.auth' => 4}
-                expect(request).to recieve(env).and_return(auth_hash)
+                expect(request).to receive(env).and_return(auth_hash)
               end
               it "pairs logged in users with omniauth" do
-                allow(controller).to recieve(:logged_in?).and_return(true)
-                expect(controller).to recieve(current_user).and_return(@user)
-                expect(@user).to recieve(:add_provider).with(4)
+                allow(controller).to receive(:logged_in?).and_return(true)
+                expect(controller).to receive(current_user).and_return(@user)
+                expect(@user).to receive(:add_provider).with(4)
               end
               it "finds or creates a new user if not logged in" do 
-                allow(controller).to recieve(:logged_in?).and_return(false)
-                expect(Authorization).to recieve(:find_or_create_user).with(4)
+                allow(controller).to receive(:logged_in?).and_return(false)
+                expect(Authorization).to receive(:find_or_create_user).with(4)
               end
               after(:each) do
                 login_as create(:customer)
               end
             end
             it "updates password storage when necessary" do
-              allow(@user).to recieve(:bcrypted?).and_return(false)
-              expect(@user).to recieve(:bcrypt_password_storage).with(anything())
+              allow(@user).to receive(:bcrypted?).and_return(false)
+              expect(@user).to receive(:bcrypt_password_storage).with(anything())
             end
             it "updates my last_login" do
               expect(@user).to receive(:update_attribute) do |meth,arg|
