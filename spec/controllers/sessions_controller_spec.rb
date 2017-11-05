@@ -9,6 +9,7 @@ describe SessionsController do
     @user  = create(:customer)
     @login_params = { :email => 'quentin@email.com', :password => 'test' }
     allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
+    allow(@user).to receive(:bcrypted?).and_return(true)
   end
   # Login for an admin
   describe 'admin view' do
