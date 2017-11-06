@@ -13,8 +13,8 @@ describe SessionsController do
   end
   it "processes omniauth logins" do
     request.env['omniauth.auth'] = true
-    expect(@controller).to receive(:logged_in?).and_return(@user)
-    expect(@controller).to receive(:current_user).and_return(@user)
+    (@controller).stub(:logged_in?).and_return(true)
+    (@controller).stub(:current_user).and_return(@user)
     expect(@user).to receive(:add_provider).with(true).and_return(nil)
     post(:create, @login_params)
   end 
