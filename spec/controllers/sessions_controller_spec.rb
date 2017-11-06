@@ -15,7 +15,7 @@ describe SessionsController do
     request.env['omniauth.auth'] = true
     expect(@controller).to receive(:logged_in?).and_return(@user)
     expect(@controller).to receive(:current_user).and_return(@user)
-    expect(@user).to_receive(:add_provider).with(true).and_return(nil)
+    expect(@user).to receive(:add_provider).with(true).and_return(nil)
     post(:create, @login_params)
   end 
   # it "bcrypts passwords if necessary" do
