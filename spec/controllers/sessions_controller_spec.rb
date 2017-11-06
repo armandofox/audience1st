@@ -24,12 +24,12 @@ describe SessionsController do
     expect(Authorization).to receive(:find_or_create_user).with(true).and_return(nil)
     post(:create, @login_params)
   end 
-  # it "bcrypts passwords if necessary" do
-  #   allow(@controller).to recieve(:u).and_return(@user)
-  #   allow(@user).to receive(:bcrypted?).and_return(false)
-  #   expect
-  #   post(:create, @login_params)
-  # end
+  it "bcrypts passwords if necessary" do
+    # (@controller).stub(:u).and_return(@user)
+    allow(@user).to receive(:bcrypted?).and_return(false)
+    expect(@user).to receive(:bcrypt_password_storage).with(anything()).and_return(nil)
+    post(:create, @login_params)
+  end
   # Login for an admin
   describe 'admin view' do
     before(:each) do
