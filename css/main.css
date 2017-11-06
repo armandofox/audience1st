@@ -97,3 +97,10 @@ td, th {
   padding: .25rem .5rem;
   border: 1px solid #e5e5e5;
 }
+
+// Bootstrap overrides
+.nav > li  { 
+  padding: 5px 10px 5px 10px;
+}
+
+

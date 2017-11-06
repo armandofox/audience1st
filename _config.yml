@@ -18,19 +18,18 @@ navigation: 2
 codeurl: 'https://github.com/armandofox/audience1st'
 
 # Default categories (in order) to appear in the navigation
-sections: [
-    ['setup', 'First Time Setup'],
-    ['customers', 'Working With Patron Records'],
-    ['season', 'Season Setup'],
-    ['donations', 'Donations'],
-    ['reports', 'Generating Customer Reports'],
-    ['financial', 'Generating Financial Reports'],
-    ['foh', 'Front of House Operations']
-]
+
+sections: [['setup', 'First Time Setup'], \
+    ['customers', 'Working With Patron Records'],  \
+    ['season', 'Season Setup'], \
+    ['donations', 'Donations'], \
+    ['reports', 'Reports'], \
+    ['foh', 'Front of House Operations'] \
+    ['int', 'Integration With Other Sites']]
 
 # Keep as an empty string if served up at the root. If served up at a specific
 # path (e.g. on GitHub pages) leave off the trailing slash, e.g. /my-project
-baseurl: '/audience1st'
+baseurl: ''
 
 # Dates are not included in permalinks
 permalink: none
