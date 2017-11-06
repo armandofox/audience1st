@@ -11,13 +11,19 @@ describe SessionsController do
     allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
     allow(@user).to receive(:bcrypted?).and_return(true)
   end
-  describe "it processes omniauth logins" do
+  it "processes omniauth logins" do
     request.env['omniauth.auth'] = true
     expect(@controller).to recieve(:logged_in?).and_return(@user)
     expect(@controller).to recieve(:current_user).and_return(@user)
     expect(@user).to_recieve(:add_provider).with(true).and_return(nil)
     post(:create, @login_params)
   end 
+  # it "bcrypts passwords if necessary" do
+  #   allow(@controller).to recieve(:u).and_return(@user)
+  #   allow(@user).to receive(:bcrypted?).and_return(false)
+  #   expect
+  #   post(:create, @login_params)
+  # end
   # Login for an admin
   describe 'admin view' do
     before(:each) do
