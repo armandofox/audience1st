@@ -11,11 +11,17 @@ describe SessionsController do
     allow(Customer).to receive(:authenticate).with(@login_params[:email], @login_params[:password]).and_return(@user)
     allow(@user).to receive(:bcrypted?).and_return(true)
   end
-  it "processes omniauth logins" do
+  it "links existing users to omniauth accounts" do
     request.env['omniauth.auth'] = true
     (@controller).stub(:logged_in?).and_return(true)
     (@controller).stub(:current_user).and_return(@user)
     expect(@user).to receive(:add_provider).with(true).and_return(nil)
+    post(:create, @login_params)
+  end
+  it "creates or finds omniauth accounts" do
+    request.env['omniauth.auth'] = true
+    (@controller).stub(:logged_in?).and_return(false)
+    expect(Authorization)to receive(:find_or_create_user).with(true).and_return(nil)
     post(:create, @login_params)
   end 
   # it "bcrypts passwords if necessary" do
