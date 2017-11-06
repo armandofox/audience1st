@@ -21,7 +21,7 @@ describe SessionsController do
   it "creates or finds omniauth accounts" do
     request.env['omniauth.auth'] = true
     (@controller).stub(:logged_in?).and_return(false)
-    expect(Authorization)to receive(:find_or_create_user).with(true).and_return(nil)
+    expect(Authorization).to receive(:find_or_create_user).with(true).and_return(nil)
     post(:create, @login_params)
   end 
   # it "bcrypts passwords if necessary" do
