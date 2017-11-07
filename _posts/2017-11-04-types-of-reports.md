@@ -1,6 +1,9 @@
 ---
-layout: page title: "Types of Reports" category: reports date:
-2017-11-04 13:58:03 order: 1
+layout: page 
+title: "Types of Reports" 
+category: reports 
+date: 2017-11-04 13:58:03 
+order: 1
 ---
 
 There are five basic categories of reports, all available from the

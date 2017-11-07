@@ -17,15 +17,16 @@ navigation: 2
 # URL to source code, used in _includes/footer.html
 codeurl: 'https://github.com/armandofox/audience1st'
 
-# Default categories (in order) to appear in the navigation
+# Default categories in order to appear in the navigation
 
-sections: [['setup', 'First Time Setup'], \
-    ['customers', 'Working With Patron Records'],  \
-    ['season', 'Season Setup'], \
-    ['donations', 'Donations'], \
-    ['reports', 'Reports'], \
-    ['foh', 'Front of House Operations'] \
-    ['int', 'Integration With Other Sites']]
+sections: [ 
+    ['setup', 'First Time Setup'], 
+    ['customers', 'Working With Patron Records'],  
+    ['season', 'Season Setup'], 
+    ['donations', 'Donations'], 
+    ['reports', 'Reports'], 
+    ['foh', 'Front of House Operations'],
+    ['int', 'Integration With Other Sites'] ]
 
 # Keep as an empty string if served up at the root. If served up at a specific
 # path (e.g. on GitHub pages) leave off the trailing slash, e.g. /my-project
