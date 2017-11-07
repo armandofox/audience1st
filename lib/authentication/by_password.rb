@@ -32,12 +32,12 @@ module Authentication
       # older versions of restful-authentication.
       def password_digest(password, salt)
         Digest::SHA1.hexdigest(password.strip.to_s+salt.to_s)
-      #   # digest = REST_AUTH_SITE_KEY
-      #   # REST_AUTH_DIGEST_STRETCHES.times do
-      #   #   digest = secure_digest(digest, salt, password, REST_AUTH_SITE_KEY)
-      #   # end
-      #   # digest
-      # end      
+        # digest = REST_AUTH_SITE_KEY
+        # REST_AUTH_DIGEST_STRETCHES.times do
+        #   digest = secure_digest(digest, salt, password, REST_AUTH_SITE_KEY)
+        # end
+        # digest
+      end      
     end # class methods
 
     #
