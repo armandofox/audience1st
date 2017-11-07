@@ -17,8 +17,7 @@ FactoryGirl.define do
     zip '10019'
 
     after(:build) do |customer,e|
-      customer.salt = 'abcdefghij'
-      customer.crypted_password = Customer.password_digest(customer.password, customer.salt)
+      customer.bcrypted_password = Customer.bcrypt_password_storage(customer.password)
       customer.role = Customer.role_value(e.role)
       customer.created_by_admin = e.created_by_admin
     end
