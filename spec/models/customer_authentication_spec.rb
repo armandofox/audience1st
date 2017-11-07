@@ -40,6 +40,15 @@ describe Customer, 'authentication' do
     Customer.authenticate(old_password_holder.email, 'test').should == old_password_holder
   end
 
+  # bcrypted password
+  it "authenticates a user against a hard-coded bcrypted password" do
+    password = 'pass'
+    old_password_holder = create :customer, email: 'salty_dog@example.com', bcrypted_password: '$2a$10$neM5JoarHPcjHQz2xYmfp.5mkNj8euTrJSG9qkVvfBtwrrbPN5oMG', created_at: 1.day.ago
+    c = Customer.authenticate(old_password_holder.email, 'test')
+    c.should == true
+    c.errors.should be_empty
+  end
+
   # New installs should bump this up and set REST_AUTH_DIGEST_STRETCHES to give a 10ms encrypt time or so
   desired_encryption_expensiveness_ms = 0.1
   it "takes longer than #{desired_encryption_expensiveness_ms}ms to encrypt a password" do

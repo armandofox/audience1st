@@ -27,7 +27,7 @@ describe SessionsController do
   it "bcrypts passwords if necessary" do
     # (@controller).stub(:u).and_return(@user)
     allow(@user).to receive(:bcrypted?).and_return(false)
-    expect(@user).to receive(:bcrypt_password_storage).at_least(:once).with('test').and_return(nil)
+    expect(@user).to receive(:bcrypt_password_storage).at_least(:once).with('pass').and_return(nil)
     post(:create, @login_params)
   end
   # Login for an admin

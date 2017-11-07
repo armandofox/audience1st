@@ -30,14 +30,14 @@ module Authentication
       # It may not be obvious, but if you set REST_AUTH_SITE_KEY to nil and
       # REST_AUTH_DIGEST_STRETCHES to 1 you'll have backwards compatibility with
       # older versions of restful-authentication.
-      def password_digest(password, salt)
-        Digest::SHA1.hexdigest(password.strip.to_s+salt.to_s)
-        # digest = REST_AUTH_SITE_KEY
-        # REST_AUTH_DIGEST_STRETCHES.times do
-        #   digest = secure_digest(digest, salt, password, REST_AUTH_SITE_KEY)
-        # end
-        # digest
-      end      
+      # def password_digest(password, salt)
+      #   Digest::SHA1.hexdigest(password.strip.to_s+salt.to_s)
+      #   # digest = REST_AUTH_SITE_KEY
+      #   # REST_AUTH_DIGEST_STRETCHES.times do
+      #   #   digest = secure_digest(digest, salt, password, REST_AUTH_SITE_KEY)
+      #   # end
+      #   # digest
+      # end      
     end # class methods
 
     #
@@ -46,9 +46,9 @@ module Authentication
     module ModelInstanceMethods
       
       # Encrypts the password with the user salt
-      def encrypt(password)
-        self.class.password_digest(password, salt)
-      end
+      # def encrypt(password)
+        # self.class.password_digest(password, salt)
+      # end
       
       def authenticated?(password)
          bcrypted? ? BCrypt::Password.new(bcrypted_password) == password : crypted_password == encrypt(password)
