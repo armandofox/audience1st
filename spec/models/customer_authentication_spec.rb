@@ -43,7 +43,7 @@ describe Customer, 'authentication' do
   # bcrypted password
   it "authenticates a user against a hard-coded bcrypted password" do
     old_password_holder = create :customer, email: 'salty_dog@example.com', bcrypted_password: '$2a$10$neM5JoarHPcjHQz2xYmfp.5mkNj8euTrJSG9qkVvfBtwrrbPN5oMG', created_at: 1.day.ago
-    c = Customer.authenticate(old_password_holder.email, 'test')
+    c = Customer.authenticate(old_password_holder.email, "test")
     c.should == old_password_holder
     c.errors.should be_empty
   end

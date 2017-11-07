@@ -74,7 +74,7 @@ module Authentication
       end
 
       def bcrypted?
-        return self.crypted_password.nil? && !!self.bcrypted_password
+        return !!self.bcrypted_password
       end
 
     end # instance methods
