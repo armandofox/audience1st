@@ -7,7 +7,7 @@ bundler_args: --without production
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - CC_TEST_REPORTER_ID=787a2f89b15c637323c7340d65ec17e898ac44480706b4b4122ea040c2a88f1d
+    - CC_TEST_REPORTER_ID=592d16d29b2e8b52ebe7ccc485fb578d7149fe7c6143f0bcc5fed93424044aaa
     - CC=./cc-test-reporter
 before_install:
   - export TZ=America/Los_Angeles
