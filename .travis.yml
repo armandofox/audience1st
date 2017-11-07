@@ -1,24 +1,47 @@
+# replace with version(s) of Ruby that matches your Gemfile:
 language: ruby
 rvm:
   - 2.3.1
-sudo: false
-cache: bundler
-bundler_args: --without production
+
+# make sure production-only gems are not installed
+bundler_args:  --without production
+
 env:
   global:
-    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - CC_TEST_REPORTER_ID=787a2f89b15c637323c7340d65ec17e898ac44480706b4b4122ea040c2a88f1d
-before_install:
-  - export TZ=America/Los_Angeles
+    # replace with your CodeClimate Test Reporter key (configure at codeclimate.com)
+    NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+    CC_TEST_REPORTER_ID=592d16d29b2e8b52ebe7ccc485fb578d7149fe7c6143f0bcc5fed93424044aaa
+    CC=./cc-test-reporter
+    
+    # set to whatever timezone your app assumes from this list:
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    TZ=America/Los_Angeles
+    
+# steps to run BEFORE the test run
+before_script:
+  # create config/application.yml (sensitive API keys etc) from config/application.yml.asc
+  # IMPORTANT: you must MANUALLY set correct value of encryption KEY in Travis settings for your project --
+  #    DO NOT expose that value here!
   - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
+  # install CodeClimate test reporter and tell it we are starting a test run
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+
 script:
-  - cp config/database.yml.test config/database.yml
-  - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
+  # setup the test database, including any seed data
   - bundle exec rake db:setup
-  - bundle exec rake ci:tests
+  # insert here any other steps needed (load other sample data, etc) before starting tests
+  # run RSpec tests, and capture coverage
+  - bundle exec rake spec
+  - $CC format-coverage --output coverage/codeclimate.$SUITE.json
+  # run Cucumber scenarios, and capture coverage
+  - bundle exec rake cucumber
+  - $CC format-coverage --output coverage/codeclimate.$SUITE.json
+  
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  # combine coverage from all suites, and upload to CodeClimate
+  - $CC sum-coverage coverage/codeclimate.*.json | $CC upload-coverage
+  - $CC after-build --exit-code $TRAVIS_TEST_RESULT
+  # just in case, be paranoid and remove sensitive config info file
   - rm -f config/application.yml
