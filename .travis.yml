@@ -9,12 +9,13 @@ bundler_args:  --without production
 env:
   global:
     # replace with your CodeClimate Test Reporter key (configure at codeclimate.com)
-    CC_TEST_REPORTER_ID=592d16d29b2e8b52ebe7ccc485fb578d7149fe7c6143f0bcc5fed93424044aaa
-    CC=./cc-test-reporter
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+    - CC_TEST_REPORTER_ID=592d16d29b2e8b52ebe7ccc485fb578d7149fe7c6143f0bcc5fed93424044aaa
+    - CC=./cc-test-reporter
     
     # set to whatever timezone your app assumes from this list:
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    TZ=America/Los_Angeles
+    - TZ=America/Los_Angeles
     
 # steps to run BEFORE the test run
 before_script:
