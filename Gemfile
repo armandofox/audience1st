@@ -69,6 +69,7 @@ group :development, :test do
   gem 'chronic'
   gem 'fakeweb'
   gem 'launchy'
+  gem 'faker'
   gem 'rack-test'
   gem 'sdoc', '~> 0.4.0'
   gem 'coveralls', :require => false

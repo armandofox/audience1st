@@ -1,4 +1,5 @@
 # Seed data for Audience1st
+require 'faker'
 
 class Audience1stSeeder
 
@@ -7,7 +8,7 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
-    #self.create_customers
+    self.create_fake_customers
   end
   # Options
   # Basic options for running features and specs
@@ -46,6 +47,21 @@ class Audience1stSeeder
       :e_blacklist => true
     }
   }
+  def self.create_fake_customers
+    (1..1000).each do |n|
+      customer = Customer.new(
+          :first_name => Faker::Name.first_name,
+          :last_name=> Faker::Name.last_name,
+          :password=>'123',
+          :email => Faker::Internet.email,
+          :city => Faker::Address.city,
+          :state => Faker::Address.state,
+          :street => Faker::Address.street_address,
+          :zip => Faker::Address.zip_code)
+      customer.created_by_admin = true
+      customer.save!
+    end
+  end
 
   def self.create_special_customers
     Rails.logger.info "Creating special customers"

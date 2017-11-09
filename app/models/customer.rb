@@ -516,9 +516,8 @@ EOSQL1
   def self.find_by_terms_col(terms)
     return [] if terms.empty?
     col_hash = Hash.new
-    Customer.find_by_multiple_terms([terms]).each do |customer|
-      matching_info = self.match_attr_info(customer,terms)
-      col_hash[customer] = matching_info
+    Customer.find_by_multiple_terms(terms.split(/\s+/)).each do |customer|
+      col_hash[customer] = self.match_attr_info(customer,terms)
     end
     col_hash
   end
@@ -526,10 +525,15 @@ EOSQL1
   # method find info containing seaching terms in an object
   def self.match_attr_info(customer,terms)
     matching_info = ''
-    Customer.column_names.each do |col|
-      if (customer.attributes[col] != nil) && (customer.attributes[col].is_a? String) &&
-          customer.attributes[col].downcase.include?(terms.downcase)
-        matching_info += "(#{customer[col]})"
+    Customer.column_names.reject{ |col|
+      (%w[role crypted_password salt _at$ _on$]).include? col}.each do |col|
+      terms.split(/\s+/).each do |term|
+        if (customer.attributes[col].is_a? String) &&
+            customer.attributes[col].downcase.include?(term.downcase) &&
+            (not matching_info.downcase.include?(customer.attributes[col].downcase))
+          matching_info += "(#{customer[col]})"
+          next
+        end
       end
     end
     matching_info
