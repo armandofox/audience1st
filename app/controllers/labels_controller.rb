@@ -35,7 +35,7 @@ class LabelsController < ApplicationController
   def update
     @label = Label.find(params[:id])
     if @label.update_attributes(params[:label])
-      redirect_with(@label, :notice => 'Label was successfully updated.')
+      redirect_with(labels_path, :notice => 'Label was successfully updated.')
     else
       flash[:alert] = ['Editing label failed: ', @label]
       render :action => "edit"
