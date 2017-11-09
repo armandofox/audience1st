@@ -499,6 +499,10 @@ EOSQL1
     end
   end
 
+  def identity
+    Authorization.find_by_provider_and_uid("Identity", email)
+  end
+
   # If customer can be uniquely identified in DB, return match from DB
   # and fill in blank attributes with nonblank values from provided attrs.
   # Otherwise, create new customer.
@@ -518,7 +522,8 @@ EOSQL1
     # precaution: make sure email is unique.
     c.email = nil if (!c.email.blank? &&
       Customer.where('email like ?',c.email.downcase).first)
-    c.save!
+    c.save!   
+    c.bcrypt_password_storage(c.password)
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => c.id,
       :comments => txn,

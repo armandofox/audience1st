@@ -58,6 +58,7 @@ class Audience1stSeeder
       admin.created_by_admin = true
       admin.role = 100
       admin.save!
+      admin.bcrypt_password_storage(admin.password)
     end
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])

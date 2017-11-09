@@ -1,7 +1,7 @@
 module CustomerStepsHelper
   
-  def find_customer(first,last)
-    Customer.find_by(:first_name => first, :last_name => last)
+  def find_customer(first,last, email=nil)
+    email ? Customer.find_by(:first_name => first, :last_name => last, :email => email) : Customer.find_by(:first_name => first, :last_name => last)
   end
 
   def make_subscriber!(customer)
@@ -18,6 +18,11 @@ module CustomerStepsHelper
 
   def find_or_create_customer(first,last)
     find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
+  end
+
+  def find_or_create_customer_with_email_and_password(first,last, email, password)
+    c = find_customer(first, last, email) || create(:customer, :first_name => first, :last_name => last, :email => email, :password => password, :password_confirmation => password)
+    c.bcrypt_password_storage(password)
   end
 
   def get_secret_question_index(question)
@@ -105,8 +110,8 @@ When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f
 end
 
 Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
-  c = find_or_create_customer first,last
-  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
+  c = find_or_create_customer_with_email_and_password first,last,email,pass
+  # c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|

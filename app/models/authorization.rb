@@ -1,5 +1,5 @@
 class Authorization < ActiveRecord::Base
-belongs_to :customer
+belongs_to :customer, foreign_key: "customer_id"
 validates :provider, :uid, :presence => true
     
   # creates a customer and an auth belonging to that customer. Return the customer
@@ -19,6 +19,20 @@ validates :provider, :uid, :presence => true
       create :customer => c, :provider => auth["provider"], :uid => auth["uid"] 
     end
     c
+  end
+  
+  def self.find_or_create_identity(cust, pass)
+    unless cust.email
+      puts "couldn't find customer email. Something is wrong."
+      return nil
+    end
+    if auth = find_by_provider_and_uid("Identity", cust.email)
+      auth.password_digest = pass
+      auth.save!
+    else
+      auth = create! :customer => cust, :provider => "Identity", :uid => cust.email, :password_digest => pass
+    end
+    auth
   end
 
 end

@@ -18,7 +18,7 @@ describe Customer, 'authentication' do
   # Authentication
   #
 
-  it 'authenticates user' do
+  it 'authenticates user using old method' do
     Customer.authenticate(@quentin.email, 'monkey').should == @quentin
     Customer.authenticate(@quentin.email, 'monkey').errors.should be_empty
   end

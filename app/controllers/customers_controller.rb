@@ -103,6 +103,8 @@ class CustomersController < ApplicationController
     @customer.validate_password = true
     if @customer.update_attributes(params[:customer])
       password = params[:customer][:password]
+      # puts "password: " << password
+      @customer.bcrypt_password_storage(password)
       flash[:notice] = "Changes confirmed."
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
@@ -152,6 +154,7 @@ class CustomersController < ApplicationController
     end
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
+      @customer.bcrypt_password_storage(params[:customer][:password])
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
@@ -247,6 +250,7 @@ class CustomersController < ApplicationController
       flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
       return render(:action => 'new')
     end
+    @customer.bcrypt_password_storage(params[:customer][:password]) unless (params[:customer][:email].blank? || params[:customer][:password].blank?)
     (flash[:notice] ||= '') <<  'Account was successfully created.'
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
@@ -327,10 +331,11 @@ class CustomersController < ApplicationController
     begin
       newpass = String.random_string(6)
       @customer.password = @customer.password_confirmation = newpass
+      @customer.bcrypt_password_storage(newpass)
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
-      email_confirmation(:confirm_account_change,@customer, "requested your password for logging in", newpass)
+      email_confirmation(:confirm_account_change, @customer, "requested your password for logging in", newpass)
       # will reach this point (and change password) only if mail delivery
       # doesn't raise any exceptions
       Txn.add_audit_record(:txn_type => 'edit',

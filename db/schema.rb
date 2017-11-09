@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171104041506) do
+ActiveRecord::Schema.define(version: 20171108212714) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",        limit: 40,  default: "", null: false
@@ -23,9 +23,10 @@ ActiveRecord::Schema.define(version: 20171104041506) do
     t.string   "provider"
     t.string   "uid"
     t.string   "name"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
     t.integer  "customer_id"
+    t.string   "password_digest"
   end
 
   add_index "authorizations", ["customer_id"], name: "index_authorizations_on_customer_id"
@@ -79,7 +80,6 @@ ActiveRecord::Schema.define(version: 20171104041506) do
     t.string   "secret_answer",             limit: 255
     t.date     "birthday"
     t.string   "password_digest"
-    t.string   "bcrypted_password"
   end
 
   add_index "customers", ["city"], name: "index_customers_on_city"
