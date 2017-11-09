@@ -31,7 +31,34 @@ Suppose we have a run of the play Hamlet, every Fri, Sat and Sun night from Jan 
 
 This way, even if the matinee special is really popular, at most 30 such tickets can be sold for each matinee.
 
-When a customer is on the "Buy Tickets" page and selects a particular performance, only the voucher types whose validity records allow that performance will be shown.  So, for example, if there were seats available for the Sunday Jan. 3 matinee but all 30 Matinee Special seats had been sold, the patron could still buy Adult General or Youth General seats for that performance, but not Matinee Special seats.  The same would happen if there were still Matinee Special seats left but the show was less than 2 days away, since the Matinee Special validity record says that sales of those tickets must stop 2 days before the performance.
+When a customer is on the "Buy Tickets" page and selects a particular
+performance, only the voucher types whose validity records allow that
+performance will be shown.  So, for example, if there were seats
+available for the Sunday Jan. 3 matinee but all 30 Matinee Special seats
+had been sold, the patron could still buy Adult General or Youth General
+seats for that performance, but not Matinee Special seats.  The same
+would happen if there were still Matinee Special seats left but the show
+was less than 2 days away, since the Matinee Special validity record
+says that sales of those tickets must stop 2 days before the
+performance.
+
+## Redemptions: Promo Codes
+
+When you associate the voucher type with a performance, you can specify
+one or more promo codes at that time. In other words, a promo code
+doesn't apply to a voucher type per se -- it applies to a voucher type
+and a particular performance. So the same voucher type might not need a
+promo code (or might use a different promo code) when associated with a
+different performance.
+
+To specify a promo code, navigate to the Show page (Season Setup tab),
+scroll down to the list of performances, and next to any of the
+performances, click _Ticket Details_ to show all ticket types valid for
+that performance.  You can click the name of any ticket type to edit its
+details, including specifying a promo code the patron must enter in
+order for that ticket to be available for them to self-purchase.  (Promo
+codes cannot be applied for comps or "box office only" tickets, only for
+revenue tickets that patrons self-purchase.)
 
 ## Redemptions: An Example (Subscriptions)
 
@@ -56,3 +83,5 @@ single "Subscriber voucher" type and declare it to be valid for any
 performance of any show.  You can also create "family pack" bundles that
 contain (for example) 2 "Adult subscriber" and 2 "Youth subscriber"
 tickets, and so on.
+
+

@@ -23,10 +23,12 @@ sections: [
     ['setup', 'First Time Setup'], 
     ['customers', 'Working With Patron Records'],  
     ['season', 'Season Setup'], 
+    ['res', 'Taking Advance Reservations'],
+    ['foh', 'Front of House Operations'],
+    ['int', 'Integration With Other Sites'],
     ['donations', 'Donations'], 
     ['reports', 'Reports'], 
-    ['foh', 'Front of House Operations'],
-    ['int', 'Integration With Other Sites'] ]
+ ]
 
 # Keep as an empty string if served up at the root. If served up at a specific
 # path (e.g. on GitHub pages) leave off the trailing slash, e.g. /my-project
@@ -42,7 +44,7 @@ highlighter: rouge
 future: true
 
 # Exclude non-site files
-exclude: ['bin', 'README.md']
+exclude: ['bin', 'README.md', 'notes.txt']
 
 # Use the kramdown Markdown renderer
 markdown: kramdown
