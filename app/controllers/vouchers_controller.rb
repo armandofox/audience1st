@@ -83,8 +83,7 @@ class VouchersController < ApplicationController
     if shouldEmail
       email_confirmation(:confirm_reservation, @customer, theshowdate, thenumtoadd)
     end
-    
-    redirect_to customer_path(@customer)
+    redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
   def update_comment
