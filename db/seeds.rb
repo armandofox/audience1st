@@ -8,9 +8,12 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
+<<<<<<< HEAD
     if Rails.env == 'development'
       self.create_fake_customers
     end
+=======
+>>>>>>> 4076bddeb3eb51266e20325e20fa495b52fa07be
   end
   # Options
   # Basic options for running features and specs
