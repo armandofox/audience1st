@@ -48,7 +48,11 @@ class CustomersController < ApplicationController
     @vouchers_by_season = @subscriber_vouchers.group_by(&:season)
     @reserved_vouchers,@unreserved_vouchers =
       @subscriber_vouchers.partition { |v| v.reserved? }
-    flash[:notice] = (@current_user.login_message || "Logged in successfully") if new_session?
+    if new_session?
+      flash[:notice] = (@current_user.login_message || "Logged in successfully")
+      flash[:alert] = false
+    end
+
   end
 
   def edit
@@ -85,9 +89,9 @@ class CustomersController < ApplicationController
         :logged_in_id => current_user.id,
         :comments => flash[:notice])
       if @customer.email_changed? && @customer.valid_email_address? &&
-          params[:dont_send_email].blank? 
+          params[:dont_send_email].blank?
         # send confirmation email
-        email_confirmation(:confirm_account_change,@customer, 
+        email_confirmation(:confirm_account_change,@customer,
                            "updated your email address in our system")
       end
       redirect_to customer_path(@customer)
@@ -144,7 +148,7 @@ class CustomersController < ApplicationController
     @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
   end
-  
+
   def user_create
     @customer = Customer.new(params[:customer])
     if @gCheckoutInProgress && @customer.day_phone.blank?
@@ -319,7 +323,7 @@ class CustomersController < ApplicationController
   end
 
   private
- 
+
   def delete_admin_only_attributes(params)
     Customer.extra_attributes.each { |a| params.delete(a) }
     params.delete(:comments)
