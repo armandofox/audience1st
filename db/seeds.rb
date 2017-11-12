@@ -8,7 +8,6 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
-    self.create_fake_customers
   end
   # Options
   # Basic options for running features and specs
