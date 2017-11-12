@@ -32,7 +32,6 @@ gem 'rest-client'
 gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
-gem 'simplecov'
 group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
