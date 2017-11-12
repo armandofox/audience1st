@@ -48,7 +48,7 @@ class Audience1stSeeder
     }
   }
   def self.create_fake_customers
-    (1..1000).each do |n|
+    (1..100).each do |n|
       customer = Customer.new(
           :first_name => Faker::Name.first_name,
           :last_name=> Faker::Name.last_name,
