@@ -111,7 +111,7 @@ end
 
 Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
   c = find_or_create_customer_with_email_and_password first,last,email,pass
-  # c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
+  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|

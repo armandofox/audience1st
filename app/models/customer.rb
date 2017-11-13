@@ -103,6 +103,18 @@ class Customer < ActiveRecord::Base
     now = Time.now
     vouchers.select { |v| now <= Time.at_end_of_season(v.season) }
   end
+
+  def force_valid_fields
+    if self.force_valid
+      self.created_by_admin = true # will skip most validations
+      self.first_name = '_' if first_name.blank?
+      self.first_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
+      self.last_name = '_' if last_name.blank?
+      self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
+      self.email = nil unless valid_and_unique(email)
+    end
+    true
+  end
   
 
   #----------------------------------------------------------------------
@@ -116,17 +128,7 @@ class Customer < ActiveRecord::Base
   # for things like daemon-created customers, the force_valid flag will cause a customer
   # to be created with minimal valid fields so that saving cannot possibly fail validations.
 
-  def force_valid_fields
-    if self.force_valid
-      self.created_by_admin = true # will skip most validations
-      self.first_name = '_' if first_name.blank?
-      self.first_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
-      self.last_name = '_' if last_name.blank?
-      self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
-      self.email = nil unless valid_and_unique(email)
-    end
-    true
-  end
+  
     
   def valid_and_unique(email)
     if email.blank?

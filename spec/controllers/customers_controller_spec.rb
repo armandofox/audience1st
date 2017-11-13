@@ -65,10 +65,6 @@ describe CustomersController do
             :email => "nobody@noplace.com"}}
         put :update, params
       end
-      it "should not update the password" do
-        @customer.crypted_password_changed?.should be_falsey
-        @customer.bcrypted_password_changed?.should be_falsey
-      end
       it "should update the address" do
         @customer.reload
         @customer.street.should == "100 Embarcadero"
