@@ -91,11 +91,11 @@ class VouchersController < ApplicationController
     vchs.each do |vchr|
       vchr.update_attributes(:comments => params[:comments], :processed_by => current_user)
     end
-    """Txn.add_audit_record(:txn_type => 'edit',
+    Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :voucher_id => vchrs.each.first,
       :comments => params[:comments],
-      :logged_in_id => current_user.id)"""
+      :logged_in_id => current_user.id)
     render :nothing => true
 
   end
