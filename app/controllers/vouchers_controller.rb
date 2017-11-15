@@ -93,7 +93,7 @@ class VouchersController < ApplicationController
     end
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
-      :voucher_id => vchrs.each.first,
+      :voucher_id => vchs.each.first,
       :comments => params[:comments],
       :logged_in_id => current_user.id)
     render :nothing => true
