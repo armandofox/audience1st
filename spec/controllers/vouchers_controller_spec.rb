@@ -59,10 +59,11 @@ describe VouchersController do
       @vouchers.each do |v|
         expect(v).to receive(:update_attributes).with(:comments => "comment", :processed_by => @customer)
       end
-      expect(Voucher).to receive(:find).and_return(@vouchers);
-      controller.class.skip_before_filter :is_logged_in
+      expect(Voucher).to receive(:find).and_return(@vouchers)
       controller.class.skip_before_filter :is_boxoffice_filter
       controller.class.skip_before_filter :owns_voucher_or_is_boxoffice
+      controller.instance_variable_set(:@customer, @customer)
+      allow(Txn).to receive(:add_audit_record).and_return(true)
       put :update_comment, @params.merge(:comments => "comment")
 
     end
