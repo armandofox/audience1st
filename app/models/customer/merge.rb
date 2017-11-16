@@ -133,7 +133,6 @@ class Customer < ActiveRecord::Base
         else
           pass = nil
         end
-        byebug
         c1.destroy
         # Corner case. If a third record contains a duplicate email of either
         # of these, the merge will fail, and there will be nothing that can be
