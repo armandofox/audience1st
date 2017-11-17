@@ -52,6 +52,7 @@ class CustomersController < ApplicationController
   def edit
     @is_admin = current_user.is_staff
     @superadmin = current_user.is_admin
+    @in_checkout = params[:in_checkout]
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
   end
@@ -88,7 +89,11 @@ class CustomersController < ApplicationController
         email_confirmation(:confirm_account_change,@customer, 
                            "updated your email address in our system")
       end
-      redirect_to customer_path(@customer)
+      if params[:in_checkout]
+        redirect_to checkout_path(@customer)
+      else
+        redirect_to customer_path(@customer)
+      end
     rescue ActiveRecord::RecordInvalid
       flash[:alert] = ["Update failed: ", @customer.errors.as_html, "Please fix error(s) and try again."]
       redirect_to edit_customer_path(@customer)

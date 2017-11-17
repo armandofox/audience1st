@@ -217,7 +217,11 @@ class StoreController < ApplicationController
     end
     unless @order.ready_for_purchase?
       flash[:alert] = @order.errors.as_html
-      redirect_to_checkout
+      unless @recipient.valid_as_purchaser?
+        redirect_to edit_customer_path(@recipient, {:in_checkout => true})
+      else
+        redirect_to_checkout
+      end
       return
     end
 

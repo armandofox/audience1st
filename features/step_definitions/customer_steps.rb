@@ -25,6 +25,10 @@ module CustomerStepsHelper
     c.bcrypt_password_storage(password)
   end
 
+  def create_no_address_customer(first, last)
+    create(:customer, :first_name => first, :last_name => last, :street => nil, :city => nil, :zip => nil)
+  end
+
   def get_secret_question_index(question)
     indx = APP_CONFIG[:secret_questions].index(question)
     indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
