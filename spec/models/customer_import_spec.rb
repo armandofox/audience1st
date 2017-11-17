@@ -60,8 +60,7 @@ describe CustomerImport do
     end
     describe "an invalid customer" do
       before(:each) do
-        @customer = build(:customer)
-        @customer.last_name = '' # makes invalid
+        @customer = build(:customer, last_name: '') # makes invalid
         @customer.should_not be_valid
         @import = CustomerImport.new
         allow(@import).to receive(:get_customers_to_import).and_return([@customer])

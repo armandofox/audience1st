@@ -72,6 +72,7 @@ describe Customer do
     attrs.each_slice(2) do |attr|
       it "should survive invalid #{attr[0]}" do
         @customer.send("#{attr[0]}=", attr[1])
+        @customer.force_valid_fields
         lambda { @customer.save! }.should_not raise_error
         @customer.should be_valid
       end
@@ -80,6 +81,7 @@ describe Customer do
       before :each do
         @existing = create(:customer)
         @customer.email = @existing.email
+        @customer.force_valid_fields
       end
       it "without raising an exception" do
         lambda { @customer.save! }.should_not raise_error
