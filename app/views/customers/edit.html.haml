@@ -1,11 +1,14 @@
 %h1.page_heading.center Contact Info for #{h @customer.full_name}
 
 %br/
-= form_tag customer_path(@customer), :method => :put do
+= form_tag customer_path(@customer, {:in_checkout => @in_checkout}), :method => :put do
   = render :partial => 'form' 
   - if @gAdminDisplay
     = render :partial => 'form_admin'
   %br/
   %br/
   = submit_tag 'Save Changes' 
-  = link_to 'Cancel', customer_path(@customer), :class => 'genButton'
+  -if @in_checkout
+    =link_to 'Cancel', checkout_path(@customer)
+  -else
+    = link_to 'Cancel', customer_path(@customer), :class => 'genButton'
