@@ -25,6 +25,10 @@ module CustomerStepsHelper
     c.bcrypt_password_storage(password)
   end
 
+  def create_no_address_customer(first, last)
+    create(:customer, :first_name => first, :last_name => last, :street => nil, :city => nil, :zip => nil)
+  end
+
   def get_secret_question_index(question)
     indx = APP_CONFIG[:secret_questions].index(question)
     indx.should be_between(0, APP_CONFIG[:secret_questions].length-1)
@@ -111,7 +115,7 @@ end
 
 Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
   c = find_or_create_customer_with_email_and_password first,last,email,pass
-  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
+  # c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|

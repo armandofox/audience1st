@@ -20,12 +20,13 @@ Given /^I (am logged in|login) as (.*)?$/ do |_,who|
   @is_admin = false
   @password = 'pass'
   case who
-  when /administrator/i then @customer,@password = Customer.find_by_role!(100),'admin'
-  when /box ?office manager/i then @customer,@is_admin = create(:boxoffice_manager),true
-  when /box ?office/i then @customer,@is_admin = create(:boxoffice),true
-  when /staff/i         then @customer,@is_admin = create(:staff), true
-  when /customer "(.*) (.*)"/ then @customer = find_or_create_customer $1,$2
-  else raise "No such user '#{who}'"
+    when /administrator/i then @customer,@password = Customer.find_by_role!(100),'admin'
+    when /box ?office manager/i then @customer,@is_admin = create(:boxoffice_manager),true
+    when /box ?office/i then @customer,@is_admin = create(:boxoffice),true
+    when /staff/i         then @customer,@is_admin = create(:staff), true
+    when /customer "(.*) (.*)"$/ then @customer = find_or_create_customer $1,$2
+    when /customer "(.*) (.*)" with no address$/ then @customer = create_no_address_customer $1, $2
+    else raise "No such user '#{who}'"
   end
   verify_successful_login
 end
