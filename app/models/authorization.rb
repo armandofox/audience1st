@@ -1,3 +1,4 @@
+require 'bcrypt'
 class Authorization < ActiveRecord::Base
 belongs_to :customer, foreign_key: "customer_id"
 validates :provider, :uid, :presence => true
@@ -23,29 +24,33 @@ validates :provider, :uid, :presence => true
   
   def self.update_or_create_identity(cust)
     if cust.email
-      if cust.password.blank?
-        password = String.random_string(6)
-      else
-        password = BCrypt::Password.create(cust.password).to_s
-      end
+      password = BCrypt::Password.create(cust.password).to_s unless cust.password.blank?       
       if auth = find_by_provider_and_uid("Identity", cust.email)
-        auth.password_digest = password
-        auth.save!
+        puts "found auth"
+        puts auth.password_digest
+        if(password && BCrypt::Password.new(auth.password_digest) != cust.password)
+          puts "shouldn't see this"
+          auth.password_digest = password
+          auth.save!
+        end
       else
+        puts "random string"
+        password = String.random_string(6) if cust.password.blank?
         auth = create! :customer => cust, :provider => "Identity", :uid => cust.email, :password_digest => password
       end
     else
-      auth = Authorization.new
-      auth.errors.add :email, "No Identity could be found because customer does not have an email"
+      puts "No Identity could be found because customer does not have an email"
     end
     auth
   end
 
   # updates an auth's email
   def self.update_identity_email(cust)
-    auth = find_by_provider_and_customer_id("Identity", cust.id)
-    self.uid = email
-    self.save!
+    if auth = find_by_provider_and_customer_id("Identity", cust.id)
+      auth.uid = cust.email
+      auth.save!
+    end
+    auth
   end
 
 end
