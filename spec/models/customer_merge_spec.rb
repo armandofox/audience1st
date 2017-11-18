@@ -1,6 +1,8 @@
 require 'rails_helper'
 
-describe Customer, "merging" do
+# This is to test that 'merge' between two new user(exist before identity)
+# as well as the majority of the funtionalities that 'merge' should provide
+describe Customer, "normal merging" do
   describe "value selection" do
     before(:each) do
       @old = create(:customer)

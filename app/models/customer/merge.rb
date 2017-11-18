@@ -148,7 +148,6 @@ class Customer < ActiveRecord::Base
 
         # This is the tricky part, we should distinguish whether the user is a user before
         # we applied 'identity' or after.
-
         # Password needs to be changed
         if pass
           if old_user
@@ -166,7 +165,6 @@ class Customer < ActiveRecord::Base
             end
           end
         end
-
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
     rescue Exception => e

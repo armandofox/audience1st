@@ -9,7 +9,7 @@ FactoryGirl.define do
     sequence(:first_name) { |n| "Joe#{n}" }
     sequence(:last_name) { |n| "Doe#{n}" }
     sequence(:email) { |n| "joe#{n}@yahoo.com" }
-    password 'pass'
+    sequence(:password) { |n| "pass#{n}"}
     password_confirmation { password }
     day_phone '212-555-5555'
     street '123 Fake St'
