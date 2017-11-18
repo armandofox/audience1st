@@ -21,18 +21,31 @@ validates :provider, :uid, :presence => true
     c
   end
   
-  def self.find_or_create_identity(cust, pass)
-    unless cust.email
-      puts "couldn't find customer email. Something is wrong."
-      return nil
-    end
-    if auth = find_by_provider_and_uid("Identity", cust.email)
-      auth.password_digest = pass
-      auth.save!
+  def self.update_or_create_identity(cust)
+    if cust.email
+      if cust.password.blank?
+        password = String.random_string(6)
+      else
+        password = BCrypt::Password.create(cust.password).to_s
+      end
+      if auth = find_by_provider_and_uid("Identity", cust.email)
+        auth.password_digest = password
+        auth.save!
+      else
+        auth = create! :customer => cust, :provider => "Identity", :uid => cust.email, :password_digest => password
+      end
     else
-      auth = create! :customer => cust, :provider => "Identity", :uid => cust.email, :password_digest => pass
+      auth = Authorization.new
+      auth.errors.add :email, "No Identity could be found because customer does not have an email"
     end
     auth
+  end
+
+  # updates an auth's email
+  def self.update_identity_email(cust)
+    auth = find_by_provider_and_customer_id("Identity", cust.id)
+    self.uid = email
+    self.save!
   end
 
 end

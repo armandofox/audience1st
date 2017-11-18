@@ -85,6 +85,7 @@ class CustomersController < ApplicationController
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank? 
         # send confirmation email
+        Authorization.update_identity_email(@customer)
         email_confirmation(:confirm_account_change,@customer, 
                            "updated your email address in our system")
       end
@@ -103,7 +104,6 @@ class CustomersController < ApplicationController
     @customer.validate_password = true
     if @customer.update_attributes(params[:customer])
       password = params[:customer][:password]
-      # puts "password: " << password
       @customer.bcrypt_password_storage(password)
       flash[:notice] = "Changes confirmed."
       Txn.add_audit_record(:txn_type => 'edit',

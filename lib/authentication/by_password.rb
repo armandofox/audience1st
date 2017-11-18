@@ -52,16 +52,6 @@ module Authentication
       
       def authenticated?(password)
         bcrypted? ? BCrypt::Password.new(self.identity.password_digest) == password : crypted_password == encrypt(password)
-        # if bcrypted?
-        #   puts "new style password detected. Authenticating..."
-        #   bool = BCrypt::Password.new(self.identity.password_digest) == password
-        # else
-        #   puts "old style password detected. Authenticating"
-        #   bool = crypted_password == encrypt(password)
-        # end
-        # puts "Authenticated? returned: "
-        # puts bool
-        # return bool
       end
       
       # before filter 
@@ -78,9 +68,11 @@ module Authentication
       end
 
       def bcrypt_password_storage(password)
-        new_password = BCrypt::Password.create(password).to_s
-        Authorization.find_or_create_identity(self, new_password)
-        crypted_password = nil
+        # new_password = BCrypt::Password.create(password).to_s
+        self.password = password
+        Authorization.update_or_create_identity(self)
+        # self.salt ||= self.class.make_token
+        # self.crypted_password = encrypt(password)
       end
 
       def bcrypted?
