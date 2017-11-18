@@ -18,11 +18,13 @@ describe Customer, "merging during transition period" do
       allow(Customer).to receive(:update_foreign_keys_from_to).and_return(['Wat, Wat'])
     end
     it "should use the old way to store the password" do
-      @user_keep.merge_automatically!(@user_merged).should_not be_nil
+      merge(@user_keep, @user_merged)
+      expect(Authorization.where(:uid => @user_merged.email).length).to eq 0
     end
 
     it "should change the older user's password to the fresher user's password" do
-      @user_keep.merge_automatically!(@user_merged).should_not be_nil
+      merge(@user_keep, @user_merged)
+      expect(Customer.where(:email => @user_merged.email).first.crypted_password).to eq @user_merged.crypted_password
     end
   end
 
