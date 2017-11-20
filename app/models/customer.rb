@@ -20,7 +20,7 @@ class Customer < ActiveRecord::Base
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
   has_many :orders, -> { where( 'sold_on IS NOT NULL').order('sold_on DESC') }
-  has_many :authorizations
+  has_many :authorizations, dependent: :destroy
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
   def shows ; self.showdates.map(&:show).uniq ; end

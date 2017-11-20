@@ -1,12 +1,12 @@
 require 'bcrypt'
 class Authorization < ActiveRecord::Base
-belongs_to :customer, foreign_key: "customer_id"
-validates :provider, :uid, :presence => true
-    
+  belongs_to :customer, foreign_key: "customer_id"
+  validates :provider, :uid, :presence => true
+
   # creates a customer and an auth belonging to that customer. Return the customer
   def self.find_or_create_user auth
     if user_auth = find_by_provider_and_uid(auth["provider"], auth["uid"])
-      c = user_auth.customer      
+      c = user_auth.customer
     else
       # create customer
       c = Customer.new
@@ -17,11 +17,11 @@ validates :provider, :uid, :presence => true
       c.last_name = customer_name.join("")
       c = Customer.find_or_create! c
       # create authorization
-      create :customer => c, :provider => auth["provider"], :uid => auth["uid"] 
+      create :customer => c, :provider => auth["provider"], :uid => auth["uid"]
     end
     c
   end
-  
+
   def self.update_or_create_identity(cust)
     if cust.email
       password = BCrypt::Password.create(cust.password).to_s unless cust.password.blank?       
