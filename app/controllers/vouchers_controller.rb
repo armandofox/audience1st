@@ -158,6 +158,8 @@ class VouchersController < ApplicationController
   end
 
   def cancel_multiple
+    canceled_num = 0
+    num = params['cancelnumber'].to_i
     vchs = Voucher.find(params[:voucher_ids].split(","))
     old_showdate = vchs.first.showdate.clone
     a = nil
@@ -174,13 +176,16 @@ class VouchersController < ApplicationController
                                  :showdate_id => showdate_id,
                                  :show_id => show_id,
                                  :voucher_id => v.id)
+        num -= 1
+        canceled_num += 1
+        break if num == 0
       else
         flash[:alert] << "Some reservations could NOT be cancelled. " <<
           "Please review your reservations below and contact a " <<
           "box office agent if you need assistance."
       end
     end
-    flash[:notice] << "Your reservations have been cancelled. "
+    flash[:notice] << "#{canceled_num} of your reservations have been cancelled. "
     flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
     email_confirmation(:cancel_reservation, @customer, old_showdate,
                        vchs.length, a) unless current_user.is_boxoffice

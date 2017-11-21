@@ -14,7 +14,7 @@ Rails.application.routes.draw do
         get :help
       end
     end
-    
+
     resources :labels
 
     resources :customers, :except => :destroy do
@@ -45,11 +45,11 @@ Rails.application.routes.draw do
         end
       end
     end
-    
+
     # list all donations management
 
     resources :donations, :only  => [:index, :update]
-    
+
     # RSS
 
     get '/info/ticket_rss' => 'info#ticket_rss'
@@ -74,7 +74,7 @@ Rails.application.routes.draw do
         get :clone
       end
     end
-    
+
     # database txns
     resources :txns, :only => [:index]
 
@@ -115,7 +115,7 @@ Rails.application.routes.draw do
 
     # checkout requires you to be logged in:
     get '/store/:customer_id/checkout' => 'store#checkout', :as => 'checkout'
-    
+
     post '/store/:customer_id/place_order' => 'store#place_order', :as => 'place_order'
 
     # quick-donation neither requires nor sets customer-id:
