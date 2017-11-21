@@ -13,13 +13,13 @@ Background: logged in as admin and shows are available
 Scenario Outline: add comps to performance
 
   Given it is currently <time>
-  When I visit the add comps page for customer "Tom Foolery"
+  When I visit the add comps page for customer "Armando Fox"
   When I select "Comp (2010)" from "What type:"
   And  I fill in "How many:" with "<number>"
   And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
   And  I fill in "Optional comments:" with "Courtesy Comp"
   And  I press "Add Vouchers"
-  Then customer "Tom Foolery" should have an order with comment "Courtesy Comp" containing the following tickets:
+  Then customer "Armando Fox" should have an order with comment "Courtesy Comp" containing the following tickets:
   | qty      | type | showdate       |
   | <number> | Comp | Apr 20, 8:00pm |
 
@@ -31,5 +31,35 @@ Scenario Outline: add comps to performance
   | Apr 18, 2010         |      4 |
   | Apr 20, 2010, 8:15pm |      4 |
 
+
+Scenario: email should be sent if customer_email is checked
+
+  Given it is currently Apr 20, 2010, 8:15pm
+  Given customer "Armando Fox" has email "armandoisafox@email.com" and password "pa$$w0rd"
+  When I visit the add comps page for customer "Armando Fox"
+  When I select "Comp (2010)" from "What type:"
+  And  I fill in "How many:" with "2"
+  And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
+  And  I fill in "Optional comments:" with "Courtesy Comp"
+  And I check "customer_email"
+  And  I press "Add Vouchers"
+  And an email should be sent to customer "Armando Fox"
   
-  
+Scenario: email should not be sent if customer_email is unchecked
+
+  Given it is currently Apr 20, 2010, 8:15pm
+  Given customer "Armando Fox" has email "armandoisafox@email.com" and password "pa$$w0rd"
+  When I visit the add comps page for customer "Armando Fox"
+  When I select "Comp (2010)" from "What type:"
+  And  I fill in "How many:" with "2"
+  And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
+  And  I fill in "Optional comments:" with "Courtesy Comp"
+  And I uncheck "customer_email"
+  And  I press "Add Vouchers"
+  And no email should be sent to customer "Armando Fox"
+
+Scenario: checkbox unavailable if no email
+
+  Given it is currently Apr 20, 2010, 8:15pm
+  When I visit the add comps page for customer "NoEmail Customer"
+  Then the "customer_email" checkbox should be disabled
