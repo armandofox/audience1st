@@ -3,6 +3,7 @@
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from
 [Xiao Fu](https://github.com/fxdawnn),
 [Wayne Leung](https://github.com/WayneLeung12),
+[Jason Lum](https://github.com/jayl109),
 [Sanket Padmanabhan](https://github.com/sanketq),
 [Andrew Sun](https://github.com/andrewsun98),
 [Jack Wan](https://github.com/WanNJ)
