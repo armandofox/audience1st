@@ -1,6 +1,16 @@
-[![Code Climate](https://codeclimate.com/github/armandofox/audience1st/badges/gpa.svg)](https://codeclimate.com/github/armandofox/audience1st)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
 [![Build Status](https://travis-ci.org/armandofox/audience1st.svg?branch=master)](https://travis-ci.org/armandofox/audience1st)
-[![Coverage Status](https://coveralls.io/repos/github/armandofox/audience1st/badge.svg?branch=master)](https://coveralls.io/github/armandofox/audience1st?branch=master)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
+
+Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from
+[Xiao Fu](https://github.com/fxdawnn),
+[Wayne Leung](https://github.com/WayneLeung12),
+[Jason Lum](https://github.com/jayl109),
+[Sanket Padmanabhan](https://github.com/sanketq),
+[Andrew Sun](https://github.com/andrewsun98),
+[Jack Wan](https://github.com/WanNJ)
+
+
 # This information is for developers and deployers
 
 Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://armandofox.github.io/audience1st/)?
