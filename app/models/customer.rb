@@ -469,29 +469,7 @@ EOSQL1
       )
   end
 
-  # under what circumstances do we consider a customer's name "the same" as a given first/last?
-  def name_word_matches(ours,given)
-    ours == given ||
-      ours[0,1] == given.gsub(/[^A-Za-z]/,'') ||
-      given[0,1] == ours.gsub(/[^A-Za-z]/,'')
-  end
-  def name_matches(first,last)
-    our_first = self.first_name.to_s.downcase
-    our_last = self.last_name.to_s.downcase
-    first.to_s.downcase!
-    last.to_s.downcase!
-    return nil if (first.blank? && last.blank? && our_first.blank? && our_last.blank?)
-    return (our_last == last) &&
-      (name_word_matches(our_first, first) || our_first.blank? || first.blank?)
-  end
 
-  def copy_nonblank_attributes(from)
-    Customer.replaceable_attributes.each do |attr|
-      if !(val = from.send(attr)).blank?
-        self.send("#{attr}=", val)
-      end
-    end
-  end
 
   # If customer can be uniquely identified in DB, return match from DB
   # and fill in blank attributes with nonblank values from provided attrs.
@@ -524,22 +502,59 @@ EOSQL1
   # all must match, though each term can match either first or last name
   def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
+    result = Customer.all
+    terms.each do |term|
+      term_s = term.to_s
+      conds_ary = Customer.match_any_content_column(term_s)
+      result = result & Customer.where(conds_ary)
+    end
+    result
+  end
+
+  # return a hash include information containing searching term in auto
+  # complete
+  def self.find_by_terms_col(terms)
+    return [] if terms.empty?
+    col_hash = Hash.new
+    Customer.find_by_multiple_terms(terms.split(/\s+/)).each do |customer|
+      col_hash[customer] = self.match_attr_info(customer,terms)
+    end
+    col_hash
+  end
+
+  # method find info containing seaching terms in an object
+  def self.match_attr_info(customer,terms)
+    matching_info = ''
+    Customer.column_names.reject{ |col|
+      (%w[role crypted_password salt _at$ _on$]).include? col}.each do |col|
+      terms.split(/\s+/).each do |term|
+        if (customer.attributes[col].is_a? String) &&
+            customer.attributes[col].downcase.include?(term.downcase) &&
+            (not matching_info.downcase.include?(customer.attributes[col].downcase))
+          matching_info += "(#{customer[col]})"
+          next
+        end
+      end
+    end
+    matching_info
+  end
+
+  # method find customers whose name containing the searching term
+  def self.find_by_name(terms)
     conds =
-      Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
+        Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
     conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
     Customer.where(*conds_ary).order('last_name')
   end
 
-  
-  # Match on any content column of a class
 
+  # Match on any content column of a class
   def self.match_any_content_column(string)
     cols = self.content_columns
     a = Array.new(cols.size) { "%#{string}%" }
     a.unshift(cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR "))
   end
 
-    
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns

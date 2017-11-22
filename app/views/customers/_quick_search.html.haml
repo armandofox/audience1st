@@ -4,13 +4,11 @@
       %span.strong Customer: 
       %span#onBehalfOfName= link_to @customer.full_name, customer_path(@customer)
       (last login: #{@customer.last_login.to_formatted_s(:month_day_year)})
-  #quicksearch
-    Quick search first or last name:
-    = text_field_tag 'autocomplete', '', :size => 20, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
+#quicksearch
+  = form_tag(customers_path,{:method =>:get, :id => 'search_field'}) do
+    Search:
+    = text_field_tag 'customers_filter', @customers_filter, :size => 32, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
     = hidden_field_tag 'id'
-  = form_tag(customers_path,{:method =>:get, :id => 'search_on_any_field'}) do
-    Search any field:
-    = text_field_tag 'customers_filter', @customers_filter, :size => 12
     = submit_tag 'Go'
     = link_to 'All', customers_path, :class => 'genButton'
     = link_to 'Dups', list_duplicate_customers_path, :class => 'genButton'
