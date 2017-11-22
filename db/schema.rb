@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171108212714) do
+ActiveRecord::Schema.define(version: 20171122003439) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",        limit: 40,  default: "", null: false
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20171108212714) do
     t.datetime "updated_at",      null: false
     t.integer  "customer_id"
     t.string   "password_digest"
+    t.string   "email"
   end
 
   add_index "authorizations", ["customer_id"], name: "index_authorizations_on_customer_id"

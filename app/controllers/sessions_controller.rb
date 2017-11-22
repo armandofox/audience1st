@@ -18,25 +18,37 @@ class SessionsController < ApplicationController
   def create
     create_session do |params|
       auth = request.env['omniauth.auth']
+      puts "auth: "
+      puts auth
       if auth
         if logged_in?
           current_user.add_provider(auth) #if customer is logged in, add new auth to their account
-          u = current_user
+          @u = current_user
         else
-          u = Authorization.find_or_create_user(auth) # otherwise login using an existing auth or create a new account
+          puts "customer"
+          puts Customer.find_by_email(params[:email])
+          puts "Authorization"
+          puts a = Authorization.find_by_email(params[:email])
+          puts "uid"
+          puts a.uid
+          puts a.provider
+          puts "find by"
+          puts Authorization.find_by_provider_and_uid("identity", "1")
+          @u = Authorization.find_or_create_user(auth) # otherwise login using an existing auth or create a new account
         end
       else
-        u = Customer.authenticate(params[:email], params[:password])
-        u.bcrypt_password_storage(params[:password]) if u && u.errors.empty? && !u.bcrypted?
+        
+        @u = Customer.authenticate(params[:email], params[:password])
+        @u.bcrypt_password_storage(params[:password]) if @u && @u.errors.empty? && !@u.bcrypted?
       end
 
-      if u.nil? || !u.errors.empty?
-        note_failed_signin(u)
+      if @u.nil? || !@u.errors.empty?
+        note_failed_signin(@u)
         @email = params[:email]
         @remember_me = params[:remember_me]
         render :action => :new
       end
-      u
+      @u
     end
   end
 

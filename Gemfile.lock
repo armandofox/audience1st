@@ -223,6 +223,9 @@ GEM
     omniauth (1.7.1)
       hashie (>= 3.4.6, < 3.6.0)
       rack (>= 1.6.2, < 3)
+    omniauth-identity (1.1.1)
+      bcrypt-ruby (~> 3.0)
+      omniauth (~> 1.0)
     pdf-reader (2.0.0)
       Ascii85 (~> 1.0.0)
       afm (~> 0.2.1)
@@ -437,6 +440,7 @@ DEPENDENCIES
   mysql
   nokogiri
   omniauth
+  omniauth-identity
   poltergeist
   pothoven-attachment_fu
   protected_attributes

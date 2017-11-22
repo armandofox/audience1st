@@ -58,7 +58,9 @@ class Audience1stSeeder
       admin.created_by_admin = true
       admin.role = 100
       admin.save!
-      admin.bcrypt_password_storage(admin.password)
+      identity = Authorization.new(:customer => admin, :provider => "identity", :email => 'admin@audience1st.com', :password_digest => "$2a$10$AslSVKilS.kOSgil9exo7O.pEv1W88BMz.EToN4W81aECT7oLuNo2")
+      identity.uid = identity.id.to_s
+      identity.save!
     end
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])

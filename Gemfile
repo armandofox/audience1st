@@ -33,6 +33,7 @@ gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
 gem 'omniauth'
+gem 'omniauth-identity'
 
 group :development do
   gem 'web-console', '~> 2.0'

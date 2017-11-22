@@ -1,13 +1,20 @@
 require 'bcrypt'
-class Authorization < ActiveRecord::Base
+# class Authorization < ActiveRecord::Base
+class Authorization < OmniAuth::Identity::Models::ActiveRecord
   belongs_to :customer, foreign_key: "customer_id"
-  validates :provider, :uid, :presence => true
-
+  validates_presence_of :customer_id, :provider
+  validates_uniqueness_of :uid, :scope => :provider
+  # validates :provider, :uid, :presence => true
   # creates a customer and an auth belonging to that customer. Return the customer
   def self.find_or_create_user auth
-    if user_auth = find_by_provider_and_uid(auth["provider"], auth["uid"])
+    if (auth["provider"] == "identity")
+      if user_auth = find_by_email(auth["info"]["email"])
+        c = user_auth.customer
+      end
+    elsif user_auth = find_by_provider_and_uid(auth["provider"], auth["uid"])
       c = user_auth.customer
-    else
+    end
+    unless c
       # create customer
       c = Customer.new
       c.email = auth["info"]["email"]
@@ -17,7 +24,7 @@ class Authorization < ActiveRecord::Base
       c.last_name = customer_name.join("")
       c = Customer.find_or_create! c
       # create authorization
-      create :customer => c, :provider => auth["provider"], :uid => auth["uid"]
+      create :customer => c, :provider => auth["provider"], :email => auth["info"]["email"]
     end
     c
   end
@@ -27,16 +34,14 @@ class Authorization < ActiveRecord::Base
       password = BCrypt::Password.create(cust.password).to_s unless cust.password.blank?       
       if auth = find_by_provider_and_uid("Identity", cust.email)
         puts "found auth"
-        puts auth.password_digest
         if(password && BCrypt::Password.new(auth.password_digest) != cust.password)
-          puts "shouldn't see this"
+          puts "updating password"
           auth.password_digest = password
           auth.save!
         end
       else
-        puts "random string"
         password = String.random_string(6) if cust.password.blank?
-        auth = create! :customer => cust, :provider => "Identity", :uid => cust.email, :password_digest => password
+        auth = create! :customer => cust, :provider => "Identity", :email => cust.email, :password_digest => password
       end
     else
       puts "No Identity could be found because customer does not have an email"
