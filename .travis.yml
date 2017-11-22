@@ -8,24 +8,24 @@ env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
     - CC_TEST_REPORTER_ID=$CC_KEY
-    - CC=./cc-test-reporter
+    - CC=/tmp/cc-test-reporter
 before_install:
   - export TZ=America/Los_Angeles
   - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CC
+  - chmod +x $CC
+  - $CC before-build
   - bundle config build.nokogiri --use-system-libraries
 script:
   - cp config/database.yml.test config/database.yml
   - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
   - bundle exec rake db:setup
   - bundle exec rake spec
-  - ./cc-test-reporter format-coverage --output coverage/codeclimate.$SUITE.json
+  - $CC format-coverage --output coverage/codeclimate.$SUITE.json
   # run Cucumber scenarios, and capture coverage
   - bundle exec rake cucumber
-  - ./cc-test-reporter format-coverage --output coverage/codeclimate.$SUITE.json
+  - $CC format-coverage --output coverage/codeclimate.$SUITE.json
 after_script:
-  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - $CC sum-coverage coverage/codeclimate.*.json | $CC upload-coverage
+  - $CC after-build --exit-code $TRAVIS_TEST_RESULT
   - rm -f config/application.yml
