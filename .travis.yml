@@ -12,9 +12,9 @@ env:
 before_install:
   - export TZ=America/Los_Angeles
   - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CC
+  - chmod +x $CC
+  - $CC before-build
 script:
   - cp config/database.yml.test config/database.yml
   - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
