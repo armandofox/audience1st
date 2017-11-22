@@ -15,6 +15,7 @@ before_install:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CC
   - chmod +x $CC
   - $CC before-build
+  - bundle config build.nokogiri --use-system-libraries
 script:
   - cp config/database.yml.test config/database.yml
   - mkdir -p public/stylesheets/venue && touch public/stylesheets/venue/default.css
