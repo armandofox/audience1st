@@ -2,19 +2,20 @@ require 'bcrypt'
 # class Authorization < ActiveRecord::Base
 class Authorization < OmniAuth::Identity::Models::ActiveRecord
   belongs_to :customer, foreign_key: "customer_id"
-  # validates_presence_of :customer_id, :provider
-  # validates_uniqueness_of :uid, :scope => :provider
-  # validates :provider, :uid, :presence => true
-  # creates a customer and an auth belonging to that customer. Return the customer
+  validates :email,
+            uniqueness: true,
+            format: {
+              with: /\A[-a-z0-9_+\.]+\@([-a-z0-9]+\.)+[a-z0-9]{2,4}\z/i,
+              message: "must be formatted correctly"
+            }, 
+            allow_blank: true,
+            on: :create
+
+  # find or create authorization and customer for non-identity omniauth strategies
   def self.find_or_create_user auth
-    if (auth["provider"] == "identity")
-      if user_auth = find(auth["uid"])
-        c = user_auth.customer
-      end
-    elsif user_auth = find_by_provider_and_uid(auth["provider"], auth["uid"])
+    if user_auth = find_by_provider_and_uid(auth["provider"], auth["uid"])
       c = user_auth.customer
-    end
-    unless c
+    else
       # create customer
       c = Customer.new
       c.email = auth["info"]["email"]
@@ -30,59 +31,36 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
     end
     c
   end
-  def self.find_user(uid)
-    find(uid).customer
-  end
-  def self.create_user(auth_hash, customer_params, password)
-    if customer_params["email"]
-      password = String.random_string(6) if password.blank?
-      puts password
-      if auth = find(auth_hash[:uid])
-        puts "found auth"
-        if !!auth.provider
-          puts "identity already exists"
-          auth.customer
-        else
-          puts "new auth, creating customer and updating with relevant information"
-          puts "current info: "
-          puts "uid"
-          puts auth.uid
-          puts "password_digest"
-          puts auth.password_digest
-          puts "isItTheRightPasssword?"
-          puts !!auth.authenticate(password)
 
-          customer_hash = customer_params.permit("first_name", "last_name", "street", "city", "state", "zip", "day_phone", "eve_phone", "blacklist", "email", "e_blacklist").to_h #convert params object to safe hash with given info only
-          cust = Customer.find_or_create!(Customer.new(customer_hash))
+  # create customer and update authorization for omniauth-identity
+  def self.find_or_create_user(auth_hash, customer_params)
+    if auth = find_by(uid: auth_hash[:uid], provider: auth_hash[:provider])
+      cust = auth.customer
+    elsif auth = find_by(id: auth_hash[:uid], provider: nil)
+      # need to create a customer for this user
+      customer_hash = customer_params.permit("first_name", "last_name", "street", "city", "state", "zip", "day_phone", "eve_phone", "blacklist", "email", "e_blacklist").to_h #convert params object to safe hash with given info only
+      cust = Customer.find_or_create!(Customer.new(customer_hash))
+      
+      auth.provider = auth_hash[:provider]
+      auth.uid = auth_hash[:uid]
+      auth.customer = cust
+      auth.save!
 
-          auth.provider = "identity"
-          auth.customer = cust
-          auth.password = password
-          auth.email = customer_hash["email"]
-          auth.save!
-
-
-          puts "password_digest"
-          puts auth.password_digest
-          puts "isItTheRightPasssword?"
-          puts !!auth.authenticate(password)
-        end
-      else
-        puts "couldn't find an identity with the relevant uid"
-      end
+      Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => cust.id,
+      :comments => 'new customer self-signup')
     else
-      puts "No Identity could be found because customer does not have an email"
+      puts "couldn't find identity to create a user for"
     end
     cust
   end
 
-  def self.update_or_create_identity(cust)
+  # create an authorization for omniauth identity given an existing customer (used to migrate an old-style user into the new system)
+  def self.create_identity_for_customer(cust)
     if cust.email
       password = BCrypt::Password.create(cust.password).to_s unless cust.password.blank?       
       if auth = find_by_provider_and_uid("identity", cust.email)
-        puts "found auth"
         if(password && BCrypt::Password.new(auth.password_digest) != cust.password)
-          puts "updating password"
           auth.password_digest = password
           auth.save
         end
@@ -93,15 +71,26 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
         auth.save
       end
     else
-      puts "No Identity could be found because customer does not have an email"
     end
     auth
   end
-
-  # updates an auth's email
+  def self.update_password(cust, password)
+    if auth = find_by(customer_id: cust.id, provider: "identity")
+      puts "old"
+      puts auth.password_digest
+    
+      auth.password = password
+      bool = auth.save!
+    end
+    puts "new"
+    puts auth.password_digest
+    # password_digest = BCrypt::Password.create(password).to_s
+    bool
+  end
+  # updates the email of a given customer
   def self.update_identity_email(cust)
-    if auth = find_by_provider_and_customer_id("identity", cust.id)
-      auth.uid = cust.email
+    if auth = find_by(customer_id: cust.id, provider: "identity")
+      auth.email = cust.email
       auth.save!
     end
     auth

@@ -18,30 +18,15 @@ class SessionsController < ApplicationController
   def create
     create_session do |params|
       auth = request.env['omniauth.auth']
-      # puts "auth: "
-      # puts auth
-      # puts "params"
-      # puts params
-      # puts "password"
-      # puts params[:password].values[0]
-      # puts "customer"
-      # puts params[:customer]
-      # puts "email"
-      # puts params[:email]
       if auth
         if logged_in?
           current_user.add_provider(auth) #if customer is logged in, add new auth to their account
           @u = current_user
         else
-          # identity is a special case
           if params[:provider] == "identity"
-            if params[:password].is_a? String
-              @u = Authorization.find_user(auth[:uid]) # if customer is logging in, just return the authenticated customer based on uid
-            else
-              @u = Authorization.create_user(auth, params[:customer], params[:password].values[0]) # if customer is signing up, create a new customer, update identity values, and return that customer 
-            end
+             @u = Authorization.find_or_create_user(auth, params[:customer])           # identity is a special case
           else
-            @u = Authorization.find_or_create_user(auth) # otherwise login using an existing auth or create a new account using bcrypt
+            @u = Authorization.find_or_create_user(auth)                               # otherwise login using an existing auth or create a new account using bcrypt
           end
         end
       else

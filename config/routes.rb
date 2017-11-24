@@ -153,7 +153,7 @@ Rails.application.routes.draw do
     end
 
     # special shortcuts
-
+    match 'auth/identity/register', :via => [:get, :post], :as => 'omniauth_registration'
     get '/login' => 'sessions#new', :as => 'login'
     match '/logout' => 'sessions#destroy', :as => 'logout', :via => [:get, :post]
 

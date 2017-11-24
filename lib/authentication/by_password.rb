@@ -70,7 +70,7 @@ module Authentication
       def bcrypt_password_storage(password)
         # new_password = BCrypt::Password.create(password).to_s
         self.password = password
-        Authorization.update_or_create_identity(self)
+        Authorization.create_identity_for_customer(self)
         # self.salt ||= self.class.make_token
         # self.crypted_password = encrypt(password)
       end

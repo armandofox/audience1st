@@ -107,18 +107,35 @@ class CustomersController < ApplicationController
   def change_password_for
     return if request.get?
     @customer.validate_password = true
-    if @customer.update_attributes(params[:customer])
-      password = params[:customer][:password]
+    puts "pass"
+    puts params[:password]
+    puts "pass_digest"
+    identity = @customer.identity
+    puts identity.password_digest
+    if @customer.bcrypted?
+      puts "goes in here"
+      success = Authorization.update_password(@customer, params[:password])
+      puts "success"
+      puts success
+
+      puts "pass_digest"
+      puts identity.password_digest
+      puts "auths true"
+      puts identity.authenticate("hi")
+    else
       @customer.bcrypt_password_storage(password)
+    end
+    if success && identity.errors.empty?
       flash[:notice] = "Changes confirmed."
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
       redirect_to customer_path(@customer)
     else
-      flash[:alert] = ['Changing password failed: ', @customer.errors.as_html]
+      flash[:alert] = ['Changing password failed: ', identity.errors.as_html]
       render :action => 'change_password_for'
     end
+    
   end
 
   def change_secret_question
@@ -151,6 +168,7 @@ class CustomersController < ApplicationController
     @identity = env['omniauth.identity']
   end
   
+  # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
     if @gCheckoutInProgress && @customer.day_phone.blank?
@@ -336,8 +354,12 @@ class CustomersController < ApplicationController
     end
     begin
       newpass = String.random_string(6)
-      @customer.password = @customer.password_confirmation = newpass
-      @customer.bcrypt_password_storage(newpass)
+      if identity = @customer.identity
+        identity.password = newpass
+        identity.save
+      else
+        @customer.bcrypt_password_storage(newpass)
+      end
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
