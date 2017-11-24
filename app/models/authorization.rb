@@ -2,7 +2,7 @@ require 'bcrypt'
 # class Authorization < ActiveRecord::Base
 class Authorization < OmniAuth::Identity::Models::ActiveRecord
   belongs_to :customer, foreign_key: "customer_id"
-  validates :email,
+  validates :uid ,
             uniqueness: true,
             format: {
               with: /\A[-a-z0-9_+\.]+\@([-a-z0-9]+\.)+[a-z0-9]{2,4}\z/i,
@@ -25,27 +25,34 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
       c.last_name = customer_name.join("")
       c = Customer.find_or_create! c
       # create authorization
-      auth = create :customer => c, :provider => auth["provider"], :email => auth["info"]["email"]
-      auth.uid = auth.id
-      auth.save
+      auth = create :customer => c, :provider => auth["provider"], :uid => auth["uid"]
     end
     c
+  end
+
+  def uid
+    if respond_to?("read_attribute")
+      return nil if read_attribute("uid").nil?
+      read_attribute("uid")
+    else
+      raise NotImplementedError 
+    end
   end
 
   # create customer and update authorization for omniauth-identity
   def self.find_or_create_user(auth_hash, customer_params)
     if auth = find_by(uid: auth_hash[:uid], provider: auth_hash[:provider])
       cust = auth.customer
-    elsif auth = find_by(id: auth_hash[:uid], provider: nil)
+    elsif auth = find_by(uid: auth_hash[:uid], provider: nil)
+
       # need to create a customer for this user
-      customer_hash = customer_params.permit("first_name", "last_name", "street", "city", "state", "zip", "day_phone", "eve_phone", "blacklist", "email", "e_blacklist").to_h #convert params object to safe hash with given info only
+      customer_hash = customer_params.permit("first_name", "last_name", "street", "city", "state", "zip", "day_phone", "eve_phone", "blacklist", "e_blacklist").to_h #convert params object to safe hash with given info only
       cust = Customer.find_or_create!(Customer.new(customer_hash))
       
       auth.provider = auth_hash[:provider]
-      auth.uid = auth_hash[:uid]
       auth.customer = cust
-      auth.save!
-
+      auth.save
+      
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => cust.id,
       :comments => 'new customer self-signup')
@@ -66,9 +73,7 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
         end
       else
         password = String.random_string(6) if cust.password.blank?
-        auth = create! :customer => cust, :provider => "identity", :email => cust.email, :password_digest => password
-        auth.uid = auth.id
-        auth.save
+        auth = create! :customer => cust, :provider => "identity", :uid => cust.email, :password_digest => password
       end
     else
     end
@@ -76,22 +81,14 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
   end
   def self.update_password(cust, password)
     if auth = find_by(customer_id: cust.id, provider: "identity")
-      puts "old"
-      puts auth.password_digest
-    
       auth.password = password
-      bool = auth.save!
+      update(auth.id, password_digest: auth.password_digest)      
     end
-    puts "new"
-    puts auth.password_digest
-    # password_digest = BCrypt::Password.create(password).to_s
-    bool
   end
   # updates the email of a given customer
   def self.update_identity_email(cust)
     if auth = find_by(customer_id: cust.id, provider: "identity")
-      auth.email = cust.email
-      auth.save!
+      update(auth.id, uid: cust.email)      
     end
     auth
   end

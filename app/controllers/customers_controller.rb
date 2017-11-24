@@ -107,21 +107,9 @@ class CustomersController < ApplicationController
   def change_password_for
     return if request.get?
     @customer.validate_password = true
-    puts "pass"
-    puts params[:password]
-    puts "pass_digest"
     identity = @customer.identity
-    puts identity.password_digest
     if @customer.bcrypted?
-      puts "goes in here"
       success = Authorization.update_password(@customer, params[:password])
-      puts "success"
-      puts success
-
-      puts "pass_digest"
-      puts identity.password_digest
-      puts "auths true"
-      puts identity.authenticate("hi")
     else
       @customer.bcrypt_password_storage(password)
     end

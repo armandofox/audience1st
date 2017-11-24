@@ -502,7 +502,7 @@ EOSQL1
   end
 
   def identity
-    Authorization.find_by_provider_and_email("identity", email)
+    Authorization.find_by_provider_and_uid("identity", email)
   end
 
   # If customer can be uniquely identified in DB, return match from DB
