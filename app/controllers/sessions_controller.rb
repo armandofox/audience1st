@@ -18,28 +18,36 @@ class SessionsController < ApplicationController
   def create
     create_session do |params|
       auth = request.env['omniauth.auth']
-      puts "auth: "
-      puts auth
+      # puts "auth: "
+      # puts auth
+      # puts "params"
+      # puts params
+      # puts "password"
+      # puts params[:password].values[0]
+      # puts "customer"
+      # puts params[:customer]
+      # puts "email"
+      # puts params[:email]
       if auth
         if logged_in?
           current_user.add_provider(auth) #if customer is logged in, add new auth to their account
           @u = current_user
         else
-          puts "customer"
-          puts Customer.find_by_email(params[:email])
-          puts "Authorization"
-          puts a = Authorization.find_by_email(params[:email])
-          puts "uid"
-          puts a.uid
-          puts a.provider
-          puts "find by"
-          puts Authorization.find_by_provider_and_uid("identity", "1")
-          @u = Authorization.find_or_create_user(auth) # otherwise login using an existing auth or create a new account
+          # identity is a special case
+          if params[:provider] == "identity"
+            if params[:password].is_a? String
+              @u = Authorization.find_user(auth[:uid]) # if customer is logging in, just return the authenticated customer based on uid
+            else
+              @u = Authorization.create_user(auth, params[:customer], params[:password].values[0]) # if customer is signing up, create a new customer, update identity values, and return that customer 
+            end
+          else
+            @u = Authorization.find_or_create_user(auth) # otherwise login using an existing auth or create a new account using bcrypt
+          end
         end
       else
-        
+        # log in the old way and create an identity
         @u = Customer.authenticate(params[:email], params[:password])
-        @u.bcrypt_password_storage(params[:password]) if @u && @u.errors.empty? && !@u.bcrypted?
+        @u.bcrypt_password_storage(params[:password]) if @u && @u.errors.empty? && !@u.bcrypted? 
       end
 
       if @u.nil? || !@u.errors.empty?

@@ -148,6 +148,7 @@ class CustomersController < ApplicationController
   def new
     @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
+    @identity = env['omniauth.identity']
   end
   
   def user_create

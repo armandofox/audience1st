@@ -1,10 +1,14 @@
-- @customer = customer if defined?(customer)
-- disabled =  defined?(passive) && passive 
-- hide ||= []
-- hide = hide.to_a
+- if @identity && @identity.errors.any?
+  .error_messages
+    %h2
+      Error(s)
+    %ul
+      - @identity.errors.full_messages.each do |msg|
+        %li= msg
+
 
 #contact_info
-  /[form:customer]
+
   %fieldset#billing_info
     %legend= defined?(legend) ? legend :  'Credit Card Billing Address'
     %p
@@ -12,51 +16,48 @@
       %span.strong like this
       are required.
       = link_to_if_option :privacy_policy_url, "Our privacy policy", :target => '_blank'
-    = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
-      %label.strong{:for => 'customer_first_name'} First name
-      = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled
+      %label.strong{:for => 'first_name'} First name
+      = text_field_tag :first_name, :size => 16, :maxlength => 40, :readonly => disabled
       %br/
-      %label.strong{:for => 'customer_last_name'} Last name
-      = f.text_field :last_name, :size => 16, :maxlength => 40, :readonly => disabled 
+      %label.strong{:for => 'last_name'} Last name
+      = text_field_tag :last_name, :size => 16, :maxlength => 40, :readonly => disabled 
       %br/
       %br/
-      %label.strong{:for => 'customer_street'} Street
-      = f.text_field :street, :readonly => disabled  
+      %label.strong{:for => 'street'} Street
+      = text_field_tag :street, :readonly => disabled  
       %br/
-      %label.strong{:for => 'customer_city'} City
-      = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled
-      %label.no_float.strong{:for => 'customer_state'} State
-      = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled}
-      %label.no_float.strong{:for => 'customer_zip'} Zip
-      = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled}
+      %label.strong{:for => 'city'} City
+      = text_field_tag :city, :size => 16, :maxlength => 32, :readonly => disabled
+      %label.no_float.strong{:for => 'state'} State
+      = text_field_tag :state, {:size => 2, :maxlength => 2, :readonly => disabled}
+      %label.no_float.strong{:for => 'zip'} Zip
+      = text_field_tag :zip, {:size => 10, :maxlength => 10, :readonly => disabled}
       %br
       %br
-      %label.strong{:for=>:customer_day_phone} Preferred phone
-      = f.text_field :day_phone, {:size => 16, :maxlength => 16, :readonly => disabled}
+      %label.strong{:for=>:day_phone} Preferred phone
+      = text_field_tag :day_phone, {:size => 16, :maxlength => 16, :readonly => disabled}
       %br/
-      %label{:for=>:customer_eve_phone} Alternate phone
-      = f.text_field :eve_phone, {:size => 16, :maxlength => 16, :readonly => disabled}
+      %label{:for=>:eve_phone} Alternate phone
+      = text_field_tag :eve_phone, {:size => 16, :maxlength => 16, :readonly => disabled}
       %br/
       - unless hide.include?(:opt_out)
         %label US Mail preferences
-        = f.check_box :blacklist
-        %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
+        = check_box :blacklist
+        %label.no_float{:for=>:blacklist} Please don't send me materials via US Mail
         %br
 
-      %label.strong{:for=>:customer_email} Email
-      = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled }
+      %label.strong{:for=>:email} Email
+      = text_field_tag :email, {:size => 30, :maxlength => 40, :readonly => disabled }
       %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
       %br
 
       - if Option.display_email_opt_out?
         %label Email preferences
-        = f.check_box :e_blacklist
-        %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
+        = check_box :e_blacklist
+        %label.no_float{:for => :e_blacklist} Please don't send me email about upcoming events.
         %br
 
     - unless disabled || hide.include?(:birthday)
-      %label{:for => :customer_birthday} Birthday (optional)
-      = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]
-
-  /[eoform:customer]
+      %label{:for => :birthday} Birthday (optional)
+      = date_select 'birthday', :include_blank => true, :order => [:month, :day]
 
