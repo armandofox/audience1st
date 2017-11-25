@@ -6,7 +6,7 @@ describe Customer, "merging during transition period" do
   def merge(c0, c1)
     c0.merge_automatically!(c1)
   end
-  describe "merge between two old users" do
+  describe "trying to merge between two old users" do
     before(:each) do
       @user_keep = create(:old_customer)
       @user_merged = create(:old_customer)
@@ -26,7 +26,7 @@ describe Customer, "merging during transition period" do
     end
   end
 
-  describe "merge new user to old users" do
+  describe "trying to merge new user to old users" do
     before(:each) do
       @user_keep = create(:old_customer)
       @user_merged = create(:customer)
@@ -35,10 +35,11 @@ describe Customer, "merging during transition period" do
       allow(@user_merged).to receive(:fresher_than?).and_return(true)
       allow(Customer).to receive(:update_foreign_keys_from_to).and_return(['Wat, Wat'])
     end
-    it "should create a anthentification through the new way" do
-      pass = Authorization.find_by_provider_and_customer_id('Identity', @user_merged.id).password_digest
+    it "should create an authorization the new way" do
+      pass = @user_merged.identity.password_digest
       merge(@user_keep, @user_merged)
-      expect(Authorization.find_by_provider_and_customer_id('Identity', @user_keep.id).password_digest).to eq(pass)
+      expect(@user_keep.identity).not_to be_nil
+      expect(@user_keep.identity.password_digest).to eq(pass)
     end
 
     # For the following test, it's a matter of migration strategy, so just leave it alone for now.
@@ -60,9 +61,10 @@ describe Customer, "merging during transition period" do
       allow(Customer).to receive(:update_foreign_keys_from_to).and_return(['Wat, Wat'])
     end
     it "should keep the current password" do
-      pass = Authorization.find_by_provider_and_customer_id('Identity', @user_keep.id).password_digest
+      pass = @user_keep.identity.password_digest
       merge(@user_keep, @user_merged)
-      expect(Authorization.find_by_provider_and_customer_id('Identity', @user_keep.id).password_digest).to eq(pass)
+      expect(@user_keep.identity).not_to be_nil
+      expect(@user_keep.identity.password_digest).to eq(pass)
     end
   end
 end

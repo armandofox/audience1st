@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
           @u = current_user
         else
           if params[:provider] == "identity"
-             @u = Authorization.find_or_create_user(auth, params[:customer])           # identity is a special case
+             @u = Authorization.find_or_create_user_identity(auth, params[:customer])           # identity is a special case
           else
             @u = Authorization.find_or_create_user(auth)                               # otherwise login using an existing auth or create a new account using bcrypt
           end

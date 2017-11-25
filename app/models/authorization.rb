@@ -40,7 +40,7 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
   end
 
   # create customer and update authorization for omniauth-identity
-  def self.find_or_create_user(auth_hash, customer_params)
+  def self.find_or_create_user_identity(auth_hash, customer_params)
     if auth = find_by(uid: auth_hash[:uid], provider: auth_hash[:provider])
       cust = auth.customer
     elsif auth = find_by(uid: auth_hash[:uid], provider: nil)
@@ -63,34 +63,35 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
   end
 
   # create an authorization for omniauth identity given an existing customer (used to migrate an old-style user into the new system)
-  def self.create_identity_for_customer(cust)
+  def self.create_identity_for_customer(cust) 
     if cust.email
       password = BCrypt::Password.create(cust.password).to_s unless cust.password.blank?       
-      if auth = find_by_provider_and_uid("identity", cust.email)
-        if(password && BCrypt::Password.new(auth.password_digest) != cust.password)
-          auth.password_digest = password
-          auth.save
-        end
-      else
+      unless auth = find_by_provider_and_uid("identity", cust.email)
         password = String.random_string(6) if cust.password.blank?
         auth = create! :customer => cust, :provider => "identity", :uid => cust.email, :password_digest => password
       end
     else
+      auth = Authorization.new
+      auth.errors.add(:email, "is required to create an identity")
     end
     auth
   end
+
+  # updates the password of a given customer
   def self.update_password(cust, password)
     if auth = find_by(customer_id: cust.id, provider: "identity")
       auth.password = password
-      update(auth.id, password_digest: auth.password_digest)      
+      auth.update(password_digest: auth.password_digest)      
     end
+    password
   end
+
   # updates the email of a given customer
   def self.update_identity_email(cust)
     if auth = find_by(customer_id: cust.id, provider: "identity")
-      update(auth.id, uid: cust.email)      
+      auth.update(uid: cust.email)      
     end
-    auth
+    cust.email
   end
 
 end

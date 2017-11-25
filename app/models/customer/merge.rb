@@ -114,7 +114,7 @@ class Customer < ActiveRecord::Base
     begin
       transaction do
         old_user = true
-        old_user = false if Authorization.find_by_provider_and_customer_id('Identity', c0.id)
+        old_user = false if c0.bcrypted?
         msg = Customer.update_foreign_keys_from_to(old, new)
         salt = nil
         # Crypted_password and salt have to be updated separately,
@@ -122,7 +122,7 @@ class Customer < ActiveRecord::Base
         # action to be encrypted with salt.
         if c1.fresher_than?(c0)
           # c1 has identity
-          if auth = Authorization.find_by_provider_and_customer_id('Identity', c1.id)
+          if auth = c1.identity
             email = c0.email
             pass = auth.password_digest
             # c1 doesn't have identity
@@ -155,7 +155,7 @@ class Customer < ActiveRecord::Base
             if salt
               Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
             else
-              Authorization.create(provider: 'Identity', uid: email, customer_id: c0.id, password_digest: pass)
+              Authorization.create(provider: 'identity', uid: email, customer: c0, password_digest: pass)
               # Customer's password and salt is protected, cannot change, just Keep it
               # Customer.find(c0.id).update(crypted_password: "", salt: "")
             end

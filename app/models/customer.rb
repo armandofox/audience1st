@@ -92,7 +92,7 @@ class Customer < ActiveRecord::Base
 
   before_validation :force_valid_fields, :on => :create
   before_save :trim_whitespace_from_user_entered_strings
-  after_save :update_email_subscription
+  after_save :update_email_subscription, :update_identity
 
   before_destroy :cannot_destroy_special_customers
 
@@ -115,8 +115,20 @@ class Customer < ActiveRecord::Base
     end
     true
   end
-  
 
+  def update_identity
+    Authorization.update_identity_email(self) if email_changed? && bcrypted?
+  end
+
+  def password=(password)
+    if respond_to?("password=")
+      @password = password
+      Authorization.update_password(self, password) if bcrypted?      
+      password
+    else
+      raise NotImplementedError 
+    end
+  end
   #----------------------------------------------------------------------
   #  private variables
   #----------------------------------------------------------------------
@@ -502,7 +514,7 @@ EOSQL1
   end
 
   def identity
-    Authorization.find_by_provider_and_uid("identity", email)
+    Authorization.find_by(provider: "identity", customer: self)
   end
 
   # If customer can be uniquely identified in DB, return match from DB
