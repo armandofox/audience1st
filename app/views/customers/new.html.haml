@@ -7,7 +7,7 @@
     to use your existing billing information.
 
   - if @is_admin
-    = form_tag customers_path do
+    = form_tag '/auth/identity/register' do
       = render :partial => 'form', :object => @customer
       = render :partial => 'password' 
       = render :partial => 'form_admin'
@@ -15,7 +15,7 @@
       = link_to 'Cancel', customers_path, :class => 'genButton'
   - else
     = form_tag '/auth/identity/register' do
-      = render :partial => 'form'
+      = render :partial => 'form', :object => @customer
       = render :partial => 'password'
       - if @gCheckoutInProgress
         = submit_tag 'CONTINUE >>'

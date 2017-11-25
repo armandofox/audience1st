@@ -23,10 +23,18 @@ class SessionsController < ApplicationController
           current_user.add_provider(auth) #if customer is logged in, add new auth to their account
           @u = current_user
         else
+          # identity is a special case
           if params[:provider] == "identity"
-             @u = Authorization.find_or_create_user_identity(auth, params[:customer])           # identity is a special case
+            # check if admin created (necessary because of some edge cases and for txn audit messages)
+            admin_created = (params[:commit] == "Create New Customer Account")
+            admin = admin_created ? current_user.id : nil
+
+            # find or create
+            @u = Authorization.find_or_create_user_identity(auth, params[:customer], admin_created, admin)
+            
           else
-            @u = Authorization.find_or_create_user(auth)                               # otherwise login using an existing auth or create a new account using bcrypt
+            # otherwise login using an existing auth or create a new account using a regular omniauth strategy
+            @u = Authorization.find_or_create_user(auth)                               
           end
         end
       else
@@ -36,10 +44,9 @@ class SessionsController < ApplicationController
       end
 
       if @u.nil? || !@u.errors.empty?
-        note_failed_signin(@u)
         @email = params[:email]
         @remember_me = params[:remember_me]
-        render :action => :new
+        note_failed_signin(@u)
       end
       @u
     end
@@ -85,9 +92,15 @@ class SessionsController < ApplicationController
 
   # Track failed login attempts
   def note_failed_signin(user)
-    flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:alert] << "because #{user.errors.as_html}" if user
-    Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
+    if user.errors.include? :Email
+      flash[:errors] = user.errors
+      redirect_to new_customer_path
+    else
+      flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
+      flash[:alert] << "because #{user.errors.as_html}" if user
+      Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
+      render :action => :new
+    end
   end
 
 end

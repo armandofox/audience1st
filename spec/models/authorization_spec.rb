@@ -54,7 +54,9 @@ describe Authorization do
         expect(auth.password_digest).not_to be_nil
         expect(auth.password_digest.length).to eq(6) # random 6 digit password is created initially, and calling create_identity_for_customer again does not update password to nil
       end
+
     end
+
   end
 
   describe "the identity update methods" do
@@ -76,7 +78,37 @@ describe Authorization do
       expect(identity = @cust.identity).not_to be_nil
       expect(identity.uid).to eq("email2@email.com")
     end
+
   end
 
+  describe "creating authorizations with omniauth-identity" do
+    
+    before(:each) do
+      @auth_hash = {}
+      @auth_hash[:uid] = "email@email.com"
+      @auth_hash[:provider] = "identity"
+      @customer_params = instance_double("params", :to_h => {})
+      allow(@customer_params).to receive(:permit).and_return(@customer_params)
+    end
+    
+    it "should find existing identities" do
+      customer = create(:customer, email: "email@email.com")
+      auth = Authorization.find_or_create_user_identity(@auth_hash, @customer_params).identity
+
+      expect(auth).not_to be_nil
+      expect(auth).to eq(customer.identity)
+    end
+
+    it "should update automatically created identities" do
+      create(:authorization, :provider => nil, :customer => nil, :uid => "email@email.com")
+      auth = Authorization.find_or_create_user_identity(@auth_hash, @customer_params).identity
+
+      expect(auth).not_to be_nil
+      expect(auth.provider).to eq("identity")
+      expect(auth.customer).not_to be_nil
+      expect(auth.customer.email).to include("email@email.com")
+    end
+
+  end
 
 end

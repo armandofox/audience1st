@@ -153,7 +153,13 @@ class CustomersController < ApplicationController
   def new
     @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
-    @identity = env['omniauth.identity']
+    if errors_hash = flash[:errors]
+      @identity = Authorization.new
+      @identity.errors.add(errors_hash.keys[0], errors_hash.values[0])
+    else
+      @identity = env['omniauth.identity']
+    end
+    # @identity suddely becomes nil when it comes out of the if statement
   end
   
   # self-create user through old system

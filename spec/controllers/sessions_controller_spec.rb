@@ -12,18 +12,29 @@ describe SessionsController do
     allow(@user).to receive(:bcrypted?).and_return(true)
   end
   it "links existing users to omniauth accounts" do
-    request.env['omniauth.auth'] = true
+    request.env['omniauth.auth'] = "env"
     (@controller).stub(:logged_in?).and_return(true)
     (@controller).stub(:current_user).and_return(@user)
-    expect(@user).to receive(:add_provider).with(true).and_return(nil)
+    expect(@user).to receive(:add_provider).with("env").and_return(nil)
     post(:create, @login_params)
   end
-  it "creates or finds omniauth accounts" do
-    request.env['omniauth.auth'] = true
+  it "creates or finds non-identity omniauth accounts" do
+    request.env['omniauth.auth'] = "env"
     (@controller).stub(:logged_in?).and_return(false)
-    expect(Authorization).to receive(:find_or_create_user).with(true).and_return(nil)
+    expect(Authorization).to receive(:find_or_create_user).with("env")
     post(:create, @login_params)
-  end 
+  end
+
+  it "finds or creates identity accounts" do
+    request.env['omniauth.auth'] = "env"
+    (@controller).stub(:logged_in?).and_return(false)
+    @login_params[:provider] = "identity"
+    @login_params[:customer] = "customer"
+
+    expect(Authorization).to receive(:find_or_create_user_identity).with("env", "customer")
+    post(:create, @login_params)
+  end
+
   it "bcrypts passwords if necessary" do
     # (@controller).stub(:u).and_return(@user)
     allow(@user).to receive(:bcrypted?).and_return(false)
