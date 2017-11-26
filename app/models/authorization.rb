@@ -14,11 +14,7 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
     end
   end
   # validates :password, allow_blank: true, length: { maximum: 20 }
-  EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been taken'
 
-  def unique_email_error
-    self.errors[:uid].include? EMAIL_UNIQUENESS_ERROR_MESSAGE
-  end
 
   # find or create authorization and customer for non-identity omniauth strategies
   def self.find_or_create_user auth

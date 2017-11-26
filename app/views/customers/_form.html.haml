@@ -11,6 +11,12 @@
       - @identity.errors.full_messages.each do |msg|
         %li= msg
 
+:javascript
+  function set_customer_uid(email)
+  {
+    $('#uid').val(email);
+  }
+
 #contact_info
   /[form:customer]
   %fieldset#billing_info
@@ -50,7 +56,9 @@
         = f.check_box :blacklist
         %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
         %br
-      = render :partial => 'email'
+      %label.strong{:for=>:customer_email} Email
+      = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled, :onchange => "set_customer_uid($('#customer_email').val());"}
+      = hidden_field_tag :uid, nil, {:id => "uid"}
       %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
       %br
 

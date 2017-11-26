@@ -151,18 +151,12 @@ class CustomersController < ApplicationController
     @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
     @identity = env['omniauth.identity']
-    # for special case of duplicate (existing) email, offer login   
-    if @identity && @identity.unique_email_error
-      flash[:alert] = "" unless flash[:alert]
-      flash.now[:alert] << sprintf("<a href=\"%s\">Sign in as #{@identity.uid}</a>", login_path(:email => @identity.uid)).html_safe
-    end
   end
   
   # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
     if auth = request.env['omniauth.auth']
-      @customer.email = auth[:uid]
       @customer.validate_password = true
       @customer.password = params[:password]
       @customer.password_confirmation = params[:password_confirmation]
@@ -183,6 +177,10 @@ class CustomersController < ApplicationController
       @identity = env['omniauth.identity']
       flash[:alert] = ["There was a problem creating your account: "] +
         @customer.errors.full_messages
+      # for special case of duplicate (existing) email, offer login
+      if @customer.unique_email_error
+        flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email)).html_safe
+      end
       render :action => 'new'
     end
   end
@@ -262,20 +260,15 @@ class CustomersController < ApplicationController
   def create
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     @customer = Customer.new(params[:customer])
-    if auth = request.env['omniauth.auth']
-      @customer.email = auth[:uid] unless auth[:uid].blank?
-      @customer.password = params[:password] unless params[:password].blank?
-      @customer.password = params[:password_confirmation] unless params[:password_confirmation].blank?
-    end
+    @customer.password = params[:password] unless params[:password].blank?
+    @customer.password = params[:password_confirmation] unless params[:password_confirmation].blank?
     @customer.created_by_admin = true
-    if auth
+    if auth = request.env['omniauth.auth']
       Authorization.find_or_create_user_identity(auth, @customer.id)
     else
       @customer.bcrypt_password_storage(params[:customer][:password]) unless (params[:uid].blank? || params[:password].blank?)
     end
     unless @customer.save
-      puts "errors: "
-      puts @customer.errors.as_html
       flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
       return render(:action => 'new')
     end
