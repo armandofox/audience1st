@@ -8,6 +8,8 @@
   %label{:for=>:password} Password
   = password_field_tag 'password', nil, :size => 20
   %br/
+
+  = hidden_field_tag :callback_type, "login"
   
   = link_to "Connect with Omniauth", "/auth/developer"
   %br/

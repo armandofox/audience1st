@@ -103,27 +103,24 @@ class CustomersController < ApplicationController
       redirect_to edit_customer_path(@customer)
     end
   end
-
   def change_password_for
     return if request.get?
     @customer.validate_password = true
-    identity = @customer.identity
-    if @customer.bcrypted?
-      success = Authorization.update_password(@customer, params[:password])
-    else
-      @customer.bcrypt_password_storage(password)
-    end
-    if success && identity.errors.empty?
+    if @customer.update(password: params[:password], password_confirmation: params[:password_confirmation])
+      if @customer.bcrypted?
+        Authorization.update_password(@customer, params[:password])
+      else
+        @customer.bcrypt_password_storage(params[:password])
+      end
       flash[:notice] = "Changes confirmed."
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
       redirect_to customer_path(@customer)
     else
-      flash[:alert] = ['Changing password failed: ', identity.errors.as_html]
+      flash[:alert] = ['Changing password failed: ', @customer.errors.as_html]
       render :action => 'change_password_for'
     end
-    
   end
 
   def change_secret_question
@@ -154,15 +151,22 @@ class CustomersController < ApplicationController
     @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
     @identity = env['omniauth.identity']
-    @error = flash[:error]
-    if @error == "invalid email"
-      flash[:error] = "Email is invalid"
+    # for special case of duplicate (existing) email, offer login   
+    if @identity && @identity.unique_email_error
+      flash[:alert] = "" unless flash[:alert]
+      flash.now[:alert] << sprintf("<a href=\"%s\">Sign in as #{@identity.uid}</a>", login_path(:email => @identity.uid)).html_safe
     end
   end
   
   # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
+    if auth = request.env['omniauth.auth']
+      @customer.email = auth[:uid]
+      @customer.validate_password = true
+      @customer.password = params[:password]
+      @customer.password_confirmation = params[:password_confirmation]
+    end
     if @gCheckoutInProgress && @customer.day_phone.blank?
       flash[:alert] = "Please provide a contact phone number in case we need to contact you about your order."
       render :action => 'new'
@@ -170,18 +174,15 @@ class CustomersController < ApplicationController
     end
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
-      @customer.bcrypt_password_storage(params[:customer][:password])
+      @customer.bcrypt_password_storage(params[:password]) unless auth
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
     else
+      @identity = env['omniauth.identity']
       flash[:alert] = ["There was a problem creating your account: "] +
         @customer.errors.full_messages
-      # for special case of duplicate (existing) email, offer login
-      if @customer.unique_email_error
-        flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email)).html_safe
-      end
       render :action => 'new'
     end
   end
@@ -261,12 +262,23 @@ class CustomersController < ApplicationController
   def create
     @is_admin = true            # needed for choosing correct method in 'new' tmpl
     @customer = Customer.new(params[:customer])
+    if auth = request.env['omniauth.auth']
+      @customer.email = auth[:uid] unless auth[:uid].blank?
+      @customer.password = params[:password] unless params[:password].blank?
+      @customer.password = params[:password_confirmation] unless params[:password_confirmation].blank?
+    end
     @customer.created_by_admin = true
+    if auth
+      Authorization.find_or_create_user_identity(auth, @customer.id)
+    else
+      @customer.bcrypt_password_storage(params[:customer][:password]) unless (params[:uid].blank? || params[:password].blank?)
+    end
     unless @customer.save
+      puts "errors: "
+      puts @customer.errors.as_html
       flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
       return render(:action => 'new')
     end
-    @customer.bcrypt_password_storage(params[:customer][:password]) unless (params[:customer][:email].blank? || params[:customer][:password].blank?)
     (flash[:notice] ||= '') <<  'Account was successfully created.'
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,

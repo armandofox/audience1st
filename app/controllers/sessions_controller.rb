@@ -26,13 +26,9 @@ class SessionsController < ApplicationController
           # identity is a special case
           if params[:provider] == "identity"
             # check if admin created (necessary because of some edge cases and for txn audit messages)
-            admin_created = (params[:commit] == "Create New Customer Account")
-            admin = admin_created ? current_user.id : nil
-
+           
             # find or create
-            @u = Authorization.find_or_create_user_identity(auth, params[:customer], admin_created, admin)
-            puts 'right out'
-            puts @u.inspect            
+            @u = Authorization.find_or_create_user_identity(auth, params[:id])
           else
             # otherwise login using an existing auth or create a new account using a regular omniauth strategy
             @u = Authorization.find_or_create_user(auth)                               
@@ -43,17 +39,12 @@ class SessionsController < ApplicationController
         @u = Customer.authenticate(params[:email], params[:password])
         @u.bcrypt_password_storage(params[:password]) if @u && @u.errors.empty? && !@u.bcrypted? 
       end
-      puts "1 user"
-      puts @u.inspect
-      puts "2 errors"
-      puts @u.errors.inspect
-      puts "3 bool"
-      puts !@u.errors.empty?
 
       if @u.nil? || !@u.errors.empty?
+        note_failed_signin(@u)
         @email = params[:email]
         @remember_me = params[:remember_me]
-        note_failed_signin(@u)
+        render :action => :new
       end
       @u
     end
@@ -99,22 +90,9 @@ class SessionsController < ApplicationController
 
   # Track failed login attempts
   def note_failed_signin(user)
-    puts "user:"
-    puts user.inspect
-    puts "errors:"
-    puts user.errors.inspect
-    puts "include"
-    puts user.errors.any?
-
-    if user.errors.any?
-      flash[:error] = 'invalid email'
-      redirect_to new_customer_path
-    else
-      flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
-      flash[:alert] << "because #{user.errors.as_html}" if user
-      Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
-      render :action => :new
-    end
+    flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
+    flash[:alert] << "because #{user.errors.as_html}" if user
+    Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
   end
 
 end

@@ -52,7 +52,7 @@ Feature: Creating an account
     | Password         | tom             |
     | Confirm Password | tom             |
     And I press "Create My Account"
-    Then account creation should fail with "Email has already been registered"
+    Then account creation should fail with "Email has already been taken"
     When I follow "Sign in as tom@foolery.com"
     Then I should be on the login page
     And the "email" field should be "tom@foolery.com"
@@ -62,7 +62,7 @@ Feature: Creating an account
     When I fill in the following:
     | Email | john@doe.com |
     And I press "Create My Account"
-    Then account creation should fail with "Password is too short"
+    Then I should see "Password is too short"
     
   Scenario: New customer cannot create account with mismatched password confirmation
 

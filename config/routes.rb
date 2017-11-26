@@ -156,8 +156,12 @@ Rails.application.routes.draw do
     match 'auth/identity/register', :via => [:get, :post], :as => 'omniauth_registration'
     get '/login' => 'sessions#new', :as => 'login'
     match '/logout' => 'sessions#destroy', :as => 'logout', :via => [:get, :post]
-
-    match 'auth/:provider/callback', :to => 'sessions#create', :via => [:get, :post]
+    match '/auth/:provider/callback', to: 'customers#user_create', via: [:get, :post],
+      constraints: lambda { |request| request.request_parameters[:callback_type] == "customer" }
+    match '/auth/:provider/callback', :to => 'customers#create', :via => [:get, :post],
+      constraints: lambda { |request| request.request_parameters[:callback_type] == "admin" }
+    match '/auth/:provider/callback', :to => 'sessions#create', :via => [:get, :post],
+      constraints: lambda { |request| request.request_parameters[:callback_type] == "login" }
     match 'auth/failure', :to => 'sessions#failure', :via => [:get, :post]
 
     # Routes for viewing and refunding orders
