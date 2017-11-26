@@ -1,0 +1,12 @@
+%span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
+%br
+
+- if Option.display_email_opt_out?
+  %label Email preferences
+  = f.check_box :e_blacklist
+  %label.no_float{:for => :customer_e_blacklist} Please don't send me email about upcoming events.
+  %br
+
+- unless disabled || hide.include?(:birthday)
+  %label{:for => :customer_birthday} Birthday (optional)
+  = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]

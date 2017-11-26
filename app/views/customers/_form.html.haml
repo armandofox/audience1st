@@ -3,6 +3,13 @@
 - hide ||= []
 - hide = hide.to_a
 
+- unless @error.blank?
+  .error_messages 
+    %h2
+      Error(s)
+    %p
+      = @error
+
 - if @identity && @identity.errors.any?
   .error_messages
     %h2

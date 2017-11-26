@@ -31,7 +31,8 @@ class SessionsController < ApplicationController
 
             # find or create
             @u = Authorization.find_or_create_user_identity(auth, params[:customer], admin_created, admin)
-            
+            puts 'right out'
+            puts @u.inspect            
           else
             # otherwise login using an existing auth or create a new account using a regular omniauth strategy
             @u = Authorization.find_or_create_user(auth)                               
@@ -42,6 +43,12 @@ class SessionsController < ApplicationController
         @u = Customer.authenticate(params[:email], params[:password])
         @u.bcrypt_password_storage(params[:password]) if @u && @u.errors.empty? && !@u.bcrypted? 
       end
+      puts "1 user"
+      puts @u.inspect
+      puts "2 errors"
+      puts @u.errors.inspect
+      puts "3 bool"
+      puts !@u.errors.empty?
 
       if @u.nil? || !@u.errors.empty?
         @email = params[:email]
@@ -92,8 +99,15 @@ class SessionsController < ApplicationController
 
   # Track failed login attempts
   def note_failed_signin(user)
-    if user.errors.include? :Email
-      flash[:errors] = user.errors
+    puts "user:"
+    puts user.inspect
+    puts "errors:"
+    puts user.errors.inspect
+    puts "include"
+    puts user.errors.any?
+
+    if user.errors.any?
+      flash[:error] = 'invalid email'
       redirect_to new_customer_path
     else
       flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
