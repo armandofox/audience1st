@@ -156,11 +156,10 @@ class CustomersController < ApplicationController
   # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
-    if auth = request.env['omniauth.auth']
-      @customer.validate_password = true
-      @customer.password = params[:password]
-      @customer.password_confirmation = params[:password_confirmation]
-    end
+    @customer.validate_password = true
+    @customer.password = params[:password]
+    @customer.password_confirmation = params[:password_confirmation]
+    
     if @gCheckoutInProgress && @customer.day_phone.blank?
       flash[:alert] = "Please provide a contact phone number in case we need to contact you about your order."
       render :action => 'new'
@@ -168,7 +167,7 @@ class CustomersController < ApplicationController
     end
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
-      @customer.bcrypt_password_storage(params[:password]) unless auth
+      @customer.bcrypt_password_storage(params[:password]) unless @customer.bcrypted?
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')

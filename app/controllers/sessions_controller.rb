@@ -24,10 +24,8 @@ class SessionsController < ApplicationController
           @u = current_user
         else
           # identity is a special case
-          if params[:provider] == "identity"
-            # check if admin created (necessary because of some edge cases and for txn audit messages)
-           
-            # find or create
+          if params[:provider] == "identity"           
+            # login/create using omniauth
             @u = Authorization.find_or_create_user_identity(auth, params[:id])
           else
             # otherwise login using an existing auth or create a new account using a regular omniauth strategy

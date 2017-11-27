@@ -74,8 +74,9 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
     if cust.email
       unless auth = find_by_provider_and_uid("identity", cust.email)
         password = cust.password.blank? ? String.random_string(6) : cust.password 
-        auth = new :customer => cust, :provider => "identity", :uid => cust.email
+        auth = new :customer => cust, :provider => "identity", :uid => cust.email, :password_digest => BCrypt::Password.create(password).to_s
         auth.password = password
+        auth.password_confirmation = password
         auth.save
       end
     else
