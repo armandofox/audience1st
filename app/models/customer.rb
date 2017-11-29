@@ -502,22 +502,28 @@ EOSQL1
   # all must match, though each term can match either first or last name
   def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
-    result = Customer.all
+    conds_ary = []
+    cols = self.content_columns
+    conds = cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR ")
     terms.each do |term|
-      term_s = term.to_s
-      conds_ary = Customer.match_any_content_column(term_s)
-      result = result & Customer.where(conds_ary)
+      conds_ary = Array.new(cols.size) { "%#{term}%" }.concat(conds_ary)
     end
-    result
+    conds = Array.new(terms.size, conds).map{ |cond| "(#{cond})"}.join(" AND ")
+    conds_ary.unshift(conds)
+    customers = Customer.where(conds_ary)
   end
 
   # return a hash include information containing searching term in auto
   # complete
   def self.find_by_terms_col(terms)
     return [] if terms.empty?
+    customers =
+        Customer.find_by_multiple_terms(terms.split( /\s+/)).
+            reject {|customer| Customer.find_by_name(terms.split( /\s+/ )).include?(customer)}
+    customers = customers[0,20]
     col_hash = Hash.new
-    Customer.find_by_multiple_terms(terms.split(/\s+/)).each do |customer|
-      col_hash[customer] = self.match_attr_info(customer,terms)
+    customers.each do |customer|
+      col_hash[customer] = self.match_attr_info(customer, terms)
     end
     col_hash
   end

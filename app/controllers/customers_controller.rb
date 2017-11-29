@@ -275,16 +275,13 @@ class CustomersController < ApplicationController
   def auto_complete_for_customer
     s = params[:term].to_s
     render :json => {} and return if s.length < 2
-    @customers = Customer.find_by_name(s.split( /\s+/ ))
-    @customers_s =
-      Customer.find_by_multiple_terms(s.split( /\s+/)).
-          reject {|customer| @customers.include?(customer)}
-    result = @customers.map do |c|
+    customers = Customer.find_by_name(s.split( /\s+/ ))
+    result = customers.map do |c|
       {'label' => c.full_name, 'value' => customer_path(c)}
     end
     customer_hash = Customer.find_by_terms_col(s)
-    @customers_s.each do |c|
-      result.push({'label' => c.full_name + customer_hash[c], 'value' => customer_path(c)})
+    customer_hash.each do |customer, info|
+      result.push({'label' => customer.full_name + info, 'value' => customer_path(customer)})
     end
     render :json => result
   end
