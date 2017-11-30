@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170628202024) do
+ActiveRecord::Schema.define(version: 20171127173123) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",        limit: 40,  default: "", null: false
@@ -80,6 +80,14 @@ ActiveRecord::Schema.define(version: 20170628202024) do
   add_index "customers", ["street"], name: "index_customers_on_street"
   add_index "customers", ["zip"], name: "index_customers_on_zip"
 
+  create_table "customers_groups", id: false, force: :cascade do |t|
+    t.integer "customer_id"
+    t.integer "group_id"
+  end
+
+  add_index "customers_groups", ["customer_id"], name: "index_customers_groups_on_customer_id"
+  add_index "customers_groups", ["group_id"], name: "index_customers_groups_on_group_id"
+
   create_table "customers_labels", id: false, force: :cascade do |t|
     t.integer "customer_id", limit: 4
     t.integer "label_id",    limit: 4
@@ -87,6 +95,12 @@ ActiveRecord::Schema.define(version: 20170628202024) do
 
   add_index "customers_labels", ["customer_id"], name: "index_customers_labels_on_customer_id"
   add_index "customers_labels", ["label_id"], name: "index_customers_labels_on_label_id"
+
+  create_table "groups", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "imports", force: :cascade do |t|
     t.string   "name",              limit: 255
