@@ -24,7 +24,7 @@ describe CustomersController do
     before(:each) do
       @params = attributes_for(:customer)
       login_as(nil)
-      post :user_create, {:customer => @params}
+      post :user_create, {:customer => @params, :password => "pass", :password_confirmation => "pass", :uid => @params[:email]}
     end
     it "should create the customer" do
       Customer.find_by_email(@params[:email]).should_not be_nil

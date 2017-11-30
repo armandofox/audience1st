@@ -45,10 +45,10 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
   end
 
   # create customer and update authorization for omniauth-identity
-  def self.find_or_create_user_identity(auth_hash, cust)
+  def self.find_or_create_user_identity(auth_hash, cust_id)
     if auth = find_by(uid: auth_hash[:uid], provider: auth_hash[:provider])
       # find
-      cust = auth.customer
+      cust_id = auth.customer_id
     elsif auth = find_by(uid: auth_hash[:uid], provider: nil)
       # create
 
@@ -60,13 +60,13 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
     
       # update authorization with new info
       auth.provider = auth_hash[:provider]
-      auth.customer_id = cust
+      auth.customer_id = cust_id
       auth.save
 
     else
       puts "couldn't find identity"
     end
-    cust
+    Customer.find(cust_id)
   end
 
   # create an authorization for omniauth identity given an existing customer (used to migrate an old-style user into the new system)
