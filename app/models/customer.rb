@@ -510,7 +510,7 @@ EOSQL1
     end
     conds = Array.new(terms.size, conds).map{ |cond| "(#{cond})"}.join(" AND ")
     conds_ary.unshift(conds)
-    customers = Customer.where(conds_ary)
+    customers = Customer.where(conds_ary).order("last_name").take(10)
   end
 
   # return a hash include information containing searching term in auto
@@ -520,7 +520,7 @@ EOSQL1
     terms = terms.split( /\s+/)
     customers =
         Customer.find_by_multiple_terms(terms).
-            reject {|customer| Customer.find_by_name(terms).include?(customer)}.take(10)
+            reject {|customer| Customer.find_by_name(terms).include?(customer)}
     col_hash = Hash.new
     customers.each do |customer|
       col_hash[customer] = self.match_attr_info(customer, terms)
@@ -553,15 +553,6 @@ EOSQL1
     conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
     Customer.where(*conds_ary).order('last_name').take(10)
   end
-
-
-  # Match on any content column of a class
-  def self.match_any_content_column(string)
-    cols = self.content_columns
-    a = Array.new(cols.size) { "%#{string}%" }
-    a.unshift(cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR "))
-  end
-
 
   # Override content_columns method to omit password hash and salt
   def self.content_columns
