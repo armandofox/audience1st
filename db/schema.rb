@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171127173123) do
+ActiveRecord::Schema.define(version: 20171201233732) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",        limit: 40,  default: "", null: false
@@ -111,6 +111,16 @@ ActiveRecord::Schema.define(version: 20171127173123) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "address_line_1"
+    t.string   "address_line_2"
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+    t.string   "work_phone"
+    t.string   "cell_phone"
+    t.string   "work_fax"
+    t.string   "group_url"
+    t.string   "best_way_to_contact"
   end
 
   create_table "identities", force: :cascade do |t|
