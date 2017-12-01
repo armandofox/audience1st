@@ -517,10 +517,10 @@ EOSQL1
   # complete
   def self.find_by_terms_col(terms)
     return [] if terms.empty?
+    terms = terms.split( /\s+/)
     customers =
-        Customer.find_by_multiple_terms(terms.split( /\s+/)).
-            reject {|customer| Customer.find_by_name(terms.split( /\s+/ )).include?(customer)}
-    customers = customers[0,20]
+        Customer.find_by_multiple_terms(terms).
+            reject {|customer| Customer.find_by_name(terms).include?(customer)}.take(10)
     col_hash = Hash.new
     customers.each do |customer|
       col_hash[customer] = self.match_attr_info(customer, terms)
@@ -528,12 +528,12 @@ EOSQL1
     col_hash
   end
 
-  # method find info containing seaching terms in an object
+  # find info containing seaching terms in an object
   def self.match_attr_info(customer,terms)
     matching_info = ''
     Customer.column_names.reject{ |col|
       (%w[role crypted_password salt _at$ _on$]).include? col}.each do |col|
-      terms.split(/\s+/).each do |term|
+      terms.each do |term|
         if (customer.attributes[col].is_a? String) &&
             customer.attributes[col].downcase.include?(term.downcase) &&
             (not matching_info.downcase.include?(customer.attributes[col].downcase))
@@ -542,6 +542,7 @@ EOSQL1
         end
       end
     end
+
     matching_info
   end
 
@@ -550,7 +551,7 @@ EOSQL1
     conds =
         Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
     conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
-    Customer.where(*conds_ary).order('last_name')
+    Customer.where(*conds_ary).order('last_name').take(10)
   end
 
 
