@@ -135,4 +135,3 @@ Given /^the "(.*)" subscription includes the following vouchers:/ do |name, vouc
   end
   sub.save!
 end
-

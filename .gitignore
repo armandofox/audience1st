@@ -14,7 +14,5 @@ public/stylesheets/venue
 tmp/
 
 db/*.sqlite3
-<<<<<<< HEAD
 
-# Ignore application configuration
 _site/

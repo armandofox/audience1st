@@ -19,6 +19,17 @@ ActiveRecord::Schema.define(version: 20171127173123) do
     t.string "description", limit: 255
   end
 
+  create_table "authorizations", force: :cascade do |t|
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "name"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "customer_id"
+  end
+
+  add_index "authorizations", ["customer_id"], name: "index_authorizations_on_customer_id"
+
   create_table "bulk_downloads", force: :cascade do |t|
     t.string "vendor",       limit: 255
     t.string "username",     limit: 255
@@ -100,6 +111,14 @@ ActiveRecord::Schema.define(version: 20171127173123) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "identities", force: :cascade do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "password_digest"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "imports", force: :cascade do |t|

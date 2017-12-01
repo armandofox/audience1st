@@ -1,5 +1,6 @@
 class GroupsController < ApplicationController
   before_action :set_group, only: [:show, :edit, :update, :destroy]
+  before_filter :is_staff_filter
 
   # GET /groups
   # GET /groups.json

@@ -63,5 +63,3 @@ Scenario: checkbox unavailable if no email
   Given it is currently Apr 20, 2010, 8:15pm
   When I visit the add comps page for customer "NoEmail Customer"
   Then the "customer_email" checkbox should be disabled
-
-  
