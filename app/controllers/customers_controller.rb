@@ -166,8 +166,11 @@ class CustomersController < ApplicationController
       return
     end
     if @customer.save
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
-      @customer.bcrypt_password_storage(params[:password]) unless @customer.bcrypted?
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us") 
+      unless Authorization.create_user_identity(@customer.email, @customer.id, params[:password])
+        @customer.bcrypt_password_storage(params[:password])
+      end
+
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
@@ -261,12 +264,14 @@ class CustomersController < ApplicationController
     @customer = Customer.new(params[:customer])
     @customer.password = params[:password] unless params[:password].blank?
     @customer.password = params[:password_confirmation] unless params[:password_confirmation].blank?
+    puts "created by admin set to true"
     @customer.created_by_admin = true
     if auth = request.env['omniauth.auth']
-      Authorization.find_or_create_user_identity(auth, @customer.id)
+      Authorization.create_user_identity(params[:customer][:email], @customer.id, params[:customer][:password])
     else
       @customer.bcrypt_password_storage(params[:customer][:password]) unless (params[:uid].blank? || params[:password].blank?)
     end
+    puts "customer save"
     unless @customer.save
       flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
       return render(:action => 'new')

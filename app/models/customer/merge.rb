@@ -113,20 +113,21 @@ class Customer < ActiveRecord::Base
     msg = []
     begin
       transaction do
-        old_user = true
-        old_user = false if c0.bcrypted?
+        keeping_bcrypted = true
+        keeping_bcrypted = false if c0.bcrypted?
         msg = Customer.update_foreign_keys_from_to(old, new)
         salt = nil
         # Crypted_password and salt have to be updated separately,
         # since crypted_password is automatically set by the before-save
         # action to be encrypted with salt.
         if c1.fresher_than?(c0)
-          # c1 has identity
           if auth = c1.identity
+            # c1 has identity
             email = c0.email
             pass = auth.password_digest
-            # c1 doesn't have identity
+            
           else
+            # c1 doesn't have identity
             pass = c1.crypted_password
             salt = c1.salt
           end
@@ -150,7 +151,7 @@ class Customer < ActiveRecord::Base
         # we applied 'identity' or after.
         # Password needs to be changed
         if pass
-          if old_user
+          if keeping_bcrypted
             # The fresher password is using the old version encrption
             if salt
               Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")

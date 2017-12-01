@@ -8,9 +8,8 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
             allow_blank: true,
             on: :create
   before_validation do
-    if self.password.blank?
-      self.password = String.random_string(6) 
-      self.password_confirmation = self.password
+    if self.password_digest.blank? && self.password.blank?
+      self.password_digest = String.random_string(6) 
     end
   end
   # validates :password, allow_blank: true, length: { maximum: 20 }
@@ -45,26 +44,27 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
   end
 
   # create customer and update authorization for omniauth-identity
-  def self.find_or_create_user_identity(auth_hash, cust_id)
-    if auth = find_by(uid: auth_hash[:uid], provider: auth_hash[:provider])
-      # find
-      cust_id = auth.customer_id
-    elsif auth = find_by(uid: auth_hash[:uid], provider: nil)
+  def self.create_user_identity(email, cust_id, password)
+    if auth = find_by(uid: email, provider: nil)
       # create
 
       # edge case that an auth was user created with no email given. No way to check this until now, so destroy auth and return error 
-      if auth_hash[:uid].blank?
+      if email.blank?
+        puts "email blank"
         auth.destroy
-        return
+        return nil
       end
     
       # update authorization with new info
-      auth.provider = auth_hash[:provider]
+      auth.password = password
+      auth.password_confirmation = password
+      auth.provider = "identity"
       auth.customer_id = cust_id
+      auth.uid = email
       auth.save
-
     else
       puts "couldn't find identity"
+      return nil
     end
     Customer.find(cust_id)
   end

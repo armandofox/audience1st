@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
           # identity is a special case
           if params[:provider] == "identity"           
             # login/create using omniauth
-            @u = Authorization.find_or_create_user_identity(auth, params[:id])
+            @u = Authorization.find_by(uid: params[:email], provider: params[:provider]).customer
           else
             # otherwise login using an existing auth or create a new account using a regular omniauth strategy
             @u = Authorization.find_or_create_user(auth)                               

@@ -56,18 +56,10 @@ describe Authorization do
       @customer_params = instance_double("params", :to_h => {})
       allow(@customer_params).to receive(:permit).and_return(@customer_params)
     end
-    
-    it "should find existing identities" do
-      customer = create(:customer, email: "email@email.com")
-      auth = Authorization.find_or_create_user_identity(@auth_hash, nil).identity
-
-      expect(auth).not_to be_nil
-      expect(auth).to eq(customer.identity)
-    end
 
     it "should update automatically created identities" do
       create(:authorization, :provider => nil, :customer => nil, :uid => "email@email.com")
-      auth = Authorization.find_or_create_user_identity(@auth_hash, 2).identity
+      auth = Authorization.create_user_identity("email@email.com", 2, "pass").identity
 
       expect(auth).not_to be_nil
       expect(auth.provider).to eq("identity")
@@ -75,9 +67,8 @@ describe Authorization do
     end
 
      it "should delete wrongly created identity" do
-      @auth_hash[:uid] = nil
       create(:authorization, :provider => nil, :customer => nil, :uid => nil)
-      auth = Authorization.find_or_create_user_identity(@auth_hash, 2)
+      auth = Authorization.create_user_identity(nil, 2, nil)
       expect(auth).to be_nil
     end
 

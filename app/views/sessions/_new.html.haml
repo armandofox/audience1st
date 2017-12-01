@@ -1,6 +1,6 @@
 / = form_tag '/auth/identity/callback' do
 
-= form_tag session_path do
+= form_tag '/auth/identity/callback' do
 
   %label{:for=>:email} Email
   = text_field_tag 'email', @email, :size => 20

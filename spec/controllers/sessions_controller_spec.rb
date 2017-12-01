@@ -25,18 +25,6 @@ describe SessionsController do
     post(:create, @login_params)
   end
 
-   it "finds or creates identity accounts" do
-      request.env['omniauth.auth'] = "env"
-      (@controller).stub(:logged_in?).and_return(false)
-      cust = instance_double("customer", id: 2)
-      @login_params[:provider] = "identity"
-     
-      @login_params[:id] = 2
-  
-      expect(Authorization).to receive(:find_or_create_user_identity).with("env", "2")
-      post(:create, @login_params)
-    end
-
   it "bcrypts passwords if necessary" do
     # (@controller).stub(:u).and_return(@user)
     allow(@user).to receive(:bcrypted?).and_return(false)

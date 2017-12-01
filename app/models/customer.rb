@@ -120,14 +120,18 @@ class Customer < ActiveRecord::Base
     Authorization.update_identity_email(self) if email_changed? && bcrypted?
   end
 
-  def password=(password)
-    if respond_to?("password=")
-      @password = password
-      Authorization.update_password(self, password) if bcrypted?      
-    else
-      raise NotImplementedError 
-    end
-  end
+  # def password=(password)
+  #   puts "password: "
+  #   puts password
+  #   if respond_to?("password=")
+  #     puts "responds to password="
+  #     @password = password
+  #     puts "bcrypted" if bcrypted?
+  #     Authorization.update_password(self, password) if bcrypted?      
+  #   else
+  #     raise NotImplementedError 
+  #   end
+  # end
   #----------------------------------------------------------------------
   #  private variables
   #----------------------------------------------------------------------
