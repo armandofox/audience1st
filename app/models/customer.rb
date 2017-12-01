@@ -510,7 +510,7 @@ EOSQL1
     end
     conds = Array.new(terms.size, conds).map{ |cond| "(#{cond})"}.join(" AND ")
     conds_ary.unshift(conds)
-    customers = Customer.where(conds_ary).order("last_name").take(10)
+    Customer.where(conds_ary).order("last_name").take(10)
   end
 
   # return a hash include information containing searching term in auto
