@@ -224,6 +224,8 @@ class CustomersController < ApplicationController
       count = do_deletions(@cust)
       flash[:notice] = "#{count} customers forgotten (their transactions have been preserved)<br/> #{flash[:notice]}"
       redirect_to_last_list and return
+    when /add/i
+      redirect_to new_group_path
     when /auto/i
       do_automatic_merge(*ids)
       redirect_to_last_list and return
