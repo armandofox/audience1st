@@ -19,11 +19,6 @@ Scenario: search with multiple match
   When I select autocomplete choice "Bilbo Baggins"
   Then I should be on the home page for customer "Bilbo Baggins"
 
-Scenario: search with no matches
-
-  When I fill "search_field" autocomplete field with "xyz"
-  Then I should not see any autocomplete choices
-
 Scenario:search with other information
   Given the following Customers exist:
     | first_name | last_name | email               | street        | city | state |
@@ -37,8 +32,20 @@ Scenario:search with other information
   Then I should see autocomplete choice "Armando Fox"
   And I should see autocomplete choice "Bobby Boxer(123 Fox Hill)"
   And I should see autocomplete choice "Organ Milk(dancingfox@mail.com)"
+  And I should see autocomplete choice "list all"
   But I should not see autocomplete choice "Bob Bag"
 
 Scenario: search with no result
   When I fill "search_field" autocomplete field with "No matching result"
   Then I should see autocomplete choice "(no matches)"
+
+Scenario: list all in autocomplete
+  When I fill "search_field" autocomplete field with "Fox"
+  Then I should see autocomplete choice "list all"
+  And I select autocomplete choice "list all"
+  Then I should be on the list of customers page
+  And table "#customers" should include:
+    | First name | Last name |
+    | Alex       | Fox       |
+    | Armando    | Fox       |
+    | Bobby      | Boxer     |
