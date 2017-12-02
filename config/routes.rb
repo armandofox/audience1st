@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
-  resources :groups
+  resources :groups, :except => [:destroy]
+  delete '/groups/:id' => 'groups#destroy', :as => 'delete_group'
+
   # :format => false means that this app only returns 'html'
   scope :format => false do
 
