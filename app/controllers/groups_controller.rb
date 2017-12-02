@@ -11,6 +11,7 @@ class GroupsController < ApplicationController
   end
 
   def new
+    @group = Group.new()
     customers_id = params[:customers]
     @customers = customers_id.map { |x| Customer.find_by_id(x.to_i) }
   end
@@ -19,17 +20,15 @@ class GroupsController < ApplicationController
   end
 
   def create
-    @group = Group.new(group_params)
-
-    respond_to do |format|
-      if @group.save
-        format.html { redirect_to @group, notice: 'Group was successfully created.' }
-        format.json { render :show, status: :created, location: @group }
-      else
-        format.html { render :new }
-        format.json { render json: @group.errors, status: :unprocessable_entity }
+    @group = Group.new(params[:group])
+    if params[:commit] =~ /create/i
+      @customers = params[:merge].keys.map { |x| Customer.find_by_id(x.to_i) }
+      @customers.each do |customer|
+        @group.customers << customer
       end
     end
+    @group.save
+    redirect_to customer_path(current_user)
   end
 
   def update
@@ -52,14 +51,4 @@ class GroupsController < ApplicationController
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_group
-      @group = Group.find(params[:id])
-    end
-
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def group_params
-      params.require(:group).permit(:name)
-    end
 end

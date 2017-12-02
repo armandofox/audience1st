@@ -26,7 +26,6 @@ ActiveRecord::Schema.define(version: 20171202014800) do
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.integer  "customer_id"
-    t.string   "password_digest"
   end
 
   add_index "authorizations", ["customer_id"], name: "index_authorizations_on_customer_id"
@@ -125,25 +124,13 @@ ActiveRecord::Schema.define(version: 20171202014800) do
     t.string   "type"
   end
 
-  create_table "identifications", force: :cascade do |t|
-    t.string   "provider"
-    t.string   "uid"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "identities", force: :cascade do |t|
     t.string   "name"
     t.string   "email"
     t.string   "password_digest"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.integer  "customer_id"
-    t.string   "provider"
-    t.string   "uid"
   end
-
-  add_index "identities", ["customer_id"], name: "index_identities_on_customer_id"
 
   create_table "imports", force: :cascade do |t|
     t.string   "name",              limit: 255
