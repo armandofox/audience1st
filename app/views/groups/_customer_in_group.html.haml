@@ -1,0 +1,21 @@
+- read_only = false unless defined?(read_only)
+- editable = customer.id && !read_only
+%tr{:valign=>:top,:class=>display_class(customer)}
+  %td= check_box_tag("merge[#{customer.id}]",1,nil,:class => 'selectForMerge') if editable
+  - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize
+  - if editable
+    - last_login = "Last login: " << h(customer.last_login.to_formatted_s(:long))
+    %td= link_to first, customer_path(customer), {:title => last_login}
+    %td= link_to last, customer_path(customer), {:title => last_login}
+  - else
+    %td= first
+    %td= last
+  %td= customer.street
+  %td= customer.city
+  %td= customer.state
+  %td= customer.zip
+  %td= number_to_phone_2(customer.day_phone)
+  %td= number_to_phone_2(customer.eve_phone)
+  %td= customer.email
+  %td= customer.company
+  %td= format_collection_with_style(customer.labels.map(&:name), 'customer_label')
