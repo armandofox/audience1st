@@ -41,9 +41,9 @@ module VboScenarioHelpers
       )
   end
 
-  def setup_subscriber_tickets(customer, show, num)
+  def setup_subscriber_tickets(customer, show, num, changeable=false)
     showdates = show.showdates
-    sub_vouchertype = create(:vouchertype_included_in_bundle, :name => "#{show.name} (Subscriber)")
+    sub_vouchertype = create(:vouchertype_included_in_bundle, :name => "#{show.name} (Subscriber)", :changeable => changeable)
     sub_vouchers = create_list(:subscriber_voucher, num.to_i, :vouchertype => sub_vouchertype, :customer => customer)
     showdates.each { |s| make_valid_tickets s, sub_vouchertype }
     sub_vouchers

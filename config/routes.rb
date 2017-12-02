@@ -14,7 +14,7 @@ Rails.application.routes.draw do
         get :help
       end
     end
-    
+
     resources :labels
 
     resources :customers, :except => :destroy do
@@ -45,11 +45,11 @@ Rails.application.routes.draw do
         end
       end
     end
-    
+
     # list all donations management
 
     resources :donations, :only  => [:index, :update]
-    
+
     # RSS
 
     get '/info/ticket_rss' => 'info#ticket_rss'
@@ -58,7 +58,7 @@ Rails.application.routes.draw do
 
     # AJAX responders
     get '/ajax/update_shows' => 'vouchers#update_shows', :as => 'update_shows'
-    get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer_full_name', :as => 'customer_autocomplete'
+    get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer', :as => 'customer_autocomplete'
     get '/ajax/customer_lookup' => 'customers#lookup', :as => 'customer_lookup'
 
     get '/ajax/mark_fulfilled' => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
@@ -74,7 +74,7 @@ Rails.application.routes.draw do
         get :clone
       end
     end
-    
+
     # database txns
     resources :txns, :only => [:index]
 
@@ -115,7 +115,7 @@ Rails.application.routes.draw do
 
     # checkout requires you to be logged in:
     get '/store/:customer_id/checkout' => 'store#checkout', :as => 'checkout'
-    
+
     post '/store/:customer_id/place_order' => 'store#place_order', :as => 'place_order'
 
     # quick-donation neither requires nor sets customer-id:

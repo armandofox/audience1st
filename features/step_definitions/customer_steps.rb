@@ -60,6 +60,14 @@ Given /^customer "(.*) (.*)" exists( and was created by admin)?$/ do |first,last
   @customer.update_attribute(:created_by_admin, true) if admin
 end
 
+Given /^customer "(.*) (.*)" whose address street is: "(.*)"$/ do |first,last,address|
+  @customer = find_customer(first,last) ||
+    create(:customer, :first_name => first,
+           :last_name => last, :email => "#{first.downcase}@#{last.downcase}.com",
+           :street => address)
+
+end
+
 Given /^the following customers exist: (.*)$/ do |list|
   list.split(/\s*,\s*/).each do |name|
     steps %Q{Given customer "#{name}" exists}
@@ -68,10 +76,10 @@ end
 
 # Searching for customers
 
-When /^I search any field for "(.*)"$/ do |text|
+When /^I search for "(.*)"$/ do |text|
   visit customers_path
   fill_in "customers_filter", :with => text
-  with_scope '#search_on_any_field' do ; click_button 'Go' ; end
+  with_scope '#search_field' do ; click_button 'Go' ; end
 end
 
 Given /^my birthday is set to "(.*)"/ do |date|
@@ -106,7 +114,7 @@ end
 
 Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
   c = find_or_create_customer first,last
-  c.update_attributes!(:email => email, :password => pass)
+  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|
