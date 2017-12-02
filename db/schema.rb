@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171201233732) do
+ActiveRecord::Schema.define(version: 20171202014800) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",        limit: 40,  default: "", null: false
@@ -121,6 +121,7 @@ ActiveRecord::Schema.define(version: 20171201233732) do
     t.string   "work_fax"
     t.string   "group_url"
     t.string   "best_way_to_contact"
+    t.string   "type"
   end
 
   create_table "identities", force: :cascade do |t|
