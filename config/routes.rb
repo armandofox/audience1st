@@ -1,12 +1,12 @@
 Rails.application.routes.draw do
 
-  resources :groups, :except => [:destroy]
-  delete '/groups/:id' => 'groups#destroy', :as => 'delete_group'
-
   # :format => false means that this app only returns 'html'
   scope :format => false do
 
     root :to => 'customers#show'
+
+    resources :groups, :except => [:destroy]
+    delete '/groups/:id' => 'groups#destroy', :as => 'delete_group'
 
     resources :bulk_downloads
     resources :account_codes
