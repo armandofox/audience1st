@@ -16,7 +16,6 @@
         %li{:class => "off"}= 'Create a group'
       %div#select{:class => "show"}
         = render :partial => 'groupslist' unless @groups == nil
-        = render :plain => 'There is no groups.' if @groups == nil
         
       %div#create{:class => "hide"} 
         = render :partial => 'form', :object => @group
