@@ -1,0 +1,44 @@
+%fieldset#group_info
+  %legend Group Information
+  %p
+    = fields_for @group do |f|
+      %label{:for => 'group_name'} Group Name
+      = f.text_field :name, :size => 16, :maxlength => 40
+      %br/
+      %br/
+      %label{:for => 'group_address_line_1'} Address 1
+      = f.text_field :address_line_1, :size => 16, :maxlength => 40
+      %br/
+      %label{:for => 'group_address_line_2'} Address 2
+      = f.text_field :address_line_2, :size => 16, :maxlength => 40
+      %br/
+      %label{:for => 'group_city'} City
+      = f.text_field :city, :size => 16, :maxlength => 32
+      %label.no_float{:for => 'group_state'} State
+      =f.text_field :state, {:size => 2, :maxlength => 2}
+      %label.no_float{:for => 'group_zip'} Zip
+      = f.text_field :zip, {:size => 10, :maxlength => 10}
+      %br
+      %br
+      %label{:for=>:group_work_phone} Work phone
+      = f.text_field :work_phone, {:size => 16, :maxlength => 16}
+      %br
+      %label{:for=>:group_cell_phone} Cell phone
+      = f.text_field :cell_phone, {:size => 16, :maxlength => 16}
+      %br
+      %label{:for=>:group_work_fax} Work Fax
+      = f.text_field :work_fax, {:size => 16, :maxlength => 16}
+      %br
+      %label{:for=>:group_group_url} Group URL
+      = f.text_field :group_url, {:size => 16, :maxlength => 16}
+      %br
+      %label{:for=>:group_comments} Comments
+      = f.text_area :comments, :cols => 60, :rows=> 3, :maxlength => 254
+      %br{:style => 'line-height: 150%'}
+      %label Group Type:
+      %br{:style => 'line-height: 150%'}
+      = f.radio_button :type, "Company"
+      = label_tag :type_company, "Company"
+      %br
+      = f.radio_button :type, "Family"
+      = label_tag :type_family, "Family"

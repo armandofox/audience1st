@@ -5,8 +5,9 @@ Rails.application.routes.draw do
 
     root :to => 'customers#show'
 
-    resources :groups, :except => [:destroy]
+    resources :groups, :except => [:destroy, :edit]
     delete '/groups/:id' => 'groups#destroy', :as => 'delete_group'
+    post '/groups/:id/edit' => 'groups#edit', :as => 'edit_group'
 
     resources :bulk_downloads
     resources :account_codes

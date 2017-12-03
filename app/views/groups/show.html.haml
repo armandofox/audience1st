@@ -1,0 +1,48 @@
+%h1 Editing Group
+%fieldset#group_info
+  %legend Group Information
+  %p
+    = form_tag edit_group_path(@group) do
+      = fields_for @group do |f|
+        %label{:for => 'group_name'} Group Name
+        = f.text_field :name, :value => @group.name , :size => 16, :maxlength => 40
+        %br/
+        %br/
+        %label{:for => 'group_address_line_1'} Address 1
+        = f.text_field :address_line_1, :value => @group.address_line_1,:size => 16, :maxlength => 40
+        %br/
+        %label{:for => 'group_address_line_2'} Address 2
+        = f.text_field :address_line_2, :value => @group.address_line_2 ,:size => 16, :maxlength => 40
+        %br/
+        %label{:for => 'group_city'} City
+        = f.text_field :city, :value => @group.city ,:size => 16, :maxlength => 32
+        %label.no_float{:for => 'group_state'} State
+        =f.text_field :state, {:size => 2, :maxlength => 2,:value => @group.state,}
+        %label.no_float{:for => 'group_zip'} Zip
+        = f.text_field :zip, {:size => 10, :maxlength => 10,:value => @group.zip ,}
+        %br
+        %br
+        %label{:for=>:group_work_phone} Work phone
+        = f.text_field :work_phone, {:size => 16, :maxlength => 16, :value => @group.work_phone ,}
+        %br
+        %label{:for=>:group_cell_phone} Cell phone
+        = f.text_field :cell_phone, {:size => 16, :maxlength => 16, :value => @group.cell_phone ,}
+        %br
+        %label{:for=>:group_work_fax} Work Fax
+        = f.text_field :work_fax, {:size => 16, :maxlength => 16, :value => @group.work_fax ,}
+        %br
+        %label{:for=>:group_group_url} Group URL
+        = f.text_field :group_url, {:size => 16, :maxlength => 16, :value => @group.group_url ,}
+        %br
+        %label{:for=>:group_comments} Comments
+        = f.text_area :comments, :cols => 60, :rows=> 3, :maxlength => 254
+        %br{:style => 'line-height: 150%', :value => @group.comments ,}
+        %label Group Type:
+        %br
+        -if @group.type == "Company"
+          =f.radio_button :type, "Company"
+          = label_tag :type_company, "Company"
+        -else
+          =f.radio_button :type, "Family"
+          =label_tag :type_family, "Family"
+        = submit_tag 'Edit Group'

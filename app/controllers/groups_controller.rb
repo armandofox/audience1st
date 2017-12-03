@@ -7,6 +7,8 @@ class GroupsController < ApplicationController
   end
 
   def show
+    @group = Group.find(params[:id])
+
   end
 
   def new
@@ -17,7 +19,17 @@ class GroupsController < ApplicationController
   end
 
   def edit
-    @group = Group.new(params[:group])
+    @group = Group.find(params[:id])
+
+    if params[:company] != nil
+      @group.attributes = params[:company]
+      @group.save
+    elsif params[:family] != nil
+      @group.attributes = params[:family]
+      @group.save
+    end
+
+    redirect_to groups_path
   end
 
   def create
