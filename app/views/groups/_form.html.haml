@@ -32,8 +32,8 @@
       %label{:for=>:group_group_url} Group URL
       = f.text_field :group_url, {:size => 16, :maxlength => 16}
       %br
-      %label{:for=>:group_best_way_to_contact} Best way to contact
-      = f.text_field :best_way_to_contact, {:size => 16, :maxlength => 16}
+      %label{:for=>:group_comments} Comments
+      = f.text_area :comments, :cols => 60, :rows=> 3, :maxlength => 254
       %br{:style => 'line-height: 150%'}
       %label Group Type:
       %br{:style => 'line-height: 150%'}
