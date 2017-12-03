@@ -40,7 +40,11 @@ class GroupsController < ApplicationController
         @group.customers << customer
       end
     end
-    @group.save
+    if @group.save
+      flash[:notice] = 'You successfully create a group.'
+    else
+      flash[:notice] = 'Sorry, something wrong with your implementation.'
+    end
     redirect_to customer_path(current_user)
   end
 
