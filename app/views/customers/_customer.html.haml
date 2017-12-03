@@ -1,5 +1,5 @@
 - read_only = false unless defined?(read_only)
-- checkbox = true unless defined?(checkbox)
+- checkbox = true if checkbox.nil?
 - editable = customer.id && !read_only
 %tr{:valign=>:top,:class=>display_class(customer)}
   %td= check_box_tag("merge[#{customer.id}]",1,nil,:class => 'selectForMerge') if editable and checkbox
