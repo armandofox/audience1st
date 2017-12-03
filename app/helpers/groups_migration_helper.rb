@@ -1,23 +1,23 @@
 module GroupsMigrationHelper
-  #c is the cutomer who may or may not have a company
-  def migrate_company(c)
-    if c.company != nil
-      if Company.exists?(:name => c.company)
-        g = Company.where(:name => c.company).first
+  def migrate_company(cust)
+    if cust.company != nil
+      if Company.exists?(:name => cust.company)
+        g = Company.where(:name => cust.company).first
       else
-        g = Company.create(:name => c.company,
-            :address_line_1 => c.company_address_line_1,
-            :address_line_2 => c.company_address_line_2,
-            :city => c.company_city,
-            :state => c.company_state,
-            :zip => c.company_zip,
-            :work_phone => c.work_phone,
-            :cell_phone => c.cell_phone,
-            :work_fax => c.work_fax,
-            :group_url => c.company_url,
-            :best_way_to_contact => c.best_way_to_contact)
+        g = Company.create(:name => cust.company,
+            :address_line_1 => cust.company_address_line_1,
+            :address_line_2 => cust.company_address_line_2,
+            :city => cust.company_city,
+            :state => cust.company_state,
+            :zip => cust.company_zip,
+            :work_phone => cust.work_phone,
+            :cell_phone => cust.cell_phone,
+            :work_fax => cust.work_fax,
+            :group_url => cust.company_url,
+            :comments => cust.best_way_to_contact)
+
       end
-      g.customers << c
+      g.customers << cust
       return g
     end
   end
