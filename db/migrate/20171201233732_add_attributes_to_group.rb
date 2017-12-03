@@ -9,6 +9,8 @@ class AddAttributesToGroup < ActiveRecord::Migration
     add_column :groups, :cell_phone, :string
     add_column :groups, :work_fax, :string
     add_column :groups, :group_url, :string
-    add_column :groups, :best_way_to_contact, :string
+    add_column :groups, :comments, :text
+    add_column :groups, :type, :string
+
   end
 end
