@@ -15,7 +15,8 @@ class GroupsController < ApplicationController
     @group = Group.new()
     @customers_id = params[:customers]
     @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
-    @groups = Group.all
+    @groups = Group.all.select("id, name, address_line_1, address_line_2, city, state, zip,
+                  work_phone, cell_phone, work_fax, group_url, comments")
   end
 
   def edit

@@ -3,7 +3,6 @@
     %tr
       %th 
       %th Name
-      %th Type
       %th Address
       %th City
       %th State
@@ -18,7 +17,6 @@
       %tr
         %td= check_box_tag("group[#{group.id}]", {checked: false})
         %td= group.name
-        %td= group.type
         %td= group.address_line_1 + ' ' + group.address_line_2
         %td= group.city
         %td= group.state

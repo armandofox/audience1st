@@ -1,9 +1,8 @@
-:javascript
-    window.onload = function(){
+window.onload = function(){
     var myTab = document.getElementById("tab");
-    var myUl = myTab.getElementsByTagName("ul")[0];//一个节点
-    var myLi = myUl.getElementsByTagName("li");    //数组
-    var myDiv = myTab.getElementsByTagName("div"); //数组
+    var myUl = myTab.getElementsByTagName("ul")[0];
+    var myLi = myUl.getElementsByTagName("li");
+    var myDiv = myTab.getElementsByTagName("div");
     
     for(var i = 0; i<myLi.length;i++){
         myLi[i].index = i;
