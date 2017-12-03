@@ -60,17 +60,23 @@ class GroupsController < ApplicationController
   def add_to_group
     @customers_id = params[:customers]
     @customers = @customers_id.map { |x| Customer.find_by_id(x) }
-    @groups_id = params[:group].keys
-    @groups = @groups_id.map { |g| Group.find_by_id(g) }
-    @groups.each { |group|
-      @customers.each { |customer|
-        unless customer.groups.include?(group)
-          customer.groups << group
-        end
-      }
-    }
 
-    flash[:notice] = 'Customers successfully added to groups.'
-    redirect_to customer_path(current_user)
+    if params[:group].nil?
+      flash[:alert] = "You haven't selected any groups!"
+      redirect_to new_group_path(:customers => @customers)
+    else
+      @groups_id = params[:group].keys
+      @groups = @groups_id.map { |g| Group.find_by_id(g) }
+      @groups.each { |group|
+        @customers.each { |customer|
+          unless customer.groups.include?(group)
+            customer.groups << group
+          end
+        }
+      }
+
+      flash[:notice] = 'Customers successfully added to groups.'
+      redirect_to customer_path(current_user)
+    end
   end
 end
