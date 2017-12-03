@@ -18,5 +18,6 @@
           = submit_tag 'Add to Groups'
 
     %div#create{:class => "hide"}
-      = render :partial => 'form', :object => @group
-      = submit_tag 'Create Group', :customers => @customers
+      = form_tag groups_path(:customers => @customers),:method => :post do
+        = render :partial => 'form'
+        = submit_tag 'Create Group', :customers => @customers

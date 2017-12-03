@@ -35,7 +35,7 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(params[:group])
     if params[:commit] =~ /create/i
-      @customers = params[:customers].strip.split(" ").map { |x| Customer.find_by_id(x.to_i) }
+      @customers = params[:customers].map { |x| Customer.find_by_id(x.to_i) }
       @customers.each do |customer|
         @group.customers << customer
       end
