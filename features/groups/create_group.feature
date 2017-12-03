@@ -19,7 +19,7 @@ Background:
 
 
   Scenario: Go to new group page with selecting customers
-    When I select customers "Armando Fox, Alex For" to add to groups
+    When I select customers "Armando Fox" and "Alex For" to add to groups
     And I press "Add to group" within "#mergebar1"
     Then I should be on the add to group page
 

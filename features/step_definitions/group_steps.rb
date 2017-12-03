@@ -7,15 +7,12 @@ When(/^I select "([^"]*)" tab$/) do |tab_name|
   pending
 end
 
-And(/^I select customers "([^"]*)" to add to groups$/) do |customers|
+And(/^I select customers "(.*) (.*)" and "(.*) (.*)" to add to groups$/) do |f1,l1,f2,l2|
+  c1 = find_or_create_customer f1,l1
+  c2 = find_or_create_customer f2,l2
   visit customers_path
-  list = customers.split(', ')
-  list.each { |name|
-    m = /^(.*) (.*)$/.match(name)
-    # m[1] is the first name and m[2] is the last name
-    c = find_or_create_customer m[1], m[2]
-    check "merge[#{c.id}]"
-  }
+  check "merge[#{c1.id}]"
+  check "merge[#{c2.id}]"
 end
 
 And(/^I select groups "([^"]*)"$/) do |groups|

@@ -15,7 +15,7 @@ Background:
     | Weigandt Family | 1234 Ward St.  | Apt. A         | Berkeley | CA    | 94702 | 123456     | 654321     | url.com   | family  |
     | Happy Comp.     | 4321 Ward St.  | Floor 4        | Berkeley | CA    | 94702 | 123456     | 654321     | cap.com   | company |
 
-  And I select customers "MaryJane Weigandt, Janey Weigandt" to add to groups
+  And I select customers "MaryJane Weigandt" and "Janey Weigandt" to add to groups
   And I press "Add to group" within "#mergebar1"
   Then I should be on the add to group page
   And I select "Existing Groups" tab
