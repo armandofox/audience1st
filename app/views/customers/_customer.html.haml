@@ -21,3 +21,4 @@
   %td= customer.email
   %td= customer.company
   %td= format_collection_with_style(customer.labels.map(&:name), 'customer_label')
+= hidden_field_tag('customers', @customers_id) if not checkbox

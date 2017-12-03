@@ -12,9 +12,8 @@ class GroupsController < ApplicationController
 
   def new
     @group = Group.new()
-    customers_id = params[:customers]
-    @customers = customers_id.map { |x| Customer.find_by_id(x.to_i) }
-    puts @customers.class
+    @customers_id = params[:customers]
+    @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
   end
 
   def edit
@@ -23,7 +22,7 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(params[:group])
     if params[:commit] =~ /create/i
-      @customers = params[:merge].keys.map { |x| Customer.find_by_id(x.to_i) }
+      @customers = params[:customers].strip.split(" ").map { |x| Customer.find_by_id(x.to_i) }
       @customers.each do |customer|
         @group.customers << customer
       end
