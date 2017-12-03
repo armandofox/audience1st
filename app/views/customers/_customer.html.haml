@@ -3,6 +3,7 @@
 - editable = customer.id && !read_only
 %tr{:valign=>:top,:class=>display_class(customer)}
   %td= check_box_tag("merge[#{customer.id}]",1,nil,:class => 'selectForMerge') if editable and checkbox
+
   - first,last = customer.first_name.name_capitalize, customer.last_name.name_capitalize
   - if editable
     - last_login = "Last login: " << h(customer.last_login.to_formatted_s(:long))
