@@ -19,12 +19,12 @@ Background:
 
 
   Scenario: Go to new group page with selecting customers
-    When I select customers "Armando Fox" and "Alex For" for group
+    When I select customers "Armando Fox, Alex For" to add to groups
     And I press "Add to group" within "#mergebar1"
-    Then I will go to the page for new groups
+    Then I should be on the add to group page
 
   Scenario: Creating new group with information
     When I fill in the "name field" with "Fox Family"
     And I press "Create Group" submit button
-    Then I will have a group "Fox Family" with member "Armando Fox" and "Alex Fox"
+    Then I will have a group "Fox Family" with members "Armando Fox, Alex Fox"
     

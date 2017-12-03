@@ -17,7 +17,7 @@ Background:
   And I am logged in as boxoffice
   And I select customers "MaryJane Weigandt" and "Janey Weigandt" for merging
 
-Scenario: auto merge 
+Scenario: auto merge
   
   When I press "Auto Merge" within "#mergebar1"
   Then customer "Janey Weigandt" should not exist

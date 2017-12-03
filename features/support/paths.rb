@@ -77,6 +77,8 @@ module NavigationHelpers
 
     when /^the account codes page$/ then account_codes_path
 
+    # Add to groups
+    when /^the add to group page$/ then new_group_path
     else
       raise "Can't find mapping for \"#{page_name}\" in #{__FILE__}"
     end
