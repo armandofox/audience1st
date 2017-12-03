@@ -10,6 +10,6 @@
       %tbody
         = render :partial => 'customers/customer', :collection => @customers, locals: {checkbox: false}
     %h2 Create or Choose a Group to Add
-    = render :partial => 'form'
+    = render :partial => 'form', :object => @group
     = submit_tag 'Create Group',:customers => @customers
     = link_to 'Cancel', customers_path
