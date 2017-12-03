@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :groups, :except => [:destroy, :edit]
     delete '/groups/:id' => 'groups#destroy', :as => 'delete_group'
     post '/groups/:id/edit' => 'groups#edit', :as => 'edit_group'
+    post '/groups/add_to_group' => 'group#add_to_group', :as => 'add_to_group'
 
     resources :bulk_downloads
     resources :account_codes

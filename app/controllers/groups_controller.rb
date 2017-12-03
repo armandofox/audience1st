@@ -56,4 +56,12 @@ class GroupsController < ApplicationController
     end
   end
 
+  def add_to_group
+    @customers_id = params[:customers]
+    @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
+    @groups_id = params[:groups]
+    @groups = @gruops_id.map { |g| Group.find_by_id(g.to_i) }
+
+
+  end
 end
