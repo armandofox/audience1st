@@ -8,6 +8,7 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
+    self.create_empty_groups
     if Rails.env == 'development'
       self.create_fake_customers
     end
@@ -63,6 +64,26 @@ class Audience1stSeeder
       customer.created_by_admin = true
       customer.save!
     end
+  end
+
+  def self.create_empty_groups
+    Rails.logger.info "Creating some empty groups"
+    Group.create(
+        :name => "Green Family",
+        :address_line_1 => "1234 Ward St.",
+        :address_line_2 => "Apt. A",
+        :city => "Berkeley",
+        :state => "CA",
+        :zip => "94702"
+    )
+    Group.create(
+        :name => "Smith Family",
+        :address_line_1 => "4312 Ward St.",
+        :address_line_2 => "Apt. D",
+        :city => "Berkeley",
+        :state => "CA",
+        :zip => "94702"
+    )
   end
 
   def self.create_special_customers

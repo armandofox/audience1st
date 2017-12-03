@@ -7,7 +7,7 @@ show = Show.create(
       :name => "Full Season",
       :house_capacity =>  10,
       :opening_date =>  (time - 2.month),
-      :closing_date => (time + 2.month), 
+      :closing_date => (time + 2.month),
       :listing_date => time)
 show.save
 showdate = show.showdates.create!(
@@ -44,7 +44,7 @@ showdate.valid_vouchers.create!(:vouchertype => vtype2,
       :start_sales => [Time.now - 1.day, showdate.thedate - 1.week].min
       )
 
-  
+
   order = Order.create(
     :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
     :customer => customer,
@@ -58,3 +58,4 @@ showdate.valid_vouchers.create!(:vouchertype => vtype2,
   order.add_tickets(vv, 5)
   order.finalize!
   puts(order.errors.full_messages)
+
