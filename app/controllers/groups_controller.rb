@@ -15,6 +15,7 @@ class GroupsController < ApplicationController
     @group = Group.new()
     @customers_id = params[:customers]
     @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
+    @groups = Group.all
   end
 
   def edit
