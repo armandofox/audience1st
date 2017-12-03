@@ -1,15 +1,15 @@
-%h2 New Group
 - unless @customers.empty?
   = form_tag groups_path do
-    #mergebar1.merge_bar= render :partial => 'customers/merge_bar'
     = hidden_field_tag 'action_name', action_name
     = hidden_field_tag 'customers_filter', @customers_filter
     = hidden_field_tag 'page', @page
+    %h2 Selected Customers
     %table.hilite#customers
       %thead
         = render :partial => 'customers/customer_header'
       %tbody
-        = render :partial => 'customers/customer', :collection => @customers
+        = render :partial => 'customers/customer', :collection => @customers, locals: {read_only: true}
+    %h2 Create or Choose a Group to Add
     = render :partial => 'form'
     = submit_tag 'Create Group',:customers => @customers
     = link_to 'Cancel', customers_path
