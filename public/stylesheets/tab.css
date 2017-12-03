@@ -1,0 +1,40 @@
+tab {
+  width:270px; 
+  padding:5px;
+  height:150px;
+  margin:20px;
+}
+
+#tab ul {
+  list-style:none; 
+  display:hide;
+  height:30px;
+  line-height:30px;
+  border-bottom:2px #C88 solid;
+}
+
+#tab ul li {
+  background:#FFF;
+  cursor:pointer;
+  float:left;
+  list-style:none; 
+  height:29px; 
+  line-height:29px;
+  padding:0px 10px;
+  margin:0px 10px; 
+  border:1px solid #BBB; 
+  border-bottom:2px solid #C88;
+}
+
+#tab ul li.on {
+  border-top:2px solid gray; 
+  border-bottom:2px solid #FFF;
+}
+
+#tab div {
+  margin:10px;
+  line-height:24px;
+  border-top:none;border:1px solid black;
+  padding:10px;
+}
+.hide{display:none;}
