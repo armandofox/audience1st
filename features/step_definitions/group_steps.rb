@@ -5,12 +5,15 @@ end
 
 
 And(/^I select customers "([^"]*)" to add to groups$/) do |customers|
-  visit customers_path
   list = customers.split(', ')
+  customers = []
   list.each {|name|
     m = /^(.*) (.*)$/.match(name)
     # m[1] is the first name and m[2] is the last name
-    c = find_or_create_customer m[1], m[2]
+    customers.push(find_or_create_customer m[1], m[2])
+  }
+  visit customers_path
+  customers.each {|c|
     check "merge[#{c.id}]"
   }
 end
