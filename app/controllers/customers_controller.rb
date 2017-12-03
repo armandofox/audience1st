@@ -11,7 +11,7 @@ class CustomersController < ApplicationController
   before_filter :is_myself_or_staff, :only => CUSTOMER_ACTIONS
   before_filter :is_staff_filter, :only => ADMIN_ACTIONS
 
-  skip_before_filter :verify_authenticity_token, %w(auto_complete_for_customer_full_name)
+  skip_before_filter :verify_authenticity_token, %w(auto_complete_for_customer_full_name, create, user_create)
 
   private
 
@@ -264,14 +264,12 @@ class CustomersController < ApplicationController
     @customer = Customer.new(params[:customer])
     @customer.password = params[:password] unless params[:password].blank?
     @customer.password = params[:password_confirmation] unless params[:password_confirmation].blank?
-    puts "created by admin set to true"
     @customer.created_by_admin = true
     if auth = request.env['omniauth.auth']
       Authorization.create_user_identity(params[:customer][:email], @customer.id, params[:customer][:password])
     else
       @customer.bcrypt_password_storage(params[:customer][:password]) unless (params[:uid].blank? || params[:password].blank?)
     end
-    puts "customer save"
     unless @customer.save
       flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
       return render(:action => 'new')

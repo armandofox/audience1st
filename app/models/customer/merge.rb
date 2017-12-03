@@ -113,8 +113,7 @@ class Customer < ActiveRecord::Base
     msg = []
     begin
       transaction do
-        keeping_bcrypted = true
-        keeping_bcrypted = false if c0.bcrypted?
+        keeping_bcrypted = !c0.bcrypted?
         msg = Customer.update_foreign_keys_from_to(old, new)
         salt = nil
         # Crypted_password and salt have to be updated separately,
@@ -154,7 +153,10 @@ class Customer < ActiveRecord::Base
           if keeping_bcrypted
             # The fresher password is using the old version encrption
             if salt
-              Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
+              c0.crypted_password = pass
+              c0.salt = salt
+              c0.save
+              # Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
             else
               Authorization.create(provider: 'identity', uid: email, customer: c0, password_digest: pass)
               # Customer's password and salt is protected, cannot change, just Keep it
@@ -162,7 +164,11 @@ class Customer < ActiveRecord::Base
             end
           else
             unless salt
-              Authorization.connection.execute("UPDATE authorizations SET uid='#{email}',password_digest='#{pass}' WHERE customer_id=#{c0.id} AND provider='Identity'")
+              identity = c0.identity
+              identity.uid = email
+              identity.password_digest = pass
+              identity.save(:validate => false)
+              # Authorization.connection.execute("UPDATE authorizations SET uid='#{email}',password_digest='#{pass}' WHERE customer_id=#{c0.id} AND provider='identity'")
             end
           end
         end

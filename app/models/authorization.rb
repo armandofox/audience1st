@@ -50,7 +50,6 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
 
       # edge case that an auth was user created with no email given. No way to check this until now, so destroy auth and return error 
       if email.blank?
-        puts "email blank"
         auth.destroy
         return nil
       end

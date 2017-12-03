@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :verify_authenticity_token, %w(create)
 
   def new
     redirect_to customer_path(current_user) and return if logged_in?
