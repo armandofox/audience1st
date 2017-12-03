@@ -18,6 +18,7 @@ module GroupsMigrationHelper
             :best_way_to_contact => c.best_way_to_contact)
       end
       g.customers << c
+      return g
     end
   end
 end
