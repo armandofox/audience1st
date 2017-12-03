@@ -16,4 +16,3 @@ describe 'info/availability.rxml', :type => :view do
     expect(response.body).not_to match(/\nhttp:/)
   end
 end
-
