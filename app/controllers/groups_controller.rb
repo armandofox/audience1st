@@ -63,8 +63,10 @@ class GroupsController < ApplicationController
     @groups_id = params[:group].keys
     @groups = @groups_id.map { |g| Group.find_by_id(g) }
     @groups.each { |group|
-      @customers.each {|customer|
-        customer.groups << group
+      @customers.each { |customer|
+        unless customer.groups.include?(group)
+          customer.groups << group
+        end
       }
     }
 
