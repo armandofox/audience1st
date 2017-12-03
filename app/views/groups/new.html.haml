@@ -1,27 +1,26 @@
 - unless @customers.empty?
-  = form_tag groups_path do
-    = hidden_field_tag 'action_name', action_name
-    = hidden_field_tag 'customers_filter', @customers_filter
-    = hidden_field_tag 'page', @page
-    %h2 Selected Customers
-    %table.hilite#customers
-      %thead
-        = render :partial => 'customers/customer_header'
-      %tbody
-        = render :partial => 'customers/customer', :collection => @customers, locals: {checkbox: false}
-    %h2 Create or Choose a Group to Add
-    %div#tab
-      %%ul
-        %li{:class => "on"}= 'Existing Groups'
-        %li{:class => "off"}= 'Create a group'
-      %div#select{:class => "show"}
-        = render :partial => 'groupslist' unless @groups == nil
-        = render :plain => 'There is no groups.' if @groups == nil
-        
-      %div#create{:class => "hide"} 
-        = render :partial => 'form', :object => @group
-        = submit_tag 'Create Group',:customers => @customers
-    
-    = link_to 'Cancel', customers_path
-    
-    = render :partial => 'groupstab'
+  %h2 Selected Customers
+  %table.hilite#customers
+    %thead
+      = render :partial => 'customers/customer_header'
+    %tbody
+      = render :partial => 'customers/customer', :collection => @customers, locals: {checkbox: false}
+  %h2 Create or Choose a Group to Add
+  %div#tab
+    %ul
+      %li{:class => "on", :id => "ExistingGroupTab"}= 'Existing Groups'
+      %li{:class => "off", :id => "CreateGroupTab"}= 'Create a group'
+    %div#select{:class => "show"}
+      - unless @groups.empty?
+        = form_tag add_to_group_path(:customers => @customers), :method => :post do
+          = render :partial => 'groupslist' unless @groups == nil
+          = render :plain => 'There is no groups.' if @groups == nil
+          = submit_tag 'Add to Groups'
+
+    %div#create{:class => "hide"}
+      = render :partial => 'form', :object => @group
+      = submit_tag 'Create Group', :customers => @customers
+
+  = link_to 'Cancel', customers_path
+
+  = render :partial => 'groupstab'

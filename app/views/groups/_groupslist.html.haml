@@ -8,23 +8,23 @@
       %th City
       %th State
       %th Zip
-      %th Work_phone
-      %th Cell_phone
-      %th Work_fax
-      %th Group_Url
+      %th Work phone
+      %th Cell phone
+      %th Work fax
+      %th Group Url
       %th Comments
   %tbody
     - @groups.each do |group|
       %tr
-        %td= check_box("tag", {checked: true})
-        %td= group.name 
-        %td= group.type 
-        %td= group.address_line_1 
-        %td= group.city 
-        %td= group.state 
-        %td= group.zip 
-        %td= group.work_phone 
-        %td= group.cell_phone 
-        %td= group.work_fax 
-        %td= group.group_url 
+        %td= check_box_tag("group[#{group.id}]", {checked: false})
+        %td= group.name
+        %td= group.type
+        %td= group.address_line_1 + ' ' + group.address_line_2
+        %td= group.city
+        %td= group.state
+        %td= group.zip
+        %td= group.work_phone
+        %td= group.cell_phone
+        %td= group.work_fax
+        %td= group.group_url
         %td= group.comments

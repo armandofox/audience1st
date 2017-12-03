@@ -59,10 +59,16 @@ class GroupsController < ApplicationController
 
   def add_to_group
     @customers_id = params[:customers]
-    @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
-    @groups_id = params[:groups]
-    @groups = @gruops_id.map { |g| Group.find_by_id(g.to_i) }
+    @customers = @customers_id.map { |x| Customer.find_by_id(x) }
+    @groups_id = params[:group].keys
+    @groups = @groups_id.map { |g| Group.find_by_id(g) }
+    @groups.each { |group|
+      @customers.each {|customer|
+        customer.groups << group
+      }
+    }
 
-
+    flash[:notice] = 'Customers successfully added to groups.'
+    redirect_to customer_path(current_user)
   end
 end
