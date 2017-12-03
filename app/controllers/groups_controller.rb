@@ -1,5 +1,4 @@
 class GroupsController < ApplicationController
-  before_action :set_group, only: [:show, :edit, :update, :destroy]
   before_filter :is_staff_filter
 
 
@@ -17,6 +16,7 @@ class GroupsController < ApplicationController
   end
 
   def edit
+    @group = Group.new(params[:group])
   end
 
   def create
@@ -32,21 +32,14 @@ class GroupsController < ApplicationController
   end
 
   def update
-    respond_to do |format|
-      if @group.update(group_params)
-        format.html { redirect_to @group, notice: 'Group was successfully updated.' }
-        format.json { render :show, status: :ok, location: @group }
-      else
-        format.html { render :edit }
-        format.json { render json: @group.errors, status: :unprocessable_entity }
-      end
-    end
+
   end
 
   def destroy
+    @group = Group.find(params[:id])
     @group.destroy
     respond_to do |format|
-      format.html { redirect_to groups_url, notice: 'Group was successfully destroyed.' }
+      format.html { redirect_to groups_path, notice: 'Group was successfully destroyed.' }
       format.json { head :no_content }
     end
   end

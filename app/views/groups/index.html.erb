@@ -13,9 +13,8 @@
     <% @groups.each do |group| %>
       <tr>
         <td><%= group.name %></td>
-        <td><%= link_to 'Show', group_path(group) %></td>
-        <td><%= link_to 'Edit', edit_group_path(group) %></td>
-        <td><%= link_to 'Destroy', delete_group_path(group), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show/Edit', edit_group_path(group) %></td>
+        <td><%= link_to 'Delete', delete_group_path(group), method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>

@@ -2,7 +2,6 @@
 source 'https://rubygems.org'
 ruby '2.3.1'
 
-gem 'pg'
 gem 'acts_as_reportable'
 gem 'builder'
 gem 'bundler'
