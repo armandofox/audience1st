@@ -14,7 +14,7 @@ Scenario: customer sees incorrect email if they type it in wrong
   And I fill in "email" with "to@foolery.com"
   And I fill in "password" with "ajsdkfla"
   And I press "Login"
-  Then I should see "Sorry, incorrect Email/Password"
+  Then I should see "Couldn't log you in as 'to@foolery.com'"
 
 Scenario: customer should not see error message on successful login
   And I fill in "email" with "to@foolery.com"
@@ -23,4 +23,4 @@ Scenario: customer should not see error message on successful login
   And I fill in "email" with "tom@foolery.com"
   And I fill in "password" with "pass"
   And I press "Login"
-  Then I should not see "Sorry, incorrect Email/Password"
+  Then I should not see "Couldn't log you in as 'to@foolery.com'"
