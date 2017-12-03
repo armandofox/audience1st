@@ -38,12 +38,12 @@ Rails.application.routes.draw do
       resources :vouchers, :only => [:index, :new, :create] do
         member do
           put :update_comment
+
         end
         collection do
           post :transfer_multiple
           post :confirm_multiple
           post :cancel_multiple
-          put :cancel_multiple
         end
       end
     end
@@ -60,7 +60,7 @@ Rails.application.routes.draw do
 
     # AJAX responders
     get '/ajax/update_shows' => 'vouchers#update_shows', :as => 'update_shows'
-    get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer_full_name', :as => 'customer_autocomplete'
+    get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer', :as => 'customer_autocomplete'
     get '/ajax/customer_lookup' => 'customers#lookup', :as => 'customer_lookup'
 
     get '/ajax/mark_fulfilled' => 'reports#mark_fulfilled', :as => 'mark_fulfilled'

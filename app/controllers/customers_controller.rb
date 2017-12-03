@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class CustomersController < ApplicationController
   skip_before_filter :verify_authenticity_token
   # Actions requiring no login, customer login, and staff login respectively
@@ -46,7 +48,11 @@ class CustomersController < ApplicationController
     @vouchers_by_season = @subscriber_vouchers.group_by(&:season)
     @reserved_vouchers,@unreserved_vouchers =
       @subscriber_vouchers.partition { |v| v.reserved? }
-    flash[:notice] = (@current_user.login_message || "Logged in successfully") if new_session?
+    if new_session?
+      flash[:notice] = (@current_user.login_message || "Logged in successfully")
+      flash[:alert] = false
+    end
+
   end
 
   def edit
@@ -84,11 +90,11 @@ class CustomersController < ApplicationController
         :logged_in_id => current_user.id,
         :comments => flash[:notice])
       if @customer.email_changed? && @customer.valid_email_address? &&
-          params[:dont_send_email].blank? 
+          params[:dont_send_email].blank?
         # send confirmation email
         Authorization.update_identity_email(@customer)
         email_confirmation(:confirm_account_change,@customer, 
-                           "updated your email address in our system")
+          "updated your email address in our system")
       end
       if params[:in_checkout]
         redirect_to checkout_path(@customer)
@@ -152,7 +158,7 @@ class CustomersController < ApplicationController
     @customer = Customer.new
     @identity = env['omniauth.identity']
   end
-  
+ 
   # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
@@ -194,11 +200,16 @@ class CustomersController < ApplicationController
     @page = (params[:page] || 1).to_i
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
-    conds = Customer.match_any_content_column(@customers_filter)
-    @customers = Customer.
-      where(conds).
-      order('last_name,first_name').
-      paginate(:page => @page)
+
+    if @customers_filter!=nil
+      @customers = Customer.find_by_name(@customers_filter.split( /\s+/ ))
+      @customers = @customers +
+          Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
+              reject {|customer| @customers.include?(customer)}
+    else
+      @customers = Customer.all
+    end
+    @customers = @customers.paginate(:page => @page)
   end
 
   def list_duplicate
@@ -288,13 +299,19 @@ class CustomersController < ApplicationController
 
   # AJAX helpers
   # auto-completion for customer search - params[:term] is what user typed
-  def auto_complete_for_customer_full_name
+  def auto_complete_for_customer
     s = params[:term].to_s
     render :json => {} and return if s.length < 2
-    @customers =
-      Customer.find_by_multiple_terms(s.split( /\s+/ )).sort_by(&:sortable_name)
+    @customers = Customer.find_by_name(s.split( /\s+/ ))
+    @customers_s =
+      Customer.find_by_multiple_terms(s.split( /\s+/)).
+          reject {|customer| @customers.include?(customer)}
     result = @customers.map do |c|
       {'label' => c.full_name, 'value' => customer_path(c)}
+    end
+    customer_hash = Customer.find_by_terms_col(s)
+    @customers_s.each do |c|
+      result.push({'label' => c.full_name + customer_hash[c], 'value' => customer_path(c)})
     end
     render :json => result
   end
@@ -333,7 +350,7 @@ class CustomersController < ApplicationController
   end
 
   private
- 
+
   def delete_admin_only_attributes(params)
     Customer.extra_attributes.each { |a| params.delete(a) }
     params.delete(:comments)

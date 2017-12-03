@@ -5,3 +5,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   }, model: Authorization, 
   locate_conditions: lambda{|req| {model.auth_key('uid') => req['email']}}
 end
+
+OmniAuth.config.on_failure = Proc.new { |env|
+  OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+}

@@ -82,6 +82,9 @@ class SessionsController < ApplicationController
     redirect_to :back
   end
   
+  def failure
+    redirect_to login_path, alert: "Sorry, incorrect Email/Password" 
+  end
 
   protected
   

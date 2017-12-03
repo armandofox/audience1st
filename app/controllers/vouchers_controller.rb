@@ -25,7 +25,7 @@ class VouchersController < ApplicationController
   def index
     @vouchers = @customer.vouchers
   end
-  
+
   def new
     @page_title = "Add Comps"
     this_season = Time.this_season
@@ -36,7 +36,7 @@ class VouchersController < ApplicationController
       redirect_to(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
     end
     @valid_vouchers = []
-    @email_disabled = @customer.email.nil?
+    @email_disabled = @customer.email.blank?
   end
 
   def create
@@ -46,7 +46,6 @@ class VouchersController < ApplicationController
     thecomment = params[:comments].to_s
     theshowdate = Showdate.find_by_id(params[:showdate_id])
     shouldEmail = params[:customer_email]
-    
     redir = new_customer_voucher_path(@customer)
     return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
       thevouchertype && thenumtoadd > 0
@@ -83,18 +82,21 @@ class VouchersController < ApplicationController
     if shouldEmail
       email_confirmation(:confirm_reservation, @customer, theshowdate, thenumtoadd)
     end
-    
-    redirect_to customer_path(@customer)
+    redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
   def update_comment
-    @voucher.update_attributes(:comments => params[:comments], :processed_by => current_user)
+    vchs = Voucher.find(params[:voucher_ids].split(","))
+    vchs.each do |vchr|
+      vchr.update_attributes(:comments => params[:comments], :processed_by => current_user)
+    end
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
-      :voucher_id => @voucher.id,
+      :voucher_id => vchs.each.first.id,
       :comments => params[:comments],
-      :logged_in_id => current_user.id)
+      :logged_in_id => current_user.id) unless vchs.length == 0
     render :nothing => true
+
   end
 
   def reserve

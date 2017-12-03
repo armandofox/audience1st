@@ -115,6 +115,8 @@ GEM
     factory_girl_rails (4.8.0)
       factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
+    faker (1.8.4)
+      i18n (~> 0.5)
     fakeweb (1.3.0)
     faraday (0.12.1)
       multipart-post (>= 1.2, < 3)
@@ -206,6 +208,7 @@ GEM
     multi_test (0.1.2)
     multipart-post (2.0.0)
     mysql (2.9.1)
+    mysql2 (0.3.21)
     nenv (0.3.0)
     net-http-digest_auth (1.4.1)
     net-http-persistent (2.9.4)
@@ -235,6 +238,7 @@ GEM
     pdf-writer (1.1.8)
       color (>= 1.4.0)
       transaction-simple (~> 1.3)
+    pg (0.21.0)
     poltergeist (1.15.0)
       capybara (~> 2.1)
       cliver (~> 0.3.1)
@@ -421,6 +425,7 @@ DEPENDENCIES
   dbf
   dbi
   factory_girl_rails (~> 4.0)
+  faker
   fakeweb
   faye-websocket
   figaro
@@ -438,9 +443,11 @@ DEPENDENCIES
   mime-types
   minitest
   mysql
+  mysql2 (~> 0.3.18)
   nokogiri
   omniauth
   omniauth-identity
+  pg
   poltergeist
   pothoven-attachment_fu
   protected_attributes

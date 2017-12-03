@@ -15,5 +15,4 @@ tmp/
 
 db/*.sqlite3
 
-# Ignore application configuration
-/config/application.yml
+_site/
