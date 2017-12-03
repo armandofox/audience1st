@@ -3,7 +3,6 @@
     %tr
       %th 
       %th Name
-      %th Type
       %th Address
       %th City
       %th State
@@ -17,8 +16,7 @@
     - @groups.each do |group|
       %tr
         %td= check_box("tag", {checked: true})
-        %td= group.name 
-        %td= group.type 
+        %td= group.name  
         %td= group.address_line_1 
         %td= group.city 
         %td= group.state 
