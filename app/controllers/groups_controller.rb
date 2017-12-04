@@ -24,12 +24,12 @@ class GroupsController < ApplicationController
     if params[:company] != nil
       @group.attributes = params[:company]
       @group.save
+      redirect_to groups_path
     elsif params[:family] != nil
       @group.attributes = params[:family]
       @group.save
+      redirect_to new_group_path(:customers => @customers)
     end
-
-    redirect_to groups_path
   end
 
   def create
