@@ -161,7 +161,7 @@ Rails.application.routes.draw do
 
     get '/login' => 'sessions#new', :as => 'login'
     match '/logout' => 'sessions#destroy', :as => 'logout', :via => [:get, :post]
-
+    post '/groups/:id/delete_customers' => 'groups#delete_customer', :as => "delete_customers_from_group"
     # Routes for viewing and refunding orders
     resources :orders, :only => [:index, :show, :update]
 

@@ -62,7 +62,15 @@ class GroupsController < ApplicationController
       format.json { head :no_content }
     end
   end
-
+  def delete_customer
+    #params[:merge] contains the ids of the ids of the customers to delete, since i reused a partial
+    
+    @group = Group.find(params[:id])
+    params[:merge].keys.each do |cust|
+      @group.customers.delete(Customer.find(cust))
+    end
+    redirect_to group_path(@group)
+  end
   def add_to_group
     @customers_id = params[:customers]
     @customers = @customers_id.map { |x| Customer.find_by_id(x) }

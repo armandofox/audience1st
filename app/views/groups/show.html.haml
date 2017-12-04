@@ -1,4 +1,16 @@
 %h1 Editing Group
+= form_tag delete_customers_from_group_path, :method => :post do
+  %p
+    Select customers to:
+    = submit_tag 'Delete from Group'
+    = hidden_field_tag 'action_name', action_name
+    = hidden_field_tag 'customers_filter', @customers_filter
+    = hidden_field_tag 'page', @page
+  %table.hilite#customers
+    %thead
+      = render :partial => 'customers/customer_header'
+    %tbody
+      = render :partial => 'customers/customer', :collection => @group.customers
 %fieldset#group_info
   %legend Group Information
   %p
