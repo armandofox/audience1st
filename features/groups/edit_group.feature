@@ -15,7 +15,10 @@ Scenario: Clicking the group brings you to its edit page
   Then I should see "Group Information"
   Then I should see "Editing Samsung"
   Then the form should contain "Samsung" within "Group Name"
+
 Scenario: Changing form info changes the group
   Given I enter the groups page for "Samsung"
-  And I fill in "Address 1" with "1 Main Street"
+  And I fill in "Group Name" with "1 Main Street"
   And I submit the form by pressing "Edit Group"
+  Then I should see "Listing"
+  And I enter the groups page for "Samsung"

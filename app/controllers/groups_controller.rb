@@ -20,16 +20,14 @@ class GroupsController < ApplicationController
 
   def edit
     @group = Group.find(params[:id])
-
+    #single table inheritance causes this weird interaction in params
     if params[:company] != nil
       @group.attributes = params[:company]
-      @group.save
-      redirect_to groups_path
     elsif params[:family] != nil
       @group.attributes = params[:family]
-      @group.save
-      redirect_to new_group_path(:customers => @customers)
     end
+    @group.save
+    redirect_to groups_path
   end
 
   def create
@@ -64,7 +62,7 @@ class GroupsController < ApplicationController
   end
   def delete_customer
     #params[:merge] contains the ids of the ids of the customers to delete, since i reused a partial
-    
+
     @group = Group.find(params[:id])
     params[:merge].keys.each do |cust|
       @group.customers.delete(Customer.find(cust))

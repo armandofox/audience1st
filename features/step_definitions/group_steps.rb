@@ -61,3 +61,6 @@ end
 Given /I submit the form by pressing "Edit Group"/ do
   page.find('#Edit').click
 end
+Then /^"(.*)" should have value "1 Main Street"/ do |name|
+  expect(Group.all.first.name).to eq "1 Main Street"
+end
