@@ -7,7 +7,6 @@ tab {
 
 #tab ul {
   list-style:none; 
-  display:hide;
   height:30px;
   line-height:30px;
   border-bottom:2px #C88 solid;
@@ -20,13 +19,13 @@ tab {
   list-style:none; 
   height:29px; 
   line-height:29px;
-  padding:0px 10px;
-  margin:0px 10px; 
+  padding:0.1px 10px;
+  margin:0.1px 10px; 
   border:1px solid #BBB; 
   border-bottom:2px solid #C88;
 }
 
-#tab ul li.on {
+#tab ul .on {
   border-top:2px solid gray; 
   border-bottom:2px solid #FFF;
 }
