@@ -15,7 +15,7 @@ class GroupsController < ApplicationController
     @group = Group.new()
     @customers_id = params[:customers]
     @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
-    @groups = Group.all.select("id, name, address_line_1, address_line_2, city, state, zip, work_phone, cell_phone, work_fax, group_url, comments")
+    @groups = Group.select("id, name, address_line_1, address_line_2, city, state, zip, work_phone, cell_phone, work_fax, group_url, comments")
   end
 
   def edit
@@ -39,13 +39,15 @@ class GroupsController < ApplicationController
       @customers.each do |customer|
         @group.customers << customer
       end
+
     end
     if @group.save
       flash[:notice] = 'You successfully create a group.'
+      redirect_to customer_path(current_user)
     else
-      flash[:notice] = 'Sorry, something wrong with your implementation.'
+      flash[:notice] = 'Sorry, something wrong with your input information.'
+      redirect_to new_group_path(:customers => @customers)
     end
-    redirect_to customer_path(current_user)
   end
 
   def update

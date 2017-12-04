@@ -34,7 +34,7 @@
       %label.strong{:for=>:group_comments} Comments
       = f.text_area :comments, :cols => 60, :rows=> 3, :maxlength => 254
       %br{:style => 'line-height: 150%'}
-      %label Group Type:
+      %label.strong Group Type:
       %br{:style => 'line-height: 150%'}
       = f.radio_button :type, "Company"
       = label_tag :type_company, "Company"
