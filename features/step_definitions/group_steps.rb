@@ -39,7 +39,25 @@ Then(/^I will have a group "([^"]*)" with members "([^"]*)"$/) do |group, member
   }
   expect(result).to eq(true)
 end
+Then (/^the form should contain "(.*)" within "(.*)"/) do |text, field|
+  page.should have_field(field, with: text)
+end
+Given /^a group named "(.*)" exists$/ do |name|
+  @group = Group.create(:name => name)
 
+end
 And(/^I press the button "([^"]*)"$/) do |button|
   click_button(button)
+end
+Given /the groups database isn't seeded/ do
+  Group.delete_all
+end
+Then(/^"(.*)" should not be in the database/) do |name|
+  expect(Group.where(:name => name).length).to eq(0)
+end
+Given /I enter the groups page for "(.*)"/ do |name|
+  visit group_path(Group.where(:name => name).all.first)
+end
+Given /I submit the form by pressing "Edit Group"/ do
+  page.find('#Edit').click
 end

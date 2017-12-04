@@ -1,4 +1,4 @@
-%h1 Editing Group
+%h1 Editing #{@group.name}
 = form_tag delete_customers_from_group_path, :method => :post do
   %p
     Select customers to:
@@ -14,7 +14,7 @@
 %fieldset#group_info
   %legend Group Information
   %p
-    = form_tag edit_group_path(@group) do
+    = form_tag edit_group_path(@group), :id => "group_form" do
       = fields_for @group do |f|
         %label{:for => 'group_name'} Group Name
         = f.text_field :name, :value => @group.name , :size => 16, :maxlength => 40
@@ -57,4 +57,4 @@
         -else
           =f.radio_button :type, "Family"
           =label_tag :type_family, "Family"
-        = submit_tag 'Edit Group'
+        = submit_tag 'Edit Group', :id => "Edit"

@@ -13,3 +13,11 @@ Scenario: Users cannot see group index
   Given I am logged in as customer "Tom Foolery"
   And I enter the groups url
   Then I should see "You must have at least Staff privilege for this action."
+
+Scenario: Groups show up in groups index
+  Given a group named "Google" exists
+  And a group named "Samsung" exists
+  And I am logged in as staff
+  And I enter the groups url
+  Then I should see "Google"
+  Then I should see "Samsung"
