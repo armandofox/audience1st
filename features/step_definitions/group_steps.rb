@@ -39,18 +39,26 @@ Then(/^I will have a group "([^"]*)" with members "([^"]*)"$/) do |group, member
   }
   expect(result).to eq(true)
 end
-Then (/^the form should contain "(.*)" within "(.*)"/) do |text, field|
-  page.should have_field(field, with: text)
+Then (/^the form should contain "(.*)"/) do |text|
+  s = "input[value='"+text+"']"
+  expect(page).to have_selector(s)
+
 end
 Given /^a group named "(.*)" exists$/ do |name|
-  @group = Group.create(:name => name)
-
+  Group.create(:name => name)
+end
+Given /^a company named "(.*)" exists$/ do |name|
+  Group.create(:name => name, :type => "Company")
 end
 And(/^I press the button "([^"]*)"$/) do |button|
   click_button(button)
 end
 Given /the groups database isn't seeded/ do
   Group.delete_all
+end
+And(/^I enter "(.*)" into "#(.*)"/) do |value, id|
+  s = "company["+id+"]"
+  fill_in s, with: value
 end
 Then(/^"(.*)" should not be in the database/) do |name|
   expect(Group.where(:name => name).length).to eq(0)
@@ -61,6 +69,7 @@ end
 Given /I submit the form by pressing "Edit Group"/ do
   page.find('#Edit').click
 end
-Then /^"(.*)" should have value "1 Main Street"/ do |name|
-  expect(Group.all.first.name).to eq "1 Main Street"
+Then /group named "(.*)" should have "(.*)" for "(.*)"/ do |name, value, attribute|
+  expect(Group.where(:name => name).all.first.send(attribute)).to eq(value)
+
 end

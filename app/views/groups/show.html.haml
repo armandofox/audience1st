@@ -1,27 +1,28 @@
 %h1 Editing #{@group.name}
-= form_tag delete_customers_from_group_path, :method => :post do
-  %p
-    Select customers to:
-    = submit_tag 'Delete from Group'
-    = hidden_field_tag 'action_name', action_name
-    = hidden_field_tag 'customers_filter', @customers_filter
-    = hidden_field_tag 'page', @page
-  %table.hilite#customers
-    %thead
-      = render :partial => 'customers/customer_header'
-    %tbody
-      = render :partial => 'customers/customer', :collection => @group.customers
+- if @group.customers.length != 0
+  = form_tag delete_customers_from_group_path, :method => :post do
+    %p
+      Select customers to:
+      = submit_tag 'Delete from Group'
+      = hidden_field_tag 'action_name', action_name
+      = hidden_field_tag 'customers_filter', @customers_filter
+      = hidden_field_tag 'page', @page
+    %table.hilite#customers
+      %thead
+        = render :partial => 'customers/customer_header'
+      %tbody
+        = render :partial => 'customers/customer', :collection => @group.customers
 %fieldset#group_info
   %legend Group Information
   %p
-    = form_tag edit_group_path(@group), :id => "group_form" do
+    = form_tag edit_group_path(@group) do
       = fields_for @group do |f|
         %label{:for => 'group_name'} Group Name
         = f.text_field :name, :value => @group.name , :size => 16, :maxlength => 40
         %br/
         %br/
         %label{:for => 'group_address_line_1'} Address 1
-        = f.text_field :address_line_1, :value => @group.address_line_1,:size => 16, :maxlength => 40
+        = f.text_field :address_line_1,:id => "address_line_1", :value => @group.address_line_1,:size => 16, :maxlength => 40
         %br/
         %label{:for => 'group_address_line_2'} Address 2
         = f.text_field :address_line_2, :value => @group.address_line_2 ,:size => 16, :maxlength => 40
