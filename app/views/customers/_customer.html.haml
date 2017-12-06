@@ -21,8 +21,13 @@
   %td= customer.email
   %td= customer.company
   %td
-    -customer.groups.each do |group|
-      =group.name
-      %br/
+    -if not customer.groups.first.nil?
+      -if customer.groups.count > 1
+        -list_of_groups = ""
+        -customer.groups.each do |group|
+          -list_of_groups.empty? ? list_of_groups = group.name : list_of_groups = list_of_groups + ', ' + group.name 
+        %span{:title => list_of_groups}=customer.groups.first.name + " ..."
+      -else
+        =customer.groups.first.name
   %td= format_collection_with_style(customer.labels.map(&:name), 'customer_label')
 = hidden_field_tag('customers', @customers_id) if not checkbox
