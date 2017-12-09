@@ -66,8 +66,9 @@ class Show < ActiveRecord::Base
   }
 
   def self.seasons_range
-    [Show.find(:first, :order => 'opening_date').opening_date.year,
-      Show.find(:first, :order => 'opening_date DESC').opening_date.year]
+    earliest_year = Show.find(:first, :order => 'opening_date').season
+    latest_year = Show.find(:first, :order => 'opening_date DESC').season
+    [earliest_year, latest_year]
   end
   
   def special? ; event_type != 'Regular Show' ; end
