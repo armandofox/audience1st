@@ -281,6 +281,10 @@ class CustomersController < ApplicationController
     if (customers.length + customer_hash.length).eql? 0
       result.push({'label' => '(no matches)', 'value' => nil})
     end
+    customer_hash = Customer.find_by_terms_col(s)
+    if (customers.length + customer_hash.length).eql? 0
+      result.push({'label' => '(no matches)', 'value' => nil})
+    end
     customer_hash.each do |customer, info|
       result.push({'label' => customer.full_name + info, 'value' => customer_path(customer)})
     end
