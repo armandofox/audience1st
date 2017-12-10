@@ -43,8 +43,3 @@ Scenario: list all in autocomplete
   Then I should see autocomplete choice "list all"
   And I select autocomplete choice "list all"
   Then I should be on the list of customers page
-  And table "#customers" should include:
-    | First name | Last name |
-    | Alex       | Fox       |
-    | Armando    | Fox       |
-    | Bobby      | Boxer     |
