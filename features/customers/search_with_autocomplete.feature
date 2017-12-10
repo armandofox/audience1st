@@ -32,15 +32,10 @@ Scenario:search with other information
   Then I should see autocomplete choice "Armando Fox"
   And I should see autocomplete choice "Bobby Boxer(123 Fox Hill)"
   And I should see autocomplete choice "Organ Milk(dancingfox@mail.com)"
-<<<<<<< HEAD
-  And I should see autocomplete choice "list all"
-=======
->>>>>>> 06fb974... Add autocomplete method to have value when there is no result
   But I should not see autocomplete choice "Bob Bag"
 
 Scenario: search with no result
   When I fill "search_field" autocomplete field with "No matching result"
-<<<<<<< HEAD
   Then I should see autocomplete choice "(no matches)"
 
 Scenario: list all in autocomplete
@@ -53,7 +48,3 @@ Scenario: list all in autocomplete
     | Alex       | Fox       |
     | Armando    | Fox       |
     | Bobby      | Boxer     |
->>>>>>> 184205e... Add list all and a little bit adjustment
-=======
-  Then I should see autocomplete choice "(no matches)"
->>>>>>> 06fb974... Add autocomplete method to have value when there is no result
