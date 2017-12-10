@@ -114,8 +114,6 @@ class Vouchertype < ActiveRecord::Base
   
   def inspect
     sprintf "%s, %s, $%.02f", name, category, price
-    if bundle?
-    end
   end
 
   def <=>(other)
