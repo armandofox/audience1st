@@ -38,3 +38,7 @@ Scenario:search with other information
   And I should see autocomplete choice "Bobby Boxer(123 Fox Hill)"
   And I should see autocomplete choice "Organ Milk(dancingfox@mail.com)"
   But I should not see autocomplete choice "Bob Bag"
+
+Scenario: search with no result
+  When I fill "search_field" autocomplete field with "No matching result"
+  Then I should see autocomplete choice "(no matches)"
