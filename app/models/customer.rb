@@ -517,7 +517,6 @@ EOSQL1
   # complete
   def self.find_by_terms_col(terms)
     return [] if terms.empty?
-    terms = terms.split( /\s+/)
     customers =
         Customer.find_by_multiple_terms(terms).
             reject {|customer| Customer.find_by_name(terms).include?(customer)}
