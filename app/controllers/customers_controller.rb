@@ -278,13 +278,14 @@ class CustomersController < ApplicationController
       result.push({'label' => c.full_name, 'value' => customer_path(c)})
     end
     customer_hash = Customer.find_by_terms_col(terms.split( /\s+/ ))
-    if (customers.length + customer_hash.length).eql? 0
-      result.push({'label' => '(no matches)', 'value' => nil})
-    end
     customer_hash.each do |customer, info|
       result.push({'label' => customer.full_name + info, 'value' => customer_path(customer)})
     end
-    result.push({'label' => 'list all', 'value' => customers_path(:customers_filter => params[:term])})
+    if (customers.length + customer_hash.length).eql? 0
+      result.push({'label' => '(no matches)', 'value' => nil})
+    else
+      result.push({'label' => 'list all', 'value' => customers_path(:customers_filter => params[:term])})
+    end
     render :json => result
   end
 
