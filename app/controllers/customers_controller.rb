@@ -100,6 +100,8 @@ class CustomersController < ApplicationController
         redirect_to checkout_path(@customer)
       else
         redirect_to customer_path(@customer)
+        email_confirmation(:confirm_account_change,@customer,
+                           "updated your email address in our system")
       end
     rescue ActiveRecord::RecordInvalid
       flash[:alert] = ["Update failed: ", @customer.errors.as_html, "Please fix error(s) and try again."]
@@ -158,7 +160,6 @@ class CustomersController < ApplicationController
     @customer = Customer.new
     @identity = env['omniauth.identity']
   end
- 
   # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
@@ -300,19 +301,22 @@ class CustomersController < ApplicationController
   # AJAX helpers
   # auto-completion for customer search - params[:term] is what user typed
   def auto_complete_for_customer
-    s = params[:term].to_s
-    render :json => {} and return if s.length < 2
-    @customers = Customer.find_by_name(s.split( /\s+/ ))
-    @customers_s =
-      Customer.find_by_multiple_terms(s.split( /\s+/)).
-          reject {|customer| @customers.include?(customer)}
-    result = @customers.map do |c|
-      {'label' => c.full_name, 'value' => customer_path(c)}
+    terms = params[:term].to_s
+    render :json => {} and return if terms.length < 2
+    customers = Customer.find_by_name(terms.split( /\s+/ ))
+    
+    result = Array.new
+    customers.each do |c|
+      result.push({'label' => c.full_name, 'value' => customer_path(c)})
     end
-    customer_hash = Customer.find_by_terms_col(s)
-    @customers_s.each do |c|
-      result.push({'label' => c.full_name + customer_hash[c], 'value' => customer_path(c)})
+    customer_hash = Customer.find_by_terms_col(terms.split( /\s+/ ))
+    if (customers.length + customer_hash.length).eql? 0
+      result.push({'label' => '(no matches)', 'value' => nil})
     end
+    customer_hash.each do |customer, info|
+      result.push({'label' => customer.full_name + info, 'value' => customer_path(customer)})
+    end
+    result.push({'label' => 'list all', 'value' => customers_path(:customers_filter => params[:term])})
     render :json => result
   end
 

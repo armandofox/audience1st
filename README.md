@@ -15,15 +15,11 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 
 Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://armandofox.github.io/audience1st/)?
 
-You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 2/Ruby 1.8.7 app deployed.
+You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 4/Ruby 2.3 app deployed.
 
-# Legacy Ruby/Rails
+# Deployment
 
-The app is on Rails 2.3.18 (2.3.5 with security patches) and Ruby 1.8.7.  I've been meaning to migrate it to Rails 3 and then Rails 4.  Help welcome.
-
-But for now you'll have to get Rails 2.3.18 and Ruby 1.8.7 deployed on whatever host you want to deploy to.  I've been using Rackspace with Apache, mod_rails, and Phusion Passenger.
-
-This is a stock Rails app, with the following exceptions/additions:
+This is a stock Rails 4 app, with the following exceptions/additions:
 
 0. The task `Customer.notify_upcoming_birthdays` emails an administrator or boxoffice manager with information about customers whose birthdays are coming up soon.  The threshold for "soon" can be set in Admin > Options.
 
