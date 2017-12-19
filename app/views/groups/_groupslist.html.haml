@@ -15,7 +15,7 @@
   %tbody
     - @groups.each do |group|
       %tr
-        %td= check_box_tag("group[#{group.id}]", 'yes', @customer.groups.exists?(group))
+        %td= check_box_tag("group[#{group.id}]", 'yes', @customer.groups.exists?(group.id))
         %td= group.name
         %td= group.address_line_1 + ' ' + group.address_line_2.to_s unless group.address_line_1 == nil
 

@@ -10,17 +10,28 @@
     %p
       %label{:for=>:customer_role} Role
       =select('customer', 'role',  roles_with_names, {:selected => @customer.role_name })
-      %br/ 
+      %br/
 
   %label{:for=>:customer_labels} Labels
   = render :partial => 'labels'
+  %p
+    %label{:for=>:customer_labels} Groups:
+    %br/
+    - @customer.groups.each do |group|
+      %span= link_to(group.name, group_path(group))
+      %br/
+    %p
+      = link_to('Manage groups', new_group_path(:customers => [@customer.id]), :class => 'genButton')
+      = popup_help_for 'manage_groups'
+    %br/
+
 
   %label{:for=>:customer_comments} Staff Comments <br />(not seen by customer):
   =text_area :customer, :comments, :cols => 60, :rows => 5
   %br/
 
   =check_box_tag 'dont_send_email', '1', true
-  %label.no_float{:for=>:dont_send_email}  
+  %label.no_float{:for=>:dont_send_email}
     %span.strong Do not
     email customer a confirmation of these changes
 

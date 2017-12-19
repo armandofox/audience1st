@@ -15,7 +15,7 @@ class GroupsController < ApplicationController
   def new
     @customer_id = params[:customers]
     if @customer_id.length != 1
-      flash[:notice] = "Please select exactly 1 customer to manage groups"
+      flash[:notice] = "Please select exactly 1 customer to manage what groups they are in"
       redirect_to customers_path
     end
     @group = Group.new()
