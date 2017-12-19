@@ -1,9 +1,9 @@
 # General
 
 disable_admin: >
-  
+
   Lets you switch between viewing the site with admin privileges vs. how
-  a regular patron would see it.  
+  a regular patron would see it.
 
 # Logging in
 
@@ -23,7 +23,7 @@ credit_card_verification_value: >
 skip_validation: >
 
   Checking this box, which is invisible to regular customers, skips
-  certain credit card prevalidations (including CVV checking) 
+  certain credit card prevalidations (including CVV checking)
   normally performed
   before submitting the charge transaction.  Check this box at
   your own risk!
@@ -34,7 +34,7 @@ advance_sales_cutoff: >
 
   The time after which customers cannot self-purchase tickets online for
   this performance.  (You can set a default value for this in Admin >
-  Options.) 
+  Options.)
 
 max_advance_sales: >
 
@@ -69,20 +69,23 @@ merge_customers: >
   automatically retains all nonblank field values, breaking ties by
   preferring the customer record that has had the most recent activity.
 
-delete_customers: > 
+delete_customers: >
 
   When you Forget a customer, all their transactions (donations, purchases,
   etc.) are transferred to the 'Anonymous Customer', so sales reporting is
   unaffected.  This action cannot be undone.
 
+manage_groups: >
+  View and manage the groups of 1 customer.
+
 # Importing
 
 import_show_name:  >
- 
+
   Because the format of will-call lists varies, you have to specify
   which show this is for.  If it doesn't exist, enter the name of a new
   show, which will be automatically created in order to import the
-  list.  NOTE!  If you enter a new show name, that show will be created 
+  list.  NOTE!  If you enter a new show name, that show will be created
   even if the import is aborted or fails.
 
 import_choose_file:  >
@@ -92,7 +95,7 @@ import_choose_file:  >
   as "Windows CSV".  Some imports also accept other file types.
 
 check_for_duplicates_after_import: >
-  
+
   When automatically importing customers (such as from an external
   will-call list or spreadsheet), Audience1st cannot always tell for
   sure if two customers with similar names are duplicates.  After doing
@@ -107,13 +110,13 @@ bulk_download_login: >
 
   Enter the username and password you'd use to login to the "Producer"
   account for this vendor (the account that lets you download sales
-  reports). 
+  reports).
 
 # Editing shows and showdates
 
 show_description: >
 
-  You can add an optional short description to a show or event (e.g. 
+  You can add an optional short description to a show or event (e.g.
   "This show contains strong language") or explanations of special
   ticket prices (e.g. "VIP Ticket price includes a free glass of wine")
   that will appear whenever the customer selects that show or event for
@@ -129,28 +132,28 @@ showdate_description: >
 show_house_capacity: >
 
   The true (physical) capacity of the house for this production, used
-  for reporting purposes and for keeping track of how many seats are 
+  for reporting purposes and for keeping track of how many seats are
   available while checking in customers during Front of House
   operations.  You MUST enter a number greater than zero
   here, or all performances will appear to be sold out.
-  To set the maximum allowed advance sales for a given performance, 
+  To set the maximum allowed advance sales for a given performance,
   click on the Edit link next to the performance date below.
 
 show_sold_out_dropdown_message: >
 
   When a performance is sold out, what should appear next to the
-  performance date in the dropdown menu on the ticket purchase page?  
+  performance date in the dropdown menu on the ticket purchase page?
   (Leave blank to display nothing special.)
 
 show_sold_out_customer_info: >
 
-  When a customer tries to select a sold-out performance on the ticket 
-  purchase page, what instructions or explanation should appear?  (For 
+  When a customer tries to select a sold-out performance on the ticket
+  purchase page, what instructions or explanation should appear?  (For
   example, you might direct them to call the box office to inquire
   about cancellations.)
 
 show_listing_date: >
- 
+
   The date the show will first appear on any customer-facing screens.
   Before this date, the show will appear not to exist.
 
@@ -250,18 +253,18 @@ vouchertype_clone: >
 
 valid_voucher_max_sales_for_type:  >
 
-  The maximum advance sales for this ticket type for this performance 
-  (for per-ticket-type capacity controls).  
-  A box office agent can always sell 
-  beyond this limit either in advance or at walkup sales time; the limit 
+  The maximum advance sales for this ticket type for this performance
+  (for per-ticket-type capacity controls).
+  A box office agent can always sell
+  beyond this limit either in advance or at walkup sales time; the limit
   applies ONLY to customer self-purchase.
 
 valid_voucher_promo_code: >
 
-  If you enter a promo code here, customers (but not box office staff) 
-  will have to enter it in order to purchase this type of ticket for 
+  If you enter a promo code here, customers (but not box office staff)
+  will have to enter it in order to purchase this type of ticket for
   this show.  You can associate multiple promo codes (separated by commas) with the same
-  redemption, since their sales are reported separately. 
+  redemption, since their sales are reported separately.
   Promo codes are not case-sensitive, so "Discount", "DISCOUNT", and
   "discount" are all equivalent.
 
@@ -298,10 +301,10 @@ select_dates: >
 
 checkin: >
 
-  Click a number in this column to "check in" that many people in the 
-  customer's party as they arrive.  
+  Click a number in this column to "check in" that many people in the
+  customer's party as they arrive.
   A highlighted number indicates people who have
-  checked in.  
+  checked in.
   Click the X to "un-check-in" everyone in that customer's party.
 
 checkin_house_capacity: >
@@ -314,4 +317,4 @@ checkin_house_capacity: >
 boxoffice_manager_only: >
 
   Issuing this ticket type in this situation requires Box Office Manager
-  privilege. 
+  privilege.

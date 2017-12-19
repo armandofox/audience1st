@@ -1,23 +1,23 @@
-- unless @customers.empty?
-  %h2 Selected Customers
-  %table.hilite#customers
+- unless @customer.nil?
+  %h2 Selected Customer
+  %table.hilite#customer
     %thead
       = render :partial => 'customers/customer_header'
     %tbody
-      = render :partial => 'customers/customer', :collection => @customers, locals: {checkbox: false}
-  %h2 Create or Choose a Group to Add
+      = render :partial => 'customers/customer', :collection => [@customer], locals: {checkbox: false}
+  %h2 Manage groups or add to a new group
   %div#tab
     %ul
       %li{:class => "on", :id => "ExistingGroupTab"}= 'Existing Groups'
       %li{:class => "off", :id => "CreateGroupTab"}= 'Create a group'
     %div#select{:class => "show"}
       - unless @groups.empty?
-        = form_tag add_to_group_path(:customers => @customers), :method => :post do
+        = form_tag update_customer_groups_path(:customer => @customer), :method => :post do
           = render :partial => 'groupslist' unless @groups == nil
-          = render :plain => 'There is no groups.' if @groups == nil
-          = submit_tag 'Add to Groups'
+          = render :plain => 'There are no groups.' if @groups == nil
+          = submit_tag 'Update Groups'
 
     %div#create{:class => "hide"}
-      = form_tag groups_path(:customers => @customers),:method => :post do
+      = form_tag create_group_path(:customer => @customer),:method => :post do
         = render :partial => 'form'
-        = submit_tag 'Create Group', :customers => @customers
+        = submit_tag 'Create Group', :customer => @customer, :test => "joe"

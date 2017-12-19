@@ -11,15 +11,17 @@ class GroupsController < ApplicationController
 
   end
 
+  #manage groups
   def new
-    @customers_id = params[:customers]
-    if @customers_id.length != 1
+    @customer_id = params[:customers]
+    if @customer_id.length != 1
       flash[:notice] = "Please select exactly 1 customer to manage groups"
       redirect_to customers_path
     end
     @group = Group.new()
-
-    @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
+    @customer = Customer.find(@customer_id.first)
+    puts("here is the customer")
+    puts(@customer)
     @groups = Group.select("id, name, address_line_1, address_line_2, city, state, zip, work_phone, cell_phone, work_fax, group_url, comments")
   end
 
@@ -37,23 +39,31 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(params[:group])
-    if params[:commit] =~ /create/i
-      @customers = params[:customers].map { |x| Customer.find_by_id(x.to_i) }
-      @customers.each do |customer|
-        @group.customers << customer
+
+      @customer = Customer.find(params[:customer])
+      @group.customers << @customer
+      if @group.save
+        flash[:notice] = 'You successfully create a group.'
+        redirect_to group_path(@group)
+      else
+        flash[:notice] = 'Sorry, something wrong with your input information.'
+        redirect_to new_group_path(:customers => [@customer])
       end
 
-    end
-    if @group.save
-      flash[:notice] = 'You successfully create a group.'
-      redirect_to group_path(@group)
-    else
-      flash[:notice] = 'Sorry, something wrong with your input information.'
-      redirect_to new_group_path(:customers => @customers)
-    end
   end
 
-  def update
+  def update_customer_groups
+    customer_id = params[:customer]
+    customer = Customer.find(customer_id)
+    customer.groups.delete_all
+    if !params[:group].nil?
+      params[:group].keys.each do |group_id|
+        customer.groups <<  Group.find(group_id)
+      end
+    end
+    flash[:notice] = "Successfully updated groups"
+    redirect_to customer_path(customer_id)
+
 
   end
 
@@ -75,12 +85,15 @@ class GroupsController < ApplicationController
     redirect_to group_path(@group)
   end
   def add_to_group
-    @customers_id = params[:customers]
-    @customers = @customers_id.map { |x| Customer.find_by_id(x) }
-
+    @customer_id = params[:customers]
+    if @customer_id.length != 1
+      flash[:notice] = "Please select exactly 1 customer to manage groups"
+      redirect_to customers_path
+    end
+    @customer = Customer.find(@customer_id)
     if params[:group].nil?
       flash[:alert] = "You haven't selected any groups!"
-      redirect_to new_group_path(:customers => @customers)
+      redirect_to new_group_path(:customers => [@customer])
     else
       @groups_id = params[:group].keys
       @groups = @groups_id.map { |g| Group.find_by_id(g) }
@@ -92,7 +105,7 @@ class GroupsController < ApplicationController
         }
       }
 
-      flash[:notice] = 'Customers successfully added to groups.'
+      flash[:notice] = 'Successfully updated groups.'
       redirect_to customer_path(current_user)
     end
   end
