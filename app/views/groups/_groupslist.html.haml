@@ -1,7 +1,7 @@
 %table
   %thead
     %tr
-      %th 
+      %th
       %th Name
       %th Address
       %th City
@@ -17,7 +17,8 @@
       %tr
         %td= check_box_tag("group[#{group.id}]", {checked: false})
         %td= group.name
-        %td= group.address_line_1 + ' ' + group.address_line_2
+        %td= group.address_line_1 + ' ' + group.address_line_2.to_s unless group.address_line_1 == nil
+
         %td= group.city
         %td= group.state
         %td= group.zip

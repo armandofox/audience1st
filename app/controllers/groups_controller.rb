@@ -12,8 +12,13 @@ class GroupsController < ApplicationController
   end
 
   def new
-    @group = Group.new()
     @customers_id = params[:customers]
+    if @customers_id.length != 1
+      flash[:notice] = "Please select exactly 1 customer to manage groups"
+      redirect_to customers_path
+    end
+    @group = Group.new()
+
     @customers = @customers_id.map { |x| Customer.find_by_id(x.to_i) }
     @groups = Group.select("id, name, address_line_1, address_line_2, city, state, zip, work_phone, cell_phone, work_fax, group_url, comments")
   end
@@ -41,7 +46,7 @@ class GroupsController < ApplicationController
     end
     if @group.save
       flash[:notice] = 'You successfully create a group.'
-      redirect_to customer_path(current_user)
+      redirect_to group_path(@group)
     else
       flash[:notice] = 'Sorry, something wrong with your input information.'
       redirect_to new_group_path(:customers => @customers)
