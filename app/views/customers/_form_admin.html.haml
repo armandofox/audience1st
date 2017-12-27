@@ -16,13 +16,17 @@
   = render :partial => 'labels'
   %p
     %label{:for=>:customer_labels} Groups:
+    = link_to('Manage groups', new_group_path(:customers => [@customer.id]), :class => 'genButton')
+    = popup_help_for 'manage_groups'
+    %br/
     %br/
     - @customer.groups.each do |group|
-      %span= link_to(group.name, group_path(group))
+      / this part is to get the indentation to line up
+      %label -
+      = link_to(group.name, group_path(group))
       %br/
-    %p
-      = link_to('Manage groups', new_group_path(:customers => [@customer.id]), :class => 'genButton')
-      = popup_help_for 'manage_groups'
+
+
     %br/
 
 

@@ -20,8 +20,6 @@ class GroupsController < ApplicationController
     end
     @group = Group.new()
     @customer = Customer.find(@customer_id.first)
-    puts("here is the customer")
-    puts(@customer)
     @groups = Group.select("id, name, address_line_1, address_line_2, city, state, zip, work_phone, cell_phone, work_fax, group_url, comments")
   end
 
