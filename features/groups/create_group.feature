@@ -18,13 +18,16 @@ Background:
     | Alice      | Fox       |
 
 
-  Scenario: Go to new group page with selecting customers
-    When I select customers "Armando Fox, Alex For" to add to groups
-    And I press "Add to group" within "#mergebar1"
-    Then I should be on the add to group page
+
+  When I select customers "Armando Fox" to add to groups
+  And I press "Manage groups" within "#mergebar1"
+  Then I should be on the add to group page
 
   Scenario: Creating new group with information
-    When I fill in the "name field" with "Fox Family"
-    And I press "Create Group" submit button
-    Then I will have a group "Fox Family" with members "Armando Fox, Alex Fox"
-    
+    Then I should see "Manage groups"
+    And I try to create a group
+    Then I should see "Group Information"
+    When I fill in "group_name" with "Fox Family"
+    And I press "Create Group"
+    Then I will have a group "Fox Family" with members "Armando Fox"
+    Then I should see "Editing Fox Family"

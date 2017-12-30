@@ -3,7 +3,15 @@ Given /I enter the groups url/ do
   visit "/groups"
 end
 
-
+And (/^I select the following customers: "(.*)"/) do |customers|
+  list = customers.split(', ')
+  list.each {|name|
+    m = /^(.*) (.*)$/.match(name)
+    # m[1] is the first name and m[2] is the last name
+    c= find_or_create_customer m[1], m[2]
+    check "merge[#{c.id}]"
+  }
+end
 And(/^I select customers "([^"]*)" to add to groups$/) do |customers|
   list = customers.split(', ')
   customers = []
@@ -24,6 +32,11 @@ And(/^I select groups "([^"]*)"$/) do |groups|
     c = Group.find_by(:name => name)
     check "group[#{c.id}]"
   }
+end
+
+And(/^the customer "(.*)" should be in the database/) do |name|
+  c = Customer.where(:first_name => name)
+  expect(c.length).to eq 1
 end
 
 Then(/^I will have a group "([^"]*)" with members "([^"]*)"$/) do |group, members|
@@ -50,6 +63,11 @@ end
 Given /^a company named "(.*)" exists$/ do |name|
   Group.create(:name => name, :type => "Company")
 end
+And(/"(.*)" is in the group "(.*)"/) do |name, group|
+  g = Group.where(:name => group).all.first
+  c = Customer.where(:first_name => name).all.first
+  c.groups <<  g
+end
 And(/^I press the button "([^"]*)"$/) do |button|
   click_button(button)
 end
@@ -66,8 +84,13 @@ end
 Given /I enter the groups page for "(.*)"/ do |name|
   visit group_path(Group.where(:name => name).all.first)
 end
+
+
 Given /I submit the form by pressing "Edit Group"/ do
   page.find('#Edit').click
+end
+Given /I try to create a group/ do
+  find('#tab').find('#ExistingGroupTab').click
 end
 Then /group named "(.*)" should have "(.*)" for "(.*)"/ do |name, value, attribute|
   expect(Group.where(:name => name).all.first.send(attribute)).to eq(value)

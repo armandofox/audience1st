@@ -16,19 +16,18 @@ Background:
     | Happy Comp.     | 4321 Ward St.  | Floor 4        | Berkeley | CA    | 94702 | 123456     | 654321     | cap.com   |
 
 
-  And I select customers "MaryJane Weigandt, Janey Weigandt" to add to groups
-  And I press "Add to group" within "#mergebar1"
+  And I select customers "MaryJane Weigandt" to add to groups
+  And I press "Manage groups" within "#mergebar1"
   Then I should be on the add to group page
   Then I should see "MaryJane Weigandt"
-  And I should see "Janey Weigandt"
 
   Scenario: Add to a single existing group
     And I select groups "Weigandt Family"
-    And I press the button "Add to Groups"
-    Then I will have a group "Weigandt Family" with members "MaryJane Weigandt, Janey Weigandt"
+    And I press the button "Update Groups"
+    Then I will have a group "Weigandt Family" with members "MaryJane Weigandt"
 
   Scenario: Add to multiple existing groups
     And I select groups "Weigandt Family, Happy Comp."
-    And I press the button "Add to Groups"
-    Then I will have a group "Weigandt Family" with members "MaryJane Weigandt, Janey Weigandt"
-    And I will have a group "Happy Comp." with members "MaryJane Weigandt, Janey Weigandt"
+    And I press the button "Update Groups"
+    Then I will have a group "Weigandt Family" with members "MaryJane Weigandt"
+    And I will have a group "Happy Comp." with members "MaryJane Weigandt"

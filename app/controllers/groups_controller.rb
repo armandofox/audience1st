@@ -74,9 +74,14 @@ class GroupsController < ApplicationController
     end
   end
   def delete_customer
-    #params[:merge] contains the ids of the ids of the customers to delete, since i reused a partial
-
     @group = Group.find(params[:id])
+
+    #params[:merge] contains the ids of the ids of the customers to delete, since i reused a partial
+    if params[:merge].nil?
+      flash[:notice] = "No Customers Selected"
+      redirect_to group_path(@group)
+      return
+    end
     params[:merge].keys.each do |cust|
       @group.customers.delete(Customer.find(cust))
     end
