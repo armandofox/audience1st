@@ -24,6 +24,7 @@ gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'rails', '4.2.9'            # 4
 gem 'rake'
 gem 'ruport'
+gem 'rvm-capistrano'
 # stripe depends on rest-client and json, but we can't use the latest version of
 # those until upgrade to ruby >= 1.9.2
 gem 'rest-client'
@@ -55,7 +56,7 @@ group :development, :test do
   gem 'guard-rspec', :require => false
   gem 'guard-cucumber'
   gem 'minitest'
-  gem 'capistrano'
+  gem 'capistrano', '~> 2.0'
   gem 'faye-websocket'
   gem 'database_cleaner'
   gem 'factory_girl_rails', '~> 4.0'

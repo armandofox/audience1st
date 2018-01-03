@@ -1,11 +1,13 @@
 # automatically run 'bundle install' to put bundled gems into vendor/ on deploy
+require 'rvm/capistrano'
 require 'bundler/capistrano'
+set :rvm_ruby_string, '2.3.1'
 set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
 # so capistrano can find 'bundle' binary...
-set :default_environment, {
-  'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
-}
+# set :default_environment, {
+#   'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
+# }
 
 set :venue, variables[:venue]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
@@ -25,7 +27,7 @@ set :config,          ALL_CONFIG[venue]
 set :application_yml, config['application_yml']
 
 set :use_sudo,        false
-set :host,            "audience1st.com"
+set :host,            "new.audience1st.com"
 role :app,            "#{host}"
 role :web,            "#{host}"
 role :db,             "#{host}", :primary => true
@@ -36,6 +38,7 @@ set :deploy_via, :remote_cache
 set :branch, (variables[:branch] || 'master')
 ssh_options[:keys] = %w(/Users/fox/.ssh/identity)
 ssh_options[:forward_agent] = true
+ssh_options[:port] = 27835
 
 namespace :provision do
   abort "Must set '-Svenue=venuename'" unless venue = variables[:venue]
