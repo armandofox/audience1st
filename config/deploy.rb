@@ -1,7 +1,9 @@
 # automatically run 'bundle install' to put bundled gems into vendor/ on deploy
 require 'rvm/capistrano'
 require 'bundler/capistrano'
+# to make RVM work properly with Capistrano
 set :rvm_ruby_string, '2.3.1'
+set :rvm_type, :system
 set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
 # so capistrano can find 'bundle' binary...
