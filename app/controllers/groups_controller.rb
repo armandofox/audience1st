@@ -1,7 +1,14 @@
 class GroupsController < ApplicationController
   before_filter :is_staff_filter
 
-
+  def validate_one_customer
+    @customer_id = params[:customers]
+    if @customer_id.length != 1
+      flash[:notice] = "Please select exactly 1 customer to manage what groups they are in"
+      redirect_to customers_path
+      return
+    end
+  end
   def index
     @groups = Group.all
   end
@@ -13,11 +20,6 @@ class GroupsController < ApplicationController
 
   #manage groups
   def new
-    @customer_id = params[:customers]
-    if @customer_id.length != 1
-      flash[:notice] = "Please select exactly 1 customer to manage what groups they are in"
-      redirect_to customers_path
-    end
     @group = Group.new()
     @customer = Customer.find(@customer_id.first)
     @groups = Group.select("id, name, address_line_1, address_line_2, city, state, zip, work_phone, cell_phone, work_fax, group_url, comments")
@@ -33,11 +35,11 @@ class GroupsController < ApplicationController
     end
     @group.save
     redirect_to groups_path
+    return
   end
 
   def create
     @group = Group.new(params[:group])
-
       @customer = Customer.find(params[:customer])
       @group.customers << @customer
       if @group.save
@@ -46,8 +48,8 @@ class GroupsController < ApplicationController
       else
         flash[:notice] = 'Sorry, something wrong with your input information.'
         redirect_to new_group_path(:customers => [@customer])
+        return
       end
-
   end
 
   def update_customer_groups
@@ -61,6 +63,7 @@ class GroupsController < ApplicationController
     end
     flash[:notice] = "Successfully updated groups"
     redirect_to customer_path(customer_id)
+    return
 
 
   end
@@ -68,14 +71,12 @@ class GroupsController < ApplicationController
   def destroy
     @group = Group.find(params[:id])
     @group.destroy
-    respond_to do |format|
-      format.html { redirect_to groups_path, notice: 'Group was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    flash[:notice] = "Group was successfully destroyed."
+    redirect_to groups_path
+    return
   end
   def delete_customer
     @group = Group.find(params[:id])
-
     #params[:merge] contains the ids of the ids of the customers to delete, since i reused a partial
     if params[:merge].nil?
       flash[:notice] = "No Customers Selected"
@@ -86,17 +87,15 @@ class GroupsController < ApplicationController
       @group.customers.delete(Customer.find(cust))
     end
     redirect_to group_path(@group)
+    return
   end
   def add_to_group
-    @customer_id = params[:customers]
-    if @customer_id.length != 1
-      flash[:notice] = "Please select exactly 1 customer to manage groups"
-      redirect_to customers_path
-    end
+    validate_one_customer()
     @customer = Customer.find(@customer_id)
     if params[:group].nil?
       flash[:alert] = "You haven't selected any groups!"
       redirect_to new_group_path(:customers => [@customer])
+      return
     else
       @groups_id = params[:group].keys
       @groups = @groups_id.map { |g| Group.find_by_id(g) }
@@ -107,9 +106,9 @@ class GroupsController < ApplicationController
           end
         }
       }
-
       flash[:notice] = 'Successfully updated groups.'
       redirect_to customer_path(current_user)
+      return
     end
   end
 end
