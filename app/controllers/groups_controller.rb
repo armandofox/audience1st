@@ -65,8 +65,6 @@ class GroupsController < ApplicationController
     flash[:notice] = "Successfully updated groups"
     redirect_to customer_path(customer_id)
     return
-
-
   end
 
   def destroy
@@ -89,27 +87,5 @@ class GroupsController < ApplicationController
     end
     redirect_to group_path(@group)
     return
-  end
-  def add_to_group
-    validate_one_customer()
-    @customer = Customer.find(@customer_id)
-    if params[:group].nil?
-      flash[:alert] = "You haven't selected any groups!"
-      redirect_to new_group_path(:customers => [@customer])
-      return
-    else
-      @groups_id = params[:group].keys
-      @groups = @groups_id.map { |g| Group.find_by_id(g) }
-      @groups.each { |group|
-        @customers.each { |customer|
-          unless customer.groups.include?(group)
-            customer.groups << group
-          end
-        }
-      }
-      flash[:notice] = 'Successfully updated groups.'
-      redirect_to customer_path(current_user)
-      return
-    end
   end
 end

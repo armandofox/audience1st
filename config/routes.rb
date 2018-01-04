@@ -9,7 +9,6 @@ Rails.application.routes.draw do
     post '/groups/create' => 'groups#create', :as => 'create_group'
     delete '/groups/:id' => 'groups#destroy', :as => 'delete_group'
     post '/groups/:id/edit' => 'groups#edit', :as => 'edit_group'
-    post '/groups/add_tox_group' => 'groups#add_to_group', :as => 'add_to_group'
     post '/groups/update_customer_groups/customer_id' => 'groups#update_customer_groups', :as => "update_customer_groups"
     resources :bulk_downloads
     resources :account_codes

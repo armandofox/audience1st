@@ -318,3 +318,9 @@ boxoffice_manager_only: >
 
   Issuing this ticket type in this situation requires Box Office Manager
   privilege.
+
+# Groups
+
+delete_group: >
+
+  Deleting a group will not delete the customers inside it

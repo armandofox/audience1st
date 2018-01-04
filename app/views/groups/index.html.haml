@@ -10,4 +10,6 @@
         %td= group.name
         %td= link_to 'Show/Edit', group_path(group)
         %td= link_to 'Delete', delete_group_path(group), method: :delete, data: { confirm: 'Are you sure?' }
+        %td= popup_help_for 'delete_group'
+
 %br/

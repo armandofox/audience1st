@@ -59,3 +59,6 @@
           =f.radio_button :type, "Family"
           =label_tag :type_family, "Family"
         = submit_tag 'Edit Group', :id => "Edit"
+        %br
+        = link_to 'Delete group', delete_group_path(@group), method: :delete, data: { confirm: 'Are you sure?' }
+        = popup_help_for 'delete_group'
