@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   include AuthenticatedSystem
   include FilenameUtils
-  
+
   force_ssl if Rails.env.production?
 
   require 'csv'
@@ -175,6 +175,5 @@ class ApplicationController < ActionController::Base
     # displaying login-time messages, etc.
     session.delete(:new_session)
   end
-  
-end
 
+end
