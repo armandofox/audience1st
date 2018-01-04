@@ -3,7 +3,8 @@ require 'rvm/capistrano'
 require 'bundler/capistrano'
 # to make RVM work properly with Capistrano
 set :rvm_ruby_string, 'ruby-2.3.1'
-set :rvm_type, :system
+#set :rvm_type, :system
+set :rvm_type, :user
 set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
 set :bundle_env_variables, { nokogiri_use_system_libraries: 1 }
