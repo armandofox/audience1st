@@ -20,7 +20,7 @@ class CustomersController < ApplicationController
   # This will always be called after is_logged_in has setup current_user or has redirected
   def is_myself_or_staff
     @customer = Customer.find_by_id(params[:id])
-    # redirect_to login_path if @customer.nil? || (@customer != current_user && !current_user.is_staff)
+    redirect_to login_path if @customer.nil? || (@customer != current_user && !current_user.is_staff)
   end
 
   public
@@ -52,7 +52,6 @@ class CustomersController < ApplicationController
       flash[:notice] = (@current_user.login_message || "Logged in successfully")
       flash[:alert] = false
     end
-
   end
 
   def edit
@@ -163,7 +162,6 @@ class CustomersController < ApplicationController
   # self-create user through old system
   def user_create
     @customer = Customer.new(params[:customer])
-    @customer.validate_password = true
     @customer.password = params[:password]
     @customer.password_confirmation = params[:password_confirmation]
     

@@ -8,11 +8,11 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
             allow_blank: true,
             on: :create
   before_validation do
-    if self.password_digest.blank? && self.password.blank?
+    if self.password_digest.blank? && self.password.blank? #pass automatic validations in the case that an admin creates a user with no password
       self.password_digest = String.random_string(6) 
     end
   end
-  # validates :password, allow_blank: true, length: { maximum: 20 }
+  
 
 
   # find or create authorization and customer for non-identity omniauth strategies
@@ -34,6 +34,7 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
     c
   end
 
+  # overrides the inherited uid method so that it will look at our uid field
   def uid
     if respond_to?("read_attribute")
       return nil if read_attribute("uid").nil?
@@ -45,15 +46,13 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
 
   # create customer and update authorization for omniauth-identity
   def self.create_user_identity(email, cust_id, password)
-    if auth = find_by(uid: email, provider: nil)
-      # create
-
-      # edge case that an auth was user created with no email given. No way to check this until now, so destroy auth and return error 
+    if auth = find_by(uid: email, provider: nil)   
+      
+      # edge case that an auth was user created with no email given. No way to check this until now, so destroy auth and return
       if email.blank?
         auth.destroy
         return nil
-      end
-    
+      end 
       # update authorization with new info
       auth.password = password
       auth.password_confirmation = password
@@ -61,11 +60,9 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
       auth.customer_id = cust_id
       auth.uid = email
       auth.save
-    else
-      puts "couldn't find identity"
-      return nil
+      return Customer.find(cust_id)
     end
-    Customer.find(cust_id)
+    auth
   end
 
   # create an authorization for omniauth identity given an existing customer (used to migrate an old-style user into the new system)
@@ -78,9 +75,6 @@ class Authorization < OmniAuth::Identity::Models::ActiveRecord
         auth.password_confirmation = password
         auth.save
       end
-    else
-      auth = Authorization.new
-      auth.errors.add(:Email, "is invalid")
     end
     auth
   end

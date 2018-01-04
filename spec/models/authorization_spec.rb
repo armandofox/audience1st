@@ -9,15 +9,15 @@ describe Authorization do
     end
     
     it "can't create an identity without an email" do
-      cust = create(:customer, :email => nil, :force_valid => true)
+      cust = create(:old_customer, :email => nil, :force_valid => true)
       auth = Authorization.create_identity_for_customer(cust)
-      expect(auth.errors).to have(1).error_on(:email)
+      expect(auth).to be_nil
     end
     
     it "should create a new identity" do
-      cust = create(:customer, :email => 'email@email.com', :password => "pass")
+      cust = create(:old_customer, :email => 'email@email.com', :password => "pass")
+      cust.password = "pass"
       auth = Authorization.create_identity_for_customer(cust)
-      crypted_password = BCrypt::Password.create("password").to_s
       expect(auth).not_to be_nil
       expect(auth.provider).to eq("identity")
       expect(auth.uid).to eq("email@email.com")

@@ -33,7 +33,7 @@ class Customer < ActiveRecord::Base
   
   validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
 
-  EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been taken'
+  EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
   validates_uniqueness_of :email,
   :allow_blank => true,
   :case_sensitive => false,
@@ -120,18 +120,6 @@ class Customer < ActiveRecord::Base
     Authorization.update_identity_email(self) if email_changed? && bcrypted?
   end
 
-  # def password=(password)
-  #   puts "password: "
-  #   puts password
-  #   if respond_to?("password=")
-  #     puts "responds to password="
-  #     @password = password
-  #     puts "bcrypted" if bcrypted?
-  #     Authorization.update_password(self, password) if bcrypted?      
-  #   else
-  #     raise NotImplementedError 
-  #   end
-  # end
   #----------------------------------------------------------------------
   #  private variables
   #----------------------------------------------------------------------
