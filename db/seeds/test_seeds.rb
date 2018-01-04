@@ -2,7 +2,7 @@ customer = Customer.create(:first_name => "a", :last_name => "l", :email => "b@g
 time = Time.new(2017, 10, 16, 2, 2, 2, "+02:00")
 showtime = Time.now + 30.minutes
 
-#NOT SURE IF LISTING DATE IS RIGHT ASK FOX 
+#NOT SURE IF LISTING DATE IS RIGHT ASK FOX
 show = Show.create(
       :name => "Full Season",
       :house_capacity =>  10,
@@ -58,4 +58,3 @@ showdate.valid_vouchers.create!(:vouchertype => vtype2,
   order.add_tickets(vv, 5)
   order.finalize!
   puts(order.errors.full_messages)
-

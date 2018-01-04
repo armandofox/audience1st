@@ -44,7 +44,7 @@ Scenario: email should be sent if customer_email is checked
   And I check "customer_email"
   And  I press "Add Vouchers"
   And an email should be sent to customer "Armando Fox"
-  
+
 Scenario: email should not be sent if customer_email is unchecked
 
   Given it is currently Apr 20, 2010, 8:15pm

@@ -3,9 +3,15 @@
   .pageDiv
     %h1 Your Venue Info As Seen By Customers
     = render_collection_of_options f, |
-     %w(venue                   venue_address           venue_city_state_zip    |
-        venue_telephone         venue_homepage_url      boxoffice_telephone |
-        help_email              privacy_policy_url      ) |
+     %w(venue |
+        venue_address |
+        venue_city_state_zip    |
+        venue_telephone |
+        venue_homepage_url |
+        boxoffice_telephone |
+        help_email |
+        privacy_policy_url |
+        ) |
     %label{:for => 'option_season_start'} Season Start Date
     = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[:season_start_month]
     = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
@@ -13,7 +19,7 @@
         
   .pageDiv
     %h1 Accepting Donations and Retail Sales Online
-    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'genButton'
+    = link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'genButton'
     = render_collection_of_options f, %w( |
       default_retail_account_code |
       default_donation_account_code |
@@ -103,8 +109,9 @@
 
   .pageDiv
     %h1 Test Your Card Swipe
-    %p If you have a USB card swipe, you can test it here.
-    = link_to 'Test Card Swipe', swipe_test_path, :class => 'genButton'
+    %p 
+      If you have a USB card swipe, you can test it here.
+      = link_to 'Test Card Swipe', swipe_test_path, :class => 'genButton'
 
   .pageDiv
     %h1 Save Your Changes

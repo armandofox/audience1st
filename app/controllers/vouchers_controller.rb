@@ -46,6 +46,7 @@ class VouchersController < ApplicationController
     thecomment = params[:comments].to_s
     theshowdate = Showdate.find_by_id(params[:showdate_id])
     shouldEmail = params[:customer_email]
+
     redir = new_customer_voucher_path(@customer)
     return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
       thevouchertype && thenumtoadd > 0
