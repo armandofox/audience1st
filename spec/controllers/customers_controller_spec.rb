@@ -44,6 +44,11 @@ describe CustomersController do
       @customer.reload
       @customer.should_not be_created_by_admin
     end
+    it "should update identity uid when updating email" do
+      put :update, {:id => @customer, :customer => {:email => "new_email@gmail.com"}}
+      @customer.reload
+      expect(@customer.identity.uid).to eq("new_email@gmail.com")
+    end
     it "should not be cleared if update fails" do
       put :update, {:id => @customer, :customer => {:first_name => ''}}
       @customer.reload

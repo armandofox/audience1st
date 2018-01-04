@@ -12,7 +12,8 @@ rerun.txt
 #*#
 public/stylesheets/venue
 tmp/
-
+doc/controller_brief.svg
+travis.log
 db/*.sqlite3
 
 _site/

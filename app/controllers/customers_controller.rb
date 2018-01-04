@@ -91,7 +91,6 @@ class CustomersController < ApplicationController
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank?
         # send confirmation email
-        Authorization.update_identity_email(@customer)
         email_confirmation(:confirm_account_change,@customer, 
           "updated your email address in our system")
       end
