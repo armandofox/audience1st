@@ -4,8 +4,10 @@ require 'bundler/capistrano'
 # to make RVM work properly with Capistrano
 set :rvm_ruby_string, 'ruby-2.3.1'
 set :rvm_type, :system
-#set :bundle_flags, '--deployment'
+set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
+set :bundle_env_variables, { nokogiri_use_system_libraries: 1 }
+
 # so capistrano can find 'bundle' binary...
 # set :default_environment, {
 #   'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
