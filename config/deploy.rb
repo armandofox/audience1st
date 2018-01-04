@@ -3,12 +3,13 @@ require 'rvm/capistrano'
 require 'bundler/capistrano'
 # to make RVM work properly with Capistrano
 set :rvm_ruby_string, 'ruby-2.3.1'
-#set :rvm_type, :system
-set :rvm_type, :user
+set :rvm_type, :system
 set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
-set :bundle_env_variables, { nokogiri_use_system_libraries: 1 }
+set :default_env, { nokogiri_use_system_libraries: 1 }
+set :bundle_env_variables, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 
+set :log_level,:debug
 # so capistrano can find 'bundle' binary...
 # set :default_environment, {
 #   'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
