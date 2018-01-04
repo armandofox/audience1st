@@ -1,5 +1,4 @@
 # Seed data for Audience1st
-require 'faker'
 
 class Audience1stSeeder
 
@@ -8,11 +7,8 @@ class Audience1stSeeder
     self.create_special_customers
     self.create_default_account_code
     self.create_purchasemethods
-    self.create_empty_groups
-    if Rails.env == 'development'
-      self.create_fake_customers
-    end
   end
+
   # Options
   # Basic options for running features and specs
 
@@ -50,41 +46,6 @@ class Audience1stSeeder
       :e_blacklist => true
     }
   }
-  def self.create_fake_customers
-    (1..1000).each do |n|
-      customer = Customer.new(
-          :first_name => Faker::Name.first_name,
-          :last_name=> Faker::Name.last_name,
-          :password=>'123',
-          :email => Faker::Internet.email,
-          :city => Faker::Address.city,
-          :state => Faker::Address.state,
-          :street => Faker::Address.street_address,
-          :zip => Faker::Address.zip_code)
-      customer.created_by_admin = true
-      customer.save!
-    end
-  end
-
-  def self.create_empty_groups
-    Rails.logger.info "Creating some empty groups"
-    Group.create(
-        :name => "Green Family",
-        :address_line_1 => "1234 Ward St.",
-        :address_line_2 => "Apt. A",
-        :city => "Berkeley",
-        :state => "CA",
-        :zip => "94702"
-    )
-    Group.create(
-        :name => "Smith Family",
-        :address_line_1 => "4312 Ward St.",
-        :address_line_2 => "Apt. D",
-        :city => "Berkeley",
-        :state => "CA",
-        :zip => "94702"
-    )
-  end
 
   def self.create_special_customers
     Rails.logger.info "Creating special customers"
@@ -99,7 +60,7 @@ class Audience1stSeeder
       admin.save!
     end
     @@special_customers.each_pair do |which, attrs|
-      unless Customer.find_by_first_name(attrs[:first_name])
+      unless Customer.find_by_role(attrs[:role])
         c = Customer.new(attrs.except(:role))
         c.role = attrs[:role]
         c.created_by_admin = true
@@ -165,5 +126,6 @@ class Audience1stSeeder
     option.save!
   end 
   self.seed_all
+
 end
 
