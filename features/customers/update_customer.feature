@@ -29,4 +29,4 @@ Scenario: superadmin can change customer role
   And I visit the edit contact info page for customer "Armando Fox"
   And I select "Staff" from "Role"
   And I press "Save Changes"
-  Then customer "Armando Fox" should have the "staff" rol
+  Then customer "Armando Fox" should have the "staff" role
