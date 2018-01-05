@@ -300,6 +300,9 @@ class StoreController < ApplicationController
     elsif params[:commit] =~ /cash/i
       meth = Purchasemethod.get_type_by_name('box_cash')
       args = {}
+    elsif params[:commit] =~ /comp/i
+      meth = Purchasemethod.get_type_by_name('none')
+      args = {}
     else
       meth = nil
       args = {}

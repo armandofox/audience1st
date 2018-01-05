@@ -13,7 +13,8 @@ A1.show_only = function(div) {
 
 A1.recalc_store_total = function() {
   var total = A1.recalculate('#total', '.itemQty', 2, 'price');
-  $('#submit').prop('disabled', (total <= 0.0));
+  var itemCount = A1.recalculate(null, '.itemQty', 0);
+  $('#submit').prop('disabled', (itemCount < 1));
 };
 
 A1.recalc_all_walkup_sales = function() {
@@ -23,7 +24,6 @@ A1.recalc_all_walkup_sales = function() {
 }
 
 A1.recalculate = function(total_field,selector,decplaces,attrib) {
-  $(total_field).value = '';
   var tot = 0.0;
   var elts = $(selector);
   var price;
@@ -42,7 +42,9 @@ A1.recalculate = function(total_field,selector,decplaces,attrib) {
     }
     tot += (price * qty);
   });
-  $(total_field).val(tot.toFixed(decplaces));
+  if (!! total_field) {
+    $(total_field).val(tot.toFixed(decplaces));
+  }
   return(tot);
 }
 
