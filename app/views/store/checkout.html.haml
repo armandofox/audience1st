@@ -24,30 +24,37 @@
     Our transactions are securely processed 
     through #{link_to 'Stripe', 'http://stripe.com'}.
 
-  = render :partial => 'credit_card', :locals => {:first_name => @cart.purchaser.first_name, :last_name => @cart.purchaser.last_name}
-  
-  - unless Option.terms_of_sale.blank?
-    #terms_of_sale
-      %label{:for => 'sales_final'} TERMS OF SALE:
-      = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
-      %strong 
-        I understand and agree to the
-        = link_to_function "terms of sale.", "alert('#{escape_javascript(Option.terms_of_sale)}')"
-      %br
-      %br
-  
-  %p.strong 
-    YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
-    -# hidden field 'commit' filled in by javascript on cc purchase
-    = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-    = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
+  - if @cart.total_price > 0
+
+    = render :partial => 'credit_card', :locals => {:first_name => @cart.purchaser.first_name, :last_name => @cart.purchaser.last_name}
+
+    - unless Option.terms_of_sale.blank?
+      #terms_of_sale
+        %label{:for => 'sales_final'} TERMS OF SALE:
+        = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
+        %strong 
+          I understand and agree to the
+          = link_to_function "terms of sale.", "alert('#{escape_javascript(Option.terms_of_sale)}')"
+        %br
+        %br
+
+    %p.strong 
+      YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
+      = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
+      -# hidden field 'commit' filled in by javascript on cc purchase
+      = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
+      = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
+
   - if @is_admin
     #other_payments.adminDiv
-      Or pay with check number: 
-      = text_field_tag 'check_number', '', :size => 6
-      = submit_tag "Accept Check Payment"
-      = submit_tag "Accept Cash Payment"
+      - if @cart.total_price > 0
+        Or pay with check number: 
+        = text_field_tag 'check_number', '', :size => 6
+        = submit_tag "Accept Check Payment" if @cart.total_price > 0
+        = submit_tag "Accept Cash Payment"
+      - else
+        No payment required
+        = submit_tag "Complete Comp Order"
       - if @cart.purchaser.valid_email_address?
         = check_box_tag('email_confirmation', 1, true)
         Send email confirmation
