@@ -305,8 +305,6 @@ GEM
     ruport (1.7.1)
       pdf-writer (= 1.1.8)
       prawn (= 0.12.0)
-    rvm-capistrano (1.5.6)
-      capistrano (~> 2.15.4)
     safe_yaml (1.0.4)
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
@@ -417,7 +415,6 @@ DEPENDENCIES
   rspec-rails
   rubyzip
   ruport
-  rvm-capistrano
   sdoc (~> 0.4.0)
   simplecov
   spring
@@ -434,4 +431,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.15.3
+   1.16.1
