@@ -1,19 +1,11 @@
 # automatically run 'bundle install' to put bundled gems into vendor/ on deploy
-require 'rvm/capistrano'
 require 'bundler/capistrano'
-# to make RVM work properly with Capistrano
-set :rvm_ruby_string, 'ruby-2.3.1'
-set :rvm_type, :system
-#set :bundle_flags, '--deployment'
+set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
 set :default_env, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 set :bundle_env_variables, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 
 set :log_level,:debug
-# so capistrano can find 'bundle' binary...
-# set :default_environment, {
-#   'PATH' => "/opt/ruby-enterprise-1.8.7-2012.02/bin:$PATH"
-# }
 
 set :venue, variables[:venue]
 set :rails_root, "#{File.dirname(__FILE__)}/.."
