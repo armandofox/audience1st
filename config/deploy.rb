@@ -6,7 +6,7 @@ set :rvm_ruby_string, 'ruby-2.3.1'
 set :rvm_type, :system
 set :bundle_flags, '--deployment'
 set :bundle_without, [:development, :test]
-set :default_env, { nokogiri_use_system_libraries: 1 }
+set :default_env, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 set :bundle_env_variables, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 
 set :log_level,:debug
