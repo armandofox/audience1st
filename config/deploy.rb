@@ -1,9 +1,8 @@
 # automatically run 'bundle install' to put bundled gems into vendor/ on deploy
 require 'bundler/capistrano'
-set :bundle_flags, '--deployment'
+# set :bundle_flags, '--deployment'
+set :bundle_flags, '--system'
 set :bundle_without, [:development, :test]
-set :default_env, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
-set :bundle_env_variables, { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => 1 }
 
 set :log_level,:debug
 
