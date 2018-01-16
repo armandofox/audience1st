@@ -1,7 +1,7 @@
 # automatically run 'bundle install' to put bundled gems into vendor/ on deploy
-require 'bundler/capistrano'
+#require 'bundler/capistrano'
 # set :bundle_flags, '--deployment'
-set :bundle_flags, '--system'
+set :bundle_flags, '--system --no-deployment'
 set :bundle_without, [:development, :test]
 
 set :log_level,:debug
