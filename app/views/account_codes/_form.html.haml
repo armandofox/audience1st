@@ -2,7 +2,7 @@
 %fieldset
   %legend Account Code
   %label{:for => 'account_code_name'} Name
-  = f.text_field 'name', :size => 20
+  = f.text_field 'name', :size => 40
   %br
   %label{:for => 'account_code_code'} Code
   = f.text_field 'code', :size => 6
@@ -10,4 +10,9 @@
   %label{:for => 'account_code_description'} Brief Description
   = f.text_field 'description', :size => 40
   %br
+  %label{:for => 'account_code_donation_prompt'} 
+    = popup_help_for 'account_code_donation_prompt'
+    Donation prompt
+  = f.text_field 'donation_prompt', :size => 40
+
 

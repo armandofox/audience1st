@@ -21,8 +21,9 @@
         %li.cart_item{:class=>cycle(:even,:odd)}
           .price_and_actions
             .cart_item_price= number_to_currency(d.amount)
-          %span.donation_name.cart_item_desc Donation to #{h(d.account_code.name)}
-        
+          %span.donation_name.cart_item_desc 
+            = ["Donation to #{h(d.account_code.name)}", d.comments].join(' - ')
+
       - @cart.retail_items.each do |item|
         %li.cart_item{:class=>cycle(:even,:odd)}
           .price_and_actions

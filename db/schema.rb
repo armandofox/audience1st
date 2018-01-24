@@ -9,12 +9,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160316203603) do
+ActiveRecord::Schema.define(:version => 20180124011808) do
 
   create_table "account_codes", :force => true do |t|
-    t.string "name",        :limit => 40, :default => "", :null => false
+    t.string "name",            :limit => 40, :default => "", :null => false
     t.string "code"
     t.string "description"
+    t.string "donation_prompt"
   end
 
   create_table "bulk_downloads", :force => true do |t|
@@ -158,7 +159,7 @@ ActiveRecord::Schema.define(:version => 20160316203603) do
     t.string   "boxoffice_telephone",                                    :default => "Enter Venue Box office phone",                               :null => false
     t.string   "donation_ack_from"
     t.string   "boxoffice_daemon_notify"
-    t.string   "help_email",                                             :default => "Enter Help Email",                                           :null => false
+    t.string   "help_email",                                             :default => ""
     t.integer  "send_birthday_reminders",                                :default => 0,                                                            :null => false
     t.integer  "session_timeout",                                        :default => 1000,                                                         :null => false
     t.text     "welcome_page_subscriber_message"

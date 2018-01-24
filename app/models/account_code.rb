@@ -10,7 +10,9 @@ class AccountCode < ActiveRecord::Base
   validates_uniqueness_of :code
   validate :name_or_code_given
 
-  attr_accessible :name, :code, :description
+  validates_length_of :donation_prompt, :maximum => 80, :allow_nil => true
+
+  attr_accessible :name, :code, :description, :donation_prompt
 
   def name_or_code_given
     !name.blank? || !code.blank?
