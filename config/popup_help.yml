@@ -272,6 +272,19 @@ valid_voucher_sales_dates: >
   and can continue selling beyond the "End sales" time and even
   after the performance has started.
 
+# Account codes
+
+account_code_donation_prompt: >
+
+  When the customer lands on a donation page that collects donations
+  specifically for this fund, you can prompt the customer to enter a
+  comment to clarify how the donation should be applied.  For example,
+  if you have an account code for production sponsorship, this prompt
+  could ask the customer which production they wish to sponsor.
+  Whatever the customer fills in becomes part of the comments of the
+  donation record.  If this prompt is left blank, no comment box will
+  appear for the customer to fill in.
+
 # Donations
 
 donation_search_by_letter_sent: >

@@ -51,7 +51,7 @@ module DatesHelper
   }, {
     text:      'All time',
     dateStart: function() { return moment('1968-01-01') },
-    dateEnd:   function() { return moment('#{(t-1.year).at_end_of_season.iso8601}') }
+    dateEnd:   function() { return moment('#{t8601}') }
   }]
 }
 }
