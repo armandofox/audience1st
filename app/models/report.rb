@@ -172,8 +172,11 @@ class Report
     @output_options.each_pair do |key,val|
       next if val.nil? || @output_options_processed[key]
       case key.to_sym
-      when :subscribers_only
-        reject << '!c.subscriber?'
+      when :subscribers
+        case val
+        when 'Subscribers only' then    reject << '!c.subscriber?' 
+        when 'Nonsubscribers only' then reject << 'c.subscriber?'
+        end
       when :exclude_blacklist
         reject << 'c.blacklist'
       when :exclude_e_blacklist
@@ -196,6 +199,7 @@ class Report
         end
       end
     end
+
     conds = reject.join(' || ')
     eval("arr.reject! { |c| #{conds} }")
     if @output_options[:remove_dups]
