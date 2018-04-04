@@ -30,10 +30,12 @@ gem 'rest-client'
 gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
+gem 'pg', '~> 0.21'
 
 group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
+  gem 'yaml_db'
 end
 
 group :test do
