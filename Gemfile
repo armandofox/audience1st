@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 ruby '2.3.1'
 
 gem 'acts_as_reportable'
+gem 'apartment', '>= 2.1.0'
+gem 'attr_encrypted'
 gem 'builder'
 gem 'bundler'
 # gem 'constant_contact'
@@ -17,7 +19,7 @@ gem 'jbuilder', '~> 2.0'        # 4
 gem 'jquery-rails'              # 4
 gem 'json'
 gem 'mechanize'
-gem 'mysql'
+gem 'pg', '~> 0.21'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
@@ -34,6 +36,7 @@ gem 'will_paginate'
 group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
+  gem 'yaml_db'
 end
 
 group :test do
