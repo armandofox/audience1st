@@ -25,28 +25,54 @@ This is a stock Rails 4 app, with the following exceptions/additions:
 
 0. The task `EmailGoldstar.receive(STDIN.read)` should be invoked to consume incoming emails from Goldstar.  See the installation section on Goldstar integration, below.
 
+# Multi-tenancy
+
+**This is important.**  By default Audience1st can be setup as
+multi-tenant using the `apartment` gem.  If you're just setting up ticketing
+for a single venue, multi-tenancy probably creates more problems for you
+than it solves.
+
+To **disable** multi-tenancy:
+
+1. Remove `gem 'apartment'` from the `Gemfile` before running `bundle
+install`
+
+2. Remove the file `config/initializers/apartment.rb`
+
+3. Make sure your `config/application.yml` (see below) does **not**
+contain any mention of `tenant_names`
+
 # Required external integrations
 
 You will need to create a file `config/application.yml` containing the following:
 
 ```yaml
 session_secret: "30 or more random characters string"
-stripe_key: "stripe public (publishable) key"
-stripe_secret: "stripe private API key"
-# include at most one of the following two lines - not both:
-email_integration: "MailChimp"  # if you use MailChimp, include this line verbatim, else omit
-email_integration: "ConstantContact" # if you use CC, include this line verbatime, else omit
-# if you included one of the two Email Integration choices:
-mailchimp_key: "optional: if you use Mailchimp, API key; otherwise omit this entry"
-constant_contact_username: "Username for CC login, if using CC"
-constant_contact_password: "password for CC login, if using CC"
-constant_contact_key: "CC publishable part of API key"
-constant_contact_secret: "CC secret part of API key"
+tenant_names: venue1,venue2,venue3
 ```
+
+The `tenant_names` should **only** be present if using multi-tenancy.
+Each tenant name is assumed to correspond to a subdomain, so in the
+exame above, the appropriate tenant would be chosen based on the URL
+subdomain (`venue1.myticketing.com`, `venue2.myticketing.com`, etc.)
+Without this line, the domain/subdomain are irrelevant and there is only
+a single tenant.
+
+**Note:** If you decide to use multi-tenancy but change the
+tenant-selection scheme (see the `apartment` gem's documentation for
+what this means), you'll also need to edit the before-suite logic in
+`features/support/env.rb` and `spec/support/rails_helper.rb`.  Those
+bits of code ensure that testing works properly with multi-tenancy
+enabled, but they rely on the tenant name being the DNS subdomain.  If
+you don't know what this means, you should probably ask for assistance
+deploying this software. :-)
 
 # First-time deployment
 
-Deploy the app as you would a normal Rails app, including running the migrations to load up `schema.rb`.  Only portable SQL features are used, so although MySQL was used to develop Audience1st, any major SQL database **that supports nested transactions** should work.  (SQLite does not support nested transactions, and as such, some tests that simulate network errors during credit card processing may appear to fail if you run all the specs locally against SQLite.)
+Deploy the app as you would a normal Rails app, including `rake
+db:schema:load` (don't try running the migrations, as many of them use
+syntax that is long deprecated).  Only portable SQL features are used,
+and the schema has been tried with MySQL, Postgres, and SQLite.
 
 Then run the task `rake db:seed` on the production database, which creates a few special users, including the administrative user `admin@audience1st.com` with password `admin`.
 

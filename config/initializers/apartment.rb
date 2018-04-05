@@ -49,37 +49,7 @@ Apartment.configure do |config|
   # end
   #
   # config.tenant_names = lambda { ToDo_Tenant_Or_User_Model.pluck :database }
-  config.tenant_names = %w(sandbox altarena ccct therhino)
-
-
-  # PostgreSQL:
-  #   Specifies whether to use PostgreSQL schemas or create a new database per Tenant.
-  #
-  # MySQL:
-  #   Specifies whether to switch databases by using `use` statement or re-establish connection.
-  #
-  # The default behaviour is true.
-  #
-  # config.use_schemas = true
-
-  #
-  # ==> PostgreSQL only options
-
-  # Apartment can be forced to use raw SQL dumps instead of schema.rb for creating new schemas.
-  # Use this when you are using some extra features in PostgreSQL that can't be represented in
-  # schema.rb, like materialized views etc. (only applies with use_schemas set to true).
-  # (Note: this option doesn't use db/structure.sql, it creates SQL dump by executing pg_dump)
-  #
-  # config.use_sql = false
-
-  # There are cases where you might want some schemas to always be in your search_path
-  # e.g when using a PostgreSQL extension like hstore.
-  # Any schemas added here will be available along with your selected Tenant.
-  #
-  # config.persistent_schemas = %w{ hstore }
-
-  # <== PostgreSQL only options
-  #
+  config.tenant_names = Figaro.env.tenant_names!.split(',')
 
   # By default, and only when not using PostgreSQL schemas, Apartment will prepend the environment
   # to the tenant name to ensure there is no conflict between your environments.
@@ -95,10 +65,5 @@ end
 #   request.host.split('.').first
 # }
 
-# Rails.application.config.middleware.use Apartment::Elevators::Domain
-# Rails.application.config.middleware.use Apartment::Elevators::Subdomain
 Rails.application.config.middleware.use Apartment::Elevators::FirstSubdomain
-# Rails.application.config.middleware.use Apartment::Elevators::Host
-# Rails.application.config.middleware.use Apartment::Elevators::Generic, lambda { |req|
-#   req.path.split('/')[1]
-# }
+# other Elevators choices: Domain, Subdomain, Host, Generic (w/callable arg that's passed the ActionDispatch.request obj)

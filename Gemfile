@@ -39,8 +39,8 @@ group :development do
 end
 
 group :test do
-  gem 'cucumber'
-  gem 'cucumber-rails', :require => false
+  gem 'cucumber', '~> 2.0'
+  gem 'cucumber-rails', '1.5.0', :require => false
   gem 'capybara'
   gem 'poltergeist'
   gem 'rspec-its'
