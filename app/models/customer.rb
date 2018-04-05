@@ -503,8 +503,8 @@ EOSQL1
   def self.find_by_multiple_terms(terms)
     return [] if terms.empty?
     conds_ary = []
-    cols = self.content_columns
-    conds = cols.map { |c| "(#{c.name} LIKE ?)" }.join(" OR ")
+    cols = %w(first_name last_name street city zip day_phone eve_phone comments company email)
+    conds = cols.map { |c| "(#{c} LIKE ?)" }.join(" OR ")
     terms.each do |term|
       conds_ary = Array.new(cols.size) { "%#{term}%" }.concat(conds_ary)
     end
