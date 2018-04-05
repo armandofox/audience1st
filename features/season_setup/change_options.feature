@@ -23,3 +23,9 @@ Scenario: venue cannot be blank
   Then I should be on the admin:settings page
   And I should see "Venue can't be blank"
 
+Scenario: change an encrypted option
+
+  When I fill in "Stripe Secret" with "sekret"
+  And I press "Update Settings"
+  Then the setting "Stripe Secret" should be "sekret"
+

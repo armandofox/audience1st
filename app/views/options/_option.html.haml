@@ -1,7 +1,7 @@
 %tr{:class => cycle(:even,:odd)}
   %td.option_name
     - attr_name = attrib.gsub(/^encrypted_/,'')
-    %label{:for => "option_#{attrib}"}= humanize(attr_name).capitalize_each_word
+    %label{:for => "option_#{attr_name}"}= humanize(attr_name).capitalize_each_word
     = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[attr_name.to_sym].to_s
   %td.t.option_value
     - if attrib.to_s =~ /account_code/i
@@ -9,7 +9,7 @@
     - else 
       - case Option.columns_hash[attrib.to_s].type
       - when :string
-        = f.text_field attr_name, {:size => 60}
+        = f.text_field attr_name, {:size => 60, :autocomplete => 'off'}
       - when :text
         = f.text_area attr_name, :rows => 6, :cols => 60
       - when :boolean

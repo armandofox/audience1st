@@ -24,3 +24,6 @@
    Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
  end
  
+ Then /^the setting "(.*)" should be "(.*)"$/ do |opt,val|
+   expect(Option.send(opt.tr(' ','').underscore)).to eq(val)
+ end

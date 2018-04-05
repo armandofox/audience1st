@@ -118,7 +118,8 @@
       appearance of your Audience1st installation.  Please be sure you 
       know what you're doing before changing these.  Click "Allow
       Changes" to enable editing of these options.
-    = link_to 'Allow Changes', '#', :class => 'genButton', :onclick => '$("#configOptions input, #configOptions select").prop("disabled", false); false;'
+    %a{:name => 'configOptions'}
+    = link_to 'Allow Changes', '#configOptions', :class => 'genButton', :onclick => '$("#configOptions input, #configOptions select").prop("disabled", false); false;'
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |
       sendgrid_key_name  encrypted_sendgrid_key_value  sendgrid_domain |
