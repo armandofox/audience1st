@@ -2,6 +2,12 @@ class Option < ActiveRecord::Base
 
   attr_protected :venue_id, :venue_shortname
 
+  attr_encrypted_options.merge!(:key => Figaro.env.session_secret!)
+  attr_encrypted :stripe_secret
+  attr_encrypted :sendgrid_key_value
+  attr_encrypted :mailchimp_key
+  attr_encrypted :maintenance_password
+
   # support singleton pattern by allowing Option.venue instead of Option.first.venue, its
   def self.method_missing(*args)
     self.first.send(*args)

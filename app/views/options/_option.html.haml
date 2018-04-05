@@ -1,18 +1,19 @@
 %tr{:class => cycle(:even,:odd)}
   %td.option_name
-    %label{:for => "option_#{attrib}"}= humanize(attrib).capitalize_each_word
-    = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[attrib.to_sym].to_s
+    - attr_name = attrib.gsub(/^encrypted_/,'')
+    %label{:for => "option_#{attrib}"}= humanize(attr_name).capitalize_each_word
+    = render :partial => 'messages/popup_help', :object => OPTION_DESCRIPTIONS[attr_name.to_sym].to_s
   %td.t.option_value
     - if attrib.to_s =~ /account_code/i
       = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i)
     - else 
       - case Option.columns_hash[attrib.to_s].type
       - when :string
-        = f.text_field attrib, {:size => 60}
+        = f.text_field attr_name, {:size => 60}
       - when :text
-        = f.text_area attrib, :rows => 6, :cols => 60
+        = f.text_area attr_name, :rows => 6, :cols => 60
       - when :boolean
-        = f.select attrib, [['Yes', true], ['No', false]]
+        = f.select attr_name, [['Yes', true], ['No', false]]
       - when :integer, :float
-        = f.text_field attrib, :size => 6, :maxlength => 6
-      - else raise "Unexpected option type for #{attrib}: #{type.to_s}"
+        = f.text_field attr_name, :size => 6, :maxlength => 6
+      - else raise "Unexpected option type for #{attr_name}: #{type.to_s}"

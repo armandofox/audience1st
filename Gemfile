@@ -4,7 +4,6 @@ ruby '2.3.1'
 
 gem 'acts_as_reportable'
 gem 'apartment', '>= 2.1.0'
-gem 'attr_encrypted'
 gem 'builder'
 gem 'bundler'
 # gem 'constant_contact'
@@ -23,6 +22,7 @@ gem 'pg', '~> 0.21'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
+gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
 gem 'rails', '4.2.9'            # 4
 gem 'rake'
 gem 'ruport'

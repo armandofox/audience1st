@@ -105,13 +105,28 @@
       send_birthday_reminders  |
       ) |
 
-    = render_collection_of_options f, %w(mailchimp_default_list_name)
-
   .pageDiv
     %h1 Test Your Card Swipe
     %p 
       If you have a USB card swipe, you can test it here.
       = link_to 'Test Card Swipe', swipe_test_path, :class => 'genButton'
+
+  .pageDiv#configOptions
+    %h1 Integrations
+    %p.warning
+      Warning: Changing these options affects the basic operation and
+      appearance of your Audience1st installation.  Please be sure you 
+      know what you're doing before changing these.  Click "Allow
+      Changes" to enable editing of these options.
+    = link_to 'Allow Changes', '#', :class => 'genButton', :onclick => '$("#configOptions input, #configOptions select").prop("disabled", false); false;'
+    = render_collection_of_options f, %w( |
+      stripe_key  encrypted_stripe_secret |
+      sendgrid_key_name  encrypted_sendgrid_key_value  sendgrid_domain |
+      encrypted_mailchimp_key  mailchimp_default_list_name |
+      stylesheet_url |
+      encrypted_maintenance_password) |
+    :javascript
+      $("#configOptions input, #configOptions select").prop("disabled", true);
 
   .pageDiv
     %h1 Save Your Changes

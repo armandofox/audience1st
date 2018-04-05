@@ -21,7 +21,7 @@ class EmailList
   public
 
   def self.disabled?
-    Figaro.env.email_integration != 'MailChimp'
+    ! Option.mailchimp_key.blank?
   end
 
   def self.enabled? ; !self.disabled? ; end
@@ -29,7 +29,7 @@ class EmailList
   def self.init_hominid
     Rails.logger.info("NOT initializing mailchimp") and return nil if self.disabled?
     return true if hominid
-    apikey = Figaro.env.mailchimp_key
+    apikey = Option.mailchimp_key
     @@list = Option.mailchimp_default_list_name
     if (apikey.blank? || @@list.blank?)
       Rails.logger.warn("NOT using Mailchimp, one or more necessary options are blank")
