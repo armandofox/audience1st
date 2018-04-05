@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 ruby '2.3.1'
 
 gem 'acts_as_reportable'
+gem 'apartment', '>= 2.1.0'
 gem 'builder'
 gem 'bundler'
 # gem 'constant_contact'
@@ -17,10 +18,11 @@ gem 'jbuilder', '~> 2.0'        # 4
 gem 'jquery-rails'              # 4
 gem 'json'
 gem 'mechanize'
-gem 'mysql'
+gem 'pg', '~> 0.21'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
+gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
 gem 'rails', '4.2.9'            # 4
 gem 'rake'
 gem 'ruport'
@@ -30,17 +32,14 @@ gem 'rest-client'
 gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
-gem 'pg', '~> 0.21'
 
 group :development do
   gem 'web-console', '~> 2.0'
-  gem 'spring'
-  gem 'yaml_db'
 end
 
 group :test do
-  gem 'cucumber'
-  gem 'cucumber-rails', :require => false
+  gem 'cucumber', '~> 2.0'
+  gem 'cucumber-rails', '1.5.0', :require => false
   gem 'capybara'
   gem 'poltergeist'
   gem 'rspec-its'
@@ -51,6 +50,7 @@ end
 
 group :development, :test do
   # cucumber and capybara
+  gem 'yaml_db'
   gem 'byebug'                  # 4
   gem 'pry'
   gem 'listen', '~> 2.2'

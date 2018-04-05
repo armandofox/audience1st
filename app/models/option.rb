@@ -2,6 +2,12 @@ class Option < ActiveRecord::Base
 
   attr_protected :venue_id, :venue_shortname
 
+  attr_encrypted_options.merge!(:key => Figaro.env.session_secret!)
+  attr_encrypted :stripe_secret
+  attr_encrypted :sendgrid_key_value
+  attr_encrypted :mailchimp_key
+  attr_encrypted :maintenance_password
+
   # support singleton pattern by allowing Option.venue instead of Option.first.venue, its
   def self.method_missing(*args)
     self.first.send(*args)
@@ -38,6 +44,8 @@ class Option < ActiveRecord::Base
   
   validates_presence_of :classes_order_service_charge_description,
   :if => Proc.new { |o| o.classes_order_service_charge > 0 }
+
+  validates_format_of :stylesheet_url, :with => Regexp.new('\A\s*https?://'), :allow_blank => true, :allow_nil => true
 
   def availability_levels_monotonically_increase
     errors.add(:nearly_sold_out_threshold, 'must be less than Sold Out threshold') unless sold_out_threshold > nearly_sold_out_threshold

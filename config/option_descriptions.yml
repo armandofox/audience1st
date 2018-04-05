@@ -349,6 +349,23 @@ general_confirmation_email_notes: >
   line to separate paragraphs; text will be automatically word-wrapped
   preserving your paragraph breaks.
 
+mailchimp_default_list_name: >
+
+  Name of your main email list, if you use MailChimp.
+  If you don't use MailChimp, leave blank.
+
+mailchimp_key: >
+
+  MailChimp API key value.  If you don't use MailChimp, leave blank.
+
+maintenance_password: >
+
+  To temporarily place Audience1st in maintenance mode (unavailable to
+  regular patrons), enter a password here; only someone with this password
+  can access it.  If this field is blank, Audience1st is accessible to
+  everyone as usual.  A red frame appears around all Audience1st pages
+  while it's in maintenance mode.
+
 subscriber_confirmation_email_notes: >
 
   Specific instructions to subscribers that appear in order confirmation
@@ -388,7 +405,36 @@ privacy_policy_url: >
   credit card numbers nor share any information used in processing the
   transactions except as required by law."
 
-mailchimp_default_list_name: >
+sendgrid_domain: >
 
-  Name of your main email list, if you use MailChimp.
-  If you don't use MailChimp, leave blank.
+  Name of the source domain to use with the Sendgrid transactional email service (used to
+  send confirmation emails only; this is different from using Mailchimp
+  or ConstantContact to send marketing emails).
+
+sendgrid_key_name: >
+
+  Name of the API key to use with the Sendgrid transactional email service (used to
+  send confirmation emails only; this is different from using Mailchimp
+  or ConstantContact to send marketing emails).
+
+sendgrid_key_value: >
+
+  Key value of the API key of the Sendgrid transactional email service (used to
+  send confirmation emails only; this is different from using Mailchimp
+  or ConstantContact to send marketing emails).
+
+stripe_key: >
+
+  The publishable (non-secret) part of your Stripe API key.  See the
+  Audience1st documentation for details.
+
+stripe_secret: >
+
+  The secret part of your Stripe API key.  See the Audience1st
+  documentation for details.
+
+stylesheet_url: >
+
+  Full URL to the stylesheet used with Audience1st.  Must begin with
+  http or https.
+

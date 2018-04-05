@@ -8,7 +8,7 @@
   = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20, :autocomplete => 'off', :class => 'unsubmitted'
   %br
   = hidden_field_tag 'credit_card_token', 'DUMMY'
-  = hidden_field_tag '_stripe_api_key', Figaro.env.stripe_key, :class => 'unsubmitted'
+  = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
 
   %label{:for => 'credit_card_number'} Number (no spaces)
   = text_field_tag 'credit_card_number', '', :size => 24, :maxlength => 16, :autocomplete => :off, :class => 'unsubmitted'

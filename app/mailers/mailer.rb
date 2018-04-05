@@ -2,8 +2,6 @@ class Mailer < ActionMailer::Base
 
   helper :customers, :application
 
-  default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
-  
   before_filter :setup_defaults
 
   def confirm_account_change(customer, whathappened, newpass=nil)
@@ -48,6 +46,7 @@ class Mailer < ActionMailer::Base
   protected
   
   def setup_defaults
+    @from = "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
     @venue = Option.venue
     @subject = "#{@venue} - "
     @contact = if Option.help_email.blank?
