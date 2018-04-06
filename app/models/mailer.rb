@@ -90,7 +90,7 @@ class Mailer < ActionMailer::Base
 
   def sending_to(recipient)
     @recipients = recipient.kind_of?(Customer)? recipient.email : recipient.to_s
-    @from = "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
+    @from = "AutoConfirm@#{Option.venue_shortname}.audience1st.com"
     @headers = {}
     @subject = "#{Option.venue} - "
     contact = if Option.help_email.blank?
