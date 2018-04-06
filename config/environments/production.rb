@@ -9,17 +9,6 @@ config.action_controller.consider_all_requests_local = false
 config.action_controller.perform_caching             = true
 #config.action_view.cache_template_loading            = true
 
-config.action_mailer.delivery_method = :smtp
-config.action_mailer.smtp_settings = {
-  :user_name => 'apikey',
-  :password => Figaro.env.sendgrid_api_value!,
-  :domain   => 'audience1st.com',
-  :address  => 'smtp.sendgrid.net',
-  :port     => 587,
-  :enable_starttls_auto => true,
-  :authentication => :plain
-}
-
 # See everything in the log (default is :info)
 config.log_level = :info
 

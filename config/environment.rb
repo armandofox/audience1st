@@ -31,7 +31,20 @@ Rails::Initializer.run do |config|
   #ActionController::Base.session_options[:session_key] = 'audience1st_session_id'
 
   config.after_initialize do
-    config.action_mailer.delivery_method = :test if Figaro.env.sandbox
+    if Figaro.env.sandbox
+      config.action_mailer.delivery_method = :test
+    else
+      config.action_mailer.delivery_method = :smtp
+      config.action_mailer.smtp_settings = {
+      :user_name => 'apikey',
+      :password => Figaro.env.sendgrid_api_value!,
+      :domain   => 'audience1st.com',
+      :address  => 'smtp.sendgrid.net',
+      :port     => 587,
+      :enable_starttls_auto => true,
+      :authentication => :plain
+    }
+    end
   end
   
   # Add additional load paths for your own custom dirs
