@@ -2,8 +2,11 @@ class Mailer < ActionMailer::Base
 
   helper :customers, :application
 
+  # the default :from needs to be wrapped in a callable because the dereferencing of Option may
+  #  cause an error at class-loading time.
+  default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
+
   before_action :setup_defaults
-  default :from => "AutoConfirm@#{Option.sendgrid_domain}"
 
   def email_test(destination_address)
     @time = Time.now
