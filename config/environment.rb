@@ -32,10 +32,10 @@ Rails::Initializer.run do |config|
 
   config.after_initialize do
     if Figaro.env.sandbox
-      config.action_mailer.delivery_method = :test
+      ActionMailer::Base.delivery_method = :test
     else
-      config.action_mailer.delivery_method = :smtp
-      config.action_mailer.smtp_settings = {
+      ActionMailer::Base.delivery_method = :smtp
+      ActionMailer::Base.smtp_settings = {
       :user_name => 'apikey',
       :password => Figaro.env.sendgrid_api_value!,
       :domain   => 'audience1st.com',

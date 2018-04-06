@@ -5,6 +5,13 @@ class Mailer < ActionMailer::Base
   
   include CustomersHelper
 
+  def test_email(addr)
+    @recipients = addr
+    @from = "AutoConfirm@#{Option.venue_shortname}.audience1st.com"
+    @subject = "test"
+    @body = { :time => Time.now.strftime('%c') }
+  end
+
   def confirm_account_change(customer, whathappened)
     sending_to(customer)
     @subject    << "#{customer.full_name}'s account"

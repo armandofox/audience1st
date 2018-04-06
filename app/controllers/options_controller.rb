@@ -16,4 +16,14 @@ class OptionsController < ApplicationController
   def swipe_test
   end
   
+  def email_test
+    begin
+      Mailer.deliver_test_email(params[:email])
+      flash[:notice] = "Test email sent to #{params[:email]}"
+    rescue RuntimeError => e
+      flash[:notice] = "Error sending email: #{e.message}"
+    end
+    redirect_to options_path
+  end
+
 end

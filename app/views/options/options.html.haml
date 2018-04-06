@@ -116,3 +116,12 @@
   .pageDiv
     %h1 Save Your Changes
     %p.c= submit_tag  "Update Settings"
+
+.pageDiv
+  %h1 Test Email Delivery
+  - form_tag email_test_path do
+    %label.no_float Send a test email to:
+    = text_field 'email', '', :size => 20
+    = submit_tag 'Send'
+
+
