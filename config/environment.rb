@@ -6,7 +6,7 @@ require File.expand_path('../application', __FILE__)
 
 Rails.application.configure do
   config.after_initialize do
-    config.action_mailer.delivery_method = :test if Figaro.env.sandbox
+    config.action_mailer.delivery_method = :smtp
   end
   
   # Add additional load paths for your own custom dirs
@@ -20,4 +20,3 @@ end
 
 # Initialize the Rails application.
 Rails.application.initialize!
-

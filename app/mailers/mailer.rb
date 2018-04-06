@@ -2,8 +2,8 @@ class Mailer < ActionMailer::Base
 
   helper :customers, :application
 
-  before_filter :setup_defaults
-  default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
+  before_action :setup_defaults
+  default :from => "AutoConfirm@#{Option.sendgrid_domain}"
 
   def email_test(destination_address)
     @time = Time.now
@@ -69,15 +69,16 @@ class Mailer < ActionMailer::Base
       Rails.logger.info "NOT sending email"
     else
       Rails.logger.info "Setting up sendgrid"
-      Rails.application.config.action_mailer.delivery_method = :sendmail
+      Rails.application.config.action_mailer.perform_deliveries = true
+      Rails.application.config.action_mailer.delivery_method = :smtp
       ActionMailer::Base.smtp_settings = {
         :user_name => Option.sendgrid_key_name,
         :password => Option.sendgrid_key_value,
         :domain   => Option.sendgrid_domain,
         :address  => 'smtp.sendgrid.net',
         :port     => 587,
-        :authentication => :plain,
-        :enable_starttls_auto => true
+        :enable_starttls_auto => true,
+        :authentication => :plain
       }
     end
   end
