@@ -1,5 +1,3 @@
-[![Code Climate](https://codeclimate.com/github/armandofox/audience1st/badges/gpa.svg)](https://codeclimate.com/github/armandofox/audience1st)
-
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from
 [Xiao Fu](https://github.com/fxdawnn),
 [Wayne Leung](https://github.com/WayneLeung12),
@@ -14,11 +12,7 @@ Perhaps you intended to [learn about Audience1st features and/or have us install
 
 You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 2/Ruby 1.8.7 app deployed.
 
-# Legacy Ruby/Rails
-
-The app is on Rails 2.3.18 (2.3.5 with security patches) and Ruby 1.8.7.  I've been meaning to migrate it to Rails 3 and then Rails 4.  Help welcome.
-
-But for now you'll have to get Rails 2.3.18 and Ruby 1.8.7 deployed on whatever host you want to deploy to.  I've been using Rackspace with Apache, mod_rails, and Phusion Passenger.
+**Note:** The app is about to be rolled to Rails 4.2.9.  Any maintainability/vulnerability issues are being addressed as part of that upgrade.
 
 This is a stock Rails app, with the following exceptions/additions:
 
@@ -73,5 +67,20 @@ To support scenario 2, you must be able to configure your email system so that e
 `RAILS_ENV=production $APP_ROOT/script/runner 'EmailGoldstar.receive(STDIN.read)'`
 
 Whenever an email is fed to this task, it will eventually generate a notification email to an address specified in Admin > Options notifying someone of what happened.  If the email was a valid Goldstar will-call list, the notification will usually say "XX customers added to will-call for date YY".  If it was not a valid Goldstar will-call list, the notification will say something like "It didn't look like a will-call list, so I ignored it."
+
+# Schema
+
+The primary models of interest are `Item`, `Customer`, `Show`, `Showdate`, `Vouchertype`.
+
+The main model and table is the `Item` model, which has subclasses `Voucher` (ie ticket), `Donation`, `RetailItem`, and `CanceledItem`.  All live in a single `items` table using single-table inheritance.
+
+If an `Item` is of subclass `Voucher`, it has various other FKs as well, notably to the `Vouchertype` model and (if the voucher is reserved as opposed to 'open') the `Showdate` model.  A `Vouchertype` is the "template" for a particular ticket type--name by which it's listed, price, who may purchase it (subscribers, box office only, anyone, etc.), which season it's valid for, etc.  A `Showdate` models a single performance, with a house capacity, start/end time, start/end sales dates, and so on.  A `Showdate` and `Vouchertype` are tied together by the model `ValidVoucher`, a join table that captures the idea of a particular type of voucher being valid for a particular performance (showdate), with optional capacity controls and promo codes for that particular (showdate, vouchertype) pair.
+
+Finally, every `Item` has a FK to the `Order` model. An order consists of a single payment transaction, so details about the payment (credit card confirmation code, etc.) are part of the `Order` rather than each `Item`.  
+
+An `Item` has two foreign keys to the `Customer` model: `customer_id` is the person who holds the item, and `purchaser_id` is the person who paid for it. These are often the same person but need not be (gift orders, etc.)
+
+A schema diagram is coming soon. Most of the other tables handle ancillary work: `Options` tracks global option (settings) values, `Purchasemethod` (which really should just be some constants) are ways to pay for a purchase, and there's a few other tables that are largely self-explanatory.
+
 
 
