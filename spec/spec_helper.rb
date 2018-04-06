@@ -16,7 +16,7 @@ RSpec.configure do |config|
   config.include AuthenticatedTestHelper
   config.include RSpecHtmlMatchers
   config.include CustomMatchers
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include ApplicationHelper
   config.include ActionView::Helpers
 

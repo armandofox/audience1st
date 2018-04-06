@@ -66,6 +66,7 @@ RSpec.configure do |config|
     end
   end
   config.around(:each) do |ex|
+    FakeStripe.stub_stripe
     DatabaseCleaner.cleaning do
       # Freeze time
       Timecop.travel(Date.parse 'Mar 1, 2012')

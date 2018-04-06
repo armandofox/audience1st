@@ -3,6 +3,7 @@ class Mailer < ActionMailer::Base
   helper :customers, :application
 
   before_filter :setup_defaults
+  default :from => "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
 
   def email_test(destination_address)
     @time = Time.now
@@ -51,7 +52,6 @@ class Mailer < ActionMailer::Base
   protected
   
   def setup_defaults
-    @from = "AutoConfirm-#{Option.venue_shortname}@audience1st.com"
     @venue = Option.venue
     @subject = "#{@venue} - "
     @contact = if Option.help_email.blank?
@@ -66,7 +66,7 @@ class Mailer < ActionMailer::Base
         Option.sendgrid_key_value.blank? or
         Option.sendgrid_domain.blank?)
       Rails.application.config.action_mailer.perform_deliveries = false
-      Rails.logger.warning "NOT sending email"
+      Rails.logger.info "NOT sending email"
     else
       Rails.logger.info "Setting up sendgrid"
       Rails.application.config.action_mailer.delivery_method = :sendmail

@@ -41,6 +41,7 @@ group :test do
   gem 'cucumber', '~> 2.0'
   gem 'cucumber-rails', '1.5.0', :require => false
   gem 'capybara'
+  gem 'fake_stripe'
   gem 'poltergeist'
   gem 'rspec-its'
   gem 'rspec-html-matchers'
@@ -60,7 +61,7 @@ group :development, :test do
   gem 'capistrano', '~> 2.0'
   gem 'faye-websocket'
   gem 'database_cleaner'
-  gem 'factory_girl_rails', '~> 4.0'
+  gem 'factory_bot_rails'
   gem 'rb-readline'
   gem 'rubyzip'
   gem 'mime-types'

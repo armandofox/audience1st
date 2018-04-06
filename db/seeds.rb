@@ -119,7 +119,9 @@ class Audience1stSeeder
       :venue_homepage_url => 'http => //test.org',
       :default_retail_account_code =>  9999,
       :default_donation_account_code => 9999,
-      :default_donation_account_code_with_subscriptions => 9999
+      :default_donation_account_code_with_subscriptions => 9999,
+      :stripe_key => 'FAKE_STRIPE_API_KEY',
+      :stripe_secret => 'FAKE_STRIPE_API_SECRET'
       )
     option.venue_id = 111
     option.venue_shortname = 'testing'

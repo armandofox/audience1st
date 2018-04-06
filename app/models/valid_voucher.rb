@@ -180,10 +180,11 @@ class ValidVoucher < ActiveRecord::Base
     remain = [remain, 0].max    # make sure it's positive
   end
 
-  def self.bundles(seasons = [Time.this_season, 1 + Time.this_season])
+  def self.bundles(seasons = [Time.this_season-1, Time.this_season+1])
     ValidVoucher.
       includes(:vouchertype).references(:vouchertypes).
-      where('vouchertypes.category = "bundle" AND vouchertypes.season IN (?)', seasons).
+      where('vouchertypes.category' => "bundle").
+      where('vouchertypes.season IN (?)', seasons).
       order("season DESC,display_order,price DESC")
   end
 

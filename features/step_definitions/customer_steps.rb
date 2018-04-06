@@ -76,12 +76,6 @@ end
 
 # Searching for customers
 
-When /^I search for "(.*)"$/ do |text|
-  visit customers_path
-  fill_in "customers_filter", :with => text
-  with_scope '#search_field' do ; click_button 'Go' ; end
-end
-
 Given /^my birthday is set to "(.*)"/ do |date|
   @customer.update_attributes!(:birthday => Date.parse(date))
 end

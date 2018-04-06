@@ -54,7 +54,7 @@ $(function() {
   // for walkup sales page
   $('#walkup_tickets .item').change(A1.recalc_all_walkup_sales);
   // if page reloaded due to failed payment txn, recalculate totals
-  if ($('#walkup_tickets').length) { // walkup sales page
+  if ($('#walkup_sales_show').length) { // walkup sales page
     A1.recalc_all_walkup_sales();
   }
 });

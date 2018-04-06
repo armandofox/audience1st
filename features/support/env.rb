@@ -86,6 +86,10 @@ Before do
 
   WebMock.enable!
   WebMock.disable_net_connect!(:allow_localhost => true)
+
+  # stub the client (JS) calls to Stripe
+  FakeStripe.stub_stripe
+
   # Allow testing of emails
   ActionMailer::Base.delivery_method = :test
   ActionMailer::Base.perform_deliveries = true
@@ -134,7 +138,7 @@ Before('@stubs_failed_refund') do
   Store.stub(:refund_credit_card).and_raise(Stripe::StripeError.new("Refund failed in test mode"))
 end
 
-World(FactoryGirl::Syntax::Methods)
+World(FactoryBot::Syntax::Methods)
 World(ActionView::Helpers::NumberHelper)
 World(ActionView::Helpers::TextHelper)
 

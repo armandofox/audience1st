@@ -29,5 +29,5 @@ Scenario: customer cannot specify alternate person for donation-only order
   When I fill in "Additional tax-deductible donation" with "50"
   And I press "CONTINUE >>"
   Then I should be on the Checkout page
-  And I should see "Donation to General Fund $50.00" within "#cart"
+  And I should see "$50.00 Donation to General Fund" within "#cart"
   But I should not see "If someone other than the purchaser will be attending this event"
