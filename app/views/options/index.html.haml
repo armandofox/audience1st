@@ -116,18 +116,20 @@
     %p.warning
       Warning: Changing these options affects the basic operation and
       appearance of your Audience1st installation.  Please be sure you 
-      know what you're doing before changing these.  Click "Allow
-      Changes" to enable editing of these options.
+      know what you're doing before changing these, and to be safe,
+      before changing a value make a note of the old value.  Click "Allow
+      Changes" to enable editing of these options, or "Test Integrations..." 
+      to test if the current values seem to be working.
     %a{:name => 'configOptions'}
-    = link_to 'Allow Changes', '#configOptions', :class => 'genButton', :onclick => '$("#configOptions input, #configOptions select").prop("disabled", false); false;'
+    %p
+      = link_to 'Allow Changes', '#configOptions', :class => 'genButton', :id => 'allowChanges'
+      = link_to 'Test Integrations', option_path(@o), :class => 'genButton', :id => 'testIntegrations'
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |
       sendgrid_key_name  encrypted_sendgrid_key_value  sendgrid_domain |
       encrypted_mailchimp_key  mailchimp_default_list_name |
       stylesheet_url |
       encrypted_maintenance_password) |
-    :javascript
-      $("#configOptions input, #configOptions select").prop("disabled", true);
 
   .pageDiv
     %h1 Save Your Changes

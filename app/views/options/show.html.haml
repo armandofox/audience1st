@@ -1,0 +1,27 @@
+%h1 Test Integrations
+
+%fieldset#test_email
+  %legend Test Sending Confirmation Emails
+  = form_tag email_test_options_path do
+    %label.no_float Send a test email to: 
+    = text_field_tag 'email', 'you@example.com', :size => 20
+    = submit_tag 'Send'
+
+%fieldset#test_swipe
+  %legend Test Your Card Swipe
+
+  %p 
+    Plug in your card reader and scan a card.  No card information will be
+    sent anywhere, but the card data will be displayed below so you
+    can check if the reader is working correctly.
+
+  %p
+    Note that the CVV code is <strong>not</strong> encoded on the magnetic stripe,
+    so even with a properly functioning card reader, that code must always be
+    entered manually.
+
+  = render :partial => 'store/credit_card'
+
+  = link_to 'Clear & Try Another', 'javascript:A1.clearCreditCardFields()', :class => 'genButton'
+
+

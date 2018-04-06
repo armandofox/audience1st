@@ -16,4 +16,15 @@ class OptionsController < ApplicationController
     redirect_to options_path
   end
 
+  def email_test
+    @email = params[:email]
+    begin
+      Mailer.send(:email_test, @email).deliver_now
+      flash[:notice] = "A test email was sent to #{@email}."
+    rescue Net::SMTPError => e
+      flash[:alert] = "Test email could not be sent.  The error was: #{e.message}"
+    end
+    redirect_to options_path
+  end
+
 end

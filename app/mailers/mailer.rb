@@ -4,6 +4,11 @@ class Mailer < ActionMailer::Base
 
   before_filter :setup_defaults
 
+  def email_test(destination_address)
+    @time = Time.now
+    mail(:to => destination_address, :subject => 'Testing')
+  end
+  
   def confirm_account_change(customer, whathappened, newpass=nil)
     @whathappened = whathappened
     @newpass = newpass
@@ -53,6 +58,28 @@ class Mailer < ActionMailer::Base
                then "call #{Option.boxoffice_telephone}"
                else "email #{Option.help_email} or call #{Option.boxoffice_telephone}"
                end
+    setup_delivery_params
+  end
+
+  def setup_delivery_params
+    if (Option.sendgrid_key_name.blank? or
+        Option.sendgrid_key_value.blank? or
+        Option.sendgrid_domain.blank?)
+      Rails.application.config.action_mailer.perform_deliveries = false
+      Rails.logger.warning "NOT sending email"
+    else
+      Rails.logger.info "Setting up sendgrid"
+      Rails.application.config.action_mailer.delivery_method = :sendmail
+      ActionMailer::Base.smtp_settings = {
+        :user_name => Option.sendgrid_key_name,
+        :password => Option.sendgrid_key_value,
+        :domain   => Option.sendgrid_domain,
+        :address  => 'smtp.sendgrid.net',
+        :port     => 587,
+        :authentication => :plain,
+        :enable_starttls_auto => true
+      }
+    end
   end
 end
 
