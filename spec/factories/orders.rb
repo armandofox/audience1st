@@ -20,10 +20,10 @@ FactoryBot.define do
     end
     after(:create) do |order,evaluator|
       1.upto evaluator.vouchers_count do
-        order.items << FactoryGirl.create(:revenue_voucher, :customer => order.customer)
+        order.items << create(:revenue_voucher, :customer => order.customer)
       end
       if evaluator.contains_donation
-        order.items << FactoryGirl.create(:donation, :customer => order.customer)
+        order.items << create(:donation, :customer => order.customer)
       end
     end
   end

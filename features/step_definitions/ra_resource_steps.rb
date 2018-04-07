@@ -8,7 +8,7 @@
 Given /^the following ([A-Z].*)s exist:/ do |thing, instances|
   klass = thing.gsub(/\s+/, '_').downcase.to_sym
   instances.hashes.each do |hash|
-    FactoryGirl.create(klass, hash)
+    FactoryBot.create(klass, hash)
   end
 end
 

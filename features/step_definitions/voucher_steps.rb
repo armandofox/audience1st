@@ -1,6 +1,6 @@
 Given /^(\d+) "(.*)" vouchers have been issued$/ do |num, type|
-  vt = Vouchertype.find_by_name(type) || FactoryGirl.create(:vouchertype, :name => type)
-  num.to_i.times { FactoryGirl.create(:voucher, :vouchertype => vt) }
+  vt = Vouchertype.find_by_name(type) || FactoryBot.create(:vouchertype, :name => type)
+  num.to_i.times { FactoryBot.create(:voucher, :vouchertype => vt) }
 end
 
 Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type|

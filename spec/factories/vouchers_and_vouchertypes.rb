@@ -95,7 +95,7 @@ FactoryBot.define do
         including.each_pair do |voucher,count|
           included_vouchertypes[voucher.vouchertype] = count
         end
-        FactoryGirl.create(:bundle, :subscription => subscription, :season => season, :including => included_vouchertypes)
+        create(:bundle, :subscription => subscription, :season => season, :including => included_vouchertypes)
       end
       amount 50
       category 'bundle'

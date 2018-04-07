@@ -5,8 +5,8 @@ Rails.application.routes.draw do
     root :to => 'customers#show'
 
     resources :bulk_downloads
-    resources :account_codes
-    resources :imports, :except => [:show] do
+    resources :account_codes, :except => :show
+    resources :imports, :except => :show do
       member do
         get :download_invalid
       end
@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :labels
+    resources :labels, :except => :show
 
     resources :customers, :except => :destroy do
       collection do

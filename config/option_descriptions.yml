@@ -436,5 +436,7 @@ stripe_secret: >
 stylesheet_url: >
 
   Full URL to the stylesheet used with Audience1st.  Must begin with
-  http or https.
+  http or https.  NOTE: Audience1st will also try to serve your
+  favicon.ico from the same directory that contains the stylesheet; if
+  no favicon.ico is found there, a generic one will be served.
 
