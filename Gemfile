@@ -2,8 +2,14 @@
 source 'https://rubygems.org'
 ruby '2.3.1'
 
+# basic app components
+gem 'pg', '~> 0.21'
+gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
+gem 'foreman'
+gem 'puma'
+gem 'rails', '4.2.9'
+
 gem 'acts_as_reportable'
-gem 'apartment', '>= 2.1.0'
 gem 'builder'
 gem 'bundler'
 # gem 'constant_contact'
@@ -18,12 +24,10 @@ gem 'jbuilder', '~> 2.0'        # 4
 gem 'jquery-rails'              # 4
 gem 'json'
 gem 'mechanize'
-gem 'pg', '~> 0.21'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
-gem 'rails', '4.2.9'            # 4
 gem 'rake'
 gem 'ruport'
 # stripe depends on rest-client and json, but we can't use the latest version of
@@ -33,8 +37,9 @@ gem 'stripe'
 gem 'thor', '0.19.1'
 gem 'will_paginate'
 
-group :development do
-  gem 'web-console', '~> 2.0'
+group :production do
+  gem 'newrelic_rpm'
+  gem 'puma-heroku'
 end
 
 group :test do
@@ -47,6 +52,12 @@ group :test do
   gem 'rspec-html-matchers'
   gem 'simplecov', :require => false
   gem 'webmock'
+end
+
+group :development do
+  gem 'derailed_benchmarks'
+  gem 'stackprof'
+  gem 'web-console', '~> 2.0'
 end
 
 group :development, :test do
