@@ -5,7 +5,6 @@ ruby '2.3.1'
 # basic app components
 gem 'pg', '~> 0.21'
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
-gem 'foreman'
 gem 'puma'
 gem 'rails', '4.2.9'
 
