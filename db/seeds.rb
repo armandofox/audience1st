@@ -120,11 +120,15 @@ class Audience1stSeeder
       :default_retail_account_code =>  9999,
       :default_donation_account_code => 9999,
       :default_donation_account_code_with_subscriptions => 9999,
-      :stripe_key => 'FAKE_STRIPE_API_KEY',
-      :stripe_secret => 'FAKE_STRIPE_API_SECRET'
+      :stripe_key => 'YOUR_STRIPE_KEY',
+      :stripe_secret => 'YOUR_STRIPE_SECRET',
+      :sendgrid_key_name => 'apikey',
+      :sendgrid_key_value => 'YOUR_SENDGRID_KEY',
+      :mailchimp_key => '',
+      :mailchimp_default_list_name => '',
+      :stylesheet_url => '/stylesheets/default.css',
+      :staff_access_only => false
       )
-    option.venue_id = 111
-    option.venue_shortname = 'testing'
     option.save!
   end 
   self.seed_all

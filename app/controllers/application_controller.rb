@@ -15,10 +15,15 @@ class ApplicationController < ActionController::Base
 
   private
   def maintenance_mode?
-    return if (p = Option.maintenance_password).blank?
-    auth_msg = "Audience1st is temporarily in maintenance mode.  Enter an administrator's maintenance pasword to continue."
-    @gMaintMode = true
-    authenticate_or_request_with_http_basic(auth_msg) {  |user,pass|  pass == p }
+    return unless Option.staff_access_only?
+    # allow login/logout even in maint mode
+    return if controller_name == 'sessions'
+    # allow logged-in staff users
+    if current_user.try(:is_staff) 
+      @gMaintMode = true
+    else
+      render 'sessions/maintenance'
+    end
   end
 
   public

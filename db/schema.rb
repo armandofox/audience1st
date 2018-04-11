@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180405175022) do
+ActiveRecord::Schema.define(version: 20180411200051) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -239,8 +239,8 @@ ActiveRecord::Schema.define(version: 20180405175022) do
     t.string   "encrypted_mailchimp_key"
     t.string   "encrypted_mailchimp_key_iv"
     t.string   "stylesheet_url"
-    t.string   "encrypted_maintenance_password"
     t.string   "encrypted_maintenance_password_iv"
+    t.boolean  "staff_access_only",                                                  default: false
   end
 
   create_table "orders", force: :cascade do |t|

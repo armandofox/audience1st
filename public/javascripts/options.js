@@ -1,12 +1,11 @@
 A1.optionsSetup = function() {
   // see if a maintenance password is set now, so we can warn if maintenance mode changes
-  A1.maintPassword = $('#option_maintenance_password').val();
+  A1.staffOnly = $('#option_staff_access_only').val(); // "true" or "false"
   $('form#edit_option_1').submit(A1.maintenanceModeWarning);
   // disable the editing of 'integration' option values initially
   $('#configOptions input, #configOptions select').prop('disabled', true);
 
   // when enabled, disable the 'try these values' option until save & reload
-
   $('#allowChanges').click(function() {
     alert($('#integrationWarning').text());
     $('#configOptions input, #configOptions select').prop('disabled', false);
@@ -16,13 +15,12 @@ A1.optionsSetup = function() {
 
 A1.maintenanceModeWarning = function() {
   // did we change from non-maintenance to maintenance mode?
-  debugger;
-  var newMaintPw = $('#option_maintenance_password').val();
-  if (A1.maintPassword == '' &&  newMaintPw != '') {
-    A1.maintPassword = 'x';     // re-trigger warning in case change
+  var newStaffOnly = $('#option_staff_access_only').val();
+  if (A1.staffOnly == 'false' &&  newStaffOnly == 'true') {
+    A1.staffOnly = 'true';     // re-trigger warning in case change
     return(confirm($('#enableMaintenanceWarning').text()));
-  } else if (A1.maintPassword != '' && newMaintPw == '') {
-    A1.maintPassword = '';      // in case admin changes it to diff value, trigger warning
+  } else if (A1.staffOnly == 'true' && newStaffOnly == 'false') {
+    A1.staffOnly = 'false';      // in case admin changes it to diff value, re-trigger warning
     return(confirm($('#disableMaintenanceWarning').text()));
   } else {
     return(true);
