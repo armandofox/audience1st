@@ -1,6 +1,6 @@
 class Mailer < ActionMailer::Base
 
-  helper :customers, :application
+  helper :customers, :application, :options
 
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.

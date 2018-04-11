@@ -85,7 +85,7 @@ describe Showdate do
       @house_cap = 12
       @max_sales = 10
       @thedate = Time.now
-      @showdate = FactoryGirl.create(:showdate,
+      @showdate = FactoryBot.create(:showdate,
         :thedate => @thedate,
         :end_advance_sales => @thedate - 5.minutes,
         :max_sales => @max_sales)
