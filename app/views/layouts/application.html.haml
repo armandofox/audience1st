@@ -16,7 +16,7 @@
 
     = csrf_meta_tags
 
-  %body{:id=>"#{controller.controller_name}_#{action_name}", :class=>(Figaro.env.sandbox ? 'testing.default' : 'default')}
+  %body{:id=>"#{controller.controller_name}_#{action_name}", :class => ('maintenance' if @gMaintMode)}
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     

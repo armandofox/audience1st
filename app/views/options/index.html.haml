@@ -1,4 +1,3 @@
-%p Click on the name of each configuration option for more information.
 = form_for @o do |f|
   .pageDiv
     %h1 Your Venue Info As Seen By Customers
@@ -113,6 +112,20 @@
 
   .pageDiv#configOptions
     %h1 Integrations
+    #integrationWarning.hidden
+      Integration options can now be edited. Proceed with care.  
+      You must click 'Update Settings' to save your changes before you
+      can test integrations with the new values.
+    #enableMaintenanceWarning.hidden
+      You're about to enable Maintenance Mode, which prevents ALL access
+      to Audience1st unless the user knows the Maintenance Password.
+      Write down the Maintenance Password and click OK to
+      proceed with this operation, or Cancel to cancel.  A dashed yellow
+      border will appear while the site is in Maintenance Mode.
+    #disableMaintenanceWarning.hidden
+      You're about to disable Maintenance Mode.  All regular users will
+      once again be able to access Audience1st.  Click OK to
+      proceed with this operation, or Cancel to cancel.
     %p.warning
       Warning: Changing these options affects the basic operation and
       appearance of your Audience1st installation.  Please be sure you 
@@ -120,10 +133,10 @@
       before changing a value make a note of the old value.  Click "Allow
       Changes" to enable editing of these options, or "Test Integrations..." 
       to test if the current values seem to be working.
-    %a{:name => 'configOptions'}
     %p
-      = link_to 'Allow Changes', '#configOptions', :class => 'genButton', :id => 'allowChanges'
-      = link_to 'Test Integrations', option_path(@o), :class => 'genButton', :id => 'testIntegrations'
+      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges'
+      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'genButton'
+
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |
       sendgrid_key_name  encrypted_sendgrid_key_value  sendgrid_domain |

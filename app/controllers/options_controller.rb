@@ -9,7 +9,7 @@ class OptionsController < ApplicationController
   def update
     @o = Option.first
     if (@o.update_attributes(params['option']))
-      flash[:notice] = "Update successful, your changes should take effect in the next 15 minutes."
+      flash[:notice] = "Update successful."
     else
       flash[:alert] = @o.errors.as_html
     end

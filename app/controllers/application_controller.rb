@@ -11,6 +11,18 @@ class ApplicationController < ActionController::Base
   require 'csv'
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
+  before_action :maintenance_mode?
+
+  private
+  def maintenance_mode?
+    return if (p = Option.maintenance_password).blank?
+    auth_msg = "Audience1st is temporarily in maintenance mode.  Enter an administrator's maintenance pasword to continue."
+    @gMaintMode = true
+    authenticate_or_request_with_http_basic(auth_msg) {  |user,pass|  pass == p }
+  end
+
+  public
+  
   # Session keys
   #  :cid               id of logged in user; if absent, nobody logged in
   #  :return_to         route params (for url_for) to return to after valid login
