@@ -4,7 +4,7 @@ module ApplicationHelper
   include ActiveSupport::Inflector # so individual views don't need to reference explicitly
 
   def favicon_path
-    if (u = Option.stylesheet_url).blank? 
+    if (u = Option.stylesheet_url).blank?  ||  u !~ /^http/i
       '/favicon.ico'
     else
       URI.join(u, 'favicon.ico').to_s
