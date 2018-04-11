@@ -20,7 +20,8 @@
    end
  end
  
- Given /^the setting "(.*)" is "(.*)"$/ do |opt,val|
+ Given /^the (boolean )?setting "(.*)" is "(.*)"$/ do |bool,opt,val|
+   val = !!(val =~ /true/i) if bool
    Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
  end
  
