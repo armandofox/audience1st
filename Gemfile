@@ -26,6 +26,8 @@ gem 'json', '1.8.1'
 gem 'stripe', '1.22.0'
 gem 'will_paginate', '2.3.16'
 
+gem 'yaml_db'
+
 group :development, :test do
   # cucumber and capybara
   gem 'ruby-debug'
