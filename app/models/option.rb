@@ -17,8 +17,8 @@ class Option < ActiveRecord::Base
   validates_inclusion_of :season_start_day, :in => 1..31
   validates_numericality_of :cancel_grace_period
   validates_presence_of(
-    :venue, :venue_address, :venue_city_state_zip, :venue_telephone, :venue_homepage_url,
-    :boxoffice_telephone, :precheckout_popup, :terms_of_sale, :privacy_policy_url,
+    :venue, 
+    :precheckout_popup, :terms_of_sale,
     :default_retail_account_code, :default_donation_account_code,
     :default_donation_account_code_with_subscriptions,
     :subscription_order_service_charge_account_code,

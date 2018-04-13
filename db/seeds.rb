@@ -116,7 +116,6 @@ class Audience1stSeeder
       :send_birthday_reminders => 0,
       :terms_of_sale => 'Sales Final',
       :precheckout_popup => 'Please double check dates',
-      :venue_homepage_url => 'http => //test.org',
       :default_retail_account_code =>  9999,
       :default_donation_account_code => 9999,
       :default_donation_account_code_with_subscriptions => 9999,
@@ -124,9 +123,6 @@ class Audience1stSeeder
       :stripe_secret => 'YOUR_STRIPE_SECRET',
       :sendgrid_key_name => 'apikey',
       :sendgrid_key_value => 'YOUR_SENDGRID_KEY',
-      :mailchimp_key => '',
-      :mailchimp_default_list_name => '',
-      :stylesheet_url => '/stylesheets/default.css',
       :staff_access_only => false
       )
     option.save!

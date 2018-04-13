@@ -11,6 +11,5 @@ class AddIntegrationOptions < ActiveRecord::Migration
       t.boolean          :staff_access_only, :default => false
       t.string :encrypted_maintenance_password; t.string :encrypted_maintenance_password_iv
     end
-    remove_column :options, :venue_id
   end
 end
