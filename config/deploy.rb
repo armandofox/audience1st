@@ -86,7 +86,12 @@ namespace :deploy do
       file = ERB.new(IO.read("#{rails_root}/#{f}.erb")).result(binding)
       put file, "#{release_path}/#{f}"
       run "rm -f #{release_path}/#{f}.erb"
-    end    
+    end
+    # remove spurious rake tasks that depend on dev/test gems and prevent rake
+    # from being used on production server
+    %w[cucumber rspec fake_names import_customers].each do |rakefile|
+      run "rm -f #{release_path}/lib/tasks/#{rakefile}.rake"
+    end
     # make public/stylesheets/venue point to venue's style assets
     run "ln -s #{stylesheet_dir}/#{venue}  #{release_path}/public/stylesheets/venue"
     # similarly, link favicon.ico
