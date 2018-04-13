@@ -8,7 +8,9 @@ class AddIntegrationOptions < ActiveRecord::Migration
       t.string           :sendgrid_domain
       t.string :encrypted_mailchimp_key      ; t.string :encrypted_mailchimp_key_iv
       t.string           :stylesheet_url
+      t.boolean          :staff_access_only, :default => false
       t.string :encrypted_maintenance_password; t.string :encrypted_maintenance_password_iv
     end
+    remove_column :options, :venue_id
   end
 end

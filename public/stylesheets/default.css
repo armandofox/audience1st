@@ -1,0 +1,1290 @@
+/* @override http://localhost:3000/stylesheets/venue/default.css?1277939720 */
+
+/* @override 
+	http://www.audience1st.com/custommade/stylesheets/venue/default.css?1275512265
+	http://localhost:3000/stylesheets/venue/default.css?1269303301
+	http://localhost:3000/stylesheets/venue/default.css?1268677795
+	http://localhost:3000/stylesheets/venue/default.css?1268333330
+	http://localhost:3000/stylesheets/venue/default.css?1268341073
+	http://localhost:3000/stylesheets/venue/default.css?1269304791
+	http://localhost:3000/stylesheets/venue/default.css?1269471239
+	http://localhost:3000/stylesheets/venue/default.css?1269491695
+	http://localhost:3000/stylesheets/venue/default.css?1269554108
+	http://192.168.15.101:3000/stylesheets/venue/default.css?1269555540
+	http://192.168.15.101:3000/stylesheets/venue/default.css?1269557599
+	http://localhost:3000/stylesheets/venue/default.css?1269557949
+	http://www.audience1st.com/custommade/stylesheets/venue/default.css?1275513708
+	https://www.audience1st.com/custommade/stylesheets/venue/default.css?1275786785
+*/
+
+/*
+  @file = default.css
+  @author =  Arthur Klepchukov
+  @modified = 02.10.2008
+  @for = Audience1st ticket-buying software
+*/
+
+/* 
+  Audience1st page structure:
+  
+  <body>
+    <div id="outer_header"/>
+    <div id="outer_wrapper">
+      <div id="inner_wrapper">
+        <div id="header">
+        <div id="page_body">
+          <div id="left_sidebar">
+          <div id="right_main">
+            <div id="nav"/> <!-- navbar -->
+	        <div id="content"/> <!-- main page content -->
+	      </div>  <!-- right_main -->
+        </div> <!-- page_body -->
+      </div>  <!-- inner_wrapper -->
+    </div>  <!-- outer_wrapper-->
+    <div id="footer"/>  <!-- copyright notice, etc -->
+  </body>
+
+*/
+
+/*
+  Eric Meyer's CSS Reset Reloaded
+  http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+/* remember to define focus styles! */
+
+:focus {
+	outline: 0;
+}
+
+body {
+	line-height: 1;
+	color: black;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	background-color: #eab634;
+}
+
+/* in testing or sandbox mode, body should look different */
+
+body.testing {
+	border: 4px solid red;
+	margin: 4px;
+}
+
+#outer_wrapper {
+	padding: 0;
+	width: 100%;
+	border: none;
+	background-color: #eab634;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15px;
+	height: 100%;
+}
+
+#inner_wrapper {
+	width: 772px;
+	height: 100%;
+	align: center;
+	margin: 0 auto 0 auto;
+	background-color: white;
+	border: 1px solid black;
+	padding: 0;
+	overflow: hidden;
+	display: block;
+}
+
+.full_width {
+	width: 100%;
+}
+
+#header {
+	height: 91px;
+	width: 772px;
+	margin: 0;
+	padding: 0;
+	background-repeat: no-repeat;
+	border-bottom: 1px solid black;
+}
+
+#header p#top_level_banner_text {
+	font-style: italic;
+	font-size: 9px;
+	text-align: right;
+	color: gray;
+	padding-left: 220px;
+	padding-right: 20px;
+	padding-top: 18px;
+}
+a#top_level_banner_link, a#top_level_banner_link:hover {
+        text-decoration: none;
+}
+
+#page_body {
+	
+}
+
+#left_sidebar {
+	display: block;
+	float: left;
+	width: 24px;
+	margin-bottom: -2000px;
+	padding-bottom: 2000px;
+	overflow: auto;
+}
+
+#right_main {
+	float: right;
+	width: 748px;
+	padding: 0 auto 0 auto;
+}
+
+#content {
+	padding: 0 0 6px 4px;
+	margin-top: 0;
+	overflow: scroll;
+}
+
+#footer {
+	margin: 0;
+	padding: 20px;
+	color: #ba0000;
+}
+
+#footer a {
+	color: white;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+/* text links */
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a.genButton {
+	background-color: #671e22;
+	color: white;
+	padding: 2px;
+	text-decoration: none;
+        border: 1px solid #671e22;
+}
+
+a.genButton:hover {
+	text-decoration: none;
+	color: #800000;
+	background-color: white;
+	border: 1px solid #800000;
+	padding: 0;
+}
+
+/* basic paragraphs and headers */
+
+p {
+	margin: 6px 0;
+}
+
+pre {
+	padding: 10px;
+	font-family: Monaco,Courier,fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: inherit;
+	font-weight: bold;
+	line-height: 1.4em;
+	color: #ba0000;
+}
+
+h1 {
+	font-size: 1.8em;
+	margin: 10px 0;
+	padding: 0;
+	letter-spacing: 1pt;
+}
+
+h2 {
+	font-size: 1.5em;
+	margin: 6px 0;
+	padding: 0;
+	letter-spacing: 1pt;
+}
+
+h3 {
+	font-size: 1.3em;
+}
+
+h4 {
+	font-size: 1.2em;
+}
+
+h5 {
+	font-size: 1.1em;
+}
+
+h6 {
+	font-size: 1.0em;
+}
+
+/* lists */
+
+ol, ul {
+	list-style: none;
+}
+
+ul.horizontal_list {
+	float: left;
+	border-bottom: 2px solid black;
+	padding-bottom: 2px;
+	margin-bottom: 4px;
+}
+
+ul.horizontal_list li {
+	width: auto;
+	list-style: none;
+	float: left;
+	padding-left: 2px;
+	padding-right: 2px;
+	margin-left: 8px;
+	margin-right: 60px;
+	font-size: larger;
+	font-weight: bold;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 0;
+	margin-bottom: 10px;
+	margin-top: 4px;
+}
+
+/* easier to navigate if tabular rows hilited on hover */
+
+table.hilite tr:hover {
+	background-color: #fcfe69;
+}
+
+/* To make alternating table rows different colors, set the styles here  */
+
+.even {
+	background-color: inherit;
+}
+
+.odd {
+	background-color: #eee;
+}
+
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+}
+
+blockquote, q {
+	quotes: "" "";
+}
+
+form {
+	display: inline;
+}
+
+
+fieldset {
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid black;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd {
+	margin: 0;
+	padding-left: 20px;
+}
+
+label {
+	margin: 0;
+	padding-right: 5px;
+	float: left;
+	clear: left;
+	width: 100px;
+	text-align: right;
+	font-size: 0.9em;
+}
+
+thead {
+	background-color: #EEE;
+	color: black;
+}
+
+th {
+	margin: 0;
+	padding: 3px;
+	font-weight: bold;
+	text-align: center;
+	background: #333;
+	color: #fff;
+}
+
+td {
+	padding: 1px 2px;
+}
+
+
+caption {
+	text-align: left;
+	font-weight: normal;
+}
+
+/*
+ *  Classes to apply to generic elements
+ */
+
+/* imitate font characteristics of h1 and h2 */
+
+.h1 {
+	margin: 14px 0 0 10px;
+	padding: 0;
+	font-size: 1.3em;
+}
+
+.h2 {
+	margin: 6px 0;
+	padding: 0;
+}
+
+strong, .strong {
+	font-weight: bold;
+	color: #ba0000;
+}
+
+em, .emphasis {
+	color: #ba0000;
+	font-style: italic;
+}
+
+/* 
+ * Utility styles - these are used in various places so don't delete
+ */
+
+.floatright {
+	float: right;
+}
+
+.floatleft {
+	float: left;
+}
+
+.hidden {
+	display: none;
+}
+
+.invisible {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: -1;
+	font-size: 1px;
+	color: white;
+	border: none;
+}
+
+.currency {
+	text-align: right;
+}
+
+.indented {
+	margin: 5px 0 5px 100px;
+	padding: 0;
+}
+
+.r {
+	text-align: right;
+}
+
+.c, .center {
+	text-align: center;
+}
+
+.l {
+	text-align: left;
+}
+
+.t, .top {
+	vertical-align: top;
+}
+
+.b {
+	vertical-align: bottom;
+}
+
+.small {
+	font-size: 0.8em;
+}
+
+.clear {
+	clear: both;
+}
+
+.no_float {
+	float: none;
+	width: 100%;
+}
+
+.feedback {
+	margin: 0;
+	padding: 5px;
+	background-color: #ddc;
+	color: #555;
+}
+
+.notice {
+	margin: 3px 0;
+	padding: 5px;
+	background-color: #EEE;
+	color: #333;
+	border: 1px solid #CCC;
+	line-height: 1.2;
+}
+
+.warning {
+	margin: 3px 20px;
+	color: red;
+	border: 1px solid red;
+	line-height: 1.2;
+	font-weight: bold;
+	padding: 6px 10px;
+}
+
+.checkout_error {
+	margin: 3px 20px;
+	background-color: yellow;
+	color: red;
+	font-weight: bold;
+	padding: 6px 10px;
+	line-height: 1.2;
+	border: 1px double red;
+}
+
+.spinner16 {
+	
+
+
+}
+
+.wide_button {
+	letter-spacing: 0.25em;
+	width: 100px;
+}
+
+.wide_label {
+	width: 350px;
+}
+
+/* show 'spinner' in a DIV that is the right size for the image, so
+   layout isn't affected when it is shown/hidden */
+
+.spinner16 {
+	height: 18px;
+	width: 18px;
+	padding: 1px;
+	margin: 0;
+	display: none;
+}
+
+/* Error messages shown to customers */
+
+#errorExplanation {
+	width: 400px;
+	border: 2px solid red;
+	padding: 7px;
+	padding-bottom: 12px;
+	margin-bottom: 20px;
+	background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+	text-align: left;
+	font-weight: bold;
+	padding: 5px 5px 5px 15px;
+	font-size: 110%;
+	margin: -7px;
+	background-color: #c00;
+	color: #fff;
+}
+
+#errorExplanation p {
+	color: #333;
+	margin-bottom: 0;
+	padding: 5px;
+}
+
+#errorExplanation ul li {
+	font-size: 110%;
+	list-style: square;
+}
+
+.explain {
+	border: 1px solid #8d3127;
+	background: white;
+	padding: 2px 2px;
+	margin: 2px 2px;
+	vertical-align: top;
+}
+
+/*
+ * Generic classes for admin-only visible elements
+ */
+
+.infoMsg {
+	color: red;
+	margin: 5px 5px;
+	padding: 5px 5px;
+	font-size: 125%;
+	border: 2px solid red;
+}
+
+.admin {
+	background-color: #eff19e;
+	color: black;
+}
+
+.adminDiv {
+	background-color: #eff19e;
+	display: block;
+}
+
+.adminField {
+	clear: both;
+	padding: 2px 10px;
+	background-color: #eff19e;
+	color: black;
+}
+
+.adminButton {
+	font-size: 11px;
+	color: black;
+	background-color: white;
+	border: 1px solid black;
+	margin: 1px;
+	padding: 2px;
+	line-height: 1.5em;
+}
+
+.adminButton:hover {
+	background-color: #eff19e;
+	color: #ba0000;
+	border: 1px solid #ba0000;
+	text-decoration: none;
+}
+
+/* Additional field qualifiers for errors etc */
+
+.validatedAddress {
+	background-color: #1f1;
+}
+
+.validationError {
+	color: red;
+}
+
+.highlighted {
+	background-color: #9f9;
+}
+
+.fieldWithErrors {
+	padding: 2px;
+	color: white;
+	background-color: red;
+	display: table;
+}
+
+.disabledField {
+	background-color: #e6e6e6;
+	border: none;
+	color: #000;
+	font-weight: bold;
+}
+
+/* Navigation tabs - don't mess with these unless you know what you're
+   doing - it allows the UL environment to create horizontal tabs
+ */
+
+#store_nav, #staff_nav {
+	float: left;
+	width: 100%;
+	list-style: none;
+}
+
+#staff_nav {
+	margin-top: 12px;
+	border-bottom: 2px solid #ccc;
+}
+
+#store_nav {
+	border-bottom: 3px double #999;
+}
+
+#store_nav li {
+	float: left;
+	border-right: 1px solid #666;
+}
+
+#staff_nav li {
+	float: left;
+	border-right: 1px solid #666;
+	border-top: 2px solid #ccc;
+}
+
+#store_nav li {
+	border-top: 2px solid #CCC;
+}
+
+#store_nav li a, #staff_nav li a {
+	margin: 0;
+	padding: 0px 3px 3px 3px;
+	display: block;
+	float: left;
+	font-variant: small-caps;
+	font-size: 10pt;
+	text-decoration: none;
+	color: #222;
+	background-color: #eee;
+}
+
+#store_nav li a:hover, #staff_nav li a:hover {
+	background-color: #ba0000;
+	color: white;
+}
+
+/* override nav tab color when tab selected */
+
+body#store_index                    li#t_store_index a, 
+body#customers_welcome              li#t_customers_welcome a, 
+body#customers_welcome_subscriber   li#t_customers_welcome a, 
+body#customers_edit                 li#t_customers_edit a, 
+body#customers_change_password      li#t_customers_change_password a,
+body#report_index                   li#t_report_index a,  
+body#box_office_walkup	            li#t_box_office_walkup a,
+body#options_edit                   li#t_options_edit a,
+body#shows_list						li#t_shows_list a,
+body#shows_edit						li#t_shows_list a,
+body#showdates_edit					li#t_shows_list a,
+body#vouchertypes_list				li#t_vouchertypes_list a,
+body#vouchertypes_edit				li#t_vouchertypes_list a,
+body#donation_list 					li#t_donation_list a {
+	background-color: white;
+	color: #ba0000;
+}
+
+/*
+ * Welcome banner elements
+ */
+
+.welcomeBanner {
+	font-size: 125%;
+	font-weight: bold;
+}
+
+#logged_in {
+	margin-bottom: 10px;
+	padding: 5px;
+	font-size: 1em;
+	background-color: #EEE;
+	color: #444;
+}
+
+#welcome {
+	color: #787878;
+	padding: 5px;
+	font: italic 10pt "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+#logged_in_welcome .button-to, #welcome .gen_button {
+	display: inline;
+}
+
+/* Login page */
+
+#login_with_facebook {
+float:  left;	
+margin-left: 10px;	
+}
+
+#homepage_ticket_sales_text, #homepage_subscription_sales_text,
+.new_account {
+    padding: 8px 0 6px 20px;
+	display: inline-block;
+}
+
+/* Welcome banner */
+
+#welcome_header {
+	float: left;
+}
+
+#admin_welcome_header {
+	float: right;
+}
+
+
+/*
+ * My Tickets and Reservations page
+ */
+
+#customerVoucherList tbody td, #customerVoucherList td {
+	border-bottom: 3px solid #CCC;
+	text-align: center;
+}
+
+table#subscriptionReservations tr {
+	line-height: 1.75;
+}
+
+table#subscriptionReservations td.selectShowdate {
+
+
+}
+
+table#subscriptionReservations .showdate {
+	width: 20em;
+}
+
+table#subscriptionReservations .action {
+	text-align: center;
+	vertical-align: top;
+}
+
+/********************
+  Cart styles 
+ ********************/
+
+div#cart {
+	margin: 5px 0;
+	padding: 10px;
+	border: 3px double #CCC;
+}
+
+p#empty_cart {
+	
+}
+
+ol#cart_items {
+	
+}
+
+li.cart_item {
+	margin: 0;
+	padding: 3px;
+}
+
+.price_and_actions {
+	margin: 0;
+	padding-left: 5px;
+	width: 20%;
+	float: right;
+}
+
+.price_and_actions .actions {
+	float: right;
+}
+
+.cart_item_price {
+	
+}
+
+span.cart_item_desc {
+	display: block;
+}
+
+.voucher_show_name {
+	text-decoration: none;
+	text-transform: capitalize;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 150%;
+	color: #800000;
+}
+
+.voucher_show_date {
+	font-style: italic;
+}
+
+.voucher_type {
+	margin: 0;
+	padding: 0 3px;
+	background-color: transparent;
+	color: #444;
+}
+
+.promo_code {
+	
+}
+
+.donation_name {
+	background-color: transparent;
+	color: #ba0000;
+	font-weight: bold;
+}
+
+#cart_total {
+	margin-top: 2px;
+	padding: 2px;
+	background-color: #666;
+	color: white;
+	border: 1px solid #EEE;
+}
+
+#total_price {
+	display: block;
+	float: right;
+	font-weight: bold;
+	width: 20%;
+}
+
+/************************
+ * Page-specific styles 
+ ************************/
+
+.page_heading {
+	margin: 0;
+	padding-bottom: 10px;
+	border-bottom: 5px double #777;
+}
+
+/* "show my tickets" page */
+
+.showName {
+	font-weight: bold;
+	color: #ba0000;
+	line-height: 1.4
+}
+
+h2.subscription_msg {
+	margin: 0;
+	padding: 10px;
+	background-color: #EEE;
+	color: #057;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 150%;
+	text-align: center;
+	letter-spacing: normal;
+}
+
+.subscription_msg2 {
+	margin-top: 3px;
+	padding: 0;
+	font-size: 0.9em;
+	text-align: center;
+}
+
+#have_account {
+	margin: 0;
+	padding: 10px;
+	float: left;
+	width: 50%;
+	/*borde
+
+r: 1px solid red;*/
+  border-right: 5px double black;
+}
+
+#new_customer {
+	margin: 0;
+	padding: 10px;
+	float: left;
+	width: 200px;
+}
+
+#new_customer a.genButton {
+	text-decoration: underline;
+	background-color: transparent;
+	color: #ba0000;
+	padding: 2px;
+}
+
+fieldset#FAQ {
+	border: 1px solid red;
+}
+
+fieldset#admin_form {
+	color: black;
+	border: 1px solid black;
+}
+
+/*
+ *  Store   //////////////////////////////////////////////////
+ */
+
+#ticket_menus {
+	margin-top: 20px;
+	padding: 0;
+}
+
+#ticket_menus label {
+	width: 200px;
+	padding-top: 0.7ex;
+}
+
+#subscription_menus #enter_promo_code label {
+	width: 350px;
+}
+
+#ticket_menus #add_to_cart {
+	margin-left: 300px;
+	padding: 0;
+}
+
+#ticket_menus *.explanation {
+	margin-left: 300px;
+	padding: 1px;
+	padding-bottom: 2px;
+        border: 1px solid rgb(137,25,18);
+	border: 1px solid rgba(137,25,18,0.5);
+	color: rgb(137,25,18,0.85);
+	color: rgba(137,25,18,0.85);
+}
+
+#orderTotal {
+	font-size: larger;
+	font-weight: bold;
+	vertical-align: bottom;
+	color: red;
+	background-color: #eee;
+}
+
+#orderTotal input {
+	font-size: inherit;
+}
+
+.storeText {
+	text-align: center;
+}
+
+#donate {
+	margin: 0 0 20px 0;
+	padding: 10px 0;
+	background-color: #f6f6ed;
+}
+
+#donate_info {
+	margin: 0 auto 10px auto;
+	padding: 5px;
+	width: 400px;
+	background-color: #EEE;
+	color: black;
+	border: 1px solid black;
+}
+
+/* 
+ * Specific messaging for Store and Subscribe pages
+ */
+
+.storeBanner {
+	background-color: #ba0000;
+	color: white;
+	padding: 5px;
+	margin: 0;
+	text-align: center;
+}
+
+.storeBanner a {
+	color: yellow;
+}
+
+/* Popup help links
+ */
+
+.popupHelpLink {
+	background-color: #fcfe17;
+	font-size: smaller;
+	color: #1c05fd;
+	padding: 2px;
+}
+
+/***********************************************************************
+ * Styles below this point are never seen by regular customers
+ **********************************************************************/
+/* 
+ * Customer name autocompletion popup
+ * Don't modify these unless you know
+ * what you're doing
+ */
+
+div.auto_complete {
+	display: inline;
+	width: 350px;
+	background: #fff;
+}
+
+div.auto_complete ul {
+	border: 1px solid #888;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	list-style-type: none;
+}
+
+div.auto_complete ul li {
+	margin: 0;
+	padding: 3px;
+}
+
+div.auto_complete ul li.selected {
+	background-color: #ffb;
+}
+
+div.auto_complete ul strong.highlight {
+	color: #800;
+	margin: 0;
+	padding: 0;
+}
+
+
+/*
+ * Door list
+ */
+
+body#door_list {
+	background: none;
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+	font-size: 11pt;
+}
+
+body#door_list h1, body#door_list h2 {
+	font-family: inherit;
+	color: black;
+}
+
+/* Index letter column (style applies to TD) */
+
+.maincolumn {
+	border: none;
+	background: none;
+	font-size: large;
+	font-weight: bold;
+	color: red;
+}
+
+/* Subscribers are hilited on door list (style applies to a TR) */
+
+.subscriber {
+	background-color: #9f9;
+}
+
+/*
+ * Quick search customer panel
+ */
+
+#customer_quick_search {
+	padding-top: 0;
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+#customer_quick_search table {
+	padding: 0;
+	margin: 0;
+}
+
+#onBehalfOfName {
+	color: black;
+	font-weight: bold;
+	font-size: larger;
+}
+
+/*
+ * Staff action buttons that appear for a customer (Contact, Prospecting, etc)
+ */
+
+#staffButtons {
+	border-top: 1px groove #fff;
+}
+
+/*
+ * General utility styles
+ */
+
+.totalsRow {
+	font-weight: bold;
+	background-color: #ccc;
+	font-size: larger;
+}
+
+/* 
+ * Edit shows and showdates
+ */
+
+.show_name {
+	font-style: italic;
+}
+
+table.showdates_summary {
+	border-style: solid;
+	border-color: #000;
+	background-color: #e6e6e6;
+	line-height: normal;
+	padding-left: 20px;
+}
+
+table.showdates_summary th {
+	background-color: #e6e6e6;
+	color: #4c4c4c;
+	text-align: center;
+}
+
+table.showdates_summary td {
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+/*
+ * Box office functions header ("stats for this show")
+ */
+
+table#showdate_info, table#showdate_info td {
+	border: 0;
+	font-size: larger;
+	width: 600px;
+	text-align: center;
+}
+
+/*
+ * Settings
+ */
+
+table#options_table td.option_name {
+	width: 20em;
+	vertical-align: top;
+	text-align: left;
+}
+
+table#options_table td.option_value {
+	text-align: left;
+}
+
+/*
+ * Reports
+ */
+
+/* Advance sales reports */
+
+div.show .showSalesDate {
+	width: 15em;
+}
+
+div.show .showSalesVoucherType {
+	padding-left: 1em;
+	width: 20em;
+}
+
+div.show .showSalesDateQty {
+	width: 5em;
+	text-align: left;
+}
+
+div.show .showSalesDatePercent, div.show .showSalesPercent {
+	width: 12em;
+}
+
+div.show .showSalesDateRevenue {
+	width: 10em;
+	font-weight: bold;
+}
+
+div.show .showSalesRevenue {
+	width: 10em;
+}
+
+#pageDiv .showDateSummary {
+	margin: 2px;
+	background: white;
+}
+
+#pageDiv .showDate {
+	float: left;
+	font-size: larger;
+	background-color: #666;
+	color: white;
+	display: block;
+}
+
+#pageDiv .showDateNav {
+	text-align: right;
+	background-color: white;
+	color: black;
+	font-weight: bold;
+}
+
+#pageDiv table.summarySales {
+	width: 80%;
+	min-width: 400px;
+	max-width: 800px;
+}
+
+#pageDiv td.salesCategory {
+	width: 85%;
+}
+
+#pageDiv td.salesQty {
+	width: 15%;
+}
+
+/* output options for customer lists */
+
+#output_options p {
+	margin-left: 2ex;
+	margin: 4px;
+}
+
+#output_options p.fieldgroup {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	font-weight: bold;
+	margin-left: 0;
+}
+
+/*
+ * Advanced customer report  (SQL builder) page 
+ */
+
+#sqlQuery {
+	border: 1px solid red;
+	padding: 4px;
+	margin: 4px 0 2px 0;
+	background: #eee;
+	color: red;
+	font-size: 90%;
+}
