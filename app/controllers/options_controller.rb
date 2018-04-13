@@ -8,7 +8,8 @@ class OptionsController < ApplicationController
 
   def update
     @o = Option.first
-    if (@o.update_attributes(params['option']))
+    option_params = params.require('option').permit!
+    if (@o.update_attributes(option_params))
       flash[:notice] = "Update successful."
     else
       flash[:alert] = @o.errors.as_html
