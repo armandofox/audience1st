@@ -61,7 +61,7 @@ end
 
 group :development, :test do
   # cucumber and capybara
-  gem 'yaml_db'
+  gem 'yaml_db', :git => 'https://github.com/armandofox/yaml_db'
   gem 'byebug'                  # 4
   gem 'pry'
   gem 'listen', '~> 2.2'

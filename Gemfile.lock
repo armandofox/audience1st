@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/armandofox/yaml_db
+  revision: 8632537bf3045f277cec21ee2433b91092bc4e3f
+  specs:
+    yaml_db (0.6.1)
+      rails (>= 3.0, < 5.2)
+      rake (>= 0.8.7)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -397,9 +405,6 @@ GEM
     will_paginate (3.1.6)
     xpath (3.0.0)
       nokogiri (~> 1.8)
-    yaml_db (0.6.0)
-      rails (>= 3.0, < 5.2)
-      rake (>= 0.8.7)
 
 PLATFORMS
   ruby
@@ -471,7 +476,7 @@ DEPENDENCIES
   web-console (~> 2.0)
   webmock
   will_paginate
-  yaml_db
+  yaml_db!
 
 RUBY VERSION
    ruby 2.3.1p112
