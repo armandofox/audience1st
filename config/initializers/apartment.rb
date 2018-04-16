@@ -1,3 +1,35 @@
+# This code (from https://github.com/influitive/apartment/issues/508)
+# works around Apartment gem issue
+# https://github.com/zdennis/activerecord-import/issues/233 
+# in which Rails' caching of the next-sequence-value for autoincrement
+# keys may be wrong because the caching isn't aware of multiple
+# tenants.  The workaround is to effectively disable caching of the
+# sequence number.
+
+if ActiveRecord::Base.connection.adapter_name.downcase =~ /postgres/
+  Rails.logger.warn "#{__FILE__}:#{__LINE__}: Initializing workaround for Apartment gem issue 233"
+  module PostgresqlSequenceResetter
+    def connect_to_new(tenant=nil)
+      super
+
+      model_names = ActiveRecord::Base.descendants.map(&:to_s)
+
+      tables = ActiveRecord::Base.connection.tables
+        .map(&:singularize)
+        .map(&:camelize)
+
+      resettable_tables = tables & model_names
+
+      resettable_tables.each do |table|
+        table.constantize.reset_sequence_name
+      end
+    end
+  end
+
+  require "apartment/adapters/postgresql_adapter"
+  Apartment::Adapters::PostgresqlSchemaAdapter.prepend PostgresqlSequenceResetter
+end
+
 # You can have Apartment route to the appropriate Tenant by adding some Rack middleware.
 # Apartment can support many different "Elevators" that can take care of this routing to your data.
 # Require whichever Elevator you're using below or none if you have a custom one.
@@ -67,3 +99,4 @@ end
 
 Rails.application.config.middleware.use Apartment::Elevators::FirstSubdomain
 # other Elevators choices: Domain, Subdomain, Host, Generic (w/callable arg that's passed the ActionDispatch.request obj)
+
