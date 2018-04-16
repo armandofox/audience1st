@@ -322,20 +322,20 @@ table#showdate_info td.value {
  * Walkup sales
  */
 
-#walkup_tickets {
+.walkup_tickets {
 	width: 100%;
 }
-#walkup_tickets .column {
+.walkup_tickets .column {
 	float: left;
 	padding: 0;
 	margin: 4px;
 	width: 45%;
 } 
-#walkup_tickets .column:hover {
+.walkup_tickets .column:hover {
 	border: 1px solid red;
 	margin: 3px;
 }
-#walkup_tickets p.column_header {
+.walkup_tickets p.column_header {
 	font-size: larger;
 	text-align: center;
 	font-weight: bold;
@@ -344,7 +344,7 @@ table#showdate_info td.value {
     padding: 4px 0;
     margin: 0;
 }
-#walkup_tickets #payment_types {
+.walkup_tickets #payment_types {
     font-size: 100%;
     
 }
