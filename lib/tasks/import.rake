@@ -7,6 +7,21 @@ namespace :db do
     STDERR.puts "Importing to schema..."
     system("TENANT=#{venue} rake db:data:load") or abort "Import failed: #{$?}"
   end
+  desc "Set config values from venues.yml"
+  task :load_config => :environment do
+    venue = ENV['VENUE'] or abort "must set VENUE=venuename"
+    c = YAML::load(IO.read("/Users/fox/Documents/fox/projects/vboadmin/venues.yml"))[venue]['application_yml']
+    STDERR.puts "Setting options..."
+    Apartment::Tenant.switch! venue
+    Option.first.update_attributes!(
+      :stripe_key => c['stripe_key'],
+      :stripe_secret => c['stripe_secret'],
+      :sendgrid_key_name => 'apikey',
+      :sendgrid_key_value => c['sendgrid_api_value'],
+      :stylesheet_url => c['stylesheet_url'],
+      :mailchimp_key => c['mailchimp_key'],
+      :sendgrid_domain => "#{venue}.audience1st.com" )
+  end
 end
 
     
