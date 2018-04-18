@@ -32,7 +32,7 @@ class Customer < ActiveRecord::Base
 
   scope :donated_during, ->(start_date, end_date, amount) {
     joins(:items, :orders).
-    where(%q{items.customer_id = customers.id AND items.amount >= ? AND items.type = \'Donation\'
+    where(%q{items.customer_id = customers.id AND items.amount >= ? AND items.type = 'Donation'
             AND orders.sold_on BETWEEN ? AND ?},
       amount, start_date, end_date).
     select('distinct customers.*')
