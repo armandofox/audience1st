@@ -183,7 +183,7 @@ class ValidVoucher < ActiveRecord::Base
   def self.bundles(seasons = [Time.this_season-1, Time.this_season+1])
     ValidVoucher.
       includes(:vouchertype).references(:vouchertypes).
-      where('vouchertypes.category' => "bundle").
+      where('vouchertypes.category' => 'bundle').
       where('vouchertypes.season IN (?)', seasons).
       order("season DESC,display_order,price DESC")
   end
@@ -192,7 +192,7 @@ class ValidVoucher < ActiveRecord::Base
     bundles = ValidVoucher.
       where('? BETWEEN start_sales AND end_sales', Time.now).
       includes(:vouchertype).references(:vouchertypes).
-      where('vouchertypes.category = "bundle"').
+      where('vouchertypes.category' => 'bundle').
       order("season DESC,display_order,price DESC")
     bundles = bundles.map do |b|
       b.customer = customer
