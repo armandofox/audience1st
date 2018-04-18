@@ -1,7 +1,7 @@
 - if @next_showdate.kind_of?(Showdate)
   = render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
 
-- if Voucher.count > 0 || Donation.count > 0
+- if nil && (Voucher.count > 0 || Donation.count > 0)
   .pageDiv#accounting_reports
     %h1 Accounting/Financial Reports
     = form_tag do_report_reports_path, {:method => :get} do
