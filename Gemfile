@@ -11,9 +11,6 @@ gem 'rails', '4.2.9'
 gem 'acts_as_reportable'
 gem 'builder'
 gem 'bundler'
-# gem 'constant_contact'
-gem 'dbf'
-gem 'dbi'
 gem 'figaro'
 gem 'sslrequirement'
 gem 'haml'
@@ -21,7 +18,6 @@ gem 'hominid'
 gem 'i18n'
 gem 'jbuilder', '~> 2.0'        # 4
 gem 'jquery-rails'              # 4
-gem 'json'
 gem 'mechanize'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
@@ -29,11 +25,7 @@ gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
 gem 'rake'
 gem 'ruport'
-# stripe depends on rest-client and json, but we can't use the latest version of
-# those until upgrade to ruby >= 1.9.2
-gem 'rest-client'
 gem 'stripe'
-gem 'thor', '0.19.1'
 gem 'will_paginate'
 
 group :production do
@@ -68,7 +60,6 @@ group :development, :test do
   gem 'guard-rspec', :require => false
   gem 'guard-cucumber'
   gem 'minitest'
-  gem 'capistrano', '~> 2.0'
   gem 'faye-websocket'
   gem 'database_cleaner'
   gem 'factory_bot_rails'
@@ -86,4 +77,5 @@ group :development, :test do
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'sqlite3'
   gem 'timecop'
+  gem 'traceroute'
 end
