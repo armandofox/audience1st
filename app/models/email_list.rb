@@ -21,7 +21,7 @@ class EmailList
   public
 
   def self.disabled?
-    ! Option.mailchimp_key.blank?
+    Option.mailchimp_key.blank?
   end
 
   def self.enabled? ; !self.disabled? ; end
