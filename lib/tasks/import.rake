@@ -1,4 +1,4 @@
-if Rails.env.development
+if ENV['RAILS_ENV'] == 'development'
   namespace :db do
     desc "Import all venues' databases schema by schema...yikes"
     task :import_venue => :environment do
