@@ -1,5 +1,6 @@
 class InfoController < ApplicationController
 
+  skip_before_filter :require_ssl
   respond_to :xml
   
   # RSS feed of ticket availability info: renders an XML view for external use
