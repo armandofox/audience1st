@@ -6,8 +6,6 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include FilenameUtils
   
-  force_ssl if Rails.env.production?
-
   require 'csv'
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired

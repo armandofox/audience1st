@@ -1,5 +1,7 @@
 class InfoController < ApplicationController
 
+  skip_before_action :maintenance_mode
+
   respond_to :xml
   
   # RSS feed of ticket availability info: renders an XML view for external use
