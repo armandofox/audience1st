@@ -39,8 +39,7 @@ Rails.application.configure do
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.ssl_options =  { redirect: { exclude: -> request { request.path =~ /rss/ } } }
-  config.force_ssl = true
+  # config.force_ssl = true
 
   # See everything in the log (default is :info)
   config.log_level = :debug

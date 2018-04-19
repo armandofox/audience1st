@@ -1,6 +1,7 @@
-class InfoController < ApplicationController
+class InfoController < ActionController::Base
 
-  skip_before_action :maintenance_mode
+  # NOTE inheriting from AC::Base avoids inheriting stuff from APplicationController, such as maintenance mode
+  # filter and force_ssl
 
   respond_to :xml
   
