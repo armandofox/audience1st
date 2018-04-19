@@ -304,7 +304,15 @@ div.large_warning {
 /*
  * Box office functions header ("stats for this show")
  */
- 
+#select_show {
+	clear:  both;
+    margin: 1em;
+    font-size: larger;
+}
+#select_show select {
+	font-size: 200%;
+} 
+
  table#showdate_info {
 	border: 0;
 	font-size: larger;

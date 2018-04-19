@@ -1,9 +1,5 @@
-#change_showdate.clear
-  %h1.floatleft= @showdate.printable_name
-  .floatleft.clear.h1= link_to 'Change', '#', :onclick => '$("#select_show").slideToggle()', :class => 'genButton'
-
-  #select_show{:style => "display: none;"}
-    %label{:for=>:showdate_thedate} Show and Date:
-    = select_tag 'new_showdate', showdates_with_urls(), :onchange => 'window.location = $("#new_showdate").val()'
+#select_show.clear
+  %label{:for=>:showdate_thedate} Show and Date:
+  = select_tag 'new_showdate', showdates_with_urls(), :onchange => 'window.location = $("#new_showdate").val()'
 
 
