@@ -7,13 +7,19 @@ xml.instruct!
 xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1", "xmlns:audience1st" => "https://www.audience1st.com/audience1st" do
   xml.channel do
     xml.title "#{@venue} Ticket Availability"
-    xml.link store_url.html_safe
+    xml.link do
+      xml.cdata! store_url.html_safe
+    end
     xml.description "Ticket Availability for #{@venue}"
     @showdates.each do |sd|
       xml.item do
         xml.title h(sd.printable_name)
-        xml.link do ; xml << link_to_showdate_tickets(sd) ; end
-        xml.guid :isPermaLink => false do ; xml << link_to_showdate_tickets(sd) ; end
+        xml.link do 
+          xml.cdata! link_to_showdate_tickets(sd)
+        end
+        xml.guid :isPermaLink => false do 
+          xml.cdata! link_to_showdate_tickets(sd) 
+        end
         xml.__send__('audience1st:show', sd.show.name)
         xml.__send__('audience1st:showDateTime', sd.thedate.strftime('%a, %b %e, %l:%M%p'))
         xml.__send__('audience1st:showDateTime8601', sd.thedate.strftime('%FT%R'))

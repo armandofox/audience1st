@@ -4,7 +4,9 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1" do
   xml.channel do
 
     xml.title       "#{@venue} Ticket Availability"
-    xml.link        url_for(:only_path => false, :controller => 'store')
+    xml.link do
+      xml.cdata! url_for(:only_path => false, :controller => 'store').html_safe
+    end
     xml.description "Ticket Availability for #{@venue}"
 
     unless (@showdate_avail.nil? || @showdate_avail.empty?)
