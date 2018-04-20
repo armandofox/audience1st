@@ -1,5 +1,6 @@
 class Report
   include FilenameUtils
+  require 'csv'
 
   if self.subclasses.empty?
     Dir["#{Rails.root}/app/models/reports/*.rb"].each do |file|
@@ -56,7 +57,7 @@ class Report
   def create_csv
     multicolumn = (@output_options['multi_column_address'].to_i > 0)
     header_row = (@output_options['header_row'].to_i > 0)
-    CSV::Writer.generate(@output='') do |csv|
+    @output = CSV.generate do |csv|
       begin
         if multicolumn
           csv << %w[first_name last_name email day_phone eve_phone street city state zip labels created_at] if header_row
@@ -87,7 +88,7 @@ class Report
             ]
           end
         end
-      rescue Exception => e
+      rescue RuntimeError => e
         err = "Error in create_csv: #{e.message}"
         add_error(err)
         Rails.logger.error err

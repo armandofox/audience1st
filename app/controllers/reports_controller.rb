@@ -1,6 +1,6 @@
 class ReportsController < ApplicationController
 
-  require 'set'
+  require 'csv'
 
   before_filter :is_staff_filter
 
@@ -55,15 +55,16 @@ class ReportsController < ApplicationController
   def subscriber_details
     y = (params[:id] || Time.now.year).to_i
     subs = Voucher.subscription_vouchers(y)
-    render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
     if params[:download]
-      CSV::Writer.generate(output='') do |csv|
+      output = CSV.generate do |csv|
         csv << %w[name amount quantity]
         q=0 ; t=0
         subs.each { |s| csv << s ; t += s[1]*s[2] ; q += s[2] }
         csv << ['Total',t,q]
-        download_to_excel(output, "subs#{y}")
       end
+      download_to_excel(output, "subs#{y}")
+    else
+      render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
     end
   end
 

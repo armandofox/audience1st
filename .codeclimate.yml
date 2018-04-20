@@ -46,9 +46,3 @@ exclude_paths:
 - vendor/
 - "*/**/*.min.js"
 - "*/**/jquery.js"
-- "*/**/prototype.js"
-- "*/**/controls.js"
-- "*/**/effects.js"
-- "*/**/dragdrop.js"
-- "*/**/builder.js"
-- "*/**/slider.js"
