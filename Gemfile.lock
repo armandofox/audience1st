@@ -326,6 +326,7 @@ GEM
       rspec-mocks (~> 3.7.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
+    ruby-prof (0.17.0)
     ruby-rc4 (0.1.5)
     rubyzip (1.2.1)
     ruport (1.7.1)
@@ -446,6 +447,7 @@ DEPENDENCIES
   rspec-html-matchers
   rspec-its
   rspec-rails
+  ruby-prof
   rubyzip
   ruport
   sdoc (~> 0.4.0)

@@ -28,9 +28,6 @@ class CheckinsController < ApplicationController
     end
   end
 
-
-
-
   def vouchers_for_showdate(showdate)
     perf_vouchers = @showdate.advance_sales_vouchers
     total = perf_vouchers.size

@@ -48,6 +48,7 @@ end
 
 group :development do
   gem 'derailed_benchmarks'
+  gem 'ruby-prof'
   gem 'stackprof'
   gem 'web-console', '~> 2.0'
 end
