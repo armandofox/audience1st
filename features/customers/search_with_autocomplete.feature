@@ -28,10 +28,10 @@ Scenario:search with other information
     | Bob        | Bag       | BBB@email.com       | 23 Alexander  |  SAF | CA    |
     | Organ      | Milk      | dancingfox@mail.com | 100 bway      |  SAF | CA    |
 
-  When I fill "search_field" autocomplete field with "Fox"
+  When I fill "search_field" autocomplete field with "FOX"
   Then I should see autocomplete choice "Armando Fox"
-  And I should see autocomplete choice "Bobby Boxer(123 Fox Hill)"
-  And I should see autocomplete choice "Organ Milk(dancingfox@mail.com)"
+  And I should see autocomplete choice "Bobby Boxer (123 Fox Hill)"
+  And I should see autocomplete choice "Organ Milk (dancingfox@mail.com)"
   But I should not see autocomplete choice "Bob Bag"
 
 Scenario: search with no result
