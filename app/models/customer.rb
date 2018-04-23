@@ -363,7 +363,7 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.where("email LIKE ?", email.strip.downcase).first) # need to get the salt
+    unless (u = Customer.where("lower(email) LIKE ?", email.strip.downcase).first) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
@@ -504,13 +504,13 @@ EOSQL1
     return [] if terms.empty?
     conds_ary = []
     cols = %w(first_name last_name street city zip day_phone eve_phone comments company email)
-    conds = cols.map { |c| "(#{c} LIKE ?)" }.join(" OR ")
+    conds = cols.map { |c| "(lower(#{c}) LIKE ?)" }.join(" OR ")
     terms.each do |term|
-      conds_ary = Array.new(cols.size) { "%#{term}%" }.concat(conds_ary)
+      conds_ary = Array.new(cols.size) { "%#{term.downcase}%" }.concat(conds_ary)
     end
     conds = Array.new(terms.size, conds).map{ |cond| "(#{cond})"}.join(" AND ")
     conds_ary.unshift(conds)
-    Customer.where(conds_ary).order("last_name").take(10)
+    Customer.where(conds_ary).limit(50).order("last_name").take(10)
   end
 
   # return a hash include information containing searching term in auto
@@ -536,7 +536,7 @@ EOSQL1
         if (customer.attributes[col].is_a? String) &&
             customer.attributes[col].downcase.include?(term.downcase) &&
             (not matching_info.downcase.include?(customer.attributes[col].downcase))
-          matching_info += "(#{customer[col]})"
+          matching_info += " (#{customer[col]})"
           next
         end
       end
@@ -548,8 +548,8 @@ EOSQL1
   # method find customers whose name containing the searching term
   def self.find_by_name(terms)
     conds =
-        Array.new(terms.length, "(first_name LIKE ? or last_name LIKE ?)").join(' AND ')
-    conds_ary = terms.map { |w| ["%#{w}%", "%#{w}%"] }.flatten.unshift(conds)
+        Array.new(terms.length, "(lower(first_name) LIKE ? or lower(last_name) LIKE ?)").join(' AND ')
+    conds_ary = terms.map { |w| ["%#{w.downcase}%", "%#{w.downcase}%"] }.flatten.unshift(conds)
     Customer.where(*conds_ary).order('last_name').take(10)
   end
 
