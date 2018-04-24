@@ -3,11 +3,10 @@
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => favicon_path}
 
-    = stylesheet_link_tag 'jquery-ui.min', :media => 'all'
-    = stylesheet_link_tag 'jquery.comiseo.daterangepicker', :media => 'all'
+    = stylesheet_link_tag :application, :media => 'all'
     = stylesheet_link_tag Option.stylesheet_url, :media => 'all'
-    = stylesheet_link_tag 'admin', :media => 'all'
-    = jquery_include_tag :google
+    = jquery_include_tag :google_schemeless
+    = jquery_ui_include_tag :google_schemeless
     = javascript_include_tag 'application'
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
 

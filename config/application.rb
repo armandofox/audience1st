@@ -36,10 +36,9 @@ module Audience1st
 
     # Enable the painful asset pipeline
     config.assets.enabled = true
-    # Since we use jquery-cdn gem to offload jquery serving, allow app's copy to be
-    #   served when CDN not available
-    config.assets.precompile += ['jquery.js']
-
+    # Since we use jquery-rails-cdn and jquery-ui-rails cdn gems to offload jquery serving, allow
+    # app's copy to be  served when CDN not available 
+    config.assets.precompile += ['jquery.js jquery-ui.js']
 
     # Raise exceptiosn when mass-assignment issues arise, to surface them
     config.active_record.mass_assignment_sanitizer = :strict

@@ -16,8 +16,8 @@ gem 'sslrequirement'
 gem 'haml'
 gem 'hominid'
 gem 'i18n'
-gem 'jbuilder', '~> 2.0'        # 4
-gem 'jquery-rails'              # 4
+gem 'jbuilder', '~> 2.0'
+gem 'jquery-ui-rails-cdn'
 gem 'jquery-rails-cdn'
 gem 'mechanize'
 gem 'nokogiri'
