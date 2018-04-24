@@ -3,3 +3,5 @@
 
 var A1 = {};                    // toplevel namespace for all our stuff
 
+//= require jquery-ui
+//= require_tree .
