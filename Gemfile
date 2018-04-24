@@ -18,6 +18,7 @@ gem 'hominid'
 gem 'i18n'
 gem 'jbuilder', '~> 2.0'        # 4
 gem 'jquery-rails'              # 4
+gem 'jquery-rails-cdn'
 gem 'mechanize'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
@@ -28,6 +29,12 @@ gem 'rake'
 gem 'ruport'
 gem 'stripe'
 gem 'will_paginate'
+
+# asset pipeline
+gem 'sprockets-rails'
+gem 'sass-rails'
+gem 'uglifier'
+gem 'coffee-rails'
 
 group :production do
   gem 'newrelic_rpm'
