@@ -38,6 +38,7 @@ gem 'sass-rails'
 group :production do
   gem 'newrelic_rpm'
   gem 'puma-heroku'
+  gem 'rails_12factor'
 end
 
 group :test do
