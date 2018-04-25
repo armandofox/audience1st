@@ -16,3 +16,4 @@ tmp/
 db/*.sqlite3
 _site/
 db/data.yml*
+public/assets/

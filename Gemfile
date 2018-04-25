@@ -16,8 +16,9 @@ gem 'sslrequirement'
 gem 'haml'
 gem 'hominid'
 gem 'i18n'
-gem 'jbuilder', '~> 2.0'        # 4
-gem 'jquery-rails'              # 4
+gem 'jbuilder', '~> 2.0'
+gem 'jquery-rails', '= 4.0.5'
+gem 'jquery-ui-rails', '= 5.0.5'
 gem 'mechanize'
 gem 'nokogiri'
 gem 'pothoven-attachment_fu'
@@ -29,9 +30,15 @@ gem 'ruport'
 gem 'stripe'
 gem 'will_paginate'
 
+# asset pipeline
+gem 'sprockets-rails', :require => 'sprockets/railtie'
+gem 'uglifier'
+gem 'sass-rails'
+
 group :production do
   gem 'newrelic_rpm'
   gem 'puma-heroku'
+  gem 'rails_12factor'
 end
 
 group :test do

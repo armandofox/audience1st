@@ -1,10 +1,9 @@
-!!! Strict
+!!! 5
 %html
   %head
-    = stylesheet_link_tag 'vbo'
-    = stylesheet_link_tag 'door_list'
+    = stylesheet_link_tag :application
     %title= h @showdate.printable_name
-  %body{:class => (Rails.env != 'production' ? :testing : nil)}
+  %body{:class => ('maintenance' if @gMaintMode)}
     %h1
       = h @showdate.printable_name
     %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
