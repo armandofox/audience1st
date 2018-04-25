@@ -8,8 +8,8 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order = Order.find(params[:id]).includes(:vouchers => [:showdate,:vouchertype])
-    if @order.empty?
+    @order = Order.where(:id => params[:id]).includes(:vouchers => [:showdate,:vouchertype]).first
+    if @order.nil?
       flash[:alert] = "Order ID #{params[:id].to_i} not found"
       redirect_to customers_path
       return
