@@ -36,7 +36,10 @@ Rails.application.configure do
   # yet still be able to expire them through the digest params.
   # config.assets.digest = true
 
-  # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
+  config.serve_static_files = true
+  # Since we use jquery-rails-cdn and jquery-ui-rails-cdn gems in production, allow
+  # app's copy to be  served when CDN not available 
+  Rails.application.config.assets.precompile += %w(jquery.js jquery-ui.js)
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true

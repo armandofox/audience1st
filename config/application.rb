@@ -34,16 +34,22 @@ module Audience1st
 
     config.autoload_paths << Rails.root.join('lib')
 
-    # Enable the painful asset pipeline
     config.assets.enabled = true
     # Since we use jquery-rails-cdn and jquery-ui-rails cdn gems to offload jquery serving, allow
     # app's copy to be  served when CDN not available 
-    config.assets.precompile += ['jquery.js jquery-ui.js']
+    config.assets.precompile += %w(jquery.js jquery-ui.js)
 
     # Raise exceptiosn when mass-assignment issues arise, to surface them
     config.active_record.mass_assignment_sanitizer = :strict
     
+    # Add additional load paths for your own custom dirs
+    additional_paths = Dir.glob(File.join Rails.root, "app/models/**/*").select { |f| File.directory? f }
+    config.eager_load_paths += additional_paths
+    config.autoload_paths += additional_paths
+
+
     config.after_initialize do
+      config.action_mailer.delivery_method = :smtp
       Time.include CoreExtensions::Time::ShowtimeDateFormats
       Time.include CoreExtensions::Time::Season
       Date.include CoreExtensions::Date::Season

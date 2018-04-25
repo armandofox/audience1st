@@ -31,10 +31,7 @@ gem 'stripe'
 gem 'will_paginate'
 
 # asset pipeline
-gem 'sprockets-rails'
-gem 'sass-rails'
-gem 'uglifier'
-gem 'coffee-rails'
+gem 'sprockets-rails', :require => 'sprockets/railtie'
 
 group :production do
   gem 'newrelic_rpm'
