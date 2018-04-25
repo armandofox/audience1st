@@ -21,25 +21,16 @@ Rails.application.configure do
   # NGINX, varnish or squid.
   # config.action_dispatch.rack_cache = true
 
-  # Disable serving static files from the `/public` folder by default since
-  # Apache or NGINX already handles this.
-  config.serve_static_files = false
-
+  # Configure the goddamn assets pipeline
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
   config.assets.css_compressor = :sass
-
-  # Do not fallback to assets pipeline if a precompiled asset is missed.
-  #config.assets.compile = false
-
   # Asset digests allow you to set far-future HTTP expiration dates on all assets,
   # yet still be able to expire them through the digest params.
   # config.assets.digest = true
-
-  config.serve_static_files = true
-  # Since we use jquery-rails-cdn and jquery-ui-rails-cdn gems in production, allow
-  # app's copy to be  served when CDN not available 
-  Rails.application.config.assets.precompile += %w(jquery.js jquery-ui.js)
+  config.serve_static_files = false
+  # Do not fallback to assets pipeline if a precompiled asset is missed.
+  # config.assets.compile = false
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
