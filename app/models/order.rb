@@ -68,6 +68,16 @@ class Order < ActiveRecord::Base
 
   public
 
+  scope :for_customer_reporting, ->() {
+    includes(:vouchers => [:customer, :showdate,:vouchertype]).
+    includes(:donations => [:customer, :account_code]).
+    includes(:processed_by).
+    includes(:purchaser).
+    includes(:purchasemethod).
+    includes(:items).
+    includes(:customer)
+  }
+
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
     other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
     order = Order.new(other_args)

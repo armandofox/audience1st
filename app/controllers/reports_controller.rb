@@ -35,10 +35,9 @@ class ReportsController < ApplicationController
   end
 
   def advance_sales
-    if (params[:shows].blank? ||
-        (@shows = params[:shows].map { |s| Show.find_by_id(s) }.flatten).empty?)
-      redirect_to reports_path, :alert => "Please select one or more shows."
-    end
+    show_ids = params[:shows]
+    redirect_to(reports_path, :alert => "Please select one or more shows.") if show_ids.blank?
+    @shows = Show.where(:id => show_ids).includes(:showdates => :vouchers)
   end
 
   def showdate_sales
