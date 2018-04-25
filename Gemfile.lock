@@ -119,6 +119,7 @@ GEM
     encryptor (3.0.0)
     erubis (2.7.0)
     eventmachine (1.2.5)
+    execjs (2.7.0)
     factory_bot (4.8.2)
       activesupport (>= 3.0.0)
     factory_bot_rails (4.8.2)
@@ -339,6 +340,17 @@ GEM
       pdf-writer (= 1.1.8)
       prawn (= 0.12.0)
     safe_yaml (1.0.4)
+    sass (3.5.6)
+      sass-listen (~> 4.0.0)
+    sass-listen (4.0.0)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
+    sass-rails (5.0.7)
+      railties (>= 4.0.0, < 6)
+      sass (~> 3.1)
+      sprockets (>= 2.8, < 4.0)
+      sprockets-rails (>= 2.0, < 4.0)
+      tilt (>= 1.1, < 3)
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
@@ -380,6 +392,8 @@ GEM
     ttfunk (1.0.3)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
+    uglifier (4.1.10)
+      execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
@@ -457,6 +471,7 @@ DEPENDENCIES
   ruby-prof
   rubyzip
   ruport
+  sass-rails
   sdoc (~> 0.4.0)
   simplecov
   sprockets-rails
@@ -466,6 +481,7 @@ DEPENDENCIES
   stripe
   timecop
   traceroute
+  uglifier
   web-console (~> 2.0)
   webmock
   will_paginate
