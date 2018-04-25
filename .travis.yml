@@ -19,10 +19,9 @@ before_install:
 script:
   - cp config/database.yml.test config/database.yml
   - bundle exec rake db:setup
-  - bundle exec rake spec
-  - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
-  # run Cucumber scenarios, and capture coverage
   - bundle exec rake cucumber
+  - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
+  - bundle exec rake spec
   - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
 after_script:
   - $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
