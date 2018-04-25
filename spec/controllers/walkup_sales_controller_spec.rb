@@ -49,12 +49,12 @@ describe WalkupSalesController do
       it_should_behave_like "no transfer is attempted"
       it "should display error if showdate not found" do
         put :update, @params
-        flash[:alert].should match(/couldn't find showdate with 'id'=99999/i)
+        flash[:alert].should match(/NO changes were made.*couldn't find showdate with 'id'=99999/i)
       end
       it "should display error if showdate not specified" do
         @params.delete(:to_showdate)
         put :update, @params
-        flash[:alert].should match(/couldn't find showdate with 'id'=/i)
+        flash[:alert].should match(/NO changes were made.*couldn't find showdate without an id/i)
       end
     end
     context "when all vouchers exist" do
