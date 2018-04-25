@@ -61,6 +61,9 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
+    bullet (5.7.5)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.11.0)
     byebug (10.0.2)
     capybara (2.18.0)
       addressable
@@ -398,6 +401,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
+    uniform_notifier (1.11.0)
     web-console (2.3.0)
       activemodel (>= 4.0)
       binding_of_caller (>= 0.7.2)
@@ -423,6 +427,7 @@ DEPENDENCIES
   apartment (>= 2.1.0)
   attr_encrypted
   builder
+  bullet
   bundler
   byebug
   capybara

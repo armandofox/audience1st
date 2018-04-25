@@ -50,7 +50,7 @@ class Voucher < Item
   scope :comp, -> { where(:category => 'comp') }
   scope :revenue, -> { where(:category => 'revenue') }
   scope :subscriber, -> { where(:category => 'subscriber') }
-  scope :advance_sales, -> { where.not(:customer_id => Customer.walkup_customer.id).includes(:customer) }
+  scope :advance_sales, -> { where.not(:customer_id => Customer.walkup_customer.id).includes(:customer,:order) }
   scope :walkup_sales, -> { where(:customer_id => Customer.walkup_customer.id) }
   scope :checked_in, -> { where(:checked_in => true) }
   

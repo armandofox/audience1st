@@ -41,4 +41,10 @@ Rails.application.configure do
   require 'stripe'
   Stripe.verify_ssl_certs = false
 
+  # Find n+1 query problems and unused eager-loads
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.bullet_logger = true # log/bullet.log
+    Bullet.add_footer = true    # add footer to each page view
+  end
 end

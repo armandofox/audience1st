@@ -61,6 +61,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'bullet'
   # cucumber and capybara
   gem 'yaml_db', :git => 'https://github.com/armandofox/yaml_db'
   gem 'byebug'                  # 4

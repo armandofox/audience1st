@@ -249,7 +249,7 @@ class StoreController < ApplicationController
   end
 
   def showdate_from_params
-    Showdate.includes(:show, :valid_vouchers).find_by_id(params[:showdate_id])
+    Showdate.includes(:valid_vouchers).find_by_id(params[:showdate_id])
   end
   def showdate_from_show_params
     (s = Show.find_by_id(params[:show_id])) &&
@@ -327,7 +327,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_admin
     @valid_vouchers =
-      @sd.valid_vouchers.to_a.
+      @sd.valid_vouchers.includes(:vouchertype).to_a.
       delete_if(&:comp?).
       delete_if(&:subscriber_voucher?).
       map do |v|
@@ -345,7 +345,7 @@ class StoreController < ApplicationController
 
   def setup_ticket_menus_for_patron
 
-    @valid_vouchers = @sd.valid_vouchers.map do |v|
+    @valid_vouchers = @sd.valid_vouchers.includes(:vouchertype).map do |v|
       v.customer = @customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)

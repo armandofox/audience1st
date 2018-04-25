@@ -31,6 +31,10 @@ class Showdate < ActiveRecord::Base
   # round off all showdates to the nearest minute
   before_save :truncate_showdate_to_nearest_minute
 
+  # virtually every dereference of a Showdate also accesses its Show,
+  #  so set that up here to avoid n+1 query problems
+  default_scope { includes(:show) }
+
   private
 
   def truncate_showdate_to_nearest_minute
