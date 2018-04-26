@@ -16,10 +16,10 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  has_many :vouchers, -> { includes(:vouchertype).order('created_at DESC') }
+  has_many :vouchers, -> { includes(:vouchertype).order(:created_at => :desc) }
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :orders, -> { where( 'sold_on IS NOT NULL').order('sold_on DESC') }
+  has_many :orders, -> { where( 'sold_on IS NOT NULL').order(:sold_on => :desc) }
   
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates
