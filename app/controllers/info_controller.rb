@@ -3,7 +3,7 @@ class InfoController < ActionController::Base
   # NOTE inheriting from AC::Base avoids inheriting stuff from APplicationController, such as maintenance mode
   # filter and force_ssl
 
-  respond_to :xml
+  respond_to :rss
   
   # RSS feed of ticket availability info: renders an XML view for external use
   def ticket_rss
