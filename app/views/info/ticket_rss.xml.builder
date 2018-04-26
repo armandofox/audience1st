@@ -15,9 +15,13 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1" do
           sd,desc,link = avail
           xml.title       "#{sd.printable_name} - #{desc}"
           if link
-            xml.link link_to_showdate_tickets(sd)
+            xml.link do
+              xml.cdata! link_to_showdate_tickets(sd)
+            end
           end
-          xml.guid link_to_showdate_tickets(sd, :ts => Time.now.to_i), "permalink" => "false"
+          xml.guid :isPermaLink => false do
+            xml.cdata! link_to_showdate_tickets(sd, :ts => Time.now.to_i)
+          end
         end
       end
     else                        # no upcoming shows
