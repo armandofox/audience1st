@@ -34,23 +34,4 @@
     = select_tag 'output[login_since_test]', options_for_select(['have','have not'])
     logged in since
     = select_date Time.now.at_beginning_of_season, :prefix => 'output[login_from]', :start_year => 2007
-  %p.fieldgroup Spreadsheet options:
-  %p
-    Display mailing address in:
-    = radio_button_tag 'output[multi_column_address]', 1, true
-    Four columns (street, city, state, zip)
-    = radio_button_tag 'output[multi_column_address]', 0, false
-    One column (complete street address with zip)
-  %p 
-    Sort list by:
-    = radio_button_tag 'output[sort_by_zip]', 1, true
-    Zip, then last name
-    = radio_button_tag 'output[sort_by_zip]', 0, false
-    Last name, then zip
-  %p 
-    Spreadsheet should have:
-    = radio_button_tag 'output[header_row]', 1, true
-    Header row
-    = radio_button_tag 'output[header_row]', 0,false
-    No header row
     
