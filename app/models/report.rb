@@ -20,12 +20,12 @@ class Report
     @output = ''
     @output_options = output_options
     @filename = filename_from_object(self)
-    @relation = nil
+    @relation = Customer.none   # generic empty chainable relation
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
 
   def generate_and_postprocess(params)
-    @relation = self.generate(params)
+    self.generate(params)
     @customers = self.postprocess
   end
   

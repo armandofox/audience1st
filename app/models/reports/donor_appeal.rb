@@ -13,6 +13,6 @@ class DonorAppeal < Report
     from,to = Time.range_from_params(params[:special_report_dates])
     result = Customer.donated_during(from, to, amount)
     result |= Customer.subscriber_during(Time.this_season) if params[:include_subscribers]
-    result
+    @relation = result
   end
 end
