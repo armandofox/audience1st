@@ -26,7 +26,7 @@ class Report
 
   def generate_and_postprocess(params)
     self.generate(params)
-    @customers = self.postprocess
+    @customers = if @relation then self.postprocess else Customer.none end
   end
   
   def create_csv
