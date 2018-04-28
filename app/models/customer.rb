@@ -350,7 +350,7 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.where("email LIKE ?", email.downcase).first) # need to get the salt
+    unless (u = Customer.where("lower(email) = ?", email.strip.downcase).first) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
@@ -363,7 +363,7 @@ class Customer < ActiveRecord::Base
       u.errors.add(:login_failed, "Please provide your email and password.")
       return u
     end
-    unless (u = Customer.where("lower(email) LIKE ?", email.strip.downcase).first) # need to get the salt
+    unless (u = Customer.where("lower(email) = ?", email.strip.downcase).first) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
       return u
@@ -448,11 +448,11 @@ class Customer < ActiveRecord::Base
     #  and at least one of first name or street must match.
     sql = <<EOSQL1
       SELECT DISTINCT c1.*
-      FROM customers c1 INNER JOIN customers c2 ON c1.last_name=c2.last_name
-      WHERE c1.id != c2.id AND
-        (c1.email LIKE c2.email OR c1.email IS NULL OR c2.email IS NULL) AND
-        (c1.first_name LIKE c2.first_name OR
-          (c1.street LIKE c2.street AND c1.street IS NOT NULL AND c1.street != ''))
+      FROM customers c1 INNER JOIN customers c2 ON lower(c1.last_name)=lower(c2.last_name)
+      WHERE 
+        (lower(c1.email) LIKE lower(c2.email) OR c1.email IS NULL OR c2.email IS NULL) AND
+        (lower(c1.first_name) LIKE lower(c2.first_name) OR
+          (lower(c1.street) LIKE lower(c2.street) AND c1.street IS NOT NULL AND c1.street != ''))
       ORDER BY c1.last_name,c1.first_name
 EOSQL1
     possible_dups = Customer.find_by_sql(sql)
