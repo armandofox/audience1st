@@ -1,4 +1,5 @@
 = form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report' do
+  = hidden_field_tag :authenticity_token, form_authenticity_token
   %fieldset{:id => name}
     %legend= name.humanize.capitalize
     = hidden_field_tag 'report_name', name

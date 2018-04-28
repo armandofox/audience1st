@@ -79,6 +79,7 @@ class ReportsController < ApplicationController
   # This handler is always called as XHR GET, but for one case ("display
   # matches on screen"), it must do a full HTTP redirect.
   
+  skip_before_filter :verify_authenticity_token, :only => :run_special, :if => lambda { request.xhr? }
   def run_special
     return unless (klass = validate_report_type params[:report_name])
     action = params[:what]
@@ -86,18 +87,24 @@ class ReportsController < ApplicationController
     # if we need a true redirect (for Download or Display On Screen),
     # serialize the form and use JS to force the redirect.
     if request.xhr? && action =~ /display|download/i
-      render :js => %Q{window.location.replace('#{request.url}')} and return
+      render :js => %Q{window.location = '#{request.fullpath}';} and return
     end
 
     @report = klass.__send__(:new, params[:output])
-    result = @report.generate_and_postprocess(params)
-    @customers = result && @report.customers
+    @report.generate_and_postprocess(params)
+    @customers = @report.customers
 
-    # result.nil? means @report.errors contains errors from generating report
-    render :js => %Q{alert("Errors generating report: #{@report.errors}")} and return unless result
-
-    render :js => 'alert("No matches.")' and return if @customers.empty?
-
+    # BUG this won't work if errors when "display on screen" chosen
+    if @report.errors
+      errors = "Errors generating report: #{@report.errors}"
+      if request.xhr?
+        render :js => %Q{alert(#{ActionController::Base.helpers.j errors})}
+      else
+        flash[:alert] = errors
+        redirect_to reports_path
+      end
+      return
+    end
 
     case action
     when /display/i

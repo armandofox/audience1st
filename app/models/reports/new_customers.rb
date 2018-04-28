@@ -6,7 +6,7 @@ class NewCustomers < Report
 
   def generate(params={})
     from,to = Time.range_from_params(params[:new_customer_dates])
-    @relation = @relation.where(:created_at => from..to)
+    @relation = Customer.where(:created_at => from..to)
   end
 
 end

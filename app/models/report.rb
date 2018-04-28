@@ -3,7 +3,7 @@ class Report
   require 'csv'
 
   attr_accessor :output_options, :filename, :query
-  attr_reader :relation, :view_params, :customers, :output
+  attr_reader :relation, :view_params, :customers, :output, :errors
   attr_accessor :fields, :log
 
   if self.subclasses.empty?
@@ -20,7 +20,7 @@ class Report
     @output = ''
     @output_options = output_options
     @filename = filename_from_object(self)
-    @relation = Customer.none   # generic empty chainable relation
+    @relation = nil   # generic empty chainable relation
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
 
@@ -72,10 +72,6 @@ class Report
     @filename = filename_from_object(self)
   end
 
-  def errors
-    @errors.join("; ")
-  end
-
   private
 
   def add_error(itm)
@@ -104,12 +100,12 @@ class Report
     @relation = @relation.includes(:labels)
     @output_options.each_pair do |option,value|
       case option
-      when :exclude_blacklist then @relation = @relation.where(:blacklist => false)
-      when :exclude_e_blacklist then @relation = @relation.where(:e_blacklist => false)
-      when :require_valid_email then @relation = @relation.where.not(:email => [nil,''])
+      when :exclude_blacklist then @relation = @relation.where('customers.blacklist' => false)
+      when :exclude_e_blacklist then @relation = @relation.where('customers.e_blacklist' => false)
+      when :require_valid_email then @relation = @relation.where.not('customers.email' => [nil,''])
       when :require_valid_address then @relation = @relation.where.
-          not(:street => [nil,'']).
-          not(:city => [nil,'']).not(:state => [nil,''])
+          not('customers.street' => [nil,'']).
+          not('customers.city' => [nil,'']).not('customers.state' => [nil,''])
       when :login_from
         if (fields = @output_options[:login_since])
           date = Date::civil(fields[:year].to_i,fields[:month].to_i,fields[:day].to_i)
@@ -119,25 +115,30 @@ class Report
             @relation = @relation.where('customers.last_login <= ?', date)
           end
         end
+      when :filter_by_zip
+        next if @output_options[:zip_glob].blank?
+        # construct a LIKE clause that matches zips starting with anything in glob
+        zips = @output_options[:zip_glob].split(/\s*,\s*/).map { |z| "#{z}%" }
+        constraints = Array.new(zips.size) { '(customers.zip LIKE ?)' }.join(' OR ')
+        @relation = @relation.where(constraints, *zips)
       end
     end
 
-    # The rest of the checks must be done on the complete collection.
-    arr = @relation.to_a
+    # Only force evaluation of the relation if there are steps we must do in Ruby:
+    # - check for subcsribers (this will become a column check eventually)
+    # - de-dup mailing addresses
+
+    return @relation if (@output_options[:subscribers] !~ /only/  &&
+      !@output_options.has_key?(:remove_dups))
+    arr = @relation.to_a        # ouch
     # This can eventually become a simple column check
-    case @output_options.delete(:subscribers)
+    case @output_options[:subscribers]
     when 'Subscribers only' then    arr.select!(&:subscriber?)
     when 'Nonsubscribers only' then arr.reject!(&:subscriber?)
     end
 
-    # if output options include stuff like duplicate elimination, do that here
-    if @output_options[:filter_by_zip]
-      zips = @output_options[:zip_glob].split(/\s*,\s*/).join('|')
-      arr.reject! { |c| !c.zip.blank? && c.zip !~ /^(#{zips})/ }
-    end
-
     if @output_options[:remove_dups]
-      # remove duplicate mailing addresses
+      # BUG: people with same street addr but diff city/state will be marked dup
       hshtemp = Hash.new
       arr.each_index do |i|
         canonical = arr[i].street.to_s.downcase.tr_s(' ', ' ')

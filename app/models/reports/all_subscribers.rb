@@ -16,7 +16,7 @@ class AllSubscribers < Report
         Vouchertype.subscription_vouchertypes(season.to_i)
       end.flatten
     end
-    Customer.purchased_any_vouchertypes(vtypes.map(&:id))
+    @relation = Customer.purchased_any_vouchertypes(vtypes.map(&:id))
   end
 end
       
