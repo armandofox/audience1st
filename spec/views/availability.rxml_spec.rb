@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'info/availability.xml.builder', :type => :view do
+describe 'info/availability.rss.builder', :type => :view do
   before :each do
     assign(:showdates,
       [sd = create(:showdate,
