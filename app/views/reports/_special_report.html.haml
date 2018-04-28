@@ -13,6 +13,26 @@
     = radio_button_tag 'what', 'download'
     %label.plain{:for => 'what_download'} Download list to Excel
     %br
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    Display mailing address in:
+    = radio_button_tag 'output[multi_column_address]', 1, true
+    Four columns (street, city, state, zip)
+    = radio_button_tag 'output[multi_column_address]', 0, false
+    One column (complete street address with zip)
+    %br 
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    Sort spreadsheet by:
+    = radio_button_tag 'output[sort_by_zip]', 1, true
+    Zip, then last name
+    = radio_button_tag 'output[sort_by_zip]', 0, false
+    Last name, then zip
+    %br 
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    = radio_button_tag 'output[header_row]', 1, true
+    Include header row
+    = radio_button_tag 'output[header_row]', 0,false
+    No header row
+    %br
     = radio_button_tag 'what', 'estimate'
     %label.plain{:for => 'what_estimate'} Estimate number of matches
     %br

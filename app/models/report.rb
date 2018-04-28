@@ -2,58 +2,33 @@ class Report
   include FilenameUtils
   require 'csv'
 
+  attr_accessor :output_options, :filename, :query
+  attr_reader :relation, :view_params, :customers, :output
+  attr_accessor :fields, :log
+
   if self.subclasses.empty?
     Dir["#{Rails.root}/app/models/reports/*.rb"].each do |file|
       require_dependency file
     end
   end
-  
-  attr_accessor :output_options, :filename, :query
-  attr_reader :view_params, :customers, :output
-  attr_accessor :fields, :log
-
-  cattr_accessor :logger
-
-  @@logger = Rails.logger
-
-  QUERY_TEMPLATE = %{
-        SELECT DISTINCT %s
-        FROM %s
-        WHERE %s
-        ORDER BY %s
-}
 
   public
   
   def initialize(output_options={})
-    @fields = %w[email day_phone eve_phone].map { |s| s.to_sym }
     @customers = []
     @errors = nil
     @output = ''
-    @joins = ['customers c']
-    @wheres = []
-    @bind_variables = []
     @output_options = output_options
-    @output_options_processed = {}
-    @order = 'last_name,zip'
     @filename = filename_from_object(self)
+    @relation = Customer.none   # generic empty chainable relation
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
 
   def generate_and_postprocess(params)
-    res = self.generate(params)
-    @customers = self.postprocess(res)
+    self.generate(params)
+    @customers = self.postprocess
   end
   
-  def execute_query
-    res = Customer.find_by_sql(query)
-    Rails.logger.info "Report Query:\n  #{query.join("\n>> ")} \n==> #{@customers.length} results"
-    @customers = postprocess(res)
-  end
-
-  def count ; make_query(count=true) ; end
-  def query ; make_query(count=false) ; end
-
   def create_csv
     multicolumn = (@output_options['multi_column_address'].to_i > 0)
     header_row = (@output_options['header_row'].to_i > 0)
@@ -103,49 +78,6 @@ class Report
 
   private
 
-  def make_query(count=false)
-    joins = @joins.join("\nLEFT OUTER JOIN ")
-    # don't want to modify instance variables of these, lest this method
-    # become non-idempotent
-    wheres = @wheres.clone
-    bind_variables = @bind_variables.clone
-    @output_options.each_pair do |key, val|
-      case key.to_sym
-      when :exclude_blacklist
-        wheres << "c.blacklist = #{val ? 0 : 1}"
-        @output_options_processed[key] = true
-      when :exclude_e_blacklist
-        wheres << "c.e_blacklist = #{val ? 0 : 1}"
-        @output_options_processed[key] = true
-      when :require_valid_email
-        (wheres << "c.email LIKE '%@%'") if val
-        @output_options_processed[key] = true
-      when :login_from
-        if @output_options[:login_since]
-          op = (@output_options[:login_since_test] =~ /not/ ?  '<=' : '>=')
-          wheres << "c.last_login #{op} ?"
-          bind_variables << Date::civil(val[:year].to_i, val[:month].to_i, val[:day].to_i)
-        end
-        @output_options_processed[key] = true
-      when :require_valid_address
-        wheres << "c.street != '' AND c.street IS NOT NULL" if !val.to_i.zero?
-        @output_options_processed[key] = true
-      when :filter_by_zip
-        zips = @output_options[:zip_glob].split(/\s*,\s*/).map(&:to_i).reject { |zip| zip.zero? } # sanitize
-        if !zips.empty?
-          wheres << ('(c.zip = \'\' OR ' + Array.new(zips.length, "c.zip LIKE ?").join(' OR ') + ')')
-          bind_variables += zips.map { |z| "#{z}%" }
-        end
-        @output_options_processed[key] = true
-      end
-    end
-    wheres.uniq!
-    wheres = wheres.empty? ? '1' : wheres.map { |s| "(#{s})" }.join(' AND ')
-    query = sprintf(QUERY_TEMPLATE, (count ? 'COUNT(*)' : 'c.*'),
-      joins, wheres, @order)
-    [query] + bind_variables
-  end
-  
   def add_error(itm)
     (@errors ||= []) << itm.to_s
   end
@@ -166,43 +98,44 @@ class Report
     ary.map(&:to_i).reject(&:zero?)
   end
 
-  def postprocess(arr)
-    arr ||= []
-    # if output options include stuff like duplicate elimination, do that here
-    reject = []
-    @output_options.each_pair do |key,val|
-      next if val.nil? || @output_options_processed[key]
-      case key.to_sym
-      when :subscribers
-        case val
-        when 'Subscribers only' then    reject << '!c.subscriber?' 
-        when 'Nonsubscribers only' then reject << 'c.subscriber?'
-        end
-      when :exclude_blacklist
-        reject << 'c.blacklist'
-      when :exclude_e_blacklist
-        reject << 'c.e_blacklist'
-      when :require_valid_email
-        reject << '!c.valid_email_address?'
-      when :require_valid_address
-        reject << '!c.valid_mailing_address?'
-      when :filter_by_zip
-        zips = @output_options[:zip_glob].split(/\s*,\s*/).join('|')
-        reject << "(!c.zip.blank? && c.zip !~ /^(#{zips})/ )"
+  def postprocess
+    # things we can do on the relation
+    # we always seem to need Labels to include as part of result
+    @relation = @relation.includes(:labels)
+    @output_options.each_pair do |option,value|
+      case option
+      when :exclude_blacklist then @relation = @relation.where(:blacklist => false)
+      when :exclude_e_blacklist then @relation = @relation.where(:e_blacklist => false)
+      when :require_valid_email then @relation = @relation.where.not(:email => [nil,''])
+      when :require_valid_address then @relation = @relation.where.
+          not(:street => [nil,'']).
+          not(:city => [nil,'']).not(:state => [nil,''])
       when :login_from
-        if @output_options[:login_since]
-          date = "Date::civil(#{val[:year].to_i},#{val[:month].to_i},#{val[:day].to_i})"
+        if (fields = @output_options[:login_since])
+          date = Date::civil(fields[:year].to_i,fields[:month].to_i,fields[:day].to_i)
           if @output_options[:login_since_test] =~ /not/
-            reject << "c.last_login >= '#{date}'"
+            @relation = @relation.where('customers.last_login >= ?', date)
           else
-            reject << "c.last_login <= '#{date}'"
+            @relation = @relation.where('customers.last_login <= ?', date)
           end
         end
       end
     end
 
-    conds = reject.join(' || ')
-    eval("arr.to_a.reject! { |c| #{conds} }")
+    # The rest of the checks must be done on the complete collection.
+    arr = @relation.to_a
+    # This can eventually become a simple column check
+    case @output_options.delete(:subscribers)
+    when 'Subscribers only' then    arr.select!(&:subscriber?)
+    when 'Nonsubscribers only' then arr.reject!(&:subscriber?)
+    end
+
+    # if output options include stuff like duplicate elimination, do that here
+    if @output_options[:filter_by_zip]
+      zips = @output_options[:zip_glob].split(/\s*,\s*/).join('|')
+      arr.reject! { |c| !c.zip.blank? && c.zip !~ /^(#{zips})/ }
+    end
+
     if @output_options[:remove_dups]
       # remove duplicate mailing addresses
       hshtemp = Hash.new

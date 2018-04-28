@@ -15,10 +15,7 @@ class AttendanceByShow < Report
     # do default search for OR. if it's AND, winnow the list afterward.
     shows_not = Report.list_of_ints_from_multiselect(params[:shows_not])
     vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
-    if (shows.empty? && shows_not.empty?)
-      add_error "Please specify one or more productions that have one or more performances."
-      return nil
-    end
+    add_error("Please specify one or more productions that have one or more performances.") and return if (shows.empty? && shows_not.empty?)
     if shows.empty?
       seen = Customer.all
     else
@@ -27,6 +24,6 @@ class AttendanceByShow < Report
     end
 
     seen = (seen & Customer.seen_any_of(shows_not)) if !shows_not.empty?
-    seen
+    @relation = seen
   end
 end
