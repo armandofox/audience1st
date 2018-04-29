@@ -265,7 +265,7 @@ class Order < ActiveRecord::Base
         customer.add_items(vouchers)
         # add retail items to recipient's account
         Rails.logger.warn "[WS] conditionally calling customer.add retail items"
-        customer.add_items(retail_items) if !retail_items.empty?
+        # customer.add_items(retail_items) if !retail_items.empty?
         Rails.logger.warn "[WS] customer save"
         unless customer.save
           Rails.logger.warn "[WS] FAILED to save customer"
