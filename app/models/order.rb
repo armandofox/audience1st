@@ -243,9 +243,11 @@ class Order < ActiveRecord::Base
   end
 
   def finalize!(sold_on_date = Time.now)
+    Rails.logger.warn "[WS] finalize:call ready_for_purchase?"
     raise Order::NotReadyError unless ready_for_purchase?
     begin
       transaction do
+        Rails.logger.warn "[WS] finalize:inside txn"
         vouchers = []
         valid_vouchers.each_pair do |valid_voucher_id, quantity|
           vv = ValidVoucher.find(valid_voucher_id)
@@ -253,36 +255,49 @@ class Order < ActiveRecord::Base
           vouchers += vv.instantiate(quantity)
         end
         vouchers.flatten!
+        Rails.logger.warn "[WS] finalize:after flatten!"
         # add non-donation items to recipient's account
         # if walkup order, mark the vouchers as walkup
         vouchers.each do |v|
           v.walkup = self.walkup?
         end
+        Rails.logger.warn "[WS] calling customer.add_items"
         customer.add_items(vouchers)
         # add retail items to recipient's account
+        Rails.logger.warn "[WS] conditionally calling customer.add retail items"
         customer.add_items(retail_items) if !retail_items.empty?
+        Rails.logger.warn "[WS] customer save"
         unless customer.save
+          Rails.logger.warn "[WS] FAILED to save customer"
           raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors.as_html)
         end
         # add donation items to purchaser's account
+        Rails.logger.warn "[WS] add donation items"
         purchaser.add_items([donation]) if donation
+        Rails.logger.warn "[WS] purchaser save"
         unless purchaser.save
+          Rails.logger.warn "[WS] FAILED purchaser save"
           raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors.as_html)
         end
+        Rails.logger.warn "[WS] setting order fields"
         self.sold_on = sold_on_date
         self.items += vouchers
         self.items += [ donation ] if donation
         self.items += retail_items if retail_items
+        Rails.logger.warn "[WS] setting item fields"
         self.items.each do |i|
           i.processed_by = self.processed_by
           # for retail item, comment is name of item, so we don't overwrite that.
           i.comments = self.comments unless i.kind_of?(RetailItem)
         end
+        Rails.logger.warn "[WS] calling save!"
         self.save!
         if purchase_medium == :credit_card
+          Rails.logger.warn "[WS] calling pay_with_credit_card"
           Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
         end
         # Log the order
+        Rails.logger.warn "[WS] logging a Txn"
         Txn.add_audit_record(:txn_type => 'oth_purch',
           :customer_id => purchaser.id,
           :processed_by_id => processed_by.id,
@@ -291,8 +306,10 @@ class Order < ActiveRecord::Base
           :order_id => self.id)
       end
     rescue ValidVoucher::InvalidRedemptionError => e
+      Rails.logger.warn "[WS] rescue Validvoucher"
       raise Order::NotReadyError, e.message
     rescue StandardError => e
+      Rails.logger.warn "[WS] rescue StandardError: #{e.message}"
       raise e                 # re-raise exception
     end
   end
