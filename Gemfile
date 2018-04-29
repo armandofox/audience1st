@@ -7,6 +7,7 @@ gem 'pg', '~> 0.21'
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
 gem 'puma'
 gem 'rails', '4.2.9'
+gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
 
 gem 'acts_as_reportable'
 gem 'builder'
