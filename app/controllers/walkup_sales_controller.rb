@@ -11,6 +11,7 @@ class WalkupSalesController < ApplicationController
   end
 
   def create
+    (Rails.logger.warn "[WS] enter") rescue nil
     @showdate = Showdate.find params[:id]
     @order = Order.new(
       :walkup => true,
@@ -47,16 +48,20 @@ class WalkupSalesController < ApplicationController
     return redirect_to(walkup_sale_path(@showdate)) if flash[:alert]
 
     # all set to try the purchase
+    (Rails.logger.warn "[WS]   finalize") rescue nil
     begin
       @order.finalize!
+      (Rails.logger.warn "[WS] finalize done") rescue nil
       Txn.add_audit_record(:txn_type => 'tkt_purch',
         :customer_id => Customer.walkup_customer.id,
         :comments => 'walkup',
         :purchasemethod_id => p,
         :logged_in_id => current_user.id)
+      (Rails.logger.warn "[WS] add_audit_record done") rescue nil
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
+      (Rails.logger.warn "[WS] reporting error") rescue nil
       flash[:alert] = ["Transaction NOT processed: ", @order.errors.as_html]
       redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
