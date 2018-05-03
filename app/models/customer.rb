@@ -341,7 +341,11 @@ class Customer < ActiveRecord::Base
   # donation, or purchased goods
 
   def add_items(new_items)
-    self.items += new_items
+    si = self.items
+    Rails.logger.warn "Curr items: #{si}"
+    Rails.logger.warn "New items: #{new_items}"
+    # self.items += new_items
+    self.items = si + new_items
   end
 
   def self.find_by_email_for_authentication(email)
