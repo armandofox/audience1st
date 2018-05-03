@@ -347,7 +347,7 @@ class Customer < ActiveRecord::Base
     si.each do |i|
       Rails.logger.warn "** INVALID: #{i}" unless i.valid?
     end
-    self.items = += new_items
+    self.items += new_items
   end
 
   def self.find_by_email_for_authentication(email)
