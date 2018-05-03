@@ -13,7 +13,7 @@
           };
         });
       %td Only for this customer (type first or last name):
-      %td
+      %td#donor_autocomplete
         = text_field_tag 'donor_name', @full_name, :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
         = hidden_field_tag 'cid', @params[:cid]
         :javascript

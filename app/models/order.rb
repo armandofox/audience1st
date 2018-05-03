@@ -52,6 +52,32 @@ class Order < ActiveRecord::Base
     self.retail_items ||= []
   end
 
+  def prepare_vouchers_from_valid_vouchers
+    vouchers = []
+    valid_vouchers.each_pair do |valid_voucher_id, quantity|
+      vv = ValidVoucher.find(valid_voucher_id)
+      vv.customer = processed_by
+      vouchers += vv.instantiate(quantity)
+    end
+    vouchers.flatten!
+    # if this is a walkup order, mark the vouchers as walkup
+    vouchers.each do |v|
+      v.walkup = self.walkup?
+    end
+    vouchers
+  end
+
+  def add_items_to_order(vouchers)
+    self.items += vouchers
+    self.items += [ donation ] if donation
+    self.items += retail_items if retail_items
+    self.items.each do |i|
+      i.processed_by = self.processed_by
+      # for retail item, comment is name of item, so we don't overwrite that.
+      i.comments = self.comments unless i.kind_of?(RetailItem)
+    end
+  end
+
   def check_purchaser_info
     # walkup orders only need purchaser & recipient info to point to walkup
     #  customer, but regular orders need full purchaser & recipient info.
@@ -244,56 +270,24 @@ class Order < ActiveRecord::Base
 
   def finalize!(sold_on_date = Time.now)
     raise Order::NotReadyError unless ready_for_purchase?
-    begin
-      transaction do
-        vouchers = []
-        valid_vouchers.each_pair do |valid_voucher_id, quantity|
-          vv = ValidVoucher.find(valid_voucher_id)
-          vv.customer = processed_by
-          vouchers += vv.instantiate(quantity)
-        end
-        vouchers.flatten!
-        # add non-donation items to recipient's account
-        # if walkup order, mark the vouchers as walkup
-        vouchers.each do |v|
-          v.walkup = self.walkup?
-        end
-        customer.add_items(vouchers) unless vouchers.empty?
-        # add retail items to recipient's account
-        customer.add_items(retail_items) unless retail_items.empty?
-        unless customer.save
-          raise Order::SaveRecipientError.new("Cannot save info for #{customer.full_name}: " + customer.errors.as_html)
-        end
-        # add donation items to purchaser's account
-        purchaser.add_items([donation]) if donation
-        unless purchaser.save
-          raise Order::SavePurchaserError.new("Cannot save info for purchaser #{purchaser.full_name}: " + purchaser.errors.as_html)
-        end
-        self.sold_on = sold_on_date
-        self.items += vouchers
-        self.items += [ donation ] if donation
-        self.items += retail_items if retail_items
-        self.items.each do |i|
-          i.processed_by = self.processed_by
-          # for retail item, comment is name of item, so we don't overwrite that.
-          i.comments = self.comments unless i.kind_of?(RetailItem)
-        end
-        self.save!
-        if purchase_medium == :credit_card
-          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
-        end
-        # Log the order
-        Txn.add_audit_record(:txn_type => 'oth_purch',
-          :customer_id => purchaser.id,
-          :processed_by_id => processed_by.id,
-          :dollar_amount => total_price,
-          :purchasemethod_id => purchasemethod.id,
-          :order_id => self.id)
+
+    self.sold_on = sold_on_date
+    vouchers = prepare_vouchers_from_valid_vouchers()
+    # add vouchers and retail items to recipient's account
+    customer.add_items(vouchers) unless vouchers.empty?
+    customer.add_items(retail_items) unless retail_items.empty?
+    # add donation items to purchaser's account
+    purchaser.add_items([donation]) if donation
+    # record items, comments, etc as part of the order
+    add_items_to_order(vouchers)
+
+    Order.transaction do
+      customer.save!
+      purchaser.save!
+      self.save!
+      if purchase_medium == :credit_card
+        Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
       end
-    rescue ValidVoucher::InvalidRedemptionError => e
-      raise Order::NotReadyError, e.message
-    rescue RuntimeError => e
-      raise e                 # re-raise exception
     end
   end
 

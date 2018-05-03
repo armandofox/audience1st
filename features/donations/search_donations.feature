@@ -58,10 +58,11 @@ Scenario: list all donations
   | Armando Fox   |    600 |
   | Tom Foolery   |    100 |
 
+@javascript
 Scenario: filter donations by donor
 
   When I check "use_cid"
-  And I fill in the customer autocomplete with "Joe Mallon"
+  And I fill "donor_autocomplete" autocomplete field with "Joe Mallon"
   And I press "Search"
   Then I should see the following donations:
   | donor         | amount |
