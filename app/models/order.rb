@@ -273,15 +273,11 @@ class Order < ActiveRecord::Base
 
     self.sold_on = sold_on_date
     vouchers = prepare_vouchers_from_valid_vouchers()
-    # add vouchers and retail items to recipient's account
-    customer.add_items(vouchers) unless vouchers.empty?
-    customer.add_items(retail_items) unless retail_items.empty?
-    # add donation items to purchaser's account
-    purchaser.add_items([donation]) if donation
-    # record items, comments, etc as part of the order
     add_items_to_order(vouchers)
 
     Order.transaction do
+      customer.add_items(vouchers + retail_items)
+      purchaser.add_items([donation]) if donation
       customer.save!
       purchaser.save!
       self.save!

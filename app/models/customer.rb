@@ -341,7 +341,8 @@ class Customer < ActiveRecord::Base
   # donation, or purchased goods
 
   def add_items(new_items)
-    new_items.each { |i| i.customer_id = self.id }
+    self.items << new_items
+    # new_items.each { |i| i.customer_id = self.id }
     # self.items += new_items
   end
 
