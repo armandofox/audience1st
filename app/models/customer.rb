@@ -340,8 +340,8 @@ class Customer < ActiveRecord::Base
   # add items to a customer's account - could be vouchers, record of a
   # donation, or purchased goods
 
-  def add_items(items)
-    self.items += items
+  def add_items(new_items)
+    self.items += new_items
   end
 
   def self.find_by_email_for_authentication(email)
