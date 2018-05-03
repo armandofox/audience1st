@@ -341,15 +341,8 @@ class Customer < ActiveRecord::Base
   # donation, or purchased goods
 
   def add_items(new_items)
-    si = self.items.to_a
-    si.each_with_index do |i,idx|
-      Rails.logger.warn "index #{idx}"
-      Rails.logger.warn "checking #{i.id}"
-      unless i.valid?
-        Rails.logger.warn "** INVALID: #{i.id}"
-      end
-    end
-    self.items += new_items
+    new_items.each { |i| i.customer_id = self.id }
+    # self.items += new_items
   end
 
   def self.find_by_email_for_authentication(email)
