@@ -342,10 +342,12 @@ class Customer < ActiveRecord::Base
 
   def add_items(new_items)
     si = self.items.to_a
-    Rails.logger.warn "Curr items: #{si}"
-    Rails.logger.warn "New items: #{new_items}"
-    si.each do |i|
-      Rails.logger.warn "** INVALID: #{i}" unless i.valid?
+    si.each_with_index do |i,idx|
+      Rails.logger.warn "index #{idx}"
+      Rails.logger.warn "checking #{i.id}"
+      unless i.valid?
+        Rails.logger.warn "** INVALID: #{i.id}"
+      end
     end
     self.items += new_items
   end
