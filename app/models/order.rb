@@ -276,7 +276,8 @@ class Order < ActiveRecord::Base
       transaction do
         vouchers = prepare_vouchers_from_valid_vouchers()
         add_items_to_order(vouchers)
-        customer.add_items(vouchers + retail_items)
+        customer.add_items(vouchers)
+        customer.add_items(retail_items)
         purchaser.add_items([donation]) if donation
         customer.save!
         purchaser.save!

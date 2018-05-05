@@ -6,7 +6,13 @@ describe VouchertypesController do
     @vtype = create(:revenue_vouchertype)
   end
   
-  describe "destroying a vouchertype" do
+  describe "creating" do
+    it "should have current season by default" do
+      get :new
+      expect(assigns(:vouchertype).season).to eq(2012)
+    end
+  end
+  describe "destroying" do
     it "should fail if vouchertype has any associated vouchers" do
       create(:revenue_voucher, :vouchertype => @vtype)
       delete :destroy, :id => @vtype.id
