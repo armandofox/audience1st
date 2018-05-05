@@ -246,7 +246,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def completed? ;  !new_record?  &&  !sold_on.blank? ; end
+  def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def ready_for_purchase?
     errors.clear
@@ -271,7 +271,6 @@ class Order < ActiveRecord::Base
   def finalize!(sold_on_date = Time.now)
     raise Order::NotReadyError unless ready_for_purchase?
 
-    self.sold_on = sold_on_date
     begin
       transaction do
         vouchers = prepare_vouchers_from_valid_vouchers()
@@ -281,12 +280,15 @@ class Order < ActiveRecord::Base
         purchaser.add_items([donation]) if donation
         customer.save!
         purchaser.save!
+        self.sold_on = sold_on_date
         self.save!
         if purchase_medium == :credit_card
           Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
         end
       end
-    rescue Order::OrderFinalizeError,RuntimeError => e
+    rescue ValidVoucher::InvalidRedemptionError => e
+      raise Order::NotReadyError, e.message
+    rescue Order::PaymentFailedError,RuntimeError => e
       raise e
     end
   end

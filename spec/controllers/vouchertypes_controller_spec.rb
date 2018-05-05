@@ -8,8 +8,11 @@ describe VouchertypesController do
   
   describe "creating" do
     it "should have current season by default" do
-      get :new
-      expect(assigns(:vouchertype).season).to eq(2012)
+      old_season = Time.this_season
+      Timecop.travel(2.years.from_now) do
+        get :new
+        expect(assigns(:vouchertype).season).to eq(old_season + 2)
+      end
     end
   end
   describe "destroying" do

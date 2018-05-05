@@ -46,7 +46,7 @@ class VouchertypesController < ApplicationController
   end
 
   def new
-    @vouchertype = Vouchertype.new(:category => 'revenue')
+    @vouchertype = Vouchertype.new(:category => 'revenue', :season => Time.this_season)
   end
 
   def clone

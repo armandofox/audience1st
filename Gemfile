@@ -51,6 +51,7 @@ group :test do
   gem 'rspec-its'
   gem 'rspec-html-matchers'
   gem 'simplecov', :require => false
+  gem 'spring'                  # for 'guard'
   gem 'webmock'
 end
 
