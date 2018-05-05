@@ -31,7 +31,7 @@ class DonationsController < ApplicationController
     rescue ActionController::RoutingError, ActiveRecord::RecordNotFound
       return redirect_to(donations_path, :alert => "Cannot limit search to customer")
     end
-    mindate,maxdate = Time.range_from_params(params[:dates])
+    mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.now]
     params[:from] = mindate
     params[:to] = maxdate
     if params[:use_date]

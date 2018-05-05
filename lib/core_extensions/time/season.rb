@@ -46,10 +46,6 @@ module CoreExtensions
         # not be correct
         def at_beginning_of_season(arg=nil) ; ::Time.now.at_beginning_of_season(arg) ; end
         def at_end_of_season(arg=nil) ; ::Time.now.at_end_of_season(arg) ; end
-        def this_season ; ::Time.now.this_season ; end
-        def db_now
-          "\"#{::Time.now.to_formatted_s(:db)}\""
-        end
         def from_param(param,default=::Time.now)
           return default if param.blank?
           return ::Time.parse(param) unless param.kind_of?(Hash)
@@ -64,7 +60,7 @@ module CoreExtensions
 
         # Extract two dates from jquery-ui-datepicker formatted params field
         def range_from_params(json)
-          return ::Time.now,::Time.now if json.empty?
+          return ::Time.now,::Time.now if json.blank?
           obj = JSON(json)
           min = ::Time.parse(obj['start'].to_s).at_beginning_of_day
           max = ::Time.parse(obj['end'].to_s).at_end_of_day

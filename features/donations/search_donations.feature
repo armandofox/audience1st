@@ -58,11 +58,26 @@ Scenario: list all donations
   | Armando Fox   |    600 |
   | Tom Foolery   |    100 |
 
+Scenario: from a customer's account page, list their donations
+
+  When I visit the home page for customer "Joe Mallon"
+  And I follow "Donations…"
+  Then I should see the following donations:
+  | donor         | amount |
+  | Joe Mallon    |    500 |
+  But I should not see the following donations:
+  | donor         | amount |
+  | Diana Moore   |    900 |
+  | Patrick Tracy |    800 |
+  | Armando Fox   |    600 |
+  | Tom Foolery   |    100 |
+
 @javascript
 Scenario: filter donations by donor
 
   When I check "use_cid"
   And I fill "donor_autocomplete" autocomplete field with "Joe Mallon"
+  And I select autocomplete choice "Joe Mallon"
   And I press "Search"
   Then I should see the following donations:
   | donor         | amount |

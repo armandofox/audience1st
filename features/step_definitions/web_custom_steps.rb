@@ -116,7 +116,7 @@ end
 
 # tabular data
 Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
-  page.should have_css(table)
+  page.should have_xpath("//#{table}")
   @rows = page.all(:xpath, "//#{table}//tr").collect { |r| r.all(:xpath, './/th|td') }
   col_regexps = row.split('|').map { |s| Regexp.new(s) }
   matched = @rows.any? do |table_row|

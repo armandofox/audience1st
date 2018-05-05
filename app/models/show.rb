@@ -8,9 +8,6 @@ class Show < ActiveRecord::Base
 
   has_many :showdates, -> { order('thedate') }, :dependent => :destroy
   has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
-  # NOTE: We can't do the trick below because the database's timezone
-  #  may not be the same as the appserver's timezone.
-  #has_many :future_showdates, :class_name => 'Showdate', :conditions => 'end_advance_sales >= #{Time.db_now}'
   has_many :vouchers, :through => :showdates
   has_many :imports
 
