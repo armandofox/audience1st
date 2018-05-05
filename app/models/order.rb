@@ -272,18 +272,21 @@ class Order < ActiveRecord::Base
     raise Order::NotReadyError unless ready_for_purchase?
 
     self.sold_on = sold_on_date
-    vouchers = prepare_vouchers_from_valid_vouchers()
-    add_items_to_order(vouchers)
-
-    Order.transaction do
-      customer.add_items(vouchers + retail_items)
-      purchaser.add_items([donation]) if donation
-      customer.save!
-      purchaser.save!
-      self.save!
-      if purchase_medium == :credit_card
-        Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
+    begin
+      transaction do
+        vouchers = prepare_vouchers_from_valid_vouchers()
+        add_items_to_order(vouchers)
+        customer.add_items(vouchers + retail_items)
+        purchaser.add_items([donation]) if donation
+        customer.save!
+        purchaser.save!
+        self.save!
+        if purchase_medium == :credit_card
+          Store.pay_with_credit_card(self) or raise(Order::PaymentFailedError, self.errors.as_html)
+        end
       end
+    rescue Order::OrderFinalizeError,RuntimeError => e
+      raise e
     end
   end
 
