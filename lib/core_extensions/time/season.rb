@@ -44,6 +44,7 @@ module CoreExtensions
       module ClassMethods
         # Needed since DB may not be in same timezone, so its notion of NOW() may
         # not be correct
+        def this_season ; ::Time.now.this_season ; end
         def at_beginning_of_season(arg=nil) ; ::Time.now.at_beginning_of_season(arg) ; end
         def at_end_of_season(arg=nil) ; ::Time.now.at_end_of_season(arg) ; end
         def from_param(param,default=::Time.now)
