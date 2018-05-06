@@ -37,7 +37,7 @@ class VouchertypesController < ApplicationController
                       else Vouchertype.all
                       end
     end
-    @vouchertypes = @vouchertypes.sort_by do |v|
+    @vouchertypes = @vouchertypes.includes(:account_code).sort_by do |v|
       (v.bundle? ? 0 : 1e6) + v.season*1000 + v.display_order
     end
     if @vouchertypes.empty?
