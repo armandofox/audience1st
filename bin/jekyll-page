@@ -96,6 +96,7 @@ END
 File.open(filepath, 'w') do |file|
     file.puts content
 end
+puts "File #{filepath} created"
 
 File.symlink("../_posts/#{today}-#{filename}.md", symlink)
 
