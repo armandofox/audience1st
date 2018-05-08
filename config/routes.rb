@@ -89,7 +89,6 @@ Rails.application.routes.draw do
         get :attendance
         get :advance_sales
         get :do_report
-        get :transaction_details
         get :accounting
         get :retail
         get :unfulfilled_orders
@@ -160,7 +159,10 @@ Rails.application.routes.draw do
     match '/logout' => 'sessions#destroy', :as => 'logout', :via => [:get, :post]
 
     # Routes for viewing and refunding orders
-    resources :orders, :only => [:index, :show, :update]
-
+    resources :orders, :only => [:index, :show, :update] do
+      collection do
+        get :report
+      end
+    end
   end
 end

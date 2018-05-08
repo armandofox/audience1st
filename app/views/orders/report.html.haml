@@ -1,0 +1,27 @@
+#pageDiv
+  %h1 #{@orders.size} transactions: #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}
+  = form_tag report_orders_path, :method => :get do
+    = hidden_field_tag 'report_dates', Time.range_to_params(@from,@to)
+    = submit_tag 'Download as Excel'
+  %table.hilite
+    %thead
+      %tr
+        %th Order#
+        %th Sold on
+        %th Customer
+        %th Payment method
+        %th Total
+        %th Items
+    %tbody
+      - @orders.each do |o|
+        %tr
+          %td= o.id
+          %td= o.sold_on.strftime('%m/%d/%y %I:%M:%S')
+          %td= link_to_customer o.customer
+          %td
+            - if o.purchase_medium == :credit_card
+              = link_to_stripe o.purchasemethod.description, o.authorization
+            - else
+              = o.purchasemethod.description
+          %td= number_to_currency o.total_price
+          %td= o.item_descriptions.gsub( /$/, '<br/>').html_safe

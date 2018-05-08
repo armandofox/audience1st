@@ -7,6 +7,19 @@ class OrdersController < ApplicationController
       (@orders = @customer.orders.for_customer_reporting).empty?
   end
 
+  def report
+    @from,@to = Time.range_from_params(params[:report_dates])
+    @orders = Order.
+      for_transactions_reporting.
+      where(:sold_on => @from..@to).
+      where(:purchasemethod => [1,3,4,5]).
+      order(:sold_on)
+    return redirect_to(reports_path, :alert => 'No matching transactions.') if @orders.empty?
+    if params[:commit] =~ /download/i
+      send_data @orders.to_csv, :type => 'text/csv', :filename => filename_from_dates(transactions,@from,@to,'csv')
+    end
+  end
+
   def show
     @order = Order.where(:id => params[:id]).includes(:vouchers => [:showdate,:vouchertype]).first
     if @order.nil?

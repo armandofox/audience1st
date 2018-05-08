@@ -174,23 +174,6 @@ class ReportsController < ApplicationController
     valid && klass
   end
 
-  def transaction_details_report
-    @report = TransactionDetailsReport.run(@from, @to)
-    return redirect_to(reports_path, :alert => 'No matching transactions found') if @report.empty?
-    case params[:format]
-    when /csv/i
-      send_data(@report.to_csv,
-        :type => (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv'),
-        :filename => filename_from_dates('transactions', @from, @to, 'csv'))
-    when /pdf/i
-      send_data(@report.to_pdf,
-        :type => 'application/pdf',
-        :filename => filename_from_dates('transactions', @from, @to, 'pdf'))
-    else
-      render :action => 'transaction_details_report'
-    end
-  end
-
   def accounting_report
     @account_codes = params[:account_codes]
     options = {:from => @from, :to => @to, :account_codes => @account_codes}

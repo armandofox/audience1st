@@ -1,6 +1,42 @@
 - if @next_showdate.kind_of?(Showdate)
-  = render :partial => 'boxoffice', :locals => {:all_showdates => @all_showdates,:next_showdate => @next_showdate}
+  .pageDiv#advance_sales_report
+    %h1 Advance Sales Reports
+    = form_tag advance_sales_reports_path, :method => :get do
+      %p 
+        (Shift-click to select multiple productions)
+        %br
+        = select_tag('shows', |
+          options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true) 
+        = submit_tag 'Go', :id => 'advance_sales'
 
+    = form_tag unfulfilled_orders_reports_path, :method => :get do
+      %p 
+        Show orders needing fulfillment as of today
+        (usually means mailing something to customer).
+        = submit_tag 'Generate Listing'
+
+.pageDiv#transactions_report
+  = form_tag report_orders_path, :method => :get do
+    %h1 Transaction (Order) Details Report
+    %label Select Dates
+    = select_date_with_shortcuts 'report_dates', :from => @from, :to => @to
+    = popup_help_for 'select_dates'
+    %br
+    %label &nbsp;
+    = submit_tag 'Display on Screen'
+    = submit_tag 'Download as Excel'
+
+.pageDiv#retail_report
+  = form_tag retail_reports_path, :method => :get do
+    %h1 Retail Sales (Non-ticket products) Report
+    %label Select Dates
+    = select_date_with_shortcuts 'report_dates', :from => @from, :to => @to
+    = popup_help_for 'select_dates'
+    %br
+    %label &nbsp;
+    = submit_tag 'Display on Screen'
+    = submit_tag 'Download as Excel'
+  
 - if nil && (Voucher.count > 0 || Donation.count > 0)
   .pageDiv#accounting_reports
     %h1 Accounting/Financial Reports

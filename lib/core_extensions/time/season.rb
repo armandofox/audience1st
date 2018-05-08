@@ -68,6 +68,10 @@ module CoreExtensions
           min,max = max,min if min > max
           return min, max
         end
+        # Convert 2 Time objects into a JSON date range for jquery-ui-datepicker
+        def range_to_params(from,to)
+          JSON[{'start' => from.strftime('%F'), 'end' => to.strftime('%F')}]
+        end
       end
     end
   end

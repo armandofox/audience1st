@@ -104,6 +104,25 @@ class Order < ActiveRecord::Base
     includes(:customer)
   }
 
+  scope :for_transactions_reporting, ->() {
+    includes(:purchasemethod).
+    includes(:items).
+    includes(:customer).
+    includes(:donations => :account_code).
+    includes(:vouchers => [:showdate,:vouchertype])
+  }
+    
+  def self.to_csv
+    attribs = %w(id sold_on purchaser_name purchase_medium total_price item_descriptions)
+    CSV.generate(:headers => true) do |csv|
+      csv << attribs
+      all.each { |o| csv << attribs.map { |att| o.send att }}
+    end
+  end
+
+  def customer_name ; customer.full_name ; end
+  def purchaser_name ; purchaser.full_name ; end
+
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
     other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
     order = Order.new(other_args)
