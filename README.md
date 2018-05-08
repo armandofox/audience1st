@@ -25,6 +25,11 @@ This is a stock Rails 4 app, with the following exceptions/additions:
 
 2. The task `EmailGoldstar.receive(STDIN.read)` should be invoked to consume incoming emails from Goldstar.  See the installation section on Goldstar integration, below.
 
+3. If the envariable `EDGE_URL` is set,
+`config.action_controller.asset_host` will be set to that value (the
+current deployment uses the Edge CDN add-on for Heroku, which uses
+Amazon CloudFront as a CDN).
+
 ## Multi-tenancy
 
 **This is important.**  By default Audience1st can be setup as
