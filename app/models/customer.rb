@@ -2,6 +2,7 @@ class Customer < ActiveRecord::Base
 
   acts_as_reportable
   
+  require_dependency 'customer/roles'
   require_dependency 'customer/special_customers'
   require_dependency 'customer/secret_question'
   require_dependency 'customer/scopes'
@@ -376,55 +377,11 @@ class Customer < ActiveRecord::Base
     return u
   end
 
-  # Values of the role field:
-  # Roles are cumulative, ie higher privilege level can do everything
-  # the lower levels can do.
-  # < 10  regular user (customer)
-  # at least 10 - board/staff member (can view/make reports, but not reservations)
-  # at least 20 - box office user
-  # at least 30 - box office manager
-  # at least 100 - God ('admin')
-
-  @@roles = [['patron', 0],
-             ['staff', 10],
-             ['walkup', 15],
-             ['boxoffice', 20],
-             ['boxoffice_manager', 30],
-             ['admin', 100]]
-
-  def self.role_value(role)
-    r = role.to_s.downcase
-    if (rr  = @@roles.assoc(r)) then rr.last else 100 end # fail-safe!!
-  end
-
-  def self.role_name(rval)
-    @@roles.select { |r| r.last <= rval }.last.first
-  end
-
-  def role_name
-    Customer.role_name(self.role)
-  end
-
-  def role_value
-    Customer.role_value(self.role)
-  end
-  
-  # you can grant someone else a particular role as long as it's less
-  # than your own.
-
-  def can_grant(newrole)
-    # TBD should really check that the two are
-    # in different role-equivalence classes
-    self.role >= Customer.role_value(newrole)
-  end
 
   def self.can_ignore_cutoff?(id)
     Customer.find(id).is_walkup
   end
 
-  def self.roles
-    @@roles.map {|x| x.first}
-  end
 
   def self.nobody_id
     0
@@ -438,12 +395,6 @@ class Customer < ActiveRecord::Base
   end
 
   public
-
-  @@roles.each do |r|
-    role = r.first
-    lvl = r.last
-    eval "def is_#{role}; self.role >= #{lvl}; end"
-  end
 
   def self.find_suspected_duplicates
     # similarity: last names must match, emails must not differ,
