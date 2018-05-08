@@ -32,7 +32,7 @@ Rails.application.configure do
   # config.assets.compile = false
 
   # Serve static assets from EDGE CDN Heroku add-on
-  # config.action_controller.asset_host = ENV['EDGE_URL'] if ENV.has_key?('EDGE_URL')
+  config.action_controller.asset_host = ENV['EDGE_URL'] if ENV.has_key?('EDGE_URL')
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true

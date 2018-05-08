@@ -2,7 +2,7 @@ FactoryBot.define do
 
   factory :customer do
     transient do
-      role :patron
+      role 'patron'
       created_by_admin false
     end
     sequence(:first_name) { |n| "Joe#{n}" }
@@ -26,19 +26,19 @@ FactoryBot.define do
     factory :staff do
       first_name 'Sally'
       last_name 'Staffer'
-      role :staff
+      role 'staff'
     end
 
     factory :boxoffice do
       first_name 'Barry'
       last_name 'Boxoffice'
-      role :boxoffice
+      role 'boxoffice'
     end
 
     factory :boxoffice_manager do
       first_name 'Mary'
       last_name 'Manager'
-      role :boxoffice_manager
+      role 'boxoffice_manager'
     end
   end
 
