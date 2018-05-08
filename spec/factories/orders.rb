@@ -23,7 +23,8 @@ FactoryBot.define do
         order.items << create(:revenue_voucher, :customer => order.customer)
       end
       if evaluator.contains_donation
-        order.items << create(:donation, :customer => order.customer)
+        #order.items << create(:donation, :customer => order.customer)
+        order.add_donation(create(:donation, :customer => order.customer))
       end
     end
   end

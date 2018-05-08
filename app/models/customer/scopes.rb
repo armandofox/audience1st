@@ -20,14 +20,15 @@ class Customer < ActiveRecord::Base
     distinct
   }
   
-  scope :seen_none_of, ->(show_ids) {
-    joins(:vouchers, :showdates).
-    where('items.customer_id = customers.id AND items.showdate_id = showdates.id AND
-           items.type = \'Voucher\' AND showdates.show_id NOT IN (?)', show_ids).
-    distinct
-  }
-  
-  #def self.seen_none_of(show_ids) ;  Customer.all - Customer.seen_any_of(show_ids) ;  end
+  def self.seen_none_of(show_ids)
+    not_seen_these_shows = Customer.
+      includes(:vouchers, :showdates).
+      where.not(:showdates => {:show_id => show_ids})
+    not_seen_any_shows = Customer.
+      includes(:vouchers, :showdates).
+      where(:items => {:customer_id => nil})
+    not_seen_these_shows.or(not_seen_any_shows).distinct
+  end
 
   scope :with_open_subscriber_vouchers, ->(vtypes) {
     joins(:items).

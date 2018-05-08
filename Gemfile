@@ -9,6 +9,8 @@ gem 'puma'
 gem 'rails', '4.2.9'
 gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
 
+gem 'where-or'                  # backport from Rails 5; remove when upgrading
+
 gem 'acts_as_reportable'
 gem 'builder'
 gem 'bundler'

@@ -10,8 +10,8 @@ describe 'scoping Customers' do
       # customer @c1 has only seen show @s1, @c2 has only seen show @s2
       sd1 = create(:showdate, :date => Time.now)
       sd2 = create(:showdate, :date => 1.day.from_now)
-      @s1 = sd1.show
-      @s2 = sd2.show
+      @s1 = sd1.show_id
+      @s2 = sd2.show_id
       create(:revenue_voucher, :showdate => sd1, :customer => @c1)
       create(:revenue_voucher, :showdate => sd2, :customer => @c2)
       # customer @new has seen nothing
@@ -41,6 +41,10 @@ describe 'scoping Customers' do
         Customer.seen_none_of(@s1).should_not include(@c1)
       end
       it 'should include customer who has seen nothing' do
+        Customer.seen_none_of([@s1,@s2]).should include(@new)
+      end
+      it 'should include customer who has given donation but not seen show' do
+        create(:order, :customer => @new, :contains_donation => true).finalize!
         Customer.seen_none_of([@s1,@s2]).should include(@new)
       end
       it 'should exclude customers who have seen anything in union of shows' do
