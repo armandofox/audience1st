@@ -1,7 +1,5 @@
 class Voucher < Item
   require 'csv'
-  acts_as_reportable
-  
   belongs_to :showdate
   belongs_to :vouchertype
 
@@ -46,6 +44,15 @@ class Voucher < Item
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
+  # scopes for reporting
+  scope :for_unfulfilled_orders, -> {
+    includes(:customer, :vouchertype, :order).
+    references(:customers, :orders).
+    where.not(:orders => {:sold_on => nil}).
+    where(:fulfillment_needed => true).
+    merge(Customer.order(:last_name))
+  }
+
   # scopes that hide implementation of category
   scope :comp, -> { where(:category => 'comp') }
   scope :revenue, -> { where(:category => 'revenue') }
@@ -72,10 +79,9 @@ class Voucher < Item
 
   # many are delegated to Vouchertype
 
-  def self.to_csv(vouchers,opts={})
-    output = ''
-    CSV::Writer.generate(output) do |csv|
-      orders = vouchers.group_by do |v|
+  def self.unfulfilled_orders_to_csv
+    CSV.generate(:headers => false) do |csv|
+      orders = all.group_by do |v|
         [v.ship_to, v.vouchertype]
       end
       orders.each_pair do |k,v|
@@ -86,7 +92,6 @@ class Voucher < Item
         csv << row
       end
     end
-    output
   end
 
   delegate(

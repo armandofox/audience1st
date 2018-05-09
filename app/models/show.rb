@@ -1,8 +1,5 @@
 class Show < ActiveRecord::Base
 
-  require 'ruport'
-  acts_as_reportable
-
   REGULAR_SHOW = 'Regular Show'
   TYPES = [REGULAR_SHOW, 'Special Event', 'Class', 'Subscription']
 

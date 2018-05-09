@@ -1,5 +1,4 @@
-require 'ruport'
-class AccountingReport < Ruport::Controller
+class AccountingReport
 
   include ApplicationHelper
   attr_accessor :from, :to, :title, :account_code_ids

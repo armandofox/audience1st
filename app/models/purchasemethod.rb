@@ -1,8 +1,5 @@
 class Purchasemethod < ActiveRecord::Base
 
-  require 'ruport'
-  acts_as_reportable
-
   def purchase_medium
     case self.shortdesc.to_sym
     when :web_cc, :box_cc then :credit_card 

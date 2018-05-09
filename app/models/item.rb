@@ -1,5 +1,4 @@
 class Item < ActiveRecord::Base
-  acts_as_reportable
 
   attr_protected :checked_in
 

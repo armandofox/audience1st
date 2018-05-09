@@ -116,19 +116,11 @@ class ReportsController < ApplicationController
   end
 
   def unfulfilled_orders
-    v = Voucher.
-      includes(:customer, :vouchertype, :order).
-      references(:customers, :orders).
-      where.not(:orders => {:sold_on => nil}).
-      where(:fulfillment_needed => true).
-      order('customers.last_name')
-    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
+    @vouchers = Voucher.for_unfulfilled_orders
+    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if @vouchers.empty?
+    @unique_addresses = @vouchers.group_by { |vc| vc.customer.street }.keys.length
     if params[:csv]
-      output = Voucher.to_csv(v)
-      download_to_excel(output, 'customers')
-    else
-      @vouchers = v
-      @unique_addresses = v.group_by { |vc| vc.customer.street }.keys.length
+      send_data @vouchers.unfulfilled_orders_to_csv, :type => 'text/csv', :filename => "unfulfilled_#{Date.today}.csv"
     end
   end
 
@@ -149,11 +141,20 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
+  def retail
+    @items = RetailItem.
+      includes(:order).references(:orders).
+      where('orders.sold_on BETWEEN ? and ?', @from, @to).references(:orders).
+      order('orders.sold_on')
+    return redirect_to(reports_path, {:notice => 'No retail purchases match these criteria.'}) if @items.empty?
+  end
+  
+
   private
 
   def validate_report_type(str)
     klass = str.camelize.constantize
-    valid = klass.ancestors.include?(Report) || klass.ancestors.include?(Ruport::Controller)
+    valid = klass.ancestors.include?(Report)
     redirect_to(reports_path, :alert => "Invalid report name '#{str}'") unless valid
     valid && klass
   end
@@ -176,12 +177,4 @@ class ReportsController < ApplicationController
     end
   end
 
-  def retail
-    @items = RetailItem.
-      includes(:order).references(:orders).
-      where('orders.sold_on BETWEEN ? and ?', @from, @to).references(:orders).
-      order('orders.sold_on')
-    return redirect_to(reports_path, {:notice => 'No retail purchases match these criteria.'}) if @items.empty?
-  end
-  
 end

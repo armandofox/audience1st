@@ -1,9 +1,6 @@
 class Vouchertype < ActiveRecord::Base
   include VouchertypesHelper
   
-  require 'ruport'
-  acts_as_reportable :only => [:name, :price]
-
   attr_accessible :category, :name, :price, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :included_vouchers
   attr_accessible :account_code_id, :account_code
 

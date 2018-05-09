@@ -1,6 +1,4 @@
 class Order < ActiveRecord::Base
-  acts_as_reportable
-
   belongs_to :customer
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'

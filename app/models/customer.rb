@@ -1,7 +1,5 @@
 class Customer < ActiveRecord::Base
 
-  acts_as_reportable
-  
   require_dependency 'customer/roles'
   require_dependency 'customer/special_customers'
   require_dependency 'customer/secret_question'
