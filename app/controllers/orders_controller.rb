@@ -14,7 +14,7 @@ class OrdersController < ApplicationController
       where(:sold_on => @from..@to).
       where(:purchasemethod => [1,3,4,5]).
       order(:sold_on)
-    return redirect_to(reports_path, :alert => 'No matching transactions.') if @orders.empty?
+    return redirect_to(reports_path, :notice => 'No matching transactions.') if @orders.empty?
     if params[:commit] =~ /download/i
       send_data @orders.to_csv, :type => 'text/csv', :filename => filename_from_dates(transactions,@from,@to,'csv')
     end

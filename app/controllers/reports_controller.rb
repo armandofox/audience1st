@@ -17,23 +17,6 @@ class ReportsController < ApplicationController
     @special_report_names = Report.subclasses.map { |s| ActiveModel::Name.new(s).human }.unshift('Select report...')
   end
 
-  def do_report
-    # this is a dispatcher that just redirects to the correct report
-    # based on a dropdown menu.
-    @report_dates = params[:report_dates]
-    @from,@to = Time.range_from_params(@report_dates)
-    case params[:rep]
-    when /retail/i
-      retail
-    when /transaction/i
-      transaction_details_report
-    when /earned/i
-      accounting_report
-    else
-      redirect_to(reports_path, :alert => "Please select a valid report.")
-    end
-  end
-
   def advance_sales
     show_ids = params[:shows]
     redirect_to(reports_path, :alert => "Please select one or more shows.") if show_ids.blank?
@@ -136,7 +119,8 @@ class ReportsController < ApplicationController
     v = Voucher.
       includes(:customer, :vouchertype, :order).
       references(:customers, :orders).
-      where('orders.sold_on IS NOT NULL AND items.fulfillment_needed = 1').
+      where.not(:orders => {:sold_on => nil}).
+      where(:fulfillment_needed => true).
       order('customers.last_name')
     return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if v.empty?
     if params[:csv]
