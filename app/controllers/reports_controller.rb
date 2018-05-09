@@ -142,11 +142,12 @@ class ReportsController < ApplicationController
   end
 
   def retail
+    @from,@to = Time.range_from_params(params[:retail_report_dates])
     @items = RetailItem.
-      includes(:order).references(:orders).
-      where('orders.sold_on BETWEEN ? and ?', @from, @to).references(:orders).
-      order('orders.sold_on')
-    return redirect_to(reports_path, {:notice => 'No retail purchases match these criteria.'}) if @items.empty?
+      joins(:order).
+      where(:orders => {:sold_on => @from..@to}).
+      merge(Order.order(:sold_on))
+    return redirect_to(reports_path, :notice => 'No retail purchases match these criteria.') if @items.empty?
   end
   
 

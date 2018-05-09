@@ -8,7 +8,7 @@ class OrdersController < ApplicationController
   end
 
   def report
-    @from,@to = Time.range_from_params(params[:report_dates])
+    @from,@to = Time.range_from_params(params[:txn_report_dates])
     @orders = Order.
       for_transactions_reporting.
       where(:sold_on => @from..@to).
@@ -16,7 +16,7 @@ class OrdersController < ApplicationController
       order(:sold_on)
     return redirect_to(reports_path, :notice => 'No matching transactions.') if @orders.empty?
     if params[:commit] =~ /download/i
-      send_data @orders.to_csv, :type => 'text/csv', :filename => filename_from_dates(transactions,@from,@to,'csv')
+      send_data @orders.to_csv, :type => 'text/csv', :filename => filename_from_dates('transactions',@from,@to,'csv')
     end
   end
 
