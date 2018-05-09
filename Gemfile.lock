@@ -482,7 +482,6 @@ DEPENDENCIES
   rspec-rails
   ruby-prof
   rubyzip
-  ruport
   sass-rails
   sdoc (~> 0.4.0)
   simplecov
