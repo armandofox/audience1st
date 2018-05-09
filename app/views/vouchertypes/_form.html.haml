@@ -89,7 +89,7 @@
         - input_name = "vouchertype[included_vouchers][#{v.id}]"
         - input_id = "vouchertype_included_vouchers[#{v.id}]"
         %label{:for => input_id}= v.name
-        = text_field_tag input_name, @vouchertype.included_vouchers[v.id], :size => 4, :id => input_id, :class => 'bundle_component'
+        = text_field_tag input_name, @vouchertype.included_vouchers[v.id.to_s], :size => 4, :id => input_id, :class => 'bundle_component'
         %br
 
 - else
