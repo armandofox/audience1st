@@ -60,6 +60,7 @@ group :development do
   gem 'ruby-prof'
   gem 'stackprof'
   gem 'web-console', '~> 2.0'
+  gem 'spring-commands-rspec'   # for use with Guard
 end
 
 group :development, :test do

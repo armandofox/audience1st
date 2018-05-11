@@ -22,14 +22,23 @@ module VouchertypesHelper
     Vouchertype::CATEGORIES.map do |category|
       name =
         case category
-        when 'bundle'     then 'Bundle'
+        when 'bundle'     then 'Bundle (subscription or otherwise)'
         when 'comp'       then 'Comp (single ticket)'
-        when 'subscriber' then 'Single subscriber voucher'
-        when 'revenue'    then 'Regular revenue voucher'
+        when 'subscriber' then 'Voucher included in a bundle'
+        when 'revenue'    then 'Regular revenue voucher (single ticket)'
         when 'nonticket'  then 'Nonticket product'
         else '???'
         end
       [name,category]
+    end
+  end
+
+  def css_class_for_vouchertype(vt)
+    if vt.category.to_s == 'bundle'
+      # distinguish subscription vs nonsubscription
+      vt.subscription? ? 'bundle-sub' : 'bundle-nonsub'
+    else
+      vt.category
     end
   end
 

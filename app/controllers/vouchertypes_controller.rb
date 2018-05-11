@@ -1,52 +1,44 @@
 class VouchertypesController < ApplicationController
 
-  before_filter :is_boxoffice_manager_filter
-  before_filter :has_at_least_one, :except => [:new, :create]
-  before_filter :load_vouchertype, :only => [:clone, :edit, :update, :destroy]
+  before_action :is_boxoffice_manager_filter
+  before_action :has_at_least_one, :except => [:new, :create]
+  before_action :load_vouchertype, :only => [:clone, :edit, :update, :destroy]
+
+  after_action :remember_vouchertype_season!, :except => :index
 
   private
 
   def load_vouchertype
-    @vouchertype = Vouchertype.find params[:id]
+    @vouchertype = Vouchertype.
+      where(:id => params[:id]).
+      includes(:vouchers,:valid_vouchers).
+      first
+  end
+
+  def remember_vouchertype_season!(season = @vouchertype.season)
+    session[:vouchertype_season] = season.to_i
+  end
+  def vouchertype_season
+    (session[:vouchertype_season] || Time.this_season).to_i
   end
 
   public
   
   def index
-    return redirect_to url_for(params.merge(:season => Time.this_season, :only_path => true)) unless (@season = params[:season].to_i) > 0
+    @season = (params[:season] || vouchertype_season).to_i
+    remember_vouchertype_season! @season
     @superadmin = current_user().is_admin
-    # possibly limit pagination to only bundles or only subs
-    @earliest = Vouchertype.order('season').first.season
-    @latest = Vouchertype.order('season DESC').first.season
-    @filter = params[:filter].to_s
-    limit_to_season = (@season.to_i > 0) ? @season.to_i : nil
-    case @filter
-    when "Bundles"
-      @vouchertypes = Vouchertype.bundle_vouchertypes(limit_to_season)
-    when "Subscriptions"
-      @vouchertypes = Vouchertype.subscription_vouchertypes(limit_to_season)
-    when "Single Tickets (Comp)"
-      @vouchertypes = Vouchertype.comp_vouchertypes(limit_to_season)
-    when "Single Tickets (Revenue)"
-      @vouchertypes = Vouchertype.revenue_vouchertypes(limit_to_season)
-    when "Nonticket Products"
-      @vouchertypes = Vouchertype.nonticket_vouchertypes(limit_to_season)
-    else # ALL
-      @vouchertypes = if limit_to_season
-                      then Vouchertype.where(:season => limit_to_season)
-                      else Vouchertype.all
-                      end
-    end
-    @vouchertypes = @vouchertypes.includes(:account_code).sort_by do |v|
-      (v.bundle? ? 0 : 1e6) + v.season*1000 + v.display_order
-    end
+    @vouchertypes = Vouchertype.
+      where(:season => @season).
+      includes(:account_code).
+      order(:display_order,:category,:created_at)
     if @vouchertypes.empty?
       flash[:alert] = "No vouchertypes matched your criteria."
     end
   end
 
   def new
-    @vouchertype = Vouchertype.new(:category => 'revenue', :season => Time.this_season)
+    @vouchertype = Vouchertype.new(:category => 'revenue', :season => vouchertype_season)
   end
 
   def clone

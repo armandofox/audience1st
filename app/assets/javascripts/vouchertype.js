@@ -1,5 +1,11 @@
 A1.vouchertype = {
 
+  // event handler for checkboxes that filter list of vouchertypes
+  filter_this_vouchertype: function() {
+    var klass = 'tr.' + $(this).attr('name'); // eg 'tr.revenue'
+    console.log(klass);
+    if ($(this).is(':checked')) { $(klass).show();  }  else { $(klass).hide(); }
+  },
   hide_price: function() {
     $('#p_vouchertype_price').hide();   
     $('#vouchertype_price').value = '0'; 
@@ -16,7 +22,6 @@ A1.vouchertype = {
   reset_fields: function() {
     var category = $(this).val();
     var k = A1.vouchertype;
-    console.log(category);
     $('.vtform').show();
     switch(category)  {
     case 'bundle':
@@ -37,12 +42,11 @@ A1.vouchertype = {
       break;
     }
   },
-  observe_vouchertype_field: function() {
+  setup: function() {
     $('#vouchertype_category').change(A1.vouchertype.reset_fields);
+    // checkboxes on index page
+    $('.vouchertype-filter').change(A1.vouchertype.filter_this_vouchertype);
   }
 };
 
-$(A1.vouchertype.observe_vouchertype_field);
-
-
-
+$(A1.vouchertype.setup);

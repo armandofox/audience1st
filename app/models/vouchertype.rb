@@ -90,7 +90,7 @@ class Vouchertype < ActiveRecord::Base
   def restrict_if_free
     if offer_public == ANYONE
       errors.add :base, "Free vouchers can't be available to public"
-    elsif category == :subscription
+    elsif category.to_s == 'subscription'
       errors.add :base, "Free vouchers can't qualify recipient as Subscriber"
     end
   end

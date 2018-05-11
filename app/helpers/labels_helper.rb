@@ -6,7 +6,4 @@ module LabelsHelper
       :class => 'no_float')  
   end
 
-  def link_to_label_list(l)
-  end
-    
 end

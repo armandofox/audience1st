@@ -1,10 +1,12 @@
 = form_tag vouchertypes_path, :method=>:get do
   %h1 
-    Listing
-    = select_tag 'filter', options_for_select(["All","Subscriptions","Bundles","Single Tickets (Revenue)", "Single Tickets (Comp)", "Nonticket Products"],@filter), :onchange => 'this.form.submit();'
-    voucher types valid during
-    = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onchange => 'this.form.submit();'
+    Listing voucher types for
+    = select_tag 'season', options_for_seasons(3.years.ago.year,2.years.from_now.year,@season), :onchange => 'this.form.submit();'
     season
+
+%p Show:
+= in_rows_of(3, {'Single-ticket Revenue Vouchers' => 'revenue', 'Comps' => 'comp', 'Subscription Bundles' => 'bundle-sub', 'Nonsubscription Bundles' => 'bundle-nonsub', 'Part of a bundle' => 'subscriber', 'Nonticket products' => 'nonticket'}) do |name, category|
+  - check_box_tag(category, 1, true, :class => 'vouchertype-filter') + content_tag('label', name, :for => category)
 
 %table.hilite#vouchertypes
   %thead
@@ -21,8 +23,8 @@
       %th Walkup?
       %th
   %tbody
-    - for vouchertype in @vouchertypes
-      %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : '')] }
+    - @vouchertypes.each do |vouchertype|
+      %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : ''),css_class_for_vouchertype(vouchertype)] }
         %td
           - if @superadmin && vouchertype.vouchers.count == 0
             = link_to(image_tag('delete.png',:border => 0, :id => "delete_#{vouchertype.id}", :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, :confirm => "Deleting the '#{h vouchertype.name}' voucher type cannot be undone. Continue?" })

@@ -5,7 +5,19 @@ describe VouchertypesController do
     login_as_boxoffice_manager
     @vtype = create(:revenue_vouchertype)
   end
-  
+  describe "default season" do
+    it "is remembered  after #index" do
+      get :index, :season => '2019'
+      get :index, :season => '2020'
+      get :index
+      expect(assigns(:season)).to eq(2020)
+    end
+    it "is used as default on new vouchertype" do
+      get :index, :season => '2020'
+      get :new
+      expect(assigns(:vouchertype).season).to eq(2020)
+    end
+  end
   describe "creating" do
     it "should have current season by default" do
       old_season = Time.this_season
