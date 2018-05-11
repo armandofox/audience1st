@@ -9,7 +9,7 @@ module VouchertypesHelper
   def options_for_seasons_range(from=0,to=0,selected = Time.this_season)
     from,to = to,from if from > to
     now = Time.this_season
-    options_for_seasons(now + from, now + to, selected)
+    options_for_seasons(now + from, now + to, selected.to_s)
   end
 
   def options_for_seasons(from,to,selected=Time.this_season)

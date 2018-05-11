@@ -222,6 +222,12 @@ vouchertype_fulfillment_needed: >
   check this box.  This will cause all such orders to appear in the
   "Show Orders Needing Fulfillment" report (Reports tab).
 
+vouchertype_subscription: >
+
+  If checked, the customer instantly becomes a Subscriber during the
+  season this voucher is for.  Note that this option is available even
+  for single tickets and for nonticket products.
+
 vouchertype_walkup_sale_allowed: >
 
   If this box is checked, this ticket type will appear on the Walk-up

@@ -11,14 +11,31 @@ A1.vouchertype = {
     $('#vouchertype_price').value = '0'; 
   },
   hide_walkup_sale: function()  {
-    $('#p_vouchertype_walkup_sale_allowed').hide(); $('#vouchertype_walkup_sale_allowed').checked = false;  },
+    $('#p_vouchertype_walkup_sale_allowed').hide();
+    $('#vouchertype_walkup_sale_allowed').checked = false;
+  },
   hide_changeable: function() {
-    $('#vouchertype_changeable').checked = false;  $('#p_vouchertype_changeable').hide(); },
-  hide_account_code: function() {   $('#p_vouchertype_account_code').hide();  },
-  hide_availability: function() {   $('#p_vouchertype_offer_public').hide();  },
-  hide_subscriber: function()   {   
-    $('#vouchertype_subscription').checked = false ; $('#p_vouchertype_subscription').hide();  },
-
+    $('#vouchertype_changeable').checked = false;
+    $('#p_vouchertype_changeable').hide();
+  },
+  hide_account_code: function() {   
+    $('#p_vouchertype_account_code').hide();  
+  },
+  hide_availability: function() {   
+    $('#p_vouchertype_offer_public').hide();  
+  },
+  hide_mail_fulfillment_needed: function() { 
+    $('#vouchertype_fulfillment_needed').checked = false; 
+    $('#p_vouchertype_fulfillment_needed').hide();
+  },
+  hide_subscriber: function()   { 
+    $('#p_vouchertype_subscription').hide();
+    $('#vouchertype_subscription').checked = false;  
+  },
+  hide_comments: function() {
+    $('#p_vouchertype_comments').hide();
+    $('#vouchertype_comments').val('');
+  },
   reset_fields: function() {
     var category = $(this).val();
     var k = A1.vouchertype;
@@ -26,14 +43,17 @@ A1.vouchertype = {
     switch(category)  {
     case 'bundle':
       k.hide_walkup_sale(); k.hide_changeable();
+      k.hide_changeable();
       break;
     case 'subscriber':
       k.hide_price(); k.hide_walkup_sale(); 
       k.hide_account_code(); k.hide_availability();
+      k.hide_mail_fulfillment_needed(); k.hide_subscriber();
+      k.hide_comments();
       break;
     case 'comp':
       k.hide_price(); k.hide_account_code(); 
-      k.hide_subscriber();
+      k.hide_mail_fulfillment_needed(); k.hide_subscriber();
       break;
     case 'nonticket':
       k.hide_changeable();
