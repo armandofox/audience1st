@@ -36,8 +36,7 @@ A1.vouchertype = {
     $('#p_vouchertype_comments').hide();
     $('#vouchertype_comments').val('');
   },
-  reset_fields: function() {
-    var category = $(this).val();
+  set_fields_for_category: function(category) {
     var k = A1.vouchertype;
     $('.vtform').show();
     switch(category)  {
@@ -62,10 +61,16 @@ A1.vouchertype = {
       break;
     }
   },
+  reset_fields: function() {
+    var category = $(this).val();
+    A1.vouchertype.set_fields_for_category(category);
+  },
   setup: function() {
     $('#vouchertype_category').change(A1.vouchertype.reset_fields);
     // checkboxes on index page
     $('.vouchertype-filter').change(A1.vouchertype.filter_this_vouchertype);
+    // for Edit form, detect type being edited and set fields
+    A1.vouchertype.set_fields_for_category($('#vouchertype_category_uncooked').val());
   }
 };
 
