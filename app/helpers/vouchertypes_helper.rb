@@ -18,17 +18,19 @@ module VouchertypesHelper
     options_for_select(list.map { |y| [humanize_season(y), y.to_s] }, selected.to_s)
   end
 
+  def human_name_for_category(category)
+    case category
+    when 'bundle'     then 'Bundle (subscription or otherwise)'
+    when 'comp'       then 'Comp (single ticket)'
+    when 'subscriber' then 'Voucher included in a bundle'
+    when 'revenue'    then 'Regular revenue voucher (single ticket)'
+    when 'nonticket'  then 'Nonticket product'
+    else '???'
+    end
+  end
   def categories_with_printable_names
     Vouchertype::CATEGORIES.map do |category|
-      name =
-        case category
-        when 'bundle'     then 'Bundle (subscription or otherwise)'
-        when 'comp'       then 'Comp (single ticket)'
-        when 'subscriber' then 'Voucher included in a bundle'
-        when 'revenue'    then 'Regular revenue voucher (single ticket)'
-        when 'nonticket'  then 'Nonticket product'
-        else '???'
-        end
+      name = human_name_for_category(category)
       [name,category]
     end
   end

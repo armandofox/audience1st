@@ -7,9 +7,8 @@
     = select 'vouchertype', 'category', options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym)
     = popup_help_for :vouchertype_type
   - else
-    = text_field_tag 'vouchertype_category', humanize(@vouchertype.category), :disabled => 'disabled'
+    %span.strong= human_name_for_category(@vouchertype.category)
     = hidden_field_tag 'vouchertype_category_uncooked', @vouchertype.category
-    %span (The type of an existing vouchertype cannot be changed)
 
 %p
   %label{:for=>:vouchertype_name} Name
