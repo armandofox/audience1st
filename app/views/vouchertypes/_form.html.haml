@@ -8,6 +8,7 @@
     = popup_help_for :vouchertype_type
   - else
     = text_field_tag 'vouchertype_category', humanize(@vouchertype.category), :disabled => 'disabled'
+    = hidden_field_tag 'vouchertype_category_uncooked', @vouchertype.category
     %span (The type of an existing vouchertype cannot be changed)
 
 %p
