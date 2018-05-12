@@ -1,4 +1,22 @@
 namespace :db do
+  desc "Populate database tenant TENANT (default: 'staging'; or no tenant if multitenancy is turned off) with NUM_CUSTOMERS fake customers (default 500), including an admin whose login is admin@audience1st.com/admin."
+  task :fake_customers => :environment do
+    tenant = ENV['TENANT'] || 'staging'
+    num_customers = (ENV['NUM_CUSTOMERS'] || '500').to_i
+    Apartment::Tenant.drop(tenant) rescue nil
+    Apartment::Tenant.create tenant 
+    Apartment::Tenant.switch! tenant
+    load File.join(Rails.root, 'db', 'seeds.rb')
+    1.upto num_customers  do
+      FactoryBot::create(:customer,
+        :first_name => Faker::Name.first_name,
+        :last_name => Faker::Name.last_name,
+        :email => Faker::Internet.unique.safe_email,
+        :street => Faker::Address.street_address,
+        :city => Faker::Address.city,
+        :state => 'CA', :zip => sprintf("94%03d", rand(999)))
+    end
+  end
   desc "Given ENV[FILE] is a CSV with columns <last, first, street, phone, email>, repopulates development DB with fake data, skipping any superadmins."
   task :fake_names => :environment do
     abort "Only works for RAILS_ENV=development" unless Rails.env.development?

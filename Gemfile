@@ -80,6 +80,7 @@ group :development, :test do
   gem 'rubyzip'
   gem 'mime-types'
   gem 'chronic'
+  gem 'faker'
   gem 'fakeweb'
   gem 'launchy'
   gem 'rack-test'
