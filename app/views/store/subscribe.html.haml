@@ -19,15 +19,18 @@
       %br
 
       - @subs_to_offer.each do |v|
-        %label.wide_label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
-        = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty', 'data-price' => v.price)
-        %br/
+        .orderRow
+          %label.wide_label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
+          = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty', 'data-price' => v.price)
+          %br/
 
-      %label.wide_label{:for => :donation} Additional tax-deductible donation
-      = text_field_tag 'donation', '', :size => 5, :class => 'itemQty'
-      \.00
+      .orderRow
+        %label.wide_label{:for => :donation} Additional tax-deductible donation
+        = text_field_tag 'donation', '', :size => 5, :class => 'itemQty'
+        \.00
+
       %br
-      #orderTotal
+      #orderTotal.orderRow
         %label.strong.wide_label{:for=>:total} Order Total:
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true
       - if Option.allow_gift_subscriptions?

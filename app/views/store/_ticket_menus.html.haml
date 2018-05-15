@@ -28,7 +28,7 @@
       %p.explanation= @sd.show.sold_out_customer_info
     - else
       - @valid_vouchers.each do |v|
-        %div{:id => "vouchertype_#{v.vouchertype_id}"}
+        %div{:id => "vouchertype_#{v.vouchertype_id}",:class => 'orderRow'}
           - fieldname = "valid_voucher[#{v.id}]"
           %label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
           - if @is_admin
