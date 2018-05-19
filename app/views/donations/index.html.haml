@@ -1,14 +1,14 @@
 %h1
   = if @params[:from] then date_range(@params[:from],@params[:to]) end
-  #{@things.length} transactions, #{number_to_currency @total}
+  #{@donations.length} transactions, #{number_to_currency @total}
 
 = form_tag donations_path, {:method => :get} do
   = render :partial => 'donation_search', :locals => {:params => @params}
   = submit_tag "Search"
-  = submit_tag(@export_label) unless @things.empty?
+  = submit_tag(@export_label) unless @donations.empty?
   = link_to "Add/Edit Account Codes", account_codes_path, :class => 'genButton'
 
-- unless @things.empty?
+- unless @donations.empty?
   %table#donations.hilite
     %thead
       %tr
@@ -20,14 +20,13 @@
         %th Thanks Ltr Sent?
         %th Comments
     %tbody 
-      - @things.each do |t|
-        - donation = t.kind_of?(Donation)
-        %tr{:class => if donation then 'odd' else 'even' end}
+      - @donations.each do |t|
+        %tr
           %td= link_to t.customer.full_name, :action => 'index', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
           %td= link_to_order_containing t
           %td= t.sold_on.strftime '%D'
           %td.right= number_to_currency(t.amount)
           %td= t.item_description
-          %td= render(:partial => 'donation_letter_sent', :locals => {:donation => t}) if donation
+          %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
           %td= t.comments
   %br

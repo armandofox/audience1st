@@ -12,7 +12,7 @@ class DonationsController < ApplicationController
   public
   
   def index
-    @things = []
+    @donations = []
     @total = 0
     @params = {}
     return unless params[:commit] # first time visiting page: don't do "null search"
@@ -32,49 +32,28 @@ class DonationsController < ApplicationController
       return redirect_to(donations_path, :alert => "Cannot limit search to customer")
     end
     mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.now]
-    params[:from] = mindate
-    params[:to] = maxdate
+    params[:from],params[:to] = mindate,maxdate
+    @donations = Donation.
+      includes({:order => :purchasemethod},:customer,:account_code).
+      where.not(:customer_id => Customer.walkup_customer.id).
+      order('orders.sold_on')
     if params[:use_date]
-      conds.merge!("orders.sold_on >= ?" => mindate, "orders.sold_on <= ?" => maxdate)
+      @donations = @donations.where('orders.sold_on' => mindate..maxdate)
     end
     if params[:use_amount]
-      conds.merge!("amount >= ?" => params[:donation_min].to_f)
-      if (donation_max = params[:donation_max].to_f) > 0.0
-        conds.merge!("amount <= ?" => donation_max)
-      end
+      @donations = @donations.where(:amount => params[:donation_min].to_f .. params[:donation_max].to_f)
     end
     if params[:use_ltr_sent]
-      conds.merge!("letter_sent IS NULL" => nil)
+      @donations = @donations.where(:letter_sent => nil)
     end
     if params[:use_fund] && !params[:donation_funds].blank?
-      conds.merge!("account_code_id IN (?)" => params[:donation_funds])
+      @donations = @donations.where(:account_code_id => params[:donation_funds])
     end
-    keys = conds.keys
-    conds_array = ([keys.join(" AND ")] + keys.map { |k| conds[k] }).compact
-    @things = Donation.
-      includes({:order => :purchasemethod},:customer,:account_code)
-    if conds.empty?
-      @things = @things.all
-    else
-      @things = @things.references(:orders).where(*conds_array)
-    end
-    # also show ticket purchases?
-    if (params[:show_vouchers] && c)
-      vouchers = c.vouchers.includes({:showdate => :show},:order,:customer).where("showdate_id > 0")
-      if params[:use_date]
-        vouchers = vouchers.
-          references(:showdates).
-          where('showdates.thedate' => mindate..maxdate)
-      end
-      @things += vouchers
-    end
-    @things = @things.sort_by { |x| (x.kind_of?(Donation) ?
-                                     x.order.sold_on.to_time : x.showdate.thedate.to_time) }
-    @total = @things.sum(&:amount)
+    @total = @donations.sum(:amount)
     @export_label = "Download in Excel Format"
     @params = params
     if params[:commit] == @export_label
-      export(@things)
+      send_data @donations.to_csv,  :type => 'text/csv', :filename => filename_from_dates('donations',mindate,maxdate,'csv')
     end
   end
 
@@ -135,29 +114,4 @@ class DonationsController < ApplicationController
     render :js => %Q{\$('#donation_#{params[:id]}').text('#{result}')}
   end
   
-  private
-
-  def export(donations)
-    content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
-    CSV::Writer.generate(output = '') do |csv|
-      csv << %w[last first street city state zip email amount date code fund letterSent]
-      donations.each do |d|
-        csv << [d.customer.last_name.name_capitalize,
-                d.customer.first_name.name_capitalize,
-                d.customer.street,
-                d.customer.city,
-                d.customer.state,
-                d.customer.zip,
-                d.customer.email,
-                d.amount,
-                d.sold_on.to_formatted_s(:db),
-                d.account_code.code,
-                d.account_code.name,
-                d.letter_sent]
-      end
-      send_data(output, :type => content_type,
-                :filename => filename_from_date('donations', Time.now, 'csv'))
-    end
-  end
-
 end

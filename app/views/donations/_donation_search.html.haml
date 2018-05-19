@@ -19,13 +19,6 @@
         :javascript
           $('#donor_name').focus(function() { $('#use_cid').prop('checked',true); })
     %tr 
-      %td 
-      %td{:colspan=>2} 
-        = check_box_tag 'show_vouchers', 1, @params[:show_vouchers]
-        Show ticket purchases as well as donations 
-        :javascript
-          $('#show_vouchers').prop('disabled',true);
-    %tr 
       %td= check_box_tag 'use_date', 1, @params[:use_date] 
       %td Date is in the range:
       %td
