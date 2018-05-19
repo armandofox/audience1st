@@ -26,6 +26,7 @@ Feature: Creating an account
     And I press "Create My Account"
     Then I should be on the home page for customer "John Doe"  
     And I should see "Welcome, John"
+    And an email should be sent to "john@doe.com" matching "password" with "Your new password is:\s*(johndoe)"
 
   Scenario: New customer cannot create account without providing email address
 

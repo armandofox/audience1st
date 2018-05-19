@@ -157,7 +157,7 @@ class CustomersController < ApplicationController
       return
     end
     if @customer.save
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
@@ -265,7 +265,7 @@ class CustomersController < ApplicationController
       :logged_in_id => current_user.id)
     # if valid email, send user a welcome message
     unless params[:dont_send_email]
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
     end
     redirect_to customer_path(@customer)
   end
