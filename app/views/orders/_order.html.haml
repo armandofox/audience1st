@@ -1,7 +1,7 @@
 %div[order]
   %h3 
     %a.flippy[order, :flippy]{:href=>'#'} &#x25BC;
-    Order ##{order.id}, by #{staff_name(order.processed_by)} on #{order.sold_on.strftime('%c')}
+    Order ##{order.id}, placed by #{staff_name(order.processed_by)} on #{order.sold_on.strftime('%c')}
   %div.order_info[order, :details]
     = form_tag order_path(order), :method => :put do
       %p 
@@ -21,9 +21,10 @@
         %span.label Payment method:
         = humanize(order.purchase_medium)
 
-      %p
-        %span.label Refundable:
-        = order.refundable? ? "Yes" : "No"
+      - unless @printable
+        %p
+          %span.label Refundable:
+          = order.refundable? ? "Yes" : "No"
 
       %p
         %span.label Order comments:
