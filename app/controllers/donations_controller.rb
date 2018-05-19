@@ -16,27 +16,16 @@ class DonationsController < ApplicationController
     @total = 0
     @params = {}
     return unless params[:commit] # first time visiting page: don't do "null search"
-
-    conds = {}
-    begin
-      if (params[:use_cid])
-        cid = Customer.id_from_route(params[:cid])
-        c = Customer.find(cid)
-        @full_name = c.full_name
-        @page_title = "Donation history: #{@full_name}"
-        conds.merge!("items.customer_id = ?" => cid)
-      else
-        @page_title = "Donation history"
-      end
-    rescue ActionController::RoutingError, ActiveRecord::RecordNotFound
-      return redirect_to(donations_path, :alert => "Cannot limit search to customer")
-    end
+    @page_title = "Donation history"
     mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.now]
     params[:from],params[:to] = mindate,maxdate
     @donations = Donation.
       includes({:order => :purchasemethod},:customer,:account_code).
       where.not(:customer_id => Customer.walkup_customer.id).
       order('orders.sold_on')
+    if params[:use_cid]
+      @donations = @donations.where(:customer_id => Customer.id_from_route(params[:cid]))
+    end
     if params[:use_date]
       @donations = @donations.where('orders.sold_on' => mindate..maxdate)
     end
