@@ -9,8 +9,6 @@ gem 'puma'
 gem 'rails', '4.2.9'
 gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
 
-gem 'faker', :git => 'https://github.com/armandofox/faker' # needed in production too,for adding fake data to staging server
-
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
 gem 'builder'
@@ -37,6 +35,10 @@ gem 'will_paginate'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem 'uglifier'
 gem 'sass-rails'
+
+# the following really belong in a separate 'staging' environment
+gem 'faker', :git => 'https://github.com/armandofox/faker' # needed in production too,for adding fake data to staging server
+gem 'factory_bot_rails'                                    # used by fake_data stuff
 
 group :production do
   gem 'newrelic_rpm'
@@ -77,7 +79,6 @@ group :development, :test do
   gem 'minitest'
   gem 'faye-websocket'
   gem 'database_cleaner'
-  gem 'factory_bot_rails'
   gem 'rb-readline'
   gem 'rubyzip'
   gem 'mime-types'
