@@ -4,7 +4,8 @@ namespace :staging do
 
   desc "Reset fake data in staging database (tenant '#{tenant}')"
   task :reset => :environment do
-    abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if Rails.env.production?
+    abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if
+      Rails.env.production? && ENV['CLOBBER_PRODUCTION'].blank?
     Apartment::Tenant.drop(tenant) rescue nil
     Apartment::Tenant.create tenant 
     Apartment::Tenant.switch! tenant
