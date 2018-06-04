@@ -55,7 +55,7 @@ namespace :staging do
       Apartment::Tenant.switch! tenant
       percent = (ENV['PERCENT'] || '50').to_i / 100.0
       price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'General').empty?
-      price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25) if Vouchertype.where(:name => 'Student/TBA').empty?
+      price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'Student/TBA').empty?
       num_customers = Customer.count
       Showdate.all.each do |perf|
         v1 = FactoryBot::create(:valid_voucher, :vouchertype => price1, :showdate => perf)
