@@ -9,6 +9,8 @@ gem 'puma'
 gem 'rails', '4.2.9'
 gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
 
+gem 'faker', :git => 'https://github.com/armandofox/faker' # needed in production too,for adding fake data to staging server
+
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
 gem 'builder'
@@ -80,7 +82,6 @@ group :development, :test do
   gem 'rubyzip'
   gem 'mime-types'
   gem 'chronic'
-  gem 'faker', :git => 'https://github.com/armandofox/faker'
   gem 'fakeweb'
   gem 'launchy'
   gem 'rack-test'

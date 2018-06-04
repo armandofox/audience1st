@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/armandofox/faker
-  revision: bc7cdfaa54e8672fccff0530cbabee1469a65815
+  revision: 99e44e6ba7a64ab771cd7b46ccd1484c84501d72
   specs:
     faker (1.8.8)
       i18n (>= 0.7)
