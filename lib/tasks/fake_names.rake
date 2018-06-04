@@ -1,4 +1,77 @@
-namespace :db do
+namespace :staging do
+
+  tenant = 'sandbox'
+
+  desc "Reset fake data in staging database (tenant '#{tenant}')"
+  task :reset => :environment do
+    abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if Rails.env.production?
+    Apartment::Tenant.drop(tenant) rescue nil
+    Apartment::Tenant.create tenant 
+    Apartment::Tenant.switch! tenant
+    load File.join(Rails.root, 'db', 'seeds.rb')
+  end
+  desc "Populate database tenant '#{tenant}' with NUM_CUSTOMERS fake customers (default 500) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."
+  task :fake_customers => :environment do
+    Apartment::Tenant.switch! tenant
+    num_customers = (ENV['NUM_CUSTOMERS'] || '100').to_i
+    1.upto num_customers  do
+      FactoryBot::create(:customer,
+        :first_name => Faker::Name.first_name,
+        :last_name => Faker::Name.last_name,
+        :email => Faker::Internet.unique.safe_email,
+        :password => 'pass',
+        :street => Faker::Address.street_address,
+        :city => Faker::Address.city,
+        :state => 'CA', :zip => sprintf("94%03d", rand(999)))
+    end
+  end
+
+  desc "Populate tenant '#{tenant}' with a fake show opening on DATE (default: 1 week from now) with NUM_SHOWDATES performances (default 3) each having house capacity CAPACITY (default 50)"
+  task :fake_show => :environment do
+    Apartment::Tenant.switch! tenant
+    date = Time.parse(ENV['DATE']) rescue 1.week.from_now.change(:hour => 20)
+    num_showdates = (ENV['NUM_SHOWDATES'] || '3').to_i
+    cap =           (ENV['CAPACITY']      || '50').to_i
+    show = FactoryBot::create(:show, :name => Faker::Show.play, :house_capacity => cap)
+    for i in 1..num_showdates do
+      FactoryBot::create(:showdate, :show => show, :thedate => date + i.days)
+    end
+  end
+
+  namespace :sell do
+
+    desc "In tenant '#{tenant}', create 2 price points 'General' and 'Student/TBA', and sell every showdate to PERCENT capacity (default 50)"
+    task :revenue => :environment do
+      Apartment::Tenant.switch! tenant
+      percent = (ENV['PERCENT'] || '50').to_i / 100.0
+      price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35)
+      price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25)
+      num_customers = Customer.count
+      Showdate.all.each do |perf|
+        v1 = FactoryBot::create(:valid_voucher, :vouchertype => price1, :showdate => perf)
+        v2 = FactoryBot::create(:valid_voucher, :vouchertype => price2, :showdate => perf)
+        # sell percentage of tickets
+        while perf.compute_total_sales < (percent * perf.house_capacity) do
+          # pick a customer
+          customer = Customer.offset(rand num_customers).first
+          # pick a number of tickets, 1-4, skewed towards 1 and 2
+          num_tix = [1,1,2,2,2,2,3,4,4].sample
+          # pick which price point they'll use
+          valid_voucher = [v1,v2].sample
+          # buy it
+          o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
+          o.add_tickets(valid_voucher, num_tix)
+          begin
+            o.finalize!
+          rescue RuntimeError => e
+            "Order errors: #{o.errors.full_messages}"
+          end
+        end
+      end
+    end
+
+  end
+  
   desc "Given ENV[FILE] is a CSV with columns <last, first, street, phone, email>, repopulates development DB with fake data, skipping any superadmins."
   task :fake_names => :environment do
     abort "Only works for RAILS_ENV=development" unless Rails.env.development?
