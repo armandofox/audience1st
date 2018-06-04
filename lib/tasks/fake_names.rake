@@ -41,12 +41,21 @@ namespace :staging do
 
   namespace :sell do
 
+    desc "In tenant '#{tenant}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers"
+    task :reset => :environment do
+      Apartment::Tenant.switch! tenant
+      ValidVoucher.delete_all
+      Vouchertype.delete_all
+      Item.delete_all
+      Order.delete_all
+    end
+
     desc "In tenant '#{tenant}', create 2 price points 'General' and 'Student/TBA', and sell every showdate to PERCENT capacity (default 50)"
     task :revenue => :environment do
       Apartment::Tenant.switch! tenant
       percent = (ENV['PERCENT'] || '50').to_i / 100.0
-      price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35)
-      price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25)
+      price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'General').empty?
+      price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25) if Vouchertype.where(:name => 'Student/TBA').empty?
       num_customers = Customer.count
       Showdate.all.each do |perf|
         v1 = FactoryBot::create(:valid_voucher, :vouchertype => price1, :showdate => perf)
