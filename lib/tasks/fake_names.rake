@@ -1,19 +1,30 @@
+module StagingHelper
+  TENANT = 'sandbox'
+  def abort_if_production!
+    abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if
+      Rails.env.production? && ENV['CLOBBER_PRODUCTION'].blank?
+  end
+  def switch_to_staging!
+    abort_if_production!
+    Apartment::Tenant.switch! StagingHelper::TENANT
+  end
+end
+
 namespace :staging do
 
   tenant = 'sandbox'
 
   desc "Reset fake data in staging database (tenant '#{tenant}')"
   task :reset => :environment do
-    abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if
-      Rails.env.production? && ENV['CLOBBER_PRODUCTION'].blank?
-    Apartment::Tenant.drop(tenant) rescue nil
-    Apartment::Tenant.create tenant 
-    Apartment::Tenant.switch! tenant
+    StagingHelper.abort_if_production!
+    Apartment::Tenant.drop(StagingHelper::TENANT) rescue nil
+    Apartment::Tenant.create StagingHelper::TENANT
+    StagingHelper.switch_to_staging!
     load File.join(Rails.root, 'db', 'seeds.rb')
   end
-  desc "Populate database tenant '#{tenant}' with NUM_CUSTOMERS fake customers (default 500) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."
+  desc "Populate database tenant '#{StagingHelper::TENANT}' with NUM_CUSTOMERS fake customers (default 100) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."
   task :fake_customers => :environment do
-    Apartment::Tenant.switch! tenant
+    StagingHelper.switch_to_staging!
     num_customers = (ENV['NUM_CUSTOMERS'] || '100').to_i
     1.upto num_customers  do
       FactoryBot::create(:customer,
