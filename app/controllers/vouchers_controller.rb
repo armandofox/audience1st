@@ -27,7 +27,8 @@ class VouchersController < ApplicationController
   end
 
   def index
-    @vouchers = @customer.vouchers
+    @vouchers = @customer.vouchers.
+      includes(:showdate,:bundled_vouchers,:order => :purchaser)
   end
 
   def new

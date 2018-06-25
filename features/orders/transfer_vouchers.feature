@@ -21,8 +21,7 @@ Scenario: transfer one subscription
 
   When I visit the transfer vouchers page for customer "Tom Foolery"
   And I check the transfer box for the 1st "Full Season" voucher
-  And I fill "transfer" autocomplete field with "Jones"
-  And I select autocomplete choice "Chris Jones"
+  And I select customer "Chris Jones" within "transfer"
   And I press "Transfer"
   Then I should be on the home page for customer "Chris Jones"
   And customer "Chris Jones" should have the following vouchers:

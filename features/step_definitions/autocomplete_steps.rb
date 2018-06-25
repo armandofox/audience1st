@@ -34,3 +34,10 @@ Then /^I should not see any autocomplete choices$/ do
   xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item")]}
   within(@container) { page.should_not have_xpath(xpath) }
 end
+
+When /^I select customer "(.*)" within "(.*)"$/ do |name,elt|
+  steps %Q{
+When I fill "#{elt}" autocomplete field with "#{name}"
+And I select autocomplete choice "#{name}"
+}
+end

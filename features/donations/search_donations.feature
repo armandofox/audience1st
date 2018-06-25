@@ -76,8 +76,7 @@ Scenario: from a customer's account page, list their donations
 Scenario: filter donations by donor
 
   When I check "use_cid"
-  And I fill "donor_autocomplete" autocomplete field with "Joe Mallon"
-  And I select autocomplete choice "Joe Mallon"
+  And I select customer "Joe Mallon" within "donor_autocomplete"
   And I press "Search"
   Then I should see the following donations:
   | donor         | amount |

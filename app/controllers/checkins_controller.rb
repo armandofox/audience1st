@@ -44,6 +44,14 @@ class CheckinsController < ApplicationController
     @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
   end
 
+  def walkup_subscriber
+    return if request.get?
+  end
+
+  def walkup_subscriber_vouchers # XHR only
+    @customer = id_from_route(params[:cid])
+  end
+
   def update
     render :nothing => true and return unless params[:vouchers]
     showdate = Showdate.find params[:id]

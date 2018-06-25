@@ -1,0 +1,8 @@
+.page_div
+  %h1 Checkin Subscriber Without Advance Reservation
+  #walkup_subscriber_search
+    Customer name:
+    = text_field_tag 'customer', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
+    = hidden_field_tag 'cid'
+  #walkup_subscriber_vouchers
+
