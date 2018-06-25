@@ -45,11 +45,18 @@ class CheckinsController < ApplicationController
   end
 
   def walkup_subscriber
-    return if request.get?
+    if params[:cid]
+      @customer = Customer.where(:id => Customer.id_from_route(params[:cid])).
+        includes(:vouchers => {:vouchertype => :valid_vouchers})
+        .first
+      # which open vouchers are valid for this performance?
+      @vouchers = @customer.vouchers.open.map do |v|
+        if (qty = v.redeemable_for?(@showdate)) then [v,qty] else nil end
+      end.compact
+    end
   end
 
-  def walkup_subscriber_vouchers # XHR only
-    @customer = id_from_route(params[:cid])
+  def walkup_subscriber_confirm
   end
 
   def update

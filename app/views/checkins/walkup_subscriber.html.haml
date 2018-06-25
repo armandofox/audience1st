@@ -1,8 +1,31 @@
 .page_div
   %h1 Checkin Subscriber Without Advance Reservation
+
+  - name = @customer.try(:full_name) || ''
   #walkup_subscriber_search
     Customer name:
-    = text_field_tag 'customer', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
-    = hidden_field_tag 'cid'
-  #walkup_subscriber_vouchers
+    = text_field_tag 'customer', name, :size => 20, :class => '_autocomplete'
+    :javascript
+      $('#customer').on('autocompleteselect', function(evt,selection) { 
+        window.location.assign(window.location.href + "?cid=" + selection.item.value);
+      })
 
+  - if @customer
+    %fieldset#walkup_subscriber_vouchers
+      %legend #{name}'s tickets valid for this performance
+      - if @vouchers.empty?
+        %p.explanation Customer has no vouchers redeemable for this performance.    
+      - else
+        = form_tag walkup_subscriber_confirm_checkin_path(@showdate) do
+          %p.explanation 
+            Check which voucher(s) to use.  
+            Customer will be checked in and these vouchers will be marked as used.
+          %table.hilite
+            %thead
+            %tbody
+              - @vouchers.each do |voucher,qty|
+                %tr
+                  %td= check_box_tag voucher.id
+                  %td{:class => ('attention' if qty.zero?)}= voucher.name
+          = submit_tag 'Confirm Check-In'
+          = link_to 'Cancel', checkin_path(@showdate), :class => 'genBtn'

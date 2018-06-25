@@ -142,6 +142,7 @@ Rails.application.routes.draw do
       member do
         get :door_list
         get :walkup_subscriber
+        post :walkup_subscriber_confirm
       end
     end
 

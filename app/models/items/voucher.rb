@@ -101,6 +101,8 @@ class Voucher < Item
     :unique_showdate,
     :to => :vouchertype)
 
+  scope :open, -> { where('showdate_id = 0 OR showdate_id IS NULL') }
+
   # delegations
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end
 
@@ -211,8 +213,14 @@ class Voucher < Item
     end
   end
 
+  def redeemable_for?(showdate, ignore_cutoff=false)
+    ours = vouchertype.valid_vouchers.where(:showdate => showdate)
+    redeemable = (ours & showdate.valid_vouchers).first
+    redeemable.try(:max_sales_for_this_patron)
+  end
+
   def redeemable_showdates(ignore_cutoff = false)
-    valid_vouchers = vouchertype.valid_vouchers.sort_by(&:thedate)
+    valid_vouchers = vouchertype.valid_vouchers.for_shows.sort_by(&:thedate)
     if ignore_cutoff
       valid_vouchers
     else
@@ -309,7 +317,8 @@ class Voucher < Item
 
   def cancel(logged_in = Customer.generic_customer.id)
     save_showdate = self.showdate.clone
-    self.showdate_id = 0
+    self.showdate = nil
+    self.checked_in = false
     if (self.save)
       save_showdate
     else
