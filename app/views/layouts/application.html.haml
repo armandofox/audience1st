@@ -35,7 +35,7 @@
                 = render :partial => 'navbars/box_office_tabs'
                 = render :partial => 'checkins/change_showdate'
                 = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
-                = render :partial => 'walkup_subscriber'
+                = render :partial => 'checkins/walkup_subscriber'
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'navbars/admin_tabs'
               - elsif existing_customer(@customer)
