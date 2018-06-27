@@ -208,5 +208,19 @@ option (settings) values, `Purchasemethod` (which really should just be
 some constants) are ways to pay for a purchase, and there's a few other
 tables that are largely self-explanatory. 
 
+# Notes on testing
 
+## Time
+
+Many features depend on the current time (to test things like reservaion
+cutoffs, etc.)  **All Cucumber scenarios fix the current date and time
+as Jan 1, 2010, 00:00:00 in the application timezone** in
+`features/support/env.rb`.  To suppress this for certain scenarios, tag
+them with `@time`.
+
+## Stubbing credit card payments
+
+Most scenarios that test payments do stubbing (in `env.rb`) at the level
+of the `Store` methods that wrap calls to Stripe.  A few scenarios use
+the `FakeStripe` gem.
 

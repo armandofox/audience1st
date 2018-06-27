@@ -10,13 +10,13 @@ module CheckinsHelper
   # return a list of this and next season's showdates and the corresponding
   # route URLs for checkin, suitable for options_for_select.
 
-  def showdates_with_urls
-    year = Time.now.year
-    showdates = Showdate.where(:thedate => (2.months.ago..2.months.from_now))
+  def showdates_with_urls(selected)
+    current = @showdate.thedate
+    showdates = Showdate.where :thedate => (current - 2.months .. current + 2.months)
     choices = showdates.map do |sd|
       [sd.name_and_date_with_capacity_stats, walkup_sale_path(sd)]
     end
-    options_for_select(choices, walkup_sale_path(@showdate))
+    options_for_select(choices, selected)
   end
 
   #  comma-separated id's for a list of vouchers
