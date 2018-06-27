@@ -1,0 +1,35 @@
+en:
+  app_config:
+    # Time zone in which all calculations are done and in which time is displayed
+
+    timezone: 'PST8PDT'
+
+    # Special seating needs or requests
+
+    secret_questions:
+     - (No question selected)
+     - What is your maternal grandfather's first name?
+     - In what city were you born?
+     - What is your mother's maiden name?
+     - What was the name of your first pet?
+     - What was the last name of your childhood best friend?
+
+    voucher_comments:
+     - Wheelchair (manual)
+     - Wheelchair (electric/oversized)
+     - Crutches
+     - Walker
+     - Cane
+     - No Stairs
+     - Requires Aisle - Left Side
+     - Requires Aisle - Right Side
+     - Near Restroom
+     - Other (briefly describe:)
+
+    # Who email appears to come from (IMPORTANT: on many ISP's, this must be 
+    #  a valid deliverable username)
+    boxoffice_daemon_address: boxofficedaemon@audience1st.com
+
+    # Whom to contact for general application error
+    bug_notify:  armandofox@gmail.com
+

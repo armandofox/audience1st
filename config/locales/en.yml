@@ -1,0 +1,3 @@
+en:
+  customers:
+    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted.  This action CANNOT BE UNDONE.  OK to proceed?"
