@@ -99,14 +99,14 @@ module CustomersHelper
   end
 
   def secret_question_select(customer=Customer.generic_customer)
-    ques = t("app_config.secret_questions")
+    ques = I18n.t("app_config.secret_questions")
     max = ques.length - 1
     idx = [max, customer.secret_question].min
     options_for_select(ques.zip((0..max).to_a), idx)
   end
   
   def secret_question_text(indx)
-    ques = t("app_config.secret_questions")
+    ques = I18n.t("app_config.secret_questions")
     (indx < 1 || indx > ques.length) ? '' : ques[indx]
   end
 

@@ -23,7 +23,7 @@ class AutoImporter
       @subject = "Audience1st AutoImporter report"
       @body = {:messages => msgs, :venue => Option.venue, :import => import}
       @recipients = Option.boxoffice_daemon_notify
-      @from       = t('app_config.boxoffice_daemon_address')
+      @from       = I18n.t('app_config.boxoffice_daemon_address')
       @content_type = 'text/html'
     end
   end

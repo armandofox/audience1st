@@ -21,7 +21,7 @@ module CustomerStepsHelper
   end
 
   def get_secret_question_index(question)
-    questions = t('app_config.secret_questions')
+    questions = I18n.t('app_config.secret_questions')
     indx = questions.index(question)
     indx.should be_between(0, questions.length-1)
     indx
