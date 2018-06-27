@@ -23,6 +23,8 @@
                 %td= check_box_tag "vouchers[#{voucher.id}]"
                 %td (#{voucher.category.capitalize})
                 - if qty.zero?
-                  %td.attention= link_to(voucher.name, order_path(voucher.order), :title => 'Customer would not be able to redeem this voucher on their own, but as box office, you can override.'
+                  %td.attention= link_to voucher.name, order_path(voucher.order), :title => 'Customer would not be able to redeem this voucher on their own, but as box office, you can override. ' << one_line_order_summary(order)
+                - else
+                  %td= link_to voucher.name, order_path(voucher.order), :title => one_line_order_summary(order)
         = submit_tag 'Confirm Check-In'
         = link_to 'Cancel', checkin_path(@showdate), :class => 'genBtn'
