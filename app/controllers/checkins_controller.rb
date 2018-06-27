@@ -47,8 +47,8 @@ class CheckinsController < ApplicationController
   def walkup_subscriber
     if params[:cid]
       @customer = Customer.where(:id => Customer.id_from_route(params[:cid])).
-        includes(:vouchers => {:vouchertype => :valid_vouchers})
-        .first
+        includes(:vouchers => {:vouchertype => :valid_vouchers}).
+        first
       # which open vouchers are valid for this performance?
       @vouchers = @customer.vouchers.open.map do |v|
         if (qty = v.redeemable_for?(@showdate)) then [v,qty] else nil end
@@ -57,6 +57,17 @@ class CheckinsController < ApplicationController
   end
 
   def walkup_subscriber_confirm
+    return redirect_to(checkin_path(@showdate), :alert => "No vouchers were selected for check-in.") unless (@vouchers = params[:vouchers])
+    begin
+      @vouchers_to_reserve = Voucher.find params[:vouchers]
+      @vouchers_to_reserve.each do |v|
+        v.reserve_for(@showdate, logged_in)
+        raise ReservationError.new(v.errors.full_messages.join(', ')) unless v.errors.empty?
+        v.check_in!
+      end
+    rescue ActiveRecord::RecordNotFound
+    rescue StandardError => e
+    end
   end
 
   def update

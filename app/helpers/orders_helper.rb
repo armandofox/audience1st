@@ -8,4 +8,8 @@ module OrdersHelper
     "Delete checked items" <<
       (order.purchase_medium == :credit_card ? " and issue credit card refund?" : "?")
   end
+
+  def one_line_order_summary(order)
+    "Order ##{order.id} processed by #{staff_name(order.processed_by)} on #{order.sold_on.to_formatted_s :showtime}"
+  end
 end

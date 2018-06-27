@@ -3,9 +3,17 @@ class Voucher < Item
   belongs_to :showdate
   belongs_to :vouchertype
 
+  class ReservationError < StandardError ;  end
   validates_presence_of :vouchertype_id
 
   validates_inclusion_of :category, :in => Vouchertype::CATEGORIES
+
+  validate :checkin_requires_reservation
+
+  def checkin_requires_reservation
+    !checked_in or reserved?
+  end
+  private :checkin_requires_reservation
 
   delegate :gift?, :ship_to, :to => :order
 
@@ -13,17 +21,6 @@ class Voucher < Item
   # constituent vouchers.  This method therefore extends the superclass method.
 
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
-
-  # we need to be able to track the bundle that a voucher belongs to until it's first saved,
-  # and upon first save, set the foreign key appropriately.
-  # attr_accessor :owning_bundle
-  # after_create :set_bundle_id
-  # private
-  # def set_bundle_id
-  #   bundle = owning_bundle.reload
-  #   raise "Cannot set bundle ID since owning bundle has not been saved" if bundle.new_record?
-  #   update_attributes!(:bundle_id => bundle.id)
-  # end
 
   def cancel!(by_whom)
     result = super # cancel the main voucher
@@ -39,7 +36,6 @@ class Voucher < Item
     !part_of_bundle? &&  super
   end
     
-
   # class methods
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
@@ -329,8 +325,6 @@ class Voucher < Item
   def reserve!(desired_showdate, new_comments='')
     update_attributes(:comments => new_comments, :showdate => desired_showdate)
   end
-
-  private
 
   def valid_voucher_adjusted_for customer,showdate
     redemption = vouchertype.valid_vouchers.find_by_showdate_id(showdate.id)
