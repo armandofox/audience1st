@@ -13,7 +13,7 @@ class Customer < ActiveRecord::Base
 
   def is_staff ; role >= PRIVS['staff'] ; end
   def is_walkup ; role >= PRIVS['walkup'] ; end
-  def is_boxoffice ; role >= PRIVS['boxoffice']; end
+  def is_boxoffice ; role >= PRIVS['boxoffice'] or self == Customer.boxoffice_daemon ; end
   def is_boxoffice_manager ; role >= PRIVS['boxoffice_manager'] ; end
   def is_admin ; role >= PRIVS['admin'] ; end
 

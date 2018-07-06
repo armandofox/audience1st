@@ -54,19 +54,20 @@ class CheckinsController < ApplicationController
   end
 
   def walkup_subscriber_confirm
-    return redirect_to(checkin_path(@showdate), :alert => "No vouchers were selected for check-in.") unless (@vouchers = params[:vouchers])
+    return redirect_to(checkin_path(@showdate), :alert => "No vouchers were selected for check-in.") unless (@vouchers = params[:vouchers].try(:keys))
     begin
-      Voucher.find(params[:vouchers].keys).each do |v|
+      Voucher.find(@vouchers).each do |v|
         v.reserve_for(@showdate, current_user)
         raise ReservationError.new(v.errors.full_messages.join(', ')) unless v.errors.empty?
         v.check_in!
+        @customer = v.customer
       end
-    rescue ActiveRecord::RecordNotFound => e
+    rescue ActiveRecord::RecordNotFound, StandardError => e
       raise e
-    rescue StandardError => e
-      raise e
+      return redirect_to(checkin_path(@showdate), :alert => e.message)
     end
-    redirect_to checkin_path(@showdate)
+    checkins = @vouchers.count
+    redirect_to checkin_path(@showdate), :notice => %Q{#{checkins} #{"checkin".pluralize(checkins)} confirmed for #{@customer.full_name}.}
   end
 
   def update

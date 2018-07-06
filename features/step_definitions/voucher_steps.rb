@@ -22,7 +22,8 @@ Given /^customer "(.*) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.
   show = Show.find_by_name!(show)
   sub_vouchers = setup_subscriber_tickets(c, show, num_total)
   # reserve some of them?
-  sub_vouchers[0, num_total.to_i - num_free.to_i].each { |v| v.reserve_for(show.showdates.first, Customer.boxoffice_daemon) }
+  dummy_showdate = create(:showdate, :thedate => show.showdates.first.thedate + 1.day, :show => show)
+  sub_vouchers[0, num_total.to_i - num_free.to_i].each { |v| v.reserve_for(dummy_showdate, Customer.boxoffice_daemon) }
 end
 
 Given /^customer "(.*) (.*)" has (\d+) (non-)?cancelable subscriber reservations for (.*)$/ do |first,last,num,non,date|

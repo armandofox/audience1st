@@ -49,7 +49,6 @@ module NavigationHelpers
     when /the walkup sales page for (.*)$/ then walkup_sale_path(sd $1)
     when /the walkup report page for (.*)$/ then report_walkup_sale_path(sd $1)
     when /the checkin page for (.*)$/ then checkin_path(sd $1)
-    when /the walkup subscriber checkin page for (.*)$/ then walkup_subscriber_checkin_path($1)
     when /the door list page for (.*)$/ then door_list_checkin_path(sd $1)
 
     when /the admin:(.*) page/i

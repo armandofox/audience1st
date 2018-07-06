@@ -97,7 +97,7 @@ class Voucher < Item
     :unique_showdate,
     :to => :vouchertype)
 
-  scope :open, -> { where('showdate_id = 0 OR showdate_id IS NULL') }
+  scope :open, -> { where(:checked_in => false).where(:showdate => nil) }
 
   # delegations
   def account_code_reportable ; vouchertype.account_code.name_with_code ; end

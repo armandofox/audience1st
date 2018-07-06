@@ -15,7 +15,7 @@ class ValidVoucher < ActiveRecord::Base
 
   attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
   # auxiliary attributes that aren't persisted
-  attr_accessible :explanation, :visible, :supplied_promo_code, :customer
+  attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
 
   belongs_to :showdate
   belongs_to :vouchertype
