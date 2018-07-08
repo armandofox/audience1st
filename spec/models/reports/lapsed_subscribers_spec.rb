@@ -11,7 +11,7 @@ describe LapsedSubscribers do
     end
     it 'should include an error' do
       @report.generate
-      expect(@report.errors).to include_match_for /specify at least one/
+      expect(@report.errors).to match /specify at least one/
     end
   end
   context 'when one array is empty' do
