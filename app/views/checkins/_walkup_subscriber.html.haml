@@ -9,7 +9,10 @@
 
   - if @customer
     - if @customer_vouchers.empty?
-      %p.explanation #{link_to_customer @customer} has no vouchers redeemable for this performance.    
+      %p.explanation
+        = link_to_customer @customer
+        has no vouchers redeemable for this performance.
+        = link_to 'Add Comps', new_customer_voucher_path(@customer), :class => 'genButton'
     - else
       = form_tag walkup_subscriber_confirm_checkin_path(@showdate) do
         %p.explanation 
