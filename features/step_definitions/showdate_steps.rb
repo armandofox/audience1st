@@ -75,8 +75,13 @@ Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, _, num|
   end
 end
 
-Given /^the "(.*)" performance is sold out$/ do |dt|
-  showdate = Showdate.find_by_thedate! Time.parse(dt)
+Given /^(that|the "(.*)") performance is sold out$/ do |recent,dt|
+  if recent =~ /that/
+    showdate = @showdate
+    dt = showdate.thedate
+  else
+    showdate = Showdate.find_by_thedate!(Time.parse(dt))
+  end
   to_sell = showdate.max_sales - showdate.compute_total_sales
   vtype = create(:valid_voucher, :showdate => showdate).name
   steps %Q{Given #{to_sell} "#{vtype}" tickets have been sold for "#{dt}"}
