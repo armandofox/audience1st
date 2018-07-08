@@ -181,12 +181,14 @@ class CustomersController < ApplicationController
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
 
-    if @customers_filter!=nil
-      @customers = Customer.find_by_name(@customers_filter.split( /\s+/ ))
-      @customers = @customers +
-          Customer.find_by_multiple_terms(@customers_filter.split( /\s+/)).
-              reject {|customer| @customers.include?(customer)}
+    if @customers_filter
+      filter_terms = @customers_filter.split /\s+/
+      @page_title = %Q{Customers matching "#{@customers_filter}"}
+      @customers =
+        (Customer.find_by_name(filter_terms) +
+        Customer.find_by_multiple_terms(filter_terms)).uniq
     else
+      @page_title = "All Customers"
       @customers = Customer.all
     end
     @customers = @customers.paginate(:page => @page)
@@ -198,7 +200,8 @@ class CustomersController < ApplicationController
     @customers = Customer.
       find_suspected_duplicates.
       paginate(:page => @page)
-    render :action => 'index'
+    @page_title = 'Possible Duplicates'
+    render 'index'
   end
 
   def merge

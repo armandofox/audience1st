@@ -64,18 +64,15 @@ class Report
           end
         end
       rescue RuntimeError => e
-        err = "Error in create_csv: #{e.message}"
-        add_error(err)
-        Rails.logger.error err
+        Rails.logger.error add_error("Error in create_csv: #{e.message}")
       end
     end
     @filename = filename_from_object(self)
   end
 
-  private
-
   def add_error(itm)
-    (@errors ||= []) << itm.to_s
+    (@errors ||= '') << itm << '  '
+    itm.to_s
   end
 
   protected

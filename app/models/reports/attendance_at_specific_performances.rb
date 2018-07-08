@@ -17,7 +17,7 @@ class AttendanceAtSpecificPerformances < Report
   end
 
   def generate(params = {})
-    @errors = ["Please select a valid show date."] and return unless
+    add_error("Please select a valid show date.") and return unless
       showdate = Showdate.find_by_id(params[:attendance_showdate_id])
     @relation = showdate.customers
   end

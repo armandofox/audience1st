@@ -90,6 +90,7 @@ class ReportsController < ApplicationController
     when /display/i
       # paginate in case it's a long report
       @customers = @customers.paginate(:page => (params[:page] || 1).to_i)
+      @page_title = "Report results: #{params[:report_name].humanize}"
       @list_action = report_url
       render :template => 'customers/index'
     when /estimate/i
