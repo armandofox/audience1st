@@ -66,12 +66,11 @@ class ReportsController < ApplicationController
   def run_special
     return unless (klass = validate_report_type params[:report_name])
     action = params[:what]
-
+    report_url = request.fullpath
+    
     # if we need a true redirect (for Download or Display On Screen),
     # serialize the form and use JS to force the redirect.
-    if request.xhr? && action =~ /display|download/i
-      render :js => %Q{window.location = '#{request.fullpath}';} and return
-    end
+    return render(:js => %Q{window.location = '#{report_url}';}) if request.xhr? && action =~ /display|download/i
 
     @report = klass.__send__(:new, params[:output])
     @report.generate_and_postprocess(params)
@@ -79,18 +78,19 @@ class ReportsController < ApplicationController
 
     # BUG this won't work if errors when "display on screen" chosen
     if @report.errors
-      errors = "Errors generating report: #{@report.errors}"
       if request.xhr?
-        render :js => %Q{alert(#{ActionController::Base.helpers.j errors})}
+        render :js => %Q{alert(#{ActionController::Base.helpers.j @report.errors})}
       else
-        flash[:alert] = errors
-        redirect_to reports_path
+        redirect_to reports_path, :alert => @report.errors
       end
       return
     end
 
     case action
     when /display/i
+      # paginate in case it's a long report
+      @customers = @customers.paginate(:page => (params[:page] || 1).to_i)
+      @list_action = report_url
       render :template => 'customers/index'
     when /estimate/i
       render :js => "alert('#{@customers.length} matches')"

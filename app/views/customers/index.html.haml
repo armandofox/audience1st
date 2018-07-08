@@ -1,15 +1,13 @@
-#customer_list_header
-  - if @customers.respond_to?(:total_pages)
-    .pagination
-      = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
-      = form_tag @list_action, :method => :get do
-        &nbsp;&bull;&nbsp; 
-        %b #{@customers.offset+1}-#{@customers.offset+@customers.length}
-        of 
-        %b #{@customers.total_entries}
-        &nbsp;&bull;&nbsp; Jump to page:
-        = text_field_tag 'page', '', :size => 4
-        = submit_tag 'Go'
+#customer_list_header.pagination
+  = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
+  = form_tag @list_action, :method => :get do
+    &nbsp;&bull;&nbsp; 
+    %b #{@customers.offset+1}-#{@customers.offset+@customers.length}
+    of 
+    %b #{@customers.total_entries}
+    &nbsp;&bull;&nbsp; Jump to page:
+    = text_field_tag 'page', '', :size => 4
+    = submit_tag 'Go'
 
 %br/
 
@@ -21,8 +19,22 @@
     = hidden_field_tag 'page', @page
     %table.hilite#customers
       %thead
-        = render :partial => 'customers/customer_header'
+        %tr
+          %th= check_box_tag 'selectAll', 1, false
+          %th First name
+          %th Last name
+          %th Street
+          %th City
+          %th State
+          %th Zip
+          %th Day/Main Phone
+          %th Eve/Alt Phone
+          %th Email
+          %th Company
+          %th Labels
       %tbody
         = render :partial => 'customers/customer', :collection => @customers
     #mergebar2.merge_bar= render :partial => 'customers/merge_bar'
+    :javascript
+      $('#selectAll').change(function() { $('.selectForMerge').prop('checked', $(this).prop('checked')); })
     %br/
