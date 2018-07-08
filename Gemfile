@@ -36,10 +36,6 @@ gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem 'uglifier'
 gem 'sass-rails'
 
-# the following really belong in a separate 'staging' environment
-gem 'faker', :git => 'https://github.com/armandofox/faker' # needed in production too,for adding fake data to staging server
-gem 'factory_bot_rails'                                    # used by fake_data stuff
-
 group :production do
   gem 'newrelic_rpm'
   gem 'puma-heroku'
@@ -68,6 +64,10 @@ group :development do
 end
 
 group :development, :test do
+  # the following really belong in a separate 'staging' environment
+  gem 'faker', :git => 'https://github.com/armandofox/faker' # needed in production too,for adding fake data to staging server
+  gem 'factory_bot_rails'                                    # used by fake_data stuff
+
   gem 'bullet'
   # cucumber and capybara
   gem 'yaml_db', :git => 'https://github.com/armandofox/yaml_db'
