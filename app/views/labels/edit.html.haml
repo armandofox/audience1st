@@ -1,0 +1,11 @@
+%h1 Change label name
+
+%p.explanation
+  You can change the name of the label and it will still be attached
+  to the same customers it was before.
+
+= form_for(@label) do |f| 
+  = f.label :name
+  = f.text_field :name
+  = f.submit 'Update'
+  = link_to 'Cancel', labels_path, :class => 'genButton'

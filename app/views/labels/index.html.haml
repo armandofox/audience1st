@@ -1,0 +1,18 @@
+%h1 Labels
+
+= form_tag labels_path do
+  %label{:for => 'label_name'} Name
+  = text_field_tag 'label[name]'
+  = submit_tag 'Create New Label'
+
+
+%table
+  %thead
+    %tr
+      %th Name
+  %tbody
+    - @labels.each do |label|
+      %tr
+        %td= label.name
+        %td= link_to 'Edit', edit_label_path(label)
+        %td= link_to 'Destroy', label, "data-confirm" => 'Are you sure? This label will be removed from all customers that have it.  This action cannot be undone.', :method => :delete

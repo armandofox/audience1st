@@ -1,15 +1,14 @@
 class LabelsController < ApplicationController
   before_filter :is_staff_filter
+
+  before_action do
+    session[:return_to] ||= params[:return_to]
+  end
+  
   # GET /labels
   # GET /labels.xml
   def index
     @labels = Label.all
-  end
-
-  # GET /labels/new
-  # GET /labels/new.xml
-  def new
-    @label = Label.new
   end
 
   # GET /labels/1/edit
@@ -22,11 +21,10 @@ class LabelsController < ApplicationController
   def create
     @label = Label.new(params[:label])
     if @label.save
-      next_action = (params[:commit] =~ /another/i ? new_label_path : labels_path)
-      redirect_to next_action, :notice => 'Label was successfully created.'
+      return_to = session.delete(:return_to)
+      redirect_to return_to, :notice => "Label '#{@label.name}' was successfully created."
     else
-      flash[:alert] = ['Creating label failed: ', @label.errors.as_html]
-      render :action => "new"
+      redirect_to labels_path, :alert => @label.errors.as_html
     end
   end
 
@@ -35,10 +33,10 @@ class LabelsController < ApplicationController
   def update
     @label = Label.find(params[:id])
     if @label.update_attributes(params[:label])
-      redirect_to(labels_path, :notice => 'Label was successfully updated.')
+      return_to = session.delete(:return_to)
+      redirect_to return_to, :notice => 'Label was successfully updated.'
     else
-      flash[:alert] = ['Editing label failed: ', @label.errors.as_html]
-      render :action => "edit"
+      redirect_to edit_label_path(@label), :alert => @label.errors.as_html
     end
   end
 
@@ -47,6 +45,7 @@ class LabelsController < ApplicationController
   def destroy
     @label = Label.find(params[:id])
     @label.destroy
-    redirect_to labels_path
+    return_to = session.delete(:return_to)
+    redirect_to return_to, :notice => "Label '#{@label.name}' was deleted and removed from all customers that had it."
   end
 end
