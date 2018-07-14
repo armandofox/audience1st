@@ -191,7 +191,7 @@ class CustomersController < ApplicationController
       @page_title = "All Customers"
       @customers = Customer.all
     end
-    @customers = @customers.paginate(:page => @page)
+    @customers = @customers.order(:last_name).paginate(:page => @page)
   end
 
   def list_duplicate
@@ -201,7 +201,7 @@ class CustomersController < ApplicationController
       find_suspected_duplicates.
       paginate(:page => @page)
     @page_title = 'Possible Duplicates'
-    render 'index'
+    render :index
   end
 
   def merge

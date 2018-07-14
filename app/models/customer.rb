@@ -397,15 +397,20 @@ class Customer < ActiveRecord::Base
   def self.find_suspected_duplicates
     # similarity: last names must match, emails must not differ,
     #  and at least one of first name or street must match.
-    sql = <<EOSQL1
-      SELECT DISTINCT c1.*
-      FROM customers c1 INNER JOIN customers c2 ON lower(c1.last_name)=lower(c2.last_name)
-      WHERE 
-        (lower(c1.email) LIKE lower(c2.email) OR c1.email IS NULL OR c2.email IS NULL) AND
-        (lower(c1.first_name) LIKE lower(c2.first_name) OR
-          (lower(c1.street) LIKE lower(c2.street) AND c1.street IS NOT NULL AND c1.street != ''))
-      ORDER BY c1.last_name,c1.first_name
-EOSQL1
+    last_name_matches = '(lower(customers.last_name)=lower(c2.last_name))'
+    at_least_one_email_blank = '(customers.email IS NULL OR c2.email IS NULL)'
+    first_name_matches = '(lower(customers.first_name) LIKE lower(c2.first_name))'
+    street_matches = "(lower(customers.street) LIKE lower(c2.street) AND customers.street IS NOT NULL AND customers.street != '')"
+    at_least_one_street_blank = "(customers.street IS NULL OR customers.street='' OR c2.street IS NULL or c2.street='')"
+
+    sql = %Q{
+      SELECT DISTINCT customers.*
+      FROM customers, customers c2
+      WHERE customers.id != c2.id
+         AND #{last_name_matches}
+         AND (#{first_name_matches} OR #{street_matches} OR #{at_least_one_street_blank})
+      ORDER BY customers.last_name,customers.first_name
+    }
     possible_dups = Customer.find_by_sql(sql)
   end
 
