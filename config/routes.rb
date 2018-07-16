@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :labels, :except => :show
+    resources :labels, :except => [:new,:show]
 
     resources :customers, :except => :destroy do
       collection do

@@ -69,12 +69,13 @@ class CustomersController < ApplicationController
     # set the return-to so that form buttons can do the right thing.
     # unless admin, remove "extra contact" fields
     params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
+    notice = []
     begin
       if ((newrole = params[:customer].delete(:role))  &&
           newrole != @customer.role_name  &&
           current_user.can_grant(newrole))
         @customer.update_attribute(:role, Customer.role_value(newrole))
-        flash[:notice] << "  Privilege level set to '#{newrole}.'"
+        notice << "  Privilege level set to '#{newrole}.'"
       end
       # update generic attribs
       @customer.created_by_admin = @is_admin # to skip validations if admin is editing
@@ -83,24 +84,23 @@ class CustomersController < ApplicationController
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
       @customer.update_attribute(:created_by_admin, false) if current_user == @customer
-      flash[:notice] = "Contact information for #{@customer.full_name} successfully updated."
+      notice << "Contact information for #{@customer.full_name} successfully updated."
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :logged_in_id => current_user.id,
-        :comments => flash[:notice])
+        :comments => notice.join(' '))
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank?
         # send confirmation email
         email_confirmation(:confirm_account_change,@customer,
                            "updated your email address in our system")
       end
-      redirect_to customer_path(@customer)
+      redirect_to customer_path(@customer), :notice => notice.join(' ')
     rescue ActiveRecord::RecordInvalid
-      flash[:alert] = ["Update failed: ", @customer.errors.as_html, "Please fix error(s) and try again."]
-      redirect_to edit_customer_path(@customer)
+      redirect_to edit_customer_path(@customer), :alert => "Update failed: " + @customer.errors.as_html
     rescue StandardError => e
-      flash[:alert] = "Update failed: #{e.message}"
-      redirect_to edit_customer_path(@customer)
+      redirect_to edit_customer_path(@customer), :alert => "Update may have failed: #{e.message}"
+      Rails.logger.error "Unexpected runtime error: #{e}"
     end
   end
 
