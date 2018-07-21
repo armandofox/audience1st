@@ -33,7 +33,7 @@ gem 'will_paginate'
 # asset pipeline
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem 'uglifier'
-gem 'sass-rails'
+gem 'sassc-rails'
 
 group :production do
   gem 'newrelic_rpm'
