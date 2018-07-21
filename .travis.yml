@@ -10,7 +10,7 @@ env:
     - CC_TEST_REPORTER_ID=$CC_KEY
     - CCTR=/tmp/cc-test-reporter
 before_install:
-  - export TZ=Europe/Zurich
+  - export TZ=America/Los_Angeles
   - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
   - chmod +x $CCTR
