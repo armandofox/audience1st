@@ -124,6 +124,7 @@ GEM
     encryptor (3.0.0)
     erubis (2.7.0)
     eventmachine (1.2.5)
+    execjs (2.7.0)
     factory_bot (4.8.2)
       activesupport (>= 3.0.0)
     factory_bot_rails (4.8.2)
@@ -360,6 +361,8 @@ GEM
       rails (>= 3.0.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
+    uglifier (4.1.15)
+      execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
@@ -450,6 +453,7 @@ DEPENDENCIES
   stripe
   timecop
   traceroute
+  uglifier
   web-console (~> 2.0)
   webmock
   where-or
