@@ -32,13 +32,13 @@ class WalkupSalesController < ApplicationController
 
     case params[:commit]
     when /cash/i
-      @order.purchasemethod = Purchasemethod.find_by_shortdesc(
+      @order.purchasemethod = Purchasemethod.get_type_by_name(
         @order.total_price.zero? ? 'none' : 'box_cash')
     when /check/i
-      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_chk')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('box_chk')
       @order.purchase_args = {:check_number => params[:check_number]}
     else                      # credit card
-      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_cc')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('box_cc')
       @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
     end
     
@@ -52,7 +52,7 @@ class WalkupSalesController < ApplicationController
       Txn.add_audit_record(:txn_type => 'tkt_purch',
         :customer_id => Customer.walkup_customer.id,
         :comments => 'walkup',
-        :purchasemethod_id => p,
+        :purchasemethod => p,
         :logged_in_id => current_user.id)
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sale_path(@showdate)

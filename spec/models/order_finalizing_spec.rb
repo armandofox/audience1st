@@ -67,16 +67,16 @@ describe Order, 'finalizing' do
     end
     it 'should fail if zero amount for purchasemethod other than cash' do
       allow(@order).to receive(:total_price).and_return(0.0)
-      @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :check)
+      @order.purchasemethod = Purchasemethod.get_type_by_name('box_chk')
       verify_error /Zero amount/i
     end
     it 'should fail for credit card purchase with null token' do
-      @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
+      @order.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
       @order.purchase_args = {:credit_card_token => nil}
       verify_error /Invalid credit card transaction/i
     end
     it 'should fail for credit card purchase with no token' do
-      @order.purchasemethod = mock_model(Purchasemethod, :purchase_medium => :credit_card)
+      @order.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
       @order.purchase_args = {}
       verify_error /Invalid credit card transaction/i
     end
@@ -121,7 +121,6 @@ describe Order, 'finalizing' do
         it 'should be saved' do ; @order.should_not be_a_new_record ; end
         it 'should include the items' do ; @order.item_count.should == 4 ; end
         it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
-        it 'should set purchasemethod on its items' do ; @order.items.each { |i| i.purchasemethod.should == @order.purchasemethod } ; end
         it 'should set order ID on its items' do ; @order.items.each { |i| i.order_id.should == @order.id } ; end
         it 'should set comments on its items' do ; @order.items.each { |i| i.comments.should == 'Comment' } ; end
         it 'should add vouchers to customer account' do
@@ -161,7 +160,7 @@ describe Order, 'finalizing' do
     before :each do
       @the_customer.items.delete_all
       @order = Order.new(
-        :purchasemethod => mock_model(Purchasemethod, :purchase_medium => :credit_card),
+        :purchasemethod => Purchasemethod.get_type_by_name('web_cc'),
         :processed_by   => @the_customer,
         :customer       => @the_customer,
         :purchaser      => @the_customer

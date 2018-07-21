@@ -2,9 +2,9 @@ module VboScenarioHelpers
 
   def purchasemethod_from_string(str)
     case str
-    when /(at )?box office/i then Purchasemethod.find_by_shortdesc('box_cc')
-    when /credit card/i then Purchasemethod.find_by_shortdesc('web_cc')
-    else Purchasemethod.find_by_shortdesc('box_cash')
+    when /(at )?box office/i then Purchasemethod.get_type_by_name('box_cc')
+    when /credit card/i then Purchasemethod.get_type_by_name('web_cc')
+    else Purchasemethod.get_type_by_name('box_cash')
     end
   end
 

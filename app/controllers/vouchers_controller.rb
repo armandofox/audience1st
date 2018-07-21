@@ -76,7 +76,7 @@ class VouchersController < ApplicationController
           :customer_id => @customer.id,
           :showdate_id => theshowdate.id,
           :voucher_id => v.id,
-          :purchasemethod_id => Purchasemethod.get_type_by_name('none').id)
+          :purchasemethod => Purchasemethod.get_type_by_name('none'))
       end
       flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
     rescue Order::NotReadyError => e

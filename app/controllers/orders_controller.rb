@@ -12,7 +12,7 @@ class OrdersController < ApplicationController
     @orders = Order.
       for_transactions_reporting.
       where(:sold_on => @from..@to).
-      where(:purchasemethod => [1,3,4,5]).
+      where(:purchasemethod => Purchasemethod.order_reporting_purchasemethods).
       order(:sold_on)
     return redirect_to(reports_path, :notice => 'No matching transactions.') if @orders.empty?
     if params[:commit] =~ /download/i

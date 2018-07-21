@@ -9,7 +9,7 @@ FactoryBot.define do
     association :processed_by, :factory => :customer
     association :customer
     walkup nil
-    purchasemethod { Purchasemethod.find_by_shortdesc(:box_cash) }
+    purchasemethod { Purchasemethod.get_type_by_name(:box_cash) }
     sold_on { Time.now }
 
     after(:build) do |order|

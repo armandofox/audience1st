@@ -19,7 +19,10 @@ var Flippy = {
       flippy.html('&#x25BC' + flippy.html().substr(1));
     }
   },
-  handleClick: function(evt) { Flippy.toggle($(evt.target)); },
+  handleClick: function(evt) {
+    Flippy.toggle($(evt.target));
+    return(false);
+  },
   hideAll: function() {
     var flippies = $('.flippy');
     if (flippies.length > 1) {

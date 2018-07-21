@@ -20,7 +20,7 @@ class DonationsController < ApplicationController
     mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.now]
     params[:from],params[:to] = mindate,maxdate
     @donations = Donation.
-      includes({:order => :purchasemethod},:customer,:account_code).
+      includes(:order,:customer,:account_code).
       where.not(:customer_id => Customer.walkup_customer.id).
       order('orders.sold_on')
     if params[:use_cid]
@@ -60,11 +60,11 @@ class DonationsController < ApplicationController
     sold_on = Date.from_year_month_day(params[:date])
     case params[:payment]
     when 'check'
-      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_chk')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('box_chk')
     when 'cash'
-      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_cash')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('box_cash')
     when 'credit_card'
-      @order.purchasemethod = Purchasemethod.find_by_shortdesc('box_cc')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('box_cc')
       @order.purchase_args =  { :credit_card_token => params[:credit_card_token] }
       sold_on = Time.now
     end

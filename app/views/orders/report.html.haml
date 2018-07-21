@@ -20,8 +20,8 @@
           %td= link_to_customer o.customer
           %td
             - if o.purchase_medium == :credit_card
-              = link_to_stripe o.purchasemethod.description, o.authorization
+              = link_to_stripe Purchasemethod.description(o.purchasemethod), o.authorization
             - else
-              = o.purchasemethod.description
+              = Purchasemethod.description(o.purchasemethod)
           %td= number_to_currency o.total_price
           %td= o.item_descriptions.gsub( /$/, '<br/>').html_safe

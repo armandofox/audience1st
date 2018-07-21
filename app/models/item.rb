@@ -3,14 +3,13 @@ class Item < ActiveRecord::Base
   attr_protected :checked_in
 
   belongs_to :customer
-  delegate :purchaser, :to => :order
   belongs_to :order
   validates_associated :order
+  delegate :sold_on, :purchaser, :purchasemethod, :to => :order
   
   belongs_to :processed_by, :class_name => 'Customer'
   validates_presence_of :processed_by_id
 
-  delegate :sold_on, :purchasemethod, :to => :order
 
   def self.foreign_keys_to_customer
     [:customer_id, :processed_by_id]

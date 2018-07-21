@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
-  force_ssl if Rails.env.production?
+  #force_ssl if Rails.env.production?
   
   include AuthenticatedSystem
   include FilenameUtils
@@ -40,10 +40,6 @@ class ApplicationController < ActionController::Base
   def session_expired
     render :template => 'messages/session_expired', :layout => 'application', :status => 400
     true
-  end
-
-  def reset_session # work around session reset bug in rails 2.3.5
-    ActiveRecord::Base.connection.execute("DELETE FROM sessions WHERE session_id = '#{request.session_options[:id]}'")
   end
 
   # set_globals tries to set globals based on current_user, among other things.

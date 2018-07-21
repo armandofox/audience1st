@@ -1,5 +1,4 @@
 class Txn < ActiveRecord::Base
-  belongs_to :purchasemethod
   belongs_to :show
   belongs_to :showdate
   belongs_to :customer
@@ -56,7 +55,7 @@ class Txn < ActiveRecord::Base
                      :txn_type => args[:txn_type] || '???',
                      :show_id => show_id,
                      :showdate_id => showdate_id,
-                     :purchasemethod_id => purch_id,
+                     :purchasemethod => purch_id,
                      :voucher_id => voucher_id,
                      :order_id => order_id,
                      :dollar_amount => amt,

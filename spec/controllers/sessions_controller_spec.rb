@@ -68,7 +68,6 @@ describe SessionsController do
             it "sets/resets/expires cookie"  do expect(controller).to receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
             it "sends a cookie"              do expect(controller).to receive(:send_remember_cookie!);  post(:create, @login_params) end
             it 'redirects to the home page'  do post(:create, @login_params); response.should redirect_to(@home_page)   end
-            it "does not reset my session"   do expect(controller).not_to receive(:reset_session); post(:create, @login_params) end # change if you uncomment the reset_session path
             if (has_request_token == :valid)
               it 'does not make new token'   do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
               it 'does refresh token'        do expect(@user).to receive(:refresh_token);     post(:create, @login_params) end 

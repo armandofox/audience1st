@@ -17,28 +17,22 @@
   %br
   %table
     %tr.tableHeading
-      - for c in ["txn_date", "entered_by_id", "customer_id", nil, nil, |
-        "txn_type_id", "purchasemethod_id", "dollar_amount", "show_id", |
-        "showdate_id", "voucher_id", "comments"] |
-        %th= ActiveSupport::Inflector.humanize(c)
+      - ["Date", "Proc'd by", "Customer", "Txn Type", "Purch.method", "Amt", "Show", "Perf date", "Voucher ID", "Comments"].each |c|
+        %th= c
     - @txns.each do |t|
       - c = Customer.find_by_id(t.customer_id)  
-      - s = Customer.find_by_id(t.entered_by_id) 
+      - s = Customer.find_by_id(t.entered_by_id)
+      - v = Voucher.find_by_id(t.voucher_id)
       %tr
         %td= t.txn_date
-        %td= s ? s.email : "" 
-        - if c.nil? 
-          %td{:colspan=>"3"}
-        - else 
-          %td= link_to c.id, customer_path(t.customer)
-          %td= link_to c.last_name, customer_path(t.customer)
-          %td= link_to c.first_name, customer_path(t.customer)
+        %td= staff_name(s)
+        %td= link_to_customer(c)
         %td= t.desc 
-        %td= (t.voucher_id.to_i.zero? || (v= Voucher.find_by_id(t.voucher_id)).nil?) ? '' : v.purchasemethod.description
+        %td= Purchasemethod.description(v.order.purchasemethod) if v
         %td= number_to_currency(t.dollar_amount) 
-        %td= t.show ? t.show.name : "" 
-        %td= t.showdate ? t.showdate.thedate : "" 
-        %td= t.voucher_id.zero? ? "": t.voucher_id 
+        %td= t.show.try(:name)
+        %td= t.showdate.try(:thedate)
+        %td= t.voucher_id 
         %td= t.comments 
 
 

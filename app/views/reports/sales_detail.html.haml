@@ -24,7 +24,7 @@
         - nsold += @daily_sales[k].size
         %td.currency= number_to_currency(t = v.vouchertype.price * @daily_sales[k].size)
         - total += t
-        %td= v.purchasemethod.description
+        %td= Purchasemethod.description(v.order.purchasemethod)
         %td= v.processed_by_name if (v.processed_by_id != v.customer.id)
     %tr.totalsRow
       %td TOTALS

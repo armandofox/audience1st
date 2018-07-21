@@ -33,7 +33,7 @@ Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do 
   customer = find_or_create_customer(first,last)
   # make it legal for customer to buy the things
   @order = build(:order,
-    :purchasemethod => Purchasemethod.find_by_shortdesc('box_cash'),
+    :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
     :customer => customer,
     :purchaser => customer)
   @order.vouchers = []

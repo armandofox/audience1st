@@ -2,7 +2,6 @@ class Order < ActiveRecord::Base
   belongs_to :customer
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
-  belongs_to :purchasemethod
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
   has_many :donations, :dependent => :destroy
@@ -12,8 +11,6 @@ class Order < ActiveRecord::Base
   attr_reader :donation
 
   attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser
-
-  delegate :purchase_medium, :to => :purchasemethod
 
   # errors
 
@@ -97,13 +94,11 @@ class Order < ActiveRecord::Base
     includes(:donations => [:customer, :account_code]).
     includes(:processed_by).
     includes(:purchaser).
-    includes(:purchasemethod).
     includes(:items).
     includes(:customer)
   }
 
   scope :for_transactions_reporting, ->() {
-    includes(:purchasemethod).
     includes(:items).
     includes(:customer).
     includes(:donations => :account_code).
@@ -121,8 +116,10 @@ class Order < ActiveRecord::Base
   def customer_name ; customer.full_name ; end
   def purchaser_name ; purchaser.full_name ; end
 
+  def purchase_medium ; Purchasemethod.purchase_medium(self.purchasemethod) ; end
+  
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
-    other_args[:purchasemethod] ||= Purchasemethod.find_by_shortdesc('none')
+    other_args[:purchasemethod] ||= Purchasemethod.get_type_by_name('none')
     order = Order.new(other_args)
     order.add_tickets(valid_voucher, howmany)
     order
@@ -272,7 +269,7 @@ class Order < ActiveRecord::Base
     errors.add(:base, "You must specify the enrollee's name for classes") if
       contains_enrollment? && comments.blank?
     check_purchaser_info unless processed_by.try(:is_boxoffice)
-    if purchasemethod.kind_of?(Purchasemethod)
+    if Purchasemethod.valid_purchasemethod?(purchasemethod)
       errors.add(:base,'Invalid credit card transaction') if
         purchase_args && purchase_args[:credit_card_token].blank?       &&
         purchase_medium == :credit_card
@@ -312,7 +309,8 @@ class Order < ActiveRecord::Base
 
   def refundable?
     completed? &&
-      (refundable_to_credit_card? || purchase_medium != :credit_card)
+      total > 0  &&             # in case all items were ALREADY refunded and now marked as canceled
+      (refundable_to_credit_card? || Purchasemethod.refundable?(purchasemethod))
   end
 
   def refundable_to_credit_card?

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180405175022) do
+ActiveRecord::Schema.define(version: 20180721131637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,14 +21,6 @@ ActiveRecord::Schema.define(version: 20180405175022) do
     t.string "code",            limit: 255
     t.string "description",     limit: 255
     t.string "donation_prompt", limit: 255
-  end
-
-  create_table "bulk_downloads", force: :cascade do |t|
-    t.string "vendor",       limit: 255
-    t.string "username",     limit: 255
-    t.string "password",     limit: 255
-    t.string "type",         limit: 255
-    t.text   "report_names"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -245,7 +237,7 @@ ActiveRecord::Schema.define(version: 20180405175022) do
   create_table "orders", force: :cascade do |t|
     t.string   "authorization",     limit: 255
     t.integer  "customer_id"
-    t.integer  "purchasemethod_id"
+    t.integer  "purchasemethod"
     t.integer  "processed_by_id"
     t.datetime "sold_on"
     t.integer  "purchaser_id"
@@ -267,21 +259,6 @@ ActiveRecord::Schema.define(version: 20180405175022) do
   add_index "orders", ["purchaser_id"], name: "public_orders_purchaser_id3_idx", using: :btree
   add_index "orders", ["walkup"], name: "index_orders_on_walkup", using: :btree
   add_index "orders", ["walkup"], name: "public_orders_walkup1_idx", using: :btree
-
-  create_table "purchasemethods", force: :cascade do |t|
-    t.string  "description", limit: 255, default: "",        null: false
-    t.string  "shortdesc",   limit: 10,  default: "?purch?", null: false
-    t.boolean "nonrevenue",              default: false
-  end
-
-  create_table "sessions", force: :cascade do |t|
-    t.string   "session_id", limit: 255
-    t.text     "data"
-    t.datetime "updated_at"
-  end
-
-  add_index "sessions", ["session_id"], name: "public_sessions_session_id0_idx", using: :btree
-  add_index "sessions", ["session_id"], name: "sessions_session_id_index", using: :btree
 
   create_table "showdates", force: :cascade do |t|
     t.datetime "thedate"
@@ -315,17 +292,17 @@ ActiveRecord::Schema.define(version: 20180405175022) do
   end
 
   create_table "txns", force: :cascade do |t|
-    t.integer  "customer_id",                   default: 1,   null: false
-    t.integer  "entered_by_id",                 default: 1,   null: false
+    t.integer  "customer_id",                default: 1,   null: false
+    t.integer  "entered_by_id",              default: 1,   null: false
     t.datetime "txn_date"
     t.integer  "show_id"
     t.integer  "showdate_id"
-    t.integer  "purchasemethod_id"
-    t.integer  "voucher_id",                    default: 0,   null: false
-    t.float    "dollar_amount",                 default: 0.0, null: false
-    t.string   "comments",          limit: 255
+    t.integer  "purchasemethod"
+    t.integer  "voucher_id",                 default: 0,   null: false
+    t.float    "dollar_amount",              default: 0.0, null: false
+    t.string   "comments",       limit: 255
     t.integer  "order_id"
-    t.string   "txn_type",          limit: 255
+    t.string   "txn_type",       limit: 255
   end
 
   add_index "txns", ["customer_id"], name: "index_txns_on_customer_id", using: :btree

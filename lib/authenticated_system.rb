@@ -74,7 +74,6 @@ module AuthenticatedSystem
     # when you cross quarantine (logged-out to logged-in).
     def logout_killing_session!
       logout_keeping_session!
-      reset_session
     end
     
     #

@@ -1,6 +1,6 @@
 %div[order]
   %h3 
-    %a.flippy[order, :flippy]{:href=>'#'} &#x25BC;
+    %a.flippy[order, :flippy]{:href=>orders_path} &#x25BC;
     = one_line_order_summary(order)
   %div.order_info[order, :details]
     = form_tag order_path(order), :method => :put do

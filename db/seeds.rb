@@ -6,7 +6,6 @@ class Audience1stSeeder
     self.create_options
     self.create_special_customers
     self.create_default_account_code
-    self.create_purchasemethods
   end
 
   # Options
@@ -82,23 +81,6 @@ class Audience1stSeeder
       :subscription_order_service_charge_account_code => a.id,
       :regular_order_service_charge_account_code => a.id,
       :classes_order_service_charge_account_code => a.id)
-  end
-
-  def self.create_purchasemethods
-    Rails.logger.info "Creating purchasemethods"
-    ["Web - Credit Card","web_cc",false,
-      "No payment required","none",true,
-      "Box office - Credit Card","box_cc",false,
-      "Box office - Cash","box_cash",false,
-      "Box office - Check","box_chk",false,
-      "Payment Due","pmt_due",false,
-      "External Vendor","ext",false,
-      "Part of a package","bundle",true,
-      "Other","?purch?",false,
-      "In-Kind Goods or Services","in_kind",true].each_slice(3) do |pm|
-      Purchasemethod.create!(:description => pm[0],
-        :shortdesc => pm[1], :nonrevenue => pm[2])
-    end
   end
 
   def self.create_options
