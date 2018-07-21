@@ -333,7 +333,7 @@ class Order < ActiveRecord::Base
   end
 
   def purchasemethod_description
-    purchasemethod.description
+    Purchasemethod.get(purchasemethod).description
   end
 
   def item_descriptions

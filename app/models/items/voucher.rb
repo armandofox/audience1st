@@ -129,7 +129,7 @@ class Voucher < Item
     end
   end
   
-  def purchasemethod_reportable ; purchasemethod.description ; end
+  def purchasemethod_reportable ; Purchasemethod.get(purchasemethod).description ; end
 
   def processed_by_name
     if self.processed_by_id.to_i.zero?
