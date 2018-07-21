@@ -116,7 +116,7 @@ class Order < ActiveRecord::Base
   def customer_name ; customer.full_name ; end
   def purchaser_name ; purchaser.full_name ; end
 
-  def purchase_medium ; Purchasemethod.purchase_medium(self.purchasemethod) ; end
+  def purchase_medium ; Purchasemethod.get(purchasemethod).purchase_medium ; end
   
   def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
     other_args[:purchasemethod] ||= Purchasemethod.get_type_by_name('none')

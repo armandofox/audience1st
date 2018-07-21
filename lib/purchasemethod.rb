@@ -1,16 +1,13 @@
 Purchasemethod = Struct.new(:description, :shortdesc, :nonrevenue, :purchase_medium) do
 
+  def self.get(indx)
+    Purchasemethod::ALL[indx]
+  end
   def self.valid_purchasemethod?(indx)
     indx.to_i.between?(1,10)
   end
-  def self.refundable?(indx)
-    [1,3,4,5].include?(indx)
-  end
-  def self.description(indx)
-    Purchasemethod::ALL[indx].description
-  end
-  def self.purchase_medium(indx)
-    Purchasemethod::ALL[indx].purchase_medium
+  def refundable?
+    [:web_cc,:box_cc,:box_cash,:box_chk].include?(shortdesc)
   end
   def self.walkup_purchasemethods
     [2,3,4,5]

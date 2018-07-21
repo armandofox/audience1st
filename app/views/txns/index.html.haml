@@ -28,7 +28,7 @@
         %td= staff_name(s)
         %td= link_to_customer(c)
         %td= t.desc 
-        %td= Purchasemethod.description(v.order.purchasemethod) if v
+        %td= Purchasemethod.get(v.order.purchasemethod).description if v
         %td= number_to_currency(t.dollar_amount) 
         %td= t.show.try(:name)
         %td= t.showdate.try(:thedate)
