@@ -1,32 +1,46 @@
-%h1
-  = if @params[:from] then date_range(@params[:from],@params[:to]) end
-  #{@donations.length} transactions, #{number_to_currency @total}
+#pageDiv
+  %h1
+    = if @params[:from] then "#{date_range(@params[:from],@params[:to])}: " end
+    #{@donations.total_entries} transactions, #{number_to_currency @total}
 
-= form_tag donations_path, {:method => :get} do
-  = render :partial => 'donation_search', :locals => {:params => @params}
-  = submit_tag "Search"
-  = submit_tag(@export_label) unless @donations.empty?
-  = link_to "Add/Edit Account Codes", account_codes_path, :class => 'genButton'
+#pageDiv.pagination
+  = will_paginate @donations, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
+  - first,last,total = @donations.offset+1, @donations.offset+@donations.length, @donations.total_entries
+  - if total > @donations.per_page
+    = form_tag donations_path, :method => :get do
+      &nbsp;&bull;&nbsp; 
+      %b #{first}-#{last} of #{total}
+      &nbsp;&bull;&nbsp; Jump to page:
+      = text_field_tag 'page', '', :size => 4
+      = submit_tag 'Go'
 
-- unless @donations.empty?
-  %table#donations.hilite
-    %thead
-      %tr
-        %th Customer
-        %th Order#
-        %th Date
-        %th Item Amount
-        %th Item Description or Acct Code
-        %th Thanks Ltr Sent?
-        %th Comments
-    %tbody 
-      - @donations.each do |t|
+#pageDiv
+  = form_tag donations_path, {:method => :get} do
+    = render :partial => 'donation_search', :locals => {:params => @params}
+    = submit_tag "Search"
+    = submit_tag(@export_label) unless @donations.empty?
+    = link_to "Add/Edit Account Codes", account_codes_path, :class => 'genButton'
+
+#pageDiv
+  - unless @donations.empty?
+    %table#donations.hilite
+      %thead
         %tr
-          %td= link_to t.customer.full_name, :action => 'index', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
-          %td= link_to_order_containing t
-          %td= t.sold_on.strftime '%D'
-          %td.right= number_to_currency(t.amount)
-          %td= t.item_description
-          %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
-          %td= t.comments
-  %br
+          %th Customer
+          %th Order#
+          %th Date
+          %th Item Amount
+          %th Item Description or Acct Code
+          %th Thanks Ltr Sent?
+          %th Comments
+      %tbody 
+        - @donations.each do |t|
+          %tr
+            %td= link_to t.customer.full_name, :action => 'index', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
+            %td= link_to_order_containing t
+            %td= t.sold_on.strftime '%D'
+            %td.right= number_to_currency(t.amount)
+            %td= t.item_description
+            %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
+            %td= t.comments
+    %br

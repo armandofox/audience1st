@@ -12,11 +12,10 @@ class DonationsController < ApplicationController
   public
   
   def index
-    @donations = []
     @total = 0
     @params = {}
-    return unless params[:commit] # first time visiting page: don't do "null search"
     @page_title = "Donation history"
+    @page = (params[:page] || '1').to_i
     mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.now]
     params[:from],params[:to] = mindate,maxdate
     @donations = Donation.
@@ -43,6 +42,8 @@ class DonationsController < ApplicationController
     @params = params
     if params[:commit] == @export_label
       send_data @donations.to_csv,  :type => 'text/csv', :filename => filename_from_dates('donations',mindate,maxdate,'csv')
+    else
+      @donations = @donations.paginate(:page => @page)
     end
   end
 
