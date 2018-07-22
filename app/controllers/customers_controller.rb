@@ -185,7 +185,7 @@ class CustomersController < ApplicationController
       filter_terms = @customers_filter.split /\s+/
       @page_title = %Q{Customers matching "#{@customers_filter}"}
       @customers =
-        (Customer.find_by_name(filter_terms) +
+        (Customer.where('role >= 0').find_by_name(filter_terms) +
         Customer.find_by_multiple_terms(filter_terms)).uniq
     else
       @page_title = "All Customers"

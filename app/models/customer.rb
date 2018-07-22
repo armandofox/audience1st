@@ -95,9 +95,6 @@ class Customer < ActiveRecord::Base
 
   before_destroy :cannot_destroy_special_customers
 
-  # Paginating customer list
-  def self.per_page ;  20 ; end
-
   def active_vouchers
     now = Time.now
     vouchers.includes(:showdate).select { |v| now <= Time.at_end_of_season(v.season) }
@@ -413,6 +410,7 @@ class Customer < ActiveRecord::Base
       SELECT DISTINCT customers.*
       FROM customers JOIN customers c2 ON #{last_name_matches}
       WHERE customers.id != c2.id
+        AND customers.role >= 0 AND c2.role >= 0
         AND #{first_name_or_initial_matches_or_is_blank}
         AND #{street_matches_or_is_blank}
       ORDER BY customers.last_name,customers.first_name
