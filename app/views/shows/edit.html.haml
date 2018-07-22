@@ -13,7 +13,7 @@
   = link_to  'Add a Performance', new_show_showdate_path(@show), :class => 'genButton'
   = link_to 'Show all details', edit_show_path(@show, :display => 1), :class => 'genButton'
   = link_to 'Hide all details', edit_show_path(@show), :class => 'genButton'
-  = link_to 'Add ticket type to all dates', :controller => 'valid_vouchers', :action => 'new', :showdate_id => @showdates.first, :add_to_all => true, :class => 'genButton'
+  = link_to 'Add ticket type to all dates', new_valid_voucher_path(:showdate_id => @showdates.first, :add_to_all => true), :class => 'genButton'
   = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'genButton'
 
 %table.hilite
