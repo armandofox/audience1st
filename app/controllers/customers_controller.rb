@@ -291,7 +291,7 @@ class CustomersController < ApplicationController
     customer_hash.each do |customer, info|
       result.push({'label' => customer.full_name + info, 'value' => customer_path(customer)})
     end
-    result.push({'label' => 'list all', 'value' => customers_path(:customers_filter => params[:term])})
+    result.push({'label' => "List all matching '#{terms}'", 'value' => customers_path(:customers_filter => params[:term])})
     render :json => result
   end
 

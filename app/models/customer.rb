@@ -398,17 +398,23 @@ class Customer < ActiveRecord::Base
     # similarity: last names must match, emails must not differ,
     #  and at least one of first name or street must match.
     last_name_matches = '(lower(customers.last_name)=lower(c2.last_name))'
-    at_least_one_email_blank = '(customers.email IS NULL OR c2.email IS NULL)'
-    first_name_matches = '(lower(customers.first_name) LIKE lower(c2.first_name))'
-    street_matches = "(lower(customers.street) LIKE lower(c2.street) AND customers.street IS NOT NULL AND customers.street != '')"
-    at_least_one_street_blank = "(customers.street IS NULL OR customers.street='' OR c2.street IS NULL or c2.street='')"
+    first_name_or_initial_matches_or_is_blank =
+      "( (lower(customers.first_name) LIKE lower(c2.first_name))
+         OR (SUBSTR(lower(customers.first_name),1,1)=lower(c2.first_name))
+         OR (SUBSTR(lower(c2.first_name),1,1)=lower(customers.first_name))
+       )"
+    street_matches_or_is_blank =
+      "( (lower(customers.street) LIKE lower(c2.street))
+          OR (customers.street='' OR customers.street IS NULL)
+          OR (c2.street='' OR c2.street IS NULL)
+       )"
 
     sql = %Q{
       SELECT DISTINCT customers.*
-      FROM customers, customers c2
+      FROM customers JOIN customers c2 ON #{last_name_matches}
       WHERE customers.id != c2.id
-         AND #{last_name_matches}
-         AND (#{first_name_matches} OR #{street_matches} OR #{at_least_one_street_blank})
+        AND #{first_name_or_initial_matches_or_is_blank}
+        AND #{street_matches_or_is_blank}
       ORDER BY customers.last_name,customers.first_name
     }
     possible_dups = Customer.find_by_sql(sql)

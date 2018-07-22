@@ -1,5 +1,18 @@
 module CustomMatchers
 
+  # test if 2 customers would be marked as near-dups based on first/last/street
+  RSpec::Matchers.define :be_near_dups do
+    match do |actual|
+      a,b= actual.split(/::/)
+      a = a.split(/,/)
+      b = b.split(/,/)
+      c1 = create(:customer, :first_name => a[0], :last_name => a[1], :street => a[2], :created_by_admin => true)
+      c2 = create(:customer, :first_name => b[0], :last_name => b[1], :street => b[2], :created_by_admin => true)
+      3.times { create(:customer, :first_name => Faker::Name.first_name + "1" , :last_name => Faker::Name.last_name, :street => Faker::Address.street_address) }
+      res = Customer.find_suspected_duplicates
+      res.size == 2 && res.include?(c1) && res.include?(c2)
+    end
+  end
   # test an enumerable to see if it includes a match for regex.
   class IncludeMatchFor
     include Enumerable
