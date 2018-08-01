@@ -186,12 +186,13 @@ class CustomersController < ApplicationController
       @page_title = %Q{Customers matching "#{@customers_filter}"}
       @customers =
         (Customer.where('role >= 0').find_by_name(filter_terms) +
-        Customer.find_by_multiple_terms(filter_terms)).uniq
+        Customer.find_by_multiple_terms(filter_terms)).
+        uniq.sort_by(&:last_name)
     else
       @page_title = "All Customers"
-      @customers = Customer.all
+      @customers = Customer.all.order(:last_name)
     end
-    @customers = @customers.order(:last_name).paginate(:page => @page)
+    @customers = @customers.paginate(:page => @page)
   end
 
   def list_duplicate

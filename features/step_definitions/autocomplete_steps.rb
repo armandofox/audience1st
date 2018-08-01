@@ -12,7 +12,8 @@ end
 Then /^I should (not )?see autocomplete choice "(.*)"/ do |no, text|
   wait_for_ajax
   autocomplete_choices = %Q{//ul[contains(@class,"ui-autocomplete")]}
-  item = autocomplete_choices + %Q{/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}')]}
+  item = autocomplete_choices +
+    %Q{/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}') and not(contains(text(),'all matching'))]}
   within(@container) do
     page.should have_xpath(autocomplete_choices)
     if no
@@ -25,7 +26,7 @@ end
 
 When /^I select autocomplete choice "(.*)"$/ do |text|
   wait_for_ajax
-  xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}')]}
+  xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}') and not(contains(text(),'all matching'))]}
   element = within(@container) { find(:xpath,xpath) }
   element.click
 end

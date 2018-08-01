@@ -40,6 +40,6 @@ Scenario: search with no result
 
 Scenario: list all in autocomplete
   When I fill "search_field" autocomplete field with "Fox"
-  Then I should see autocomplete choice "list all"
-  And I select autocomplete choice "list all"
+  Then I should see autocomplete choice "List all matching 'Fox'"
+  And I select autocomplete choice "List all matching 'Fox'"
   Then I should be on the list of customers page
