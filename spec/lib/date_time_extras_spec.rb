@@ -38,17 +38,17 @@ describe "Date/time extras" do
         stub_month_and_day(@m, @d)
       end
       it "should calculate the beginning of the 2005 season" do
-        Time.now.at_beginning_of_season(2005).should == Time.local(2005,@m,@d)
+        Time.current.at_beginning_of_season(2005).should == Time.local(2005,@m,@d)
       end
       it "should calculate the end of the 2005 season" do
-        Time.now.at_end_of_season(2005).should == (Time.local(2006,@m,@d,23,59,59) - 1.day)
+        Time.current.at_end_of_season(2005).should == (Time.local(2006,@m,@d,23,59,59) - 1.day)
       end
       it "should calculate beginning of current season when calendar date precedes season start date" do
-        y = Time.now.year
+        y = Time.current.year
         Time.local(y, @m, @d-1).at_beginning_of_season.should == Time.local(y-1,@m,@d)
       end
       it "should calculate beginning of current season when calendar date is after season start date" do
-        y = Time.now.year
+        y = Time.current.year
         Time.local(y, @m, @d+1).at_beginning_of_season.should == Time.local(y,@m,@d)
       end
     end
@@ -90,7 +90,7 @@ describe "Date/time extras" do
     describe "should give same result for date or time object" do
       before(:each) do
         stub_month_and_day(9,1)
-        @time = Time.parse("2011-01-21")
+        @time = Time.zone.parse("2011-01-21")
         @date = Date.civil(2011, 1, 21)
       end
       it "if different year" do
@@ -113,7 +113,7 @@ describe "Date/time extras" do
 
   describe "creating a date or time from params[]" do
     it "should return default value if param is blank" do
-      deflt = Time.now
+      deflt = Time.current
       Time.from_param(nil,deflt).should == deflt
     end
     context "when param is not a hash" do

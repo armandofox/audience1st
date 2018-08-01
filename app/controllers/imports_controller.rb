@@ -4,7 +4,7 @@ class ImportsController < ApplicationController
 
   def new
     @import ||= Import.new
-    yr = Time.now.this_season
+    yr = Time.current.this_season
     @shows = (Show.all_for_season(yr-1) + Show.all_for_season(yr)).reverse
     if @shows.include?(curr = Show.current_or_next) && curr
       show = curr

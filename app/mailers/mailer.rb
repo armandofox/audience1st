@@ -9,7 +9,7 @@ class Mailer < ActionMailer::Base
   before_action :setup_defaults
 
   def email_test(destination_address)
-    @time = Time.now
+    @time = Time.current
     mail(:to => destination_address, :subject => 'Testing')
   end
   

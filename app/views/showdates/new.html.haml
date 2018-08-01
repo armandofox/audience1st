@@ -37,7 +37,7 @@
   = day_of_week_checkboxes('day')
   %br
   %label{:for => 'time'} At
-  = select_time(Time.parse("8:00pm"), :time_separator => ':', :prefix => 'time')
+  = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time')
   %br
   %label{:for => 'start'} From
   = text_field_tag 'show_run_dates'

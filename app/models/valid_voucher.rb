@@ -83,7 +83,7 @@ class ValidVoucher < ActiveRecord::Base
     errors.add(:base,"Dates and times for start and end sales must be provided") and return if (start_sales.blank? || end_sales.blank?)
     errors.add(:base,"Start sales time cannot be later than end sales time") and return if start_sales > end_sales
     vt = self.vouchertype
-    if self.end_sales > (end_of_season = Time.now.at_end_of_season(vt.season))
+    if self.end_sales > (end_of_season = Time.current.at_end_of_season(vt.season))
       errors.add :base, "Voucher type '#{vt.name}' is valid for the
         season ending #{end_of_season.to_formatted_s(:showtime_including_year)},
         but you've indicated sales should continue later than that
@@ -114,7 +114,7 @@ class ValidVoucher < ActiveRecord::Base
       self.max_sales_for_this_patron = 0
       return nil
     end
-    if showdate.thedate < Time.now
+    if showdate.thedate < Time.current
       self.explanation = 'Event date is in the past'
       self.visible = false
     elsif showdate.really_sold_out?
@@ -126,7 +126,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_sales_dates
-    now = Time.now
+    now = Time.current
     if showdate && (now > showdate.end_advance_sales)
       self.explanation = 'Advance sales for this performance are closed'
       self.visible = true
@@ -142,7 +142,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def adjust_for_advance_reservations
-    if Time.now > end_sales
+    if Time.current > end_sales
       self.explanation = 'Advance reservations for this performance are closed'
       self.max_sales_for_this_patron = 0
     end
@@ -192,7 +192,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def self.bundles_available_to(customer = Customer.generic_customer, promo_code=nil)
     bundles = ValidVoucher.
-      where('? BETWEEN start_sales AND end_sales', Time.now).
+      where('? BETWEEN start_sales AND end_sales', Time.current).
       includes(:vouchertype,:showdate).references(:vouchertypes).
       where('vouchertypes.category' => 'bundle').
       order("season DESC,display_order,price DESC")

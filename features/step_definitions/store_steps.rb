@@ -20,7 +20,7 @@ end
 
 Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
   vouchertype = Vouchertype.find_by_name! ticket_type
-  showdate = Showdate.find_by_thedate! Time.parse date
+  showdate = Showdate.find_by_thedate! Time.zone.parse date
   ValidVoucher.find_by_vouchertype_id_and_showdate_id(vouchertype.id, showdate.id).
     update_attributes!(:promo_code => promo)
 end
@@ -35,7 +35,7 @@ end
 Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
   order = build(:order, :walkup => true)
   qty = qty.to_i
-  showdate = Showdate.find_by_thedate!(Time.parse(dt))
+  showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
   offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
     Vouchertype.find_by_name!(vtype).id,
     showdate.id)

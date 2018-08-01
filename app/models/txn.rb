@@ -51,7 +51,7 @@ class Txn < ActiveRecord::Base
     order_id = args[:order_id].to_i
     a = Txn.create( :customer_id => cust_id,
                      :entered_by_id => logged_in,
-                     :txn_date => Time.now,
+                     :txn_date => Time.current,
                      :txn_type => args[:txn_type] || '???',
                      :show_id => show_id,
                      :showdate_id => showdate_id,

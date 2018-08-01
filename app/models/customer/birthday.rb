@@ -18,7 +18,7 @@ class Customer < ActiveRecord::Base
   def self.notify_upcoming_birthdays
     n = Option.send_birthday_reminders
     recipient = Option.boxoffice_daemon_notify
-    now = Time.now.at_beginning_of_day
+    now = Time.current.at_beginning_of_day
     return if n <= 0 || now.strftime('%j').to_i % n != 0 || recipient.blank?
     from_date = now + n.days
     to_date = from_date + n.days

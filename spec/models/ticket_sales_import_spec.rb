@@ -11,7 +11,7 @@ describe TicketSalesImport, :pending => 'refactor import logic' do
     context "when no match" do
       it "should build the new showdate" do
         @imp.import_showdate(@date)
-        @imp.show.showdates.find_by_thedate(Time.parse(@date)).should_not be_nil
+        @imp.show.showdates.find_by_thedate(Time.zone.parse(@date)).should_not be_nil
       end
       it "should note the created showdate" do
         l = @imp.created_showdates.length

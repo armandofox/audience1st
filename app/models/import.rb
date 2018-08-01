@@ -12,14 +12,14 @@ class Import < ActiveRecord::Base
   def self.foreign_keys_to_customer ;  [:customer_id] ;  end
 
   def <=>(other)
-    (self.completed_at || self.updated_at || self.created_at || Time.now) <=>
-      (other.completed_at || other.updated_at || other.created_at || Time.now)
+    (self.completed_at || self.updated_at || self.created_at || Time.current) <=>
+      (other.completed_at || other.updated_at || other.created_at || Time.current)
   end
   
   def import! ; raise "Must override this method" ; end
 
   def finalize(bywhom = Customer.boxoffice_daemon)
-    self.update_attributes(:completed_at => Time.now, :customer => bywhom)
+    self.update_attributes(:completed_at => Time.current, :customer => bywhom)
   end
 
   def completed? ; !completed_at.nil? ; end
@@ -59,7 +59,7 @@ class Import < ActiveRecord::Base
   def set_source_data(data,content_type='application/octet-stream')
     length = 0
     full_filename = short_filename = ''
-    f = File.new(File.join(UPLOADED_FILES_PATH,"upload_#{Time.now.usec}"),"w+",0600)
+    f = File.new(File.join(UPLOADED_FILES_PATH,"upload_#{Time.current.usec}"),"w+",0600)
     full_filename = f.path
     short_filename = full_filename.split('/').last
     length = f.write(data)

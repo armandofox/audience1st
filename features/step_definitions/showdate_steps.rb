@@ -11,14 +11,14 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that)
 end
 
 Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"$/ do |num,comp_type,show_name,date|
-  show_date = Time.parse(date)
+  show_date = Time.zone.parse(date)
   @showdate = setup_show_and_showdate(show_name,show_date)
   @comp = create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
   make_valid_tickets(@showdate, @comp, num)
 end
                                    
 Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
-  time = Time.parse(time)
+  time = Time.zone.parse(time)
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
   @show = @showdate.show
@@ -38,35 +38,35 @@ Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|
   show = Show.find_by_name!(showname)
   showdates = show.showdates
   dates.hashes.each do |date|
-    sd = Showdate.find_by_thedate(Time.parse(date[:date]))
+    sd = Showdate.find_by_thedate(Time.zone.parse(date[:date]))
     sd.should_not be_nil
     sd.show.should == show
     if date[:max_sales]
       sd.max_sales.should == date[:max_sales].to_i
     end
     if date[:sales_cutoff]
-      sd.end_advance_sales.should == Time.parse(date[:sales_cutoff])
+      sd.end_advance_sales.should == Time.zone.parse(date[:sales_cutoff])
     end
   end
 end
 
 When /^I delete the showdate "(.*)"$/ do |date|
-  showdate = Showdate.find_by_thedate!(Time.parse date)
+  showdate = Showdate.find_by_thedate!(Time.zone.parse date)
   steps %Q{When I visit the show details page for "#{showdate.show.name}"}
   click_button "delete_showdate_#{showdate.id}"
 end
 
 Then /^there should be no "Delete" button for the showdate "(.*)"$/ do |date|
-  showdate = Showdate.find_by_thedate!(Time.parse date)
+  showdate = Showdate.find_by_thedate!(Time.zone.parse date)
   page.should_not have_xpath("//tr[@id='showdate_#{showdate.id}']//input[@type='submit' and @value='Delete']")
 end
 
 Then /^there should be no show on "(.*)"$/ do |date|
-  Showdate.find_by_thedate(Time.parse date).should be_nil
+  Showdate.find_by_thedate(Time.zone.parse date).should be_nil
 end
 
 Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, _, num|
-  showdate = Showdate.find_by_thedate! Time.parse(date)
+  showdate = Showdate.find_by_thedate! Time.zone.parse(date)
   num = num.to_i
   if num > 0
     (showdate.compute_total_sales - showdate.max_sales).should == num
@@ -80,7 +80,7 @@ Given /^(that|the "(.*)") performance is sold out$/ do |recent,dt|
     showdate = @showdate
     dt = showdate.thedate
   else
-    showdate = Showdate.find_by_thedate!(Time.parse(dt))
+    showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
   end
   to_sell = showdate.max_sales - showdate.compute_total_sales
   vtype = create(:valid_voucher, :showdate => showdate).name
@@ -95,8 +95,8 @@ Given /^sales cutoff at "(.*)", with "(.*)" tickets selling from (.*) to (.*)$/ 
   vtype.valid_vouchers <<
     ValidVoucher.new(
     :showdate => @showdate,
-    :start_sales => Time.parse(start_sales),
-    :end_sales   => Time.parse(end_sales)
+    :start_sales => Time.zone.parse(start_sales),
+    :end_sales   => Time.zone.parse(end_sales)
     )
   @showdate.update_attributes!(:end_advance_sales => end_advance_sales)
 end

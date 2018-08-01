@@ -34,11 +34,11 @@ class Show < ActiveRecord::Base
   def has_showdates? ; !showdates.empty? ; end
   
   def upcoming_showdates
-    showdates.where('thedate > ?', Time.now).includes(:valid_vouchers)
+    showdates.where('thedate > ?', Time.current).includes(:valid_vouchers)
   end
 
   def next_showdate
-    showdates.where('thedate > ?', Time.now).includes(:valid_vouchers).first
+    showdates.where('thedate > ?', Time.current).includes(:valid_vouchers).first
   end
 
   def self.all_for_season(season=Time.this_season)
@@ -77,7 +77,7 @@ class Show < ActiveRecord::Base
   end
 
   def future_showdates
-    self.showdates.where('end_advance_sales >= ?', Time.now).order('thedate')
+    self.showdates.where('end_advance_sales >= ?', Time.current).order('thedate')
   end
 
     

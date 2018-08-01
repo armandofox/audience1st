@@ -6,19 +6,19 @@ describe Voucher do
     #  some Vouchertype objects for these tests
     args = {
       :fulfillment_needed => false,
-      :season => Time.now.year
+      :season => Time.current.year
     }
     @vt_regular = create(:revenue_vouchertype, :price => 10)
     @vt_subscriber = create(:vouchertype_included_in_bundle)
     @vt_bundle = create(:bundle, :including  => {@vt_subscriber => 2})
-    @basic_showdate = create(:showdate, :date => Time.now.tomorrow)
+    @basic_showdate = create(:showdate, :date => Time.current.tomorrow)
   end
 
   describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|
         @from = mock_model(Showdate)
-        @to = create(:showdate, :date => Time.now.tomorrow)
+        @to = create(:showdate, :date => Time.current.tomorrow)
         @logged_in = mock_model(Customer)
         @customer = create(:customer)
         @invalid_voucher = Voucher.new
@@ -55,7 +55,7 @@ describe Voucher do
 
   describe "expired voucher" do
     before(:each) do
-      @vt_regular.update_attribute(:season, Time.now.year - 2)
+      @vt_regular.update_attribute(:season, Time.current.year - 2)
       @v = Voucher.new_from_vouchertype(@vt_regular)
       @v.should be_valid
     end

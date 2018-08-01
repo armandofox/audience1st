@@ -62,7 +62,7 @@ describe WalkupSalesController do
         @v1 = create(:walkup_voucher)
         @v2 = create(:walkup_voucher)
         @params = {:vouchers => [@v1.id, @v2.id], :id => @showdate.id }
-        @showdate = create(:showdate, :date => Time.now)
+        @showdate = create(:showdate, :date => Time.current)
         @params[:commit] = 'Transfer'
         @params[:to_showdate] = @showdate.id
       end

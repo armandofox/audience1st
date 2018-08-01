@@ -5,7 +5,7 @@ module DatesHelper
   end
   
   def select_date_with_shortcuts(name, options={})
-    t = Time.now
+    t = Time.current
     t8601 = t.iso8601
     start_date = (options[:from] || 1.day.ago).at_beginning_of_day
     end_date = (options[:to] || t).at_beginning_of_day

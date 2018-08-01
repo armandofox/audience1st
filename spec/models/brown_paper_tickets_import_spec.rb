@@ -21,7 +21,7 @@ describe "BPT import" do
       BrownPaperTicketsImport.send(:public, :showdate_from_row)
     end
     it "should match existing showdate if one exists" do
-      showdate = mock_model(Showdate, :thedate => Time.parse("21 May 2009 8:00pm"))
+      showdate = mock_model(Showdate, :thedate => Time.zone.parse("21 May 2009 8:00pm"))
       @imp.allow(show).to receive(:showdates).and_return([showdate])
       @imp.showdate_from_row(@row).should == showdate
     end

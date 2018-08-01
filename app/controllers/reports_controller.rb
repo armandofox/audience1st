@@ -12,7 +12,7 @@ class ReportsController < ApplicationController
     # all show names
     @all_shows = Show.all
     # quick subscription stats
-    @subscriptions = Voucher.subscription_vouchers(Time.now.year)
+    @subscriptions = Voucher.subscription_vouchers(Time.current.year)
     # list of all special reports
     @special_report_names = Report.subclasses.map { |s| ActiveModel::Name.new(s).human }.unshift('Select report...')
   end
@@ -35,7 +35,7 @@ class ReportsController < ApplicationController
   end
 
   def subscriber_details
-    y = (params[:id] || Time.now.year).to_i
+    y = (params[:id] || Time.current.year).to_i
     subs = Voucher.subscription_vouchers(y)
     if params[:download]
       output = CSV.generate do |csv|

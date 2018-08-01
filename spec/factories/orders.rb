@@ -10,7 +10,7 @@ FactoryBot.define do
     association :customer
     walkup nil
     purchasemethod { Purchasemethod.get_type_by_name(:box_cash) }
-    sold_on { Time.now }
+    sold_on { Time.current }
 
     after(:build) do |order|
       if order.walkup

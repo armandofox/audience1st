@@ -33,5 +33,5 @@
     Only those who
     = select_tag 'output[login_since_test]', options_for_select(['have','have not'])
     logged in since
-    = select_date Time.now.at_beginning_of_season, :prefix => 'output[login_from]', :start_year => 2007
+    = select_date Time.current.at_beginning_of_season, :prefix => 'output[login_from]', :start_year => 2007
     

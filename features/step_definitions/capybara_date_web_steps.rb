@@ -12,14 +12,14 @@ DATE_TIME_SUFFIXES = {
 def to_date(date_to_select)
   date_to_select.kind_of?(Date) || date_to_select.kind_of?(Time) ?
   date_to_select :
-    Time.parse(date_to_select)
+    Time.zone.parse(date_to_select)
 end
 
 def select_date_matching(date_to_select, options={})
   date = to_date(date_to_select)
   menu = find_field(options[:from] || raise(":from => 'field' is required"))
   choice = menu.all('option').detect do |opt|
-    date == Time.parse(opt.text)
+    date == Time.zone.parse(opt.text)
   end
   choice.select_option
 end
@@ -52,8 +52,8 @@ def id_prefix_for(options = {})
 end
 
 def date_range_to_json(from,to)
-  from = Time.parse from
-  to = Time.parse to
+  from = Time.zone.parse from
+  to = Time.zone.parse to
   %Q[{"start":"#{from.strftime('%Y-%m-%d')}","end":"#{to.strftime('%Y-%m-%d')}"}]
 end
 
@@ -68,6 +68,6 @@ end
 
 Then /^"(.*) to (.*)" should be selected as the "(.*)" date range$/ do |from,to,selector|
   fmt = '%b %-d, %Y' # eg "Dec 3, 2016"
-  dates = "#{Time.parse(from).strftime(fmt)} - #{Time.parse(to).strftime(fmt)}"
+  dates = "#{Time.zone.parse(from).strftime(fmt)} - #{Time.zone.parse(to).strftime(fmt)}"
   page.find(:css,"##{selector}+button.comiseo-daterangepicker-triggerbutton").should have_content(dates)
 end

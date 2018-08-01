@@ -13,7 +13,7 @@ class TicketOffer
       (@noffered >= 0 && @nsold >= 0)
     # from the price and showdate, determine if we have assigned a
     # vouchertype corresponding to this.
-    showdate_as_date = Time.parse(showdate_as_date) unless showdate_as_date.kind_of?(Time)
+    showdate_as_date = Time.zone.parse(showdate_as_date) unless showdate_as_date.kind_of?(Time)
     showdates = Showdate.where('thedate = ?',showdate_as_date)
     if showdates.length != 1
       raise(NoPerfMatch,

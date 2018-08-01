@@ -71,7 +71,7 @@ describe Showdate do
   end
   describe 'max sales' do
     before :each do
-      @s = create(:showdate, :date => Time.now, :max_sales => 200)
+      @s = create(:showdate, :date => Time.current, :max_sales => 200)
     end
     describe 'when zero' do
       before(:each) { @s.update_attributes!(:max_sales => 0) }
@@ -84,7 +84,7 @@ describe Showdate do
     before(:each) do
       @house_cap = 12
       @max_sales = 10
-      @thedate = Time.now
+      @thedate = Time.current
       @showdate = FactoryBot.create(:showdate,
         :thedate => @thedate,
         :end_advance_sales => @thedate - 5.minutes,

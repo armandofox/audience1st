@@ -41,7 +41,7 @@ namespace :staging do
   desc "Populate tenant '#{tenant}' with a fake show opening on DATE (default: 1 week from now) with NUM_SHOWDATES performances (default 3) each having house capacity CAPACITY (default 50)"
   task :fake_show => :environment do
     Apartment::Tenant.switch! tenant
-    date = Time.parse(ENV['DATE']) rescue 1.week.from_now.change(:hour => 20)
+    date = Time.zone.parse(ENV['DATE']) rescue 1.week.from_now.change(:hour => 20)
     num_showdates = (ENV['NUM_SHOWDATES'] || '3').to_i
     cap =           (ENV['CAPACITY']      || '50').to_i
     show = FactoryBot::create(:show, :name => Faker::Show.play, :house_capacity => cap)

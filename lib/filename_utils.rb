@@ -9,6 +9,6 @@ module FilenameUtils
   end
   def filename_from_object(obj, ext='')
     ext = ".#{ext}" unless ext.blank?
-    "#{obj.class.to_s.downcase}-#{Time.now.to_formatted_s(:filename)}#{ext}"
+    "#{obj.class.to_s.downcase}-#{Time.current.to_formatted_s(:filename)}#{ext}"
   end
 end

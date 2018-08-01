@@ -282,7 +282,7 @@ class Order < ActiveRecord::Base
     errors.empty?
   end
 
-  def finalize!(sold_on_date = Time.now)
+  def finalize!(sold_on_date = Time.current)
     raise Order::NotReadyError unless ready_for_purchase?
 
     begin

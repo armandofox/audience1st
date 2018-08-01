@@ -8,7 +8,7 @@ describe Customer, "birthdays" do
     @c2.update_attributes!(:birthday => 'Feb 4, 1974')
   end
   describe "setting" do
-    before :each do ; @birthday = Time.parse("Jan 21, 1973") ; end
+    before :each do ; @birthday = Time.zone.parse("Jan 21, 1973") ; end
     it "should always be in the year 2000" do
       @c = create(:customer)
       @c.update_attribute :birthday, @birthday
@@ -17,7 +17,7 @@ describe Customer, "birthdays" do
   end
   describe "reporting" do
     def birthdays(from, to)
-      Customer.birthdays_in_range(Time.parse(from), Time.parse(to))
+      Customer.birthdays_in_range(Time.zone.parse(from), Time.zone.parse(to))
     end
     it 'should identify birthdays within range regardless of year' do
       c = birthdays('Jan 3, 2012', 'Jan 5')

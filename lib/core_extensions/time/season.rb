@@ -44,12 +44,12 @@ module CoreExtensions
       module ClassMethods
         # Needed since DB may not be in same timezone, so its notion of NOW() may
         # not be correct
-        def this_season ; ::Time.now.this_season ; end
-        def at_beginning_of_season(arg=nil) ; ::Time.now.at_beginning_of_season(arg) ; end
-        def at_end_of_season(arg=nil) ; ::Time.now.at_end_of_season(arg) ; end
-        def from_param(param,default=::Time.now)
+        def this_season ; ::Time.current.this_season ; end
+        def at_beginning_of_season(arg=nil) ; ::Time.current.at_beginning_of_season(arg) ; end
+        def at_end_of_season(arg=nil) ; ::Time.current.at_end_of_season(arg) ; end
+        def from_param(param,default=::Time.current)
           return default if param.blank?
-          return ::Time.parse(param) unless param.kind_of?(Hash)
+          return ::Time.zone.parse(param) unless param.kind_of?(Hash)
           t = ::Time.local(0,1,1,0,0,0)
           [:year,:month,:day,:hour].each do |component|
             t = t.change(component => param[component].to_i) if param.has_key?(component)
@@ -61,10 +61,10 @@ module CoreExtensions
 
         # Extract two dates from jquery-ui-datepicker formatted params field
         def range_from_params(json)
-          return ::Time.now,::Time.now if json.blank?
+          return ::Time.current,::Time.current if json.blank?
           obj = JSON(json)
-          min = ::Time.parse(obj['start'].to_s).at_beginning_of_day
-          max = ::Time.parse(obj['end'].to_s).at_end_of_day
+          min = ::Time.zone.parse(obj['start'].to_s).at_beginning_of_day
+          max = ::Time.zone.parse(obj['end'].to_s).at_end_of_day
           min,max = max,min if min > max
           return min, max
         end

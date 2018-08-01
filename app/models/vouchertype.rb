@@ -222,18 +222,18 @@ class Vouchertype < ActiveRecord::Base
   end
   
   def valid_as_of?(date)
-    date.to_time <= Time.now.at_end_of_season(self.season)
+    date.to_time <= Time.current.at_end_of_season(self.season)
   end
 
   def valid_now?
-    valid_as_of?(Time.now)
+    valid_as_of?(Time.current)
   end
 
-  def valid_for_season?(which_season = Time.now.year)
+  def valid_for_season?(which_season = Time.current.year)
     season == which_season
   end
 
-  def self.create_external_voucher_for_season!(name,price,year=Time.now.year)
+  def self.create_external_voucher_for_season!(name,price,year=Time.current.year)
     name = Vouchertype.ensure_valid_name(name)
     return Vouchertype.create!(:name => name,
       :price => price,

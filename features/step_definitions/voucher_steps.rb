@@ -28,7 +28,7 @@ end
 
 Given /^customer "(.*) (.*)" has (\d+) (non-)?cancelable subscriber reservations for (.*)$/ do |first,last,num,non,date|
   @customer = find_or_create_customer first,last
-  @showdate = Showdate.find_by_thedate! Time.parse(date) unless date =~ /that performance/
+  @showdate = Showdate.find_by_thedate! Time.zone.parse(date) unless date =~ /that performance/
   sub_vouchers = setup_subscriber_tickets(@customer, @showdate.show, num, non.nil?)
   sub_vouchers.each { |v| v.reserve_for(@showdate, Customer.boxoffice_daemon) }
 end
@@ -57,7 +57,7 @@ Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)
 end
 
 Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,type,show,date|
-  @showdate = Showdate.find_by_thedate!(Time.parse(date))
+  @showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
   @showdate.show.name.should == show
   @vouchertype = Vouchertype.find_by_name!(type)
   @customer.vouchers.where('vouchertype_id = ? AND showdate_id = ?', @vouchertype.id,@showdate.id).count.
@@ -75,7 +75,7 @@ Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last
       if v[:showdate].blank?
         found_vouchers.all? { |v| v.showdate.should be_nil }.should be_truthy
       else
-        date = Time.parse v[:showdate]
+        date = Time.zone.parse v[:showdate]
         found_vouchers.all? { |v| v.showdate.thedate.should == date }.should be_truthy
       end
     end
@@ -84,7 +84,7 @@ end
 
 Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype_name,date|
   vtype = Vouchertype.find_by_name!(vtype_name)
-  showdate = Showdate.find_by_thedate!(Time.parse(date))
+  showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
   showdate.vouchers.where('vouchertype_id = ?', vtype.id).count.should == qty.to_i
 end
 
@@ -109,11 +109,11 @@ Given /(?:an? )?"([^\"]+)" subscription available to (.*) for \$?([0-9.]+)/ do |
                  else raise "Subscription available to whom?"
                  end,
     :account_code => AccountCode.default_account_code,
-    :season => Time.now.at_beginning_of_season.year
+    :season => Time.current.at_beginning_of_season.year
     )
   @sub.valid_vouchers.first.update_attributes!(
-    :start_sales => Time.now.at_beginning_of_season,
-    :end_sales   => Time.now.at_end_of_season,
+    :start_sales => Time.current.at_beginning_of_season,
+    :end_sales   => Time.current.at_end_of_season,
     :max_sales_for_type => nil
     )
 end

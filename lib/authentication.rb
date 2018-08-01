@@ -31,7 +31,7 @@ module Authentication
     end
 
     def make_token
-      secure_digest(Time.now, (1..10).map{ rand.to_s })
+      secure_digest(Time.current, (1..10).map{ rand.to_s })
     end
   end # class methods
 

@@ -109,7 +109,7 @@ end
 
 # It is always 1/1/2010, except for tests that specifically manipulate time
 Before('~@time') do
-  @base_time = Time.parse('January 1, 2010')
+  @base_time = Time.zone.parse('January 1, 2010')
   Timecop.travel @base_time
 end
 

@@ -93,12 +93,12 @@ EOS1
       </willcall>
 EOS2
         )
-      @import.extract_date_and_time.should == Time.parse("1/21/11 8:00pm")
+      @import.extract_date_and_time.should == Time.zone.parse("1/21/11 8:00pm")
     end
     describe "should ignore spurious Time that is a child of Inventory" do
       it "when Time appears properly" do
         allow(@import).to receive(:xml).and_return xml_from_file('fragments/inventory-with-time')
-        @import.extract_date_and_time.should == Time.parse("1/21/11 8:00pm")
+        @import.extract_date_and_time.should == Time.zone.parse("1/21/11 8:00pm")
       end
       it "when Time is otherwise missing" do
         allow(@import).to receive(:xml).and_return xml_from_file('fragments/inventory-without-time')

@@ -22,7 +22,7 @@ module TemporalHelpers
   private
   
   def parse_time(time)
-    Chronic.parse(time) || Time.parse(time)
+    Chronic.parse(time) || Time.zone.parse(time)
   end
   
 end

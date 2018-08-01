@@ -24,7 +24,7 @@ Given /^a bundle "(.*)" for \$?([0-9.]+) containing:$/ do |name,price,tickets|
   bundle.included_vouchers = {}
   tickets.hashes.each do |h|
     show_name = h['show']
-    the_showdate = Time.parse(h['date'])
+    the_showdate = Time.zone.parse(h['date'])
     bundle_component = create(:vouchertype_included_in_bundle, :season => the_showdate.year, :name => "#{show_name} (bundle)")
     bundle.included_vouchers[bundle_component.id] = h['qty']
     bundle.season = the_showdate.year

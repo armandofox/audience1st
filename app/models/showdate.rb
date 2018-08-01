@@ -57,7 +57,7 @@ class Showdate < ActiveRecord::Base
   # finders
   
   def self.current_and_future
-    Showdate.where("thedate >= ?", Time.now - 1.day).order('thedate')
+    Showdate.where("thedate >= ?", Time.current - 1.day).order('thedate')
   end
 
   def self.current_or_next(opts={})
@@ -65,7 +65,7 @@ class Showdate < ActiveRecord::Base
     type = opts[:type] || 'Regular Show'
     Showdate.
       includes(:show).references(:shows).
-      where("showdates.thedate >= ? AND shows.event_type=?",Time.now-buffer, type).
+      where("showdates.thedate >= ? AND shows.event_type=?",Time.current-buffer, type).
       order("thedate").
       first  ||
 
@@ -76,9 +76,9 @@ class Showdate < ActiveRecord::Base
       first
   end
 
-  def self.all_showdates_for_seasons(first=Time.now.year, last=Time.now.year)
-    first = Time.now.at_beginning_of_season(first)
-    last = Time.now.at_end_of_season(last)
+  def self.all_showdates_for_seasons(first=Time.current.year, last=Time.current.year)
+    first = Time.current.at_beginning_of_season(first)
+    last = Time.current.at_end_of_season(last)
     Showdate.where('thedate BETWEEN ? and ?', first, last).order('thedate')
   end
 
@@ -126,7 +126,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def advance_sales?
-    (self.end_advance_sales - 5.minutes) > Time.now
+    (self.end_advance_sales - 5.minutes) > Time.current
   end
 
   def max_allowed_sales

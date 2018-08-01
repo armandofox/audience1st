@@ -24,7 +24,7 @@ Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, t
 end
 
 Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|
-  date_string = Time.parse(date_string).to_formatted_s(:showtime)
+  date_string = Time.zone.parse(date_string).to_formatted_s(:showtime)
   steps %Q{Then I should see /#{date_string}.*?#{type}/ within "#cart_items" #{num} times}
 end
 

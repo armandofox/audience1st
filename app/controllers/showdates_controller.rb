@@ -14,7 +14,7 @@ class ShowdatesController < ApplicationController
   
   def create
     start_date,end_date = Time.range_from_params(params[:show_run_dates])
-    time = Time.parse("#{params[:time][:hour]}:#{params[:time][:minute]}")
+    time = Time.zone.parse("#{params[:time][:hour]}:#{params[:time][:minute]}")
     days = params[:day]
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => days,
       :time => time).dates

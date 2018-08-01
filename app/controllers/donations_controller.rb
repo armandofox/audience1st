@@ -16,7 +16,7 @@ class DonationsController < ApplicationController
     @params = {}
     @page_title = "Donation history"
     @page = (params[:page] || '1').to_i
-    mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.now]
+    mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.current]
     params[:from],params[:to] = mindate,maxdate
     @donations = Donation.
       includes(:order,:customer,:account_code).
@@ -67,7 +67,7 @@ class DonationsController < ApplicationController
     when 'credit_card'
       @order.purchasemethod = Purchasemethod.get_type_by_name('box_cc')
       @order.purchase_args =  { :credit_card_token => params[:credit_card_token] }
-      sold_on = Time.now
+      sold_on = Time.current
     end
     @order.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
@@ -89,7 +89,7 @@ class DonationsController < ApplicationController
 
   def update
     if (t = Donation.find_by_id(params[:id])).kind_of?(Donation)
-      now = Time.now
+      now = Time.current
       c = current_user.email rescue "(??)"
       t.update_attributes(:letter_sent => now,
         :processed_by => current_user)

@@ -1,7 +1,7 @@
 class AttendanceByShow < Report
   
   def initialize(output_options={})
-    season = Time.now.this_season
+    season = Time.current.this_season
     @view_params = {
       :name => "Attendance by show",
       :shows => Show.all.order(:opening_date),

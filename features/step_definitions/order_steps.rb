@@ -52,7 +52,7 @@ Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containi
   table.hashes.each do |item|
     matching_items = order.vouchers.select { |v| v.vouchertype.name == item['type'] }
     unless item['showdate'].blank?
-      matching_items.reject! { |v| v.showdate != Showdate.find_by_thedate(Time.parse(item['showdate'])) }
+      matching_items.reject! { |v| v.showdate != Showdate.find_by_thedate(Time.zone.parse(item['showdate'])) }
     end
     matching_items.length.should == item['qty'].to_i
   end

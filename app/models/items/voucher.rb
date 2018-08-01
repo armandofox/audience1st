@@ -59,7 +59,7 @@ class Voucher < Item
   
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)
-    season_start = Time.now.at_beginning_of_season(year)
+    season_start = Time.current.at_beginning_of_season(year)
     v = Vouchertype.subscription_vouchertypes(year)
     v.map { |t| [t.name, t.price.round, Voucher.where('vouchertype_id = ?',t.id).count] }
   end
@@ -198,7 +198,7 @@ class Voucher < Item
     end
   end
 
-  def valid_today? ; Time.now <= expiration_date ; end
+  def valid_today? ; Time.current <= expiration_date ; end
 
   def validity_dates_as_string
     fmt = '%m/%d/%y'
@@ -256,7 +256,7 @@ class Voucher < Item
 
   def within_grace_period?
     unreserved? ||
-      (Time.now < (showdate.thedate - Option.cancel_grace_period.minutes))
+      (Time.current < (showdate.thedate - Option.cancel_grace_period.minutes))
   end
 
   # Checked in?

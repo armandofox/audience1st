@@ -4,7 +4,7 @@ FactoryBot.define do
     transient do
       price 7
     end
-    start_sales { Time.now }
+    start_sales { Time.current }
     end_sales   { 10.minutes.from_now }
     max_sales_for_type 100
     association :showdate
@@ -13,7 +13,7 @@ FactoryBot.define do
 
   factory :vouchertype do
     account_code { AccountCode.default_account_code }
-    season Time.now.year
+    season Time.current.year
     fulfillment_needed false
     changeable true
 
@@ -88,7 +88,7 @@ FactoryBot.define do
       transient do
         including Hash.new
         subscription false
-        season Time.now.year
+        season Time.current.year
       end
       vouchertype do
         included_vouchertypes = {}

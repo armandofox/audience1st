@@ -4,10 +4,10 @@ class DatetimeRange
   attr_reader :days
 
   def initialize(args={})
-    @start_date = (args[:start_date] || Time.now).to_date
-    @end_date = (args[:end_date] || Time.now).to_date
+    @start_date = (args[:start_date] || Time.current).to_date
+    @end_date = (args[:end_date] || Time.current).to_date
     @start_date,@end_date = @end_date,@start_date if @start_date > @end_date
-    @time = (args[:time] || Time.now).to_time
+    @time = (args[:time] || Time.current).to_time
     @days = (args[:days] || []).map(&:to_i)
     @dates = []
     raise(ArgumentError, "days must be an array of integers in range 0..6") unless

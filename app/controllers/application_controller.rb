@@ -132,7 +132,7 @@ class ApplicationController < ActionController::Base
   end
 
   def download_to_excel(output,filename="data",timestamp=true)
-    (filename << "_" << Time.now.strftime("%Y_%m_%d")) if timestamp
+    (filename << "_" << Time.current.strftime("%Y_%m_%d")) if timestamp
     send_data(output,:type => (request.user_agent =~ /windows/i ?
                                'application/vnd.ms-excel' : 'text/csv'),
               :filename => "#{filename}.csv")
@@ -169,7 +169,7 @@ class ApplicationController < ActionController::Base
       # reset_session
       self.current_user = @user
       # if user is an admin, enable admin privs
-      @user.update_attribute(:last_login,Time.now)
+      @user.update_attribute(:last_login,Time.current)
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
       handle_remember_cookie! new_cookie_flag

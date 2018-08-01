@@ -44,7 +44,7 @@ class GoldstarCsvImport < TicketSalesImport
     self.existing_vouchers += qty and return if already_entered?(order_id)
     customer = customer_from_row(row)
     vouchertype = vouchertype_from_row(row)
-    order_date = Time.now
+    order_date = Time.current
     order_notes = row[NOTE]
     vouchers = []
     1.upto(qty) do |i|

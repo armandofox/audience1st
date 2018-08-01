@@ -22,7 +22,7 @@ class CheckinsController < ApplicationController
         redirect_to params.to_hash.merge(:id => @showdate.id)
       end
     else
-      year = Time.now.year
+      year = Time.current.year
       @showdates = Showdate.all_showdates_for_seasons(year, year+1)
       @showdates << @showdate unless @showdates.include?(@showdate)
     end

@@ -25,7 +25,7 @@ Given /^the following donations:$/ do |donations|
 end
 
 Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
-  date = Time.parse(date)
+  date = Time.zone.parse(date)
   account_code = AccountCode.find_by_name!(fund)
   amount = amount.to_f
   find_customer(first,last).orders.where('sold_on = ?',date) do |order|

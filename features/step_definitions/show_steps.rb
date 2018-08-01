@@ -8,7 +8,7 @@ end
 
 Given /^a show "(.*)" with tickets on sale for today$/ do |name|
   steps %Q{
-    Given a performance of "#{name}" at #{Time.now + 8.hours}
+    Given a performance of "#{name}" at #{Time.current + 8.hours}
     Given 10 General vouchers costing $20 are available for that performance
   }
 end
@@ -46,7 +46,7 @@ end
 Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
   @show = create(:show, :name => name)
   showdates.hashes.each do |showdate|
-    s = create(:showdate, :show => @show, :thedate => Time.parse(showdate[:date]))
+    s = create(:showdate, :show => @show, :thedate => Time.zone.parse(showdate[:date]))
     showdate[:tickets_sold].to_i.times { create(:revenue_voucher, :showdate => s) }
   end
 end

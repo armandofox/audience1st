@@ -12,7 +12,7 @@ class InfoController < ActionController::Base
   
   # RSS feed of ticket availability info: renders an XML view for external use
   def ticket_rss
-    now = Time.now
+    now = Time.current
     # end_date = now.next_year.at_beginning_of_year
     end_date = now + 3.months
     showdates =
@@ -42,7 +42,7 @@ class InfoController < ActionController::Base
     lookahead = params[:q].to_i
     # pin to 1 year ahead
     lookahead = 90 if lookahead < 1 || lookahead > 366
-    now = Time.now
+    now = Time.current
     @showdates = Showdate.
       where('thedate BETWEEN ? AND ?', now, now + lookahead.days).order('thedate').
       select { |sd| !sd.price_range.empty? }

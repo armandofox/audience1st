@@ -21,7 +21,7 @@ describe DatetimeRange do
         @range = DatetimeRange.new(
           :start_date => Date.parse("2011-07-31"),
           :end_date => Date.parse("2011-08-07"),
-          :time => Time.parse("6:30pm"),
+          :time => Time.zone.parse("6:30pm"),
           :days => [0,2,4])
         @dates = @range.dates
       end
@@ -45,12 +45,12 @@ describe DatetimeRange do
       before(:each) do
         @range = DatetimeRange.new(
           :start_date => Date.parse("2012-02-25"), :end_date => Date.parse("2012-03-02"),
-          :time => Time.parse("12:00 pm"),
+          :time => Time.zone.parse("12:00 pm"),
           :days => [0,1,2,3,4,5,6])
       end
       it "should count correctly" do ; @range.count.should == 7 ; end
       it "should include Feb 29" do
-        @range.dates.should include(Time.parse("Feb 29, 2012, 12:00pm"))
+        @range.dates.should include(Time.zone.parse("Feb 29, 2012, 12:00pm"))
       end
     end
     it "should work correctly when no dates included" do

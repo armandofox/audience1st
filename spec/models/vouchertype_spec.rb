@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Vouchertype do
   before :each do
-    @now = Time.now.at_end_of_season - 6.months
+    @now = Time.current.at_end_of_season - 6.months
   end
   describe 'visibility' do
     before :each do
@@ -158,7 +158,7 @@ describe Vouchertype do
       @v = Vouchertype.create!(:category => 'bundle',
         :name => 'test', :price => 10,
         :offer_public => Vouchertype::ANYONE,
-        :subscription => false, :season => Time.now.year)
+        :subscription => false, :season => Time.current.year)
     end
     it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
       @v.valid_vouchers.length.should == 1

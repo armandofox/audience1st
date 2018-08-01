@@ -13,7 +13,7 @@ module CoreExtensions
       end
       module ClassMethods
         def from_year_month_day(hash)
-          now = ::Time.now
+          now = ::Time.current
           ::Date.new((hash[:year] || now.year).to_i, (hash[:month] || now.month).to_i, (hash[:day] || now.day).to_i)
         end
       end

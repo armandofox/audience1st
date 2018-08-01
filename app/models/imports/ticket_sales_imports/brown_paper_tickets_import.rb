@@ -60,7 +60,7 @@ class BrownPaperTicketsImport < TicketSalesImport
     customer = customer_from_row(row)
     showdate = showdate_from_row(row)
     vouchertype = vouchertype_from_row(row, showdate.thedate.year)
-    order_date = Time.parse(row[ORDER_DATE])
+    order_date = Time.zone.parse(row[ORDER_DATE])
     order_notes = row[ORDER_NOTES].to_s
 
     voucher = Voucher.new_from_vouchertype(vouchertype, :showdate => showdate,

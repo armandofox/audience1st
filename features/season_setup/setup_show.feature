@@ -11,7 +11,7 @@ Background:
 
 Scenario: Setup new show
   When I go to the New Show page
-  And I specify a show "Chicago" playing from "1.week.from_now" until "1.month.from_now" with capacity "100" to be listed starting "Time.now"
+  And I specify a show "Chicago" playing from "1.week.from_now" until "1.month.from_now" with capacity "100" to be listed starting "Time.current"
   And I press "Create"
   Then I should be on the Show Details page for "Chicago"
 

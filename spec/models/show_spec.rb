@@ -13,8 +13,8 @@ describe Show do
   end
   describe "adjusting showdates post-hoc" do
     before :each do
-      @s = create(:show, :opening_date => Time.now, :closing_date => 1.day.from_now)
-      @now = Time.now
+      @s = create(:show, :opening_date => Time.current, :closing_date => 1.day.from_now)
+      @now = Time.current
       dates_and_tix = [
         [@now+1.day,  10],
         [@now,        5],

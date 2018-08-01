@@ -69,7 +69,7 @@ class SessionsController < ApplicationController
   def note_failed_signin(user)
     flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
     flash[:alert] << " because #{user.errors.as_html}" if user
-    Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.now.utc}: #{flash[:alert]}"
+    Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
   end
 
 end

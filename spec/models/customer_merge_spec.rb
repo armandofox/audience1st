@@ -119,7 +119,7 @@ describe Customer, "merging" do
 
   describe "merging" do
     before(:each) do
-      now = Time.now.change(:usec => 0)
+      now = Time.current.change(:usec => 0)
       @old = create(:customer)
       @new = create(:customer)
       allow(@old).to receive(:fresher_than?).and_return(nil)

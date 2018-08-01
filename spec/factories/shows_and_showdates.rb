@@ -13,13 +13,13 @@ FactoryBot.define do
 
   factory :show do
     transient do
-      including Time.now
+      including Time.current
     end
     house_capacity 200
     name 'Show'
     opening_date { including - 1.week }
     closing_date { opening_date + 1.month }
-    listing_date { Time.now }
+    listing_date { Time.current }
   end
 
 

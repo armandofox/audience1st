@@ -8,7 +8,7 @@ describe 'scoping Customers' do
   describe 'who have' do
     before :each do
       # customer @c1 has only seen show @s1, @c2 has only seen show @s2
-      sd1 = create(:showdate, :date => Time.now)
+      sd1 = create(:showdate, :date => Time.current)
       sd2 = create(:showdate, :date => 1.day.from_now)
       @s1 = sd1.show_id
       @s2 = sd2.show_id

@@ -12,12 +12,12 @@ describe Order, 'finalizing' do
     @vt = create(:revenue_vouchertype, :price => 7)
     @sd = create(:showdate, :date => 1.day.from_now)
     @vv = ValidVoucher.create!(
-      :vouchertype => @vt, :showdate => @sd, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
+      :vouchertype => @vt, :showdate => @sd, :start_sales => Time.current, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
     @vt2 = create(:revenue_vouchertype, :price => 3)
     @sd2 = create(:showdate, :date => 1.week.from_now)
     @vv2 = ValidVoucher.create!(
-      :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.now, :end_sales => 10.minutes.from_now,
+      :vouchertype => @vt2, :showdate => @sd2, :start_sales => Time.current, :end_sales => 10.minutes.from_now,
       :max_sales_for_type => 100)
     @the_processed_by = create(:customer)
     @the_customer = create(:customer)
@@ -120,7 +120,7 @@ describe Order, 'finalizing' do
       shared_examples_for 'when valid' do
         it 'should be saved' do ; @order.should_not be_a_new_record ; end
         it 'should include the items' do ; @order.item_count.should == 4 ; end
-        it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.now - 5.seconds, Time.now) ; end
+        it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.current - 5.seconds, Time.current) ; end
         it 'should set order ID on its items' do ; @order.items.each { |i| i.order_id.should == @order.id } ; end
         it 'should set comments on its items' do ; @order.items.each { |i| i.comments.should == 'Comment' } ; end
         it 'should add vouchers to customer account' do

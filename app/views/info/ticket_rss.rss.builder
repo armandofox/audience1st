@@ -20,7 +20,7 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1" do
             end
           end
           xml.guid :isPermaLink => false do
-            xml.cdata! link_to_showdate_tickets(sd, :ts => Time.now.to_i)
+            xml.cdata! link_to_showdate_tickets(sd, :ts => Time.current.to_i)
           end
         end
       end

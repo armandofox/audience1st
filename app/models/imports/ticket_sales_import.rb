@@ -139,7 +139,7 @@ class TicketSalesImport < Import
 
   def import_showdate(time_as_str)
     raise TicketSalesImport::ImportError, "Time parsing needs to be updated"
-    event_date = Time.parse(time_as_str)
+    event_date = Time.zone.parse(time_as_str)
     unless (self.show.showdates &&
         sd = self.show.showdates.detect { |sd| sd.thedate == event_date })
       sd = Showdate.placeholder(event_date)
@@ -159,7 +159,7 @@ class TicketSalesImport < Import
     true
   end
 
-  def get_or_create_vouchertype(price,name,valid_year=Time.now.year)
+  def get_or_create_vouchertype(price,name,valid_year=Time.current.year)
     name_match = "%#{name}%"
     if (v = Vouchertype.where("price = #{price} AND name LIKE ?", name_match).first)
       @vouchertype = v

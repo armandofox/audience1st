@@ -90,7 +90,7 @@ class GoldstarXmlImport < TicketSalesImport
     begin
       date = xml.xpath("//willcall/on_date").first.text 
       time = xml.xpath("//willcall/time_note").first.text 
-      datetime = Time.parse "#{date} #{time}"
+      datetime = Time.zone.parse "#{date} #{time}"
     rescue Exception => e
       raise TicketSalesImport::DateTimeNotFound, e.message
     end
@@ -122,9 +122,9 @@ class GoldstarXmlImport < TicketSalesImport
 
   def order_date_from_purchase(purchase)
     if (dt = purchase.xpath("created_at"))
-      Time.parse(dt.text)
+      Time.zone.parse(dt.text)
     else
-      Time.now
+      Time.current
     end
   end
 

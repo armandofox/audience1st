@@ -18,7 +18,7 @@ module VboScenarioHelpers
   end
 
   def setup_show_and_showdate(name,time,args={})
-    time = Time.parse(time) unless time.kind_of? Time
+    time = Time.zone.parse(time) unless time.kind_of? Time
     show = Show.find_by_name(name) ||
       create(:show,
       :name => name,
@@ -37,7 +37,7 @@ module VboScenarioHelpers
     showdate.valid_vouchers.create!(:vouchertype => vtype,
       :max_sales_for_type => qty.to_i,
       :end_sales => showdate.thedate + 5.minutes,
-      :start_sales => [Time.now - 1.day, showdate.thedate - 1.week].min
+      :start_sales => [Time.current - 1.day, showdate.thedate - 1.week].min
       )
   end
 
@@ -55,11 +55,11 @@ module VboScenarioHelpers
     show = nil
     showdate = nil
     hashes.each do |t|
-      thedate = Time.parse t[:showdate]
+      thedate = Time.zone.parse t[:showdate]
       show ||= t[:show]
       showdate ||= thedate
       sd = Showdate.find_by_thedate(thedate) ||
-        create(:showdate, :thedate => Time.parse(t[:showdate]), :show_name => t[:show])
+        create(:showdate, :thedate => Time.zone.parse(t[:showdate]), :show_name => t[:show])
       vt = Vouchertype.find_by_name(t[:type]) ||
         create(:revenue_vouchertype, :name => t[:type], :price => t[:price])
       create(:valid_voucher, :vouchertype => vt, :showdate => sd, :max_sales_for_type => t[:qty])
