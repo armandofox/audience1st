@@ -2,7 +2,7 @@
   %td.option_name
     - attr_name = attrib.gsub(/^encrypted_/,'')
     %label{:for => "option_#{attr_name}"}= humanize(attr_name).capitalize_each_word
-    = render :partial => 'messages/popup_help', :object => "option_descriptions.#{attr_name}"
+    = render :partial => 'messages/popup_help', :object => t("option_descriptions.#{attr_name}")
   %td.t.option_value
     - if attrib.to_s =~ /account_code/i
       = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i)
