@@ -65,8 +65,7 @@ class Mailer < ActionMailer::Base
   end
 
   def setup_delivery_params
-    if (Option.sendgrid_key_name.blank? or
-        Option.sendgrid_key_value.blank? or
+    if (Option.sendgrid_key_value.blank? or
         Option.sendgrid_domain.blank?)
       Rails.application.config.action_mailer.perform_deliveries = false
       Rails.logger.info "NOT sending email"
@@ -75,7 +74,7 @@ class Mailer < ActionMailer::Base
       Rails.application.config.action_mailer.perform_deliveries = true
       Rails.application.config.action_mailer.delivery_method = :smtp
       ActionMailer::Base.smtp_settings = {
-        :user_name => Option.sendgrid_key_name,
+        :user_name => 'apikey',
         :password => Option.sendgrid_key_value,
         :domain   => Option.sendgrid_domain,
         :address  => 'smtp.sendgrid.net',

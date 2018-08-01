@@ -406,15 +406,11 @@ en:
 
     sendgrid_domain: >
 
-      Name of the source domain to use with the Sendgrid transactional email service (used to
-      send confirmation emails only; this is different from using Mailchimp
-      or ConstantContact to send marketing emails).
-
-    sendgrid_key_name: >
-
-      Name of the API key to use with the Sendgrid transactional email service (used to
-      send confirmation emails only; this is different from using Mailchimp
-      or ConstantContact to send marketing emails).
+      Where transactional emails appear to come from (confirmation
+      emails, etc.).  This is separate from sending marketing emails
+      via MailChimp, ConstantContact, etc.  NOTE: Proper DNS
+      configuration on Sendgrid is required, or else emails may not be
+      delivered. 
 
     sendgrid_key_value: >
 
