@@ -24,6 +24,13 @@ Then /^I should (not )?see autocomplete choice "(.*)"/ do |no, text|
   end
 end
 
+When /^I select autocomplete choice to show all matches$/ do
+  wait_for_ajax
+  xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'List all matching')]}
+  element = within(@container) { find(:xpath,xpath) }
+  element.click
+end
+
 When /^I select autocomplete choice "(.*)"$/ do |text|
   wait_for_ajax
   xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}') and not(contains(text(),'all matching'))]}
