@@ -1,7 +1,7 @@
 require 'apartment/migrator'
 
 module Audience1stRakeTasks
-  def check_vars!
+  def self.check_vars!
     %w(TENANT STRIPE_KEY STRIPE_SECRET SENDGRID_KEY VENUE_FULLNAME).each do |var|
       raise "#{var} is required" unless ENV[var]
     end
@@ -42,7 +42,7 @@ a1client = namespace :a1client  do
   end
 
   desc "Set up new client TENANT using VENUE_FULLNAME, SENDGRID_KEY, STRIPE_KEY, STRIPE_SECRET, all of which are required."
-  task :setup => :environment do
+  task :provision => :environment do
     Audience1stRakeTasks.check_vars!
     a1client['create'].invoke
     a1client['configure'].invoke

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180721131637) do
+ActiveRecord::Schema.define(version: 20180727143316) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -155,8 +155,6 @@ ActiveRecord::Schema.define(version: 20180721131637) do
   create_table "options", force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "venue_id"
-    t.string   "venue_shortname",                                        limit: 255
     t.integer  "advance_sales_cutoff",                                               default: 5
     t.integer  "sold_out_threshold",                                                 default: 90
     t.integer  "nearly_sold_out_threshold",                                          default: 80
@@ -224,7 +222,6 @@ ActiveRecord::Schema.define(version: 20180721131637) do
     t.string   "stripe_key"
     t.string   "encrypted_stripe_secret"
     t.string   "encrypted_stripe_secret_iv"
-    t.string   "sendgrid_key_name"
     t.string   "encrypted_sendgrid_key_value"
     t.string   "encrypted_sendgrid_key_value_iv"
     t.string   "sendgrid_domain"
