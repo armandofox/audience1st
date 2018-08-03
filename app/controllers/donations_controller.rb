@@ -16,7 +16,7 @@ class DonationsController < ApplicationController
     @params = {}
     @page_title = "Donation history"
     @page = (params[:page] || '1').to_i
-    mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.at(0),Time.current]
+    mindate,maxdate = params[:dates] ? Time.range_from_params(params[:dates]) : [Time.current.at_beginning_of_season,Time.current]
     params[:from],params[:to] = mindate,maxdate
     @donations = Donation.
       includes(:order,:customer,:account_code).

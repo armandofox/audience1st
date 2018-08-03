@@ -23,7 +23,6 @@
       %legend Transaction (Order) Details
       %label Select Dates
       = select_date_with_shortcuts 'txn_report_dates', :from => @from, :to => @to
-      = popup_help_for 'select_dates'
       %br
       %label &nbsp;
       = submit_tag 'Display on Screen'
@@ -34,7 +33,6 @@
       %legend Retail Sales (Non-ticket products)
       %label Select Dates
       = select_date_with_shortcuts 'retail_report_dates', :from => @from, :to => @to
-      = popup_help_for 'select_dates'
       %br
       %label &nbsp;
       = submit_tag 'Display on Screen'
@@ -46,7 +44,6 @@
     = form_tag do_report_reports_path, {:method => :get} do
       %label Select Dates
       = select_date_with_shortcuts 'report_dates', :from => @from, :to => @to
-      = popup_help_for 'select_dates'
       %br
       %label{:for => 'rep'} Report type
       = select_tag 'rep', options_for_select(["Transaction details", "Earned Revenue", "Retail Sales"])
