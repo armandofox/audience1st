@@ -22,7 +22,7 @@
 
 %p
   %label{:for => :show_description} Description (optional)
-  = text_area 'show', 'description', :rows => 4
+  = text_area 'show', 'description', :rows => 4, :cols => 70, :maxlength => 255
   = popup_help_for :show_description
 
 %p.strong If show is sold out:
@@ -34,7 +34,7 @@
 
 %p
   %label{:for => :show_sold_out_customer_info} Information for patron
-  = text_area 'show', 'sold_out_customer_info', :rows => 4
+  = text_area 'show', 'sold_out_customer_info', :rows => 4, :cols => 70, :maxlength => 255
   = popup_help_for :show_sold_out_customer_info
 
 %p
@@ -49,6 +49,6 @@
 
 %p
   %label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); leave blank if none
-  = text_area :show, :patron_notes, :cols =>60,:rows => 3,:maxlength => 254
+  = text_area :show, :patron_notes, :cols =>70,:rows => 4,:maxlength => 255
 
 
