@@ -3,6 +3,7 @@
 %br/
 = form_tag customer_path(@customer), :method => :put do
   = render :partial => 'form' 
+  = render :partial => 'extra'
   - if @gAdminDisplay
     = render :partial => 'form_admin'
   %br/
