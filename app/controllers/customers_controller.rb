@@ -5,7 +5,7 @@ class CustomersController < ApplicationController
   # Actions requiring no login, customer login, and staff login respectively
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
-  ADMIN_ACTIONS =         %w(create search merge finalize_merge index list_duplicate
+  ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate
                              auto_complete_for_customer_full_name)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
@@ -145,17 +145,37 @@ class CustomersController < ApplicationController
   end
 
   def new
-    @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
+    @customer.guest_checkout = !!params[:guest_checkout]
+    render (current_user.is_staff ? 'admin_new' : 'new')
+  end
+
+  def admin_new                 # admin create customer
+    @customer = Customer.new
+  end
+
+  def create
+    @is_admin = true            # needed for choosing correct method in 'new' tmpl
+    @customer = Customer.new(params[:customer])
+    @customer.created_by_admin = true
+    unless @customer.save
+      flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
+      return render(:action => 'new')
+    end
+    (flash[:notice] ||= '') <<  'Account was successfully created.'
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => @customer.id,
+      :comments => 'new customer added',
+      :logged_in_id => current_user.id)
+    # if valid email, send user a welcome message
+    unless params[:dont_send_email]
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
+    end
+    redirect_to customer_path(@customer)
   end
 
   def user_create
     @customer = Customer.new(params[:customer])
-    if @gCheckoutInProgress && @customer.day_phone.blank?
-      flash[:alert] = "Please provide a contact phone number in case we need to contact you about your order."
-      render :action => 'new'
-      return
-    end
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
       Txn.add_audit_record(:txn_type => 'edit',
@@ -252,26 +272,6 @@ class CustomersController < ApplicationController
     flash[:notice] = result || c0
     Rails.logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
     redirect_to_last_list
-  end
-
-  def create
-    @is_admin = true            # needed for choosing correct method in 'new' tmpl
-    @customer = Customer.new(params[:customer])
-    @customer.created_by_admin = true
-    unless @customer.save
-      flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
-      return render(:action => 'new')
-    end
-    (flash[:notice] ||= '') <<  'Account was successfully created.'
-    Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @customer.id,
-      :comments => 'new customer added',
-      :logged_in_id => current_user.id)
-    # if valid email, send user a welcome message
-    unless params[:dont_send_email]
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
-    end
-    redirect_to customer_path(@customer)
   end
 
   # AJAX helpers
