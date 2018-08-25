@@ -106,6 +106,7 @@ class CustomersController < ApplicationController
 
   def change_password_for
     return if request.get?
+    @customer.must_revalidate_password = true
     return redirect_to(change_password_for_customer_path(@customer), :alert => @customer.errors.as_html) unless  @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,

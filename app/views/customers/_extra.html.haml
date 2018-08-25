@@ -16,5 +16,5 @@
     %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
     %br
 
-    %label Birthday (optional)
+    %label{:for => :customer_birthday} Birthday (optional)
     = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]

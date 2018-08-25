@@ -57,12 +57,13 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
+  attr_accessor :must_revalidate_password
+
   validates :password, :length => {:in => 3..20}, :on => :create, :unless => :created_by_admin
-  validates :password, :length => {:in => 3..20}, :on => :update, :if => :crypted_password_changed?
+  validates :password, :length => {:in => 3..20}, :on => :update, :if => :must_revalidate_password
   
   validates_confirmation_of :password, :on => :create,  :unless => :created_by_admin
-  validates_confirmation_of :password, :on => :update,  :if => :crypted_password_changed?
-  
+  validates_confirmation_of :password, :on => :update,  :if => :must_revalidate_password  
 
   attr_accessor :force_valid         
   attr_accessor :gift_recipient_only 
