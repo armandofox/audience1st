@@ -1,12 +1,11 @@
-- disabled = defined?(passive) && passive
-%fieldset#extra_info
+%fieldset#extra
   %legend Other Contact Info
-  = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
+  = fields_for @customer do |f|
     %label{:for=>:customer_day_phone} Preferred phone
-    = f.text_field :day_phone, {:size => 16, :maxlength => 16, :readonly => disabled}
+    = f.text_field :day_phone, {:size => 16, :maxlength => 16}
     %br
     %label{:for=>:customer_eve_phone} Alternate phone
-    = f.text_field :eve_phone, {:size => 16, :maxlength => 16, :readonly => disabled}
+    = f.text_field :eve_phone, {:size => 16, :maxlength => 16}
     %br
     %label &nbsp;
     = f.check_box :e_blacklist
@@ -17,5 +16,5 @@
     %label.no_float{:for=>:customer_blacklist} Please don't send me materials via US Mail
     %br
 
-    %label{:for => :customer_birthday} Birthday (optional)
+    %label Birthday (optional)
     = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]

@@ -10,7 +10,7 @@
   %span#new_account.new_account= link_to "Create Account", new_customer_path, :class => 'genButton'
   %br
   - if @gCheckoutInProgress
-    %span#enter_billing.new_account= link_to "Checkout as Guest",  new_customer_path(:guest_checkout => true), :class => 'genButton'
+    %span#enter_billing.new_account= link_to "Checkout as Guest",  guest_checkout_for_customers_path, :class => 'genButton'
     %br
   - else 
     = link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'genButton'}

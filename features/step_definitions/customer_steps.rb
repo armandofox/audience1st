@@ -32,7 +32,7 @@ World(CustomerStepsHelper)
 Then /^account creation should fail with "(.*)"$/ do |msg|
   steps %Q{
   Then I should see "#{msg}"
-  And I should see "Create Your Account"
+  And I should see "Sign Up"
 }
 end
 

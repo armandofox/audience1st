@@ -101,6 +101,7 @@ class Audience1stSeeder
       :default_retail_account_code =>  9999,
       :default_donation_account_code => 9999,
       :default_donation_account_code_with_subscriptions => 9999,
+      :privacy_policy_url => '',
       :stylesheet_url => 'https://rawgit.com/armandofox/stylesheets/master/sandbox/default.css',
       :stripe_key => 'YOUR_STRIPE_KEY',
       :stripe_secret => 'YOUR_STRIPE_SECRET',

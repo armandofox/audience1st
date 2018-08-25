@@ -6,7 +6,6 @@
     %span.strong like this
     are required.
   = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
-    = f.hidden_field :guest_checkout
     %label.strong{:for => 'customer_first_name'} First name
     = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled
     %br

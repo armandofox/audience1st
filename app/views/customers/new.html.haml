@@ -1,18 +1,13 @@
-%h1.page_heading.center= @gCheckoutInProgress ? 'Billing Information' : 'Create Your Account'
+%h1.page_heading.center Sign Up
 
-#inner_wrapper
-  %p.strong 
-    Subscribers, please
-    = link_to 'sign in', login_path
-    to use your existing billing information.
+%p.strong 
+  Already have an account?
+  = link_to 'Sign in', login_path
+  to use your existing billing information.
 
-  = form_tag user_create_customers_path do
-    = render 'billing_address'
-    - if @customer.guest_checkout
-      = submit_tag 'CONTINUE >>'
-      = link_to 'Cancel', store_path, :class => 'genButton'
-    - else
-      = render 'password'
-      = render 'extra'
-      = submit_tag 'Create My Account'
-      = link_to 'Cancel', login_path, :class => 'genButton'
+= form_tag user_create_customers_path do
+  = render 'billing_address'
+  = render 'password'
+  = render 'extra'
+  = submit_tag 'Create My Account'
+  = link_to 'Cancel', (@gCheckoutInProgress ? store_path : login_path), :class => 'genButton'

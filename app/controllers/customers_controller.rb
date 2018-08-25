@@ -69,7 +69,7 @@ class CustomersController < ApplicationController
     # set the return-to so that form buttons can do the right thing.
     # unless admin, remove "extra contact" fields
     params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
-    notice = []
+    notice = ''
     begin
       if ((newrole = params[:customer].delete(:role))  &&
           newrole != @customer.role_name  &&
@@ -83,19 +83,19 @@ class CustomersController < ApplicationController
       @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
-      @customer.update_attribute(:created_by_admin, false) if current_user == @customer
+      @customer.update_attribute(:created_by_admin, false) unless current_user.is_staff
       notice << "Contact information for #{@customer.full_name} successfully updated."
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :logged_in_id => current_user.id,
-        :comments => notice.join(' '))
+        :comments => notice)
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank?
         # send confirmation email
         email_confirmation(:confirm_account_change,@customer,
                            "updated your email address in our system")
       end
-      redirect_to customer_path(@customer), :notice => notice.join(' ')
+      redirect_to customer_path(@customer), :notice => notice
     rescue ActiveRecord::RecordInvalid
       redirect_to edit_customer_path(@customer), :alert => "Update failed: " + @customer.errors.as_html
     rescue StandardError => e
@@ -106,18 +106,11 @@ class CustomersController < ApplicationController
 
   def change_password_for
     return if request.get?
-    @customer.validate_password = true
-    if @customer.update_attributes(params[:customer])
-      password = params[:customer][:password]
-      flash[:notice] = "Changes confirmed."
+    return redirect_to(change_password_for_customer_path(@customer), :alert => @customer.errors.as_html) unless  @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
-      redirect_to customer_path(@customer)
-    else
-      flash[:alert] = ['Changing password failed: ', @customer.errors.as_html]
-      render :action => 'change_password_for'
-    end
+    redirect_to customer_path(@customer), :notice => "Password change confirmed."
   end
 
   def change_secret_question
@@ -144,24 +137,26 @@ class CustomersController < ApplicationController
     end
   end
 
+  # Regular user creating new account
   def new
     @customer = Customer.new
-    @customer.guest_checkout = !!params[:guest_checkout]
-    render (current_user.is_staff ? 'admin_new' : 'new')
   end
 
+  # Regular user checking out as guest
+  def guest_checkout_for
+    @customer = Customer.new
+  end
+
+  # Admin adding customer to database
   def admin_new                 # admin create customer
     @customer = Customer.new
   end
 
   def create
-    @is_admin = true            # needed for choosing correct method in 'new' tmpl
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
-    unless @customer.save
-      flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
-      return render(:action => 'new')
-    end
+    return render(:action => 'admin_new',  :alert => ('Creating customer failed: ' + @customer.errors.as_html))  unless @customer.save
+
     (flash[:notice] ||= '') <<  'Account was successfully created.'
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
@@ -174,6 +169,9 @@ class CustomersController < ApplicationController
     redirect_to customer_path(@customer)
   end
 
+  def guest_checkout_create
+  end
+  
   def user_create
     @customer = Customer.new(params[:customer])
     if @customer.save
@@ -183,8 +181,8 @@ class CustomersController < ApplicationController
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
     else
-      flash[:alert] = ["There was a problem creating your account: "] +
-        @customer.errors.full_messages
+      flash[:alert] = "There was a problem creating your account: " <<
+        @customer.errors.as_html
       # for special case of duplicate (existing) email, offer login
       if @customer.unique_email_error
         flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email)).html_safe

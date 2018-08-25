@@ -1,0 +1,6 @@
+%h1 Checkout As Guest
+
+= form_tag guest_checkout_create_customers_path do
+  = render 'billing_address'
+  = submit_tag 'CONTINUE >>'
+  = link_to 'Cancel', store_path, :class => 'genButton'
