@@ -59,7 +59,7 @@ class Customer < ActiveRecord::Base
 
   attr_accessor :must_revalidate_password
 
-  validates :password, :length => {:in => 3..20}, :on => :create, :unless => :created_by_admin
+  validates :password, :length => {:in => 3..20}, :on => :create, :if => :self_created?
   validates :password, :length => {:in => 3..20}, :on => :update, :if => :must_revalidate_password
   
   validates_confirmation_of :password, :on => :create,  :unless => :created_by_admin

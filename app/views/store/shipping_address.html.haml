@@ -22,7 +22,7 @@
     - if @cart.include_donation?
       %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
-    = render :partial => 'customers/billing_address', :object => @recipient, :locals => {:legend => "Gift Recipient"}
+    = render :partial => 'customers/billing_address', :locals => {:customer => @recipient, :legend => "Gift Recipient"}
     = render :partial => 'customers/extra'        
     = link_to '<< Go Back', {:action => (@redirect_to || :index)}, { :class => 'genButton' }
     to change or cancel order, or
