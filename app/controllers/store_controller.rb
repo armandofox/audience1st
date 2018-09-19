@@ -223,7 +223,7 @@ class StoreController < ApplicationController
 
     if finalize_order(@order)
       reset_shopping
-      if @customer.has_never_logged_in?
+      if ! @customer.has_ever_logged_in?
         # forget customer after successful guest checkout
         logout_keeping_session!
       end

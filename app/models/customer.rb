@@ -231,7 +231,7 @@ class Customer < ActiveRecord::Base
   end
 
   def has_ever_logged_in?
-    last_login < Time.zone.parse('2007-04-07') # sentinel date should match what's in schema.rb
+    last_login > Time.zone.parse('2007-04-07') # sentinel date should match what's in schema.rb
   end
 
   def set_labels(labels_list)

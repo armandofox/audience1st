@@ -12,13 +12,14 @@ Feature: Guest checkout
       | show    | qty | type    | price | showdate             |
       | Chicago |   3 | General |  7.00 | May 15, 2010, 8:00pm |
     And I follow "Checkout as Guest"
-    And I fill in the ".billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, alsmith@mail.com"
+    And I fill in the ".billing_info" fields with "Joe Tally, 123 Fake St., Alameda, CA 94501, 510-999-9999, alsmith@mail.com"
 
-  Scenario: successful first-time guest checkout for single-ticket purchases
+  Scenario: successful first-time guest checkout for single-ticket purchases is followed by logout
     When I press "CONTINUE >>"
-    Then I should be logged in as "Al Smith"
-    Then I should be on the checkout page
-    And the 
+    Then I should be on the checkout page for customer "Joe Tally"
+    When I place my order with a valid credit card
+    Then customer Joe Tally should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+    And customer "Joe Tally" should not be logged in
 
   Scenario: after successful guest checkout I should no longer be logged in
 

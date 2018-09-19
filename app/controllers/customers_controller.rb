@@ -174,23 +174,8 @@ class CustomersController < ApplicationController
     email = params[:customer][:email].to_s.strip
     return redirect_to(guest_checkout_customers_path, :alert => "Email can't be blank.") if email.blank?
     @customer = Customer.where(:email => email.downcase).first
-    # if this email exists, AND the customer has previously logged in, they must login to continue; guest c/o won't work.
-    if @customer && @customer.has_ever_logged_in?
-      return redirect_to(new_session_path, :alert => "This email address has previously been used to login with a password. Please provide the email and password to continue, or use one of the Reset Password links below if you've forgotten it.  You can also continue as a guest by using a different email address.")
-    end
-    if @customer
-      # email exists but NEVER logged in: "login" and continue.
-      return create_session(@customer)
-    end
-    # email does not exist: try to create customer and continue
-    @customer = Customer.new(params[:customer])
-    # HACK: this check can be replaced by regular validations once Customer is factored into subclasses
-    if @customer.valid_as_guest_checkout?
-      @customer.save!
-      create_session(@customer)
-    else
-      render :action => :guest_checkout
-    end
+
+    redirect_to_real_login || continue_as_existing_guest || continue_as_new_guest || render(:action => :guest_checkout)
   end
   
   def user_create
@@ -384,6 +369,30 @@ class CustomersController < ApplicationController
       flash[:notice] = e.message +
         "<br/>Please contact #{Option.help_email} if you need help."
       return nil
+    end
+  end
+
+  def redirect_to_real_login
+    # if this email exists, AND the customer has previously logged in, they must login to continue; guest c/o won't work.
+    if @customer && @customer.has_ever_logged_in?
+      redirect_to(new_session_path, :alert => "This email address has previously been used to login with a password. Please provide the email and password to continue, or use one of the Reset Password links below if you've forgotten it.  You can also continue as a guest by using a different email address.")
+    end
+  end
+
+  def continue_as_existing_guest
+    if @customer
+      # email exists but NEVER logged in: "login" and continue.
+      create_session(@customer) #  will redirect to next correct action
+    end
+  end
+
+  def continue_as_new_guest
+    # email does not exist: try to create customer and continue
+    @customer = Customer.new(params[:customer])
+    # HACK: this check can be replaced by regular validations once Customer is factored into subclasses
+    if @customer.valid_as_guest_checkout?
+      @customer.save!
+      create_session(@customer)
     end
   end
 

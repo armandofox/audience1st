@@ -38,11 +38,11 @@ Then /^I should be able to login with username "(.*)" and (that password|passwor
 end
 
 Then /(?:customer )"(.*) (.*)" should (not )?be logged in$/ do |first,last,no|
-  customer = find_customer first,last
+  @customer = find_customer first,last
   if no
-    page.should_not have_content("Signed in as #{customer.full_name}")
+    page.should_not have_content("Signed in as #{@customer.full_name}")
   else
-    page.should have_content("Signed in as #{customer.full_name}")
+    page.should have_content("Signed in as #{@customer.full_name}")
   end
 end
 
