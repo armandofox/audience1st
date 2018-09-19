@@ -232,6 +232,9 @@ class Customer < ActiveRecord::Base
     self.save! 
   end
   
+  def valid_as_guest_checkout?
+  end
+
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email

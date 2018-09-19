@@ -171,6 +171,7 @@ class CustomersController < ApplicationController
   end
 
   def guest_checkout_create
+    @customer = Customer.new(params[:customer])
   end
   
   def user_create
