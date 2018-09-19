@@ -24,8 +24,8 @@ class SessionsController < ApplicationController
         render :action => :new
       else
         u.update_attribute(:last_login,Time.current)
-        u
       end
+      u
     end
   end
 
@@ -40,11 +40,10 @@ class SessionsController < ApplicationController
         else
           redirect_to new_from_secret_session_path
         end
-        return
       else
         u.update_attribute(:last_login,Time.current)
-        u
       end
+      u
     end
   end
 
