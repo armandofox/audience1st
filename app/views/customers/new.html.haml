@@ -6,7 +6,7 @@
   to use your existing billing information.
 
 = form_tag user_create_customers_path do
-  = render 'billing_address'
+  = render :partial => 'billing_address', :object => @customer
   = render 'password'
   = render 'extra'
   = submit_tag 'Create My Account'

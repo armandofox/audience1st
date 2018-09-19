@@ -26,7 +26,7 @@ Feature: Successful checkout with credit card
       | show    | qty | type    | price | showdate             |
       | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
     Then I should be on the shipping info page for customer "Tom Foolery"
-    When I fill in the "billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, alsmith@mail.com"
+    When I fill in the ".billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, alsmith@mail.com"
     And I press "CONTINUE >>"
     Then I should be on the checkout page
     And the gift recipient customer should be "Al Smith"

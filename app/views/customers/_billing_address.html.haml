@@ -1,11 +1,12 @@
 - disabled = defined?(passive) && passive
-%fieldset#billing_info
-  %legend= defined?(legend) ? legend :  'Credit Card Billing Address'
+- customer = local_assigns[:customer] || @customer
+%fieldset.billing_info
+  %legend= local_assigns[:legend] || 'Credit Card Billing Address'
   %p
     Fields
     %span.strong like this
     are required.
-  = fields_for @customer, :namespace => (disabled ? 'gift' : '') do |f|
+  = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
     %label.strong{:for => 'customer_first_name'} First name
     = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled
     %br
@@ -22,6 +23,9 @@
     = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled}
     %label.no_float.strong{:for => 'customer_zip'} Zip
     = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled}
+    %br
+    %label{:for=>:customer_day_phone} Preferred phone
+    = f.text_field :day_phone, {:size => 16, :maxlength => 16}
     %br
     %br
 

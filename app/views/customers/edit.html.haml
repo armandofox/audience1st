@@ -2,7 +2,7 @@
 
 %br
 = form_tag customer_path(@customer), :method => :put do
-  = render 'billing_address'
+  = render :partial => 'billing_address', :object => @customer
   = render 'extra'
   = render 'form_admin' if @gAdminDisplay
   %br

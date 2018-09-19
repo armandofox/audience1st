@@ -176,7 +176,7 @@ class StoreController < ApplicationController
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
-      flash[:alert] = @recipient.errors.as_html
+      flash.now[:alert] = @recipient.errors.as_html
       render :action => :shipping_address
       return
     end

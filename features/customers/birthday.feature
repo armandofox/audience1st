@@ -11,7 +11,6 @@ Background:
 Scenario: Add birthday to profile
 
   When I visit the edit contact info page
-  Then show me the page
   Then nothing should be selected in the "customer_birthday_2i" menu
   When I select "May 12" as the "Birthday (optional)" month and day
   And I press "Save Changes"

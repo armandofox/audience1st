@@ -1,7 +1,7 @@
 %h1.page_heading.center Add Customer
 
 = form_tag customers_path do
-  = render 'billing_address'
+  = render :partial =>  'billing_address', :object => @customer
   = render 'form_admin'
   = submit_tag 'Create Account'
   = link_to 'Cancel', customers_path, :class => 'genButton'
