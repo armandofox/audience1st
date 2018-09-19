@@ -30,6 +30,16 @@ class Customer < ActiveRecord::Base
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
   
+  # There are multiple 'flavors' of customers with different validation requirements.
+  # These should be factored out into subclasses.
+  # | Type            | When used                    | Validations                                  |
+  # | Customer (base) |                              |                                              |
+  # | SelfCreated     | signup; edit info; change pw | All                                          |
+  # | GuestCheckout   | guest checkout               | nonblank email,first,last,address            |
+  # | GiftRecipient   | giftee of someone else       | nonblank first,last; nonblank email OR phone |
+  # | Imported        | import from 3rd party        | none, but all fields FORCED valid on create  |
+
+
   validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
 
   EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
@@ -233,6 +243,12 @@ class Customer < ActiveRecord::Base
   end
   
   def valid_as_guest_checkout?
+    if (first_name.blank? || last_name.blank? || email.blank? || street.blank? || city.blank? || state.blank? || zip.blank?)
+      errors.add :base, "Please provide your email address for order confirmation, and your credit card billing name and address."
+      false
+    else
+      true
+    end
   end
 
   def valid_as_gift_recipient?
