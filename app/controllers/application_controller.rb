@@ -168,8 +168,6 @@ class ApplicationController < ActionController::Base
       # button. Uncomment if you understand the tradeoffs.
       # reset_session
       self.current_user = @user
-      # if user is an admin, enable admin privs
-      @user.update_attribute(:last_login,Time.current)
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
       handle_remember_cookie! new_cookie_flag

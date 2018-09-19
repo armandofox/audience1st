@@ -230,6 +230,10 @@ class Customer < ActiveRecord::Base
     msg
   end
 
+  def has_ever_logged_in?
+    last_login < Time.zone.parse('2007-04-07') # sentinel date should match what's in schema.rb
+  end
+
   def set_labels(labels_list)
     self.labels = (
       labels_list.respond_to?(:each) ?
@@ -247,6 +251,9 @@ class Customer < ActiveRecord::Base
       errors.add :base, "Please provide your email address for order confirmation, and your credit card billing name and address."
       false
     else
+      # this is a HACK: set created_by_admin to bypass most other validations.
+      # This will be fixed when Customer class is refactored into subclasses with their own validations
+      self.created_by_admin = true
       true
     end
   end

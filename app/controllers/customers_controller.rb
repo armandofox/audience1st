@@ -3,7 +3,7 @@ require 'will_paginate/array'
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
-  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate
                              auto_complete_for_customer_full_name)
@@ -144,7 +144,7 @@ class CustomersController < ApplicationController
   end
 
   # Regular user checking out as guest
-  def guest_checkout_for
+  def guest_checkout
     @customer = Customer.new
   end
 
@@ -171,7 +171,26 @@ class CustomersController < ApplicationController
   end
 
   def guest_checkout_create
+    email = params[:customer][:email].to_s.strip
+    return redirect_to(guest_checkout_customers_path, :alert => "Email can't be blank.") if email.blank?
+    @customer = Customer.where(:email => email.downcase).first
+    # if this email exists, AND the customer has previously logged in, they must login to continue; guest c/o won't work.
+    if @customer && @customer.has_ever_logged_in?
+      return redirect_to(new_session_path, :alert => "This email address has previously been used to login with a password. Please provide the email and password to continue, or use one of the Reset Password links below if you've forgotten it.  You can also continue as a guest by using a different email address.")
+    end
+    if @customer
+      # email exists but NEVER logged in: "login" and continue.
+      return create_session(@customer)
+    end
+    # email does not exist: try to create customer and continue
     @customer = Customer.new(params[:customer])
+    # HACK: this check can be replaced by regular validations once Customer is factored into subclasses
+    if @customer.valid_as_guest_checkout?
+      @customer.save!
+      create_session(@customer)
+    else
+      render :action => :guest_checkout
+    end
   end
   
   def user_create

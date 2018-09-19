@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     resources :customers, :except => :destroy do
       collection do
         get  :merge
-        get  :guest_checkout_for
+        get  :guest_checkout
         get  :admin_new
         post :user_create
         post :guest_checkout_create

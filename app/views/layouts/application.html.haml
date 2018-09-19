@@ -37,7 +37,7 @@
                 = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'navbars/admin_tabs'
-              - elsif existing_customer(@customer)
+              - elsif existing_customer(@customer) && @customer.has_ever_logged_in?
                 = render :partial => 'navbars/main_tabs'
               - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
                 = render :partial => 'navbars/season_tabs'
@@ -49,5 +49,5 @@
                 %h1.center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
               = yield
-        = render :partial => 'layouts/login_banner' if current_user
+        = render :partial => 'layouts/login_banner' if current_user && current_user.has_ever_logged_in?
     = render :partial => 'layouts/footer'
