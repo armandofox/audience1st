@@ -12,10 +12,10 @@ class StoreController < ApplicationController
   # index, subscribe, donate_to_fund    valid @customer
   #              |
   #         process_cart
-  #        /           \
-  #  shipping_address   |
-  #           \        /
-  #            checkout                logged in && valid @customer
+  #         /          \
+  # shipping_address   |
+  #         \          /
+  #           checkout                logged in && valid @customer
   #               |
   #          place_order
   #===================================
@@ -151,7 +151,7 @@ class StoreController < ApplicationController
     remember_cart_in_session!
     set_checkout_in_progress true
     # if gift, first collect separate shipping address...
-    if params[:gift] && @cart.include_vouchers?
+    if params[:gift] && @cart.includes_vouchers?
       redirect_to shipping_address_path(@customer)
     else
       # otherwise go directly to checkout
@@ -161,7 +161,7 @@ class StoreController < ApplicationController
   end
 
   def shipping_address
-    @mailable = @cart.has_mailable_items?
+    @mailable = @cart.includes_mailable_items?
     @recipient ||= (@cart.customer || Customer.new) and return if request.get?
 
     # request is a POST: collect shipping address
@@ -193,12 +193,12 @@ class StoreController < ApplicationController
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message =
-      if @cart.include_regular_vouchers?
+      if @cart.includes_regular_vouchers?
       then (Option.precheckout_popup ||
         "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.")
       else ""
       end
-    @cart_contains_class_order = @cart.contains_enrollment?
+    @cart_contains_class_order = @cart.includes_enrollment?
     @cart.processed_by ||= current_user()
     @cart.purchaser ||= @customer
     @cart.customer ||= @cart.purchaser

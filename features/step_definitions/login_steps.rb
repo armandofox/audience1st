@@ -30,6 +30,18 @@ Given /^I (am logged in|login) as (.*)?$/ do |_,who|
   verify_successful_login
 end
 
+Given /^customer "(.*) (.*)" has previously logged in$/ do |first,last|
+  cust = find_customer(first,last)
+  cust.update_attribute(:last_login, 1.second.ago)
+  expect(cust.has_ever_logged_in?).to be_truthy
+end
+
+When /^I login with the correct credentials for customer "(.*) (.*)"$/ do |first,last|
+  cust = find_customer(first,last)
+  fill_in 'email', :with => cust.email
+  fill_in 'password', :with => 'pass'
+  click_button 'Login'
+end
 
 Then /^I should be able to login with username "(.*)" and (that password|password "(.*)")$/ do |username,use_prev,password|
   @password = password if use_prev !~ /that/

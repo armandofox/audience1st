@@ -95,7 +95,7 @@ describe Order, 'finalizing' do
     end
     it 'should fail if contains a course enrollment without enrollee name' do
       @order.comments = nil
-      allow(@order).to receive(:contains_enrollment?).and_return(true)
+      allow(@order).to receive(:includes_enrollment?).and_return(true)
       verify_error /You must specify the enrollee's name for classes/ # '
     end
   end

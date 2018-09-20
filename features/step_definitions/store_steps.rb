@@ -66,6 +66,20 @@ When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*
   end
 end
 
+When /^I try to checkout as guest using "(.*)"$/ do |info|
+  steps %Q{
+  When I follow "Checkout as Guest"
+  And I fill in the ".billing_info" fields with "#{info}"
+}
+end
+
+When /^I successfully complete guest checkout$/ do
+  steps %Q{
+When I press "CONTINUE >>"
+And I place my order with a valid credit card
+}
+end
+
 Then /^the gift recipient customer should be "(.*)\s+(.*)"$/ do |first,last|
   verify_customer_in_div "#gift_recipient", first, last
 end

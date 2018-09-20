@@ -12,5 +12,5 @@ Scenario: successful import
   And a valid Goldstar will-call email "valid.eml" for "Of Mice and Men" on Sunday, February 6, 2011, 2:00pm
   When that valid email is received and processed by GoldstarAutoImporter
   Then customer "Heebok Park" should exist
-  And customer Heebok Park should have 2 "Goldstar 1/2 price" tickets for "Of Mice and Men" on Sunday, February 6, 2011, 2:00pm
-  And customer Marvel Pierce should have 2 "Goldstar 1/2 price" tickets for "Of Mice and Men" on Sunday, February 6, 2011, 2:00pm
+  And customer "Heebok Park" should have 2 "Goldstar 1/2 price" tickets for "Of Mice and Men" on Sunday, February 6, 2011, 2:00pm
+  And customer "Marvel Pierce" should have 2 "Goldstar 1/2 price" tickets for "Of Mice and Men" on Sunday, February 6, 2011, 2:00pm

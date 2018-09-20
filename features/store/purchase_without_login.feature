@@ -18,4 +18,4 @@ Background:
   When I place my order with a valid credit card
   Then I should be on the order confirmation page
   And I should see "You have paid a total of $21.00 by Credit card"
-  And customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+  And customer "Tom Foolery" should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm

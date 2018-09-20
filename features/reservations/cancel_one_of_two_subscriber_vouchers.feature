@@ -17,6 +17,6 @@ Scenario: Cancel/change multiple reservation the customer want
   When I select "1" from "cancelnumber"
   And I press "Click to Cancel"
   Then I should see "1 of your reservations have been cancelled"
-  And  customer Tom Foolery should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
+  And  customer "Tom Foolery" should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 
 

@@ -40,8 +40,8 @@ Scenario: manual merge
   Then I should see /Transferred .+ to customer/
   And customer "MaryJane Weigandt" should not exist
   And customer "Janey Weigandt" should have the following attributes:
-   | attribute  | value        |
-   | last_login | 2011-01-03   |
-   | zip        | 99949        |
+   | attribute  | value          |
+   | last_login | 2011-01-03     |
+   | zip        | 99949          |
    | email      | janey@mail.com |
-   | street     | 11 Main St   |
+   | street     | 11 Main St     |

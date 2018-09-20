@@ -18,7 +18,7 @@ Feature: Successful checkout with credit card
     When I place my order with a valid credit card
     Then I should be on the order confirmation page for customer "Tom Foolery"
     And I should see "You have paid a total of $21.00 by Credit card"
-    And customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+    And customer "Tom Foolery" should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
 
   Scenario: successful gift order without donation
 
@@ -33,8 +33,8 @@ Feature: Successful checkout with credit card
     And the billing customer should be "Tom Foolery"
     When  I place my order with a valid credit card
     Then I should be on the order confirmation page for customer "Tom Foolery"
-    And customer Tom Foolery should have 0 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
-    And customer Al Smith should have 2 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+    And customer "Tom Foolery" should have 0 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+    And customer "Al Smith" should have 2 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
 
   Scenario: successful subscription purchase
 

@@ -22,7 +22,7 @@ describe Order do
   describe 'creating from bare donation' do
     before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, create(:customer)) }
     it 'should not be completed' do ; @order.should_not be_completed ; end
-    it 'should include a donation' do ; @order.include_donation?.should be_truthy  ; end
+    it 'should include a donation' do ; @order.includes_donation?.should be_truthy  ; end
     it 'should_not be_a_gift' do ; @order.should_not be_a_gift ; end
     it 'should not be ready' do ; @order.should_not be_ready_for_purchase, @order.errors.full_messages ; end
     it 'should not show as empty' do ; @order.cart_empty?.should be_falsey ; end
@@ -43,6 +43,36 @@ describe Order do
     end
   end
 
+  describe 'guest checkout' do
+    before :each do
+      @order = Order.new
+      @order.add_tickets(create(:valid_voucher), 2)
+    end
+    context 'allowed when includes' do
+      specify 'regular tickets only' do
+        expect(@order).to be_ok_for_guest_checkout
+      end
+      specify 'donation' do
+        @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
+        expect(@order).to be_ok_for_guest_checkout
+      end
+    end
+    context 'not allowed when includes' do
+      specify 'subscription' do
+        @order.add_tickets(create(:valid_voucher, :vouchertype => create(:bundle, :subscription => true)), 1)
+        expect(@order).not_to be_ok_for_guest_checkout
+      end
+      specify 'class enrollment' do
+        some_class = create(:show, :event_type => 'Class')
+        @order.add_tickets(create(:valid_voucher, :showdate => create(:showdate, :show => some_class)), 1)
+        expect(@order).not_to be_ok_for_guest_checkout
+      end
+      specify 'retail items' do
+        @order.add_tickets(create(:valid_voucher, :vouchertype => create(:nonticket_vouchertype)), 1)
+        expect(@order).not_to be_ok_for_guest_checkout
+      end
+    end
+  end
 
   describe 'gift' do
     before :each do ; @c = create(:customer) ; @p = create(:customer) ; end

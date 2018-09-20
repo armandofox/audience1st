@@ -6,7 +6,7 @@
     = render :partial => 'customers/billing_address', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
 = form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
-  - if @cart.include_vouchers? &&  !@cart.gift?
+  - if @cart.includes_vouchers? &&  !@cart.gift?
     #someone_else
     %h2 Who's Attending?
     %p
