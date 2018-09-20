@@ -21,6 +21,14 @@ en:
       listed as "limited availability" (availability grade 2) if this
       percentage of the house is sold.
 
+    allow_guest_checkout: >
+
+      Allow buyers of "simple" orders (single-ticket revenue sales only; not subscriptions,
+      course enrollments, or gift orders) to checkout as a guest, without having to
+      set up an account password.  An account will actually be created, but the customer won't be
+      able to log in to it.  As long as they use the same email address each time,
+      multiple guest checkouts will all be tied to that account.
+
     allow_gift_tickets: >
 
       Whether customers can purchase individual tickets as a gift for another customer.

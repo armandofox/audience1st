@@ -7,7 +7,8 @@ Feature: Guest checkout
 
 Background: 
 
-  Given I am not logged in  
+  Given the boolean setting "Allow guest checkout" is "true"
+  And I am not logged in  
   And my cart contains the following tickets:
     | show    | qty | type    | price | showdate             |
     | Chicago |   3 | General |  7.00 | May 15, 2010, 8:00pm |
@@ -56,3 +57,8 @@ Scenario: if guest checkout fails because of existing account, checkout continue
 
 Scenario: option setting can disable guest checkout
     
+  Given the boolean setting "Allow guest checkout" is "false"
+  And my cart contains the following tickets:
+    | show      | qty | type    | price | showdate             |
+    | Priscilla |   3 | General |  7.00 | May 16, 2010, 8:00pm |
+  Then I should not see "Checkout as Guest"    

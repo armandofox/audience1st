@@ -9,7 +9,7 @@
   %h2 New Customers
   %span#new_account.new_account= link_to "Create Account", new_customer_path, :class => 'genButton'
   %br
-  - if @gCheckoutInProgress  &&  @cart.ok_for_guest_checkout?
+  - if @gCheckoutInProgress  &&  Option.allow_guest_checkout  &&  @cart.ok_for_guest_checkout?
     %span#enter_billing.new_account= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'genButton'
     %br
   - else 
