@@ -39,13 +39,13 @@ end
 Given /^I (?:am acting on behalf of|switch to) customer "(.*) (.*)"$/ do |first,last|
   customer = find_or_create_customer first,last
   visit customer_path(customer)
-  with_scope('div#on_behalf_of_customer') do
-    page.should have_content("Customer: #{first} #{last}")
+  with_scope('#staffButtons') do
+    page.should have_content(customer.full_name)
   end
 end
 
 Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
-  with_scope('#onBehalfOfName') do
+  with_scope('#staffButtons') do
     page.should have_content(full_name)
   end
 end

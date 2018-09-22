@@ -9,6 +9,6 @@
         = link_to 'Transfer&hellip;'.html_safe, customer_vouchers_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
         = link_to 'Donations&hellip;'.html_safe, {:controller => 'donations', :action => 'index', :use_cid => 1, :commit => 'Go', :cid => customer_path(@customer).html_safe}, :class => 'btn btn-sm btn-outline-secondary'
         = link_to 'Transactions&hellip;'.html_safe, txns_path(:txn_filter => @customer.id), :class => 'btn btn-sm btn-outline-secondary'
-        = link_to 'New Donation&hellip;'.html_safe, new_customer_donation_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
+        = link_to 'New Donation...', new_customer_donation_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
   .clear
 
