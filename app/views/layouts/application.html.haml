@@ -3,6 +3,8 @@
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => favicon_path}
 
+    %link{rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"}
+
     = stylesheet_link_tag :application, :media => 'all'
     = stylesheet_link_tag Option.stylesheet_url, :media => 'all'
 
@@ -12,6 +14,7 @@
     %title= @page_title || h(action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
     %meta{:name=>:description, :content=>''}/
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1, shrink-to-fit=no"}
 
     = csrf_meta_tags
 
@@ -39,10 +42,10 @@
                 = render :partial => 'navbars/admin_tabs'
               - elsif existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
                 = render :partial => 'navbars/main_tabs'
-              - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
+              - if @gAdminDisplay
                 = render :partial => 'navbars/season_tabs'
                 = render :partial => 'customers/quick_search'
-                = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+                = render :partial => 'navbars/staff_buttons'
             #content.clear
               = render :partial => 'messages/notices'
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)

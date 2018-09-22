@@ -1,11 +1,10 @@
 #welcome_header
-  Signed in as 
-  = link_to current_user.full_name, customer_path(current_user)
-  = link_to 'Log Out', logout_path, :class => 'genButton'
+  %br
+  = link_to 'Buy More Tickets', store_path(@customer), :class => 'btn btn-success'
+  = link_to 'Log Out', logout_path, :class => 'btn btn-danger float-right'
   - if @gAdminDisplay
-    = link_to 'Online Help', 'http://docs.audience1st.com', :class => 'genButton', :target => '_blank'
-    = link_to 'Regular Patron View', temporarily_disable_admin_session_path, :class => 'genButton'
+    = link_to 'Regular Patron View', temporarily_disable_admin_session_path, :class => 'btn btn-secondary float-right'
     = popup_help_for :disable_admin
   - elsif current_user().is_staff
-    = link_to 'Admin View', reenable_admin_session_path, :class => 'genButton'
+    = link_to 'Admin View', reenable_admin_session_path, :class => 'btn btn-secondary float-right'
     = popup_help_for :disable_admin

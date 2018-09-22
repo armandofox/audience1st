@@ -1,8 +1,14 @@
-#staffButtons.adminField
-  = link_to 'Add Comps&hellip;'.html_safe, new_customer_voucher_path(@customer), :class => 'adminButton'
-  = link_to 'Orders&hellip;'.html_safe, orders_path(:customer_id => @customer), :class => 'adminButton'
-  = link_to 'Transfer&hellip;'.html_safe, customer_vouchers_path(@customer), :class => 'adminButton'
-  = link_to 'Donations&hellip;'.html_safe, {:controller => 'donations', :action => 'index', :use_cid => 1, :commit => 'Go', :cid => customer_path(@customer).html_safe}, :class => 'adminButton'
-  = link_to 'Transactions&hellip;'.html_safe, txns_path(:txn_filter => @customer.id), :class => 'adminButton'
-  = link_to 'Record Donation&hellip;'.html_safe, new_customer_donation_path(@customer), :class => 'adminButton'
-.clear
+- if @customer
+  #staffButtons.adminField.container
+    .row
+      .col-md-3
+        .lead.text-left.text-primary= @customer.full_name
+      .col-md-9.text-right
+        = link_to 'Add Comps&hellip;'.html_safe, new_customer_voucher_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
+        = link_to 'Orders&hellip;'.html_safe, orders_path(:customer_id => @customer), :class => 'btn btn-sm btn-outline-secondary'
+        = link_to 'Transfer&hellip;'.html_safe, customer_vouchers_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
+        = link_to 'Donations&hellip;'.html_safe, {:controller => 'donations', :action => 'index', :use_cid => 1, :commit => 'Go', :cid => customer_path(@customer).html_safe}, :class => 'btn btn-sm btn-outline-secondary'
+        = link_to 'Transactions&hellip;'.html_safe, txns_path(:txn_filter => @customer.id), :class => 'btn btn-sm btn-outline-secondary'
+        = link_to 'New Donation&hellip;'.html_safe, new_customer_donation_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
+  .clear
+
