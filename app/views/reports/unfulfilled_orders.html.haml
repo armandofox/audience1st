@@ -1,7 +1,7 @@
 %h1= "#{@vouchers.length} unfulfilled orders (#{@unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
 
 %p{:align=>:top}
-  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'genButton'
+  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'btn btn-primary'
   = check_box_tag 'Check/Clear All', :id => 'all'
   = javascript_tag %q{$('#all').change(function() { $('#uf input.check').prop('checked', $(this).prop('checked')) }) }
 

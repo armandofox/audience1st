@@ -43,7 +43,7 @@
       = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
       -# hidden field 'commit' filled in by javascript on cc purchase
       = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-      = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
+      = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'btn btn-primary'} 
 
   - if @is_admin
     #other_payments.adminDiv

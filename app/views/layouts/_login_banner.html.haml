@@ -1,10 +1,10 @@
 #welcome_header
-  %br
-  = link_to 'Buy More Tickets', store_path(@customer), :class => 'btn btn-success'
   = link_to 'Log Out', logout_path, :class => 'btn btn-danger float-right'
   - if @gAdminDisplay
-    = link_to 'Regular Patron View', temporarily_disable_admin_session_path, :class => 'btn btn-secondary float-right'
-    = popup_help_for :disable_admin
+    .float-right
+      = popup_help_for :disable_admin
+      = link_to 'Regular Patron View', temporarily_disable_admin_session_path, :class => 'btn btn-secondary'
   - elsif current_user().is_staff
-    = link_to 'Admin View', reenable_admin_session_path, :class => 'btn btn-secondary float-right'
-    = popup_help_for :disable_admin
+    .float-right
+      = popup_help_for :disable_admin
+      = link_to 'Admin View', reenable_admin_session_path, :class => 'btn btn-secondary'

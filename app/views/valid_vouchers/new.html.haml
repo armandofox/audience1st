@@ -17,8 +17,8 @@
         = radio_button_tag "addtojustone", 0, @add_to_all
         All Dates
         %br/
-  = submit_tag "Add"
-  = submit_tag "Save & Add Another"
-  = link_to 'Cancel', edit_show_path(@showdate.show), {:class => 'genButton' }
+  = submit_tag "Add", :class => 'btn btn-success'
+  = submit_tag "Save & Add Another", :class => 'btn btn-success'
+  = link_to 'Cancel', edit_show_path(@showdate.show), {:class => 'btn btn-primary' }
 
 

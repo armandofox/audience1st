@@ -24,6 +24,6 @@
           = radio_button_tag c, 1
           = h @cust[1].send(c)
 
-  = submit_tag 'Merge Records'
-  = link_to 'Cancel', customers_path, :class => 'genButton'
+  = submit_tag 'Merge Records', :class => 'btn btn-success'
+  = link_to 'Cancel', customers_path, :class => 'btn btn-primary'
 

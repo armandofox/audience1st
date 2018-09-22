@@ -39,7 +39,7 @@
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
               = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name).html_safe if qty>0 
         %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
-        %td= link_to 'Clone', clone_vouchertype_path(vouchertype), :class => 'genButton'
+        %td= link_to 'Clone', clone_vouchertype_path(vouchertype), :class => 'btn btn-sm btn-warning'
 
 %br/
-= link_to  'New Voucher Type', new_vouchertype_path, :class => 'genButton'
+= link_to  'New Voucher Type', new_vouchertype_path, :class => 'btn btn-primary'

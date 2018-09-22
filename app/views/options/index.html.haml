@@ -18,7 +18,7 @@
         
   .pageDiv
     %h1 Accepting Donations and Retail Sales Online
-    = link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'genButton'
+    = link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
     = render_collection_of_options f, %w( |
       default_retail_account_code |
       default_donation_account_code |
@@ -76,7 +76,7 @@
 
   .pageDiv
     %h1 Order Service Charges
-    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'genButton'
+    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'btn btn-primary'
     = render_collection_of_options f, %w( |
       subscription_order_service_charge |
       subscription_order_service_charge_description |
@@ -133,8 +133,8 @@
       to test if the current values seem to be working.
     %p
       = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges'
-      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'genButton'
-      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'genButton'
+      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'btn btn-primary'
+      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'btn btn-primary'
 
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |

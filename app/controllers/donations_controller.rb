@@ -23,7 +23,9 @@ class DonationsController < ApplicationController
       where.not(:customer_id => Customer.walkup_customer.id).
       order('orders.sold_on')
     if params[:use_cid]
-      @donations = @donations.where(:customer_id => Customer.id_from_route(params[:cid]))
+      cid = Customer.id_from_route(params[:cid])
+      @donations = @donations.where(:customer_id => cid)
+      @full_name = Customer.find(cid).full_name
     end
     if params[:use_date]
       @donations = @donations.where('orders.sold_on' => mindate..maxdate)

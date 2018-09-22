@@ -67,8 +67,8 @@ en:
 
     merge_customers: >
 
-      To merge duplicates, select exactly 2 customer records.  Merging
-      manually lets you choose which field values are retained; merging
+      To merge duplicates, select exactly 2 customer records.  Manual Merge
+      lets you choose which field values are retained; Auto Merge
       automatically retains all nonblank field values, breaking ties by
       preferring the customer record that has had the most recent activity.
 
