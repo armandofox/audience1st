@@ -7,7 +7,7 @@
       = render :partial => 'walkup_sales_tickets'
     #payment.column
       %p.column_header 2. Collect & record payment
-      #whoops_button.c= link_to 'Whoops, I Made a Mistake', report_walkup_sale_path(@showdate), :class => 'genButton'
+      #whoops_button.c= link_to 'Whoops, I Made a Mistake', report_walkup_sale_path(@showdate), :class => 'btn btn-warning'
       #payment_types
         %label.no_float{:for => 'payment_type_credit_card'} Credit Card
         = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"

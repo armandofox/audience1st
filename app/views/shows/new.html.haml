@@ -2,6 +2,6 @@
 
 = form_tag shows_path do
   = render :partial => 'form'
-  = submit_tag "Create"
+  = submit_tag "Create", :class => 'btn btn-success'
 
-= link_to "Don't Create", shows_path, :class => 'genButton'
+= link_to "Don't Create", shows_path, :class => 'btn btn-primary'

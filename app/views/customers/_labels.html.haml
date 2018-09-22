@@ -4,5 +4,5 @@
       - checkbox_for_label(l, @customer.labels.include?(l))
   %label &nbsp;
   %p
-    = link_to 'Create/Edit Labels&hellip;'.html_safe, labels_path(:return_to => request.path), :class => 'genButton'
+    = link_to 'Create/Edit Labels&hellip;'.html_safe, labels_path(:return_to => request.path), :class => 'btn btn-primary'
     = popup_help_for 'customer_labels'

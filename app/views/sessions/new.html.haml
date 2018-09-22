@@ -7,15 +7,15 @@
 
 #new_customer
   %h2 New Customers
-  %span#new_account.new_account= link_to "Create Account", new_customer_path, :class => 'genButton'
+  %span#new_account.new_account= link_to "Create Account", new_customer_path, :class => 'btn btn-primary'
   %br
   - if @gCheckoutInProgress  &&  Option.allow_guest_checkout  &&  @cart.ok_for_guest_checkout?
-    %span#enter_billing.new_account= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'genButton'
+    %span#enter_billing.new_account= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'btn btn-primary'
     %br
   - else 
-    = link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'genButton'}
+    = link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'btn btn-primary'}
     %br
-    = link_to_if_option_text :homepage_subscription_sales_text, store_path, {:class => 'genButton'}
+    = link_to_if_option_text :homepage_subscription_sales_text, store_path, {:class => 'btn btn-primary'}
     %br
     
 .clear
