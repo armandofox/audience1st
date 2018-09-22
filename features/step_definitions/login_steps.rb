@@ -5,7 +5,7 @@ module CustomerLoginHelper
     fill_in 'email', :with => @customer.email
     fill_in 'password', :with => @password
     click_button 'Login'
-    page.should have_content("Signed in as #{@customer.first_name}")
+    page.should have_content("Welcome, #{@customer.full_name}")
     page.should have_css('#customer_quick_search') if @is_admin
   end
 end

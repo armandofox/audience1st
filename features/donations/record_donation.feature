@@ -8,7 +8,7 @@ Background:
 
   Given I am logged in as boxoffice manager
   And I am on the home page for customer "Tom Foolery"
-  And I follow "Record Donation"
+  And I follow "New Donation..."
 
 Scenario: record valid check donation
 
