@@ -49,5 +49,5 @@
                 %h1.center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
               = yield
-        = render :partial => 'layouts/login_banner' if current_user && current_user.has_ever_logged_in?
+        = render :partial => 'layouts/login_banner' if current_user
     = render :partial => 'layouts/footer'
