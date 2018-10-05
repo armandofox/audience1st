@@ -3,9 +3,9 @@ require 'will_paginate/array'
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
-  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password)
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
-  ADMIN_ACTIONS =         %w(create search merge finalize_merge index list_duplicate
+  ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate
                              auto_complete_for_customer_full_name)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
@@ -69,7 +69,7 @@ class CustomersController < ApplicationController
     # set the return-to so that form buttons can do the right thing.
     # unless admin, remove "extra contact" fields
     params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
-    notice = []
+    notice = ''
     begin
       if ((newrole = params[:customer].delete(:role))  &&
           newrole != @customer.role_name  &&
@@ -83,19 +83,19 @@ class CustomersController < ApplicationController
       @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       # if success, and the update is NOT being performed by an admin,
       # clear the created-by-admin flag
-      @customer.update_attribute(:created_by_admin, false) if current_user == @customer
+      @customer.update_attribute(:created_by_admin, false) unless current_user.is_staff
       notice << "Contact information for #{@customer.full_name} successfully updated."
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :logged_in_id => current_user.id,
-        :comments => notice.join(' '))
+        :comments => notice)
       if @customer.email_changed? && @customer.valid_email_address? &&
           params[:dont_send_email].blank?
         # send confirmation email
         email_confirmation(:confirm_account_change,@customer,
                            "updated your email address in our system")
       end
-      redirect_to customer_path(@customer), :notice => notice.join(' ')
+      redirect_to customer_path(@customer), :notice => notice
     rescue ActiveRecord::RecordInvalid
       redirect_to edit_customer_path(@customer), :alert => "Update failed: " + @customer.errors.as_html
     rescue StandardError => e
@@ -106,18 +106,12 @@ class CustomersController < ApplicationController
 
   def change_password_for
     return if request.get?
-    @customer.validate_password = true
-    if @customer.update_attributes(params[:customer])
-      password = params[:customer][:password]
-      flash[:notice] = "Changes confirmed."
+    @customer.must_revalidate_password = true
+    return redirect_to(change_password_for_customer_path(@customer), :alert => @customer.errors.as_html) unless  @customer.update_attributes(params[:customer])
       Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
       :comments => 'Change password')
-      redirect_to customer_path(@customer)
-    else
-      flash[:alert] = ['Changing password failed: ', @customer.errors.as_html]
-      render :action => 'change_password_for'
-    end
+    redirect_to customer_path(@customer), :notice => "Password change confirmed."
   end
 
   def change_secret_question
@@ -144,18 +138,48 @@ class CustomersController < ApplicationController
     end
   end
 
+  # Regular user creating new account
   def new
-    @is_admin = current_user.try(:is_boxoffice)
     @customer = Customer.new
   end
 
+  # Regular user checking out as guest
+  def guest_checkout
+    @customer = Customer.new
+  end
+
+  # Admin adding customer to database
+  def admin_new                 # admin create customer
+    @customer = Customer.new
+  end
+
+  def create
+    @customer = Customer.new(params[:customer])
+    @customer.created_by_admin = true
+    return render(:action => 'admin_new',  :alert => ('Creating customer failed: ' + @customer.errors.as_html))  unless @customer.save
+
+    (flash[:notice] ||= '') <<  'Account was successfully created.'
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => @customer.id,
+      :comments => 'new customer added',
+      :logged_in_id => current_user.id)
+    # if valid email, send user a welcome message
+    unless params[:dont_send_email]
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
+    end
+    redirect_to customer_path(@customer)
+  end
+
+  def guest_checkout_create
+    email = params[:customer][:email].to_s.strip
+    return redirect_to(guest_checkout_customers_path, :alert => "Email can't be blank.") if email.blank?
+    @customer = Customer.where(:email => email.downcase).first
+
+    redirect_to_real_login || continue_as_existing_guest || continue_as_new_guest || render(:action => :guest_checkout)
+  end
+  
   def user_create
     @customer = Customer.new(params[:customer])
-    if @gCheckoutInProgress && @customer.day_phone.blank?
-      flash[:alert] = "Please provide a contact phone number in case we need to contact you about your order."
-      render :action => 'new'
-      return
-    end
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
       Txn.add_audit_record(:txn_type => 'edit',
@@ -163,8 +187,8 @@ class CustomersController < ApplicationController
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
     else
-      flash[:alert] = ["There was a problem creating your account: "] +
-        @customer.errors.full_messages
+      flash[:alert] = "There was a problem creating your account: " <<
+        @customer.errors.as_html
       # for special case of duplicate (existing) email, offer login
       if @customer.unique_email_error
         flash[:alert] << sprintf("<a href=\"%s\">Sign in as #{@customer.email}</a>", login_path(:email => @customer.email)).html_safe
@@ -252,26 +276,6 @@ class CustomersController < ApplicationController
     flash[:notice] = result || c0
     Rails.logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
     redirect_to_last_list
-  end
-
-  def create
-    @is_admin = true            # needed for choosing correct method in 'new' tmpl
-    @customer = Customer.new(params[:customer])
-    @customer.created_by_admin = true
-    unless @customer.save
-      flash[:alert] = ['Creating customer failed: ', @customer.errors.as_html]
-      return render(:action => 'new')
-    end
-    (flash[:notice] ||= '') <<  'Account was successfully created.'
-    Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @customer.id,
-      :comments => 'new customer added',
-      :logged_in_id => current_user.id)
-    # if valid email, send user a welcome message
-    unless params[:dont_send_email]
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
-    end
-    redirect_to customer_path(@customer)
   end
 
   # AJAX helpers
@@ -365,6 +369,30 @@ class CustomersController < ApplicationController
       flash[:notice] = e.message +
         "<br/>Please contact #{Option.help_email} if you need help."
       return nil
+    end
+  end
+
+  def redirect_to_real_login
+    # if this email exists, AND the customer has previously logged in, they must login to continue; guest c/o won't work.
+    if @customer && @customer.has_ever_logged_in?
+      redirect_to(new_session_path, :alert => "This email address has previously been used to login with a password. Please provide the email and password to continue, or use one of the Reset Password links below if you've forgotten it.  You can also continue as a guest by using a different email address.")
+    end
+  end
+
+  def continue_as_existing_guest
+    if @customer
+      # email exists but NEVER logged in: "login" and continue.
+      create_session(@customer) #  will redirect to next correct action
+    end
+  end
+
+  def continue_as_new_guest
+    # email does not exist: try to create customer and continue
+    @customer = Customer.new(params[:customer])
+    # HACK: this check can be replaced by regular validations once Customer is factored into subclasses
+    if @customer.valid_as_guest_checkout?
+      @customer.save!
+      create_session(@customer)
     end
   end
 

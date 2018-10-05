@@ -1,0 +1,17 @@
+%fieldset#extra
+  %legend Other Contact Info
+  = fields_for @customer do |f|
+    %label{:for=>:customer_eve_phone} Alternate phone
+    = f.text_field :eve_phone, {:size => 16, :maxlength => 16}
+    %br
+    %label &nbsp;
+    = f.check_box :e_blacklist
+    %label.no_float{:for => :customer_e_blacklist} Please don't send email about upcoming events.
+    %br
+    %label &nbsp;
+    = f.check_box :blacklist
+    %label.no_float{:for=>:customer_blacklist} Please don't send announcements via US Mail
+    %br
+
+    %label{:for => :customer_birthday} Birthday (optional)
+    = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day]

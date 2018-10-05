@@ -1,25 +1,13 @@
-%h1.page_heading.center= @gCheckoutInProgress ? 'Billing Information' : 'Create Your Account'
+%h1.page_heading.center Sign Up
 
-#inner_wrapper
-  %p.strong 
-    Subscribers, please
-    = link_to 'sign in', login_path
-    to use your existing billing information.
+%p.strong 
+  Already have an account?
+  = link_to 'Sign in', login_path
+  to use your existing billing information.
 
-  - if @is_admin
-    = form_tag customers_path do
-      = render :partial => 'form', :object => @customer
-      = render :partial => 'password' 
-      = render :partial => 'form_admin'
-      = submit_tag "Create New Customer Account"
-      = link_to 'Cancel', customers_path, :class => 'genButton'
-  - else
-    = form_tag user_create_customers_path do
-      = render :partial => 'form', :object => @customer
-      = render :partial => 'password'
-      - if @gCheckoutInProgress
-        = submit_tag 'CONTINUE >>'
-        = link_to 'Cancel', store_path, :class => 'genButton'
-      - else
-        = submit_tag 'Create My Account'
-        = link_to 'Cancel', login_path, :class => 'genButton'
+= form_tag user_create_customers_path do
+  = render :partial => 'billing_address', :locals => {:customer => @customer}
+  = render 'password'
+  = render 'extra'
+  = submit_tag 'Create My Account'
+  = link_to 'Cancel', (@gCheckoutInProgress ? store_path : login_path), :class => 'genButton'

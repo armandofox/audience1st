@@ -54,7 +54,7 @@ When /^I try to redeem the "(.*)" discount code$/ do |promo|
 end
 
 When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*(\S+)\s+(\S+),\s*([^,]+),\s*(.*@.*)"$/ do |fieldset, first, last, street, city, state, zip, phone, email|
-  with_scope "fieldset##{fieldset}" do
+  with_scope "fieldset#{fieldset}" do
     fill_in 'customer[first_name]', :with => first
     fill_in 'customer[last_name]', :with => last
     fill_in 'customer[street]', :with => street
@@ -64,6 +64,20 @@ When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*
     fill_in 'customer[day_phone]', :with => phone
     fill_in 'customer[email]', :with => email
   end
+end
+
+When /^I try to checkout as guest using "(.*)"$/ do |info|
+  steps %Q{
+  When I follow "Checkout as Guest"
+  And I fill in the ".billing_info" fields with "#{info}"
+}
+end
+
+When /^I successfully complete guest checkout$/ do
+  steps %Q{
+When I press "CONTINUE >>"
+And I place my order with a valid credit card
+}
 end
 
 Then /^the gift recipient customer should be "(.*)\s+(.*)"$/ do |first,last|

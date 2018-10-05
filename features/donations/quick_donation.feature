@@ -24,7 +24,7 @@ Scenario: donor not logged in but has matching account
   And   I am not logged in
 
   And   I go to the quick donation page
-  When  I fill in the "billing_info" fields with "Tom Foolery, 123 Fake St, Oakland, CA 94601, 510-555-5555, tom@foolery.com"
+  When  I fill in the ".billing_info" fields with "Tom Foolery, 123 Fake St, Oakland, CA 94601, 510-555-5555, tom@foolery.com"
   And   I fill in "Donation amount" with "20"
   And   I press "Charge Donation to Credit Card"
 
@@ -36,7 +36,7 @@ Scenario: donor not logged in and no previous account
 
   Given I am not logged in
   When I go to the quick donation page
-  And I fill in the "billing_info" fields with "Joe Mallon, 123 Fake St, Oakland, CA 94611, 555-1212, joe@joescafe.com"
+  And I fill in the ".billing_info" fields with "Joe Mallon, 123 Fake St, Oakland, CA 94611, 555-1212, joe@joescafe.com"
   And I fill in "Donation amount" with "10"
   And I press "Charge Donation to Credit Card"
 

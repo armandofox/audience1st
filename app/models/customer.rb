@@ -30,6 +30,16 @@ class Customer < ActiveRecord::Base
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
   
+  # There are multiple 'flavors' of customers with different validation requirements.
+  # These should be factored out into subclasses.
+  # | Type            | When used                    | Validations                                  |
+  # | Customer (base) |                              |                                              |
+  # | SelfCreated     | signup; edit info; change pw | All                                          |
+  # | GuestCheckout   | guest checkout               | nonblank email,first,last,address            |
+  # | GiftRecipient   | giftee of someone else       | nonblank first,last; nonblank email OR phone |
+  # | Imported        | import from 3rd party        | none, but all fields FORCED valid on create  |
+
+
   validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
 
   EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
@@ -57,12 +67,13 @@ class Customer < ActiveRecord::Base
   validates_length_of :last_name, :within => 1..50
   validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
-  attr_accessor :validate_password
-  validates_length_of :password, :on => :create, :if => :self_created?, :in => 1..20
-  validates_length_of :password, :on => :update, :if => :validate_password, :in => 1..20
-  validates_confirmation_of :password, :if => :self_created?
+  attr_accessor :must_revalidate_password
 
+  validates :password, :length => {:in => 3..20}, :on => :create, :if => :self_created?
+  validates :password, :length => {:in => 3..20}, :on => :update, :if => :must_revalidate_password
   
+  validates_confirmation_of :password, :on => :create,  :unless => :created_by_admin
+  validates_confirmation_of :password, :on => :update,  :if => :must_revalidate_password  
 
   attr_accessor :force_valid         
   attr_accessor :gift_recipient_only 
@@ -219,6 +230,10 @@ class Customer < ActiveRecord::Base
     msg
   end
 
+  def has_ever_logged_in?
+    last_login > Time.zone.parse('2007-04-07') # sentinel date should match what's in schema.rb
+  end
+
   def set_labels(labels_list)
     self.labels = (
       labels_list.respond_to?(:each) ?
@@ -231,6 +246,18 @@ class Customer < ActiveRecord::Base
     self.save! 
   end
   
+  def valid_as_guest_checkout?
+    if (first_name.blank? || last_name.blank? || email.blank? || street.blank? || city.blank? || state.blank? || zip.blank?)
+      errors.add :base, "Please provide your email address for order confirmation, and your credit card billing name and address."
+      false
+    else
+      # this is a HACK: set created_by_admin to bypass most other validations.
+      # This will be fixed when Customer class is refactored into subclasses with their own validations
+      self.created_by_admin = true
+      true
+    end
+  end
+
   def valid_as_gift_recipient?
     # must have first and last name, mailing addr, and at least one
     #  phone or email

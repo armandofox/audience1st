@@ -32,7 +32,7 @@ World(CustomerStepsHelper)
 Then /^account creation should fail with "(.*)"$/ do |msg|
   steps %Q{
   Then I should see "#{msg}"
-  And I should see "Create Your Account"
+  And I should see "Sign Up"
 }
 end
 
@@ -55,9 +55,9 @@ Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
   if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
 end
 
-Given /^customer "(.*) (.*)" exists( and was created by admin)?$/ do |first,last,admin|
+Given /^customer "(.*) (.*)" exists( and was created by admin)?( with email "(.*)")?$/ do |first,last,admin,_,email|
   @customer = find_customer(first,last) ||
-    create(:customer, :first_name => first, :last_name => last, :email => "#{first.downcase}@#{last.downcase}.com")
+    create(:customer, :first_name => first, :last_name => last, :email => email||"#{first.downcase}@#{last.downcase}.com")
   @customer.update_attribute(:created_by_admin, true) if admin
 end
 

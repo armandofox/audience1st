@@ -84,17 +84,6 @@ A1.setupForCheckout = function() {
     failure: A1.swipeFail,
     parsers: ["visa", "amex", "mastercard", "discover"],
   });
-
-  // on the checkout page, copy the billing customer info to the credit card info
-
-  if ($('#store_checkout').length > 0) { // only on checkout page
-    $('#credit_card_first_name').val($('#billing #customer_first_name').val());
-    $('#credit_card_last_name').val($('#billing #customer_last_name').val());
-    if (A1.checkForStripe()) {
-      var message = $('#checkout_message').text();
-      if (message != "") { alert(message); }
-    }
-  }
 };
 
 $(A1.setupForCheckout);

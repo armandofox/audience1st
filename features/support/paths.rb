@@ -25,6 +25,7 @@ module NavigationHelpers
     when /the record donation page/         then new_customer_donation_path(@customer)
     when /the new customer page/i           then new_customer_path
       # admin-facing voucher management and customer help
+    when /the add customer page for staff/  then admin_new_customers_path
     when /the list of customers page/i      then customers_path
     when /the add comps page/i              then new_customer_voucher_path(@customer)
     when /the transfer vouchers page/i  then customer_vouchers_path(@customer)

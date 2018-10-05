@@ -22,6 +22,8 @@ class SessionsController < ApplicationController
         @email = params[:email]
         @remember_me = params[:remember_me]
         render :action => :new
+      else
+        u.update_attribute(:last_login,Time.current)
       end
       u
     end
@@ -38,7 +40,8 @@ class SessionsController < ApplicationController
         else
           redirect_to new_from_secret_session_path
         end
-        return
+      else
+        u.update_attribute(:last_login,Time.current)
       end
       u
     end

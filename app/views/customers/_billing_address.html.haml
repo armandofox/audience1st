@@ -1,0 +1,34 @@
+- disabled = defined?(passive) && passive
+%fieldset.billing_info
+  %legend= local_assigns[:legend] || 'Credit Card Billing Address'
+  %p
+    Fields
+    %span.strong like this
+    are required.
+  = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
+    %label.strong{:for => 'customer_first_name'} First name
+    = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled
+    %br
+    %label.strong{:for => 'customer_last_name'} Last name
+    = f.text_field :last_name, :size => 16, :maxlength => 40, :readonly => disabled 
+    %br
+    %br
+    %label.strong{:for => 'customer_street'} Street
+    = f.text_field :street, :readonly => disabled  
+    %br
+    %label.strong{:for => 'customer_city'} City
+    = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled
+    %label.no_float.strong{:for => 'customer_state'} State
+    = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled}
+    %label.no_float.strong{:for => 'customer_zip'} Zip
+    = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled}
+    %br
+    %label{:for=>:customer_day_phone} Preferred phone
+    = f.text_field :day_phone, {:size => 16, :maxlength => 16}
+    %br
+    %br
+
+    %label.strong{:for=>:customer_email} Email
+    = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled }
+    %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
+    %br

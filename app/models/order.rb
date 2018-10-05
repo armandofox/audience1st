@@ -176,9 +176,9 @@ class Order < ActiveRecord::Base
     completed? ? vouchers.count : valid_vouchers.values.map(&:to_i).sum
   end
 
-  def item_count ; ticket_count + (include_donation? ? 1 : 0) + retail_items.size; end
+  def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
 
-  def has_mailable_items?
+  def includes_mailable_items?
     # do any of the items require fulfillment?
     if completed?
       vouchers.any? { |v| v.vouchertype.fulfillment_needed? }
@@ -187,7 +187,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def include_vouchers?
+  def includes_vouchers?
     if completed?
       items.any? { |v| v.kind_of?(Voucher) }
     else
@@ -195,7 +195,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def include_regular_vouchers?
+  def includes_regular_vouchers?
     if completed?
       items.any? { |v| v.kind_of?(Voucher) && !v.bundle? }
     else
@@ -203,7 +203,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def include_donation?
+  def includes_donation?
     if completed?
       items.any? { |v| v.kind_of?(Donation) }
     else
@@ -211,8 +211,21 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def contains_enrollment?
+  def includes_enrollment?
     ValidVoucher.find(valid_vouchers.keys).any? { |v| v.event_type == 'Class' }
+  end
+
+  def includes_bundle?
+    ValidVoucher.find(valid_vouchers.keys).any? { |v| v.vouchertype.category == 'bundle' }
+  end
+
+  def includes_nonticket_item?
+    ValidVoucher.find(valid_vouchers.keys).any? { |v| v.vouchertype.category == 'nonticket' }
+  end
+
+  def ok_for_guest_checkout?
+    # basically, the ONLY thing you can guest checkout for is single-ticket purchases for yourself.
+    ! (gift? || includes_mailable_items? || includes_bundle? || includes_enrollment? || includes_nonticket_item?)
   end
 
   def total_price
@@ -226,15 +239,15 @@ class Order < ActiveRecord::Base
 
   def walkup_confirmation_notice
     notice = []
-    notice << "#{'$%.02f' % donation.amount} donation" if include_donation?
-    if include_vouchers?
+    notice << "#{'$%.02f' % donation.amount} donation" if includes_donation?
+    if includes_vouchers?
       notice << "#{ticket_count} ticket" + (ticket_count > 1 ? 's' : '')
     end
     message = notice.join(' and ')
     if total_price.zero?
       message = "Issued #{message} as zero-revenue order"
     else
-      if include_vouchers?
+      if includes_vouchers?
         message << " (total #{'$%.02f' % total_price})"
       end
       message << " paid by #{ActiveSupport::Inflector::humanize(purchase_medium)}"
@@ -267,7 +280,7 @@ class Order < ActiveRecord::Base
     errors.add(:base, 'Shopping cart is empty') if cart_empty?
     errors.add(:base, 'No purchaser information') unless purchaser.kind_of?(Customer)
     errors.add(:base, "You must specify the enrollee's name for classes") if
-      contains_enrollment? && comments.blank?
+      includes_enrollment? && comments.blank?
     check_purchaser_info unless processed_by.try(:is_boxoffice)
     if Purchasemethod.valid_purchasemethod?(purchasemethod)
       errors.add(:base,'Invalid credit card transaction') if

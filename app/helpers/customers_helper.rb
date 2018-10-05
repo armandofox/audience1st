@@ -5,6 +5,12 @@ module CustomersHelper
     customer.first_name.blank? ? customer.full_name : customer.first_name
   end
   #
+  # When did customer last login, if ever?
+  #
+  def last_login_for(customer)
+    customer.has_ever_logged_in? ? customer.last_login.to_formatted_s(:showtime_including_year) : 'Never'
+  end
+  #
   # Link to user's home page
   #
   def link_to_customer(customer, options={})

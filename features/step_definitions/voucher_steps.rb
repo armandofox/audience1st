@@ -51,12 +51,12 @@ Then /^customer "(.*) (.*)" should have the following items:$/ do |first,last,it
 end
 
 
-Then /^customer (.*) (.*) should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
+Then /^customer "(.*) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
   @customer = find_customer first,last
   steps %Q{Then he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
 
-Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,type,show,date|
+Then /^s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |num,type,show,date|
   @showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
   @showdate.show.name.should == show
   @vouchertype = Vouchertype.find_by_name!(type)
@@ -64,7 +64,7 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets for "(.*)" on (.*)$/ do |num,typ
     should == num.to_i
 end
 
-Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last,vouchers|
+Then /^customer "(.*) (.*)" should have the following vouchers?:$/ do |first,last,vouchers|
   @customer = find_customer first,last
   @vouchers = @customer.vouchers
   vouchers.hashes.each do |v|
@@ -82,7 +82,7 @@ Then /^customer "(.*) (.*)" should have the following vouchers:$/ do |first,last
   end
 end
 
-Then /^there should be (\d+) "(.*)" tickets sold for "(.*)"$/ do |qty,vtype_name,date|
+Then /^there should be (\d+) "(.*)" tickets? sold for "(.*)"$/ do |qty,vtype_name,date|
   vtype = Vouchertype.find_by_name!(vtype_name)
   showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
   showdate.vouchers.where('vouchertype_id = ?', vtype.id).count.should == qty.to_i

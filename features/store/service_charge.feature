@@ -41,7 +41,7 @@ Scenario: service charge on regular order
   Then the cart total price should be 24.50
 
   When I place my order with a valid credit card
-  Then customer Tom Foolery should have 3 "General" tickets for "Chicago" on May 15, 8pm
+  Then customer "Tom Foolery" should have 3 "General" tickets for "Chicago" on May 15, 8pm
   And  customer "Tom Foolery" should have the following items:
   | type       | amount | comments  | account_code |
   | RetailItem |   3.50 | Order Fee |         0000 |

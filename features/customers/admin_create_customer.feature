@@ -10,7 +10,7 @@ Background:
 
 Scenario: admin can create customer by name only
 
-  When I visit the new customer page
+  When I visit the add customer page for staff
   And I fill in the following:
   | First name | Bob    |
   | Last name  | Barker |
