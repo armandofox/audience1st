@@ -25,7 +25,7 @@ module DatesHelper
   clearButtonText: '',
   cancelButtonText: '',
   applyButtonText: 'OK',
-  datepickerOptions : {  numberOfMonths : 1  },
+  datepickerOptions : {  numberOfMonths : 1, minDate : 0, maxDate : null  },
   presetRanges: [
   #{show_run} {
     text:      'Today',
