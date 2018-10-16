@@ -56,16 +56,6 @@ describe Vouchertype do
       it "should be valid with valid attributes" do
         @vt.should be_valid
       end
-      it "should not be zero-price if accessible to anyone" do
-        @vt.price = 0.0
-        @vt.offer_public = Vouchertype::ANYONE
-        @vt.should_not be_valid
-      end
-      it "should not be zero-price if accessible for subscriber purchase" do
-        @vt.price = 0.0
-        @vt.offer_public = Vouchertype::SUBSCRIBERS
-        @vt.should_not be_valid
-      end
       it "may be zero-price if accessible to boxoffice only" do
         @vt.price = 0.0
         @vt.offer_public = Vouchertype::BOXOFFICE
