@@ -17,7 +17,7 @@
         this event or picking up this order, please enter his/her name here:
       = text_field_tag 'pickup', '', :size => 30
 
-  %h2.floatleft#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
+  %h2#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
     
   - if @cart.total_price > 0
 
@@ -29,39 +29,37 @@
 
     = render :partial => 'credit_card', :locals => {:first_name => @cart.purchaser.first_name, :last_name => @cart.purchaser.last_name}
 
-    - unless Option.terms_of_sale.blank?
-      #terms_of_sale
-        %label{:for => 'sales_final'} TERMS OF SALE:
-        = check_box_tag 'sales_final',1,(@sales_final_acknowledged = true)
-        %strong 
-          I understand and agree to the
-          = link_to "terms of sale.", :onclick => "alert('#{escape_javascript(Option.terms_of_sale)}')"
-        %br
-        %br
+  - unless @is_admin || Option.terms_of_sale.blank?
+    #terms_of_sale
+      %label{:for => 'sales_final'} TERMS OF SALE:
+      = check_box_tag 'sales_final',1,(@sales_final_acknowledged == true)
+      %strong 
+        I understand and agree to the
+        = link_to "terms of sale.", :onclick => "alert('#{escape_javascript(Option.terms_of_sale)}')"
+      %br
+      %br
 
-    %p.strong 
-      YOUR PURCHASE IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-      = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
-      -# hidden field 'commit' filled in by javascript on cc purchase
-      = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-      = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
-
-  - elsif !@is_admin
-
-    = hidden_field_tag 'email_confirmation', 1
-    = submit_tag "Complete Comp Order"
-
-  - else
+  - if @is_admin
     #other_payments.adminDiv
       - if @cart.total_price > 0
         Or pay with check number: 
         = text_field_tag 'check_number', '', :size => 6
         = submit_tag "Accept Check Payment"
         = submit_tag "Accept Cash Payment"
-      - else
-        No payment required
-        = submit_tag "Complete Comp Order"
       - if @cart.purchaser.valid_email_address?
         = check_box_tag('email_confirmation', 1, true)
         Send email confirmation
+  - else 
+    = hidden_field_tag 'email_confirmation', 1
+
+  %p.strong 
+    YOUR ORDER IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
+    - if @cart.total_price > 0
+      = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
+      -# hidden field 'commit' filled in by javascript on cc purchase
+      = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
+    - else
+      = submit_tag "Complete Comp Order"
+
+    = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'genButton'} 
 
