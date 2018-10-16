@@ -189,6 +189,25 @@ describe ValidVoucher do
     end
   end
 
+  describe "for comps" do
+    context "that are self-service" do
+      before(:each) do
+        @vt = create(:comp_vouchertype, :offer_public => Vouchertype::ANYONE)
+        @sd = create(:showdate)
+        @vv = build(:valid_voucher, :vouchertype => @vt, :showdate => @sd)
+      end
+      it "should be invalid without a promo code" do
+        expect(@vv).not_to be_valid
+      end
+      it "should be valid with a promo code" do
+        @vv.promo_code = 'Gloof'
+        expect(@vv).to be_valid
+      end
+    end
+    context "that are non-self-service" do
+      it "should be valid even without promo code"
+    end
+  end
   describe "promo code matching" do
     before :all do ; ValidVoucher.send(:public, :match_promo_code) ; end
     after :all do ; ValidVoucher.send(:protected, :match_promo_code) ; end

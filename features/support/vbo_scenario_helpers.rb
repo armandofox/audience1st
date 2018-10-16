@@ -32,13 +32,15 @@ module VboScenarioHelpers
       :max_sales => args[:max_sales] || 100)
   end
 
-  def make_valid_tickets(showdate,vtype,qty=nil)
+  def make_valid_tickets(showdate,vtype,qty=nil,promo_code=nil)
     qty ||= showdate.max_allowed_sales
-    showdate.valid_vouchers.create!(:vouchertype => vtype,
+    options = {:vouchertype => vtype,
       :max_sales_for_type => qty.to_i,
       :end_sales => showdate.thedate + 5.minutes,
       :start_sales => [Time.current - 1.day, showdate.thedate - 1.week].min
-      )
+    }
+    options[:promo_code] = promo_code if promo_code
+    showdate.valid_vouchers.create! options
   end
 
   def setup_subscriber_tickets(customer, show, num, changeable=false)

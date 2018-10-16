@@ -295,16 +295,19 @@ class StoreController < ApplicationController
   end
 
   def purchasemethod_from_params
-    if ( !@is_admin || params[:commit ] =~ /credit/i )
+    case params[:commit]
+    when /credit/i
       meth = Purchasemethod.get_type_by_name(@cart.customer == current_user ? 'web_cc' : 'box_cc')
       args = { :credit_card_token => params[:credit_card_token] }
-    elsif params[:commit] =~ /check/i
+    when /check/i
+      return redirect_to(checkout_path, :alert => "Only box office can process check payments") unless @is_admin
       meth = Purchasemethod.get_type_by_name('box_chk')
       args = {:check_number => params[:check_number] }
-    elsif params[:commit] =~ /cash/i
+    when /cash/i
+      return redirect_to(checkout_path, :alert => "Only box office can process cash payments") unless @is_admin
       meth = Purchasemethod.get_type_by_name('box_cash')
       args = {}
-    elsif params[:commit] =~ /comp/i
+    when /comp/i
       meth = Purchasemethod.get_type_by_name('none')
       args = {}
     else

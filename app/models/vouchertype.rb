@@ -24,17 +24,11 @@ class Vouchertype < ActiveRecord::Base
   #:message => "Vouchers that create revenue must have an account code")
   validates_inclusion_of :offer_public, :in => -1..2, :message => "Invalid specification of who may purchase"
   validates_inclusion_of :category, :in => CATEGORIES
-  # Vouchertypes whose price is zero must NOT be available
-  # to subscribers or general public
-  validates_exclusion_of(:offer_public, :in => [1,2],
-                         :if => lambda { |v| v.price.to_i.zero? },
-                         :message => "Zero-price vouchers can only be sold
-                                        by box office or external reseller")
 
   # Subscription vouchertypes shouldn't be available for walkup sale,
   # since we need to capture the address
   validate :subscriptions_shouldnt_be_walkups, :if => :subscription?
-  validate :restrict_if_free, :if => lambda { |v| v.price.to_i.zero? }
+
   # Bundles must include only zero-cost vouchers
   validate :bundles_include_only_zero_cost_vouchers, :if => :bundle?
 
@@ -88,14 +82,6 @@ class Vouchertype < ActiveRecord::Base
     end
   end
   
-  def restrict_if_free
-    if offer_public == ANYONE
-      errors.add :base, "Free vouchers can't be available to public"
-    elsif category.to_s == 'subscription'
-      errors.add :base, "Free vouchers can't qualify recipient as Subscriber"
-    end
-  end
-
   # BUG clean up this method
   def bundles_include_only_zero_cost_vouchers
     return if self.get_included_vouchers.empty?
@@ -160,6 +146,10 @@ class Vouchertype < ActiveRecord::Base
   def bundle? ; category == 'bundle' ; end
   def comp? ; category == 'comp' ; end
   def external? ; offer_public == EXTERNAL ; end
+  def self_service_comp?
+    category == 'comp' &&
+      (offer_public == SUBSCRIBERS || offer_public == ANYONE)
+  end
 
   def subscriber_voucher? ; category == 'subscriber' ; end
 

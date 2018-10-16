@@ -19,6 +19,7 @@ class ValidVoucher < ActiveRecord::Base
 
   belongs_to :showdate
   belongs_to :vouchertype
+  validate :self_service_comps_must_have_promo_code
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type, :allow_nil => true, :greater_than_or_equal_to => 0
@@ -76,6 +77,14 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   private
+
+  # A zero-price vouchertype that is marked as "available to public"
+  # MUST have a promo code
+  def self_service_comps_must_have_promo_code
+    if vouchertype.self_service_comp? &&  promo_code.blank?
+      errors.add(:promo_code, "must be provided for comps that are available for self-purchase")
+    end
+  end
 
   # Vouchertype's valid date must not be later than valid_voucher start date
   # Vouchertype expiration date must not be earlier than valid_voucher end date
