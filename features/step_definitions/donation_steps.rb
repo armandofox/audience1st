@@ -10,7 +10,7 @@ module DonationStepsHelper
 end
 World(DonationStepsHelper)
 
-Given /^the following account codes exist:$/ do |instances|
+Given /^the following Account Codes exist:$/ do |instances|
   instances.hashes.each do |hash|
     create(:account_code, hash)
   end

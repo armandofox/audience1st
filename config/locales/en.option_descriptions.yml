@@ -29,14 +29,6 @@ en:
       able to log in to it.  As long as they use the same email address each time,
       multiple guest checkouts will all be tied to that account.
 
-    allow_self_service_comps:
-
-     Allow patrons to obtain Comp tickets without calling the Box
-     Office.  "Self-service" comp vouchers must have their visibility set
-     to either "Anyone may purchase" or "Subscribers may purchase", and a
-     promo code must be specified when associating the comp with one
-     or more performances for "self-service".
-
     allow_gift_tickets: >
 
       Whether customers can purchase individual tickets as a gift for
