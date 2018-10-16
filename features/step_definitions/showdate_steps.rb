@@ -38,6 +38,7 @@ end
 Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|
   show = Show.find_by_name!(showname)
   showdates = show.showdates
+  byebug
   dates.hashes.each do |date|
     sd = Showdate.find_by_thedate(Time.zone.parse(date[:date]))
     sd.should_not be_nil

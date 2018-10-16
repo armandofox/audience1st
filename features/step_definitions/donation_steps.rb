@@ -10,6 +10,12 @@ module DonationStepsHelper
 end
 World(DonationStepsHelper)
 
+Given /^the following account codes exist:$/ do |instances|
+  instances.hashes.each do |hash|
+    create(:account_code, hash)
+  end
+end
+
 When /^I record a (check|cash) donation of \$([\d.]+) to "(.*)" on (.*)(?: with comment "(.*)")?$/ do |type, amount, fund, date, comment|
   fill_in "Amount", :with => amount
   choose type.capitalize

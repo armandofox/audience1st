@@ -6,7 +6,6 @@ describe DatetimeRange do
     before(:each) do ;  @d = DatetimeRange.new ; end
     it "has a start date" do ;   @d.start_date.should be_a(Date)  ; end
     it "has an end date"  do ;   @d.end_date.should be_a(Date) ; end
-    it "has a time" do ; @d.time.should be_a(Time) ; end
     it "converts strings to ints if needed" do
       DatetimeRange.new(:days => ['3', 4, '6.0']).days.should == [3,4,6]
     end
@@ -21,7 +20,7 @@ describe DatetimeRange do
         @range = DatetimeRange.new(
           :start_date => Date.parse("2011-07-31"),
           :end_date => Date.parse("2011-08-07"),
-          :time => Time.zone.parse("6:30pm"),
+          :hour => 18, :minute => '30',
           :days => [0,2,4])
         @dates = @range.dates
       end
@@ -45,7 +44,7 @@ describe DatetimeRange do
       before(:each) do
         @range = DatetimeRange.new(
           :start_date => Date.parse("2012-02-25"), :end_date => Date.parse("2012-03-02"),
-          :time => Time.zone.parse("12:00 pm"),
+          :hour => 12,
           :days => [0,1,2,3,4,5,6])
       end
       it "should count correctly" do ; @range.count.should == 7 ; end

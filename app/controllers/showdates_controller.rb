@@ -14,10 +14,8 @@ class ShowdatesController < ApplicationController
   
   def create
     start_date,end_date = Time.range_from_params(params[:show_run_dates])
-    time = Time.zone.parse("#{params[:time][:hour]}:#{params[:time][:minute]}")
-    days = params[:day]
-    all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => days,
-      :time => time).dates
+    all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
+      :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
     new_showdates = showdates_from_date_list(all_dates, params)
     redirect_to new_show_showdate_path(@show) and return unless flash[:alert].blank?
     new_showdates.each do |showdate|

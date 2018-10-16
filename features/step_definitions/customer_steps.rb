@@ -50,6 +50,12 @@ Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
   end
 end
 
+Given /^the following customers exist:$/ do |instances|
+  instances.hashes.each do |hash|
+    create(:customer, hash)
+  end
+end
+
 Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
   @customer = find_customer first,last
   if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end

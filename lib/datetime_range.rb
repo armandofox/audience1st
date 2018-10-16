@@ -1,13 +1,14 @@
 class DatetimeRange
 
-  attr_reader :start_date, :end_date, :time
+  attr_reader :start_date, :end_date, :hour, :minute
   attr_reader :days
 
   def initialize(args={})
     @start_date = (args[:start_date] || Time.current).to_date
     @end_date = (args[:end_date] || Time.current).to_date
     @start_date,@end_date = @end_date,@start_date if @start_date > @end_date
-    @time = (args[:time] || Time.current).to_time
+    @hour = (args[:hour] || 0).to_i
+    @minute = (args[:minute] || 0).to_i
     @days = (args[:days] || []).map(&:to_i)
     @dates = []
     raise(ArgumentError, "days must be an array of integers in range 0..6") unless
@@ -17,10 +18,9 @@ class DatetimeRange
 
   def dates
     return @dates unless @dates.empty?
-    hour,min = @time.hour, @time.min
     (@start_date..@end_date).each do |day|
-      @dates << day.to_time.change(:hour => hour, :min => min) if
-        @days.include?(day.wday)
+      candidate_date = day.to_time.in_time_zone.change(:hour => @hour, :min => @minute)
+      @dates << candidate_date if @days.include?(candidate_date.wday)
     end
     @dates
   end

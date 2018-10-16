@@ -20,7 +20,7 @@ Scenario: search with multiple match
   Then I should be on the home page for customer "Bilbo Baggins"
 
 Scenario:search with other information
-  Given the following Customers exist:
+  Given the following customers exist:
     | first_name | last_name | email               | street        | city | state |
     | Alex       | Fox       | afox@mail.com       | 11 Main St #1 |  SAF | CA    |
     | Armando    | Fox       | arfox@mail.com      | 11 Main St    |  SAF | CA    |

@@ -6,10 +6,10 @@ Feature: merge customers
 
 Background:
 
-  Given the following Customers exist:
+  Given the following customers exist:
    | first_name | last_name | email          | created_by_admin | street        | password | password_confirmation | city | state |   zip | last_login | updated_at |
-   | MaryJane   | Weigandt  | mjw@mail.com   | true             | 11 Main St    |          |                       | Oak  | CA    | 99994 | 2011-01-03 | 2011-01-01 |
-   | Janey      | Weigandt  | janey@mail.com | false            | 11 Main St #1 | blurgle  | blurgle               | Oak  | CA    | 99949 | 2010-01-01 | 2010-01-01 |
+   | MaryJane   | Weigandt  | mjw@mail.com   | true             | 11 Main St    |          |                       | Oak  | CA    | 99994 | 2011-01-03 03:00:00 | 2011-01-01 |
+   | Janey      | Weigandt  | janey@mail.com | false            | 11 Main St #1 | blurgle  | blurgle               | Oak  | CA    | 99949 | 2010-01-01 04:00:00 | 2010-01-01 |
   And the following donations:
    | amount |       date | donor             | fund    |
    |  35.00 | 2009-01-01 | Janey Weigandt    | General |
@@ -40,8 +40,8 @@ Scenario: manual merge
   Then I should see /Transferred .+ to customer/
   And customer "MaryJane Weigandt" should not exist
   And customer "Janey Weigandt" should have the following attributes:
-   | attribute  | value          |
-   | last_login | 2011-01-03     |
-   | zip        | 99949          |
-   | email      | janey@mail.com |
-   | street     | 11 Main St     |
+   | attribute  | value               |
+   | last_login | 2011-01-03 03:00:00 |
+   | zip        | 99949               |
+   | email      | janey@mail.com      |
+   | street     | 11 Main St          |
