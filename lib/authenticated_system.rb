@@ -64,7 +64,8 @@ module AuthenticatedSystem
       # Kill server-side auth cookie
       @current_user.forget_me if @current_user.is_a? Customer
       @current_user = false     # not logged in, and don't do it for me
-      session[:cid] = nil
+      session.delete(:cid)
+      session.delete(:return_to)
       reset_shopping unless @gCheckoutInProgress
       kill_remember_cookie!     # Kill client-side auth cookie
     end
