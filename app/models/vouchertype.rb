@@ -145,9 +145,9 @@ class Vouchertype < ActiveRecord::Base
 
   def bundle? ; category == 'bundle' ; end
   def comp? ; category == 'comp' ; end
-  def revenue? ; category == 'revenue' ; end
   def external? ; offer_public == EXTERNAL ; end
-  end
+  def revenue? ; category == 'revenue' ; end
+
   def self_service_comp?
     category == 'comp' &&
       (offer_public == SUBSCRIBERS || offer_public == ANYONE)
