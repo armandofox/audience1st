@@ -295,8 +295,12 @@ class StoreController < ApplicationController
   end
 
   def purchasemethod_from_params
+    # if Stripe successfully registered a CC purchase, 'fake' the :commit parameter (Submit
+    # button value) to look like 'credit card'
+    byebug
+    params[:commit] = 'credit' if params[:_stripe_commit] =~ /credit/
     case params[:commit]
-    when /credit/i
+    when ( /credit/i || params[:_stripe_commit] =~ /credit/i)
       meth = Purchasemethod.get_type_by_name(@cart.customer == current_user ? 'web_cc' : 'box_cc')
       args = { :credit_card_token => params[:credit_card_token] }
     when /check/i

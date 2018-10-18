@@ -56,8 +56,7 @@
     YOUR ORDER IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
     - if @cart.total_price > 0
       = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
-      -# hidden field 'commit' filled in by javascript on cc purchase
-      = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
+      = hidden_field_tag '_stripe_commit'
     - else
       = submit_tag "Complete Comp Order"
 
