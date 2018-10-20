@@ -18,10 +18,10 @@ describe DatetimeRange do
     context "over less than 1 week" do
       before(:each) do
         @range = DatetimeRange.new(
-          :start_date => Date.parse("2011-07-31"),
-          :end_date => Date.parse("2011-08-07"),
+          :start_date => Date.parse("2011-07-31"), # sunday
+          :end_date => Date.parse("2011-08-07"),   # also sunday
           :hour => 18, :minute => '30',
-          :days => [0,2,4])
+          :days => [0,2,4]) # sunday, tuesday, thursday
         @dates = @range.dates
       end
       it "should result in a list of Time objects" do
@@ -37,6 +37,15 @@ describe DatetimeRange do
         @dates.each do |d|
           d.hour.should == 18
           d.min.should == 30
+        end
+      end
+      it "should compute the right datetimes in the local timezone" do
+        t = Time.zone
+        result = ["2011-07-31 18:30",
+          "2011-08-02 18:30",
+          "2011-08-04 18:30",
+          "2011-08-07 18:30"].each do |l|
+          expect(@dates).to include(Time.zone.parse l)
         end
       end
     end

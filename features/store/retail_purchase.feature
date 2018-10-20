@@ -17,7 +17,7 @@ Scenario: successful retail purchase
 
   When I fill in "Description of retail purchase" with "Auction item" 
   And I press "CONTINUE >>"
-  Then I should be on the checkout page
+  Then I should be on the checkout page for customer "Tom Foolery"
   And I should see "Auction item"
   When the order is placed successfully
   Then customer "Tom Foolery" should have the following items:
@@ -31,13 +31,13 @@ Scenario: gift purchase cannot include retail item
   When I fill in "Description of retail purchase" with "Auction item" 
   And I check "gift"
   And I press "CONTINUE >>"
-  Then I should be on the store page
+  Then I should be on the store page for customer "Tom Foolery"
   And I should see "Retail items can't be included in a gift order"
 
 Scenario: invalid retail purchase info returns you to store page
 
   When I press "CONTINUE >>"
-  Then I should be on the store page
+  Then I should be on the store page for customer "Tom Foolery"
   And I should see "Comments or description can't be blank"
 
 Scenario: regular customers don't see retail option

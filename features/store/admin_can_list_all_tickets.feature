@@ -15,7 +15,7 @@ Background: logged in as admin
 Scenario Outline: Date-related restrictions
 
   Given sales cutoff at "<end_advance_sales>", with "General" tickets selling from <start_sales> to <end_sales>
-  When I visit the store page for "Fame"
+  When I visit the store page for the show "Fame"
   Then I should see "<message>" within the container for "General" tickets
 
   Examples:
@@ -27,7 +27,7 @@ Scenario Outline: Date-related restrictions
 Scenario Outline: Capacity-related restrictions
 
   Given there are <per_ticket_limit> "General" tickets and <remaining_seats> total seats available
-  When I visit the store page for "Fame"
+  When I visit the store page for the show "Fame"
   Then I should see "<message>" within the container for "General" tickets
 
   Examples:

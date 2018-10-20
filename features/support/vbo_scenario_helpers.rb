@@ -70,9 +70,9 @@ module VboScenarioHelpers
       # steps %Q{Given a show "#{show}" with #{10+qty.to_i} "#{type}" tickets for $#{price} on "#{showdate}"}
     end
     if customer
-      visit path_to %Q{the store page for "#{show}" on behalf of customer "#{customer}"}
+      visit path_to %Q{the store page for the show "#{show}" for customer "#{customer}"}
     else
-      visit path_to %Q{the store page for "#{show}"}
+      visit path_to %Q{the store page for the show "#{show}"}
     end
     select show, :from => 'Show'
     select_date_matching showdate, :from => 'Date'

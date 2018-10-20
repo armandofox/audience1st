@@ -19,14 +19,14 @@ Scenario: add ticket explanation to a show
 Scenario: see show-specific description on ticket page
 
   Given show "Chicago" has description "This show is racy"
-  When I visit the store page for "Chicago"
+  When I visit the store page for the show "Chicago"
   Then I should see "This show is racy"
 
 Scenario: show without ticket explanation doesn't display anything
 
   Given show "Chicago" has description "This show is racy"
   And a show "Cabaret" with tickets on sale for today
-  When I visit the store page for "Cabaret" 
+  When I visit the store page for the show "Cabaret" 
   Then I should not see "This show is racy"
   
   

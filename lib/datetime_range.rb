@@ -1,3 +1,9 @@
+# Given a starting and ending date, an array of days of the week as integers (0=Sunday),
+# and an hour/minute expressed in the app's timezone, all passed in an options hash,
+# construct a list of Time objects corresponding to
+# showdates on those days of the week throughout the time range, in the app's timezone.
+# Used for setting up showdates like "Every Tues, Thurs, Fri at 8pm from 6/1/18 to 8/15/18"
+
 class DatetimeRange
 
   attr_reader :start_date, :end_date, :hour, :minute
@@ -19,8 +25,8 @@ class DatetimeRange
   def dates
     return @dates unless @dates.empty?
     (@start_date..@end_date).each do |day|
-      candidate_date = day.to_time.in_time_zone.change(:hour => @hour, :min => @minute)
-      @dates << candidate_date if @days.include?(candidate_date.wday)
+      next unless @days.include?(day.wday)
+      @dates << Time.zone.local(day.year, day.month, day.day, @hour, @minute)
     end
     @dates
   end
