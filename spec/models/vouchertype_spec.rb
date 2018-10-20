@@ -54,33 +54,33 @@ describe Vouchertype do
     end
     describe "vouchertypes in general" do
       it "should be valid with valid attributes" do
-        @vt.should be_valid
+        expect(@vt).to be_valid
       end
-      it "may be zero-price if accessible to boxoffice only" do
+      it "may not be zero-price, even if accessible to boxoffice only" do
         @vt.price = 0.0
         @vt.offer_public = Vouchertype::BOXOFFICE
-        @vt.should be_valid
+        expect(@vt).not_to be_valid
       end
-      it "may be zero-price if provided by external reseller" do
+      it "may not be zero-price even if provided by external reseller as a comp" do
         @vt.price = 0.0
         @vt.offer_public = Vouchertype::EXTERNAL
-        @vt.should be_valid
+        expect(@vt).not_to be_valid
       end
       it "should be valid for redemption now" do
-        @vt.should be_valid_now
+        expect(@vt).to be_valid_now
       end
       it "should not have a bogus offer-to-whom field" do
         @vt.offer_public = 999
-        @vt.should_not be_valid
+        expect(@vt).not_to be_valid
       end
       it "should not have a negative price" do
         @vt = Vouchertype.new(:price => -1.0)
-        @vt.should_not be_valid
+        expect(@vt).not_to be_valid
       end
       it "should not be sold as walkup if it's a subscription" do
         @vt.subscription = true
         @vt.walkup_sale_allowed = true
-        @vt.should_not be_valid
+        expect(@vt).not_to be_valid
         @vt.errors[:base].should include_match_for(/walkup sales/i)
       end
     end
@@ -97,7 +97,7 @@ describe Vouchertype do
           :account_code => AccountCode.default_account_code,
           :season => @now.year
           )
-        @vtn.should be_valid
+        expect(@vtn).to be_valid
       end
     end
     describe "bundles" do
@@ -116,7 +116,7 @@ describe Vouchertype do
       end
       it "should be invalid if contains any nonzero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 1}
-        @vtb.should_not be_valid
+        expect(@vtb).not_to be_valid
         @vtb.errors.full_messages.should include("Bundle can't include revenue voucher #{@vt_notfree.id} (#{@vt_notfree.name})"), @vtb.errors.full_messages.join(',')
       end
       it "should  be valid with only zero-price vouchers" do

@@ -113,7 +113,7 @@ class Vouchertype < ActiveRecord::Base
   public
   
   def inspect
-    sprintf "[%d] %s, %s, $%.02f", id, name, category, price
+    sprintf "[%d] %s, %s, $%.02f", (new_record? ? 0 : id), name, category, price
   end
 
   def <=>(other)
