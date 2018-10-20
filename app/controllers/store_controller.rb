@@ -295,6 +295,9 @@ class StoreController < ApplicationController
   end
 
   def purchasemethod_from_params
+    # for a regular customer, the only options are 'credit' or 'none' (the latter only valid
+    #  if a zero-price order)
+
     # if Stripe successfully registered a CC purchase, 'fake' the :commit parameter (Submit
     # button value) to look like 'credit card'
     params[:commit] = 'credit' if params[:_stripe_commit] =~ /credit/

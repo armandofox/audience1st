@@ -32,12 +32,16 @@ module NavigationHelpers
     when /the orders page/i             then orders_path(:customer_id => @customer)
       # store purchase flow
     when /the order page for that order/ then order_path(@order)
+    when /the store page for "(.*)" on behalf of customer "(.*) (.*)"/ then
+      store_path(@customer = find_customer($2,$3), :show_id => (@show = Show.find_by_name!($1).id))
     when /the store page for "(.*)"/    then store_path(:show_id => (@show = Show.find_by_name!($1).id))
-    when /the store page/i              then store_path(@customer)
+    when /the store page on behalf of customer "(.*) (.*)"$/ then store_path(@customer = find_customer($1,$2))
+    when /the store page$/i              then store_path(@customer)
     when /the special events page/      then store_path(:what => 'Special Event')
     when /the classes and camps page/   then store_path(:what => 'Class')
     when /the subscriptions page/i      then store_subscribe_path(@customer)
     when /the shipping info page/i      then shipping_address_path(@customer)
+    when /the checkout page for customer "(.*) (.*)"/i then checkout_path(@customer = find_customer($1,$2))
     when /the checkout page/i           then checkout_path(@customer)
     when /the order confirmation page/i then place_order_path(@customer)
       # reporting pages 

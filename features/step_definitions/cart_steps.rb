@@ -12,6 +12,11 @@ Given /^(?:my cart contains|I add) the following tickets:/ do |tickets|
   click_button 'CONTINUE >>', :disabled => true
 end
 
+Given /^I add the following tickets for customer "(.*)":/ do |customer,tickets|
+  create_tickets(tickets.hashes, customer)
+  click_button 'CONTINUE >>', :disabled => true
+end
+
 Given /^my gift order contains the following tickets:/ do |tickets|
   Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
   create_tickets(tickets.hashes)
