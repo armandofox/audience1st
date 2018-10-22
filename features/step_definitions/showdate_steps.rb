@@ -31,6 +31,13 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|
+  @show = create(:show, :name => name)
+  @showdates = dates.split(/\s*,\s*/).map do |dt|
+    create(:showdate, :show => @show, :thedate => Time.zone.parse(dt))
+  end
+end
+
 Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
   Show.find_by_name!(show).showdates.count.should == num.to_i
 end

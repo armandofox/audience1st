@@ -22,5 +22,4 @@ FactoryBot.define do
     listing_date { Time.current }
   end
 
-
 end

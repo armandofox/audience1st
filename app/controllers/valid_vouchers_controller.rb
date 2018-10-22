@@ -22,56 +22,20 @@ class ValidVouchersController < ApplicationController
   end
 
   def create
-    msgs = ''
-    vouchertypes = params[:valid_voucher].delete(:vouchertypes)
-    return redirect_to(:back, :alert => 'You must select 1 or more show dates.') unless (vouchertypes && !vouchertypes.empty?)
     args = params[:valid_voucher]
-    hours_before = (params[:end_is_relative].to_i > 0 ?
-                    params[:hours_before].to_f.hours :
-                    false)
-    showdate = Showdate.find(args[:showdate_id])
-    raise "New voucher type must be added to valid showdate" unless showdate.kind_of?(Showdate)
-    addtojustone = params[:addtojustone].to_i
-    if addtojustone.zero?
-      # add voucher type to all dates
-      showdate.show.showdates.each do |dt|
-        args[:showdate_id] = dt.id
-        vouchertypes.each do |vt_id| 
-          args[:vouchertype_id] = vt_id
-          vv = ValidVoucher.new(args)
-          if hours_before
-            vv.end_sales = dt.thedate - hours_before
-          end
-          unless vv.save
-            msgs << %{Voucher type #{Vouchertype.find(vt_id).name} NOT added to
-                #{dt.thedate.to_formatted_s(:date_only)}:
-                #{vv.errors.full_messages.join(', ')}} << "<br/>"
-          end
-        end
-      end
-      if (msgs == '')
-        msgs = 'Ticket type(s) added to all dates'
-      end
-    else
-      # add to just one date
-      vouchertypes.each do |vt_id|
-        args[:vouchertype_id] = vt_id
-        @validvoucher = ValidVoucher.new(args)
-        if hours_before
-          @validvoucher.end_sales = showdate.thedate - hours_before
-        end
-        if @validvoucher.save
-          msgs << 'Added to performance on ' << showdate.printable_date 
-        else
-          msgs << @validvoucher.errors.full_messages.join(', ')
-        end
-      end
-    end
-    flash[:notice] = msgs
-    if params[:commit] =~ /another/i
-      redirect_to :action => :new, :showdate_id => showdate, :add_to_all => addtojustone.zero?
-    else
-      redirect_to edit_show_path(showdate.show)
+    return redirect_to(:back, :alert => 'You must select 1 or more show dates.') unless
+      (vouchertypes = Vouchertype.find(args.delete(:vouchertypes))) &&
+      !vouchertypes.empty?
+    args[:before_showtime] = params[:hours_before].to_f.hours if params[:end_is_relative].to_i > 0
+    @add_to_all = (params[:add_to_all].to_i > 0)
+    @showdate = Showdate.find(args[:showdate_id])
+    showdates = if @add_to_all then @showdate.show.showdates else [@showdate] end
+    begin
+      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args
+      redirect_to edit_show_path(@showdate.show), :notice => "Successfully added #{vouchertypes.size} voucher types to #{showdates.size} showdate(s)."
+    rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
+      redirect_to(new_valid_voucher_path(:showdate_id => @showdate.id,:add_to_all => @add_to_all),
+        :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}")
     end
   end
 

@@ -10,15 +10,14 @@
       %td Add ticket type to:
       %td
         = hidden_field_tag 'valid_voucher[showdate_id]', @showdate_id
-        = radio_button_tag "addtojustone", 1, !@add_to_all
+        = radio_button_tag "add_to_all", 0, !@add_to_all
         = @showdate.printable_date
         Only
         %br/
-        = radio_button_tag "addtojustone", 0, @add_to_all
+        = radio_button_tag "add_to_all", 1, @add_to_all
         All Dates
         %br/
   = submit_tag "Add"
-  = submit_tag "Save & Add Another"
   = link_to 'Cancel', edit_show_path(@showdate.show), {:class => 'genButton' }
 
 
