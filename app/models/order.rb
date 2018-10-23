@@ -80,10 +80,10 @@ class Order < ActiveRecord::Base
       errors.add(:base, "Walkup order requires purchaser & recipient to be walkup customer") unless
         (purchaser == Customer.walkup_customer && customer == purchaser)
     else
-      errors.add(:base, "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}") if
-        purchaser.kind_of?(Customer) && !purchaser.valid_as_purchaser?
-      errors.add(:base, 'No recipient information') unless customer.kind_of?(Customer)
-      errors.add(:customer, customer.errors.as_html) if customer.kind_of?(Customer) && !customer.valid_as_gift_recipient?
+      errors.add(:base, 'No purchaser information') and return unless purchaser.kind_of?(Customer)
+      errors.add(:base, "Purchaser information is incomplete: #{purchaser.errors.full_messages.join(', ')}") unless purchaser.valid_as_purchaser?
+      errors.add(:base, 'No recipient information') and return unless customer.kind_of?(Customer)
+      errors.add(:customer, customer.errors.as_html) if (gift? && ! customer.valid_as_gift_recipient?)
     end
   end
 
@@ -278,7 +278,6 @@ class Order < ActiveRecord::Base
   def ready_for_purchase?
     errors.clear
     errors.add(:base, 'Shopping cart is empty') if cart_empty?
-    errors.add(:base, 'No purchaser information') unless purchaser.kind_of?(Customer)
     errors.add(:base, "You must specify the enrollee's name for classes") if
       includes_enrollment? && comments.blank?
     check_purchaser_info unless processed_by.try(:is_boxoffice)

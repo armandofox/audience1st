@@ -66,6 +66,15 @@ When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*
   end
 end
 
+When /^I fill in the address as "(.*),\s*(.*),\s*(.*)\s+(.*)"/ do |street,city,state,zip|
+  with_scope "#street_city_only" do
+    fill_in 'customer[street]', :with => street
+    fill_in 'customer[city]', :with => city
+    fill_in 'customer[state]', :with => state
+    fill_in 'customer[zip]', :with => zip
+  end
+end
+
 When /^I try to checkout as guest using "(.*)"$/ do |info|
   steps %Q{
   When I follow "Checkout as Guest"

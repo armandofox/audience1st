@@ -78,6 +78,7 @@ class Customer < ActiveRecord::Base
   attr_accessor :force_valid         
   attr_accessor :gift_recipient_only 
   attr_accessor :password
+  attr_accessor :save_address_info
 
   attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
   :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,

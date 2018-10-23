@@ -53,4 +53,22 @@ Feature: Successful checkout with credit card
     | Hamlet (subscriber)    |        6 |
     | King Lear (subscriber) |        3 |
 
+  Scenario: successful purchase even if customer doesn't have address info
 
+    Given customer "Tom Foolery" has no contact info
+    And my cart contains the following tickets:
+      | show    | qty | type    | price | showdate             |
+      | Chicago |   3 | General |  7.00 | May 15, 2010, 8:00pm |
+    When I press "Charge Credit Card"
+    Then I should see "Street can't be blank"
+    When I fill in the address as "123 Fake St, Oakland, CA 94611"
+    And I press "Charge Credit Card"
+    Then I should be on the order confirmation page for customer "Tom Foolery"
+    And I should see "You have paid a total of $21.00 by Credit card"
+    And customer "Tom Foolery" should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+    And customer "Tom Foolery" should have the following attributes:
+      | attribute | value       |
+      | street    | 123 Fake St |
+      | city      | Oakland     |
+      | state     | CA          |
+      | zip       | 94611       |

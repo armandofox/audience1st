@@ -1,5 +1,9 @@
 %fieldset#credit_card
   %legend= defined?(legend) ? legend : 'Credit Card Information'
+  %p.notice.clear
+    We do not store or access your card number.
+    Our transactions are securely processed 
+    through Stripe.
   %p#payment_errors
   %label{:for => 'credit_card_first_name'} First Name
   = text_field_tag 'credit_card_first_name', (first_name ||= ''), :size => 20, :autocomplete => 'off', :class => 'unsubmitted'

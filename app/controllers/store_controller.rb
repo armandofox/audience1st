@@ -192,13 +192,9 @@ class StoreController < ApplicationController
   def checkout
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
-    @checkout_message =
-      if @cart.includes_regular_vouchers?
-      then (Option.precheckout_popup ||
-        "PLEASE DOUBLE CHECK DATES before submitting your order.  If they're not correct, you will be able to Cancel before placing the order.")
-      else ""
-      end
+    @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
     @cart_contains_class_order = @cart.includes_enrollment?
+    @allow_pickup_by_other = (@cart.includes_vouchers? && !@cart.gift?)
     @cart.processed_by ||= current_user()
     @cart.purchaser ||= @customer
     @cart.customer ||= @cart.purchaser
@@ -215,6 +211,7 @@ class StoreController < ApplicationController
       # record 'who will pickup' field if necessary
       @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
+    @order.purchaser.update_attributes(params[:customer])
     unless @order.ready_for_purchase?
       flash[:alert] = @order.errors.as_html
       redirect_to_checkout

@@ -6,27 +6,15 @@
     = render :partial => 'customers/billing_address', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
 = form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
-  - if @cart.includes_vouchers? &&  !@cart.gift?
-    #someone_else
-    %h2 Who's Attending?
-    %p
-      - if @cart_contains_class_order
-        For classes, you <strong>must</strong> enter enrollee's name(s) here:
-      - else
-        If someone <strong>other than the purchaser</strong> will be attending 
-        this event or picking up this order, please enter his/her name here:
-      = text_field_tag 'pickup', '', :size => 30
+
+  = render :partial => 'pickup_by' if @allow_pickup_by_other
 
   %h2#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
     
   - if @cart.total_price > 0
 
     = hidden_field_tag 'email_confirmation', 1
-    %p.notice.clear
-      We do not store or access your card number.
-      Our transactions are securely processed 
-      through #{link_to 'Stripe', 'http://stripe.com'}.
-
+    #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @cart.purchaser}
     = render :partial => 'credit_card', :locals => {:first_name => @cart.purchaser.first_name, :last_name => @cart.purchaser.last_name}
 
   - unless @is_admin || Option.terms_of_sale.blank?

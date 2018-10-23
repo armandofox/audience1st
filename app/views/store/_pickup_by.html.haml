@@ -1,0 +1,10 @@
+- if @cart.includes_vouchers? &&  !@cart.gift?
+  #someone_else
+  %h2 Who's Attending?
+  %p
+    - if @cart_contains_class_order
+      For classes, you <strong>must</strong> enter enrollee's name(s) here:
+    - else
+      If someone <strong>other than the purchaser</strong> will be attending 
+      this event or picking up this order, please enter his/her name here:
+    = text_field_tag 'pickup', '', :size => 30

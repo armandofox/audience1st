@@ -1,0 +1,21 @@
+%fieldset.address_only
+  %legend= local_assigns[:legend] || 'Credit Card Billing Address'
+  %p
+    Fields
+    %span.strong like this
+    are required.
+  = fields_for customer do |f|
+    %label.strong{:for => 'customer_street'} Street
+    = f.text_field :street
+    %br
+    %label.strong{:for => 'customer_city'} City
+    = f.text_field :city, {:size => 16, :maxlength => 32}
+    %label.no_float.strong{:for => 'customer_state'} State
+    = f.text_field :state, {:size => 2, :maxlength => 2}
+    %label.no_float.strong{:for => 'customer_zip'} Zip
+    = f.text_field :zip, {:size => 10, :maxlength => 10}
+    %br
+    %label{:for=>:customer_day_phone} Preferred phone
+    = f.text_field :day_phone, {:size => 16, :maxlength => 16}
+    %br
+    %br
