@@ -209,14 +209,13 @@ class CustomersController < ApplicationController
       filter_terms = @customers_filter.split /\s+/
       @page_title = %Q{Customers matching "#{@customers_filter}"}
       @customers =
-        (Customer.where('role >= 0').find_by_name(filter_terms) +
-        Customer.find_by_multiple_terms(filter_terms)).
-        uniq.sort_by(&:last_name)
+        (Customer.regular_customers.where('role >= 0').find_by_name(filter_terms) +
+        Customer.regular_customers.find_by_multiple_terms(filter_terms))
     else
       @page_title = "All Customers"
-      @customers = Customer.all.order(:last_name)
+      @customers = Customer.regular_customers
     end
-    @customers = @customers.regular_customers.paginate(:page => @page)
+    @customers = @customers.paginate(:page => @page)
   end
 
   def list_duplicate
