@@ -1,12 +1,10 @@
 require 'rails_helper'
 
 describe 'scoping Customers' do
-  before :each do
-    @c1 = create(:customer)
-    @c2 = create(:customer)
-  end
   describe 'who have' do
     before :each do
+      @c1 = create(:customer)
+      @c2 = create(:customer)
       # customer @c1 has only seen show @s1, @c2 has only seen show @s2
       sd1 = create(:showdate, :date => Time.current)
       sd2 = create(:showdate, :date => 1.day.from_now)
@@ -60,6 +58,8 @@ describe 'scoping Customers' do
   end
   describe 'based on purchases' do
     before :each do
+      @c1 = create(:customer)
+      @c2 = create(:customer)
       @show_voucher_1 = create(:subscriber_voucher, :customer => @c1)
       @vid1 = @show_voucher_1.vouchertype.id
       @sub_1 = create(:bundle_voucher, :customer => @c1, :subscription => true,
@@ -112,6 +112,41 @@ describe 'scoping Customers' do
         c.should_not include(@c1)
         c.should_not include(@c2)
       end
+    end
+  end
+  describe 'correct joins' do
+    before(:each) do
+      @v0 = create(:revenue_vouchertype).id
+      @v1 = create(:revenue_vouchertype).id
+      @v2 = create(:revenue_vouchertype).id
+      @v3 = create(:revenue_vouchertype).id
+      @v4 = create(:revenue_vouchertype).id
+      @u0 = create(:customer)
+      @u1 = create(:customer)
+      @u2 = create(:customer)
+      @u3 = create(:customer)
+      # u0 has v0 only
+      create(:revenue_voucher, vouchertype_id: @v0, customer: @u0)
+      # u1 has v1 only
+      create(:revenue_voucher, vouchertype_id: @v1, customer: @u1)
+      # u2 has v0 and v1
+      create(:revenue_voucher, vouchertype_id: @v1, customer: @u2)
+      create(:revenue_voucher, vouchertype_id: @v0, customer: @u2)
+      # u3 has neither v0 nor v1
+      create(:revenue_voucher, vouchertype_id: @v2, customer: @u3)
+      # everyone has purchased v4
+      [@u0,@u1,@u2,@u3].each { |u| create(:revenue_voucher, vouchertype_id: @v4, customer: u) }
+    end
+    specify 'only u3 has purchased neither v0 nor v1' do
+      u = Customer.purchased_no_vouchertypes([@v0,@v1])
+      expect(u).to include(@u3)
+      [@u0,@u1,@u2].each { |user| expect(u).not_to include(user) }
+    end
+    specify 'nobody has purchased v3' do
+      [@u0,@u1,@u2,@u3].each { |u| expect(Customer.purchased_no_vouchertypes([@v3])).to include(u) }
+    end
+    specify 'everyone has purchased v4' do
+      [@u0,@u1,@u2,@u3].each { |u| expect(Customer.purchased_no_vouchertypes([@v4])).not_to include(u) }
     end
   end
 end

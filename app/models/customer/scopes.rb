@@ -1,5 +1,5 @@
 class Customer < ActiveRecord::Base
-  default_scope {  order('last_name, zip') }
+  default_scope {  where('role >= 0').order('last_name, zip') }
 
   scope :subscriber_during, ->(seasons) {
     joins(:vouchertypes).where('vouchertypes.subscription = ? AND vouchertypes.season IN (?)', true, seasons)
@@ -9,9 +9,14 @@ class Customer < ActiveRecord::Base
     joins(:vouchertypes).where('vouchertypes.id IN (?)', vouchertype_ids).distinct
   }
   
-  def self.purchased_no_vouchertypes(vouchertype_ids)
-    Customer.all - Customer.purchased_any_vouchertypes(vouchertype_ids)
-  end
+  scope :purchased_no_vouchertypes, ->(vouchertype_ids) {
+    matching_vouchers = Voucher.where('items.customer_id = customers.id').where('items.vouchertype_id IN (?)', vouchertype_ids)
+    where("NOT EXISTS(#{matching_vouchers.to_sql})")
+  }
+
+  # def self.purchased_no_vouchertypes(vouchertype_ids)
+  #   Customer.all - Customer.purchased_any_vouchertypes(vouchertype_ids)
+  # end
 
   scope :seen_any_of, ->(show_ids) {
     joins(:vouchers, :showdates).
