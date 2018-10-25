@@ -216,13 +216,14 @@ class CustomersController < ApplicationController
       @page_title = "All Customers"
       @customers = Customer.all.order(:last_name)
     end
-    @customers = @customers.paginate(:page => @page)
+    @customers = @customers.regular_customers.paginate(:page => @page)
   end
 
   def list_duplicate
     @list_action = list_duplicate_customers_path
     @page = (params[:page] || 1).to_i
     @customers = Customer.
+      regular_customers.
       find_suspected_duplicates.
       paginate(:page => @page)
     @page_title = 'Possible Duplicates'

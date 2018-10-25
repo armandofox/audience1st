@@ -18,5 +18,6 @@ class LapsedSubscribers < Report
     if ! (have_not.empty?)
       @relation = @relation & Customer.purchased_no_vouchertypes(have_not)
     end
+    @relation.regular_customers
   end
 end

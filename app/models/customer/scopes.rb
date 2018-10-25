@@ -1,12 +1,15 @@
 class Customer < ActiveRecord::Base
-  default_scope {  where('role >= 0').order('last_name, zip') }
+  default_scope {  order('last_name, zip').distinct }
 
+  scope :regular_customers, ->()  { where('role >= 0') }
+  
   scope :subscriber_during, ->(seasons) {
-    joins(:vouchertypes).where('vouchertypes.subscription = ? AND vouchertypes.season IN (?)', true, seasons)
+    joins(:vouchertypes).
+    where('vouchertypes.subscription = ? AND vouchertypes.season IN (?)', true, seasons)
   }
 
   scope :purchased_any_vouchertypes, ->(vouchertype_ids) {
-    joins(:vouchertypes).where('vouchertypes.id IN (?)', vouchertype_ids).distinct
+    joins(:vouchertypes).where('vouchertypes.id IN (?)', vouchertype_ids)
   }
   
   scope :purchased_no_vouchertypes, ->(vouchertype_ids) {
@@ -21,8 +24,7 @@ class Customer < ActiveRecord::Base
   scope :seen_any_of, ->(show_ids) {
     joins(:vouchers, :showdates).
     where('items.customer_id = customers.id AND items.showdate_id = showdates.id AND
-           items.type = \'Voucher\' AND showdates.show_id IN (?)', show_ids).
-    distinct
+           items.type = \'Voucher\' AND showdates.show_id IN (?)', show_ids)
   }
   
   def self.seen_none_of(show_ids)
@@ -39,16 +41,14 @@ class Customer < ActiveRecord::Base
     joins(:items).
     where('items.customer_id = customers.id AND items.type = \'Voucher\' AND
                        (items.showdate_id = 0 OR items.showdate_id IS NULL) AND
-                       items.vouchertype_id IN (?)', vtypes).
-    distinct
+                       items.vouchertype_id IN (?)', vtypes)
   }
 
   scope :donated_during, ->(start_date, end_date, amount) {
     joins(:items, :orders).
     where(%q{items.customer_id = customers.id AND items.amount >= ? AND items.type = 'Donation'
             AND orders.sold_on BETWEEN ? AND ?},
-      amount, start_date, end_date).
-    distinct
+      amount, start_date, end_date)
   }
 
 end

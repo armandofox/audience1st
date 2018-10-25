@@ -24,7 +24,7 @@ class ValidVouchersController < ApplicationController
   def create
     args = params[:valid_voucher]
     return redirect_to(:back, :alert => 'You must select 1 or more show dates.') unless
-      (vouchertypes = Vouchertype.find(args.delete(:vouchertypes))) &&
+      (vouchertypes = Vouchertype.find_by_id(args.delete(:vouchertypes))) &&
       !vouchertypes.empty?
     args[:before_showtime] = params[:hours_before].to_f.hours if params[:end_is_relative].to_i > 0
     @add_to_all = (params[:add_to_all].to_i > 0)

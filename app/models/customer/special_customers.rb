@@ -36,16 +36,12 @@ class Customer < ActiveRecord::Base
       Customer.generic_customer.id].include?(self.id)
   end
   
-  def real_customer? ; !special_customer? ; end
-
-  def self.all_customers ; Customer.where('role >= 0') ; end
-  
   private
 
   def deletable? ; !self.special_customer? ; end
 
   def self.special_customer(which)
-    Customer.unscoped.find_by_role!(ROLES[which.to_sym])
+    Customer.find_by_role!(ROLES[which.to_sym])
   end
 
 end
