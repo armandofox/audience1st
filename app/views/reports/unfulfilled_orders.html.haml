@@ -1,11 +1,7 @@
 %h1= "#{@vouchers.length} unfulfilled orders (#{@unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
 
-%p{:align=>:top}
-  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'genButton'
-  = check_box_tag 'Check/Clear All', :id => 'all'
-  = javascript_tag %q{$('#all').change(function() { $('#uf input.check').prop('checked', $(this).prop('checked')) }) }
-
 = form_tag mark_fulfilled_path, :id=>'uf' do
+  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'genButton'
   = submit_tag 'Mark Checked Orders as Fulfilled'
 
   %table.hilite.ordersTable
@@ -18,7 +14,9 @@
       %th Zip
       %th Order Date
       %th Product
-      %th Completed
+      %th
+        = check_box_tag 'all'
+        = javascript_tag %q{$('#all').change(function() { $('#uf input.check').prop('checked', $(this).prop('checked')) }) }
 
 
     - @vouchers.each do |v|
@@ -38,5 +36,4 @@
           %td.strong{:colspan=>9}
             Gift for #{link_to_customer v.order.customer} from #{link_to_customer v.order.purchaser}
             (ship to #{cust.full_name})
-  = submit_tag 'Mark Checked Orders as Fulfilled'
 

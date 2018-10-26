@@ -573,6 +573,15 @@ class Customer < ActiveRecord::Base
     end
   end
 
+  def name_and_address_to_csv
+    [
+      (first_name.name_capitalize unless first_name.blank?),
+      (last_name.name_capitalize unless last_name.blank?),
+      email,
+      street,city,state,zip
+    ]
+  end
+
   def to_csv
     [
       (first_name.name_capitalize unless first_name.blank?),

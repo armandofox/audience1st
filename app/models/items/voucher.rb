@@ -82,7 +82,8 @@ class Voucher < Item
       end
       orders.each_pair do |k,v|
         voucher = v[0]
-        row = k[0].to_csv
+        row = k[0].name_and_address_to_csv
+        row << v[0].order.sold_on
         row << v.size           # quantity
         row << k[1].name        # product
         csv << row
