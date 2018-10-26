@@ -4,11 +4,8 @@
   - else
     Signed in as 
     = link_to current_user.full_name, customer_path(current_user)
-    = link_to 'Log Out', logout_path, :class => 'btn btn-danger float-right'
+    = link_to 'Log Out', logout_path, :class => 'btn btn-warning float-right'
     - if @gAdminDisplay
-      = link_to 'Online Help', 'http://docs.audience1st.com', :class => 'btn btn-secondary', :target => '_blank'
-      = link_to 'Regular Patron View', temporarily_disable_admin_session_path, :class => 'btn btn-secondary float-right'
-      = popup_help_for :disable_admin
+      = link_to 'View as Patron', temporarily_disable_admin_session_path, :class => 'btn btn-danger float-right'
     - elsif current_user().is_staff
-      = link_to 'Admin View', reenable_admin_session_path, :class => 'btn btn-secondary float-right'
-      = popup_help_for :disable_admin
+      = link_to 'View as Admin', reenable_admin_session_path, :class => 'btn btn-warning float-right'

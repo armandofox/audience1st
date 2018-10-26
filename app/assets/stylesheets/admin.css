@@ -28,7 +28,7 @@ table.hilite tr:hover {
 .odd { background-color: #eee; }
 
 /*
- * Tooltip styles (http://psacake.com/web/jl.asp)
+ * Popup-help styles (http://psacake.com/web/jl.asp)
  */
 
 a.a1tooltip {outline:none; }
@@ -102,7 +102,7 @@ a.a1tooltip:hover span{
     overflow: hidden; }
 
 
-/*CSS3 extras*/
+/* for truncated strings that display whole string  */
 a.tooltip span
 {
     border-radius:4px;

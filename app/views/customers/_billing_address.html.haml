@@ -1,34 +1,46 @@
-- disabled = defined?(passive) && passive
-%fieldset.billing_info
-  %legend= local_assigns[:legend] || 'Credit Card Billing Address'
-  %p
-    Fields
-    %span.strong like this
-    are required.
-  = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
-    %label.strong{:for => 'customer_first_name'} First name
-    = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled
-    %br
-    %label.strong{:for => 'customer_last_name'} Last name
-    = f.text_field :last_name, :size => 16, :maxlength => 40, :readonly => disabled 
-    %br
-    %br
-    %label.strong{:for => 'customer_street'} Street
-    = f.text_field :street, :readonly => disabled  
-    %br
-    %label.strong{:for => 'customer_city'} City
-    = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled
-    %label.no_float.strong{:for => 'customer_state'} State
-    = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled}
-    %label.no_float.strong{:for => 'customer_zip'} Zip
-    = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled}
-    %br
-    %label{:for=>:customer_day_phone} Preferred phone
-    = f.text_field :day_phone, {:size => 16, :maxlength => 16}
-    %br
-    %br
+.container
+  - disabled = defined?(passive) && passive
+  %fieldset.billing_info
+    %legend= local_assigns[:legend] || 'Credit Card Billing Address'
+    %p.bg-secondary.text-light  Fields <span class="strong">like this</span> are required.
+    = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
+      .row
+        .col
+          %label.strong{:for => 'customer_first_name'} First name
+        .col
+          = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled, :class => 'form-control'
+        .col
+          %label.strong{:for => 'customer_last_name'} Last name
+        .col
+          = f.text_field :last_name, :size => 16, :maxlength => 40, :readonly => disabled, :class => 'form-control'
+      .row
+        .col
+          %label.strong{:for => 'customer_street'} Street
+        .col
+          = f.text_field :street, :readonly => disabled, :class => 'form-control'
+      .row
+        .col
+          %label.strong{:for => 'customer_city'} City
+        .col              
+          = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled, :class => 'form-control'
+      .row
+        .col
+          %label.no_float.strong{:for => 'customer_state'} State
+        .col
+          = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled, :class => 'form-control'}
+        .col
+          %label.no_float.strong{:for => 'customer_zip'} Zip
+        .col
+          = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled, :class => 'form-control'}
+      .row
+        .col
+          %label{:for=>:customer_day_phone} Preferred phone
+        .col        
+          = f.text_field :day_phone, {:size => 16, :maxlength => 16, :class => 'form-control'}
+        .col
+          %label.strong{:for=>:customer_email} Email
+        .col
+          = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled, :class => 'form-control' }
+      .row
+        %small.form-text.text-muted= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
 
-    %label.strong{:for=>:customer_email} Email
-    = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled }
-    %span.small= link_to_if_option :privacy_policy_url, "Our Privacy Policy", :target => '_blank'
-    %br

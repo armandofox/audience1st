@@ -1,32 +1,31 @@
-%fieldset#credit_card
-  %legend= defined?(legend) ? legend : 'Credit Card Information'
-  %p.notice.clear
-    We do not store or access your card number.
-    Our transactions are securely processed 
-    through Stripe.
-  %p#payment_errors
-  %label{:for => 'credit_card_first_name'} First Name
-  = text_field_tag 'credit_card_first_name', (first_name ||= ''), :size => 20, :autocomplete => 'off', :class => 'unsubmitted'
-  %br
-  %label{:for => 'credit_card_last_name'} Last Name
-  = text_field_tag 'credit_card_last_name', (last_name ||= ''), :size => 20, :autocomplete => 'off', :class => 'unsubmitted'
-  %br
-  = hidden_field_tag 'credit_card_token', 'DUMMY'
-  = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
-
-  %label{:for => 'credit_card_number'} Number (no spaces)
-  = text_field_tag 'credit_card_number', '', :size => 24, :maxlength => 16, :autocomplete => :off, :class => 'unsubmitted'
-  = image_tag 'credit_card_logos_horizontal.png'
-
-  %br
-  %label Expiration MM/YYYY
-  = text_field_tag 'credit_card_month', '', :size => 2, :maxlength => 2, :autocomplete => :off, :class => 'unsubmitted'
-  &nbsp;/&nbsp;
-  = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'unsubmitted'
-
-  %br
-  %label{:for => 'credit_card_verification_value'} Security (CVV) code
-  = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'unsubmitted'
-  = popup_help_for 'credit_card_verification_value'
-  %br
-
+.container
+  %fieldset#credit_card
+    %legend= defined?(legend) ? legend : 'Credit Card Information'
+    %p.bg-secondary.text-light= t('store.credit_card_security_notice')
+    .container#payment_errors.bg-danger
+    = hidden_field_tag 'credit_card_token', 'DUMMY'
+    = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
+    .row
+      .col-md-2
+        %label.col-form-label{:for => 'credit_card_name'} Name
+      .col-md-3
+        = text_field_tag 'credit_card_name', local_assigns[:name] || '', :autocomplete => 'off', :class => 'form-control unsubmitted'
+      .col-md-2
+        %label.col-form-label{:for => 'credit_card_number'} Number
+      .col-md-3
+        = text_field_tag 'credit_card_number', '', :maxlength => 16, :autocomplete => :off, :class => 'form-control unsubmitted'
+      .col-md-2
+    .row
+      .col-md-2
+        %label.col-form-label Expiration
+      .col-md-3
+        = text_field_tag 'credit_card_month', '', :size => 4, :maxlength => 2, :autocomplete => :off, :class => 'form-control unsubmitted'
+        &nbsp;/&nbsp;
+        = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'form-control unsubmitted'
+      .col-md-2
+        %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
+      .col-md-2
+        = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control unsubmitted'
+        = popup_help_for 'credit_card_verification_value'
+      .col-md-3
+        = image_tag 'credit_card_logos_horizontal.png'

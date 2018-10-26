@@ -13,7 +13,7 @@
   = hidden_field_tag 'customer_id', @customer.id
 
   #credit_card_info.hidden
-    = render :partial => 'store/credit_card', :locals => {:first_name => @customer.first_name, :last_name => @customer.last_name}
+    = render :partial => 'store/credit_card', :locals => {:name => @customer.full_name}
     = hidden_field_tag '_stripe_commit'
     %label &nbsp;
     = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
