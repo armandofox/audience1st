@@ -22,7 +22,6 @@ Scenario: set up multiple valid showdates
   And I press "Save & Back to List of Shows"
   Then I should see "5 showdates were successfully added"
   And "Hamlet" should have 5 showdates
-  Then debug
   And the following showdates for "Hamlet" should exist:
   | date              | max_sales | sales_cutoff      |
   | 2011-12-23 7:00pm |        50 | 2011-12-23 6:00pm |

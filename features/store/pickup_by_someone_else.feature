@@ -16,7 +16,7 @@ Scenario: customer can specify pickup name at purchase time
     | qty | type    | show    | price | showdate         |
     |   2 | General | Chicago | 10.00 | Apr 2, 2010, 8pm |
   And I am on the checkout page
-  Then I should see "If someone other than the purchaser will be attending this event"
+  Then I should see "Is someone other than the purchaser picking up the tickets?"
   When I fill in "pickup" with "Jason Gray"
   And the order is placed successfully
   Then I should be on the order confirmation page
