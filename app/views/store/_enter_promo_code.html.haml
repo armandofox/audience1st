@@ -1,6 +1,10 @@
-#enter_promo_code
-  %label{:for => "promo_code"} Discount Code
-  = text_field_tag 'promo_code', @promo_code, :size => 10
-  = link_to 'Redeem', '#', :onclick => "window.location = '#{@reload_url}'.replace('XXXX',$('#promo_code').val().toUpperCase()); false;"
-  - unless @promo_code.blank?
-    %p (Discounted price appears below <b>only</b> if discount still available)
+.row#enter_promo_code
+  .col-md-4.text-right
+    %label.col-form-label{:for => "promo_code"} Discount Code
+  .col-md-2
+    = text_field_tag 'promo_code', @promo_code, :size => 12, :class => 'form-control'
+  .col-md-2
+    = link_to 'Redeem', '#', :onclick => "window.location = '#{@reload_url}'.replace('XXXX',$('#promo_code').val().toUpperCase()); false;", :class => 'btn btn-sm btn-success'
+  .col-md-4
+    - unless @promo_code.blank?
+      %p (Discounted price appears below <b>only</b> if discount still available)

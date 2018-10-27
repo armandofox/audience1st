@@ -114,34 +114,14 @@
       send_birthday_reminders  |
       ) |
 
-  .container#configOptions
+  .container.text-center#configOptions
     %h1 Integrations
-    #integrationWarning.hidden
-      Integration options can now be edited. Proceed with care.  
-      You must click 'Update Settings' to save your changes before you
-      can test integrations with the new values.
-    #enableMaintenanceWarning.hidden
-      You're about to restrict access to Audience1st only to Staff
-      or higher level users. Patrons and non-staff users will see a
-      message saying the site is temporarily under maintenance.  You can
-      resume normal operation later 
-      by changing Staff Access Only back to "No".  Click OK to
-      restrict access to Staff only, or Cancel to leave things as they
-      are.  A dashed yellow border will appear while the site is in
-      Staff Access Only mode. 
-    #disableMaintenanceWarning.hidden
-      You're about to turn off Staff Access Only and make Audience1st
-      available to all users. 
-      Click OK to confirm, or Cancel to cancel.
-    %p.warning
-      Warning: Changing these options affects the basic operation and
-      appearance of your Audience1st installation.  Please be sure you 
-      know what you're doing before changing these, and to be safe,
-      before changing a value make a note of the old value.  Click "Allow
-      Changes" to enable editing of these options, or "Test Integrations..." 
-      to test if the current values seem to be working.
+    #integrationWarning.hidden= t('options.integration_warning')
+    #enableMaintenanceWarning.hidden= t('options.enable_maintenance_warning')
+    #disableMaintenanceWarning.hidden= t('options.disable_maintenance_warning')
+    %p.text-danger.lead= t('options.change_basic_settings_warning')
     %p
-      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-warning'
+      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'
       = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'btn btn-primary'
       = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'btn btn-primary'
 

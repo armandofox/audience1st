@@ -5,11 +5,11 @@
     %h2 This Order is a Gift For...
     = render :partial => 'customers/billing_address', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
-= form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form', :class => 'form-inline' do
-
-  = render :partial => 'pickup_by' if @allow_pickup_by_other
+= form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
 
   %h2#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
+
+  = render :partial => 'pickup_by' if @allow_pickup_by_other
     
   - if @cart.total_price > 0
 

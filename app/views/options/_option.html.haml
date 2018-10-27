@@ -1,19 +1,19 @@
 .row
   .col-md-4.text-right
     - attr_name = attrib.gsub(/^encrypted_/,'')
-    = humanize(attr_name).capitalize_each_word
+    %label.col-form-label= humanize(attr_name).capitalize_each_word
     = option_description_for(attr_name)
   .col-md-8
     - if attrib.to_s =~ /account_code/i
-      = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i)
+      = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i), {}, {:class => 'form-control'}
     - else 
       - case Option.columns_hash[attrib.to_s].type
       - when :string
-        = f.text_field attr_name, {:size => 60, :autocomplete => 'off'}
+        = f.text_field attr_name, {:class => 'form-control', :autocomplete => 'off'}
       - when :text
-        = f.text_area attr_name, :rows => 6, :cols => 60
+        = f.text_area attr_name, :rows => 4, :class => 'form-control'
       - when :boolean
-        = f.select attr_name, [['Yes', true], ['No', false]]
+        = f.select attr_name, [['Yes', true], ['No', false]], {}, {:class => 'form-control'}
       - when :integer, :float
-        = f.text_field attr_name, :size => 6, :maxlength => 6
+        = f.text_field attr_name, :size => 6, :maxlength => 6, :class => 'form-control'
       - else raise "Unexpected option type for #{attr_name}: #{type.to_s}"

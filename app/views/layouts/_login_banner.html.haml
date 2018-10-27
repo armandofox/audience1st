@@ -2,10 +2,9 @@
   - if !current_user.has_ever_logged_in?
     = link_to 'Cancel/Start Over', logout_path, :class =>  'btn btn-danger float-right'
   - else
-    Signed in as 
-    = link_to current_user.full_name, customer_path(current_user)
-    = link_to 'Log Out', logout_path, :class => 'btn btn-warning float-right'
+    = link_to 'Log Out', logout_path, :class => 'btn btn-warning'
+    = current_user.full_name
     - if @gAdminDisplay
-      = link_to 'View as Patron', temporarily_disable_admin_session_path, :class => 'btn btn-danger float-right'
+      = link_to 'View as Patron', temporarily_disable_admin_session_path, :class => 'btn btn-outline-danger float-right'
     - elsif current_user().is_staff
-      = link_to 'View as Admin', reenable_admin_session_path, :class => 'btn btn-warning float-right'
+      = link_to 'View as Admin', reenable_admin_session_path, :class => 'btn btn-outline-danger float-right'

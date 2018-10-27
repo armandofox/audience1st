@@ -1,31 +1,31 @@
 .container
   %fieldset#credit_card
-    %legend= defined?(legend) ? legend : 'Credit Card Information'
-    %p.bg-secondary.text-light= t('store.credit_card_security_notice')
+    %legendn= local_assigns[:legend] || 'Credit Card Information'
+    %p.text-center.bg-secondary.text-light= t('store.credit_card_security_notice')
     .container#payment_errors.bg-danger
     = hidden_field_tag 'credit_card_token', 'DUMMY'
     = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
-    .row
-      .col-md-2
+    .form-row
+      .col-md-2.text-right
         %label.col-form-label{:for => 'credit_card_name'} Name
       .col-md-3
-        = text_field_tag 'credit_card_name', local_assigns[:name] || '', :autocomplete => 'off', :class => 'form-control unsubmitted'
-      .col-md-2
+        = text_field_tag 'credit_card_name', local_assigns[:name] || '', :autocomplete => 'off', :class => 'form-control form-control-sm unsubmitted'
+      .col-md-2.text-right
         %label.col-form-label{:for => 'credit_card_number'} Number
       .col-md-3
-        = text_field_tag 'credit_card_number', '', :maxlength => 16, :autocomplete => :off, :class => 'form-control unsubmitted'
+        = text_field_tag 'credit_card_number', '', :maxlength => 16, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
       .col-md-2
-    .row
-      .col-md-2
+    .form-row
+      .col-md-2.text-right
         %label.col-form-label Expiration
-      .col-md-3
-        = text_field_tag 'credit_card_month', '', :size => 4, :maxlength => 2, :autocomplete => :off, :class => 'form-control unsubmitted'
+      .col-md-3.form-inline
+        = text_field_tag 'credit_card_month', '', :size => 4, :maxlength => 2, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
         &nbsp;/&nbsp;
-        = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'form-control unsubmitted'
-      .col-md-2
+        = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
+      .col-md-2.text-right
         %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
       .col-md-2
-        = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control unsubmitted'
+        = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control form-control-sm unsubmitted'
         = popup_help_for 'credit_card_verification_value'
       .col-md-3
         = image_tag 'credit_card_logos_horizontal.png'

@@ -14,7 +14,7 @@
 
   #event_types.center
     - (Show::TYPES - [@what]).each do |type|
-      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-sm btn-primary'
+      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-primary'
 
   #ticket_menus
     = form_tag process_cart_path(@customer) do
@@ -26,18 +26,30 @@
 
       = render :partial => 'retail' if @is_admin
 
-      %label{:for => :donation} Additional tax-deductible donation
-      = text_field_tag 'donation', '', :size => 5, :class => 'itemQty'
-      \.00
-      %br
-      #orderTotal
-        %label.strong{:for=>:total} Order Total
-        = text_field_tag 'total', '0.00', :size => 6, :disabled => true
+      .form-row  
+        .col-md-4.text-right
+          %label.col-form-label{:for => :donation} Additional tax-deductible donation
+        .col-md-2
+          = text_field_tag 'donation', '', :size => 5, :class => 'itemQty form-control form-control-sm'
+        .col-md-6
+
+      .form-row#orderTotal
+        .col-md-4.text-right
+          %label.col-form-label.strong{:for=>:total} Order Total
+        .col-md-2
+          = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'form-control form-control-sm'
+        .col-md-6
+
       - if Option.allow_gift_tickets?
-        %label.emphasis{:for=>:gift} Is this order a <strong>gift?</strong>
-        = check_box_toggle 'gift', false, 'nextstep','to enter Recipient information', |
-          'to Billing information' |
-      %br
-      %label &nbsp;
-      = submit_tag 'CONTINUE >>', :disabled => true, :id => 'submit', :class => 'btn btn-success'
-      %span#nextstep to Billing Information
+        .form-row
+          .col-md-4.text-right
+            %label.col-form-label.strong{:for=>:gift} Is this order a <strong>gift?</strong>
+          .col-md-1
+            = check_box_toggle 'gift', false, 'nextstep','to enter Recipient information','to Billing information'
+          .col-md-7
+      .form-row  
+        .col-md-4
+        .col-md-4
+          = submit_tag 'CONTINUE >>', :disabled => true, :id => 'submit', :class => 'btn btn-success'
+          %span#nextstep to Billing Information
+        .col-md-4
