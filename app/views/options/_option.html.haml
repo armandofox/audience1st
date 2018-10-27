@@ -1,7 +1,7 @@
 .row
   .col-md-4.text-right
     - attr_name = attrib.gsub(/^encrypted_/,'')
-    %label.col-form-label= humanize(attr_name).capitalize_each_word
+    %label.col-form-label{:for => "option_#{attr_name}"}= humanize(attr_name).capitalize_each_word
     = option_description_for(attr_name)
   .col-md-8
     - if attrib.to_s =~ /account_code/i
