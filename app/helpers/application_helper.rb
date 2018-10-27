@@ -11,6 +11,12 @@ module ApplicationHelper
     end
   end
 
+  def display_customer_actions?
+    ! @customer.try(:new_record?) &&
+      controller.controller_name == 'customers' &&
+      action_name     !~ /^index|list_duplicate/
+  end
+
   def in_rows_of(n,collection)
     return '' if (collection.nil? || collection.empty?)
     rows = ''

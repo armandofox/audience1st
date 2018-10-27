@@ -44,7 +44,7 @@
               - if @gAdminDisplay
                 = render :partial => 'navbars/season_tabs'
                 = render :partial => 'customers/quick_search'
-                = render :partial => 'navbars/staff_buttons'
+                = render :partial => 'navbars/staff_buttons' if display_customer_actions?
             #content.clear
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
                 %h1.center Your Order Is Not Yet Complete
