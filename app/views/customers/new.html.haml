@@ -9,5 +9,5 @@
   = render :partial => 'billing_address', :locals => {:customer => @customer}
   = render 'password'
   = render 'extra'
-  = submit_tag 'Create My Account'
-  = link_to 'Cancel', (@gCheckoutInProgress ? store_path : login_path), :class => 'genButton'
+  = submit_tag 'Create My Account', :class => 'btn btn-success'
+  = link_to 'Cancel', (@gCheckoutInProgress ? store_path : login_path), :class => 'btn btn-primary'

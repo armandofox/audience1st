@@ -15,7 +15,7 @@
       %label{:for => 'email_confirmation'} Send confirmation email?
       = check_box_tag 'email_confirmation', 1, !@customer.is_admin
       %br
-    = submit_tag 'Confirm Reservation'
+    = submit_tag 'Confirm Reservation', :class => 'btn btn-success'
     - back_label = "Don't Make Reservation"
   - else
     - back_label = "Back to My Account"
@@ -26,7 +26,7 @@
       %li All shows for which it's valid may be sold out
       %li All seats allocated for this type of ticket may be sold out 
       %li Seats allocated for this type of ticket may not be available for reservation until a future date
-  = link_to back_label, customer_path(@customer), :class => 'genButton'
+  = link_to back_label, customer_path(@customer), :class => 'btn btn-primary'
 
 
 

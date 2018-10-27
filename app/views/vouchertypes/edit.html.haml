@@ -2,5 +2,5 @@
   %legend Make changes to "#{@vouchertype.name}"
   = form_tag vouchertype_path(@vouchertype), :method => :put do
     = render :partial => 'form' 
-    = submit_tag 'Save Changes' 
-    = link_to 'Cancel', vouchertypes_path, :class => 'genButton'
+    = submit_tag 'Save Changes', :class => 'btn btn-success'
+    = link_to 'Cancel', vouchertypes_path, :class => 'btn btn-primary'

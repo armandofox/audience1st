@@ -1,7 +1,7 @@
 %h1= "#{@vouchers.length} unfulfilled orders (#{@unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
 
 = form_tag mark_fulfilled_path, :id=>'uf' do
-  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'genButton'
+  = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'btn btn-primary'
   = submit_tag 'Mark Checked Orders as Fulfilled'
 
   %table.hilite.ordersTable

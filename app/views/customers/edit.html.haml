@@ -7,5 +7,5 @@
   = render 'form_admin' if @gAdminDisplay
   %br
   %br
-  = submit_tag 'Save Changes' 
-  = link_to 'Cancel', customer_path(@customer), :class => 'genButton'
+  = submit_tag 'Save Changes', :class => 'btn btn-success'
+  = link_to 'Cancel', customer_path(@customer), :class => 'btn btn-primary'

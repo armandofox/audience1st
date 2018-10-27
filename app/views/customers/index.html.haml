@@ -35,7 +35,6 @@
           %th Labels
       %tbody
         = render :partial => 'customers/customer', :collection => @customers
-    #mergebar2.merge_bar= render :partial => 'customers/merge_bar'
     :javascript
       $('#selectAll').change(function() { $('.selectForMerge').prop('checked', $(this).prop('checked')); })
     %br/

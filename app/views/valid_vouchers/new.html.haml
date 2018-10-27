@@ -17,7 +17,5 @@
         = radio_button_tag "add_to_all", 1, @add_to_all
         All Dates
         %br/
-  = submit_tag "Add"
-  = link_to 'Cancel', edit_show_path(@showdate.show), {:class => 'genButton' }
-
-
+  = submit_tag "Add", :class => 'btn btn-success'
+  = link_to 'Cancel', edit_show_path(@showdate.show), {:class => 'btn btn-primary' }

@@ -8,7 +8,7 @@ Background:
 
   Given I am logged in as boxoffice manager
   And I am on the home page for customer "Tom Foolery"
-  And I follow "Record Donation"
+  And I follow "New Donation..."
 
 Scenario: record valid check donation
 
@@ -22,9 +22,9 @@ Scenario: attempt donation with invalid credit card
   When I fill in "Amount" with "30.00"
   And I choose "Credit Card"
   And I fill in the "Credit Card Information" fields as follows:
-  | field               |            value |
-  | Number (no spaces)  | 4000000000000002 |
-  | Security (CVV) code |              111 |
+  | field    |            value |
+  | Number   | 4000000000000002 |
+  | CVV code |              111 |
   And I press "Charge Credit Card"
   Then I should be on the record donation page for customer "Tom Foolery"
   Then I should see "Forced failure in test mode"

@@ -7,5 +7,5 @@
     %td.c #{import.customer.first_name.name_capitalize if import.customer} #{import.completed_at.to_formatted_s(:short)}
     %td.c=  h import.number_of_records
   - else
-    %td.c= link_to "Preview", edit_import_path(import), :class => 'genButton'
-    %td.c= link_to "Cancel", import_path(import), {:method => :delete}, {:class => 'genButton'}
+    %td.c= link_to "Preview", edit_import_path(import), :class => 'btn btn-primary'
+    %td.c= link_to "Cancel", import_path(import), {:method => :delete}, {:class => 'btn btn-primary'}

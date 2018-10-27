@@ -1,3 +1,6 @@
 en:
   customers:
-    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted.  This action CANNOT BE UNDONE.  OK to proceed?"
+    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?"
+
+  store:
+    credit_card_security_notice: "We do not store or access your card number.  Our transactions are securely processed through Stripe."

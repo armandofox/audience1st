@@ -1,5 +1,5 @@
 = form_for @o do |f|
-  .pageDiv
+  .container
     %h1 Your Venue Info As Seen By Customers
     = render_collection_of_options f, |
      %w(venue |
@@ -11,14 +11,20 @@
         help_email |
         privacy_policy_url |
         ) |
-    %label{:for => 'option_season_start'} Season Start Date
-    = render :partial => 'messages/popup_help', :object => t("option_descriptions.season_start_month")
-    = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
-    = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
+    .row
+      .col-md-4.text-right
+        Season Start Date
+        = option_description_for(:season_start_month)   
+      .col-md-8
+        = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
+        = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
         
-  .pageDiv
+  .container
     %h1 Accepting Donations and Retail Sales Online
-    = link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'genButton'
+    .row
+      .col-md-4
+      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+
     = render_collection_of_options f, %w( |
       default_retail_account_code |
       default_donation_account_code |
@@ -29,7 +35,7 @@
       donation_ack_from |
       ) |
 
-  .pageDiv
+  .container
     %h1 Info Messages Displayed on Customer's "My Account" Page
     = render_collection_of_options f, %w( |
       welcome_page_subscriber_message |
@@ -40,7 +46,7 @@
       display_email_opt_out |
       ) |
 
-  .pageDiv
+  .container
     %h1 Info Messages Displayed on Ticket Sales Pages
     = render_collection_of_options f, %w( |
       regular_show_sales_banner_for_nonsubscribers        |
@@ -57,7 +63,7 @@
       special_event_sales_banner_for_next_season_subscribers       |
       ) |
 
-  .pageDiv
+  .container
     %h1 Ticket Sales
     = render_collection_of_options f, %w( |
       advance_sales_cutoff  |
@@ -74,9 +80,12 @@
       checkout_notices |
       ) |
 
-  .pageDiv
+  .container
     %h1 Order Service Charges
-    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'genButton'
+    .row
+      .col-md-4
+      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+
     = render_collection_of_options f, %w( |
       subscription_order_service_charge |
       subscription_order_service_charge_description |
@@ -89,7 +98,7 @@
       classes_order_service_charge_account_code |
       ) |
  
-  .pageDiv
+  .container
     %h1 Email Confirmation of Reservation Sent to Customer
     = render_collection_of_options f, %w( |
       general_confirmation_email_notes |
@@ -98,14 +107,14 @@
       subscription_purchase_email_notes |
       ) |
     
-  .pageDiv
+  .container
     %h1 Email Reports Sent to Box Office Manager
     = render_collection_of_options f, %w( |
       boxoffice_daemon_notify  | 
       send_birthday_reminders  |
       ) |
 
-  .pageDiv#configOptions
+  .container#configOptions
     %h1 Integrations
     #integrationWarning.hidden
       Integration options can now be edited. Proceed with care.  
@@ -132,9 +141,9 @@
       Changes" to enable editing of these options, or "Test Integrations..." 
       to test if the current values seem to be working.
     %p
-      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges'
-      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'genButton'
-      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'genButton'
+      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-warning'
+      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'btn btn-primary'
+      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'btn btn-primary'
 
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |
@@ -143,6 +152,6 @@
       stylesheet_url |
       staff_access_only ) |
 
-  .pageDiv
+  .container
     %h1 Save Your Changes
-    %p.c= submit_tag  "Update Settings"
+    %p.c= submit_tag  "Update Settings", :class => 'btn btn-success'

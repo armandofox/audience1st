@@ -4,17 +4,16 @@
 
 = form_tag show_path(@show), :method => :put do
   = render :partial => 'form'
-  = submit_tag 'Save Changes'
-  = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'genButton'
+  = submit_tag 'Save Changes', :class => 'btn btn-success'
+  = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'btn btn-primary'
 
 %h2 Performances
 
 %p
-  = link_to  'Add a Performance', new_show_showdate_path(@show), :class => 'genButton'
-  = link_to 'Show all details', edit_show_path(@show, :display => 1), :class => 'genButton'
-  = link_to 'Hide all details', edit_show_path(@show), :class => 'genButton'
-  = link_to 'Add ticket type to all dates', new_valid_voucher_path(:showdate_id => @showdates.first, :add_to_all => true), :class => 'genButton'
-  = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'genButton'
+  = link_to  'Add a Performance', new_show_showdate_path(@show), :class => 'btn btn-primary'
+  = link_to 'Show all details', edit_show_path(@show, :display => 1), :class => 'btn btn-primary'
+  = link_to 'Hide all details', edit_show_path(@show), :class => 'btn btn-primary'
+  = link_to 'Add ticket type to all dates', new_valid_voucher_path(:showdate_id => @showdates.first, :add_to_all => true), :class => 'btn btn-primary'
 
 %table.hilite
   %thead

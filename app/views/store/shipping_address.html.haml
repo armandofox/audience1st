@@ -24,7 +24,7 @@
 
     = render :partial => 'customers/billing_address', :locals => {:customer => @recipient, :legend => "Gift Recipient"}
     = render :partial => 'customers/extra'        
-    = link_to '<< Go Back', {:action => (@redirect_to || :index)}, { :class => 'genButton' }
+    = link_to '<< Go Back', {:action => (@redirect_to || :index)}, { :class => 'btn btn-primary' }
     to change or cancel order, or
     = submit_tag 'CONTINUE >>'
     %span#nextstep to Billing Information

@@ -26,8 +26,7 @@ A1.swipeFail = function() {
   alert('Error reading card.'); 
 }
 A1.copySwipe = function(data) {
-  $('#credit_card_first_name').val(data.firstName);
-  $('#credit_card_last_name').val(data.lastName);
+  $('#credit_card_name').val(data.firstName + ' ' + data.lastName);
   $('#credit_card_number').val(data.account);
   $('#credit_card_month').val(data.expMonth);
   $('#credit_card_year').val("20" + data.expYear);
@@ -62,7 +61,7 @@ A1.stripeSubmit = function(event) {
     cvc: $('#credit_card_verification_value').val(),
     exp_month: $('#credit_card_month').val(),
     exp_year: $('#credit_card_year').val(),
-    name: ($('#credit_card_first_name').val() + ' ' + $('#credit_card_last_name').val())
+    name: ($('#credit_card_name').val())
   };
   if ($('#billing').length > 0) {             // billing name/addr available on form?
     card.address_line1 = $('#billing #customer_street').val();
