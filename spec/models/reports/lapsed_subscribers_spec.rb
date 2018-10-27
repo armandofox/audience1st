@@ -17,17 +17,17 @@ describe LapsedSubscribers do
   context 'when one array is empty' do
     it 'should not call purchased_any if have[] is empty' do
       expect(Customer).not_to receive(:purchased_any_vouchertypes)
-      expect(Customer).to receive(:purchased_no_vouchertypes).with([1,2]).and_return([])
+      expect(Customer).to receive(:purchased_no_vouchertypes).with([1,2]).and_return(Customer.none)
       @report.generate(:dont_have_vouchertypes => ['0,1,2'])
     end
     it 'should not call purchased_none if dont_have[] empty' do
-      expect(Customer).to receive(:purchased_any_vouchertypes).and_return([])
+      expect(Customer).to receive(:purchased_any_vouchertypes).and_return(Customer.none)
       expect(Customer).not_to receive(:purchased_no_vouchertypes).with([1,2])
       @report.generate(:have_vouchertypes => ['0,1,2'])
     end
     it 'should call both scopes if both arrays nonempty' do
-      expect(Customer).to receive(:purchased_any_vouchertypes).and_return([])
-      expect(Customer).to receive(:purchased_no_vouchertypes).and_return([])
+      expect(Customer).to receive(:purchased_any_vouchertypes).and_return(Customer.none)
+      expect(Customer).to receive(:purchased_no_vouchertypes).and_return(Customer.none)
       expect(@report.generate(:dont_have_vouchertypes => ['1,0'], :have_vouchertypes => ['0,1,2'])).to be_empty
     end
   end

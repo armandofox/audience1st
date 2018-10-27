@@ -12,7 +12,7 @@ describe ValidVouchersController do
         response.should redirect_to 'http://test.host'
       end
       it 'should display a message' do
-        flash[:alert].should =~ /select 1 or more show dates/i
+        flash[:alert].should =~ /select 1 or more voucher types/i
       end
     end
   end
