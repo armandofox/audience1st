@@ -13,17 +13,16 @@ Background:
 Scenario Outline: browse reports
 
   When I select "<report_type>" from "special_report_name"
-  Then I should see "<a_report_option>"
-  When I choose "Estimate number of matches"
+  And I choose "Estimate number of matches"
   And I press "Run Report"
-  Then I should see an alert matching /[0-9]+ matches/
+  Then I should see an alert matching /<alert>/
 
   Examples: customer report fields
-    | report_type                         | a_report_option                                    |
-    | Lapsed subscribers                  | Find patrons who purchased                         |
-    | Attendance at specific performances | List customers attending this specific             |
-    | New customers                       | List customers who were added to the database      |
-    | Subscriber open vouchers            | List customers who have open (unreserved) vouchers |
-    | Attendance by show                  | List customers who attended                        |
-    | Donor appeal                        | Donors who have made at least one donation of      |
+    | report_type                         | alert                                               |
+    | Lapsed subscribers                  | You must specify at least one type of voucher       |
+    | Attendance at specific performances | Please select a valid show date                     |
+    | New customers                       | 0 matches                                           |
+    | Subscriber open vouchers            | Please specify one or more subscriber voucher types |
+    | Attendance by show                  | Please specify one or more productions              |
+    | Donor appeal                        | 0 matches                                           |
 
