@@ -1,5 +1,5 @@
 class Customer < ActiveRecord::Base
-  default_scope {  order('last_name, zip').distinct }
+  default_scope {  distinct.order([:last_name, :zip]) }
 
   scope :regular_customers, ->()  { where('role >= 0') }
   

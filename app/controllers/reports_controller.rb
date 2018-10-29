@@ -66,23 +66,19 @@ class ReportsController < ApplicationController
     return unless (klass = validate_report_type params[:report_name])
     action = params[:what]
     full_report_url = request.fullpath
-    
-    # if we need a true redirect (for Download or Display On Screen),
-    # serialize the form and use JS to force the redirect.
-    return render(:js => %Q{window.location.href = '#{full_report_url}';}) if request.xhr? && action =~ /display|download/i
-
     @report = klass.__send__(:new, params[:output])
     @report.generate_and_postprocess(params)
     @customers = @report.customers
 
-    # BUG this won't work if errors when "display on screen" chosen
     if @report.errors
-      if request.xhr?
-        render :js => %Q{alert(#{ActionController::Base.helpers.j @report.errors})}
-      else
-        redirect_to reports_path, :alert => @report.errors
-      end
-      return
+      return render(:js => %Q{alert('#{ActionController::Base.helpers.j @report.errors}')})
+    end
+    
+    if request.xhr? && action =~ /display|download/i
+      # if we need a true redirect (for Download or Display On Screen),
+      # serialize the form and use JS to force the redirect.  This means we end up
+      # running the report twice, but whatever.
+      return render(:js => %Q{window.location.href = '#{full_report_url}';}) 
     end
 
     case action
