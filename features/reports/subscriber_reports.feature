@@ -17,22 +17,17 @@ Background: we have some subscribers
   | Diana    |          2010 |
   | Star     |          2009 |
 
-Scenario:
-
-  When I run the special report "All subscribers" with seasons: 2008,2009
-  Then the report output should include only customers: Elaine, Star  
-
 Scenario Outline: list all subscribers for specific season(s)
 
   When I run the special report "All subscribers" with seasons: <seasons>
   Then the report output should include only customers: <included>
 
 Examples:
-  | seasons   | included            |
-  | 2008,2009 | Elaine, Star        |
-  | 2010      | Elaine, Diana       |
-  | 2009,2010 | Elaine, Diana, Star |
-  | 2008      | Patrick             |
+  | seasons   | included              |
+  | 2008,2009 | Elaine, Star, Patrick |
+  | 2010      | Elaine, Diana         |
+  | 2009,2010 | Elaine, Diana, Star   |
+  | 2008      | Patrick               |
 
 Scenario Outline: list lapsed subscribers from 2009 to 2010
 
