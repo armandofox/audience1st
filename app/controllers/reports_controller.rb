@@ -66,11 +66,11 @@ class ReportsController < ApplicationController
   def run_special
     return unless (klass = validate_report_type params[:report_name])
     action = params[:what]
-    report_url = request.fullpath
+    full_report_url = request.fullpath
     
     # if we need a true redirect (for Download or Display On Screen),
     # serialize the form and use JS to force the redirect.
-    return render(:js => %Q{window.location = '#{report_url}';}) if request.xhr? && action =~ /display|download/i
+    return render(:js => %Q{window.location.href = '#{full_report_url}';}) if request.xhr? && action =~ /display|download/i
 
     @report = klass.__send__(:new, params[:output])
     @report.generate_and_postprocess(params)
@@ -91,7 +91,7 @@ class ReportsController < ApplicationController
       # paginate in case it's a long report
       @customers = @customers.paginate(:page => (params[:page] || 1).to_i)
       @page_title = "Report results: #{params[:report_name].humanize}"
-      @list_action = report_url
+      @list_action = full_report_url
       render :template => 'customers/index'
     when /estimate/i
       render :js => "alert('#{@customers.length} matches')"

@@ -7,7 +7,6 @@ Then /the report output should include only customers: (.*)/ do |arg|
   else
     choose 'Display list on screen'
     click_button 'Run Report'
-    save_and_open_page
     steps %Q{Then column "First name" of table "#customers" should include only: #{arg}}
   end
 end
