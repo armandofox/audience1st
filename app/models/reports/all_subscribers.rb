@@ -13,7 +13,7 @@ class AllSubscribers < Report
     @relation = 
       if seasons.empty?
       then Customer.purchased_any_vouchertypes(Vouchertype.subscription_vouchertypes.map(&:id))
-      else Customer.subscriber_during seasons.first.split(',')
+      else Customer.subscriber_during seasons
       end
   end
 end

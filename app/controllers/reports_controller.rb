@@ -61,7 +61,6 @@ class ReportsController < ApplicationController
 
   # This handler is always called as XHR GET, but for one case ("display
   # matches on screen"), it must do a full HTTP redirect.
-  
   skip_before_filter :verify_authenticity_token, :only => :run_special, :if => lambda { request.xhr? }
   def run_special
     return unless (klass = validate_report_type params[:report_name])

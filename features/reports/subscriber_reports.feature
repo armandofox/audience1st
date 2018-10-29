@@ -8,10 +8,11 @@ Feature: all subscribers/lapsed subscribers report
 Background: we have some subscribers  
 
   Given I am logged in as boxoffice manager
-  And subscription vouchers for seasons 2009, 2010
+  And subscription vouchers for seasons 2008, 2009, 2010
   And the following subscribers exist:
   | customer | subscriptions |
   | Joe      |               |
+  | Patrick  |          2008 |
   | Elaine   |     2009,2010 |
   | Diana    |          2010 |
   | Star     |          2009 |
@@ -27,9 +28,20 @@ Scenario Outline: list all subscribers for specific season(s)
   Then the report output should include only customers: <included>
 
 Examples:
-
-  |   seasons | included            |
+  | seasons   | included            |
   | 2008,2009 | Elaine, Star        |
+  | 2010      | Elaine, Diana       |
+  | 2009,2010 | Elaine, Diana, Star |
+  | 2008      | Patrick             |
 
 Scenario Outline: list lapsed subscribers from 2009 to 2010
 
+  When I run the special report "Lapsed subscribers" to find <old> subscribers who have not renewed in <new>
+  Then the report output should include only customers: <included>
+
+Examples:
+  |  old |  new | included |
+  | 2009 | 2010 | Star     |
+  | 2008 | 2010 | Patrick  |
+  | 2008 | 2009 | Patrick  |
+  | 2010 | 2010 |          |

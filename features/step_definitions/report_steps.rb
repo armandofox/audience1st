@@ -23,6 +23,16 @@ When /^I run the special report "All subscribers" with seasons: (.*)/ do |season
   end
 end
 
+When /^I run the special report "Lapsed subscribers" to find (.*) subscribers who have not renewed in (.*)$/ do |old,new|
+  visit path_to "the reports page"
+  select "Lapsed subscribers", :from => 'special_report_name'
+  within '#report_body' do
+    old.split(/\s*,\s*/).each { |s| select s, :from => 'have_vouchertypes' }
+    new.split(/\s*,\s*/).each { |s| select s, :from => 'dont_have_vouchertypes' }
+  end
+end
+  
+
 When /^I fill in the special report "(.*)" with:$/ do |report_name, fields|
   visit path_to "the reports page"
   select report_name, :from => 'special_report_name'

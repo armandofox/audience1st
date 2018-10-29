@@ -8,6 +8,8 @@
   %fieldset.generate_report
     %legend What to do with the results
 
+    = radio_button_tag 'what', 'estimate'
+    %label.plain{:for => 'what_estimate'} Estimate number of matches
     = radio_button_tag 'what', 'display', 1
     %label.plain{:for => 'what_display'} Display list on screen
     %br
@@ -28,16 +30,7 @@
     = radio_button_tag 'output[sort_by_zip]', 0, false
     Last name, then zip
     %br 
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    = radio_button_tag 'output[header_row]', 1, true
-    Include header row
-    = radio_button_tag 'output[header_row]', 0,false
-    No header row
-    %br
-    = radio_button_tag 'what', 'estimate'
-    %label.plain{:for => 'what_estimate'} Estimate number of matches
-    %br
-    - if @sublists
+    - if !@sublists.blank?
       = radio_button_tag 'what', 'add'
       %label.plain{:for => 'what_add'} Add to existing mailing list:
       = select_tag 'sublist', options_for_sublists(@sublists)
