@@ -103,6 +103,7 @@ class Report
       when :require_valid_address then @relation = @relation.where.
           not('customers.street' => [nil,'']).
           not('customers.city' => [nil,'']).not('customers.state' => [nil,''])
+      when :subscribers_only then @relation = @relation.subscriber_during(Time.this_season)
       when :login_from
         if (fields = @output_options[:login_since])
           date = Date::civil(fields[:year].to_i,fields[:month].to_i,fields[:day].to_i)
@@ -120,32 +121,6 @@ class Report
         @relation = @relation.where(constraints, *zips)
       end
     end
-
-    # Only force evaluation of the relation if there are steps we must do in Ruby:
-    # - check for subcsribers (this will become a column check eventually)
-    # - de-dup mailing addresses
-
-    return @relation if (@output_options[:subscribers] !~ /only/  &&
-      !@output_options.has_key?(:remove_dups))
-    arr = @relation.to_a        # ouch
-    # This can eventually become a simple column check
-    case @output_options[:subscribers]
-    when 'Subscribers only' then    arr.select!(&:subscriber?)
-    when 'Nonsubscribers only' then arr.reject!(&:subscriber?)
-    end
-
-    if @output_options[:remove_dups]
-      # BUG: people with same street addr but diff city/state will be marked dup
-      hshtemp = Hash.new
-      arr.each_index do |i|
-        canonical = arr[i].street.to_s.downcase.tr_s(' ', ' ')
-        if hshtemp.has_key?(canonical)
-          arr.delete_at(i)
-        else
-          hshtemp[canonical] = true
-        end
-      end
-    end
-    arr
+    @relation
   end
 end

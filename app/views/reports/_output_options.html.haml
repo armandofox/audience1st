@@ -1,16 +1,11 @@
 %fieldset#output_options
   %legend Report options
   %p
-    Include
-    = select_tag 'output[subscribers]', options_for_select(['Subscribers and nonsubscribers', 'Subscribers only', 'Nonsubscribers only'], 0)
+    = check_box_tag 'output[subscribers_only]', 'Limit to subscribers only', '1'
   %p.fieldgroup US Mail options
   %p
     = check_box_tag 'output[require_valid_address]', '1'
-    Require apparently-valid mailing address (takes longer)
-    %br
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    = check_box_tag 'output[remove_dups]', '1'
-    One entry per mailing address: remove similar addresses associated with distinct names (takes even longer)
+    Require valid mailing address
     %br
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     = check_box_tag 'output[filter_by_zip]', '1'
