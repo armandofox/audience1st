@@ -1,3 +1,22 @@
+module ScenarioHelpers
+  module Orders
+    def buy!(customer, vtype, qty)
+      @order = build(:order,
+        :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
+        :customer => customer,
+        :purchaser => customer)
+      @order.vouchers = []
+      vv = create(:valid_voucher, :vouchertype => vtype, :showdate => nil,
+        :start_sales => Time.at_beginning_of_season(vtype.season),
+        :end_sales => Time.at_end_of_season(vtype.season))
+      @order.add_tickets(vv, qty.to_i)
+      @order.finalize!
+    end
+  end
+end
+
+World(ScenarioHelpers::Orders)
+
 Given /^an order for customer "(.*)" paid with "credit card" containing:$/ do |customer, table|
   step %Q{I am logged in as customer "#{customer}"}
   step(%Q{my cart contains the following tickets:}, table)

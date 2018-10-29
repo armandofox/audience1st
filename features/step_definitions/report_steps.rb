@@ -1,3 +1,29 @@
+Then /the report output should include only customers: (.*)/ do |arg|
+  num_matches = arg.split(/\s*,\s*/).size
+  if num_matches.zero?
+    choose 'Estimate number of matches'
+    click_button 'Run Report'
+    expect(accept_alert()).to match(/0 matches/)
+  else
+    choose 'Display list on screen'
+    click_button 'Run Report'
+    save_and_open_page
+    steps %Q{Then column "First name" of table "#customers" should include only: #{arg}}
+  end
+end
+
+When /^I run the special report "All subscribers" with seasons: (.*)/ do |seasons|
+  visit path_to "the reports page"
+  select "All subscribers", :from => 'special_report_name'
+  wait_for_ajax
+  within '#report_body' do
+    unselect Time.this_season, :from => 'seasons'
+    seasons.split(/\s*,\s*/).each do |season|
+      select season, :from => 'seasons'
+    end
+  end
+end
+
 When /^I fill in the special report "(.*)" with:$/ do |report_name, fields|
   visit path_to "the reports page"
   select report_name, :from => 'special_report_name'

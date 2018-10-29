@@ -10,7 +10,7 @@ end
 
 Then /^I should see an alert matching \/(.*)\/$/ do |regex|
   # Rails3 - the following should work with more recent Capybara
-  # accept_alert().should match(Regexp.new regex)
+  expect(accept_alert()).to match(Regexp.new regex)
 end
 
 # Check for N occurrences of something
@@ -131,6 +131,19 @@ Then /^I should (not )?see a row "(.*)" within "(.*)"$/ do |flag, row, table|
   else
     matched.should be_truthy, "Expected #{table} to contain a row matching <#{row}>"
   end
+end
+
+# look for matching values within a particular column
+Then /^column "(.*)" of table "(.*)" should include( only)?: (.*)/ do |col,tbl,only,list|
+  list = list.split(/\s*,\s*/)
+  table_container = page.find(:css, tbl)
+  table_col_index = table_container.all(:xpath, "//tr//th").map(&:text).index(col)
+  # verify column is present
+  expect(table_col_index).not_to be_nil
+  # extract column contents
+  col_values = table_container.all(:xpath, "//tr/td[#{1+table_col_index}]").map(&:text)
+  (expect(col_values.size).to eq(list.size)) if only
+  list.each { |elt| expect(col_values).to include(elt) }
 end
 
 # match several rows

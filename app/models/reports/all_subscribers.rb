@@ -9,14 +9,12 @@ class AllSubscribers < Report
   end
 
   def generate(params = {})
-    if (seasons = params[:seasons]).empty?
-      vtypes = Vouchertype.subscription_vouchertypes
-    else
-      vtypes = params[:seasons].first.split(',').map do |season|
-        Vouchertype.subscription_vouchertypes(season.to_i)
-      end.flatten
-    end
-    @relation = Customer.purchased_any_vouchertypes(vtypes.map(&:id))
+    seasons = params[:seasons]
+    @relation = 
+      if seasons.empty?
+      then Customer.purchased_any_vouchertypes(Vouchertype.subscription_vouchertypes.map(&:id))
+      else Customer.subscriber_during seasons.first.split(',')
+      end
   end
 end
-      
+
