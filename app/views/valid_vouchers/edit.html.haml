@@ -15,4 +15,4 @@
   = hidden_field 'valid_voucher', 'vouchertype_id', :value => vt.id
   = render :partial => 'form'
   = submit_tag 'Save Changes'
-  = link_to 'Cancel', edit_show_path(@valid_voucher.showdate.show), {:class => 'genButton' }
+  = link_to 'Cancel', edit_show_path(@valid_voucher.showdate.show), {:class => 'btn btn-primary' }

@@ -16,7 +16,7 @@ module ApplicationHelper
       controller.controller_name == 'customers' &&
       action_name     !~ /^index|list_duplicate/
   end
-  
+
   def in_rows_of(n,collection)
     return '' if (collection.nil? || collection.empty?)
     rows = ''

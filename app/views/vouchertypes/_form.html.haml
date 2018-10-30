@@ -21,7 +21,7 @@
 %p#p_vouchertype_account_code.vtform
   %label{:for=>:vouchertype_account_code_id} Account Code
   = collection_select 'vouchertype', 'account_code_id', AccountCode.all, :id, :name_with_code
-  = link_to "Add/Edit Account Codes", account_codes_path, :class => 'genButton'
+  = link_to "Add/Edit Account Codes", account_codes_path, :class => 'btn btn-primary'
   = popup_help_for :vouchertype_account_code
 
 %p#p_vouchertype_offer_public.vtform

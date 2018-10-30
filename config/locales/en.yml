@@ -1,3 +1,45 @@
 en:
   customers:
-    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted.  This action CANNOT BE UNDONE.  OK to proceed?"
+    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?"
+
+  store:
+
+    credit_card_security_notice: >
+      We do not store or access your card number.
+      Our transactions are securely processed through Stripe.
+
+    accessible_seating_prompt: >
+      Special seating needs?
+
+    accessible_seating_description: >
+      Please describe (wheelchair, no stairs, etc.)
+
+  options:
+
+    integration_warning: >
+      Integration options can now be edited. Proceed with care.  
+      You must click 'Update Settings' to save your changes before you
+      can test integrations with the new values.
+
+    enable_maintenance_warning: >
+      You're about to restrict access to Audience1st only to Staff
+      or higher level users. Patrons and non-staff users will see a
+      message saying the site is temporarily under maintenance.  You can
+      resume normal operation later 
+      by changing Staff Access Only back to "No".  Click OK to
+      restrict access to Staff only, or Cancel to leave things as they
+      are.  A dashed yellow border will appear while the site is in
+      Staff Access Only mode.
+
+    disable_maintenance_warning: >
+      You're about to turn off Staff Access Only and make Audience1st
+      available to all users. 
+      Click OK to confirm, or Cancel to cancel.
+
+    change_basic_settings_warning: >
+      Warning: Changing these options affects the basic operation and
+      appearance of your Audience1st installation.  Please be sure you 
+      know what you're doing before changing these, and to be safe,
+      before changing a value make a note of the old value.  Click "Allow
+      Changes" to enable editing of these options, or "Test Integrations..." 
+      to test if the current values seem to be working.

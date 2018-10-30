@@ -51,8 +51,8 @@
       - if @printable
         %h2.center #{Option.venue} thanks you for your order!
       - else
-        = link_to 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank', :class => 'genButton'}
-        = link_to 'Back to Customer', customer_path(order.customer), :class => 'genButton'
+        = link_to 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank', :class => 'btn btn-primary'}
+        = link_to 'Back to Customer', customer_path(order.customer), :class => 'btn btn-primary'
         - if order.refundable?
           - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Delete')
           = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order)

@@ -3,6 +3,7 @@
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => favicon_path}
 
+    %link{rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"}
     = stylesheet_link_tag :application, :media => 'all'
     = stylesheet_link_tag Option.stylesheet_url, :media => 'all'
 
@@ -12,6 +13,7 @@
     %title= @page_title || h(action_name.humanize)
     %meta{'http-equiv'=>'content-type', :content=>'text/html; charset=utf-8'}/
     %meta{:name=>:description, :content=>''}/
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1, shrink-to-fit=no"}
 
     = csrf_meta_tags
 
@@ -21,15 +23,15 @@
     
     #outer_header
     #outer_wrapper
-      #inner_wrapper
+      #inner_wrapper.container
         - if (url = Option.venue_homepage_url).blank?
           #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         - else
           %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
-        #page_body
-          #left_sidebar
-          #right_main
+        #page_body.container
+          #left_sidebar.container
+          #right_main.container
             #nav
               - if controller.controller_name =~ /checkins|walkup_sales/
                 = render :partial => 'navbars/box_office_tabs'

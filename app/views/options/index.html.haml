@@ -1,5 +1,5 @@
 = form_for @o do |f|
-  .pageDiv
+  .container
     %h1 Your Venue Info As Seen By Customers
     = render_collection_of_options f, |
      %w(venue |
@@ -11,14 +11,20 @@
         help_email |
         privacy_policy_url |
         ) |
-    %label{:for => 'option_season_start'} Season Start Date
-    = render :partial => 'messages/popup_help', :object => t("option_descriptions.season_start_month")
-    = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
-    = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
+    .row
+      .col-md-4.text-right
+        Season Start Date
+        = option_description_for(:season_start_month)   
+      .col-md-8
+        = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
+        = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
         
-  .pageDiv
+  .container
     %h1 Accepting Donations and Retail Sales Online
-    = link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'genButton'
+    .row
+      .col-md-4
+      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+
     = render_collection_of_options f, %w( |
       default_retail_account_code |
       default_donation_account_code |
@@ -29,7 +35,7 @@
       donation_ack_from |
       ) |
 
-  .pageDiv
+  .container
     %h1 Info Messages Displayed on Customer's "My Account" Page
     = render_collection_of_options f, %w( |
       welcome_page_subscriber_message |
@@ -40,7 +46,7 @@
       display_email_opt_out |
       ) |
 
-  .pageDiv
+  .container
     %h1 Info Messages Displayed on Ticket Sales Pages
     = render_collection_of_options f, %w( |
       regular_show_sales_banner_for_nonsubscribers        |
@@ -57,7 +63,7 @@
       special_event_sales_banner_for_next_season_subscribers       |
       ) |
 
-  .pageDiv
+  .container
     %h1 Ticket Sales
     = render_collection_of_options f, %w( |
       advance_sales_cutoff  |
@@ -74,9 +80,12 @@
       checkout_notices |
       ) |
 
-  .pageDiv
+  .container
     %h1 Order Service Charges
-    = link_to 'Create/Edit Account Codes', account_codes_path, :class => 'genButton'
+    .row
+      .col-md-4
+      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+
     = render_collection_of_options f, %w( |
       subscription_order_service_charge |
       subscription_order_service_charge_description |
@@ -89,7 +98,7 @@
       classes_order_service_charge_account_code |
       ) |
  
-  .pageDiv
+  .container
     %h1 Email Confirmation of Reservation Sent to Customer
     = render_collection_of_options f, %w( |
       general_confirmation_email_notes |
@@ -98,43 +107,23 @@
       subscription_purchase_email_notes |
       ) |
     
-  .pageDiv
+  .container
     %h1 Email Reports Sent to Box Office Manager
     = render_collection_of_options f, %w( |
       boxoffice_daemon_notify  | 
       send_birthday_reminders  |
       ) |
 
-  .pageDiv#configOptions
+  .container.text-center#configOptions
     %h1 Integrations
-    #integrationWarning.hidden
-      Integration options can now be edited. Proceed with care.  
-      You must click 'Update Settings' to save your changes before you
-      can test integrations with the new values.
-    #enableMaintenanceWarning.hidden
-      You're about to restrict access to Audience1st only to Staff
-      or higher level users. Patrons and non-staff users will see a
-      message saying the site is temporarily under maintenance.  You can
-      resume normal operation later 
-      by changing Staff Access Only back to "No".  Click OK to
-      restrict access to Staff only, or Cancel to leave things as they
-      are.  A dashed yellow border will appear while the site is in
-      Staff Access Only mode. 
-    #disableMaintenanceWarning.hidden
-      You're about to turn off Staff Access Only and make Audience1st
-      available to all users. 
-      Click OK to confirm, or Cancel to cancel.
-    %p.warning
-      Warning: Changing these options affects the basic operation and
-      appearance of your Audience1st installation.  Please be sure you 
-      know what you're doing before changing these, and to be safe,
-      before changing a value make a note of the old value.  Click "Allow
-      Changes" to enable editing of these options, or "Test Integrations..." 
-      to test if the current values seem to be working.
+    #integrationWarning.hidden= t('options.integration_warning')
+    #enableMaintenanceWarning.hidden= t('options.enable_maintenance_warning')
+    #disableMaintenanceWarning.hidden= t('options.disable_maintenance_warning')
+    %p.text-danger.lead= t('options.change_basic_settings_warning')
     %p
-      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges'
-      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'genButton'
-      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'genButton'
+      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'
+      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'btn btn-primary'
+      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'btn btn-primary'
 
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |
@@ -143,6 +132,6 @@
       stylesheet_url |
       staff_access_only ) |
 
-  .pageDiv
+  .container
     %h1 Save Your Changes
-    %p.c= submit_tag  "Update Settings"
+    %p.c= submit_tag  "Update Settings", :class => 'btn btn-success'

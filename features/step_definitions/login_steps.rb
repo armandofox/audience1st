@@ -5,7 +5,7 @@ module CustomerLoginHelper
     fill_in 'email', :with => @customer.email
     fill_in 'password', :with => @password
     click_button 'Login'
-    page.should have_content("Signed in as #{@customer.first_name}")
+    page.should have_content("Log Out #{@customer.full_name}")
     page.should have_css('#customer_quick_search') if @is_admin
   end
 end
@@ -52,9 +52,9 @@ end
 Then /(?:customer )"(.*) (.*)" should (not )?be logged in$/ do |first,last,no|
   @customer = find_customer first,last
   if no
-    page.should_not have_content("Signed in as #{@customer.full_name}")
+    page.should_not have_content("Log Out #{@customer.full_name}")
   else
-    page.should have_content("Signed in as #{@customer.full_name}")
+    page.should have_content("Log Out #{@customer.full_name}")
   end
 end
 

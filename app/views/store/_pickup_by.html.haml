@@ -1,10 +1,9 @@
 - if @cart.includes_vouchers? &&  !@cart.gift?
-  #someone_else
-  %h2 Who's Attending?
-  %p
-    - if @cart_contains_class_order
-      For classes, you <strong>must</strong> enter enrollee's name(s) here:
-    - else
-      If someone <strong>other than the purchaser</strong> will be attending 
-      this event or picking up this order, please enter his/her name here:
-    = text_field_tag 'pickup', '', :size => 30
+  .container#someone_else
+    .form-row
+      - if @cart_contains_class_order
+        .col-md-8 Who is attending the class?
+        .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "Enrollee's name"
+      - else
+        .col-md-8 Is someone <strong>other than the purchaser</strong> picking up the tickets?
+        .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "If yes, attendee's name"

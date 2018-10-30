@@ -13,7 +13,7 @@ Background:
   And I fill in "General - $20.00" with "1"
   And I press "CONTINUE >>"
   Then I should be on the checkout page
-  And I should see "For classes, you must enter enrollee's name(s) here:"
+  And I should see "Who is attending the class?"
 
 Scenario: try to enroll without giving a name, even enforced for admins
 
