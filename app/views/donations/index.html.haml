@@ -1,4 +1,4 @@
-#pageDiv
+.pageDiv
   %h1
     = if @params[:from] then "#{date_range(@params[:from],@params[:to])}: " end
     #{@donations.total_entries} transactions, #{number_to_currency @total}
@@ -14,14 +14,14 @@
       = text_field_tag 'page', '', :size => 4
       = submit_tag 'Go'
 
-#pageDiv
+.pageDiv
   = form_tag donations_path, {:method => :get} do
     = render :partial => 'donation_search', :locals => {:params => @params}
     = submit_tag "Search", :class => 'btn btn-primary'
     = submit_tag(@export_label, :class => 'btn btn-primary') unless @donations.empty?
     = link_to "Add/Edit Account Codes&hellip;".html_safe, account_codes_path, :class => 'btn btn-primary'
 
-#pageDiv
+.pageDiv
   - unless @donations.empty?
     %table#donations.hilite
       %thead

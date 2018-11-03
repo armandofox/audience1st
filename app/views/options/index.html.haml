@@ -11,7 +11,7 @@
         help_email |
         privacy_policy_url |
         ) |
-    .row
+    .form-row
       .col-md-4.text-right
         Season Start Date
         = option_description_for(:season_start_month)   
@@ -21,7 +21,7 @@
         
   .container
     %h1 Accepting Donations and Retail Sales Online
-    .row
+    .form-row
       .col-md-4
       .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
 
@@ -82,7 +82,7 @@
 
   .container
     %h1 Order Service Charges
-    .row
+    .form-row
       .col-md-4
       .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
 
@@ -134,4 +134,4 @@
 
   .container
     %h1 Save Your Changes
-    %p.c= submit_tag  "Update Settings", :class => 'btn btn-success'
+    %p.text-center= submit_tag  "Update Settings", :class => 'btn btn-success'

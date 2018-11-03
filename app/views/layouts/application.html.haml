@@ -5,7 +5,7 @@
 
     %link{rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"}
     = stylesheet_link_tag :application, :media => 'all'
-    = stylesheet_link_tag Option.stylesheet_url, :media => 'all'
+    %link{rel: "stylesheet", href: Option.stylesheet_url, :media => 'all'}
 
     = javascript_include_tag :application
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
@@ -47,9 +47,15 @@
                 = render :partial => 'navbars/staff_buttons' if display_customer_actions?
             #content.clear
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
-                %h1.center Your Order Is Not Yet Complete
+                %h1.text-center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
               = render :partial => 'messages/notices'
               = yield
         = render :partial => 'layouts/login_banner' if current_user
-    = render :partial => 'layouts/footer'
+    #footer.footer.container.text-center
+      %p
+        \&copy; 2011&ndash;2018
+        Secure ticketing by
+        = link_to 'Audience1st', 'http://www.audience1st.com'
+        - unless (s = Option.privacy_policy_url).blank?
+          = link_to "Terms of Use & Privacy Policy", s

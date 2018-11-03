@@ -2,7 +2,7 @@
   #donation_panel
     = form_tag process_cart_path(@customer) do
       - if @is_admin
-        %h1.page_heading.center Record Donation
+        %h1.text-center Record Donation
         %label{:for => :account_code_id} Fund or Account:
         = select_tag 'account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @account_code.id)
         %br
@@ -10,9 +10,9 @@
         = text_area_tag 'comments'
         %br
       - else
-        %h1.page_heading.center Donation to #{@account_code.name}
+        %h1.text-center Donation to #{@account_code.name}
         - if @account_code.description
-          %p.center= @account_code.description
+          %p.text-center= @account_code.description
         = hidden_field_tag 'account_code_id', @account_code.id
         %br
 

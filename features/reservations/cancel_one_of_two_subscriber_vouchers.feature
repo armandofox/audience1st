@@ -15,7 +15,7 @@ Background: I have 2 subscriber vouchers reserved for a show called "Hairspray"
 
 Scenario: Cancel/change multiple reservation the customer want
   When I select "1" from "cancelnumber"
-  And I press "Click to Cancel"
+  And I press "Cancel"
   Then I should see "1 of your reservations have been cancelled"
   And  customer "Tom Foolery" should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 

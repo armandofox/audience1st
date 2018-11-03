@@ -17,10 +17,10 @@
       %tr{:class=>cycle(:even,:odd)}
         %td= link_to show.name, edit_show_path(show)
         %td= purchase_link_popup "[Link]", link_to_show_tickets(show), show.name
-        %td.c= humanize_date_range(show.opening_date, show.closing_date)
+        %td.text-center= humanize_date_range(show.opening_date, show.closing_date)
         %td= show.listing_date.to_formatted_s(:showtime)
         - if (n = show.showdates.length) > 0
-          %td.c= n
+          %td.text-center= n
           %td
         - else
           %td

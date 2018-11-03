@@ -1,4 +1,4 @@
-%h1.page_heading.center Sign Up
+%h1.text-center Sign Up
 
 %p.strong 
   Already have an account?
@@ -7,7 +7,18 @@
 
 = form_tag user_create_customers_path do
   = render :partial => 'billing_address', :locals => {:customer => @customer}
-  = render 'password'
+  .form-row
+    .col-md-2.text-right  
+      %label.col-form-label{:for=>:customer_password}= defined?(newpassword) ? 'New Password' : 'Password'
+    .col-md-5
+      = password_field 'customer', 'password', :size => 20, :value => '', :class => 'form-control form-control-sm'
+    .col-md-5
+  .form-row
+    .col-md-2.text-right
+      %label.col-form-label{:for=>:customer_password_confirmation}= defined?(newpassword) ? 'Confirm New Password' : 'Confirm Password'
+    .col-md-5
+      = password_field 'customer', 'password_confirmation', :size => 20, :value => '', :class => 'form-control form-control-sm'
+
   = render 'extra'
   = submit_tag 'Create My Account', :class => 'btn btn-success'
   = link_to 'Cancel', (@gCheckoutInProgress ? store_path : login_path), :class => 'btn btn-primary'

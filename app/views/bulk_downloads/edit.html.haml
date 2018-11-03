@@ -22,14 +22,14 @@
         %th Or enter name of new show
     %tbody
       %tr
-        %td.c
+        %td.text-center
         %td
         %td
         %td
       - if @download.report_names
         - @download.report_names.each_pair do |production,key|
           %tr
-            %td.c= check_box_tag "import[#{key}]", 1, true, {:class => 'chk'}
+            %td.text-center= check_box_tag "import[#{key}]", 1, true, {:class => 'chk'}
             %td= truncate_with_hovering(production, :length => 40)
             %td= select_tag "show[#{key}]", shows
             %td= text_field_tag "new[#{key}]", '', :size => 40, :maxlength => 40

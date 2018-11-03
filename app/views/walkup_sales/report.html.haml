@@ -3,12 +3,12 @@
   %table.hilite
     - @vouchers.each_key do |howpurchased|
       %tr
-        %td.r= @vouchers[howpurchased].length
+        %td.text-right= @vouchers[howpurchased].length
         %td= Purchasemethod.get(howpurchased).description
-        %td.r= number_to_currency @subtotal[howpurchased]
+        %td.text-right= number_to_currency @subtotal[howpurchased]
     %tr.strong
       %td
-      %td.r.strong Total
+      %td.text-right.strong Total
       %td= number_to_currency @total
 
   %h1 Walkup Sales Detail

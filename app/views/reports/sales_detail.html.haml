@@ -20,7 +20,7 @@
         %td= v.showdate.printable_name if v.showdate.kind_of?(Showdate)
         %td= v.vouchertype.name
         %td.currency= number_to_currency(v.vouchertype.price)
-        %td.c= @daily_sales[k].size
+        %td.text-center= @daily_sales[k].size
         - nsold += @daily_sales[k].size
         %td.currency= number_to_currency(t = v.vouchertype.price * @daily_sales[k].size)
         - total += t
@@ -28,7 +28,7 @@
         %td= v.processed_by_name if (v.processed_by_id != v.customer.id)
     %tr.totalsRow
       %td TOTALS
-      %td.r{:colspan=>3} # Unique customers: 
+      %td.text-right{:colspan=>3} # Unique customers: 
       %td= @nunique
       %td= nsold
       %td.currency= number_to_currency(total)

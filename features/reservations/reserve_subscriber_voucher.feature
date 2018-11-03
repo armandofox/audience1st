@@ -18,21 +18,21 @@ Scenario: reserve all vouchers for available performance
 
   When I select "2" from "number"
   And I select "Saturday, May 1, 8:00 PM" from "showdate_id"
-  And I press "Click to Confirm"
+  And I press "Confirm"
   Then customer "Tom Foolery" should have 2 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 
 Scenario: reserve single voucher for available performance
 
   When I select "1" from "number"
   And I select "Saturday, May 1, 8:00 PM" from "showdate_id"
-  And I press "Click to Confirm"
+  And I press "Confirm"
   Then customer "Tom Foolery" should have 1 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 
 Scenario: customer cannot reserve sold out performance
 
   When I select "1" from "number"
   And I select "Monday, May 3, 8:00 PM (Not available)" from "showdate_id"
-  And I press "Click to Confirm"
+  And I press "Confirm"
   Then I should see "Your reservations could not be completed"
   And  customer "Tom Foolery" should have 0 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
 
@@ -42,6 +42,6 @@ Scenario: boxoffice can reserve sold out performance
   And I am on the home page for customer "Tom Foolery"
   When I select "2" from "number"
   And I select "Monday, May 3, 8:00 PM" from "showdate_id"
-  And I press "Click to Confirm"
+  And I press "Confirm"
   Then customer "Tom Foolery" should have 2 "Hairspray (Subscriber)" tickets for "Hairspray" on May 3, 8pm
   And the Monday, May 3, 8pm performance should be oversold by 2

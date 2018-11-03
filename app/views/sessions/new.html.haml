@@ -1,21 +1,44 @@
 - unless @gCheckoutInProgress
-  %h1.page_heading.center= "#{Option.venue} Online Box Office"
+  %h1.text-center= "#{Option.venue} Online Box Office"
   
-#have_account
-  %h2 Subscribers and Returning Customers
-  = render :partial => 'sessions/new'
+.container
+  = form_tag session_path do
+    .row
+      .col-md-8.border.rounded
+        %h3.text-center Subscribers and Returning Customers
+        .row
+          .col-4.text-right
+            %label.col-form-label{:for=>:customer_email} Email
+          .col-6
+            = text_field_tag 'email', @email, :class => 'form-control'
+          .col-2
+        .row
+          .col-4.text-right
+            %label.col-form-label{:for=>:customer_password} Password
+          .col-6
+            = password_field_tag 'password', nil, :class => 'form-control'
+          .col-2
+            = submit_tag 'Login', :class => 'btn btn-success', :disable_with => 'Logging in...'
+        .row
+          .col-4.text-right
+            = check_box_tag 'remember_me', '1', @remember_me
+          .col-8
+            Remember me for next time (Don't use on public/shared computers)
+        .row
+          .col-4.text-right Need to reset your password?
+          .col-6= link_to 'Reset password by email', forgot_password_customers_path, :class => 'btn btn-primary btn-sm'
+          .col-2
+        .row
+          .col-4
+          .col-6= link_to 'Login with secret question', new_from_secret_session_path, :class => 'btn btn-primary btn-sm'
+          .col-2
 
-#new_customer
-  %h2 New Customers
-  %span#new_account.new_account= link_to "Create Account", new_customer_path, :class => 'btn btn-primary'
-  %br
-  - if @gCheckoutInProgress  &&  Option.allow_guest_checkout  &&  @cart.ok_for_guest_checkout?
-    %span#enter_billing.new_account= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'btn btn-primary'
-    %br
-  - else 
-    = link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'btn btn-primary'}
-    %br
-    = link_to_if_option_text :homepage_subscription_sales_text, store_path, {:class => 'btn btn-primary'}
-    %br
-    
-.clear
+                            
+      .col-md-4.border.rounded
+        %h3.text-center New Customers
+        .row.justify-content-center= link_to "Create Account", new_customer_path, :class => 'btn btn-primary'
+        - if @gCheckoutInProgress  &&  Option.allow_guest_checkout  &&  @cart.ok_for_guest_checkout?
+          .row.justify-content-center= link_to "Checkout as Guest",  guest_checkout_customers_path, :class => 'btn btn-primary'
+        - else
+          .row.justify-content-center= link_to_if_option_text :homepage_ticket_sales_text, store_path, {:class => 'btn btn-success'}
+          .row.justify-content-center= link_to_if_option_text :homepage_subscription_sales_text, store_path, {:class => 'btn btn-primary'}

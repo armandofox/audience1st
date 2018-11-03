@@ -2,7 +2,7 @@
 
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
 
-  %h1.page_heading.center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
+  %h1.text-center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
   %br
   
   %table#subscriptionReservations.full_width
@@ -20,7 +20,7 @@
           - if group.reserved
             = render :partial => 'reserved_subscriber_voucher', :locals => {:group => group}
           - elsif group.redeemable_showdates.empty?
-            %td.c= group.size
+            %td.text-center= group.size
             %td= group.name
             %td{:colspan=>3} Reservations unavailable for this show
           - else
@@ -28,7 +28,7 @@
 
   %br
 
-%h1.page_heading.center #{@customer.full_name}'s Regular Tickets
+%h1.text-center #{@customer.full_name}'s Regular Tickets
 %br
 
 - if @vouchers.empty?

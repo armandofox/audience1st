@@ -267,30 +267,6 @@ table.showdates_summary td {
 }
 
 /*
- * "No javascript!" error message and other warnings
- */
-div.large_warning {
-    background-color: red;
-    padding: 1em;
-    font-size: large;
-    color: yellow;
-    text-align: center;
-    margin: 5ex 0;
-    border: 3px solid yellow;
-}
-
-/* animatable background for "flashing" element */
-
-.bg_green {
-  height: inherit;
-  width: inherit;
-  background-color: #00dd00;
-}
-.bg_yellow {
-  background-color: #ffff00;
-}
-
-/*
  * Credit card payment error message
  */
 #payment_errors {
@@ -412,19 +388,6 @@ span.checkin_button:hover, span.checked_in {
 }
 
 /*
- * Settings
- */
-
-table#options_table td.option_name {
-  width: 20em;
-  vertical-align: top;
-  text-align: left;
-}
-table#options_table td.option_value {
-  text-align: left;
-}
-
-/*
  * Reports
  */
 
@@ -456,41 +419,6 @@ div.show .showSalesRevenue {
   width: 10em;
 }
 
-
-#pageDiv .showDateSummary {
-  margin: 2px;
-  background: white;
-}
-
-#pageDiv .showDate {
-  float: left;
-  font-size: larger;
-  background-color: #666;
-  color: white;
-  display: block;
- }
-
-#pageDiv .showDateNav {
-  text-align: right;
-  background-color: white;
-  color: black;
-  font-weight: bold;
- }
-
-#pageDiv table.summarySales {
-  width: 80%;
-  min-width: 400px;
-  max-width: 800px;
- }
-
-#pageDiv td.salesCategory {
-  width: 85%;
- }
-#pageDiv td.salesQty {
-  width: 15%;
- }
-
-
 /* output options for customer lists */
 
 #report_body ul	 {
@@ -511,19 +439,6 @@ div.show .showSalesRevenue {
 	margin-left: 0;
 }
 
-
-/*
- * Advanced customer report  (SQL builder) page 
- */
-
-#sqlQuery {
-  border: 1px solid red;
-  padding: 4px;
-  margin: 4px 0 2px 0;
-  background: #eee;
-  color: red;
-  font-size: 90%;
-}
 
 /*
  * Door list

@@ -29,11 +29,11 @@
             = link_to(image_tag('delete.png',:border => 0, :id => "delete_#{vouchertype.id}", :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, :confirm => "Deleting the '#{h vouchertype.name}' voucher type cannot be undone. Continue?" })
         %td= vouchertype.display_order
         %td= link_to h(vouchertype.name), edit_vouchertype_path(vouchertype)
-        %td.r= number_to_currency(vouchertype.price)   
-        %td.r= account_code_with_popup_link(vouchertype.account_code)
-        %td.c= vouchertype.subscription? ? "Yes" : ""
+        %td.text-right= number_to_currency(vouchertype.price)   
+        %td.text-right= account_code_with_popup_link(vouchertype.account_code)
+        %td.text-center= vouchertype.subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
-        %td.c= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
+        %td.text-center= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
         %td 
           -if vouchertype.bundle? 
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 

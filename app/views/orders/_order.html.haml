@@ -49,7 +49,7 @@
               %td= item.comments
 
       - if @printable
-        %h2.center #{Option.venue} thanks you for your order!
+        %h2.text-center #{Option.venue} thanks you for your order!
       - else
         = link_to 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank', :class => 'btn btn-primary'}
         = link_to 'Back to Customer', customer_path(order.customer), :class => 'btn btn-primary'

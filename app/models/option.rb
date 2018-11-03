@@ -42,8 +42,10 @@ class Option < ActiveRecord::Base
   validates_presence_of :classes_order_service_charge_description,
   :if => Proc.new { |o| o.classes_order_service_charge > 0 }
 
-  validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https?://'), :allow_blank => true, :allow_nil => true
-
+  if Rails.env.production?
+    validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https?://')
+  end
+  
   def availability_levels_monotonically_increase
     errors.add(:nearly_sold_out_threshold, 'must be less than Sold Out threshold') unless sold_out_threshold > nearly_sold_out_threshold
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold

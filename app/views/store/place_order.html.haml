@@ -1,4 +1,4 @@
-%h1.page_heading.center Thank You for Your Purchase!
+%h1.text-center Thank You for Your Purchase!
 
 .notice
   %p 
@@ -29,7 +29,7 @@
     #order_notes
       %p <strong>Order notes:</strong> #{@order.comments}
 
-%p.center
+%p.text-center
   - if @is_admin
     = link_to 'Back to Customer List', customers_path, :class => 'btn btn-outline-primary'
     = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-outline-primary'

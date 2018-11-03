@@ -1,5 +1,5 @@
 #customer_list_header.pagination
-  %h1.center= @page_title
+  %h1.text-center= @page_title
   = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
   = form_tag @list_action, :method => :get do
     - first,last,total = @customers.offset+1, @customers.offset+@customers.length, @customers.total_entries
