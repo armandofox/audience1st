@@ -14,7 +14,7 @@
 
   #event_types.text-center
     - (Show::TYPES - [@what]).each do |type|
-      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-primary'
+= link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-secondary'
 
   #ticket_menus
     = form_tag process_cart_path(@customer) do

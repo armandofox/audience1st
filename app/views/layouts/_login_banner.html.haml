@@ -2,9 +2,9 @@
   .row
     .col.pull-left
       - if !current_user.has_ever_logged_in?
-        = link_to 'Cancel/Start Over', logout_path, :class =>  'btn btn-danger float-right'
+        = link_to 'Cancel/Start Over', logout_path, :class =>  'btn btn-secondary float-right'
       - else
-        = link_to 'Log Out', logout_path, :class => 'btn btn-warning'
+        = link_to 'Log Out', logout_path, :class => 'btn btn-secondary'
         = current_user.full_name
     .col.pull-right
       - if @gAdminDisplay
