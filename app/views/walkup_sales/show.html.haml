@@ -9,11 +9,11 @@
       %p.column_header 2. Collect & record payment
       #whoops_button.text-center= link_to 'Whoops, I Made a Mistake', report_walkup_sale_path(@showdate), :class => 'btn btn-warning'
       #payment_types
-        %label.no_float{:for => 'payment_type_credit_card'} Credit Card
+        %label{:for => 'payment_type_credit_card'} Credit Card
         = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
-        %label.no_float{:for => 'payment_type_cash'} Cash or Zero-Revenue
+        %label{:for => 'payment_type_cash'} Cash or Zero-Revenue
         = radio_button_tag 'payment_type', 'cash', false, :onclick => "A1.show_only('cash')"
-        %label.no_float{:for => 'payment_type_check'} Check
+        %label{:for => 'payment_type_check'} Check
         = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
       #payment_form
         #credit_card_payment

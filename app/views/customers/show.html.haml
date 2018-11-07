@@ -1,55 +1,37 @@
+= themed
+
 - include_all_showdates = @gAdminDisplay && current_user.is_boxoffice
 
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
 
   %h1.text-center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
-  %br
-  
-  %table#subscriptionReservations.full_width
-    %thead
-      %tr
-        %th #Tix
-        %th Show
-        %th Your Reservation
-        %th
-        - if @gAdminDisplay
-          %th.admin Comments
-    %tbody
-      - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
-        %tr[group.vouchers.first]
-          - if group.reserved
-            = render :partial => 'reserved_subscriber_voucher', :locals => {:group => group}
-          - elsif group.redeemable_showdates.empty?
-            %td.text-center= group.size
-            %td= group.name
-            %td{:colspan=>3} Reservations unavailable for this show
-          - else
-            = render :partial => 'open_subscriber_voucher', :locals => {:group => group}
+  .row
+    .col-md-2.text-center #Tix
+    .col.text-center Show
+    .col.text-center Your Reservation
+    .col-md-2
 
-  %br
+  - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
+    - if group.reserved
+      = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => true}
+    - else
+      = render :partial => 'open_subscriber_voucher', :locals => {:group => group}
 
-%h1.text-center #{@customer.full_name}'s Regular Tickets
-%br
 
-- if @vouchers.empty?
-  %p There are no tickets in your account.
-- else
-  %table#customerVoucherList.full_width.hilite
-    %thead
-      %tr
-        %th #Tix
-        %th Type
-        %th Reservation
-        %th
-        - if @gAdminDisplay
-          %th.admin Comment
-    %tbody
-      - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
-        %tr[group.vouchers.first]
-          - if group.reserved
-            = render :partial => 'reserved_regular_voucher', :locals => {:group => group}
-          - else
-            = render :partial => 'open_regular_voucher', :locals => {:group => group}
+- unless @vouchers.empty?
+  %h1.text-center #{@customer.full_name}'s Regular Tickets
+
+  .row
+    .col-md-2.text-center #Tix
+    .col.text-center Type
+    .col.text-center Reservation
+    .col-md-2
+
+  - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
+    - if group.reserved
+      = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => false}
+    - else
+      = render :partial => 'open_regular_voucher', :locals => {:group => group}
 
 :javascript
   $('.save_comment').on('ajax:success', function(e,s,x) { alert("Comment saved") });

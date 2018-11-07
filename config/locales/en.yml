@@ -2,6 +2,11 @@ en:
   customers:
     confirm_delete: "Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?"
 
+  reservations:
+
+    confirm_cancellation: >
+      Are you sure? Click OK to cancel this reservation, or Cancel to leave things as they are.
+
   store:
 
     credit_card_security_notice: >

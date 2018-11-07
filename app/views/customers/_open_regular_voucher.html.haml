@@ -3,24 +3,25 @@
   - gid = group.group_id
   = form_tag confirm_multiple_customer_vouchers_path(@customer) do
     = hidden_field_tag 'voucher_ids', group.voucherlist
-    %td.text-center= menu_or_static_text('number', group.size)
-    %td{:title => (group.voucherlist if @gAdminDisplay)}= group.name
-    %td.selectShowdate
-      = select_tag 'showdate_id', |
-        content_tag(:option, "Select show and date...", :value => 0) + |
-        options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, :name_and_date_with_capacity_stats), |
-        :class => 'showdate form-control', |
-        :onchange => %Q{$('#special_seating_#{gid}').slideToggle(); $('#confirm_#{gid}').prop('disabled',false)} |
-      = render :partial => 'special_seating', :locals => {:gid => gid}
-    %td.action= submit_tag 'Confirm', :disabled => 'disabled', :disable_with => 'Confirming...', :id => "confirm_#{gid}", :class => 'btn btn-success'
-    - if @gAdminDisplay
-      %td.admin
-
+    .row[group.vouchers.first]
+      .col-md-2.text-center= menu_or_static_text('number', group.size)
+      .col.text-center= group.name
+      .col.text-center
+        = select_tag 'showdate_id', |
+          content_tag(:option, "Select show and date...", :value => 0) + |
+          options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, :name_and_date_with_capacity_stats), |
+          :class => 'showdate form-control form-control-sm', |
+          :onchange => %Q{$('#special_seating_#{gid}').slideToggle(); $('#confirm_#{gid}').prop('disabled',false)} |
+        = render :partial => 'special_seating', :locals => {:gid => gid}
+      .col-md-2.text-center= submit_tag 'Confirm', :disabled => 'disabled', :disable_with => 'Confirming...', :id => "confirm_#{gid}", :class => 'btn btn-success'
+      - if @gAdminDisplay
+        .col-md-2.adminField
 - else
 
-  %td.text-center= group.size
-  %td= group.name
-  %td
-  %td
-  - if @gAdminDisplay
-    %td.admin
+  .row
+    .col-md-2.text-center= group.size
+    .col= group.name
+    .col
+    .col-md-2
+    - if @gAdminDisplay
+      .col-md-2.adminField

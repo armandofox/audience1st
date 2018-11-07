@@ -1,6 +1,8 @@
+= themed
+
 %h1 Checkout As Guest
 
 = form_tag guest_checkout_create_customers_path do
   = render :partial => 'billing_address', :locals => {:customer => @customer}
   = submit_tag 'CONTINUE >>'
-  = link_to 'Cancel', store_path, :class => 'btn btn-primary'
+  = link_to 'Cancel', store_path, :class => 'btn btn-secondary'

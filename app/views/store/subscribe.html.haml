@@ -1,3 +1,5 @@
+= themed
+
 = sales_banners_for :subscription, @subscriber, @next_season_subscriber
 
 - if @nobody_really_logged_in
@@ -19,26 +21,45 @@
       %br
 
       - @subs_to_offer.each do |v|
-        .orderRow
-          %label.wide_label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
-          = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty', 'data-price' => v.price)
-          %br/
+        .form-row
+          .col-md-5.text-right
+            %label.col-form-label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
+          .col-md-1
+            = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty form-control form-control-sm', 'data-price' => v.price)
+          .col-md-6
 
-      .orderRow
-        %label.wide_label{:for => :donation} Additional tax-deductible donation
-        = text_field_tag 'donation', '', :size => 5, :class => 'itemQty'
-        \.00
+      .form-row  
+        .col-md-5.text-right
+          %label.col-form-label{:for => :donation} Additional tax-deductible donation
+        .col-md-2
+          .input-group
+            = text_field_tag 'donation', '', :size => 3, :class => 'itemQty form-control form-control-sm'
+            .input-group-append.form-control-sm
+              %span.input-group-text .00
+        .col-md-5
 
-      %br
-      #orderTotal.orderRow
-        %label.strong.wide_label{:for=>:total} Order Total:
-        = text_field_tag 'total', '0.00', :size => 6, :disabled => true
+      .form-row#orderTotal
+        .col-md-5.text-right
+          %label.col-form-label.strong{:for=>:total} Order Total:
+        .col-md-2
+          = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'form-control form-control-sm'
+        .col-md-5
+
       - if Option.allow_gift_subscriptions?
-        %label.emphasis.wide_label{:for=>:gift} Is this order a <strong>gift?</strong>
-        = check_box_toggle 'gift', false, :nextstep, 'to enter Recipient information', 'to Billing information'
-      %br
-      %label.wide_label &nbsp;
-      = hidden_field_tag 'referer', 'subscribe'
-      = submit_tag 'CONTINUE >>', {:disabled => !@is_admin, :id => 'submit'}
-      %span#nextstep to Billing Information
+        .form-row
+          .col-md-5.text-right
+            %label.col-form-label.strong{:for=>:gift} Is this order a <strong>gift?</strong>
+          .col-md-1
+            = check_box_toggle 'gift', false, 'nextstep', 'to enter Recipient information', 'to Billing information'
+          .col-md-6
+
+      .form-row
+        .col-md-5
+        .col-md-4
+          = hidden_field_tag 'referer', 'subscribe'
+          = submit_tag 'CONTINUE >>', {:disabled => !@is_admin, :id => 'submit', :class => 'btn btn-success'}
+          %span#nextstep to Billing Information
+        .col-md-3
+
+
 

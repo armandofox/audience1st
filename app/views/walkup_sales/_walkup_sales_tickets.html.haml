@@ -17,7 +17,7 @@
     - boxoffice_mgr_only = (v.vouchertype.comp? && !@admin.is_boxoffice_manager)
     %tr
       %td.label
-        %label.no_float{:for => "qty_#{v.id}"}= v.name
+        %label{:for => "qty_#{v.id}"}= v.name
         - unless v.sales_unlimited?
           %span.emphasis= "#{v.name} (#{v.seats_of_type_remaining} left)"
         - if boxoffice_mgr_only

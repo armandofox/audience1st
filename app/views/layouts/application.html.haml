@@ -21,41 +21,33 @@
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     
-    #outer_header
-    #outer_wrapper
-      #inner_wrapper.container
-        - if (url = Option.venue_homepage_url).blank?
-          #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
-        - else
-          %a{:id => 'top_level_banner_link', :href => url}
-            #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
-        #page_body.container
-          #left_sidebar.container
-          #right_main.container
-            #nav
-              - if controller.controller_name =~ /checkins|walkup_sales/
-                = render :partial => 'navbars/box_office_tabs'
-                = render :partial => 'checkins/change_showdate'
-                = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
-              - elsif controller.controller_name =~ /import|options|bulk_downloads/i
-                = render :partial => 'navbars/admin_tabs'
-              - elsif existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
-                = render :partial => 'navbars/main_tabs'
-              - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
-                = render :partial => 'navbars/season_tabs'
-                = render :partial => 'customers/quick_search'
-                = render :partial => 'navbars/staff_buttons' if display_customer_actions?
-            #content.clear
-              - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
-                %h1.text-center Your Order Is Not Yet Complete
-                = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
-              = render :partial => 'messages/notices'
-              = yield
+    #outer_header.container-fluid
+    #outer_wrapper.container-fluid
+      #header
+        %a{:id => 'top_level_banner_link', :href => Option.venue_homepage_url}
+        = sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
+      #nav
+        - if controller.controller_name =~ /checkins|walkup_sales/
+          = render :partial => 'navbars/box_office_tabs'
+          = render :partial => 'checkins/change_showdate'
+          = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
+        - elsif controller.controller_name =~ /import|options|bulk_downloads/i
+          = render :partial => 'navbars/admin_tabs'
+        - elsif existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
+          = render :partial => 'navbars/main_tabs'
+        - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
+          = render :partial => 'navbars/season_tabs'
+          = render :partial => 'customers/quick_search'
+          = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+      #content.container-fluid
+        - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
+          %h1.text-center Your Order Is Not Yet Complete
+          = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
+        = render :partial => 'messages/notices'
+        = yield
+      #footer.footer.text-center
         = render :partial => 'layouts/login_banner' if current_user
-    #footer.footer.container.text-center
-      %p
-        \&copy; 2011&ndash;2018
-        Secure ticketing by
-        = link_to 'Audience1st', 'http://www.audience1st.com'
-        - unless (s = Option.privacy_policy_url).blank?
-          = link_to "Terms of Use & Privacy Policy", s
+        %p
+          \&copy; 2011&ndash;2018
+          Secure ticketing by
+          = link_to 'Audience1st', 'http://www.audience1st.com'

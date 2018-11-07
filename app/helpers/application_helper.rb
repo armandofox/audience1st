@@ -11,6 +11,10 @@ module ApplicationHelper
     end
   end
 
+  def themed
+    javascript_tag %Q{$(function() { $('body').addClass('themed'); });}
+  end
+  
   def display_customer_actions?
     ! @customer.try(:new_record?) &&
       controller.controller_name == 'customers' &&

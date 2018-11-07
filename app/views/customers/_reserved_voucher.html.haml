@@ -1,0 +1,26 @@
+- if @gAdminDisplay || group.cancelable_by(@customer)
+  = form_tag cancel_multiple_customer_vouchers_path(@customer) do
+    = hidden_field_tag 'voucher_ids', group.voucherlist
+    .row[group.vouchers.first]
+      .col-md-2.text-center= menu_or_static_text('cancelnumber', group.size)
+      .col.text-center{:title => (group.voucherlist if @gAdminDisplay)}= group.name
+      .col.text-center
+        - if local_assigns[:is_subscriber_voucher]
+          = group.showdate.printable_date
+        - else
+          %span.showName= group.showdate.name
+          %br
+          %span.showDate= group.showdate.printable_date_with_description
+      .col-md-2 
+        = submit_tag 'Cancel', |
+          :disable_with => 'Cancelling...', |
+          :class => 'btn btn-danger', |
+          :confirm => t('reservations.confirm_cancellation') |
+      - if @gAdminDisplay
+        = render :partial => 'update_voucher_comments', :locals => {:group => group}
+- else
+  .row
+    .col-md-2.text-center= group.size
+    .col.text-center= group.name
+    .col.text-center= group.showdate.printable_date
+    .col-md-2
