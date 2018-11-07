@@ -5,33 +5,38 @@
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
 
   %h1.text-center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
-  .row
-    .col-md-2.text-center #Tix
+
+  .row.bg-secondary.text-light
+    .col-md-1.text-center #Tix
     .col.text-center Show
     .col.text-center Your Reservation
     .col-md-2
+    - if @gAdminDisplay
+      .col-md-2
 
   - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
     - if group.reserved
       = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => true}
     - else
-      = render :partial => 'open_subscriber_voucher', :locals => {:group => group}
+      = render :partial => 'open_voucher', :locals => {:group => group, :label_function => (@gAdminDisplay ? :date_with_explanation_for_admin : date_with_explanation)}
 
 
 - unless @vouchers.empty?
   %h1.text-center #{@customer.full_name}'s Regular Tickets
 
-  .row
-    .col-md-2.text-center #Tix
+  .row.bg-secondary.text-light
+    .col-md-1.text-center #Tix
     .col.text-center Type
     .col.text-center Reservation
     .col-md-2
+    - if @gAdminDisplay
+      .col-md-2
 
   - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
     - if group.reserved
       = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => false}
     - else
-      = render :partial => 'open_regular_voucher', :locals => {:group => group}
+      = render :partial => 'open_voucher', :locals => {:group => group, :label_function => :name_and_date_with_capacity_stats}
 
 :javascript
   $('.save_comment').on('ajax:success', function(e,s,x) { alert("Comment saved") });

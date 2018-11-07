@@ -1,0 +1,27 @@
+- if group.redeemable_showdates.empty?
+  .row.border-bottom.border-secondary
+    .col-md-1= group.size
+    .col.text-center= group.name
+    .col-md-4.text-center Reservations unavailable for this show
+    .col-md-2
+    - if @gAdminDisplay
+      .col-md-2
+
+- else
+  - gid = group.group_id
+  = form_tag confirm_multiple_customer_vouchers_path(@customer) do
+    = hidden_field_tag 'voucher_ids', group.voucherlist
+    .row.border-bottom.border-secondary
+      .col-md-1.text-center= menu_or_static_text('number', group.size)
+      .col.text-center{:title => (group.voucherlist if @gAdminDisplay)}= group.name
+      .col-md-4.text-center
+        = select_tag 'showdate_id', | 
+          content_tag(:option, "Select...", :value => 0) + |
+          options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, label_function), |
+          :class => 'showdate form-control form-control-sm', |
+          :onchange => %Q{$('#special_seating_#{gid}').removeClass('invisible'); $('#confirm_#{gid}').prop('disabled',false)} |
+        .invisible{:id => "special_seating_#{gid}"}
+          = text_field_tag 'comments', '', :size => '20em', :class => 'form-control form-control-sm', :placeholder => t('reservations.special_seating_requests')
+      .col-md-2.text-center= submit_tag 'Confirm', :disabled => 'disabled', :disable_with => 'Confirming...', :id => "confirm_#{gid}", :class => 'btn btn-success'
+      - if @gAdminDisplay  
+        .col-md-2

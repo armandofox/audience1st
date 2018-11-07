@@ -1,7 +1,0 @@
-%div{:id => "special_seating_#{gid}",:style=>'display:none'}
-  %span.emphasis Special seating needs?
-  = checkbox_guard_for "special_seating_div_#{gid}"
-  %div{:id => "special_seating_div_#{gid}", :style=>'display:none'}
-    = Option.special_seating_requests
-    %br
-    = text_field_tag 'comments', '', :size => '20em', :class => :showdate

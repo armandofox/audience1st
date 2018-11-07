@@ -109,7 +109,10 @@ class Customer < ActiveRecord::Base
 
   def active_vouchers
     now = Time.current
-    vouchers.includes(:showdate).select { |v| now <= Time.at_end_of_season(v.season) }
+    vouchers.
+      includes(:showdate).
+      includes(:vouchertype => :valid_vouchers).
+      select { |v| now <= Time.at_end_of_season(v.season) }
   end
   
 
@@ -348,14 +351,14 @@ class Customer < ActiveRecord::Base
 
   def subscriber?
     self.role >= 0 &&
-      self.vouchers.detect do |f|
+      self.vouchers.includes(:vouchertype).detect do |f|
       f.vouchertype.subscription? && f.vouchertype.valid_now?
     end
   end
 
   def next_season_subscriber?
     self.role >= 0 &&
-      self.vouchers.detect do |f|
+      self.vouchers.includes(:vouchertype).detect do |f|
       f.vouchertype.subscription? &&
         f.vouchertype.expiration_date.within_season?(Time.current.at_end_of_season + 1.year)
     end
