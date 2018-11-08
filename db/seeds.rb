@@ -23,13 +23,6 @@ class Audience1stSeeder
       :blacklist => true,
       :e_blacklist => true
     },
-    :generic => {
-      :role => Customer::ROLES[:generic],
-      :first_name => 'GENERIC',
-      :last_name => 'CUSTOMER',
-      :blacklist => true,
-      :e_blacklist => true,
-    },
     :boxoffice_daemon => {
       :role => Customer::ROLES[:boxoffice_daemon],
       :first_name => 'BoxOffice',

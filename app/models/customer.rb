@@ -405,18 +405,6 @@ class Customer < ActiveRecord::Base
     Customer.find(id).is_walkup
   end
 
-
-  def self.nobody_id
-    0
-  end
-
-  # a generic customer who is a 'stand in' for determining customer
-  # privileges; the least common denominator
-  def self.generic_customer
-    Customer.walkup_customer
-    # for now, same as the 'walkup customer'
-  end
-
   public
 
   def self.find_suspected_duplicates

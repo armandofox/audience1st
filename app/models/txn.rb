@@ -39,7 +39,7 @@ class Txn < ActiveRecord::Base
 
   def self.add_audit_record(args={})
 
-    cust_id = args[:customer_id] || Customer.nobody_id
+    cust_id = args[:customer_id] || 0
     logged_in = args[:logged_in_id].to_i
     show_id =  args[:show_id].to_i
     showdate_id = args[:showdate_id].to_i

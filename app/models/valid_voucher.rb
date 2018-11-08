@@ -230,7 +230,7 @@ class ValidVoucher < ActiveRecord::Base
       order("season DESC,display_order,price DESC")
   end
 
-  def self.bundles_available_to(customer = Customer.generic_customer, promo_code=nil)
+  def self.bundles_available_to(customer = Customer.walkup_customer, promo_code=nil)
     bundles = ValidVoucher.
       where('? BETWEEN start_sales AND end_sales', Time.current).
       includes(:vouchertype,:showdate).references(:vouchertypes).

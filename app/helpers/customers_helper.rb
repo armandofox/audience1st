@@ -65,7 +65,7 @@ module CustomersHelper
     klass.join ' '
   end
 
-  def secret_question_select(customer=Customer.generic_customer)
+  def secret_question_select(customer=Customer.walkup_customer)
     ques = I18n.t("app_config.secret_questions")
     max = ques.length - 1
     idx = [max, customer.secret_question].min

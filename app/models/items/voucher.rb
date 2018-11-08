@@ -239,9 +239,9 @@ class Voucher < Item
     end
   end
 
-  def can_be_changed?(who = Customer.generic_customer)
+  def can_be_changed?(who = Customer.walkup_customer)
     unless who.kind_of?(Customer)
-      who = Customer.find(who) rescue Customer.generic_customer
+      who = Customer.find(who) rescue Customer.walkup_customer
     end
     return (who.is_walkup) ||
       (changeable? && valid_now? && within_grace_period?)
@@ -312,7 +312,7 @@ class Voucher < Item
     return true, total
   end
 
-  def cancel(logged_in = Customer.generic_customer.id)
+  def cancel(logged_in = Customer.walkup_customer.id)
     save_showdate = self.showdate.clone
     self.showdate = nil
     self.checked_in = false

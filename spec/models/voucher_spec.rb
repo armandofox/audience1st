@@ -74,7 +74,7 @@ describe Voucher do
       @c.vouchers << @v
       @sd = create(:showdate, :date => 1.day.from_now)
       allow(@v).to receive(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_this_patron => 0, :explanation => 'Event is sold out'))
-      @success = @v.reserve_for(@sd, Customer.generic_customer, 'foo')
+      @success = @v.reserve_for(@sd, Customer.walkup_customer, 'foo')
     end
     it 'should not succeed' do
       @v.should_not be_reserved

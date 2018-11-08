@@ -234,6 +234,8 @@ GEM
     puma (3.11.4)
     puma-heroku (1.0.0)
       puma (~> 3.0)
+    query_trail (1.0)
+      rails (~> 4.0)
     rack (1.6.10)
     rack-protection (1.5.5)
       rack
@@ -443,6 +445,7 @@ DEPENDENCIES
   pry
   puma
   puma-heroku
+  query_trail
   rack-test
   rack-timeout
   rails (= 4.2.9)
@@ -480,4 +483,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.16.1
+   1.16.2

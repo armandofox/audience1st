@@ -65,7 +65,7 @@ describe Customer do
   end
       
   describe "special" do
-    %w[walkup_customer generic_customer anonymous_customer boxoffice_daemon].each do |c|
+    %w[walkup_customer anonymous_customer boxoffice_daemon].each do |c|
       it "#{c.humanize} cannot be destroyed" do
         cust = Customer.send(c)
         lambda { cust.destroy }.should raise_error(Customer::CannotDestroySpecialCustomersError)
