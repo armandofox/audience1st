@@ -10,6 +10,16 @@ Background:
   Given I am logged in as boxoffice
   And customer "Armando Fox" exists
   
+Scenario: admin remains logged in after purchasing for a customer who has never logged in
+
+  When I add the following tickets for customer "Armando Fox":
+    | show    | qty   | type    | price | showdate             |
+    | Chicago | 2     | General |  7.00 | May 15, 2010, 8:00pm |
+  And I press "Accept Cash Payment"
+  Then I should see "You have paid a total of $14.00 by Cash"
+  When I follow "Back to This Customer"
+  Then I should be on the home page for customer "Armando Fox"
+
 Scenario Outline:
 
   When I add the following tickets for customer "Armando Fox":
