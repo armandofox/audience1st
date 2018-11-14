@@ -3,7 +3,6 @@
 = form_tag update_comment_customer_voucher_path(@customer,group.vouchers[0]), :method => 'put', 'data-remote' => true, :class => 'save_comment' do
   = hidden_field_tag 'voucher_ids', group.voucherlist
   - comment = multiple_voucher_comments(group.vouchers)
-  .col-md-2.adminField
-    .input-group
-      = text_field_tag 'comments', comment, :id => "comments_#{gid}", :class => 'form-control form-control-sm'
-      = submit_tag 'Save', :id => svid, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'
+  .input-group
+    = text_field_tag 'comments', comment, :id => "comments_#{gid}", :class => 'form-control form-control-sm'
+    = submit_tag 'Save', :id => svid, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'

@@ -23,7 +23,7 @@ Scenario: successfully purchase comps as guest
   When I press "Complete Comp Order"
   Then customer "Joe Tally" should have 2 "PromoComp" tickets for "Hamlet" on Oct 1, 2010, 8pm
 
-@stubs_successful_credit_card_purchase
+@stubs_successful_credit_card_payment
 Scenario: purchase both comps and regular tickets
   
   When I select "2" from "PromoComp - $0.00"

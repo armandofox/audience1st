@@ -21,8 +21,8 @@
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     
-    #outer_header.container-fluid
-    #outer_wrapper.container-fluid
+    #outer_header.container
+    #outer_wrapper
       #header
         %a{:id => 'top_level_banner_link', :href => Option.venue_homepage_url}
         = sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
@@ -39,7 +39,7 @@
           = render :partial => 'navbars/season_tabs'
           = render :partial => 'customers/quick_search'
           = render :partial => 'navbars/staff_buttons' if display_customer_actions?
-      #content.container-fluid
+      #content.container
         - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
           %h1.text-center Your Order Is Not Yet Complete
           = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
