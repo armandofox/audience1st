@@ -21,12 +21,12 @@
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     
-    #outer_header.container
+    #outer_header
     #outer_wrapper
-      #header
+      #header.container
         %a{:id => 'top_level_banner_link', :href => Option.venue_homepage_url}
         = sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
-      #nav
+      #nav.container
         - if controller.controller_name =~ /checkins|walkup_sales/
           = render :partial => 'navbars/box_office_tabs'
           = render :partial => 'checkins/change_showdate'
@@ -45,7 +45,7 @@
           = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
         = render :partial => 'messages/notices'
         = yield
-      #footer.footer.text-center
+      #footer.footer.text-center.container
         = render :partial => 'layouts/login_banner' if current_user
         %p
           \&copy; 2011&ndash;2018
