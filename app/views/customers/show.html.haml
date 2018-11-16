@@ -31,11 +31,10 @@
     .col-md-2
 
   - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
-    .row.border-bottom.border-secondary
-      - if group.reserved
-        = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => false}
-      - else
-        = render :partial => 'open_voucher', :locals => {:group => group, :label_function => :name_and_date_with_capacity_stats}
+    - if group.reserved
+      = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => false}
+    - else
+      = render :partial => 'open_voucher', :locals => {:group => group, :label_function => :name_and_date_with_capacity_stats}
 
 :javascript
   $('.save_comment').on('ajax:success', function(e,s,x) { alert("Comment saved") });
