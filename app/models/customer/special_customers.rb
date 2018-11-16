@@ -2,20 +2,12 @@ class Customer < ActiveRecord::Base
 
   class CannotDestroySpecialCustomersError < RuntimeError ;  end
 
-  ROLES = {
-    :walkup => -1,
-    :boxoffice_daemon => -2,
-    :anonymous => -3,
-    :generic => -4
-  }
-  @@special = {}
-  
   public
 
   # The "customer" to whom all walkup tickets are sold
   
   def self.walkup_customer
-    @@special[:walkup_customer] ||= Customer.find_by!(:role => -1)
+    Customer.find_by!(:role => -1)
   end
   
   def is_walkup_customer? ;  self.role == -1 && self.first_name =~ /^walkup$/i;   end
@@ -23,14 +15,14 @@ class Customer < ActiveRecord::Base
   # The box office daemon that handles background imports, etc.
 
   def self.boxoffice_daemon
-    @@special[:boxoffice_daemon] ||= Customer.find_by!(:role => -2)
+    Customer.find_by!(:role => -2)
   end
 
   # The anonymous customer (for deleting customers while preserving
   # their transactions)
 
   def self.anonymous_customer
-    @@special[:anonymous] ||= Customer.find_by!(:role => -3)
+    Customer.find_by!(:role => -3)
   end
 
   def cannot_destroy_special_customers

@@ -17,21 +17,21 @@ class Audience1stSeeder
   require 'customer'
   @@special_customers = {
     :walkup => {
-      :role => Customer::ROLES[:walkup],
+      :role => -1,
       :first_name => 'WALKUP',
       :last_name => 'CUSTOMER',
       :blacklist => true,
       :e_blacklist => true
     },
     :boxoffice_daemon => {
-      :role => Customer::ROLES[:boxoffice_daemon],
+      :role => -2,
       :first_name => 'BoxOffice',
       :last_name => 'Daemon',
       :blacklist => true,
       :e_blacklist => true
     },
     :anonymous => {
-      :role => Customer::ROLES[:anonymous],
+      :role => -3,
       :first_name => 'ANONYMOUS',
       :last_name => 'CUSTOMER',
       :blacklist => true,
