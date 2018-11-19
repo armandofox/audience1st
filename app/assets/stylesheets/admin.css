@@ -12,6 +12,34 @@ body.maintenance {
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
+/* 
+ * Customer name autocompletion popup
+ * Don't modify these unless you know
+ * what you're doing
+ */
+div.auto_complete {
+  width: 350px;
+  background: #fff; }
+
+div.auto_complete ul {
+  border: 1px solid #888;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  list-style-type: none; }
+
+div.auto_complete ul li {
+  margin: 0;
+  padding: 3px; }
+
+div.auto_complete ul li.selected {
+  background-color: #ffb; }
+
+div.auto_complete ul strong.highlight {
+  color: #800;
+  margin: 0;
+  padding: 0; }
+
 
 /* General tabular styles */
 
@@ -26,6 +54,25 @@ table.hilite tr:hover {
 /* To make alternating table rows different colors, set the styles here  */
 .even { background-color: inherit; }
 .odd { background-color: #eee; }
+
+.admin {
+  background-color: #eff19e;
+  color: black; }
+
+.adminDiv {
+  background-color: #eff19e;
+  display: block; }
+
+.adminField {
+    width: 100%;
+    display: inline-block;
+  font-family: PT Sans, sans-serif;
+  clear: both;
+  padding: 2px 10px;
+  background-color: #eff19e;
+  color: black; }
+
+
 
 /*
  * Popup-help styles (http://psacake.com/web/jl.asp)
@@ -154,27 +201,20 @@ span.tooltip:hover span { /* will display just on :hover state*/
    display: inline;
 }
 
-/*
- * Welcome panel:  needs to be statically sized (height) if FB is in use,
- * otherwise late load of FB image makes page jittery 
- */
-#welcome.facebook {
-    height: 55px;
-    vertical-align: bottom;
-}
+/* Printable receipts */
+/* plain style for receipts */
+body#receipt {
+  background: none;
+  font-family: Helvetica, Arial, sans-serif;
+  color: black;
+  border: 2px solid black;
+  padding: 0.5em;
+  margin: 0.5em;
+  font-size: larger; }
+  body#receipt * {
+    color: black;
+    background: none; }
 
-
-/*
- * Quick search customer panel
- */
-#customer_quick_search {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-#customer_quick_search table {
-	padding: 0;
-	margin: 0;
-}
 #onBehalfOfName {
 	color: blue;
 	font-weight: bold;

@@ -6,10 +6,20 @@ class Option < ActiveRecord::Base
   attr_encrypted :mailchimp_key
 
   # support singleton pattern by allowing Option.venue instead of Option.first.venue, its
+  @@cached_options = {}
   def self.method_missing(*args)
-    self.first.send(*args)
+    opt = args[0].to_s
+    if @@cached_options.has_key?(opt)
+      @@cached_options[opt]     # note, may be nil!
+    else
+      @@cached_options[opt] = self.first.send(*args)
+    end
   end
-  
+
+  after_save do
+    @@cached_options = {}
+  end
+
   validates_numericality_of :advance_sales_cutoff
   validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
   validate :availability_levels_monotonically_increase

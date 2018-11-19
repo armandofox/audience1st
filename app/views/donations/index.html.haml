@@ -17,7 +17,7 @@
 .pageDiv
   = form_tag donations_path, {:method => :get} do
     = render :partial => 'donation_search', :locals => {:params => @params}
-    = submit_tag "Search", :class => 'btn btn-primary'
+    = submit_tag "Search", :class => 'btn btn-success'
     = submit_tag(@export_label, :class => 'btn btn-primary') unless @donations.empty?
     = link_to "Add/Edit Account Codes&hellip;".html_safe, account_codes_path, :class => 'btn btn-primary'
 

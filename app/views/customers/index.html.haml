@@ -14,7 +14,14 @@
 
 - unless @customers.empty?
   = form_tag merge_customers_path, :method => :get do
-    #mergebar1.merge_bar= render :partial => 'customers/merge_bar'
+    %p.merge_bar
+      Select customers to:
+      = popup_help_for 'merge_customers'
+      = submit_tag 'Manual Merge&hellip;'.html_safe, :class => 'btn btn-primary'
+      = submit_tag 'Auto Merge', :class => 'btn btn-warning'
+      = submit_tag 'Forget', :class => 'btn btn-danger', :onclick => "return confirm('#{escape_javascript t(%q{customers.confirm_delete})}')"
+      = popup_help_for 'delete_customers'
+
     = hidden_field_tag 'action_name', action_name
     = hidden_field_tag 'customers_filter', @customers_filter
     = hidden_field_tag 'page', @page

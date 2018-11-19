@@ -1,12 +1,11 @@
-#themed-nav
-  %ul.nav.store_nav
-    %li#t_store_index= link_to 'Buy Tickets', store_path(@customer)
-    %li#t_store_donate= link_to 'Donate', quick_donate_path
-    %li#t_store_subscribe= link_to 'Subscribe', store_subscribe_path(@customer)
-    - if really_logged_in(@customer)
-      %li#t_customers_show= link_to 'My Tickets', customer_path(@customer)
-      %li#t_customers_edit= link_to 'Billing/Contact', edit_customer_path(@customer)
-      %li#t_customers_change_password_for= link_to 'Change Password', change_password_for_customer_path(@customer)
-    - else
-      %li#t_sessions_new= link_to "Sign in", login_path
+%ul.nav.store_nav
+  %li#t_store_index= link_to 'Buy Tickets', store_path(@customer)
+  %li#t_store_donate= link_to 'Donate', quick_donate_path
+  %li#t_store_subscribe= link_to 'Subscribe', store_subscribe_path(@customer)
+  - if really_logged_in(@customer)
+    %li#t_customers_show= link_to 'My Tickets', customer_path(@customer)
+    %li#t_customers_edit= link_to 'Billing/Contact', edit_customer_path(@customer)
+    %li#t_customers_change_password_for= link_to 'Change Password', change_password_for_customer_path(@customer)
+  - else
+    %li#t_sessions_new= link_to "Sign in", login_path
 

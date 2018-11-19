@@ -22,9 +22,10 @@
       &nbsp;/&nbsp;
       = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
     .col-md-2.text-right
-      %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
+      %label.col-form-label{:for => 'credit_card_verification_value'}
+        CVV code
+        = popup_help_for 'credit_card_verification_value'
     .col-md-2
       = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control form-control-sm unsubmitted'
-      = popup_help_for 'credit_card_verification_value'
     .col-md-3
       = image_tag 'credit_card_logos_horizontal.png'

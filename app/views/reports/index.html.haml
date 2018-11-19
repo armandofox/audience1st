@@ -1,5 +1,5 @@
 - if @next_showdate.kind_of?(Showdate)
-  .pageDiv
+  .container
     %h1 Advance Sales and Orders
     = form_tag advance_sales_reports_path, :method => :get do
       %fieldset#advance_sales_report
@@ -16,7 +16,7 @@
         %legend Orders Needing Mail Fulfillment 
         = submit_tag 'Generate Listing'
 
-.pageDiv#financial_reports
+.container#financial_reports
   %h1 Financial/Transaction Reports
   = form_tag report_orders_path, :method => :get do
     %fieldset#transaction_details_report
@@ -39,7 +39,7 @@
       = submit_tag 'Download as Excel'
   
 - if nil && (Voucher.count > 0 || Donation.count > 0)
-  .pageDiv#accounting_reports
+  .container#accounting_reports
     %h1 Accounting/Financial Reports
     = form_tag do_report_reports_path, {:method => :get} do
       %label Select Dates
@@ -54,12 +54,12 @@
       %label &nbsp;
       = submit_tag 'Display report'
 
-.pageDiv#customer_lists
+.container#customer_lists
   %h1 Customer Lists
   = select_tag 'special_report_name', options_for_select(@special_report_names, :selected => 'Select report...'), 'data-submit' => attendance_reports_path
   #report_body
 
-.pageDiv#subscription_counts
+.container#subscription_counts
   %h1
     Subscription Counts for
     - y = Time.this_season

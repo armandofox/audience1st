@@ -23,11 +23,11 @@
         = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled, :class => 'form-control form-control-sm'
     .form-row
       .col-md-2.text-right
-        %label.no_float.strong{:for => 'customer_state'} State
+        %label.strong{:for => 'customer_state'} State
       .col-md-1
         = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled, :class => 'form-control form-control-sm'}
       .col-md-1.text-right
-        %label.no_float.strong{:for => 'customer_zip'} Zip
+        %label.strong{:for => 'customer_zip'} Zip
       .col-md-2
         = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled, :class => 'form-control form-control-sm'}
       .col-md-2.text-right

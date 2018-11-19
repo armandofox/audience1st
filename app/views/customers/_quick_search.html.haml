@@ -1,10 +1,9 @@
-#customer_quick_search.adminField.container
-  #quicksearch
-    = form_tag(customers_path,{:method =>:get, :id => 'search_field'}) do
-      Search:
-      = text_field_tag 'customers_filter', @customers_filter, :size => 32, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
-      = hidden_field_tag 'id'
-      = link_to 'List All', customers_path, :class => 'btn btn-sm btn-outline-secondary'
-      = link_to 'List Dups', list_duplicate_customers_path, :class => 'btn btn-sm btn-outline-secondary'
-      = link_to 'Add New...', admin_new_customers_path, :class => 'btn btn-sm btn-outline-primary'
-      = link_to 'Help&hellip;'.html_safe, 'http://docs.audience1st.com', :class => 'float-right btn btn-sm btn-danger', :target => '_blank'
+.adminField.container
+  = form_tag(customers_path,{:method =>:get, :id => 'search_field'}) do
+    Search:
+    = text_field_tag 'customers_filter', @customers_filter, :size => 32, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
+    = hidden_field_tag 'id'
+    = link_to 'List All', customers_path, :class => 'btn btn-sm btn-outline-secondary'
+    = link_to 'List Dups', list_duplicate_customers_path, :class => 'btn btn-sm btn-outline-secondary'
+    = link_to 'Add New...', admin_new_customers_path, :class => 'btn btn-sm btn-outline-primary'
+    = link_to 'Help&hellip;'.html_safe, 'http://docs.audience1st.com', :class => 'float-right btn btn-sm btn-danger', :target => '_blank'
