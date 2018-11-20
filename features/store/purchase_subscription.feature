@@ -1,4 +1,3 @@
-@javascript
 @stubs_successful_credit_card_payment
 Feature: Purchase subscription
 
@@ -28,4 +27,4 @@ Scenario: successful purchase
   When I place my order with a valid credit card
 
   Then I should see "You have paid a total of $100.00 by Credit card"
-  And I should be logged in as customer "Tom Foolery"
+  And I should see "Back to My Tickets"
