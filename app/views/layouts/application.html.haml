@@ -29,22 +29,24 @@
         - else
           %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
-        #page_body.container
+        #page_body
           #left_sidebar
           #right_main
-            #nav
+            #themed-nav
               - if controller.controller_name =~ /checkins|walkup_sales/
                 = render :partial => 'navbars/box_office_tabs'
-                = render :partial => 'checkins/change_showdate'
-                = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
               - elsif controller.controller_name =~ /import|options|bulk_downloads/i
                 = render :partial => 'navbars/admin_tabs'
               - elsif existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
                 = render :partial => 'navbars/main_tabs'
-              - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
-                = render :partial => 'navbars/season_tabs'
-                = render :partial => 'customers/quick_search'
-                = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+                = render :partial => 'navbars/season_tabs' if @gAdminDisplay
+            - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
+              = render :partial => 'customers/quick_search'
+              = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+            - if controller.controller_name =~ /checkins|walkup_sales/
+              = render :partial => 'checkins/change_showdate'
+              = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
+
             #content.clear
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
                 %h1.text-center Your Order Is Not Yet Complete
