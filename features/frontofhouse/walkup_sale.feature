@@ -7,6 +7,7 @@ Feature: Sell walkup tickets
 
   Background:
     Given I am logged in as boxoffice
+    Then show me the page
     And a show "The Nerd" with the following tickets available:
     | qty | type    | price  | showdate                |
     |   3 | General | $11.00 | October 1, 2015, 7:00pm |
