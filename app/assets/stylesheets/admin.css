@@ -12,6 +12,14 @@ body.maintenance {
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
+
+.a1-text-large {
+    font-size: 150%;
+}
+.a1-text-medium {
+    font-size; 125%;
+}
+
 /* 
  * Customer name autocompletion popup
  * Don't modify these unless you know
@@ -215,11 +223,6 @@ body#receipt {
     color: black;
     background: none; }
 
-#onBehalfOfName {
-	color: blue;
-	font-weight: bold;
-	font-size:  larger;
-}
 /* Make autocomplete menu not be infinitely long */
 .ui-autocomplete {
   max-height: 50ex;
@@ -234,12 +237,6 @@ body#receipt {
   height: 50ex;
 }
 
-/*
- * Staff action buttons that appear for a customer (Contact, Prospecting, etc)
- */
-#staffButtons {
-	border-top: 1px groove #fff;
-}
 /*
  * Customer list 
  */
@@ -317,31 +314,6 @@ table.showdates_summary td {
 	padding: 0 2em;
 }
 
-/*
- * Box office functions header ("stats for this show")
- */
-#select_show {
-	clear:  both;
-    margin: 1em;
-    font-size: larger;
-}
-#select_show select {
-	font-size: larger;
-} 
-
- table#showdate_info {
-	border: 0;
-	font-size: larger;
-	width: 600px;
-	text-align: center;
-}
-table#showdate_info td.header {
-	text-align: right;
-}
-table#showdate_info td.value {
-	text-align: right;
-	width: 10em;
-}
 /*
  * Walkup sales
  */

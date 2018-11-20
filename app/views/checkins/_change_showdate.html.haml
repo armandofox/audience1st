@@ -1,5 +1,5 @@
-#select_show.clear
-  %label{:for=>:showdate_thedate} Show and Date:
-  = select_tag 'new_showdate', showdates_with_urls(walkup_sale_path(@showdate)), :onchange => 'window.location = $("#new_showdate").val()'
-
-
+#select_show.form-inline
+  %label.col-form-label Show and Date:
+  = select_tag 'new_showdate', showdates_with_urls(walkup_sale_path(@showdate)), |
+    :class => 'form-control', |
+    :onchange => 'window.location = $("#new_showdate").val()' |
