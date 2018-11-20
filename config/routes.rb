@@ -44,7 +44,7 @@ Rails.application.routes.draw do
         collection do
           post :transfer_multiple
           post :confirm_multiple
-          put :cancel_multiple
+          post :cancel_multiple
         end
       end
     end

@@ -16,11 +16,11 @@
           :disable_with => 'Cancelling...', |
           :class => 'btn btn-danger', |
           :confirm => t('reservations.confirm_cancellation') |
-      - if @gAdminDisplay
-        .col-md-2.adminField
-          = render :partial => 'update_voucher_comments', :locals => {:group => group}
-      - else
-        .col-md-2
+  - if @gAdminDisplay
+    .col-md-2.adminField
+      = render :partial => 'update_voucher_comments', :locals => {:group => group}
+  - else
+    .col-md-2
 - else
   .row.border-bottom.border-secondary
     .col-md-1.text-center= group.size

@@ -30,8 +30,8 @@
           %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         #page_body.container
-          #left_sidebar.container
-          #right_main.container
+          #left_sidebar
+          #right_main
             #nav
               - if controller.controller_name =~ /checkins|walkup_sales/
                 = render :partial => 'navbars/box_office_tabs'

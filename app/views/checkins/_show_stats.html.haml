@@ -4,7 +4,14 @@
       = popup_help_for 'checkin_house_capacity'
       = link_to 'True Cap:', edit_show_path(showdate.show)
     .col-md-1= showdate.house_capacity
-    .col-md-8
+    .col-md-2.text-right Sales cutoff:
+    .col-md-1= showdate.max_sales
+    .col-md-2.text-right Available:
+    - if showdate.really_sold_out?
+      .col-md-1.text-white.bg-danger 0
+    - else
+      .col-md-1.text-white.bg-success= showdate.house_capacity - showdate.compute_total_sales
+    .col-md-2
   .row
     .col-md-3.text-right Advance sales:
     .col-md-1{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
@@ -16,11 +23,4 @@
   .row
     .col-md-3.text-right= link_to 'Walkup sales:', walkup_sale_path(showdate)
     .col-md-1= showdate.compute_walkup_sales
-    .col-md-8
-  .row
-    .col-md-3.text-right Available:
-    - if showdate.really_sold_out?
-      .col-md-1.text-white.bg-danger 0
-    - else
-      .col-md-1.text-white.bg-success= showdate.house_capacity - showdate.compute_total_sales
     .col-md-8
