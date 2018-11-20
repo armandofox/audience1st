@@ -1,19 +1,6 @@
 require 'rails_helper'
 
 describe Option do
-  describe 'caching' do
-    it 'caches option values' do
-      val1 = Option.season_start_month
-      Option.any_instance.stub(:season_start_month).and_raise("Option isn't caching its values")
-      val2 = Option.season_start_month
-      expect(val1).to eq(val2)
-    end
-    it 'nukes cache when options updated' do
-      val1 = Option.season_start_month
-      Option.update_attributes!(:season_start_month => val1+1)
-      expect(val1).not_to eq(Option.season_start_month)
-    end
-  end
   describe 'validations' do
     before :each do
       @o = Option.first 
