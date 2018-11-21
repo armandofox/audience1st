@@ -1,94 +1,80 @@
 class EmailList
+  require 'digest'              # for computing MD5 hashes of email addresses
+  
+  # this version works with the Gibbon gem for Mailchimp API v3.0
 
-  # this version works with Brian Getting's Hominid gem:
-  #  script/plugin install git://github.com/bgetting/hominid.git
-
-  attr_reader :errors, :apikey, :disabled
+  attr_reader :errors, :disabled
 
   def initialize
     @apikey = Option.mailchimp_key
-    @list = Option.mailchimp_default_list_name
-    Rails.logger.info("NOT initializing mailchimp") and return nil if (@apikey.blank? || @list.blank?)
     @disabled = true
-    begin
-      @hominid = Hominid::Base.new :api_key => @apikey
-      @listid = @hominid.find_list_id_by_name(@list)
-      @disabled = false
-      Rails.logger.info "Init Mailchimp with default list '#{@list}'"
-    rescue NoMethodError => e   # dereference nil.[] means list not found
-      Rails.logger.warn "Init Mailchimp: list '#{@list}' not found"
-    rescue StandardError => e
-      Rails.logger.info "Init Mailchimp failed: <#{e.message}>"
-    end
+    Rails.logger.info("email_list: NOT initializing mailchimp") and return nil if (@apikey.blank? || @list.blank?)
+    @disabled = false
+    Rails.logger.info "email_list: Init Mailchimp"
   end
-
 
   private
 
-  def segment_id_from_name(name)
-    @hominid.static_segments(@listid).detect { |s| s['name'] == name }['id']
+  def mc
+    Gibbon::Request.new(:api_key => @apikey, :symbolize_keys => true)
+  end
+  
+  def default_list_id
+    @default_list ||= mc.lists.retrieve.body['lists'][0]['id']
   end
 
+  def segment_id_from_name(name)
+    @mailchimp.static_segments(@listid).detect { |s| s['name'] == name }['id']
+  end
+
+  def mailchimp_body_for(cust)
+    {
+      :email_address => cust.email,
+      :status => (cust.e_blacklist? ? 'unsubscribed' : 'subscribed'),
+      :merge_fields => {'FNAME' => cust.first_name, 'LNAME' => cust.last_name}
+    }
+  end
+  
   public
 
   def subscribe(cust, email=cust.email)
     return true if disabled
-    Rails.logger.info "Subscribe #{cust.full_name} as #{email}"
-    msg = "Subscribing #{cust.full_name} <#{email}> to '#{@list}'"
     begin
-      @hominid.subscribe(
-        @listid,
-        email,
-        {:FNAME => cust.first_name, :LNAME => cust.last_name},
-        {:email_type => 'html'})
-      Rails.logger.info msg
-    rescue StandardError => e
-      Rails.logger.info [msg,e.message].join(': ')
+      mc.lists(default_list_id).members.create(:body => mailchimp_body_for(cust))
+    rescue Gibbon::MailChimpError, StandardError => e
+      @errors = e.message
+      Rails.logger.info "email_list: #{@errors}"
     end
   end
 
   def update(cust, old_email)
     return nil if @disabled
-    Rails.logger.info "Update email for #{cust.full_name} from #{old_email} to #{cust.email}"
+    what = "updating #{cust.full_name} from #{old_email} to #{cust.email}"
     begin
-      # update existing entry
-      msg = "Changing <#{old_email}> to <#{cust.email}> " <<
-        "for #{cust.full_name} in  '#{@list}'"
-      @hominid.update_member(
-        @listid,
-        old_email,
-        {:FNAME => cust.first_name, :LNAME => cust.last_name,
-          :email => cust.email })
-    rescue Hominid::ListError => e
-      if (e.message !~ /no record of/i)
-        msg = "Hominid error: #{e.message}"
-      else
-        begin
-          # was not on list previously
-          msg = "Adding #{cust.email} to list #{@list}"
-          @hominid.subscribe(@listid, cust.email,
-            {:FNAME => cust.first_name, :LNAME => cust.last_name},
-            {:email_type => 'html'})
-        rescue Exception => e
-          throw e
-        end
-      end
-      # here if all went well...
-      Rails.logger.info msg
-    rescue Exception => e
-      Rails.logger.info [msg,e.message].join(': ')
+      # 'upsert' modifies a user if exists, or adds if not. But can still fail if the
+      #  updated (new) info duplicates an existing email address, which gives HTTP 400.
+      digest = Digest::MD5.hexdigest(old_email.downcase)
+      member = mc.lists(default_list_id).members(digest).upsert(:body => mailchimp_body_for(cust))
+    rescue Gibbon::MailChimpError => e
+      # check for and rescue 400, meaning email already exists.
+      # TBD how to handle that case, since failure of this op must not block regular operation?
+      @errors = e.message
+      Rails.logger.warn "email_list: MailChimp error #{what}: #{@errors}"
+    rescue StandardError => e
+      @errors = e.message
+      Rails.logger.warn "email_list: Unexpected error #{what}: #{@errors}"
     end
   end
 
   def unsubscribe(cust, email=cust.email)
     return nil if @disabled
-    Rails.logger.info "Unsubscribe #{cust.full_name} as #{email}"
-    msg = "Unsubscribing #{cust.full_name} <#{email}> from '#{@list}'"
+    what = "unsubscribing #{cust.full_name} as #{email}"
+    digest = Digest::MD5.hexdigest(cust.email.downcase)
     begin
-      @hominid.unsubscribe(@listid, email)
-      Rails.logger.info msg
-    rescue Exception => e
-      Rails.logger.info [msg,e.message].join(': ')
+      mc.lists(default_list_id).update(:body => {:status => 'unsubscribed'})
+    rescue Gibbon::MailChimpError, StandardError => e
+      @errors = e.message
+      Rails.logger.warn "email_list: #{what}: #{@errors}"
     end
   end
 
@@ -99,13 +85,12 @@ class EmailList
   def create_sublist(name)
     return nil if @disabled
     begin
-      @hominid.add_static_segment(@listid, name)
-      return true
-    rescue Exception => e
-      error = "List segment '#{name}' could not be created: #{e.message}"
+      @mailchimp.add_static_segment(@listid, name)
+      true
+    rescue Hominid::APIError => e
+      @errors = "List segment '#{name}' could not be created: #{e.message}"
       Rails.logger.warn error
-      @errors = error
-      return nil
+      nil
     end
   end
 
@@ -113,7 +98,7 @@ class EmailList
     # returns array of 2-element arrays, each of which is [name,count] for static segments
     return [] if @disabled
     begin
-      segs = @hominid.static_segments(@listid).map { |seg| [seg['name'], seg['member_count']] }
+      segs = @mailchimp.static_segments(@listid).map { |seg| [seg['name'], seg['member_count']] }
       puts "Returning static segments: #{segs}"
       segs
     rescue Exception => e
@@ -131,7 +116,7 @@ class EmailList
         @errors = "None of the matching customers had valid email addresses."
         return 0
       end
-      result = @hominid.static_segment_add_members(@listid, seg_id, emails)
+      result = @mailchimp.static_segment_add_members(@listid, seg_id, emails)
       if !result['errors'].blank?
         @errors = "MailChimp was unable to add #{result['errors'].length} of the customers, usually because they aren't subscribed to the master list."
       end
