@@ -174,23 +174,20 @@ class Customer < ActiveRecord::Base
   # when customer is saved, possibly update their email opt-in status
   # with external mailing list.  
 
-  @@email_sync_disabled = nil
-  def self.enable_email_sync ;  @@email_sync_disabled = nil ; end
-  def self.disable_email_sync ; @@email_sync_disabled = true  ; end
-
   def update_email_subscription
-    return unless (@@email_sync_disabled || e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    email_list = EmailList.new or return
     if e_blacklist      # opting out of email
-      EmailList.unsubscribe(self, email_was)
+      email_list.unsubscribe(self, email_was)
     else                        # opt in
       if (email_changed? || first_name_changed? || last_name_changed?)
         if email_was.blank?
-          EmailList.subscribe(self)
+          email_list.subscribe(self)
         else
-          EmailList.update(self, email_was)
+          email_list.update(self, email_was)
         end
       else                      # with same email
-        EmailList.subscribe(self)
+        email_list.subscribe(self)
       end
     end
   end
