@@ -1,35 +1,28 @@
-!!! 5
-%html
-  %head
-    = stylesheet_link_tag :application
-    %title= h @showdate.printable_name
-  %body{:class => ('maintenance' if @gMaintMode)}
-    %h1
-      = h @showdate.printable_name
-    %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
-    #doorList
-      %table.hilite
-        %thead
-          %tr
-            %th{:colspan=>2} Last
-            %th First
-            %th Type
-            %th Qty
-            %th Notes
-        %tbody
-          - @vouchers.keys.sort_by(&:downcase).each do |k|
-            - v = @vouchers[k].first
-            - c = v.customer
-            %tr{:class=>(c.subscriber? ? 'subscriber' : nil)}
-              %td.maincolumn= letter_header_for(c.last_name) 
-              %td= link_to c.last_name.name_capitalize, customer_path(c)
-              %td= link_to c.first_name.name_capitalize, customer_path(c)
-              %td= h v.vouchertype.name
-              %td.text-center= h @vouchers[k].size
-              / concatenate all nonempty comments
-              %td= h comments_for_voucherlist(@vouchers[k])
+%h1.text-center= @showdate.printable_name
+%h2.text-center= "#{@num_subscribers} subscribers, #{@total} total reservations"
+.container
+  %table.hilite
+    %thead
+      %tr
+        %th{:colspan=>2} Last
+        %th First
+        %th Type
+        %th Qty
+        %th Notes
+    %tbody
+      - @vouchers.keys.sort_by(&:downcase).each do |k|
+        - v = @vouchers[k].first
+        - c = v.customer
+        %tr{:class=>(c.subscriber? ? 'subscriber' : nil)}
+          %td.maincolumn= letter_header_for(c.last_name) 
+          %td= link_to c.last_name.name_capitalize, customer_path(c)
+          %td= link_to c.first_name.name_capitalize, customer_path(c)
+          %td= h v.vouchertype.name
+          %td.text-center= h @vouchers[k].size
+          / concatenate all nonempty comments
+          %td= h comments_for_voucherlist(@vouchers[k])
 
-      %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
-      %p
-        = "Box office report generated #{Time.current.to_formatted_s(:showtime)}"
-        %span{:style => 'float: right;'}= link_to '<< Back', checkin_path(@showdate)
+  %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
+  %p
+    = "Box office report generated #{Time.current.to_formatted_s(:showtime)}"
+    %span{:style => 'float: right;'}= link_to '<< Back', checkin_path(@showdate)

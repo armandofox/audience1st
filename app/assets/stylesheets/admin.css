@@ -14,10 +14,10 @@ body.maintenance {
  **********************************************************************/
 
 .a1-text-large {
-    font-size: 150%;
+    font-size: 1.5rem;
 }
 .a1-text-medium {
-    font-size: 125%;
+    font-size: 1.25rem;
 }
 
 /* 
@@ -86,7 +86,7 @@ table.hilite tr:hover {
  * Popup-help styles (http://psacake.com/web/jl.asp)
  */
 
-a.a1tooltip {outline:none; }
+a.a1tooltip {outline:none; font-size: 1rem; }
 a.a1tooltip strong {line-height:30px;}
 a.a1tooltip:hover {text-decoration:none;} 
 a.a1tooltip span {
@@ -366,18 +366,6 @@ table.showdates_summary td {
 	margin-right: 4ex;
 	margin-left: -5px;
 }
-#ccWaiting {
-  background-color: white;
-  color: red;
-  line-height: 1.5em;
-  font-weight: bold;
-  text-align: center;
-  border: 1px solid red;
-  padding: 2px;
-}
-#ccWaiting a a:hover {
-  color: red;
- }
  
 /*
  * Online check-in
@@ -463,33 +451,34 @@ div.show .showSalesRevenue {
 /*
  * Door list
  */
- 
-body#door_list {
-	background: none;
-	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-	font-size:  11pt;
+
+#door_list {
+    background-color: white;
 }
-body#door_list h1, body#door_list h2 {
-	font-family: inherit;
-	color: black;
+#door_list table {
+    width: 100%;
+}
+#door_list table, #door_list th, #door_list td {
+    font-size: 1.5rem;
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 
 /* Index letter column (style applies to TD) */
-.maincolumn {
+#door_list .maincolumn {
   border: none;
-  background: none;
+  background-color: white;
   font-size: large;
   font-weight: bold;
-  color: red;
 }
-/* Subscribers are hilited on door list (style applies to a TR) */
-.subscriber {
-  background-color: #9f9;
-}
-/* Attention - something's not right here */
-.attention {
-  color: red;
-}
+@media screen {  #door_list .maincolumn {  color: red;     } }
+
+/* Subscribers are hilited on door list on screen, but bolded in print */
+@media screen {  #door_list .subscriber {  background-color: #9f9;  } }
+@media print  {  #door_list .subscriber {  font-style: italic;  } }
+
+/* Don't underline links in printed door list */
+@media print { #door_list a { text-decoration: none; color: black; } }
 
 /*
  *  Importing

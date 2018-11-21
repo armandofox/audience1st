@@ -1,5 +1,8 @@
-#select_show.form.form-inline.clear
-  %label.col-form-label Show and Date:
-  = select_tag 'new_showdate', showdates_with_urls(walkup_sale_path(@showdate)), |
-    :class => 'form-control', |
-    :onchange => 'window.location = $("#new_showdate").val()' |
+#select_show.form.form-row.clear.bg-light
+  .col.text-right
+    %label.col-form-label.a1-text-large Show and Date:
+  .col-text-left
+    = select_tag 'new_showdate', showdates_with_urls(walkup_sale_path(@showdate)), |
+      :class => 'form-control form-control-lg', |
+      :onchange => 'window.location = $("#new_showdate").val()' |
+  .col
