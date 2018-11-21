@@ -53,7 +53,9 @@
                 = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
               = render :partial => 'messages/notices'
               = yield
-        = render :partial => 'layouts/login_banner' if current_user
+    - if current_user
+      #welcome_header.container= render :partial => 'layouts/login_banner'
+
     #footer.footer.container.text-center
       %p
         \&copy; 2011&ndash;2018
