@@ -186,6 +186,7 @@ class CustomersController < ApplicationController
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
+      @customer.update_attribute(:last_login, Time.current)
     else
       flash[:alert] = "There was a problem creating your account: " <<
         @customer.errors.as_html
