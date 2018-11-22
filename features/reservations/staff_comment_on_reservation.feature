@@ -16,7 +16,6 @@ Scenario: add comment to revenue reservation
   | Hamlet    | Feb 1, 2010, 8pm |   2 |
   | King Lear | Mar 1, 2010, 8pm |   1 |
   When I visit the home page for customer "Tom Foolery"
-  Then show me the page
   And I fill in "comments" with "Will be late" within "#voucher_1"
   And I press "Save" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"
