@@ -23,7 +23,7 @@
       %th
   %tbody
     - @vouchertypes.each do |vouchertype|
-      %tr{:class => [cycle(:odd,:even),(vouchertype.subscription? ? 'subscriberVouchertype' : ''),css_class_for_vouchertype(vouchertype)] }
+      %tr{:class => [(vouchertype.subscription? ? 'subscriberVouchertype' : ''),css_class_for_vouchertype(vouchertype)] }
         %td
           - if @superadmin && vouchertype.vouchers.count == 0
             = link_to(image_tag('delete.png',:border => 0, :id => "delete_#{vouchertype.id}", :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, :confirm => "Deleting the '#{h vouchertype.name}' voucher type cannot be undone. Continue?" })

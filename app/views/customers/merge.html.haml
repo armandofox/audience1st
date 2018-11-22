@@ -5,17 +5,17 @@
   = hidden_field_tag 'offset', @offset
   = hidden_field_tag 'cust0', @cust[0].id
   = hidden_field_tag 'cust1', @cust[1].id
-  %table.hilite
-    %tr{:class=>cycle(:odd,:even)}
+  %table.hilite.table-striped
+    %tr
       %td Last login
       %td= @cust[0].last_login.to_formatted_s(:long)
       %td= @cust[1].last_login.to_formatted_s(:long)
-    %tr{:class=>cycle(:odd,:even)}
+    %tr
       %td Last activity
       %td= @cust[0].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
       %td= @cust[1].most_recent_txn.txn_date.to_formatted_s(:long) rescue "???"
     - Customer.replaceable_attributes.each do |c|
-      %tr{:class=>cycle(:odd,:even)}
+      %tr
         %td= h c.humanize
         %td.c0
           = radio_button_tag c, 0, :selected=>true

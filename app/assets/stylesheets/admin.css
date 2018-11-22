@@ -50,18 +50,40 @@ div.auto_complete ul strong.highlight {
 
 
 /* General tabular styles */
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 0;
+	margin-bottom: 10px;
+	margin-top: 4px;
+}
+thead {
+  background-color: #EEE;
+  color: black;
+}
+th {
+  margin: 0;
+  padding: 3px;
+  font-weight: bold;
+  text-align: center;
+  background: #333;
+  color: #fff;
+}
+td {
+  padding: 1px 2px;
+}
 
 /* easier to navigate if tabular rows hilited on hover */
-table.hilite tr {
-	padding: 2px 0;
-	line-height: 1.2;
-}
 table.hilite tr:hover {
 	background-color: #fcfe69;
 }
-/* To make alternating table rows different colors, set the styles here  */
-.even { background-color: inherit; }
-.odd { background-color: #eee; }
+
+.no_float {
+  float: none;
+  width: 100%;
+}
+
 
 .admin {
   background-color: #eff19e;
@@ -236,30 +258,6 @@ body#receipt {
 * html .ui-autocomplete {
   height: 50ex;
 }
-/*
- * Merge toolbar
- */
-
-.merge_bar {
-    border-top: 1px solid #666;
-    border-bottom: 1px solid #666;
-}
-
-/*
- * Customer list 
- */
-#customer_list_header {
-    margin-top: 0.5ex;
-    margin-bottom: 0;
-    padding-top: 2px;
-    padding-bottom: 0;
-    text-align: center;
-}
-
-#customer_list_header span.customer_list_header {
-    font-size: 110%;
-    font-weight: bold;
-}
 
 .customer_label {
     font-size: 90%;
@@ -322,51 +320,6 @@ table.showdates_summary td {
 	padding: 0 2em;
 }
 
-/*
- * Walkup sales
- */
-
-.walkup_tickets {
-	width: 100%;
-}
-.walkup_tickets .column {
-	float: left;
-	padding: 0;
-	margin: 4px;
-	width: 45%;
-} 
-.walkup_tickets .column:hover {
-	border: 1px solid red;
-	margin: 3px;
-}
-.walkup_tickets p.column_header {
-	font-size: larger;
-	text-align: center;
-	font-weight: bold;
-	color: #fff;
-	background-color: red;
-    padding: 4px 0;
-    margin: 0;
-}
-.walkup_tickets #payment_types {
-    font-size: 100%;
-    
-}
-#whoops_button {
-    text-align: center;
-    line-height: 2.5;
-}
-#payment_types {
-	text-align: center;
-	font-size: medium;
-	font-weight: bold;
-	margin-top: 10px;
-}
-#payment_types input[type="radio"] {
-	margin-right: 4ex;
-	margin-left: -5px;
-}
- 
 /*
  * Online check-in
  */
@@ -503,3 +456,16 @@ table.import td {
     margin-left: 2em;
 }
 
+#donate {
+  margin: 0 0 20px 0;
+  padding: 10px 0;
+  background-color: #f6f6ed;
+}
+#donate_info {
+  margin: 0 auto 10px auto;
+  padding: 5px;
+  width: 400px;
+  background-color: #EEE;
+  color: black;
+  border: 1px solid black;
+}
