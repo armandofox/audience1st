@@ -8,7 +8,7 @@
 
 - else
   - gid = group.group_id
-  = form_tag confirm_multiple_customer_vouchers_path(@customer) do
+  = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post do
     .row.border-bottom.border-secondary
       = hidden_field_tag 'voucher_ids', group.voucherlist
       .col-md-1.text-center= menu_or_static_text('number', group.size)

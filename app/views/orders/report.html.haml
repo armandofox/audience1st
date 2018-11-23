@@ -1,11 +1,11 @@
-#pageDiv.pagination
+.pagination.container
   %h1 #{@orders.total_entries} transactions: #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}
   = will_paginate @orders, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
   = form_tag report_orders_path, :method => :get do
     = hidden_field_tag 'txn_report_dates', Time.range_to_params(@from,@to)
     = submit_tag 'Download Results as Excel'
 
-#pageDiv
+.container
   %table.hilite
     %thead
       %tr

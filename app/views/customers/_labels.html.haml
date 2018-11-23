@@ -1,4 +1,4 @@
-#customer_labels
+#customer_labels.container
   #current_labels
     = in_rows_of(4, Label.all_labels) do |l|
       - checkbox_for_label(l, @customer.labels.include?(l))

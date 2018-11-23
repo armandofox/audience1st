@@ -13,36 +13,36 @@
 %br/
 
 - unless @customers.empty?
-  = form_tag merge_customers_path, :method => :get do
-    .form-row
-      .form-group.justify-content-center.mb-2
-        %label Select customers to:
+  .container.px-0
+    = form_tag merge_customers_path, :method => :get, :class => 'form' do
+      .form-group
+        %label.col-form-label.a1-text-large Select customers to:
         = popup_help_for 'merge_customers'
         = submit_tag 'Manual Merge&hellip;'.html_safe, :class => 'btn btn-primary'
-        = submit_tag 'Auto Merge', :class => 'btn btn-warning'
+        = submit_tag 'Auto Merge', :class => 'btn btn-danger'
         = submit_tag 'Forget', :class => 'btn btn-danger', :onclick => "return confirm('#{escape_javascript t(%q{customers.confirm_delete})}')"
         = popup_help_for 'delete_customers'
 
-    = hidden_field_tag 'action_name', action_name
-    = hidden_field_tag 'customers_filter', @customers_filter
-    = hidden_field_tag 'page', @page
-    %table.hilite#customers
-      %thead
-        %tr
-          %th= check_box_tag 'selectAll', 1, false
-          %th First name
-          %th Last name
-          %th Street
-          %th City
-          %th State
-          %th Zip
-          %th Day/Main Phone
-          %th Eve/Alt Phone
-          %th Email
-          %th Company
-          %th Labels
-      %tbody
-        = render :partial => 'customers/customer', :collection => @customers
-    :javascript
-      $('#selectAll').change(function() { $('.selectForMerge').prop('checked', $(this).prop('checked')); })
-    %br/
+      = hidden_field_tag 'action_name', action_name
+      = hidden_field_tag 'customers_filter', @customers_filter
+      = hidden_field_tag 'page', @page
+      %table.hilite#customers
+        %thead
+          %tr
+            %th= check_box_tag 'selectAll', 1, false
+            %th First name
+            %th Last name
+            %th Street
+            %th City
+            %th State
+            %th Zip
+            %th Day/Main Phone
+            %th Eve/Alt Phone
+            %th Email
+            %th Company
+            %th Labels
+        %tbody
+          = render :partial => 'customers/customer', :collection => @customers
+:javascript
+  $('#selectAll').change(function() { $('.selectForMerge').prop('checked', $(this).prop('checked')); })
+

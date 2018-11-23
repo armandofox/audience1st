@@ -52,8 +52,11 @@
       - if current_user
         #welcome_header.container= render :partial => 'layouts/login_banner'
 
-    #footer.footer.container.text-center
-      Powered by
-      = link_to 'Audience1st', 'http://www.audience1st.com'
-      - unless (s = Option.privacy_policy_url).blank?
-        = link_to "&bull; Terms of Use & Privacy Policy", s
+    #footer
+      %p
+        Powered by&nbsp;
+        = link_to 'Audience1st', 'http://www.audience1st.com', :target => '_blank'
+        - unless (s = Option.privacy_policy_url).blank?
+          = link_to "&nbsp;&bull;&nbsp; Terms of Use & Privacy Policy".html_safe, s
+        \&nbsp;&bull;&nbsp;
+        = link_to Option.venue, Option.venue_homepage_url

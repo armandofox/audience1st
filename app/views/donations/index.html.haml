@@ -1,9 +1,8 @@
-.pageDiv
-  %h1
-    = if @params[:from] then "#{date_range(@params[:from],@params[:to])}: " end
-    #{@donations.total_entries} transactions, #{number_to_currency @total}
+%h1
+  = if @params[:from] then "#{date_range(@params[:from],@params[:to])}: " end
+  #{@donations.total_entries} transactions, #{number_to_currency @total}
 
-#pageDiv.pagination
+.pagination.mx-auto
   = will_paginate @donations, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
   - first,last,total = @donations.offset+1, @donations.offset+@donations.length, @donations.total_entries
   - if total > @donations.per_page
@@ -14,14 +13,14 @@
       = text_field_tag 'page', '', :size => 4
       = submit_tag 'Go'
 
-.pageDiv
+.container
   = form_tag donations_path, {:method => :get} do
     = render :partial => 'donation_search', :locals => {:params => @params}
     = submit_tag "Search", :class => 'btn btn-success'
     = submit_tag(@export_label, :class => 'btn btn-primary') unless @donations.empty?
     = link_to "Add/Edit Account Codes&hellip;".html_safe, account_codes_path, :class => 'btn btn-primary'
 
-.pageDiv
+.container
   - unless @donations.empty?
     %table#donations.hilite
       %thead

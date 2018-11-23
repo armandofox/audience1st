@@ -128,7 +128,7 @@ a.a1tooltip:hover span{
   width: 100%;
  }
 .pagination {
-  width: auto;
+    width: auto;
   margin: 0 auto; /* centered */
   display: block;
   /* self-clearing method: */ }

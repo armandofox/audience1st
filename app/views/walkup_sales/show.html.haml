@@ -6,7 +6,8 @@
       .card
         .card-header.text-center
           %h4 1. Select tickets & donation amount
-        .card-body= render :partial => 'walkup_sales_tickets'
+        .card-body
+          = render :partial => 'walkup_sales_tickets'
     .col-md-8#payment
       .card
         .card-header.text-center
