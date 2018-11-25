@@ -110,7 +110,7 @@ class Customer < ActiveRecord::Base
   def active_vouchers
     now = Time.current
     vouchers.
-      includes(:showdate).
+      includes(:showdate => :show).
       includes(:vouchertype => :valid_vouchers).
       select { |v| now <= Time.at_end_of_season(v.season) }
   end

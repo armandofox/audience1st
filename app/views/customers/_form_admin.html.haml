@@ -23,9 +23,3 @@
   %label{:for=>:dont_send_email}  
     %span.strong Do not
     email customer a confirmation of these changes
-
-  %p=button_tag "Extra Contact Info...", :id => 'extra'
-  = javascript_tag %q{$('#extra').click(function() { $("#contact").slideToggle()' }) }
-
-  #contact{:style => "display: none;"}
-    = render :partial => 'contact', :locals => {:customer => @customer}

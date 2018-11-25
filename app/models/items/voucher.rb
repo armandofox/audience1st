@@ -217,7 +217,7 @@ class Voucher < Item
   end
 
   def redeemable_showdates(ignore_cutoff = false)
-    valid_vouchers = vouchertype.valid_vouchers.for_shows.sort_by(&:thedate)
+    valid_vouchers = vouchertype.valid_vouchers.includes(:showdate).order('showdates.thedate').for_shows
     if ignore_cutoff
       valid_vouchers
     else
