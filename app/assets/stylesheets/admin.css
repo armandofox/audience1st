@@ -9,6 +9,8 @@ body.maintenance {
   background-color: red;
 }
 
+.hidden { display: none; }
+
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
