@@ -1,3 +1,4 @@
+= themed
 = render :partial => 'store/check_javascript'
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
@@ -28,7 +29,10 @@
 
       .form-group.form-row  
         %label.col-form-label.text-right.col-sm-4{:for => :donation} Additional tax-deductible donation
-        = text_field_tag 'donation', '', :size => 5, :class => 'itemQty form-control form-control-sm col-sm-2'
+        .input-group
+          = text_field_tag 'donation', '', :size => 5, :class => 'itemQty form-control form-control-sm'
+          .input-group-append
+            %span.input-group-text.form-control-sm .00
         .col-sm-6
 
       .form-group.form-row#orderTotal

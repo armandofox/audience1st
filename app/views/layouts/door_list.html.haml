@@ -1,0 +1,12 @@
+!!! 5
+%html
+  %head
+    %title Door List: #{@showdate.printable_name}
+    = bootstrap_stylesheet_link_tag
+    = stylesheet_link_tag :application, :media => 'all'
+    = venue_stylesheet_link_tag
+  %body#door_list{:class => ('maintenance' if @gMaintMode)}
+    = yield
+
+
+

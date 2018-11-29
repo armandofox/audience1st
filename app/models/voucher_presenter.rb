@@ -11,7 +11,7 @@ class VoucherPresenter
   # VoucherPresenter objects.
   #
   require 'set'
-  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist, :redeemable_showdates
+  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist
   # Constructor takes a set of vouchers that should be part of a group, and constructs the
   # presentation logic for them.  It's an error for the provided vouchers not to "belong together"
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
@@ -20,6 +20,7 @@ class VoucherPresenter
     @vouchers = vouchers
     raise InvalidGroupError.new("Vouchers don't belong together") unless vouchers_belong_together
     first = @vouchers[0]
+    @ignore_cutoff = ignore_cutoff
     @reserved = first.reserved?
     @group_id = first.id
     @size = @vouchers.length
@@ -27,7 +28,10 @@ class VoucherPresenter
     @name = @vouchertype.name
     @showdate = first.showdate
     @voucherlist = @vouchers.map { |v| v.id }.join(',')
-    @redeemable_showdates = if first.reservable? then first.redeemable_showdates(ignore_cutoff) else [] end
+  end
+
+  def redeemable_showdates
+    @redeemable_showdates ||= if @vouchers[0].reservable? then @vouchers[0].redeemable_showdates(@ignore_cutoff) else [] end
   end
 
   def cancelable_by(user)

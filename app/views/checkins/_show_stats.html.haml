@@ -1,38 +1,33 @@
-#show_stats
-  %table#showdate_info
-    %tr
-      %td.header
+#show_stats.a1-text-large.card.m-3
+  .card-body
+    .row
+      .col-md-3.text-right
         = popup_help_for 'checkin_house_capacity'
-        = link_to 'True Cap:', edit_show_path(showdate.show)
-      %td.value
-        %span#cap= showdate.house_capacity
-      %td
-      %td
-    %tr
-      %td.header Advance sales:
-      %td.value
-        %span#advance_sales{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
-      %td
-        ( Checked in:
-        %span#checked_in= showdate.checked_in
-      %td
-        Waiting for:
-        %span#waiting_for= showdate.waiting_for
-        )
-    %tr 
-      %td.header= link_to 'Walkup sales:', walkup_sale_path(showdate)
-      %td.value
-        %span#walkup_sales= showdate.compute_walkup_sales
-      %td
-      %td
-    %tr
-      %td.header Available:
-      %td.value
-        - if showdate.really_sold_out?
-          %span#available.strong 0
-        - else
-          %span#available.highlighted= showdate.house_capacity - showdate.compute_total_sales
-      %td
-      %td
-
-.clear
+        True Cap:
+      .col-md-1= showdate.house_capacity
+      .col-md-2.text-right Sales cutoff:
+      .col-md-1= showdate.max_sales
+      .col-md-2.text-right Available:
+      - if showdate.really_sold_out?
+        .col-md-1.text-white.bg-danger 0
+      - else
+        .col-md-1.text-white.bg-success= showdate.house_capacity - showdate.compute_total_sales
+      .col-md-2
+    .row
+      .col-md-3.text-right Advance sales:
+      .col-md-1{:class => ('strong' if showdate.really_sold_out?)}= showdate.compute_advance_sales
+      .col-md-2.text-right Checked in:
+      .col-md-1= showdate.checked_in
+      .col-md-2.text-right Waiting for:
+      .col-md-1= showdate.waiting_for
+      .col-md-2
+    .row
+      .col-md-3.text-right Walkup sales:
+      .col-md-1= showdate.compute_walkup_sales
+      .col-md-2.text-center
+        - if controller.controller_name =~ /walkup/
+          = link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'
+        - else 
+          = link_to 'Walkup Sales', walkup_sale_path(showdate), :class => 'btn btn-primary d-inline-block'
+      .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary'
+      .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary', :target => '_blank'

@@ -1,5 +1,5 @@
 .browsable[voucher]
-  %tr{:class => cycle(:even,:odd)}
+  %tr
     %td= check_box_tag "vouchers[]", voucher.id, false, :id => "voucher_#{voucher.id}"
     %td= voucher.id
     %td= link_to_unless voucher.order_id.nil?,  voucher.order_id, order_path(voucher.order_id)

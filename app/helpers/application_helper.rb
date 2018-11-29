@@ -11,6 +11,18 @@ module ApplicationHelper
     end
   end
 
+  def bootstrap_stylesheet_link_tag
+    content_tag(:link, nil, {rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"})
+  end
+
+  def venue_stylesheet_link_tag
+    content_tag(:link, nil, {rel: "stylesheet", href: Option.stylesheet_url, :media => 'all'})
+  end
+
+  def themed
+    javascript_tag %Q{$(function() { $('body').addClass('themed'); });}
+  end
+  
   def display_customer_actions?
     ! @customer.try(:new_record?) &&
       controller.controller_name == 'customers' &&

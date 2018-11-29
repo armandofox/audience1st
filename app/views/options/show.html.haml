@@ -3,7 +3,7 @@
 %fieldset#test_email
   %legend Test Sending Confirmation Emails
   = form_tag email_test_options_path do
-    %label.no_float Send a test email to: 
+    %label Send a test email to: 
     = text_field_tag 'email', 'you@example.com', :size => 20
     = submit_tag 'Send'
 

@@ -6,7 +6,7 @@ module CustomerLoginHelper
     fill_in 'password', :with => @password
     click_button 'Login'
     page.should have_content("Log Out #{@customer.full_name}")
-    page.should have_css('#customer_quick_search') if @is_admin
+    page.should have_css('.adminField') if @is_admin
   end
 end
 World(CustomerLoginHelper)

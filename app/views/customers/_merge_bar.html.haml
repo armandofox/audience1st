@@ -1,7 +1,0 @@
-%p
-  Select customers to:
-  = popup_help_for 'merge_customers'
-  = submit_tag 'Manual Merge&hellip;'.html_safe, :class => 'btn btn-primary'
-  = submit_tag 'Auto Merge', :class => 'btn btn-warning'
-  = submit_tag 'Forget', :class => 'btn btn-danger', :onclick => "return confirm('#{escape_javascript t(%q{customers.confirm_delete})}')"
-  = popup_help_for 'delete_customers'

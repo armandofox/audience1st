@@ -1,14 +1,13 @@
-.container#welcome_header
-  .row
-    .col.pull-left
-      - if !current_user.has_ever_logged_in?
-        = link_to 'Cancel/Start Over', logout_path, :class =>  'btn btn-secondary'
-      - else
-        .form-group
-          = link_to 'Log Out', logout_path, :class => 'btn btn-secondary'
-          %label.col-form-label= current_user.full_name
-    .col.pull-right
-      - if @gAdminDisplay
-        = link_to 'View as Patron', temporarily_disable_admin_session_path, :class => 'btn btn-outline-danger float-right'
-      - elsif current_user().is_staff
-        = link_to 'View as Admin', reenable_admin_session_path, :class => 'btn btn-outline-danger float-right'
+.row.bg-light
+  .col.pull-left
+    - if !current_user.has_ever_logged_in?
+      = link_to 'Cancel/Start Over', logout_path, :class =>  'btn btn-secondary'
+    - else
+      .form-group
+        = link_to 'Log Out', logout_path, :class => 'btn btn-secondary'
+        %label.col-form-label= current_user.full_name
+  .col.pull-right
+    - if @gAdminDisplay
+      = link_to 'View as Patron', temporarily_disable_admin_session_path, :class => 'btn btn-outline-danger float-right'
+    - elsif current_user().is_staff
+      = link_to 'View as Admin', reenable_admin_session_path, :class => 'btn btn-outline-danger float-right'
