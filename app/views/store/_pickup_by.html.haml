@@ -2,8 +2,8 @@
   .container#someone_else
     .form-row
       - if @cart_contains_class_order
-        .col-xs-8 Who is attending the class?
-        .col-xs-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "Enrollee's name"
+        .col-md-8 Who is attending the class?
+        .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "Enrollee's name"
       - else
-        .col-xs-8 Is someone <strong>other than the purchaser</strong> picking up the tickets?
-        .col-xs-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "If yes, attendee's name"
+        .col-md-8 Is someone <strong>other than the purchaser</strong> picking up the tickets?
+        .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "If yes, attendee's name"

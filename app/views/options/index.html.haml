@@ -12,18 +12,18 @@
         privacy_policy_url |
         ) |
     .form-row
-      .col-xs-4.text-right
+      .col-md-4.text-right
         Season Start Date
         = option_description_for(:season_start_month)   
-      .col-xs-8
+      .col-md-8
         = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
         = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
         
   .container
     %h1 Accepting Donations and Retail Sales Online
     .form-row
-      .col-xs-4
-      .col-xs-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+      .col-md-4
+      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
 
     = render_collection_of_options f, %w( |
       default_retail_account_code |
@@ -83,8 +83,8 @@
   .container
     %h1 Order Service Charges
     .form-row
-      .col-xs-4
-      .col-xs-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+      .col-md-4
+      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
 
     = render_collection_of_options f, %w( |
       subscription_order_service_charge |
