@@ -9,6 +9,11 @@ body.maintenance {
   background-color: red;
 }
 
+.customer-vouchers-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
