@@ -1,30 +1,27 @@
 - if (@gAdminDisplay || group.cancelable_by(@customer))
-  = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post do
-    .row.border-bottom.border-secondary
-      = hidden_field_tag 'voucher_ids', group.voucherlist
-      .col-md-1.text-center= menu_or_static_text('cancelnumber', group.size)
-      .col-md-3.text-center= group.name
-      .col-md-4.text-center
-        - if local_assigns[:is_subscriber_voucher]
-          = group.showdate.printable_date
-        - else
-          %span.showName= group.showdate.name
-          %br
-          %span.showDate= group.showdate.printable_date_with_description
-      .col-md-2.text-center 
-        = submit_tag 'Cancel', |
-          :disable_with => 'Cancelling...', |
-          :class => 'btn btn-danger', |
-          :confirm => t('reservations.confirm_cancellation') |
+  = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline' do
+    = hidden_field_tag 'voucher_ids', group.voucherlist
+    .col-md-1.text-center= menu_or_static_text('cancelnumber', group.size)
+    .col-md-3.text-center= group.name
+    .col-md-4.text-center
+      - if local_assigns[:is_subscriber_voucher]
+        = group.showdate.printable_date
+      - else
+        %span.showName= group.showdate.name
+        %br
+        %span.showDate= group.showdate.printable_date_with_description
+    .col-md-2.text-center 
+      = submit_tag 'Cancel', |
+        :disable_with => 'Cancelling...', |
+        :class => 'btn btn-danger', |
+        :confirm => t('reservations.confirm_cancellation') |
   - if @gAdminDisplay
-    .col-md-2.adminField
-      = render :partial => 'update_voucher_comments', :locals => {:group => group}
+    = render :partial => 'update_voucher_comments', :locals => {:group => group}
   - else
     .col-md-2
 - else
-  .row.border-bottom.border-secondary
-    .col-md-1.text-center= group.size
-    .col-md-3.text-center= group.name
-    .col-md-4.text-center= group.showdate.printable_date
-    .col-md-2
-    .col-md-2
+  .col-md-1.text-center= group.size
+  .col-md-3.text-center= group.name
+  .col-md-4.text-center= group.showdate.printable_date
+  .col-md-2
+  .col-md-2
