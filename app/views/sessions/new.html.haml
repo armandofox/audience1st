@@ -4,7 +4,7 @@
 .container
   = form_tag session_path do
     .row
-      .col-md-8.border.rounded
+      .col-xs-8.border.rounded
         %h3.text-center Subscribers and Returning Customers
         .row
           .col-4.text-right
@@ -34,7 +34,7 @@
           .col-2
 
                             
-      .col-md-4.border.rounded
+      .col-xs-4.border.rounded
         %h3.text-center New Customers
         .row.justify-content-center= link_to "Create Account", new_customer_path, :class => 'btn btn-primary'
         - if @gCheckoutInProgress  &&  Option.allow_guest_checkout  &&  @cart.ok_for_guest_checkout?

@@ -2,21 +2,21 @@
   %legend Other Contact Info
   = fields_for @customer do |f|
     .form-row
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label{:for=>:customer_eve_phone} Alternate phone
-      .col-md-4
+      .col-xs-4
         = f.text_field :eve_phone, :maxlength => 16, :class => 'form-control form-control-sm'
-      .col-md-1.text-right
+      .col-xs-1.text-right
         = f.check_box :e_blacklist
-      .col-md-5  
+      .col-xs-5  
         %label.col-form-label{:for => :customer_e_blacklist} Please don't send email about upcoming events.
     .form-row
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label{:for => :customer_birthday} Birthday (optional)
-      .col-md-4
+      .col-xs-4
         = date_select 'customer', 'birthday', :include_blank => true, :order => [:month, :day], :class => 'form-control form-control-sm'
-      .col-md-1.text-right
+      .col-xs-1.text-right
         = f.check_box :blacklist
-      .col-md-5
+      .col-xs-5
         %label.col-form-label{:for=>:customer_blacklist} Please don't send announcements via US Mail
 

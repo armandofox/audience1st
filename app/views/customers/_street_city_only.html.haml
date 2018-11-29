@@ -3,33 +3,33 @@
   %p.text-center.bg-secondary.text-light  Fields <span class="strong">like this</span> are required.
   = fields_for customer do |f|
     .form-row
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label.strong{:for => 'customer_first_name'} First name
-      .col-md-4
+      .col-xs-4
         = f.text_field :first_name,  :class => 'form-control form-control-sm'
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label.strong{:for => 'customer_last_name'} Last name
-      .col-md-4
+      .col-xs-4
         = f.text_field :last_name,  :class => 'form-control form-control-sm'
     .form-row
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label.strong{:for => 'customer_street'} Street
-      .col-md-4
+      .col-xs-4
         = f.text_field :street, :class => 'form-control form-control-sm'
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label.strong{:for => 'customer_city'} City
-      .col-md-4
+      .col-xs-4
         = f.text_field :city, :class => 'form-control form-control-sm'
     .form-row
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label.strong{:for => 'customer_state'} State
-      .col-md-1
+      .col-xs-1
         = f.text_field :state, {:size => 2,:class => 'form-control form-control-sm'}
-      .col-md-1.text-right
+      .col-xs-1.text-right
         %label.col-form-label.strong{:for => 'customer_zip'} Zip
-      .col-md-2
+      .col-xs-2
         = f.text_field :zip, {:size => 10, :class => 'form-control form-control-sm'}
-      .col-md-2.text-right
+      .col-xs-2.text-right
         %label.col-form-label{:for=>:customer_day_phone} Phone
-      .col-md-4
+      .col-xs-4
         = f.text_field :day_phone, {:class => 'form-control form-control-sm'}

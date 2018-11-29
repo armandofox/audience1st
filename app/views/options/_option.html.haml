@@ -1,9 +1,9 @@
 .row
-  .col-md-4.text-right
+  .col-xs-4.text-right
     - attr_name = attrib.gsub(/^encrypted_/,'')
     %label.col-form-label{:for => "option_#{attr_name}"}= humanize(attr_name).capitalize_each_word
     = option_description_for(attr_name)
-  .col-md-8
+  .col-xs-8
     - if attrib.to_s =~ /account_code/i
       = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i), {}, {:class => 'form-control'}
     - else 
