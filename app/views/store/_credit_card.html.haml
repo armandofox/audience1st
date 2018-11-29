@@ -5,26 +5,29 @@
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
   .form-row
-    .col-xs-2.text-right
+    .col-md-2.text-right
       %label.col-form-label{:for => 'credit_card_name'} Name
-    .col-xs-3
+    .col-md-3
       = text_field_tag 'credit_card_name', local_assigns[:name] || '', :autocomplete => 'off', :class => 'form-control form-control-sm unsubmitted'
-    .col-xs-2.text-right
+    .col-md-2.text-right
       %label.col-form-label{:for => 'credit_card_number'} Number
-    .col-xs-3
+    .col-md-3
       = text_field_tag 'credit_card_number', '', :maxlength => 16, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
-    .col-xs-2
+    .col-md-2
   .form-row
-    .col-xs-2.text-right
+    .col-md-2.text-right
       %label.col-form-label Expiration
-    .col-xs-3.form-inline
-      = text_field_tag 'credit_card_month', '', :size => 4, :maxlength => 2, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
-      &nbsp;/&nbsp;
-      = text_field_tag 'credit_card_year', '', :size => 4, :maxlength => 4, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
-    .col-xs-2.text-right
+    .col-md-3
+      .row.mx-auto.px-auto
+        .form-group
+          = select_tag 'credit_card_month', options_for_select(1..12), :class => 'form-control form-control-sm col-auto unsubmitted'
+        .form-group
+          %span.col-auto &nbsp;/&nbsp;
+        .form-group
+          = select_tag 'credit_card_year', options_for_select(Time.current.year..Time.current.year+10), :class => 'form-control form-control-sm col-auto unsubmitted'
+    .col-md-2.text-right
       %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
-    .col-xs-2
+    .col-md-2
       = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control form-control-sm unsubmitted'
-      = popup_help_for 'credit_card_verification_value'
-    .col-xs-3
+    .col-md-3
       = image_tag 'credit_card_logos_horizontal.png'

@@ -1,15 +1,9 @@
 #retail_purchase
-  .form-row
-    .col-xs-4.text-right
-      %label.col-form-label{:for => :retail} Retail purchase amount
-    .col-xs-1
-      = text_field_tag 'retail', '', :size => 8, :class => 'itemQty form-control form-control-sm'
-    .col-xs-3.text-right    
-      %label.col-form-label{:for => 'retail_account_code_id'} Account Code
-    .col-xs-4
-      = select_tag 'retail_account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, Option.default_retail_account_code), {:class => 'form-control form-control-sm'}
-  .form-row
-    .col-xs-4.text-right
-      %label.col-form-label{:for => :retail_comments} Description of retail purchase
-    .col-xs-8
-      = text_field_tag 'retail_comments', '', :class => 'form-control form-control-sm'
+  .form-group.form-row
+    %label.col-form-label.text-right.col-sm-4{:for => :retail} Retail purchase amount
+    = text_field_tag 'retail', '', :size => 8, :class => 'itemQty form-control form-control-sm col-sm-1'
+    %label.col-form-label.text-right.col-sm-3{:for => 'retail_account_code_id'} Account Code
+    = select_tag 'retail_account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, Option.default_retail_account_code), {:class => 'form-control form-control-sm col-sm-4'}
+  .form-group.form-row
+    %label.col-form-label.text-right.col-sm-4{:for => :retail_comments} Description of retail purchase
+    = text_field_tag 'retail_comments', '', :class => 'form-control form-control-sm col-sm-8'

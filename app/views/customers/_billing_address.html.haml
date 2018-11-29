@@ -4,39 +4,30 @@
   %p.text-center.bg-secondary.text-light  Fields <span class="strong">like this</span> are required.
   = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
     .form-row
-      .col-xs-2.text-right
-        %label.strong{:for => 'customer_first_name'} First name
-      .col-xs-4
+      .form-group.col-md-4
+        %label.col-form-label.strong{:for => 'customer_first_name'} First name
         = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm'
-      .col.md-2.text-right
-        %label.strong{:for => 'customer_last_name'} Last name
-      .col-xs-4
+      .form-group.col-md-4
+        %label.col-form-label.strong{:for => 'customer_last_name'} Last name
         = f.text_field :last_name, :size => 16, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm'
-    .form-row
-      .col-xs-2.text-right
-        %label.strong{:for => 'customer_street'} Street
-      .col-xs-4
-        = f.text_field :street, :readonly => disabled, :class => 'form-control form-control-sm'
-      .col.md-2.text-right
-        %label.strong{:for => 'customer_city'} City
-      .col-xs-4              
-        = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled, :class => 'form-control form-control-sm'
-    .form-row
-      .col-xs-2.text-right
-        %label.no_float.strong{:for => 'customer_state'} State
-      .col-xs-1
-        = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled, :class => 'form-control form-control-sm'}
-      .col-xs-1.text-right
-        %label.no_float.strong{:for => 'customer_zip'} Zip
-      .col-xs-2
-        = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled, :class => 'form-control form-control-sm'}
-      .col-xs-2.text-right
-        %label{:for=>:customer_day_phone} Preferred phone
-      .col-xs-4
+      .form-group.col-md-4
+        %label.col-form-label{:for=>:customer_day_phone} Preferred phone
         = f.text_field :day_phone, {:size => 16, :maxlength => 16, :class => 'form-control form-control-sm'}
     .form-row
-      .col-xs-2.text-right
-        %label.strong{:for=>:customer_email} Email
-      .col-xs-4
+      .form-group..col-md-6
+        %label.col-form-label.strong{:for=>:customer_email} Email
         = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm' }
-      .col-xs-6
+    .form-row
+      .form-group.col-md-4
+        %label.strong{:for => 'customer_street'} Street
+        = f.text_field :street, :readonly => disabled, :class => 'form-control form-control-sm'
+      .form-group.col-md-4
+        %label.strong{:for => 'customer_city'} City
+        = f.text_field :city, :size => 16, :maxlength => 32, :readonly => disabled, :class => 'form-control form-control-sm'
+      .form-group.col-md-1
+        %label.strong{:for => 'customer_state'} State
+        = f.text_field :state, {:size => 2, :maxlength => 2, :readonly => disabled, :class => 'form-control form-control-sm'}
+      .form-group.col-md-2
+        %label.strong{:for => 'customer_zip'} Zip
+        = f.text_field :zip, {:size => 10, :maxlength => 10, :readonly => disabled, :class => 'form-control form-control-sm'}
+
