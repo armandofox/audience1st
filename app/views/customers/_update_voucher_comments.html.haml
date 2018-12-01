@@ -6,4 +6,4 @@
     - comment = multiple_voucher_comments(group.vouchers)
     .input-group
       = text_field_tag 'comments', comment, :id => "comments_#{gid}", :class => 'form-control form-control-sm'
-      = submit_tag '&#x2714;'.html_safe, :id => svid, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'
+      = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => svid, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'

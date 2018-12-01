@@ -17,7 +17,7 @@ module ShowdatesHelper
         (content_tag('span', :class => 'hilite') do
           check_box_tag(prefix, idx, false,
             :name => "#{prefix}[]", :id => "#{prefix}_#{idx}") +
-            content_tag('label', day, :for => "#{prefix}_#{idx}", :class => 'no_float') 
+            content_tag('label', day, :for => "#{prefix}_#{idx}") 
         end)
     end
     tag.html_safe

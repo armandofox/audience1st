@@ -1,4 +1,4 @@
-#customer_list_header.pagination
+.pagination
   %h1.text-center= @page_title
   = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
   = form_tag @list_action, :method => :get do

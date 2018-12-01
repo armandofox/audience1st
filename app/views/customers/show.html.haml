@@ -12,7 +12,10 @@
         %td.text-center Show
         %td.text-center Your Reservation
         %td
-        %td
+        - if @gAdminDisplay
+          %td.adminField Staff Comments
+        - else
+          %td
     
     %tbody
       - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, include_all_showdates).each do |group|
@@ -33,7 +36,10 @@
         %td.text-center Type
         %td.text-center Your Reservation
         %td
-        %td
+        - if @gAdminDisplay
+          %td.adminField Staff Comments
+        - else
+          %td
     %tbody
       - VoucherPresenter.groups_from_vouchers(@other_vouchers, include_all_showdates).each do |group|
         %tr.border-bottom.border-secondary[group.vouchers.first]

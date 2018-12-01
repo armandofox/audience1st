@@ -10,7 +10,7 @@ body.maintenance {
 }
 
 .customer-vouchers-table {
-    width: 100%;
+    width: 90%;
     border-collapse: collapse;
 }
 
@@ -24,35 +24,6 @@ body.maintenance {
 .a1-text-medium {
     font-size: 1.25rem;
 }
-
-/* 
- * Customer name autocompletion popup
- * Don't modify these unless you know
- * what you're doing
- */
-div.auto_complete {
-  width: 350px;
-  background: #fff; }
-
-div.auto_complete ul {
-  border: 1px solid #888;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  list-style-type: none; }
-
-div.auto_complete ul li {
-  margin: 0;
-  padding: 3px; }
-
-div.auto_complete ul li.selected {
-  background-color: #ffb; }
-
-div.auto_complete ul strong.highlight {
-  color: #800;
-  margin: 0;
-  padding: 0; }
-
 
 /* General tabular styles */
 /* tables still need 'cellspacing="0"' in the markup */
@@ -83,12 +54,6 @@ td {
 table.hilite tr:hover {
 	background-color: #fcfe69;
 }
-
-.no_float {
-  float: none;
-  width: 100%;
-}
-
 
 .admin {
   background-color: #eff19e;
@@ -127,11 +92,6 @@ a.a1tooltip:hover span{
 .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
     
 /* Pagination of customer list */
-#customer_list_header { 
-  text-align: center;
-  padding: 10px;
-  width: 100%;
- }
 .pagination {
     width: auto;
   margin: 0 auto; /* centered */
@@ -232,7 +192,7 @@ span.tooltip:hover span { /* will display just on :hover state*/
 }
 
 /* Inline form buttons */
-.inline, .button-to, .button-to div {
+.inline {
    display: inline;
 }
 
@@ -437,40 +397,3 @@ div.show .showSalesRevenue {
 
 /* Don't underline links in printed door list */
 @media print { #door_list a { text-decoration: none; color: black; } }
-
-/*
- *  Importing
- */
- 
-table.import {
-    height: 2ex;
-}
-table.import td {
-	border-width: 1px;
-	border-style: dotted;
-}
-
-#import_help div {
-    margin-left: 200px;
-    margin-right: 200px;
-    border: 2px solid grey;
-    padding: 2px 4px;
-}
-#import_help ul, #import_help ol {
-    list-style: square;
-    margin-left: 2em;
-}
-
-#donate {
-  margin: 0 0 20px 0;
-  padding: 10px 0;
-  background-color: #f6f6ed;
-}
-#donate_info {
-  margin: 0 auto 10px auto;
-  padding: 5px;
-  width: 400px;
-  background-color: #EEE;
-  color: black;
-  border: 1px solid black;
-}
