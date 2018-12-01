@@ -17,6 +17,9 @@ body.maintenance {
 
 /* General tabular styles */
 
+table {
+    font-size: 12pt;
+}
 /* easier to navigate if tabular rows hilited on hover */
 table.hilite tr {
 	padding: 2px 0;
