@@ -20,14 +20,14 @@
       %td 
         %label{:for => :advance_sales_cutoff} Advance sales stop
       %td
-        = text_field_tag 'advance_sales_cutoff', Option.advance_sales_cutoff, :size => 4
+        = text_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :size => 4
         minutes before curtain
         = popup_help_for :advance_sales_cutoff
     %tr
       %td 
         %label{:for => :max_sales} Max advance sales
       %td
-        = text_field_tag 'max_sales', '', :size => 5
+        = text_field_tag 'max_sales', @max_sales_default, :size => 5
         = popup_help_for(:max_advance_sales)
         = hidden_field_tag "show_id", @show.id
 

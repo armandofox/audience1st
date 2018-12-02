@@ -46,7 +46,7 @@ class Voucher < Item
     references(:customers, :orders).
     where.not(:orders => {:sold_on => nil}).
     where(:fulfillment_needed => true).
-    order('orders.sold_on,customers.last_name')
+    order('customers.last_name,orders.sold_on')
   }
 
   # scopes that hide implementation of category
