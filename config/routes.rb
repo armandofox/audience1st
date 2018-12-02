@@ -64,7 +64,7 @@ Rails.application.routes.draw do
     get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer', :as => 'customer_autocomplete'
     get '/ajax/customer_lookup' => 'customers#lookup', :as => 'customer_lookup'
 
-    get '/ajax/mark_fulfilled' => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
+    post '/ajax/mark_fulfilled' => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
     get '/ajax/create_sublist' => 'reports#create_sublist', :as => 'create_sublist'
 
     # shows

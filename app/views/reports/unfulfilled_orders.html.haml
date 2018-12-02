@@ -2,7 +2,7 @@
 
 = form_tag mark_fulfilled_path, :id=>'uf' do
   = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'btn btn-primary'
-  = submit_tag 'Mark Checked Orders as Fulfilled'
+  = submit_tag 'Mark Checked Orders as Fulfilled', :class => 'btn btn-success'
 
   %table.hilite.ordersTable
     %tr{:class=>cycle(:even,:odd)}
