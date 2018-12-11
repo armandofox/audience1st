@@ -1,26 +1,49 @@
+#  In general, to reconstitute the fake database, run tasks in this order:
+#    TENANT=a1-staging rake client:provision  (if a1-staging database/schema not set up)
+#    rake staging:reset 
+#    rake staging:fake_customers         - creates customers
+#    rake staging:fake_season            - creates shows & showdates
+#    rake staging:fake_vouchers          - creates & makes 2 kinds of valid revenue tix for shows
+#    rake staging:fake_subscriptions     - creates a subscription voucher w/1 tx per show
+
+
 module StagingHelper
-  TENANT = 'sandbox'
-  def abort_if_production!
+  TENANT = 'a1-staging'
+  SHOWS = ['Company', 'Fiddler on the Roof', 'West Side Story']
+  CITIES = ['Oakland', 'San Francisco', 'Alameda', 'Hayward', 'San Leandro', 'Berkeley',
+    'Daly City', 'Castro Valley', 'Pleasanton', 'Walnut Creek', 'Concord', 'Antioch', 'Pittsburg',
+    'Union City', 'Fremont', 'Albany', 'El Cerrito', 'Dublin', 'Livermore', 'Newark']
+  def self.abort_if_production!
     abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if
       Rails.env.production? && ENV['CLOBBER_PRODUCTION'].blank?
   end
-  def switch_to_staging!
+  def self.switch_to_staging!
     abort_if_production!
     Apartment::Tenant.switch! StagingHelper::TENANT
   end
 end
 
-namespace :staging do
+staging = namespace :staging do
+ 
+  desc "Re-create fake data in staging database (tenant '#{StagingHelper::TENANT}')"
+  task :reload => :environment do
+    staging['reset'].invoke     # truncate & re-seed DB
+    staging['fake_customers'].invoke # create fake customers
+    staging['fake_season'].invoke    # create 3 shows with 3 weekend runs each
+    staging['fake_vouchers'].invoke  # create 2 revenue vouchertypes, make valid for all showdates
+    staging['fake_subscriptions'].invoke # create a sub with 1tx per show
+  end
 
-  tenant = 'sandbox'
-
-  desc "Reset fake data in staging database (tenant '#{tenant}')"
+  desc "Reset fake data in staging database (tenant '#{StagingHelper::TENANT}')"
   task :reset => :environment do
     StagingHelper.abort_if_production!
     Apartment::Tenant.drop(StagingHelper::TENANT) rescue nil
     Apartment::Tenant.create StagingHelper::TENANT
     StagingHelper.switch_to_staging!
     load File.join(Rails.root, 'db', 'seeds.rb')
+    Option.first.update_attributes!(
+      :venue => 'A1 Staging Theater',
+      :season_start_month => (1.month.ago).month)
   end
   desc "Populate database tenant '#{StagingHelper::TENANT}' with NUM_CUSTOMERS fake customers (default 100) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."
   task :fake_customers => :environment do
@@ -33,44 +56,85 @@ namespace :staging do
         :email => Faker::Internet.unique.safe_email,
         :password => 'pass',
         :street => Faker::Address.street_address,
-        :city => Faker::Address.city,
+        :city => StagingHelper::CITIES.sample,
         :state => 'CA', :zip => sprintf("94%03d", rand(999)))
     end
   end
 
-  desc "Populate tenant '#{tenant}' with a fake show opening on DATE (default: 1 week from now) with NUM_SHOWDATES performances (default 3) each having house capacity CAPACITY (default 50)"
-  task :fake_show => :environment do
-    Apartment::Tenant.switch! tenant
-    date = Time.zone.parse(ENV['DATE']) rescue 1.week.from_now.change(:hour => 20)
-    num_showdates = (ENV['NUM_SHOWDATES'] || '3').to_i
-    cap =           (ENV['CAPACITY']      || '50').to_i
-    show = FactoryBot::create(:show, :name => Faker::Show.play, :house_capacity => cap)
-    for i in 1..num_showdates do
-      FactoryBot::create(:showdate, :show => show, :thedate => date + i.days)
+  desc "Create 3 fake productions, each with 3-weekend (Fri/Sat/Sun) run, with first show opening on the first Friday of next month, each show's tickets going on sale 2 weeks before opening, two price points for each production, and a Subscription that includes all three."
+  task :fake_season => :environment do
+    StagingHelper::switch_to_staging!
+    range_start = Time.now.at_beginning_of_month + 1.month
+    StagingHelper::SHOWS.each_with_index do |show,index|
+      # every Fri, Sat, Sun at 8pm
+      showdates = DatetimeRange.new(
+        :start_date => range_start, :end_date => range_start + 25.days,
+        :hour => 20, :days => [5,6,0]).
+        dates
+      show = FactoryBot::create(:show,
+        :name => show,
+        :house_capacity => 50,
+        :opening_date => showdates.first,
+        :closing_date => showdates.last,
+        :listing_date => Time.current)
+      showdates.each do |date|
+        showdate = FactoryBot::create(:showdate,
+          :show => show,
+          :thedate => date,
+          :end_advance_sales => date - 3.hours)
+      end
+      range_start += 1.month
     end
   end
 
+  desc "Create two price points (General - $35 and Student/TBA - $30) and make those vouchertypes valid for all performances"
+  task :fake_vouchers => :environment do
+    StagingHelper::switch_to_staging!
+    price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'General').empty?
+    price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'Student/TBA').empty?
+    Showdate.all.each do |perf|
+      FactoryBot::create(:valid_voucher, :vouchertype => price1, :showdate => perf,
+        :end_sales => perf.thedate - 1.hour)
+      FactoryBot::create(:valid_voucher, :vouchertype => price2, :showdate => perf,
+        :end_sales => perf.thedate - 1.hour)
+    end
+  end
+  
+  desc "Create a subscription that includes 1 ticket to each of the season's fake shows (run the fake_season task first)"
+  task :fake_subscriptions => :environment do
+    StagingHelper::switch_to_staging!
+    sub_vouchers = StagingHelper::SHOWS.map do |show|
+      sub_voucher = FactoryBot::create(:vouchertype_included_in_bundle,
+        :name => "#{show} (subscriber)")
+      # make it valid for all perfs of that show
+      Show.find_by(:name => show).showdates.each do |date|
+        FactoryBot::create(:valid_voucher, :vouchertype => sub_voucher, :showdate => date,
+          :start_sales => Time.current.change(:minute => 0), :end_sales => date.thedate - 1.hour)
+      end
+      sub_voucher
+    end
+    FactoryBot::create(:bundle, :subscription => true,
+      :including => Hash[sub_vouchers.zip(Array.new(sub_vouchers.size) { 1 })])
+  end
+  
   namespace :sell do
 
-    desc "In tenant '#{tenant}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers"
+    desc "In tenant '#{StagingHelper::TENANT}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers, shows, and show dates"
     task :reset => :environment do
-      Apartment::Tenant.switch! tenant
+      StagingHelper::switch_to_staging!
       ValidVoucher.delete_all
       Vouchertype.delete_all
       Item.delete_all
       Order.delete_all
     end
 
-    desc "In tenant '#{tenant}', create 2 price points 'General' and 'Student/TBA', and sell every showdate to PERCENT capacity (default 50)"
+    desc "In tenant '#{StagingHelper::TENANT}', sell every showdate to PERCENT capacity (default 50) using a random mix of available vouchertypes for that showdate"
     task :revenue => :environment do
-      Apartment::Tenant.switch! tenant
+      StagingHelper::switch_to_staging!
       percent = (ENV['PERCENT'] || '50').to_i / 100.0
-      price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'General').empty?
-      price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'Student/TBA').empty?
       num_customers = Customer.count
       Showdate.all.each do |perf|
-        v1 = FactoryBot::create(:valid_voucher, :vouchertype => price1, :showdate => perf)
-        v2 = FactoryBot::create(:valid_voucher, :vouchertype => price2, :showdate => perf)
+        valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertype => {:category => :revenue})
         # sell percentage of tickets
         while perf.compute_total_sales < (percent * perf.house_capacity) do
           # pick a customer
@@ -78,7 +142,7 @@ namespace :staging do
           # pick a number of tickets, 1-4, skewed towards 1 and 2
           num_tix = [1,1,2,2,2,2,3,4,4].sample
           # pick which price point they'll use
-          valid_voucher = [v1,v2].sample
+          valid_voucher = valid_vouchers.sample
           # buy it
           o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
           o.add_tickets(valid_voucher, num_tix)
@@ -92,51 +156,4 @@ namespace :staging do
     end
 
   end
-  
-  desc "Given ENV[FILE] is a CSV with columns <last, first, street, phone, email>, repopulates development DB with fake data, skipping any superadmins."
-  task :fake_names => :environment do
-    abort "Only works for RAILS_ENV=development" unless Rails.env.development?
-    require 'string_extras'
-    require 'generator'
-    require 'csv'
-    csv = CSV::Reader.create(File.open(ENV['FILE'], 'r'))
-    custs = Customer.find(:all)
-    SyncEnumerator.new(custs, csv).each do |customer,row|
-      break unless customer
-      unless customer.role == 100 # skip admins
-        customer.update_attribute(:last_name, row[0].data)
-        customer.update_attribute(:first_name, row[1].data)
-        customer.update_attribute(:street, row[2].data) unless
-          customer.street.blank?
-        customer.update_attribute(:day_phone,row[3].data) unless
-          customer.day_phone.blank?
-        customer.update_attribute(:eve_phone, '')
-        unless customer.email.blank?
-          customer.update_attribute(:email, row[4].data)
-        end
-      end
-    end
-  end
-
-  desc "Given ENV[FILE] is a CSV with columns <last, first, street, phone, email>, creates ENV[NUM] fake customers in the database, all with password 'pass'"
-  task :populate_fake_names => :environment do
-    require 'string_extras'
-    require 'generator'
-    require 'csv'
-    i = ENV['NUM'].to_i
-    CSV::Reader.parse(File.open(ENV['FILE'], 'r')) do |row|
-      Customer.create!(:last_name => row[0].data,
-        :first_name => row[1].data,
-        :street => row[2].data,
-        :city => 'Berkeley',
-        :state => 'CA',
-        :zip => '94720',
-        :day_phone => row[3].data,
-        :password => 'pass',
-        :email => row[4].data)
-      i -= 1
-      break if i.zero?
-    end
-  end
-
 end

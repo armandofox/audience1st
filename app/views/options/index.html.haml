@@ -16,8 +16,9 @@
         Season Start Date
         = option_description_for(:season_start_month)   
       .col-md-8
-        = select_month Option.season_start_month, :prefix => 'option', :field_name => 'season_start_month'
-        = select_day   Option.season_start_day,   :prefix => 'option', :field_name => 'season_start_day'
+        - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
+        = select_month season_start, :prefix => 'option', :field_name => 'season_start_month'
+        = select_day   season_start, :prefix => 'option', :field_name => 'season_start_day'
         
   .container
     %h1 Accepting Donations and Retail Sales Online
