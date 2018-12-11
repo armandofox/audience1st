@@ -17,7 +17,7 @@ Scenario: add comment to revenue reservation
   | King Lear | Mar 1, 2010, 8pm |   1 |
   When I visit the home page for customer "Tom Foolery"
   And I fill in "comments" with "Will be late" within "#voucher_1"
-  And I press "&#x2714;" within "#voucher_1"
+  And I press "✔" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"
   Then the "comments" field within "#voucher_1" should contain "Will be late"
 
@@ -29,7 +29,7 @@ Scenario: add comment to subscriber reservation
   | King Lear | Mar 1, 2010, 8pm |   1 |
   When I visit the home page for customer "Tom Foolery"
   And I fill in "comments" with "Will be late" within "#voucher_1"
-  And I press "Save" within "#voucher_1"
+  And I press "✔" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"
   Then the "comments" field within "#voucher_1" should contain "Will be late"
     

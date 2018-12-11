@@ -33,6 +33,8 @@ staging = namespace :staging do
     staging['fake_vouchers'].invoke  # create 2 revenue vouchertypes, make valid for all showdates
     staging['fake_subscriptions'].invoke # create a sub with 1tx per show
     staging['reset_sales'].invoke
+    staging['sell_revenue'].invoke
+    staging['sell_subscriptions'].invoke
   end
 
   desc "Reset fake data in staging database (tenant '#{StagingHelper::TENANT}')"
