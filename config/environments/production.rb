@@ -1,6 +1,16 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 
+  # If the STAGING envariable is set, we are in a production environment but on a staging server so:
+  if ENV['STAGING']  
+    config.action_mailer.delivery_method = :test
+    config.log_level = :debug
+    config.consider_all_requests_local = true
+  else
+    config.log_level = :warn
+    config.consider_all_requests_local = false
+  end
+
   # The production environment is meant for finished, "live" apps.
   # Code is not reloaded between requests
   config.cache_classes = true
@@ -12,7 +22,6 @@ Rails.application.configure do
   config.eager_load = true
 
   # Full error reports are disabled and caching is turned on
-  config.consider_all_requests_local = false
   config.action_controller.perform_caching             = true
 
   # Enable Rack::Cache to put a simple HTTP cache in front of your application
@@ -36,9 +45,6 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
-
-  # See everything in the log (default is :info)
-  config.log_level = :warn
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :subdomain, :uuid ]
