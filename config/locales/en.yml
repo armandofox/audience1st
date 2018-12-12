@@ -10,6 +10,13 @@ en:
     special_seating_requests: >
       Any special seating/mobility needs?
 
+    cannot_be_changed: >
+      Some reservations could NOT be cancelled.  Please review your reservations below and contact a 
+      box office agent if you need assistance.
+
+    cancelled: >
+      %{canceled_num} of your reservations have been cancelled.
+
   store:
 
     credit_card_security_notice: >

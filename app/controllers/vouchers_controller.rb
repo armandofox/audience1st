@@ -169,38 +169,17 @@ class VouchersController < ApplicationController
   end
 
   def cancel_multiple
-    canceled_num = 0
+    vchs = Voucher.includes(:showdate).find(params[:voucher_ids].split(","))
+    return redirect_to(customer_path(@customer), :alert => t('reservations.cannot_be_changed'))unless
+      vchs.all? { |v| v.can_be_changed?(current_user) }
     num = params['cancelnumber'].to_i
-    vchs = Voucher.find(params[:voucher_ids].split(","))
-    old_showdate = vchs.first.showdate.clone
-    a = nil
-    flash[:notice] = ''
-    vchs.each do |v|
-      if v.can_be_changed?(current_user.id)
-        showdate = v.showdate
-        showdate_id = showdate.id
-        show_id = showdate.show.id
-        v.cancel(current_user.id)
-        a = Txn.add_audit_record(:txn_type => 'res_cancl',
-                                 :customer_id => @customer.id,
-                                 :logged_in_id => current_user.id,
-                                 :showdate_id => showdate_id,
-                                 :show_id => show_id,
-                                 :voucher_id => v.id)
-        num -= 1
-        canceled_num += 1
-        break if num == 0
-      else
-        flash[:alert] << "Some reservations could NOT be cancelled. " <<
-          "Please review your reservations below and contact a " <<
-          "box office agent if you need assistance."
-      end
+    result = Voucher.cancel_multiple!(vchs, num, current_user)
+    if result.nil?
+      redirect_to customer_path(@customer), :alert => t('reservations.cannot_be_changed')
+    else
+      redirect_to customer_path(@customer), :notice => t('reservations.cancelled', :canceled_num => num)
     end
-    flash[:notice] << "#{canceled_num} of your reservations have been cancelled. "
-    flash[:notice] << "Your cancellation confirmation number is #{a}. " unless a.nil?
-    email_confirmation(:cancel_reservation, @customer, old_showdate,
-                       vchs.length, a) unless current_user.is_boxoffice
-    redirect_to customer_path(@customer)
+    email_confirmation(:cancel_reservation, @customer, vchs.first.showdate, num, result) unless current_user.is_boxoffice
   end
 
 end

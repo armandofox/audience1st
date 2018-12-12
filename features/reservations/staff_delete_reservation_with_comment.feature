@@ -16,7 +16,7 @@ Scenario: delete tickets to some revenue reservations and keep comments
   | Hamlet    | Feb 1, 2010, 8pm |   10 |
   When I visit the home page for customer "Tom Foolery"
   And I fill in "comments" with "Will be late" within "#voucher_1"
-  And I press "Save" within "#voucher_1"
+  And I press "✔" within "#voucher_1"
   And I select "5" from "cancelnumber" within "#voucher_1"
   And I press "Cancel" within "#voucher_1"
   And I visit the home page for customer "Tom Foolery"

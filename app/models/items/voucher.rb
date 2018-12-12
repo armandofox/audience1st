@@ -22,6 +22,27 @@ class Voucher < Item
 
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
 
+  def self.cancel_multiple!(vchs, num, by_whom)
+    to_cancel = vchs[0,num]
+    to_leave_reserved = vchs[num + 1]
+    preserve_comments = to_cancel.map(&:comments)
+    Voucher.transaction do
+      if to_leave_reserved && !preserve_comments.blank?
+        preserve_comments.unshift(to_leave_reserved.comments.to_s)
+        to_leave_reserved.update_attributes!(:comments => preserve_comments.join('; '))
+      end
+      to_cancel.each do |v|
+        Txn.add_audit_record(:txn_type => 'res_cancl',
+          :customer_id => v.customer.id,
+          :logged_in_id => by_whom.id,
+          :showdate_id => v.showdate_id,
+          :show_id => v.showdate.show_id,
+          :voucher_id => v.id)
+        v.cancel(by_whom)
+      end
+    end
+  end
+
   def cancel!(by_whom)
     result = super # cancel the main voucher
     bundled_vouchers.each { |v| v.cancel!(by_whom) }
