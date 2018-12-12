@@ -92,15 +92,13 @@ class VouchersController < ApplicationController
   end
 
   def update_comment
-    vchs = Voucher.find(params[:voucher_ids].split(","))
-    vchs.each do |vchr|
-      vchr.update_attributes(:comments => params[:comments], :processed_by => current_user)
-    end
+    vchr = Voucher.find(params[:voucher_ids].split(",").first)
+    vchr.update_attributes(:comments => params[:comments], :processed_by => current_user)
     Txn.add_audit_record(:txn_type => 'edit',
       :customer_id => @customer.id,
-      :voucher_id => vchs.each.first.id,
+      :voucher_id => vchr.id,
       :comments => params[:comments],
-      :logged_in_id => current_user.id) unless vchs.length == 0
+      :logged_in_id => current_user.id)
     render :nothing => true
 
   end
