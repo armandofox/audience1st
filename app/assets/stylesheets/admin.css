@@ -14,6 +14,30 @@ body.maintenance {
     border-collapse: collapse;
 }
 
+/* Additional field qualifiers for errors etc */
+
+.validationError {
+  color: red;
+ }
+
+.highlighted {
+  background-color: #9f9;
+}
+
+.fieldWithErrors {
+  padding: 2px;
+  color: white;
+  background-color: red;
+  display: table;
+}
+
+.disabledField {
+	background-color: #e6e6e6;
+	border: none;
+	color: #000;
+	font-weight: bold;
+}
+
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/

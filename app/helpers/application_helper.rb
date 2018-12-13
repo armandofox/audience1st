@@ -16,7 +16,11 @@ module ApplicationHelper
   end
 
   def venue_stylesheet_link_tag
-    content_tag(:link, nil, {rel: "stylesheet", href: Option.stylesheet_url, :media => 'all'})
+    if (url = Option.stylesheet_url).blank?
+      # use local
+      url = '/assets/default.css'
+    end
+    content_tag(:link, nil, {rel: "stylesheet", href: url, :media => 'all'})
   end
 
   def themed

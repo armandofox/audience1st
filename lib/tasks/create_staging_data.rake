@@ -28,6 +28,7 @@ staging = namespace :staging do
   desc "Re-create fake data in staging database (tenant '#{StagingHelper::TENANT}')"
   task :initialize => :environment do
     staging['reset'].invoke     # truncate & re-seed DB
+    staging['api_keys'].invoke  # set correct API keys for staging/test mode
     staging['fake_customers'].invoke # create fake customers
     staging['fake_season'].invoke    # create 3 shows with 3 weekend runs each
     staging['fake_vouchers'].invoke  # create 2 revenue vouchertypes, make valid for all showdates
@@ -48,19 +49,31 @@ staging = namespace :staging do
       :venue => 'A1 Staging Theater',
       :season_start_month => (1.month.ago).month)
   end
+
+  desc "Set staging API keys STRIPE_SECRET, STRIPE_KEY, SENDGRID_KEY from Figaro"
+  task :api_keys => :environment do
+    StagingHelper::switch_to_staging!
+    Option.first.update_attributes!(
+      :stripe_key => Figaro.env.STRIPE_KEY!,
+      :stripe_secret => Figaro.env.STRIPE_SECRET!,
+      :sendgrid_key_value => Figaro.env.SENDGRID_KEY)
+  end
+
   desc "Populate database tenant '#{StagingHelper::TENANT}' with NUM_CUSTOMERS fake customers (default 100) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."
   task :fake_customers => :environment do
     StagingHelper.switch_to_staging!
     num_customers = (ENV['NUM_CUSTOMERS'] || '100').to_i
+    now = Time.current.at_beginning_of_day
     1.upto num_customers  do
-      FactoryBot::create(:customer,
+      Customer.create!(
         :first_name => Faker::Name.first_name,
         :last_name => Faker::Name.last_name,
         :email => Faker::Internet.unique.safe_email,
         :password => 'pass',
         :street => Faker::Address.street_address,
         :city => StagingHelper::CITIES.sample,
-        :state => 'CA', :zip => sprintf("94%03d", rand(999)))
+        :state => 'CA', :zip => sprintf("94%03d", rand(999))).
+        update_attribute(:last_login, now)
     end
   end
 
@@ -74,15 +87,15 @@ staging = namespace :staging do
         :start_date => range_start, :end_date => range_start + 25.days,
         :hour => 20, :days => [5,6,0]).
         dates
-      show = FactoryBot::create(:show,
+      show = Show.create!(
         :name => show,
         :house_capacity => 50,
         :opening_date => showdates.first,
         :closing_date => showdates.last,
         :listing_date => Time.current)
       showdates.each do |date|
-        showdate = FactoryBot::create(:showdate,
-          :show => show,
+        showdate = show.showdates.create!(
+          :max_sales => show.house_capacity,
           :thedate => date,
           :end_advance_sales => date - 3.hours)
       end
@@ -93,36 +106,40 @@ staging = namespace :staging do
   desc "Create two price points (General - $35 and Student/TBA - $30) and make those vouchertypes valid for all performances"
   task :fake_vouchers => :environment do
     StagingHelper::switch_to_staging!
-    price1 = FactoryBot::create(:revenue_vouchertype, :name => 'General', :price => 35, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'General').empty?
-    price2 = FactoryBot::create(:revenue_vouchertype, :name => 'Student/TBA', :price => 25, :walkup_sale_allowed => true) if Vouchertype.where(:name => 'Student/TBA').empty?
+    vtype_opts = {:account_code => AccountCode.default_account_code, :category => :revenue, :walkup_sale_allowed => true, :season => Time.this_season}
+    price1 = Vouchertype.create!({:name => 'General', :price => 35}.merge(vtype_opts)) if Vouchertype.where(:name => 'General').empty?
+    price2 = Vouchertype.create!({:name => 'Student/TBA', :price => 25}.merge(vtype_opts)) if Vouchertype.where(:name => 'Student/TBA').empty?
+    now = Time.current.at_beginning_of_day
     Showdate.all.each do |perf|
-      FactoryBot::create(:valid_voucher, :vouchertype => price1, :showdate => perf,
-        :end_sales => perf.thedate - 1.hour)
-      FactoryBot::create(:valid_voucher, :vouchertype => price2, :showdate => perf,
-        :end_sales => perf.thedate - 1.hour)
+      perf.valid_vouchers.create!(:vouchertype => price1, :start_sales => now, :end_sales => perf.thedate - 1.hour)
+      perf.valid_vouchers.create!(:vouchertype => price2, :start_sales => now, :end_sales => perf.thedate - 1.hour)
     end
   end
   
   desc "Create a subscription that includes 1 ticket to each of the season's fake shows (run the fake_season task first)"
   task :fake_subscriptions => :environment do
     StagingHelper::switch_to_staging!
-    now = Time.current.change(:minute => 0)
+    now = Time.current.at_beginning_of_day
     sub_vouchers = StagingHelper::SHOWS.map do |show|
-      sub_voucher = FactoryBot::create(:vouchertype_included_in_bundle,
+      sub_voucher = Vouchertype.create!(
+        :category => :subscriber,
+        :account_code => AccountCode.default_account_code,
+        :season => Time.this_season,
         :name => "#{show} (subscriber)")
       # make it valid for all perfs of that show
       Show.find_by(:name => show).showdates.each do |date|
-        FactoryBot::create(:valid_voucher, :vouchertype => sub_voucher, :showdate => date,
+        date.valid_vouchers.create!(:vouchertype => sub_voucher, 
           :start_sales => now, :end_sales => date.thedate - 1.hour)
       end
       sub_voucher
     end
-    sub = FactoryBot::create(:bundle,
+    sub = Vouchertype.create!(
+      :category => :bundle,
       :subscription => true,
       :name => 'Season Subscription',
-      :including => Hash[sub_vouchers.zip(Array.new(sub_vouchers.size) { 1 })])
-    ValidVoucher.create!(:vouchertype => sub,
-      :start_sales => now, :end_sales => 6.months.from_now)
+      :season => Time.this_season,
+      :included_vouchers => sub_vouchers.map(&:id).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
+    sub.valid_vouchers.create!(:start_sales => now, :end_sales => 6.months.from_now)
   end
   
   desc "In tenant '#{StagingHelper::TENANT}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers, shows, and show dates"
@@ -170,12 +187,10 @@ staging = namespace :staging do
         valid_voucher = valid_vouchers.sample
         # buy it
         o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
-        byebug if valid_voucher.nil?
         o.add_tickets(valid_voucher, num_tix)
         begin
           o.finalize!
         rescue RuntimeError,Order::NotReadyError => e
-          1 if byebug
           "Order errors: #{o.errors.full_messages}"
         end
       end
