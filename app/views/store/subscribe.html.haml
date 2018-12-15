@@ -3,7 +3,7 @@
 = sales_banners_for :subscription, @subscriber, @next_season_subscriber
 
 - if @nobody_really_logged_in
-  %p.subscription_msg2
+  %p.lead.text-center.bg-light.py-4
     %strong Already a subscriber?
     = link_to "Sign in to your account", login_path
     to manage your reservations and get your Subscriber benefits.

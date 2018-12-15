@@ -1,4 +1,4 @@
-#transfer_to.explain
+.alert.alert-info
   Check the vouchers you want to transfer, then at the bottom of this
   page, fill in the customer name to transfer them to.
   %ul
@@ -31,9 +31,9 @@
           %td= link_to v.order_id, order_path(v.order)
           %td= v.purchaser.full_name
 
-  #transfer.explain
-    %strong Transfer checked vouchers to customer
-    = text_field_tag 'customer', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
+  .form-row.border.m-2.bg-light
+    .col-md-4.text-right Transfer checked vouchers to customer:
+    .col-md-5= text_field_tag 'customer', '', :size => 20, :class => '_autocomplete form-control', 'data-resultfield' => 'cid', :placeholder => 'Type customer first or last name'
     = hidden_field_tag 'cid'
-    = submit_tag 'Transfer'
+    .col-md-2= submit_tag 'Transfer', :class => 'btn btn-danger'
 

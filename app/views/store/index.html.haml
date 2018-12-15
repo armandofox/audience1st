@@ -3,7 +3,7 @@
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
 - unless current_user
-  %p.subscription_msg2
+  %p.lead.text-center.bg-light.py-4
     %strong Already a subscriber?
     = link_to "Sign in to your account", login_path
     to manage your reservations and get your Subscriber benefits.
@@ -15,7 +15,7 @@
 
   #event_types.py-3.text-center
     - (Show::TYPES - [@what]).each do |type|
-      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-secondary'
+      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-primary'
 
   #ticket_menus
     = form_tag process_cart_path(@customer) do
