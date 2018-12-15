@@ -37,5 +37,5 @@
     - unless @cart.comments.blank?
       #cart_comments
         %p
-          %span.emphasis Special seating needs:
+          %span.alert.alert-warning Special seating needs:
           = h @cart.comments

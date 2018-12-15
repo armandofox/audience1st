@@ -108,7 +108,7 @@ class Vouchertype < ActiveRecord::Base
   @@offer_to = [["Box office use only", BOXOFFICE],
                 ["Subscribers may purchase",SUBSCRIBERS],
                 ["Anyone may purchase", ANYONE],
-                ["Sold by external reseller", EXTERNAL]]
+                ["Sold by external reseller", EXTERNAL]].freeze
 
   public
   

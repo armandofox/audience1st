@@ -48,7 +48,7 @@
       = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success', :onclick => 'A1.stripeSubmit()'
       = hidden_field_tag '_stripe_commit'
     - else
-      = submit_tag "Complete Comp Order"
+      = submit_tag "Complete Comp Order", :class => 'btn btn-success'
 
     = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'btn btn-secondary'} 
 

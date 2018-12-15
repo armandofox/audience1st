@@ -1,4 +1,4 @@
-h1 { 
+#doorList h1 { 
   border: 2px solid black;
   text-align: center;
   font: large;
@@ -7,7 +7,7 @@ h1 {
   margin: 0 10px;
 }
 
-h2 { 
+#doorList h2 { 
   font: medium;
   font-weight: bold; 
   text-align: center;

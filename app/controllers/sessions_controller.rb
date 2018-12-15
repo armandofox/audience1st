@@ -5,6 +5,7 @@ class SessionsController < ApplicationController
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
+      @display_guest_checkout = allow_guest_checkout?
     end
     @remember_me = true
     @email ||= params[:email]

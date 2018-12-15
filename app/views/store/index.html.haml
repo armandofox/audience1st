@@ -13,7 +13,7 @@
     = label_for_page_header @what
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
-  #event_types.text-center
+  #event_types.py-3.text-center
     - (Show::TYPES - [@what]).each do |type|
       = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-secondary'
 
@@ -29,7 +29,7 @@
 
       .form-group.form-row  
         %label.col-form-label.text-right.col-sm-4{:for => :donation} Additional tax-deductible donation
-        .input-group.col-md-1.col-sm-2
+        .input-group.col-md-1.col-xs-2
           = text_field_tag 'donation', '', :class => 'itemQty text-right form-control form-control-sm'
           .input-group-append
             %span.input-group-text.form-control-sm .00

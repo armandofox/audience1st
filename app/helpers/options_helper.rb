@@ -17,14 +17,15 @@ module OptionsHelper
   end
   
   def link_to_if_option(opt, text, opts={})
-    ((s = Option.send(opt)).blank? ?
+    (s = Option.send(opt)).blank? ?
       opts[:alt].to_s :
-      content_tag(:span, link_to(text, s, opts), :id => opt, :class => opt))
+      link_to(text, s, opts)
   end
 
   def link_to_if_option_text(opt, path, html_opts={})
-    if (s = Option.send(opt)).blank? then '' else
-      content_tag(:span, link_to(s, path, html_opts), :id => opt, :class => opt)
+    if (s = Option.send(opt)).blank?
+    then ''
+    else link_to(s, path, html_opts)
     end
   end
 

@@ -146,6 +146,7 @@ class CustomersController < ApplicationController
   # Regular user checking out as guest
   def guest_checkout
     @customer = Customer.new
+    redirect_to new_customer_path, :alert => t('store.guest_checkout_not_allowed') unless allow_guest_checkout?
   end
 
   # Admin adding customer to database

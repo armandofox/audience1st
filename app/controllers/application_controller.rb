@@ -52,10 +52,16 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  def allow_guest_checkout?
+    # Only if option is enabled, and a self-purchase is in progress for an order that is OK for guest checkout
+    !@gAdminDisplay               &&
+      @gCheckoutInProgress        &&
+      @gCart.ok_for_guest_checkout? &&
+      Option.allow_guest_checkout
+  end
 
   def reset_shopping           # called as a filter
-    @cart = find_cart
-    @cart.empty_cart!
+    @gCart.empty_cart!
     session.delete(:promo_code)
     session.delete(:cart)
     set_checkout_in_progress(false)

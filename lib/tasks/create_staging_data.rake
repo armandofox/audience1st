@@ -106,7 +106,12 @@ staging = namespace :staging do
   desc "Create two price points (General - $35 and Student/TBA - $30) and make those vouchertypes valid for all performances"
   task :fake_vouchers => :environment do
     StagingHelper::switch_to_staging!
-    vtype_opts = {:account_code => AccountCode.default_account_code, :category => :revenue, :walkup_sale_allowed => true, :season => Time.this_season}
+    vtype_opts = {
+      :account_code => AccountCode.default_account_code,
+      :category => :revenue,
+      :walkup_sale_allowed => true,
+      :offer_public => Vouchertype::ANYONE,
+      :season => Time.this_season}
     price1 = Vouchertype.create!({:name => 'General', :price => 35}.merge(vtype_opts)) if Vouchertype.where(:name => 'General').empty?
     price2 = Vouchertype.create!({:name => 'Student/TBA', :price => 25}.merge(vtype_opts)) if Vouchertype.where(:name => 'Student/TBA').empty?
     now = Time.current.at_beginning_of_day
@@ -125,6 +130,7 @@ staging = namespace :staging do
         :category => :subscriber,
         :account_code => AccountCode.default_account_code,
         :season => Time.this_season,
+        :offer_public => Vouchertype::ANYONE,
         :name => "#{show} (subscriber)")
       # make it valid for all perfs of that show
       Show.find_by(:name => show).showdates.each do |date|
