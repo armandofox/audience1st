@@ -50,6 +50,7 @@ class SessionsController < ApplicationController
 
   def destroy
     logout_killing_session!
+    reset_shopping
     redirect_to login_path, :notice => "You have been logged out."
   end
 
