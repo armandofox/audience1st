@@ -29,9 +29,14 @@ en:
     accessible_seating_description: >
       Please describe (wheelchair, no stairs, etc.)
 
-    guest_checkout_not_allowed:  >
-      Sorry, guest checkout is unavailable for this order.  Please
-      create an account to continue checkout.
+    errors:
+
+      guest_checkout_not_allowed:  >
+        Sorry, guest checkout is unavailable for this order.  Please
+        create an account to continue checkout.
+
+      empty_order: >
+        There are no items in your order.
 
   options:
 

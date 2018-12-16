@@ -190,6 +190,7 @@ class StoreController < ApplicationController
   # Beyond this point, purchaser is logged in (or admin is logged in and acting on behalf of purchaser)
 
   def checkout
+    redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
