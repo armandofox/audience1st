@@ -31,7 +31,7 @@
           %td= link_to v.order_id, order_path(v.order)
           %td= v.purchaser.full_name
 
-  .form-row.border.m-2.bg-light
+  .form-row.border.m-2.bg-light#transfer
     .col-md-4.text-right Transfer checked vouchers to customer:
     .col-md-5= text_field_tag 'customer', '', :size => 20, :class => '_autocomplete form-control', 'data-resultfield' => 'cid', :placeholder => 'Type customer first or last name'
     = hidden_field_tag 'cid'

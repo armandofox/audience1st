@@ -18,6 +18,8 @@ Scenario: successful first-time guest checkout for single-ticket purchases is fo
 
   When I press "CONTINUE >>"
   Then I should be on the checkout page for customer "Joe Tally"
+  Then show me the page
+  Then debug
   When I place my order with a valid credit card
   Then customer "Joe Tally" should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
   And customer "Joe Tally" should not be logged in

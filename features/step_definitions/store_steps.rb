@@ -45,7 +45,7 @@ end
 
 Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message, name|
   div_id = Vouchertype.find_by_name!(name).id
-  page.find("div#vouchertype_#{div_id} .explain").text.should == message
+  page.find("div#vouchertype_#{div_id} .s-explain").text.should == message
 end
 
 When /^I try to redeem the "(.*)" discount code$/ do |promo|

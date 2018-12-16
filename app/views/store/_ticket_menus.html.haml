@@ -36,11 +36,11 @@
               = text_field_tag fieldname, '', :size => 3, 'data-price' => v.price, :class => 'itemQty form-control form-control-sm'
             .col-sm-2
             .col-sm-5
-              %span.alert.alert-danger= v.explanation
+              %span.alert.alert-danger.s-explain= v.explanation
           - else
             = select_tag(fieldname, options_for_select(0..max_sales), 'data-price' => v.price, :class => 'itemQty form-control form-control-sm col-sm-1')
             - if max_sales.zero?
-              %span.text-info.col-sm-7.border.border-danger= v.explanation if max_sales.zero?
+              %span.text-info.col-sm-7.border.border-danger.s-explain= v.explanation if max_sales.zero?
           = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
     - unless @valid_vouchers.empty?
