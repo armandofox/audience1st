@@ -101,7 +101,11 @@ class StoreController < ApplicationController
   # This single action handles quick_donate: GET serves the form, POST places the order
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
-    @customer =  (current_user() || Customer.new)
+    unless (@customer = current_user)
+      # handle donation as a 'guest checkout', even though may end up being tied to real customer
+      @customer = Customer.new
+      session[:guest_checkout] = true
+    end
     return if request.get?
 
     # If donor doesn't exist, create them and marked created-by-admin
@@ -224,6 +228,7 @@ class StoreController < ApplicationController
       if session[:guest_checkout]
         # forget customer after successful guest checkout
         logout_keeping_session!
+        @guest_checkout = true
       end
     else
       redirect_to_checkout

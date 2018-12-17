@@ -21,6 +21,7 @@ Scenario: successful first-time guest checkout for single-ticket purchases is fo
   When I place my order with a valid credit card
   Then customer "Joe Tally" should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
   And customer "Joe Tally" should not be logged in
+  And I should not see "Back to My Tickets"
 
 Scenario: multiple guest checkouts to same email credit tickets to same account, even if different address/name
 

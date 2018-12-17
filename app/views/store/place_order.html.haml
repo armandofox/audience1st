@@ -36,5 +36,5 @@
     = link_to 'Back to Customer List', customers_path, :class => 'btn btn-outline-primary'
     = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-outline-primary'
   - else
-    - unless session[:guest_checkout]
+    - unless @guest_checkout
       = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'
