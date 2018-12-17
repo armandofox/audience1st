@@ -6,6 +6,7 @@
 #    rake staging:fake_vouchers          - creates & makes 2 kinds of valid revenue tix for shows
 #    rake staging:fake_subscriptions     - creates a subscription voucher w/1 tx per show
 
+require 'csv'
 
 module StagingHelper
   TENANT = 'a1-staging'
@@ -65,16 +66,15 @@ staging = namespace :staging do
     StagingHelper.switch_to_staging!
     num_customers = (ENV['NUM_CUSTOMERS'] || '100').to_i
     now = Time.current.at_beginning_of_day
-    1.upto num_customers  do
-      Customer.create!(
-        :first_name => Faker::Name.first_name,
-        :last_name => Faker::Name.last_name,
-        :email => Faker::Internet.unique.safe_email,
+    (CSV.read(File.join(Rails.root, 'spec', 'fake_names.csv')))[0,num_customers].each do |c|
+      cust = Customer.new(
+        :last_name => c[0], :first_name => c[1], :street => c[2], :day_phone => c[3], :email => c[4],
         :password => 'pass',
-        :street => Faker::Address.street_address,
         :city => StagingHelper::CITIES.sample,
-        :state => 'CA', :zip => sprintf("94%03d", rand(999))).
-        update_attribute(:last_login, now)
+        :state => 'CA', :zip => sprintf("94%03d", rand(999))
+        )
+      cust.last_login = now
+      cust.save!
     end
   end
 
