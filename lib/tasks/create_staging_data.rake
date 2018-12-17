@@ -22,21 +22,32 @@ module StagingHelper
     abort_if_production!
     Apartment::Tenant.switch! StagingHelper::TENANT
   end
+  def self.dot
+    print "."; $stdout.flush
+  end
 end
 
 staging = namespace :staging do
   
   desc "Re-create fake data in staging database (tenant '#{StagingHelper::TENANT}')"
   task :initialize => :environment do
+    puts "Clearing out old staging data..."
     staging['reset'].invoke     # truncate & re-seed DB
     staging['api_keys'].invoke  # set correct API keys for staging/test mode
+    print "\nCreating customers"
     staging['fake_customers'].invoke # create fake customers
+    print "\nCreating productions and vouchers..."
     staging['fake_season'].invoke    # create 3 shows with 3 weekend runs each
     staging['fake_vouchers'].invoke  # create 2 revenue vouchertypes, make valid for all showdates
     staging['fake_subscriptions'].invoke # create a sub with 1tx per show
     staging['reset_sales'].invoke
+    print "\n'Selling' revenue tickets"
     staging['sell_revenue'].invoke
+    print "\n'Selling' subscriptions..."
     staging['sell_subscriptions'].invoke
+    print "\nRecording donations"
+    staging['fake_donations'].invoke
+    puts "Staging data is ready"
   end
 
   desc "Reset fake data in staging database (tenant '#{StagingHelper::TENANT}')"
@@ -75,6 +86,7 @@ staging = namespace :staging do
         )
       cust.last_login = now
       cust.save!
+      StagingHelper::dot
     end
   end
 
@@ -172,6 +184,7 @@ staging = namespace :staging do
       num_tix = [1,2,2,2,2,3,4].sample
       o.add_tickets(sub_voucher, num_tix)
       o.finalize!
+      StagingHelper::dot
       # now reserve each of those vouchers for a random perf of each show
       # TBD
     end
@@ -188,6 +201,7 @@ staging = namespace :staging do
         o.add_donation(Donation.from_amount_and_account_code_id(20 + 15 * rand(10), AccountCode.default_account_code_id))
         o.finalize!
         o.update_attribute(:sold_on, Time.current - rand(180).days)
+        StagingHelper::dot
       end
     end
   end
@@ -211,6 +225,7 @@ staging = namespace :staging do
         o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
         o.add_tickets(valid_voucher, num_tix)
         o.finalize!
+        StagingHelper::dot
       end
     end
   end
