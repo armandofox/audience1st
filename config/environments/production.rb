@@ -1,16 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 
-  # If the STAGING envariable is set, we are in a production environment but on a staging server so:
-  if ENV['STAGING']  
-    config.action_mailer.delivery_method = :test
-    config.log_level = :debug
-    config.consider_all_requests_local = true
-  else
-    config.log_level = :warn
-    config.consider_all_requests_local = false
-  end
-
   # The production environment is meant for finished, "live" apps.
   # Code is not reloaded between requests
   config.cache_classes = true
