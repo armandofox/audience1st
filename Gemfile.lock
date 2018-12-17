@@ -386,6 +386,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     uniform_notifier (1.11.0)
+    vcr (3.0.3)
     web-console (2.3.0)
       activemodel (>= 4.0)
       binding_of_caller (>= 0.7.2)
@@ -475,6 +476,7 @@ DEPENDENCIES
   timecop
   traceroute
   uglifier
+  vcr
   web-console (~> 2.0)
   webmock
   where-or

@@ -52,6 +52,7 @@ group :test do
   gem 'simplecov', :require => false
   gem 'spring'                  # for 'guard'
   gem 'webmock'
+  gem 'vcr'
 end
 
 group :development do
