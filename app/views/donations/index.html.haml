@@ -35,7 +35,7 @@
       %tbody 
         - @donations.each do |t|
           %tr
-            %td= link_to t.customer.full_name, :action => 'index', :cid => t.customer, :use_cid => 1, :show_vouchers => true, :commit => 'Go'
+            %td= link_to t.customer.full_name, donations_path(:use_cid => 1, :cid => t.customer, :show_vouchers => true, :commit => 'Go')
             %td= link_to_order_containing t
             %td= t.sold_on.strftime '%D'
             %td.right= number_to_currency(t.amount)

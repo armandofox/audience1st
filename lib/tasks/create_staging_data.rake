@@ -170,16 +170,27 @@ staging = namespace :staging do
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
       o.add_tickets(sub_voucher, num_tix)
-      begin
-        o.finalize!
-      rescue
-        1 if byebug
-      end
+      o.finalize!
       # now reserve each of those vouchers for a random perf of each show
       # TBD
     end
   end
-  
+
+  desc "Randomly pick PERCENT of all customers (default 50) and have each of these make 1 to 3 donations of $20 to $150 apiece"
+  task :fake_donations => :environment do
+    StagingHelper::switch_to_staging!
+    percent = (ENV['PERCENT'] || '50').to_i / 100.0    
+    Customer.regular_customers.sample(Customer.all.size * percent).each do |customer|
+      [1,1,1,1,2,2,3].sample.times do
+        o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer,
+          :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
+        o.add_donation(Donation.from_amount_and_account_code_id(20 + 15 * rand(10), AccountCode.default_account_code_id))
+        o.finalize!
+        o.update_attribute(:sold_on, Time.current - rand(180).days)
+      end
+    end
+  end
+
   desc "For each showdate, sell PERCENT of remaining seats (default 50) using a random mix of revenue vouchertypes for that showdate"
   task :sell_revenue => :environment do
     StagingHelper::switch_to_staging!
@@ -198,11 +209,7 @@ staging = namespace :staging do
         # buy it
         o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
         o.add_tickets(valid_voucher, num_tix)
-        begin
-          o.finalize!
-        rescue RuntimeError,Order::NotReadyError => e
-          "Order errors: #{o.errors.full_messages}"
-        end
+        o.finalize!
       end
     end
   end

@@ -16,7 +16,7 @@
     .form-row
       .form-group.col-md-6
         %label.col-form-label.strong{:for=>:customer_email} Email
-        = f.text_field :email, {:size => 30, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm' }
+        = f.text_field :email, {:size => 30, :type => :email, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm' }
     .form-row
       .form-group.col-md-4
         %label.strong{:for => 'customer_street'} Street

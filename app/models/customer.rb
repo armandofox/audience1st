@@ -217,12 +217,7 @@ class Customer < ActiveRecord::Base
   public
 
   def self.id_from_route(route)
-    # This should really use
-    #  ActionController::Routing::Routes.recognize_path(route, :method => :get))[:Id]
-    # to do the recognition, but it doesn't work in production because the production
-    # server prepends the theater name /altarena or /ccct etc to the full route...ugh...
-    # :BUG:
-    route =~ /\/customers\/(-?\d+)$/ ? $1 : nil
+    (Rails.application.routes.recognize_path(route))[:id]
   end
   
   # message that will appear in flash[:notice] once only, at login
