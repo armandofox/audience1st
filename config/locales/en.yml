@@ -29,6 +29,9 @@ en:
     accessible_seating_description: >
       Please describe (wheelchair, no stairs, etc.)
 
+    accept_terms_of_sale: >
+      By completing your order, you agree to the <a href="#" onclick="alert('%{terms_of_sale_text}')">terms of sale</a>.
+
     errors:
 
       guest_checkout_not_allowed:  >

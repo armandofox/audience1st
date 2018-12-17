@@ -241,7 +241,7 @@ class StoreController < ApplicationController
       email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
       success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
-      flash[:alert] = (order.errors.full_messages + [e.message]).join(', ')
+      flash[:alert] = order.errors.full_messages
       Rails.logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
     rescue Exception => e
       Rails.logger.error("Unexpected exception: #{e.message} #{e.backtrace}")

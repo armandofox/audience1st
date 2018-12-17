@@ -39,4 +39,3 @@
     = link_to 'Make Another Purchase', store_path(@order.purchaser), :class => 'btn btn-success'
     - if @order.purchaser.has_ever_logged_in?
       = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'
-      = link_to 'Log Out', logout_path, :class => 'btn btn-primary'

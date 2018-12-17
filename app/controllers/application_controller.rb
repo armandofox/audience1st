@@ -113,8 +113,8 @@ class ApplicationController < ActionController::Base
   # filter that requires user to login before accessing account
 
   def is_logged_in
-    unless logged_in?
-      flash[:notice] = "Please log in or create an account in order to view this page."
+    unless (logged_in?  &&
+        current_user.has_ever_logged_in?)
       redirect_to login_path
       nil
     else

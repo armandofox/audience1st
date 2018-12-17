@@ -1,7 +1,6 @@
 %fieldset#credit_card
   %legend= local_assigns[:legend] || 'Credit Card Information'
   %p.text-center.bg-secondary.text-light= t('store.credit_card_security_notice')
-  .container#payment_errors.bg-danger
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
   .form-row
@@ -33,3 +32,4 @@
       = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control form-control-sm unsubmitted'
     .col-md-3
       = image_tag 'credit_card_logos_horizontal.png'
+  .container#payment_errors.bg-danger.text-center

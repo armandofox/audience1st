@@ -49,6 +49,7 @@ class Audience1stSeeder
         :email => 'admin@audience1st.com')
       admin.created_by_admin = true
       admin.role = 100
+      admin.last_login = Time.current
       admin.save!
     end
     @@special_customers.each_pair do |which, attrs|

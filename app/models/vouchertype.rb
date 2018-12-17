@@ -44,9 +44,11 @@ class Vouchertype < ActiveRecord::Base
   protected
 
   # for bundle vouchers, the included_vouchers values should be ints
+  # and the keys (id's) should be strings, eg {"3" => 1, "2" => 2} etc
   def convert_bundle_quantities_to_ints
     if included_vouchers
       included_vouchers.delete_if { |id,qty| qty.to_i.zero? }
+      included_vouchers.transform_keys!(&:to_s)
       included_vouchers.transform_values!(&:to_i) 
     end
   end

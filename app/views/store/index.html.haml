@@ -13,9 +13,7 @@
     = label_for_page_header @what
     %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
-  #event_types.py-3.text-center
-    - (Show::TYPES - [@what]).each do |type|
-      = link_to label_for_page_header(type), store_path(@customer, :what => type), :class => 'btn btn-primary'
+  = render :partial => 'event_types'
 
   #ticket_menus
     = form_tag process_cart_path(@customer) do

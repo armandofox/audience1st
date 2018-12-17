@@ -39,7 +39,11 @@ module AuthenticatedSystem
 
     # Called from #current_user.  First attempt to login by the user id stored in the session.
     def login_from_session
-      self.current_user = Customer.find_by_id(session[:cid]) if session[:cid]
+      if (cid = session[:cid]) &&
+          (user = Customer.find_by_id(session[:cid])) &&
+          user.has_ever_logged_in?
+        self.current_user = user
+      end
     end
 
     #

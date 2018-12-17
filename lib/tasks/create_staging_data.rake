@@ -130,7 +130,6 @@ staging = namespace :staging do
         :category => :subscriber,
         :account_code => AccountCode.default_account_code,
         :season => Time.this_season,
-        :offer_public => Vouchertype::ANYONE,
         :name => "#{show} (subscriber)")
       # make it valid for all perfs of that show
       Show.find_by(:name => show).showdates.each do |date|
@@ -142,10 +141,11 @@ staging = namespace :staging do
     sub = Vouchertype.create!(
       :category => :bundle,
       :subscription => true,
+      :price => 70.00,
       :name => 'Season Subscription',
       :season => Time.this_season,
-      :included_vouchers => sub_vouchers.map(&:id).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
-    sub.valid_vouchers.create!(:start_sales => now, :end_sales => 6.months.from_now)
+      :offer_public => Vouchertype::ANYONE,
+      :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
   end
   
   desc "In tenant '#{StagingHelper::TENANT}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers, shows, and show dates"
@@ -170,7 +170,11 @@ staging = namespace :staging do
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
       o.add_tickets(sub_voucher, num_tix)
-      o.finalize!
+      begin
+        o.finalize!
+      rescue
+        1 if byebug
+      end
       # now reserve each of those vouchers for a random perf of each show
       # TBD
     end

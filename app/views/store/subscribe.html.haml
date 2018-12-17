@@ -1,5 +1,5 @@
 = themed
-
+= render :partial => 'store/check_javascript'
 = sales_banners_for :subscription, @subscriber, @next_season_subscriber
 
 - if @nobody_really_logged_in
@@ -9,16 +9,16 @@
     to manage your reservations and get your Subscriber benefits.
 
 #store
-  #subscription_menus
-    %h1.text-center 
-      Buy Subscriptions
-      %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
+  = render :partial => 'event_types'
 
+  %h1.text-center 
+    Become A Subscriber
+    %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
+
+  #subscription_menus
     = form_tag process_cart_path(@customer) do
       = hidden_field_tag 'what', h(@what)
-      %br
       = render :partial => 'enter_promo_code'
-      %br
 
       - @subs_to_offer.each do |v|
         .form-row
