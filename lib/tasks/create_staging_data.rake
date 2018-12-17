@@ -47,7 +47,7 @@ staging = namespace :staging do
     staging['sell_subscriptions'].invoke
     print "\nRecording donations"
     staging['fake_donations'].invoke
-    puts "Staging data is ready"
+    puts "\nStaging data is ready"
   end
 
   desc "Reset fake data in staging database (tenant '#{StagingHelper::TENANT}')"
@@ -225,8 +225,8 @@ staging = namespace :staging do
         o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
         o.add_tickets(valid_voucher, num_tix)
         o.finalize!
-        StagingHelper::dot
       end
+      StagingHelper::dot
     end
   end
 end
