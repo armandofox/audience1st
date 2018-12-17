@@ -113,13 +113,7 @@ class ApplicationController < ActionController::Base
   # filter that requires user to login before accessing account
 
   def is_logged_in
-    unless (logged_in?  &&
-        current_user.has_ever_logged_in?)
-      redirect_to login_path
-      nil
-    else
-      current_user
-    end
+    redirect_to login_path unless logged_in?
   end
 
   def temporarily_unavailable

@@ -221,7 +221,7 @@ class StoreController < ApplicationController
 
     if finalize_order(@order)
       reset_shopping
-      if  (! @is_admin) && (! @customer.has_ever_logged_in?)
+      if session[:guest_checkout]
         # forget customer after successful guest checkout
         logout_keeping_session!
       end

@@ -39,11 +39,7 @@ module AuthenticatedSystem
 
     # Called from #current_user.  First attempt to login by the user id stored in the session.
     def login_from_session
-      if (cid = session[:cid]) &&
-          (user = Customer.find_by_id(session[:cid])) &&
-          user.has_ever_logged_in?
-        self.current_user = user
-      end
+      self.current_user = Customer.find_by_id(session[:cid]) if session[:cid]
     end
 
     #
@@ -69,6 +65,7 @@ module AuthenticatedSystem
       @current_user.forget_me if @current_user.is_a? Customer
       @current_user = false     # not logged in, and don't do it for me
       session.delete(:cid)
+      session.delete(:guest_checkout)
       reset_shopping unless @gCheckoutInProgress
       kill_remember_cookie!     # Kill client-side auth cookie
     end

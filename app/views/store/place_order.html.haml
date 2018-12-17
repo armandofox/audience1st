@@ -36,6 +36,5 @@
     = link_to 'Back to Customer List', customers_path, :class => 'btn btn-outline-primary'
     = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-outline-primary'
   - else
-    = link_to 'Make Another Purchase', store_path(@order.purchaser), :class => 'btn btn-success'
-    - if @order.purchaser.has_ever_logged_in?
+    - unless session[:guest_checkout]
       = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'

@@ -25,6 +25,7 @@ class SessionsController < ApplicationController
         render :action => :new
       else
         u.update_attribute(:last_login,Time.current)
+        session[:guest_checkout] = false
       end
       u
     end
@@ -43,6 +44,7 @@ class SessionsController < ApplicationController
         end
       else
         u.update_attribute(:last_login,Time.current)
+        session[:guest_checkout] = false
       end
       u
     end

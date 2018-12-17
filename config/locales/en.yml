@@ -1,6 +1,16 @@
 en:
   customers:
-    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?"
+
+    confirm_delete: >
+      Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked 
+      to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
+
+  login:
+
+    real_login_required: >
+      This email address has previously been used to login with a password. 
+      Please provide the email and password to continue, or use one of the Reset Password links
+      below if you've forgotten it.  You can also continue as a guest by using a different email address.
 
   reservations:
 
