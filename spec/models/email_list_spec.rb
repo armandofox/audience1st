@@ -1,21 +1,14 @@
 require 'rails_helper'
 
-
-class Customer
-  def to_mailchimp
-    {:FNAME => self.first_name, :LNAME => self.last_name, :email => self.email }
-  end
-  def ==(other)
-    other.kind_of?(Customer) &&
-      Customer.content_columns.map(&:name).all? { |c| self.send(c) == other.send(c) }
-  end
-end
-
 describe EmailList do
   before(:each) do
-    allow(EmailList).to receive(:init_hominid).and_return(true)
+    @l = EmailList.new('a5d35b24aaa29563837f56c9db670e00-us1')
   end
-  describe "segments" do
+
+  it 'returns list of static segments' do
+    segs = @l.get_sublists
+    expect(segs.sort).to eq(['StaticSeg1', 'StaticSeg2'])
   end
+
 end
 
