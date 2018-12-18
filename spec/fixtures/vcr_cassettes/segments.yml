@@ -27,20 +27,20 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - e20d49b8-bd7d-47ee-970a-3be5997833c6
+      - 09a28a85-7c50-4025-b98b-6995dab9bead
       Link:
       - <https://us1.api.mailchimp.com/schema/3.0/Lists/Collection.json>; rel="describedBy"
       Vary:
       - Accept-Encoding
       Date:
-      - Mon, 17 Dec 2018 23:30:44 GMT
+      - Tue, 18 Dec 2018 00:11:20 GMT
       Content-Length:
       - '11860'
       Connection:
       - keep-alive
       Set-Cookie:
       - _AVESTA_ENVIRONMENT=prod; path=/
-      - _mcid=1.dacc421404985eea83ed140473ebafc5; expires=Tue, 17-Dec-2019 23:30:44
+      - _mcid=1.5d60e8abec0264b3a793907c6890bf1e; expires=Wed, 18-Dec-2019 00:11:20
         GMT; Max-Age=31536000; path=/; domain=.mailchimp.com
     body:
       encoding: UTF-8
@@ -81,21 +81,21 @@ http_interactions:
       Content-Type:
       - application/json; charset=utf-8
       X-Request-Id:
-      - 3e4072f3-e1b3-4395-945a-d9c8a236bfc3
+      - f153edd1-0799-40ae-ac56-e2424333a5fa
       Link:
       - <https://us1.api.mailchimp.com/schema/3.0/Lists/Segments/Collection.json>;
         rel="describedBy"
       Vary:
       - Accept-Encoding
       Date:
-      - Mon, 17 Dec 2018 23:30:45 GMT
+      - Tue, 18 Dec 2018 00:11:20 GMT
       Content-Length:
       - '4819'
       Connection:
       - keep-alive
       Set-Cookie:
       - _AVESTA_ENVIRONMENT=prod; path=/
-      - _mcid=1.fe66b2aed05b0b0429dd8fd39791ddd9; expires=Tue, 17-Dec-2019 23:30:44
+      - _mcid=1.d5cbc596e8b65c5ebe968650e051ff72; expires=Wed, 18-Dec-2019 00:11:20
         GMT; Max-Age=31536000; path=/; domain=.mailchimp.com
     body:
       encoding: UTF-8

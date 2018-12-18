@@ -99,13 +99,13 @@ class EmailList
       mc.lists(default_list_id).segments.create(:body => {:name => name, :static_segment => []})
     rescue Gibbon::MailChimpError, StandardError => e
       @errors = "List segment '#{name}' could not be created: #{e.message}"
-      Rails.logger.warn error
+      Rails.logger.warn @errors
       nil
     end
   end
 
   def get_sublists
-    # returns array of 2-element arrays, each of which is [name,count] for static segments
+    # returns names of sublists
     return [] if @disabled
     begin
       segments.map { |s| s[:name] }
@@ -115,7 +115,7 @@ class EmailList
     end
   end
 
-  def add_to_sublist(sublist_name,customers=[])
+  def add_to_sublist(sublist,customers=[])
     return nil if @disabled
     segs = segments
     begin
