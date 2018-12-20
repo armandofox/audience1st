@@ -80,7 +80,7 @@ class Audience1stSeeder
   def self.create_options
     Rails.logger.info "Creating default options"
     option = Option.new(
-      :venue => 'Test Theater',
+      :venue => 'A1 Staging Theater',
       :advance_sales_cutoff => 60,
       :sold_out_threshold => 90,
       :nearly_sold_out_threshold => 80,
@@ -95,7 +95,7 @@ class Audience1stSeeder
       :default_retail_account_code =>  9999,
       :default_donation_account_code => 9999,
       :default_donation_account_code_with_subscriptions => 9999,
-      :allow_guest_checkout => false,
+      :allow_guest_checkout => true,
       :homepage_ticket_sales_text => 'Get Tickets',
       :homepage_subscription_sales_text => 'Subscribe to Our Season',
       :privacy_policy_url => '',
