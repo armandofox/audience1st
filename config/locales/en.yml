@@ -21,6 +21,12 @@ en:
     email_or_password_blank: >
       You need to provide your email and password.
 
+    no_secret_question: >
+      %{username} never set up a secret question.
+
+    wrong_answer: >
+      That isn't the answer you provided when you selected your secret question.
+
     real_login_required: >
       This email address has previously been used to login with a password. 
       Please provide the email and password to continue, or use one of the Reset Password links

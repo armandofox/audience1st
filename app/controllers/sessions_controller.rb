@@ -37,11 +37,7 @@ class SessionsController < ApplicationController
       u = Customer.authenticate_from_secret_question(@email, params[:secret_question], params[:answer])
       if u.nil? || !u.errors.empty?
         note_failed_signin(@email, u)
-        if u && u.errors.include?(:no_secret_question)
-          redirect_to login_path
-        else
-          redirect_to new_from_secret_session_path
-        end
+        redirect_to (u.errors.has_key?(:no_secret_question) ? login_path : new_from_secret_session_path)
       else
         u.update_attribute(:last_login,Time.current)
       end

@@ -25,7 +25,7 @@ Scenario: customer cannot login if secret question answered incorrectly
   When I fill in "Your Answer" with "San Francisco"
   And I press "Verify"
   Then customer "Tom Foolery" should not be logged in
-  And I should see "Sorry, that isn't the answer"
+  And I should see "That isn't the answer"
   And I should be on the Login With Secret Question page
 
 Scenario: customer cannot login if secret question hasn't been selected
@@ -33,7 +33,7 @@ Scenario: customer cannot login if secret question hasn't been selected
   When I fill in "Your Answer" with "San Francisco"
   And I press "Verify"
   Then customer "Tom Foolery" should not be logged in
-  And I should see "Sorry, but 'tom@foolery.com' never set up a secret question."
+  And I should see "tom@foolery.com never set up a secret question."
   And I should be on the login page
 
 
