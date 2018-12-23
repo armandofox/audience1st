@@ -21,6 +21,10 @@ en:
     email_or_password_blank: >
       You need to provide your email and password.
 
+    setup_secret_question_message: >
+      You can now setup a secret question to verify your identity in case you forget your password.  
+      Click Change Password above to setup your secret question.
+
     no_secret_question: >
       %{username} never set up a secret question.
 
@@ -91,10 +95,10 @@ en:
     disable_maintenance_warning: >
       You're about to turn off Staff Access Only and make Audience1st
       available to all users. 
-      Click OK to confirm, or Cancel to cancel.
+      Click OK to confirm, or Cancel to leave Audience1st in "staff access only" mode.
 
     change_basic_settings_warning: >
-      Warning: Changing these options affects the basic operation and
+      Changing these options affects the basic operation and
       appearance of your Audience1st installation.  Please be sure you 
       know what you're doing before changing these, and to be safe,
       before changing a value make a note of the old value.  Click "Allow

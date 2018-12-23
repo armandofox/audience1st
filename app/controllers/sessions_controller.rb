@@ -33,7 +33,6 @@ class SessionsController < ApplicationController
   def create_from_secret
     create_session do |params|
       @email = params[:email]
-      # If customer logged in using this mechanism, force them to change password.
       u = Customer.authenticate_from_secret_question(@email, params[:secret_question], params[:answer])
       if u.nil? || !u.errors.empty?
         note_failed_signin(@email, u)
