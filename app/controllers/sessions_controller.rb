@@ -69,7 +69,8 @@ class SessionsController < ApplicationController
   protected
 
   def note_failed_signin(attempted_username,customer)
-    flash[:alert] = t('login.failed_reason', :why => customer.errors.as_html) if customer
+    flash[:alert] = t('login.login_failed')
+    flash[:alert] << customer.errors[:login_failed].join(", ") if customer
     Rails.logger.warn "Failed login for '#{attempted_username}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
   end
 

@@ -7,18 +7,19 @@ en:
 
   login:
 
+    login_failed: >
+      We're so sorry, but we couldn't log you in:
+
     no_such_email: >
-      Can't find that email in our database.  Maybe you signed up with a different one?
+      We can't find that email in our database.  Maybe you signed up with a different one?
       You can also continue with your purchase and setup a new account as you checkout.
 
     bad_password: >
-      Password incorrect.  If you forgot your password, click 'Reset my password' and we will email 
+      The password seems to be incorrect.  If you forgot your password, click 'Reset my password' and we will email 
       you a new password within 1 minute.
 
     email_or_password_blank: >
-      Please provide your email and password.
-
-    failed_reason: " because %{why}."
+      You need to provide your email and password.
 
     real_login_required: >
       This email address has previously been used to login with a password. 

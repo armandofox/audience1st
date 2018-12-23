@@ -95,7 +95,7 @@ describe SessionsController do
       login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
-    it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /Couldn't log you in as 'quentin@email.com'/ end
+    it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /couldn't log you in/i end
     it 'renders the log in page'    do post(:create, @login_params); response.should redirect_to(new_session_path)  end
     it "doesn't log me in"          do post(:create, @login_params); controller.send(:logged_in?).should == false end
     it "doesn't send password back" do 
@@ -103,18 +103,6 @@ describe SessionsController do
       post(:create, @login_params)
       response.should_not have_text(/FROBNOZZ/i)
     end
-  end
-
-  it "does not have sticky message when successful login follows failed login" do
-    customer_params = {:email => 'joe@joescafe.com', :password => 'pass'}
-    customer = create(:customer, customer_params)
-    expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(nil)
-    post(:create, :email => 'joe@joescafe.com', :password => 'wrong')
-    expect(flash[:alert]).to match /couldn\'t log you in/i
-    expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(customer)
-    post(:create, customer_params)
-    expect(response).to redirect_to(customer_path(customer))
-    expect(flash[:alert]).to be_blank
   end
 
   describe "on signout" do
