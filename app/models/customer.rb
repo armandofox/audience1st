@@ -368,32 +368,19 @@ class Customer < ActiveRecord::Base
     # self.items += new_items # <= doesn't work because cardinality of self.items is huge
   end
 
-  def self.find_by_email_for_authentication(email)
-    if email.blank?
-      u = Customer.new
-      u.errors.add(:login_failed, "Please provide your email and password.")
-      return u
-    end
-    unless (u = Customer.where("lower(email) = ?", email.strip.downcase).first) # need to get the salt
-      u = Customer.new
-      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
-      return u
-    end
-  end
-
   def self.authenticate(email, password)
     if (email.blank? || password.blank?)
       u = Customer.new
-      u.errors.add(:login_failed, "Please provide your email and password.")
+      u.errors.add(:login_failed, I18n.t('login.email_or_password_blank'))
       return u
     end
     unless (u = Customer.where("lower(email) = ?", email.strip.downcase).first) # need to get the salt
       u = Customer.new
-      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
+      u.errors.add(:login_failed, I18n.t('login.no_such_email'))
       return u
     end
     unless u.authenticated?(password)
-      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, click 'Reset my password' and we will email you a new password within 1 minute.")
+      u.errors.add(:login_failed, I18n.t('login.bad_password'))
     end
     return u
   end

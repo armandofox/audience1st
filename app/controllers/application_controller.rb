@@ -168,6 +168,7 @@ class ApplicationController < ActionController::Base
       # button. Uncomment if you understand the tradeoffs.
       # reset_session
       self.current_user = @user
+      session[:guest_checkout] = false
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
       handle_remember_cookie! new_cookie_flag

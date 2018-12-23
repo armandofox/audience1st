@@ -17,17 +17,14 @@ class SessionsController < ApplicationController
 
   def create
     create_session do |params|
-      u = Customer.authenticate(params[:email], params[:password])
+      @email = params[:email]
+      @remember_me = params[:remember_me]
+      u = Customer.authenticate(@email, params[:password])
       if u.nil? || !u.errors.empty?
-        flash.now[:alert] = t('login.login_failed', :username => params[:email])
-        flash.now[:alert] << t('login.failed_reason', :why => u.errors.as_html) if u
-        Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
-        @email = params[:email]
-        @remember_me = params[:remember_me]
-        render :action => :new
+        note_failed_signin(@email, u)
+        redirect_to new_session_path, :email => @email, :remember_me => @remember_me
       else
         u.update_attribute(:last_login,Time.current)
-        session[:guest_checkout] = false
       end
       u
     end
@@ -35,18 +32,18 @@ class SessionsController < ApplicationController
 
   def create_from_secret
     create_session do |params|
-    # If customer logged in using this mechanism, force them to change password.
-      u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
+      @email = params[:email]
+      # If customer logged in using this mechanism, force them to change password.
+      u = Customer.authenticate_from_secret_question(@email, params[:secret_question], params[:answer])
       if u.nil? || !u.errors.empty?
-        note_failed_signin(u)
-        if u.errors.include?(:no_secret_question)
+        note_failed_signin(@email, u)
+        if u && u.errors.include?(:no_secret_question)
           redirect_to login_path
         else
           redirect_to new_from_secret_session_path
         end
       else
         u.update_attribute(:last_login,Time.current)
-        session[:guest_checkout] = false
       end
       u
     end
@@ -54,7 +51,6 @@ class SessionsController < ApplicationController
 
   def destroy
     logout_killing_session!
-    reset_shopping
     redirect_to login_path, :notice => "You have been logged out."
   end
 
@@ -69,6 +65,12 @@ class SessionsController < ApplicationController
     end
     redirect_to :back
   end
-  
+
+  protected
+
+  def note_failed_signin(attempted_username,customer)
+    flash[:alert] = t('login.failed_reason', :why => customer.errors.as_html) if customer
+    Rails.logger.warn "Failed login for '#{attempted_username}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
+  end
 
 end
