@@ -105,6 +105,18 @@ describe SessionsController do
     end
   end
 
+  it "does not have sticky message when successful login follows failed login" do
+    customer_params = {:email => 'joe@joescafe.com', :password => 'pass'}
+    customer = create(:customer, customer_params)
+    expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(nil)
+    post(:create, :email => 'joe@joescafe.com', :password => 'wrong')
+    expect(flash[:alert]).to match /couldn\'t log you in/i
+    expect(Customer).to receive(:authenticate).with(anything(), anything()).and_return(customer)
+    post(:create, customer_params)
+    expect(response).to redirect_to(customer_path(customer))
+    expect(flash[:alert]).to be_blank
+  end
+
   describe "on signout" do
     def do_destroy
       get :destroy

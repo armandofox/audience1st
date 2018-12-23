@@ -7,6 +7,8 @@ en:
 
   login:
 
+    login_failed: "Couldn't log you in as '%{username}'"
+    failed_reason: " because %{why}."
     real_login_required: >
       This email address has previously been used to login with a password. 
       Please provide the email and password to continue, or use one of the Reset Password links

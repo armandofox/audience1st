@@ -50,7 +50,7 @@ end
 #  * 'just' rspec: 'rspec'
 
 group 'rspec' do
-  guard :rspec, cmd: "bundle exec spring rspec", failed_mode: :focus do
+  guard :rspec, cmd: "bundle exec rspec", failed_mode: :focus do
     require "guard/rspec/dsl"
     dsl = Guard::RSpec::Dsl.new(self)
 

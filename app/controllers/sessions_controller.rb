@@ -19,7 +19,9 @@ class SessionsController < ApplicationController
     create_session do |params|
       u = Customer.authenticate(params[:email], params[:password])
       if u.nil? || !u.errors.empty?
-        note_failed_signin(u)
+        flash.now[:alert] = t('login.login_failed', :username => params[:email])
+        flash.now[:alert] << t('login.failed_reason', :why => u.errors.as_html) if u
+        Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
         @email = params[:email]
         @remember_me = params[:remember_me]
         render :action => :new
@@ -68,15 +70,5 @@ class SessionsController < ApplicationController
     redirect_to :back
   end
   
-
-  protected
-  
-
-  # Track failed login attempts
-  def note_failed_signin(user)
-    flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:alert] << " because #{user.errors.as_html}" if user
-    Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
-  end
 
 end
