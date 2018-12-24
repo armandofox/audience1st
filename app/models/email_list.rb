@@ -7,10 +7,13 @@ class EmailList
 
   def initialize(key = Option.mailchimp_key)
     @apikey = key
-    @disabled = true
-    Rails.logger.info("email_list: NOT initializing mailchimp") and return nil if @apikey.blank?
-    @disabled = false
-    Rails.logger.info "email_list: Init Mailchimp"
+    if @apikey.blank?
+      @disabled = true
+      Rails.logger.info("email_list: NOT initializing mailchimp")
+    else
+      Rails.logger.info "email_list: Init Mailchimp"
+    end
+    !@disabled
   end
 
   private
@@ -51,7 +54,8 @@ class EmailList
   def subscribe(cust, email=cust.email)
     return true if disabled
     begin
-      mc.lists(default_list_id).members.create(:body => mailchimp_body_for(cust))
+      digest = customer_id_from(email)
+      mc.lists(default_list_id).members(digest).upsert(:body => mailchimp_body_for(cust))
     rescue Gibbon::MailChimpError, StandardError => e
       @errors = e.message
       Rails.logger.info "email_list: #{@errors}"
@@ -83,9 +87,18 @@ class EmailList
     digest = customer_id_from(cust.email)
     begin
       mc.lists(default_list_id).members(digest).update(:body => {:status => 'unsubscribed'})
-    rescue Gibbon::MailChimpError, StandardError => e
+    rescue Gibbon::MailChimpError => e
+      if e.status_code == 404  # member not found: silently ignore
+        true
+      else
+        @errors = e.message
+        Rails.logger.warn "email_list: #{what}: #{@errors}"
+        nil
+      end
+    rescue StandardError => e
       @errors = e.message
       Rails.logger.warn "email_list: #{what}: #{@errors}"
+      nil
     end
   end
 
