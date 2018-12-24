@@ -1,5 +1,10 @@
 require 'rails_helper'
 
+# WARNING. The specs here use VCR to replay responses from the real Mailchimp.
+# Should you ever need to re-generate those cassettes, YOU MUST SETUP THE INITIAL
+# CONDITIONS IN MAILCHIMP as describe in the befor(:each) block below (StaticSeg1 and
+# StaticSeg2 should contain the names indicated, and StaticSeg3 should not exist).
+
 describe EmailList do
   before(:each) do
     @l = EmailList.new('a5d35b24aaa29563837f56c9db670e00-us1')
