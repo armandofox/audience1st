@@ -6,7 +6,7 @@ class Mailer < ActionMailer::Base
   #  cause an error at class-loading time.
   default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
 
-  before_action :setup_defaults
+  before_action :set_delivery_options
 
   def email_test(destination_address)
     @time = Time.current
@@ -54,24 +54,19 @@ class Mailer < ActionMailer::Base
 
   protected
   
-  def setup_defaults
+  def set_delivery_options
     @venue = Option.venue
     @subject = "#{@venue} - "
     @contact = if Option.help_email.blank?
                then "call #{Option.boxoffice_telephone}"
                else "email #{Option.help_email} or call #{Option.boxoffice_telephone}"
                end
-    setup_delivery_params
-  end
-
-  def setup_delivery_params
     if Rails.env.production? and
         (Option.sendgrid_key_value.blank? or
         Option.sendgrid_domain.blank?)
       ActionMailer::Base.perform_deliveries = false
       Rails.logger.info "NOT sending email"
     else
-      Rails.logger.info "Setting up sendgrid"
       ActionMailer::Base.perform_deliveries = true
       ActionMailer::Base.smtp_settings = {
         :user_name => 'apikey',

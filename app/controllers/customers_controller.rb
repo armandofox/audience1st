@@ -49,8 +49,8 @@ class CustomersController < ApplicationController
     @reserved_vouchers,@unreserved_vouchers =
       @subscriber_vouchers.partition { |v| v.reserved? }
     if new_session?
-      flash[:notice] = (@current_user.login_message || "Logged in successfully")
-      flash[:alert] = false
+      flash.now[:notice] = (@current_user.login_message || "Logged in successfully")
+      flash.delete(:alert)
     end
 
   end
