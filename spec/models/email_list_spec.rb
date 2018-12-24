@@ -8,7 +8,7 @@ require 'rails_helper'
 describe EmailList do
 
   before(:each) do
-    @l = EmailList.new('a5d35b24aaa29563837f56c9db670e00-us1')
+    @l = EmailList.new(Figaro.env.MAILCHIMP_TEST_KEY!)
     @known_emails = %w(af-theater@reinysfox.com af-www@reinysfox.com fox@a1patronsystems.com)
     @customers = @known_emails.map { |c| create(:customer, :email => c) }
     # StaticSeg1 contains the first 2, StaticSeg2 contains the third
