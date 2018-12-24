@@ -68,6 +68,7 @@ class Mailer < ActionMailer::Base
     if (Option.sendgrid_key_value.blank? or
         Option.sendgrid_domain.blank?)
       Rails.application.config.action_mailer.perform_deliveries = false
+      Rails.application.config.action_mailer.delivery_method = :test
       Rails.logger.info "NOT sending email"
     else
       Rails.logger.info "Setting up sendgrid"
