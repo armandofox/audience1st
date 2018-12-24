@@ -65,7 +65,8 @@ class Mailer < ActionMailer::Base
   end
 
   def setup_delivery_params
-    if (Option.sendgrid_key_value.blank? or
+    if Rails.env.production? and
+        (Option.sendgrid_key_value.blank? or
         Option.sendgrid_domain.blank?)
       ActionMailer::Base.perform_deliveries = false
       Rails.logger.info "NOT sending email"

@@ -14,7 +14,7 @@ Scenario: customer sees incorrect email if they type it in wrong
   When I fill in "email" with "to@foolery.com"
   And I fill in "password" with "ajsdkfla"
   And I press "Login"
-  Then I should see "Can't find that email in our database"
+  Then I should see "can't find that email in our database"
 
 Scenario: customer should not see error message on successful login
   When I fill in "email" with "to@foolery.com"
