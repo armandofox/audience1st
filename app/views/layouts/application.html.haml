@@ -31,7 +31,7 @@
         #page_body
           #left_sidebar
           #right_main
-            #themed-nav
+            #themed-nav.clearfix
               - if existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
                 = render :partial => 'navbars/main_tabs'
               - if @gAdminDisplay

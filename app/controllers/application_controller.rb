@@ -64,6 +64,7 @@ class ApplicationController < ActionController::Base
     @gCart.empty_cart!
     session.delete(:promo_code)
     session.delete(:cart)
+    session.delete(:return_to)
     set_checkout_in_progress(false)
     true
   end
@@ -96,7 +97,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_after_login(customer)
-    redirect_to ((r = session[:return_to]) ?
+    redirect_to ((r = session.delete(:return_to)) ?
       r.merge(:customer_id => customer) :
       customer_path(customer))
   end
