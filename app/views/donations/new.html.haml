@@ -4,11 +4,11 @@
  
   %label Payment Method:
   = radio_button_tag 'payment', 'check', true
-  %label.no_float{:for => 'payment_check'} Check
+  %label{:for => 'payment_check'} Check
   = radio_button_tag 'payment', 'cash', false
-  %label.no_float{:for => 'payment_cash'} Cash
+  %label{:for => 'payment_cash'} Cash
   = radio_button_tag 'payment', 'credit_card', false, :id => 'enable_cc'
-  %label.no_float{:for => 'enable_cc'} Credit Card
+  %label{:for => 'enable_cc'} Credit Card
   %br
   = hidden_field_tag 'customer_id', @customer.id
 

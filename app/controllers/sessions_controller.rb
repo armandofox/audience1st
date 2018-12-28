@@ -5,6 +5,7 @@ class SessionsController < ApplicationController
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
+      @display_guest_checkout = allow_guest_checkout?
     end
     @remember_me = true
     @email ||= params[:email]
@@ -16,12 +17,12 @@ class SessionsController < ApplicationController
 
   def create
     create_session do |params|
-      u = Customer.authenticate(params[:email], params[:password])
+      @email = params[:email]
+      @remember_me = params[:remember_me]
+      u = Customer.authenticate(@email, params[:password])
       if u.nil? || !u.errors.empty?
-        note_failed_signin(u)
-        @email = params[:email]
-        @remember_me = params[:remember_me]
-        render :action => :new
+        note_failed_signin(@email, u)
+        redirect_to new_session_path, :email => @email, :remember_me => @remember_me
       else
         u.update_attribute(:last_login,Time.current)
       end
@@ -31,15 +32,11 @@ class SessionsController < ApplicationController
 
   def create_from_secret
     create_session do |params|
-    # If customer logged in using this mechanism, force them to change password.
-      u = Customer.authenticate_from_secret_question(params[:email], params[:secret_question], params[:answer])
+      @email = params[:email]
+      u = Customer.authenticate_from_secret_question(@email, params[:secret_question], params[:answer])
       if u.nil? || !u.errors.empty?
-        note_failed_signin(u)
-        if u.errors.include?(:no_secret_question)
-          redirect_to login_path
-        else
-          redirect_to new_from_secret_session_path
-        end
+        note_failed_signin(@email, u)
+        redirect_to (u.errors.has_key?(:no_secret_question) ? login_path : new_from_secret_session_path)
       else
         u.update_attribute(:last_login,Time.current)
       end
@@ -63,16 +60,13 @@ class SessionsController < ApplicationController
     end
     redirect_to :back
   end
-  
 
   protected
-  
 
-  # Track failed login attempts
-  def note_failed_signin(user)
-    flash[:alert] = "Couldn't log you in as '#{params[:email]}'"
-    flash[:alert] << " because #{user.errors.as_html}" if user
-    Rails.logger.warn "Failed login for '#{params[:email]}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
+  def note_failed_signin(attempted_username,customer)
+    flash[:alert] = t('login.login_failed')
+    flash[:alert] << customer.errors[:login_failed].join(", ") if customer
+    Rails.logger.warn "Failed login for '#{attempted_username}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
   end
 
 end

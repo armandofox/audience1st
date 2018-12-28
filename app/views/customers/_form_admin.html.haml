@@ -1,6 +1,6 @@
 / Extra params settable only by admin
 
-%fieldset#admin_form
+%fieldset.admin
   %legend Administrator Preferences
   %p
     %label{:for => :customer_last_login} Last login
@@ -20,12 +20,6 @@
   %br/
 
   =check_box_tag 'dont_send_email', '1', true
-  %label.no_float{:for=>:dont_send_email}  
+  %label{:for=>:dont_send_email}  
     %span.strong Do not
     email customer a confirmation of these changes
-
-  %p=button_tag "Extra Contact Info...", :id => 'extra'
-  = javascript_tag %q{$('#extra').click(function() { $("#contact").slideToggle()' }) }
-
-  #contact{:style => "display: none;"}
-    = render :partial => 'contact', :locals => {:customer => @customer}

@@ -2,10 +2,9 @@
 %html
   %head
     %link{:rel => "shortcut icon", :type => "image/x-icon", :href => favicon_path}
-
-    %link{rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"}
+    = bootstrap_stylesheet_link_tag
     = stylesheet_link_tag :application, :media => 'all'
-    %link{rel: "stylesheet", href: Option.stylesheet_url, :media => 'all'}
+    = venue_stylesheet_link_tag
 
     = javascript_include_tag :application
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
@@ -29,33 +28,35 @@
         - else
           %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
-        #page_body.container
-          #left_sidebar.container
-          #right_main.container
-            #nav
-              - if controller.controller_name =~ /checkins|walkup_sales/
-                = render :partial => 'navbars/box_office_tabs'
-                = render :partial => 'checkins/change_showdate'
-                = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
-              - elsif controller.controller_name =~ /import|options|bulk_downloads/i
-                = render :partial => 'navbars/admin_tabs'
-              - elsif existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
+        #page_body
+          #left_sidebar
+          #right_main
+            #themed-nav.clearfix
+              - if existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
                 = render :partial => 'navbars/main_tabs'
-              - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
+              - if @gAdminDisplay
                 = render :partial => 'navbars/season_tabs'
-                = render :partial => 'customers/quick_search'
-                = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+            - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
+              = render :partial => 'customers/quick_search'
+              = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+            - if controller.controller_name =~ /checkins|walkup_sales/
+              = render :partial => 'checkins/change_showdate'
+              = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
+
             #content.clear
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
                 %h1.text-center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
               = render :partial => 'messages/notices'
               = yield
-        = render :partial => 'layouts/login_banner' if current_user
-    #footer.footer.container.text-center
+      - if current_user
+        #welcome_header.container= render :partial => 'layouts/login_banner'
+
+    #footer
       %p
-        \&copy; 2011&ndash;2018
-        Secure ticketing by
-        = link_to 'Audience1st', 'http://www.audience1st.com'
+        Powered by&nbsp;
+        = link_to 'Audience1st', 'http://www.audience1st.com', :target => '_blank'
         - unless (s = Option.privacy_policy_url).blank?
-          = link_to "Terms of Use & Privacy Policy", s
+          = link_to "&nbsp;&bull;&nbsp; Terms of Use & Privacy Policy".html_safe, s
+        \&nbsp;&bull;&nbsp;
+        = link_to Option.venue, Option.venue_homepage_url

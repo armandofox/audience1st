@@ -33,6 +33,7 @@ Capybara.default_selector = :css
 require 'capybara/poltergeist'
 Capybara.register_driver :poltergeist do |app|
   options = {
+    :js_errors => true
   }
   Capybara::Poltergeist::Driver.new(app, options)
 end

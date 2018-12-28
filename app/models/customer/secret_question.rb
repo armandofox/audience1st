@@ -14,10 +14,6 @@ class Customer < ActiveRecord::Base
     :is => 0, :allow_nil => true,
     :message => 'cannot be given unless you specify a question')
 
-  def setup_secret_question_message
-    'You can now setup a secret question to verify your identity in case you forget your password.  Click Change Password above to setup your secret question.'
-  end
-
   def has_secret_question? ; !self.secret_question.zero? ; end
   
   def check_secret_answer(str)
@@ -30,14 +26,14 @@ class Customer < ActiveRecord::Base
     if email.blank? || answer.blank?
       u = Customer.new
       u.errors.add(:login_failed, 'Please provide your email and the answer to your chosen secret question.')
-    elsif (u = Customer.where('email LIKE ?', email.downcase).first).nil?
+    elsif (u = Customer.lookup_by_email_for_auth(email)).nil?
       u = Customer.new
-      u.errors.add(:login_failed,
-        'Can\'t find that email address.  Maybe you registered with a different one?')
+      u.errors.add(:login_failed, I18n.t('login.no_such_email'))
     elsif !u.has_secret_question?
-      u.errors.add(:no_secret_question, "Sorry, but '#{email}' never set up a secret question.")
+      u.errors.add(:no_secret_question, '') # presence of this key prevents redirect back to this page
+      u.errors.add(:login_failed, I18n.t('login.no_secret_question', :username => email))
     elsif !(u.check_secret_answer(answer))
-      u.errors.add(:incorrect_secret_question_answer, "Sorry, that isn't the answer you provided when you selected your secret question.")
+      u.errors.add(:login_failed, I18n.t('login.wrong_answer'))
     end
     u
   end

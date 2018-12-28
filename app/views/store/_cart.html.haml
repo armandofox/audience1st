@@ -7,7 +7,7 @@
     %h2#check_dates Please double check your order
     %ul#cart_items
       - @cart.each_voucher do |v|
-        %li.cart_item{:class=>cycle(:even,:odd)}
+        %li.cart_item
           .price_and_actions
             .cart_item_price= number_to_currency(v.price)
           %span.cart_item_desc
@@ -18,14 +18,14 @@
               %span.promo_code (Promo #{h(v.promo_code)})
 
       - if (d = @cart.donation)
-        %li.cart_item{:class=>cycle(:even,:odd)}
+        %li.cart_item
           .price_and_actions
             .cart_item_price= number_to_currency(d.amount)
           %span.donation_name.cart_item_desc 
             = ["Donation to #{h(d.account_code.name)}", d.comments].join(' - ')
 
       - @cart.retail_items.each do |item|
-        %li.cart_item{:class=>cycle(:even,:odd)}
+        %li.cart_item
           .price_and_actions
             .cart_item_price= number_to_currency(item.amount)
           %span.retail_item_description.cart_item_desc= item.comments
@@ -37,5 +37,5 @@
     - unless @cart.comments.blank?
       #cart_comments
         %p
-          %span.emphasis Special seating needs:
+          %span.alert.alert-warning Special seating needs:
           = h @cart.comments

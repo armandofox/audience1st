@@ -1,9 +1,9 @@
 #retail_purchase
   .form-group.form-row
     %label.col-form-label.text-right.col-sm-4{:for => :retail} Retail purchase amount
-    = text_field_tag 'retail', '', :size => 8, :class => 'itemQty form-control form-control-sm col-sm-1'
-    %label.col-form-label.text-right.col-sm-3{:for => 'retail_account_code_id'} Account Code
-    = select_tag 'retail_account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, Option.default_retail_account_code), {:class => 'form-control form-control-sm col-sm-4'}
+    = text_field_tag 'retail', '', :class => 'itemQty form-control form-control-sm col-sm-1'
+    %label.col-form-label.text-right.col-sm-2{:for => 'retail_account_code_id'} Account Code
+    = select_tag 'retail_account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, Option.default_retail_account_code), {:class => 'form-control form-control-sm col-sm-3'}
   .form-group.form-row
     %label.col-form-label.text-right.col-sm-4{:for => :retail_comments} Description of retail purchase
-    = text_field_tag 'retail_comments', '', :class => 'form-control form-control-sm col-sm-8'
+    = text_field_tag 'retail_comments', '', :class => 'form-control form-control-sm col-sm-6'

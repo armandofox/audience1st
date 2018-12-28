@@ -109,7 +109,10 @@ class Customer < ActiveRecord::Base
 
   def active_vouchers
     now = Time.current
-    vouchers.includes(:showdate).select { |v| now <= Time.at_end_of_season(v.season) }
+    vouchers.
+      includes(:showdate => :show).
+      includes(:vouchertype => :valid_vouchers).
+      select { |v| now <= Time.at_end_of_season(v.season) }
   end
   
 
@@ -171,23 +174,20 @@ class Customer < ActiveRecord::Base
   # when customer is saved, possibly update their email opt-in status
   # with external mailing list.  
 
-  @@email_sync_disabled = nil
-  def self.enable_email_sync ;  @@email_sync_disabled = nil ; end
-  def self.disable_email_sync ; @@email_sync_disabled = true  ; end
-
   def update_email_subscription
-    return unless (@@email_sync_disabled || e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    return unless (e_blacklist_changed? || email_changed? || first_name_changed? || last_name_changed?)
+    email_list = EmailList.new or return
     if e_blacklist      # opting out of email
-      EmailList.unsubscribe(self, email_was)
+      email_list.unsubscribe(self, email_was)
     else                        # opt in
       if (email_changed? || first_name_changed? || last_name_changed?)
         if email_was.blank?
-          EmailList.subscribe(self)
+          email_list.subscribe(self)
         else
-          EmailList.update(self, email_was)
+          email_list.update(self, email_was)
         end
       else                      # with same email
-        EmailList.subscribe(self)
+        email_list.subscribe(self)
       end
     end
   end
@@ -214,19 +214,14 @@ class Customer < ActiveRecord::Base
   public
 
   def self.id_from_route(route)
-    # This should really use
-    #  ActionController::Routing::Routes.recognize_path(route, :method => :get))[:Id]
-    # to do the recognition, but it doesn't work in production because the production
-    # server prepends the theater name /altarena or /ccct etc to the full route...ugh...
-    # :BUG:
-    route =~ /\/customers\/(-?\d+)$/ ? $1 : nil
+    (Rails.application.routes.recognize_path(route))[:id]
   end
   
   # message that will appear in flash[:notice] once only, at login
   def login_message
     msg = ["Welcome, #{full_name}"]
     msg << encourage_opt_in_message if has_opted_out_of_email?
-    msg << setup_secret_question_message unless has_secret_question?
+    msg << I18n.t('login.setup_secret_question_message') unless has_secret_question?
     msg << welcome_message
     msg
   end
@@ -348,14 +343,14 @@ class Customer < ActiveRecord::Base
 
   def subscriber?
     self.role >= 0 &&
-      self.vouchers.detect do |f|
+      self.vouchers.includes(:vouchertype).detect do |f|
       f.vouchertype.subscription? && f.vouchertype.valid_now?
     end
   end
 
   def next_season_subscriber?
     self.role >= 0 &&
-      self.vouchers.detect do |f|
+      self.vouchers.includes(:vouchertype).detect do |f|
       f.vouchertype.subscription? &&
         f.vouchertype.expiration_date.within_season?(Time.current.at_end_of_season + 1.year)
     end
@@ -370,32 +365,23 @@ class Customer < ActiveRecord::Base
     # self.items += new_items # <= doesn't work because cardinality of self.items is huge
   end
 
-  def self.find_by_email_for_authentication(email)
-    if email.blank?
-      u = Customer.new
-      u.errors.add(:login_failed, "Please provide your email and password.")
-      return u
-    end
-    unless (u = Customer.where("lower(email) = ?", email.strip.downcase).first) # need to get the salt
-      u = Customer.new
-      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
-      return u
-    end
+  def self.lookup_by_email_for_auth(email)
+    Customer.where("lower(email) = ?", email.strip.downcase).first
   end
 
   def self.authenticate(email, password)
     if (email.blank? || password.blank?)
       u = Customer.new
-      u.errors.add(:login_failed, "Please provide your email and password.")
+      u.errors.add(:login_failed, I18n.t('login.email_or_password_blank'))
       return u
     end
-    unless (u = Customer.where("lower(email) = ?", email.strip.downcase).first) # need to get the salt
+    unless (u = Customer.lookup_by_email_for_auth(email)) # need to get the salt
       u = Customer.new
-      u.errors.add(:login_failed, "Can't find that email in our database.  Maybe you signed up with a different one?  If not, click Create Account to create a new account.")
+      u.errors.add(:login_failed, I18n.t('login.no_such_email'))
       return u
     end
     unless u.authenticated?(password)
-      u.errors.add(:login_failed, "Password incorrect.  If you forgot your password, click 'Reset my password' and we will email you a new password within 1 minute.")
+      u.errors.add(:login_failed, I18n.t('login.bad_password'))
     end
     return u
   end

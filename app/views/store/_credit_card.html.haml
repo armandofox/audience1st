@@ -1,7 +1,6 @@
 %fieldset#credit_card
   %legend= local_assigns[:legend] || 'Credit Card Information'
   %p.text-center.bg-secondary.text-light= t('store.credit_card_security_notice')
-  .container#payment_errors.bg-danger
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
   .form-row
@@ -26,8 +25,11 @@
         .form-group
           = select_tag 'credit_card_year', options_for_select(Time.current.year..Time.current.year+10), :class => 'form-control form-control-sm col-auto unsubmitted'
     .col-md-2.text-right
-      %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
+      %label.col-form-label{:for => 'credit_card_verification_value'}
+        CVV code
+        = popup_help_for 'credit_card_verification_value'
     .col-md-2
       = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control form-control-sm unsubmitted'
     .col-md-3
       = image_tag 'credit_card_logos_horizontal.png'
+  .container#payment_errors.bg-danger.text-center

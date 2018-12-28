@@ -1,6 +1,6 @@
 = render :partial => 'reports/report_options_header', :locals => {:report_name => 'Transaction Details'}
 
-#pageDiv
+.container
   %h1 #{@report.size} transactions: #{@from.to_formatted_s(:long)} - #{@to.to_formatted_s(:long)}
 
   %table.hilite

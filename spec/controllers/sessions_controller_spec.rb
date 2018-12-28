@@ -95,8 +95,8 @@ describe SessionsController do
       login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
-    it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /Couldn't log you in as 'quentin@email.com'/ end
-    it 'renders the log in page'    do post(:create, @login_params); response.should render_template('new')  end
+    it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /couldn't log you in/i end
+    it 'renders the log in page'    do post(:create, @login_params); response.should redirect_to(new_session_path)  end
     it "doesn't log me in"          do post(:create, @login_params); controller.send(:logged_in?).should == false end
     it "doesn't send password back" do 
       @login_params[:password] = 'FROBNOZZ'

@@ -3,7 +3,7 @@
 = form_tag confirm_reservation_customer_voucher_path(@customer,@voucher) do
   = render(:partial => 'reserve_for') if @valid_vouchers
 
-  %label.emphasis{:for => 'accessible_seating'} Special seating needs?
+  %label{:for => 'accessible_seating'} Special seating needs?
   = checkbox_guard_for 'special_seating'
   #special_seating{:style => 'display:none'}
     %label{:for => 'comments'} Please describe special seating needs

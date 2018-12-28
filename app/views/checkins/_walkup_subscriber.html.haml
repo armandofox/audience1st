@@ -30,4 +30,4 @@
               - else
                 %span= link_to "(Order ##{order.id})", order_path(order), :title => strip_tags(one_line_order_summary order)
         = submit_tag 'Confirm Check-In'
-        = link_to 'Cancel', checkin_path(@showdate), :class => 'btn btn-primary'
+        = link_to 'Cancel', checkin_path(@showdate), :class => 'btn btn-secondary'

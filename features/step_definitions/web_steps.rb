@@ -130,9 +130,14 @@ Then /^(?:|I )should not see \/([^\/]*)\/(?: within "([^\"]*)")?$/ do |regexp, s
   end
 end
 
-Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should contain "([^\"]*)"$/ do |field, selector, value|
+Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"]*)"$/ do |field, selector, equality_check, value|
   with_scope(selector) do
-    find_field(field).value.should =~ /#{value}/
+    val = find_field(field).value
+    if equality_check =~ /equal/
+      val.should eq(value)
+    else
+      val.should =~ /#{value}/
+    end
   end
 end
 

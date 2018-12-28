@@ -1,0 +1,25 @@
+- if group.redeemable_showdates.empty?
+  %tr.border-bottom.border-secondary[group.vouchers.first]
+    %td.text-center= group.size
+    %td.text-center= group.name
+    %td.text-center Reservations unavailable for this show
+    %td
+    %td
+
+- else
+  - gid = group.group_id
+  %tr.border-bottom.border-secondary[group.vouchers.first]
+    = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline' do
+      = hidden_field_tag 'voucher_ids', group.voucherlist
+      %td.text-center= menu_or_static_text('number', group.size)
+      %td.text-center= group.name
+      %td.text-center
+        = select_tag 'showdate_id', | 
+          content_tag(:option, "Select...", :value => 0) + |
+          options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, label_function), |
+          :class => 'showdate', |
+          :style => 'max-width: 20em !important', |
+          :onchange => %Q{$('#special_seating_#{gid}').removeClass('invisible'); $('#confirm_#{gid}').prop('disabled',false)} |
+        .invisible{:id => "special_seating_#{gid}"}= text_field_tag 'comments', '', :class => 'form-control form-control-sm', :placeholder => t('reservations.special_seating_requests')
+      %td.text-center= submit_tag 'Confirm', :disabled => 'disabled', :disable_with => 'Confirming...', :id => "confirm_#{gid}", :class => 'btn btn-success'
+      %td

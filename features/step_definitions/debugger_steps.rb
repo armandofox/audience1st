@@ -7,4 +7,3 @@ Then /^debug javascript$/ do
   page.driver.debug
   1
 end
-

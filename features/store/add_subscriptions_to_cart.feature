@@ -13,9 +13,7 @@ Feature: Add subscriptions to cart
     Given a "Regular" subscription available to anyone for $50.00
     And a "Discount" subscription available to anyone for $20.00
     When I go to the subscriptions page
-    Then I should see "Buy Subscriptions"
-
-    When I select "2" from "Regular"
+    And I select "2" from "Regular"
     And I select "1" from "Discount"
     And I press "CONTINUE >>"
     Then the cart should contain 2 "Regular" subscriptions

@@ -1,3 +1,5 @@
+= themed
+
 %h1.text-center Contact Info for #{h @customer.full_name}
 
 %br
@@ -8,4 +10,4 @@
   %br
   %br
   = submit_tag 'Save Changes', :class => 'btn btn-success'
-  = link_to 'Cancel', customer_path(@customer), :class => 'btn btn-primary'
+  = link_to 'Cancel', customer_path(@customer), :class => 'btn btn-secondary'

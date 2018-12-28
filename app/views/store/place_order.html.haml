@@ -1,3 +1,5 @@
+= themed
+
 %h1.text-center Thank You for Your Purchase!
 
 .notice
@@ -21,7 +23,7 @@
         %label= h @recipient.street
         %br
         %label= "#{h @recipient.city}, #{h @recipient.state} #{h @recipient.zip}"
-      %p.emphasis Note: Recipient has NOT been notified of this gift.
+      %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
 
   = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
@@ -34,7 +36,5 @@
     = link_to 'Back to Customer List', customers_path, :class => 'btn btn-outline-primary'
     = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-outline-primary'
   - else
-    = link_to 'Make Another Purchase', store_path(@order.purchaser), :class => 'btn btn-success'
-    - if @order.purchaser.has_ever_logged_in?
+    - unless @guest_checkout
       = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'
-      = link_to 'Log Out', logout_path, :class => 'btn btn-primary'

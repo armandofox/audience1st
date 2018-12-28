@@ -34,10 +34,10 @@
     - if !@sublists.blank?
       = radio_button_tag 'what', 'add'
       %label.plain{:for => 'what_add'} Add to existing mailing list:
-      = select_tag 'sublist', options_for_sublists(@sublists)
+      = select_tag 'sublist', options_for_select(@sublists)
       %br
       = radio_button_tag 'what', 'create'
       %label.plain{:for => 'what_create'} Create new mailing list named:
       = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
       %br
-    = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...'
+    = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...', :class => 'btn btn-primary'

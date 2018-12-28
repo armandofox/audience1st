@@ -9,34 +9,103 @@ body.maintenance {
   background-color: red;
 }
 
-.hidden { display: none; }
+.customer-vouchers-table {
+    width: 90%;
+    border-collapse: collapse;
+}
 
+/* Additional field qualifiers for errors etc */
+
+.validationError {
+  color: red;
+ }
+
+.highlighted {
+  background-color: #9f9;
+}
+
+.fieldWithErrors {
+  padding: 2px;
+  color: white;
+  background-color: red;
+  display: table;
+}
+
+.disabledField {
+	background-color: #e6e6e6;
+	border: none;
+	color: #000;
+	font-weight: bold;
+}
+x
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
 
+.a1-text-large {
+    font-size: 1.5rem;
+}
+.a1-text-medium {
+    font-size: 1.25rem;
+}
+
 /* General tabular styles */
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 0;
+	margin-bottom: 10px;
+	margin-top: 4px;
+}
+thead {
+  background-color: #EEE;
+  color: black;
+}
+th {
+  margin: 0;
+  padding: 3px;
+  font-weight: bold;
+  text-align: center;
+  background: #333;
+  color: #fff;
+}
+td {
+  padding: 1px 2px;
+}
 
 table {
     font-size: 12pt;
 }
 /* easier to navigate if tabular rows hilited on hover */
-table.hilite tr {
-	padding: 2px 0;
-	line-height: 1.2;
-}
 table.hilite tr:hover {
 	background-color: #fcfe69;
 }
-/* To make alternating table rows different colors, set the styles here  */
-.even { background-color: inherit; }
-.odd { background-color: #eee; }
+
+.admin {
+  background-color: #eff19e;
+  color: black; }
+
+.adminDiv {
+  background-color: #eff19e;
+  display: block; }
+
+.adminField {
+    width: 100%;
+    display: inline-block;
+  font-family: PT Sans, sans-serif;
+  clear: both;
+  padding: 2px 10px;
+  background-color: #eff19e;
+  color: black; }
+
+
 
 /*
  * Popup-help styles (http://psacake.com/web/jl.asp)
  */
 
-a.a1tooltip {outline:none; }
+a.a1tooltip {outline:none; font-size: 1rem; }
 a.a1tooltip strong {line-height:30px;}
 a.a1tooltip:hover {text-decoration:none;} 
 a.a1tooltip span {
@@ -50,13 +119,8 @@ a.a1tooltip:hover span{
 .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
     
 /* Pagination of customer list */
-#customer_list_header { 
-  text-align: center;
-  padding: 10px;
-  width: 100%;
- }
 .pagination {
-  width: auto;
+    width: auto;
   margin: 0 auto; /* centered */
   display: block;
   /* self-clearing method: */ }
@@ -155,36 +219,24 @@ span.tooltip:hover span { /* will display just on :hover state*/
 }
 
 /* Inline form buttons */
-.inline, .button-to, .button-to div {
+.inline {
    display: inline;
 }
 
-/*
- * Welcome panel:  needs to be statically sized (height) if FB is in use,
- * otherwise late load of FB image makes page jittery 
- */
-#welcome.facebook {
-    height: 55px;
-    vertical-align: bottom;
-}
+/* Printable receipts */
+/* plain style for receipts */
+body#receipt {
+  background: none;
+  font-family: Helvetica, Arial, sans-serif;
+  color: black;
+  border: 2px solid black;
+  padding: 0.5em;
+  margin: 0.5em;
+  font-size: larger; }
+  body#receipt * {
+    color: black;
+    background: none; }
 
-
-/*
- * Quick search customer panel
- */
-#customer_quick_search {
-	padding-top: 0;
-	padding-bottom: 0;
-}
-#customer_quick_search table {
-	padding: 0;
-	margin: 0;
-}
-#onBehalfOfName {
-	color: blue;
-	font-weight: bold;
-	font-size:  larger;
-}
 /* Make autocomplete menu not be infinitely long */
 .ui-autocomplete {
   max-height: 50ex;
@@ -197,28 +249,6 @@ span.tooltip:hover span { /* will display just on :hover state*/
  */
 * html .ui-autocomplete {
   height: 50ex;
-}
-
-/*
- * Staff action buttons that appear for a customer (Contact, Prospecting, etc)
- */
-#staffButtons {
-	border-top: 1px groove #fff;
-}
-/*
- * Customer list 
- */
-#customer_list_header {
-    margin-top: 0.5ex;
-    margin-bottom: 0;
-    padding-top: 2px;
-    padding-bottom: 0;
-    text-align: center;
-}
-
-#customer_list_header span.customer_list_header {
-    font-size: 110%;
-    font-weight: bold;
 }
 
 .customer_label {
@@ -282,88 +312,6 @@ table.showdates_summary td {
 	padding: 0 2em;
 }
 
-/*
- * Box office functions header ("stats for this show")
- */
-#select_show {
-	clear:  both;
-    margin: 1em;
-    font-size: larger;
-}
-#select_show select {
-	font-size: larger;
-} 
-
- table#showdate_info {
-	border: 0;
-	font-size: larger;
-	width: 600px;
-	text-align: center;
-}
-table#showdate_info td.header {
-	text-align: right;
-}
-table#showdate_info td.value {
-	text-align: right;
-	width: 10em;
-}
-/*
- * Walkup sales
- */
-
-.walkup_tickets {
-	width: 100%;
-}
-.walkup_tickets .column {
-	float: left;
-	padding: 0;
-	margin: 4px;
-	width: 45%;
-} 
-.walkup_tickets .column:hover {
-	border: 1px solid red;
-	margin: 3px;
-}
-.walkup_tickets p.column_header {
-	font-size: larger;
-	text-align: center;
-	font-weight: bold;
-	color: #fff;
-	background-color: red;
-    padding: 4px 0;
-    margin: 0;
-}
-.walkup_tickets #payment_types {
-    font-size: 100%;
-    
-}
-#whoops_button {
-    text-align: center;
-    line-height: 2.5;
-}
-#payment_types {
-	text-align: center;
-	font-size: medium;
-	font-weight: bold;
-	margin-top: 10px;
-}
-#payment_types input[type="radio"] {
-	margin-right: 4ex;
-	margin-left: -5px;
-}
-#ccWaiting {
-  background-color: white;
-  color: red;
-  line-height: 1.5em;
-  font-weight: bold;
-  text-align: center;
-  border: 1px solid red;
-  padding: 2px;
-}
-#ccWaiting a a:hover {
-  color: red;
- }
- 
 /*
  * Online check-in
  */
@@ -448,54 +396,31 @@ div.show .showSalesRevenue {
 /*
  * Door list
  */
- 
-body#door_list {
-	background: none;
-	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
-	font-size:  11pt;
+
+#door_list {
+    background-color: white;
 }
-body#door_list h1, body#door_list h2 {
-	font-family: inherit;
-	color: black;
+#door_list table {
+    width: 100%;
+}
+#door_list table, #door_list th, #door_list td {
+    font-size: 1.5rem;
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 
 /* Index letter column (style applies to TD) */
-.maincolumn {
+#door_list .maincolumn {
   border: none;
-  background: none;
+  background-color: white;
   font-size: large;
   font-weight: bold;
-  color: red;
 }
-/* Subscribers are hilited on door list (style applies to a TR) */
-.subscriber {
-  background-color: #9f9;
-}
-/* Attention - something's not right here */
-.attention {
-  color: red;
-}
+@media screen {  #door_list .maincolumn {  color: red;     } }
 
-/*
- *  Importing
- */
- 
-table.import {
-    height: 2ex;
-}
-table.import td {
-	border-width: 1px;
-	border-style: dotted;
-}
+/* Subscribers are hilited on door list on screen, but bolded in print */
+@media screen {  #door_list .subscriber {  background-color: #9f9;  } }
+@media print  {  #door_list .subscriber {  font-style: italic;  } }
 
-#import_help div {
-    margin-left: 200px;
-    margin-right: 200px;
-    border: 2px solid grey;
-    padding: 2px 4px;
-}
-#import_help ul, #import_help ol {
-    list-style: square;
-    margin-left: 2em;
-}
-
+/* Don't underline links in printed door list */
+@media print { #door_list a { text-decoration: none; color: black; } }

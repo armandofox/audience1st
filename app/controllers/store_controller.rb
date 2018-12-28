@@ -101,7 +101,11 @@ class StoreController < ApplicationController
   # This single action handles quick_donate: GET serves the form, POST places the order
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
-    @customer =  (current_user() || Customer.new)
+    unless (@customer = current_user)
+      # handle donation as a 'guest checkout', even though may end up being tied to real customer
+      @customer = Customer.new
+      session[:guest_checkout] = true
+    end
     return if request.get?
 
     # If donor doesn't exist, create them and marked created-by-admin
@@ -190,6 +194,7 @@ class StoreController < ApplicationController
   # Beyond this point, purchaser is logged in (or admin is logged in and acting on behalf of purchaser)
 
   def checkout
+    redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
@@ -220,9 +225,10 @@ class StoreController < ApplicationController
 
     if finalize_order(@order)
       reset_shopping
-      if  (! @is_admin) && (! @customer.has_ever_logged_in?)
+      if session[:guest_checkout]
         # forget customer after successful guest checkout
         logout_keeping_session!
+        @guest_checkout = true
       end
     else
       redirect_to_checkout
@@ -240,7 +246,7 @@ class StoreController < ApplicationController
       email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
       success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
-      flash[:alert] = (order.errors.full_messages + [e.message]).join(', ')
+      flash[:alert] = order.errors.full_messages
       Rails.logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
     rescue Exception => e
       Rails.logger.error("Unexpected exception: #{e.message} #{e.backtrace}")

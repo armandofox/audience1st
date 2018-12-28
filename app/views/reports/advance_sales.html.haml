@@ -1,5 +1,5 @@
 - @shows.each do |s|
-  %div.pageDiv[s]
+  %div.container[s]
     %h1= "#{s.name} (#{humanize_date_range(s.opening_date,s.closing_date)})"
     %h2="#{s.showdates.size} performances (Click on a show date for details)"
     = render :partial => "showdate", :locals => {:showdate => s,:hdr=>"<b>Total all performances</b>".html_safe} 

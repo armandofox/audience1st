@@ -12,10 +12,21 @@ Rails.application.configure do
   # preloads Rails for running tests, you may have to set it to true.
   config.eager_load = false
 
-
-  # Configure static file server for tests with Cache-Control for performance.
   config.serve_static_files   = true
   config.static_cache_control = 'public, max-age=3600'
+  # Debug mode disables concatenation and preprocessing of assets.
+  # This option may cause significant delays in view rendering with a large
+  # number of complex assets.
+  # config.assets.enabled = true
+  # config.serve_static_files = true
+  # config.assets.debug = true
+  # config.assets.compile = true
+  # config.assets.digest = false
+
+  # Adds additional error checking when serving assets at runtime.
+  # Checks for improperly declared sprockets dependencies.
+  # Raises helpful error messages.
+  config.assets.raise_runtime_errors = true
 
   # Show full error reports and disable caching
   config.consider_all_requests_local = true
@@ -35,7 +46,7 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
-  config.log_level = :info
+  config.log_level = :debug
 
   # Find n+1 query problems and unused eager-loads
   config.after_initialize do

@@ -19,7 +19,8 @@ Scenario: admin remains logged in after purchasing for a customer who has never 
   Then I should see "You have paid a total of $14.00 by Cash"
   When I follow "Back to This Customer"
   Then I should be on the home page for customer "Armando Fox"
-
+  And customer "Barry Boxoffice" should be logged in
+  
 Scenario Outline:
 
   When I add the following tickets for customer "Armando Fox":
@@ -29,6 +30,7 @@ Scenario Outline:
   When I press "<button>"
   And I should see "You have paid a total of <total_amount> by <method>"
   And customer "Armando Fox" should have <qty> "General" tickets for "Chicago" on May 15, 2010, 8:00pm
+  And customer "Barry Boxoffice" should be logged in
 
 Examples:
 

@@ -15,7 +15,7 @@ gem 'bundler'
 gem 'figaro'
 gem 'sslrequirement'
 gem 'haml'
-gem 'hominid'
+gem 'gibbon'
 gem 'i18n'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', '= 4.0.5'
@@ -52,11 +52,12 @@ group :test do
   gem 'simplecov', :require => false
   gem 'spring'                  # for 'guard'
   gem 'webmock'
+  gem 'vcr'
 end
 
 group :development do
   gem 'derailed_benchmarks'
-  gem 'query_trail'
+  # gem 'query_trail'
   gem 'ruby-prof'
   gem 'stackprof'
   gem 'web-console', '~> 2.0'

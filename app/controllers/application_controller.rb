@@ -52,12 +52,19 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  def allow_guest_checkout?
+    # Only if option is enabled, and a self-purchase is in progress for an order that is OK for guest checkout
+    !@gAdminDisplay               &&
+      @gCheckoutInProgress        &&
+      @gCart.ok_for_guest_checkout? &&
+      Option.allow_guest_checkout
+  end
 
   def reset_shopping           # called as a filter
-    @cart = find_cart
-    @cart.empty_cart!
+    @gCart.empty_cart!
     session.delete(:promo_code)
     session.delete(:cart)
+    session.delete(:return_to)
     set_checkout_in_progress(false)
     true
   end
@@ -90,7 +97,7 @@ class ApplicationController < ActionController::Base
   end
 
   def redirect_after_login(customer)
-    redirect_to ((r = session[:return_to]) ?
+    redirect_to ((r = session.delete(:return_to)) ?
       r.merge(:customer_id => customer) :
       customer_path(customer))
   end
@@ -107,13 +114,7 @@ class ApplicationController < ActionController::Base
   # filter that requires user to login before accessing account
 
   def is_logged_in
-    unless logged_in?
-      flash[:notice] = "Please log in or create an account in order to view this page."
-      redirect_to login_path
-      nil
-    else
-      current_user
-    end
+    redirect_to login_path unless logged_in?
   end
 
   def temporarily_unavailable
@@ -168,6 +169,7 @@ class ApplicationController < ActionController::Base
       # button. Uncomment if you understand the tradeoffs.
       # reset_session
       self.current_user = @user
+      session[:guest_checkout] = false
       # 'remember me' checked?
       new_cookie_flag = (params[:remember_me] == "1")
       handle_remember_cookie! new_cookie_flag

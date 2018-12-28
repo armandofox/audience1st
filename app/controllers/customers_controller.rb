@@ -49,8 +49,8 @@ class CustomersController < ApplicationController
     @reserved_vouchers,@unreserved_vouchers =
       @subscriber_vouchers.partition { |v| v.reserved? }
     if new_session?
-      flash[:notice] = (@current_user.login_message || "Logged in successfully")
-      flash[:alert] = false
+      flash.now[:notice] = (@current_user.login_message || "Logged in successfully")
+      flash.delete(:alert)
     end
 
   end
@@ -146,6 +146,7 @@ class CustomersController < ApplicationController
   # Regular user checking out as guest
   def guest_checkout
     @customer = Customer.new
+    redirect_to new_customer_path, :alert => t('store.errors.guest_checkout_not_allowed') unless allow_guest_checkout?
   end
 
   # Admin adding customer to database
@@ -186,6 +187,7 @@ class CustomersController < ApplicationController
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
       create_session(@customer) # will redirect to next action
+      @customer.update_attribute(:last_login, Time.current)
     else
       flash[:alert] = "There was a problem creating your account: " <<
         @customer.errors.as_html
@@ -375,7 +377,7 @@ class CustomersController < ApplicationController
   def redirect_to_real_login
     # if this email exists, AND the customer has previously logged in, they must login to continue; guest c/o won't work.
     if @customer && @customer.has_ever_logged_in?
-      redirect_to(new_session_path, :alert => "This email address has previously been used to login with a password. Please provide the email and password to continue, or use one of the Reset Password links below if you've forgotten it.  You can also continue as a guest by using a different email address.")
+      redirect_to(new_session_path, :alert => t('login.real_login_required'))
     end
   end
 
@@ -383,6 +385,7 @@ class CustomersController < ApplicationController
     if @customer
       # email exists but NEVER logged in: "login" and continue.
       create_session(@customer) #  will redirect to next correct action
+      session[:guest_checkout] = true
     end
   end
 
@@ -393,6 +396,7 @@ class CustomersController < ApplicationController
     if @customer.valid_as_guest_checkout?
       @customer.save!
       create_session(@customer)
+      session[:guest_checkout] = true
     end
   end
 

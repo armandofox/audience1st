@@ -1,3 +1,5 @@
+= themed
+
 #checkout_message.hidden= @checkout_message
 
 - if @cart.gift?
@@ -17,16 +19,6 @@
     #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @cart.purchaser}
     = render :partial => 'credit_card', :locals => {:name => @cart.purchaser.full_name}
 
-  - unless @is_admin || Option.terms_of_sale.blank?
-    #terms_of_sale
-      %label{:for => 'sales_final'} TERMS OF SALE:
-      = check_box_tag 'sales_final',1,(@sales_final_acknowledged == true)
-      %strong 
-        I understand and agree to the
-        = link_to "terms of sale.", :onclick => "alert('#{escape_javascript(Option.terms_of_sale)}')"
-      %br
-      %br
-
   - if @is_admin
     #other_payments.adminDiv
       - if @cart.total_price > 0
@@ -40,13 +32,14 @@
   - else 
     = hidden_field_tag 'email_confirmation', 1
 
-  %p.strong 
-    YOUR ORDER IS NOT COMPLETE UNTIL YOU CLICK HERE >>>
-    - if @cart.total_price > 0
-      = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success', :onclick => 'A1.stripeSubmit()'
-      = hidden_field_tag '_stripe_commit'
-    - else
-      = submit_tag "Complete Comp Order"
+  .form-row
+    .col-md-9
+      .alert.alert-warning.text-center= t('store.accept_terms_of_sale', :terms_of_sale_text => escape_javascript(Option.terms_of_sale)).html_safe
+    .col-md-3
+      - if @cart.total_price > 0
+        = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'
+        = hidden_field_tag '_stripe_commit'
+      - else
+        = submit_tag "Complete Comp Order", :class => 'btn btn-success btn-block'
 
-    = link_to "Cancel", store_path(@cart.customer), {:id => 'cancel',:class => 'btn btn-secondary'} 
 

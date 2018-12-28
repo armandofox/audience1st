@@ -1,9 +1,9 @@
 - unless flash[:notice].blank?
-  #notice.notice.message.feedback.clear{'data-hilite' => '#00dd00'}
-    %p= render_multiline_message(flash[:notice])
+  .alert.alert-secondary.text-center{'data-hilite' => '#00dd00'}
+    = render_multiline_message(flash[:notice])
 
 - unless flash[:alert].blank?
-  #warning.warning.message.clear{'data-hilite' => '#ffff00'}
-    %p= render_multiline_message(flash[:alert])
+  .alert.alert-danger.text-center{'data-hilite' => '#ffff00'}
+    = render_multiline_message(flash[:alert])
 
-= javascript_tag %q{$('.message').animate({backgroundColor: $('.message').data('hilite')}, 3000);}
+= javascript_tag %q{$('.alert').animate({backgroundColor: $('.alert').data('hilite')}, 3000);}

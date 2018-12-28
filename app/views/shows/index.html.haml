@@ -14,7 +14,7 @@
       %th
   %tbody
     - @shows.each do |show|
-      %tr{:class=>cycle(:even,:odd)}
+      %tr
         %td= link_to show.name, edit_show_path(show)
         %td= purchase_link_popup "[Link]", link_to_show_tickets(show), show.name
         %td.text-center= humanize_date_range(show.opening_date, show.closing_date)

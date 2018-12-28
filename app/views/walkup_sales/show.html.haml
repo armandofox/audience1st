@@ -1,34 +1,41 @@
 = render :partial => 'store/check_javascript'
 
 = form_tag walkup_sales_path(:id => @showdate.id), {:id => '_stripe_payment_form'} do
-  .walkup_tickets
-    .column
-      %p.column_header 1. Select tickets & donation amount
-      = render :partial => 'walkup_sales_tickets'
-    #payment.column
-      %p.column_header 2. Collect & record payment
-      #whoops_button.text-center= link_to 'Whoops, I Made a Mistake', report_walkup_sale_path(@showdate), :class => 'btn btn-warning'
-      #payment_types
-        %label.no_float{:for => 'payment_type_credit_card'} Credit Card
-        = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
-        %label.no_float{:for => 'payment_type_cash'} Cash or Zero-Revenue
-        = radio_button_tag 'payment_type', 'cash', false, :onclick => "A1.show_only('cash')"
-        %label.no_float{:for => 'payment_type_check'} Check
-        = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
-      #payment_form
-        #credit_card_payment
-          = render :partial => 'store/credit_card'
-          -# hidden field 'commit' filled in by javascript on cc purchase
-          = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-          = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :onclick => 'A1.stripeSubmit()'
-        #cash_payment{:style => 'display: none;'}
-          %fieldset
-            %legend Cash Payment
-            %p Collect Cash, Then Click Below to Record
-          = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash'}
-        #check_payment{:style => 'display: none;'}
-          %fieldset
-            %legend Check Payment
-            %label{:for => 'check_number'} Check Number (optional)
-            = text_field_tag 'check_number', '', :size => 6
-          = submit_tag 'Record Check Payment', {:id => 'submit_check'}
+  .row.mx-0
+    .col-md-4
+      .card
+        .card-header.text-center
+          %h4 1. Select tickets & donation amount
+        .card-body
+          = render :partial => 'walkup_sales_tickets'
+    .col-md-8#payment
+      .card
+        .card-header.text-center
+          %h4 2. Collect & record payment
+        .card-body
+          #whoops_button.text-center= link_to 'Whoops, I Made a Mistake...', report_walkup_sale_path(@showdate), :class => 'btn btn-danger'
+          #payment_types
+            %label{:for => 'payment_type_credit_card'} Credit Card
+            = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
+            %label{:for => 'payment_type_cash'} Cash or Zero-Revenue
+            = radio_button_tag 'payment_type', 'cash', false, :onclick => "A1.show_only('cash')"
+            %label{:for => 'payment_type_check'} Check
+            = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
+          #payment_form.justify-content-center
+            #credit_card_payment
+              = render :partial => 'store/credit_card'
+              = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
+              = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :class => 'btn btn-success', :onclick => 'A1.stripeSubmit()'
+            #cash_payment{:style => 'display: none;'}
+              %fieldset
+                %legend Cash Payment
+                %label.col-form-label Collect Cash, then
+                = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash', :class => 'btn btn-success'}
+            #check_payment{:style => 'display: none;'}
+              %fieldset
+                %legend Check Payment
+                .input-group.mb-2
+                  .input-group-prepend
+                    %span.input-group-text Check Number (optional)
+                  = text_field_tag 'check_number', '', :size => 6, :class => 'form-control'
+                = submit_tag 'Record Check Payment', {:id => 'submit_check', :class => 'btn btn-success'}

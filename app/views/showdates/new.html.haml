@@ -1,6 +1,6 @@
 %h1 Add dates for #{@show.name}
 
-%p.infoMsg
+.alert.alert-info
   The following options will be used for
   %strong all
   dates created at the same time.  If you want some performances to have different 
@@ -31,7 +31,7 @@
         = popup_help_for(:max_advance_sales)
         = hidden_field_tag "show_id", @show.id
 
-  %p.infoMsg Enter recurring dates (you can add more later, or delete exceptions later):
+  .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
 
   %label Every
   = day_of_week_checkboxes('day')
@@ -46,5 +46,5 @@
     
   = submit_tag 'Save & Back to List of Shows' 
   = submit_tag 'Save & Add More Dates for This Show' 
-  = link_to 'Cancel', edit_show_path(@show), :class => 'btn btn-primary'
+  = link_to 'Cancel', edit_show_path(@show), :class => 'btn btn-secondary'
 

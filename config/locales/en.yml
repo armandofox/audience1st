@@ -1,6 +1,55 @@
 en:
   customers:
-    confirm_delete: "Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?"
+
+    confirm_delete: >
+      Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked 
+      to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
+
+  login:
+
+    login_failed: >
+      We're so sorry, but we couldn't log you in:
+
+    no_such_email: >
+      We can't find that email in our database.  Maybe you signed up with a different one?
+      You can also continue with your purchase and setup a new account as you checkout.
+
+    bad_password: >
+      The password seems to be incorrect.  If you forgot your password, click 'Reset my password' and we will email 
+      you a new password within 1 minute.
+
+    email_or_password_blank: >
+      You need to provide your email and password.
+
+    setup_secret_question_message: >
+      You can now setup a secret question to verify your identity in case you forget your password.  
+      Click Change Password above to setup your secret question.
+
+    no_secret_question: >
+      %{username} never set up a secret question.
+
+    wrong_answer: >
+      That isn't the answer you provided when you selected your secret question.
+
+    real_login_required: >
+      This email address has previously been used to login with a password. 
+      Please provide the email and password to continue, or use one of the Reset Password links
+      below if you've forgotten it.  You can also continue as a guest by using a different email address.
+
+  reservations:
+
+    confirm_cancellation: >
+      Are you sure? Click OK to cancel this reservation, or Cancel to leave things as they are.
+
+    special_seating_requests: >
+      Any special seating/mobility needs?
+
+    cannot_be_changed: >
+      Some reservations could NOT be cancelled.  Please review your reservations below and contact a 
+      box office agent if you need assistance.
+
+    cancelled: >
+      %{canceled_num} of your reservations have been cancelled.
 
   store:
 
@@ -13,6 +62,18 @@ en:
 
     accessible_seating_description: >
       Please describe (wheelchair, no stairs, etc.)
+
+    accept_terms_of_sale: >
+      By completing your order, you agree to the <a href="#" onclick="alert('%{terms_of_sale_text}')">terms of sale</a>.
+
+    errors:
+
+      guest_checkout_not_allowed:  >
+        Sorry, guest checkout is unavailable for this order.  Please
+        create an account to continue checkout.
+
+      empty_order: >
+        There are no items in your order.
 
   options:
 
@@ -34,10 +95,10 @@ en:
     disable_maintenance_warning: >
       You're about to turn off Staff Access Only and make Audience1st
       available to all users. 
-      Click OK to confirm, or Cancel to cancel.
+      Click OK to confirm, or Cancel to leave Audience1st in "staff access only" mode.
 
     change_basic_settings_warning: >
-      Warning: Changing these options affects the basic operation and
+      Changing these options affects the basic operation and
       appearance of your Audience1st installation.  Please be sure you 
       know what you're doing before changing these, and to be safe,
       before changing a value make a note of the old value.  Click "Allow

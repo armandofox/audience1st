@@ -26,7 +26,7 @@ describe Customer, 'authentication' do
   context "invalid login" do
     it "should display a password-incorrect message for bad password" do
       Customer.authenticate(@quentin.email, 'invalid_password').errors[:login_failed].
-        should include_match_for(/password incorrect/i)
+        should include_match_for(/password seems to be incorrect/i)
     end
     it "should display an unknown-username message for bad username" do
       Customer.authenticate('asdkfljhadf@email.com', 'pass').errors[:login_failed].

@@ -98,7 +98,7 @@ class CheckinsController < ApplicationController
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
       redirect_to walkup_sale_path(@showdate)
     else
-      render :layout => false
+      render :layout => 'door_list'
     end
   end
 
