@@ -14,28 +14,31 @@
           %h4 2. Collect & record payment
         .card-body
           #whoops_button.text-center= link_to 'Whoops, I Made a Mistake...', report_walkup_sale_path(@showdate), :class => 'btn btn-danger'
-          #payment_types
-            %label{:for => 'payment_type_credit_card'} Credit Card
-            = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
-            %label{:for => 'payment_type_cash'} Cash or Zero-Revenue
-            = radio_button_tag 'payment_type', 'cash', false, :onclick => "A1.show_only('cash')"
-            %label{:for => 'payment_type_check'} Check
-            = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
+          #payment_types.py-2
+            .form-check.form-check-inline
+              = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
+              %label.form-check-label.px-1{:for => 'payment_type_credit_card'} Credit Card
+            .form-check.form-check-inline
+              = radio_button_tag 'payment_type', 'cash', false, :onclick => "A1.show_only('cash')"
+              %label.form-check-label.px-1{:for => 'payment_type_cash'} Cash or Zero-Revenue
+            .form-check.form-check-inline
+              = radio_button_tag 'payment_type', 'check', false, :onclick => "A1.show_only('check')"
+              %label.form-check-label.px-1{:for => 'payment_type_check'} Check
           #payment_form.justify-content-center
             #credit_card_payment
               = render :partial => 'store/credit_card'
               = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-              = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :class => 'btn btn-success', :onclick => 'A1.stripeSubmit()'
+              = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :class => 'btn btn-success mt-2', :onclick => 'A1.stripeSubmit()'
             #cash_payment{:style => 'display: none;'}
               %fieldset
                 %legend Cash Payment
-                %label.col-form-label Collect Cash, then
-                = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash', :class => 'btn btn-success'}
+                %label.col-form-label.px-2 Collect Cash, then
+                = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash', :class => 'btn btn-success mb-2'}
             #check_payment{:style => 'display: none;'}
               %fieldset
                 %legend Check Payment
-                .input-group.mb-2
+                .input-group.m-2.pr-3
                   .input-group-prepend
                     %span.input-group-text Check Number (optional)
-                  = text_field_tag 'check_number', '', :size => 6, :class => 'form-control'
-                = submit_tag 'Record Check Payment', {:id => 'submit_check', :class => 'btn btn-success'}
+                  = text_field_tag 'check_number', '', :size => 4, :class => 'form-control'
+                = submit_tag 'Record Check Payment', {:id => 'submit_check', :class => 'btn btn-success m-2'}

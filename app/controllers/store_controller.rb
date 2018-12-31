@@ -134,6 +134,9 @@ class StoreController < ApplicationController
       render(:action => 'donate') and return
     end
     if finalize_order(@order)
+      # forget customer after successful guest checkout
+      @guest_checkout = true
+      logout_keeping_session!
       render :action => 'place_order'
     else
       @customer =  (current_user() || Customer.new)
@@ -244,12 +247,14 @@ class StoreController < ApplicationController
       order.finalize!
       Rails.logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
       email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
+      flash.now[:notice] = flash[:notice]
+      flash.delete(:notice)
       success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
       flash[:alert] = order.errors.full_messages
       Rails.logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
-    rescue Exception => e
-      Rails.logger.error("Unexpected exception: #{e.message} #{e.backtrace}")
+    rescue StandardError => e
+      Rails.logger.error("Unexpected error: #{e.message} #{e.backtrace}")
       flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
     end
     success

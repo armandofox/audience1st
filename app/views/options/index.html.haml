@@ -116,9 +116,9 @@
 
   .container.text-center#configOptions
     %h1 Integrations
-    #integrationWarning.hidden= t('options.integration_warning')
-    #enableMaintenanceWarning.hidden= t('options.enable_maintenance_warning')
-    #disableMaintenanceWarning.hidden= t('options.disable_maintenance_warning')
+    #integrationWarning.sr-only= t('options.integration_warning')
+    #enableMaintenanceWarning.sr-only= t('options.enable_maintenance_warning')
+    #disableMaintenanceWarning.sr-only= t('options.disable_maintenance_warning')
     %p.text-danger.lead= t('options.change_basic_settings_warning')
     %p
       = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'

@@ -1,6 +1,6 @@
 %fieldset#credit_card
   %legend= local_assigns[:legend] || 'Credit Card Information'
-  %p.text-center.bg-secondary.text-light= t('store.credit_card_security_notice')
+  %p.text-center.bg-secondary.text-light.py-2= t('store.credit_card_security_notice')
   = hidden_field_tag 'credit_card_token', 'DUMMY'
   = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
   .form-row
@@ -28,8 +28,8 @@
       %label.col-form-label{:for => 'credit_card_verification_value'}
         CVV code
         = popup_help_for 'credit_card_verification_value'
-    .col-md-2
-      = text_field_tag 'credit_card_verification_value', '', :size => 4, :maxlength => 4, :class => 'form-control form-control-sm unsubmitted'
-    .col-md-3
+    .col-md-1
+      = text_field_tag 'credit_card_verification_value', '', :class => 'form-control form-control-sm unsubmitted'
+    .col-md-4
       = image_tag 'credit_card_logos_horizontal.png'
   .container#payment_errors.bg-danger.text-center
