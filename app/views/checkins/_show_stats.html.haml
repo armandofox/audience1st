@@ -24,10 +24,10 @@
     .row
       .col-md-3.text-right Walkup sales:
       .col-md-1= showdate.compute_walkup_sales
-      .col-md-2.text-center
-        - if controller.controller_name =~ /walkup/
-          = link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'
-        - else 
-          = link_to 'Walkup Sales', walkup_sale_path(showdate), :class => 'btn btn-primary d-inline-block'
-      .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary'
-      .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary', :target => '_blank'
+    .row
+      .col-md-2
+      .col-md-2.text-center= link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'
+      .col-md-2.text-center= link_to 'Walkup Sales', walkup_sale_path(showdate), :class => 'btn btn-primary d-inline-block'
+      .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary  d-inline-block'
+      .col-md-1
+      .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary  d-inline-block', :target => '_blank'
