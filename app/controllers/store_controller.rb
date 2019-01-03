@@ -247,8 +247,6 @@ class StoreController < ApplicationController
       order.finalize!
       Rails.logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
       email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
-      flash.now[:notice] = flash[:notice]
-      flash.delete(:notice)
       success = true
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
       flash[:alert] = order.errors.full_messages
