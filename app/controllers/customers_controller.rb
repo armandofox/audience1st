@@ -283,23 +283,24 @@ class CustomersController < ApplicationController
   # AJAX helpers
   # auto-completion for customer search - params[:term] is what user typed
   def auto_complete_for_customer
-    terms = params[:term].to_s
-    render :json => {} and return if terms.length < 2
-    customers = Customer.find_by_name(terms.split( /\s+/ ))
-    
-    result = Array.new
-    customers.each do |c|
-      result.push({'label' => c.full_name, 'value' => customer_path(c)})
+    render :json => {} and return if (terms_string = params[:term].to_s).length < 2
+    terms = terms_string.split( /\s+/ )
+    exact_name_matches = Customer.exact_name_matches(terms).limit(20)
+    partial_name_matches = Customer.partial_name_matches(terms).limit(20)
+    other_term_matches = Customer.other_term_matches(terms).limit(20)
+
+    if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
+      render :json => [{'label' => '(no matches)', 'value' => nil}] and return
     end
-    customer_hash = Customer.find_by_terms_col(terms.split( /\s+/ ))
-    if (customers.length + customer_hash.length).eql? 0
-      result.push({'label' => '(no matches)', 'value' => nil})
-    end
-    customer_hash.each do |customer, info|
-      result.push({'label' => customer.full_name + info, 'value' => customer_path(customer)})
-    end
-    result.push({'label' => "List all matching '#{terms}'", 'value' => customers_path(:customers_filter => params[:term])})
-    render :json => result
+    show_all_matches = [{
+        'label' => "List all matching '#{terms_string}'",
+        'value' => customers_path(:customers_filter => terms_string)}]
+    result =
+      exact_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
+      partial_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
+      other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})"} +
+      show_all_matches
+    render :json => result.uniq
   end
 
   private
