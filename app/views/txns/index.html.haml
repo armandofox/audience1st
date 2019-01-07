@@ -17,7 +17,7 @@
   %br
   %table
     %tr.tableHeading
-      - ["Date", "Proc'd by", "Customer", "Txn Type", "Purch.method", "Amt", "Show", "Perf date", "Voucher ID", "Comments"].each |c|
+      - ["Date", "Proc'd by", "Customer", "Txn Type", "Purch.method", "Amt", "Show", "Perf date", "Voucher ID", "Comments"].each do |c|
         %th= c
     - @txns.each do |t|
       - c = Customer.find_by_id(t.customer_id)  
