@@ -16,7 +16,7 @@ class Customer < ActiveRecord::Base
         Customer.update_foreign_keys_from_to(self.id, Customer.anonymous_customer.id)
         self.destroy
       end
-    rescue Exception => e
+    rescue StandardError => e
       self.errors.add :base,"Cannot forget customer #{id} (#{full_name}): #{e.message}"
     end
     return self.errors.empty?
@@ -44,8 +44,8 @@ class Customer < ActiveRecord::Base
   end
         
   def mergeable_with?(other)
-    if other.special_customer?
-      self.errors.add :base,"Special customers cannot be merged away"
+    if other.special_customer? || self.is_admin || other.is_admin
+      self.errors.add :base,"Special customers and super admins cannot be merged"
     elsif (self.special_customer? && self != Customer.anonymous_customer)
       self.errors.add :base,"Merges disallowed into all special customers except Anonymous customer"
     end
@@ -133,7 +133,7 @@ class Customer < ActiveRecord::Base
         end
         ok = "Transferred " + msg.join(", ") + " to customer id #{new}"
       end
-    rescue Exception => e
+    rescue StandardError => e
       c0.errors.add :base,"Customers NOT merged: #{e.message}"
     end
     return ok

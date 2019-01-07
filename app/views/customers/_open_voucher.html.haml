@@ -2,7 +2,7 @@
   %tr.border-bottom.border-secondary[group.vouchers.first]
     %td.text-center= group.size
     %td.text-center= group.name
-    %td.text-center Reservations unavailable for this show
+    %td.text-center= "Reservations unavailable for this show" if group.vouchertype.reservable?
     %td
     %td
 

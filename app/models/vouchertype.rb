@@ -150,6 +150,10 @@ class Vouchertype < ActiveRecord::Base
   def external? ; offer_public == EXTERNAL ; end
   def revenue? ; category == 'revenue' ; end
 
+  def reservable?
+    !([:bundle,:nonticket].include?(category))
+  end
+
   def self_service_comp?
     category == 'comp' &&
       (offer_public == SUBSCRIBERS || offer_public == ANYONE)

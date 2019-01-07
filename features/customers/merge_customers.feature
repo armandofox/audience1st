@@ -45,3 +45,11 @@ Scenario: manual merge
    | zip        | 99949               |
    | email      | janey@mail.com      |
    | street     | 11 Main St          |
+
+Scenario: cannot merge Admins
+
+  When I select customers "Super Administrator" and "Janey Weigandt" for merging
+  And I press "Auto Merge"
+  Then I should see "super admins cannot be merged"
+  And customer "Janey Weigandt" should exist
+  And customer "Super Administrator" should exist

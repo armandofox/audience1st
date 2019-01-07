@@ -122,7 +122,7 @@ class CustomersController < ApplicationController
       flash[:notice] = 'Secret question change confirmed.'
       redirect_to customer_path(@customer)
     else
-      flash[:alert] = ["Could not update secret question: ", @customer.errors.as_html]
+      flash[:alert] = "Could not update secret question: #{@customer.errors.as_html}"
       render :action => :change_secret_question, :id => @customer
     end
   end
@@ -277,9 +277,11 @@ class CustomersController < ApplicationController
       redirect_to_last_list and return
     end
     result = c0.merge_with_params!(c1, params)
-    # result is nil if merge failed, else string describing result
-    flash[:notice] = result || c0
-    Rails.logger.info "Merging <#{c1}> into <#{c0}>: #{flash[:notice]}"
+    if result.nil?
+      flash[:alert] = "Merge failed: #{c0.errors.as_html}"
+    else
+      flash[:notice] = result
+    end
     redirect_to_last_list
   end
 
@@ -333,10 +335,11 @@ class CustomersController < ApplicationController
     c0 = Customer.find_by_id(id0)
     c1 = Customer.find_by_id(id1)
     flash[:notice] ||= ''
-    if (result = c0.merge_automatically!(c1))
-      flash[:notice] = result
+    result = c0.merge_automatically!(c1)
+    if result.nil?
+      flash[:alert] = "Automatic merge failed: #{c0.errors.as_html}"
     else
-      flash[:notice] = ["Automatic merge failed, try merging manually to resolve the following errors:" , c0]
+      flash[:notice] = result
     end
   end
 
@@ -372,8 +375,8 @@ class CustomersController < ApplicationController
         :customer_id => @customer.id,
         :comments => 'Password has been reset')
       return true
-    rescue Exception => e
-      flash[:notice] = e.message +
+    rescue StandardError => e
+      flash[:alert] = e.message +
         "<br/>Please contact #{Option.help_email} if you need help."
       return nil
     end
