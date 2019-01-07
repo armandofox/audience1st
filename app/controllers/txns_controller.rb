@@ -9,7 +9,7 @@ class TxnsController < ApplicationController
     if (@customer = Customer.find_by_id(@txn_filter))
       @txns = Txn.
         where("customer_id = ?", @customer.id).
-        includes(:customer, :show, :showdate, :voucher => :order).
+        includes(:customer, :show, :showdate, :voucher, :order).
         order("txn_date DESC").
         paginate(:page => @page)
       @header = "Transactions for #{@customer.full_name}"

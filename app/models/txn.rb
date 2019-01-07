@@ -2,7 +2,9 @@ class Txn < ActiveRecord::Base
   belongs_to :show
   belongs_to :showdate
   belongs_to :customer
-
+  belongs_to :order
+  belongs_to :voucher
+  
   Txn::TYPES = {
     "other" => "Other",
     "tkt_purch" => "Ticket purchase",
