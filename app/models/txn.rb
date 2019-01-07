@@ -27,6 +27,10 @@ class Txn < ActiveRecord::Base
 
   def desc ; TYPES[txn_type.to_s] rescue "???" ; end
 
+  def is_purchase?
+    %w(tkt_purch sub_purch oth_purch don_cash pmt_rcv refund).include?(txn_type.to_s)
+  end
+
   # provide a handler to be called when customers are merged.
   # Transfers the txns from old to new id, and also changes the
   # values of entered_by_id field, which is really a customer id.
