@@ -43,7 +43,7 @@ describe 'customer search' do
     describe 'exactly' do
       [ [%w(sandy),         [0,1,2]],
         [%w(sandy o'shea), [0]],  # '
-        [%w(o'),           [0,2]],
+        [%w(o'),           []],
         [%w(o'shea sandy), [0]],
         [%w(anne frank),    [3,4]],
         [%w(frank anne),    [3,4]],

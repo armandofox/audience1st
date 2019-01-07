@@ -1,12 +1,25 @@
-When /^I search for customers matching "([^\"]*)"$/ do |value|
-  @container = "#search_field"        # save for future autocomplete steps
-  within(@container) do
-    field = find(:css, '._autocomplete')['id']
-    fill_in(field, :with => value)
-    page.should_not have_selector 'html.loading'
-    page.execute_script(%{ $('##{field}').trigger('focus') })
-    page.execute_script(%{ $('##{field}').trigger('keydown') })
+module AutocompleteScenarioHelper
+  def perform_autocomplete_search(value)
+    within(@container) do
+      field = find(:css, '._autocomplete')['id']
+      fill_in(field, :with => value)
+      page.should_not have_selector 'html.loading'
+      page.execute_script(%{ $('##{field}').trigger('focus') })
+      page.execute_script(%{ $('##{field}').trigger('keydown') })
+    end
   end
+end
+World(AutocompleteScenarioHelper)
+
+When /^I search for customers matching "([^\"]*)"$/ do |value|
+  @container = '#search_field'
+  perform_autocomplete_search(value)
+end
+
+When /^I select customer "(.*)" within "(.*)"$/ do |name,elt|
+  @container = "##{elt}"
+  perform_autocomplete_search(name)
+  steps %Q{When I select autocomplete choice "#{name}"}
 end
 
 Then /^the search results dropdown should (not )?include: (.*)/ do |no, text_list|
@@ -44,11 +57,4 @@ end
 Then /^I should not see any autocomplete choices$/ do
   xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item")]}
   within(@container) { page.should_not have_xpath(xpath) }
-end
-
-When /^I select customer "(.*)" within "(.*)"$/ do |name,elt|
-  steps %Q{
-When I fill "#{elt}" autocomplete field with "#{name}"
-And I select autocomplete choice "#{name}"
-}
 end

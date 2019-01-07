@@ -1,71 +1,98 @@
 require 'rails_helper'
 
-describe Customer do
-  describe "managing email subscriptions" do
+describe "email sub" do
+  # The EmailList instance can receive #subscribe, #unsubscribe, #update (change email address
+  # on existing subscriber)
+  def stub_list
+    # this cannot be in a before-block, because if so, FactoryBot creating the customers
+    # will end up triggering the double inadvertently.
+    @list = double(EmailList)
+    allow(EmailList).to receive(:new).and_return(@list)
+  end
+  context "when customer created" do
+    it "subscribes customer if e_blacklist not checked" do
+      @customer = build(:customer, :e_blacklist => false, :email => 'n@ai')
+      stub_list
+      expect(@list).to receive(:subscribe).with(@customer)
+      @customer.save!
+    end
+    it "does not subscribe customer if e_blacklist checked" do
+      @customer = build(:customer, :e_blacklist => true, :email => 'n@ai')
+      stub_list
+      expect(@list).not_to receive(:subscribe)
+      @customer.save!
+    end
+  end
+  context "for existing opted-in customer" do
     before(:each) do
-      @customer = create(:customer)
-      @email = @customer.email
+      @customer = create(:customer, :email => 'n@ai', :e_blacklist => false)
     end
-    context "when changing name only" do
-      it "should be updated with new name even if email doesn't change" do
-        @customer.update_attributes!(:e_blacklist => false)
-        @customer.first_name = "Newfirstname"
-        expect(EmailList).to receive(:update).with(@customer, @email)
-        @customer.save!
-      end
-      it "should not be updated if previously opted out" do
-        @customer.update_attributes!(:e_blacklist => true)
-        @customer.first_name = "Newfirstname"
-        expect(EmailList).not_to receive(:update)
-        @customer.save!
-      end
-      it "should not be updated if now opting out" do
-        @customer.update_attributes!(:e_blacklist => false)
-        @customer.first_name = "Newfirstname"
-        @customer.e_blacklist = true
-        expect(EmailList).not_to receive(:update)
-        @customer.save!
-      end
+    it "should be updated with new name even if email doesn't change" do
+      @customer.first_name = "Newfirstname"
+      stub_list
+      expect(@list).to receive(:update).with(@customer, 'n@ai')
+      @customer.save!
     end
-    context "when opting out" do
+    it "should be unsubscribed if email is changed from nonblank to blank" do
+      @customer.update_attribute(:created_by_admin, true) # to allow blank email
+      @customer.email = ''
+      stub_list
+      expect(@list).to receive(:unsubscribe).with(@customer, 'n@ai')
+      @customer.save!
+    end
+    it "should not be updated if name doesn't change" do
+      @customer.street = '1 New Street'
+      stub_list
+      expect(@list).not_to receive(:update)
+      @customer.save!
+    end
+    describe "transitioning to opted-out" do
       before(:each) do
-        @customer = create(:customer)
-        @customer.update_attributes!(:e_blacklist => false)
-        @email = @customer.email
         @customer.e_blacklist = true # so it's marked dirty
       end
       it "should be unsubscribed using old email" do
         expect(@customer.email_changed?).to be_falsy
-        expect(EmailList).to receive(:unsubscribe).with(@customer,@email)
+        stub_list
+        expect(@list).to receive(:unsubscribe).with(@customer,'n@ai')
         @customer.save!
       end
-      it "should be unsubscribed using old email even if email changed" do
+      it "should be unsubscribed using old email even if email also changed" do
         @customer.email = "newjohn@doe.com"
         expect(@customer.email_changed?).to be_truthy
-        expect(EmailList).to receive(:unsubscribe).with(@customer,@email)
+        stub_list
+        expect(@list).to receive(:unsubscribe).with(@customer,'n@ai')
         @customer.save!
       end
     end
-    context "when opting in" do
+  end
+  context "for existing opted-out customer" do
+    before(:each) do
+      @customer = create(:customer, :email => 'n@ai', :e_blacklist => true)
+    end
+    it "should not be updated when customer info changes" do
+      @customer.first_name = "Newfirstname"
+      stub_list
+      expect(@list).not_to receive(:update)
+      @customer.save!
+    end
+    describe "when transitioning to opted-in" do
       before(:each) do
-        @customer = create(:customer)
-        @customer.update_attributes!(:e_blacklist => true)
-        @email = @customer.email
+        @customer.e_blacklist = false
       end
       it "with new email address should be updated to new if old address was nonblank" do
-        @customer.e_blacklist = false
         @customer.email = "newjohn@doe.com"
-        expect(EmailList).to receive(:update).with(@customer, @email)
+        stub_list
+        expect(@list).to receive(:update).with(@customer, 'n@ai')
         @customer.save!
       end
       it "should be subscribed with new email if old email was blank" do
-        @customer.e_blacklist = false
-        expect(EmailList).to receive(:subscribe).with(@customer)
+        stub_list
+        expect(@list).to receive(:subscribe).with(@customer)
         @customer.save!
       end
       it "with same email address should be subscribed with new email" do
-        @customer.e_blacklist = false
-        expect(EmailList).to receive(:subscribe).with(@customer)
+        stub_list
+        expect(@list).to receive(:subscribe).with(@customer)
         @customer.save!
       end
     end
