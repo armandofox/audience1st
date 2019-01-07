@@ -28,8 +28,8 @@
         %td= staff_name(s)
         %td= link_to_customer(c)
         %td= t.desc 
-        %td= Purchasemethod.get(v.order.purchasemethod).description if v
-        %td= number_to_currency(t.dollar_amount) 
+        %td= Purchasemethod.get(v.order.purchasemethod).description if v && is_purchase?
+        %td= number_to_currency(t.dollar_amount) if is_purchase?
         %td= t.show.try(:name)
         %td= t.showdate.try(:thedate)
         %td= t.voucher_id 
