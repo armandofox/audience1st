@@ -145,7 +145,7 @@ describe Customer, "merging" do
       it "should refuse if RHS is any Special customer" do
         allow(@c1).to receive(:special_customer?).and_return true
         @c0.merge_automatically!(@c1).should be_nil
-        @c0.errors.full_messages.should include_match_for(/special customers cannot be merged/i)
+        @c0.errors.full_messages.should include_match_for(/cannot be merged/i)
       end
       it "should allow if LHS is Anonymous customer" do
         c0 = Customer.anonymous_customer
