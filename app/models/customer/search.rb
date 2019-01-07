@@ -40,6 +40,24 @@ class Customer < ActiveRecord::Base
       )
   end
 
+  # support for find_unique
+
+  def self.match_email_and_last_name(email,last_name)
+    !email.blank? && !last_name.blank? &&
+      Customer.where('email LIKE ? AND last_name LIKE ?', email.strip, last_name.strip).first
+  end
+
+  def self.match_first_last_and_address(first_name,last_name,street)
+    !first_name.blank? && !last_name.blank? && !street.blank? &&
+      Customer.where('first_name LIKE ? AND last_name LIKE ? AND street like ?', first_name, last_name, street).first
+  end
+
+  def self.match_uniquely_on_names_only(first_name, last_name)
+    return nil if first_name.blank? || last_name.blank?
+    m = Customer.where('last_name LIKE ? AND first_name LIKE ?',  last_name, first_name)
+    m && m.length == 1 ?  m.first : nil
+  end
+
   # If customer can be uniquely identified in DB, return match from DB
   # and fill in blank attributes with nonblank values from provided attrs.
   # Otherwise, create new customer.
@@ -72,86 +90,36 @@ class Customer < ActiveRecord::Base
   def self.exact_name_matches(terms)
     conds =
       Array.new(terms.length, "(lower(first_name) LIKE ? or lower(last_name) LIKE ?)").join(' AND ')
-    conds_ary = terms.map { |w| [w.downcase, w.downcase] }.flatten.unshift(conds)
-    Customer.where(conds, *conds_ary).uniq.order('last_name')
+    binds = terms.map { |w| [w.downcase, w.downcase] }
+    Customer.regular_customers.where(*([conds,binds].flatten)).uniq.order('last_name')
   end
 
   def self.partial_name_matches(terms)
     conds =
       Array.new(terms.length, "(lower(first_name) LIKE ? or lower(last_name) LIKE ?)").join(' AND ')
-    conds_ary = terms.map { |w| ["%#{w.downcase}%", "%#{w.downcase}%"] }.flatten.unshift(conds)
-    Customer.where(*conds_ary).uniq.order('last_name')
+    binds = terms.map { |w| ["%#{w.downcase}%", "%#{w.downcase}%"] }
+    Customer.regular_customers.where(*([conds,binds].flatten)).uniq.order('last_name')
   end
 
   def self.other_term_matches(terms)
     conds = SEARCHABLE_COLUMNS.map { |c| "(lower(#{c}) LIKE ?)" }.join(" OR ")
     conds_ary = terms.map do |term|
-      Array.new(SEARCHABLE_COLMNS.size) { "%#{term.downcase}%" }
+      Array.new(SEARCHABLE_COLUMNS.size) { "%#{term.downcase}%" }
     end.flatten
     conds = Array.new(terms.size, conds).map{ |cond| "(#{cond})"}.join(" AND ")
     conds_ary.unshift(conds)
-    Customer.where(conds_ary).uniq.order('last_name')
+    Customer.regular_customers.where(conds_ary).uniq.order('last_name')
   end
 
   # Return value of field in this customer record that matches some term in an array of terms.
   # If multiple fields match, return any of the matching field values.
   def field_matching_terms(terms)
-    match = Regexp.new(terms.map { |t| "(#{Regexp.escape t})" }.join("|"))
+    match = Regexp.new(terms.map { |t| "(#{Regexp.escape t})" }.join("|"), Regexp::IGNORECASE)
     SEARCHABLE_COLUMNS.each do |attr|
-      return attr if attr =~ match
+      attr_val = self.send(attr)
+      return attr_val if attr_val =~ match
     end
     ""
   end
-
-  # return a hash include information containing searching term in auto
-  # complete
-  def self.find_by_terms_col(terms)
-    return [] if terms.empty?
-    customers =
-      Customer.find_by_multiple_terms(terms).
-      reject {|customer| Customer.find_by_name(terms).include?(customer)}
-    col_hash = Hash.new
-    customers.each do |customer|
-      col_hash[customer] = self.match_attr_info(customer, terms)
-    end
-    col_hash
-  end
-
-  # find info containing seaching terms in an object
-  def self.match_attr_info(customer,terms)
-    matching_info = ''
-    Customer.column_names.reject{ |col|
-      (%w[role crypted_password salt _at$ _on$]).include? col}.each do |col|
-      terms.each do |term|
-        if (customer.attributes[col].is_a? String) &&
-            customer.attributes[col].downcase.include?(term.downcase) &&
-            (not matching_info.downcase.include?(customer.attributes[col].downcase))
-          matching_info += " (#{customer[col]})"
-          next
-        end
-      end
-    end
-
-    matching_info
-  end
-
-  # support for find_unique
-
-  def self.match_email_and_last_name(email,last_name)
-    !email.blank? && !last_name.blank? &&
-      Customer.where('email LIKE ? AND last_name LIKE ?', email.strip, last_name.strip).first
-  end
-
-  def self.match_first_last_and_address(first_name,last_name,street)
-    !first_name.blank? && !last_name.blank? && !street.blank? &&
-      Customer.where('first_name LIKE ? AND last_name LIKE ? AND street like ?', first_name, last_name, street).first
-  end
-
-  def self.match_uniquely_on_names_only(first_name, last_name)
-    return nil if first_name.blank? || last_name.blank?
-    m = Customer.where('last_name LIKE ? AND first_name LIKE ?',  last_name, first_name)
-    m && m.length == 1 ?  m.first : nil
-  end
-
 
 end

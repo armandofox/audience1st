@@ -1,5 +1,5 @@
-When /^I fill "(.*)" autocomplete field with "([^\"]*)"$/ do |container,value|
-  @container = "##{container}"        # save for future autocomplete steps
+When /^I search for customers matching "([^\"]*)"$/ do |value|
+  @container = "#search_field"        # save for future autocomplete steps
   within(@container) do
     field = find(:css, '._autocomplete')['id']
     fill_in(field, :with => value)
@@ -9,17 +9,20 @@ When /^I fill "(.*)" autocomplete field with "([^\"]*)"$/ do |container,value|
   end
 end
 
-Then /^I should (not )?see autocomplete choice "(.*)"/ do |no, text|
+Then /^the search results dropdown should (not )?include: (.*)/ do |no, text_list|
   wait_for_ajax
+  text = text_list.split(/\s*,\s*/)
   autocomplete_choices = %Q{//ul[contains(@class,"ui-autocomplete")]}
-  item = autocomplete_choices +
-    %Q{/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}') and not(contains(text(),'all matching'))]}
   within(@container) do
-    page.should have_xpath(autocomplete_choices)
-    if no
-      page.should_not have_xpath(item)
-    else
-      page.should have_xpath(item)
+    expect(page).to have_xpath(autocomplete_choices)
+    text_list.split(/\s*,\s*/).each do |text|
+      item = autocomplete_choices +
+        %Q{/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}') and not(contains(text(),'all matching'))]}
+      if no
+        expect(page).not_to have_xpath(item)
+      else
+        expect(page).to have_xpath(item)
+      end
     end
   end
 end

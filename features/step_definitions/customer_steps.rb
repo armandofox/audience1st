@@ -50,22 +50,22 @@ Then /^I should be acting on behalf of customer "(.*)"$/ do |full_name|
   end
 end
 
+# Creating customers:
+#  from a table
 Given /^the following customers exist:$/ do |instances|
   instances.hashes.each do |hash|
     create(:customer, hash)
   end
 end
 
-Given /^customer "(.*) (.*)" has no contact info$/ do |first,last|
-  @customer = find_customer first,last
-  @customer.update_attributes!(:street => nil, :city => nil, :state => nil, :zip => nil)
+# from names only
+Given /^the following customers exist: (.*)$/ do |list|
+  list.split(/\s*,\s*/).each do |name|
+    steps %Q{Given customer "#{name}" exists}
+  end
 end
 
-Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
-  @customer = find_customer first,last
-  if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
-end
-
+# specifying email and/or street address
 Given /^customer "(.*) (.*)" exists( and was created by admin)?( with email "(.*)")?$/ do |first,last,admin,_,email|
   @customer = find_customer(first,last) ||
     create(:customer, :first_name => first, :last_name => last, :email => email||"#{first.downcase}@#{last.downcase}.com")
@@ -80,13 +80,22 @@ Given /^customer "(.*) (.*)" whose address street is: "(.*)"$/ do |first,last,ad
 
 end
 
-Given /^the following customers exist: (.*)$/ do |list|
-  list.split(/\s*,\s*/).each do |name|
-    steps %Q{Given customer "#{name}" exists}
-  end
+Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
+  c = find_or_create_customer first,last
+  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
-# Searching for customers
+
+
+Given /^customer "(.*) (.*)" has no contact info$/ do |first,last|
+  @customer = find_customer first,last
+  @customer.update_attributes!(:street => nil, :city => nil, :state => nil, :zip => nil)
+end
+
+Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
+  @customer = find_customer first,last
+  if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
+end
 
 Given /^my birthday is set to "(.*)"/ do |date|
   @customer.update_attributes!(:birthday => Date.parse(date))
@@ -116,11 +125,6 @@ When /^I select customers "(.*) (.*)" and "(.*) (.*)" for merging$/ do |f1,l1, f
   visit customers_path
   check "merge[#{c1.id}]"
   check "merge[#{c2.id}]"
-end
-
-Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
-  c = find_or_create_customer first,last
-  c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
 Given /^customer "(.*) (.*)" (should have|has) secret question "(.*)" with answer "(.*)"$/ do |first,last,assert,question,answer|

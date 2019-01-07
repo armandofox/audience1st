@@ -207,12 +207,15 @@ class CustomersController < ApplicationController
     @list_action = customers_path
     @customers_filter ||= params[:customers_filter]
 
-    if @customers_filter
-      filter_terms = @customers_filter.split /\s+/
+    if !@customers_filter.blank?
+      terms = @customers_filter.split /\s+/
       @page_title = %Q{Customers matching "#{@customers_filter}"}
       @customers =
-        (Customer.regular_customers.where('role >= 0').find_by_name(filter_terms) +
-        Customer.regular_customers.find_by_multiple_terms(filter_terms))
+        Customer.exact_name_matches(terms).or(
+        Customer.partial_name_matches(terms)).or(
+        Customer.other_term_matches(terms)).
+        order('last_name,first_name').
+        uniq
     else
       @page_title = "All Customers"
       @customers = Customer.regular_customers
@@ -285,9 +288,10 @@ class CustomersController < ApplicationController
   def auto_complete_for_customer
     render :json => {} and return if (terms_string = params[:term].to_s).length < 2
     terms = terms_string.split( /\s+/ )
-    exact_name_matches = Customer.exact_name_matches(terms).limit(20)
-    partial_name_matches = Customer.partial_name_matches(terms).limit(20)
-    other_term_matches = Customer.other_term_matches(terms).limit(20)
+    max_matches = 60
+    exact_name_matches = Customer.exact_name_matches(terms).limit(max_matches/3)
+    partial_name_matches = Customer.partial_name_matches(terms).limit(max_matches/3) - exact_name_matches
+    other_term_matches = Customer.other_term_matches(terms).limit(max_matches/3) - exact_name_matches - partial_name_matches
 
     if (exact_name_matches.size + partial_name_matches.size + other_term_matches.size) == 0
       render :json => [{'label' => '(no matches)', 'value' => nil}] and return
@@ -298,9 +302,9 @@ class CustomersController < ApplicationController
     result =
       exact_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
       partial_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
-      other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})"} +
+      other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})"} } +
       show_all_matches
-    render :json => result.uniq
+      render :json => result.uniq
   end
 
   private

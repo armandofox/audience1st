@@ -5,8 +5,8 @@ class EmailList
 
   attr_reader :errors, :disabled
 
-  def initialize(key = Option.mailchimp_key)
-    @apikey = key
+  def initialize(key = nil)
+    @apikey = key || (Option.mailchimp_key rescue nil)
     if @apikey.blank?
       @disabled = true
       Rails.logger.info("email_list: NOT initializing mailchimp")

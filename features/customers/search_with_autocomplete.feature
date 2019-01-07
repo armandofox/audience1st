@@ -8,14 +8,13 @@ Feature: search with autocompletion
 Background: I am logged in as boxoffice
   
   Given I am logged in as box office
-  And the following customers exist: Frodo Baggins, Bilbo Baggins, Bob Bag
 
 Scenario: search with multiple match
 
-  When I fill "search_field" autocomplete field with "Bagg"
-  Then I should see autocomplete choice "Bilbo Baggins" 
-  And I should see autocomplete choice "Frodo Baggins"
-  But I should not see autocomplete choice "Bob Bag"
+  Given the following customers exist: Frodo Baggins, Bilbo Baggins, Bob Bag
+  When I search for customers matching "Bagg"
+  Then the search results dropdown should include: Bilbo Baggins, Frodo Baggins
+  But the search results dropdown should not include: Bob Bag
   When I select autocomplete choice "Bilbo Baggins"
   Then I should be on the home page for customer "Bilbo Baggins"
 
@@ -28,17 +27,23 @@ Scenario:search with other information
     | Bob        | Bag       | BBB@email.com       | 23 Alexander  |  SAF | CA    |
     | Organ      | Milk      | dancingfox@mail.com | 100 bway      |  SAF | CA    |
 
-  When I fill "search_field" autocomplete field with "FOX"
-  Then I should see autocomplete choice "Armando Fox"
-  And I should see autocomplete choice "Bobby Boxer (123 Fox Hill)"
-  And I should see autocomplete choice "Organ Milk (dancingfox@mail.com)"
-  But I should not see autocomplete choice "Bob Bag"
+  When I search for customers matching "FOX"
+  Then the search results dropdown should include: Armando Fox, Bobby Boxer (123 Fox Hill), Organ Milk (dancingfox@mail.com)
+  But the search results dropdown should not include: Bob Bag
 
 Scenario: search with no result
-  When I fill "search_field" autocomplete field with "No matching result"
-  Then I should see autocomplete choice "(no matches)"
+  When I search for customers matching "No matching result"
+  Then the search results dropdown should include: (no matches)
 
 Scenario: list all in autocomplete
-  When I fill "search_field" autocomplete field with "Fox"
+  Given the following customers exist: Armando Fox, Foxy Armando
+  When I search for customers matching "Fox"
   And I select autocomplete choice to show all matches
   Then I should be on the list of customers page
+
+Scenario: duplicates are not listed in dropdown
+  Given customer "Armando Fox" exists with email "fox@gmail.com"
+  When I search for customers matching "fox"
+  Then the search results dropdown should include: Armando Fox
+  But  the search results dropdown should not include: Armando Fox (fox@gmail.com)
+  
