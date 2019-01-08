@@ -2,7 +2,7 @@
 
 = form_tag valid_vouchers_path do
   .form-group.form-row
-    %label.col-form-label.col-md-5{:for=>:valid_voucher_vouchertypes} Voucher/ticket type (Ctrl-click to select multiple)
+    %label.col-form-label.col-md-5.text-right{:for=>:valid_voucher_vouchertypes} Voucher/ticket type (Ctrl-click to select multiple)
     = select_tag 'valid_voucher[vouchertypes]', options_from_collection_for_select(@vouchertypes, :id, :name_with_season_and_price), :multiple => true, :class => 'form-control col-md-6'
 
   = render :partial => 'form'

@@ -1,18 +1,16 @@
 %h2 Edit Ticket Redemption
 
 - vt = @valid_voucher.vouchertype
-%p
-  %strong Performance:
-  =  h(@valid_voucher.printable_name)
-%p
-  %strong Ticket type:
-  =  link_to vt.name_with_season_and_price, edit_vouchertype_path(vt)
-
-%br
 
 = form_tag valid_voucher_path(@valid_voucher), :method => :put do
-
+  .form-group.form-row
+    %label.col-form-label.col-md-5.text-right Performance
+    %strong.col-md-5= @valid_voucher.printable_name
+  .form-group.form-row
+    %label.col-form-label.col-md-5.text-right Voucher Type
+    %strong.col-md-5= vt.name_with_season_and_price
   = hidden_field 'valid_voucher', 'vouchertype_id', :value => vt.id
   = render :partial => 'form'
-  = submit_tag 'Save Changes'
-  = link_to 'Cancel', edit_show_path(@valid_voucher.showdate.show), {:class => 'btn btn-secondary' }
+  .form-row
+    .col-md-2.offset-md-5= submit_tag 'Save Changes', :class => 'btn btn-success btn-block'
+    .col-md-2= link_to 'Cancel', edit_show_path(@valid_voucher.showdate.show), {:class => 'btn btn-secondary btn-block' }

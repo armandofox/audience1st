@@ -1,0 +1,17 @@
+.row.pl-4.pb-3
+  .col-md-2.text-center
+    = link_to 'Select All', '#',  :onclick => %Q{$('.showdate').prop('checked', true); return(false);}
+    &nbsp;&bull;&nbsp;
+    = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false); return(false);}
+  .col-md-5.text-center
+    %span.strong Every&nbsp;&nbsp;
+    - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
+      = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true); return(false);}
+      - unless wday == 'Sun'
+        &nbsp;&bull;&nbsp;
+  .col-md-5.text-center
+    %span.strong No&nbsp;&nbsp;
+    - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
+      = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false); return(false);}
+      - unless wday == 'Sun'
+        &nbsp;&bull;&nbsp;

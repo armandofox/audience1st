@@ -30,11 +30,16 @@
     %span.px-2 On this date:
     = datetime_select 'valid_voucher', 'end_sales'
 
+= render :partial => 'weekday_checkbox_links'
+- cols = 5
 - @showdate.show.showdates.each_with_index do |showdate,idx|  
-  - if idx % 4 == 0
-    <div class="row">
+  - if idx % cols == 0
+    <div class="row pl-4">
   .col-md-2.form-check.form-check-inline
-    .form-check-input= check_box_tag('showdates[]', 1, false, :id => "showdates[#{showdate.id}]")
-    %label.form-check-label= showdate.thedate.to_formatted_s(:showtime)
-  - if idx % 4 == 3
+    - wkday = showdate.thedate.strftime('%a')
+    .form-check-input= check_box_tag('showdates[]', 1, false, :class => "showdate showdate-#{wkday}", :id => "showdates[#{showdate.id}]")
+    %label.form-check-label= showdate.thedate.to_formatted_s(:showtime_brief)
+  - if idx % cols == cols-1
     </div>
+- if @showdate.show.showdates.size % cols != 0
+  </div>
