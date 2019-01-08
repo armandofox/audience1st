@@ -9,6 +9,7 @@ A1.vouchertype = {
   hide_price: function() {
     $('#p_vouchertype_price').hide();   
     $('#vouchertype_price').value = '0'; 
+    $('#vouchertype_price').hide();
   },
   hide_walkup_sale: function()  {
     $('#p_vouchertype_walkup_sale_allowed').hide();

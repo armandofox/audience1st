@@ -66,8 +66,8 @@ class VouchertypesController < ApplicationController
         end
       end
     else
-      flash[:notice] = ['Vouchertype could not be created: ', @vouchertype.errors.as_html]
-      render :action => 'new'
+      flash[:alert] = 'Vouchertype could not be created: ' << @vouchertype.errors.as_html
+      redirect_to new_vouchertype_path
     end
   end
 
@@ -75,7 +75,8 @@ class VouchertypesController < ApplicationController
     @num_vouchers = @vouchertype.vouchers.count
     @valid_voucher = @vouchertype.valid_vouchers.first if @vouchertype.bundle?
     if @num_vouchers > 0
-      flash[:alert] = "#{@num_vouchers} vouchers of this voucher type have already been issued.  Any changes  you make will be retroactively reflected to all of them.  If this is not what you want, click Cancel below."
+      flash[:alert] = '' if flash[:alert].blank?
+      flash[:alert] += "<br>#{@num_vouchers} vouchers of this voucher type have already been issued.  Any changes you make will be retroactively reflected to all of them.  If this is not what you want, click Cancel below."
     end
   end
 
