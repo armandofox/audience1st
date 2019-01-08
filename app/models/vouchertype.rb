@@ -151,7 +151,7 @@ class Vouchertype < ActiveRecord::Base
   def revenue? ; category == 'revenue' ; end
 
   def reservable?
-    !([:bundle,:nonticket].include?(category))
+    !(['bundle','nonticket'].include?(category))
   end
 
   def self_service_comp?
