@@ -1,0 +1,149 @@
+{
+  "show_id": 1497273,
+  "event": {
+    "title": "\"The Miracle Worker\""
+  },
+  "venue": {
+    "venue_id": 1173,
+    "name": "Altarena Playhouse",
+    "address": {
+      "street_address": "1409 High Street",
+      "extended_address": "",
+      "locality": "Alameda",
+      "region": "CA",
+      "postal_code": "94501",
+      "country_name": "United States"
+    }
+  },
+  "on_date": "2018-05-26",
+  "time_note": "8:00pm",
+  "inventories": [
+    {
+      "inventory_id": 2150229,
+      "time_note": null,
+      "quantity": 20,
+      "offers": [
+        {
+          "offer_id": 2413193,
+          "name": "General Admission",
+          "full_price": "30.0",
+          "our_price": "15.0"
+        }
+      ],
+      "purchases": [
+        {
+          "purchase_id": 10988051,
+          "red_velvet": false,
+          "last_name": "Brack",
+          "first_name": "Mitch",
+          "note": null,
+          "created_at": "2018-05-19T17:19:13.000-07:00",
+          "claims": [
+            {
+              "quantity": 4,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10988545,
+          "red_velvet": false,
+          "last_name": "Butler",
+          "first_name": "Bernadette",
+          "note": null,
+          "created_at": "2018-05-19T21:48:24.000-07:00",
+          "claims": [
+            {
+              "quantity": 4,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10975762,
+          "red_velvet": false,
+          "last_name": "Cvar",
+          "first_name": "Jackie",
+          "note": null,
+          "created_at": "2018-05-15T22:06:20.000-07:00",
+          "claims": [
+            {
+              "quantity": 2,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10988329,
+          "red_velvet": false,
+          "last_name": "Dambrosio",
+          "first_name": "Donna",
+          "note": null,
+          "created_at": "2018-05-19T19:31:34.000-07:00",
+          "claims": [
+            {
+              "quantity": 2,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10981740,
+          "red_velvet": false,
+          "last_name": "Hannigan",
+          "first_name": "Peter",
+          "note": null,
+          "created_at": "2018-05-17T17:24:28.000-07:00",
+          "claims": [
+            {
+              "quantity": 2,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10951723,
+          "red_velvet": false,
+          "last_name": "Moody",
+          "first_name": "Sharmaine",
+          "note": null,
+          "created_at": "2018-05-08T11:32:49.000-07:00",
+          "claims": [
+            {
+              "quantity": 2,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10983787,
+          "red_velvet": false,
+          "last_name": "Richter",
+          "first_name": "Harlan",
+          "note": null,
+          "created_at": "2018-05-18T10:19:08.000-07:00",
+          "claims": [
+            {
+              "quantity": 2,
+              "offer_id": 2413193
+            }
+          ]
+        },
+        {
+          "purchase_id": 10981566,
+          "red_velvet": false,
+          "last_name": "Weingand or Juneau",
+          "first_name": "Traudel or Cindi",
+          "note": null,
+          "created_at": "2018-05-17T16:25:35.000-07:00",
+          "claims": [
+            {
+              "quantity": 2,
+              "offer_id": 2413193
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
