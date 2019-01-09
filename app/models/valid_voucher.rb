@@ -90,7 +90,7 @@ class ValidVoucher < ActiveRecord::Base
   # Vouchertype's valid date must not be later than valid_voucher start date
   # Vouchertype expiration date must not be earlier than valid_voucher end date
   def check_dates
-    errors.add(:base,"Dates and times for start and end sales must be provided") and return if (start_sales.blank? || end_sales.blank?)
+    return if start_sales.blank? || end_sales.blank? || vouchertype.nil?
     errors.add(:base,"Start sales time cannot be later than end sales time") and return if start_sales > end_sales
     vt = self.vouchertype
     if self.end_sales > (end_of_season = Time.current.at_end_of_season(vt.season))
@@ -99,6 +99,7 @@ class ValidVoucher < ActiveRecord::Base
         but you've indicated sales should continue later than that
         (until #{end_sales.to_formatted_s(:showtime_including_year)})."
     end
+    self.end_sales = self.end_sales.rounded_to(:second)
   end
 
   def match_promo_code(str)
@@ -182,7 +183,8 @@ class ValidVoucher < ActiveRecord::Base
 
   public
   
-  # Transactionally add one or more vouchertypes to multiple showdates.  If errors, collate them intelligently.
+  # Transactionally add one or more vouchertypes to multiple showdates.  
+  # If errors, collate them intelligently and fail.
   # If +valid_voucher_params+ includes a key
   # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
   # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
@@ -192,10 +194,15 @@ class ValidVoucher < ActiveRecord::Base
     ValidVoucher.transaction do
       showdates.each do |showdate|
         if (before_showtime = valid_voucher_params.delete(:before_showtime))
-          valid_voucher_params[:end_sales] = showdate.thedate - before_showtime
+          valid_voucher_params[:end_sales] = (showdate.thedate - before_showtime).rounded_to(:second)
         end
+        # if this valid-voucher exists already, edit it in place; otherwise create new.
         vouchertypes.each do |vouchertype|
-          vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
+          if (vv = ValidVoucher.where(:showdate => showdate, :vouchertype => vouchertype).first)
+            vv.assign_attributes(valid_voucher_params)
+          else
+            vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
+          end
           unless vv.save
             errs[vouchertype] << showdate.thedate.to_formatted_s(:showtime_brief)
             possible_cause[vouchertype] = vv.errors.full_messages.join(', ')

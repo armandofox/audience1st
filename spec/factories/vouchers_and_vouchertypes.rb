@@ -5,7 +5,7 @@ FactoryBot.define do
       price 7
     end
     start_sales { Time.current }
-    end_sales   { 10.minutes.from_now }
+    end_sales   { 10.minutes.from_now.rounded_to(:second) }
     max_sales_for_type 100
     association :showdate
     association :vouchertype, :factory => :revenue_vouchertype
