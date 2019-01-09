@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<willcall>
+  <show_id type="integer">1497273</show_id>
+  <event>
+    <title>"The Miracle Worker"</title>
+  </event>
+  <venue>
+    <venue_id type="integer">1173</venue_id>
+    <name>Altarena Playhouse</name>
+    <address>
+      <street_address>1409 High Street</street_address>
+      <extended_address></extended_address>
+      <locality>Alameda</locality>
+      <region>CA</region>
+      <postal_code>94501</postal_code>
+      <country_name>United States</country_name>
+    </address>
+  </venue>
+  <on_date type="date">2018-05-26</on_date>
+  <time_note>8:00pm</time_note>
+  <inventories type="array">
+    <inventory>
+      <inventory_id type="integer">2150229</inventory_id>
+      <time_note nil="true"/>
+      <quantity type="integer">20</quantity>
+      <offers type="array">
+        <offer>
+          <offer_id type="integer">2413193</offer_id>
+          <name>General Admission</name>
+          <full_price type="decimal">30.0</full_price>
+          <our_price type="decimal">15.0</our_price>
+        </offer>
+      </offers>
+      <purchases type="array">
+        <purchase>
+          <purchase_id type="integer">10988051</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Brack</last_name>
+          <first_name>Mitch</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-19T17:19:13-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">4</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10988545</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Butler</last_name>
+          <first_name>Bernadette</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-19T21:48:24-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">4</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10975762</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Cvar</last_name>
+          <first_name>Jackie</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-15T22:06:20-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10988329</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Dambrosio</last_name>
+          <first_name>Donna</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-19T19:31:34-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10981740</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Hannigan</last_name>
+          <first_name>Peter</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-17T17:24:28-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10951723</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Moody</last_name>
+          <first_name>Sharmaine</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-08T11:32:49-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10983787</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Richter</last_name>
+          <first_name>Harlan</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-18T10:19:08-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">10981566</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Weingand or Juneau</last_name>
+          <first_name>Traudel or Cindi</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2018-05-17T16:25:35-07:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2413193</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+      </purchases>
+    </inventory>
+  </inventories>
+</willcall>
