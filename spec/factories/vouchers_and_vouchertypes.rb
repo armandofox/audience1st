@@ -4,7 +4,7 @@ FactoryBot.define do
     transient do
       price 7
     end
-    start_sales { Time.current }
+    start_sales { Time.current.rounded_to(:second) }
     end_sales   { 10.minutes.from_now.rounded_to(:second) }
     max_sales_for_type 100
     association :showdate
