@@ -38,7 +38,7 @@ Rails.application.configure do
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :subdomain, :uuid ]
-  config.log_level = :debug
+  config.log_level = :info
   
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
