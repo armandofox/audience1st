@@ -1,34 +1,28 @@
 %div[order]
   %h3 
-    %a.flippy[order, :flippy]{:href=>orders_path} &#x25BC;
+    %a.flippy[order, :flippy]{:href=>orders_path} &#x25BA;
     = one_line_order_summary(order)
-  %div.order_info[order, :details]
+  %div.flippy-div.order_info[order, :details]
     = form_tag order_path(order), :method => :put do
-      %p 
-        %span.label Purchaser: 
-        = link_to_customer order.purchaser
-      %p
-        %span.label Gift order?
-        = order.gift? ? 'Yes' : 'No'
-      - if order.gift?
-        %p
-          %span.label Gift recipient:
-          = link_to_customer order.customer
-      %p
-        %span.label Order total:
-        = number_to_currency order.total_price
-      %p
-        %span.label Payment method:
-        = humanize(order.purchase_medium)
-
-      - unless @printable
-        %p
-          %span.label Refundable:
-          = order.refundable? ? "Yes" : "No"
-
-      %p
-        %span.label Order comments:
-        = order.comments
+      .form-row
+        .col-md-3
+          %label.col-form-label Purchaser: 
+          = link_to_customer order.purchaser
+        .col-md-3
+          %label.col-form-label Gift?
+          = order.gift? ? link_to_customer(order.customer) : 'No'
+      .form-row
+        .col-md-3
+          %label.col-form-label Order total:
+          = number_to_currency order.total_price
+          (#{humanize(order.purchase_medium)})
+        - unless @printable
+          .col-md-2
+            %label.col-form-label Refundable:
+            = order.refundable? ? "Yes" : "No"
+          .col-md-7
+            %label.col-form-label Comments:
+            = order.comments
 
       %table#order_items.hilite
         %thead
@@ -55,5 +49,5 @@
         = link_to 'Back to Customer', customer_path(order.customer), :class => 'btn btn-primary'
         - if order.refundable?
           - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Delete')
-          = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order)
+          = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order), :class => 'btn btn-danger'
 

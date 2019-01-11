@@ -29,8 +29,9 @@ module ApplicationHelper
   
   def display_customer_actions?
     ! @customer.try(:new_record?) &&
-      controller.controller_name == 'customers' &&
-      action_name     !~ /^index|list_duplicate/
+      ((controller.controller_name == 'customers' && action_name !~ /^index|list_duplicate/) ||
+      (controller.controller_name == 'vouchers' && action_name == 'index')  ||
+      (controller.controller_name == 'orders' && action_name == 'index'))
   end
 
   def in_rows_of(n,collection)

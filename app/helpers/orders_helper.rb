@@ -10,6 +10,6 @@ module OrdersHelper
   end
 
   def one_line_order_summary(order)
-    "Order ##{order.id} processed by #{staff_name(order.processed_by)} on #{order.sold_on.to_formatted_s :showtime}"
+    "Order ##{order.id} processed by #{staff_name(order.processed_by)} on #{order.sold_on.to_formatted_s :showtime}".html_safe
   end
 end

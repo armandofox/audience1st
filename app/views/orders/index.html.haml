@@ -1,1 +1,4 @@
+= link_to 'Expand All', '#', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); false;}
+&nbsp;&bull;&nbsp;
+= link_to 'Collapse All', '#', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); false;}
 = render :partial => 'order', :collection => @orders

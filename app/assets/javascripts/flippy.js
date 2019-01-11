@@ -13,25 +13,19 @@ var Flippy = {
     var flippyContent = Flippy.getContentElementFor(flippy).first();
     if (flippyContent.is(':visible')) {
       flippyContent.slideUp('fast');
-      flippy.html('&#x25BA' + flippy.html().substr(1));
+      flippy.html('&#x25BA');
     } else {
       flippyContent.slideDown('fast');
-      flippy.html('&#x25BC' + flippy.html().substr(1));
+      flippy.html('&#x25BC');
     }
   },
   handleClick: function(evt) {
     Flippy.toggle($(evt.target));
     return(false);
   },
-  hideAll: function() {
-    var flippies = $('.flippy');
-    if (flippies.length > 1) {
-      flippies.each(function(index,elt) { Flippy.toggle($(elt)); });
-    }
-  },
   setup: function() {
     $('.flippy').click(Flippy.handleClick);
-    Flippy.hideAll();
+    $('.flippy-div').hide();
   }
 };
 $(Flippy.setup);
