@@ -9,9 +9,12 @@ body.maintenance {
   background-color: red;
 }
 
-.customer-vouchers-table {
+.customer-vouchers-table, .a1-table {
     width: 90%;
     border-collapse: collapse;
+}
+.customer-vouchers-table td, .a1-table td {
+    vertical-align: top;
 }
 
 /* Additional field qualifiers for errors etc */
