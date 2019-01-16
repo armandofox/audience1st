@@ -19,6 +19,7 @@ Scenario: search with multiple match
   Then I should be on the home page for customer "Bilbo Baggins"
 
 Scenario:search with other information
+
   Given the following customers exist:
     | first_name | last_name | email               | street        | city | state |
     | Alex       | Fox       | afox@mail.com       | 11 Main St #1 |  SAF | CA    |
@@ -30,6 +31,8 @@ Scenario:search with other information
   When I search for customers matching "FOX"
   Then the search results dropdown should include: Armando Fox, Bobby Boxer (123 Fox Hill), Organ Milk (dancingfox@mail.com)
   But the search results dropdown should not include: Bob Bag
+  When I select autocomplete choice "Bobby Boxer (123 Fox Hill)"
+  Then I should be on the home page for customer "Bobby Boxer"
 
 Scenario: search with no result
   When I search for customers matching "No matching result"
@@ -46,4 +49,3 @@ Scenario: duplicates are not listed in dropdown
   When I search for customers matching "fox"
   Then the search results dropdown should include: Armando Fox
   But  the search results dropdown should not include: Armando Fox (fox@gmail.com)
-  

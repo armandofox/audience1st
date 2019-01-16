@@ -304,7 +304,7 @@ class CustomersController < ApplicationController
     result =
       exact_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
       partial_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
-      other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})"} } +
+      other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})", 'value' => customer_path(c)} } +
       show_all_matches
       render :json => result.uniq
   end
