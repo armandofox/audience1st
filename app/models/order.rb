@@ -98,13 +98,6 @@ class Order < ActiveRecord::Base
     includes(:customer)
   }
 
-  scope :for_transactions_reporting, ->() {
-    includes(:items).
-    includes(:customer).
-    includes(:donations => :account_code).
-    includes(:vouchers => [:showdate,:vouchertype])
-  }
-    
   def self.to_csv
     attribs = %w(id sold_on purchaser_name purchase_medium total_price item_descriptions)
     CSV.generate(:headers => true) do |csv|
@@ -255,8 +248,8 @@ class Order < ActiveRecord::Base
     message
   end
 
-  def summary
-    (items.map(&:one_line_description) << self.comments).join("\n")
+  def summary(separator = "\n")
+    (items.map(&:one_line_description) << self.comments).join(separator)
   end
 
   def summary_for_audit_txn

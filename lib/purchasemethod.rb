@@ -4,16 +4,16 @@ Purchasemethod = Struct.new(:description, :shortdesc, :nonrevenue, :purchase_med
     Purchasemethod::ALL[indx]
   end
   def self.valid_purchasemethod?(indx)
-    indx.to_i.between?(1,10)
+    indx.to_i.between?(1,10)  &&  indx.to_i != 3
   end
   def refundable?
-    [:web_cc,:box_cc,:box_cash,:box_chk].include?(shortdesc)
+    [:web_cc,:box_cash,:box_chk].include?(shortdesc)
   end
   def self.walkup_purchasemethods
-    [2,3,4,5]
+    [2,4,5]
   end
   def self.order_reporting_purchasemethods
-    [1,3,4,5]
+    [1,4,5]
   end
   def self.get_type_by_name(str)
     Purchasemethod::ALL.index { |p| p.shortdesc.to_s == str.to_s } ||
@@ -30,7 +30,6 @@ Purchasemethod::ALL ||= [
   Purchasemethod.new('INVALID/DUMMY',            :invalid, true,  :none).freeze,          
   Purchasemethod.new('Web - Credit Card',        :web_cc,  false, :credit_card).freeze,   # 1
   Purchasemethod.new('No payment required',      :none,    true,  :cash).freeze,          # 2
-  Purchasemethod.new('Box office - Credit Card', :box_cc,  false, :credit_card).freeze,   # 3
   Purchasemethod.new('Box office - Cash',        :box_cash,false, :cash).freeze,   # 4
   Purchasemethod.new('Box office - Check',       :box_chk, false, :check).freeze,   # 5
   Purchasemethod.new('Payment Due',              :pmt_due, false, :none).freeze,          # 6

@@ -1,0 +1,15 @@
+- o = order_summary
+%tr[o]
+  %td
+    %a.a1tooltip{:href => order_path(o)}
+      = o.id
+      %span.text-left
+        = image_tag 'callout.gif', :class => 'callout'
+        = o.summary('<br/>').html_safe
+  %td= o.sold_on.strftime('%a %b %-d %-l:%M%P')
+  %td= link_to  o.purchaser.full_name, customer_path(o.purchaser)
+  %td= o.processed_by.full_name
+  %td.text-right= sprintf('%5.2f', o.total)
+  %td
+    - if o.purchasemethod == Purchasemethod.get_type_by_name('web_cc')
+      = o.authorization

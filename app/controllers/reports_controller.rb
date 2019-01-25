@@ -138,6 +138,11 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
+  def accounting_report
+    from,to = Time.range_from_params(params[:txn_report_dates])
+    @report = AccountingReport.new(from,to).run
+  end
+
   def retail
     @from,@to = Time.range_from_params(params[:retail_report_dates])
     @items = RetailItem.
@@ -155,24 +160,6 @@ class ReportsController < ApplicationController
     valid = klass.ancestors.include?(Report)
     redirect_to(reports_path, :alert => "Invalid report name '#{str}'") unless valid
     valid && klass
-  end
-
-  def accounting_report
-    @account_codes = params[:account_codes]
-    options = {:from => @from, :to => @to, :account_codes => @account_codes}
-    if params[:format] =~ /csv/i
-      content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
-      send_data(AccountingReport.render_csv(options),
-        :type => content_type,
-        :filename => filename_from_dates('revenue', @from, @to, 'csv'))
-    elsif params[:format] =~ /pdf/i
-      send_data(AccountingReport.render_pdf(options),
-        :type => 'application/pdf',
-        :filename => filename_from_dates('revenue', @from, @to, 'pdf'))
-    else
-      @report = AccountingReport.render_html(options)
-      render :action => 'accounting_report'
-    end
   end
 
 end
