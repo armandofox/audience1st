@@ -67,7 +67,7 @@ class DonationsController < ApplicationController
     when 'cash'
       @order.purchasemethod = Purchasemethod.get_type_by_name('box_cash')
     when 'credit_card'
-      @order.purchasemethod = Purchasemethod.get_type_by_name('box_cc')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
       @order.purchase_args =  { :credit_card_token => params[:credit_card_token] }
       sold_on = Time.current
     end

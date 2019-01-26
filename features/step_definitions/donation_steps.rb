@@ -51,7 +51,7 @@ Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|b
   order.purchasemethod = Purchasemethod.get_type_by_name(
     case how
     when /cash/ then 'box_cash'
-    when /credit/ then 'box_cc'
+    when /credit/ then 'web_cc'
     else 'box_chk'
     end)
   begin

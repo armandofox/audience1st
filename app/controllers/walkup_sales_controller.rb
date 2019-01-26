@@ -38,7 +38,7 @@ class WalkupSalesController < ApplicationController
       @order.purchasemethod = Purchasemethod.get_type_by_name('box_chk')
       @order.purchase_args = {:check_number => params[:check_number]}
     else                      # credit card
-      @order.purchasemethod = Purchasemethod.get_type_by_name('box_cc')
+      @order.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
       @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
     end
     

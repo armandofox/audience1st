@@ -309,7 +309,7 @@ class StoreController < ApplicationController
     params[:commit] = 'credit' if params[:_stripe_commit] =~ /credit/
     case params[:commit]
     when ( /credit/i || params[:_stripe_commit] =~ /credit/i)
-      meth = Purchasemethod.get_type_by_name(@cart.customer == current_user ? 'web_cc' : 'box_cc')
+      meth = Purchasemethod.get_type_by_name('web_cc')
       args = { :credit_card_token => params[:credit_card_token] }
     when /check/i
       return redirect_to(checkout_path, :alert => "Only box office can process check payments") unless @is_admin

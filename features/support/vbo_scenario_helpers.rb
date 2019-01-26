@@ -2,7 +2,7 @@ module VboScenarioHelpers
 
   def purchasemethod_from_string(str)
     case str
-    when /(at )?box office/i then Purchasemethod.get_type_by_name('box_cc')
+    when /(at )?box office/i then Purchasemethod.get_type_by_name('web_cc')
     when /credit card/i then Purchasemethod.get_type_by_name('web_cc')
     else Purchasemethod.get_type_by_name('box_cash')
     end
