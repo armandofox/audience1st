@@ -30,6 +30,7 @@ Purchasemethod::ALL ||= [
   Purchasemethod.new('INVALID/DUMMY',            :invalid, true,  :none).freeze,          
   Purchasemethod.new('Web - Credit Card',        :web_cc,  false, :credit_card).freeze,   # 1
   Purchasemethod.new('No payment required',      :none,    true,  :cash).freeze,          # 2
+  Purchasemethod.new('INVALID/DUMMY',            :invalid, true,  :none).freeze,  # 3 - was box_cc
   Purchasemethod.new('Box office - Cash',        :box_cash,false, :cash).freeze,   # 4
   Purchasemethod.new('Box office - Check',       :box_chk, false, :check).freeze,   # 5
   Purchasemethod.new('Payment Due',              :pmt_due, false, :none).freeze,          # 6
