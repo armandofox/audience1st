@@ -19,7 +19,7 @@
 
 .container#financial_reports
   %h1 Orders by Payment Method and Account Code
-  = form_tag accounting_reports_path, :method => :get, :class => 'form-inline' do
+  = form_tag credit_card_sales_reports_path, :method => :get, :class => 'form-inline' do
     %label.col-form-label.px-2 Select Dates
     = select_date_with_shortcuts 'txn_report_dates', :from => @from, :to => @to
     .px-2= submit_tag 'Display on Screen', :class => 'btn btn-primary'

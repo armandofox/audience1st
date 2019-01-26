@@ -138,9 +138,9 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
-  def accounting_report
+  def credit_card_sales
     from,to = Time.range_from_params(params[:txn_report_dates])
-    @report = AccountingReport.new(from,to).run
+    @report = CreditCardSalesReport.new(from,to).run
   end
 
   def retail

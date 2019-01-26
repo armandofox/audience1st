@@ -23,12 +23,6 @@ class OrdersController < ApplicationController
     end
   end
 
-  ### OBSOLETE
-  def report_by_payment_type
-    from,to = Time.range_from_params(params[:txn_report_dates])
-    @report = Order::ReportByPaymentType.new(from,to).run
-  end
-
   def show
     @order = Order.where(:id => params[:id]).includes(:vouchers => [:showdate,:vouchertype]).first
     if @order.nil?

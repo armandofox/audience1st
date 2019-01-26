@@ -1,0 +1,37 @@
+%h1.text-center Credit card revenue by account code, 
+%h2.text-center
+  = @report.from.to_formatted_s(:filename)
+  to
+  = @report.to.to_formatted_s(:filename)
+
+.row.text-light.bg-primary.font-weight-bold
+  .col-md-9.offset-md-1 Total Credit Card, all account codes
+  .col-md-2.text-right= number_to_currency(@report.total)
+  
+- @report.account_code_groups.each_pair do |account_code, items|
+  .row
+    .col-md-1
+      %a.flippy[account_code, :flippy]{:href => '#'} &#x25BA;
+    .col-md-9.text-left= account_code.name_with_code
+    .col-md-2.text-right= number_to_currency(items.map(&:amount).sum)
+  .flippy-div[account_code, :details]
+    %table.a1-table
+      %thead
+        %tr
+          %th{:scope => 'col'} Order
+          %th{:scope => 'col'} Item
+          %th{:scope => 'col'} Sold on
+          %th{:scope => 'col'} Customer
+          %th{:scope => 'col'} Amount
+      %tbody
+        - time_fmt = (@report.to - @report.from > 1.day) ? '%a %b %-d %-l:%M%P' : '%-l:%M%P'
+        - items.each do |item|
+          %tr
+            %td= link_to item.order_id, order_path(item.order)
+            %td= item.one_line_description
+            %td= item.order.sold_on.strftime(time_fmt)
+            %td= item.customer.full_name
+            %td.text-right= sprintf("%.2f", item.amount)
+          
+
+

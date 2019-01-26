@@ -92,7 +92,7 @@ Rails.application.routes.draw do
         get :attendance
         get :advance_sales
         get :do_report
-        get :accounting
+        get :credit_card_sales
         get :retail
         get :unfulfilled_orders
       end
