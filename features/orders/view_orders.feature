@@ -18,11 +18,10 @@ Scenario: view correct order info
   Given I am logged in as boxoffice manager
   When I visit the orders page for customer "Tom Foolery"
   Then I should see the following details for that order:
-  | content                                |
-  | Purchaser: Tom Foolery                 |
-  | Order comments: Pickup by: Al Foolery  |
-  | Gift order? No                         |
-  | Order total: $19.00                    |
-  | Payment method: Credit card            |
+  | content                           |
+  | Purchaser: Tom Foolery            |
+  | Comments: Pickup by: Al Foolery   |
+  | Gift? No                          |
+  | Order total: $19.00 (Credit card) |
 
  
