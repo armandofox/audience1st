@@ -113,7 +113,7 @@ class Voucher < Item
   end
 
   delegate(
-    :name,  :season, :account_code,
+    :name,  :season,
     :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
     :included_vouchers, :num_included_vouchers,
     :unique_showdate,
@@ -205,6 +205,7 @@ class Voucher < Item
     vt.vouchers.build({
         :fulfillment_needed => vt.fulfillment_needed,
         :amount => vt.price,
+        :account_code => vt.account_code,
         :category => vt.category}.merge(args))
   end
 

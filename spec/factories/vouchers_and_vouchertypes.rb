@@ -71,7 +71,8 @@ FactoryBot.define do
       association :vouchertype, :factory => :revenue_vouchertype
       amount { vouchertype.price }
       category { vouchertype.category }
-
+      account_code { vouchertype.account_code }
+      
       factory :walkup_voucher do
         walkup true
         customer { Customer.walkup_customer }
@@ -98,6 +99,7 @@ FactoryBot.define do
         create(:bundle, :subscription => subscription, :season => season, :including => included_vouchertypes)
       end
       amount 50
+      account_code { vouchertype.account_code }
       category 'bundle'
     end
   end
