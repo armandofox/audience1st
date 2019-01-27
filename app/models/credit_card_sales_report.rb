@@ -14,8 +14,9 @@ class CreditCardSalesReport
       :order,
       :vouchertype,
       :showdate => :show).
+      where('amount > 0').
       where('orders.purchasemethod' => Purchasemethod.get_type_by_name(:web_cc))
-    @account_code_groups = items.group_by(&:account_code)
+    @account_code_groups = items.group_by(&:account_code).sort
     @total = items.map(&:amount).sum
     self
   end

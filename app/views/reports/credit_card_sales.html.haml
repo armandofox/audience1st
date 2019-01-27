@@ -1,4 +1,4 @@
-%h1.text-center Credit card revenue by account code, 
+%h1.text-center Credit card revenue by account code 
 %h2.text-center
   = @report.from.to_formatted_s(:filename)
   to
@@ -8,7 +8,7 @@
   .col-md-9.offset-md-1 Total Credit Card, all account codes
   .col-md-2.text-right= number_to_currency(@report.total)
   
-- @report.account_code_groups.each_pair do |account_code, items|
+- @report.account_code_groups.each do |account_code, items|
   .row
     .col-md-1
       %a.flippy[account_code, :flippy]{:href => '#'} &#x25BA;

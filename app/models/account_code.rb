@@ -26,6 +26,14 @@ class AccountCode < ActiveRecord::Base
     AccountCode.first
   end
 
+  def <=>(other)
+    if self.code && other.code
+      self.code <=> other.code
+    else
+      self.name <=> other.name
+    end
+  end
+
   class CannotDelete < RuntimeError ;  end
   
   # convenience accessors
