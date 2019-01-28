@@ -18,9 +18,9 @@
       = submit_tag 'Generate Listing', :class => 'btn btn-primary'
 
 .container#financial_reports
-  %h1 Credit Card Revenue By Account Code
-  = form_tag credit_card_sales_reports_path, :method => :get, :class => 'form-inline' do
-    %label.col-form-label.px-2 Select Dates
+  %h1 Revenue By Payment Method and Account Code
+  = form_tag revenue_by_payment_method_reports_path, :method => :get, :class => 'form-inline' do
+    %label.col-form-label.px-2 Select Dates (3 month maximum window)
     = select_date_with_shortcuts 'txn_report_dates', :from => @from, :to => @to
     .px-2= submit_tag 'Display on Screen', :class => 'btn btn-primary'
     -# .px-2= submit_tag 'Download as Excel', :class => 'btn btn-primary px-2'

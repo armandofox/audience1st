@@ -1,4 +1,4 @@
-%h1.text-center Credit card revenue by account code 
+%h1.text-center Revenue by payment method
 %h2.text-center
   = @report.from.to_formatted_s(:filename)
   to
@@ -31,7 +31,7 @@
               %td= item.one_line_description
               %td= item.order.sold_on.strftime(time_fmt)
               %td= item.customer.full_name
-              %td.text-right= sprintf("%.2f", item.amount)
+              %td.text-right= number_to_currency item.amount
 
 
 

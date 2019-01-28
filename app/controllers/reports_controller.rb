@@ -138,9 +138,10 @@ class ReportsController < ApplicationController
     redirect_to({:action => 'index'}, {:notice =>  "#{i} orders marked fulfilled"})
   end
 
-  def credit_card_sales
+  def revenue_by_payment_method
     from,to = Time.range_from_params(params[:txn_report_dates])
-    @report = CreditCardSalesReport.new(from,to).run
+    return redirect_to(reports_path, :alert => 'Please select a date range of 3 months or less for the revenue by payment method report.') if (to - from > 93.days)
+    @report = RevenueByPaymentMethodReport.new(from,to).run
   end
 
   def retail

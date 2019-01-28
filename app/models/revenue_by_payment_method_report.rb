@@ -1,4 +1,4 @@
-class CreditCardSalesReport
+class RevenueByPaymentMethodReport
 
   attr_reader :from, :to, :payment_types, :totals
   
