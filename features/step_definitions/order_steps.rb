@@ -77,6 +77,29 @@ Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containi
   end
 end
 
+Given /^the following orders have been placed:/ do |tbl|
+  # fields: date, customer name, item1 (eg "2x SeasonSub"), item2 (eg "$20 donation"), payment
+  tbl.hashes.each do |order|
+    pmt_types = {"credit card" => "web_cc", "cash" => "box_cash", "check" => "box_chk"}.freeze
+    customer = find_or_create_customer(*(order['customer'].split(/\s+/)))
+    o = build(:order,
+      :purchasemethod => Purchasemethod.get_type_by_name(pmt_types[order['payment']]),
+      :purchase_args => {:credit_card_token => 'DUMMY'}, # to pass order validation for CC purchase
+      :customer => customer, :purchaser => customer)
+    [order['item1'],order['item2']].each do |item|
+      case item
+      when /\$(\d+) donation/
+        o.add_donation(Donation.from_amount_and_account_code_id($1.to_i,
+            Option.default_donation_account_code))
+      when /(\d+)x (.*)$/
+        vv = create(:valid_voucher, :vouchertype => Vouchertype.find_by!(:name => $2))
+        o.add_tickets(vv, $1.to_i)
+      end
+    end
+    o.finalize!
+  end
+end
+
 When /^I place my order with a valid credit card$/ do
   # relies on stubbing Store.purchase_with_credit_card method
   steps %Q{When I press "Charge Credit Card"}

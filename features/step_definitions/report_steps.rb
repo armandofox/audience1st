@@ -1,3 +1,17 @@
+# Revenue by payment type and account code report
+
+When /I view revenue by payment type from "(.*)" to "(.*)"$/ do |from,to|
+  steps %Q{
+When I visit the reports page
+And I select "#{from} to #{to}" as the "txn_report_dates" date range
+And I press "Display on Screen"
+}
+end
+
+
+
+# Customer lists
+
 Then /the report output should include only customers: (.*)/ do |arg|
   num_matches = arg.split(/\s*,\s*/).size
   if num_matches.zero?
