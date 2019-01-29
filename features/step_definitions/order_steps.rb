@@ -97,6 +97,7 @@ Given /^the following orders have been placed:/ do |tbl|
       end
     end
     o.finalize!
+    o.update_attribute(:sold_on,Time.zone.parse(order['date']))
   end
 end
 

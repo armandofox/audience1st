@@ -8,7 +8,18 @@ And I press "Display on Screen"
 }
 end
 
-
+Then /the "(.*)" subtotals should be exactly:/ do |pmt_type, tbl|
+  tbl.hashes.each do |acc_code|
+    ac = AccountCode.find_by!(:code => acc_code['account_code']).id
+    subtotal = acc_code['total'].to_f
+    if subtotal.zero?           # there should not be a subtotal row for this
+      expect(page).not_to have_css("#subtotal_#{pmt_type}_#{ac}")
+    else
+      expect(page.find(:css, "#subtotal_#{pmt_type}_#{ac}").text).
+        to eq("$#{acc_code['total']}")
+    end
+  end
+end
 
 # Customer lists
 

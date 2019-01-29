@@ -6,14 +6,14 @@
 
 - @report.payment_types.each_pair do |payment_type, account_code_groups|
   .row.text-light.bg-primary.font-weight-bold
-    .col-md-9.offset-md-1 Total #{humanize payment_type}, all account codes
+    .col-md-9.offset-md-1{:id => "#{payment_type}_total"} Total #{humanize payment_type}, all account codes
     .col-md-2.text-right= number_to_currency(@report.totals[payment_type])
   - account_code_groups.each do |account_code, items|
     .row
       .col-md-1
         %a.flippy{:id => "flippy_#{payment_type}_#{account_code.id}", :href => '#'} &#x25BA;
       .col-md-9.text-left= account_code.name_with_code
-      .col-md-2.text-right= number_to_currency(items.map(&:amount).sum)
+      .col-md-2.text-right{:id => "subtotal_#{payment_type}_#{account_code.id}"}= number_to_currency(items.map(&:amount).sum)
     .flippy-div{:id => "details_#{payment_type}_#{account_code.id}"}
       %table.a1-table
         %thead
