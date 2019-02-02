@@ -17,7 +17,7 @@ Scenario:  Add regular tickets to my order with no donation
   When I select "3" from "General - $15.00"
   And I press "CONTINUE >>"
   Then the billing customer should be "Tom Foolery"
-  And I should see "45.00" within "#cart_total"
+  And the cart total price should be $45.00
   And the cart should contain 3 "General" tickets for "October 1, 2010, 7:00pm"
   And the cart should not contain a donation
 
@@ -27,7 +27,7 @@ Scenario: Add regular tickets to my order with a donation
   And I fill in "donation" with "17"
   And I press "CONTINUE >>"
   Then I should be on the Checkout page
-  And I should see "47.00" within "#cart_total"
+  And the cart total price should be $47.00
   And the cart should contain 2 "General" tickets for "October 1, 2010, 7:00pm"
   And the cart should contain a donation of $17.00 to "General Fund"
 

@@ -25,35 +25,33 @@ Given /^my gift order contains the following tickets:/ do |tickets|
 end
 
 Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
-  steps %Q{Then I should see /#{type}/ within "#cart_items" #{num} times}
+  steps %Q{Then I should see /#{type}/ within "#cart" #{num} times}
 end
 
 Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|
   date_string = Time.zone.parse(date_string).to_formatted_s(:showtime)
-  steps %Q{Then I should see /#{date_string}.*?#{type}/ within "#cart_items" #{num} times}
+  steps %Q{Then I should see /#{date_string}.*?#{type}/ within "#cart" #{num} times}
 end
 
 
 Then /^the cart should contain a donation of \$(.*) to "(.*)"$/ do |amount,account|
-  # This should really check internal state of the cart, but due to current poor design
-  #  that state's not externally grabbable because it's buried in the session.
-  steps %Q{Then I should see /#{sprintf('%.02f',amount)}.*?Donation to #{account}/ within "#cart_items" 1 times}
+  steps %Q{Then I should see /Donation to #{account}.*?#{sprintf('%.02f',amount)}/ within "#cart" 1 times}
 end
 
 Then /^the cart should not contain a donation$/ do
-  steps %Q{Then I should not see "Donation" within "#cart_items"}
+  steps %Q{Then I should not see "Donation" within "#cart"}
 end
 
 Then /^the cart should show the following items:$/ do |table|
   table.hashes.each do |item|
     formatted_price = number_to_currency(item['price'].to_f)
-    page.all('li.cart_item').any? do |entry|
-      entry.find('.cart_item_price').has_content?(formatted_price) &&
-        entry.find('.cart_item_desc').has_content?(item['description'])
+    page.all('#cart .row').any? do |entry|
+      (entry.find('.a1-cart-amount').has_content?(formatted_price) rescue  nil) &&
+        entry.has_content?(item['description'])
     end
   end
 end
 
 Then /^the cart total price should be \$?([0-9.]+)$/ do |price|
-  within '#cart_total' do ; page.should have_content(number_to_currency price.to_f) ; end
+  page.find('.a1-cart-total-amount').should have_content(number_to_currency price.to_f)
 end

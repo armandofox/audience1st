@@ -1,6 +1,6 @@
 - @cart ||= cart 
 
-.container
+#cart.container
   - if @cart.cart_empty?
     .alert.alert-danger No items in your order.
   - else
@@ -14,7 +14,7 @@
             - if v.promo_code.blank?
               = v.name
             - else
-              Promo #{v.promo_code}
+              #{v.name} (#{v.promo_code})
         .col-md-2.text-right.text-primary.h4
           .a1-cart-amount= number_to_currency(v.price)
 
@@ -30,7 +30,7 @@
     - @cart.retail_items.each do |item|
       .row.border-top.bg-light
         .col-md-10.h5
-          .a1-retail-item #{item.name} - #{item.comments}
+          .a1-cart-retail-item= item.comments
         .col-md-2.h4.text-right.text-primary
           .a1-cart-amount= number_to_currency(item.amount)
 
@@ -40,7 +40,7 @@
         .col-md-7.h5= @cart.comments
         
     .row.bg-primary.text-white.a1-total
-      .a1-total-label.col-md-10.h4 Total
-      .col-md-2.text-right.h4
-        .a1-total-amount._stripe_total= number_to_currency(@cart.total_price)
+      .a1-cart-total-label.col-md-2.offset-md-8.h3 Total
+      .col-md-2.text-right.h3
+        .a1-cart-total-amount._stripe_total= number_to_currency(@cart.total_price)
 

@@ -39,6 +39,6 @@ Scenario: contents of donation prompt field are recorded as donation comment
   And I fill in "donation" with "999"
   And I press "submit"
   Then I should be on the Checkout page
-  And I should see "Donation to Show Sponsorship - Guys and Dolls"
+  And I should see "Donation to Show Sponsorship Guys and Dolls"
   When I place my order with a valid credit card
   Then customer "Tom Foolery" should have a donation of $999 to "Show Sponsorship" with comment "Guys and Dolls"

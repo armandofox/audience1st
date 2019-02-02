@@ -17,8 +17,8 @@
         %br
 
       - unless @account_code.donation_prompt.blank?
-        %label{:for => :comments}= @account_code.donation_prompt
-        = text_field_tag 'comments', '', :size => 40
+        %label{:for => :donation_comments}= @account_code.donation_prompt
+        = text_field_tag 'donation_comments', '', :size => 40
         %br
         %br
 
