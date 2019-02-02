@@ -4,34 +4,43 @@
   - if @cart.cart_empty?
     .alert.alert-danger No items in your order.
   - else
-    %ul.list-group
-      - @cart.each_voucher do |v|
-        %li.list-group-item
-          .pull-left
-            = v.showdate.try(:name)
-            = v.showdate.thedate.to_formatted_s(:showtime) if v.showdate
+    - @cart.each_voucher do |v|
+      .row.border-top.bg-light
+        .col-md-5.text-truncate.h5
+          .a1-cart-show-name= v.showdate.try(:name)
+        .col-md-5.font-italic.h5
+          .a1-cart-show-date= v.showdate.thedate.to_formatted_s(:showtime) if v.showdate
+          .a1-cart-voucher-type.text-secondary
             - if v.promo_code.blank?
               = v.name
             - else
               Promo #{v.promo_code}
-          .pull-right= number_to_currency(v.price)
+        .col-md-2.text-right.text-primary.h4
+          .a1-cart-amount= number_to_currency(v.price)
 
-      - if (d = @cart.donation)
-        %li.list-group-item.list-group-item-light
-          .pull-left= ["Donation to #{h(d.account_code.name)}", d.comments].join(' - ')
-          .pull-right= number_to_currency(d.amount)
+    - if (d = @cart.donation)
+      .row.border-top.bg-light
+        .col-md-5.text-truncate.h5
+          .a1-cart-donation-to Donation to #{d.account_code.name}
+        .col-md-5.font-italic.text-truncate.h5
+          .a1-cart-donation-comments= d.comments
+        .col-md-2.h4.text-right.text-primary
+          .a1-cart-amount= number_to_currency(d.amount)
 
-      - @cart.retail_items.each do |item|
-        %li.list-group-item.list-group-item-light
-          .pull-left #{item.name} - #{item.comments}
-          .pull-right= number_to_currency(item.amount)
-
-    #cart_total
-      #total_price._stripe_total= number_to_currency(@cart.total_price)
-      %div &nbsp;
+    - @cart.retail_items.each do |item|
+      .row.border-top.bg-light
+        .col-md-10.h5
+          .a1-retail-item #{item.name} - #{item.comments}
+        .col-md-2.h4.text-right.text-primary
+          .a1-cart-amount= number_to_currency(item.amount)
 
     - unless @cart.comments.blank?
-      #cart_comments
-        %p
-          %span.alert.alert-warning Special seating needs:
-          = h @cart.comments
+      .row.border-top.bg-secondary.text-light.a1-cart-comments
+        .col-md-5.h5 Notes
+        .col-md-7.h5= @cart.comments
+        
+    .row.bg-primary.text-white.a1-total
+      .a1-total-label.col-md-10.h4 Total
+      .col-md-2.text-right.h4
+        .a1-total-amount._stripe_total= number_to_currency(@cart.total_price)
+
