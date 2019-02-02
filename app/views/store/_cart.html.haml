@@ -1,34 +1,30 @@
 - @cart ||= cart 
 
-#cart.container
+.container
   - if @cart.cart_empty?
-    %p#empty_cart No items in your order.
+    .alert.alert-danger No items in your order.
   - else
-    %h2#check_dates Please double check your order
-    %ul#cart_items
+    %ul.list-group
       - @cart.each_voucher do |v|
-        %li.cart_item
-          .price_and_actions
-            .cart_item_price= number_to_currency(v.price)
-          %span.cart_item_desc
-            %span.voucher_show_name= v.showdate.try(:name)
-            %span.voucher_show_date= v.showdate.thedate.to_formatted_s(:showtime) if v.showdate
-            %span.voucher_type= v.name
-            - if !v.promo_code.blank?
-              %span.promo_code (Promo #{h(v.promo_code)})
+        %li.list-group-item
+          .pull-left
+            = v.showdate.try(:name)
+            = v.showdate.thedate.to_formatted_s(:showtime) if v.showdate
+            - if v.promo_code.blank?
+              = v.name
+            - else
+              Promo #{v.promo_code}
+          .pull-right= number_to_currency(v.price)
 
       - if (d = @cart.donation)
-        %li.cart_item
-          .price_and_actions
-            .cart_item_price= number_to_currency(d.amount)
-          %span.donation_name.cart_item_desc 
-            = ["Donation to #{h(d.account_code.name)}", d.comments].join(' - ')
+        %li.list-group-item.list-group-item-light
+          .pull-left= ["Donation to #{h(d.account_code.name)}", d.comments].join(' - ')
+          .pull-right= number_to_currency(d.amount)
 
       - @cart.retail_items.each do |item|
-        %li.cart_item
-          .price_and_actions
-            .cart_item_price= number_to_currency(item.amount)
-          %span.retail_item_description.cart_item_desc= item.comments
+        %li.list-group-item.list-group-item-light
+          .pull-left #{item.name} - #{item.comments}
+          .pull-right= number_to_currency(item.amount)
 
     #cart_total
       #total_price._stripe_total= number_to_currency(@cart.total_price)
