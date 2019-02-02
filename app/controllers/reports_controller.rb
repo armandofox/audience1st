@@ -12,7 +12,7 @@ class ReportsController < ApplicationController
     # all show names
     @all_shows = Show.all
     # quick subscription stats
-    @subscriptions = Voucher.subscription_vouchers(Time.current.year)
+    @subscriptions = Voucher.subscription_vouchers(Time.this_season)
     # list of all special reports
     @special_report_names = Report.subclasses.map { |s| ActiveModel::Name.new(s).human }.unshift('Select report...')
   end
