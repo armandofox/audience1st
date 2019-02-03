@@ -7,7 +7,7 @@ Background:
 
 Scenario: make donation
   When I fill in "donation" with "15"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then I should be on the Checkout page
   And the cart should contain a donation of $15.00 to "General Fund"
   And the billing customer should be "Tom Foolery"

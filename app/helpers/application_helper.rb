@@ -92,7 +92,7 @@ module ApplicationHelper
 
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked, opts={})
-    check_box_tag name, 1, checked, opts.merge(:onchange => %Q{$('##{elt}').text($(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}' )})
+    check_box_tag name, 1, checked, opts.merge(:onchange => %Q{$('##{elt}').val($(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}' )})
   end
 
   def purchase_link_popup(text,url,name=nil)

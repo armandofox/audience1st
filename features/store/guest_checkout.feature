@@ -44,7 +44,7 @@ Scenario: no guest checkout allowed for subscription purchases or camps
   Given a "Regular" subscription available to anyone for $50.00
   When I go to the subscriptions page
   When I select "1" from "Regular"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then I should not see "Checkout as Guest"
 
 Scenario: if guest checkout fails because of existing account, checkout continues successfully after login

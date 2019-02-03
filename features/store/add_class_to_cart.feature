@@ -11,7 +11,7 @@ Background:
   When I visit the classes and camps page
   And I select "Acting 101" from "Class"
   And I fill in "General - $20.00" with "1"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then I should be on the checkout page
   And I should see "Who is attending the class?"
 

@@ -50,14 +50,14 @@
           .col-md-5.text-right
             %label.col-form-label.strong{:for=>:gift} Is this order a <strong>gift?</strong>
           .col-md-1
-            = check_box_toggle 'gift', false, 'nextstep', 'to enter Recipient information', 'to Billing information'
+            = check_box_toggle 'gift', false, 'submit', 'Continue to Recipient information', 'Continue to Billing Information'
           .col-md-6
 
       .form-row
         .col-md-5
         .col-md-4
           = hidden_field_tag 'referer', 'subscribe'
-          = submit_tag 'CONTINUE >>', {:disabled => !@is_admin, :id => 'submit', :class => 'btn btn-success'}
+          = submit_tag 'Continue to Billing Information', {:disabled => !@is_admin, :id => 'submit', :class => 'btn btn-success'}
           %span#nextstep to Billing Information
         .col-md-3
 

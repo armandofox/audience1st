@@ -14,7 +14,7 @@ Scenario: successful purchase
   When I go to the login page
   And I follow "Subscribe to Our Season"
   And I select "2" from "Regular"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
 
   Then I should be on the login page
   When I follow "Create Account"

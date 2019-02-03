@@ -75,6 +75,11 @@ When /^I fill in the address as "(.*),\s*(.*),\s*(.*)\s+(.*)"/ do |street,city,s
   end
 end
 
+When /^I proceed to checkout/ do
+  #click_button 'submit'
+  find('input#submit').click
+end
+
 When /^I try to checkout as guest using "(.*)"$/ do |info|
   steps %Q{
   When I follow "Checkout as Guest"
@@ -83,8 +88,8 @@ When /^I try to checkout as guest using "(.*)"$/ do |info|
 end
 
 When /^I successfully complete guest checkout$/ do
+  find('input#submit').click
   steps %Q{
-When I press "CONTINUE >>"
 And I place my order with a valid credit card
 }
 end

@@ -4,7 +4,7 @@
   = form_tag shipping_address_path(@customer) do
     - if @mailable
       = hidden_field_tag 'mailable_gift_order', 1
-      %p
+      .alert.alert-warning
         If part of this order needs to be mailed, where should it be mailed?
         (We will not otherwise notify recipient of their gift, but we need
         their mailing address even if you want us to mail order to you.)
@@ -14,7 +14,7 @@
       = radio_button_tag 'ship_to_purchaser', '0', false
       %label{:for => :ship_to_purchaser_0} To the gift recipient
     - else
-      %p 
+      .alert.alert-warning
         We won't notify the recipient of their gift, but we do need
         the gift recipient's full name, mailing address, and at least
         one phone number or email address.
@@ -24,8 +24,7 @@
 
     = render :partial => 'customers/billing_address', :locals => {:customer => @recipient, :legend => "Gift Recipient"}
     = render :partial => 'customers/extra'        
-    = link_to '<< Go Back', {:action => (@redirect_to || :index)}, { :class => 'btn btn-primary' }
-    to change or cancel order, or
-    = submit_tag 'CONTINUE >>'
-    %span#nextstep to Billing Information
-
+    .row
+      .col-md-2.offset-md-5= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger' }
+      .col-md-1
+      .col-md-4= submit_tag 'Continue to Billing Information', :class => 'btn btn-success', :id => 'submit'

@@ -55,6 +55,15 @@ class StoreController < ApplicationController
 
   public
 
+  # cancel the order, empty the cart, etc, and start fresh.
+  def cancel
+    reset_shopping
+    if session[:guest_checkout]
+      logout_keeping_session!
+    end
+    redirect_to store_path
+  end
+
   def index
     return_after_login params.except(:customer_id)
     @valid_vouchers = []

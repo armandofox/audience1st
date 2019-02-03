@@ -42,11 +42,8 @@
         .form-group.form-row
           .col-sm-4
           .form-check.col-sm-8
-            = check_box_toggle 'gift', false, 'nextstep','to enter Recipient information','to Billing information',:class => 'form-check-input'
+            = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
             %label.form-check-label{:for=>:gift} This order is a gift
       .form-group.form-row  
-        .col-sm-4
-        .col-sm-4
-          = submit_tag 'CONTINUE >>', :disabled => true, :id => 'submit', :class => 'btn btn-success'
-          %span#nextstep to Billing Information
-        .col-sm-4
+        .col-md-4.offset-md-4
+          = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'

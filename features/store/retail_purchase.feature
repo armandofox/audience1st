@@ -16,7 +16,7 @@ Background: logged in as administrator acting on behalf of a patron
 Scenario: successful retail purchase
 
   When I fill in "Description of retail purchase" with "Auction item" 
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then I should be on the checkout page for customer "Tom Foolery"
   And I should see "Auction item"
   When the order is placed successfully
@@ -30,13 +30,13 @@ Scenario: gift purchase cannot include retail item
 
   When I fill in "Description of retail purchase" with "Auction item" 
   And I check "gift"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then I should be on the store page for customer "Tom Foolery"
   And I should see "Retail items can't be included in a gift order"
 
 Scenario: invalid retail purchase info returns you to store page
 
-  When I press "CONTINUE >>"
+  When I proceed to checkout
   Then I should be on the store page for customer "Tom Foolery"
   And I should see "Comments or description can't be blank"
 

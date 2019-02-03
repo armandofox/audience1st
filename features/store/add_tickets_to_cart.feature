@@ -15,7 +15,7 @@ Background:
 Scenario:  Add regular tickets to my order with no donation
 
   When I select "3" from "General - $15.00"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then the billing customer should be "Tom Foolery"
   And the cart total price should be $45.00
   And the cart should contain 3 "General" tickets for "October 1, 2010, 7:00pm"
@@ -25,7 +25,7 @@ Scenario: Add regular tickets to my order with a donation
 
   When I select "2" from "General - $15.00"
   And I fill in "donation" with "17"
-  And I press "CONTINUE >>"
+  And I proceed to checkout
   Then I should be on the Checkout page
   And the cart total price should be $47.00
   And the cart should contain 2 "General" tickets for "October 1, 2010, 7:00pm"
