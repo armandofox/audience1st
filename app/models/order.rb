@@ -68,8 +68,9 @@ class Order < ActiveRecord::Base
     self.items += retail_items if retail_items
     self.items.each do |i|
       i.processed_by = self.processed_by
-      # for retail item, comment is name of item, so we don't overwrite that.
-      i.comments = self.comments unless i.kind_of?(RetailItem)
+      # any vouchers with blank comments get a copy of the order's comment
+      # (special seating needs, usually)
+      i.comments = self.comments if i.comments.blank? && i.kind_of?(Voucher)
     end
   end
 

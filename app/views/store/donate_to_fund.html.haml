@@ -5,16 +5,11 @@
         %h1.text-center Record Donation
         %label{:for => :account_code_id} Fund or Account:
         = select_tag 'account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @account_code.id)
-        %br
-        %label{:for => :comments} Comments and/or check no.:
-        = text_area_tag 'comments'
-        %br
       - else
         %h1.text-center Donation to #{@account_code.name}
         - if @account_code.description
           %p.text-center= @account_code.description
         = hidden_field_tag 'account_code_id', @account_code.id
-        %br
 
       - unless @account_code.donation_prompt.blank?
         %label{:for => :donation_comments}= @account_code.donation_prompt
