@@ -122,7 +122,15 @@ describe Order, 'finalizing' do
         it 'should include the items' do ; @order.item_count.should == 4 ; end
         it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.current - 5.seconds, Time.current) ; end
         it 'should set order ID on its items' do ; @order.items.each { |i| i.order_id.should == @order.id } ; end
-        it 'should set comments on its items' do ; @order.items.each { |i| i.comments.should == 'Comment' } ; end
+        it 'should set comments on vouchers but not donations or retail' do
+          @order.items.each do |i|
+            if i.kind_of?(Voucher)
+              i.comments.should == 'Comment'
+            else
+              i.comments.should be_blank
+            end
+          end
+        end
         it 'should add vouchers to customer account' do
           @cust.should have(2).vouchers_for(@sd,@vt)
           @cust.should have(1).vouchers_for(@sd2,@vt2)
