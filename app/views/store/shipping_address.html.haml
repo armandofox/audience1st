@@ -1,4 +1,4 @@
-#store
+#store.container
   %h1.text-center Gift Order
 
   = form_tag shipping_address_path(@customer) do
@@ -25,6 +25,6 @@
     = render :partial => 'customers/billing_address', :locals => {:customer => @recipient, :legend => "Gift Recipient"}
     = render :partial => 'customers/extra'        
     .row
-      .col-md-2.offset-md-5= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger' }
-      .col-md-1
-      .col-md-4= submit_tag 'Continue to Billing Information', :class => 'btn btn-success', :id => 'submit'
+      .col-md-3= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger btn-block' }
+      .col-md-5
+      .col-md-4.text-right= submit_tag 'Continue to Billing Information', :class => 'btn btn-success', :id => 'submit'

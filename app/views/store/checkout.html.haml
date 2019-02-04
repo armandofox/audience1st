@@ -1,45 +1,48 @@
 = themed
 
-#checkout_message.hidden= @checkout_message
+.container
 
-- if @cart.gift?
-  #gift_recipient
-    %h2 This Order is a Gift For...
-    = render :partial => 'customers/billing_address', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
+  #checkout_message.hidden= @checkout_message
 
-= form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
+  - if @cart.gift?
+    #gift_recipient
+      %h2 This Order is a Gift For...
+      = render :partial => 'customers/billing_address', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
-  %h2#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
+  = form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
 
-  = render :partial => 'pickup_by' if @allow_pickup_by_other
-    
-  - if @cart.total_price > 0
+    %h2#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
 
-    = hidden_field_tag 'email_confirmation', 1
-    #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @cart.purchaser}
-    = render :partial => 'credit_card', :locals => {:name => @cart.purchaser.full_name}
+    = render :partial => 'pickup_by' if @allow_pickup_by_other
 
-  - if @is_admin
-    #other_payments.adminDiv
-      - if @cart.total_price > 0
-        Or pay with check number: 
-        = text_field_tag 'check_number', '', :size => 6
-        = submit_tag "Accept Check Payment", :class => 'btn btn-warning'
-        = submit_tag "Accept Cash Payment", :class => 'btn btn-warning'
-      - if @cart.purchaser.valid_email_address?
-        = check_box_tag('email_confirmation', 1, true)
-        Send email confirmation
-  - else 
-    = hidden_field_tag 'email_confirmation', 1
+    - if @cart.total_price > 0
 
-  .form-row
-    .col-md-9
-      .alert.alert-warning.text-center= t('store.accept_terms_of_sale', :terms_of_sale_text => escape_javascript(Option.terms_of_sale)).html_safe
-    .col-md-3
-      - if @cart.total_price > 0
-        = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'
-        = hidden_field_tag '_stripe_commit'
-      - else
-        = submit_tag "Complete Comp Order", :class => 'btn btn-success btn-block'
+      = hidden_field_tag 'email_confirmation', 1
+      #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @cart.purchaser}
+      = render :partial => 'credit_card', :locals => {:name => @cart.purchaser.full_name}
+
+    - if @is_admin
+      #other_payments.adminDiv
+        - if @cart.total_price > 0
+          Or pay with check number: 
+          = text_field_tag 'check_number', '', :size => 6
+          = submit_tag "Accept Check Payment", :class => 'btn btn-warning'
+          = submit_tag "Accept Cash Payment", :class => 'btn btn-warning'
+        - if @cart.purchaser.valid_email_address?
+          = check_box_tag('email_confirmation', 1, true)
+          Send email confirmation
+    - else 
+      = hidden_field_tag 'email_confirmation', 1
+
+    .form-row
+      .col-md-3= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger btn-block' }
+      .col-md-6
+        .alert.alert-warning.text-center= t('store.accept_terms_of_sale', :terms_of_sale_text => escape_javascript(Option.terms_of_sale)).html_safe
+      .col-md-3
+        - if @cart.total_price > 0
+          = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'
+          = hidden_field_tag '_stripe_commit'
+        - else
+          = submit_tag "Complete Comp Order", :class => 'btn btn-success btn-block'
 
 

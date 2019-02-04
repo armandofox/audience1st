@@ -1,4 +1,4 @@
-.row.bg-light
+.row.bg-secondary.my-2
   .col.pull-left
     - if !current_user.has_ever_logged_in?
       = link_to 'Cancel/Start Over', logout_path, :class =>  'btn btn-secondary'

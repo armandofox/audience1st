@@ -1,7 +1,9 @@
 %h1.text-center Add Customer
 
-= form_tag customers_path do
-  = render :partial =>  'billing_address', :locals => {:customer => @customer}
-  = render 'form_admin'
-  = submit_tag 'Create Account', :class => 'btn btn-success'
-  = link_to 'Cancel', customers_path, :class => 'btn btn-secondary'
+.container.pb-2
+  = form_tag customers_path do
+    = render :partial =>  'billing_address', :locals => {:customer => @customer}
+    = render 'form_admin'
+    .form-row
+      .col-md-3= link_to 'Cancel', customers_path, :class => 'btn btn-danger btn-block'
+      .col-md-3.offset-md-6.text-right= submit_tag 'Create Account', :class => 'btn btn-success btn-block'

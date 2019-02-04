@@ -46,20 +46,14 @@
         .col-md-5
 
       - if Option.allow_gift_subscriptions?
-        .form-row
-          .col-md-5.text-right
-            %label.col-form-label.strong{:for=>:gift} Is this order a <strong>gift?</strong>
-          .col-md-1
-            = check_box_toggle 'gift', false, 'submit', 'Continue to Recipient information', 'Continue to Billing Information'
-          .col-md-6
+        .form-group.form-row
+          .col-md-4
+          .form-check.col-md-8
+            = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
+            %label.form-check-label{:for=>:gift} This order is a gift
 
-      .form-row
-        .col-md-5
-        .col-md-4
+      .form-group.form-row  
+        .col-md-4.offset-md-4
           = hidden_field_tag 'referer', 'subscribe'
-          = submit_tag 'Continue to Billing Information', {:disabled => !@is_admin, :id => 'submit', :class => 'btn btn-success'}
-          %span#nextstep to Billing Information
-        .col-md-3
-
-
+          = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
 
