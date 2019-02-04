@@ -1,40 +1,38 @@
 = themed
 
-%h1.text-center Thank You for Your Purchase!
+.container
 
-.notice
-  %p 
-    You have paid a total of 
-    %span.strong= number_to_currency @order.total_price
-    - if @order.total_price > 0 
-      by 
-      %span.strong= humanize(@order.purchase_medium)
-    for order number
-    %span.strong= @order.id
-  %p.strong Please print this confirmation for your records:
-  %pre= @order.summary
+  %h1.text-center Thank You for Your Purchase!
 
-  - if @order.gift?
-    #gift
-      %fieldset#gift_recipient
-        %legend This order is a gift for:
-        %label= h @recipient.full_name
-        %br
-        %label= h @recipient.street
-        %br
-        %label= "#{h @recipient.city}, #{h @recipient.state} #{h @recipient.zip}"
-      %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
+  .notice
+    %p 
+      You have paid a total of 
+      %span.strong= number_to_currency @order.total_price
+      - if @order.total_price > 0 
+        by 
+        %span.strong= humanize(@order.purchase_medium)
+      for order number
+      %span.strong= @order.id
 
-  = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
+    - if @order.gift?
+      #gift
+        %fieldset#gift_recipient
+          %legend This order is a gift for:
+          %label= @recipient.full_name
+          %br
+          %label= @recipient.street
+          %br
+          %label= "#{h @recipient.city}, #{h @recipient.state} #{h @recipient.zip}"
+        %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
 
-  - unless @order.comments.blank?
-    #order_notes
-      %p <strong>Order notes:</strong> #{@order.comments}
+    = render :partial => 'cart', :object => @order
 
-%p.text-center
-  - if @is_admin
-    = link_to 'Back to Customer List', customers_path, :class => 'btn btn-outline-primary'
-    = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-outline-primary'
-  - else
-    - unless @guest_checkout
-      = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'
+    = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
+
+  .text-center.pt-2
+    - if @is_admin
+      = link_to 'Back to Customer List', customers_path, :class => 'btn btn-primary'
+      = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-primary'
+    - else
+      - unless @guest_checkout
+        = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'
