@@ -48,6 +48,6 @@
         = link_to 'Printable Receipt', order_path(order, :printable => 1), {:target => '_blank', :class => 'btn btn-primary'}
         = link_to 'Back to Customer', customer_path(order.customer), :class => 'btn btn-primary'
         - if order.refundable?
-          - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Delete')
-          = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order), :class => 'btn btn-danger'
+          - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Cancel')
+          = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order), :class => 'btn btn-danger', :id => 'refund'
 

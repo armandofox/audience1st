@@ -7,7 +7,7 @@ Purchasemethod = Struct.new(:description, :shortdesc, :nonrevenue, :purchase_med
     indx.to_i.between?(1,10)  &&  indx.to_i != 3
   end
   def refundable?
-    [:web_cc,:box_cash,:box_chk].include?(shortdesc)
+    [:web_cc,:box_cash,:box_chk,:none].include?(shortdesc)
   end
   def self.walkup_purchasemethods
     [2,4,5]

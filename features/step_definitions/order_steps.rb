@@ -1,15 +1,16 @@
 module ScenarioHelpers
   module Orders
-    def buy!(customer, vtype, qty)
+    def buy!(customer, vtype, qty, showdate=nil)
       @order = build(:order,
         :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
         :customer => customer,
         :purchaser => customer)
       @order.vouchers = []
-      vv = create(:valid_voucher, :vouchertype => vtype, :showdate => nil,
+      vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate,
         :start_sales => Time.at_beginning_of_season(vtype.season),
         :end_sales => Time.at_end_of_season(vtype.season))
       @order.add_tickets(vv, qty.to_i)
+      @order.purchasemethod = Purchasemethod.get_type_by_name('none') if @order.total_price.zero?
       @order.finalize!
     end
   end
@@ -21,6 +22,18 @@ Given /^an order for customer "(.*)" paid with "credit card" containing:$/ do |c
   step %Q{I am logged in as customer "#{customer}"}
   step(%Q{my cart contains the following tickets:}, table)
   step %Q{I place my order with a valid credit card}
+end
+
+Given /^a comp order for customer "(.*) (.*)" containing (\d+) "(.*)" comps to "(.*)"$/ do |first,last, qty, comp_type, show_name|
+  comp = create(:comp_vouchertype, :name => comp_type)
+  sd = create(:showdate, :show_name => show_name)
+  customer = find_or_create_customer first,last
+  buy!(customer, comp, qty.to_i, sd)
+end
+
+Given /^an order of (\d+) "(.*)" comp subscriptions for customer "(.*) (.*)"$/ do |qty, sub, first, last|
+  customer = find_or_create_customer first,last
+  buy!(customer, Vouchertype.find_by!(:name => sub), qty.to_i)
 end
 
 Given /^that order has the comment "(.*)"$/ do |comment|
@@ -80,7 +93,7 @@ end
 Given /^the following orders have been placed:/ do |tbl|
   # fields: date, customer name, item1 (eg "2x SeasonSub"), item2 (eg "$20 donation"), payment
   tbl.hashes.each do |order|
-    pmt_types = {"credit card" => "web_cc", "cash" => "box_cash", "check" => "box_chk"}.freeze
+    pmt_types = {"credit card" => "web_cc", "cash" => "box_cash", "check" => "box_chk", "comp" => "none"}.freeze
     customer = find_or_create_customer(*(order['customer'].split(/\s+/)))
     o = build(:order,
       :purchasemethod => Purchasemethod.get_type_by_name(pmt_types[order['payment']]),
@@ -101,19 +114,7 @@ Given /^the following orders have been placed:/ do |tbl|
   end
 end
 
-When /^I place my order with a valid credit card$/ do
-  # relies on stubbing Store.purchase_with_credit_card method
-  steps %Q{When I press "Charge Credit Card"}
-  page.title.match(/confirmation of order (\d+)/i).should be_truthy
-  @order = Order.find($1)
-end
-
-When /^the order is placed successfully$/ do
-  allow(Store).to receive(:pay_with_credit_card).and_return(true)
-  click_button 'Charge Credit Card' # but will be handled as Cash sale in 'test' environment
-end
-
-When /^I refund items? (.*) of that order$/ do |items|
+When /^I (?:refund|cancel) items? (.*) of that order$/ do |items|
   steps %Q{
     When I select items #{items} of that order
     And I refund that order
@@ -122,7 +123,9 @@ end
 
 When /^I refund that order$/ do
   @order.should be_a_kind_of Order # setup by a previous step
-  within "#order_#{@order.id}" do ;  click_button 'Refund Checked Items' ; end
+  within "#order_#{@order.id}" do
+    find('input#refund').click
+  end
 end
 
 When /^I (un)?select all the items in that order$/ do |un|
@@ -132,9 +135,8 @@ When /^I (un)?select all the items in that order$/ do |un|
 end
 
 When /^I (un)?select items? ([0-9, ]+) of that order$/ do |un, index|
-  e = page.all(:css, "input.itemSelect")
-  index.split(/, */).map(&:to_i).each do |i|
-    if un then uncheck(e[i-1]['id']) else check(e[i-1]['id']) end
+  index.split(/, */).each do |i|
+    if un then uncheck("items_#{i}") else check("items_#{i}") end
   end
 end
 

@@ -315,7 +315,7 @@ class Order < ActiveRecord::Base
 
   def refundable?
     completed? &&
-      total > 0  &&             # in case all items were ALREADY refunded and now marked as canceled
+      items.any? { |i| !i.kind_of?(CanceledItem) } # in case all items were ALREADY refunded and now marked as canceled
       (refundable_to_credit_card? || Purchasemethod.get(purchasemethod).refundable?)
   end
 
