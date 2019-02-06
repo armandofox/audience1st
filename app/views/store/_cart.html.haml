@@ -35,7 +35,7 @@
           .a1-cart-amount= number_to_currency(item.amount)
 
     - unless @cart.comments.blank?
-      .row.border-top.bg-secondary.text-light.a1-cart-comments
+      #order_notes.row.border-top.bg-secondary.text-light.a1-cart-comments
         .col-md-5.h5 Notes
         .col-md-7.h5= @cart.comments
         

@@ -37,7 +37,7 @@ Scenario: partial refund credit card order
 Scenario: refund multiple items in separate transactions
 
   When I refund item 1 of that order
-  And I refund items 2,3 of that order
+  And I refund items 3,4 of that order
   Then I should see "Order total: $7.00"
   And I should see "Credit card refund of $9.00 successfully processed"
 

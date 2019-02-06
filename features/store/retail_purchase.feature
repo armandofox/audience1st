@@ -24,7 +24,7 @@ Scenario: successful retail purchase
   | type       | amount | comments     | account_code |
   | RetailItem | 237.88 | Auction item |         0000 |
   And I should be on the order confirmation page for customer "Tom Foolery"
-  And I should see /237\.88\s+Auction item/
+  And I should see /Auction item.*\$237\.88/
 
 Scenario: gift purchase cannot include retail item
 
