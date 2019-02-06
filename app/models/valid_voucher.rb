@@ -191,9 +191,10 @@ class ValidVoucher < ActiveRecord::Base
   def self.add_vouchertypes_to_showdates!(showdates,vouchertypes,valid_voucher_params)
     errs = Hash.new { |h,k| h[k]=[] }       # vouchertype => showdate_id's to which it could NOT be added
     possible_cause = {}
+    before_showtime = valid_voucher_params.delete(:before_showtime)
     ValidVoucher.transaction do
       showdates.each do |showdate|
-        if (before_showtime = valid_voucher_params.delete(:before_showtime))
+        if (before_showtime)
           valid_voucher_params[:end_sales] = (showdate.thedate - before_showtime).rounded_to(:second)
         end
         # if this valid-voucher exists already, edit it in place; otherwise create new.

@@ -18,7 +18,7 @@ describe 'ValidVoucher' do
         to raise_error(ValidVoucher::CannotAddVouchertypeToMultipleShowdates)
     end
     describe 'updates' do
-        before(:each) do
+      before(:each) do
         params = {:before_showtime => 4.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
         ValidVoucher.add_vouchertypes_to_showdates!([@sd1,@sd2], [@vt1,@vt2], params)
         @vv1.reload
@@ -26,21 +26,28 @@ describe 'ValidVoucher' do
       end
       specify 'show 1 start sales' do ; expect(@vv1.start_sales).to eq(@sd1.thedate - 2.weeks) ; end
       specify 'show 2 start sales to match show 1' do ; expect(@vv2.start_sales).to eq(@sd1.thedate - 2.weeks) ; end
-      specify 'show 1 end sales to 4h before showtime' do ; expect(@vv2.end_sales).to eq(@sd2.thedate - 4.hours) ; end
-      specify 'show 2 end sales to 4h before showtime' do ; expect(@vv1.end_sales).to eq(@sd1.thedate - 4.hours) ; end
+      specify 'show 1 end sales to 4h before showtime' do ; expect(@vv1.end_sales).to eq(@sd1.thedate - 4.hours) ; end
+      specify 'show 2 end sales to 4h before showtime' do ; expect(@vv2.end_sales).to eq(@sd2.thedate - 4.hours) ; end
       specify 'show 1 max sales' do ; expect(@vv1.max_sales_for_type).to eq(77) ; end
       specify 'show 2 max sales' do ; expect(@vv2.max_sales_for_type).to eq(77) ; end
+    end
+    it 'creates new with correct params' do
+      @vv2.destroy
+      params = {:before_showtime => 3.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
+      ValidVoucher.add_vouchertypes_to_showdates!([@sd2],[@vt2], params)
+      @vv2 = ValidVoucher.find_by!(:showdate => @sd2, :vouchertype => @vt2)
+      expect(@vv2.end_sales).to eq(@sd2.thedate - 3.hours)
     end
     describe 'updates existing/creates new with correct' do
       before(:each) do
         @vv2.destroy
-        params = {:before_showtime => 4.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
+        params = {:before_showtime => 3.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
         ValidVoucher.add_vouchertypes_to_showdates!([@sd1,@sd2], [@vt1,@vt2], params)
         @vv1.reload
-        @vv2 = ValidVoucher.where(:showdate => @sd2, :vouchertype => @vt2).first
+        @vv2 = ValidVoucher.find_by!(:showdate => @sd2, :vouchertype => @vt2)
       end
-      specify 'existing VV end sales' do ; expect(@vv1.end_sales).to eq(@sd1.thedate - 4.hours) ; end
-      specify 'new VV end sales' do ; expect(@vv2.end_sales).to eq(@sd2.thedate - 4.hours) ; end
+      specify 'existing VV end sales' do ; expect(@vv1.end_sales).to eq(@sd1.thedate - 3.hours) ; end
+      specify 'new VV end sales' do ; expect(@vv2.end_sales).to eq(@sd2.thedate - 3.hours) ; end
       specify 'existing VV max sales' do ; expect(@vv1.max_sales_for_type).to eq(77) ; end
       specify 'new VV max sales' do ; expect(@vv2.max_sales_for_type).to eq(77) ; end
     end
