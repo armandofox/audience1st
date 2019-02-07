@@ -1,17 +1,16 @@
-.row.pl-4.pb-3
+.form-row.pl-4.pb-3.border-top
   .col-md-2.text-center
-    = link_to 'Select All', '#',  :onclick => %Q{$('.showdate').prop('checked', true); return(false);}
-    &nbsp;&bull;&nbsp;
-    = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false); return(false);}
+    Select Dates:
+    %br
+    = link_to 'All', '#',  :onclick => %Q{$('.showdate').prop('checked', true); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+    = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
   .col-md-5.text-center
-    %span.strong Every&nbsp;&nbsp;
+    Or Select Every:
+    %br
     - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-      = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true); return(false);}
-      - unless wday == 'Sun'
-        &nbsp;&bull;&nbsp;
+      = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
   .col-md-5.text-center
-    %span.strong No&nbsp;&nbsp;
+    Or Select None:
+    %br
     - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-      = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false); return(false);}
-      - unless wday == 'Sun'
-        &nbsp;&bull;&nbsp;
+      = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'

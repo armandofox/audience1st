@@ -13,16 +13,16 @@
 .form-group.form-row
   .col-md-5.text-right
     = popup_help_for :valid_voucher_sales_dates
-    %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales:
+    %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales
   .col-md-6= datetime_select 'valid_voucher', 'start_sales'
 
 .form-group.form-row
   .col-md-5.text-right
-    %label.col-form-label  End sales:
+    %label.col-form-label End sales
   .form-check.form-check-inline.col-md-6
     = radio_button_tag 'end_is_relative', 1, true, :class => 'form-check-input'
-    = number_field_tag 'hours_before', 2, :class => 'form-control form-control-sm col-md-1'
-    %label.form-check-label.px-2 hours before show time
+    = number_field_tag 'minutes_before', 120, :class => 'form-control form-control-sm col-md-2'
+    %label.form-check-label.px-2{:for => 'minutes_before'} minutes before show time
 .form-group.form-row
   .col-md-5
   .form-check.form-check-inline.col-md-6
@@ -30,16 +30,17 @@
     %span.px-2 On this date:
     = datetime_select 'valid_voucher', 'end_sales'
 
-= render :partial => 'weekday_checkbox_links'
-- cols = 5
-- @showdate.show.showdates.each_with_index do |showdate,idx|  
-  - if idx % cols == 0
-    <div class="row pl-4">
-  .col-md-2.form-check.form-check-inline
-    - wkday = showdate.thedate.strftime('%a')
-    .form-check-input= check_box_tag('showdates[]', 1, false, :class => "showdate showdate-#{wkday}", :id => "showdates[#{showdate.id}]")
-    %label.form-check-label= showdate.thedate.to_formatted_s(:showtime_brief)
-  - if idx % cols == cols-1
+.container.border-top.border-bottom.pb-2
+  = render :partial => 'weekday_checkbox_links'
+  - @showdate.show.showdates.each_with_index do |showdate,idx|  
+    - if idx % 4 == 0
+      <div class="form-row">
+    .col-3.form-check.form-check-inline
+      - wkday = showdate.thedate.strftime('%a')
+      - field_id = "showdates[#{showdate.id}]"
+      .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
+      %label.form-check-label{:for => field_id}= showdate.thedate.to_formatted_s(:showtime_brief)
+    - if idx % 4 == 3
+      </div>
+  - if @showdate.show.showdates.size % 4 != 0
     </div>
-- if @showdate.show.showdates.size % cols != 0
-  </div>

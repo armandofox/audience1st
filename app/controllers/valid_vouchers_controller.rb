@@ -13,7 +13,6 @@ class ValidVouchersController < ApplicationController
     unless (@showdate = Showdate.find_by_id(@showdate_id))
       return redirect_to(shows_path, :alert => "New voucher must be associated with a showdate")
     end
-    @add_to_all = params[:add_to_all]
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@showdate.season)
     @valid_voucher = ValidVoucher.new
     # set some convenient defaults for new valid_voucher
@@ -21,30 +20,30 @@ class ValidVouchersController < ApplicationController
     @valid_voucher.end_sales = @showdate.end_advance_sales
   end
 
-  def create
-    args = params[:valid_voucher]
-    vouchertypes = Vouchertype.where(:id => args.delete(:vouchertypes))
-    return redirect_to(:back, :alert => 'You must select 1 or more voucher types to add.') if vouchertypes.empty?
-    args[:before_showtime] = params[:hours_before].to_f.hours if params[:end_is_relative].to_i > 0
-    @add_to_all = (params[:add_to_all].to_i > 0)
-    @showdate = Showdate.find(args[:showdate_id])
-    showdates = if @add_to_all then @showdate.show.showdates else [@showdate] end
-    begin
-      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args
-      redirect_to edit_show_path(@showdate.show), :notice => "Successfully added #{vouchertypes.size} voucher types to #{showdates.size} showdate(s)."
-    rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
-      redirect_to(new_valid_voucher_path(:showdate_id => @showdate.id,:add_to_all => @add_to_all),
-        :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}")
-    end
-  end
-
   def edit
     @valid_voucher = ValidVoucher.find(params[:id])
     @showdate = @valid_voucher.showdate
   end
 
+  def create
+    args = params[:valid_voucher]
+    show_id = params[:show_id]
+    vouchertypes = Vouchertype.find(params[:vouchertypes])
+    return redirect_to(:back, :alert => 'You must select 1 or more voucher types to add.') if vouchertypes.empty?
+    args[:before_showtime] = params[:minutes_before].to_i.minutes if params[:end_is_relative].to_i > 0
+    showdates = Showdate.find(params[:showdates])
+    begin
+      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args
+      redirect_to edit_show_path(show_id), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
+    rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
+      redirect_to(new_valid_voucher_path,
+        :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}")
+    end
+  end
+
   def update
     @valid_voucher = ValidVoucher.find(params[:id])
+    flash_message = {}
     begin
       # this is ugly: we incur 2 database writes on an update if
       # end_is_relative  is set.
@@ -53,11 +52,11 @@ class ValidVouchersController < ApplicationController
         @valid_voucher.update_attribute(:end_sales,
            @valid_voucher.showdate.thedate - params[:hours_before].to_f.hours)
       end
-      flash[:notice] = 'Update successful'
-    rescue Exception => e
-      flash[:alert] = [e.message, @valid_voucher.errors.as_html]
+      flash_message = {:notice => 'Update successful'}
+    rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
+      flash_message = {:alert => e.message}
     end
-    redirect_to edit_show_path(@valid_voucher.showdate.show)
+    redirect_to edit_show_path(@valid_voucher.showdate.show), flash_message
   end
 
   def destroy
