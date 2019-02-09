@@ -1,14 +1,15 @@
-%h2 Add ticket type(s) for #{@showdate.show.name}
+%h2 Add ticket type(s) for #{@show.name}
 
 = form_tag valid_vouchers_path do
-  = hidden_field_tag :show_id, @showdate.show_id
+  = hidden_field_tag :show_id, @show.id
   .form-group.form-row
     %label.col-form-label.col-md-5.text-right Add which ticket types:
-    .col-md-6
+    .col-md-6#t-vouchertypes
       - @vouchertypes.each do |v|
         .form-check
-          .form-check-input= check_box_tag('vouchertypes[]', v.id, false)
-          %label.form-check-label{:for => "vouchertypes[#{v.id}]"}= v.name_with_season_and_price
+          - field_id = "vouchertypes[#{v.id}]"
+          .form-check-input= check_box_tag "vouchertypes[]", v.id, false, :id => field_id
+          %label.form-check-label{:for => field_id}= v.name_with_season_and_price
           %br
 
   = render :partial => 'form'
@@ -16,4 +17,4 @@
   .form-row
     .col-md-3.offset-md-2= submit_tag "Apply Changes", :class => 'btn btn-success btn-block'
     .col-md-1
-    .col-md-4= link_to "Don't Apply Changes", edit_show_path(@showdate.show), {:class => 'btn btn-secondary btn-block' }
+    .col-md-4= link_to "Don't Apply Changes", edit_show_path(@show), {:class => 'btn btn-secondary btn-block' }

@@ -69,4 +69,19 @@ Then /it should be a (.*) voucher/i do |typ|
   @vouchertype.category.to_s.should == typ.downcase
 end
 
-  
+Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only,show,tbl|
+  show = Show.find_by!(:name => show)
+  confirmed_vvs = tbl.hashes.map do |v|
+    vv = ValidVoucher.find_by!(
+      :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
+      :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']))
+    expect(vv.end_sales).to eq(Time.zone.parse(v['end_sales']))
+    expect(vv.max_sales_for_type).to eq(v['max_sales'].to_i)
+    vv
+  end
+  # if checking to ensure these are the ONLY valid_vouchers:
+  if only
+    all_vvs_for_show = show.showdates.map(&:valid_vouchers).flatten.compact
+    expect(all_vvs_for_show - confirmed_vvs).to be_empty
+  end
+end

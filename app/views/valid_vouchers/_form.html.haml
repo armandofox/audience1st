@@ -1,8 +1,8 @@
 .form-group.form-row
   .col-md-5.text-right
     = popup_help_for :valid_voucher_max_sales_for_type
-    %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for this type (Leave blank for unlimited)
-  = number_field_tag 'valid_voucher_max_sales_for_type', (@valid_voucher.max_sales_for_type unless @valid_voucher.max_sales_for_type == ValidVoucher::INFINITE), :class => 'form-control col-md-2'
+    %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (Leave blank for unlimited)
+  = number_field_tag 'valid_voucher_max_sales_for_type', (@valid_voucher.max_sales_for_type unless @valid_voucher.max_sales_for_type == ValidVoucher::INFINITE), :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
 
 .form-group.form-row
   .col-md-5.text-right
@@ -21,7 +21,7 @@
     %label.col-form-label End sales
   .form-check.form-check-inline.col-md-6
     = radio_button_tag 'end_is_relative', 1, true, :class => 'form-check-input'
-    = number_field_tag 'minutes_before', 120, :class => 'form-control form-control-sm col-md-2'
+    = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
     %label.form-check-label.px-2{:for => 'minutes_before'} minutes before show time
 .form-group.form-row
   .col-md-5
@@ -32,7 +32,7 @@
 
 .container.border-top.border-bottom.pb-2
   = render :partial => 'weekday_checkbox_links'
-  - @showdate.show.showdates.each_with_index do |showdate,idx|  
+  - @show.showdates.each_with_index do |showdate,idx|  
     - if idx % 4 == 0
       <div class="form-row">
     .col-3.form-check.form-check-inline
@@ -42,5 +42,5 @@
       %label.form-check-label{:for => field_id}= showdate.thedate.to_formatted_s(:showtime_brief)
     - if idx % 4 == 3
       </div>
-  - if @showdate.show.showdates.size % 4 != 0
+  - if @show.showdates.size % 4 != 0
     </div>

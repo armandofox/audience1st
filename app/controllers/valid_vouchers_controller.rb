@@ -9,20 +9,15 @@ class ValidVouchersController < ApplicationController
   end
 
   def new
-    @showdate_id = params[:showdate_id]
-    unless (@showdate = Showdate.find_by_id(@showdate_id))
-      return redirect_to(shows_path, :alert => "New voucher must be associated with a showdate")
-    end
-    @vouchertypes = Vouchertype.nonbundle_vouchertypes(@showdate.season)
-    @valid_voucher = ValidVoucher.new
-    # set some convenient defaults for new valid_voucher
-    @valid_voucher.start_sales = @showdate.show.listing_date
-    @valid_voucher.end_sales = @showdate.end_advance_sales
+    @show = Show.find params[:show_id]
+    @vouchertypes = Vouchertype.nonbundle_vouchertypes(@show.season)
+    @valid_voucher = ValidVoucher.new(:start_sales => @show.listing_date)
+    @minutes_before = Option.advance_sales_cutoff
   end
 
   def edit
     @valid_voucher = ValidVoucher.find(params[:id])
-    @showdate = @valid_voucher.showdate
+    @show = @valid_voucher.showdate.show
   end
 
   def create

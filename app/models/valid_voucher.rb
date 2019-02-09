@@ -194,15 +194,16 @@ class ValidVoucher < ActiveRecord::Base
     before_showtime = valid_voucher_params.delete(:before_showtime)
     ValidVoucher.transaction do
       showdates.each do |showdate|
-        if (before_showtime)
-          valid_voucher_params[:end_sales] = (showdate.thedate - before_showtime).rounded_to(:second)
-        end
         # if this valid-voucher exists already, edit it in place; otherwise create new.
         vouchertypes.each do |vouchertype|
           if (vv = ValidVoucher.where(:showdate => showdate, :vouchertype => vouchertype).first)
             vv.assign_attributes(valid_voucher_params)
+            # vv.end_sales must be assigned separately, because normally valid_voucher_params
+            # will contain end_sales(1i), end_sales(2i), etc. populated from datetime menus.
+            vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second) if (before_showtime)
           else
             vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
+            vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second) if before_showtime
           end
           unless vv.save
             errs[vouchertype] << showdate.thedate.to_formatted_s(:showtime_brief)
