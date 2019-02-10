@@ -85,3 +85,14 @@ Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only
     expect(all_vvs_for_show - confirmed_vvs).to be_empty
   end
 end
+
+Given /the following voucher types are valid for "(.*)":$/ do |show,tbl|
+  show = Show.find_by!(:name => show)
+  tbl.hashes.map do |v|
+    ValidVoucher.create!(
+      :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
+      :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']),
+      :end_sales => Time.zone.parse(v['end_sales']),
+      :max_sales_for_type => v['max_sales'].to_i)
+  end
+end

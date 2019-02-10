@@ -14,7 +14,6 @@ Background: logged in as boxoffice managing existing showdates
 Scenario: add vouchertypes for subset of performances
 
   When I visit the edit ticket redemptions page for "Chicago"
-  Then show me the page
   And I check "Student (2010) - $23.00" within "#t-vouchertypes"
   And I fill in "minutes before show time" with "90"
   And I fill in "Max sales for type (Leave blank for unlimited)" with "45"
@@ -26,3 +25,9 @@ Scenario: add vouchertypes for subset of performances
     | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        45 |
     | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
     
+Scenario: add vouchertypes in a way that also changes existing ones
+
+  Given the following voucher types are valid for "Chicago":
+    | showdate      | vouchertype | end_sales        | max_sales |
+    | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        45 |
+    | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
