@@ -37,8 +37,7 @@ class ShowdatesController < ApplicationController
     showdate = Showdate.find(params[:id])
     show = showdate.show
     showdate.destroy
-    flash[:notice] = 'Show date successfully deleted.'
-    redirect_to edit_show_path(show)
+    redirect_to edit_show_path(show), :notice => 'Show date successfully deleted.'
   end
 
   def new

@@ -5,6 +5,11 @@ en:
       Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked 
       to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
 
+  season_setup:
+
+    confirm_delete_performance: >
+      Delete this performance: are you sure?
+
   login:
 
     login_failed: >
