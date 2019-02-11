@@ -92,7 +92,21 @@ Given /the following voucher types are valid for "(.*)":$/ do |show,tbl|
     ValidVoucher.create!(
       :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
       :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']),
+      :start_sales => 1.hour.ago,
       :end_sales => Time.zone.parse(v['end_sales']),
       :max_sales_for_type => v['max_sales'].to_i)
+  end
+end
+
+When /I select the following vouchertypes: (.*)/ do |vtypes|
+  vtypes.split(/\s*,\s*/).each do |vtype|
+    fullname = Vouchertype.where('name LIKE ?', vtype).first.name_with_season_and_price
+    check(fullname)
+  end
+end
+
+When /I select the following show dates: (.*)/ do |dates|
+  dates.split(/\s*,\s*/).each do |date|
+    check(Time.parse(date).to_formatted_s(:showtime_brief))
   end
 end
