@@ -8,6 +8,8 @@ class Label < ActiveRecord::Base
 
   attr_accessible :name
 
+  default_scope { order('name') }
+  
   def remove_from_join_table
     ActiveRecord::Base.connection.execute("DELETE FROM customers_labels WHERE label_id=#{id}")
   end

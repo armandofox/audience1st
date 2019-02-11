@@ -11,32 +11,22 @@ class LabelsController < ApplicationController
     @labels = Label.all
   end
 
-  # GET /labels/1/edit
-  def edit
-    @label = Label.find(params[:id])
-  end
-
-  # POST /labels
-  # POST /labels.xml
   def create
-    @label = Label.new(params[:label])
-    if @label.save
+    @label = Label.create(:name => params[:label_name])
+    if @label.errors.empty?
       return_to = session.delete(:return_to)
-      redirect_to return_to, :notice => "Label '#{@label.name}' was successfully created."
+      redirect_to (return_to || labels_path)
     else
       redirect_to labels_path, :alert => @label.errors.as_html
     end
   end
 
-  # PUT /labels/1
-  # PUT /labels/1.xml
   def update
     @label = Label.find(params[:id])
-    if @label.update_attributes(params[:label])
-      return_to = session.delete(:return_to)
-      redirect_to return_to, :notice => 'Label was successfully updated.'
+    if @label.update_attributes(:name => params[:label_name])
+      redirect_to labels_path
     else
-      redirect_to edit_label_path(@label), :alert => @label.errors.as_html
+      redirect_to labels_path, :alert => @label.errors.as_html
     end
   end
 
@@ -45,7 +35,6 @@ class LabelsController < ApplicationController
   def destroy
     @label = Label.find(params[:id])
     @label.destroy
-    return_to = session.delete(:return_to)
-    redirect_to return_to, :notice => "Label '#{@label.name}' was deleted and removed from all customers that had it."
+    redirect_to labels_path, :notice => "Label '#{@label.name}' was deleted and removed from all customers that had it."
   end
 end

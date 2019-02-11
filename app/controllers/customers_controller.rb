@@ -19,8 +19,13 @@ class CustomersController < ApplicationController
 
   # This will always be called after is_logged_in has setup current_user or has redirected
   def is_myself_or_staff
-    @customer = Customer.where(:id => params[:id]).includes(:vouchers => {:vouchertype => :valid_vouchers}).first
+    @customer = Customer.
+      where(:id => params[:id]).
+      includes(:vouchers => {:vouchertype => :valid_vouchers}).
+      includes(:labels).
+      first
     redirect_to login_path if @customer.nil? || (@customer != current_user && !current_user.is_staff)
+    @labels = Label.all
   end
 
   public
