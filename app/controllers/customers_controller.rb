@@ -25,7 +25,6 @@ class CustomersController < ApplicationController
       includes(:labels).
       first
     redirect_to login_path if @customer.nil? || (@customer != current_user && !current_user.is_staff)
-    @labels = Label.all
   end
 
   public

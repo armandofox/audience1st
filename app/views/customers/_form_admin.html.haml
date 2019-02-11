@@ -17,7 +17,8 @@
 
   #customer_labels
     #current_labels
-      - @labels.each_with_index do |l, idx|
+      - labels = Label.all
+      - labels.each_with_index do |l, idx|
         - if idx % 4 == 0
           <div id="row">
         .col-3.form-check.form-check-inline
@@ -25,7 +26,7 @@
           %label.form-check-label{:for => "label_#{l.id}"}= l.name
         - if idx % 4 == 3
           </div>
-      - if @labels.size % 4 != 0
+      - if labels.size % 4 != 0
         </div>
 
 
