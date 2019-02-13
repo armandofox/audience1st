@@ -10,7 +10,7 @@ module DatesHelper
     start_date = (options[:from] || 1.day.ago).at_beginning_of_day
     end_date = (options[:to] || t).at_beginning_of_day
     start_date,end_date = end_date,start_date if start_date > end_date
-    show_run = if @show then %Q[
+    show_run = if @show.try(:opening_date) then %Q[
                         { text: 'This production',
                           dateStart: function() { return moment('#{@show.opening_date.iso8601}') },
                           dateEnd:   function() { return moment('#{@show.closing_date.iso8601}') }
@@ -71,7 +71,7 @@ $('##{name}').daterangepicker('setRange', #{init_range});
 $('##{name}').daterangepicker({ open: function() { $('#{en}').prop('checked',true); } })
 })
     end
-    text_field_tag(name,'') << "\n" << popup_help_for(:select_dates) <<  "\n" << js
+    popup_help_for(:select_dates) <<  "\n" << text_field_tag(name,'',:class => options[:class]) << "\n" << js
 
   end
 

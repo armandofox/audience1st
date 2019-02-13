@@ -8,43 +8,44 @@
   separately instead of all at once.
 
 = form_tag show_showdates_path(@show) do
-  
-  %table
-    %tr
-      %td
-        %label{:for => :description} Description (optional)
-      %td
-        = text_field_tag 'description', '', :size => 20
-        = popup_help_for :showdate_description
-    %tr
-      %td 
-        %label{:for => :advance_sales_cutoff} Advance sales stop
-      %td
-        = text_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :size => 4
-        minutes before curtain
-        = popup_help_for :advance_sales_cutoff
-    %tr
-      %td 
-        %label{:for => :max_sales} Max advance sales
-      %td
-        = text_field_tag 'max_sales', @max_sales_default, :size => 5
-        = popup_help_for(:max_advance_sales)
-        = hidden_field_tag "show_id", @show.id
+  .form-row  
+    .col-3.text-right
+      %label.col-form-label{:for => :description} Description (optional)
+      = popup_help_for :showdate_description
+    .col-9
+      = text_field_tag 'description', '', :class => 'form-control'
+
+  .form-row.py-1
+    .col-3.text-right
+      %label.col-form-label{:for => :advance_sales_cutoff} Advance sales stop
+      = popup_help_for :advance_sales_cutoff
+    = number_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control col-1'
+    %label.col-form-label.col-3 minutes before curtain
+    .col-4.text-right
+      %label.col-form-label{:for => :max_sales} Max advance sales
+      = popup_help_for(:max_advance_sales)
+    = number_field_tag 'max_sales', @max_sales_default, :class => 'form-control col-1'
+    = hidden_field_tag "show_id", @show.id
 
   .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
 
-  %label Every
-  = day_of_week_checkboxes('day')
-  %br
-  %label{:for => 'time'} At
-  = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time')
-  %br
-  %label{:for => 'start'} From
-  = select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date
-  %br
+  .form-row
+    %label.col-form-label Every
+    - %w(Mon Tue Wed Thu Fri Sat Sun).each_with_index do |day,i|
+      - idx = (i+1) % 7
+      .form-check.form-check-inline
+        %label.form-check-label{:for => "day_#{idx}"}= day
+        = check_box_tag 'day', idx, false, :name => 'day[]', :id => "day_#{idx}", :class => 'form-check-input'
+    %label.col-form-label.px-3{:for => 'time'} At
+    = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :class => 'form-control')
+
+  .form-row
+    %label.col-form-label{:for => 'start'} From
+    = select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date, :class => 'form-control'
+
   %p.feedback
     
-  = submit_tag 'Save & Back to List of Shows' 
-  = submit_tag 'Save & Add More Dates for This Show' 
+  = submit_tag 'Save & Back to List of Shows', :class => 'btn btn-success' 
+  = submit_tag 'Save & Add More Dates for This Show', :class => 'btn btn-success'
   = link_to 'Cancel', edit_show_path(@show), :class => 'btn btn-secondary'
 

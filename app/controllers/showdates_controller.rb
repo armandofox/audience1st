@@ -20,7 +20,7 @@ class ShowdatesController < ApplicationController
     redirect_to new_show_showdate_path(@show) and return unless flash[:alert].blank?
     new_showdates.each do |showdate|
       unless showdate.save
-        flash[:alert] = ["Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: ", showdate]
+        flash[:alert] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: #{showdate.errors.as_html}"
         redirect_to new_show_showdate_path(@show)
         return
       end
