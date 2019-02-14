@@ -12,7 +12,7 @@
       %td= link_to account_code.code, edit_account_code_path(account_code)
       %td= link_to account_code.name, edit_account_code_path(account_code)
       %td= [account_code.description, account_code.donation_prompt].join('<br/>'.html_safe).html_safe
-      %td= purchase_link_popup '[Link]', donate_to_fund_url(account_code.id), "donations to #{account_code.name_with_code}"
+      %td= purchase_link_popup link_icon, donate_to_fund_url(account_code.id), "donations to #{account_code.name_with_code}"
 %br
 
 = link_to 'Add New Account Code', new_account_code_path , :class => 'btn btn-primary'

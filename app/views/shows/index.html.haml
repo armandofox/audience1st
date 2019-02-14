@@ -16,7 +16,7 @@
     - @shows.each do |show|
       %tr
         %td= link_to show.name, edit_show_path(show)
-        %td= purchase_link_popup "[Link]", link_to_show_tickets(show), show.name
+        %td= purchase_link_popup link_icon, link_to_show_tickets(show), show.name
         %td.text-center= humanize_date_range(show.opening_date, show.closing_date)
         %td= show.listing_date.to_formatted_s(:showtime)
         - if (n = show.showdates.length) > 0

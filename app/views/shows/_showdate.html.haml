@@ -2,7 +2,7 @@
   .col-4
     %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
     = link_to showdate.printable_date, edit_show_showdate_path(showdate.show, showdate)
-    = purchase_link_popup content_tag(:span, '', :class => 'd-inline-block ui-icon ui-icon-link').html_safe, link_to_showdate_tickets(showdate), showdate.printable_name
+    = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
   .col-4= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
   .col-2
     = showdate.max_allowed_sales

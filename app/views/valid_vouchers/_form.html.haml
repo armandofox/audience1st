@@ -33,14 +33,14 @@
 .container.border-top.border-bottom.pb-2
   = render :partial => 'weekday_checkbox_links'
   - @show.showdates.each_with_index do |showdate,idx|  
-    - if idx % 4 == 0
+    - if idx % 3 == 0
       <div class="form-row">
     .col-3.form-check.form-check-inline
       - wkday = showdate.thedate.strftime('%a')
       - field_id = "showdates[#{showdate.id}]"
       .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
       %label.form-check-label{:for => field_id}= showdate.thedate.to_formatted_s(:showtime_brief)
-    - if idx % 4 == 3
+    - if idx % 3 == 2
       </div>
-  - if @show.showdates.size % 4 != 0
+  - if @show.showdates.size % 3 != 0
     </div>

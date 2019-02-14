@@ -32,7 +32,7 @@
         %td.text-right= account_code_with_popup_link(vouchertype.account_code)
         %td.text-center= vouchertype.subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
-        %td.text-center= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
+        %td.text-center= purchase_link_popup(link_icon, link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
         %td 
           -if vouchertype.bundle? 
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 

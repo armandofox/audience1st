@@ -10,7 +10,7 @@
     - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
       = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
   .col-md-5.text-center
-    Or Select None:
+    Or Un-select Every:
     %br
     - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
       = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
