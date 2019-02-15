@@ -4,7 +4,7 @@ class AttendanceByShow < Report
     season = Time.current.this_season
     @view_params = {
       :name => "Attendance by show",
-      :shows => Show.all.order(:opening_date),
+      :shows => Show.all.order('opening_date DESC'),
       :vouchertypes => Vouchertype.nonbundle_vouchertypes(season) + Vouchertype.nonbundle_vouchertypes(season-1)
     }
     super
