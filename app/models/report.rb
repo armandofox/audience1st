@@ -102,7 +102,13 @@ class Report
       when :require_valid_address then @relation = @relation.where.
           not('customers.street' => [nil,'']).
           not('customers.city' => [nil,'']).not('customers.state' => [nil,''])
-      when :subscribers_only then @relation = @relation.subscriber_during(Time.this_season)
+      when :include
+        if value =~ /non-subscribers/i
+          @relation = @relation.nonsubscriber_during(Time.this_season)
+        elsif value =~ / subscribers/i
+          @relation = @relation.subscriber_during(Time.this_season)
+        end
+        # otherwise include everyone
       when :login_from
         if (fields = @output_options[:login_since])
           date = Date::civil(fields[:year].to_i,fields[:month].to_i,fields[:day].to_i)

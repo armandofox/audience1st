@@ -70,6 +70,12 @@ describe 'scoping Customers' do
       @sub_2 = create(:bundle_voucher, :customer => @c2, :subscription => true,
         :season => 2013, :including => {@show_voucher_2 => 1})
 
+      # also create a couple of random other nonsubscription-type vouchers for
+      # them to buy, to ensure the query logic isn't tripped up by that case
+      vt_2012 = create(:revenue_vouchertype, :season => 2012)
+      create(:revenue_voucher, :customer => @c1, :vouchertype => vt_2012)
+      vt_2013 = create(:revenue_vouchertype, :season => 2013)
+      create(:revenue_voucher, :customer => @c2, :vouchertype => vt_2013)
     end
     context 'of subscription' do
       it 'should identify subscribers during a given year' do
@@ -87,6 +93,44 @@ describe 'scoping Customers' do
         c = Customer.subscriber_during([2012,2013]) - Customer.subscriber_during(2012)
         c.should include(@c2)
         c.should_not include(@c1)
+      end
+      describe 'identifying nonsubscribers' do
+        before :each do
+          @non_2012 = Customer.nonsubscriber_during(2012)
+          @non_2013 = Customer.nonsubscriber_during(2013)
+        end
+        specify 'excludes subscribers' do
+          expect(@non_2012).not_to include(@c1)
+          expect(@non_2013).not_to include(@c2)
+        end
+        specify 'includes everyone else' do
+          expect(@non_2012.size).to eq(Customer.count - 1)
+          expect(@non_2013.size).to eq(Customer.count - 1)
+        end
+        specify 'specifically, nonsubscribers' do
+          expect(@non_2012).to include(@c2)
+          expect(@non_2013).to include(@c1)
+        end
+        it 'should identify nonsubscribers across range of years' do
+          expect(Customer.nonsubscriber_during([2012,2013]).size).
+            to eq(Customer.count - 2)
+        end
+      end
+      describe 'count of subscribers + nonsubscribers = everyone' do
+        specify 'in a given year' do
+          expect(Customer.subscriber_during(2013).size +
+            Customer.nonsubscriber_during(2013).size).
+            to eq(Customer.count)
+          expect(Customer.subscriber_during(2012).size +
+            Customer.nonsubscriber_during(2012).size).
+            to eq(Customer.count)
+        end
+        specify 'across years' do
+          years = (2010..2014).to_a
+          expect(Customer.subscriber_during(years).size +
+            Customer.nonsubscriber_during(years).size).
+            to eq(Customer.count)
+        end
       end
     end
     context 'including specific Vouchertypes' do

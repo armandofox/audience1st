@@ -1,8 +1,9 @@
 %fieldset#output_options
   %legend Report filtering options
   %p
-    = check_box_tag 'output[subscribers_only]', '1'
-    Limit to subscribers only
+    Include:
+    - season = humanize_season(Time.this_season)
+    = select_tag 'output[include]', options_for_select(["All patrons", "#{season} subscribers only", "#{season} non-subscribers only"])
     %br
     = check_box_tag 'output[login_since]', '1'
     Limit to patrons who

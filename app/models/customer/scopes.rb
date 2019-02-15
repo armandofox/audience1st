@@ -8,6 +8,15 @@ class Customer < ActiveRecord::Base
     where('vouchertypes.subscription = ? AND vouchertypes.season IN (?)', true, seasons)
   }
 
+  scope :nonsubscriber_during, ->(seasons) {
+    has_subscription_vouchers = Voucher.
+    joins(:vouchertype).
+    where('items.customer_id = customers.id').
+    where('vouchertypes.subscription = ? AND vouchertypes.season IN (?)', true, seasons)
+    # use NOT EXISTS to invert the above join:
+    where("NOT EXISTS(#{has_subscription_vouchers.to_sql})")
+  }
+  
   scope :purchased_any_vouchertypes, ->(vouchertype_ids) {
     joins(:vouchertypes).where('vouchertypes.id IN (?)', vouchertype_ids)
   }

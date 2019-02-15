@@ -80,6 +80,9 @@ FactoryBot.define do
     end
 
     factory :subscriber_voucher do
+      transient do
+        season { Time.this_season }
+      end
       association :vouchertype, :factory => :vouchertype_included_in_bundle
       amount 0
       category 'subscriber'
@@ -89,7 +92,7 @@ FactoryBot.define do
       transient do
         including Hash.new
         subscription false
-        season Time.current.year
+        season { Time.this_season }
       end
       vouchertype do
         included_vouchertypes = {}
