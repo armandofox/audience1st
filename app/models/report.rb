@@ -95,7 +95,7 @@ class Report
     # we always seem to need Labels to include as part of result
     @relation = @relation.includes(:labels)
     @output_options.each_pair do |option,value|
-      case option
+      case option.to_sym
       when :exclude_blacklist then @relation = @relation.where('customers.blacklist' => false)
       when :exclude_e_blacklist then @relation = @relation.where('customers.e_blacklist' => false)
       when :require_valid_email then @relation = @relation.where.not('customers.email' => [nil,''])
