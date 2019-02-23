@@ -25,14 +25,21 @@ class ValidVouchersController < ApplicationController
     show_id = params[:show_id]
     vouchertypes = Vouchertype.find(params[:vouchertypes])
     return redirect_to(:back, :alert => 'You must select 1 or more voucher types to add.') if vouchertypes.empty?
-    args[:before_showtime] = params[:minutes_before].to_i.minutes if params[:end_is_relative].to_i > 0
+    case params[:end_is_relative]
+    when 'relative'
+      args[:before_showtime] = params[:minutes_before].to_i.minutes
+    when 'unchanged'
+      # get rid of the 'end sales' args so no updating happens
+      args.reject! { |k,v| k =~ /end_sales/ }
+    when 'absolute'             # just leave the selected date menus to be parsed
+    end
     showdates = Showdate.find(params[:showdates])
     begin
       ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args
       redirect_to edit_show_path(show_id), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
     rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
-      redirect_to(new_valid_voucher_path,
-        :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}")
+      redirect_to(new_valid_voucher_path(:show_id => show_id),
+        :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}",)
     end
   end
 

@@ -18,15 +18,20 @@
 
 .form-group.form-row
   .col-md-5.text-right
-    %label.col-form-label End sales
+    %label.col-form-label End sales for each performance
   .form-check.form-check-inline.col-md-6
-    = radio_button_tag 'end_is_relative', 1, true, :class => 'form-check-input'
+    = radio_button_tag 'end_is_relative', 'unchanged', true, :class => 'form-check-input'
+    %label.form-check-label.px-2{:for => 'end_is_relative_unchanged'} Leave existing redemptions as-is; set to #{@minutes_before} minutes before show time for new redemptions
+.form-group.form-row
+  .col-md-5.text-right
+  .form-check.form-check-inline.col-md-6
+    = radio_button_tag 'end_is_relative', 'relative', false, :class => 'form-check-input'
     = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
     %label.form-check-label.px-2{:for => 'minutes_before'} minutes before show time
 .form-group.form-row
   .col-md-5
   .form-check.form-check-inline.col-md-6
-    = radio_button_tag 'end_is_relative', 0, false, :class => 'form-check-input'
+    = radio_button_tag 'end_is_relative', 'absolute', false, :class => 'form-check-input'
     %span.px-2 On this date:
     = datetime_select 'valid_voucher', 'end_sales'
 

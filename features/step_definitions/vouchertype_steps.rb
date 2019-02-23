@@ -69,6 +69,15 @@ Then /it should be a (.*) voucher/i do |typ|
   @vouchertype.category.to_s.should == typ.downcase
 end
 
+When /I set end sales to (\d+) minutes before show time/ do |minutes|
+  fill_in "minutes_before", with: minutes
+  choose "end_is_relative_relative"
+end
+
+When /I choose to leave end sales as-is/ do
+  choose "end_is_relative_unchanged"
+end
+
 Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only,show,tbl|
   show = Show.find_by!(:name => show)
   confirmed_vvs = tbl.hashes.map do |v|

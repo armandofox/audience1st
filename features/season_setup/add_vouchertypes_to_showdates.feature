@@ -15,7 +15,7 @@ Scenario: add vouchertypes for subset of performances
 
   When I visit the edit ticket redemptions page for "Chicago"
   And I select the following vouchertypes: Student
-  And I fill in "minutes before show time" with "90"
+  And I set end sales to 90 minutes before show time
   And I fill in "Max sales for type (Leave blank for unlimited)" with "45"
   And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
   And I press "Apply Changes"
@@ -35,15 +35,35 @@ Scenario: add vouchertypes in a way that also changes existing ones
   When I visit the edit ticket redemptions page for "Chicago"
   And I select the following vouchertypes: Student, General
   And I select the following show dates: 3/15 8:00pm, 3/20 8:00pm
-  And I fill in "minutes before show time" with "20"
+  And I set end sales to 20 minutes before show time
   And I fill in "Max sales for type (Leave blank for unlimited)" with "50"
   And I press "Apply Changes"
   Then only the following voucher types should be valid for "Chicago":
     | showdate      | vouchertype | end_sales        | max_sales |
     | Mon 3/15, 8pm | Student     | Mon 3/15, 7:40pm |        50 |
     | Mon 3/15, 8pm | General     | Mon 3/15, 7:40pm |        50 |
-    | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        20 |
-    | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
     | Sat 3/20, 8pm | Student     | Sat 3/20, 7:40pm |        50 |
     | Sat 3/20, 8pm | General     | Sat 3/20, 7:40pm |        50 |
+    | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        20 |
+    | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
     
+Scenario: leave end sales unchanged while updating max sales
+  Given the following voucher types are valid for "Chicago":
+    | showdate      | vouchertype | end_sales        | max_sales |
+    | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        45 |
+    | Mon 3/15, 8pm | General     | Mon 3/15, 6:00pm |        35 |
+    | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        20 |
+    | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
+  When I visit the edit ticket redemptions page for "Chicago"
+  And I select the following vouchertypes: Student
+  And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
+  And I choose to leave end sales as-is
+  And I fill in "Max sales for type (Leave blank for unlimited)" with "21"
+  And I press "Apply Changes"
+  Then only the following voucher types should be valid for "Chicago":
+    | showdate      | vouchertype | end_sales        | max_sales |
+    | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        21 |
+    | Mon 3/15, 8pm | General     | Mon 3/15, 6:00pm |        35 |
+    | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        21 |
+    | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        21 |
+
