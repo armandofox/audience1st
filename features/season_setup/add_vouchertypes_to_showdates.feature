@@ -64,6 +64,6 @@ Scenario: leave end sales unchanged while updating max sales
     | showdate      | vouchertype | end_sales        | max_sales |
     | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        21 |
     | Mon 3/15, 8pm | General     | Mon 3/15, 6:00pm |        35 |
-    | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        21 |
+    | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        20 |
     | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        21 |
 
