@@ -22,12 +22,19 @@ class ValidVouchersController < ApplicationController
 
   def create
     args = params[:valid_voucher]
-    show_id = params[:show_id]
-    vouchertypes = Vouchertype.find(params[:vouchertypes])
-    return redirect_to(:back, :alert => 'You must select 1 or more voucher types to add.') if vouchertypes.empty?
+    vt = params[:vouchertypes]
+    back = new_valid_voucher_path(:show_id => params[:show_id])
+    return redirect_to(back, :alert => t('season_setup.must_select_vouchertypes')) if vt.blank?
+    vouchertypes = Vouchertype.find vt
+    # max_sales_for_type if blank should be "infinity"
+    if args[:max_sales_for_type].blank?
+      args[:max_sales_for_type] = ValidVoucher::INFINITE
+    end
     case params[:end_is_relative]
     when 'relative'
-      args[:before_showtime] = params[:minutes_before].to_i.minutes
+      min = params[:minutes_before]
+      return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if min.blank?
+      args[:before_showtime] = min.to_i.minutes
     when 'unchanged'
       # get rid of the 'end sales' args so no updating happens
       args.reject! { |k,v| k =~ /end_sales/ }
@@ -36,9 +43,9 @@ class ValidVouchersController < ApplicationController
     showdates = Showdate.find(params[:showdates])
     begin
       ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args
-      redirect_to edit_show_path(show_id), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
+      redirect_to edit_show_path(params[:show_id]), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
     rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
-      redirect_to(new_valid_voucher_path(:show_id => show_id),
+      redirect_to(back,
         :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}",)
     end
   end

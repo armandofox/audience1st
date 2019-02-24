@@ -10,6 +10,13 @@ en:
     confirm_delete_performance: >
       Delete this performance: are you sure?
 
+    minutes_before_cant_be_blank: >
+      Please enter how many minutes before showtime to end sales, or choose a different 
+      option for setting the sales cutoff.
+
+    must_select_vouchertypes: >
+      You must select 1 or more voucher types to add.
+
   login:
 
     login_failed: >

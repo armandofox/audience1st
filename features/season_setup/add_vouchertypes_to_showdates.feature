@@ -15,7 +15,7 @@ Scenario: add vouchertypes for subset of performances
 
   When I visit the edit ticket redemptions page for "Chicago"
   And I select the following vouchertypes: Student
-  And I set end sales to 90 minutes before show time
+  And I set end sales to "90" minutes before show time
   And I fill in "Max sales for type (Leave blank for unlimited)" with "45"
   And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
   And I press "Apply Changes"
@@ -35,7 +35,7 @@ Scenario: add vouchertypes in a way that also changes existing ones
   When I visit the edit ticket redemptions page for "Chicago"
   And I select the following vouchertypes: Student, General
   And I select the following show dates: 3/15 8:00pm, 3/20 8:00pm
-  And I set end sales to 20 minutes before show time
+  And I set end sales to "20" minutes before show time
   And I fill in "Max sales for type (Leave blank for unlimited)" with "50"
   And I press "Apply Changes"
   Then only the following voucher types should be valid for "Chicago":
@@ -67,3 +67,24 @@ Scenario: leave end sales unchanged while updating max sales
     | Fri 3/19, 8pm | Student     | Fri 3/19, 6:00pm |        20 |
     | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        21 |
 
+Scenario: can't leave vouchertypes blank
+
+  When I visit the edit ticket redemptions page for "Chicago"
+  And I choose to leave end sales as-is
+  And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
+  And I press "Apply Changes"
+  Then I should see "You must select 1 or more voucher types to add."
+  And I should see "Add ticket type(s) for Chicago"
+
+Scenario: if setting end-sales to minutes before curtain, can't leave blank
+
+  When I visit the edit ticket redemptions page for "Chicago"
+  And I select the following vouchertypes: Student
+  And I set end sales to "" minutes before show time
+  And I choose "end_is_relative_relative"
+  And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
+  And I press "Apply Changes"
+  Then I should see "Please enter how many minutes before showtime to end sales"
+  And I should see "Add ticket type(s) for Chicago"
+  
+  
