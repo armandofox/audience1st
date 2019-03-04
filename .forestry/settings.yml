@@ -10,7 +10,6 @@ sections:
 - type: document
   path: _config.yml
   label: Static site config (edit with care)
-  match: "**/*"
 upload_dir: uploads
 public_path: "/uploads"
 front_matter_path: ''
