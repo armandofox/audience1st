@@ -7,9 +7,6 @@ sections:
 - type: jekyll-posts
   label: Articles
   create: all
-- type: document
-  path: _config.yml
-  label: Static site config (edit with care)
 upload_dir: assets
 public_path: "/assets"
 front_matter_path: ''
