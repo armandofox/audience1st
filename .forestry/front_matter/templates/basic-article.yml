@@ -7,12 +7,10 @@ fields:
   name: category
   config:
     source:
-      type: simple
-      file: _posts/2017-11-04-financial-reports.md
-      section: jekyll-posts
+      type: custom
     options:
-    - setup
-    - customers
+    - setup: First Time Setup
+    - customers: Working With Customer Data
     - season
   label: Article Category
   description: Set category
