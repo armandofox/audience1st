@@ -3,26 +3,26 @@ label: Basic article
 hide_body: false
 is_partial: false
 fields:
-- name: layout
-  label: Layout
-  type: text
-  hidden: false
-  default: ''
+- type: select
+  name: category
+  config:
+    source:
+      type: simple
+      file: _posts/2017-11-04-financial-reports.md
+      section: jekyll-posts
+    options:
+    - setup
+    - customers
+    - season
+  label: Article Category
+  description: Set category
 - name: title
   label: Title
   type: text
   hidden: false
   default: ''
-- name: category
-  label: Category
-  type: tag_list
-  hidden: false
-  default: ''
-- name: date
-  label: Date
-  type: datetime
-  hidden: false
-  default: ''
+  config:
+    required: true
 - name: order
   label: Order
   type: text
