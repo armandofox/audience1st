@@ -24,7 +24,7 @@ sections: [
     ['WorkingWithPatronRecords', 'Working With Patron Records'],  
     ['SeasonSetup', 'Season Setup'], 
     ['AdvanceSalesAndReservations', 'Advance Sales And Reservations'],
-    ['FrontOfHOuse', 'Front of House Operations'],
+    ['FrontOfHouse', 'Front of House Operations'],
     ['IntegrationWithOtherSites', 'Integration With Other Sites'],
     ['Donations', 'Donations'], 
     ['Reports', 'Reports'], 
