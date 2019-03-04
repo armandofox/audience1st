@@ -1,0 +1,28 @@
+---
+label: Basic article
+hide_body: false
+is_partial: false
+fields:
+- type: select
+  name: category
+  config:
+    source:
+      type: custom
+    options:
+    - setup: First Time Setup
+    - customers: Working With Customer Data
+    - season
+  label: Article Category
+  description: Set category
+- name: title
+  label: Title
+  type: text
+  hidden: false
+  default: ''
+  config:
+    required: true
+- name: order
+  label: Order
+  type: text
+  hidden: false
+  default: ''
