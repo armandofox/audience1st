@@ -7,13 +7,19 @@ fields:
   name: category
   config:
     source:
-      type: custom
+      type: simple
     options:
-    - setup: First Time Setup
-    - customers: Working With Customer Data
-    - season
+    - FirstTimeSetup
+    - WorkingWithPatronRecords
+    - SeasonSetup
+    - AdvanceSalesAndReservations
+    - FrontOfHouse
+    - IntegrationWithOtherSites
+    - Donations
+    - Reports
+    required: true
   label: Article Category
-  description: Set category
+  description: Set category for lefthand navbar
 - name: title
   label: Title
   type: text
