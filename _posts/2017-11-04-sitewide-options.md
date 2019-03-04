@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Site-Wide Options"
-category: setup
+category: FirstTimeSetup
 date: 2017-11-04 12:36:34
 order: 29
 ---

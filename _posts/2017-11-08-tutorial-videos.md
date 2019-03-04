@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Tutorial Videos"
-category: setup
+category: FirstTimeSetup
 order: 90
 date: 2017-11-08 15:28:29
 ---

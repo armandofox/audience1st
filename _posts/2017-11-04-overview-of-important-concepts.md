@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Overview of Important Concepts"
-category: setup
+category: FirstTimeSetup
 date: 2017-11-04 12:23:35
 order: 10
 ---

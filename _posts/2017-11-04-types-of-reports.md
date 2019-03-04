@@ -1,7 +1,7 @@
 ---
 layout: page 
 title: "Types of Reports" 
-category: reports 
+category: Reports 
 date: 2017-11-04 13:58:03 
 order: 1
 ---

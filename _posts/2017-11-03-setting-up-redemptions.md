@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Setting Up Redemptions"
-category: season
+category: SeasonSetup
 date: 2017-11-03 19:11:07
 order: 40
 ---

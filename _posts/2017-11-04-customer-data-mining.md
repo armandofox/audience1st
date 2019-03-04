@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Customer Data Mining"
-category: reports
+category: Reports
 date: 2017-11-04 14:11:00
 order: 50
 ---

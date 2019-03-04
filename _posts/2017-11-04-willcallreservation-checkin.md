@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Will-Call/Reservation Check-in"
-category: foh
+category: FrontOfHouse
 date: 2017-11-04 13:49:27
 order: 30
 ---

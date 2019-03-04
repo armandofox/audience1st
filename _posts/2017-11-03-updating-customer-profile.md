@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Updating Customer Profile"
-category: customers
+category: WorkingWithPatronRecords
 date: 2017-11-03 18:57:37
 order: 20
 ---

@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Ticket Sales"
-category: reports
+category: Reports
 date: 2017-11-04 14:10:46
 order: 20
 ---

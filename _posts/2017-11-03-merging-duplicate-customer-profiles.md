@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Merging Duplicate Customer Profiles"
-category: customers
+category: WorkingWithPatronRecords
 date: 2017-11-03 18:58:09
 order: 40
 ---

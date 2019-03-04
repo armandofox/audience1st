@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "First-Time Setup"
-category: setup
+category: FirstTimeSetup
 date: 2017-11-04 12:23:42
 order: 20
 ---

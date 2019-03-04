@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Financial Reports"
-category: reports
+category: Reports
 date: 2017-11-04 14:10:50
 order: 30
 ---

@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Using a Credit Card Swipe"
-category: setup
+category: FirstTimeSetup
 date: 2017-11-04 12:36:22
 order: 30
 ---

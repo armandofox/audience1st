@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Deleting Customers"
-category: customers
+category: WorkingWithPatronRecords
 date: 2017-11-03 18:59:04
 order: 50
 ---

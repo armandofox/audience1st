@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Looking Up or Adding a Customer"
-category: customers
+category: WorkingWithPatronRecords
 date: 2017-10-28 16:14:16
 order: 10
 ---

@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Accepting and Recording Donations"
-category: donations
+category: Donations
 date: 2017-10-28 16:15:43
 order: 20
 ---

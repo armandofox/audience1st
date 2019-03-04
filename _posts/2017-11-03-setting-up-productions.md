@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Setting Up Productions"
-category: season
+category: SeasonSetup
 date: 2017-11-03 19:09:42
 order: 20
 ---

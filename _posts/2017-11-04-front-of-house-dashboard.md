@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Front of House Dashboard"
-category: foh
+category: FrontOfHouse
 date: 2017-11-04 13:48:49
 order: 10
 ---

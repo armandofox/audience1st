@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Setting Up Tickets and Subscriptions"
-category: season
+category: SeasonSetup
 date: 2017-11-03 19:10:37
 order: 30
 ---

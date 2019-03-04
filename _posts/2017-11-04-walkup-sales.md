@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Walkup Sales"
-category: foh
+category: FrontOfHouse
 date: 2017-11-04 13:48:59
 order: 20
 ---
