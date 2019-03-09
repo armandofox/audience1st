@@ -17,7 +17,7 @@ Perhaps you intended to [learn about Audience1st features and/or have us install
 
 You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 4/Ruby 2.3 app deployed.
 
-# Deployment
+# Development and Deployment
 
 This is a stock Rails 4 app, with the following exceptions/additions:
 
@@ -32,38 +32,61 @@ Amazon CloudFront as a CDN).
 
 ## Multi-tenancy
 
-**This is important.**  By default Audience1st can be setup as
-multi-tenant using the `apartment` gem.  If you're just setting up ticketing
-for a single venue, multi-tenancy probably creates more problems for you
-than it solves.
+**This is important.** By default Audience1st is designed to be setup
+as [multi-tenant using the `apartment`
+gem](https://github.com/influitive/apartment), where each theater is a
+tenant.  Audience1st determines the tenant name for a given request
+fomr the first subdomain in the URI, e.g. if your deployment domain is
+`somewhere.com`, then `my-theater.somewhere.com` selects `my-theater`
+as the tenant for that request.
 
-To **disable** multi-tenancy:
+For development or staging, the recommended approach is to setup a
+single tenant called _a1-staging_, which is the one whose data is
+populated by the fake database.  To do this:
+
+1.  Create a file `config/application.yml` containing the following:
+
+```yaml
+session_secret: "30 or more random characters string"
+tenant_names: a1-staging
+```
+
+(In a production setting, you'd have several tenant names separated by
+commas.)
+**Please don't version this file or include it in pull requests, nor
+modify the existing `config/application.yml.asc`**
+
+2.  After running `bundle` as usual, you can run `bundle exec rake
+db:schema:load` to load the database schema into each tenant.
+
+3.  Then run the task `rake db:seed` on the development database,
+which creates a few special users, including the administrative user
+`admin@audience1st.com` with password `admin`. 
+
+4.  The app should now be able to run and you should be able to login
+with the administrator password.  Later you can designate other users as administrators.
+
+5.  If you want fake-but-realistic data, also run the task `bundle
+exec rake staging:initialize`.  This creates a bunch of fake users,
+shows, etc., courtesy of the `faker` gem.
+
+### To disable multi-tenancy entirely
+
+This requires removing a few files.  **Do not make any PRs that delete those files** since we need
+them in the main/production version.  
 
 1. Remove `gem 'apartment'` from the `Gemfile` before running `bundle
 install`
 
 2. Remove the file `config/initializers/apartment.rb`
 
-3. Make sure your `config/application.yml` (see below) does **not**
+3. Make sure your `config/application.yml` does **not**
 contain any mention of `tenant_names`
 
-## Required external integrations
 
-You will need to create a file `config/application.yml` containing the following:
+### Changing the tenant selection scheme
 
-```yaml
-session_secret: "30 or more random characters string"
-tenant_names: venue1,venue2,venue3
-```
-
-The `tenant_names` should **only** be present if using multi-tenancy.
-Each tenant name is assumed to correspond to a subdomain, so in the
-exame above, the appropriate tenant would be chosen based on the URL
-subdomain (`venue1.myticketing.com`, `venue2.myticketing.com`, etc.)
-Without this line, the domain/subdomain are irrelevant and there is only
-a single tenant.
-
-**Note:** If you decide to use multi-tenancy but change the
+If you decide to use multi-tenancy but change the
 tenant-selection scheme (see the `apartment` gem's documentation for
 what this means), you'll also need to edit the before-suite logic in
 `features/support/env.rb` and `spec/support/rails_helper.rb`.  Those
@@ -72,18 +95,24 @@ enabled, but they rely on the tenant name being the DNS subdomain.  If
 you don't know what this means, you should probably ask for assistance
 deploying this software. :-)
 
-## First-time deployment
+## Deploying to production or staging
 
-Deploy the app as you would a normal Rails app, including `rake
-db:schema:load` (don't try running the migrations, as many of them use
-syntax that is long deprecated).  Only portable SQL features are used,
+1. Deploy
+
+2. Ensure that the `config/application.yml` on the staging/production
+server contains the correct data
+
+3. If using Heroku, `figaro heroku:set -e production` to make
+`application.yml`'s environment variables available to Heroku.
+
+4. `RAILS_ENV=production rake db:seed` to create the basic admin
+account, etc.  Only portable SQL features are used,
 and the schema has been tried with MySQL, Postgres, and SQLite.
 
-Then run the task `rake db:seed` on the production database, which creates a few special users, including the administrative user `admin@audience1st.com` with password `admin`.
-
-The app should now be up and running; login and change the administrator password.  Later you can designate other users as administrators.
-
 # Integration with Goldstar™
+
+## NOTE: this information is currently out of date as Goldstar
+integration is being rehabilitated.
 
 See the documentation on how Goldstar integration is handled in the administrator UI.
 
