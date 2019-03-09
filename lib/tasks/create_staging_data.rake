@@ -9,7 +9,7 @@
 require 'csv'
 
 module StagingHelper
-  TENANT = 'a1-staging'
+  TENANT = ENV['TENANT'] || 'a1-staging'
   SHOWS = ['Company', 'Fiddler on the Roof', 'West Side Story']
   CITIES = ['Oakland', 'San Francisco', 'Alameda', 'Hayward', 'San Leandro', 'Berkeley',
     'Daly City', 'Castro Valley', 'Pleasanton', 'Walnut Creek', 'Concord', 'Antioch', 'Pittsburg',
@@ -62,7 +62,7 @@ staging = namespace :staging do
       :season_start_month => (1.month.ago).month)
   end
 
-  desc "Set staging API keys STRIPE_SECRET, STRIPE_KEY, SENDGRID_KEY from Figaro"
+  desc "Set staging API keys STRIPE_SECRET, STRIPE_KEY from Figaro"
   task :api_keys => :environment do
     StagingHelper::switch_to_staging!
     Option.first.update_attributes!(

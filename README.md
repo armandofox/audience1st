@@ -17,11 +17,12 @@ Perhaps you intended to [learn about Audience1st features and/or have us install
 
 You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 4/Ruby 2.3 app deployed.
 
-# Development and Deployment
+# Preparing to develop
 
-This is a stock Rails 4 app, with the following exceptions/additions.
+In addition to the app, you will need a Stripe account, though you can 
+use just the test-mode keys during development.
 
-## Multi-tenancy
+## Multi-tenant setup
 
 **This is important.** By default Audience1st is designed to be setup
 as [multi-tenant using the `apartment`
@@ -32,59 +33,57 @@ fomr the first subdomain in the URI, e.g. if your deployment domain is
 as the tenant for that request.
 
 For development or staging, the recommended approach is to setup a
-single tenant called _a1-staging_, which is the one whose data is
-populated by the fake database.  To do this:
+single tenant.  In this example we will call it `my-tenant-name`; you can
+call it whatever you want, but if you deploy to Heroku for staging,
+the app name `my-tenant-name.herokuapp.com` must exist, so choose
+the name carefully.
 
 1.  Create a file `config/application.yml` containing the following:
 
 ```yaml
+tenant_names: my-tenant-name
 session_secret: "30 or more random characters string"
-tenant_names: a1-staging
+attr_encrypted_key: "long string used to encrypt sensitive data"
+STRIPE_KEY: "Publishable key from a Stripe account in test mode"
+STRIPE_SECRET: "Secret key from a Stripe account in test mode"
 ```
 
 (In a production setting, you'd have several tenant names separated by
 commas.)
 **Please don't version this file or include it in pull requests, nor
-modify the existing `config/application.yml.asc`**
+modify the existing `config/application.yml.asc`.  The `.gitignore` is
+set to ignore this file when versioning.** 
 
-2.  After running `bundle` as usual, you can run `bundle exec rake
+2. Create a `config/database.yml` file (and don't version it; it is
+also git-ignored) containing `development:` and
+`test:` targets:
+
+```yaml
+development:
+  adapter: sqlite3
+  database: db/my-tenant-name.sqlite3
+test:
+  adapter: sqlite3
+  database: db/test.sqlite3
+```
+
+(The `production` configuration, if any, depends on your deployment
+environment.  Heroku ignores any `production` configuration because it
+sets its own using PostgreSQL.)
+
+3.  After running `bundle` as usual, you can run `bundle exec rake
 db:schema:load` to load the database schema into each tenant.
 
-3.  Then run the task `rake db:seed` on the development database,
+4.  Run `rake db:seed` on the development database,
 which creates a few special users, including the administrative user
-`admin@audience1st.com` with password `admin`. 
+`admin@audience1st.com` with password `admin`.
 
-4.  The app should now be able to run and you should be able to login
+5.  The app should now be able to run and you should be able to login
 with the administrator password.  Later you can designate other users as administrators.
 
 5.  If you want fake-but-realistic data, also run the task `bundle
 exec rake staging:initialize`.  This creates a bunch of fake users,
 shows, etc., courtesy of the `faker` gem.
-
-### To disable multi-tenancy entirely
-
-This requires removing a few files.  **Do not make any PRs that delete those files** since we need
-them in the main/production version.  
-
-1. Remove `gem 'apartment'` from the `Gemfile` before running `bundle
-install`
-
-2. Remove the file `config/initializers/apartment.rb`
-
-3. Make sure your `config/application.yml` does **not**
-contain any mention of `tenant_names`
-
-
-### Changing the tenant selection scheme
-
-If you decide to use multi-tenancy but change the
-tenant-selection scheme (see the `apartment` gem's documentation for
-what this means), you'll also need to edit the before-suite logic in
-`features/support/env.rb` and `spec/support/rails_helper.rb`.  Those
-bits of code ensure that testing works properly with multi-tenancy
-enabled, but they rely on the tenant name being the DNS subdomain.  If
-you don't know what this means, you should probably ask for assistance
-deploying this software. :-)
 
 # Deploying to production or staging
 
@@ -252,3 +251,43 @@ Most scenarios that test payments do stubbing (in `env.rb`) at the level
 of the `Store` methods that wrap calls to Stripe.  A few scenarios use
 the `FakeStripe` gem.
 
+# Advanced topics
+
+## Integration: Sending transactional email in production
+
+In production, email confirmations are sent for various things.
+Audience1st is configured to use Sendgrid.  Log in to Audience1st as
+an administrator, go to Options, and enter a Sendgrid key.  If it's
+left blank, email sending is disabled.
+
+## Integration: MailChimp
+
+In production, Audience1st can export customer lists (reports) to
+Mailchimp to serve as the basis of a targeted email campaign.  To
+enable this, log in to Audience1st as an administrator, go to Options,
+and enter a Mailchimp key.  If left blank, Mailchimp integration is
+disabled.
+
+## To disable multi-tenancy
+
+This requires removing a few files.  **Do not make any PRs that delete those files** since we need
+them in the main/production version.  
+
+1. Remove `gem 'apartment'` from the `Gemfile` before running `bundle
+install`
+
+2. Remove the file `config/initializers/apartment.rb`
+
+3. Make sure your `config/application.yml` does **not**
+contain any mention of `tenant_names`
+
+## To change the tenant selection scheme
+
+If you decide to use multi-tenancy but change the
+tenant-selection scheme (see the `apartment` gem's documentation for
+what this means), you'll also need to edit the before-suite logic in
+`features/support/env.rb` and `spec/support/rails_helper.rb`.  Those
+bits of code ensure that testing works properly with multi-tenancy
+enabled, but they rely on the tenant name being the DNS subdomain.  If
+you don't know what this means, you should probably ask for assistance
+deploying this software. :-)

@@ -100,9 +100,9 @@ class Audience1stSeeder
       :homepage_subscription_sales_text => 'Subscribe to Our Season',
       :privacy_policy_url => '',
       :stylesheet_url => 'https://rawgit.com/armandofox/stylesheets/master/sandbox/default.css',
-      :stripe_key => 'YOUR_STRIPE_KEY',
-      :stripe_secret => 'YOUR_STRIPE_SECRET',
-      :sendgrid_key_value => 'YOUR_SENDGRID_KEY',
+      :stripe_key => Figaro.env.STRIPE_KEY!,
+      :stripe_secret => Figaro.env.STRIPE_SECRET!,
+      :sendgrid_key_value => '',
       :staff_access_only => false
       )
     option.save!
