@@ -78,19 +78,28 @@ db:schema:load` to load the database schema into each tenant.
 which creates a few special users, including the administrative user
 `admin@audience1st.com` with password `admin`.
 
+5.  To start the app, say `rails server` as usual, but in your
+browser, **do not** try to visit `localhost:3000`; instead visit
+`http://my-tenant-name.lvh.me:3000` since the multi-tenant
+selection relies on the first component of the URI being the tenant
+name.  This uses the [free lvh.me
+service](https://nickjanetakis.com/blog/ngrok-lvhme-nipio-a-trilogy-for-local-development-and-testing#lvh-me)
+that always resolves to `localhost`.
+
 5.  The app should now be able to run and you should be able to login
 with the administrator password.  Later you can designate other users as administrators.
 
-5.  If you want fake-but-realistic data, also run the task `bundle
+5.  If you want fake-but-realistic data, also run the task
+`TENANT=my-tenant-name bundle
 exec rake staging:initialize`.  This creates a bunch of fake users,
 shows, etc., courtesy of the `faker` gem.
 
 # Deploying to production or staging
 
-1. Deploy
+1. Deploy.
 
 2. Ensure that the `config/application.yml` on the staging/production
-server contains the correct data
+server contains the correct data.
 
 3. If using Heroku, `figaro heroku:set -e production` to make
 `application.yml`'s environment variables available to Heroku.
@@ -99,7 +108,7 @@ server contains the correct data
 account, etc.  Only portable SQL features are used,
 and the schema has been tried with MySQL, Postgres, and SQLite.
 
-5. If the envariable `EDGE_URL` is set,
+5. If the environment variable `EDGE_URL` is set,
 `config.action_controller.asset_host` will be set to that value to
 serve static assets from a CDN, which you must configure (the
 current deployment uses the Edge CDN add-on for Heroku, which uses
@@ -110,7 +119,7 @@ usual way without CDN.
 
 # Integration with Goldstar™
 
-## NOTE: this information is currently out of date as Goldstar integration is being rehabilitated.
+**NOTE: this information is currently out of date as Goldstar integration is being rehabilitated.**
 
 See the documentation on how Goldstar integration is handled in the administrator UI.
 
