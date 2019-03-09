@@ -13,22 +13,13 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 
 # This information is for developers and deployers
 
-Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://armandofox.github.io/audience1st/)?
+Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://docs.audience1st.com)?
 
 You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 4/Ruby 2.3 app deployed.
 
 # Development and Deployment
 
-This is a stock Rails 4 app, with the following exceptions/additions:
-
-1. The task `Customer.notify_upcoming_birthdays` emails an administrator or boxoffice manager with information about customers whose birthdays are coming up soon.  The threshold for "soon" can be set in Admin > Options.
-
-2. The task `EmailGoldstar.receive(STDIN.read)` should be invoked to consume incoming emails from Goldstar.  See the installation section on Goldstar integration, below.
-
-3. If the envariable `EDGE_URL` is set,
-`config.action_controller.asset_host` will be set to that value (the
-current deployment uses the Edge CDN add-on for Heroku, which uses
-Amazon CloudFront as a CDN).
+This is a stock Rails 4 app, with the following exceptions/additions.
 
 ## Multi-tenancy
 
@@ -95,7 +86,7 @@ enabled, but they rely on the tenant name being the DNS subdomain.  If
 you don't know what this means, you should probably ask for assistance
 deploying this software. :-)
 
-## Deploying to production or staging
+# Deploying to production or staging
 
 1. Deploy
 
@@ -109,10 +100,18 @@ server contains the correct data
 account, etc.  Only portable SQL features are used,
 and the schema has been tried with MySQL, Postgres, and SQLite.
 
+5. If the envariable `EDGE_URL` is set,
+`config.action_controller.asset_host` will be set to that value to
+serve static assets from a CDN, which you must configure (the
+current deployment uses the Edge CDN add-on for Heroku, which uses
+Amazon CloudFront as a CDN).  If not set, assets will be served the
+usual way without CDN.
+
+6. The task `Customer.notify_upcoming_birthdays` emails an administrator or boxoffice manager with information about customers whose birthdays are coming up soon.  The threshold for "soon" can be set in Admin > Options.
+
 # Integration with Goldstar™
 
-## NOTE: this information is currently out of date as Goldstar
-integration is being rehabilitated.
+## NOTE: this information is currently out of date as Goldstar integration is being rehabilitated.
 
 See the documentation on how Goldstar integration is handled in the administrator UI.
 
