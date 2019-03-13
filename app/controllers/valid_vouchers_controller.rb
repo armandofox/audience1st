@@ -20,6 +20,21 @@ class ValidVouchersController < ApplicationController
     @show = @valid_voucher.showdate.show
   end
 
+  def update
+    @valid_voucher = ValidVoucher.find(params[:id])
+    args = params[:valid_voucher]
+    # max_sales_for_type if blank should be "infinity"
+    if args[:max_sales_for_type].blank?
+      args[:max_sales_for_type] = ValidVoucher::INFINITE
+    end
+
+    if @valid_voucher.update_attributes(args)
+      redirect_to edit_show_path(@valid_voucher.showdate.show), :notice => 'Update successful.'
+    else
+      redirect_to edit_valid_voucher_path(@valid_voucher), :alert => @valid_voucher.errors.as_html
+    end
+  end
+
   def create
     args = params[:valid_voucher]
     vt = params[:vouchertypes]
@@ -48,24 +63,6 @@ class ValidVouchersController < ApplicationController
       redirect_to(back,
         :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}",)
     end
-  end
-
-  def update
-    @valid_voucher = ValidVoucher.find(params[:id])
-    flash_message = {}
-    begin
-      # this is ugly: we incur 2 database writes on an update if
-      # end_is_relative  is set.
-      @valid_voucher.update_attributes!(params[:valid_voucher])
-      if params[:end_is_relative].to_i > 0
-        @valid_voucher.update_attribute(:end_sales,
-           @valid_voucher.showdate.thedate - params[:hours_before].to_f.hours)
-      end
-      flash_message = {:notice => 'Update successful'}
-    rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
-      flash_message = {:alert => e.message}
-    end
-    redirect_to edit_show_path(@valid_voucher.showdate.show), flash_message
   end
 
   def destroy
