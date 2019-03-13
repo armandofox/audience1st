@@ -71,3 +71,25 @@ Then /^"(.*) to (.*)" should be selected as the "(.*)" date range$/ do |from,to,
   dates = "#{Time.zone.parse(from).strftime(fmt)} - #{Time.zone.parse(to).strftime(fmt)}"
   page.find(:css,"##{selector}+button.comiseo-daterangepicker-triggerbutton").should have_content(dates)
 end
+
+# Variant for dates
+Then /^"(.*)" should be selected as the "(.*)" date$/ do |date,menu|
+  date = Date.parse(date)
+  html = Nokogiri::HTML(page.body)
+  menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
+  year, month, day =
+    html.xpath("//select[@id='#{menu_id}_2i']").empty? ? %w[year month day] : %w[1i 2i 3i]
+  if page.has_selector?("select##{menu_id}_#{year}")
+    steps %Q{Then "#{date.year}" should be selected in the "#{menu_id}_#{year}" menu}
+  end
+  steps %Q{Then "#{date.strftime('%B')}" should be selected in the "#{menu_id}_#{month}" menu
+           And  "#{date.day}" should be selected in the "#{menu_id}_#{day}" menu}
+end
+
+When /^I select "(.*) (.*)" as the "(.*)" month and day$/ do |month,day, menu|
+  html = Nokogiri::HTML(page.body)
+  menu_id = html.xpath("//label[contains(text(),'#{menu}')]").first['for']
+  select(month, :from => "#{menu_id}_2i")
+  select(day, :from => "#{menu_id}_3i")
+end
+

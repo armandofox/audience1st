@@ -86,6 +86,9 @@ Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only
       :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']))
     expect(vv.end_sales).to eq(Time.zone.parse(v['end_sales']))
     expect(vv.max_sales_for_type).to eq(v['max_sales'].to_i)
+    if v['promo_code']
+      expect(vv.promo_code.to_s).to eq v['promo_code'].to_s
+    end
     vv
   end
   # if checking to ensure these are the ONLY valid_vouchers:
@@ -103,6 +106,7 @@ Given /the following voucher types are valid for "(.*)":$/ do |show,tbl|
       :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']),
       :start_sales => 1.hour.ago,
       :end_sales => Time.zone.parse(v['end_sales']),
+      :promo_code => v['promo_code'],
       :max_sales_for_type => v['max_sales'].to_i)
   end
 end

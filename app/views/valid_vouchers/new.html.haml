@@ -12,9 +12,59 @@
           %label.form-check-label{:for => field_id}= v.name_with_season_and_price
           %br
 
-  = render :partial => 'form'
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_max_sales_for_type
+      %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (Leave blank for unlimited)
+    = number_field_tag 'valid_voucher_max_sales_for_type', (@valid_voucher.max_sales_for_type unless @valid_voucher.max_sales_for_type == ValidVoucher::INFINITE), :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
 
-  .form-row
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_promo_code
+      %label.col-form-label{:for=>:valid_voucher_promo_code} Redemption (promo) code, if any
+    = text_field 'valid_voucher', 'promo_code', :class => 'form-control col-md-3'
+
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_sales_dates
+      %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales
+    .col-md-6= datetime_select 'valid_voucher', 'start_sales'
+
+  .form-group.form-row
+    .col-md-5.text-right
+      %label.col-form-label End sales for each performance
+    .form-check.form-check-inline.col-md-6
+      = radio_button_tag 'end_is_relative', 'unchanged', true, :class => 'form-check-input'
+      %label.form-check-label.px-2{:for => 'end_is_relative_unchanged'} Leave existing redemptions as-is; set to #{@minutes_before} minutes before show time for new redemptions
+  .form-group.form-row
+    .col-md-5.text-right
+    .form-check.form-check-inline.col-md-6
+      = radio_button_tag 'end_is_relative', 'relative', false, :class => 'form-check-input'
+      = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
+      %label.form-check-label.px-2{:for => 'minutes_before'} minutes before show time
+  .form-group.form-row
+    .col-md-5
+    .form-check.form-check-inline.col-md-6
+      = radio_button_tag 'end_is_relative', 'absolute', false, :class => 'form-check-input'
+      %span.px-2 On this date:
+      = datetime_select 'valid_voucher', 'end_sales'
+
+  .container.border-top.border-bottom.pb-2
+    = render :partial => 'weekday_checkbox_links'
+    - @show.showdates.each_with_index do |showdate,idx|  
+      - if idx % 3 == 0
+        <div class="form-row">
+      .col-3.form-check.form-check-inline
+        - wkday = showdate.thedate.strftime('%a')
+        - field_id = "showdates[#{showdate.id}]"
+        .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
+        %label.form-check-label{:for => field_id}= showdate.thedate.to_formatted_s(:showtime_brief)
+      - if idx % 3 == 2
+        </div>
+    - if @show.showdates.size % 3 != 0
+      </div>
+
+  .form-group.form-row
     .col-md-3.offset-md-2= submit_tag "Apply Changes", :class => 'btn btn-success btn-block'
     .col-md-1
     .col-md-4= link_to "Don't Apply Changes", edit_show_path(@show), {:class => 'btn btn-secondary btn-block' }
