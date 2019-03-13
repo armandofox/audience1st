@@ -53,6 +53,9 @@ class ValidVouchersController < ApplicationController
     when 'unchanged'
       # get rid of the 'end sales' args so no updating happens
       args.reject! { |k,v| k =~ /end_sales/ }
+      min = params[:minutes_before_for_new]
+      return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if min.blank?
+      args[:before_showtime_for_new] = min.to_i.minutes
     when 'absolute'             # just leave the selected date menus to be parsed
     end
     showdates = Showdate.find(params[:showdates])

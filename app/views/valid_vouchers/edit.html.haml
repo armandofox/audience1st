@@ -10,8 +10,6 @@
 
 = form_tag valid_voucher_path(@valid_voucher), :method => :put do
 
-  = hidden_field 'valid_voucher', 'vouchertype_id', :value => vt.id
-
   .form-group.form-row
     .col-md-5.text-right
       = popup_help_for :valid_voucher_max_sales_for_type
@@ -33,7 +31,6 @@
   .form-group.form-row
     .col-md-5.text-right
       %label.col-form-label{:for => :valid_voucher_end_sales} End sales
-      = hidden_field_tag 'end_is_relative', 'absolute'
     .col-md-6= datetime_select 'valid_voucher', 'end_sales'
 
   .form-group.form-row

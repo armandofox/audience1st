@@ -12,6 +12,8 @@
           %label.form-check-label{:for => field_id}= v.name_with_season_and_price
           %br
 
+  .alert.alert-info= t('season_setup.options_apply_to_all_selected_performances')
+
   .form-group.form-row
     .col-md-5.text-right
       = popup_help_for :valid_voucher_max_sales_for_type
@@ -35,22 +37,49 @@
       %label.col-form-label End sales for each performance
     .form-check.form-check-inline.col-md-6
       = radio_button_tag 'end_is_relative', 'unchanged', true, :class => 'form-check-input'
-      %label.form-check-label.px-2{:for => 'end_is_relative_unchanged'} Leave existing redemptions as-is; set to #{@minutes_before} minutes before show time for new redemptions
+      %label.pr-2.col-form-label{:for => :minutes_before_for_new} Set new redemptions to 
+      = number_field_tag 'minutes_before_for_new', @minutes_before, :class => 'form-control form-control-sm col-md-2'
+      %span.px-2 minutes
+
+  .form-group.form-row
+    .col-md-5
+    %label.form-check-label.pl-4{:for => 'end_is_relative_unchanged'} before show time; leave existing redemptions as-is
+
   .form-group.form-row
     .col-md-5.text-right
     .form-check.form-check-inline.col-md-6
       = radio_button_tag 'end_is_relative', 'relative', false, :class => 'form-check-input'
+      %span.px-2 Set all to
       = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
       %label.form-check-label.px-2{:for => 'minutes_before'} minutes before show time
   .form-group.form-row
     .col-md-5
     .form-check.form-check-inline.col-md-6
       = radio_button_tag 'end_is_relative', 'absolute', false, :class => 'form-check-input'
-      %span.px-2 On this date:
+      %span.px-2 Set all to
       = datetime_select 'valid_voucher', 'end_sales'
 
-  .container.border-top.border-bottom.pb-2
-    = render :partial => 'weekday_checkbox_links'
+  .alert.alert-info= t('season_setup.apply_to_which_performances')
+
+  .container.pb-2
+    .form-row.pl-4.pb-3
+      .col-md-2.text-center
+        Select Dates:
+        %br
+        = link_to 'All', '#',  :onclick => %Q{$('.showdate').prop('checked', true); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+        = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+      .col-md-5.text-center
+        Or Select Every:
+        %br
+        - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
+          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+      .col-md-5.text-center
+        Or Un-select Every:
+        %br
+        - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
+          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+
+
     - @show.showdates.each_with_index do |showdate,idx|  
       - if idx % 3 == 0
         <div class="form-row">
