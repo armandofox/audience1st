@@ -189,29 +189,29 @@ class ValidVoucher < ActiveRecord::Base
   # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
   # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
 
-  def self.add_vouchertypes_to_showdates!(showdates,vouchertypes,valid_voucher_params)
+  def self.add_vouchertypes_to_showdates!(showdates,vouchertypes,valid_voucher_params,mode)
     errs = Hash.new { |h,k| h[k]=[] }       # vouchertype => showdate_id's to which it could NOT be added
     possible_cause = {}
     before_showtime = valid_voucher_params.delete(:before_showtime)
-    before_showtime_for_new = valid_voucher_params.delete(:before_showtime_for_new)
     ValidVoucher.transaction do
       showdates.each do |showdate|
         # if this valid-voucher exists already, edit it in place; otherwise create new.
         vouchertypes.each do |vouchertype|
           if (vv = ValidVoucher.find_by(:showdate => showdate, :vouchertype => vouchertype))
-            vv.assign_attributes(valid_voucher_params)
-            # vv.end_sales must be assigned separately, because normally valid_voucher_params
-            # will contain end_sales(1i), end_sales(2i), etc. populated from datetime menus.
-            if before_showtime
+            case mode
+              when :unchanged
+              vv.assign_attributes(valid_voucher_params.reject { |k,v| k =~ /end_sales/ })
+            when :relative
+              vv.assign_attributes(valid_voucher_params)
               vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second)
+            when :absolute
+              vv.assign_attributes(valid_voucher_params)
             end
           else
             vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
-            if before_showtime
+            # new VV has a default end_time assignment
+            if (mode == :relative || mode ==  :unchanged)
               vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second)
-            else
-              # new valid-voucher MUST have and end-sales date
-              vv.end_sales = (showdate.thedate - Option.advance_sales_cutoff).rounded_to(:second)
             end
           end
           unless vv.save

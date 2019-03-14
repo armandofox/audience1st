@@ -45,26 +45,24 @@ class ValidVouchersController < ApplicationController
     if args[:max_sales_for_type].blank?
       args[:max_sales_for_type] = ValidVoucher::INFINITE
     end
-    case params[:end_is_relative]
-    when 'relative'
+    mode = params[:end_is_relative].to_sym
+    case mode
+    when :relative
       min = params[:minutes_before]
       return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if min.blank?
       args[:before_showtime] = min.to_i.minutes
-    when 'unchanged'
+    when :unchanged
       # get rid of the 'end sales' args so no updating happens
-      args.reject! { |k,v| k =~ /end_sales/ }
       min = params[:minutes_before_for_new]
       return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if min.blank?
-      args[:before_showtime_for_new] = min.to_i.minutes
-    when 'absolute'             # just leave the selected date menus to be parsed
+      args[:before_showtime] = min.to_i.minutes
     end
     showdates = Showdate.find(params[:showdates])
     begin
-      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args
+      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args,mode
       redirect_to edit_show_path(params[:show_id]), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
     rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
-      redirect_to(back,
-        :alert => "NO changes were made, because some voucher type(s) could not be added to some show date(s)--try adding them one at a time to isolate specific errors.  #{e.message}",)
+      redirect_to(back,:alert => t('season_setup.no_valid_vouchers_added', :error_message => e.message))
     end
   end
 
