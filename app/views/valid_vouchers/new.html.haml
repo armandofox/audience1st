@@ -24,7 +24,7 @@
   .form-group.form-row.pt-0.mt-0.border-bottom
     .form-check.form-check-inline.col-md-5.offset-md-5
       = check_box_tag 'preserve[max_sales_for_type]', 1, true
-      %label.pl-1.col-form-label{:for => 'preserve_max_sales_for_type'} Keep as-is on existing redemptions
+      %label.px-1.col-form-label{:for => 'preserve_max_sales_for_type'} Keep as-is on existing redemptions
 
   .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
@@ -35,8 +35,9 @@
   .form-group.form-row.pt-0.mt-0.border-bottom
     .form-check.form-check-inline.col-md-5.offset-md-5
       = check_box_tag 'preserve[promo_code]', 1, true
-      %label.pl-1.col-form-label{:for => 'preserve_promo_code'} Keep as-is on existing redemptions
-    
+      %label.px-1.col-form-label{:for => 'preserve_promo_code'} Keep as-is on existing redemptions
+      = popup_help_for 'keep_existing_redemptions_as_is'
+
   .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
       = popup_help_for :valid_voucher_sales_dates
@@ -46,7 +47,8 @@
   .form-group.form-row.pt-0.mt-0.border-bottom
     .form-check.form-check-inline.col-md-5.offset-md-5
       = check_box_tag 'preserve[start_sales]', 1, true
-      %label.pl-1.col-form-label{:for => 'preserve_start_sales'} Keep as-is on existing redemptions
+      %label.px-1.col-form-label{:for => 'preserve_start_sales'} Keep as-is on existing redemptions
+      = popup_help_for 'keep_existing_redemptions_as_is'
     
   .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
@@ -58,7 +60,8 @@
   .form-group.form-row.pt-0.mt-0.border-bottom
     .form-check.form-check-inline.col-md-5.offset-md-5
       = check_box_tag 'preserve[end_sales]', 1, true
-      %label.pl-1.col-form-label{:for => 'preserve_end_sales'} Keep as-is on existing redemptions
+      %label.px-1.col-form-label{:for => 'preserve_end_sales'} Keep as-is on existing redemptions
+      = popup_help_for 'keep_existing_redemptions_as_is'
     
   .alert.alert-info= t('season_setup.apply_to_which_performances')
 
