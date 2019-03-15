@@ -14,51 +14,52 @@
 
   .alert.alert-info= t('season_setup.options_apply_to_all_selected_performances')
 
-  .form-group.form-row
+  .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
       = popup_help_for :valid_voucher_max_sales_for_type
-      %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (Leave blank for unlimited)
-    = number_field_tag 'valid_voucher_max_sales_for_type', (@valid_voucher.max_sales_for_type unless @valid_voucher.max_sales_for_type == ValidVoucher::INFINITE), :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
+      %label.col-form-label{:for=>:valid_voucher_max_sales_for_type}
+        Max sales for type (leave blank for unlimited)
+    = number_field_tag 'valid_voucher_max_sales_for_type', '', :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
 
-  .form-group.form-row
+  .form-group.form-row.pt-0.mt-0.border-bottom
+    .form-check.form-check-inline.col-md-5.offset-md-5
+      = check_box_tag 'preserve[max_sales_for_type]', 1, true
+      %label.pl-1.col-form-label{:for => 'preserve_max_sales_for_type'} Keep as-is on existing redemptions
+
+  .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
       = popup_help_for :valid_voucher_promo_code
       %label.col-form-label{:for=>:valid_voucher_promo_code} Redemption (promo) code, if any
-    = text_field 'valid_voucher', 'promo_code', :class => 'form-control col-md-3'
+    = text_field 'valid_voucher', 'promo_code', :class => 'form-control col-md-2'
 
-  .form-group.form-row
+  .form-group.form-row.pt-0.mt-0.border-bottom
+    .form-check.form-check-inline.col-md-5.offset-md-5
+      = check_box_tag 'preserve[promo_code]', 1, true
+      %label.pl-1.col-form-label{:for => 'preserve_promo_code'} Keep as-is on existing redemptions
+    
+  .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
       = popup_help_for :valid_voucher_sales_dates
-      %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales
+      %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales for each performance
     .col-md-6= datetime_select 'valid_voucher', 'start_sales'
 
-  .form-group.form-row
+  .form-group.form-row.pt-0.mt-0.border-bottom
+    .form-check.form-check-inline.col-md-5.offset-md-5
+      = check_box_tag 'preserve[start_sales]', 1, true
+      %label.pl-1.col-form-label{:for => 'preserve_start_sales'} Keep as-is on existing redemptions
+    
+  .form-group.form-row.pb-0.mb-0
     .col-md-5.text-right
       %label.col-form-label End sales for each performance
     .form-check.form-check-inline.col-md-6
-      = radio_button_tag 'end_is_relative', 'unchanged', true, :class => 'form-check-input'
-      %label.pr-2.col-form-label{:for => :minutes_before_for_new} Set new redemptions to 
-      = number_field_tag 'minutes_before_for_new', @minutes_before, :class => 'form-control form-control-sm col-md-2'
-      %span.px-2 minutes
+      = number_field_tag 'minutes_before', '', :class => 'form-control form-control-sm col-md-2'
+      %label.col-form-label{:for => :minutes_before} minutes before show time
 
-  .form-group.form-row
-    .col-md-5
-    %label.form-check-label.pl-4{:for => 'end_is_relative_unchanged'} before show time; leave existing redemptions as-is
-
-  .form-group.form-row
-    .col-md-5.text-right
-    .form-check.form-check-inline.col-md-6
-      = radio_button_tag 'end_is_relative', 'relative', false, :class => 'form-check-input'
-      %span.px-2 Set all to
-      = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
-      %label.form-check-label.px-2{:for => 'minutes_before'} minutes before show time
-  .form-group.form-row
-    .col-md-5
-    .form-check.form-check-inline.col-md-6
-      = radio_button_tag 'end_is_relative', 'absolute', false, :class => 'form-check-input'
-      %span.px-2 Set all to
-      = datetime_select 'valid_voucher', 'end_sales'
-
+  .form-group.form-row.pt-0.mt-0.border-bottom
+    .form-check.form-check-inline.col-md-5.offset-md-5
+      = check_box_tag 'preserve[end_sales]', 1, true
+      %label.pl-1.col-form-label{:for => 'preserve_end_sales'} Keep as-is on existing redemptions
+    
   .alert.alert-info= t('season_setup.apply_to_which_performances')
 
   .container.pb-2
