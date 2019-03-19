@@ -37,29 +37,19 @@ class ValidVouchersController < ApplicationController
 
   def create
     args = params[:valid_voucher]
+    preserve = params[:preserve]
     vt = params[:vouchertypes]
+    showdates = Showdate.find(params[:showdates])
     back = new_valid_voucher_path(:show_id => params[:show_id])
     return redirect_to(back, :alert => t('season_setup.must_select_vouchertypes')) if vt.blank?
     vouchertypes = Vouchertype.find vt
     # max_sales_for_type if blank should be "infinity"
-    if args[:max_sales_for_type].blank?
-      args[:max_sales_for_type] = ValidVoucher::INFINITE
-    end
-    mode = params[:end_is_relative].to_sym
-    case mode
-    when :relative
-      min = params[:minutes_before]
-      return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if min.blank?
-      args[:before_showtime] = min.to_i.minutes
-    when :unchanged
-      # get rid of the 'end sales' args so no updating happens
-      min = params[:minutes_before_for_new]
-      return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if min.blank?
-      args[:before_showtime] = min.to_i.minutes
-    end
-    showdates = Showdate.find(params[:showdates])
+    args[:max_sales_for_type] = ValidVoucher::INFINITE if args[:max_sales_for_type].blank?
+    args[:before_showtime] = params[:minutes_before].to_i.minutes
+    return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if args[:before_showtime].zero?
+
     begin
-      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args,mode
+      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args,preserve
       redirect_to edit_show_path(params[:show_id]), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
     rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
       redirect_to(back,:alert => t('season_setup.no_valid_vouchers_added', :error_message => e.message))
