@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'editing existing', :focus => true do
+describe 'editing existing' do
   before(:each) do
     @sd1 = create(:showdate)
     @sd2 = create(:showdate, :show => @sd1.show, :thedate => @sd1.thedate + 1.day)
@@ -10,8 +10,25 @@ describe 'editing existing', :focus => true do
     @vv2 = create(:valid_voucher, :showdate => @sd2, :vouchertype => @vt2)
   end
 
-  describe 'selective update' do
-    it 'overrides 
+  describe 'selective update', :focus => true do
+    before(:each) do
+      @vv_params = {"start_sales(1i)"=>"2018", "start_sales(2i)"=>"12", "start_sales(3i)"=>"11",
+        "start_sales(4i)"=>"00", "start_sales(5i)"=>"00",
+        "promo_code" => "XYZ",
+        "before_showtime" => "20",
+        "max_sales_for_type" => "33"
+      }.symbolize_keys
+      @u = RedemptionBatchUpdater.new([@vt1],[@sd1])
+    end
+    after(:each) do
+      expect(@u.error_message).to be_blank
+    end
+    it 'preserves start sales' do
+      @u.valid_voucher_params = @vv_params
+      @u.preserve = {"start_sales" => "1"}
+      expect { @u.update }.not_to change { @vv1.start_sales }
+    end
+  end
 
   it 'does not update if validity errors' do
     params = {:before_showtime => 4.hours, :max_sales_for_type => 77}
@@ -53,5 +70,4 @@ describe 'editing existing', :focus => true do
     specify 'existing VV max sales' do ; expect(@vv1.max_sales_for_type).to eq(77) ; end
     specify 'new VV max sales' do ; expect(@vv2.max_sales_for_type).to eq(77) ; end
   end
-end
 end

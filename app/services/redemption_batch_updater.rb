@@ -10,6 +10,7 @@ class RedemptionBatchUpdater
     @preserve = preserve
     @errs = Hash.new { |h,k| h[k] = [] } # vouchertype => showdate_id's to which it could NOT be added
     @possible_cause = {}
+    @before_showtime = 0
     @vv = nil
   end
 
@@ -19,7 +20,7 @@ class RedemptionBatchUpdater
     # If +valid_voucher_params+ includes a key
     # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
     # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
-    before_showtime = valid_voucher_params.delete(:before_showtime)
+    @before_showtime = valid_voucher_params.delete(:before_showtime).to_i
     ValidVoucher.transaction do
       showdates.each do |showdate|
         # if this valid-voucher exists already, edit it in place; otherwise create new.
@@ -37,6 +38,15 @@ class RedemptionBatchUpdater
     end
     @errs.empty?
   end
+
+  def error_message
+    @errs.map do |vouchertype,dates|
+      "Can't add '#{vouchertype.name}' (possibly because #{@possible_cause[vouchertype]}) " <<
+        "to #{dates.size} dates including #{dates.first}"
+    end.join('; ')
+  end
+
+  private
   
   def selectively_assign_to_existing
     args = valid_voucher_params.clone
@@ -46,23 +56,16 @@ class RedemptionBatchUpdater
     preserve.keys.each { |k| args.delete(k) }
     # assign all remaining (non-preserved) attributes
     @vv.assign_attributes(args)
-    @vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second) unless preserve[:end_sales]
+    @vv.end_sales = (@vv.showdate.thedate - @before_showtime).rounded_to(:second) unless preserve[:end_sales]
   end
 
   def build_new
     @vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
-    @vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second)
+    @vv.end_sales = (showdate.thedate - @before_showtime).rounded_to(:second)
   end
 
   def add_error
-    @errs[@vv.vouchertype] << vv.showdate.thedate.to_formatted_s(:showtime_brief)
-    @possible_cause[@vv.vouchertype] = vv.errors.full_messages.join(', ')
-
-  end
-
-  def error_message
-    @errs.map do |vouchertype,dates|
-      "Can't add '#{vouchertype.name}' (possibly because: #{@possible_cause[vouchertype]}) to #{dates.first} and #{dates.size - 1} more dates"
-    end.join('; ')
+    @errs[@vv.vouchertype] << @vv.showdate.thedate.to_formatted_s(:showtime_brief)
+    @possible_cause[@vv.vouchertype] = @vv.errors.full_messages.join(', ')
   end
 end

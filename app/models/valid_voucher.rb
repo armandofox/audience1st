@@ -12,7 +12,6 @@ class ValidVoucher < ActiveRecord::Base
 
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
-  class CannotAddVouchertypeToMultipleShowdates < RuntimeError ; end
 
   attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
   # auxiliary attributes that aren't persisted

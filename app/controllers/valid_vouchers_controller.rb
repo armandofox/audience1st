@@ -36,6 +36,7 @@ class ValidVouchersController < ApplicationController
   end
 
   def create
+    byebug
     args = params[:valid_voucher]
     preserve = params[:preserve]
     vt = params[:vouchertypes]
@@ -57,7 +58,7 @@ class ValidVouchersController < ApplicationController
   end
 
   def destroy
-    id = params[:id]
+    id = params[:id].to_i
     begin
       ValidVoucher.find(id).destroy
       # Success: hide the partial associated with this valid-voucher
