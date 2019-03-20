@@ -183,49 +183,6 @@ class ValidVoucher < ActiveRecord::Base
 
   public
   
-  # Transactionally add one or more vouchertypes to multiple showdates.  
-  # If errors, collate them intelligently and fail.
-  # If +valid_voucher_params+ includes a key
-  # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
-  # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
-
-  def self.add_vouchertypes_to_showdates!(showdates,vouchertypes,valid_voucher_params,preserve)
-    errs = Hash.new { |h,k| h[k]=[] }       # vouchertype => showdate_id's to which it could NOT be added
-    possible_cause = {}
-    before_showtime = valid_voucher_params.delete(:before_showtime)
-    ValidVoucher.transaction do
-      showdates.each do |showdate|
-        # if this valid-voucher exists already, edit it in place; otherwise create new.
-        vouchertypes.each do |vouchertype|
-          if (vv = ValidVoucher.find_by(:showdate => showdate, :vouchertype => vouchertype))
-            args = valid_voucher_params.clone
-            # special case:  start/end_sales args are a set of end_sales(1i), etc, so reject all if must be preserved
-            args.reject!  { |k,v| k =~ /end_sales/ }    if preserve[:end_sales]
-            args.reject!  { |k,v| k =~ /start_sales/ }  if preserve[:start_sales]
-            preserve.keys.each { |k| args.delete(k) }
-            # assign all remaining (non-preserved) attributes
-            vv.assign_attributes(args)
-            vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second) unless preserve[:end_sales]
-          else                  # new redemption: use all the args
-            vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
-            vv.end_sales = (showdate.thedate - before_showtime).rounded_to(:second)
-          end
-          unless vv.save
-            errs[vouchertype] << showdate.thedate.to_formatted_s(:showtime_brief)
-            possible_cause[vouchertype] = vv.errors.full_messages.join(', ')
-          end
-        end
-      end
-      # if any errors occurred, commit none of the changes.
-      unless errs.empty?
-        msg = errs.map do |vouchertype,dates|
-          "Can't add '#{vouchertype.name}' (possibly because: #{possible_cause[vouchertype]}) to #{dates.first} and #{dates.size - 1} more dates"
-        end.join('; ')
-        raise CannotAddVouchertypeToMultipleShowdates.new(msg)
-      end
-    end
-  end
-  
   def seats_of_type_remaining
     return INFINITE unless showdate
     total_empty = showdate.saleable_seats_left

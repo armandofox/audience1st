@@ -48,11 +48,11 @@ class ValidVouchersController < ApplicationController
     args[:before_showtime] = params[:minutes_before].to_i.minutes
     return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if args[:before_showtime].zero?
 
-    begin
-      ValidVoucher.add_vouchertypes_to_showdates! showdates,vouchertypes,args,preserve
+    updater = RedemptionBatchUpdater.new(showdates,vouchertypes,args,preserve)
+    if updater.update
       redirect_to edit_show_path(params[:show_id]), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
-    rescue ValidVoucher::CannotAddVouchertypeToMultipleShowdates => e
-      redirect_to(back,:alert => t('season_setup.no_valid_vouchers_added', :error_message => e.message))
+    else
+      redirect_to(back,:alert => t('season_setup.no_valid_vouchers_added', :error_message => updater.error_message))
     end
   end
 
