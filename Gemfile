@@ -1,6 +1,6 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '2.3.1'
+ruby '2.4.5'
 
 # basic app components
 gem 'pg', '~> 0.21'
