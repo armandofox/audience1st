@@ -24,10 +24,15 @@ Scenario: send magic link to user
   Then I should be on the change password page
   And "John Doe" should be logged in
 
-Scenario: No email is sent if email is not confirmed
-  
+Scenario: no forgot password email is sent if email does not exist
+  Given there is no customer named "bchillz@gmail.com"
+  When I visit the forgot password page
+  And I fill in "email" with "bchillz@gmail.com"
+  And I press "Reset My Password By Email"
+  Then I should be on the forgot password page 
+  And I should see "is not in our database. You might try under a different email, or create a new account."
 
-Scenario: Magic link expires after 15 minutes
+Scenario: magic link expires after 15 minutes
   Given customer "John Doe" exists and was created by admin
   When I visit the forgot password page
   And I fill in "email" with "john@doe.com"
