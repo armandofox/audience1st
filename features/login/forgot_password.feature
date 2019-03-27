@@ -12,3 +12,19 @@ Scenario: reset password and login with new one
   And I press "Reset My Password By Email"
   Then an email should be sent to "john@doe.com" matching "password" with "Your new password is:\s*(\S*)\s*"
   And I should be able to login with username "john@doe.com" and that password
+
+Scenario: send magic link to user
+  Given customer "John Doe" exists and was created by admin
+  When I visit the forgot password page
+  And I fill in "email" with "john@doe.com"
+  And I press "Reset My Password By Email"
+  Then an email should be sent to "john@doe.com" matching "magic_link" with "(.*)"
+  Given customer "John Doe" clicks on "magic_link" 
+  Then I should be on the change password page
+  And "John Doe" should be logged in
+
+  
+  
+  
+
+  
