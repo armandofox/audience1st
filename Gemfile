@@ -1,6 +1,6 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '2.4.5'
+ruby '2.3.1'
 
 # basic app components
 gem 'pg', '~> 0.21'
@@ -95,4 +95,5 @@ group :development, :test do
   gem 'sqlite3'
   gem 'timecop'
   gem 'traceroute'
+  gem 'email_spec'
 end

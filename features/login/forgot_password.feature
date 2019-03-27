@@ -19,10 +19,28 @@ Scenario: send magic link to user
   And I fill in "email" with "john@doe.com"
   And I press "Reset My Password By Email"
   Then an email should be sent to "john@doe.com" matching "magic_link" with "(.*)"
-  Given customer "John Doe" clicks on "magic_link" 
+  Given "john@doe.com" opens the email
+  And customer "john@doe.com" clicks on "magic_link" 
   Then I should be on the change password page
   And "John Doe" should be logged in
 
+Scenario: No email is sent if email is not confirmed
+  
+
+Scenario: Magic link expires after 15 minutes
+  Given customer "John Doe" exists and was created by admin
+  When I visit the forgot password page
+  And I fill in "email" with "john@doe.com"
+  And I press "Reset My Password By Email"
+  Then an email should be sent to "john@doe.com" matching "magic_link" with "(.*)"
+  When I note the time
+  And I wait 900 seconds
+  And "john@doe.com" opens the email
+  And customer "john@doe.com" clicks on "magic_link"
+  Then I should be on the link expired page
+  And "John Doe" should not be logged in
+  
+  
   
   
   

@@ -13,6 +13,9 @@ require 'webmock/cucumber'
 require 'coveralls'
 Coveralls.wear_merged!
 
+# This is email_spec
+require 'email_spec/cucumber'
+
 # require 'cucumber/formatter/unicode' # Remove this line if you don't want Cucumber Unicode support
 # require 'cucumber/rails/rspec'
 # require 'cucumber/rails/world'
