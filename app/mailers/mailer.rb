@@ -13,9 +13,9 @@ class Mailer < ActionMailer::Base
     mail(:to => destination_address, :subject => 'Testing')
   end
   
-  def confirm_account_change(customer, whathappened, newpass=nil)
+  def confirm_account_change(customer, whathappened, token=nil)
     @whathappened = whathappened
-    @newpass = newpass
+    @token = "http://audience1st.com/customer/reset_token?token=" + token
     @customer = customer
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
