@@ -22,10 +22,9 @@ Scenario: send magic link to user
   Given "john@doe.com" opens the email
   And customer "john@doe.com" clicks on "magic_link" 
   Then I should be on the change password page
-  And "John Doe" should be logged in
+  And customer "John Doe" should be logged in
 
 Scenario: no forgot password email is sent if email does not exist
-  Given there is no customer named "bchillz@gmail.com"
   When I visit the forgot password page
   And I fill in "email" with "bchillz@gmail.com"
   And I press "Reset My Password By Email"
@@ -43,7 +42,7 @@ Scenario: magic link expires after 15 minutes
   And "john@doe.com" opens the email
   And customer "john@doe.com" clicks on "magic_link"
   Then I should be on the link expired page
-  And "John Doe" should not be logged in
+  And customer "John Doe" should not be logged in
   
   
   
