@@ -3,7 +3,7 @@ require 'will_paginate/array'
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
-  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create)
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create reset_token)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate
                              auto_complete_for_customer_full_name)
@@ -374,12 +374,12 @@ class CustomersController < ApplicationController
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
-      email_confirmation(:confirm_account_change,@customer, "requested your password for logging in", token)
+      email_confirmation(:confirm_account_change, @customer, "", token)
       # will reach this point (and change password) only if mail delivery
       # doesn't raise any exceptions
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
-        :comments => 'Password has been reset')
+        :comments => 'Password reset link has been sent')
       return true
     rescue StandardError => e
       flash[:alert] = e.message +
@@ -414,4 +414,14 @@ class CustomersController < ApplicationController
     end
   end
 
+  def reset_token
+    token = params[:token]
+    @customer = Customer.where('token LIKE ?', token).first
+    if (Time.now + 10.minutes).utc < @customer.token_created_at || @customer.nil?
+      flash[:notice] = "Link has expired"
+      redirect_to login_path
+    end
+
+    return redirect_to(change_password_for_customer_path(@customer))
+  end
 end
