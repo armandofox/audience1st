@@ -10,7 +10,7 @@ describe 'editing existing' do
     @vv2 = create(:valid_voucher, :showdate => @sd2, :vouchertype => @vt2)
   end
 
-  describe 'selective update', :focus => true do
+  describe 'selective update' do
     before(:each) do
       @orig_end_sales = @vv1.end_sales
       @new_start_sales = @vv1.end_sales - 1.month
@@ -20,7 +20,7 @@ describe 'editing existing' do
         "start_sales(4i)"=> @new_start_sales.hour.to_s,
         "start_sales(5i)"=> @new_start_sales.min.to_s,
         "promo_code" => "XYZ",
-        "before_showtime" => "20",
+        "before_showtime" => 20.minutes,
         "max_sales_for_type" => "33"
       }.symbolize_keys
       @u = RedemptionBatchUpdater.new([@vt1],[@sd1],:valid_voucher_params => @vv_params)

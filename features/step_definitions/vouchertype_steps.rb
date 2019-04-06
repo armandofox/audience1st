@@ -71,19 +71,31 @@ end
 
 When /I set end sales to "(.*)" minutes before show ?time/ do |minutes|
   fill_in "minutes_before", with: minutes
-  choose "end_is_relative_relative"
 end
 
-When /I choose to leave end sales as-is/ do
-  choose "end_is_relative_unchanged"
+When /I choose to leave as-is on existing redemptions:\s+(.*)/ do |props|
+  steps %Q{When I choose to overwrite existing redemptions}
+  props.split(/\s*,\s*/).each do |prop|
+    check "preserve_#{prop.gsub(/\s+/,'_')}"
+  end
+end
+
+When /I choose to overwrite existing redemptions/ do
+  %w(max_sales_for_type promo_code start_sales end_sales).each do |prop|
+    uncheck "preserve_#{prop}"
+  end
 end
 
 Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only,show,tbl|
   show = Show.find_by!(:name => show)
   confirmed_vvs = tbl.hashes.map do |v|
-    vv = ValidVoucher.find_by!(
-      :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
-      :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']))
+    vv = begin
+           ValidVoucher.find_by!(
+        :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
+        :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']))
+         rescue ActiveRecord::RecordNotFound
+           raise "Can't find valid_voucher for #{v['vouchertype']}:#{v['showdate']}"
+         end
     expect(vv.end_sales).to eq(Time.zone.parse(v['end_sales']))
     expect(vv.max_sales_for_type).to eq(v['max_sales'].to_i)
     if v['promo_code']

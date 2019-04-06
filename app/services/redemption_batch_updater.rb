@@ -19,7 +19,7 @@ class RedemptionBatchUpdater
     # If +valid_voucher_params+ includes a key
     # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
     # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
-    @before_showtime = valid_voucher_params.delete(:before_showtime).to_i.minutes
+    @before_showtime = valid_voucher_params.delete(:before_showtime).to_i
     ValidVoucher.transaction do
       showdates.each do |showdate|
         # if this valid-voucher exists already, edit it in place; otherwise create new.
@@ -62,7 +62,7 @@ class RedemptionBatchUpdater
 
   def build_new(showdate,vouchertype)
     @vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
-    @vv.end_sales = (showdate.thedate - @before_showtime.minutes).rounded_to(:minute)
+    @vv.end_sales = (showdate.thedate - @before_showtime).rounded_to(:minute)
     @vv
   end
 

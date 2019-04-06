@@ -18,14 +18,14 @@
     .form-group.form-row.pb-0.mb-0
       .col-md-5.text-right
         = popup_help_for :valid_voucher_max_sales_for_type
-        %label.col-form-label{:for=>:valid_voucher_max_sales_for_type}
-          Max sales for type (leave blank for unlimited)
+        %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (leave blank for unlimited)
       = number_field_tag 'valid_voucher_max_sales_for_type', '', :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
         = check_box_tag 'preserve[max_sales_for_type]', 1, true
         %label.px-1.col-form-label{:for => 'preserve_max_sales_for_type'} Keep as-is on existing redemptions
+        = popup_help_for 'keep_existing_redemptions_as_is'
 
   #adjust-promo-code
     .form-group.form-row.pb-0.mb-0

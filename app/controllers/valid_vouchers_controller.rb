@@ -36,9 +36,8 @@ class ValidVouchersController < ApplicationController
   end
 
   def create
-    byebug
     args = params[:valid_voucher]
-    preserve = params[:preserve]
+    preserve = params[:preserve] || {}
     vt = params[:vouchertypes]
     showdates = Showdate.find(params[:showdates])
     back = new_valid_voucher_path(:show_id => params[:show_id])
@@ -49,7 +48,8 @@ class ValidVouchersController < ApplicationController
     args[:before_showtime] = params[:minutes_before].to_i.minutes
     return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if args[:before_showtime].zero?
 
-    updater = RedemptionBatchUpdater.new(showdates,vouchertypes,args,preserve)
+    updater = RedemptionBatchUpdater.new(showdates,vouchertypes,
+      :valid_voucher_params => args, :preserve => preserve)
     if updater.update
       redirect_to edit_show_path(params[:show_id]), :notice => "Successfully updated #{vouchertypes.size} voucher type(s) on #{showdates.size} showdate(s)."
     else
