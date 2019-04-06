@@ -6,11 +6,10 @@ class RedemptionBatchUpdater
   def initialize(showdates, vouchertypes, valid_voucher_params: {}, preserve: {})
     @showdates = showdates
     @vouchertypes = vouchertypes
-    @valid_voucher_params = valid_voucher_params
-    @preserve = preserve
+    @valid_voucher_params = valid_voucher_params.symbolize_keys
+    @preserve = preserve.symbolize_keys
     @errs = Hash.new { |h,k| h[k] = [] } # vouchertype => showdate_id's to which it could NOT be added
     @possible_cause = {}
-    @before_showtime = 0
     @vv = nil
   end
 
@@ -20,7 +19,7 @@ class RedemptionBatchUpdater
     # If +valid_voucher_params+ includes a key
     # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
     # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
-    @before_showtime = valid_voucher_params.delete(:before_showtime).to_i
+    @before_showtime = valid_voucher_params.delete(:before_showtime).to_i.minutes
     ValidVoucher.transaction do
       showdates.each do |showdate|
         # if this valid-voucher exists already, edit it in place; otherwise create new.
@@ -28,7 +27,7 @@ class RedemptionBatchUpdater
           if (@vv = ValidVoucher.find_by(:showdate => showdate, :vouchertype => vouchertype))
             selectively_assign_to_existing
           else
-            build_new
+            @vv = build_new(showdate,vouchertype)
           end
           add_error unless @vv.save
         end
@@ -50,18 +49,21 @@ class RedemptionBatchUpdater
   
   def selectively_assign_to_existing
     args = valid_voucher_params.clone
-    # special case:  start/end_sales args are a set of end_sales(1i), etc, so reject all if must be preserved
-    args.reject!  { |k,v| k =~ /end_sales/ }    if preserve[:end_sales]
+    # special case:  start_sales args are a set of start_sales(1i), etc, so reject all if must be preserved
     args.reject!  { |k,v| k =~ /start_sales/ }  if preserve[:start_sales]
-    preserve.keys.each { |k| args.delete(k) }
+    preserve.keys.each { |k| args.delete(k.to_sym) }
     # assign all remaining (non-preserved) attributes
     @vv.assign_attributes(args)
-    @vv.end_sales = (@vv.showdate.thedate - @before_showtime).rounded_to(:second) unless preserve[:end_sales]
+    # special case: IF end_sales should be overwrittn, set to @before_showtime before curtain
+    unless preserve[:end_sales]
+      @vv.end_sales = (@vv.showdate.thedate - @before_showtime).rounded_to(:minute)
+    end
   end
 
-  def build_new
+  def build_new(showdate,vouchertype)
     @vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
-    @vv.end_sales = (showdate.thedate - @before_showtime).rounded_to(:second)
+    @vv.end_sales = (showdate.thedate - @before_showtime.minutes).rounded_to(:minute)
+    @vv
   end
 
   def add_error

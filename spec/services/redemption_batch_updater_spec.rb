@@ -12,34 +12,88 @@ describe 'editing existing' do
 
   describe 'selective update', :focus => true do
     before(:each) do
-      @vv_params = {"start_sales(1i)"=>"2018", "start_sales(2i)"=>"12", "start_sales(3i)"=>"11",
-        "start_sales(4i)"=>"00", "start_sales(5i)"=>"00",
+      @orig_end_sales = @vv1.end_sales
+      @new_start_sales = @vv1.end_sales - 1.month
+      @vv_params = {"start_sales(1i)"=> @new_start_sales.year.to_s,
+        "start_sales(2i)"=> @new_start_sales.month.to_s,
+        "start_sales(3i)"=> @new_start_sales.day.to_s,
+        "start_sales(4i)"=> @new_start_sales.hour.to_s,
+        "start_sales(5i)"=> @new_start_sales.min.to_s,
         "promo_code" => "XYZ",
         "before_showtime" => "20",
         "max_sales_for_type" => "33"
       }.symbolize_keys
-      @u = RedemptionBatchUpdater.new([@vt1],[@sd1])
+      @u = RedemptionBatchUpdater.new([@vt1],[@sd1],:valid_voucher_params => @vv_params)
     end
     after(:each) do
       expect(@u.error_message).to be_blank
     end
-    it 'preserves start sales' do
-      @u.valid_voucher_params = @vv_params
-      @u.preserve = {"start_sales" => "1"}
-      expect { @u.update }.not_to change { @vv1.start_sales }
+    describe 'preserves' do
+      specify 'start sales' do
+        @u.preserve = {"start_sales" => "1"}
+        expect { @u.update }.not_to change { @vv1.start_sales }
+      end
+      specify 'promo code' do
+        @u.preserve = {"start_sales" => "1", "promo_code" => "1"}
+        expect { @u.update }.not_to change { @vv1.promo_code }
+        expect { @u.update }.not_to change { @vv1.start_sales }
+      end
+      specify 'end sales' do
+        @u.preserve = {"end_sales" => "1"}
+        expect { @u.update }.not_to change { @vv1.end_sales }
+      end
+      specify 'max sales for type' do
+        @u.preserve = {"max_sales_for_type" => "1"}
+        expect { @u.update }.not_to change { @vv1.max_sales_for_type }
+      end
+    end
+    describe 'overwrites' do
+      specify 'start sales' do
+        @u.update
+        @vv1.reload
+        expect(@vv1.start_sales.to_time).to eq(@new_start_sales)
+      end
+      specify 'end sales' do
+        @u.update
+        @vv1.reload
+        expect(@vv1.end_sales).to eq(@vv1.showdate.thedate - 20.minutes)
+      end
+      specify 'promo, even if blank' do
+        @vv_params["promo_code"] = ''
+        @u.valid_voucher_params = @vv_params
+        @u.update
+        expect(@vv1.promo_code).to be_blank
+      end
+      specify 'max sales for type (finite)' do
+        @u.update
+        @vv1.reload
+        expect(@vv1.max_sales_for_type).to eq(33)
+      end
     end
   end
-
-  it 'does not update if validity errors' do
-    params = {:before_showtime => 4.hours, :max_sales_for_type => 77}
-    # invalid because start_sales not specified
-    expect { ValidVoucher.add_vouchertypes_to_showdates!([@sd1,@sd2], [@vt1,@vt2], params) }.
-      to raise_error(ValidVoucher::CannotAddVouchertypeToMultipleShowdates)
+  
+  describe 'when validity errors' do
+    before(:each) do
+      @params = {:before_showtime => 4.hours, :max_sales_for_type => 77}
+      @u = RedemptionBatchUpdater.new([@sd1,@sd2],[@vt1,@vt2], :valid_voucher_params => @params)
+      # invalid because start_sales not specified
+    end
+    it 'gives error' do
+      @u.update
+      expect(@u.error_message).to match /Start sales can't be blank/ # '
+    end
+    it 'does not update existing redemption 1' do
+      expect(@vv1).not_to receive(:save)
+    end
+    it 'does not update existing redemption 2' do
+      expect(@vv2).not_to receive(:save)
+    end
   end
   describe 'updates' do
     before(:each) do
       params = {:before_showtime => 4.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
-      ValidVoucher.add_vouchertypes_to_showdates!([@sd1,@sd2], [@vt1,@vt2], params)
+      @u = RedemptionBatchUpdater.new([@sd1,@sd2], [@vt1,@vt2], :valid_voucher_params => params)
+      expect(@u.update).to be_truthy
       @vv1.reload
       @vv2.reload
     end
@@ -53,7 +107,7 @@ describe 'editing existing' do
   it 'creates new with correct params' do
     @vv2.destroy
     params = {:before_showtime => 3.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
-    ValidVoucher.add_vouchertypes_to_showdates!([@sd2],[@vt2], params)
+    RedemptionBatchUpdater.new([@sd2],[@vt2], :valid_voucher_params => params).update
     @vv2 = ValidVoucher.find_by!(:showdate => @sd2, :vouchertype => @vt2)
     expect(@vv2.end_sales).to eq(@sd2.thedate - 3.hours)
   end
@@ -61,7 +115,8 @@ describe 'editing existing' do
     before(:each) do
       @vv2.destroy
       params = {:before_showtime => 3.hours, :max_sales_for_type => 77, :start_sales => @sd1.thedate - 2.weeks}
-      ValidVoucher.add_vouchertypes_to_showdates!([@sd1,@sd2], [@vt1,@vt2], params)
+      @u = RedemptionBatchUpdater.new([@sd1,@sd2], [@vt1,@vt2], :valid_voucher_params => params)
+      @u.update
       @vv1.reload
       @vv2 = ValidVoucher.find_by!(:showdate => @sd2, :vouchertype => @vt2)
     end

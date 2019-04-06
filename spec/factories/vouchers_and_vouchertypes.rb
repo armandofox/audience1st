@@ -4,8 +4,8 @@ FactoryBot.define do
     transient do
       price 7
     end
-    start_sales { 1.hour.ago.rounded_to(:second) }
-    end_sales   { 10.minutes.from_now.rounded_to(:second) }
+    start_sales { 1.hour.ago.rounded_to(:minute) }
+    end_sales   { 10.minutes.from_now.rounded_to(:minute) }
     max_sales_for_type 100
     association :showdate
     association :vouchertype, :factory => :revenue_vouchertype

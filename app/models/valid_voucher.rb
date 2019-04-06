@@ -28,7 +28,7 @@ class ValidVoucher < ActiveRecord::Base
 
 
   # Capacity is infinite if it is left blank
-  INFINITE = 100.000
+  INFINITE = 100_000
   def max_sales_for_type ; self[:max_sales_for_type] || INFINITE ; end
   def sales_unlimited?   ; max_sales_for_type >= INFINITE ; end
 
