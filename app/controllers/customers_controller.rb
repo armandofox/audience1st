@@ -142,6 +142,16 @@ class CustomersController < ApplicationController
     end
   end
 
+  def reset_token
+    token = params[:token]
+    @customer = Customer.where('token LIKE ?', token).first
+    if @customer.nil? || (Time.now).utc >= (@customer.token_created_at + 10.minutes).utc
+      flash[:notice] = "The reset password link has expired"
+      return redirect_to login_path
+    end
+    puts("The token expires at: #{(@customer.token_created_at + 10.minutes).utc}. It is currently: #{(Time.now).utc}")
+    create_session(@customer, 'reset_token')
+  end
   # Regular user creating new account
   def new
     @customer = Customer.new
@@ -374,7 +384,7 @@ class CustomersController < ApplicationController
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
-      email_confirmation(:confirm_account_change, @customer, "", token)
+      email_confirmation(:confirm_account_change, @customer, "", token, request.original_url)
       # will reach this point (and change password) only if mail delivery
       # doesn't raise any exceptions
       Txn.add_audit_record(:txn_type => 'edit',
@@ -412,16 +422,5 @@ class CustomersController < ApplicationController
       create_session(@customer)
       session[:guest_checkout] = true
     end
-  end
-
-  def reset_token
-    token = params[:token]
-    @customer = Customer.where('token LIKE ?', token).first
-    if (Time.now + 10.minutes).utc < @customer.token_created_at || @customer.nil?
-      flash[:notice] = "Link has expired"
-      redirect_to login_path
-    end
-
-    return redirect_to(change_password_for_customer_path(@customer))
   end
 end

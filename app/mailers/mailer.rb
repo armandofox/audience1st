@@ -1,3 +1,4 @@
+require 'uri'
 class Mailer < ActionMailer::Base
 
   helper :customers, :application, :options
@@ -12,16 +13,18 @@ class Mailer < ActionMailer::Base
     @time = Time.current
     mail(:to => destination_address, :subject => 'Testing')
   end
-  
-  def confirm_account_change(customer, whathappened, token=nil)
+
+  def confirm_account_change(customer, whathappened, token='', requestURL)
     @whathappened = whathappened
-    @token = "http://audience1st.com/customer/reset_token?token=" + token
+    uri = URI(requestURL)
+    @tokenLink = "#{uri.scheme}://#{uri.host}" + "/customers/reset_token?token=" + token
     @customer = customer
+    puts("The reset password token link is: #{@tokenLink}")
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 
-    
-  def confirm_order(purchaser,order) 
+
+  def confirm_order(purchaser,order)
     @order = order
     mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
   end
@@ -33,7 +36,7 @@ class Mailer < ActionMailer::Base
     @notes = @showdate.patron_notes
     mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end
-    
+
   def cancel_reservation(old_customer, old_showdate, num = 1, confnum)
     @showdate,@customer = old_showdate, old_customer
     @num,@confnum = num,confnum
@@ -45,7 +48,7 @@ class Mailer < ActionMailer::Base
     @donation_chair = Option.donation_ack_from
     mail(:to => @customer.email, :subject => "#{@subject} Thank you for your donation!")
   end
-  
+
   def upcoming_birthdays(send_to, num, from_date, to_date, customers)
     @num,@customers = num,customers
     @subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
@@ -53,7 +56,7 @@ class Mailer < ActionMailer::Base
   end
 
   protected
-  
+
   def set_delivery_options
     @venue = Option.venue
     @subject = "#{@venue} - "
@@ -80,5 +83,3 @@ class Mailer < ActionMailer::Base
     end
   end
 end
-
-
