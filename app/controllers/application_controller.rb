@@ -183,7 +183,7 @@ class ApplicationController < ActionController::Base
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
       session[:new_session] = true
-      if action = 'reset_token'
+      if action == 'reset_token'
         return redirect_after_reset_token(@user)
       end
       redirect_after_login(@user)
