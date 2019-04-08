@@ -1,13 +1,9 @@
-Then /^an email should be sent to( customer)? "(.*?)"( matching "(.*)" with "(.*)")?$/ do |cust,recipient,_,match_var,regex|
+Then /^an email should be sent to( customer)? "(.*?)" containing "(.*)"$/ do |cust,recipient,link|
   recipient = find_customer(*recipient.split(/\s+/)).email if cust
   @email = ActionMailer::Base.deliveries.first
   @email.should_not be_nil
   @email.to.should include(recipient)
-  if match_var
-    match = @email.body.match( Regexp.new regex )
-    match[1].should_not be_nil
-    instance_variable_set "@#{match_var}", match[1]
-  end
+  @email.body.should include(link)
 end
 
 Then /^no email should be sent to( customer)? "(.*)"$/ do |cust,recipient|
@@ -17,5 +13,9 @@ end
 
 # Needs magic_link implementation
 Given /^customer "(.*)" clicks on "(.*)"$/ do |cust,link|
-  visit_in_email(link, cust)
+  visit link
 end  
+
+When /^I seed with (\d+)$/ do |seed|
+  srand(seed.to_i)
+end
