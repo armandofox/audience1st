@@ -21,7 +21,7 @@
       .col-3 Sales end
       .col-1 Sold
       .col-2 Max
-    - showdate.valid_vouchers.each do |v|
+    - showdate.valid_vouchers.sorted.each do |v|
       .row[v]
         - nsales = showdate.sales_by_type(v.vouchertype_id)
         .col-3
