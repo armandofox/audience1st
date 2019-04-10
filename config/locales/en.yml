@@ -24,6 +24,9 @@ en:
     must_select_vouchertypes: >
       You must select 1 or more voucher types to add.
 
+    must_select_showdates: >
+      You must select 1 or more showdates to apply these changes to.
+
     no_valid_vouchers_added: >
       NO changes were made, because some voucher type(s) could not be added to some show 
       date(s)--try adding them one at a time to isolate specific errors.  %{error_message}

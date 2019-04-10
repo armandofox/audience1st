@@ -39,10 +39,12 @@ class ValidVouchersController < ApplicationController
     args = params[:valid_voucher]
     preserve = params[:preserve] || {}
     vt = params[:vouchertypes]
-    showdates = Showdate.find(params[:showdates])
+    sd = params[:showdates]
     back = new_valid_voucher_path(:show_id => params[:show_id])
+    return redirect_to(back, :alert => t('season_setup.must_select_showdates')) if sd.blank?
     return redirect_to(back, :alert => t('season_setup.must_select_vouchertypes')) if vt.blank?
     vouchertypes = Vouchertype.find vt
+    showdates = Showdate.find sd
     # max_sales_for_type if blank should be "infinity"
     args[:max_sales_for_type] = ValidVoucher::INFINITE if args[:max_sales_for_type].blank?
     args[:before_showtime] = params[:minutes_before].to_i.minutes

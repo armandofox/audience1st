@@ -26,6 +26,7 @@ class ValidVoucher < ActiveRecord::Base
   validates_presence_of :start_sales
   validates_presence_of :end_sales
 
+  scope :sorted, -> { order('vouchertype.display_order,vouchertype.name') }
 
   # Capacity is infinite if it is left blank
   INFINITE = 100_000
