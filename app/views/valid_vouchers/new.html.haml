@@ -3,7 +3,7 @@
 = form_tag valid_vouchers_path do
   = hidden_field_tag :show_id, @show.id
   .form-group.form-row
-    %label.col-form-label.col-md-5.text-right Add which ticket types:
+    %label.col-form-label.col-md-5.text-right Add/modify which ticket types:
     .col-md-6#t-vouchertypes
       - @vouchertypes.each do |v|
         .form-check

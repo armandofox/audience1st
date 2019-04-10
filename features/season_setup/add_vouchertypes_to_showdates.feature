@@ -50,6 +50,7 @@ Scenario: add vouchertypes in a way that also changes existing ones
     | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
     
 Scenario: leave end sales unchanged while updating max sales
+
   Given the following voucher types are valid for "Chicago":
     | showdate      | vouchertype | end_sales        | max_sales |
     | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        45 |
