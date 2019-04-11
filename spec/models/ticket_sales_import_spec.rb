@@ -1,5 +1,17 @@
 require 'rails_helper'
 
+describe TicketSalesImport do
+  describe 'new' do
+    it 'initializes parser' do
+      @i = TicketSalesImport.new(:vendor => 'TodayTix')
+      expect(@i.parser).to be_a TicketSalesImportParser::TodayTix
+    end
+    it 'does not choke if invalid parser' do
+      expect { TicketSalesImport.new(:vendor => 'NoSuchVendor') }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
+end
+
 describe TicketSalesImport, :pending => 'refactor import logic' do
 
   xdescribe "importing showdate" do

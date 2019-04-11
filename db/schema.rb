@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190125170022) do
+ActiveRecord::Schema.define(version: 20190410231843) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -287,6 +287,14 @@ ActiveRecord::Schema.define(version: 20190125170022) do
     t.string   "event_type",                limit: 255, default: "Regular Show", null: false
     t.string   "sold_out_dropdown_message", limit: 255
     t.string   "sold_out_customer_info",    limit: 255
+  end
+
+  create_table "ticket_sales_imports", force: :cascade do |t|
+    t.string   "vendor"
+    t.text     "raw_data"
+    t.boolean  "completed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "txns", force: :cascade do |t|

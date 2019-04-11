@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :ticket_sales_imports, :only => [:index, :create, :edit, :update]
+
     resources :labels, :only => [:index, :create, :update, :destroy]
 
     resources :customers, :except => :destroy do
