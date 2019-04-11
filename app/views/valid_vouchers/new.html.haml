@@ -1,21 +1,122 @@
-%h2 Add ticket type(s) for #{@showdate.show.name}
+%h2 Add ticket type(s) for #{@show.name}
 
 = form_tag valid_vouchers_path do
-  %label{:for=>:valid_voucher_vouchertypes} Voucher/ticket type (Ctrl-click to select multiple)
-  = select_tag 'valid_voucher[vouchertypes]', options_from_collection_for_select(@vouchertypes, :id, :name_with_season_and_price), :multiple => true
-  %br/
-  = render :partial => 'form'
-  %table
-    %tr
-      %td Add ticket type to:
-      %td
-        = hidden_field_tag 'valid_voucher[showdate_id]', @showdate_id
-        = radio_button_tag "add_to_all", 0, !@add_to_all
-        = @showdate.printable_date
-        Only
-        %br/
-        = radio_button_tag "add_to_all", 1, @add_to_all
-        All Dates
-        %br/
-  = submit_tag "Add", :class => 'btn btn-success'
-  = link_to 'Cancel', edit_show_path(@showdate.show), {:class => 'btn btn-secondary' }
+  = hidden_field_tag :show_id, @show.id
+  .form-group.form-row
+    %label.col-form-label.col-md-5.text-right Add/modify which ticket types:
+    .col-md-6#t-vouchertypes
+      - @vouchertypes.each do |v|
+        .form-check
+          - field_id = "vouchertypes[#{v.id}]"
+          .form-check-input= check_box_tag "vouchertypes[]", v.id, false, :id => field_id, :class => 'vouchertype'
+          %label.form-check-label{:for => field_id}= v.name_with_season_and_price
+          %br
+
+  .alert.alert-info= t('season_setup.options_apply_to_all_selected_performances')
+
+  #adjust-max-sales
+    .form-group.form-row.pb-0.mb-0
+      .col-md-5.text-right
+        = popup_help_for :valid_voucher_max_sales_for_type
+        %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (leave blank for unlimited)
+      = number_field_tag 'valid_voucher_max_sales_for_type', '', :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
+
+    .form-group.form-row.pt-0.mt-0.border-bottom
+      .form-check.form-check-inline.col-md-5.offset-md-5
+        = check_box_tag 'preserve[max_sales_for_type]', 1, true
+        %label.px-1.col-form-label{:for => 'preserve_max_sales_for_type'} Keep as-is on existing redemptions
+        = popup_help_for 'keep_existing_redemptions_as_is'
+
+  #adjust-promo-code
+    .form-group.form-row.pb-0.mb-0
+      .col-md-5.text-right
+        = popup_help_for :valid_voucher_promo_code
+        %label.col-form-label{:for=>:valid_voucher_promo_code} Redemption (promo) code, if any
+      = text_field 'valid_voucher', 'promo_code', :class => 'form-control col-md-2'
+
+    .form-group.form-row.pt-0.mt-0.border-bottom
+      .form-check.form-check-inline.col-md-5.offset-md-5
+        = check_box_tag 'preserve[promo_code]', 1, true
+        %label.px-1.col-form-label{:for => 'preserve_promo_code'} Keep as-is on existing redemptions
+        = popup_help_for 'keep_existing_redemptions_as_is'
+
+  #adjust-start-sales
+    .form-group.form-row.pb-0.mb-0
+      .col-md-5.text-right
+        = popup_help_for :valid_voucher_sales_dates
+        %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales for each performance
+      .col-md-6= datetime_select 'valid_voucher', 'start_sales'
+
+    .form-group.form-row.pt-0.mt-0.border-bottom
+      .form-check.form-check-inline.col-md-5.offset-md-5
+        = check_box_tag 'preserve[start_sales]', 1, true
+        %label.px-1.col-form-label{:for => 'preserve_start_sales'} Keep as-is on existing redemptions
+        = popup_help_for 'keep_existing_redemptions_as_is'
+    
+  #adjust-end-sales
+    .form-group.form-row.pb-0.mb-0
+      .col-md-5.text-right
+        = popup_help_for :valid_voucher_sales_dates
+        %label.col-form-label End sales for each performance
+      .form-check.form-check-inline.col-md-6
+        = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
+        %label.col-form-label{:for => :minutes_before} minutes before show time
+
+    .form-group.form-row.pt-0.mt-0.border-bottom
+      .form-check.form-check-inline.col-md-5.offset-md-5
+        = check_box_tag 'preserve[end_sales]', 1, true
+        %label.px-1.col-form-label{:for => 'preserve_end_sales'} Keep as-is on existing redemptions
+        = popup_help_for 'keep_existing_redemptions_as_is'
+    
+  .alert.alert-info= t('season_setup.apply_to_which_performances')
+
+  .container.pb-2#select-performances
+    .form-row.pl-4.pb-3
+      .col-md-2.text-center
+        Select Dates:
+        %br
+        = link_to 'All', '#',  :onclick => %Q{$('.showdate').prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+        = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+      .col-md-5.text-center
+        Or Select Every:
+        %br
+        - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
+          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+      .col-md-5.text-center
+        Or Un-select Every:
+        %br
+        - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
+          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+
+
+    - @show.showdates.each_with_index do |showdate,idx|  
+      - if idx % 3 == 0
+        <div class="form-row">
+      .col-3.form-check.form-check-inline
+        - wkday = showdate.thedate.strftime('%a')
+        - field_id = "showdates[#{showdate.id}]"
+        .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
+        %label.form-check-label{:for => field_id}= showdate.thedate.to_formatted_s(:showtime_brief)
+      - if idx % 3 == 2
+        </div>
+    - if @show.showdates.size % 3 != 0
+      </div>
+
+  .form-group.form-row
+    .col-md-3.offset-md-2= submit_tag "Apply Changes", :class => 'btn btn-success btn-block', :id => 'submit'
+    .col-md-1
+    .col-md-4= link_to "Don't Apply Changes", edit_show_path(@show), {:class => 'btn btn-secondary btn-block' }
+
+:javascript
+  A1.valid_vouchers_change = function() {
+    if ($('.showdate').is(':checked')  &&  $('.vouchertype').is(':checked')) {
+      $('#submit').attr('disabled', false);
+    } else {
+      $('#submit').attr('disabled', true);
+    }
+  }
+  A1.setup_valid_vouchers_editing = function() {
+    $('#submit').attr('disabled', true);
+    $('.showdate, .vouchertype').change(A1.valid_vouchers_change);
+  }
+  $(A1.setup_valid_vouchers_editing);

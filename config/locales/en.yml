@@ -5,6 +5,32 @@ en:
       Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked 
       to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
 
+  season_setup:
+
+    options_apply_to_all_selected_performances: >
+      The following options will be applied to all the performances selected at
+      the bottom of the page.
+
+    apply_to_which_performances: >
+      Apply the above changes to which dates:
+
+    confirm_delete_performance: >
+      Delete this performance: are you sure?
+
+    minutes_before_cant_be_blank: >
+      Please enter how many minutes before showtime to end sales, or choose a different 
+      option for setting the sales cutoff.
+
+    must_select_vouchertypes: >
+      You must select 1 or more voucher types to add.
+
+    must_select_showdates: >
+      You must select 1 or more showdates to apply these changes to.
+
+    no_valid_vouchers_added: >
+      NO changes were made, because some voucher type(s) could not be added to some show 
+      date(s)--try adding them one at a time to isolate specific errors.  %{error_message}
+
   login:
 
     login_failed: >

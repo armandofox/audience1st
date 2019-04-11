@@ -26,6 +26,10 @@ module ApplicationHelper
   def themed
     javascript_tag %Q{$(function() { $('body').addClass('themed'); });}
   end
+
+  def link_icon
+    content_tag(:span, '', :class => 'd-inline-block ui-icon ui-icon-link').html_safe
+  end
   
   def display_customer_actions?
     ! @customer.try(:new_record?) &&

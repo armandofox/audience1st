@@ -1,45 +1,36 @@
-%tr.t
-  %td.t
-    = showdate.printable_date
-    %br
-  %td.t= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
-  %td.t
+.row
+  .col-4
+    %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
+    = link_to showdate.printable_date, edit_show_showdate_path(showdate.show, showdate)
+    = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
+  .col-4= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
+  .col-2
     = showdate.max_allowed_sales
     - p = showdate.percent_max_allowed_sales
     %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
-  %td{:width=>"50%"}
-    = link_to 'Edit', edit_show_showdate_path(showdate.show,showdate)
-    = "|"
-    = purchase_link_popup "Link", link_to_showdate_tickets(showdate), showdate.printable_name
-    = "|"
-    = link_to "Ticket Details", '#', :onclick => "$('#showdate_#{showdate.id}').slideToggle(); return(false);"
-    = "|"
+  .col-2
     - if showdate.compute_total_sales.zero?
-      = button_to 'Delete', show_showdate_path(showdate.show, showdate), {:method => :delete, :class => 'inline', :id => "delete_showdate_#{showdate.id}", :confirm => 'Delete this performance: are you sure?' }
-%tr
-  %td{:colspan=>4}
-    %div[showdate]{:style => @maybe_hide}
-      %table.hilite.showdates_summary
-        - unless showdate.valid_vouchers.empty?
-          %tr
-            %th Sold
-            %th Max
-            %th Type
-            %th Sales start
-            %th Sales end
-        - showdate.valid_vouchers.each do |v|
-          %tr[v]
-            - nsales = showdate.sales_by_type(v.vouchertype_id)
-            %td= nsales
-            %td= humanize_sales_limit(v.max_sales_for_type)
-            %td
-              = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
-              = "(#{h(v.promo_code)})" unless v.promo_code.blank?
-              %td= time_in_words_relative_to(v.start_sales,showdate.thedate)
-              %td= time_in_words_relative_to(v.end_sales,showdate.thedate)
-              %td
-                - if nsales.zero?
-                  = link_to 'Delete', valid_voucher_path(v), 'data-remote' => true, 'data-method' => :delete, 'data-type' => 'script'
-        %tr
-          %td{:colspan=>4}
-            = link_to  "Add New&hellip;".html_safe, new_valid_voucher_path(:showdate_id => showdate.id), :class => 'btn btn-sm btn-primary'
+      = form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|
+        = submit_tag 'Delete Performance', :class => 'btn btn-sm btn-outline-danger d-inline', :id => "delete_showdate_#{showdate.id}", :confirm => t('season_setup.confirm_delete_performance')
+
+- unless showdate.valid_vouchers.empty?
+  %div.flippy-div[showdate, :details]
+    .row.bg-light.border.border-top
+      .col-3 Type
+      .col-3 Sales start
+      .col-3 Sales end
+      .col-1 Sold
+      .col-2 Max
+    - showdate.valid_vouchers.sorted.each do |v|
+      .row[v]
+        - nsales = showdate.sales_by_type(v.vouchertype_id)
+        .col-3
+          = link_to v.vouchertype.name_with_price, {:controller => 'valid_vouchers', :action => 'edit', :id => v.id}
+          = "(#{h(v.promo_code)})" unless v.promo_code.blank?
+        .col-3= time_in_words_relative_to(v.start_sales,showdate.thedate)
+        .col-3= time_in_words_relative_to(v.end_sales,showdate.thedate)
+        .col-1= nsales
+        .col-2
+          = humanize_sales_limit(v.max_sales_for_type)
+          - if nsales.zero?
+            = link_to '&#x2716;'.html_safe, valid_voucher_path(v), 'data-remote' => true, 'data-method' => :delete, 'data-type' => 'script', :class => 'text-danger'

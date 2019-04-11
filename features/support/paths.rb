@@ -47,7 +47,7 @@ module NavigationHelpers
     when /the reports page/i            then '/reports'
     when /the vouchertypes page$/i       then '/vouchertypes'
     when /the vouchertypes page for the (\d+) season/ then "/vouchertypes?season=#{$1}"
-
+    when /the edit ticket redemptions page for "(.*)"/ then new_valid_voucher_path(:show_id => Show.find_by!(:name => $1))
     when /the walkup sales page for (.*)$/ then walkup_sale_path(sd $1)
     when /the walkup report page for (.*)$/ then report_walkup_sale_path(sd $1)
     when /the checkin page for (.*)$/ then checkin_path(sd $1)

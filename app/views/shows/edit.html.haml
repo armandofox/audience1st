@@ -1,27 +1,29 @@
-%h1
-  Details for 
-  %span.show_name= @show.name
+.container
+  %h1
+    Details for 
+    %span.show_name= @show.name
 
-= form_tag show_path(@show), :method => :put do
-  = render :partial => 'form'
-  = submit_tag 'Save Changes', :class => 'btn btn-success'
-  = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'btn btn-primary'
+  = form_tag show_path(@show), :method => :put do
+    = render :partial => 'form'
+    = submit_tag 'Save Changes', :class => 'btn btn-success'
+    = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'btn btn-primary'
 
-%h2 Performances
+  %h2 Performances
 
-%p
-  = link_to  'Add a Performance', new_show_showdate_path(@show), :class => 'btn btn-primary'
-  = link_to 'Show all details', edit_show_path(@show, :display => 1), :class => 'btn btn-primary'
-  = link_to 'Hide all details', edit_show_path(@show), :class => 'btn btn-primary'
-  = link_to 'Add ticket type to all dates', new_valid_voucher_path(:showdate_id => @showdates.first, :add_to_all => true), :class => 'btn btn-primary'
+  %p
+    = link_to 'Add Performances', new_show_showdate_path(@show), :class => 'btn btn-primary'
+    = link_to 'Add/Change Ticket Type(s) For Performance(s)', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary'
 
-%table.hilite
-  %thead
-    %tr
-      %th Date/time
-      %th Adv sales stop
-      %th Max Sale<br/> (% of House)
-      %th Redeemable Ticket Types (click name to edit)
-  %tbody
-    = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
+  .row.bg-dark.text-light
+    .col-4 Date/time (click to edit show date details)
+    .col-4 Adv sales stop
+    .col-2 Max Sell<br/>(% of House)
+  .row
+    .col-4
+      %a{:name => 'dummy'}
+      = link_to 'Expand All', '#dummy', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); false;}
+      &nbsp;&bull;&nbsp;
+      = link_to 'Collapse All', '#dummy', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); false;}
+
+  = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 

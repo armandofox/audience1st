@@ -51,6 +51,14 @@ en:
       "sold out" when 100 tickets are sold, even if the physical house
       capacity has been set higher than 100.
 
+    keep_existing_redemptions_as_is: >
+
+      If this box is checked, pre-existing redemptions will not be
+      changed, and the value selected above will be applied only to
+      redemptions newly created. If the box is not checked, then the
+      value selected above will be applied to BOTH pre-existing and newly-created
+      redemptions.
+
     # Customers and customer lists
 
     customer_labels: >

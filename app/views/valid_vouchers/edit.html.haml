@@ -1,18 +1,38 @@
 %h2 Edit Ticket Redemption
 
 - vt = @valid_voucher.vouchertype
-%p
-  %strong Performance:
-  =  h(@valid_voucher.printable_name)
-%p
-  %strong Ticket type:
-  =  link_to vt.name_with_season_and_price, edit_vouchertype_path(vt)
 
-%br
+%p.lead
+  = @valid_voucher.printable_name
+  &bull;
+  = vt.name_with_season_and_price
+
 
 = form_tag valid_voucher_path(@valid_voucher), :method => :put do
 
-  = hidden_field 'valid_voucher', 'vouchertype_id', :value => vt.id
-  = render :partial => 'form'
-  = submit_tag 'Save Changes'
-  = link_to 'Cancel', edit_show_path(@valid_voucher.showdate.show), {:class => 'btn btn-secondary' }
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_max_sales_for_type
+      %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (Leave blank for unlimited)
+    = number_field_tag 'valid_voucher_max_sales_for_type', (@valid_voucher.max_sales_for_type unless @valid_voucher.max_sales_for_type == ValidVoucher::INFINITE), :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
+
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_promo_code
+      %label.col-form-label{:for=>:valid_voucher_promo_code} Redemption (promo) code, if any
+    = text_field 'valid_voucher', 'promo_code', :class => 'form-control col-md-3'
+
+  .form-group.form-row
+    .col-md-5.text-right
+      = popup_help_for :valid_voucher_sales_dates
+      %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales
+    .col-md-6= datetime_select 'valid_voucher', 'start_sales'
+
+  .form-group.form-row
+    .col-md-5.text-right
+      %label.col-form-label{:for => :valid_voucher_end_sales} End sales
+    .col-md-6= datetime_select 'valid_voucher', 'end_sales'
+
+  .form-group.form-row
+    .col-md-2.offset-md-5= submit_tag 'Save Changes', :class => 'btn btn-success btn-block'
+    .col-md-2= link_to 'Cancel', edit_show_path(@valid_voucher.showdate.show), {:class => 'btn btn-secondary btn-block' }

@@ -48,6 +48,7 @@ module Audience1st
     config.after_initialize do
       config.action_mailer.delivery_method = :smtp
       Time.include CoreExtensions::Time::ShowtimeDateFormats
+      Time.include CoreExtensions::Time::RoundedTo
       Time.include CoreExtensions::Time::Season
       Date.include CoreExtensions::Date::Season
       String.include CoreExtensions::String::Name
