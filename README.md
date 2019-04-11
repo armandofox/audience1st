@@ -78,7 +78,9 @@ db:schema:load` to load the database schema into each tenant.
 which creates a few special users, including the administrative user
 `admin@audience1st.com` with password `admin`.
 
-5.  To start the app, say `rails server` as usual, but in your
+5.  To start the app, say `rails server webrick` as usual (assuming you
+want to use the simpler Webrick server locally; the `Procfile` uses 
+a 2-process Puma server for the production environment currently), but in your
 browser, **do not** try to visit `localhost:3000`; instead visit
 `http://my-tenant-name.lvh.me:3000` since the multi-tenant
 selection relies on the first component of the URI being the tenant
