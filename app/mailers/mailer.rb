@@ -1,4 +1,3 @@
-require 'uri'
 class Mailer < ActionMailer::Base
 
   helper :customers, :application, :options
@@ -13,16 +12,13 @@ class Mailer < ActionMailer::Base
     @time = Time.current
     mail(:to => destination_address, :subject => 'Testing')
   end
-
-  def confirm_account_change(customer, whathappened, token='', requestURL)
+  
+  def confirm_account_change(customer, whathappened, newpass=nil)
     @whathappened = whathappened
-    uri = URI(requestURL)
-    @tokenLink = "#{uri.scheme}://#{uri.host}" + "/customers/reset_token?token=" + token
+    @newpass = newpass
     @customer = customer
-    puts("The reset password token link is: #{@tokenLink}")
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
-
 
   def confirm_order(purchaser,order)
     @order = order
@@ -48,7 +44,6 @@ class Mailer < ActionMailer::Base
     @donation_chair = Option.donation_ack_from
     mail(:to => @customer.email, :subject => "#{@subject} Thank you for your donation!")
   end
-
    
   def general_mailer(template_name, params, subject)
     params.keys.each do |key|
