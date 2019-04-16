@@ -18,7 +18,6 @@ class Customer < ActiveRecord::Base
   def self.notify_upcoming_birthdays
     venue = Option.venue
     subject = "#{venue} - "
-
     n = Option.send_birthday_reminders
     recipient = Option.boxoffice_daemon_notify
     now = Time.current.at_beginning_of_day
