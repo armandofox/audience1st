@@ -29,6 +29,4 @@ Scenario: Add regular tickets to my order with a donation
   Then I should be on the Checkout page
   And the cart total price should be $47.00
   And the cart should contain 2 "General" tickets for "October 1, 2010, 7:00pm"
-  And the cart should contain a donation of $17.00 to "General Fund"
-
-  
+  And the cart should contain a donation of $17.00 to "General Fund"  
