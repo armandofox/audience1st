@@ -32,7 +32,7 @@ describe Customer, "birthdays" do
     before :each do
       Option.first.update_attributes!(:send_birthday_reminders => 5,
         :boxoffice_daemon_notify => 'n@ai')
-      expect(Mailer).not_to receive(:upcoming_birthdays)
+      expect(Mailer).not_to receive(:general_mailer)
     end
     specify 'when feature is turned off' do
       Option.first.update_attributes!(:send_birthday_reminders => 0)
