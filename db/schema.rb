@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190401004004) do
+ActiveRecord::Schema.define(version: 20190417013019) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 40,  default: "", null: false
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(version: 20190401004004) do
     t.date     "birthday"
     t.string   "token"
     t.datetime "token_created_at"
+    t.boolean  "matching"
   end
 
   add_index "customers", ["city"], name: "index_customers_on_city"
