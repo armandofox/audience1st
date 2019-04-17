@@ -179,8 +179,8 @@ class StoreController < ApplicationController
 
   def shipping_address
     @mailable = @cart.includes_mailable_items?
-    @recipient ||= (@cart.customer || Customer.new) and return if request.get?
-
+    @recipient ||= Customer.new and return if request.get?
+    
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
