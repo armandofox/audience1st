@@ -53,6 +53,15 @@ class Mailer < ActionMailer::Base
     mail(:to => send_to, :subject => @subject)
   end
 
+  def general_mailer(template_name, params, subject)
+    params.keys.each do |key|
+      self.instance_variable_set("@#{key}", params[key])
+    end
+    @subject << subject
+    mail(:to => params[:recipient],
+             :subject => @subject,
+             :template_name => template_name)
+  end
   protected
 
   def set_delivery_options
