@@ -97,6 +97,11 @@ Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
   if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
 end
 
+Given /^customer "(.*) (.*)" has a birthday on "(.*)"/ do |first,last,date|
+    @customer = find_customer first,last
+    @customer.update_attributes!(:birthday => Date.parse(date))
+end
+
 Given /^my birthday is set to "(.*)"/ do |date|
   @customer.update_attributes!(:birthday => Date.parse(date))
 end

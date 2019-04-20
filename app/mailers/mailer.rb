@@ -20,8 +20,7 @@ class Mailer < ActionMailer::Base
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 
-    
-  def confirm_order(purchaser,order) 
+  def confirm_order(purchaser,order)
     @order = order
     mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
   end
@@ -33,7 +32,7 @@ class Mailer < ActionMailer::Base
     @notes = @showdate.patron_notes
     mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end
-    
+
   def cancel_reservation(old_customer, old_showdate, num = 1, confnum)
     @showdate,@customer = old_showdate, old_customer
     @num,@confnum = num,confnum
@@ -45,15 +44,18 @@ class Mailer < ActionMailer::Base
     @donation_chair = Option.donation_ack_from
     mail(:to => @customer.email, :subject => "#{@subject} Thank you for your donation!")
   end
-  
-  def upcoming_birthdays(send_to, num, from_date, to_date, customers)
-    @num,@customers = num,customers
-    @subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
-    mail(:to => send_to, :subject => @subject)
+   
+  def general_mailer(template_name, params, subject)
+    params.keys.each do |key|
+      self.instance_variable_set("@#{key}", params[key])
+    end
+    @subject << subject 
+    mail(:to => params[:recipient],
+             :subject => @subject, 
+             :template_name => template_name)        
   end
-
   protected
-  
+
   def set_delivery_options
     @venue = Option.venue
     @subject = "#{@venue} - "
@@ -80,5 +82,3 @@ class Mailer < ActionMailer::Base
     end
   end
 end
-
-

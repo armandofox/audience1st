@@ -32,10 +32,9 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
 end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|
-  @show = create(:show, :name => name)
-  @showdates = dates.split(/\s*,\s*/).map do |dt|
-    create(:showdate, :show => @show, :thedate => Time.zone.parse(dt))
-  end
+  dates = dates.split(/\s*,\s*/).map {  |dt| Time.zone.parse(dt) }
+  @show = create(:show, :name => name, :opening_date => dates.first)
+  @showdates = dates.each { |d|  create(:showdate, :show => @show, :thedate => d) }
 end
 
 Then /^"(.*)" should have (\d+) showdates$/ do |show,num|

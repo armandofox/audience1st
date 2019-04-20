@@ -12,7 +12,6 @@ class ValidVoucher < ActiveRecord::Base
 
   class InvalidRedemptionError < RuntimeError ;  end
   class InvalidProcessedByError < RuntimeError ; end
-  class CannotAddVouchertypeToMultipleShowdates < RuntimeError ; end
 
   attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
   # auxiliary attributes that aren't persisted
@@ -27,9 +26,10 @@ class ValidVoucher < ActiveRecord::Base
   validates_presence_of :start_sales
   validates_presence_of :end_sales
 
+  scope :sorted, -> { joins(:vouchertype).order('vouchertypes.display_order,vouchertypes.name') }
 
   # Capacity is infinite if it is left blank
-  INFINITE = 100.000
+  INFINITE = 100_000
   def max_sales_for_type ; self[:max_sales_for_type] || INFINITE ; end
   def sales_unlimited?   ; max_sales_for_type >= INFINITE ; end
 
@@ -90,7 +90,7 @@ class ValidVoucher < ActiveRecord::Base
   # Vouchertype's valid date must not be later than valid_voucher start date
   # Vouchertype expiration date must not be earlier than valid_voucher end date
   def check_dates
-    errors.add(:base,"Dates and times for start and end sales must be provided") and return if (start_sales.blank? || end_sales.blank?)
+    return if start_sales.blank? || end_sales.blank? || vouchertype.nil?
     errors.add(:base,"Start sales time cannot be later than end sales time") and return if start_sales > end_sales
     vt = self.vouchertype
     if self.end_sales > (end_of_season = Time.current.at_end_of_season(vt.season))
@@ -99,6 +99,7 @@ class ValidVoucher < ActiveRecord::Base
         but you've indicated sales should continue later than that
         (until #{end_sales.to_formatted_s(:showtime_including_year)})."
     end
+    self.end_sales = self.end_sales.rounded_to(:second)
   end
 
   def match_promo_code(str)
@@ -181,36 +182,6 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   public
-  
-  # Transactionally add one or more vouchertypes to multiple showdates.  If errors, collate them intelligently.
-  # If +valid_voucher_params+ includes a key
-  # <tt>:before_showtime => val</tt>, then each valid voucher's end-sales should be overridden to be
-  # +val+ prior to its showtime (+val+ must be an object that can be added/subtracted from +Time+).
-  def self.add_vouchertypes_to_showdates!(showdates,vouchertypes,valid_voucher_params)
-    errs = Hash.new { |h,k| h[k]=[] }       # vouchertype => showdate_id's to which it could NOT be added
-    possible_cause = {}
-    ValidVoucher.transaction do
-      showdates.each do |showdate|
-        if (before_showtime = valid_voucher_params.delete(:before_showtime))
-          valid_voucher_params[:end_sales] = showdate.thedate - before_showtime
-        end
-        vouchertypes.each do |vouchertype|
-          vv = ValidVoucher.new(valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype}))
-          unless vv.save
-            errs[vouchertype] << showdate.thedate.to_formatted_s(:showtime_brief)
-            possible_cause[vouchertype] = vv.errors.full_messages.join(', ')
-          end
-        end
-      end
-      # if any errors occurred, commit none of the changes.
-      unless errs.empty?
-        msg = errs.map do |vouchertype,dates|
-          "Can't add '#{vouchertype.name}' (possibly because: #{possible_cause[vouchertype]}) to #{dates.first} and #{dates.size - 1} more dates"
-        end.join('; ')
-        raise CannotAddVouchertypeToMultipleShowdates.new(msg)
-      end
-    end
-  end
   
   def seats_of_type_remaining
     return INFINITE unless showdate

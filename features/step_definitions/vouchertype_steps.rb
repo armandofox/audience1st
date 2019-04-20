@@ -69,4 +69,69 @@ Then /it should be a (.*) voucher/i do |typ|
   @vouchertype.category.to_s.should == typ.downcase
 end
 
-  
+When /I set end sales to "(.*)" minutes before show ?time/ do |minutes|
+  fill_in "minutes_before", with: minutes
+end
+
+When /I choose to leave as-is on existing redemptions:\s+(.*)/ do |props|
+  steps %Q{When I choose to overwrite existing redemptions}
+  props.split(/\s*,\s*/).each do |prop|
+    check "preserve_#{prop.gsub(/\s+/,'_')}"
+  end
+end
+
+When /I choose to overwrite existing redemptions/ do
+  %w(max_sales_for_type promo_code start_sales end_sales).each do |prop|
+    uncheck "preserve_#{prop}"
+  end
+end
+
+Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only,show,tbl|
+  show = Show.find_by!(:name => show)
+  confirmed_vvs = tbl.hashes.map do |v|
+    vv = begin
+           ValidVoucher.find_by!(
+        :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
+        :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']))
+         rescue ActiveRecord::RecordNotFound
+           raise "Can't find valid_voucher for #{v['vouchertype']}:#{v['showdate']}"
+         end
+    expect(vv.end_sales).to eq(Time.zone.parse(v['end_sales']))
+    expect(vv.max_sales_for_type).to eq(v['max_sales'].to_i)
+    if v['promo_code']
+      expect(vv.promo_code.to_s).to eq v['promo_code'].to_s
+    end
+    vv
+  end
+  # if checking to ensure these are the ONLY valid_vouchers:
+  if only
+    all_vvs_for_show = show.showdates.map(&:valid_vouchers).flatten.compact
+    expect(all_vvs_for_show - confirmed_vvs).to be_empty
+  end
+end
+
+Given /the following voucher types are valid for "(.*)":$/ do |show,tbl|
+  show = Show.find_by!(:name => show)
+  tbl.hashes.map do |v|
+    ValidVoucher.create!(
+      :showdate => Showdate.find_by!(:thedate => Time.zone.parse(v['showdate'])),
+      :vouchertype => Vouchertype.find_by!(:name => v['vouchertype']),
+      :start_sales => 1.hour.ago,
+      :end_sales => Time.zone.parse(v['end_sales']),
+      :promo_code => v['promo_code'],
+      :max_sales_for_type => v['max_sales'].to_i)
+  end
+end
+
+When /I select the following vouchertypes: (.*)/ do |vtypes|
+  vtypes.split(/\s*,\s*/).each do |vtype|
+    fullname = Vouchertype.where('name LIKE ?', vtype).first.name_with_season_and_price
+    check(fullname)
+  end
+end
+
+When /I select the following show dates: (.*)/ do |dates|
+  dates.split(/\s*,\s*/).each do |date|
+    check(Time.parse(date).to_formatted_s(:showtime_brief))
+  end
+end

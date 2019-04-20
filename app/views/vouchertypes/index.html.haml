@@ -1,8 +1,7 @@
-= form_tag vouchertypes_path, :method=>:get do
-  %h1 
-    Listing voucher types for
-    = select_tag 'season', options_for_seasons(3.years.ago.year,2.years.from_now.year,@season), :onchange => 'this.form.submit();'
-    season
+= form_tag vouchertypes_path, :method=>:get, :class => 'form-inline' do
+  %p.lead
+    Listing voucher types for season:
+    = select_tag 'season', options_for_seasons(3.years.ago.year,2.years.from_now.year,@season), :onchange => 'this.form.submit();', :class => 'form-control'
 
 = in_rows_of(3, { 'Regular revenue vouchers (single tickets)' => 'revenue', 'Comps (single tickets)' => 'comp', 'Subscription Bundles' => 'bundle-sub', 'Nonsubscription Bundles' => 'bundle-nonsub', 'Vouchers included in a bundle' => 'subscriber', 'Nonticket products' => 'nonticket'}) do |name, category|
   - check_box_tag(category, 1, true, :class => 'vouchertype-filter') + content_tag('label', name, :for => category)
@@ -33,7 +32,7 @@
         %td.text-right= account_code_with_popup_link(vouchertype.account_code)
         %td.text-center= vouchertype.subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
-        %td.text-center= purchase_link_popup("[Link]", link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
+        %td.text-center= purchase_link_popup(link_icon, link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
         %td 
           -if vouchertype.bundle? 
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
