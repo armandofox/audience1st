@@ -47,12 +47,6 @@ class Mailer < ActionMailer::Base
     mail(:to => @customer.email, :subject => "#{@subject} Thank you for your donation!")
   end
 
-  def upcoming_birthdays(send_to, num, from_date, to_date, customers)
-    @num,@customers = num,customers
-    @subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
-    mail(:to => send_to, :subject => @subject)
-  end
-
   def general_mailer(template_name, params, subject)
     params.keys.each do |key|
       self.instance_variable_set("@#{key}", params[key])
