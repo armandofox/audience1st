@@ -36,6 +36,9 @@ en:
       Please provide the email and password to continue, or use one of the Reset Password links
       below if you've forgotten it.  You can also continue as a guest by using a different email address.
 
+    change_password_now: >
+      Please change your password now.
+
   reservations:
 
     confirm_cancellation: >

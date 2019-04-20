@@ -148,6 +148,8 @@ class CustomersController < ApplicationController
     if @customer.nil? || (Time.now).utc >= (@customer.token_created_at + 10.minutes).utc
       flash[:notice] = "The reset password link has expired"
       return redirect_to login_path
+    else
+      @customer.token_created_at = (Time.now).utc - 10.minutes
     end
     puts("The token expires at: #{(@customer.token_created_at + 10.minutes).utc}. It is currently: #{(Time.now).utc}")
     create_session(@customer, 'reset_token')
