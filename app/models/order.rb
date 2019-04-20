@@ -25,6 +25,8 @@ class Order < ActiveRecord::Base
     [:customer_id, :purchaser_id, :processed_by_id]
   end
 
+  validates_uniqueness_of :external_key, :allow_blank => true
+
   serialize :valid_vouchers, Hash
   serialize :donation_data, Hash
   serialize :retail_items, Array
