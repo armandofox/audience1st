@@ -38,7 +38,7 @@
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'text-right form-control form-control-sm col-md-1 col-sm-2'
         .col-sm-6
 
-      - if Option.allow_gift_tickets?
+      - if Option.allow_gift_tickets? and @logged_in
         .form-group.form-row
           .col-md-4
           .form-check.col-md-8
