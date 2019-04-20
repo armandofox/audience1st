@@ -190,6 +190,11 @@ class StoreController < ApplicationController
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
     @recipient =  recipient_from_params
+    if @recipient.email == @customer.email
+        flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
+        render :action => :shipping_address
+        return
+    end 
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
