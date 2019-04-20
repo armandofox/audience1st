@@ -19,7 +19,6 @@ class Mailer < ActionMailer::Base
     uri = URI(requestURL)
     @token_link = "#{uri.scheme}://#{uri.host}" + reset_token_customers_path(:token => token)
     @customer = customer
-    puts("The reset password token link is: #{@token_link}")
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 
@@ -52,8 +51,16 @@ class Mailer < ActionMailer::Base
     @num,@customers = num,customers
     @subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
     mail(:to => send_to, :subject => @subject)
+   
+  def general_mailer(template_name, params, subject)
+    params.keys.each do |key|
+      self.instance_variable_set("@#{key}", params[key])
+    end
+    @subject << subject 
+    mail(:to => params[:recipient],
+             :subject => @subject, 
+             :template_name => template_name)        
   end
-
   protected
 
   def set_delivery_options
