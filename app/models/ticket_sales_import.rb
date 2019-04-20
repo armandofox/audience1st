@@ -1,20 +1,16 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_accessible :vendor, :import_number, :raw_data
+  attr_accessible :vendor, :raw_data
 
   # make sure all parser classes are loaded so we can validate against them
-  Dir["#{Rails.root}/lib/ticket_sales_import_parser/*.rb"].each { |f| load f }
-  IMPORTERS = TicketSalesImportParser.constants.select { |c| const_get("TicketSalesImportParser::#{c}").is_a? Class }.map(&:to_s)
+  Dir["#{Rails.root}/app/services/ticket_sales_import_parser/*.rb"].each { |f| load f }
+  IMPORTERS =
+    TicketSalesImportParser.constants.select { |c| const_get("TicketSalesImportParser::#{c}").is_a? Class }.
+    map(&:to_s)
 
   validates_inclusion_of :vendor, :in => IMPORTERS
-  
-  validates_presence_of :order_number
-  validates_uniqueness_of :order_number, :scope => :vendor
-
   validates_length_of :raw_data, :within => 1..65535
-  validates_inclusion_of :raw_data_type, :in => %w(json xml csv)
-
-  validates_associated :showdate
+  validate :valid_for_parsing?
 
   scope :sorted, -> { order('completed DESC, updated_at DESC') }
 
@@ -22,6 +18,7 @@ class TicketSalesImport < ActiveRecord::Base
   after_initialize :set_parser
 
   private
+
   def set_parser
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
@@ -30,5 +27,11 @@ class TicketSalesImport < ActiveRecord::Base
       raise ActiveRecord::RecordInvalid.new(self)
     end
   end
+
+  def valid_for_parsing?
+    @parser.valid?
+  end
+  
+
 
 end
