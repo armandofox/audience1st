@@ -11,6 +11,7 @@ module TicketSalesImportParser
     # sanity-check that the raw data appears to be a valid import file
     def valid?
       true
+      # if errors are found, modify the 
     end
 
   end
