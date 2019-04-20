@@ -8,8 +8,9 @@ module TicketSalesImportParser
       @import = import
     end
 
-    def parse_metadata
-      
+    # sanity-check that the raw data appears to be a valid import file
+    def valid?
+      true
     end
 
   end
