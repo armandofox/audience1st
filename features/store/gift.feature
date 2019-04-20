@@ -12,7 +12,6 @@ Background:
     | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
   And I go to the store page
 
-
 Scenario: customer gifting to oneself should be unsuccessful
   Given I go to the shipping info page for customer "Tom Foolery"
   When I fill in the ".billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, joe3@yahoo.com"
