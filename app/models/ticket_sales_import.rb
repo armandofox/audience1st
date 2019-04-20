@@ -33,5 +33,4 @@ class TicketSalesImport < ActiveRecord::Base
   end
   
 
-
 end
