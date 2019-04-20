@@ -135,7 +135,7 @@ class CustomersController < ApplicationController
   def forgot_password
     return if request.get?
     email = params[:email]
-    if send_new_password(email)
+    if send_magic_link(email)
       redirect_to login_path(:email => email)
     else
       redirect_to forgot_password_customers_path(:email => email)
@@ -367,9 +367,15 @@ class CustomersController < ApplicationController
     params
   end
 
-  def send_new_password(email)
+  def generate_token
+    length_of_token = 15
+    token = rand(36**length_of_token).to_s(36)
+    return token
+  end
+
+  def send_magic_link(email)
     if email.blank?
-      flash[:notice] = I18n.t('login.send_new_password')
+      flash[:notice] = I18n.t('login.send_magic_link')
       return nil
     end
     @customer = Customer.where('email LIKE ?', email).first
@@ -378,8 +384,7 @@ class CustomersController < ApplicationController
       return nil
     end
     begin
-      length_of_token = 15
-      token = rand(36**length_of_token).to_s(36)
+      token = generate_token
       @customer.token = token
       @customer.token_created_at = Time.zone.now.getutc
       # Save without validations here, because if there is a dup email address,

@@ -14,8 +14,4 @@ end
 # Needs magic_link implementation
 Given /^customer "(.*)" clicks on "(.*)"$/ do |cust,link|
   visit link
-end  
-
-When /^I seed with (\d+)$/ do |seed|
-  srand(seed.to_i)
 end

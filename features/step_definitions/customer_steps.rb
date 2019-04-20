@@ -70,6 +70,7 @@ Given /^customer "(.*) (.*)" exists( and was created by admin)?( with email "(.*
   @customer = find_customer(first,last) ||
     create(:customer, :first_name => first, :last_name => last, :email => email||"#{first.downcase}@#{last.downcase}.com")
   @customer.update_attribute(:created_by_admin, true) if admin
+  CustomersController.any_instance.stub(:generate_token).and_return("test_token")
 end
 
 Given /^customer "(.*) (.*)" whose address street is: "(.*)"$/ do |first,last,address|
