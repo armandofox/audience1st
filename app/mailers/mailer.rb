@@ -17,12 +17,11 @@ class Mailer < ActionMailer::Base
   def confirm_account_change(customer, whathappened, token='', requestURL)
     @whathappened = whathappened
     uri = URI(requestURL)
-    @tokenLink = "#{uri.scheme}://#{uri.host}" + "/customers/reset_token?token=" + token
+    @token_link = "#{uri.scheme}://#{uri.host}" + "/customers/reset_token?token=" + token
     @customer = customer
-    puts("The reset password token link is: #{@tokenLink}")
+    puts("The reset password token link is: #{@token_link}")
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
-
 
   def confirm_order(purchaser,order)
     @order = order

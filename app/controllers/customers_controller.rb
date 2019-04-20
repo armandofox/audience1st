@@ -144,14 +144,13 @@ class CustomersController < ApplicationController
 
   def reset_token
     token = params[:token]
-    @customer = Customer.where('token LIKE ?', token).first
-    if @customer.nil? || (Time.now).utc >= (@customer.token_created_at + 10.minutes).utc
+    @customer = Customer.where(token: token).first
+    if @customer.nil? || (Time.zone.now).utc >= (@customer.token_created_at + 10.minutes).utc
       flash[:notice] = "The reset password link has expired"
       return redirect_to login_path
     else
-      @customer.token_created_at = (Time.now).utc - 10.minutes
+      @customer.token_created_at = (Time.zone.now).utc - 10.minutes
     end
-    puts("The token expires at: #{(@customer.token_created_at + 10.minutes).utc}. It is currently: #{(Time.now).utc}")
     create_session(@customer, 'reset_token')
   end
   # Regular user creating new account
@@ -370,7 +369,7 @@ class CustomersController < ApplicationController
 
   def send_new_password(email)
     if email.blank?
-      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a link to reset your password."
+      flash[:notice] = I18n.t('login.send_new_password')
       return nil
     end
     @customer = Customer.where('email LIKE ?', email).first
@@ -379,10 +378,10 @@ class CustomersController < ApplicationController
       return nil
     end
     begin
-      lengthOfToken = 15
-      token = rand(36**lengthOfToken).to_s(36)
+      length_of_token = 15
+      token = rand(36**length_of_token).to_s(36)
       @customer.token = token
-      @customer.token_created_at = Time.now.getutc
+      @customer.token_created_at = Time.zone.now.getutc
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
