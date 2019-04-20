@@ -68,6 +68,9 @@ en:
 
     errors:
 
+      gift_diff_email_notice: >
+        Please enter a gift recipient email different from your own.
+
       guest_checkout_not_allowed:  >
         Sorry, guest checkout is unavailable for this order.  Please
         create an account to continue checkout.
