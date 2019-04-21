@@ -66,6 +66,7 @@ class StoreController < ApplicationController
 
   def index
     return_after_login params.except(:customer_id)
+    @logged_in = current_user()  
     @valid_vouchers = []
     @all_shows = []
     @all_showdates = []
