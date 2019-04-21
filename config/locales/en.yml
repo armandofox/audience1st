@@ -2,7 +2,7 @@ en:
   customers:
 
     confirm_delete: >
-      Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked 
+      Selected customer(s) will be PERMANENTLY deleted, and their transactions will be linked
       to the Anonymous Customer.  This action CANNOT BE UNDONE.  OK to proceed?
 
   season_setup:
@@ -41,14 +41,14 @@ en:
       You can also continue with your purchase and setup a new account as you checkout.
 
     bad_password: >
-      The password seems to be incorrect.  If you forgot your password, click 'Reset my password' and we will email 
+      The password seems to be incorrect.  If you forgot your password, click 'Reset my password' and we will email
       you a new password within 1 minute.
 
     email_or_password_blank: >
       You need to provide your email and password.
 
     setup_secret_question_message: >
-      You can now setup a secret question to verify your identity in case you forget your password.  
+      You can now setup a secret question to verify your identity in case you forget your password.
       Click Change Password above to setup your secret question.
 
     no_secret_question: >
@@ -58,9 +58,15 @@ en:
       That isn't the answer you provided when you selected your secret question.
 
     real_login_required: >
-      This email address has previously been used to login with a password. 
+      This email address has previously been used to login with a password.
       Please provide the email and password to continue, or use one of the Reset Password links
       below if you've forgotten it.  You can also continue as a guest by using a different email address.
+
+    change_password_now: >
+      Please change your password now.
+
+    send_magic_link: >
+      Please enter the email with which you originally signed up, and we will email you a link to reset your password.
 
   reservations:
 
@@ -71,7 +77,7 @@ en:
       Any special seating/mobility needs?
 
     cannot_be_changed: >
-      Some reservations could NOT be cancelled.  Please review your reservations below and contact a 
+      Some reservations could NOT be cancelled.  Please review your reservations below and contact a
       box office agent if you need assistance.
 
     cancelled: >
@@ -107,7 +113,7 @@ en:
   options:
 
     integration_warning: >
-      Integration options can now be edited. Proceed with care.  
+      Integration options can now be edited. Proceed with care.
       You must click 'Update Settings' to save your changes before you
       can test integrations with the new values.
 
@@ -115,7 +121,7 @@ en:
       You're about to restrict access to Audience1st only to Staff
       or higher level users. Patrons and non-staff users will see a
       message saying the site is temporarily under maintenance.  You can
-      resume normal operation later 
+      resume normal operation later
       by changing Staff Access Only back to "No".  Click OK to
       restrict access to Staff only, or Cancel to leave things as they
       are.  A dashed yellow border will appear while the site is in
@@ -123,13 +129,13 @@ en:
 
     disable_maintenance_warning: >
       You're about to turn off Staff Access Only and make Audience1st
-      available to all users. 
+      available to all users.
       Click OK to confirm, or Cancel to leave Audience1st in "staff access only" mode.
 
     change_basic_settings_warning: >
       Changing these options affects the basic operation and
-      appearance of your Audience1st installation.  Please be sure you 
+      appearance of your Audience1st installation.  Please be sure you
       know what you're doing before changing these, and to be safe,
       before changing a value make a note of the old value.  Click "Allow
-      Changes" to enable editing of these options, or "Test Integrations..." 
+      Changes" to enable editing of these options, or "Test Integrations..."
       to test if the current values seem to be working.

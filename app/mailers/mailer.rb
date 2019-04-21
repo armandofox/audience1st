@@ -13,10 +13,12 @@ class Mailer < ActionMailer::Base
     mail(:to => destination_address, :subject => 'Testing')
   end
   
-  def confirm_account_change(customer, whathappened, newpass=nil)
+ def confirm_account_change(customer, whathappened, token='', requestURL)
     @whathappened = whathappened
-    @newpass = newpass
+    uri = URI(requestURL)
+    @token_link = "#{uri.scheme}://#{uri.host}" + reset_token_customers_path(:token => token)
     @customer = customer
+    puts("The reset password token link is: #{@tokenLink}")
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 

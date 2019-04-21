@@ -78,7 +78,7 @@ module NavigationHelpers
     when /^the new (.*)s? page$/i       then eval("new_#{underscorize($1)}_path")
 
     when /^the account codes page$/ then account_codes_path
-
+    # when /^the link expired page$/ then some_path
     else
       raise "Can't find mapping for \"#{page_name}\" in #{__FILE__}"
     end

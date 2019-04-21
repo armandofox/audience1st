@@ -95,4 +95,5 @@ group :development, :test do
   gem 'sqlite3'
   gem 'timecop'
   gem 'traceroute'
+  gem 'email_spec'
 end

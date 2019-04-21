@@ -4,10 +4,10 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   force_ssl if Rails.env.production?
-  
+
   include AuthenticatedSystem
   include FilenameUtils
-  
+
   require 'csv'
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     # allow login/logout even in maint mode
     return if controller_name == 'sessions'
     # allow logged-in staff users
-    if current_user.try(:is_staff) 
+    if current_user.try(:is_staff)
       @gMaintMode = true
     else
       render 'sessions/maintenance'
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   end
 
   public
-  
+
   # Session keys
   #  :cid               id of logged in user; if absent, nobody logged in
   #  :return_to         route params (for url_for) to return to after valid login
@@ -102,6 +102,13 @@ class ApplicationController < ActionController::Base
       customer_path(customer))
   end
 
+  def redirect_after_reset_token(customer)
+    redirect_to ((r = session.delete(:return_to)) ?
+      r.merge(:customer_id => customer) :
+      change_password_for_customer_path(customer))
+    flash[:alert] = I18n.t('login.change_password_now')
+  end
+
   def find_cart
     Order.find_by_id(session[:cart]) || Order.new
   end
@@ -160,7 +167,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def create_session(u = nil)
+  def create_session(u = nil, action = '')
     logout_keeping_session!
     @user = u || yield(params)
     if @user && @user.errors.empty?
@@ -177,6 +184,9 @@ class ApplicationController < ActionController::Base
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
       session[:new_session] = true
+      if action == 'reset_token'
+        return redirect_after_reset_token(@user)
+      end
       redirect_after_login(@user)
     end
   end
@@ -188,6 +198,5 @@ class ApplicationController < ActionController::Base
     # displaying login-time messages, etc.
     session.delete(:new_session)
   end
-  
-end
 
+end
