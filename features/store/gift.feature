@@ -36,8 +36,4 @@ Scenario: Confidential information is removed, street address, phone number
   Given I go to the shipping info page for customer "Tom Foolery"
   When I fill in the ".billing_info" fields with "John Lennon, Imagine St., Berk, CA 99999, 123-456-7890, john@lennon.com"
   And I proceed to checkout
-  Then I should not see "123-456-7890"
-  And I should not see "Imagine St."
-  And I should not see "Berk"
-  And I should not see "CA"
-  And I should not see "99999"
+  Then I should not see the following: "123-456-7890, Imagine St., Berk, CA, 99999"
