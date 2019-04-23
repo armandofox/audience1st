@@ -1,6 +1,7 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_accessible :vendor, :raw_data
+  attr_accessible :vendor, :raw_data, :processed_by
+  belongs_to :processed_by, :class_name => 'Customer'
 
   # make sure all parser classes are loaded so we can validate against them
   Dir["#{Rails.root}/app/services/ticket_sales_import_parser/*.rb"].each { |f| load f }

@@ -3,6 +3,7 @@ class CreateTicketSalesImports < ActiveRecord::Migration
     create_table :ticket_sales_imports, :force => true do |t|
       t.string :vendor
       t.text :raw_data
+      t.references :processed_by
       t.timestamps null: false
     end
     change_table :orders do |t|
