@@ -28,7 +28,6 @@ class TicketSalesImportsController < ApplicationController
 
   def edit
     @import = TicketSalesImport.find params[:id]
-    byebug
   end
 
 end
