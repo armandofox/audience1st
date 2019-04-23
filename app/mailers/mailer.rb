@@ -18,7 +18,6 @@ class Mailer < ActionMailer::Base
     uri = URI(requestURL)
     @token_link = reset_token_customers_url(:token => token)
     @customer = customer
-    puts("The reset password token link is: #{@tokenLink}")
     mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
   end
 
