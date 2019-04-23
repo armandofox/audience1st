@@ -8,7 +8,11 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Jason Lum](https://github.com/jayl109),
 [Sanket Padmanabhan](https://github.com/sanketq),
 [Andrew Sun](https://github.com/andrewsun98),
-[Jack Wan](https://github.com/WanNJ)
+[Jack Wan](https://github.com/WanNJ),
+[Jasper Gan](https://github.com/jaspergan),
+[Yowsean Li](https://github.com/yowsean),
+[Kevin Yen](https://github.com/crazyberry7)
+
 
 
 # This information is for developers and deployers
