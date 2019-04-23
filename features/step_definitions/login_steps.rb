@@ -1,13 +1,13 @@
 module CustomerLoginHelper
   def verify_successful_login
     # if someone is currently logged in, log them out first
-    visit logout_path if page.has_content?("Log Out")
     visit login_path
-    unless page.has_content?("Log Out")
-      fill_in 'email', :with => @customer.email
-      fill_in 'password', :with => @password
-      click_button 'Login'
-    end
+    return if page.has_content?("Log Out #{@customer.full_name}") # correct person already logged in
+    visit logout_path if page.has_content?("Log Out")             # logout whoever's logged in
+    visit login_path
+    fill_in 'email', :with => @customer.email
+    fill_in 'password', :with => @password
+    click_button 'Login'
     expect(page).to have_content("Log Out #{@customer.full_name}")
     expect(page).to have_css('.adminField') if @is_admin
   end

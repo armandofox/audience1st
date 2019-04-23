@@ -86,7 +86,12 @@ Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,la
   c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)
 end
 
-
+Given /^customer "(.*) (.*)" has no email address$/ do |first,last|
+  @customer = find_or_create_customer first,last
+  @customer.created_by_admin = true
+  @customer.email = nil
+  @customer.save!
+end
 
 Given /^customer "(.*) (.*)" has no contact info$/ do |first,last|
   @customer = find_customer first,last

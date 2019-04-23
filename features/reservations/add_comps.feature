@@ -41,7 +41,7 @@ Scenario: email should be sent if customer_email is checked
   And  I fill in "How many:" with "2"
   And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
   And  I fill in "Optional comments:" with "Courtesy Comp"
-  And I check "customer_email"
+  And I check "Send Email Confirmation"
   And  I press "Add Vouchers"
   And an email should be sent to customer "Armando Fox" containing "Macbeth"
   
@@ -54,12 +54,13 @@ Scenario: email should not be sent if customer_email is unchecked
   And  I fill in "How many:" with "2"
   And  I select "Macbeth - Tuesday, Apr 20, 8:00 PM (2 left)" from "Reserve for:"
   And  I fill in "Optional comments:" with "Courtesy Comp"
-  And I uncheck "customer_email"
+  And I uncheck "Send Email Confirmation"
   And  I press "Add Vouchers"
   And no email should be sent to customer "Armando Fox"
 
-Scenario: checkbox unavailable if no email
+Scenario: checkbox unavailable if customer has no email
 
   Given it is currently Apr 20, 2010, 8:15pm
+  And customer "NoEmail Customer" has no email address
   When I visit the add comps page for customer "NoEmail Customer"
-  Then the "customer_email" checkbox should be disabled
+  Then the "Send Email Confirmation" checkbox should be disabled

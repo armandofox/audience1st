@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 World(ModelAccess)
 
 # Element should be disabled
-Then /^the (".*") (?:checkbox|button|field|control) should be disabled/ do |field|
+Then /^the "(.*)" (?:checkbox|button|field|control) should be disabled/ do |field|
   expect(page).to have_field(field, :disabled => true)
 end
 

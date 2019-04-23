@@ -378,7 +378,6 @@ class StoreController < ApplicationController
   end
 
   def setup_ticket_menus_for_patron
-
     @valid_vouchers = @sd.valid_vouchers.includes(:vouchertype).map do |v|
       v.customer = @customer
       v.adjust_for_customer @promo_code
