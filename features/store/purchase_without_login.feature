@@ -39,7 +39,7 @@ Scenario: create account during purchase
     | Confirm Password | daisy                |
   And I press "Create My Account"
   Then I should be on the checkout page for customer "Daisy Prince"
-  And an email should be sent to "daisyprince@mail.com" matching "password" with "Your new password is:\s*(daisy)"
+  And an email should be sent to "daisyprince@mail.com" containing "set up an account with us"
   When I place my order with a valid credit card
   Then I should see "You have paid a total of $21.00 by Credit card"
   And customer "Daisy Prince" should have 3 "General" tickets for "Chicago" on May 15, 2010, 8:00pm

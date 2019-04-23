@@ -16,7 +16,7 @@ Background: show with self-service comps available
 Scenario: successfully purchase comps as guest
 
   When I select "2" from "PromoComp - $0.00"
-  When I continue to checkout
+  When I proceed to checkout
   And I try to checkout as guest using "Joe Tally, 123 Fake St., Alameda, CA 94501, 510-999-9999, joetally@mail.com"
   And I press "CONTINUE >>"
   Then the cart should contain 2 "PromoComp" tickets for "Oct 1, 2010, 8pm"
@@ -28,7 +28,7 @@ Scenario: purchase both comps and regular tickets
   
   When I select "2" from "PromoComp - $0.00"
   When I select "1" from "General - $10.00"
-  And I continue to checkout
+  And I proceed to checkout
   And I try to checkout as guest using "Joe Tally, 123 Fake St., Alameda, CA 94501, 510-999-9999, joetally@mail.com"
   And I successfully complete guest checkout
   Then I should see "You have paid a total of $10.00 by Credit card"

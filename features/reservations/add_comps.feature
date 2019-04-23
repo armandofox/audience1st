@@ -43,7 +43,7 @@ Scenario: email should be sent if customer_email is checked
   And  I fill in "Optional comments:" with "Courtesy Comp"
   And I check "customer_email"
   And  I press "Add Vouchers"
-  And an email should be sent to customer "Armando Fox"
+  And an email should be sent to customer "Armando Fox" containing "Macbeth"
   
 Scenario: email should not be sent if customer_email is unchecked
 
