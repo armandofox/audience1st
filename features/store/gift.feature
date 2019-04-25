@@ -13,7 +13,6 @@ Background:
   And the following customers exist:
     | first_name | last_name | email           | created_by_admin | street        | password | password_confirmation | city | state |   zip | last_login          | updated_at | 
     | John       | Lennon    | john@lennon.com | false            | Imagine St.   | imagine  | imagine               | Berk | CA    | 99999 | 2009-01-01          | 2009-01-01 |  
-  And I go to the store page
  
 Scenario: Allow gift purchase if logged in and approved by box office manager
   Given the setting "allow gift tickets" is "true"
@@ -37,3 +36,5 @@ Scenario: Confidential information is removed, street address, phone number
   When I fill in the ".billing_info" fields with "John Lennon, Imagine St., Berk, CA 99999, 123-456-7890, john@lennon.com"
   And I proceed to checkout
   Then I should not see the following: "123-456-7890, Imagine St., Berk, CA, 99999"
+  And I should see "We have the gift recipient's address and phone number on file."
+

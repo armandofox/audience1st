@@ -179,7 +179,7 @@ class StoreController < ApplicationController
 
   def shipping_address
     @mailable = @cart.includes_mailable_items?
-    @recipient ||= Customer.new and return if request.get?
+    @recipient = Customer.new and return if request.get?
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
@@ -189,8 +189,7 @@ class StoreController < ApplicationController
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
     recipient = recipient_from_params
-    @recipient, matching =  recipient[0], recipient[1]
-    session[:matching] = (matching == "found_matching_customer") ? true : false
+    @recipient =  recipient[0]
     if @recipient.email == @customer.email
         flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
         render :action => :shipping_address
@@ -214,7 +213,7 @@ class StoreController < ApplicationController
 
   def checkout
     redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
-    if session[:matching]
+    if params[:matching] == "found_matching_customer"
         flash.now[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
     @page_title = "Review Order For #{@customer.full_name}"
@@ -301,6 +300,9 @@ class StoreController < ApplicationController
     checkout_params = {}
     checkout_params[:sales_final] = true if params[:sales_final]
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
+    recipient = recipient_from_params
+    matching =  recipient[1]
+    checkout_params[:matching] = matching 
     redirect_to checkout_path(@customer, checkout_params)
     true
   end
