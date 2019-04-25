@@ -300,7 +300,7 @@ class StoreController < ApplicationController
     recipient = recipient_from_params
     matching =  recipient[1]
     if matching == "found_matching_customer"
-        flash.now[:notice] = I18n.t('store.gift_recipient_on_file')  
+        flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
     redirect_to checkout_path(@customer, checkout_params)
     true
