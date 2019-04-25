@@ -213,9 +213,6 @@ class StoreController < ApplicationController
 
   def checkout
     redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
-    if params[:matching] == "found_matching_customer"
-        flash.now[:notice] = I18n.t('store.gift_recipient_on_file')  
-    end
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
@@ -302,7 +299,9 @@ class StoreController < ApplicationController
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
     recipient = recipient_from_params
     matching =  recipient[1]
-    checkout_params[:matching] = matching 
+    if matching == "found_matching_customer"
+        flash.now[:notice] = I18n.t('store.gift_recipient_on_file')  
+    end
     redirect_to checkout_path(@customer, checkout_params)
     true
   end
