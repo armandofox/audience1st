@@ -195,6 +195,12 @@ class StoreController < ApplicationController
         render :action => :shipping_address
         return
     end 
+    if email_matches_diff_last_name?
+        flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
+        render :action => :shipping_address
+        return
+    end
+    
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
@@ -281,7 +287,10 @@ class StoreController < ApplicationController
       (s.next_showdate || s.showdates.first)
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
-
+  def email_matches_diff_last_name?
+    try_customer = Customer.new(params[:customer])
+    Customer.email_matches_diff_last_name?(try_customer)
+  end
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)

@@ -100,6 +100,9 @@ en:
 
     errors:
 
+      gift_matching_email_diff_last_name: >
+        The email address you entered for the gift recipient is already registered in the system, but the name you entered does not match our records. Please double-check that you entered the gift recipient's name and email address and try again
+
       gift_diff_email_notice: >
         Please enter a gift recipient email different from your own.
 
