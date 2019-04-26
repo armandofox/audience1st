@@ -390,7 +390,7 @@ class CustomersController < ApplicationController
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
-      email_confirmation(:confirm_account_change, @customer, "", token, request.original_url)
+      email_confirmation(:confirm_account_change, @customer, 'asked for your password to be reset', token, request.original_url)
       # will reach this point (and change password) only if mail delivery
       # doesn't raise any exceptions
       Txn.add_audit_record(:txn_type => 'edit',
