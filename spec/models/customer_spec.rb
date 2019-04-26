@@ -165,7 +165,7 @@ describe Customer do
 
       context "and last name matches" do
         it "should return false" do
-          Customer.email_matches_diff_last_name?(@cust).should == false
+          Customer.email_matches_diff_last_name?(@old).should == false
         end
       end
       context "and last name does not match" do
