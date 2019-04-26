@@ -11,8 +11,8 @@ Background:
     | show    | qty | type    | price | showdate             |
     | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
   And the following customers exist:
-    | first_name | last_name | email           | created_by_admin | street        | password | password_confirmation | city | state |   zip | last_login          | updated_at | 
-    | John       | Lennon    | john@lennon.com | false            | Imagine St.   | imagine  | imagine               | Berk | CA    | 99999 | 2009-01-01          | 2009-01-01 |  
+    | first_name | last_name | email           | created_by_admin | street        | password | password_confirmation | city     | state |   zip | last_login          | updated_at | 
+    | John       | Lennon    | john@lennon.com | false            | Imagine St.   | imagine  | imagine               | Berkeley | CA    | 99999 | 2009-01-01          | 2009-01-01 |  
  
 Scenario: Allow gift purchase if logged in and approved by box office manager
   Given the setting "allow gift tickets" is "true"
@@ -33,10 +33,10 @@ Scenario: customer gifting to oneself should be unsuccessful
     
 Scenario: Confidential information is removed, street address, phone number
   Given I go to the shipping info page for customer "Tom Foolery"
-  When I fill in the ".billing_info" fields with "John Lennon, Imagine St., Berk, CA 99999, 123-456-7890, john@lennon.com"
+  When I fill in the ".billing_info" fields with "John Lennon, Imagine St., Berkeley, CA 99999, 123-456-7890, john@lennon.com"
   And I proceed to checkout
-  Then I should not see the following: "123-456-7890, Imagine St., Berk, CA, 99999"
+  Then I should not see the following: "123-456-7890, Imagine St., Berkeley, CA, 99999"
   And I should see "We have the gift recipient's address and phone number on file."
   When I place my order with a valid credit card
   Then I should be on the order confirmation page
-  And I should not see the following: "123-456-7890, Imagine St., Berk, CA, 99999"
+  And I should not see the following: "123-456-7890, Imagine St., Berkeley, CA, 99999"
