@@ -37,4 +37,6 @@ Scenario: Confidential information is removed, street address, phone number
   And I proceed to checkout
   Then I should not see the following: "123-456-7890, Imagine St., Berk, CA, 99999"
   And I should see "We have the gift recipient's address and phone number on file."
-
+  When I place my order with a valid credit card
+  Then I should be on the order confirmation page
+  And I should not see the following: "123-456-7890, Imagine St., Berk, CA, 99999"
