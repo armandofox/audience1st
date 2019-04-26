@@ -200,7 +200,6 @@ class StoreController < ApplicationController
         render :action => :shipping_address
         return
     end
-    
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
