@@ -11,8 +11,8 @@ Background:
     | show    | qty | type    | price | showdate             |
     | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
   And the following customers exist:
-    | first_name | last_name | email           | created_by_admin | street        | password | password_confirmation | city | state |   zip | day_phone    | last_login | updated_at | 
-    | John       | Lennon    | john@lennon.com | false            | Imagine St.   | imagine  | imagine               | Berk | CA    | 99999 | 510-999-9999 | 2009-01-01 | 2009-01-01 |  
+    | first_name | last_name | email           | created_by_admin | street        | password | password_confirmation | city     | state |   zip | day_phone    | last_login | updated_at | 
+    | John       | Lennon    | john@lennon.com | false            | Imagine St.   | imagine  | imagine               | Berkeley | CA    | 99999 | 510-999-9999 | 2009-01-01 | 2009-01-01 |  
   
 Scenario: Allow gift purchase if logged in and approved by box office manager
   Given the setting "allow gift tickets" is "true"
