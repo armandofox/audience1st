@@ -297,8 +297,7 @@ class StoreController < ApplicationController
     checkout_params = {}
     checkout_params[:sales_final] = true if params[:sales_final]
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
-    recipient = recipient_from_params
-    matching =  recipient[1]
+    matching = recipient_from_params[1]
     if matching == "found_matching_customer"
         flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
