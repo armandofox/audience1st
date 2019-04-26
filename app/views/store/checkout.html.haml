@@ -7,7 +7,7 @@
   - if @cart.gift?
     #gift_recipient
       %h2 This Order is a Gift For...
-      = render :partial => 'customers/billing_address', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
+      = render :partial => 'customers/gift_recipient_info', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
   = form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
 
