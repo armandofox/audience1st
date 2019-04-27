@@ -179,10 +179,6 @@ class CustomersController < ApplicationController
       :customer_id => @customer.id,
       :comments => 'new customer added',
       :logged_in_id => current_user.id)
-    # if valid email, send user a welcome message
-    unless params[:dont_send_email]
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
-    end
     redirect_to customer_path(@customer)
   end
 
@@ -197,7 +193,7 @@ class CustomersController < ApplicationController
   def user_create
     @customer = Customer.new(params[:customer])
     if @customer.save
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
