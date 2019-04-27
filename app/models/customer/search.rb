@@ -32,19 +32,13 @@ class Customer < ActiveRecord::Base
   # account for case where email matches but not last name
 
   def self.email_matches_diff_last_name?(p)
+    byebug
     email, last_name = p.email, p.last_name
-    if !email.blank? && !last_name.blank?
-        recipient = Customer.where('email LIKE ?', email.strip).first
-        if !recipient.nil?
-            recipient_last_name = recipient.last_name
-            if last_name != recipient_last_name
-                return true
-            end
-            return false
-        end
-        return false
-    end
-    return false
+    # email can't match different last name if either is blank
+    return false if (email.blank? || last_name.blank?)
+    recipient = Customer.where('email LIKE ?', email.strip).first
+    # otherwise, we have a matching email, so check if last name is diff
+    return (!recipient.nil?  &&  last_name != recipient.last_name)   
   end
  
   # given some customer info, find this customer in the database with

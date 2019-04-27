@@ -163,16 +163,12 @@ describe Customer do
         @cust = Customer.new(@attrs)
       end
 
-      context "and last name matches" do
-        it "should return false" do
-          Customer.email_matches_diff_last_name?(@old).should == false
-        end
+      it "returns false if last name does match" do
+          Customer.email_matches_diff_last_name?(@old).should be_falsy
       end
-      context "and last name does not match" do
-        it "should return true" do
+      it "returns true if last name doesn't match" do
           @cust.last_name = "Thorne"
-          Customer.email_matches_diff_last_name?(@cust).should == true
-        end
+          Customer.email_matches_diff_last_name?(@cust).should be_truthy
       end
     end
   end

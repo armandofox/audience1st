@@ -36,4 +36,4 @@ Scenario: display error message if recipient's last name does not match record o
   When I fill in the ".billing_info" fields with "John Roake, Imagine St., Berkeley, CA 99999, 510-999-9999, john@lennon.com"
   And I proceed to checkout
   Then I should be on the shipping info page
-  And I should see "The email address you entered for the gift recipient is already registered in the system, but the name you entered does not match our records. Please double-check that you entered the gift recipient's name and email address and try again"
+  Then I should see the message for "store.errors.gift_matching_email_diff_last_name"
