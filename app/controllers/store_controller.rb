@@ -191,9 +191,9 @@ class StoreController < ApplicationController
     recipient = recipient_from_params
     @recipient =  recipient[0]
     if @recipient.email == @customer.email
-        flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
-        render :action => :shipping_address
-        return
+      flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
+      render :action => :shipping_address
+      return
     end 
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
@@ -299,7 +299,7 @@ class StoreController < ApplicationController
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
     matching = recipient_from_params[1]
     if matching == "found_matching_customer"
-        flash[:notice] = I18n.t('store.gift_recipient_on_file')  
+      flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
     redirect_to checkout_path(@customer, checkout_params)
     true
@@ -386,7 +386,7 @@ class StoreController < ApplicationController
       v.customer = @customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)
-  
+    
     @all_shows = Show.current_and_future.of_type(@what) || []
     if (@what == 'Regular Show' && !@all_shows.include?(@sh))
       @all_shows << @sh
