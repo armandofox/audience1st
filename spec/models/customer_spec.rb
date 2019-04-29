@@ -162,7 +162,6 @@ describe Customer do
         @old = create(:customer,@attrs)
         @cust = Customer.new(@attrs)
       end
-
       it "returns false if last name does match" do
           Customer.email_matches_diff_last_name?(@old).should be_falsy
       end
