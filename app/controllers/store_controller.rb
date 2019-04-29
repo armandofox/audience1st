@@ -302,10 +302,9 @@ class StoreController < ApplicationController
     checkout_params[:sales_final] = true if params[:sales_final]
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
     matching = recipient_from_params[1]
-    byebug 
-    #if email_last_name_match_diff_address?
-    #    flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
-    if matching == "found_matching_customer"
+    if email_last_name_match_diff_address?
+        flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
+    elsif matching == "found_matching_customer"
         flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
     redirect_to checkout_path(@customer, checkout_params)
