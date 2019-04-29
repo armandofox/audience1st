@@ -32,7 +32,6 @@ class Customer < ActiveRecord::Base
   # account for case where email matches but not last name
 
   def self.email_matches_diff_last_name?(p)
-    byebug
     email, last_name = p.email, p.last_name
     # email can't match different last name if either is blank
     return false if (email.blank? || last_name.blank?)
