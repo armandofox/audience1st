@@ -130,3 +130,9 @@ When /^I fill in the "(.*)" fields as follows:$/ do |fieldset, table|
   end
 end
 
+# Lets you write step def such as:
+# Then I should see the message for "customers.confirm_delete"
+Then /I should see the message for "(.*)"/ do |i18n_key|
+  message = I18n.translate!(i18n_key)
+  page.should have_content(message)
+end

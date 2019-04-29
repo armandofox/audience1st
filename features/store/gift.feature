@@ -40,3 +40,10 @@ Scenario: Confidential information is removed, street address, phone number
   When I place my order with a valid credit card
   Then I should be on the order confirmation page
   And I should not see the following: "123-456-7890, Imagine St., Berkeley, CA, 99999"
+
+Scenario: notify customer if gift recipient's mailing address does not match but email and last name does
+  Given I go to the shipping info page for customer "Tom Foolery"
+  When I fill in the ".billing_info" fields with "Bob Lennon, Belief St., Berkeley, CA 99999, 510-999-9999, john@lennon.com"
+  And I proceed to checkout
+  Then I should be on the checkout page
+  And I should see the message for "store.gift_matching_email_last_name_diff_address"

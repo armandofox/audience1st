@@ -195,6 +195,7 @@ class StoreController < ApplicationController
         render :action => :shipping_address
         return
     end 
+
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
@@ -287,7 +288,10 @@ class StoreController < ApplicationController
     recipient = Customer.find_unique(try_customer)
     (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
-
+  def email_last_name_match_diff_address?
+    try_customer = Customer.new(params[:customer])
+    Customer.email_last_name_match_diff_address?(try_customer)
+  end
   def remember_cart_in_session!
     @cart.save!
     session[:cart] = @cart.id
@@ -298,6 +302,9 @@ class StoreController < ApplicationController
     checkout_params[:sales_final] = true if params[:sales_final]
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
     matching = recipient_from_params[1]
+    byebug 
+    #if email_last_name_match_diff_address?
+    #    flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
     if matching == "found_matching_customer"
         flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
