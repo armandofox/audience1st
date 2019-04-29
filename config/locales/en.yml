@@ -97,8 +97,12 @@ en:
 
     accept_terms_of_sale: >
       By completing your order, you agree to the <a href="#" onclick="alert('%{terms_of_sale_text}')">terms of sale</a>.
+    
     gift_recipient_on_file: >
       We have the gift recipient's address and phone number on file.
+    
+    gift_matching_email_last_name_diff_address: >
+      We recognize that name and email address, but we have a different mailing address and/or phone number on file for this person.  Please note that we will use our contact information to contact them.  If you believe this is a problem, please contact the box office after completing this gift order.
 
     errors:
 

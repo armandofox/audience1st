@@ -29,6 +29,18 @@ class Customer < ActiveRecord::Base
     possible_dups = Customer.find_by_sql(sql)
   end
 
+  # account for case where email and last name match
+  # but mailing address does not
+  
+  def self.email_last_name_match_diff_address?(p)
+    email, last_name, street = p.email, p.last_name, p.street
+    # email, last_name can't match different address if any are blank
+    return false if (email.blank? || last_name.blank? || street.blank?)
+    recipient = Customer.where('email LIKE ? AND last_name LIKE ?', email.strip, last_name.strip).first
+    # otherwise, we have a matching email, so check if address is diff
+    return (!recipient.nil?  &&  street != recipient.street)   
+  end
+  
   # given some customer info, find this customer in the database with
   # high confidence;  if not found or ambiguous, return nil
 
