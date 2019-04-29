@@ -36,10 +36,7 @@ Scenario: display error message if recipient's last name does not match record o
   When I fill in the ".billing_info" fields with "John Roake, Imagine St., Berkeley, CA 99999, 510-999-9999, john@lennon.com"
   And I proceed to checkout
   Then I should be on the shipping info page
-<<<<<<< HEAD
   And I should see the message for "store.errors.gift_matching_email_diff_last_name"
-=======
-  And I should see "Please enter a gift recipient email different from your own."
     
 Scenario: Confidential information is removed, street address, phone number
   Given I go to the shipping info page for customer "Tom Foolery"
@@ -50,4 +47,3 @@ Scenario: Confidential information is removed, street address, phone number
   When I place my order with a valid credit card
   Then I should be on the order confirmation page
   And I should not see the following: "123-456-7890, Imagine St., Berkeley, CA, 99999"
->>>>>>> 3cf868a09f5dd056f858ca51d4bf6ef314fdf538
