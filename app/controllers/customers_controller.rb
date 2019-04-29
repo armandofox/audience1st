@@ -179,10 +179,6 @@ class CustomersController < ApplicationController
       :customer_id => @customer.id,
       :comments => 'new customer added',
       :logged_in_id => current_user.id)
-    # if valid email, send user a welcome message
-    unless params[:dont_send_email]
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
-    end
     redirect_to customer_path(@customer)
   end
 
@@ -197,7 +193,7 @@ class CustomersController < ApplicationController
   def user_create
     @customer = Customer.new(params[:customer])
     if @customer.save
-      email_confirmation(:confirm_account_change,@customer,"set up an account with us",@customer.password)
+      email_confirmation(:confirm_account_change,@customer,"set up an account with us")
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :comments => 'new customer self-signup')
@@ -390,7 +386,7 @@ class CustomersController < ApplicationController
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
-      email_confirmation(:confirm_account_change, @customer, "", token, request.original_url)
+      email_confirmation(:confirm_account_change, @customer, 'asked for your password to be reset', token, request.original_url)
       # will reach this point (and change password) only if mail delivery
       # doesn't raise any exceptions
       Txn.add_audit_record(:txn_type => 'edit',

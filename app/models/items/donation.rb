@@ -25,20 +25,25 @@ class Donation < Item
 
   def self.to_csv
     CSV.generate(:headers => true) do |csv|
-      csv << %w(last first street city state zip email amount date code fund letterSent)
+      csv << %w(order_number last first street city state zip email amount date code fund letter_sent letter_sent_by comments)
       all.each do |d|
-        csv << [d.customer.last_name.name_capitalize,
-                d.customer.first_name.name_capitalize,
-                d.customer.street,
-                d.customer.city,
-                d.customer.state,
-                d.customer.zip,
-                d.customer.email,
-                d.amount,
-                d.sold_on.to_formatted_s(:db),
-                d.account_code.code,
-                d.account_code.name,
-                d.letter_sent]
+        csv << [
+          d.order.id,
+          d.customer.last_name.name_capitalize,
+          d.customer.first_name.name_capitalize,
+          d.customer.street,
+          d.customer.city,
+          d.customer.state,
+          d.customer.zip,
+          d.customer.email,
+          d.amount,
+          d.sold_on.to_formatted_s(:db),
+          d.account_code.code,
+          d.account_code.name,
+          d.letter_sent,
+          (d.letter_sent ? d.processed_by.full_name : ''),
+          [d.comments.to_s, d.order.comments.to_s].join('; ')
+        ]
       end
     end
   end

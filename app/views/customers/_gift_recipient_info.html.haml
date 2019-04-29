@@ -1,0 +1,17 @@
+- disabled = defined?(passive) && passive
+%fieldset.billing_info
+  %legend= local_assigns[:legend] || 'Address'
+  %p.text-center.bg-secondary.text-light  Fields <span class="strong">like this</span> are required.
+  = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
+    .form-row
+      .form-group.col-md-4
+        %label.col-form-label.strong{:for => 'customer_first_name'} First name
+        = f.text_field :first_name, :size => 16, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm'
+      .form-group.col-md-4
+        %label.col-form-label.strong{:for => 'customer_last_name'} Last name
+        = f.text_field :last_name, :size => 16, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm'
+      .form-row
+      .form-group.col-md-6
+        %label.col-form-label.strong{:for=>:customer_email} Email
+        = f.text_field :email, {:size => 30, :type => :email, :maxlength => 40, :readonly => disabled, :class => 'form-control form-control-sm' }
+
