@@ -7,7 +7,7 @@ bundler_args: --without production
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - CC_TEST_REPORTER_ID=$CC_KEY
+    - CC_TEST_REPORTER_ID=c2b95b25d30ce5fa83d28309f1857d559be106347c00705aeb5325bc10c46935
     - CCTR=/tmp/cc-test-reporter
 before_install:
   - export TZ=America/Los_Angeles

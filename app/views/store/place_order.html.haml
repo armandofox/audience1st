@@ -20,9 +20,6 @@
           %legend This order is a gift for:
           %label= @recipient.full_name
           %br
-          %label= @recipient.street
-          %br
-          %label= "#{h @recipient.city}, #{h @recipient.state} #{h @recipient.zip}"
         %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
 
     = render :partial => 'cart', :object => @order
