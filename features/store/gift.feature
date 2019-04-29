@@ -47,3 +47,10 @@ Scenario: display error message if recipient's last name does not match record o
   And I proceed to checkout
   Then I should be on the shipping info page
   And I should see the message for "store.errors.gift_matching_email_diff_last_name"
+
+Scenario: notify customer if gift recipient's mailing address does not match but email and last name does
+  Given I go to the shipping info page for customer "Tom Foolery"
+  When I fill in the ".billing_info" fields with "Bob Lennon, Belief St., Berkeley, CA 99999, 510-999-9999, john@lennon.com"
+  And I proceed to checkout
+  Then I should be on the checkout page
+  And I should see the message for "store.gift_matching_email_last_name_diff_address"
