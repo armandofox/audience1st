@@ -106,6 +106,9 @@ en:
 
     errors:
 
+      gift_matching_email_diff_last_name: >
+        We recognize that email address, but it matches a customer with a different last name. Please correct the last name of the customer, or else leave the email address blank and provide a contact address and phone number instead.
+
       gift_diff_email_notice: >
         Please enter a gift recipient email different from your own.
 

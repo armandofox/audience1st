@@ -170,6 +170,26 @@ describe Customer do
       end
     end
   end
+  describe "determine if last name does not match record" do
+    context "when email matches" do
+      before(:each) do
+        @attrs = {:first_name => 'Bob', :last_name => 'Jones',
+          :email => 'bobjones@mail.com',
+          :street => '1234 Fake St',
+          :city => 'New York', :state => 'NY', :zip => '99999'
+        }
+        @old = create(:customer,@attrs)
+        @cust = Customer.new(@attrs)
+      end
+      it "returns false if last name does match" do
+          Customer.email_matches_diff_last_name?(@old).should be_falsy
+      end
+      it "returns true if last name doesn't match" do
+          @cust.last_name = "Thorne"
+          Customer.email_matches_diff_last_name?(@cust).should be_truthy
+      end
+    end
+  end
   describe "find unique" do
     def names_match(a,b)
       our_first,our_last = a.split(/ +/)
