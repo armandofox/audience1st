@@ -31,6 +31,7 @@ gem 'will_paginate'
 
 # asset pipeline
 gem 'sprockets-rails', :require => 'sprockets/railtie'
+gem 'sassc'
 gem 'uglifier'
 
 group :production do
