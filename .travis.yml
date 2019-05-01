@@ -15,6 +15,7 @@ before_install:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
   - chmod +x $CCTR
   - $CCTR before-build
+  - gem install bundler --version=1.17.2
   - bundle config build.nokogiri --use-system-libraries
 script:
   - cp config/database.yml.test config/database.yml
