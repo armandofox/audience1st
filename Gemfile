@@ -70,7 +70,6 @@ group :development do
   gem 'ruby-prof'
   gem 'stackprof'
   gem 'web-console', '~> 2.0'
-  gem 'spring-commands-rspec'   # for use with Guard
   gem 'sdoc', '~> 0.4.0'
 end
 
@@ -84,6 +83,7 @@ group :development, :test do
   gem 'listen', '~> 2.2'
   gem 'guard-rspec', :require => false
   gem 'guard-cucumber'
+  gem 'spring-commands-rspec'   # for use with Guard
   gem 'minitest'
   gem 'faye-websocket'
   gem 'database_cleaner'
