@@ -5,14 +5,6 @@ GIT
     faker (1.8.8)
       i18n (>= 0.7)
 
-GIT
-  remote: https://github.com/armandofox/yaml_db
-  revision: 8632537bf3045f277cec21ee2433b91092bc4e3f
-  specs:
-    yaml_db (0.6.1)
-      rails (>= 3.0, < 5.2)
-      rake (>= 0.8.7)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -322,7 +314,6 @@ GEM
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
     ruby-prof (0.17.0)
-    rubyzip (1.2.1)
     safe_yaml (1.0.4)
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
@@ -424,7 +415,6 @@ DEPENDENCIES
   jquery-ui-rails (= 5.0.5)
   launchy
   listen (~> 2.2)
-  mime-types
   minitest
   newrelic_rpm
   nokogiri
@@ -448,7 +438,6 @@ DEPENDENCIES
   rspec-its
   rspec-rails
   ruby-prof
-  rubyzip
   sdoc (~> 0.4.0)
   simplecov
   spring
@@ -466,7 +455,6 @@ DEPENDENCIES
   webmock
   where-or
   will_paginate
-  yaml_db!
 
 RUBY VERSION
    ruby 2.5.5p157
