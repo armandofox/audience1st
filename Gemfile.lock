@@ -399,7 +399,7 @@ DEPENDENCIES
   attr_encrypted
   builder
   bullet
-  bundler
+  bundler (= 1.17.2)
   byebug
   capybara
   chronic

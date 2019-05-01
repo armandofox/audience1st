@@ -11,7 +11,7 @@ gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeou
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
 gem 'builder'
-gem 'bundler'
+gem 'bundler', '1.17.2'
 gem 'figaro'
 gem 'sslrequirement'
 gem 'haml'
