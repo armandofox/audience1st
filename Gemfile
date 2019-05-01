@@ -1,6 +1,6 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '2.3.1'
+ruby '2.5.5'
 
 # basic app components
 gem 'pg', '~> 0.21'
@@ -32,7 +32,7 @@ gem 'will_paginate'
 # asset pipeline
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem 'uglifier'
-gem 'sassc-rails'
+# gem 'sassc-rails'
 
 group :production do
   gem 'newrelic_rpm'
@@ -84,7 +84,6 @@ group :development, :test do
   gem 'rubyzip'
   gem 'mime-types'
   gem 'chronic'
-  gem 'fakeweb'
   gem 'launchy'
   gem 'rack-test'
   gem 'sdoc', '~> 0.4.0'

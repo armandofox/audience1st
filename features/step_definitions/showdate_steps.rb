@@ -41,6 +41,14 @@ Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
   Show.find_by_name!(show).showdates.count.should == num.to_i
 end
 
+Then /the showdate should have the following attributes:/ do |tbl|
+  expect(@showdate).to be_a_kind_of Showdate
+  @showdate.reload
+  tbl.hashes.each do |attr|
+    expect(@showdate.send(attr['attribute']).to_s).to eq(attr['value'].to_s)
+  end
+end
+
 Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|
   show = Show.find_by_name!(showname)
   showdates = show.showdates

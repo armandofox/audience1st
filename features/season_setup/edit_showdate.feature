@@ -15,4 +15,7 @@ Scenario: limit max sales
   When I fill in "Max advance sales" with "96"
   And I fill in "Description (optional)" with "Special performance"
   And I press "Save Changes"
-  Then the showdate should have max_sales: 96 and description: "Special performance"
+  Then the showdate should have the following attributes:
+    | attribute   | value               |
+    | max_sales   | 96                  |
+    | description | Special performance |
