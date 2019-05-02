@@ -172,7 +172,11 @@ class CustomersController < ApplicationController
   def create
     @customer = Customer.new(params[:customer])
     @customer.created_by_admin = true
-    return render(:action => 'admin_new',  :alert => ('Creating customer failed: ' + @customer.errors.as_html))  unless @customer.save
+    unless @customer.save
+      flash.now[:alert] = 'Creating customer failed: ' + @customer.errors.as_html
+      render :action => 'admin_new'
+      return
+    end
 
     (flash[:notice] ||= '') <<  'Account was successfully created.'
     Txn.add_audit_record(:txn_type => 'edit',

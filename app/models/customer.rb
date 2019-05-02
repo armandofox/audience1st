@@ -57,16 +57,12 @@ class Customer < ActiveRecord::Base
   validate :valid_or_blank_address?, :if => :self_created?
   validate :valid_as_gift_recipient?, :if => :gift_recipient_only
 
-  NAME_REGEX = /\A[-A-Za-z0-9_\/#\@'":;,.%\ ()&]+\z/
   NAME_FORBIDDEN_CHARS = /[^-A-Za-z0-9_\/#\@'":;,.%\ ()&]/
-
   BAD_NAME_MSG = "must not include special characters like <, >, !, etc."
 
-  validates_length_of :first_name, :within => 1..50
-  validates_format_of :first_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
+  validates_length_of :first_name, :within => 1..50, :if => :self_created?
 
   validates_length_of :last_name, :within => 1..50
-  validates_format_of :last_name, :with => NAME_REGEX,  :message => BAD_NAME_MSG
 
   attr_accessor :must_revalidate_password
 
