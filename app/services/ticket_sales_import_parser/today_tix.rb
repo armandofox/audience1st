@@ -18,15 +18,24 @@ module TicketSalesImportParser
         false
       end
       keys = ["Order #","Sale Date","Section","# of Seats","Pickup First Name","Pickup Last Name","Purchaser First Name","Purchaser Last Name","Email","Row","Start","End","Total Price","Performance Date","Zip Code"] 
+      map_keys_to_sym = ["Order #" => :order_num,"Sale Date" => :sale_date ,"Section" => :section,"# of Seats" => :seat_nums,"Pickup First Name" => :pickup_first_name,"Pickup Last Name" => :pickup_last_name,"Purchaser First Name" => :purchaser_first_name,"Purchaser Last Name" => :purchaser_last_name,"Email" => :email,"Row" => :row,"Start" => :start,"End" => :end,"Total Price" => :total_price,"Performance Date" => :performance_date,"Zip Code" => :zipcode] 
+
       header = csv_arr[0]
-      csv_arr_of_hashes = csv_arr.map {|a| Hash[ keys.zip(a) ] }
       # check if header contains required columns
-      return false if csv_headers_valid?(header, keys)
-      # check each row contains all required columns and are valid
+      return false if csv_headers_valid?(header, keys) 
+
+      # convert header strings into symbols
+      header_sym = header.map { |x| map_keys_to_sym[x] }
+
+      csv_arr_of_hashes = csv_arr.map {|a| Hash[ header_sym.zip(a) ] }
+     # check each row contains all required columns and are valid
       csv_arr_of_hashes.drop(1).each do |row|
         row_obj = TablelessImports::TodayTixSingleSales.new(row)
         unless row_obj.valid?
-            # add errors msges
+            row_obj.errors.full_messages.each do |err_msg|
+                # add error messeges
+                @import.errors.add(:vendor, "Data is invalid because " + err_msg )
+            end
             return false
         end
       end
