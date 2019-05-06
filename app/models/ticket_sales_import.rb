@@ -1,6 +1,7 @@
 class TicketSalesImport < ActiveRecord::Base
 
   attr_accessible :vendor, :raw_data, :processed_by
+  attr_reader :importable_orders
   belongs_to :processed_by, :class_name => 'Customer'
 
   # make sure all parser classes are loaded so we can validate against them
@@ -21,6 +22,7 @@ class TicketSalesImport < ActiveRecord::Base
   private
 
   def set_parser
+    @importable_orders = []
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
     else
@@ -31,6 +33,10 @@ class TicketSalesImport < ActiveRecord::Base
 
   def valid_for_parsing?
     @parser.valid?
+  end
+
+  def parse
+    @importable_orders = @parser.parse
   end
   
 

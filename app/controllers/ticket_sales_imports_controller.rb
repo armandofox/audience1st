@@ -15,19 +15,11 @@ class TicketSalesImportsController < ApplicationController
   # field is populated from the dropdown on the index page and whose 'raw_data' is populated
   # from the contents of the uploaded file
 
-  def create
+  def new
     @import = TicketSalesImport.new(
       :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user)
-    if @import.valid?
-      @import.save!
-      redirect_to edit_ticket_sales_import_path(@import)
-    else
-      redirect_to ticket_sales_imports_path, :alert => @import.errors.as_html
-    end
-  end
-
-  def edit
-    @import = TicketSalesImport.find params[:id]
+    return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) unless @import.valid?
+    @import.parse
   end
 
 end
