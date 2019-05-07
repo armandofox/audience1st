@@ -1,12 +1,12 @@
 require 'rails_helper'
 
-describe ImportsController, :skip => true do
+describe ImportsController do
   before :each do
-    skip
+    #skip
     ImportsController.send(:public, :partial_for_import)
   end
   describe "creating new" do
-    before :each do ; @params = {:import => {:type => 'BrownPaperTicketsImport'}} ; end
+    before :each do ; skip; @params = {:import => {:type => 'BrownPaperTicketsImport'}} ; end
     it "should simply redirect if import type is not given" do
       lambda { post :create }.should_not raise_error
       response.should redirect_to(new_import_path)
@@ -46,6 +46,7 @@ describe ImportsController, :skip => true do
   end
   describe "preview" do
     before(:each) do
+      skip
       @import = TicketSalesImport.new
       allow(Import).to receive(:find).and_return(@import)
     end
@@ -74,8 +75,44 @@ describe ImportsController, :skip => true do
       end
     end
   end
+  describe "invalid TodayTix CSV file" do
+    before(:each) do
+      @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/all_in_one.csv"))
+      @parser = TicketSalesImportParser::TodayTix.new(@import)
+    end
+    it "should raise error if file is blank" do
+      @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/empty.csv"))
+      @parser = TicketSalesImportParser::TodayTix.new(@import)
+      res = @parser.valid?
+      @import.errors[:vendor].should include("Data is invalid because file is empty")
+      res.should be_falsy
+    end
+    it "should raise error if headers is missing critical columns" do
+      @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/invalid_header.csv"))
+      @parser = TicketSalesImportParser::TodayTix.new(@import)
+      res = @parser.valid?
+      @import.errors[:vendor].should include("Data is invalid because header is missing required columns")
+      res.should be_falsy
+    end
+    it "should raise error if row data has blank order number (not missing)" do
+      res = @parser.valid?
+      @import.errors[:vendor].any? { |s| s.include?("Data is invalid because Order num is invalid or blank on line 2") }
+      res.should be_falsy
+    end
+    it "should raise error if row data has invalid email" do
+      res = @parser.valid?
+      @import.errors[:vendor].any? { |s| s.include?("Data is invalid because Email is invalid or blank on line 3") }
+      res.should be_falsy
+    end
+    it "should raise error if row data has invalid performance date" do
+      res = @parser.valid?
+      @import.errors[:vendor].any? { |s| s.include?("Data is invalid because Performance date is invalid or blank on line 4") }
+      res.should be_falsy
+    end
+  end
   describe "import" do
     before(:each) do
+      skip
       @import = TicketSalesImport.new
       allow(@import).to receive(:import!).and_return([[:a,:b],[:c]])
       allow(Import).to receive(:find).and_return(@import)
