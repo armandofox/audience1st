@@ -1,4 +1,13 @@
 en:
+  import:
+
+    vouchertype_not_found: >
+      Cannot find vouchertype for %{season} season with '%{vendor}' in its name and
+      priced at %{price}.
+
+    redemption_not_found: >
+      Cannot find redemption for voucher type '#{vouchertype}' for performance of #{performance}.
+
   customers:
 
     confirm_delete: >

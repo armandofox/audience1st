@@ -10,6 +10,12 @@ describe TicketSalesImport do
       expect { TicketSalesImport.new(:vendor => 'NoSuchVendor') }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
+
+  describe 'pre-finalizing' do
+    it 'warns if total import quantity exceeds redemption allocation'
+    it 'warns if import file contained extraneous columns'
+  end
+
 end
 
 describe TicketSalesImport, :pending => 'refactor import logic' do

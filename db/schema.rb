@@ -11,15 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 20190420212205) do
-=======
-ActiveRecord::Schema.define(version: 20190410231843) do
->>>>>>> starting specs
-=======
-ActiveRecord::Schema.define(version: 20190420212205) do
->>>>>>> fix bugs in migration file
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -219,13 +211,9 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.string   "external_key"
   end
 
-<<<<<<< HEAD
-
   add_index "orders", ["authorization"], name: "public_orders_authorization0_idx", using: :btree
   add_index "orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
   add_index "orders", ["customer_id"], name: "public_orders_customer_id2_idx", using: :btree
-=======
->>>>>>> adding basic controller actions for import workflow
   add_index "orders", ["external_key"], name: "index_orders_on_external_key", unique: true, using: :btree
 
   create_table "showdates", force: :cascade do |t|

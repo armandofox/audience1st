@@ -1,5 +1,36 @@
 require 'rails_helper'
 
+describe 'possible customer matches', :focus => true do
+  before :each do
+    @c = [
+      create(:customer, :first_name => 'Chris', :last_name => 'Jones', :email => 'cjones@mail.com'),
+      create(:customer, :first_name => 'Christopher', :last_name => 'Jones'),
+      create(:customer, :first_name => 'Barb', :last_name => 'Jones', :email => 'bjones@mail.com')
+    ]
+  end
+  it "returns one candidate when email matches" do
+    expect(Customer.possible_matches('Chris','Jones','cjones@mail.com')).to eq [@c[0]]
+  end
+  it "(even if name does not match)" do
+    match = Customer.possible_matches('Chris','Jones','bjones@mail.com')
+    expect(match).to include(@c[2])
+  end
+  it "includes both exact-email match and unique name match" do
+    match = Customer.possible_matches('Chris','Jones','bjones@mail.com')
+    expect(match).to include(@c[2]) # exact match on email
+    expect(match).to include(@c[0]) # exact match on name w/o email
+  end
+  it "includes non-unique first name matches when no email" do
+    match = Customer.possible_matches('C','Jones')
+    expect(match).to include(@c[1]) # non-exact match on first name w/o email
+    expect(match).to include(@c[0]) # non-exact match on first name w/o email
+    expect(match).not_to include(@c[2]) # non-exact match on first name w/o email
+  end
+  it "returns empty list when no matches" do
+    expect(Customer.possible_matches('Shirley','Jones')).to be_empty
+  end
+end
+
 describe 'customer search' do
 
   before :each do

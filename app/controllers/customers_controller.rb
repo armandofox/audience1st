@@ -6,14 +6,14 @@ class CustomersController < ApplicationController
   ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create reset_token)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate
-                             auto_complete_for_customer_full_name)
+                             auto_complete_for_customer)
 
   # All these filters redirect to login if trying to trigger an action without correct preconditions.
   before_filter :is_logged_in, :except => ACTIONS_WITHOUT_LOGIN
   before_filter :is_myself_or_staff, :only => CUSTOMER_ACTIONS
   before_filter :is_staff_filter, :only => ADMIN_ACTIONS
 
-  skip_before_filter :verify_authenticity_token, %w(auto_complete_for_customer_full_name)
+  skip_before_filter :verify_authenticity_token, %w(auto_complete_for_customer)
 
   private
 
@@ -321,7 +321,7 @@ class CustomersController < ApplicationController
       partial_name_matches.map { |c| {'label' => c.full_name, 'value' => customer_path(c)} } +
       other_term_matches.map { |c| {'label' => "#{c.full_name} (#{c.field_matching_terms(terms)})", 'value' => customer_path(c)} } +
       show_all_matches
-      render :json => result.uniq
+    render :json => result.uniq
   end
 
   private

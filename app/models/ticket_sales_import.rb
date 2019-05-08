@@ -2,7 +2,10 @@ class TicketSalesImport < ActiveRecord::Base
 
   attr_accessible :vendor, :raw_data, :processed_by
   attr_reader :importable_orders
+  attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
+
+  class ImportError < StandardError ;  end
 
   # make sure all parser classes are loaded so we can validate against them
   Dir["#{Rails.root}/app/services/ticket_sales_import_parser/*.rb"].each { |f| load f }
@@ -23,6 +26,7 @@ class TicketSalesImport < ActiveRecord::Base
 
   def set_parser
     @importable_orders = []
+    @warnings = []
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
     else
@@ -39,5 +43,9 @@ class TicketSalesImport < ActiveRecord::Base
     @importable_orders = @parser.parse
   end
   
-
+  def finalize!
+    @importable_orders.each do |imp|
+      imp.finalize!
+    end
+  end
 end

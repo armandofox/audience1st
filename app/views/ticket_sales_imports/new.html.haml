@@ -1,6 +1,15 @@
 .container
   %h1 Proposed Import from #{@import.vendor}
 
-  - @import.importable_orders.each do |ord|
-    .row
-      
+  = form_for @import do
+    %table.table
+      %thead
+        %tr
+          %th{:scope => 'col'} Tickets
+          %th{:scope => 'col'} Name on import list
+          %th{:scope => 'col'} Action
+      %tbody
+        - @import.importable_orders.each do |ord|
+          %tr
+            %td= ord.item_descriptions
+            %td= ord.

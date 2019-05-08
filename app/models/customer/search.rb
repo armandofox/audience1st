@@ -29,12 +29,20 @@ class Customer < ActiveRecord::Base
     possible_dups = Customer.find_by_sql(sql)
   end
 
+  # Find POSSIBLE matches for a customer given first,last, maybe email
+  def self.possible_matches(first,last,email=nil)
+    [
+      self.find_unique(Customer.new(:first_name => first, :last_name => last, :email => email)),
+      self.match_uniquely_on_names_only(first,last)
+    ].compact.uniq
+  end
+
   # account for case where email matches but not last name
 
   def self.email_matches_diff_last_name?(p)
     email, last_name = p.email, p.last_name
     # email can't match different last name if either is blank
-    return false if (email.blank? || last_name.blank?)
+    return nil if (email.blank? || last_name.blank?)
     recipient = Customer.where('email LIKE ?', email.strip).first
     # otherwise, we have a matching email, so check if last name is diff
     return (!recipient.nil?  &&  last_name != recipient.last_name)   
