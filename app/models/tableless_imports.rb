@@ -17,11 +17,5 @@ module TablelessImports
             errors.add(:performance_date, 'must be a valid datetime') if ((DateTime.parse(performance_date) rescue ArgumentError) == ArgumentError)
             errors.add(:sale_date, 'must be a valid datetime') if ((DateTime.parse(sale_date) rescue ArgumentError) == ArgumentError)
         end
-
-    end
-
-    
-    class TodayTixSalesSummary < TodayTixSingleSales
-        attr_accessor :num_trans, :purchased_section, :actual_section         
     end
 end

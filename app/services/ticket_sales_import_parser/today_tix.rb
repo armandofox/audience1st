@@ -19,51 +19,47 @@ module TicketSalesImportParser
       end
       keys = ["Order #","Sale Date","Section","# of Seats","Pickup First Name","Pickup Last Name","Purchaser First Name","Purchaser Last Name","Email","Row","Start","End","Total Price","Performance Date","Zip Code"] 
       map_keys_to_sym = {"Order #" => :order_num,"Sale Date" => :sale_date ,"Section" => :section,"# of Seats" => :num_seats,"Pickup First Name" => :pickup_first_name,"Pickup Last Name" => :pickup_last_name,"Purchaser First Name" => :purchaser_first_name,"Purchaser Last Name" => :purchaser_last_name,"Email" => :email,"Row" => :row,"Start" => :start,"End" => :end,"Total Price" => :total_price,"Performance Date" => :performance_date,"Zip Code" => :zipcode}
-
       header = csv_arr[0]
       # check if header contains required columns
       if csv_headers_valid?(header, keys) 
         @import.errors.add(:vendor, "Data is invalid because header is missing required columns")
         return false
       end
-
       # convert header strings into symbols
       header_arr_of_sym = header.map { |x| map_keys_to_sym[x] }
-
+      # create array of hashes mapping column to row data
       csv_arr_of_hashes = csv_arr.map {|a| Hash[ header_arr_of_sym.zip(a) ] }
-
-      # ASK about missing data in rows -e.g. skipped over entirely (not blank data) 
       # check each row contains all required columns and are valid
-      line_num = 2
+      # if columns are missing (NOT blank) in a row, then the row_obj will 
+      # raise errors for every mismatched row data and column type
+      # first row of data starts on line 2
+      row_num = 2
       csv_arr_of_hashes.drop(1).each do |row|
         row_obj = TablelessImports::TodayTixSingleSales.new(row)
         unless row_obj.valid?
             row_obj.errors.full_messages.each do |err_msg|
-                # add error messeges
-                @import.errors.add(:vendor, "Data is invalid because " + err_msg + " or missing" + " on row %i" % (line_num))
+                # add error messeges with row number
+                @import.errors.add(:vendor, "Data is invalid because " + err_msg + " or missing" + " on row %i" % (row_num))
             end
             return false
         end
-        line_num += 1
+        row_num += 1
       end
       true
-      # if errors are found, modify the errors objecton the import itself:
-      # @import.errors.add(:vendor, "Data is invalid because " + explanation_of_whats_wrong)
-      # finally, return truthy value iff no errors
     end
    
-    # valid helpers
+    # helpers for valid?
     def csv_file_empty?
       if @import.raw_data.blank?
         @import.errors.add(:vendor, "Data is invalid because file is empty")
         true
       end
     end 
-    
+   
+    # checks that all required columns are present
     def csv_headers_valid? header, keys
         return true if (keys-header).length != 0
     end
-
    
     # parse the raw data and return an array of ImportableOrder instances
     def parse
