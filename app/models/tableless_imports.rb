@@ -14,8 +14,8 @@ module TablelessImports
         validates :email, presence: true, format: { with: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i }
 
         def valid_dates?
-            errors.add(:performance_date, 'must be a valid datetime') if ((DateTime.parse(performance_date) rescue ArgumentError) == ArgumentError)
-            errors.add(:sale_date, 'must be a valid datetime') if ((DateTime.parse(sale_date) rescue ArgumentError) == ArgumentError)
+            errors.add(:performance_date, 'is an invalid datetime') if ((DateTime.parse(performance_date) rescue ArgumentError) == ArgumentError)
+            errors.add(:sale_date, 'is an invalid datetime') if ((DateTime.parse(sale_date) rescue ArgumentError) == ArgumentError)
         end
     end
 end

@@ -39,12 +39,12 @@ module TicketSalesImportParser
         unless row_obj.valid?
             row_obj.errors.full_messages.each do |err_msg|
                 # add error messeges with row number
-                @import.errors.add(:vendor, "Data is invalid because " + err_msg + " or missing" + " on row %i" % (row_num))
+                @import.errors.add(:vendor, "Data is invalid because " + err_msg + " on row %i" % (row_num))
             end
-            return false
         end
         row_num += 1
       end
+      return false if !@import.errors.messages.empty?
       true
     end
    

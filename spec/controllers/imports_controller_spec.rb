@@ -96,20 +96,32 @@ describe ImportsController do
     end
     it "should raise error if row data has blank order number (not missing)" do
       res = @parser.valid?
-      @import.errors[:vendor].any? { |s| s.include?("Data is invalid because Order num is invalid or blank on line 2") }
+      @import.errors[:vendor].should include("Data is invalid because Order num can't be blank on row 2")
       res.should be_falsy
     end
     it "should raise error if row data has invalid email" do
       res = @parser.valid?
-      @import.errors[:vendor].any? { |s| s.include?("Data is invalid because Email is invalid or blank on line 3") }
+      @import.errors[:vendor].should include("Data is invalid because Email is invalid on row 3") 
       res.should be_falsy
     end
     it "should raise error if row data has invalid performance date" do
       res = @parser.valid?
-      @import.errors[:vendor].any? { |s| s.include?("Data is invalid because Performance date is invalid or blank on line 4") }
+      @import.errors[:vendor].should include("Data is invalid because Performance date is an invalid datetime on row 4") 
       res.should be_falsy
     end
   end
+  
+  describe "valid TodayTix CSV file" do
+    before(:each) do
+      @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/valid.csv"))
+      @parser = TicketSalesImportParser::TodayTix.new(@import)
+    end
+    it "should return true if all rows are valid" do
+      res = @parser.valid?
+      res.should be_truthy
+    end
+  end
+  
   describe "import" do
     before(:each) do
       skip
