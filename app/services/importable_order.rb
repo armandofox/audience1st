@@ -28,7 +28,7 @@ class ImportableOrder
   DO_NOT_IMPORT = 0
   CREATE_NEW_CUSTOMER = 1
 
-  def initialize # :notnew:
+  def initialize                # :nodoc:
     @order = Order.new(
       :processed_by => Customer.boxoffice_daemon,
       :purchasemethod => Purchasemethod.get(:ext))
@@ -64,7 +64,6 @@ class ImportableOrder
     end
     customer_args = { :first_name => @import_first_name, :last_name => @import_last_name }
     customer_args[:email] = @import_email unless @import_email.blank?
-    
   end
 
 end

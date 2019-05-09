@@ -1,21 +1,22 @@
 module TicketSalesImportParser
   class TodayTix
+    require 'csv'
 
     attr_reader :import
     delegate :raw_data, :to => :import
 
     class MissingDataError < StandardError ; end
 
+    # columns that must be nonblank in body
+    REQUIRED_COLUMNS = ["Order #", "Sale Date", "Email",
+      "Pickup First Name","Pickup Last Name","Purchaser First Name","Purchaser Last Name",
+      "# of Seats","Total Price","Performance Date"].freeze
+    # columns that might be blank in body, but must be present in header
+    OTHER_COLUMNS = ["Section","Row","Start","End","Zip Code"].freeze
+    COLUMNS = (REQUIRED_COLUMNS + OTHER_COLUMNS).freeze
+
     def initialize(import)
       @import = import
-    end
-
-    # sanity-check that the raw data appears to be a valid import file
-    def valid?
-      true
-      # if errors are found, modify the errors objecton the import itself:
-      # @import.errors.add(:vendor, "Data is invalid because " + explanation_of_whats_wrong)
-      # finally, return truthy value iff no errors
     end
 
     # parse the raw data and return an array of ImportableOrder instances
@@ -58,5 +59,59 @@ module TicketSalesImportParser
         raise MissingDataError
       end
     end
+    
+    # sanity-check that the raw data appears to be a valid import file
+    def valid?
+      csv_file_parsable?  &&  required_headers_present?  &&  rows_valid?
+    end
+
+    private                     # helper methods below here
+
+    def csv_file_parsable?
+      begin
+        @csv = CSV.parse(raw_data)
+        true
+      rescue CSV::MalformedCSVError => e
+        @import.errors.add(:base, "File format invalid: #{e.message}")
+        false
+      end
+    end
+
+    def required_headers_present?
+      missing = COLUMNS - @csv[0]
+      unless missing.empty?
+        @import.errors.add(:base, "Required columns #{missing} are missing")
+      end
+      missing.empty?
+    end
+
+    def rows_valid?
+      @csv.drop(1).each_with_index do |row,num|
+        unless valid_row?(row)
+          @import.errors.add(:base, "Row #{num+1} invalid: #{row}")
+          return false 
+        end
+      end
+    end
+
+    def valid_row?(row)
+      # all required (nonblank) columns are nonblank...
+      REQUIRED_COLUMNS.all? { |col|  !(row[col].blank?) }  &&
+        valid_date?(row["Sale Date"])                      && # date columns look like dates
+        valid_date?(row["Performance Date"])               &&
+        row["Total Price"].to_f > 0.0                      && # total price looks like a number
+        row["# of Seats"].to_i > 0                         && # of seats looks like a number
+        row["Email"] =~ /[^@]@[^@]/                           # minimally valid email
+    end
+
+    def valid_date?(date)
+      begin
+        Time.zone.parse(date)
+        true
+      rescue ArgumentError
+        false
+      end
+    end
+
   end
 end

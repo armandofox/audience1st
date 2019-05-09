@@ -48,4 +48,5 @@ class TicketSalesImport < ActiveRecord::Base
       imp.finalize!
     end
   end
+
 end
