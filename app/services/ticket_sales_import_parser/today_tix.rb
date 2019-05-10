@@ -69,24 +69,26 @@ module TicketSalesImportParser
 
     def csv_file_parsable?
       begin
-        @csv = CSV.parse(raw_data)
-        true
+        @csv = CSV.parse(raw_data, :headers => true)
+        @import.errors.add(:base, "File is empty") if @csv.empty?
+        @csv.empty?
       rescue CSV::MalformedCSVError => e
-        @import.errors.add(:base, "File format invalid: #{e.message}")
+        @import.errors.add(:base, "File format is invalid: #{e.message}")
         false
       end
     end
 
     def required_headers_present?
-      missing = COLUMNS - @csv[0]
+      missing = COLUMNS - @csv[0].to_h.keys
       unless missing.empty?
-        @import.errors.add(:base, "Required columns #{missing} are missing")
+        @import.errors.add(:base, "Required column(s) are missing: #{missing}")
       end
       missing.empty?
     end
 
     def rows_valid?
       @csv.drop(1).each_with_index do |row,num|
+        byebug
         unless valid_row?(row)
           @import.errors.add(:base, "Row #{num+1} invalid: #{row}")
           return false 
