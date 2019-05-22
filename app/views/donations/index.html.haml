@@ -34,12 +34,12 @@
           %th Comments
       %tbody 
         - @donations.each do |t|
-          %tr
+          %tr{:id => "donation[#{t.id}]"}
             %td= link_to t.customer.full_name, donations_path(:use_cid => 1, :cid => t.customer, :show_vouchers => true, :commit => 'Go')
             %td= link_to_order_containing t
             %td= t.sold_on.strftime '%D'
             %td.right= number_to_currency(t.amount)
             %td= t.item_description
             %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
-            %td= t.comments
+            %td.donation_comment{:id => "donation_comment[#{t.id}]"}= t.comments
     %br

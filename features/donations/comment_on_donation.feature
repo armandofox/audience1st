@@ -15,4 +15,5 @@ Background:
 Scenario: add comment to donation
 
   When I visit the donations page
-  
+  Then show me the page
+  And I fill in "sponsor" as the comment on Joe Mallon's donation

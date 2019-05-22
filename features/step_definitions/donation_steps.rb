@@ -10,6 +10,8 @@ module DonationStepsHelper
 end
 World(DonationStepsHelper)
 
+# creating/recording donations and account codes
+
 Given /^the following Account Codes exist:$/ do |instances|
   instances.hashes.each do |hash|
     create(:account_code, hash)
@@ -26,28 +28,16 @@ end
 
 Given /^the following donations:$/ do |donations|
   donations.hashes.each do |donation|
-    steps %Q{Given a donation of #{donation[:amount]} on #{donation[:date]} from "#{donation[:donor]}" to the "#{donation[:fund]}"}
+    steps %Q{Given a donation of #{donation[:amount]} on #{donation[:date]} from "#{donation[:donor]}" to the "#{donation[:fund]}" with comment "#{donation[:comment]}"}
   end
 end
 
-Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
-  date = Time.zone.parse(date)
-  account_code = AccountCode.find_by_name!(fund)
-  amount = amount.to_f
-  find_customer(first,last).orders.where('sold_on = ?',date) do |order|
-    order.purchase_medium == type.to_sym &&
-      order.donations.length > 0 &&
-      (d = order.donations.first).amount == amount &&
-      d.account_code == account_code
-  end.should be_truthy
-end
-
-
-Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|by cash|by credit card)?$/ do |amount,date,customer,fund,how|
+Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|by cash|by credit card)?(?: with comment "(.*)")$/ do |amount,date,customer,fund,how,comment|
   steps %Q{Given customer \"#{customer}\" exists}
   account_code = fund.blank? ? AccountCode.default_account_code : find_or_create_account_code(fund)
   order = Order.new_from_donation(amount, account_code, @customer)
   order.processed_by = @customer
+  order.comments = comment if comment
   order.purchasemethod = Purchasemethod.get_type_by_name(
     case how
     when /cash/ then 'box_cash'
@@ -59,6 +49,28 @@ Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|b
   rescue Exception => e
     raise "Finalize error: #{order.errors.full_messages}"
   end
+end
+
+# editing/modifying donations
+
+When /I fill in "(.*)" as the comment on (.*)'s donation/ do |comment,name| # '
+  table_row = page.find(:xpath, "//a[text()='#{name}']/../..")
+  comment_field = table_row.find(:css, '.donation_comment')
+  fill_in comment_field, :with => comment
+end
+
+# checking for presence/attributes of donations
+
+Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
+  date = Time.zone.parse(date)
+  account_code = AccountCode.find_by_name!(fund)
+  amount = amount.to_f
+  find_customer(first,last).orders.where('sold_on = ?',date) do |order|
+    order.purchase_medium == type.to_sym &&
+      order.donations.length > 0 &&
+      (d = order.donations.first).amount == amount &&
+      d.account_code == account_code
+  end.should be_truthy
 end
 
 Then /^I should (not )?see the following donations:$/ do |no,donations|
