@@ -11,9 +11,9 @@ Background:
     | MaryJane   | Weigandt  | mjw@mail.com   | true             | 11 Main St    |          |                       | Oak  | CA    | 99994 | 2011-01-03 03:00:00 | 2011-01-01 |
     | Janey      | Weigandt  | janey@mail.com | false            | 11 Main St #1 | blurgle  | blurgle               | Oak  | CA    | 99949 | 2010-01-01 04:00:00 | 2010-01-01 |
   And the following donations:
-   | amount |       date | donor             | fund    |
-   |  35.00 | 2009-01-01 | Janey Weigandt    | General |
-   |  12.00 | 2009-05-01 | MaryJane Weigandt | General |
+   | amount |       date | donor             | fund         |
+   | $35.00 | 2009-01-01 | Janey Weigandt    | General Fund |
+   | $12.00 | 2009-05-01 | MaryJane Weigandt | General Fund |
   And I am logged in as boxoffice
   And I select customers "MaryJane Weigandt" and "Janey Weigandt" for merging
 
@@ -26,8 +26,8 @@ Scenario: auto merge
    | street    | 11 Main St   |
    | zip       | 99994        |
    | email     | mjw@mail.com |
-  And customer "MaryJane Weigandt" should have a donation of $35.00 to "General"
-  And customer "MaryJane Weigandt" should have a donation of $12.00 to "General"
+  And customer "MaryJane Weigandt" should have a donation of $35.00 to "General Fund"
+  And customer "MaryJane Weigandt" should have a donation of $12.00 to "General Fund"
 
 Scenario: manual merge
   # MaryJane appears in column 0 (left), Janey in column 1 (right)
