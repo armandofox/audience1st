@@ -32,7 +32,7 @@ Given /^the following donations:$/ do |donations|
   end
 end
 
-Given /^a donation of \$?([0-9.]+) on (\S+) from "(.*)" to the "(.*)"(by check|by cash|by credit card)?(?: with comment "(.*)")$/ do |amount,date,customer,fund,how,comment|
+Given /^a donation of \$([0-9.]+) on (\S+) from "(.*)" to the "(.*?)"(by check|by cash|by credit card)?(?: with comment "(.*)")?$/ do |amount,date,customer,fund,how,comment|
   steps %Q{Given customer \"#{customer}\" exists}
   account_code = fund.blank? ? AccountCode.default_account_code : find_or_create_account_code(fund)
   order = Order.new_from_donation(amount, account_code, @customer)
@@ -55,8 +55,8 @@ end
 
 When /I fill in "(.*)" as the comment on (.*)'s donation/ do |comment,name| # '
   table_row = page.find(:xpath, "//a[text()='#{name}']/../..")
-  comment_field = table_row.find(:css, '.donation_comment')
-  fill_in comment_field, :with => comment
+  comment_field = table_row.find(:css, '.donation-comment')
+  comment_field.set(comment)
 end
 
 # checking for presence/attributes of donations
@@ -80,11 +80,12 @@ Then /^I should (not )?see the following donations:$/ do |no,donations|
   end
 end
 
-Then /^customer "(.*)" should (not )?have a donation of \$([0-9.]+) to "(.*?)"(?: with comment "(.*)")?$/ do |customer_name,no,amount,fund,comment|
-  steps %Q{
-    Given I am logged in as staff
-    And I visit the donations page
-    And I press "Search"
-    Then I should #{no}see a row "#{customer_name}|||#{amount}|||#{comment}|" within "table[@id='donations']"
-  }
+Then /^customer "(.*) (.*)" should (not )?have a donation of \$([0-9.]+) to "(.*?)"(?: with comment "(.*)")?$/ do |first,last,no,amount,fund,comment|
+  fund_id = AccountCode.find_by(:name => fund).id
+  result = Customer.find_by(:first_name => first, :last_name => last).donations.any? do |d|
+    d.amount == amount.to_f
+    d.account_code_id = fund_id
+    comment.nil? || d.comments == comment
+  end
+  no ? !result : result
 end

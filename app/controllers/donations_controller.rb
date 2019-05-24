@@ -95,7 +95,7 @@ class DonationsController < ApplicationController
       c = current_user.email rescue "(??)"
       t.update_attributes(:letter_sent => now,
         :processed_by => current_user)
-      Txn.add_audit_record(:cust_id => t.customer_id,
+      Txn.add_audit_record(:customer_id => t.customer_id,
         :logged_in_id => current_user.id,
         :txn_type => 'don_ack',
         :comments => "Donation ID #{t.id} marked as acknowledged")
@@ -105,5 +105,22 @@ class DonationsController < ApplicationController
     end
     render :js => %Q{\$('#donation_#{params[:id]}').text('#{result}')}
   end
-  
+
+  # AJAX handler for updating the text of a donation's comment
+  def update_comment_for
+    begin
+      donation = Donation.find(params[:id])
+      comments = params[:comments]
+      donation.update_attributes!(:comments => comments)
+      Txn.add_audit_record(:customer_id => donation.customer_id, :logged_in_id => current_user.id,
+        :order_id => donation.order_id,
+        :comments => comments,
+        :txn_type => "don_edit")
+      # restore "save comment" button to look like a check mark
+      render :js => %Q{$('#save_#{donation.id}').html('&#x2714;')}
+    rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid => e
+      error = ActionController::Base.helpers.escape_javascript(e.message)
+      render :js => %Q{alert('There was an error saving the donation comment: #{error}')}
+    end
+  end
 end

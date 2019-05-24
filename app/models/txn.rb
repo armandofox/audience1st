@@ -22,7 +22,8 @@ class Txn < ActiveRecord::Base
     "del_tkts" => "Remove tickets from account",
     "???" => "UNKNOWN",
     "config" => "Configuration Change",
-    "don_ack" => "Acknowledge donation"
+    "don_ack" => "Acknowledge donation",
+    "don_edit" => "Edit donation details"
   }
 
   def desc ; TYPES[txn_type.to_s] rescue "???" ; end

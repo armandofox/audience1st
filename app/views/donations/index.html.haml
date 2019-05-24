@@ -34,12 +34,15 @@
           %th Comments
       %tbody 
         - @donations.each do |t|
-          %tr{:id => "donation[#{t.id}]"}
+          %tr{:id => "donation_row_#{t.id}"}
             %td= link_to t.customer.full_name, donations_path(:use_cid => 1, :cid => t.customer, :show_vouchers => true, :commit => 'Go')
             %td= link_to_order_containing t
             %td= t.sold_on.strftime '%D'
             %td.right= number_to_currency(t.amount)
             %td= t.item_description
             %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
-            %td.donation_comment{:id => "donation_comment[#{t.id}]"}= t.comments
+            %td
+              = form_tag update_comment_for_donation_path(t), 'data-remote' => true, 'data-method' => 'put', 'data-type' => 'script', :class => 'form form-inline' do
+                = text_field_tag 'comments', t.comments, :id => "donation_comment_{t.id}", :class => 'donation-comment form-control form-control-sm'
+                = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => "save_#{t.id}", 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'              
     %br

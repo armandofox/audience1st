@@ -52,7 +52,11 @@ Rails.application.routes.draw do
 
     # list all donations management
 
-    resources :donations, :only  => [:index, :update]
+    resources :donations, :only  => [:index, :update] do
+      member do
+        post :update_comment_for
+      end
+    end
 
     # RSS
 
