@@ -195,10 +195,10 @@ class StoreController < ApplicationController
       render :action => :shipping_address
       return
     end 
-    if email_matches_diff_last_name?
-        flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
-        render :action => :shipping_address
-        return
+    if Customer.email_matches_diff_last_name?(Customer.new params[:customer])
+      flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
+      render :action => :shipping_address
+      return
     end
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
@@ -211,6 +211,12 @@ class StoreController < ApplicationController
     @recipient.save!
     @cart.customer = @recipient
     @cart.save!
+
+    if Customer.email_last_name_match_diff_address?(Customer.new params[:customer])
+      flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
+    elsif recipient_from_params[1] == "found_matching_customer"
+      flash[:notice] = I18n.t('store.gift_recipient_on_file')  
+    end
     redirect_to_checkout
   end
 
@@ -286,18 +292,10 @@ class StoreController < ApplicationController
       (s.next_showdate || s.showdates.first)
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
-  def email_matches_diff_last_name?
-    try_customer = Customer.new(params[:customer])
-    Customer.email_matches_diff_last_name?(try_customer)
-  end
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)
     (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
-  end
-  def email_last_name_match_diff_address?
-    try_customer = Customer.new(params[:customer])
-    Customer.email_last_name_match_diff_address?(try_customer)
   end
   def remember_cart_in_session!
     @cart.save!
@@ -308,12 +306,6 @@ class StoreController < ApplicationController
     checkout_params = {}
     checkout_params[:sales_final] = true if params[:sales_final]
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
-    matching = recipient_from_params[1]
-    if email_last_name_match_diff_address?
-        flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
-    elsif matching == "found_matching_customer"
-        flash[:notice] = I18n.t('store.gift_recipient_on_file')  
-    end
     redirect_to checkout_path(@customer, checkout_params)
     true
   end
