@@ -17,4 +17,9 @@ Scenario: no tickets from this will-call have been previously imported
 
   When I upload the "TodayTix" will-call file "four_valid_orders.csv"
   Then show me the page
-  
+
+Scenario: some orders have already been imported
+
+Scenario: total number of tickets to import exceeds max sales for date
+
+Scenario: capacity control exceeded on one of the ticket types to import

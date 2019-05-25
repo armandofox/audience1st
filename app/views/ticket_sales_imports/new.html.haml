@@ -7,23 +7,20 @@
         %tr
           %th{:scope => 'col'} Vendor's order#
           %th{:scope => 'col'} Tickets
-          %th{:scope => 'col'} First name on import
-          %th{:scope => 'col'} Last name on import
+          %th{:scope => 'col'} Name on import
           %th{:scope => 'col'} Email on import
-          %th{:scope => 'col'} Action
+          %th{:scope => 'col', :width => '20%'} Import to customer
       %tbody
         - @import.importable_orders.each_with_index do |ord,idx|
           %tr
             %td= ord.order.external_key
             %td= ord.description
-            %td= ord.import_first_name
-            %td= ord.import_last_name
+            %td #{ord.import_last_name}, #{ord.import_first_name}
             %td= ord.import_email
             %td
-              - if ord.action == ImportableOrder::DO_NOT_IMPORT
-                Will not be imported
-              - elsif ord.action == ImportableOrder::CREATE_NEW_CUSTOMER
-                Create new customer & import
+              - if ord.action == ImportableOrder::ALREADY_IMPORTED
+                Already imported as order #
+                = link_to ord.order.id, order_path(ord.order)
               - else
                 = select_tag "import[#{idx}]", import_choices(ord), :class => 'form-control'
 

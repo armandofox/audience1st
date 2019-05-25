@@ -25,20 +25,24 @@ module TicketSalesImportParser
       importable_orders = []
       begin
         orders_as_hash.each do |h|
-          redemption = find_valid_voucher_for(h)
-          imp_ord = ImportableOrder.new
-          first,last = h.values_at("Purchaser First Name", "Purchaser Last Name")
-          imp_ord.import_first_name = first
-          imp_ord.import_last_name = last
-          imp_ord.import_email = h["Purchaser Email"]
-          imp_ord.customers = Customer.possible_matches(first,last,imp_ord.import_email)
-          imp_ord.order.external_key = h["Order #"]
-          num_seats = h["# of Seats"].to_i
-          imp_ord.order.add_tickets(redemption, num_seats)
-          imp_ord.description = "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
-          importable_orders << imp_ord
+          i = ImportableOrder.new
+          i.find_or_set_external_key h["Order #"]
+          unless i.action == ImportableOrder::ALREADY_IMPORTED
+            num_seats = h["# of Seats"].to_i
+            price_per_seat = h["Total Price"].to_f / num_seats
+            redemption = i.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)
+            first,last = h.values_at("Purchaser First Name", "Purchaser Last Name")
+            i.import_first_name = first
+            i.import_last_name = last
+            i.import_email = h["Email"]
+            i.set_possible_customers first,last,i.import_email
+            i.order.add_tickets(redemption, num_seats)
+            i.description = "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
+          end
+          importable_orders << i
         end
-      rescue MissingDataError
+      rescue ImportableOrder::MissingDataError => e
+        import.errors.add(:base, e.message)
         []
       end
       importable_orders
@@ -48,33 +52,6 @@ module TicketSalesImportParser
       CSV.parse(raw_data, :headers => true).map(&:to_hash)
     end
 
-    def find_valid_voucher_for(h)   # :nodoc:
-      thedate = Time.zone.parse(h["Performance Date"] )
-      showdate = Showdate.where(:thedate => thedate).first
-      if showdate.nil?
-        import.errors.add(:base, I18n.translate('import.showdate_not_found', :date => thedate.to_formatted_s(:showtime_including_year)))
-        raise MissingDataError
-      end
-      num_seats = h["# of Seats"].to_i
-      price_per_seat = h["Total Price"].to_f / num_seats
-      vouchertype = Vouchertype.
-        where("name LIKE ?", "%#{import.vendor}%").
-        find_by(:season => showdate.season, :price => price_per_seat)
-      if vouchertype.nil?
-        import.errors.add(:base, I18n.translate('import.vouchertype_not_found',
-            :season => ApplicationController.helpers.humanize_season(showdate.season),
-            :vendor => import.vendor, :price => sprintf('%.02f', price_per_seat)))
-        raise MissingDataError
-      end
-      redemption = ValidVoucher.find_by(:vouchertype => vouchertype, :showdate => showdate)
-      if redemption.nil?
-        import.errors.add(:base, I18n.translate('import.redemption_not_found', :vouchertype => vouchertype.name,
-            :performance => showdate.printable_name))
-        raise MissingDataError
-      end
-      redemption
-    end
-    
     # sanity-check that the raw data appears to be a valid import file
     def valid?
       csv_file_parsable?  &&  required_headers_present?  &&  rows_valid?

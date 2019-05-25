@@ -63,6 +63,10 @@ class Customer < ActiveRecord::Base
   # given some customer info, find this customer in the database with
   # high confidence;  if not found or ambiguous, return nil
 
+  def self.find_by_email(email)
+    Customer.where("lower(email) = ?", email.strip.downcase).first
+  end
+  
   def self.find_unique(p)
     return (
       match_email_and_last_name(p.email, p.last_name) ||
