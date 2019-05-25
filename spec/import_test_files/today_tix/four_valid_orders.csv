@@ -1,0 +1,5 @@
+"Order #","Purchaser First Name","Purchaser Last Name","Zip Code","Pickup First Name","Pickup Last Name","Ticket Type","Email","# Trans","show","Performance Date","Sale Date","# of Seats","Purchased Section","Actual Section","Row","Start","End","Total Price","Status","Data Privacy"
+"T102618218358","Maria","Moran","94014","Samantha","Moran","PURCHASE","mmoranrn98@not.hotmail.com","4","Company","2019-01-04 8:00 PM","2018-10-26 4:51 PM","3","Orchestra","Orchestra","GA_O",,,"57.00","CHARGED","-"
+"T102718421247","Faryl","Ury","94110","Faryl","Ury","PURCHASE","faryl.ury@not.gmail.com","4","Company","2019-01-04 8:00 PM","2018-10-27 8:42 AM","2","Orchestra","Orchestra","GA_O",,,"38.00","CHARGED","-"
+"T102918348530","Bryan","Song","94025","Wen","Song Bryan Chia","PURCHASE","bryanchiawensong@not.gmail.com","5","Company","2019-01-04 8:00 PM","2018-10-29 1:26 PM","2","Orchestra","Orchestra","GA_O",,,"38.00","CHARGED","-"
+"T103018946384","Adrian","Ray Avalani ","94066","Adrian","Ray Avalani","PURCHASE","arrayavalani@not.gmail.com","15","Company","2019-01-06 8:00 PM","2018-10-29 5:13 PM","1","Orchestra","Orchestra","GA_O",,,"19.00","CHARGED","-"
