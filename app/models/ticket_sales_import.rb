@@ -39,6 +39,8 @@ class TicketSalesImport < ActiveRecord::Base
     @parser.valid?
   end
 
+  public
+
   def parse
     @importable_orders = @parser.parse
   end

@@ -22,8 +22,8 @@ class ImportableOrder
   # +action+: index of selected action. 0=do not import, 1=create new customer,
   # 2..n-2=import to selected customer
   attr_accessor :action
-  # +comment+: optional comment added by staff at import time that becomes the comment field
-  # of the order
+  # +description+: summary of what will be imported/added
+  attr_accessor :description
 
   DO_NOT_IMPORT = 0
   CREATE_NEW_CUSTOMER = 1
@@ -31,7 +31,7 @@ class ImportableOrder
   def initialize                # :nodoc:
     @order = Order.new(
       :processed_by => Customer.boxoffice_daemon,
-      :purchasemethod => Purchasemethod.get(:ext))
+      :purchasemethod => Purchasemethod.get_type_by_name('ext'))
     @customers = []
     @action = DO_NOT_IMPORT
     @comment = nil
@@ -60,8 +60,6 @@ class ImportableOrder
   end
 
   def finalize_with_new_customer!
-    if 
-    end
     customer_args = { :first_name => @import_first_name, :last_name => @import_last_name }
     customer_args[:email] = @import_email unless @import_email.blank?
   end

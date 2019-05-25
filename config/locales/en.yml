@@ -1,6 +1,9 @@
 en:
   import:
 
+    showdate_not_found: >
+      This will-call list is for %{date}, but there is no performance listed on that date.
+
     vouchertype_not_found: >
       Cannot find vouchertype for %{season} season with '%{vendor}' in its name and
       priced at %{price}.

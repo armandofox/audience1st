@@ -15,7 +15,12 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :ticket_sales_imports, :only => [:index, :new, :create]
+    resources :ticket_sales_imports, :only => [:index, :create] do
+      collection do
+        post :upload
+      end
+    end
+    
 
     resources :labels, :only => [:index, :create, :update, :destroy]
 

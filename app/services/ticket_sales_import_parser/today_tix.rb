@@ -1,5 +1,6 @@
 module TicketSalesImportParser
   class TodayTix
+    
     require 'csv'
 
     attr_reader :import
@@ -26,14 +27,21 @@ module TicketSalesImportParser
         orders_as_hash.each do |h|
           redemption = find_valid_voucher_for(h)
           imp_ord = ImportableOrder.new
-          imp_ord.customers = Customer.possible_matches(h["Purchaser First Name"], h["Purchaser Last Name"])
-          imp_ord.order.add_tickets(redemption, order_hash["# of Seats"])
+          first,last = h.values_at("Purchaser First Name", "Purchaser Last Name")
+          imp_ord.import_first_name = first
+          imp_ord.import_last_name = last
+          imp_ord.import_email = h["Purchaser Email"]
+          imp_ord.customers = Customer.possible_matches(first,last,imp_ord.import_email)
+          imp_ord.order.external_key = h["Order #"]
+          num_seats = h["# of Seats"].to_i
+          imp_ord.order.add_tickets(redemption, num_seats)
+          imp_ord.description = "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
           importable_orders << imp_ord
         end
-        importable_orders
       rescue MissingDataError
         []
       end
+      importable_orders
     end
 
     def orders_as_hash          # :nodoc:
@@ -41,23 +49,30 @@ module TicketSalesImportParser
     end
 
     def find_valid_voucher_for(h)   # :nodoc:
-      showdate = Showdate.find_by(:thedate => Time.zone.parse(h["Performance Date"] ))
+      thedate = Time.zone.parse(h["Performance Date"] )
+      showdate = Showdate.where(:thedate => thedate).first
+      if showdate.nil?
+        import.errors.add(:base, I18n.translate('import.showdate_not_found', :date => thedate.to_formatted_s(:showtime_including_year)))
+        raise MissingDataError
+      end
       num_seats = h["# of Seats"].to_i
       price_per_seat = h["Total Price"].to_f / num_seats
       vouchertype = Vouchertype.
-        where("name LIKE ?", import.vendor).
+        where("name LIKE ?", "%#{import.vendor}%").
         find_by(:season => showdate.season, :price => price_per_seat)
       if vouchertype.nil?
-        import.errors.add(:base, t('import.vouchertype_not_found', :season => showdate.season,
+        import.errors.add(:base, I18n.translate('import.vouchertype_not_found',
+            :season => ApplicationController.helpers.humanize_season(showdate.season),
             :vendor => import.vendor, :price => sprintf('%.02f', price_per_seat)))
         raise MissingDataError
       end
-      redemption = ValidVoucher.find_by(:vouchertype => vouchertype, :showdate => showdate).first
+      redemption = ValidVoucher.find_by(:vouchertype => vouchertype, :showdate => showdate)
       if redemption.nil?
-        import.errors.add(:base, t('import.redemption_not_found', :vouchertype => vouchertype.name,
+        import.errors.add(:base, I18n.translate('import.redemption_not_found', :vouchertype => vouchertype.name,
             :performance => showdate.printable_name))
         raise MissingDataError
       end
+      redemption
     end
     
     # sanity-check that the raw data appears to be a valid import file

@@ -4,17 +4,18 @@ describe 'TodayTix parser' do
   describe "validating" do
     context  "invalid CSV file" do
       before(:each) do
-        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/all_in_one.csv"))
+        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/today_tix/all_in_one.csv"))
         @parser = TicketSalesImportParser::TodayTix.new(@import)
         expect(@parser).not_to be_valid
+        @dir = "spec/import_test_files/today_tix"
       end
       it "should raise error if file is blank" do
-        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/empty.csv"))
+        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("#{@dir}/empty.csv"))
         @parser = TicketSalesImportParser::TodayTix.new(@import)
         expect(@import.errors[:base]).to include_match_for(/file is empty/i)
       end
       it "should raise error if headers is missing critical columns" do
-        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/missing_required_columns.csv"))
+        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("#{@dir}/missing_required_columns.csv"))
         @parser = TicketSalesImportParser::TodayTix.new(@import)
         expect(@import.errors[:base]).to include_match_for(Regexp.new %Q{missing required columns: Order \#, \# of Seats},Regexp::IGNORECASE)
       end
@@ -30,7 +31,7 @@ describe 'TodayTix parser' do
     end
     context "valid CSV file" do
       it "should return true if all rows are valid" do
-        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("spec/import_test_files/todaytix/valid.csv"))
+        @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("#{@dir}/valid.csv"))
         @parser = TicketSalesImportParser::TodayTix.new(@import)
         expect(@parser).to be_valid
       end

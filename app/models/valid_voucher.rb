@@ -266,6 +266,10 @@ class ValidVoucher < ActiveRecord::Base
     "#{showdate.printable_name} (#{seats_of_type_remaining} left)"
   end
 
+  def show_name_with_vouchertype_name
+    "#{showdate.printable_name} - #{vouchertype.name}"
+  end
+
   def instantiate(quantity)
     raise InvalidProcessedByError unless customer.kind_of?(Customer)
     vouchers = vouchertype.instantiate(quantity, :promo_code => self.promo_code)

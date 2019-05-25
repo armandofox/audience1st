@@ -5,11 +5,28 @@
     %table.table
       %thead
         %tr
+          %th{:scope => 'col'} Vendor's order#
           %th{:scope => 'col'} Tickets
-          %th{:scope => 'col'} Name on import list
+          %th{:scope => 'col'} First name on import
+          %th{:scope => 'col'} Last name on import
+          %th{:scope => 'col'} Email on import
           %th{:scope => 'col'} Action
       %tbody
-        - @import.importable_orders.each do |ord|
+        - @import.importable_orders.each_with_index do |ord,idx|
           %tr
-            %td= ord.item_descriptions
-            %td= ord.
+            %td= ord.order.external_key
+            %td= ord.description
+            %td= ord.import_first_name
+            %td= ord.import_last_name
+            %td= ord.import_email
+            %td
+              - if ord.action == ImportableOrder::DO_NOT_IMPORT
+                Will not be imported
+              - elsif ord.action == ImportableOrder::CREATE_NEW_CUSTOMER
+                Create new customer & import
+              - else
+                = select_tag "import[#{idx}]", import_choices(ord), :class => 'form-control'
+
+    = submit_tag 'Import Orders', :class => 'btn btn-success'
+    = link_to 'Cancel', ticket_sales_imports_path, :class => 'btn btn-secondary'
+  
