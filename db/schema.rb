@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190420212205) do
+ActiveRecord::Schema.define(version: 20190526013811) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,7 +93,6 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.integer  "showdate_id"
     t.string   "comments",           limit: 255
     t.boolean  "fulfillment_needed",             default: false,      null: false
-    t.string   "external_key",       limit: 255
     t.string   "promo_code",         limit: 255
     t.integer  "processed_by_id",                default: 2146722771, null: false
     t.integer  "bundle_id",                      default: 0,          null: false
@@ -211,9 +210,6 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.string   "external_key"
   end
 
-  add_index "orders", ["authorization"], name: "public_orders_authorization0_idx", using: :btree
-  add_index "orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
-  add_index "orders", ["customer_id"], name: "public_orders_customer_id2_idx", using: :btree
   add_index "orders", ["external_key"], name: "index_orders_on_external_key", unique: true, using: :btree
 
   create_table "showdates", force: :cascade do |t|
@@ -246,8 +242,8 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.string   "vendor"
     t.text     "raw_data"
     t.integer  "processed_by_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "txns", force: :cascade do |t|

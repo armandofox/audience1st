@@ -92,6 +92,8 @@ class Order < ActiveRecord::Base
 
   public
 
+  scope :completed, ->() { where('sold_on IS NOT NULL') }
+
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
     includes(:donations => [:customer, :account_code]).

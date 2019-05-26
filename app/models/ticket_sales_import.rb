@@ -43,6 +43,7 @@ class TicketSalesImport < ActiveRecord::Base
 
   def parse
     @importable_orders = @parser.parse
+    @importable_orders.each { |imp| imp.order.save! }
   end
   
   def finalize!

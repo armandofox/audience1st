@@ -11,18 +11,24 @@
           %th{:scope => 'col'} Email on import
           %th{:scope => 'col', :width => '20%'} Import to customer
       %tbody
-        - @import.importable_orders.each_with_index do |ord,idx|
+        - @import.importable_orders.each do |ord|
+          - oid = ord.order_id
           %tr
             %td= ord.order.external_key
             %td= ord.description
             %td #{ord.import_last_name}, #{ord.import_first_name}
             %td= ord.import_email
+            - if ord.action == ImportableOrder::CREATE_NEW_CUSTOMER
+              = hidden_field_tag "o[#{oid}][first]", ord.import_first_name
+              = hidden_field_tag "o[#{oid}][last]", ord.import_last_name
+              = hidden_field_tag "o[#{oid}][email]", ord.import_email
             %td
+              = hidden_field_tag "o[#{oid}][action]", ord.action
               - if ord.action == ImportableOrder::ALREADY_IMPORTED
                 Already imported as order #
                 = link_to ord.order.id, order_path(ord.order)
               - else
-                = select_tag "import[#{idx}]", import_choices(ord), :class => 'form-control'
+                = select_tag "o[#{oid}][customer_id]", import_choices(ord), :class => 'form-control'
 
     = submit_tag 'Import Orders', :class => 'btn btn-success'
     = link_to 'Cancel', ticket_sales_imports_path, :class => 'btn btn-secondary'
