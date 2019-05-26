@@ -28,33 +28,30 @@ class TicketSalesImportsController < ApplicationController
   def edit
     @import = TicketSalesImport.find params[:id]
     @import.parse
-    if @import.errors.empty?
-      render :action => 'edit'
-    else
-      redirect_to ticket_sales_imports_path, :alert => @import.errors.as_html
-    end
+    redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) if !@import.errors.empty?
   end
 
   # Finalize the import according to dropdown menu selections
   def update
     import = TicketSalesImport.find params[:id]
     order_hash = params[:o]
+    byebug
     # each hash key is the id of a saved (but not finalized) order
     # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
     #  if action is ALREADY_IMPORTED or DO_NOT_IMPORT, do nothing
-    #  if action is CREATE_NEW_CUSTOMER, create new customer & finalize order
-    #  if action is USE_EXISTING_CUSTOMER, attach given customer ID & finalize order
+    #  if action is MAY_CREATE_NEW_CUSTOMER, create new customer & finalize order
+    #  if action is MUST_USE_EXISTING_CUSTOMER, attach given customer ID & finalize order
     Order.transaction do
       order_hash.each_pair do |order_id, o|
         order = Order.find order_id
         case o[:action]
-        when ImportableOrder::CREATE_NEW_CUSTOMER
+        when ImportableOrder::MAY_CREATE_NEW_CUSTOMER
           order.customer = order.purchaser =
             Customer.new(:first_name => o[:first], :last_name => o[:last], :email => o[:email])
           customer.force_valid = true
           order.finalize!
           import.new_customers += 1
-        when ImportableOrder::USE_EXISTING_CUSTOMER
+        when ImportableOrder::MUST_USE_EXISTING_CUSTOMER
           order.customer_id = order.purchaser_id = o[:customer_id]
           order.finalize!
           import.existing_customers += 1

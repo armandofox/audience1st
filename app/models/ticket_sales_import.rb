@@ -17,7 +17,7 @@ class TicketSalesImport < ActiveRecord::Base
   validates_length_of :raw_data, :within => 1..65535
   validate :valid_for_parsing?
 
-  scope :sorted, -> { order('completed DESC, updated_at DESC') }
+  scope :sorted, -> { order('updated_at DESC') }
 
   attr_reader :parser
   after_initialize :set_parser
@@ -43,7 +43,9 @@ class TicketSalesImport < ActiveRecord::Base
 
   def parse
     @importable_orders = @parser.parse
-    @importable_orders.each { |imp| imp.order.save! }
+    @importable_orders.each do |imp|
+      imp.order.save! unless (imp.action == ImportableOrder::ALREADY_IMPORTED || imp.action == ImportableOrder::DO_NOT_IMPORT)
+    end
   end
   
   def finalize!

@@ -42,7 +42,7 @@ class ImportableOrder
   # +description+: summary of what will be imported/added
   attr_accessor :description
 
-  DO_NOT_IMPORT =         0
+  DO_NOT_IMPORT =         -4
   ALREADY_IMPORTED =      -1
   CREATE_NEW_CUSTOMER =   -2
   USE_EXISTING_CUSTOMER = -3
@@ -71,6 +71,7 @@ class ImportableOrder
       self.action = USE_EXISTING_CUSTOMER
     else
       self.customers = Customer.possible_matches(import_first_name,import_last_name,import_email)
+      self.action = CREATE_NEW_CUSTOMER
     end
   end
 

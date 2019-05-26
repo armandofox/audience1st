@@ -1,6 +1,6 @@
 .container
   %h1 Import External Vendor Ticket Sales
-  = form_tag upload_ticket_sales_imports_path, :multipart => true, :class => 'form' do
+  = form_tag ticket_sales_imports_path, :multipart => true, :class => 'form' do
     .form-row.px-2
       %label.col-2.text-right.col-form-label{:for => 'vendor'} Import from
       = select_tag 'vendor', options_for_select(@vendors), :class => 'form-control col-2'
@@ -22,7 +22,7 @@
     %tbody
       - @ticket_sales_imports.each do |imp|
         %tr[imp]
-          %td= link_to edit_ticket_sales_import_path(imp), imp.updated_at.to_formatted_s(:compact)
+          %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
           %td= imp.vendor
           %td= imp.tickets_sold
           %td= imp.new_customers
