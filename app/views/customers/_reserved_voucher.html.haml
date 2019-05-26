@@ -24,6 +24,9 @@
   %tr.border-bottom.border-secondary[group.vouchers.first]
     %td.text-center= group.size
     %td.text-center= group.name
-    %td.text-center= group.showdate.printable_date
+    %td.text-center
+      %span.showName= group.showdate.name
+      %br
+      %span.showDate= group.showdate.printable_date
     %td
     %td
