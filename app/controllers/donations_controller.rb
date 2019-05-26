@@ -117,7 +117,7 @@ class DonationsController < ApplicationController
         :comments => comments,
         :txn_type => "don_edit")
       # restore "save comment" button to look like a check mark
-      render :js => %Q{$('#save_#{donation.id}').html('&#x2714;')}
+      render :js => %Q{alert('Comment saved')}
     rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid => e
       error = ActionController::Base.helpers.escape_javascript(e.message)
       render :js => %Q{alert('There was an error saving the donation comment: #{error}')}

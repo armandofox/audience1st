@@ -44,5 +44,5 @@
             %td
               = form_tag update_comment_for_donation_path(t), 'data-remote' => true, 'data-method' => 'put', 'data-type' => 'script', :class => 'form form-inline' do
                 = text_field_tag 'comments', t.comments, :id => "donation_comment_{t.id}", :class => 'donation-comment form-control form-control-sm'
-                = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => "save_#{t.id}", 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'              
+                = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => "save_#{t.id}", :class => 'btn btn-sm btn-outline-success'              
     %br
