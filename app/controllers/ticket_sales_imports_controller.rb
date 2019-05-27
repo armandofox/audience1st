@@ -17,10 +17,10 @@ class TicketSalesImportsController < ApplicationController
   def create
     @import = TicketSalesImport.new(
       :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user)
-    begin
+    if @import.valid?
       @import.save!
       redirect_to edit_ticket_sales_import_path(@import)
-    rescue ActiveRecord::RecordInvalid
+    else
       redirect_to ticket_sales_imports_path, :alert => @import.errors.as_html
     end
   end

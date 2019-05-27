@@ -36,7 +36,7 @@ class ImportableOrder
   attr_accessor :import_email
   # +customers+: a collection of candidate Customer records to import to
   attr_accessor :customers
-  # +action+: DO_NOT_IMPORT, ALREADY_IMPORTED, CREATE_NEW_CUSTOMER, USE_EXISTING_CUSTOMER
+  # +action+: DO_NOT_IMPORT, ALREADY_IMPORTED, MAY_CREATE_NEW_CUSTOMER, MUST_USE_EXISTING_CUSTOMER
   # 2..n-2=import to selected customer
   attr_accessor :action
   # +description+: summary of what will be imported/added
@@ -44,8 +44,8 @@ class ImportableOrder
 
   DO_NOT_IMPORT =         -4
   ALREADY_IMPORTED =      -1
-  CREATE_NEW_CUSTOMER =   -2
-  USE_EXISTING_CUSTOMER = -3
+  MAY_CREATE_NEW_CUSTOMER =   -2
+  MUST_USE_EXISTING_CUSTOMER = -3
   
   def initialize                # :nodoc:
     @order = Order.new(
@@ -68,10 +68,10 @@ class ImportableOrder
     if (!import_email.blank?  && (c = Customer.find_by_email(import_email)))
       # unique match
       self.customers = [c]
-      self.action = USE_EXISTING_CUSTOMER
+      self.action = MUST_USE_EXISTING_CUSTOMER
     else
       self.customers = Customer.possible_matches(import_first_name,import_last_name,import_email)
-      self.action = CREATE_NEW_CUSTOMER
+      self.action = MAY_CREATE_NEW_CUSTOMER
     end
   end
 
@@ -82,7 +82,7 @@ class ImportableOrder
     vouchertype = Vouchertype.where("name LIKE ?", "%#{vendor}%").find_by(:season => showdate.season, :price => price)
     raise MissingDataError.new(I18n.translate('import.vouchertype_not_found',
         :season => ApplicationController.helpers.humanize_season(showdate.season),
-        :vendor => import.vendor, :price => sprintf('%.02f', price_per_seat))) if vouchertype.nil?
+        :vendor => vendor, :price => sprintf('%.02f', price))) if vouchertype.nil?
     redemption = ValidVoucher.find_by(:vouchertype => vouchertype, :showdate => showdate)
     raise MissingDataError.new(I18n.translate('import.redemption_not_found',
         :vouchertype => vouchertype.name,:performance => showdate.printable_name)) if redemption.nil?
@@ -95,7 +95,7 @@ class ImportableOrder
     case @action
     when DO_NOT_IMPORT
       return true
-    when CREATE_NEW_CUSTOMER
+    when MAY_CREATE_NEW_CUSTOMER
       finalize_with_new_customer!
     else
       finalize_with_existing_customer!

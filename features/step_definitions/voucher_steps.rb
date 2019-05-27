@@ -56,6 +56,12 @@ Then /^customer "(.*) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (
   steps %Q{Then he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
 
+Then /the following "(.*)" tickets should have been imported for "(.*)":/ do |vtype,show,table|
+  table.hashes.each do |h|
+    steps %Q{Then customer "#{h[patron]}" should have #{h[qty]} "#{vtype}" tickets for "#{show}" on #{h[showdate]}}
+  end
+end
+
 Then /^s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |num,type,show,date|
   @showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
   @showdate.show.name.should == show

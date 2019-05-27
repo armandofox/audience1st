@@ -13,7 +13,7 @@ module TicketSalesImportParser
       "Pickup First Name","Pickup Last Name","Purchaser First Name","Purchaser Last Name",
       "# of Seats","Total Price","Performance Date"].freeze
     # columns that might be blank in body, but must be present in header
-    OTHER_COLUMNS = ["Section","Row","Start","End","Zip Code"].freeze
+    OTHER_COLUMNS = ["Row","Start","End","Zip Code"].freeze
     COLUMNS = (REQUIRED_COLUMNS + OTHER_COLUMNS).freeze
 
     def initialize(import)
@@ -23,8 +23,9 @@ module TicketSalesImportParser
     # parse the raw data and return an array of ImportableOrder instances
     def parse
       importable_orders = []
+      csv_file_parsable? unless @csv # make sure we have parsed it even if #valid? wasn't 
       begin
-        orders_as_hash.each do |h|
+        @csv.map(&:to_hash).each do |h|
           i = ImportableOrder.new
           i.find_or_set_external_key h["Order #"]
           unless i.action == ImportableOrder::ALREADY_IMPORTED
@@ -47,10 +48,6 @@ module TicketSalesImportParser
       importable_orders
     end
 
-    def orders_as_hash          # :nodoc:
-      CSV.parse(raw_data, :headers => true).map(&:to_hash)
-    end
-
     # sanity-check that the raw data appears to be a valid import file
     def valid?
       csv_file_parsable?  &&  required_headers_present?  &&  rows_valid?
@@ -60,9 +57,9 @@ module TicketSalesImportParser
 
     def csv_file_parsable?
       begin
-        @csv = CSV.parse(raw_data, :headers => true)
+        @csv = CSV.parse(raw_data, :headers => true, :converters => lambda { |f| f.to_s.strip })
         @import.errors.add(:base, "File is empty") if @csv.empty?
-        @csv.empty?
+        !@csv.empty?
       rescue CSV::MalformedCSVError => e
         @import.errors.add(:base, "File format is invalid: #{e.message}")
         false
