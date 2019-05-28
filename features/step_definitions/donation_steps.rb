@@ -30,7 +30,7 @@ Given /^the following donations:$/ do |donations|
   end
 end
 
-Then /^customer "(.*) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
+Then /^customer "(\S+) (.*)" should have an order dated "(.*)" containing a (.*) donation of \$(.*) to "(.*)"$/ do |first,last,date,type,amount,fund|
   date = Time.zone.parse(date)
   account_code = AccountCode.find_by_name!(fund)
   amount = amount.to_f

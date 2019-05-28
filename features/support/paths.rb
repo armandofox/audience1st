@@ -10,7 +10,7 @@ module NavigationHelpers
     Showdate.find_by_thedate!(Time.zone.parse time)
   end
   def path_to(page_name)
-    @customer = find_or_create_customer($1,$2) if page_name =~ /for customer "(.*) (.*)"/
+    @customer = find_or_create_customer($1,$2) if page_name =~ /for customer "(\S+) (.*)"/
     @show = (Show.find_by_name($1) || create(:show, :name => $1)).id if page_name =~ /for the show "(.*)"/
     
     case page_name
@@ -38,7 +38,7 @@ module NavigationHelpers
     when /the classes and camps page/   then store_path(:what => 'Class')
     when /the subscriptions page/i      then store_subscribe_path(@customer)
     when /the shipping info page/i      then shipping_address_path(@customer)
-    when /the checkout page for customer "(.*) (.*)"/i then checkout_path(@customer = find_customer($1,$2))
+    when /the checkout page for customer "(\S+) (.*)"/i then checkout_path(@customer = find_customer($1,$2))
     when /the checkout page/i           then checkout_path(@customer)
     when /the order confirmation page/i then place_order_path(@customer)
       # reporting pages 
