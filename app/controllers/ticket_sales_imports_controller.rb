@@ -16,7 +16,8 @@ class TicketSalesImportsController < ApplicationController
 
   def create
     @import = TicketSalesImport.new(
-      :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user)
+      :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user,
+      :existing_customers => 0, :new_customers => 0, :tickets_sold => 0)
     if @import.valid?
       @import.save!
       redirect_to edit_ticket_sales_import_path(@import)
@@ -35,31 +36,38 @@ class TicketSalesImportsController < ApplicationController
   def update
     import = TicketSalesImport.find params[:id]
     order_hash = params[:o]
-    byebug
     # each hash key is the id of a saved (but not finalized) order
     # each hash value is {:action => a, :customer_id => c, :first => f, :last => l, :email => e}
     #  if action is ALREADY_IMPORTED or DO_NOT_IMPORT, do nothing
     #  if action is MAY_CREATE_NEW_CUSTOMER, create new customer & finalize order
     #  if action is MUST_USE_EXISTING_CUSTOMER, attach given customer ID & finalize order
-    Order.transaction do
-      order_hash.each_pair do |order_id, o|
-        order = Order.find order_id
-        case o[:action]
-        when ImportableOrder::MAY_CREATE_NEW_CUSTOMER
-          order.customer = order.purchaser =
-            Customer.new(:first_name => o[:first], :last_name => o[:last], :email => o[:email])
-          customer.force_valid = true
-          order.finalize!
-          import.new_customers += 1
-        when ImportableOrder::MUST_USE_EXISTING_CUSTOMER
-          order.customer_id = order.purchaser_id = o[:customer_id]
-          order.finalize!
-          import.existing_customers += 1
-        when ImportableOrder::DO_NOT_IMPORT, ImportableOrder::ALREADY_IMPORTED
+    #begin
+      Order.transaction do
+        order_hash.each_pair do |order_id, o|
+          order = Order.find order_id
+          order.ticket_sales_import = import
+          case o[:action]
+          when ImportableOrder::MAY_CREATE_NEW_CUSTOMER
+            customer = Customer.new(:first_name => o[:first], :last_name => o[:last], :email => o[:email])
+            customer.force_valid = true
+            order.customer = order.purchaser = customer
+            order.finalize!
+            import.new_customers += 1
+            import.tickets_sold += order.ticket_count
+          when ImportableOrder::MUST_USE_EXISTING_CUSTOMER
+            order.customer_id = order.purchaser_id = o[:customer_id]
+            order.finalize!
+            import.existing_customers += 1
+            import.tickets_sold += order.ticket_count
+          when ImportableOrder::DO_NOT_IMPORT, ImportableOrder::ALREADY_IMPORTED
+          end
         end
+        import.save!
+        flash[:notice] = t('import.import_successful', :tickets_sold => import.tickets_sold, :new_customers => import.new_customers, :existing_customers => import.existing_customers)
       end
-      import.save!
-    end
+    # rescue StandardError => e
+    #   flash[:alert] = t('import.import_failed', :message => e.message)
+    # end
+    redirect_to ticket_sales_imports_path
   end
-
 end

@@ -76,7 +76,6 @@ module TicketSalesImportParser
 
     def rows_valid?
       @csv.drop(1).each_with_index do |row,num|
-        byebug
         unless valid_row?(row)
           @import.errors.add(:base, "Row #{num+1} invalid: #{row}")
           return false 

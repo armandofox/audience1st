@@ -23,6 +23,8 @@ Scenario: no tickets from this will-call have been previously imported, no custo
   | Song, Bryan         | Create new customer |
   | Ray Avalani, Adrian | Create new customer |
   And I press "Import Orders"
+  Then I should not see the message for "import.import_failed"
+  Then show me the page
   Then the following "TodayTix - half off" tickets should have been imported for "Chicago":
     | patron             | qty | showdate            |
     | Maria Moran        |   3 | Oct 1, 2010, 8:00pm |

@@ -58,7 +58,7 @@ end
 
 Then /the following "(.*)" tickets should have been imported for "(.*)":/ do |vtype,show,table|
   table.hashes.each do |h|
-    steps %Q{Then customer "#{h[patron]}" should have #{h[qty]} "#{vtype}" tickets for "#{show}" on #{h[showdate]}}
+    steps %Q{Then customer "#{h['patron']}" should have #{h['qty']} "#{vtype}" tickets for "#{show}" on #{h['showdate']}}
   end
 end
 
@@ -66,8 +66,8 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |num,ty
   @showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
   @showdate.show.name.should == show
   @vouchertype = Vouchertype.find_by_name!(type)
-  @customer.vouchers.where('vouchertype_id = ? AND showdate_id = ?', @vouchertype.id,@showdate.id).count.
-    should == num.to_i
+  expect(@customer.vouchers.where(:vouchertype_id => @vouchertype.id, :showdate_id => @showdate.id).count).
+    to eq(num.to_i)
 end
 
 Then /^customer "(.*) (.*)" should have the following vouchers?:$/ do |first,last,vouchers|

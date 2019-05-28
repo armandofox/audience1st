@@ -2,6 +2,7 @@ class Order < ActiveRecord::Base
   belongs_to :customer
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
+  belongs_to :ticket_sales_import # only for orders imported from external vendor (eg TodayTix)
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
   has_many :donations, :dependent => :destroy

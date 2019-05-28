@@ -42,10 +42,10 @@ class ImportableOrder
   # +description+: summary of what will be imported/added
   attr_accessor :description
 
-  DO_NOT_IMPORT =         -4
-  ALREADY_IMPORTED =      -1
-  MAY_CREATE_NEW_CUSTOMER =   -2
-  MUST_USE_EXISTING_CUSTOMER = -3
+  DO_NOT_IMPORT =         "DO_NOT_IMPORT"
+  ALREADY_IMPORTED =      "ALREADY_IMPORTED"
+  MAY_CREATE_NEW_CUSTOMER =   "MAY_CREATE_NEW_CUSTOMER"
+  MUST_USE_EXISTING_CUSTOMER = "MUST_USE_EXISTING_CUSTOMER"
   
   def initialize                # :nodoc:
     @order = Order.new(

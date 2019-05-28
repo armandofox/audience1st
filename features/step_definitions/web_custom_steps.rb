@@ -132,7 +132,11 @@ end
 
 # Lets you write step def such as:
 # Then I should see the message for "customers.confirm_delete"
-Then /I should see the message for "(.*)"/ do |i18n_key| 
+Then /I should (not )?see the message for "(.*)"/ do |no,i18n_key| 
   message = I18n.translate!(i18n_key)
-  page.should have_content(message)
+  if no
+    expect(page).not_to have_content(message)
+  else
+    expect(page).to have_content(message)
+  end
 end

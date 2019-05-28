@@ -9,7 +9,14 @@ en:
       priced at %{price}.
 
     redemption_not_found: >
-      Cannot find redemption for voucher type '#{vouchertype}' for performance of #{performance}.
+      Cannot find redemption for voucher type '%{vouchertype}' for performance of %{performance}.
+
+    import_successful: >
+      %{tickets_sold} tickets added for %{new_customers} new customers 
+      and %{existing_customers} existing customers.
+
+    import_failed: >
+      NO orders were imported because of problems completing the import: %{message}
 
   customers:
 

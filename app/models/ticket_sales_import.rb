@@ -1,6 +1,6 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_accessible :vendor, :raw_data, :processed_by
+  attr_accessible :vendor, :raw_data, :processed_by, :existing_customers, :new_customers, :tickets_sold
   attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
