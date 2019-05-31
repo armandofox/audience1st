@@ -33,8 +33,22 @@ class Customer < ActiveRecord::Base
   def self.possible_matches(first,last,email=nil)
     [
       self.find_unique(Customer.new(:first_name => first, :last_name => last, :email => email)),
-      self.match_uniquely_on_names_only(first,last)
-    ].compact.uniq
+      self.match_last_name_and_substring_of_first_name(first,last,email)
+    ].flatten.compact.uniq
+  end
+
+  def self.match_last_name_and_substring_of_first_name(first,last,email)
+    # do this the hard way, in Ruby, since the SQL query would be too convoluted.
+    matches = Customer.where("lower(last_name) LIKE ?", last.downcase)
+    matches = matches.find_all do |c|
+      # for comparison, truncate both first names to length of shorter one
+      trunc_length = [c.first_name.length, first.length].min
+      c.first_name[0,trunc_length].downcase == first[0,trunc_length].downcase
+    end
+    if !email.blank?
+      matches.reject! { |c| !c.email.blank? && c.email.downcase != email.downcase.strip }
+    end
+    matches
   end
 
   # account for case where email matches but not last name
@@ -43,9 +57,9 @@ class Customer < ActiveRecord::Base
     email, last_name = p.email, p.last_name
     # email can't match different last name if either is blank
     return nil if (email.blank? || last_name.blank?)
-    recipient = Customer.where('email LIKE ?', email.strip).first
+    recipient = Customer.find_by_email(email)
     # otherwise, we have a matching email, so check if last name is diff
-    return (!recipient.nil?  &&  last_name != recipient.last_name)   
+    recipient  &&  last_name != recipient.last_name
   end
  
   # account for case where email and last name match
