@@ -47,7 +47,7 @@ Scenario: customer unique match on email
 Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing
 
   Given customer "M Moran" exists with email "moran@example.com"
-  And customer "Adrian Ray Avalani" exists and was created by admin
+  And customer "Adrian Ray Avalani" exists with no email
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then show me the page
 

@@ -6,7 +6,7 @@ Feature: customer who forgot password can receive a link to reset
 
 Background:
   Given it is currently 'January 1, 2019 12:00'
-  And customer "John Doe" exists and was created by admin
+  And customer "John Doe" exists
 
 Scenario: send magic link to user
 

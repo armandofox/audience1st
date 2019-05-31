@@ -66,10 +66,17 @@ Given /^the following customers exist: (.*)$/ do |list|
 end
 
 # specifying email and/or street address
-Given /^customer "(.*) (.*)" exists( and was created by admin)?( with email "(.*)")?$/ do |first,last,admin,_,email|
-  @customer = find_customer(first,last) ||
-    create(:customer, :first_name => first, :last_name => last, :email => email||"#{first.downcase}@#{last.downcase}.com")
-  @customer.update_attribute(:created_by_admin, true) if admin
+
+Given /customer "(.*) (.*)" exists with no email/ do |first,last|
+  @customer = create(:customer, :first_name => first, :last_name => last,
+    :email => nil, :created_by_admin => true)
+end
+
+Given /^customer "(.*) (.*)" exists( with email "(.*)")?$/ do |first,last,_,email|
+  @customer =
+    find_customer(first,last) ||
+    create(:customer, :first_name => first, :last_name => last,
+    :email => (email||"#{first.downcase}@#{last.downcase}.com"))
 end
 
 Given /^customer "(.*) (.*)" whose address street is: "(.*)"$/ do |first,last,address|
