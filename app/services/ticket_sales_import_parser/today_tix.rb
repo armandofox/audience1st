@@ -36,6 +36,7 @@ module TicketSalesImportParser
             i.import_first_name = h["Purchaser First Name"]
             i.import_last_name = h["Purchaser Last Name"]
             i.import_email = h["Email"]
+            i.transaction_date = Time.zone.parse h["Sale Date"]
             i.set_possible_customers
             i.description = "#{num_seats} @ #{redemption.show_name_with_vouchertype_name}"
           end

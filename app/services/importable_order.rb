@@ -30,19 +30,21 @@ class ImportableOrder
   class MissingDataError < StandardError ;  end
 
   attr_accessor :order
+  # +transaction_date+: when the vendor processed the transaction.  When the order is imported,
+  # will become the +sold_on+ date for the final +Order+ object.
+  attr_accessor :transaction_date
   # +import_first_name,import_last_name+: first and last name as given in the import list
   attr_accessor :import_first_name, :import_last_name
   # +customer_email_in_import+: if given, the email address from import list
   attr_accessor :import_email
   # +customers+: a collection of candidate Customer records to import to
   attr_accessor :customers
-  # +action+: DO_NOT_IMPORT, ALREADY_IMPORTED, MAY_CREATE_NEW_CUSTOMER, MUST_USE_EXISTING_CUSTOMER
+  # +action+: ALREADY_IMPORTED, MAY_CREATE_NEW_CUSTOMER, MUST_USE_EXISTING_CUSTOMER
   # 2..n-2=import to selected customer
-  attr_accessor :action
+  attr_reader :action
   # +description+: summary of what will be imported/added
   attr_accessor :description
 
-  DO_NOT_IMPORT =         "DO_NOT_IMPORT"
   ALREADY_IMPORTED =      "ALREADY_IMPORTED"
   MAY_CREATE_NEW_CUSTOMER =   "MAY_CREATE_NEW_CUSTOMER"
   MUST_USE_EXISTING_CUSTOMER = "MUST_USE_EXISTING_CUSTOMER"
@@ -52,26 +54,32 @@ class ImportableOrder
       :processed_by => Customer.boxoffice_daemon,
       :purchasemethod => Purchasemethod.get_type_by_name('ext'))
     @customers = []
-    @action = DO_NOT_IMPORT
+    @action = MAY_CREATE_NEW_CUSTOMER
     @comment = nil
   end
 
   def find_or_set_external_key(key)
-    if Order.completed.find_by(:external_key => key) # this order has already been imported
-      self.action = ALREADY_IMPORTED
+    if (o = Order.completed.find_by(:external_key => key)) # this order has already been imported
+      @action = ALREADY_IMPORTED
+      @order = o
+      @import_first_name = @order.customer.first_name
+      @import_last_name = @order.customer.last_name
+      @import_email = @order.customer.email
+      @transaction_date = @order.sold_on
+      @description = @order.summary("<br/>").html_safe
     else
-      self.order.external_key = key
+      @order.external_key = key
     end
   end
 
   def set_possible_customers
     if (!import_email.blank?  && (c = Customer.find_by_email(import_email)))
       # unique match
-      self.customers = [c]
-      self.action = MUST_USE_EXISTING_CUSTOMER
+      @customers = [c]
+      @action = MUST_USE_EXISTING_CUSTOMER
     else
-      self.customers = Customer.possible_matches(import_first_name,import_last_name,import_email)
-      self.action = MAY_CREATE_NEW_CUSTOMER
+      @customers = Customer.possible_matches(import_first_name,import_last_name,import_email)
+      @action = MAY_CREATE_NEW_CUSTOMER
     end
   end
 
@@ -87,35 +95,6 @@ class ImportableOrder
     raise MissingDataError.new(I18n.translate('import.redemption_not_found',
         :vouchertype => vouchertype.name,:performance => showdate.printable_name)) if redemption.nil?
     redemption
-  end
-
-  def finalize!
-    # copy comment to order
-    @order.comment = @comment
-    case @action
-    when DO_NOT_IMPORT
-      return true
-    when MAY_CREATE_NEW_CUSTOMER
-      finalize_with_new_customer!
-    else
-      finalize_with_existing_customer!
-    end
-  end
-
-  private
-
-  def finalize_with_existing_customer!
-    customer = @customers[@index]
-    @order.purchaser = @order.recipient = customer
-    @order.finalize!
-  end
-
-  def finalize_with_new_customer!
-    customer = Customer.new(:first_name => @import_first_name, :last_name => @import_last_name)
-    customer.email = @import_email unless @import_email.blank?
-    customer.force_valid = true
-    @order.purchaser = @order.recipient = customer
-    @order.finalize!
   end
 
 end

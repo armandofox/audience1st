@@ -293,6 +293,18 @@ class Order < ActiveRecord::Base
     errors.empty?
   end
 
+  def finalize_with_existing_customer_id!(cid,sold_on=Time.current)
+    self.customer_id = self.purchaser_id = cid
+    self.finalize!(sold_on)
+  end
+  
+  def finalize_with_new_customer!(first,last,email,sold_on=Time.current)
+    customer = Customer.new(:first_name => first, :last_name => last, :email => email)
+    customer.force_valid = true
+    self.customer = self.purchaser = customer
+    self.finalize!(sold_on)
+  end
+
   def finalize!(sold_on_date = Time.current)
     raise Order::NotReadyError unless ready_for_purchase?
 

@@ -2,32 +2,31 @@
   %h1 Proposed Import from #{@import.vendor}
 
   = form_for @import do
-    %table.table
+    %table.table#proposed_import
       %thead
         %tr
           %th{:scope => 'col'} Vendor's order#
+          %th{:scope => 'col'} Txn date
           %th{:scope => 'col'} Tickets
           %th{:scope => 'col'} Name on import
           %th{:scope => 'col'} Email on import
           %th{:scope => 'col', :width => '20%'} Import to customer
       %tbody
         - @import.importable_orders.each do |ord|
-          - oid = ord.order.id
-          %tr
-            %td= ord.order.external_key
+          - @order = ord.order
+          - oid = @order.id
+          %tr{:class => ('font-italic' if ord.action == ImportableOrder::ALREADY_IMPORTED)}
+            %td= @order.external_key
+            %td= ord.transaction_date.strftime('%b %d, %-l:%M%p')
             %td= ord.description
             %td #{ord.import_last_name}, #{ord.import_first_name}
             %td= ord.import_email
+            = hidden_field_tag "o[#{oid}][transaction_date]", ord.transaction_date
             = hidden_field_tag "o[#{oid}][first]", ord.import_first_name
             = hidden_field_tag "o[#{oid}][last]", ord.import_last_name
             = hidden_field_tag "o[#{oid}][email]", ord.import_email
             = hidden_field_tag "o[#{oid}][action]", ord.action
-            %td
-              - if ord.action == ImportableOrder::ALREADY_IMPORTED
-                Already imported as order #
-                = link_to ord.order.id, order_path(ord.order)
-              - else
-                = select_tag "o[#{oid}][customer_id]", import_choices(ord), :class => 'form-control'
+            %td.actions= import_choices(ord).html_safe
 
     = submit_tag 'Import Orders', :class => 'btn btn-success'
     = link_to 'Cancel', ticket_sales_imports_path, :class => 'btn btn-secondary'

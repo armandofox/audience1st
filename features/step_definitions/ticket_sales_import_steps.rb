@@ -1,3 +1,11 @@
+module TicketSalesImportStepsHelper
+  def find_import_row_for(name)
+    page.find(:xpath, "//tr/td[text()='#{name}']/..")    
+  end
+end
+
+World(TicketSalesImportStepsHelper)
+
 When /I upload the "(.*)" will-call file "(.*)"/ do |vendor,file|
   visit ticket_sales_imports_path
   select vendor, :from => 'vendor'
@@ -8,7 +16,14 @@ end
 When /I select the following options for each import:/ do |table|
   table.hashes.each do |h|
     # identify the table row for this customer
-    tr = page.find(:xpath, "//tr/td[text()='#{h[:import_name]}']/..")
+    tr = find_import_row_for h[:import_name]
     tr.find('select').select h[:action]
   end
+end
+
+# Checking the appearance/status of an importable order
+
+Then /the import for "(.*)" should show "(.*)"/ do |name,status|
+  tr = find_import_row_for name
+  expect(tr.find(:css, 'td.actions').text).to have_content(status)
 end

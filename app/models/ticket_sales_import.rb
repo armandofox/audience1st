@@ -44,7 +44,7 @@ class TicketSalesImport < ActiveRecord::Base
   def parse
     @importable_orders = @parser.parse
     @importable_orders.each do |imp|
-      imp.order.save! unless (imp.action == ImportableOrder::ALREADY_IMPORTED || imp.action == ImportableOrder::DO_NOT_IMPORT)
+      imp.order.save! unless imp.action == ImportableOrder::ALREADY_IMPORTED
     end
   end
   
