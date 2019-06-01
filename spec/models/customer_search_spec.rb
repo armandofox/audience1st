@@ -18,7 +18,6 @@ describe 'possible customer matches' do
     expect(match).to include(@c[2]) # exact match on email
     expect(match).to include(@c[1]) # near match on name w/o email
     expect(match).to include(@c[3]) # initial match w/o email
-    expect(match).not_to include(@c[0])
   end
   it "includes non-unique first name matches when no email" do
     match = Customer.possible_matches('C','Jones')
