@@ -18,6 +18,7 @@ module TicketSalesImportParser
 
     def initialize(import)
       @import = import
+      @index = 0
     end
 
     # parse the raw data and return an array of ImportableOrder instances
@@ -56,51 +57,49 @@ module TicketSalesImportParser
 
     private                     # helper methods below here
 
+    def error(msg)
+      @import.errors.add(:base, "#{msg} on row #{@index.to_i}")
+    end
+
     def csv_file_parsable?
       begin
         @csv = CSV.parse(raw_data, :headers => true, :converters => lambda { |f| f.to_s.strip })
-        @import.errors.add(:base, "File is empty") if @csv.empty?
+        error("File is empty") if @csv.empty?
         !@csv.empty?
       rescue CSV::MalformedCSVError => e
-        @import.errors.add(:base, "File format is invalid: #{e.message}")
+        error("Invalid CSV file: #{e.message}")
         false
       end
     end
 
     def required_headers_present?
       missing = COLUMNS - @csv[0].to_h.keys
-      unless missing.empty?
-        @import.errors.add(:base, "Required column(s) are missing: #{missing}")
-      end
+      error("Required column(s) #{missing.join(', ')} are missing") unless missing.empty?
       missing.empty?
     end
 
     def rows_valid?
-      @csv.drop(1).each_with_index do |row,num|
-        unless valid_row?(row)
-          @import.errors.add(:base, "Row #{num+1} invalid: #{row}")
-          return false 
-        end
+      @csv.each_with_index do |row,num|
+        @index = num+2
+        valid_row?(row)
       end
+      @import.errors.empty?
     end
 
     def valid_row?(row)
       # all required (nonblank) columns are nonblank...
-      REQUIRED_COLUMNS.all? { |col|  !(row[col].blank?) }  &&
-        valid_date?(row["Sale Date"])                      && # date columns look like dates
-        valid_date?(row["Performance Date"])               &&
-        row["Total Price"].to_f > 0.0                      && # total price looks like a number
-        row["# of Seats"].to_i > 0                         && # of seats looks like a number
-        row["Email"] =~ /[^@]@[^@]/                           # minimally valid email
+      error("some required columns are blank") unless
+        REQUIRED_COLUMNS.all? { |col|  !(row[col].blank?) }
+      error("Order number is invalid") unless row["Order #"] =~ /\S+/
+      error("Sale Date is invalid") unless valid_date?(row["Sale Date"])
+      error("Performance Date is invalid") unless valid_date?(row["Performance Date"])
+      error("Price is invalid") unless row["Total Price"] =~ /^[0-9.]+$/
+      error("Total # of seats is invalid") unless row["# of Seats"].to_i > 0
+      error("Email is invalid") unless row["Email"] =~ /[^@]@[^@]/
     end
 
     def valid_date?(date)
-      begin
-        Time.zone.parse(date)
-        true
-      rescue ArgumentError
-        false
-      end
+      Time.zone.parse(date) rescue nil
     end
 
   end
