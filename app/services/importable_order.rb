@@ -50,9 +50,7 @@ class ImportableOrder
   MUST_USE_EXISTING_CUSTOMER = "MUST_USE_EXISTING_CUSTOMER"
   
   def initialize                # :nodoc:
-    @order = Order.new(
-      :processed_by => Customer.boxoffice_daemon,
-      :purchasemethod => Purchasemethod.get_type_by_name('ext'))
+    @order = Order.new(:purchasemethod => Purchasemethod.get_type_by_name('ext'))
     @customers = []
     @action = MAY_CREATE_NEW_CUSTOMER
     @comment = nil

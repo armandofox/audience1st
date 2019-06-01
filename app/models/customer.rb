@@ -325,6 +325,10 @@ class Customer < ActiveRecord::Base
     valid_email_address? ? "#{full_name} (#{email})" : full_name
   end
 
+  def full_name_with_email_and_address
+    "#{full_name_with_email} (#{street})"
+  end
+
   def sortable_name
     "#{self.last_name.downcase},#{self.first_name.downcase}"
   end

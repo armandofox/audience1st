@@ -45,9 +45,6 @@ class Customer < ActiveRecord::Base
       trunc_length = [c.first_name.length, first.length].min
       c.first_name[0,trunc_length].downcase == first[0,trunc_length].downcase
     end
-    if !email.blank?
-      matches.reject! { |c| !c.email.blank? && c.email.downcase != email.downcase.strip }
-    end
     matches
   end
 

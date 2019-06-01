@@ -13,7 +13,7 @@ module TicketSalesImportsHelper
     else                        # MAY create new; other candidates exist
       select_tag("o[#{oid}][customer_id]",
         (options_for_select([["Create new customer", ""]]) <<
-          options_from_collection_for_select(importable_order.customers, :id, :full_name)),
+          options_from_collection_for_select(io.customers, :id, :full_name_with_email_and_address)),
         :class => 'form-control')
     end
   end

@@ -46,6 +46,7 @@ class TicketSalesImportsController < ApplicationController
         order_hash.each_pair do |order_id, o|
           order = Order.find order_id
           order.ticket_sales_import = import
+          order.processed_by = current_user
           sold_on = Time.zone.parse o[:transaction_date]
           if o[:action] == ImportableOrder::MAY_CREATE_NEW_CUSTOMER && o[:customer_id].blank?
             order.finalize_with_new_customer!(o[:first], o[:last], o[:email], sold_on)
