@@ -42,7 +42,7 @@ Scenario: customer unique match on email
   When I press "Import Orders"
   Then I should see "4 tickets added for 1 new customers and 1 existing customers"
   And customer "Maria Moran" should have 3 "TodayTix - half off" tickets for "Chicago" on Oct 1, 2010, 8:00pm
-  And customer "Adrian Ray Avalani" should have 1 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
+  And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
 
 Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing
 
