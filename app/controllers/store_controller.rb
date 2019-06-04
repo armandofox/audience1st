@@ -78,6 +78,10 @@ class StoreController < ApplicationController
     @page_title = "#{Option.venue} - Tickets"
     reset_shopping unless (@promo_code = params[:promo_code])
     setup_for_showdate(showdate_from_params || showdate_from_show_params || showdate_from_default)
+    @nothing_to_buy =
+      @valid_vouchers.empty? && # no tickets for this showdate
+      @all_shows.size == 1   && # no other shows coming up
+      @all_showdates.empty?     # no other eligible showdates for this show
   end
 
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
