@@ -1,7 +1,7 @@
-.row
+.row.text-white.bg-warning
   .col-4
     %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
-    = link_to showdate.printable_date, edit_show_showdate_path(showdate.show, showdate)
+    = link_to showdate.printable_date, edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'
     = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
   .col-4= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
   .col-2
