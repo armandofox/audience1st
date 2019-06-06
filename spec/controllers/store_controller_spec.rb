@@ -38,8 +38,12 @@ describe StoreController do
         response.should redirect_to(store_path(@c, @extra))
       end
       it 'lets you view store as yourself' do
-        get :index, @extra.merge(:customer_id => @c)
+        get :index, @extra.merge(:customer_id => @c.id)
         response.should be_success
+      end
+      it 'redirects if URL explicitly mentions anonymous customer' do
+        get :index, @extra.merge(:customer_id => Customer.anonymous_customer.id)
+        response.should redirect_to(store_path(@c, @extra))
       end
     end
     context 'when logged in as admin' do
@@ -54,6 +58,10 @@ describe StoreController do
       it 'redirects to another customer' do
         get :index, @extra.merge(:customer_id => @c)
         response.should be_success
+      end
+      it 'redirects to logged-in staff if URL explicitly mentions anonymous customer' do
+        get :index, @extra.merge(:customer_id => Customer.anonymous_customer.id)
+        response.should redirect_to(store_path(@b, @extra))
       end
     end
   end

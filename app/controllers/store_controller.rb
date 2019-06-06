@@ -27,30 +27,29 @@ class StoreController < ApplicationController
 
   # invariant: after set_customer runs, the URL contains ID of customer doing the shopping
   def set_customer
-    logged_in = current_user()
-    desired = Customer.find_by_id(params[:customer_id])
+    logged_in_user = current_user()
+    specified_customer = Customer.find_by_id(params[:customer_id])
     # OK to proceed given this URL?
-    if well_formed_customer_url(logged_in, desired)
-      @customer = desired
+    redirect_customer = resolve_customer_in_url(logged_in_user, specified_customer)
+    if redirect_customer == specified_customer # ok to proceed as is
+      @customer = specified_customer
       @is_admin = is_boxoffice()
       @cart = find_cart
-    else # must redirect to include a customer_id in the url
-      desired = if !logged_in then Customer.anonymous_customer
-                elsif logged_in.is_staff then desired || logged_in
-                else logged_in
-                end
-      p = params.to_hash
-      redirect_to p.merge(:customer_id => desired, :only_path => true)
+    else      
+      redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
     end
   end
 
-  def well_formed_customer_url(logged_in, desired)
-    anon = Customer.anonymous_customer
-    # we can proceed without a redirect if:
-    return (desired == anon) if !logged_in # not logged in, & anonymous customer specified
-    staff_login = logged_in.is_boxoffice
-    (staff_login && desired && desired != anon) || # staff login, and any non-anon customer specified
-      ( ! staff_login && desired == logged_in) # or regular login, and self specified
+  def resolve_customer_in_url(logged_in_user, desired)
+    if !logged_in_user
+      Customer.anonymous_customer
+    elsif  logged_in_user.is_boxoffice
+      # someone is logged in. if staff, correct redirect is to the specified user, UNLESS
+      # that is a special customer, in which case redirect is to staff member themselves.
+      (desired.nil? || desired.special_customer?) ?  logged_in_user : desired
+    else                        # regular user is logged in: redir to self
+      logged_in_user
+    end
   end
 
   public
