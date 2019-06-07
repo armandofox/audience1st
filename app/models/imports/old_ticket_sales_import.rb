@@ -1,4 +1,4 @@
-class TicketSalesImport < Import
+class OldTicketSalesImport < Import
 
   belongs_to :show
   validates_associated :show
