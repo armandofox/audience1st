@@ -47,6 +47,10 @@ class TicketSalesImport < ActiveRecord::Base
       imp.order.save! unless imp.action == ImportableOrder::ALREADY_IMPORTED
     end
   end
+
+  def completed?
+    ! (created_at == updated_at)
+  end
   
   def finalize!
     @importable_orders.each do |imp|

@@ -16,7 +16,6 @@ Background: logged in as boxoffice
 Scenario: no tickets from this will-call have been previously imported, no customers known
 
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
-  Then show me the page
   Then table "#proposed_import" should include:
   | Name on import | Import to customer       |
   | Moran, Maria   | Will create new customer |
@@ -30,6 +29,11 @@ Scenario: no tickets from this will-call have been previously imported, no custo
   When I visit the ticket sales import page for the most recent "TodayTix" import
   Then the import for "Moran, Maria" should show "Previously imported" 
   And  the import for "Ray, Adrian" should show "Previously imported" 
+  And  I should not see "Import Orders"
+  When I upload the "TodayTix" will-call file "two_valid_orders.csv"
+  Then the import for "Moran, Maria" should show "Previously imported" 
+  And  the import for "Ray, Adrian" should show "Previously imported" 
+  And  I should not see "Import Orders"
 
 Scenario: customer unique match on email
 

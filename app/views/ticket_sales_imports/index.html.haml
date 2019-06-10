@@ -14,11 +14,11 @@
   %table#ticket_sales_imports.table
     %thead
       %tr
-        %th Date of import
+        %th Date of Import
         %th Vendor
-        %th Tickets sold
-        %th # new cust.
-        %th # existing cust.
+        %th Tickets Sold
+        %th New Customers Added
+        %th Existing Customers Found
     %tbody
       - @ticket_sales_imports.each do |imp|
         %tr[imp]

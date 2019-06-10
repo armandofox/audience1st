@@ -56,6 +56,17 @@ class ImportableOrder
     @comment = nil
   end
 
+  def already_imported?
+    @action == ALREADY_IMPORTED
+  end
+  def may_create_new_customer?
+    @action == MAY_CREATE_NEW_CUSTOMER
+  end
+  def must_use_existing_customer?
+    @action == MUST_USE_EXISTING_CUSTOMER
+  end
+  
+
   def find_or_set_external_key(key)
     if (o = Order.completed.find_by(:external_key => key)) # this order has already been imported
       @action = ALREADY_IMPORTED
