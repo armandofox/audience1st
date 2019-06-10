@@ -65,7 +65,6 @@ class ImportableOrder
   def must_use_existing_customer?
     @action == MUST_USE_EXISTING_CUSTOMER
   end
-  
 
   def find_or_set_external_key(key)
     if (o = Order.completed.find_by(:external_key => key)) # this order has already been imported

@@ -2,9 +2,9 @@ module TicketSalesImportsHelper
 
   def import_choices(io)
     oid = io.order.id
-    if io.action == ImportableOrder::ALREADY_IMPORTED
+    if io.already_imported?
       link_to "Previously imported", order_path(io.order)
-    elsif io.action == ImportableOrder::MUST_USE_EXISTING_CUSTOMER
+    elsif io.must_use_existing_customer?
       c = io.customers.first
       (link_to(c.full_name, customer_path(c), :title => [c.email, c.day_phone, c.street].join(' ')) <<
         hidden_field_tag("o[#{oid}][customer_id]", c.id))

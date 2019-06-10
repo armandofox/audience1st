@@ -29,7 +29,7 @@ module TicketSalesImportParser
         @csv.map(&:to_hash).each do |h|
           i = ImportableOrder.new
           i.find_or_set_external_key h["Order #"]
-          unless i.action == ImportableOrder::ALREADY_IMPORTED
+          unless i.already_imported?
             num_seats = h["# of Seats"].to_i
             price_per_seat = h["Total Price"].to_f / num_seats
             redemption = i.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)

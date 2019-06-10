@@ -15,7 +15,7 @@
         - @import.importable_orders.each do |ord|
           - @order = ord.order
           - oid = @order.id
-          %tr{:class => ('font-italic' if ord.action == ImportableOrder::ALREADY_IMPORTED)}
+          %tr{:class => ('font-italic' if ord.already_imported?)}
             %td= @order.external_key
             %td= ord.transaction_date.strftime('%b %d, %-l:%M%p')
             %td= ord.description
