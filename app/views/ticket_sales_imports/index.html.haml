@@ -1,0 +1,29 @@
+.container
+  %h1 Import External Vendor Ticket Sales
+  = form_tag ticket_sales_imports_path, :multipart => true, :class => 'form' do
+    .form-row.px-2
+      %label.col-2.text-right.col-form-label{:for => 'vendor'} Import from
+      = select_tag 'vendor', options_for_select(@vendors), :class => 'form-control col-2'
+      %label.col-2.btn.btn-primary{:for => 'file'} Choose file...
+      = file_field_tag 'file', :accept => '.csv', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#file')[0].files[0].name)}
+      %label.col-3.col-form-label.small#filename No file chosen
+      = submit_tag 'Upload', :class => 'col-2 btn btn-success'
+
+.container
+  %h1 Previous Imports
+  %table#ticket_sales_imports.table
+    %thead
+      %tr
+        %th Date of Import
+        %th Vendor
+        %th Tickets Sold
+        %th New Customers Added
+        %th Existing Customers Found
+    %tbody
+      - @ticket_sales_imports.each do |imp|
+        %tr[imp]
+          %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
+          %td= imp.vendor
+          %td= imp.tickets_sold
+          %td= imp.new_customers
+          %td= imp.existing_customers

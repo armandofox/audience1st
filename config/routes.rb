@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :ticket_sales_imports, :only => [:index, :create, :edit, :update]
+
     resources :labels, :only => [:index, :create, :update, :destroy]
 
     resources :customers, :except => :destroy do
@@ -29,7 +31,7 @@ Rails.application.routes.draw do
         get  :list_duplicate
         get  :forgot_password
         post :forgot_password
-        get  :reset_token, :as => 'reset_token'
+        get  :reset_token
       end
       member do
         get  :change_password_for

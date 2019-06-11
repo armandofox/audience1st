@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<willcall>
+  <show_id type="integer">1618857</show_id>
+  <event>
+    <title>"Hand to God"</title>
+  </event>
+  <venue>
+    <venue_id type="integer">1173</venue_id>
+    <name>Altarena Playhouse</name>
+    <address>
+      <street_address>1409 High Street</street_address>
+      <extended_address></extended_address>
+      <locality>Alameda</locality>
+      <region>CA</region>
+      <postal_code>94501</postal_code>
+      <country_name>United States</country_name>
+    </address>
+  </venue>
+  <on_date type="date">2019-01-11</on_date>
+  <time_note>8:00pm </time_note>
+  <inventories type="array">
+    <inventory>
+      <inventory_id type="integer">2347993</inventory_id>
+      <time_note nil="true"/>
+      <quantity type="integer">10</quantity>
+      <offers type="array">
+        <offer>
+          <offer_id type="integer">2633909</offer_id>
+          <name>General Admission</name>
+          <full_price type="decimal">30.0</full_price>
+          <our_price type="decimal">15.0</our_price>
+        </offer>
+      </offers>
+      <purchases type="array">
+        <purchase>
+          <purchase_id type="integer">11913016</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Hai</last_name>
+          <first_name>Kat</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-08T18:44:26-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2633909</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11921592</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Jackson</last_name>
+          <first_name>Trey</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-11T08:45:28-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2633909</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11918635</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Long</last_name>
+          <first_name>Dawna</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-10T11:34:26-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">1</quantity>
+              <offer_id type="integer">2633909</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11917318</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Marks</last_name>
+          <first_name>Vanessa</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-09T23:02:07-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2633909</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11910515</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Maples</last_name>
+          <first_name>John</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-08T01:57:49-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2633909</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11912863</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Wong</last_name>
+          <first_name>Ellen</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-08T17:57:22-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">1</quantity>
+              <offer_id type="integer">2633909</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+      </purchases>
+    </inventory>
+  </inventories>
+</willcall>

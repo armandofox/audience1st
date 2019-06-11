@@ -325,6 +325,10 @@ class Customer < ActiveRecord::Base
     valid_email_address? ? "#{full_name} (#{email})" : full_name
   end
 
+  def full_name_with_email_and_address
+    "#{full_name_with_email} (#{street})"
+  end
+
   def sortable_name
     "#{self.last_name.downcase},#{self.first_name.downcase}"
   end
@@ -372,17 +376,13 @@ class Customer < ActiveRecord::Base
     # self.items += new_items # <= doesn't work because cardinality of self.items is huge
   end
 
-  def self.lookup_by_email_for_auth(email)
-    Customer.where("lower(email) = ?", email.strip.downcase).first
-  end
-
   def self.authenticate(email, password)
     if (email.blank? || password.blank?)
       u = Customer.new
       u.errors.add(:login_failed, I18n.t('login.email_or_password_blank'))
       return u
     end
-    unless (u = Customer.lookup_by_email_for_auth(email)) # need to get the salt
+    unless (u = Customer.find_by_email(email)) # need to get the salt
       u = Customer.new
       u.errors.add(:login_failed, I18n.t('login.no_such_email'))
       return u

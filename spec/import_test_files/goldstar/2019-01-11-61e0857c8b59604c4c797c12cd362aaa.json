@@ -1,0 +1,121 @@
+{
+   "show_id" : 1618857,
+   "time_note" : "8:00pm ",
+   "inventories" : [
+      {
+         "time_note" : null,
+         "quantity" : 10,
+         "offers" : [
+            {
+               "full_price" : "30.0",
+               "our_price" : "15.0",
+               "name" : "General Admission",
+               "offer_id" : 2633909
+            }
+         ],
+         "purchases" : [
+            {
+               "last_name" : "Hai",
+               "note" : null,
+               "red_velvet" : false,
+               "first_name" : "Kat",
+               "purchase_id" : 11913016,
+               "created_at" : "2019-01-08T18:44:26.000-08:00",
+               "claims" : [
+                  {
+                     "quantity" : 2,
+                     "offer_id" : 2633909
+                  }
+               ]
+            },
+            {
+               "claims" : [
+                  {
+                     "quantity" : 2,
+                     "offer_id" : 2633909
+                  }
+               ],
+               "created_at" : "2019-01-11T08:45:28.000-08:00",
+               "purchase_id" : 11921592,
+               "first_name" : "Trey",
+               "note" : null,
+               "red_velvet" : false,
+               "last_name" : "Jackson"
+            },
+            {
+               "created_at" : "2019-01-10T11:34:26.000-08:00",
+               "claims" : [
+                  {
+                     "quantity" : 1,
+                     "offer_id" : 2633909
+                  }
+               ],
+               "note" : null,
+               "red_velvet" : false,
+               "last_name" : "Long",
+               "purchase_id" : 11918635,
+               "first_name" : "Dawna"
+            },
+            {
+               "claims" : [
+                  {
+                     "offer_id" : 2633909,
+                     "quantity" : 2
+                  }
+               ],
+               "created_at" : "2019-01-09T23:02:07.000-08:00",
+               "purchase_id" : 11917318,
+               "first_name" : "Vanessa",
+               "red_velvet" : false,
+               "note" : null,
+               "last_name" : "Marks"
+            },
+            {
+               "last_name" : "Maples",
+               "note" : null,
+               "red_velvet" : false,
+               "purchase_id" : 11910515,
+               "first_name" : "John",
+               "created_at" : "2019-01-08T01:57:49.000-08:00",
+               "claims" : [
+                  {
+                     "offer_id" : 2633909,
+                     "quantity" : 2
+                  }
+               ]
+            },
+            {
+               "claims" : [
+                  {
+                     "quantity" : 1,
+                     "offer_id" : 2633909
+                  }
+               ],
+               "created_at" : "2019-01-08T17:57:22.000-08:00",
+               "first_name" : "Ellen",
+               "purchase_id" : 11912863,
+               "note" : null,
+               "red_velvet" : false,
+               "last_name" : "Wong"
+            }
+         ],
+         "inventory_id" : 2347993
+      }
+   ],
+   "event" : {
+      "title" : "\"Hand to God\""
+   },
+   "venue" : {
+      "address" : {
+         "region" : "CA",
+         "extended_address" : "",
+         "locality" : "Alameda",
+         "postal_code" : "94501",
+         "country_name" : "United States",
+         "street_address" : "1409 High Street"
+      },
+      "name" : "Altarena Playhouse",
+      "venue_id" : 1173
+   },
+   "on_date" : "2019-01-11"
+}

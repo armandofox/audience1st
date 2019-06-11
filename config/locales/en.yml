@@ -1,4 +1,23 @@
 en:
+  import:
+
+    showdate_not_found: >
+      This will-call list is for %{date}, but there is no performance listed on that date.
+
+    vouchertype_not_found: >
+      Cannot find vouchertype for %{season} season with '%{vendor}' in its name and
+      priced at %{price}.
+
+    redemption_not_found: >
+      Cannot find redemption for voucher type '%{vouchertype}' for performance of %{performance}.
+
+    import_successful: >
+      %{tickets_sold} tickets added for %{new_customers} new customers 
+      and %{existing_customers} existing customers.
+
+    import_failed: >
+      NO orders were imported because of problems completing the import: %{message}
+
   customers:
 
     confirm_delete: >

@@ -1,12 +1,12 @@
 require 'rails_helper'
 
-describe ImportsController, :skip => true do
+describe ImportsController do
   before :each do
-    skip
+    #skip
     ImportsController.send(:public, :partial_for_import)
   end
   describe "creating new" do
-    before :each do ; @params = {:import => {:type => 'BrownPaperTicketsImport'}} ; end
+    before :each do ; skip; @params = {:import => {:type => 'BrownPaperTicketsImport'}} ; end
     it "should simply redirect if import type is not given" do
       lambda { post :create }.should_not raise_error
       response.should redirect_to(new_import_path)
@@ -46,6 +46,7 @@ describe ImportsController, :skip => true do
   end
   describe "preview" do
     before(:each) do
+      skip
       @import = TicketSalesImport.new
       allow(Import).to receive(:find).and_return(@import)
     end
@@ -74,8 +75,10 @@ describe ImportsController, :skip => true do
       end
     end
   end
+  
   describe "import" do
     before(:each) do
+      skip
       @import = TicketSalesImport.new
       allow(@import).to receive(:import!).and_return([[:a,:b],[:c]])
       allow(Import).to receive(:find).and_return(@import)

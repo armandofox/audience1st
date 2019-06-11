@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<willcall>
+  <show_id type="integer">1618858</show_id>
+  <event>
+    <title>"Hand to God"</title>
+  </event>
+  <venue>
+    <venue_id type="integer">1173</venue_id>
+    <name>Altarena Playhouse</name>
+    <address>
+      <street_address>1409 High Street</street_address>
+      <extended_address></extended_address>
+      <locality>Alameda</locality>
+      <region>CA</region>
+      <postal_code>94501</postal_code>
+      <country_name>United States</country_name>
+    </address>
+  </venue>
+  <on_date type="date">2019-01-12</on_date>
+  <time_note>8:00pm </time_note>
+  <inventories type="array">
+    <inventory>
+      <inventory_id type="integer">2347994</inventory_id>
+      <time_note nil="true"/>
+      <quantity type="integer">10</quantity>
+      <offers type="array">
+        <offer>
+          <offer_id type="integer">2633910</offer_id>
+          <name>General Admission</name>
+          <full_price type="decimal">30.0</full_price>
+          <our_price type="decimal">15.0</our_price>
+        </offer>
+      </offers>
+      <purchases type="array">
+        <purchase>
+          <purchase_id type="integer">11916767</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Chewning</last_name>
+          <first_name>Lynn</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-09T19:38:15-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2633910</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11911841</purchase_id>
+          <red_velvet type="boolean">true</red_velvet>
+          <last_name>Granding</last_name>
+          <first_name>Annabel</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-08T12:48:47-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">1</quantity>
+              <offer_id type="integer">2633910</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+        <purchase>
+          <purchase_id type="integer">11926368</purchase_id>
+          <red_velvet type="boolean">false</red_velvet>
+          <last_name>Melendrez</last_name>
+          <first_name>Rosa</first_name>
+          <note nil="true"/>
+          <created_at type="dateTime">2019-01-12T12:46:51-08:00</created_at>
+          <claims type="array">
+            <claim>
+              <quantity type="integer">2</quantity>
+              <offer_id type="integer">2633910</offer_id>
+            </claim>
+          </claims>
+        </purchase>
+      </purchases>
+    </inventory>
+  </inventories>
+</willcall>

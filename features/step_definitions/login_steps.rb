@@ -61,3 +61,10 @@ Then /(?:customer )"(.*) (.*)" should (not )?be logged in$/ do |first,last,no|
   end
 end
 
+When /I ask to send a password reset email to "(.*)"/ do |email|
+  visit forgot_password_customers_path
+  fill_in 'email', :with => email
+  # arrange to return a fixed value for the magic login token
+  CustomersController.any_instance.stub(:generate_token).and_return("test_token")
+  click_button 'Reset My Password By Email'
+end

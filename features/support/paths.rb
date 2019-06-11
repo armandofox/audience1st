@@ -10,7 +10,7 @@ module NavigationHelpers
     Showdate.find_by_thedate!(Time.zone.parse time)
   end
   def path_to(page_name)
-    @customer = find_or_create_customer($1,$2) if page_name =~ /for customer "(.*) (.*)"/
+    @customer = find_or_create_customer($1,$2) if page_name =~ /for customer "(\S+) (.*)"/
     @show = (Show.find_by_name($1) || create(:show, :name => $1)).id if page_name =~ /for the show "(.*)"/
     
     case page_name
@@ -38,7 +38,7 @@ module NavigationHelpers
     when /the classes and camps page/   then store_path(:what => 'Class')
     when /the subscriptions page/i      then store_subscribe_path(@customer)
     when /the shipping info page/i      then shipping_address_path(@customer)
-    when /the checkout page for customer "(.*) (.*)"/i then checkout_path(@customer = find_customer($1,$2))
+    when /the checkout page for customer "(\S+) (.*)"/i then checkout_path(@customer = find_customer($1,$2))
     when /the checkout page/i           then checkout_path(@customer)
     when /the order confirmation page/i then place_order_path(@customer)
       # reporting pages 
@@ -58,10 +58,12 @@ module NavigationHelpers
       case page
       when /settings/i    then '/options' 
       when /bulk import/i then '/bulk_downloads/new'
-      when /import/i      then '/imports/new'
+      when /import/i      then '/ticket_sales_imports/'
       else                raise "No mapping for admin:#{page}"
       end
 
+    when /the ticket sales import page$/ then ticket_sales_imports_path
+    when /the ticket sales import page for the most recent "(.*)" import/ then edit_ticket_sales_import_path(TicketSalesImport.find_by(:vendor => $1))
     when /the show details page for "(.*)"/i then edit_show_path(@show = Show.find_by_name!($1))
     when /the new showdate page for "(.*)"/i then new_show_showdate_path(@show = Show.find_by_name!($1))
 

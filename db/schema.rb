@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190420212205) do
+ActiveRecord::Schema.define(version: 20190527222208) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,7 +93,6 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.integer  "showdate_id"
     t.string   "comments",           limit: 255
     t.boolean  "fulfillment_needed",             default: false,      null: false
-    t.string   "external_key",       limit: 255
     t.string   "promo_code",         limit: 255
     t.integer  "processed_by_id",                default: 2146722771, null: false
     t.integer  "bundle_id",                      default: 0,          null: false
@@ -201,14 +200,15 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.integer  "purchaser_id"
     t.text     "valid_vouchers"
     t.text     "donation_data"
-    t.string   "comments",          limit: 255
+    t.string   "comments",               limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "walkup",                        default: false
-    t.boolean  "ship_to_purchaser",             default: true
-    t.string   "authorization",     limit: 255
+    t.boolean  "walkup",                             default: false
+    t.boolean  "ship_to_purchaser",                  default: true
+    t.string   "authorization",          limit: 255
     t.text     "retail_items"
     t.string   "external_key"
+    t.integer  "ticket_sales_import_id"
   end
 
   add_index "orders", ["external_key"], name: "index_orders_on_external_key", unique: true, using: :btree
@@ -243,8 +243,11 @@ ActiveRecord::Schema.define(version: 20190420212205) do
     t.string   "vendor"
     t.text     "raw_data"
     t.integer  "processed_by_id"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.integer  "tickets_sold"
+    t.integer  "new_customers"
+    t.integer  "existing_customers"
   end
 
   create_table "txns", force: :cascade do |t|

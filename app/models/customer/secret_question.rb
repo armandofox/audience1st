@@ -26,7 +26,7 @@ class Customer < ActiveRecord::Base
     if email.blank? || answer.blank?
       u = Customer.new
       u.errors.add(:login_failed, 'Please provide your email and the answer to your chosen secret question.')
-    elsif (u = Customer.lookup_by_email_for_auth(email)).nil?
+    elsif (u = Customer.find_by_email(email)).nil?
       u = Customer.new
       u.errors.add(:login_failed, I18n.t('login.no_such_email'))
     elsif !u.has_secret_question?

@@ -2,6 +2,7 @@ class Order < ActiveRecord::Base
   belongs_to :customer
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
+  belongs_to :ticket_sales_import # only for orders imported from external vendor (eg TodayTix)
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
   has_many :donations, :dependent => :destroy
@@ -24,6 +25,8 @@ class Order < ActiveRecord::Base
   def self.foreign_keys_to_customer
     [:customer_id, :purchaser_id, :processed_by_id]
   end
+
+  validates_uniqueness_of :external_key, :allow_blank => true
 
   serialize :valid_vouchers, Hash
   serialize :donation_data, Hash
@@ -89,6 +92,8 @@ class Order < ActiveRecord::Base
   end
 
   public
+
+  scope :completed, ->() { where('sold_on IS NOT NULL') }
 
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
@@ -286,6 +291,18 @@ class Order < ActiveRecord::Base
     end
     errors.add(:base, 'No information on who processed order') unless processed_by.kind_of?(Customer)
     errors.empty?
+  end
+
+  def finalize_with_existing_customer_id!(cid,sold_on=Time.current)
+    self.customer_id = self.purchaser_id = cid
+    self.finalize!(sold_on)
+  end
+  
+  def finalize_with_new_customer!(first,last,email,sold_on=Time.current)
+    customer = Customer.new(:first_name => first, :last_name => last, :email => email)
+    customer.force_valid = true
+    self.customer = self.purchaser = customer
+    self.finalize!(sold_on)
   end
 
   def finalize!(sold_on_date = Time.current)
