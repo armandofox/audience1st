@@ -1,5 +1,8 @@
 .container
-  %h1 Proposed Import from #{@import.vendor}
+  - if @importable
+    %h1 Proposed Import From #{@import.vendor}
+  - else
+    %h1 Previously Imported From #{@import.vendor}
 
   = form_for @import do
     %table.table#proposed_import
@@ -28,9 +31,9 @@
             = hidden_field_tag "o[#{oid}][action]", ord.action
             %td.actions= import_choices(ord).html_safe
 
-    - if @import.completed? || @import.importable_orders.all?(&:already_imported?)
-      = link_to 'Back', ticket_sales_imports_path, :class => 'btn btn-primary'
-    - else
+    - if @importable
       = submit_tag 'Import Orders', :class => 'btn btn-success'
       = link_to 'Cancel', ticket_sales_imports_path, :class => 'btn btn-secondary'
+    - else
+      = link_to 'Back', ticket_sales_imports_path, :class => 'btn btn-primary'
   

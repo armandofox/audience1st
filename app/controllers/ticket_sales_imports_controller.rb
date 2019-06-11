@@ -29,6 +29,7 @@ class TicketSalesImportsController < ApplicationController
   def edit
     @import = TicketSalesImport.find params[:id]
     @import.parse
+    @importable = ! (@import.completed? || @import.importable_orders.all?(&:already_imported?))
     redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) if !@import.errors.empty?
   end
 
