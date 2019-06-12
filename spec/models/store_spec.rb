@@ -22,7 +22,7 @@ describe Store, "credit card" do
     end
     it 'records authorization ID' do
       Store.pay_with_credit_card(@order)
-      @order.authorization.should == 'auth'
+      expect(@order.authorization).to eq('auth')
     end
   end
   describe 'unsuccessful purchase' do
@@ -30,11 +30,11 @@ describe Store, "credit card" do
       allow(Stripe::Charge).to receive(:create).and_raise(Stripe::StripeError.new('BOOM'))
     end
     it 'should return nil' do
-      Store.pay_with_credit_card(@order).should be_nil
+      expect(Store.pay_with_credit_card(@order)).to be_nil
     end
     it 'should record the error' do
       Store.pay_with_credit_card(@order)
-      @order.errors.full_messages.should include('Credit card payment error: BOOM')
+      expect(@order.errors.full_messages).to include('Credit card payment error: BOOM')
     end
   end
 end

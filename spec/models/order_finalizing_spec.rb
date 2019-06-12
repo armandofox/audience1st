@@ -39,12 +39,12 @@ describe Order, 'finalizing' do
       @order.purchasemethod = Purchasemethod.default
     end
     it 'should pass if all attributes valid' do
-      @order.should be_ready_for_purchase
-      @order.errors.should be_empty
+      expect(@order).to be_ready_for_purchase
+      expect(@order.errors).to be_empty
     end
     def verify_error(regex)
-      @order.should_not be_ready_for_purchase
-      @order.errors.full_messages.should include_match_for(regex)
+      expect(@order).not_to be_ready_for_purchase
+      expect(@order.errors.full_messages).to include_match_for(regex)
     end
     it 'should fail if no purchaser' do
       @order.purchaser = nil
@@ -59,7 +59,7 @@ describe Order, 'finalizing' do
       @order.processed_by = create(:customer, :role => :boxoffice)
       allow(@order.purchaser).to receive(:valid_as_purchaser?).and_return(nil)
       allow(@order.purchaser).to receive_message_chain(:errors, :full_messages => ['ERROR'])
-      @order.should be_ready_for_purchase
+      expect(@order).to be_ready_for_purchase
     end
     it 'should fail if no recipient' do
       @order.customer = nil
@@ -118,38 +118,38 @@ describe Order, 'finalizing' do
     end
     describe 'web order' do
       shared_examples_for 'when valid' do
-        it 'should be saved' do ; @order.should_not be_a_new_record ; end
-        it 'should include the items' do ; @order.item_count.should == 4 ; end
-        it 'should have a sold-on time' do ;@order.sold_on.should be_between(Time.current - 5.seconds, Time.current) ; end
-        it 'should set order ID on its items' do ; @order.items.each { |i| i.order_id.should == @order.id } ; end
+        it 'should be saved' do ; expect(@order).not_to be_a_new_record ; end
+        it 'should include the items' do ; expect(@order.item_count).to eq(4) ; end
+        it 'should have a sold-on time' do ;expect(@order.sold_on).to be_between(Time.current - 5.seconds, Time.current) ; end
+        it 'should set order ID on its items' do ; @order.items.each { |i| expect(i.order_id).to eq(@order.id) } ; end
         it 'should set comments on vouchers but not donations or retail' do
           @order.items.each do |i|
             if i.kind_of?(Voucher)
-              i.comments.should == 'Comment'
+              expect(i.comments).to eq('Comment')
             else
-              i.comments.should be_blank
+              expect(i.comments).to be_blank
             end
           end
         end
         it 'should add vouchers to customer account' do
-          @cust.should have(2).vouchers_for(@sd,@vt)
-          @cust.should have(1).vouchers_for(@sd2,@vt2)
+          expect(@cust).to have(2).vouchers_for(@sd,@vt)
+          expect(@cust).to have(1).vouchers_for(@sd2,@vt2)
         end
-        it 'should compute total price successfully' do ; @order.reload.total_price.should == 34 ; end
+        it 'should compute total price successfully' do ; expect(@order.reload.total_price).to eq(34) ; end
       end
       context 'when purchaser==recipient' do
         before :each do ; @order.finalize! ; end
         it_should_behave_like 'when valid'
-        it 'should add donations to customer account' do ; @cust.donations.should include(@donation) ; end
+        it 'should add donations to customer account' do ; expect(@cust.donations).to include(@donation) ; end
       end
       context 'when purchaser!=recipient' do
         before :each do ;   @order.purchaser = @purch = @the_purchaser ; @order.finalize! ; end
         it_should_behave_like 'when valid'
-        it 'should add donations to purchaser account' do ; @purch.donations.should include(@donation) ; end
-        it 'should NOT add donations to recipient account' do ; @cust.donations.should_not include(@donation) ; end
+        it 'should add donations to purchaser account' do ; expect(@purch.donations).to include(@donation) ; end
+        it 'should NOT add donations to recipient account' do ; expect(@cust.donations).not_to include(@donation) ; end
         it 'should NOT add vouchers to purchaser account' do
-          @purch.vouchers.should have(0).vouchers_for(@sd,@vt)
-          @purch.vouchers.should have(0).vouchers_for(@sd2,@vt2)
+          expect(@purch.vouchers).to have(0).vouchers_for(@sd,@vt)
+          expect(@purch.vouchers).to have(0).vouchers_for(@sd2,@vt2)
         end
       end
     end
@@ -160,8 +160,8 @@ describe Order, 'finalizing' do
         @order.walkup = true
         @order.finalize!
       end
-      it 'should assign all vouchers to walkup customer' do ; Customer.walkup_customer.vouchers.size.should == 3 ; end
-      it 'should mark all vouchers as walkup' do ; Customer.walkup_customer.vouchers.all? { |v| v.walkup? }.should be_truthy ; end
+      it 'should assign all vouchers to walkup customer' do ; expect(Customer.walkup_customer.vouchers.size).to eq(3) ; end
+      it 'should mark all vouchers as walkup' do ; expect(Customer.walkup_customer.vouchers.all? { |v| v.walkup? }).to be_truthy ; end
     end
   end
   describe 'web order with FAILED credit card payment' do
@@ -180,19 +180,19 @@ describe Order, 'finalizing' do
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count
       allow(Store).to receive(:pay_with_credit_card).and_return(nil)
-      lambda { @order.finalize! }.should raise_error(Order::PaymentFailedError)
+      expect { @order.finalize! }.to raise_error(Order::PaymentFailedError)
     end
     it 'should leave authorization field blank' do
-      @order.authorization.should be_blank
+      expect(@order.authorization).to be_blank
     end
     it 'should not save the items' do
-      Voucher.count.should == @previous_vouchers_count
-      Donation.count.should == @previous_donations_count
+      expect(Voucher.count).to eq(@previous_vouchers_count)
+      expect(Donation.count).to eq(@previous_donations_count)
     end
-    it 'should not add vouchers to customer' do ; @the_customer.reload.vouchers.should be_empty ; end
+    it 'should not add vouchers to customer' do ; expect(@the_customer.reload.vouchers).to be_empty ; end
     it 'should not complete the order' do
       pending "#persisted? returns true until we call #new_record?, which syncs with transaction state, after which #persisted? now returns false"
-      @order.should_not be_completed
+      expect(@order).not_to be_completed
     end
   end
 end

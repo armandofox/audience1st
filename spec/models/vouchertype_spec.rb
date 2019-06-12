@@ -17,26 +17,26 @@ describe Vouchertype do
     end
     context 'of boxoffice voucher' do
       subject { Vouchertype.new :offer_public => Vouchertype::BOXOFFICE }
-      it { should_not be_visible_to(@customers[:patron]) }
-      it { should_not be_visible_to(@customers[:walkup]) }
+      it { is_expected.not_to be_visible_to(@customers[:patron]) }
+      it { is_expected.not_to be_visible_to(@customers[:walkup]) }
     end
     context 'of subscriber voucher' do
       subject { Vouchertype.new :offer_public => Vouchertype::SUBSCRIBERS }
-      it { should_not be_visible_to(@customers[:patron]) }
-      it { should     be_visible_to(@customers[:patron_subscriber]) }
+      it { is_expected.not_to be_visible_to(@customers[:patron]) }
+      it { is_expected.to     be_visible_to(@customers[:patron_subscriber]) }
     end
     context 'of general-availability voucher' do
       subject { Vouchertype.new :offer_public => Vouchertype::ANYONE }
-      it { should     be_visible_to(@customers[:patron_subscriber]) }
-      it { should     be_visible_to(@customers[:patron]) }
-      it { should     be_visible_to(@customers[:walkup]) }
+      it { is_expected.to     be_visible_to(@customers[:patron_subscriber]) }
+      it { is_expected.to     be_visible_to(@customers[:patron]) }
+      it { is_expected.to     be_visible_to(@customers[:walkup]) }
     end
     context 'of external reseller voucher' do
       subject { Vouchertype.new :offer_public => Vouchertype::EXTERNAL }
-      it { should_not be_visible_to(@customers[:patron]) }
-      it { should_not be_visible_to(@customers[:patron_subscriber]) }
-      it { should_not be_visible_to(@customers[:boxoffice]) }
-      it { should_not be_visible_to(@customers[:walkup]) }
+      it { is_expected.not_to be_visible_to(@customers[:patron]) }
+      it { is_expected.not_to be_visible_to(@customers[:patron_subscriber]) }
+      it { is_expected.not_to be_visible_to(@customers[:boxoffice]) }
+      it { is_expected.not_to be_visible_to(@customers[:walkup]) }
     end
   end
   describe "validations" do
@@ -81,7 +81,7 @@ describe Vouchertype do
         @vt.subscription = true
         @vt.walkup_sale_allowed = true
         expect(@vt).not_to be_valid
-        @vt.errors[:base].should include_match_for(/walkup sales/i)
+        expect(@vt.errors[:base]).to include_match_for(/walkup sales/i)
       end
     end
     describe "nonticket vouchertypes" do
@@ -117,7 +117,7 @@ describe Vouchertype do
       it "should be invalid if contains any nonzero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 1}
         expect(@vtb).not_to be_valid
-        @vtb.errors.full_messages.should include("Bundle can't include revenue voucher #{@vt_notfree.id} (#{@vt_notfree.name})"), @vtb.errors.full_messages.join(',')
+        expect(@vtb.errors.full_messages).to include("Bundle can't include revenue voucher #{@vt_notfree.id} (#{@vt_notfree.name})"), @vtb.errors.full_messages.join(',')
       end
       it "should  be valid with only zero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
@@ -131,15 +131,15 @@ describe Vouchertype do
         @vt_bundle = create(:bundle, :including => {@v[0] => 1, @v[1] => 2, @v[2] => 3})
       end
       it('should instantiate all vouchers in bundle') do
-        @vt_bundle.instantiate(2).size.should == 14
+        expect(@vt_bundle.instantiate(2).size).to eq(14)
       end
       it 'should set bundle-id when saved' do
         all_vouchers = @vt_bundle.instantiate(2)
         all_vouchers.map(&:save!)
         saved_bundles = Voucher.where('vouchertype_id = ?', @vt_bundle.id)
-        all_vouchers.should have_vouchers_matching(quantity=2, :vouchertype_id => @vt_bundle.id)
-        all_vouchers.should have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[0].id)
-        all_vouchers.should have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[1].id)
+        expect(all_vouchers).to have_vouchers_matching(quantity=2, :vouchertype_id => @vt_bundle.id)
+        expect(all_vouchers).to have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[0].id)
+        expect(all_vouchers).to have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[1].id)
       end
     end
   end
@@ -151,24 +151,24 @@ describe Vouchertype do
         :subscription => false, :season => Time.current.year)
     end
     it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
-      @v.valid_vouchers.length.should == 1
+      expect(@v.valid_vouchers.length).to eq(1)
     end
     it 'should destroy its valid-voucher when destroyed' do
       saved_id = @v.id
       @v.destroy
-      ValidVoucher.find_by_vouchertype_id(saved_id).should be_nil
+      expect(ValidVoucher.find_by_vouchertype_id(saved_id)).to be_nil
     end
     describe 'attempting to change to a non-bundle after creation' do
       before :each do
         @result = @v.update_attributes(:category => 'revenue')
       end
-      it 'should fail' do ; @result.should be_falsey ; end
+      it 'should fail' do ; expect(@result).to be_falsey ; end
       it 'should explain why' do
-        @v.errors[:category].should include_match_for(/cannot be changed/)
+        expect(@v.errors[:category]).to include_match_for(/cannot be changed/)
       end
       it 'should not change the category' do
         @v.reload
-        @v.category.should == 'bundle'
+        expect(@v.category).to eq('bundle')
       end
     end
   end

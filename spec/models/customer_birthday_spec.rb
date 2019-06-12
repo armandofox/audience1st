@@ -12,7 +12,7 @@ describe Customer, "birthdays" do
     it "should always be in the year 2000" do
       @c = create(:customer)
       @c.update_attribute :birthday, @birthday
-      @c.birthday.year.should == 2000
+      expect(@c.birthday.year).to eq(2000)
     end
   end
   describe "reporting" do
@@ -21,11 +21,11 @@ describe Customer, "birthdays" do
     end
     it 'should identify birthdays within range regardless of year' do
       c = birthdays('Jan 3, 2012', 'Jan 5')
-      c.should include(@c1)
-      c.should_not include(@c2)
+      expect(c).to include(@c1)
+      expect(c).not_to include(@c2)
     end
     it 'should return empty if no birthdays' do
-      birthdays('Feb 5', 'Jan 3').should be_empty
+      expect(birthdays('Feb 5', 'Jan 3')).to be_empty
     end
   end
   describe "no email should be created" do
@@ -71,14 +71,14 @@ describe Customer, "birthdays" do
       @sent = ActionMailer::Base.deliveries
     end
     specify 'just once' do
-      @sent.length.should == 1
+      expect(@sent.length).to eq(1)
     end
     specify 'with a proper subject line' do
-      @sent.first.subject.should match(Regexp.new 'Birthdays between 01/10/12 and 01/15/12')
+      expect(@sent.first.subject).to match(Regexp.new 'Birthdays between 01/10/12 and 01/15/12')
     end
     specify 'with both customers' do
-      @sent.first.body.should include(@c1.full_name)
-      @sent.first.body.should include(@c2.full_name)
+      expect(@sent.first.body).to include(@c1.full_name)
+      expect(@sent.first.body).to include(@c2.full_name)
     end
   end
 end

@@ -8,7 +8,7 @@ describe CustomerImport do
   end
   
   it "should register its type" do
-    Import.import_types["Customer/mailing list"].should == "CustomerImport"
+    expect(Import.import_types["Customer/mailing list"]).to eq("CustomerImport")
   end
 
   it "should create a new instance given valid attributes" do
@@ -29,11 +29,11 @@ describe CustomerImport do
       end
       it "should have 2 records, not counting header line" do
         @import.preview
-        @import.number_of_records.should == 2
+        expect(@import.number_of_records).to eq(2)
       end
       it "should have Customers as the records" do
-        @import.preview[0].should be_a_kind_of(Customer)
-        @import.preview[1].should be_a_kind_of(Customer)
+        expect(@import.preview[0]).to be_a_kind_of(Customer)
+        expect(@import.preview[1]).to be_a_kind_of(Customer)
       end
     end
   end
@@ -46,38 +46,38 @@ describe CustomerImport do
         @imports,@rejects = @import.import!
       end
       it "should be saved" do
-        Customer.find_by_email(@customer.email).should be_a_kind_of(Customer)
+        expect(Customer.find_by_email(@customer.email)).to be_a_kind_of(Customer)
       end
       it "should be in the imports list" do
-        @imports.should include(@customer)
+        expect(@imports).to include(@customer)
       end
       it "should not be in rejects list" do
-        @rejects.should_not include(@customer)
+        expect(@rejects).not_to include(@customer)
       end
       it "should not have errors" do
-        @customer.errors.should be_empty
+        expect(@customer.errors).to be_empty
       end
     end
     describe "an invalid customer" do
       before(:each) do
         @customer = build(:customer)
         @customer.last_name = '' # makes invalid
-        @customer.should_not be_valid
+        expect(@customer).not_to be_valid
         @import = CustomerImport.new
         allow(@import).to receive(:get_customers_to_import).and_return([@customer])
         @imports,@rejects = @import.import!
       end
       it "should not be saved" do
-        Customer.find_by_email(@customer.email).should be_nil
+        expect(Customer.find_by_email(@customer.email)).to be_nil
       end
       it "should not appear in imports list" do
-        @imports.should_not include(@customer)
+        expect(@imports).not_to include(@customer)
       end
       it "should appear in rejects list" do
-        @rejects.should include(@customer)
+        expect(@rejects).to include(@customer)
       end
       it "should have an error message" do
-        @customer.errors_on(:last_name).should include_match_for(/is too short/i)
+        expect(@customer.errors_on(:last_name)).to include_match_for(/is too short/i)
       end
     end
   end

@@ -7,10 +7,10 @@ describe Label do
   end
   describe "when valid" do
     it "should be unique" do
-      lambda { Label.create!(:name => "Foo") }.should raise_error(ActiveRecord::RecordInvalid)
+      expect { Label.create!(:name => "Foo") }.to raise_error(ActiveRecord::RecordInvalid)
     end
     it "should not be empty" do
-      lambda { Label.create!(:name => "") }.should raise_error(ActiveRecord::RecordInvalid)
+      expect { Label.create!(:name => "") }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
   describe "when deleted" do
@@ -18,7 +18,7 @@ describe Label do
       @c.labels << @foo_label
       @foo_label.destroy
       @c.reload
-      @c.labels.should_not include(@foo_label)
+      expect(@c.labels).not_to include(@foo_label)
     end
   end
   describe "when customer changes" do
@@ -27,14 +27,14 @@ describe Label do
       @c.save!
     end      
     it "should be deleted when that customer is forgotten" do
-      @c.forget!.should be_truthy
-      @foo_label.customers.should_not include(@c)
+      expect(@c.forget!).to be_truthy
+      expect(@foo_label.customers).not_to include(@c)
     end
     it "should be moved to surviving customer if merged" do
       @c2 = create(:customer)
-      @c2.merge_automatically!(@c).should be_truthy
-      @foo_label.customers.should_not include(@c)
-      @foo_label.customers.should include(@c2)
+      expect(@c2.merge_automatically!(@c)).to be_truthy
+      expect(@foo_label.customers).not_to include(@c)
+      expect(@foo_label.customers).to include(@c2)
     end
   end
 end

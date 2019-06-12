@@ -8,16 +8,16 @@ describe CustomersController do
       post :create, {:customer => @params}
     end
     it "should create the customer" do
-      Customer.find_by_email(@params[:email]).should_not be_nil
+      expect(Customer.find_by_email(@params[:email])).not_to be_nil
     end
     it "should set created-by-admin flag" do
-      Customer.find_by_email(@params[:email]).should be_created_by_admin
+      expect(Customer.find_by_email(@params[:email])).to be_created_by_admin
     end
     it "should not clear created-by-admin flag if admin updates record" do
       customer = Customer.find_by_email(@params[:email])
       put :update, {:id => customer, :customer => {:first_name => 'Bobby'}}
       customer.reload
-      customer.should be_created_by_admin
+      expect(customer).to be_created_by_admin
     end
   end
   describe "user self-creation or self-update" do
@@ -27,10 +27,10 @@ describe CustomersController do
       post :user_create, {:customer => @params}
     end
     it "should create the customer" do
-      Customer.find_by_email(@params[:email]).should_not be_nil
+      expect(Customer.find_by_email(@params[:email])).not_to be_nil
     end
     it "should not set created-by-admin flag when created by customer" do
-      Customer.find_by_email(@params[:email]).should_not be_created_by_admin
+      expect(Customer.find_by_email(@params[:email])).not_to be_created_by_admin
     end
   end
   describe "updating created-by-admin flag" do
@@ -42,12 +42,12 @@ describe CustomersController do
     it "should be cleared on successful update" do
       put :update, {:id => @customer, :customer => {:first_name => "Bobby"}}
       @customer.reload
-      @customer.should_not be_created_by_admin
+      expect(@customer).not_to be_created_by_admin
     end
     it "should not be cleared if update fails" do
       put :update, {:id => @customer, :customer => {:first_name => ''}}
       @customer.reload
-      @customer.should be_created_by_admin
+      expect(@customer).to be_created_by_admin
     end
   end
   describe "checkout flow" do
@@ -66,15 +66,15 @@ describe CustomersController do
         put :update, params
       end
       it "should not update the password" do
-        @customer.crypted_password_changed?.should be_falsey
+        expect(@customer.crypted_password_changed?).to be_falsey
       end
       it "should update the address" do
         @customer.reload
-        @customer.street.should == "100 Embarcadero"
-        @customer.zip.should == "94100"
+        expect(@customer.street).to eq("100 Embarcadero")
+        expect(@customer.zip).to eq("94100")
       end
       it "should display a message confirming the update" do
-        flash[:notice].should match(/Contact information.*successfully updated/i)
+        expect(flash[:notice]).to match(/Contact information.*successfully updated/i)
       end
     end
   end

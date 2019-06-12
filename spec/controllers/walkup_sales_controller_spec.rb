@@ -16,7 +16,7 @@ describe WalkupSalesController do
       end
       it "should redirect" do
         put :update, @params
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
     context "when no vouchers are checked" do
@@ -24,7 +24,7 @@ describe WalkupSalesController do
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
         put :update, @params
-        flash[:alert].should match(/you didn't select any vouchers/i)
+        expect(flash[:alert]).to match(/you didn't select any vouchers/i)
       end
     end
     context "when at least one voucher is not found" do
@@ -36,7 +36,7 @@ describe WalkupSalesController do
       it_should_behave_like "no transfer is attempted"
       it "should display appropriate error" do
         put :update, @params
-        flash[:alert].should match(/no changes were made/i)
+        expect(flash[:alert]).to match(/no changes were made/i)
       end
     end
     context "when target showdate doesn't exist" do
@@ -49,12 +49,12 @@ describe WalkupSalesController do
       it_should_behave_like "no transfer is attempted"
       it "should display error if showdate not found" do
         put :update, @params
-        flash[:alert].should match(/NO changes were made.*couldn't find showdate with 'id'=99999/i)
+        expect(flash[:alert]).to match(/NO changes were made.*couldn't find showdate with 'id'=99999/i)
       end
       it "should display error if showdate not specified" do
         @params.delete(:to_showdate)
         put :update, @params
-        flash[:alert].should match(/NO changes were made.*couldn't find showdate without an id/i)
+        expect(flash[:alert]).to match(/NO changes were made.*couldn't find showdate without an id/i)
       end
     end
     context "when all vouchers exist" do
@@ -75,14 +75,14 @@ describe WalkupSalesController do
         end
         it "should display confirmation" do
           put :update, @params
-          flash[:notice].should == "2 vouchers transferred to #{@showdate.printable_name}."
+          expect(flash[:notice]).to eq("2 vouchers transferred to #{@showdate.printable_name}.")
         end
       end
       specify "and errors occur should display a message" do
         expect(Voucher).to receive(:change_showdate_multiple).and_raise("boom!")
         put :update, @params
-        flash[:alert].should match(/no changes were made/i)
-        flash[:alert].should match(/boom!/)
+        expect(flash[:alert]).to match(/no changes were made/i)
+        expect(flash[:alert]).to match(/boom!/)
       end
     end
   end

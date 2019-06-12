@@ -14,36 +14,36 @@ describe StoreController do
       before :each do ; login_as(nil) ; end
       it 'redirects as generic customer' do
         get :index
-        response.should redirect_to(store_path(@anon))
+        expect(response).to redirect_to(store_path(@anon))
       end
       it 'preserves params' do
         get :index, @extra
-        response.should redirect_to(store_path(@anon, @extra))
+        expect(response).to redirect_to(store_path(@anon, @extra))
       end
 
       it 'prevents switching to a different user' do
         get :index, {:customer_id => @c.id}
-        response.should redirect_to(store_path(@anon))
+        expect(response).to redirect_to(store_path(@anon))
       end
     end
     context 'when logged in as regular user' do
       before :each do ; login_as(@c) ;  end
       it 'redirects to your login keeping params' do
         get :index, @extra
-        response.should redirect_to(store_path(@c, @extra))
+        expect(response).to redirect_to(store_path(@c, @extra))
       end
       it 'prevents you from switching to different user' do
         other = create(:customer)
         get :index, @extra.merge(:customer_id => other)
-        response.should redirect_to(store_path(@c, @extra))
+        expect(response).to redirect_to(store_path(@c, @extra))
       end
       it 'lets you view store as yourself' do
         get :index, @extra.merge(:customer_id => @c.id)
-        response.should be_success
+        expect(response).to be_success
       end
       it 'redirects if URL explicitly mentions anonymous customer' do
         get :index, @extra.merge(:customer_id => Customer.anonymous_customer.id)
-        response.should redirect_to(store_path(@c, @extra))
+        expect(response).to redirect_to(store_path(@c, @extra))
       end
     end
     context 'when logged in as admin' do
@@ -53,15 +53,15 @@ describe StoreController do
       end
       it 'redirects to you if no customer specified' do
         get :index, @extra
-        response.should redirect_to(store_path(@b,@extra))
+        expect(response).to redirect_to(store_path(@b,@extra))
       end
       it 'redirects to another customer' do
         get :index, @extra.merge(:customer_id => @c)
-        response.should be_success
+        expect(response).to be_success
       end
       it 'redirects to logged-in staff if URL explicitly mentions anonymous customer' do
         get :index, @extra.merge(:customer_id => Customer.anonymous_customer.id)
-        response.should redirect_to(store_path(@b, @extra))
+        expect(response).to redirect_to(store_path(@b, @extra))
       end
     end
   end
@@ -92,7 +92,7 @@ describe StoreController do
     it "should show the Session Expired page rather than throwing error" do
       expect(controller).to receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
       post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
-      response.should render_template 'messages/session_expired'
+      expect(response).to render_template 'messages/session_expired'
     end
   end
 
@@ -105,9 +105,9 @@ describe StoreController do
     end
     shared_examples_for 'failure' do
       before :each do ; @count = Customer.count(:all) ; end
-      it 'redirects' do ; response.should render_template 'store/donate' ;  end
-      it 'shows error messages' do ; render_multiline_message(flash[:alert]).should match(@alert) ; end
-      it 'does not create new customer' do ; Customer.count(:all).should == @count ; end
+      it 'redirects' do ; expect(response).to render_template 'store/donate' ;  end
+      it 'shows error messages' do ; expect(render_multiline_message(flash[:alert])).to match(@alert) ; end
+      it 'does not create new customer' do ; expect(Customer.count(:all)).to eq(@count) ; end
     end
     context 'with invalid donation amount' do
       before :each do
@@ -143,11 +143,11 @@ describe StoreController do
       shared_examples_for "all cases" do
         it "should redirect to index" do
           post :process_cart, {:customer_id => @buyer.id}
-          response.should redirect_to store_path(@buyer)
+          expect(response).to redirect_to store_path(@buyer)
         end
         it "should display a warning" do
           post :process_cart, {:customer_id => @buyer.id}
-          flash[:alert].should match(/nothing in your order/i)
+          expect(flash[:alert]).to match(/nothing in your order/i)
         end
       end
       context "if gift" do
@@ -166,12 +166,12 @@ describe StoreController do
       end
       it "should allow proceeding" do
         post :process_cart, @params
-        response.should redirect_to checkout_path(@buyer)
+        expect(response).to redirect_to checkout_path(@buyer)
       end
       it "should proceed to checkout even if gift order" do
         @params[:gift] = 1
         post :process_cart, @params
-        response.should redirect_to(:action => 'checkout')
+        expect(response).to redirect_to(:action => 'checkout')
       end
       it "should add the donation to the cart" do
         allow(controller).to receive(:find_cart).and_return(@cart = Order.new)
@@ -191,11 +191,11 @@ describe StoreController do
     end
     it "should select showdate if given" do
       get :index, {:customer_id => @buyer.id, :showdate_id => @sd2.id}
-      assigns(:sd).id.should == @sd2.id
+      expect(assigns(:sd).id).to eq(@sd2.id)
     end
     it "should default to earliest showdate with tickets if invalid" do
       get :index, {:customer_id => @buyer.id, :showdate_id => 9999999}
-      assigns(:sd).id.should == @sd1.id
+      expect(assigns(:sd).id).to eq(@sd1.id)
     end
   end
 
@@ -210,18 +210,18 @@ describe StoreController do
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
       post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
-      response.should redirect_to checkout_path(@buyer)
+      expect(response).to redirect_to checkout_path(@buyer)
     end
     it "should be valid with only an email address" do
       @customer[:email] = "me@example.com"
       post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
-      response.should redirect_to checkout_path(@buyer)
+      expect(response).to redirect_to checkout_path(@buyer)
     end
     it "should not be valid if neither phone nor email given" do
       post :shipping_address, {:customer_id => @buyer.id, :customer => @customer}
-      flash[:alert].should match(/at least one phone number or email/i)
-      response.should render_template(:shipping_address)
-      response.should_not be_redirect
+      expect(flash[:alert]).to match(/at least one phone number or email/i)
+      expect(response).to render_template(:shipping_address)
+      expect(response).not_to be_redirect
     end
   end
 

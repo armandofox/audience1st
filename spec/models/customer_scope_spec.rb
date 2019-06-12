@@ -17,43 +17,43 @@ describe 'scoping Customers' do
     end
     context 'seen a show' do
       it 'should select customer who has seen it' do
-        Customer.seen_any_of(@s1).should include(@c1)
+        expect(Customer.seen_any_of(@s1)).to include(@c1)
       end
       it 'should exclude customer who has not seen it' do
-        Customer.seen_any_of(@s1).should_not include(@c2)
+        expect(Customer.seen_any_of(@s1)).not_to include(@c2)
       end
       it 'should select customers who have seen union of shows' do
         c = Customer.seen_any_of([@s1,@s2])
-        c.should include(@c1)
-        c.should include(@c2)
+        expect(c).to include(@c1)
+        expect(c).to include(@c2)
       end
       it 'should not select a customer who has seen nothing' do
-        Customer.seen_any_of([@s1,@s2]).should_not include(@new)
+        expect(Customer.seen_any_of([@s1,@s2])).not_to include(@new)
       end
     end
     context 'when selecting based on NOT having seen a show' do
       it 'should select customer who has not seen it' do
-        Customer.seen_none_of(@s1).should include(@c2)
+        expect(Customer.seen_none_of(@s1)).to include(@c2)
       end
       it 'should exclude customer who HAS seen it' do
-        Customer.seen_none_of(@s1).should_not include(@c1)
+        expect(Customer.seen_none_of(@s1)).not_to include(@c1)
       end
       it 'should include customer who has seen nothing' do
-        Customer.seen_none_of([@s1,@s2]).should include(@new)
+        expect(Customer.seen_none_of([@s1,@s2])).to include(@new)
       end
       it 'should include customer who has given donation but not seen show' do
         create(:order, :customer => @new, :contains_donation => true).finalize!
-        Customer.seen_none_of([@s1,@s2]).should include(@new)
+        expect(Customer.seen_none_of([@s1,@s2])).to include(@new)
       end
       it 'should exclude customers who have seen anything in union of shows' do
         c = Customer.seen_none_of([@s1,@s2])
-        c.should_not include(@c1)
-        c.should_not include(@c2)
+        expect(c).not_to include(@c1)
+        expect(c).not_to include(@c2)
       end
     end
     it 'should select zero customers if conditions are contradictory' do
       intersection = (Customer.seen_any_of([@s1,@s2]) & Customer.seen_none_of([@s1,@s2]))
-      intersection.should be_empty
+      expect(intersection).to be_empty
     end
   end
   describe 'based on purchases' do
@@ -79,20 +79,20 @@ describe 'scoping Customers' do
     end
     context 'of subscription' do
       it 'should identify subscribers during a given year' do
-        Customer.subscriber_during(2012).should include(@c1)
+        expect(Customer.subscriber_during(2012)).to include(@c1)
       end
       it 'should exclude customers who did not subscribe that year' do
-        Customer.subscriber_during(2012).should_not include(@c2)
+        expect(Customer.subscriber_during(2012)).not_to include(@c2)
       end
       it 'should identify subscribers given a range of years' do
         c = Customer.subscriber_during([2012, 2013])
-        c.should include(@c1)
-        c.should include(@c2)
+        expect(c).to include(@c1)
+        expect(c).to include(@c2)
       end
       it 'should compute difference-sets' do
         c = Customer.subscriber_during([2012,2013]) - Customer.subscriber_during(2012)
-        c.should include(@c2)
-        c.should_not include(@c1)
+        expect(c).to include(@c2)
+        expect(c).not_to include(@c1)
       end
       describe 'identifying nonsubscribers' do
         before :each do
@@ -136,25 +136,25 @@ describe 'scoping Customers' do
     context 'including specific Vouchertypes' do
       it 'should include customers who have purchased ANY of...' do
         c = Customer.purchased_any_vouchertypes([@vid1, @vid2])
-        c.should include(@c1)
-        c.should include(@c2)
+        expect(c).to include(@c1)
+        expect(c).to include(@c2)
       end
     end
     context 'excluding specific Vouchertypes' do
       it 'should include customers who have purchased nothing' do
         @c3 = create(:customer)
-        Customer.purchased_no_vouchertypes(@vid1).should include(@c3)
+        expect(Customer.purchased_no_vouchertypes(@vid1)).to include(@c3)
       end
       it 'should include customers who have not purchased that Vouchertype' do
-        Customer.purchased_no_vouchertypes(@vid2).should include(@c1)
+        expect(Customer.purchased_no_vouchertypes(@vid2)).to include(@c1)
       end
       it 'should exclude customers who have purchased ANY of that Vouchertype' do
-        Customer.purchased_no_vouchertypes(@vid2).should_not include(@c2)
+        expect(Customer.purchased_no_vouchertypes(@vid2)).not_to include(@c2)
       end
       it 'should exclude union of customers who have purchased ANY of that Vouchertype' do
         c = Customer.purchased_no_vouchertypes([@vid1,@vid2])
-        c.should_not include(@c1)
-        c.should_not include(@c2)
+        expect(c).not_to include(@c1)
+        expect(c).not_to include(@c2)
       end
     end
   end

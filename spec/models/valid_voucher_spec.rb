@@ -69,15 +69,15 @@ describe ValidVoucher do
     after :all do ; ValidVoucher.send(:protected, :match_promo_code) ; end
     context 'when promo code is blank' do
       before :each do ; @v = ValidVoucher.new(:promo_code => nil) ; end
-      it 'should match empty string' do ;     @v.match_promo_code('').should be_truthy ; end
-      it 'should match arbitrary string' do ; @v.match_promo_code('foo!').should be_truthy ; end
-      it 'should match nil' do ;              @v.match_promo_code(nil).should be_truthy ; end
+      it 'should match empty string' do ;     expect(@v.match_promo_code('')).to be_truthy ; end
+      it 'should match arbitrary string' do ; expect(@v.match_promo_code('foo!')).to be_truthy ; end
+      it 'should match nil' do ;              expect(@v.match_promo_code(nil)).to be_truthy ; end
     end
     shared_examples_for 'nonblank promo code' do
-      it 'should match exact string' do ;     @v.match_promo_code('foo').should be_truthy ; end
-      it 'should be case-insensitive' do ;    @v.match_promo_code('FoO').should be_truthy ; end
-      it 'should ignore whitespace' do ;      @v.match_promo_code(' Foo ').should be_truthy ; end
-      it 'should not match partial string' do;@v.match_promo_code('fo').should be_falsey ; end
+      it 'should match exact string' do ;     expect(@v.match_promo_code('foo')).to be_truthy ; end
+      it 'should be case-insensitive' do ;    expect(@v.match_promo_code('FoO')).to be_truthy ; end
+      it 'should ignore whitespace' do ;      expect(@v.match_promo_code(' Foo ')).to be_truthy ; end
+      it 'should not match partial string' do;expect(@v.match_promo_code('fo')).to be_falsey ; end
     end
     context '"foo"' do
       before :each do ; @v = ValidVoucher.new(:promo_code => 'foo') ; end
@@ -101,11 +101,11 @@ describe ValidVoucher do
       @anyone = create(:customer)
     end
     it 'for generic bundle should be available to anyone' do
-      ValidVoucher.bundles_available_to(@anyone, promo_code=nil).
+      expect(ValidVoucher.bundles_available_to(@anyone, promo_code=nil).
         any? do |offer|
         offer.vouchertype == @anyone_bundle &&
           offer.max_sales_for_type == ValidVoucher::INFINITE
-      end.should be_truthy
+      end).to be_truthy
     end
   end
 

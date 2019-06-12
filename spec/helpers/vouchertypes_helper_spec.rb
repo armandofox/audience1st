@@ -9,12 +9,14 @@ describe VouchertypesHelper do
     context "should work with either a range or deltas" do
       before(:each) do ; stub_month_and_day(9,1) ; end
       it "with default selection" do
-        helper.options_for_seasons_range(-2,1).should ==
+        expect(helper.options_for_seasons_range(-2,1)).to eq(
           helper.options_for_seasons(2007, 2010)
+        )
       end
       it "with explicit nondefault selection" do
-        helper.options_for_seasons_range(-2,1,2008).should ==
+        expect(helper.options_for_seasons_range(-2,1,2008)).to eq(
           helper.options_for_seasons(2007, 2010, 2008)
+        )
       end
     end
     context "when season starts May or earlier" do
@@ -23,12 +25,12 @@ describe VouchertypesHelper do
       end
       it "should show season as single year" do
         @list = helper.options_for_seasons_range(-1,0)
-        @list.should have_tag('option',:text => '2008')
-        @list.should have_tag('option',:text => '2009')
+        expect(@list).to have_tag('option',:text => '2008')
+        expect(@list).to have_tag('option',:text => '2009')
       end
       it "should select current season" do
         @list = helper.options_for_seasons_range(-1,0)
-        @list.should have_tag('option', :text => '2009', :selected => 'selected')
+        expect(@list).to have_tag('option', :text => '2009', :selected => 'selected')
       end
     end
     context "when it starts June or later" do
@@ -37,16 +39,16 @@ describe VouchertypesHelper do
         @list = helper.options_for_seasons_range(-1,0)
       end
       it "should show season as hyphenated year" do
-        @list.should have_tag('option', :text => '2008-2009')
-        @list.should have_tag('option', :text => '2009-2010')
+        expect(@list).to have_tag('option', :text => '2008-2009')
+        expect(@list).to have_tag('option', :text => '2009-2010')
       end
       it "should select current season" do
-        @list.should have_tag('option', :text => '2009-2010', :selected => 'selected')
+        expect(@list).to have_tag('option', :text => '2009-2010', :selected => 'selected')
       end
     end
     it "should not care about order of arguments" do
       stub_month_and_day(1,1)
-      helper.options_for_seasons_range(-2,1).should == helper.options_for_seasons_range(1,-2)
+      expect(helper.options_for_seasons_range(-2,1)).to eq(helper.options_for_seasons_range(1,-2))
     end
   end        
 end

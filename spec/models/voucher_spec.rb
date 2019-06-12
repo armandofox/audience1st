@@ -31,21 +31,21 @@ describe Voucher do
     describe "transferring" do
       it "should transfer to the new showdate" do
         Voucher.change_showdate_multiple(@vouchers, @to, @logged_in)
-        @vouchers.each { |v| @to.vouchers.should include(v) }
+        @vouchers.each { |v| expect(@to.vouchers).to include(v) }
       end
       it "should do nothing if any of the vouchers is invalid" do
-        lambda do
+        expect do
           Voucher.change_showdate_multiple(@vouchers.push(@invalid_voucher),@to,@logged_in)
-        end.should raise_error(ActiveRecord::RecordInvalid)
-        @vouchers.each { |v| @to.vouchers.should_not include(v) }
+        end.to raise_error(ActiveRecord::RecordInvalid)
+        @vouchers.each { |v| expect(@to.vouchers).not_to include(v) }
       end
     end
   end
 
   describe "templated from vouchertype" do
     subject { Voucher.new_from_vouchertype(@vt_regular) }
-    it { should be_valid }
-    it { should_not be_reserved }
+    it { is_expected.to be_valid }
+    it { is_expected.not_to be_reserved }
     its(:customer) { should be_nil }
     its(:category) { should == @vt_regular.category }
     its(:processed_by) { should be_nil }
@@ -57,13 +57,13 @@ describe Voucher do
     before(:each) do
       @vt_regular.update_attribute(:season, Time.current.year - 2)
       @v = Voucher.new_from_vouchertype(@vt_regular)
-      @v.should be_valid
+      expect(@v).to be_valid
     end
     it "should not be valid today" do
-      @v.should_not be_valid_today
+      expect(@v).not_to be_valid_today
     end
     it "should not be reservable" do
-      @v.should_not be_reservable
+      expect(@v).not_to be_reservable
     end
   end
 
@@ -77,18 +77,18 @@ describe Voucher do
       @success = @v.reserve_for(@sd, Customer.walkup_customer, 'foo')
     end
     it 'should not succeed' do
-      @v.should_not be_reserved
-      @success.should_not be_truthy
+      expect(@v).not_to be_reserved
+      expect(@success).not_to be_truthy
     end
     it 'should explain that show is sold out' do
-      @v.errors.full_messages.should include('Event is sold out')
+      expect(@v.errors.full_messages).to include('Event is sold out')
     end
   end
   describe "transferring" do
     before(:each) do
       @from = create(:customer)
       @v = Voucher.new_from_vouchertype(@vt_regular)
-      @v.should be_valid
+      expect(@v).to be_valid
       @from.vouchers << @v
       @from.save!
     end
@@ -98,12 +98,12 @@ describe Voucher do
       end
       it "should add the voucher to the recipient's account" do
         @v.transfer_to_customer(@to)
-        @to.vouchers.should include(@v)
+        expect(@to.vouchers).to include(@v)
       end
       it "should remove the voucher from the transferor's account" do
         @v.transfer_to_customer(@to)
         @from.reload
-        @from.vouchers.should_not include(@v)
+        expect(@from.vouchers).not_to include(@v)
       end
     end
     context 'for bundles' do
@@ -118,11 +118,11 @@ describe Voucher do
         @from.vouchers.find_by_vouchertype_id(@bundle.id).transfer_to_customer(@to)
       end
       it 'transfers the bundle voucher' do
-        @to.vouchers.should have_voucher_matching(:vouchertype_id => @bundle.id)
+        expect(@to.vouchers).to have_voucher_matching(:vouchertype_id => @bundle.id)
       end
       it 'transfers the included vouchers' do
-        @to.vouchers.should have_vouchers_matching(2, :vouchertype_id => @vt1.id)
-        @to.vouchers.should have_vouchers_matching(1, :vouchertype_id => @vt2.id)
+        expect(@to.vouchers).to have_vouchers_matching(2, :vouchertype_id => @vt1.id)
+        expect(@to.vouchers).to have_vouchers_matching(1, :vouchertype_id => @vt2.id)
       end
     end
   end

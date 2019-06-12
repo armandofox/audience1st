@@ -43,7 +43,7 @@ describe VoucherPresenter do
           v0.reserve!(@sd[test[2]]) unless test[2].nil?
           v1 = create(:revenue_voucher, :vouchertype => @vt[test[1]])
           v1.reserve!(@sd[test[3]]) unless test[3].nil?
-          (v0 <=> v1).should == test[4]
+          expect(v0 <=> v1).to eq(test[4])
         end
       end
     end

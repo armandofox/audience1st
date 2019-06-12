@@ -4,12 +4,12 @@ describe Show do
 
   it "should be searchable case-insensitive" do
     @s = create(:show, :name => "The Last Five Years")
-    Show.find_unique(" the last FIVE Years").should == @s
+    expect(Show.find_unique(" the last FIVE Years")).to eq(@s)
   end
   specify "revenueper seat should be zero (not exception) if zero vouchers sold" do
     @s = create(:show)
-    lambda { @s.revenue_per_seat }.should_not raise_error
-    @s.revenue_per_seat.should be_zero
+    expect { @s.revenue_per_seat }.not_to raise_error
+    expect(@s.revenue_per_seat).to be_zero
   end
   describe "adjusting showdates post-hoc" do
     before :each do
@@ -29,13 +29,13 @@ describe Show do
       @s.adjust_metadata_from_showdates
     end
     it "should not change house cap" do
-      @s.house_capacity_changed?.should_not be_truthy
+      expect(@s.house_capacity_changed?).not_to be_truthy
     end
     it "should set opening date" do
-      @s.opening_date.should == @now.to_date
+      expect(@s.opening_date).to eq(@now.to_date)
     end
     it "should set closing date" do
-      @s.closing_date.should == (@now+5.days).to_date
+      expect(@s.closing_date).to eq((@now+5.days).to_date)
     end
   end
 end

@@ -31,13 +31,13 @@ describe VouchertypesController do
     it "should fail if vouchertype has any associated vouchers" do
       create(:revenue_voucher, :vouchertype => @vtype)
       delete :destroy, :id => @vtype.id
-      response.should redirect_to vouchertypes_path(:season => @vtype.season)
-      flash[:alert].should =~ /1 of them have already been issued/
+      expect(response).to redirect_to vouchertypes_path(:season => @vtype.season)
+      expect(flash[:alert]).to match(/1 of them have already been issued/)
     end
     it "should succeed if vouchertype has no associated vouchers or vouchertypes" do
       post :destroy, :id => @vtype.id
-      Vouchertype.find_by_id(@vtype.id).should be_nil
-      response.should redirect_to vouchertypes_path(:season => @vtype.season)
+      expect(Vouchertype.find_by_id(@vtype.id)).to be_nil
+      expect(response).to redirect_to vouchertypes_path(:season => @vtype.season)
     end
   end
 

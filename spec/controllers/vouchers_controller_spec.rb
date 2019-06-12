@@ -15,12 +15,12 @@ describe VouchersController do
       @params = {:customer_id => @customer.id, :voucher_ids => @vouchers.map(&:id), :showdate_id => @showdate.id}
     end
     shared_examples_for 'all reservations' do
-      it "redirects to welcome" do ; response.should redirect_to customer_path(@customer) ; end
+      it "redirects to welcome" do ; expect(response).to redirect_to customer_path(@customer) ; end
     end
     describe 'successful reservations' do
       describe 'for all 3 vouchers' do
         before :each do ; @successful = 3 ; post :confirm_multiple, @params.merge(:number => 3) ; end
-        it 'notifies' do ; flash[:notice].should match(/^Your reservations are confirmed./) ; end
+        it 'notifies' do ; expect(flash[:notice]).to match(/^Your reservations are confirmed./) ; end
         it_should_behave_like 'all reservations'
       end
       describe 'for 2 vouchers' do
@@ -29,7 +29,7 @@ describe VouchersController do
           @successful = 2
           post :confirm_multiple, @params.merge(:number => 2)
         end
-        it 'notifies' do ; flash[:notice].should match(/^Your reservations are confirmed./) ; end
+        it 'notifies' do ; expect(flash[:notice]).to match(/^Your reservations are confirmed./) ; end
         it_should_behave_like 'all reservations'
       end
     end
@@ -42,7 +42,7 @@ describe VouchersController do
       end
       describe 'for 3 vouchers' do
         before :each do ; @successful = 2; post :confirm_multiple, @params.merge(:number => 3) ; end
-        it 'notifies' do ; flash[:alert].should match(/could not be completed: An error occurred/) ; end
+        it 'notifies' do ; expect(flash[:alert]).to match(/could not be completed: An error occurred/) ; end
         it_should_behave_like 'all reservations'
       end
     end

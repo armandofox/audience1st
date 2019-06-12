@@ -20,7 +20,7 @@ describe Showdate do
           :limited_availability_threshold => c[0],
           :nearly_sold_out_threshold => c[1],
           :sold_out_threshold => c[2])
-        @sd.availability_grade.should == grade
+        expect(@sd.availability_grade).to eq(grade)
       end
     end
   end
@@ -31,27 +31,27 @@ describe Showdate do
         special = create(:show, :event_type => 'Special Event')
         s1 = create(:showdate, :show => regular, :thedate => 1.day.from_now)
         s2 = create(:showdate, :show => special, :thedate => 2.days.from_now)
-        Showdate.current_or_next(:type => 'Special Event').id.should == s2.id
+        expect(Showdate.current_or_next(:type => 'Special Event').id).to eq(s2.id)
       end
       it 'returns nil if no matches' do
         s1 = create(:showdate)
-        Showdate.current_or_next(:type => 'Special Event').should be_nil
+        expect(Showdate.current_or_next(:type => 'Special Event')).to be_nil
       end
     end
       
     context "when there are no showdates" do
       before(:each) do ; Showdate.delete_all ; end
       it "should be nil" do
-        Showdate.current_or_next.should be_nil
+        expect(Showdate.current_or_next).to be_nil
       end
       it "should not raise an exception" do
-        lambda { Showdate.current_or_next }.should_not raise_error
+        expect { Showdate.current_or_next }.not_to raise_error
       end
     end
     context "when there is only 1 showdate and it's in the past" do
       it "should return that showdate" do
         @showdate  = create(:showdate, :thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
-        Showdate.current_or_next.id.should == @showdate.id
+        expect(Showdate.current_or_next.id).to eq(@showdate.id)
       end
     end
     context "when there are past and future showdates" do
@@ -61,11 +61,11 @@ describe Showdate do
       end
       it "should return the next showdate" do
         @now_show = create(:showdate, :thedate => 5.minutes.from_now)
-        Showdate.current_or_next.id.should == @now_show.id
+        expect(Showdate.current_or_next.id).to eq(@now_show.id)
       end
       it "and 30-minute margin should return a showdate that started 5 minutes ago" do
         @now_show = create(:showdate, :thedate => 5.minutes.ago)
-        Showdate.current_or_next(:grace_period => 30.minutes).id.should == @now_show.id
+        expect(Showdate.current_or_next(:grace_period => 30.minutes).id).to eq(@now_show.id)
       end
     end
   end
@@ -75,8 +75,8 @@ describe Showdate do
     end
     describe 'when zero' do
       before(:each) { @s.update_attributes!(:max_sales => 0) }
-      it('should be allowed') {  @s.max_allowed_sales.should be_zero }
-      it('should make show sold-out') { @s.should be_really_sold_out }
+      it('should be allowed') {  expect(@s.max_allowed_sales).to be_zero }
+      it('should make show sold-out') { expect(@s).to be_really_sold_out }
     end
       
   end
@@ -109,15 +109,15 @@ describe Showdate do
     end
     describe "vouchers" do
       it "should have 9 vouchers" do
-        @showdate.vouchers.count.should == 9
+        expect(@showdate.vouchers.count).to eq(9)
       end
       it "should have 10 actual vouchers" do
-        @showdate.all_vouchers.count.should ==  10
+        expect(@showdate.all_vouchers.count).to eq(10)
       end
       it "should have 1 nonticket product" do
         nonticket = @showdate.all_vouchers - @showdate.vouchers
-        nonticket.size.should == 1
-        nonticket.first.category.should == 'nonticket'
+        expect(nonticket.size).to eq(1)
+        expect(nonticket.first.category).to eq('nonticket')
       end
     end
     describe "revenue" do
@@ -128,42 +128,42 @@ describe Showdate do
       end
       it "should be based on total seats sold" do
         # based on selling 9 seats
-        @showdate.revenue.should == 99.00
+        expect(@showdate.revenue).to eq(99.00)
       end
       it "should not include nonticket revenue" do
         @v = Voucher.new_from_vouchertype(create(:nonticket_vouchertype,:price => 22))
         @v.reserve(@showdate, mock_model(Customer))
         @v.save!
-        @showdate.revenue.should ==  99.00
+        expect(@showdate.revenue).to eq(99.00)
       end
     end
     describe "capacity computations" do
       shared_examples "for normal sales" do
         # house cap 12, max sales 10, sold 9
         it "should compute total sales" do
-          @showdate.compute_total_sales.should == @total_sold
-          @showdate.compute_advance_sales.should == @total_sold
+          expect(@showdate.compute_total_sales).to eq(@total_sold)
+          expect(@showdate.compute_advance_sales).to eq(@total_sold)
         end
         it "should compute total seats left" do
-          @showdate.total_seats_left.should == 3
+          expect(@showdate.total_seats_left).to eq(3)
         end
         it "should not be affected by nonticket vouchers" do
           @v = Voucher.new_from_vouchertype(create(:nonticket_vouchertype, :price => 99))
           @v.reserve(@showdate, mock_model(Customer))
           @v.save!
-          @showdate.total_seats_left.should == 3
+          expect(@showdate.total_seats_left).to eq(3)
         end
         it "should compute percent of max sales" do
-          @showdate.percent_sold.should == ((@total_sold.to_f / @max_sales) * 100).floor
+          expect(@showdate.percent_sold).to eq(((@total_sold.to_f / @max_sales) * 100).floor)
         end
         it "should compute percent of house" do
-          @showdate.percent_of_house.should == ((@total_sold.to_f / @house_cap) * 100).floor
+          expect(@showdate.percent_of_house).to eq(((@total_sold.to_f / @house_cap) * 100).floor)
         end
       end
       describe "when house is partly sold" do
         it_should_behave_like "for normal sales"
         it "should compute saleable seats left" do
-          @showdate.saleable_seats_left.should == 1
+          expect(@showdate.saleable_seats_left).to eq(1)
         end
       end
       describe "when house is oversold" do
@@ -175,8 +175,8 @@ describe Showdate do
           end
         end
         it "should show zero (not negative) seats remaining" do
-          @showdate.total_seats_left.should == 0
-          @showdate.saleable_seats_left.should == 0
+          expect(@showdate.total_seats_left).to eq(0)
+          expect(@showdate.saleable_seats_left).to eq(0)
         end
       end
       describe "when sold beyond max sales but not house cap" do
@@ -186,10 +186,10 @@ describe Showdate do
         end
         it_should_behave_like "for normal sales"
         it "should compute saleable seats left" do
-          @showdate.saleable_seats_left.should == 0
+          expect(@showdate.saleable_seats_left).to eq(0)
         end
         it "should show zero (not negative) seats remaining" do
-          @showdate.saleable_seats_left.should == 0
+          expect(@showdate.saleable_seats_left).to eq(0)
         end
       end
     end

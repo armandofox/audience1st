@@ -2,12 +2,12 @@ require 'rails_helper'
 
 describe 'ValidVoucher adjusting' do
   shared_examples_for 'visible, zero capacity' do
-    it { should be_visible }
+    it { is_expected.to be_visible }
     its(:explanation) { should_not be_blank }
     its(:max_sales_for_this_patron) { should be_zero }
   end
   shared_examples_for 'invisible, zero capacity' do
-    it { should_not be_visible }
+    it { is_expected.not_to be_visible }
     its(:explanation) { should_not be_blank }
     its(:max_sales_for_this_patron) { should be_zero }
   end
@@ -90,10 +90,10 @@ describe 'ValidVoucher adjusting' do
       @v
     end
     it 'should have no seats available' do
-      @v.max_sales_for_this_patron.should be_zero
+      expect(@v.max_sales_for_this_patron).to be_zero
     end
     it 'should say advance sales are closed' do
-      @v.explanation.should == 'Advance sales for this performance are closed'
+      expect(@v.explanation).to eq('Advance sales for this performance are closed')
     end
   end
 

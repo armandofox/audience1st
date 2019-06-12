@@ -19,11 +19,11 @@ describe SessionsController do
     end
     it 'can be disabled' do
       get :temporarily_disable_admin
-      @controller.send(:is_boxoffice).should_not be_truthy
+      expect(@controller.send(:is_boxoffice)).not_to be_truthy
     end
     it 'can be reenabled' do
       get :reenable_admin
-      @controller.send(:is_boxoffice).should be_truthy
+      expect(@controller.send(:is_boxoffice)).to be_truthy
     end
   end
 
@@ -58,16 +58,16 @@ describe SessionsController do
             end
             it "updates my last_login" do
               expect(@user).to receive(:update_attribute) do |meth,arg|
-                meth.should == :last_login
-                arg.should be_a_kind_of(Time)
+                expect(meth).to eq(:last_login)
+                expect(arg).to be_a_kind_of(Time)
               end
               post(:create, @login_params)
             end
             it "kills existing login"        do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params); end    
-            it "logs me in"                  do post(:create, @login_params); controller.send(:logged_in?).should  be_truthy  end    
+            it "logs me in"                  do post(:create, @login_params); expect(controller.send(:logged_in?)).to  be_truthy  end    
             it "sets/resets/expires cookie"  do expect(controller).to receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
             it "sends a cookie"              do expect(controller).to receive(:send_remember_cookie!);  post(:create, @login_params) end
-            it 'redirects to the home page'  do post(:create, @login_params); response.should redirect_to(@home_page)   end
+            it 'redirects to the home page'  do post(:create, @login_params); expect(response).to redirect_to(@home_page)   end
             if (has_request_token == :valid)
               it 'does not make new token'   do expect(@user).not_to receive(:remember_me);   post(:create, @login_params) end
               it 'does refresh token'        do expect(@user).to receive(:refresh_token);     post(:create, @login_params) end 
@@ -95,13 +95,13 @@ describe SessionsController do
       login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
-    it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /couldn't log you in/i end
-    it 'renders the log in page'    do post(:create, @login_params); response.should redirect_to(new_session_path)  end
-    it "doesn't log me in"          do post(:create, @login_params); controller.send(:logged_in?).should == false end
+    it 'flashes an error'           do post(:create, @login_params); expect(flash[:alert]).to match(/couldn't log you in/i) end
+    it 'renders the log in page'    do post(:create, @login_params); expect(response).to redirect_to(new_session_path)  end
+    it "doesn't log me in"          do post(:create, @login_params); expect(controller.send(:logged_in?)).to eq(false) end
     it "doesn't send password back" do 
       @login_params[:password] = 'FROBNOZZ'
       post(:create, @login_params)
-      response.should_not have_text(/FROBNOZZ/i)
+      expect(response).not_to have_text(/FROBNOZZ/i)
     end
   end
 
@@ -113,7 +113,7 @@ describe SessionsController do
       login_as create(:customer, :email => 'quentin@email.com')
     end
     it 'logs me out'                   do expect(controller).to receive(:logout_killing_session!); do_destroy end
-    it 'redirects me to the home page' do do_destroy; response.should be_redirect     end
+    it 'redirects me to the home page' do do_destroy; expect(response).to be_redirect     end
   end
   
 end

@@ -8,9 +8,9 @@ describe Order do
   end
   describe 'new order' do
     subject { Order.new }
-    it { should_not be_a_gift }
-    it { should_not be_completed }
-    it { should_not be_walkup }
+    it { is_expected.not_to be_a_gift }
+    it { is_expected.not_to be_completed }
+    it { is_expected.not_to be_walkup }
     its(:items) { should be_empty }
     its(:cart_empty?) { should be_truthy }
     its(:total_price) { should be_zero }
@@ -21,15 +21,15 @@ describe Order do
 
   describe 'creating from bare donation' do
     before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, create(:customer)) }
-    it 'should not be completed' do ; @order.should_not be_completed ; end
-    it 'should include a donation' do ; @order.includes_donation?.should be_truthy  ; end
-    it 'should_not be_a_gift' do ; @order.should_not be_a_gift ; end
-    it 'should not be ready' do ; @order.should_not be_ready_for_purchase, @order.errors.full_messages ; end
-    it 'should not show as empty' do ; @order.cart_empty?.should be_falsey ; end
+    it 'should not be completed' do ; expect(@order).not_to be_completed ; end
+    it 'should include a donation' do ; expect(@order.includes_donation?).to be_truthy  ; end
+    it 'should_not be_a_gift' do ; expect(@order).not_to be_a_gift ; end
+    it 'should not be ready' do ; expect(@order).not_to be_ready_for_purchase, @order.errors.full_messages ; end
+    it 'should not show as empty' do ; expect(@order.cart_empty?).to be_falsey ; end
     it 'should be ready when purchasemethod and processed_by are set' do
       @order.purchasemethod = Purchasemethod.default
       @order.processed_by = @the_customer
-      @order.should be_ready_for_purchase
+      expect(@order).to be_ready_for_purchase
     end
   end
 
@@ -39,7 +39,7 @@ describe Order do
       @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
       @order.save!
       @unserialized = Order.find(@order.id)
-      @unserialized.cart_empty?.should be_falsey
+      expect(@unserialized.cart_empty?).to be_falsey
     end
   end
 
@@ -78,17 +78,17 @@ describe Order do
     before :each do ; @c = create(:customer) ; @p = create(:customer) ; end
     context 'sent to purchaser' do
       subject { Order.new(:customer => @c, :purchaser => @p, :ship_to_purchaser => true) }
-      it { should be_a_gift }
+      it { is_expected.to be_a_gift }
       its(:ship_to) { should == @p }
     end
     context 'sent to recipient' do
       subject { Order.new(:customer => @c, :purchaser => @p, :ship_to_purchaser => false) }
-      it { should be_a_gift }
+      it { is_expected.to be_a_gift }
       its(:ship_to) { should == @c }
     end
     context 'not a gift' do
       subject { Order.new(:customer => @c, :purchaser => @c) }
-      it { should_not be_a_gift }
+      it { is_expected.not_to be_a_gift }
       its(:ship_to) { should == @c }
     end
   end
@@ -108,7 +108,7 @@ describe Order do
       specify "#{donations} donations and #{tickets} tickets" do
         @o.add_donation(Donation.new(:amount => 5)) if donations > 0
         @o.add_tickets(@vv,tickets) if tickets > 0
-        @o.walkup_confirmation_notice.should == message
+        expect(@o.walkup_confirmation_notice).to eq(message)
       end
     end
   end

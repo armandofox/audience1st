@@ -19,12 +19,12 @@ describe Customer do
       @c.created_by_admin = nil
       @c.gift_recipient_only = true
     end
-    it "should require first name" do ; @c.without(:first_name).should_not be_valid ;  end
-    it "should require last name" do ;  @c.without(:last_name).should_not be_valid;    end
-    it "should be valid if email but no phone" do ; @c.without(:day_phone).should be_valid ; end
-    it "should be valid if phone but no email" do ; @c.without(:email).should be_valid ; end
+    it "should require first name" do ; expect(@c.without(:first_name)).not_to be_valid ;  end
+    it "should require last name" do ;  expect(@c.without(:last_name)).not_to be_valid;    end
+    it "should be valid if email but no phone" do ; expect(@c.without(:day_phone)).to be_valid ; end
+    it "should be valid if phone but no email" do ; expect(@c.without(:email)).to be_valid ; end
     it "should be invalid if neither phone nor email" do
-      @c.without(:email).without(:day_phone).should_not be_valid
+      expect(@c.without(:email).without(:day_phone)).not_to be_valid
     end
   end
   
@@ -40,17 +40,17 @@ describe Customer do
     end
     it "should not require email address" do
       @customer.email = nil
-      @customer.should be_valid
-      lambda { @customer.save! }.should_not raise_error
+      expect(@customer).to be_valid
+      expect { @customer.save! }.not_to raise_error
     end
     it "should not require password" do
       @customer.password = @customer.password_confirmation = nil
-      @customer.should be_valid
-      lambda { @customer.save! }.should_not raise_error
+      expect(@customer).to be_valid
+      expect { @customer.save! }.not_to raise_error
     end
     it "should be valid if only first initial and last name provided" do
       @customer = new_by_admin(:first_name => 'A', :last_name => 'Fox')
-      @customer.should be_valid
+      expect(@customer).to be_valid
     end
   end
   describe "when created using force_valid" do
@@ -72,8 +72,8 @@ describe Customer do
     attrs.each_slice(2) do |attr|
       it "should survive invalid #{attr[0]}" do
         @customer.send("#{attr[0]}=", attr[1])
-        lambda { @customer.save! }.should_not raise_error
-        @customer.should be_valid
+        expect { @customer.save! }.not_to raise_error
+        expect(@customer).to be_valid
       end
     end
     describe "should react to duplicate email" do
@@ -82,11 +82,11 @@ describe Customer do
         @customer.email = @existing.email
       end
       it "without raising an exception" do
-        lambda { @customer.save! }.should_not raise_error
+        expect { @customer.save! }.not_to raise_error
       end
       it "by blanking out email" do
         @customer.save!
-        @customer.email.should be_blank
+        expect(@customer.email).to be_blank
       end
     end
   end
@@ -99,43 +99,43 @@ describe Customer do
     end
     it "should allow &" do
       @customer.first_name = "John & Mary"
-      @customer.should be_valid
+      expect(@customer).to be_valid
     end
     it "should allow /" do
       @customer.last_name = "Smith/Jones"
-      @customer.should be_valid
+      expect(@customer).to be_valid
     end
     it "should allow lists" do
       @customer.first_name = "John, Mary, & Joan"
-      @customer.should be_valid
+      expect(@customer).to be_valid
     end
     it "should disallow potential HTML/Javascript tags" do
       @customer.last_name = "<Doe>"
-      @customer.should_not be_valid
+      expect(@customer).not_to be_valid
     end
     it "should require valid email address" do
       @customer.email = nil
-      @customer.should_not be_valid
+      expect(@customer).not_to be_valid
     end
     it "should reject invalid email address" do
       @customer.email = "NotValidAddress"
-      @customer.should_not be_valid
-      @customer.errors[:email].should_not be_empty
+      expect(@customer).not_to be_valid
+      expect(@customer.errors[:email]).not_to be_empty
     end
     it "should require password" do
       @customer.password = @customer.password_confirmation = ''
-      @customer.should_not be_valid
-      @customer.errors[:password].join(",").should match(/too short/i)
+      expect(@customer).not_to be_valid
+      expect(@customer.errors[:password].join(",")).to match(/too short/i)
     end
     it "should require nonblank password confirmation" do
       @customer.password_confirmation = ''
-      @customer.should_not be_valid
-      @customer.errors[:password_confirmation].should include_match_for(/doesn't match/i)
+      expect(@customer).not_to be_valid
+      expect(@customer.errors[:password_confirmation]).to include_match_for(/doesn't match/i)
     end
     it "should require matching password confirmation" do
       @customer.password_confirmation = "DoesNotMatch"
-      @customer.should_not be_valid
-      @customer.errors[:password_confirmation].should include_match_for(/doesn't match/i)
+      expect(@customer).not_to be_valid
+      expect(@customer.errors[:password_confirmation]).to include_match_for(/doesn't match/i)
     end
   end
 end

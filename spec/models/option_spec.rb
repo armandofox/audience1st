@@ -17,17 +17,17 @@ describe Option do
         @o.limited_availability_threshold = c[0]
         @o.nearly_sold_out_threshold = c[1]
         @o.sold_out_threshold = c[2]
-        !!@o.valid?.should == result
+        !!(expect(@o.valid?).to eq(result))
       end
     end
     it 'is invalid if service charge > 0 but no description' do
       @o.subscription_order_service_charge = 2.50
-      @o.should_not be_valid
-      @o.errors[:subscription_order_service_charge_description].should include "can't be blank"
+      expect(@o).not_to be_valid
+      expect(@o.errors[:subscription_order_service_charge_description]).to include "can't be blank"
     end
     it 'is valid if service charge = 0 and no description' do
       @o.subscription_order_service_charge = 0
-      @o.should be_valid
+      expect(@o).to be_valid
     end
   end
 end

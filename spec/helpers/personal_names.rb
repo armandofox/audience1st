@@ -15,7 +15,7 @@ describe "name splitting" do
   @cases.each_slice(3) do |name|
     it "should split '#{name[0]}' into '#{name[1]}' and '#{name[2]}'" do
       full = name.shift
-      full.first_and_last_from_full_name.should == name
+      expect(full.first_and_last_from_full_name).to eq(name)
     end
   end
 end

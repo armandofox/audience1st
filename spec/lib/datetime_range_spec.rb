@@ -4,13 +4,13 @@ describe DatetimeRange do
 
   describe "attributes" do
     before(:each) do ;  @d = DatetimeRange.new ; end
-    it "has a start date" do ;   @d.start_date.should be_a(Date)  ; end
-    it "has an end date"  do ;   @d.end_date.should be_a(Date) ; end
+    it "has a start date" do ;   expect(@d.start_date).to be_a(Date)  ; end
+    it "has an end date"  do ;   expect(@d.end_date).to be_a(Date) ; end
     it "converts strings to ints if needed" do
-      DatetimeRange.new(:days => ['3', 4, '6.0']).days.should == [3,4,6]
+      expect(DatetimeRange.new(:days => ['3', 4, '6.0']).days).to eq([3,4,6])
     end
     it "should be invalid if days of week not in range 0-6" do
-      lambda { DatetimeRange.new(:days => [8]) }.should raise_error(ArgumentError)
+      expect { DatetimeRange.new(:days => [8]) }.to raise_error(ArgumentError)
     end
   end
 
@@ -25,18 +25,18 @@ describe DatetimeRange do
         @dates = @range.dates
       end
       it "should result in a list of Time objects" do
-        @dates.first.should be_a(Time)
+        expect(@dates.first).to be_a(Time)
       end
       it "should return correct count" do
-        @range.count.should == 4
+        expect(@range.count).to eq(4)
       end
       it "should include boundary dates" do
-        @dates.size.should == 4
+        expect(@dates.size).to eq(4)
       end
       it "should set the time correctly" do
         @dates.each do |d|
-          d.hour.should == 18
-          d.min.should == 30
+          expect(d.hour).to eq(18)
+          expect(d.min).to eq(30)
         end
       end
       it "should compute the right datetimes in the local timezone" do
@@ -56,15 +56,15 @@ describe DatetimeRange do
           :hour => 12,
           :days => [0,1,2,3,4,5,6])
       end
-      it "should count correctly" do ; @range.count.should == 7 ; end
+      it "should count correctly" do ; expect(@range.count).to eq(7) ; end
       it "should include Feb 29" do
-        @range.dates.should include(Time.zone.parse("Feb 29, 2012, 12:00pm"))
+        expect(@range.dates).to include(Time.zone.parse("Feb 29, 2012, 12:00pm"))
       end
     end
     it "should work correctly when no dates included" do
-      DatetimeRange.new(
+      expect(DatetimeRange.new(
         :start_date => Date.today, :end_date => Date.today+11.days,
-        :days => []).dates.should be_empty
+        :days => []).dates).to be_empty
     end
   end
 

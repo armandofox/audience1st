@@ -5,17 +5,17 @@ describe Customer do
       @c = create(:customer)
     end
     it 'should be the empty question by default' do
-      @c.secret_question.should == 0
-      @c.should be_valid
+      expect(@c.secret_question).to eq(0)
+      expect(@c).to be_valid
     end
     it 'should be invalid with too-large secret question index' do
       @c.secret_question = 9999
-      @c.should_not be_valid
+      expect(@c).not_to be_valid
     end
     it 'should make customer invalid if question selected but no answer' do
       @c.secret_question = 1
-      @c.should_not be_valid
-      @c.errors[:secret_answer].should include_match_for(/must be given if you specify a question/)
+      expect(@c).not_to be_valid
+      expect(@c.errors[:secret_answer]).to include_match_for(/must be given if you specify a question/)
     end
   end
   describe 'authenticating with secret question' do
@@ -27,19 +27,19 @@ describe Customer do
       scenarios.each do |s|
         it "if #{s[0]}" do
           u = Customer.authenticate_from_secret_question(s[1], s[2], s[3])
-          u.errors[:login_failed].should include_match_for(s[4])
+          expect(u.errors[:login_failed]).to include_match_for(s[4])
         end
       end
       it 'if user hasn\'t setup a secret question' do
         c = create(:customer, :secret_question => 0)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'foo')
-        u.errors[:login_failed].should include_match_for(/never set up a secret question/)
-        u.errors[:no_secret_question].should_not be_nil
+        expect(u.errors[:login_failed]).to include_match_for(/never set up a secret question/)
+        expect(u.errors[:no_secret_question]).not_to be_nil
       end
       it 'if answer incorrect' do
         c = create(:customer, :secret_answer => 'blah',:secret_question => 2)
         u = Customer.authenticate_from_secret_question(c.email, 2, 'answer')
-        u.errors[:login_failed].should include_match_for(/isn't the answer/)
+        expect(u.errors[:login_failed]).to include_match_for(/isn't the answer/)
       end
     end
   end
@@ -48,29 +48,29 @@ describe Customer do
       @c = create(:customer)
     end
     it 'should be valid if blank' do
-      @c.secret_answer.should be_blank
-      @c.should be_valid
+      expect(@c.secret_answer).to be_blank
+      expect(@c).to be_valid
     end
     it 'should be invalid if too long' do
       @c.secret_answer = 'foo' * 30
-      @c.should_not be_valid
-      @c.errors[:secret_answer].should include_match_for(/too long/)
+      expect(@c).not_to be_valid
+      expect(@c.errors[:secret_answer]).to include_match_for(/too long/)
     end
     context 'when there is a secret question' do
       before(:each) do
         @c.update_attributes(:secret_answer => 'The Foo   bar', :secret_question => 1)
       end
       it 'should always be wrong if blank' do
-        @c.check_secret_answer('').should be_nil
+        expect(@c.check_secret_answer('')).to be_nil
       end
       it 'should match case-insensitively' do
-        @c.check_secret_answer('the foo bar').should be_truthy
+        expect(@c.check_secret_answer('the foo bar')).to be_truthy
       end
       it 'should match if whitespace collapsed' do
-        @c.check_secret_answer('The Foo bar').should be_truthy
+        expect(@c.check_secret_answer('The Foo bar')).to be_truthy
       end
       it 'should match if whitespace expanded' do
-        @c.check_secret_answer('The Foo bar').should be_truthy
+        expect(@c.check_secret_answer('The Foo bar')).to be_truthy
       end
     end
     context 'when there is no secret question' do
@@ -78,12 +78,12 @@ describe Customer do
         @c.update_attributes(:secret_answer => 'foo', :secret_question => 0)
       end
       it 'should always be wrong' do
-        @c.check_secret_answer('foo').should be_nil
+        expect(@c.check_secret_answer('foo')).to be_nil
       end
       it 'should make customer invalid if secret answer provided' do
         @c.secret_answer = 'foo'
-        @c.should_not be_valid
-        @c.errors[:secret_answer].should include_match_for(/specify a question/i)
+        expect(@c).not_to be_valid
+        expect(@c.errors[:secret_answer]).to include_match_for(/specify a question/i)
       end
     end
   end

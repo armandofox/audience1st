@@ -52,11 +52,6 @@ group :test do
   gem 'email_spec'
   gem 'fake_stripe'
   gem 'poltergeist'
-  gem 'rspec-rails'
-  gem 'rspec-its'
-  gem 'rspec-html-matchers'
-  gem 'rspec-collection_matchers' # should have(n).items, etc
-  gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'simplecov', :require => false
   gem 'spring'                  # for 'guard'
   gem 'timecop'
@@ -88,6 +83,12 @@ group :development, :test do
   gem 'faye-websocket'
   gem 'database_cleaner'
   gem 'rb-readline'
+  gem 'rspec', '~> 3.0'
+  gem 'rspec-rails'
+  gem 'rspec-its'
+  gem 'rspec-html-matchers'
+  gem 'rspec-collection_matchers' # should have(n).items, etc
+  gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'sqlite3'
   gem 'traceroute'
 end
