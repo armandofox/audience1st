@@ -1,0 +1,3 @@
+"Order #","Purchaser First Name","Purchaser Last Name","Zip Code","Pickup First Name","Pickup Last Name","Ticket Type","Email","# Trans","show","Performance Date","Sale Date","# of Seats","Purchased Section","Actual Section","Row","Start","End","Total Price","Status","Data Privacy"
+"T103018946384","Adrian","Ray ","94066","Adrian","Ray","PURCHASE","arrayavalani@not.gmail.com","15","Company","2010-10-03 3:00 PM","2010-10-29 5:13 PM","1","Orchestra","Orchestra","GA_O",,,"19.00","CHARGED","-"
+"T102618218358","Maria","Moran","94014","Samantha","Moran","PURCHASE","mmoranrn98@not.hotmail.com","4","Company","2010-10-01 8:00 PM","2010-09-26 4:51 PM","7","Orchestra","Orchestra","GA_O",,,"133.00","CHARGED","-"
