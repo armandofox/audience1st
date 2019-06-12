@@ -13,7 +13,7 @@ Background: logged in as boxoffice
     |  10 | TodayTix - half off | $19.00 | October 1, 2010, 8:00pm |
     |  10 | TodayTix - half off | $19.00 | October 3, 2010, 3:00pm |
 
-Scenario: no tickets from this will-call have been previously imported, no customers known
+Scenario: successful import with customers known; then attempt re-import of same file
 
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then table "#proposed_import" should include:
@@ -31,9 +31,8 @@ Scenario: no tickets from this will-call have been previously imported, no custo
   And  the import for "Ray, Adrian" should show "Previously imported" 
   And  I should not see "Import Orders"
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
-  Then the import for "Moran, Maria" should show "Previously imported" 
-  And  the import for "Ray, Adrian" should show "Previously imported" 
-  And  I should not see "Import Orders"
+  Then I should see "This list was already imported"
+  And  I should be on the ticket sales import page
 
 Scenario: customer unique match on email
 

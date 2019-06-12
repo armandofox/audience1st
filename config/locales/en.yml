@@ -1,6 +1,9 @@
 en:
   import:
 
+    already_imported: >
+      This list was already imported, on %{date}.      
+
     showdate_not_found: >
       This will-call list is for %{date}, but there is no performance listed on that date.
 

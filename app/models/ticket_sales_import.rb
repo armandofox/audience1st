@@ -15,8 +15,9 @@ class TicketSalesImport < ActiveRecord::Base
 
   validates_inclusion_of :vendor, :in => IMPORTERS
   validates_length_of :raw_data, :within => 1..65535
+  validate :not_previously_imported?
   validate :valid_for_parsing?
-
+  
   scope :sorted, -> { order('updated_at DESC') }
 
   attr_reader :parser
@@ -33,6 +34,18 @@ class TicketSalesImport < ActiveRecord::Base
       errors.add(:parser, "is invalid")
       raise ActiveRecord::RecordInvalid.new(self)
     end
+  end
+
+  def not_previously_imported?
+    # just in case, don't preload all imports!
+    TicketSalesImport.all.each do |i|
+      if i.completed? && self.raw_data.strip == i.raw_data.strip
+        self.errors.add(:base, I18n.translate('import.already_imported',
+            :date => i.updated_at.to_formatted_s(:month_day_year)))
+        return nil
+      end
+    end
+    true
   end
 
   def valid_for_parsing?
