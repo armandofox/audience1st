@@ -15,6 +15,7 @@ class TicketSalesImportsController < ApplicationController
   # from the contents of the uploaded file
 
   def create
+    return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
     @import = TicketSalesImport.new(
       :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user,
       :existing_customers => 0, :new_customers => 0, :tickets_sold => 0)
@@ -30,7 +31,11 @@ class TicketSalesImportsController < ApplicationController
     @import = TicketSalesImport.find params[:id]
     @import.parse
     @importable = ! (@import.completed? || @import.importable_orders.all?(&:already_imported?))
-    redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) if !@import.errors.empty?
+    if !@import.errors.empty?
+      @import.destroy
+      redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
+      return
+    end
     @import.check_sales_limits
     flash.now[:alert] = @import.warnings.as_html if !@import.warnings.empty?
   end
