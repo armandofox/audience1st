@@ -17,19 +17,12 @@ module VboScenarioHelpers
     end
   end
 
-  def setup_show_and_showdate(name,time,args={})
+  def setup_show_and_showdate(name,time)
     time = Time.zone.parse(time) unless time.kind_of? Time
     show = Show.find_by_name(name) ||
-      create(:show,
-      :name => name,
-      :house_capacity => args[:house_capacity] || 10,
-      :opening_date => args[:opening_date] || (time - 1.month),
-      :closing_date => args[:closing_date] || (time + 1.month))
+      create(:show, :name => name, :opening_date => time - 1.month, :closing_date => (time + 1.month))
     return Showdate.find_by_show_id_and_thedate(show.id, time) ||
-      show.showdates.create!(
-      :thedate => time,
-      :end_advance_sales => time - 5.minutes,
-      :max_sales => args[:max_sales] || 100)
+      create(:showdate, :show => show, :thedate => time)
   end
 
   def make_valid_tickets(showdate,vtype,qty=nil,promo_code=nil)

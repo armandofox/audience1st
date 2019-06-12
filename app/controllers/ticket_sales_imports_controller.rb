@@ -31,6 +31,8 @@ class TicketSalesImportsController < ApplicationController
     @import.parse
     @importable = ! (@import.completed? || @import.importable_orders.all?(&:already_imported?))
     redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html) if !@import.errors.empty?
+    @import.check_sales_limits
+    flash.now[:alert] = @import.warnings.as_html if !@import.warnings.empty?
   end
 
   # Finalize the import according to dropdown menu selections

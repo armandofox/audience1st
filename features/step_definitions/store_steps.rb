@@ -33,7 +33,7 @@ Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, ticket
 end
 
 Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
-  order = build(:order, :walkup => true)
+  order = build(:order, :walkup => true, :processed_by => Customer.boxoffice_daemon)
   qty = qty.to_i
   showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
   offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(

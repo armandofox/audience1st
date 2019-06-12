@@ -33,7 +33,7 @@ module TicketSalesImportParser
             num_seats = h["# of Seats"].to_i
             price_per_seat = h["Total Price"].to_f / num_seats
             redemption = i.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)
-            i.order.add_tickets(redemption, num_seats)
+            i.add_tickets(redemption, num_seats)
             i.import_first_name = h["Purchaser First Name"]
             i.import_last_name = h["Purchaser Last Name"]
             i.import_email = h["Email"]

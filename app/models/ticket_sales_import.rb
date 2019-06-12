@@ -27,7 +27,7 @@ class TicketSalesImport < ActiveRecord::Base
 
   def set_parser
     @importable_orders = []
-    @warnings = []
+    @warnings = ActiveModel::Errors.new(self)
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
     else
@@ -54,10 +54,44 @@ class TicketSalesImport < ActiveRecord::Base
 
   public
 
+  # Call the underlying parser to create a set of +importable_order+ objects for this import
   def parse
     @importable_orders = @parser.parse
     @importable_orders.each do |imp|
       imp.order.save! unless imp.already_imported?
+    end
+  end
+
+  # Check whether the import will exceed either the house capacity or a per-ticket-type capacity control
+  def check_sales_limits
+    showdates = Hash.new { 0 }
+    num_of_type = Hash.new { 0 }
+    @importable_orders.each do |i|
+      i.valid_vouchers.each_pair do |vv,num|
+        # add tickets that will be imported for each showdate
+        showdates[vv.showdate] += num
+        num_of_type[vv] += num
+      end
+    end
+    showdates.each_pair do |showdate,num_to_import|
+      current_sales = showdate.compute_total_sales
+      warning_params = { :num_to_import => num_to_import, :current_sales => current_sales,
+        :performance_date => showdate.thedate.to_formatted_s(:showtime) }
+      if current_sales + num_to_import > showdate.max_sales
+        @warnings.add(:base, I18n.translate('import.capacity_exceeded',
+            warning_params.merge({:capacity_control => "performance's sales cap", :capacity => showdate.max_sales})))
+      end
+      if current_sales + num_to_import > showdate.house_capacity
+        @warnings.add(:base, I18n.translate('import.capacity_exceeded',
+            warning_params.merge({:capacity_control => 'house capacity', :capacity => showdate.house_capacity})))
+      end
+    end
+    num_of_type.each_pair do |vv, num_to_import|
+      if vv.showdate.sales_by_type(vv.vouchertype_id) + num_to_import > vv.max_sales_for_type
+        @warnings.add(:base, I18n.translate('import.max_sales_for_type_exceeded',
+            :num_to_import => num_to_import, :vouchertype => vv.name, :max_sales_for_type => vv.max_sales_for_type,
+            :performance_date => vv.thedate.to_formatted_s(:showtime)))
+      end
     end
   end
 

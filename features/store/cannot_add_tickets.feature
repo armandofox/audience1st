@@ -22,7 +22,7 @@ Scenario: Cannot buy tickets to sold-out performance
 
   Given a performance of "The Nerd" on October 1, 2013, 7:00pm
   Given today is September 30, 2013
-  And the "Oct 1, 2013, 7:00pm" performance is sold out
+  And the "Oct 1, 2013, 7:00pm" performance has reached its max sales
   When I go to the store page
   Then I should see "Event is sold out" within "#voucher_menus"
 

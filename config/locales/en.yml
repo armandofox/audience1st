@@ -4,6 +4,15 @@ en:
     already_imported: >
       This list was already imported, on %{date}.      
 
+    capacity_exceeded: >
+      For the %{performance_date} performance, adding these %{num_to_import} vouchers to 
+      current sales of %{current_sales} will exceed the %{capacity_control} of %{capacity}.
+
+    max_sales_for_type_exceeded: >
+      For the %{performance_date} performance,
+      importing these %{num_to_import} "%{vouchertype}" vouchers
+      will exceed your intended limit of %{max_sales_for_type} vouchers of this type.
+
     showdate_not_found: >
       This will-call list is for %{date}, but there is no performance listed on that date.
 

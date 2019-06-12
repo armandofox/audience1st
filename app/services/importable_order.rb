@@ -54,6 +54,7 @@ class ImportableOrder
     @customers = []
     @action = MAY_CREATE_NEW_CUSTOMER
     @comment = nil
+    @valid_vouchers = Hash.new { 0 }
   end
 
   def already_imported?
@@ -103,6 +104,18 @@ class ImportableOrder
     raise MissingDataError.new(I18n.translate('import.redemption_not_found',
         :vouchertype => vouchertype.name,:performance => showdate.printable_name)) if redemption.nil?
     redemption
+  end
+
+  # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
+  def add_tickets(vv, num)
+    self.order.add_tickets(vv, num)
+    @valid_vouchers[vv] += num
+  end
+
+  def valid_vouchers
+    raise MissingDataError.new("Attempt to call #valid_vouchers on empty/previous import") if
+      (@valid_vouchers.empty? || @action == ALREADY_IMPORTED)
+    @valid_vouchers
   end
 
 end
