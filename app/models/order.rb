@@ -255,7 +255,14 @@ class Order < ActiveRecord::Base
   end
 
   def summary(separator = "\n")
-    (items.map(&:one_line_description) << self.comments).join(separator)
+    summary = []
+    vouchers, nonvouchers = items.partition { |i| i.kind_of?(Voucher) }
+    vouchers.group_by { |v| [v.vouchertype, v.showdate] }.each_pair do |for_show,vouchers|
+      summary << "#{vouchers.count} @ #{vouchers.first.one_line_description}"
+    end
+    summary += nonvouchers.map(&:one_line_description)
+    summary << self.comments
+    summary.join(separator)
   end
 
   def summary_for_audit_txn

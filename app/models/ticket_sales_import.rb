@@ -66,7 +66,7 @@ class TicketSalesImport < ActiveRecord::Base
   def check_sales_limits
     showdates = Hash.new { 0 }
     num_of_type = Hash.new { 0 }
-    @importable_orders.each do |i|
+    @importable_orders.reject(&:already_imported?).each do |i|
       i.valid_vouchers.each_pair do |vv,num|
         # add tickets that will be imported for each showdate
         showdates[vv.showdate] += num
