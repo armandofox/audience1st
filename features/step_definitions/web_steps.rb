@@ -106,27 +106,27 @@ end
 
 Then /^(?:|I )should see "([^\"]*)"(?: within "([^\"]*)")?$/ do |text, selector|
   with_scope(selector) do
-    page.should have_content(text)
+    expect(page).to have_content(text, :normalize_ws => true)
   end
 end
 
 Then /^(?:|I )should see \/([^\/]*)\/(?: within "([^\"]*)")?$/ do |regexp, selector|
   regexp = Regexp.new(regexp)
   with_scope(selector) do
-    page.should have_xpath('//*', :text => regexp)
+    expect(page).to have_xpath('//*', :text => regexp)
   end
 end
 
 Then /^(?:|I )should not see "([^\"]*)"(?: within "([^\"]*)")?$/ do |text, selector|
   with_scope(selector) do
-    page.should have_no_content(text)
+    expect(page).to have_no_content(text)
   end
 end
 
 Then /^(?:|I )should not see \/([^\/]*)\/(?: within "([^\"]*)")?$/ do |regexp, selector|
   regexp = Regexp.new(regexp)
   with_scope(selector) do
-    page.should have_no_xpath('//*', :text => regexp)
+    expect(page).to have_no_xpath('//*', :text => regexp)
   end
 end
 
@@ -141,46 +141,46 @@ Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"
   with_scope(selector) do
     val = find_field(field).value
     if equality_check =~ /equal/
-      val.should eq(value)
+      expect(val).to eq(value)
     else
-      val.should =~ /#{value}/
+      expect(val).to match(/#{value}/)
     end
   end
 end
 
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should be blank$/ do |field, selector|
   with_scope(selector) do
-    find_field(field).value.should be_blank
+    expect(find_field(field).value).to be_blank
   end
 end
 
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should not contain "([^\"]*)"$/ do |field, selector, value|
   with_scope(selector) do
-    find_field(field).value.should_not =~ /#{value}/
+    expect(find_field(field).value).not_to match(/#{value}/)
   end
 end
 
 Then /^the "([^\"]*)" checkbox(?: within "([^\"]*)")? should be checked$/ do |label, selector|
   with_scope(selector) do
-    find_field(label)['checked'].should be_truthy
+    expect(find_field(label)['checked']).to be_truthy
   end
 end
 
 Then /^the "([^\"]*)" checkbox(?: within "([^\"]*)")? should not be checked$/ do |label, selector|
   with_scope(selector) do
-    find_field(label)['checked'].should_not be_truthy
+    expect(find_field(label)['checked']).to be_falsey
   end
 end
  
 Then /^(?:|I )should be on (.+)$/ do |page_name|
   current_path = URI.parse(current_url).select(:path).compact.join('?')
-  current_path.should == path_to(page_name)
+  expect(current_path).to  eq(path_to(page_name))
 end
 
 Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
   actual_params   = CGI.parse(URI.parse(current_url).query)
   expected_params = Hash[expected_pairs.rows_hash.map{|k,v| [k,[v]]}]
-  actual_params.should == expected_params
+  expect(actual_params).to eq(expected_params)
 end
 
 Then /^show me the page$/ do

@@ -135,14 +135,16 @@ en:
     gift_matching_email_last_name_diff_address: >
       We recognize that name and email address, but we have a
       different mailing address and/or phone number on file for this
-      person.  Please note that we will use our contact information to
-      contact them.  If you believe this is a problem, please contact
+      person. Please note that we will use our contact information to
+      contact them. If you believe this is a problem, please contact
       the box office after completing this gift order.
 
     errors:
 
       gift_matching_email_diff_last_name: >
-        We recognize that email address, but it matches a customer with a different last name. Please correct the last name of the customer, or else leave the email address blank and provide a contact address and phone number instead.
+        We recognize that email address, but it matches a customer with a different last name.
+        Please correct the last name of the customer, or else leave the email address blank
+        and provide a contact address and phone number instead.
 
       gift_diff_email_notice: >
         Please enter a gift recipient email different from your own.

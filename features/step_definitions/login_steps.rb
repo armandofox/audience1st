@@ -46,8 +46,8 @@ When /^I login with the correct credentials for customer "(.*) (.*)"$/ do |first
   click_button 'Login'
 end
 
-Then /^I should be able to login with username "(.*)" and (that password|password "(.*)")$/ do |username,use_prev,password|
-  @password = password if use_prev !~ /that/
+Then /I should be able to login with username "(.*)" and password "(.*)"/ do |username,password|
+  @password = password
   @customer = Customer.where('email LIKE ?',username.downcase).first
   verify_successful_login
 end

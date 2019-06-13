@@ -80,7 +80,7 @@ Then /^there should be no show on "(.*)"$/ do |date|
   Showdate.find_by_thedate(Time.zone.parse date).should be_nil
 end
 
-Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, _, num|
+Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, num|
   showdate = Showdate.find_by_thedate! Time.zone.parse(date)
   num = num.to_i
   if num > 0
@@ -90,13 +90,8 @@ Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, _, num|
   end
 end
 
-Given /^(that|the "(.*)") performance (has reached its max sales|is truly sold out)$/ do |recent,dt,sold|
-  if recent =~ /that/
-    showdate = @showdate
-    dt = showdate.thedate
-  else
-    showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
-  end
+Given /^the "(.*)" performance (has reached its max sales|is truly sold out)$/ do |dt,sold|
+  showdate = Showdate.find_by(:thedate => Time.zone.parse(dt))
   to_sell = (sold =~ /max/ ? showdate.saleable_seats_left : showdate.total_seats_left)
   vtype = create(:valid_voucher, :showdate => showdate).name
   steps %Q{Given #{to_sell} "#{vtype}" tickets have been sold for "#{dt}"}

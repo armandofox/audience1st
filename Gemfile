@@ -42,9 +42,9 @@ group :production do
 end
 
 group :test do
-  gem 'cucumber', '~> 3.0'
+  gem 'cucumber', '~> 3.0.0'
   gem 'cucumber-rails', :require => false
-  gem 'capybara'
+  gem 'capybara', '~> 3.0'
   gem 'chronic'
   gem 'launchy'
   gem 'rack-test'

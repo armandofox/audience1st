@@ -72,7 +72,7 @@ Given /customer "(.*) (.*)" exists with no email/ do |first,last|
     :email => nil, :created_by_admin => true)
 end
 
-Given /^customer "(.*) (.*)" exists( with email "(.*)")?$/ do |first,last,_,email|
+Given /^customer "(.*) (.*)" exists( with email "(.*)")?$/ do |first,last,email|
   @customer =
     find_customer(first,last) ||
     create(:customer, :first_name => first, :last_name => last,

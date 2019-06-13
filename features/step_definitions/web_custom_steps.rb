@@ -19,7 +19,7 @@ Then /^I should see an alert matching \/(.*)\/$/ do |regex|
 end
 
 # Check for N occurrences of something
-Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, _, selector, count|
+Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, selector, count|
   regexp = Regexp.new(regexp, Regexp::MULTILINE)
   count = count.to_i
   if selector

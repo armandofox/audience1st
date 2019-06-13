@@ -8,7 +8,7 @@ Feature: checkin "walkup" subscriber (without advance reservation)
 Background: I am logged in as boxoffice and checking in a show
 
   Given a performance of "Chicago" on April 15, 2010, 8:00pm
-  And that performance has reached its max sales
+  And the "April 15, 2010, 8:00pm" performance has reached its max sales
   And customer "Elaine Henninger" has 1 of 2 open subscriber vouchers for "Chicago"
   And I am logged in as box office
   And I visit the checkin page for April 15, 2010, 8:00pm
