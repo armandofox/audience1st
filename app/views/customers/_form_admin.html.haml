@@ -1,10 +1,13 @@
-/ Extra params settable only by admin
-
 %fieldset.admin
   %legend Administrator Preferences
-  %p
-    %label{:for => :customer_last_login} Last login
-    %span= last_login_for @customer
+  .row
+    .col-md-6
+      %label{:for => :customer_last_login} Last login
+      %span= last_login_for @customer
+    .col-md-6
+      - if (imp = @customer.ticket_sales_import)
+        Created by
+        = link_to "#{imp.vendor} import on #{imp.updated_at.to_formatted_s(:month_day_year)}", edit_ticket_sales_import_path(imp)
 
   - if @superadmin
     %p

@@ -305,8 +305,7 @@ class Order < ActiveRecord::Base
     self.finalize!(sold_on)
   end
   
-  def finalize_with_new_customer!(first,last,email,sold_on=Time.current)
-    customer = Customer.new(:first_name => first, :last_name => last, :email => email)
+  def finalize_with_new_customer!(customer,sold_on=Time.current)
     customer.force_valid = true
     self.customer = self.purchaser = customer
     self.finalize!(sold_on)

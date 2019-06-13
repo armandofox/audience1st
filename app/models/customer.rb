@@ -31,6 +31,8 @@ class Customer < ActiveRecord::Base
   has_many :retail_items
   has_many :items               # the superclass of vouchers,donations,retail_items
 
+  belongs_to :ticket_sales_import
+
   # There are multiple 'flavors' of customers with different validation requirements.
   # These should be factored out into subclasses.
   # | Type            | When used                    | Validations                                  |
@@ -84,6 +86,7 @@ class Customer < ActiveRecord::Base
   attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
   :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
   :password, :password_confirmation, :token, :token_created_at, :comments,
+  :ticket_sales_import,
   :secret_question, :secret_answer,
   :company, :title, :company_url, :company_address_line_1,
   :company_address_line_2, :company_city, :company_state, :company_zip,

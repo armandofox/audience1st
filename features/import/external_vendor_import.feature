@@ -34,7 +34,7 @@ Scenario: successful import with customers known; then attempt re-import of same
   Then I should see "This list was already imported"
   And  I should be on the ticket sales import page
 
-Scenario: customer unique match on email
+Scenario: customer unique match on email; verify customer is linked to this import
 
   Given customer "Maria Moran" exists with email "mmoranrn98@not.hotmail.com"
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
@@ -46,6 +46,9 @@ Scenario: customer unique match on email
   Then I should see "4 tickets added for 1 new customers and 1 existing customers"
   And customer "Maria Moran" should have 3 "TodayTix - half off" tickets for "Chicago" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
+  When I visit the edit contact info page for customer "Adrian Ray"
+  Then show me the page
+  Then I should see "Created by TodayTix import" within ".admin"
 
 Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing
 
