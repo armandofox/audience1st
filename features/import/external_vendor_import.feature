@@ -47,7 +47,6 @@ Scenario: customer unique match on email; verify customer is linked to this impo
   And customer "Maria Moran" should have 3 "TodayTix - half off" tickets for "Chicago" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
   When I visit the edit contact info page for customer "Adrian Ray"
-  Then show me the page
   Then I should see "Created by TodayTix import" within ".admin"
 
 Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing
