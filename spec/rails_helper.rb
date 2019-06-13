@@ -1,13 +1,16 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-require 'rspec/rails'
 require File.expand_path('../../config/environment', __FILE__)
+require 'rspec/rails'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in #{Rails.env}!") unless Rails.env.test?
 # Add additional requires below this line. Rails is not loaded until this point!
+# require 'capybara/rspec'
+# require 'capybara/rails'
+# require 'capybara/webkit'
+Capybara.server = :webrick
 
 require 'vcr'
-
 VCR.configure do |config|
   config.ignore_localhost = true # to allow Stripe stubbing to work
   config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'

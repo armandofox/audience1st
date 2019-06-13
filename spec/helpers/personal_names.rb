@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 # The name functions being tested here are currently included by extending
 # String - although they shouldn't be.
