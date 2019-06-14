@@ -4,7 +4,7 @@
     .form-row.px-2
       %label.col-2.text-right.col-form-label{:for => 'vendor'} Import from
       = select_tag 'vendor', options_for_select(@vendors), :class => 'form-control col-2'
-      %label.col-2.btn.btn-primary{:for => 'file'} Choose file...
+      %label.col-2.btn.btn-primary{:for => 'file'} Choose will-call list...
       = file_field_tag 'file', :accept => '.csv', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#file')[0].files[0].name)}
       %label.col-3.col-form-label.small#filename No file chosen
       = submit_tag 'Upload', :class => 'col-2 btn btn-success'
@@ -15,6 +15,7 @@
     %thead
       %tr
         %th Date of Import
+        %th Imported by
         %th Vendor
         %th Tickets Sold
         %th New Customers Added
@@ -23,6 +24,7 @@
       - @ticket_sales_imports.each do |imp|
         %tr[imp]
           %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
+          %td= imp.processed_by.first_name rescue ''
           %td= imp.vendor
           %td= imp.tickets_sold
           %td= imp.new_customers

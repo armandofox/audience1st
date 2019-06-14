@@ -6,7 +6,7 @@ class TicketSalesImportsController < ApplicationController
   # The view provides a dropdown populated from TicketSalesImporter::IMPORTERS, which
   # should be used to set the 'vendor' field of the import.
   def index
-    @ticket_sales_imports = TicketSalesImport.all.sorted
+    @ticket_sales_imports = TicketSalesImport.completed.sorted
     @vendors = TicketSalesImport::IMPORTERS
   end
 

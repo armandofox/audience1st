@@ -3,7 +3,7 @@ module TicketSalesImportsHelper
   def import_choices(io)
     oid = io.order.id
     if io.already_imported?
-      link_to "Previously imported", order_path(io.order)
+      link_to "View imported order", order_path(io.order)
     elsif io.must_use_existing_customer?
       c = io.customers.first
       (link_to(c.full_name, customer_path(c), :title => [c.email, c.day_phone, c.street].join(' ')) <<

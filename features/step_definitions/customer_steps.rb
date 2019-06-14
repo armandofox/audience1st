@@ -109,6 +109,11 @@ Given /^customer "(.*) (.*)" should (not )?exist$/ do |first,last,no|
   if no then @customer.should be_nil else @customer.should be_a_kind_of Customer end
 end
 
+Then /customer "(.*) (.*)" should exist with email "(.*)"/ do |first,last,email|
+  c = Customer.find_by(:first_name => first, :last => last)
+  expect(c.email.strip.downcase).to eq(email.strip.downcase)
+end
+
 Given /^customer "(.*) (.*)" has a birthday on "(.*)"/ do |first,last,date|
     @customer = find_customer first,last
     @customer.update_attributes!(:birthday => Date.parse(date))
