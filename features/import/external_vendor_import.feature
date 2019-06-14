@@ -27,8 +27,8 @@ Scenario: successful import with customers known; then attempt re-import of same
     | Adrian Ray  |   1 | Oct 3, 2010, 3:00pm |
   And I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
   When I visit the ticket sales import page for the most recent "TodayTix" import
-  Then the import for "Moran, Maria" should show "Previously imported" 
-  And  the import for "Ray, Adrian" should show "Previously imported" 
+  Then the import for "Moran, Maria" should show "View imported order" 
+  And  the import for "Ray, Adrian" should show "View imported order" 
   And  I should not see "Import Orders"
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then I should see "This list was already imported"
@@ -88,6 +88,5 @@ Scenario: partially-completed import should not show up in Previous Imports, and
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   And I visit the edit contact info page for customer "Adria Ray"
   And I visit the ticket sales import page
-  Then debug
   And I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then I should see "Proposed Import From TodayTix"
