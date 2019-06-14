@@ -14,8 +14,6 @@
           %th{:scope => 'col'} Name on import
           %th{:scope => 'col'} Email on import
           %th{:scope => 'col', :width => '20%'}= @importable ? 'Import to customer' : ''
-            - if @importable
-              Import to customer
       %tbody
         - @import.importable_orders.each do |ord|
           - @order = ord.order

@@ -105,12 +105,10 @@ class Vouchertype < ActiveRecord::Base
   BOXOFFICE = 0
   SUBSCRIBERS = 1
   ANYONE = 2
-  EXTERNAL = -1
 
   @@offer_to = [["Box office use only", BOXOFFICE],
                 ["Subscribers may purchase",SUBSCRIBERS],
-                ["Anyone may purchase", ANYONE],
-                ["Sold by external reseller", EXTERNAL]].freeze
+                ["Anyone may purchase", ANYONE]].freeze
 
   public
   
@@ -128,7 +126,6 @@ class Vouchertype < ActiveRecord::Base
     when BOXOFFICE then "Box office only"
     when SUBSCRIBERS then "Subscribers"
     when ANYONE then "Anyone"
-    when EXTERNAL then "External Resellers"
     else "Unknown (#{offer_public})"
     end
   end
@@ -147,7 +144,6 @@ class Vouchertype < ActiveRecord::Base
 
   def bundle? ; category == 'bundle' ; end
   def comp? ; category == 'comp' ; end
-  def external? ; offer_public == EXTERNAL ; end
   def revenue? ; category == 'revenue' ; end
 
   def reservable?
@@ -230,16 +226,6 @@ class Vouchertype < ActiveRecord::Base
 
   def valid_for_season?(which_season = Time.current.year)
     season == which_season
-  end
-
-  def self.create_external_voucher_for_season!(name,price,year=Time.current.year)
-    name = Vouchertype.ensure_valid_name(name)
-    return Vouchertype.create!(:name => name,
-      :price => price,
-      :offer_public => Vouchertype::EXTERNAL,
-      :category => (price.to_i.zero? ? 'comp' : 'revenue'),
-      :subscription => false,
-      :season => year)
   end
 
   # BUG can we delete this method??
