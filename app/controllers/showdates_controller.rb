@@ -17,7 +17,7 @@ class ShowdatesController < ApplicationController
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
     new_showdates = showdates_from_date_list(all_dates, params)
-    redirect_to new_show_showdate_path(@show) and return unless flash[:alert].blank?
+    return redirect_to(new_show_showdate_path(@show)) unless flash[:alert].blank?
     new_showdates.each do |showdate|
       unless showdate.save
         flash[:alert] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: #{showdate.errors.as_html}"
@@ -68,13 +68,23 @@ class ShowdatesController < ApplicationController
     max_sales = params[:max_sales].to_i
     description = params[:description].to_s
 
-    dates.map do |date|
+    existing_dates, new_dates = dates.partition { |date| Showdate.find_by(:thedate => date) }
+    unless existing_dates.empty?
+      flash[:notice] = I18n.translate('season_setup.showdates_already_exist', :dates =>
+        existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', '))
+    end
+    if new_dates.empty?
+      flash[:alert] = I18n.translate('season_setup.no_showdates_added')
+      return []
+    end
+    new_dates.map do |date|
       s = @show.showdates.build(:thedate => date,
         :max_sales => max_sales,
         :end_advance_sales => date - sales_cutoff.minutes,
         :description => description)
       unless s.valid?
-        flash[:alert] = ["NO showdates were created, because the #{date.to_formatted_s(:showtime)} showdate had errors: ", s]
+        flash[:alert] = I18n.translate('season_setup.error_adding_showdates',
+          :date => date.to_formatted_s(:showtime), :errors => s.errors.as_html)
       end
       s
     end

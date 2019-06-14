@@ -38,6 +38,10 @@ en:
 
   season_setup:
 
+    vouchers_already_issued: >
+      %{num} vouchers of this voucher type have already been issued.  Any changes you make
+      will be retroactively reflected to all of them.  If this is not what you want, click Cancel below.
+
     options_apply_to_all_selected_performances: >
       The following options will be applied to all the performances selected at
       the bottom of the page.
@@ -61,6 +65,15 @@ en:
     no_valid_vouchers_added: >
       NO changes were made, because some voucher type(s) could not be added to some show 
       date(s)--try adding them one at a time to isolate specific errors.  %{error_message}
+
+    showdates_already_exist: >
+      The following performances were not created because they already exist: %{dates}
+
+    no_showdates_added: >
+      No new performances were added.
+
+    error_adding_showdates: >
+      No performances were added, because the %{date} performance had errors: %{errors}
 
   login:
 
