@@ -19,6 +19,7 @@ class TicketSalesImport < ActiveRecord::Base
   validate :valid_for_parsing?
   
   scope :sorted, -> { order('updated_at DESC') }
+  scope :completed, -> { where('created_at != updated_at') }
 
   attr_reader :parser
   after_initialize :set_parser
@@ -38,8 +39,8 @@ class TicketSalesImport < ActiveRecord::Base
 
   def not_previously_imported?
     # just in case, don't preload all imports!
-    TicketSalesImport.all.each do |i|
-      if i.completed? && self.raw_data.strip == i.raw_data.strip
+    TicketSalesImport.completed.each do |i|
+      if self.raw_data.strip == i.raw_data.strip
         self.errors.add(:base, I18n.translate('import.already_imported',
             :date => i.updated_at.to_formatted_s(:month_day_year)))
         return nil

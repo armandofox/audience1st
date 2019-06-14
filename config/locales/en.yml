@@ -14,18 +14,33 @@ en:
       will exceed your intended limit of %{max_sales_for_type} vouchers of this type.
 
     showdate_not_found: >
-      This will-call list is for %{date}, but there is no performance listed on that date.
+      This will-call list is for %{date}, but there is no performance listed for that date and time.
 
     vouchertype_not_found: >
       Cannot find vouchertype for %{season} season with '%{vendor}' in its name and
       priced at %{price}.
 
     redemption_not_found: >
-      Cannot find redemption for voucher type '%{vouchertype}' for performance of %{performance}.
+      The will-call list could not be imported because at least one transaction references 
+      the '%{vouchertype}' and the %{performance}, but no redemption for this voucher type
+      could be found for this performance.
 
-    import_successful: >
-      %{tickets_sold} tickets added for %{new_customers} new customers 
-      and %{existing_customers} existing customers.
+    success:
+      num_tickets:
+        zero:  No tickets were imported
+        one:   One ticket was imported
+        other: "%{count} tickets were imported"
+      total_customers: 
+        one:   for one customer.
+        other: for %{count} total customers.
+      existing_customers: 
+        zero:  None of the customers were already in your list.
+        one:   One customer was already in your list.
+        other: "%{count} customers were already in your list."
+      new_customers_created: 
+        zero:  No new customers were created.
+        one:   One new customer was created.
+        other: "%{count} new customers were created."
 
     import_failed: >
       NO orders were imported because of problems completing the import: %{message}

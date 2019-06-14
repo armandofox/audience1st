@@ -68,11 +68,12 @@ class TicketSalesImportsController < ApplicationController
           import.tickets_sold += order.ticket_count unless o[:action] == ImportableOrder::ALREADY_IMPORTED
         end
         import.save!
-        if import.tickets_sold == 0
-          flash[:notice] = t('import.empty_import')
-        else
-          flash[:notice] = t('import.import_successful', :tickets_sold => import.tickets_sold, :new_customers => import.new_customers, :existing_customers => import.existing_customers)
-        end
+        flash[:notice] = [
+          t('import.success.num_tickets', :count => import.tickets_sold),
+          t('import.success.total_customers', :count => import.existing_customers + import.new_customers),
+          t('import.success.existing_customers', :count => import.existing_customers),
+          t('import.success.new_customers_created', :count => import.new_customers)].
+          join(' ')
       end
     rescue StandardError => e
       flash[:alert] = t('import.import_failed', :message => e.message)

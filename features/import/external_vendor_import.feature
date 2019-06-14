@@ -25,7 +25,7 @@ Scenario: successful import with customers known; then attempt re-import of same
     | patron      | qty | showdate            |
     | Maria Moran |   3 | Oct 1, 2010, 8:00pm |
     | Adrian Ray  |   1 | Oct 3, 2010, 3:00pm |
-  And I should see "4 tickets added for 2 new customers and 0 existing customers"
+  And I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
   When I visit the ticket sales import page for the most recent "TodayTix" import
   Then the import for "Moran, Maria" should show "Previously imported" 
   And  the import for "Ray, Adrian" should show "Previously imported" 
@@ -43,7 +43,7 @@ Scenario: customer unique match on email; verify customer is linked to this impo
     | Moran, Maria   | mmoranrn98@not.hotmail.com | Maria Moran              |
     | Ray, Adrian    | arrayavalani@not.gmail.com | Will create new customer |
   When I press "Import Orders"
-  Then I should see "4 tickets added for 1 new customers and 1 existing customers"
+  Then I should see "4 tickets were imported for 2 total customers. One customer was already in your list. One new customer was created."
   And customer "Maria Moran" should have 3 "TodayTix - half off" tickets for "Chicago" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
   When I visit the edit contact info page for customer "Adrian Ray"
@@ -59,7 +59,7 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
   | Moran, Maria | M Moran (moran@example.com) (123 Fake St) |
   | Ray, Adrian  | Create new customer                       |
   And I press "Import Orders"
-  Then I should see "4 tickets added for 1 new customers and 1 existing customers"
+  Then I should see "4 tickets were imported for 2 total customers. One customer was already in your list. One new customer was created."
   And customer "M Moran" should have 3 "TodayTix - half off" tickets for "Chicago" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
   But customer "Adrianna Ray" should have 0 "TodayTix - half off" tickets for "Chicago" on Oct 3, 2010, 3:00pm
@@ -71,10 +71,10 @@ Scenario: import would exceed house capacity
   Then I should see "For the Friday, Oct 1, 8:00 PM performance, adding these 3 vouchers to current sales of 200 will exceed the performance's sales cap of 100."
   And I should see "For the Friday, Oct 1, 8:00 PM performance, adding these 3 vouchers to current sales of 200 will exceed the house capacity of 200."
   When I press "Import Orders"
-  Then I should see "4 tickets added for 2 new customers and 0 existing customers"
+  Then I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
 
 Scenario: import would exceed per-ticket-type capacity
   When I upload the "TodayTix" will-call file "too_many_discount_tickets_sold.csv"
   Then I should see /For the Friday, Oct 1, 8:00 PM performance, importing these 7 "TodayTix - half off" vouchers will exceed your intended limit of 5 vouchers of this type/
   When I press "Import Orders"
-  Then I should see "8 tickets added for 2 new customers and 0 existing customers"
+  Then I should see "8 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
