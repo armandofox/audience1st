@@ -292,7 +292,7 @@ class Order < ActiveRecord::Base
         purchase_args && purchase_args[:credit_card_token].blank?       &&
         purchase_medium == :credit_card
       errors.add(:base,'Zero amount') if
-        total_price.zero? && purchase_medium != :cash
+        total_price.zero? && Purchasemethod.must_be_nonzero_amount(purchasemethod)
     else
       errors.add(:base,'No payment method specified')
     end

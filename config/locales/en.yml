@@ -10,7 +10,7 @@ en:
 
     max_sales_for_type_exceeded: >
       For the %{performance_date} performance,
-      importing these %{num_to_import} "%{vouchertype}" vouchers
+      importing these %{num_to_import} '%{vouchertype}' vouchers
       will exceed your intended limit of %{max_sales_for_type} vouchers of this type.
 
     showdate_not_found: >

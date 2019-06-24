@@ -6,6 +6,9 @@ Purchasemethod = Struct.new(:description, :shortdesc, :nonrevenue, :purchase_med
   def self.valid_purchasemethod?(indx)
     indx.to_i.between?(1,10)  &&  indx.to_i != 3
   end
+  def self.must_be_nonzero_amount(indx)
+    ! ([2,6,7,8].include?(indx))
+  end
   def refundable?
     [:web_cc,:box_cash,:box_chk,:none].include?(shortdesc)
   end
