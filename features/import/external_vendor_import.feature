@@ -90,7 +90,6 @@ Scenario: partially-completed import should not show up in Previous Imports, and
   And I visit the edit contact info page for customer "Adria Ray"
   And I visit the ticket sales import page
   Then I should see "two_valid_orders.csv" within "#in_progress_imports"
-  And show me the page
   When I follow "Finish..."
   Then I should see "Proposed Import From TodayTix"
   When I press "Import Orders"
