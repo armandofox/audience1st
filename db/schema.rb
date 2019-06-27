@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190614221606) do
+ActiveRecord::Schema.define(version: 20190627012945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -212,7 +212,7 @@ ActiveRecord::Schema.define(version: 20190614221606) do
     t.integer  "ticket_sales_import_id"
   end
 
-  add_index "orders", ["external_key"], name: "index_orders_on_external_key", unique: true, using: :btree
+  add_index "orders", ["external_key"], name: "index_orders_on_external_key", using: :btree
 
   create_table "showdates", force: :cascade do |t|
     t.datetime "thedate"
@@ -249,6 +249,7 @@ ActiveRecord::Schema.define(version: 20190614221606) do
     t.integer  "tickets_sold"
     t.integer  "new_customers"
     t.integer  "existing_customers"
+    t.string   "filename"
   end
 
   create_table "txns", force: :cascade do |t|

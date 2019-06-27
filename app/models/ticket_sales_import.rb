@@ -1,6 +1,6 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_accessible :vendor, :raw_data, :processed_by, :existing_customers, :new_customers, :tickets_sold
+  attr_accessible :vendor, :raw_data, :filename, :processed_by, :existing_customers, :new_customers, :tickets_sold
   attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
@@ -20,6 +20,7 @@ class TicketSalesImport < ActiveRecord::Base
   
   scope :sorted, -> { order('updated_at DESC') }
   scope :completed, -> { where('created_at != updated_at') }
+  scope :in_progress, -> { where('created_at = updated_at') }
 
   attr_reader :parser
   after_initialize :set_parser

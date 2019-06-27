@@ -9,23 +9,46 @@
       %label.col-3.col-form-label.small#filename No file chosen
       = submit_tag 'Upload', :class => 'col-2 btn btn-success'
 
-.container
-  %h1 Previous Imports
-  %table#ticket_sales_imports.table
-    %thead
-      %tr
-        %th Date of Import
-        %th Imported by
-        %th Vendor
-        %th Tickets Sold
-        %th New Customers Added
-        %th Existing Customers Found
-    %tbody
-      - @ticket_sales_imports.each do |imp|
-        %tr[imp]
-          %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
-          %td= imp.processed_by.first_name rescue ''
-          %td= imp.vendor
-          %td= imp.tickets_sold
-          %td= imp.new_customers
-          %td= imp.existing_customers
+- unless @in_progress_imports.empty?
+  .container
+    %h1 Imports Not Yet Finalized
+    %table#in_progress_imports.table
+      %thead
+        %tr
+          %th Date Uploaded
+          %th Uploaded by
+          %th Vendor
+          %th File name
+          %th
+      %tbody
+        - @in_progress_imports.each do |imp|
+          %tr[imp]
+            %td= imp.created_at.to_formatted_s(:compact)
+            %td= imp.processed_by.first_name rescue ''
+            %td= imp.vendor
+            %td= imp.filename
+            %td= link_to 'Finish...', edit_ticket_sales_import_path(imp), :class => 'btn btn-primary'
+
+- unless @ticket_sales_imports.empty?
+  .container
+    %h1 Completed Imports
+    %table#ticket_sales_imports.table
+      %thead
+        %tr
+          %th Date of Import
+          %th Imported by
+          %th Vendor
+          %th File name
+          %th Tickets Sold
+          %th New Customers Added
+          %th Existing Customers Found
+      %tbody
+        - @ticket_sales_imports.each do |imp|
+          %tr[imp]
+            %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
+            %td= imp.processed_by.first_name rescue ''
+            %td= imp.vendor
+            %td= imp.filename
+            %td= imp.tickets_sold
+            %td= imp.new_customers
+            %td= imp.existing_customers
