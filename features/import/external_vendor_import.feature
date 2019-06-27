@@ -89,9 +89,9 @@ Scenario: partially-completed import should not show up in Previous Imports, and
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   And I visit the edit contact info page for customer "Adria Ray"
   And I visit the ticket sales import page
-  And I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then I should see "Proposed Import From TodayTix"
-
+  Then show me the page
+  
 Scenario: import includes comps
 
   Given a show "Company" with the following tickets available:

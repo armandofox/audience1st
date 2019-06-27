@@ -33,8 +33,7 @@ class TicketSalesImportsController < ApplicationController
     @importable = ! (@import.completed? || @import.importable_orders.all?(&:already_imported?))
     if !@import.errors.empty?
       @import.destroy
-      redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
-      return
+      return redirect_to(ticket_sales_imports_path, :alert => @import.errors.as_html)
     end
     @import.check_sales_limits
     flash.now[:alert] = @import.warnings.as_html if !@import.warnings.empty?

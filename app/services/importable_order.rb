@@ -68,7 +68,8 @@ class ImportableOrder
   end
 
   def find_or_set_external_key(key)
-    if (o = Order.completed.find_by(:external_key => key)) # this order has already been imported
+    if (o = Order.completed.find_by(:external_key => key))
+      # this order has already been finalized, so use it to override some fields of ImportableOrder
       @action = ALREADY_IMPORTED
       @order = o
       @import_first_name = @order.customer.first_name
