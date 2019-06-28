@@ -71,13 +71,6 @@ class Vouchertype < ActiveRecord::Base
       )
   end
 
-  def self.ensure_valid_name(name)
-    # make name valid if it isn't already
-    name = name.to_s
-    name += '___' if name.length < 3
-    name[0,NAME_LIMIT]
-  end
-  
   def subscriptions_shouldnt_be_walkups
     if walkup_sale_allowed?
       errors.add :base, "Subscription vouchers can't be sold via walkup sales screen, since address must be captured."
@@ -105,10 +98,12 @@ class Vouchertype < ActiveRecord::Base
   BOXOFFICE = 0
   SUBSCRIBERS = 1
   ANYONE = 2
+  EXTERNAL = -1
 
   @@offer_to = [["Box office use only", BOXOFFICE],
                 ["Subscribers may purchase",SUBSCRIBERS],
-                ["Anyone may purchase", ANYONE]].freeze
+                ["Anyone may purchase", ANYONE],
+                ["Sold by external reseller", EXTERNAL]].freeze
 
   public
   
@@ -126,6 +121,7 @@ class Vouchertype < ActiveRecord::Base
     when BOXOFFICE then "Box office only"
     when SUBSCRIBERS then "Subscribers"
     when ANYONE then "Anyone"
+    when EXTERNAL then "External Resellers"
     else "Unknown (#{offer_public})"
     end
   end
@@ -144,6 +140,7 @@ class Vouchertype < ActiveRecord::Base
 
   def bundle? ; category == 'bundle' ; end
   def comp? ; category == 'comp' ; end
+  def external? ; offer_public == EXTERNAL ; end
   def revenue? ; category == 'revenue' ; end
 
   def reservable?

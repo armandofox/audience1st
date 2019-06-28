@@ -4,6 +4,12 @@ Given /^the display orders of "(.*)" and "(.*)" are set to (\d+) and (\d+)$/ do 
 end
 
 Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,price,season|
+  if name =~ /(.*)\s+\(external\)/
+    name = $1
+    offer_public = Vouchertype::EXTERNAL
+  else
+    offer_public = (price.to_f.zero? ? Vouchertype::BOXOFFICE : Vouchertype::ANYONE)
+  end
   @vouchertype = Vouchertype.find_by_name_and_price_and_season(name,price,season) ||
     Vouchertype.create!(
     :name => name,
@@ -11,7 +17,7 @@ Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,pri
     :season => season,
     :walkup_sale_allowed => true,
     :category => (price.to_f.zero? ? 'comp' : 'revenue'),
-    :offer_public => (price.to_f.zero? ? Vouchertype::BOXOFFICE : Vouchertype::ANYONE)
+    :offer_public => offer_public
     )
 end
 

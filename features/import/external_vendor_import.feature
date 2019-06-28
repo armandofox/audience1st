@@ -9,9 +9,9 @@ Background: logged in as boxoffice
   Given I am logged in as boxoffice
   And I am on the ticket sales import page
   And a show "Company" with the following tickets available:
-    | qty | type                | price  | showdate                |
-    |  5  | TodayTix - half off | $19.00 | October 1, 2010, 8:00pm |
-    |  5  | TodayTix - half off | $19.00 | October 3, 2010, 3:00pm |
+    | qty | type                           | price  | showdate                |
+    |   5 | TodayTix - half off (external) | $19.00 | October 1, 2010, 8:00pm |
+    |   5 | TodayTix - half off (external) | $19.00 | October 3, 2010, 3:00pm |
 
 Scenario: successful import with customers known; then attempt re-import of same file
 
@@ -98,8 +98,8 @@ Scenario: partially-completed import should not show up in Previous Imports, and
 Scenario: import includes comps
 
   Given a show "Company" with the following tickets available:
-    | qty | type                | price  | showdate                |
-    |   2 | TodayTix - comp     | $0.00  | October 1, 2010, 8:00pm |
+    | qty | type                       | price | showdate                |
+    |   2 | TodayTix - comp (external) | $0.00 | October 1, 2010, 8:00pm |
   When I upload the "TodayTix" will-call file "includes_comps.csv"
   Then I should see "importing these 3 'TodayTix - comp' vouchers will exceed your intended limit of 2"
   When I press "Import Orders"

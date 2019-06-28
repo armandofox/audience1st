@@ -90,6 +90,9 @@ en:
     error_adding_showdates: >
       No performances were added, because the %{date} performance had errors: %{errors}
 
+    no_comps_defined: >
+      You must define some comp voucher types first.
+
   login:
 
     login_failed: >

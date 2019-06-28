@@ -36,10 +36,8 @@ class VouchersController < ApplicationController
     this_season = Time.this_season
     @vouchers = (
       Vouchertype.comp_vouchertypes(this_season + 1) +
-      Vouchertype.comp_vouchertypes(this_season))
-    if @vouchers.empty?
-      redirect_to(vouchertypes_path, :alert => 'You must define some comp voucher types first.')
-    end
+      Vouchertype.comp_vouchertypes(this_season)).delete_if?(&:external?)
+    return redirect_to(vouchertypes_path, :alert => t('season_setup.no_comps_defined')) if @vouchers.empty?
     @valid_vouchers = []
     @email_disabled = @customer.email.blank?
   end

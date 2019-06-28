@@ -97,7 +97,7 @@ class ImportableOrder
     showdate = Showdate.where(:thedate => thedate).first
     price = price.to_f
     raise MissingDataError.new(I18n.translate('import.showdate_not_found', :date => thedate.to_formatted_s(:showtime_including_year))) if showdate.nil?
-    vouchertype = Vouchertype.where("name LIKE ?", "%#{vendor}%").find_by(:season => showdate.season, :price => price)
+    vouchertype = Vouchertype.where("name LIKE ?", "%#{vendor}%").find_by(:season => showdate.season, :price => price, :offer_public => Vouchertype::EXTERNAL)
     raise MissingDataError.new(I18n.translate('import.vouchertype_not_found',
         :season => ApplicationController.helpers.humanize_season(showdate.season),
         :vendor => vendor, :price => sprintf('%.02f', price))) if vouchertype.nil?
