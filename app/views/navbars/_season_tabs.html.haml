@@ -7,6 +7,6 @@
     %li#t_donations_index= link_to 'Donations', donations_path
     - if (@showdate ||= Showdate.current_or_next)
       %li#t_walkup_sales_show= link_to 'Front Of House', walkup_sale_path(@showdate)
-      %li#t_ticket_sales_imports_index= link_to 'Import', ticket_sales_imports_path
+      -# %li#t_ticket_sales_imports_index= link_to 'Import', ticket_sales_imports_path
     - if current_user.is_boxoffice_manager
       %li#t_options_edit= link_to 'Options', options_path
