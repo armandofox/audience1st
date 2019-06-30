@@ -4,6 +4,10 @@ en:
     already_imported: >
       This list was already imported, on %{date}.      
 
+    wrong_show: >
+      This list contains an order for '%{import_show}' on %{performance_date},
+      but the show name associated with that date is '%{actual_show}'.
+
     capacity_exceeded: >
       For the %{performance_date} performance, adding these %{num_to_import} vouchers to 
       current sales of %{current_sales} will exceed the %{capacity_control} of %{capacity}.

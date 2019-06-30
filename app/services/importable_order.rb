@@ -72,9 +72,9 @@ class ImportableOrder
       # this order has already been finalized, so use it to override some fields of ImportableOrder
       @action = ALREADY_IMPORTED
       @order = o
-      @import_first_name = @order.customer.first_name
-      @import_last_name = @order.customer.last_name
-      @import_email = @order.customer.email
+      #@import_first_name = @order.customer.first_name
+      #@import_last_name = @order.customer.last_name
+      #@import_email = @order.customer.email
       @transaction_date = @order.sold_on
       @description = @order.summary("<br/>").html_safe
     else

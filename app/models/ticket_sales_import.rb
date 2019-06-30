@@ -64,6 +64,16 @@ class TicketSalesImport < ActiveRecord::Base
     end
   end
 
+  def completed?
+    ! (created_at == updated_at)
+  end
+  
+  def finalize!
+    @importable_orders.each do |imp|
+      imp.finalize!
+    end
+  end
+
   # Check whether the import will exceed either the house capacity or a per-ticket-type capacity control
   def check_sales_limits
     showdates = Hash.new { 0 }
@@ -97,14 +107,5 @@ class TicketSalesImport < ActiveRecord::Base
     end
   end
 
-  def completed?
-    ! (created_at == updated_at)
-  end
-  
-  def finalize!
-    @importable_orders.each do |imp|
-      imp.finalize!
-    end
-  end
 
 end

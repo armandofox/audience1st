@@ -2,7 +2,7 @@
   - if @importable
     %h1 Proposed Import From #{@import.vendor}
   - else
-    %h1 Previously Imported From #{@import.vendor}
+    %h1 Imported From #{@import.vendor} on #{@import.updated_at.to_formatted_s(:showtime_including_year)}
 
   = form_for @import do
     %table.table#proposed_import

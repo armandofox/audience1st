@@ -47,12 +47,12 @@ Scenario: customer unique match on email; verify customer is linked to this impo
   And customer "Maria Moran" should have 3 "TodayTix - half off" tickets for "Company" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
   When I visit the edit contact info page for customer "Adrian Ray"
-  Then I should see "Created by TodayTix import" within ".admin"
+  Then I should see "Created by TodayTix import on Jan 1, 2010" within ".admin"
   And customer "Adrian Ray" should have the following attributes:
     | attribute | value                      |
     | email     | arrayavalani@not.gmail.com |
 
-Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing
+Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing; imported order shows original import name, not matched name
 
   Given customer "M Moran" exists with email "moran@example.com"
   And customer "Adrianna Ray" exists with no email
@@ -66,6 +66,9 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
   And customer "M Moran" should have 3 "TodayTix - half off" tickets for "Company" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
   But customer "Adrianna Ray" should have 0 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
+  When I visit the ticket sales import page for the most recent "TodayTix" import
+  Then the import for "Moran, Maria" should show "View imported order"
+  But I should not see "M Moran"
 
 Scenario: import would exceed house capacity
 
@@ -105,3 +108,9 @@ Scenario: import includes comps
   When I press "Import Orders"
   Then customer "Maria Moran" should have 3 "TodayTix - comp" tickets for "Company" on October 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on October 3, 2010, 3:00pm
+
+Scenario: possibly wrong show
+
+  When I upload the "TodayTix" will-call file "wrong_show.csv"
+  Then I should see "This list contains an order for 'Wicked' on Sunday, Oct 3, 3:00 PM, but the show name associated with that date is 'Company'."
+  But I should not see "This list contains an order for 'Company'"
