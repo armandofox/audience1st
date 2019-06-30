@@ -70,6 +70,35 @@ describe Customer, "merging" do
     end
   end
 
+  describe "provenance", focus: true do
+    before :each do
+      @old = create(:customer)
+      @old.update_attribute(:created_at, 1.day.ago)
+      @new = create(:customer)
+    end
+    context 'if older record created by import' do
+      before :each do ; @old.update_attribute(:ticket_sales_import_id,999) ;  end
+      specify 'keeps import ID (direction 1)' do
+        @old.merge_automatically!(@new)
+        expect(@old.ticket_sales_import_id).to eq(999)
+      end
+      specify 'keeps import ID (direction 2)' do
+        @new.merge_automatically!(@old)
+        expect(@new.ticket_sales_import_id).to eq(999)
+      end
+    end
+    context 'if newer record created by import' do
+      before :each do ; @new.update_attribute(:ticket_sales_import_id,999) ; end
+      specify 'nils import ID (direction 1)' do
+        @old.merge_automatically!(@new)
+        expect(@old.ticket_sales_import_id).to be_nil
+      end
+      specify 'nils import ID (direction 2)' do
+        @new.merge_automatically!(@old)
+        expect(@new.ticket_sales_import_id).to be_nil
+      end
+    end
+  end
   describe "deleting" do
     before :each do ;  @cust = create(:customer) ;  end
     def create_records(type,cust)

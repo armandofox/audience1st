@@ -13,7 +13,7 @@ Background: logged in as boxoffice
     |   5 | TodayTix - half off (external) | $19.00 | October 1, 2010, 8:00pm |
     |   5 | TodayTix - half off (external) | $19.00 | October 3, 2010, 3:00pm |
 
-Scenario: successful import with customers known; then attempt re-import of same file
+Scenario: successful import creates new customers; then attempt re-import of same file
 
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then table "#proposed_import" should include:
@@ -33,6 +33,7 @@ Scenario: successful import with customers known; then attempt re-import of same
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   Then I should see "This list was already imported"
   And  I should be on the ticket sales import page
+  And customer "Maria Moran" should exist with email "mmoranrn98@not.hotmail.com"
 
 Scenario: customer unique match on email; verify customer is linked to this import
 
@@ -52,7 +53,7 @@ Scenario: customer unique match on email; verify customer is linked to this impo
     | attribute | value                      |
     | email     | arrayavalani@not.gmail.com |
 
-Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing; imported order shows original import name, not matched name
+Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing; imported order shows original import name, not matched name; imported customer has email
 
   Given customer "M Moran" exists with email "moran@example.com"
   And customer "Adrianna Ray" exists with no email
@@ -66,6 +67,7 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
   And customer "M Moran" should have 3 "TodayTix - half off" tickets for "Company" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
   But customer "Adrianna Ray" should have 0 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
+  And customer "Adrian Ray" should exist with email "arrayavalani@not.gmail.com"
   When I visit the ticket sales import page for the most recent "TodayTix" import
   Then the import for "Moran, Maria" should show "View imported order"
   But I should not see "M Moran"

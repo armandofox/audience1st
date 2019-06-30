@@ -109,6 +109,11 @@ class Customer < ActiveRecord::Base
     begin
       transaction do
         msg = Customer.update_foreign_keys_from_to(old, new)
+        # Definitively propagate provenance (either ticket_sales_import_id, or nil)
+        # from the older record.
+        if c0.created_at > c1.created_at # c1 is older,but c0 will be result of merge
+          c0.ticket_sales_import_id = c1.ticket_sales_import_id
+        end
         # Crypted_password and salt have to be updated separately,
         # since crypted_password is automatically set by the before-save
         # action to be encrypted with salt.
