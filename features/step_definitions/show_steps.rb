@@ -1,9 +1,5 @@
-Given /^there are no shows set up$/ do
-  Show.delete_all
-end
-
 Given /^there is no show named "([^\"]+)"$/ do |name|
-  Show.find_by_name(name).should be_nil
+  expect(Show.find_by(:name => name)).to be_nil
 end
 
 Given /^a show "(.*)" with tickets on sale for today$/ do |name|
@@ -24,17 +20,6 @@ end
 Given /^a class "(.*)" available for enrollment now$/ do |name|
   steps %Q{Given a show "#{name}" with tickets on sale for today}
   @show.update_attributes!(:event_type => "Class")
-end
-
-Given /^there is a show named "([^\"]+)"$/ do |name|
-  @show =  Show.find_by_name(name) ||
-    create(:show, :name => name,
-    :opening_date => Date.today, :closing_date => Date.today + 1.week)
-end
-
-Given /^there is a show named "([^\"]+)" opening "([^\"]+)"$/ do |name,opening|
-  @show = create(:show, :name => name,
-    :opening_date => Date.parse(opening))
 end
 
 Given /^there is a show named "([^\"]+)" opening "([^\"]+)" and closing "([^\"]+)"$/ do |name,opening,closing|

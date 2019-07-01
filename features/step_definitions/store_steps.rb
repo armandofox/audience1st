@@ -9,62 +9,77 @@ end
 
 World(CustomerDivs)
 
-Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message, name|
-  div_id = Vouchertype.find_by_name!(name).id
-  page.find("div#vouchertype_#{div_id} .s-explain").text.should == message
-end
+# Preparing to put things in the cart
 
 When /^I try to redeem the "(.*)" discount code$/ do |promo|
   # should really use headless JS for this
   visit store_path(:promo_code => promo)
 end
 
-When /^I fill in the "(.*)" fields with "(\S+)\s+(\S+),\s*([^,]+),\s*([^,]+),\s*(\S+)\s+(\S+),\s*([^,]+),\s*(.*@.*)"$/ do |fieldset, first, last, street, city, state, zip, phone, email|
-  with_scope "fieldset#{fieldset}" do
-    fill_in 'customer[first_name]', :with => first
-    fill_in 'customer[last_name]', :with => last
-    fill_in 'customer[street]', :with => street
-    fill_in 'customer[city]', :with => city
-    fill_in 'customer[state]', :with => state
-    fill_in 'customer[zip]', :with => zip
-    fill_in 'customer[day_phone]', :with => phone
-    fill_in 'customer[email]', :with => email
-  end
+Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message, name|
+  div_id = Vouchertype.find_by_name!(name).id
+  page.find("div#vouchertype_#{div_id} .s-explain").text.should == message
 end
 
-When /^I fill in the address as "(.*),\s*(.*),\s*(.*)\s+(.*)"/ do |street,city,state,zip|
-  with_scope "#street_city_only" do
-    fill_in 'customer[street]', :with => street
-    fill_in 'customer[city]', :with => city
-    fill_in 'customer[state]', :with => state
-    fill_in 'customer[zip]', :with => zip
-  end
-end
 
-When /^I proceed to checkout/ do
-  #click_button 'submit'
+# Adding things to a store order
+
+Given /^(?:my cart contains|I add) (\d+) "(.*)" (bundles|subscriptions)$/ do |qty,name,_|
+  unless Vouchertype.where('name = ? AND category = ?', name, 'bundle').first
+    steps "Given a \"#{name}\" subscription available to anyone for $50.00"
+  end
+  visit path_to(%Q{the subscriptions page})
+  select qty.to_s, :from => name
   find('input#submit').click
 end
 
-When /^I try to checkout as guest using "(.*)"$/ do |info|
-  steps %Q{
-  When I follow "Checkout as Guest"
-  And I fill in the ".billing_info" fields with "#{info}"
-}
-end
-
-When /^I successfully complete guest checkout$/ do
+Given /^(?:my cart contains|I add) the following tickets:/ do |tickets|
+  create_tickets(tickets.hashes)
   find('input#submit').click
-  steps %Q{
-And I place my order with a valid credit card
-}
 end
 
-Then /^the gift recipient customer should be "(.*)\s+(.*)"$/ do |first,last|
-  verify_customer_in_div "#gift_recipient", first, last
+Given /^I add the following tickets for customer "(.*)":/ do |customer,tickets|
+  create_tickets(tickets.hashes, customer)
+  find('input#submit').click
 end
 
-Then /^the billing customer should be "(.*)\s+(.*)"$/ do |first,last|
-  within('#purchaser') { page.should have_content("#{first} #{last}") }
+Given /^my gift order contains the following tickets:/ do |tickets|
+  Option.first.update_attributes!(:allow_gift_tickets => true, :allow_gift_subscriptions => true)
+  create_tickets(tickets.hashes)
+  check 'gift'
+  find('input#submit').click
+end
+
+# Cart should contain items
+
+Then /^the cart should contain (\d+) "(.*)" (bundles|subscriptions)$/ do |num, type, what|
+  steps %Q{Then I should see /#{type}/ within "#cart" #{num} times}
+end
+
+Then /^the cart should contain (\d+) "(.*)" tickets for "(.*)"$/ do |num, type, date_string|
+  date_string = Time.zone.parse(date_string).to_formatted_s(:showtime)
+  steps %Q{Then I should see /#{date_string}.*?#{type}/ within "#cart" #{num} times}
+end
+
+Then /^the cart should contain a donation of \$(.*) to "(.*)"$/ do |amount,account|
+  steps %Q{Then I should see /Donation to #{account}.*?#{sprintf('%.02f',amount)}/ within "#cart" 1 times}
+end
+
+Then /^the cart should not contain a donation$/ do
+  steps %Q{Then I should not see "Donation" within "#cart"}
+end
+
+Then /^the cart should show the following items:$/ do |table|
+  table.hashes.each do |item|
+    formatted_price = number_to_currency(item['price'].to_f)
+    page.all('#cart .row').any? do |entry|
+      (entry.find('.a1-cart-amount').has_content?(formatted_price) rescue  nil) &&
+        entry.has_content?(item['description'])
+    end
+  end
+end
+
+Then /^the cart total price should be \$?([0-9.]+)$/ do |price|
+  page.find('.a1-cart-total-amount').should have_content(number_to_currency price.to_f)
 end
 

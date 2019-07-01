@@ -1,9 +1,3 @@
-Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that) performance/i do |n,vouchertype,price|
-  @showdate.should be_an_instance_of(Showdate)
-  steps %Q{Given a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
-  make_valid_tickets(@showdate, @vouchertype, n.to_i)
-end
-
 Given /^(\d+) "(.*)" comps are available for "(.*)" on "([^\"]+)"(?: with promo code "(.*)")?$/ do |num,comp_type,show_name,date,code|
   show_date = Time.zone.parse(date)
   @showdate = setup_show_and_showdate(show_name,show_date)
@@ -16,15 +10,6 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   tickets.hashes.each do |t|
     steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
   end
-end
-
-Given /^a show "(.*)" with "(.*)" tickets for \$?(.*) on "(.*)"$/ do |show,type,price,date|
-  steps %Q{Given a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
-end
-
-Given /^a show "(.*)" with (\d+) "(.*)" tickets for \$(.*) on "(.*)"$/ do |show,num,type,price,date|
-  steps %Q{Given a performance of "#{show}" on "#{date}"
-           And #{num} #{type} vouchers costing $#{price} are available for that performance}
 end
 
 Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|

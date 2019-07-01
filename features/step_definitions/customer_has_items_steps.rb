@@ -42,13 +42,40 @@ Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,i
       conds_clause << ' AND account_code_id = ?'
       conds_values << AccountCode.find_by_code!(item[:account_code]).id
     end
-    Item.where(conds_clause,*conds_values).first.should_not be_nil
+    expect(Item.where(conds_clause,*conds_values).first).not_to be_nil
   end
 end
 
+
+Then /^customer "(\S+) (.*)" should have the following vouchers?:$/ do |first,last,vouchers|
+  @customer = find_customer first,last
+  @vouchers = @customer.vouchers
+  vouchers.hashes.each do |v|
+    vtype = Vouchertype.find_by_name!(v[:vouchertype])
+    found_vouchers = @vouchers.where('vouchertype_id = ?',vtype.id)
+    expect(found_vouchers.length).to eq(v[:quantity].to_i)
+    if v.has_key?(:showdate)
+      if v[:showdate].blank?
+        found_vouchers.all? { |v| expect(v.showdate).to be_nil }.should be_truthy
+      else
+        date = Time.zone.parse v[:showdate]
+        found_vouchers.all? { |v| expect(v.showdate.thedate).to eq(date) }.should be_truthy
+      end
+    end
+  end
+end
 
 Then /^customer "(\S+) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
   @customer = find_customer first,last
   steps %Q{Then he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
+
+Then /^s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |num,type,show,date|
+  @showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
+  expect(@showdate.show.name).to eq(show)
+  @vouchertype = Vouchertype.find_by_name!(type)
+  expect(@customer.vouchers.where(:vouchertype_id => @vouchertype.id, :showdate_id => @showdate.id).count).
+    to eq(num.to_i)
+end
+
 

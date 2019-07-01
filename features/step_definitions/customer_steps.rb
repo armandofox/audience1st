@@ -79,14 +79,6 @@ Given /^customer "(.*) (.*)" exists( with email "(.*)")?$/ do |first,last,email|
     :email => (email||"#{first.downcase}@#{last.downcase}.com"))
 end
 
-Given /^customer "(.*) (.*)" whose address street is: "(.*)"$/ do |first,last,address|
-  @customer = find_customer(first,last) ||
-    create(:customer, :first_name => first,
-           :last_name => last, :email => "#{first.downcase}@#{last.downcase}.com",
-           :street => address)
-
-end
-
 Given /^customer "(.*) (.*)" has email "(.*)" and password "(.*)"$/ do |first,last,email,pass|
   c = find_or_create_customer first,last
   c.update_attributes!(:email => email, :password => pass, :password_confirmation => pass)

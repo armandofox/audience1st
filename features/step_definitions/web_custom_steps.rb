@@ -18,25 +18,6 @@ Then /^I should see an alert matching \/(.*)\/$/ do |regex|
   expect(accept_alert()).to match(Regexp.new regex)
 end
 
-# Check for N occurrences of something
-Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, selector, count|
-  regexp = Regexp.new(regexp, Regexp::MULTILINE)
-  count = count.to_i
-  if selector
-    within(selector) { page.find(:xpath, '/*').text.split(regexp).length.should == 1+count }
-  else
-    page.find(:xpath, '/*').text.split(regexp).length.should == 1+count
-  end
-end
-
-# Wrapper around 'I should see ... within ...' steps
-Then /^I should see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  steps %Q{Then I should see #{string} within "#{tag}[@id='#{id}']"}
-end
-Then /^I should not see ([\"\/].*[\"\/]) within the "(.*)" (.*)$/ do |string,tag,id|
-  steps %Q{Then I should not see #{string} within "#{tag}[@id='#{id}']"}
-end
-
 # Check if menu option selected
 Then /^"(.*)" should be selected in the "(.*)" menu$/ do |opt,menu|
   html = Nokogiri::HTML(page.body)
@@ -78,40 +59,6 @@ Then /^(.*):"(.*)" should come (before|after) (.*):"(.*)" within "(.*)"$/ do |ta
   else
     sequence.should == 1
   end
-end
-
-# A dropdown menu of quantities associated with a particular voucher type.
-# Capture the vouchertype label so we can refer to it later.
-
-Then /^I should see a quantity menu for "([^\"]*)"$/ do |name|
-  vtype = Vouchertype.find_by_name(name)
-  page.should have_css("select.itemQty[name='vouchertype[#{vtype.id}]']")
-end
-
-Then /^the "([^\"]*)" menu should contain "([^\"]*)"$/ do |menu,choice|
-  page.should(have_css("select[id=#{menu}]") || have_css("select[name=#{menu}]")) do |m|
-    m.should have_css("option", :content => choice)
-  end
-end
-
-Then /^I should see the "(.*)" message$/ do |m|
-  page.should(have_css("div##{m}") || have_css("div.#{m}"))
-end
-
-# File uploading
-When /^I upload (.*) import list "(.*)"$/ do |type,file|
-  case type
-  when /customer/i
-    path = "customer_list"
-  when /brown/i
-    path = "brownpapertickets"
-  when /goldstar/i
-    path = "email_goldstar"
-  else
-    raise "Unknown import type #{type}; try 'customer list', 'Brown Paper Tickets', or 'Goldstar'"
-  end
-  attach_file :import_uploaded_data, File.join(Rails.root, 'spec', 'import_test_files', path, file)
-  click_button "Preview Import"
 end
 
 # Fill in all fields in a fieldset
