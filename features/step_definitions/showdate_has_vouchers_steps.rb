@@ -12,6 +12,17 @@ Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tic
   end
 end
 
+Given /^a show "(.*)" with (\d+) "(.*)" tickets for \$(.*) on "(.*)"$/ do |show,num,type,price,date|
+  steps %Q{Given a performance of "#{show}" on "#{date}"
+           And #{num} #{type} vouchers costing $#{price} are available for that performance}
+end
+
+Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that) performance/i do |n,vouchertype,price|
+  @showdate.should be_an_instance_of(Showdate)
+  steps %Q{Given a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
+  make_valid_tickets(@showdate, @vouchertype, n.to_i)
+end
+
 Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
   vouchertype = Vouchertype.find_by_name! ticket_type
   showdate = Showdate.find_by_thedate! Time.zone.parse date

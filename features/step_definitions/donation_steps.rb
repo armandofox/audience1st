@@ -14,9 +14,19 @@ World(ScenarioHelpers::Donations)
 
 # creating/recording donations and account codes
 
-Given /^the following Account Codes exist:$/ do |instances|
-  instances.hashes.each do |hash|
-    create(:account_code, hash)
+Given /^the following account codes exist:$/ do |tbl|
+  tbl.hashes.each do |acc_code|
+    ac = create(:account_code, :code => acc_code["code"], :name => acc_code["name"],
+      :description => acc_code["description"], :donation_prompt => acc_code["donation_prompt"])
+    used_for = acc_code["used_for"]
+    case used_for
+    when /donations/i
+      Option.first.update_attributes!(:default_donation_account_code => ac.id)
+    else
+      used_for.to_s.split(/\s*,\s*/).each do |vtype_name|
+        Vouchertype.find_by!(:name => vtype_name).update_attributes!(:account_code => ac)
+      end
+    end
   end
 end
 

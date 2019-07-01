@@ -11,6 +11,19 @@ end
 Then /^the "(.*)" field should be "(.*)"$/ do |field,val|
   page.should have_field(field, :with => val)
 end
+
+
+# Check for N occurrences of something
+Then /^(?:|I )should see \/([^\/]*?)\/ (within "(.*?)" )?(\d+) times$/ do |regexp, selector, count|
+  regexp = Regexp.new(regexp, Regexp::MULTILINE)
+  count = count.to_i
+  if selector
+    within(selector) { page.find(:xpath, '/*').text.split(regexp).length.should == 1+count }
+  else
+    page.find(:xpath, '/*').text.split(regexp).length.should == 1+count
+  end
+end
+
 # Check for a JavaScript alert (when running with a JS-aware Capybara driver)
 
 Then /^I should see an alert matching \/(.*)\/$/ do |regex|

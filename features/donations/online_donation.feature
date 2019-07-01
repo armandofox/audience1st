@@ -6,7 +6,7 @@ Feature: dedicated landing page for online donations
 
 Background:
 
-  Given the following Account Codes exist:
+  Given the following account codes exist:
   | name             | code | description                                                     | donation_prompt          |
   | History Fund     | 7575 | The History Fund supports exhibits about the theater's history. |                          |
   | Show Sponsorship | 8080 | Sponsorship of Altarena productions                             | Name of show to sponsor: |
