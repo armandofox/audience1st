@@ -70,7 +70,7 @@ describe Customer, "merging" do
     end
   end
 
-  describe "provenance", focus: true do
+  describe "provenance" do
     before :each do
       @old = create(:customer)
       @old.update_attribute(:created_at, 1.day.ago)

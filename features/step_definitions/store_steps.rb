@@ -9,40 +9,6 @@ end
 
 World(CustomerDivs)
 
-Given /^a show "(.*)" with "(.*)" tickets for \$?(.*) on "(.*)"$/ do |show,type,price,date|
-  steps %Q{Given a show "#{show}" with 100 "#{type}" tickets for $#{price} on "#{date}"}
-end
-
-Given /^a show "(.*)" with (\d+) "(.*)" tickets for \$(.*) on "(.*)"$/ do |show,num,type,price,date|
-  steps %Q{Given a performance of "#{show}" on "#{date}"
-           And #{num} #{type} vouchers costing $#{price} are available for that performance}
-end
-
-Given /^the "(.*)" tickets for "(.*)" require promo code "(.*)"$/ do |ticket_type,date,promo|
-  vouchertype = Vouchertype.find_by_name! ticket_type
-  showdate = Showdate.find_by_thedate! Time.zone.parse date
-  ValidVoucher.find_by_vouchertype_id_and_showdate_id(vouchertype.id, showdate.id).
-    update_attributes!(:promo_code => promo)
-end
-
-Given /^the following walkup tickets have been sold for "(.*)":$/ do |dt, tickets|
-  tickets.hashes.each do |t|
-    qty = t[:qty].to_i
-    steps %Q{Given #{t[:qty]} "#{t[:type]}" tickets have been sold for "#{dt}"}
-  end
-end
-
-Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
-  order = build(:order, :walkup => true, :processed_by => Customer.boxoffice_daemon)
-  qty = qty.to_i
-  showdate = Showdate.find_by_thedate!(Time.zone.parse(dt))
-  offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
-    Vouchertype.find_by_name!(vtype).id,
-    showdate.id)
-  order.add_tickets(offer, qty)
-  order.finalize!
-end
-
 Then /^I should see "(.*)" within the container for "(.*)" tickets$/ do |message, name|
   div_id = Vouchertype.find_by_name!(name).id
   page.find("div#vouchertype_#{div_id} .s-explain").text.should == message

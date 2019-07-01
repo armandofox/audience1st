@@ -1,34 +1,8 @@
-Given /^(\d+) "(.*)" tickets available at \$(.*) each$/i do |qty,type,price|
-  @showdate.should be_an_instance_of(Showdate)
-  steps %Q{Given a "#{type}" vouchertype costing #{price} for the #{@showdate.season} season}
-  make_valid_tickets(@showdate, @vouchertype, qty.to_i)
-end
-
-Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that) performance/i do |n,vouchertype,price|
-  @showdate.should be_an_instance_of(Showdate)
-  steps %Q{Given a "#{vouchertype}" vouchertype costing $#{price} for the #{@showdate.season} season}
-  make_valid_tickets(@showdate, @vouchertype, n.to_i)
-end
-
-Given /^(\d+) "(.*)" comps are available for "(.*)" on "([^\"]+)"(?: with promo code "(.*)")?$/ do |num,comp_type,show_name,date,code|
-  show_date = Time.zone.parse(date)
-  @showdate = setup_show_and_showdate(show_name,show_date)
-  @comp = create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
-  @comp.update_attributes!(:offer_public => Vouchertype::ANYONE) if code
-  make_valid_tickets(@showdate, @comp, num, code)
-end
-                                   
 Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   time = Time.zone.parse(time)
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
   @show = @showdate.show
-end
-
-Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
-  tickets.hashes.each do |t|
-    steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
-  end
 end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|
