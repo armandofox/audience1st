@@ -47,6 +47,16 @@ Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,i
 end
 
 
+Then /^customer "(.*) (.*)" should (not )?have a donation of \$([0-9.]+) to "(.*?)"(?: with comment "(.*)")?$/ do |first,last,no,amount,fund,comment|
+  fund_id = AccountCode.find_by(:name => fund).id
+  result = Customer.find_by(:first_name => first, :last_name => last).donations.any? do |d|
+    d.amount == amount.to_f
+    d.account_code_id = fund_id
+    comment.nil? || d.comments == comment
+  end
+  no ? !result : result
+end
+
 Then /^customer "(\S+) (.*)" should have the following vouchers?:$/ do |first,last,vouchers|
   @customer = find_customer first,last
   @vouchers = @customer.vouchers
@@ -76,6 +86,19 @@ Then /^s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |num,ty
   @vouchertype = Vouchertype.find_by_name!(type)
   expect(@customer.vouchers.where(:vouchertype_id => @vouchertype.id, :showdate_id => @showdate.id).count).
     to eq(num.to_i)
+end
+
+Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,comments,table|
+  @customer = find_customer(first,last)
+  order = @customer.orders.first
+  order.comments.should == comments
+  table.hashes.each do |item|
+    matching_items = order.vouchers.select { |v| v.vouchertype.name == item['type'] }
+    unless item['showdate'].blank?
+      matching_items.reject! { |v| v.showdate != Showdate.find_by_thedate(Time.zone.parse(item['showdate'])) }
+    end
+    matching_items.length.should == item['qty'].to_i
+  end
 end
 
 

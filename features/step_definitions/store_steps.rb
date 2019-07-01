@@ -1,13 +1,14 @@
-module CustomerDivs
-  def verify_customer_in_div(id, first, last)
-    with_scope id do
-      find_field("customer[first_name]").value.should == first
-      find_field("customer[last_name]").value.should == last
+module ScenarioHelpers
+  module CustomerDivs
+    def verify_customer_in_div(id, first, last)
+      with_scope id do
+        find_field("customer[first_name]").value.should == first
+        find_field("customer[last_name]").value.should == last
+      end
     end
   end
 end
-
-World(CustomerDivs)
+World(ScenarioHelpers::CustomerDivs)
 
 # Preparing to put things in the cart
 

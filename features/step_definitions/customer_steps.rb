@@ -1,33 +1,36 @@
-module CustomerStepsHelper
-  
-  def find_customer(first,last)
-    Customer.find_by(:first_name => first, :last_name => last)
-  end
+module ScenarioHelpers
+  module Customers
+    
+    def find_customer(first,last)
+      Customer.find_by(:first_name => first, :last_name => last)
+    end
 
-  def make_subscriber!(customer)
-    vtype = create(:bundle, :subscription => true)
-    voucher = Voucher.new_from_vouchertype(vtype)
-    customer.vouchers << voucher
-    customer.save!
-    customer.should be_a_subscriber
-  end
+    def make_subscriber!(customer)
+      vtype = create(:bundle, :subscription => true)
+      voucher = Voucher.new_from_vouchertype(vtype)
+      customer.vouchers << voucher
+      customer.save!
+      customer.should be_a_subscriber
+    end
 
-  def find_customer_by_fullname(name)
-    c = Customer.find_by_first_name_and_last_name(*(name.split(/ +/))) or raise ActiveRecord::RecordNotFound
-  end
+    def find_customer_by_fullname(name)
+      c = Customer.find_by_first_name_and_last_name(*(name.split(/ +/))) or raise ActiveRecord::RecordNotFound
+    end
 
-  def find_or_create_customer(first,last)
-    find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
-  end
+    def find_or_create_customer(first,last)
+      find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
+    end
 
-  def get_secret_question_index(question)
-    questions = I18n.t('app_config.secret_questions')
-    indx = questions.index(question)
-    indx.should be_between(0, questions.length-1)
-    indx
+    def get_secret_question_index(question)
+      questions = I18n.t('app_config.secret_questions')
+      indx = questions.index(question)
+      indx.should be_between(0, questions.length-1)
+      indx
+    end
   end
 end
-World(CustomerStepsHelper)
+
+World(ScenarioHelpers::Customers)
 
 Then /^account creation should fail with "(.*)"$/ do |msg|
   steps %Q{

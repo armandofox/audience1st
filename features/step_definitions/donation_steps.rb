@@ -1,14 +1,16 @@
-module DonationStepsHelper
-  def find_or_create_account_code(full_name)
-    if full_name =~ /^(\d+)\s+(.*)$/
-      code,name = $1,$2
-    else
-      code,name = '0000', full_name
+module ScenarioHelpers
+  module Donations
+    def find_or_create_account_code(full_name)
+      if full_name =~ /^(\d+)\s+(.*)$/
+        code,name = $1,$2
+      else
+        code,name = '0000', full_name
+      end
+      AccountCode.find_by_code(code) || AccountCode.find_by_name(name) || AccountCode.create!(:name => name, :code => code)
     end
-    AccountCode.find_by_code(code) || AccountCode.find_by_name(name) || AccountCode.create!(:name => name, :code => code)
   end
 end
-World(DonationStepsHelper)
+World(ScenarioHelpers::Donations)
 
 # creating/recording donations and account codes
 
@@ -73,14 +75,4 @@ Then /^I should (not )?see the following donations:$/ do |no,donations|
     regexp = "#{donation[:donor]}|||#{donation[:amount].to_i}||||"
     steps %Q{Then I should #{no}see a row "#{regexp}" within "table[@id='donations']"}
   end
-end
-
-Then /^customer "(.*) (.*)" should (not )?have a donation of \$([0-9.]+) to "(.*?)"(?: with comment "(.*)")?$/ do |first,last,no,amount,fund,comment|
-  fund_id = AccountCode.find_by(:name => fund).id
-  result = Customer.find_by(:first_name => first, :last_name => last).donations.any? do |d|
-    d.amount == amount.to_f
-    d.account_code_id = fund_id
-    comment.nil? || d.comments == comment
-  end
-  no ? !result : result
 end

@@ -48,19 +48,6 @@ Then /^I should see the following details for that order:$/ do |table|
   end
 end
 
-Given /^customer "(.*) (.*)" has the following (subscriber )?reservations:/ do |first,last,sub,table|
-  customer = find_or_create_customer(first,last)
-  table.hashes.each do |res|
-    vtype = find_or_create_or_default res[:vouchertype], (sub ? :vouchertype_included_in_bundle : :revenue_vouchertype)
-    showdate = setup_show_and_showdate(res[:show], res[:showdate])
-    vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate)
-    purchasemethod = purchasemethod_from_string res[:purchasemethod]
-    order = build(:order, :customer => customer, :purchaser => customer, :purchasemethod => purchasemethod)
-    order.add_tickets(vv, res[:qty].to_i)
-    order.finalize!
-  end
-end
-
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
   customer = find_or_create_customer(first,last)
   # make it legal for customer to buy the things
@@ -75,19 +62,6 @@ Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do 
     @order.add_tickets(vv, voucher[:quantity].to_i)
   end
   @order.finalize!
-end
-
-Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,comments,table|
-  @customer = find_customer(first,last)
-  order = @customer.orders.first
-  order.comments.should == comments
-  table.hashes.each do |item|
-    matching_items = order.vouchers.select { |v| v.vouchertype.name == item['type'] }
-    unless item['showdate'].blank?
-      matching_items.reject! { |v| v.showdate != Showdate.find_by_thedate(Time.zone.parse(item['showdate'])) }
-    end
-    matching_items.length.should == item['qty'].to_i
-  end
 end
 
 Given /^the following orders have been placed:/ do |tbl|
@@ -130,7 +104,7 @@ end
 
 When /^I (un)?select all the items in that order$/ do |un|
   page.all(:css, 'input.itemSelect').each do |e|
-    if un then uncheck e['id'] else check e['id'] end
+    if un then uncheck e['id'].to_s else check e['id'].to_s end
   end
 end
 
