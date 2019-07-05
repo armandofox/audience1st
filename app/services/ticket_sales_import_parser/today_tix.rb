@@ -16,9 +16,14 @@ module TicketSalesImportParser
     OTHER_COLUMNS = ["Row","Start","End","Zip Code"].freeze
     COLUMNS = (REQUIRED_COLUMNS + OTHER_COLUMNS).freeze
 
+    def self.accept_file_type
+      '.csv'
+    end
+
     def initialize(import)
       @import = import
       @index = 0
+      @csv = nil
     end
 
     # parse the raw data and return an array of ImportableOrder instances
@@ -27,10 +32,8 @@ module TicketSalesImportParser
       csv_file_parsable? unless @csv # make sure we have parsed it even if #valid? wasn't 
       begin
         @csv.map(&:to_hash).each do |h|
-          i = ImportableOrder.new
-          i.import_first_name = h["Purchaser First Name"]
-          i.import_last_name = h["Purchaser Last Name"]
-          i.import_email = h["Email"]
+          i = ImportableOrder.new(first: h["Purchaser First Name"], last: h["Purchaser Last Name"],
+            email: h["Email"])
           # find_or_set_external_key will set already_imported to true if order found
           i.find_or_set_external_key h["Order #"]
           populate_from_import(i,h) unless i.already_imported?
@@ -53,7 +56,7 @@ module TicketSalesImportParser
     def populate_from_import(i,h)
       num_seats = h["# of Seats"].to_i
       price_per_seat = h["Total Price"].to_f / num_seats
-      redemption = i.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)
+      redemption = ImportableOrder.find_valid_voucher_for(Time.zone.parse(h["Performance Date"]), 'TodayTix', price_per_seat)
       i.add_tickets(redemption, num_seats)
       i.transaction_date = Time.zone.parse h["Sale Date"]
       i.set_possible_customers

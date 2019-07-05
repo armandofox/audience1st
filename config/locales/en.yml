@@ -4,6 +4,9 @@ en:
     already_imported: >
       This list was already imported, on %{date}.      
 
+    wrong_file_type: >
+      This appears to be a %{type} file, but you must upload a %{desired_type} file.
+
     wrong_show: >
       This list contains an order for '%{import_show}' on %{performance_date},
       but the show name associated with that date is '%{actual_show}'.

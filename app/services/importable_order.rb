@@ -49,11 +49,26 @@ class ImportableOrder
   MAY_CREATE_NEW_CUSTOMER =   "MAY_CREATE_NEW_CUSTOMER"
   MUST_USE_EXISTING_CUSTOMER = "MUST_USE_EXISTING_CUSTOMER"
   
-  def initialize                # :nodoc:
+  def self.find_valid_voucher_for(thedate,vendor,price)
+    showdate = Showdate.where(:thedate => thedate).first
+    price = price.to_f
+    raise MissingDataError.new(I18n.translate('import.showdate_not_found', :date => thedate.to_formatted_s(:showtime_including_year))) if showdate.nil?
+    vouchertype = Vouchertype.where("name LIKE ?", "%#{vendor}%").find_by(:season => showdate.season, :price => price, :offer_public => Vouchertype::EXTERNAL)
+    raise MissingDataError.new(I18n.translate('import.vouchertype_not_found',
+        :season => ApplicationController.helpers.humanize_season(showdate.season),
+        :vendor => vendor, :price => sprintf('%.02f', price))) if vouchertype.nil?
+    redemption = ValidVoucher.find_by(:vouchertype => vouchertype, :showdate => showdate)
+    raise MissingDataError.new(I18n.translate('import.redemption_not_found',
+        :vouchertype => vouchertype.name,:performance => showdate.printable_name)) if redemption.nil?
+    redemption
+  end
+
+  def initialize(first: '', last: '', email: nil) # :nodoc:
     @order = Order.new(:purchasemethod => Purchasemethod.get_type_by_name('ext'))
+    @import_first_name, @import_last_name, @import_email = first,last,email
     @customers = []
     @action = MAY_CREATE_NEW_CUSTOMER
-    @comment = nil
+    @description = ''
     @valid_vouchers = Hash.new { 0 }
   end
 
@@ -88,20 +103,6 @@ class ImportableOrder
       @customers = Customer.possible_matches(import_first_name,import_last_name,import_email)
       @action = MAY_CREATE_NEW_CUSTOMER
     end
-  end
-
-  def find_valid_voucher_for(thedate,vendor,price)
-    showdate = Showdate.where(:thedate => thedate).first
-    price = price.to_f
-    raise MissingDataError.new(I18n.translate('import.showdate_not_found', :date => thedate.to_formatted_s(:showtime_including_year))) if showdate.nil?
-    vouchertype = Vouchertype.where("name LIKE ?", "%#{vendor}%").find_by(:season => showdate.season, :price => price, :offer_public => Vouchertype::EXTERNAL)
-    raise MissingDataError.new(I18n.translate('import.vouchertype_not_found',
-        :season => ApplicationController.helpers.humanize_season(showdate.season),
-        :vendor => vendor, :price => sprintf('%.02f', price))) if vouchertype.nil?
-    redemption = ValidVoucher.find_by(:vouchertype => vouchertype, :showdate => showdate)
-    raise MissingDataError.new(I18n.translate('import.redemption_not_found',
-        :vouchertype => vouchertype.name,:performance => showdate.printable_name)) if redemption.nil?
-    redemption
   end
 
   # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher

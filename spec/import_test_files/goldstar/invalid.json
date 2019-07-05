@@ -1,5 +1,5 @@
 {
-   "venue" : {
+   "venue" : 
       "venue_id" : 1173,
       "name" : "Altarena Playhouse",
       "address" : {
@@ -86,4 +86,4 @@
    "event" : {
       "title" : "\"Hand to God\""
    }
-}
+

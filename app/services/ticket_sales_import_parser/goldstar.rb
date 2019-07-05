@@ -2,10 +2,15 @@ module TicketSalesImportParser
   class Goldstar
 
     require 'json'
+    require 'csv'
     
     attr_reader :import
     delegate :raw_data, :to => :import
 
+    def self.accept_file_type
+      '.json'
+    end
+    
     def initialize(import)
       @import = import
       @j = nil
@@ -87,7 +92,8 @@ module TicketSalesImportParser
       actual_show_name = @showdate.show.name
       unless ShowNameMatcher.near_match?(import_show_name, actual_show_name)
         @import.warnings.add(:base, I18n.translate('import.wrong_show',
-          :import_show => import_show_name, :actual_show => actual_show_name))
+            :performance_date => thedate.to_formatted_s(:showtime),
+            :import_show => import_show_name, :actual_show => actual_show_name))
       end
       @import.errors.empty?
     end
@@ -96,7 +102,13 @@ module TicketSalesImportParser
       begin
         @j = JSON.parse(raw_data)
       rescue JSON::JSONError => e
-        @import.errors.add(:base, "Invalid JSON data: #{e.message}")
+        # is it possibly a CSV file?
+        begin
+          CSV.parse(raw_data)
+          @import.errors.add(:base, I18n.translate('import.wrong_file_type', :type => 'CSV', :desired_type => 'JSON'))
+        rescue CSV::MalformedCSVError
+          @import.errors.add(:base, "Invalid JSON data: #{e.message}")
+        end
       end
       @import.errors.empty?
     end

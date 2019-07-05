@@ -35,34 +35,6 @@
          ],
          "purchases" : [
             {
-               "created_at" : "2010-01-09T19:38:15.000-08:00",
-               "red_velvet" : false,
-               "purchase_id" : 11916767,
-               "note" : null,
-               "claims" : [
-                  {
-                     "quantity" : 2,
-                     "offer_id" : 2633910
-                  }
-               ],
-               "first_name" : "Lynn",
-               "last_name" : "Chewning"
-            },
-            {
-               "note" : null,
-               "first_name" : "Annabel",
-               "claims" : [
-                  {
-                     "offer_id" : 2633910,
-                     "quantity" : 1
-                  }
-               ],
-               "last_name" : "Granding",
-               "created_at" : "2010-01-08T12:48:47.000-08:00",
-               "red_velvet" : true,
-               "purchase_id" : 11911841
-            },
-            {
                "note" : null,
                "last_name" : "Melendrez",
                "first_name" : "Rosa",
@@ -84,6 +56,6 @@
       }
    ],
    "event" : {
-      "title" : "\"Hand to God\""
+      "title" : "\"God Hand\""
    }
 }

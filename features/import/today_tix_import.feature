@@ -1,8 +1,8 @@
-Feature: import third party sales
+Feature: import TodayTix sales
 
   As a boxoffice manager
-  To easily merge external vendor sales into our own sales
-  I want to import sales lists from external vendors
+  To easily merge TodayTix sales into our own sales
+  I want to import sales lists from TodayTix
 
 Background: logged in as boxoffice
 
@@ -70,7 +70,6 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
   And customer "Adrian Ray" should exist with email "arrayavalani@not.gmail.com"
   When I visit the ticket sales import page for the most recent "TodayTix" import
   Then the import for "Moran, Maria" should show "View imported order"
-  But I should not see "M Moran"
 
 Scenario: import would exceed house capacity
 
