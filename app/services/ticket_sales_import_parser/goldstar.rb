@@ -107,7 +107,7 @@ module TicketSalesImportParser
           CSV.parse(raw_data)
           @import.errors.add(:base, I18n.translate('import.wrong_file_type', :type => 'CSV', :desired_type => 'JSON'))
         rescue CSV::MalformedCSVError
-          @import.errors.add(:base, "Invalid JSON data: #{e.message}")
+          @import.errors.add(:base, "Invalid JSON data: #{e.message[0..100]}")
         end
       end
       @import.errors.empty?

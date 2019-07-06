@@ -21,7 +21,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', '= 4.0.5'
 gem 'jquery-ui-rails', '= 5.0.5'
 gem 'nokogiri'
-gem 'pothoven-attachment_fu'
+#gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'responders', '~> 2.0'
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
