@@ -64,7 +64,7 @@ Scenario: customer non-unique match, boxoffice agent decides whether to import a
 Scenario: possibly wrong show
 
   When I upload the "Goldstar" will-call file "wrong_show.json"
-  Then I should see "This list contains an order for 'Gods Hand' on Sunday, Oct 3, 3:00 PM, but the show name associated with that date is 'Hand to God'."
+  Then I should see "This list contains an order for 'God Hand' on Tuesday, Jan 12, 8:00 PM, but the show name associated with that date is 'Hand to God'."
   But I should not see "This list contains an order for 'Hand to God'"
 
 Scenario: mistakenly upload CSV rather than JSON

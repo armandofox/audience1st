@@ -74,7 +74,9 @@ module TicketSalesImportParser
 
     def valid_show_and_showdate?
       # assumes @j has been parsed.
-      import_show_name = @j['event']['title'] rescue 'UNKNOWN SHOW'
+      import_show_name = @j['event']['title'].strip rescue 'UNKNOWN SHOW'
+      import_show_name.gsub!(/^"/, '')
+      import_show_name.gsub!(/"$/, '')
       begin
         thedate = Time.zone.parse(@j['on_date'] << ' ' << @j['time_note'])
       rescue ArgumentError
