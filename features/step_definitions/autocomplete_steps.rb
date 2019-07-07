@@ -23,7 +23,6 @@ When /^I select customer "(.*)" within "(.*)"$/ do |name,elt|
 end
 
 Then /^the search results dropdown should (not )?include: (.*)/ do |no, text_list|
-  wait_for_ajax
   text = text_list.split(/\s*,\s*/)
   autocomplete_choices = %Q{//ul[contains(@class,"ui-autocomplete")]}
   within(@container) do
@@ -41,14 +40,12 @@ Then /^the search results dropdown should (not )?include: (.*)/ do |no, text_lis
 end
 
 When /^I select autocomplete choice to show all matches$/ do
-  wait_for_ajax
   xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'List all matching')]}
   element = within(@container) { find(:xpath,xpath) }
   element.click
 end
 
 When /^I select autocomplete choice "(.*)"$/ do |text|
-  wait_for_ajax
   xpath = %Q{//ul[contains(@class,"ui-autocomplete")]/li[contains(@class,"ui-menu-item") and contains(text(),'#{text}') and not(contains(text(),'all matching'))]}
   element = within(@container) { find(:xpath,xpath) }
   element.click

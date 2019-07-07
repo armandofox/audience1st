@@ -39,8 +39,7 @@ end
 When /^I run the special report "All subscribers" with seasons: (.*)/ do |seasons|
   visit path_to "the reports page"
   select "All subscribers", :from => 'special_report_name'
-  wait_for_ajax
-  within '#report_body' do
+    within '#report_body' do
     unselect Time.this_season.to_s, :from => 'seasons'
     seasons.split(/\s*,\s*/).each do |season|
       select season, :from => 'seasons'
@@ -61,8 +60,7 @@ end
 When /^I fill in the special report "(.*)" with:$/ do |report_name, fields|
   visit path_to "the reports page"
   select report_name, :from => 'special_report_name'
-  wait_for_ajax
-  within '#report_body' do
+    within '#report_body' do
     fields.hashes.each do |form_field|
       case form_field[:action]
       when /select/
