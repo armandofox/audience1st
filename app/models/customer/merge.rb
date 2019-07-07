@@ -91,7 +91,7 @@ class Customer < ActiveRecord::Base
     msg = []
     l = Label.rename_customer(old, new)
     msg << "#{l} labels"
-    [Order, Item, Txn, Import].each do |t|
+    [Order, Item, Txn].each do |t|
       howmany = 0
       t.foreign_keys_to_customer.each do |field|
         howmany += t.where("#{field} = ?", old).update_all(field => new)
