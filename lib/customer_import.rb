@@ -1,4 +1,4 @@
-class CustomerImport < Import
+class CustomerImport
 
   MAX_PREVIEW_SIZE = 100 unless defined?(MAX_PREVIEW_SIZE)
   MAX_IMPORT = 100_000 unless defined?(MAX_IMPORT)
