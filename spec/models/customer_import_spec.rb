@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-describe CustomerImport do
+describe CustomerImport, :focus => true do
 
   before(:all) do
     @testfiles_dir = File.join(Rails.root, 'spec', 'import_test_files', 'customer_list')
     @file_with_2_customers = File.join(@testfiles_dir, 'list_with_2_customers.csv')
   end
   
-  it "should register its type" do
+  xit "should register its type" do
     expect(Import.import_types["Customer/mailing list"]).to eq("CustomerImport")
   end
 
-  it "should create a new instance given valid attributes" do
+  xit "should create a new instance given valid attributes" do
     @valid_attributes = {
       :name => "value for name",
       :filename => "value for filename",
@@ -21,7 +21,7 @@ describe CustomerImport do
     CustomerImport.create!(@valid_attributes)
   end
   
-  describe "preview" do
+  xdescribe "preview" do
     describe "for file containing 2 valid customers plus header row" do
       before(:each) do 
         @import = CustomerImport.new
@@ -37,7 +37,7 @@ describe CustomerImport do
       end
     end
   end
-  describe "importing" do
+  xdescribe "importing" do
     describe "a valid customer" do
       before(:each) do
         @customer = build(:customer)

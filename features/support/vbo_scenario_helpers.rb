@@ -71,9 +71,9 @@ module VboScenarioHelpers
     select_date_matching showdate, :from => 'Date'
     tickets_hashes.each_pair do |type,qty|
       begin
-        select qty, :from => type
+        select qty.to_s, :from => type
       rescue Capybara::ElementNotFound # for admin, fill in box rather than dropdown
-        fill_in type, :with => qty
+        fill_in type, :with => qty.to_s
       end
     end
   end

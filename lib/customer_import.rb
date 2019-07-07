@@ -1,7 +1,13 @@
 class CustomerImport
 
+  attr_accessor :name, :filename, :content_type, :size, :number_of_records, :public_filename, :errors
+
   MAX_PREVIEW_SIZE = 100 unless defined?(MAX_PREVIEW_SIZE)
   MAX_IMPORT = 100_000 unless defined?(MAX_IMPORT)
+
+  def initialize
+    @errors = ActiveModel::Errors.new(self)
+  end
 
   def preview
     return get_customers_to_import(MAX_PREVIEW_SIZE)

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190627012945) do
+ActiveRecord::Schema.define(version: 20190707161330) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -71,21 +71,6 @@ ActiveRecord::Schema.define(version: 20190627012945) do
   create_table "customers_labels", id: false, force: :cascade do |t|
     t.integer "customer_id"
     t.integer "label_id"
-  end
-
-  create_table "imports", force: :cascade do |t|
-    t.string   "name",              limit: 255
-    t.string   "type",              limit: 255
-    t.integer  "number_of_records",             default: 0, null: false
-    t.string   "filename",          limit: 255
-    t.string   "content_type",      limit: 255
-    t.integer  "size"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "customer_id"
-    t.datetime "completed_at"
-    t.integer  "show_id"
-    t.integer  "showdate_id"
   end
 
   create_table "items", force: :cascade do |t|
