@@ -69,7 +69,15 @@ class VoucherPresenter
     # Ordering rules:
     # Subscriber vouchers all reserved for SAME SHOW (ie, same subscriber vouchertype) are grouped.
     # 
-    formatted_groups.sort_by(&:showdate)
+    formatted_groups.sort do |g1,g2|
+      if g1.showdate && g2.showdate
+        g1.showdate<=>g2.showdate
+      elsif g1.showdate         # g2 has no showdate, it sorts earlier
+        1
+      else
+        -1
+      end
+    end
   end
 
   private
