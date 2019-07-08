@@ -6,7 +6,6 @@ ruby '2.5.5'
 gem 'pg', '~> 0.21'
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
 gem 'rails', '4.2.9'
-gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
 
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
@@ -35,6 +34,7 @@ gem 'sassc-rails'
 gem 'uglifier'
 
 group :production do
+  gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
   gem 'newrelic_rpm'
   gem 'puma-heroku'
   gem 'puma'

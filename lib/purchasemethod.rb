@@ -37,9 +37,9 @@ Purchasemethod::ALL ||= [
   Purchasemethod.new('Box office - Cash',        :box_cash,false, :cash).freeze,   # 4
   Purchasemethod.new('Box office - Check',       :box_chk, false, :check).freeze,   # 5
   Purchasemethod.new('Payment Due',              :pmt_due, false, :none).freeze,          # 6
-  Purchasemethod.new('External Vendor',          :ext,     false, :none).freeze,          # 7
+  Purchasemethod.new('External Vendor',          :ext,     false, :third_party).freeze,   # 7
   Purchasemethod.new('Part of a package',	 :bundle,  true,  :none).freeze,          # 8
-  Purchasemethod.new('Other',                    :'?purch?',false,:none).freeze,          # 9
+  Purchasemethod.new('Other',                    :'?purch?',false,:other).freeze,          # 9
   Purchasemethod.new('In-Kind Goods or Services',:in_kind, true,  :none).freeze,          # 10
 ].freeze
 

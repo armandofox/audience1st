@@ -90,17 +90,17 @@ class Customer < ActiveRecord::Base
 
   def self.match_email_and_last_name(email,last_name)
     !email.blank? && !last_name.blank? &&
-      Customer.where('email LIKE ? AND last_name LIKE ?', email.strip, last_name.strip).first
+      Customer.where('lower(email) LIKE ? AND lower(last_name) LIKE ?', email.strip.downcase, last_name.strip.downcase).first
   end
 
   def self.match_first_last_and_address(first_name,last_name,street)
     !first_name.blank? && !last_name.blank? && !street.blank? &&
-      Customer.where('first_name LIKE ? AND last_name LIKE ? AND street like ?', first_name, last_name, street).first
+      Customer.where('lower(first_name) LIKE ? AND lower(last_name) LIKE ? AND lower(street) like ?', first_name.strip.downcase, last_name.strip.downcase, street.strip.downcase).first
   end
 
   def self.match_uniquely_on_names_only(first_name, last_name)
     return nil if first_name.blank? || last_name.blank?
-    m = Customer.where('last_name LIKE ? AND first_name LIKE ?',  last_name, first_name)
+    m = Customer.where('lower(last_name) LIKE ? AND lower(first_name) LIKE ?',  last_name.strip.downcase, first_name.strip.downcase)
     m && m.length == 1 ?  m.first : nil
   end
 

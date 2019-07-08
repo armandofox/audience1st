@@ -24,13 +24,13 @@ en:
       This will-call list is for %{date}, but there is no performance listed for that date and time.
 
     vouchertype_not_found: >
-      Cannot find vouchertype for %{season} season with '%{vendor}' in its name and
-      priced at %{price}.
+      This will-call list includes tickets priced at %{price}, but no voucher type 
+      for the %{season} season whose name begins with '%{vendor}' could be found at this price.
 
     redemption_not_found: >
       The will-call list could not be imported because at least one transaction references 
-      the '%{vouchertype}' and the %{performance}, but no redemption for this voucher type
-      could be found for this performance.
+      the '%{vouchertype}' voucher type and the %{performance} performance, but 
+      no redemption for this voucher type could be found for this performance.
 
     success:
       num_tickets:

@@ -43,7 +43,8 @@ class Customer < ActiveRecord::Base
   # | Imported        | import from 3rd party        | none, but all fields FORCED valid on create  |
 
 
-  validates_format_of :email, :if => :self_created?, :with => /\A\S+@\S+\z/
+  VALID_EMAIL_REGEXP = /\A\S+@\S+\z/
+  validates_format_of :email, :if => :self_created?, :with => VALID_EMAIL_REGEXP
 
   EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
   validates_uniqueness_of :email,
@@ -138,19 +139,14 @@ class Customer < ActiveRecord::Base
       self.first_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
       self.last_name = '_' if last_name.blank?
       self.last_name.gsub!(NAME_FORBIDDEN_CHARS, '_')
-      self.email = nil unless valid_and_unique(email)
+      self.email = nil unless valid_and_nonexistent(email)
     end
     true
   end
 
-  def valid_and_unique(email)
-    if email.blank?
-      true
-    elsif !email.match(/^[\w\d]+@[\w\d]+/)
-      false
-    else
-      !(Customer.where('email LIKE ?', email.downcase)).first
-    end
+  def valid_and_nonexistent(email)
+    email.blank? ||
+      (email =~ VALID_EMAIL_REGEXP  &&  Customer.find_by_email(email).nil?)
   end
 
   # match up donation customer with an existing one, or create it
