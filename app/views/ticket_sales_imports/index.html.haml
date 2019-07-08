@@ -23,7 +23,7 @@
       %tbody
         - @in_progress_imports.each do |imp|
           %tr[imp]
-            %td= imp.created_at.to_formatted_s(:compact)
+            %td= imp.updated_at.to_formatted_s(:compact)
             %td= imp.processed_by.first_name rescue ''
             %td= imp.vendor
             %td= imp.filename

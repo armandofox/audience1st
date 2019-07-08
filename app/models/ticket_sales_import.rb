@@ -1,6 +1,6 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_accessible :vendor, :raw_data, :filename, :processed_by, :existing_customers, :new_customers, :tickets_sold
+  attr_accessible :vendor, :raw_data, :filename, :completed, :processed_by, :existing_customers, :new_customers, :tickets_sold
   attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
@@ -19,8 +19,8 @@ class TicketSalesImport < ActiveRecord::Base
   validate :valid_for_parsing?
   
   scope :sorted, -> { order('updated_at DESC') }
-  scope :completed, -> { where('created_at != updated_at') }
-  scope :in_progress, -> { where('created_at = updated_at') }
+  scope :completed, -> { where(:completed => true) }
+  scope :in_progress, -> { where(:completed => false) }
 
   attr_reader :parser
   after_initialize :set_parser
@@ -64,10 +64,6 @@ class TicketSalesImport < ActiveRecord::Base
     end
   end
 
-  def completed?
-    ! (created_at == updated_at)
-  end
-  
   def finalize!
     @importable_orders.each do |imp|
       imp.finalize!

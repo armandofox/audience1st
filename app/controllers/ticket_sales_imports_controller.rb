@@ -20,6 +20,7 @@ class TicketSalesImportsController < ApplicationController
     @import = TicketSalesImport.new(
       :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user,
       :filename => params[:file].original_filename,
+      :completed => false,
       :existing_customers => 0, :new_customers => 0, :tickets_sold => 0)
     if @import.valid?
       @import.save!
@@ -68,6 +69,7 @@ class TicketSalesImportsController < ApplicationController
           end
           import.tickets_sold += order.ticket_count unless o[:action] == ImportableOrder::ALREADY_IMPORTED
         end
+        import.completed = true
         import.save!
         flash[:notice] = [
           t('import.success.num_tickets', :count => import.tickets_sold),
