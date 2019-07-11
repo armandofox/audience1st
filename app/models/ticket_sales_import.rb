@@ -4,6 +4,7 @@ class TicketSalesImport < ActiveRecord::Base
   attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
+  has_many :orders, :dependent => :nullify
 
   class ImportError < StandardError ;  end
 

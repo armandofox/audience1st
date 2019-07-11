@@ -99,6 +99,15 @@ Scenario: partially-completed import should not show up in Previous Imports, and
   When I press "Import Orders"
   Then I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
   
+Scenario: partially-completed import can be deleted
+
+  When I upload the "TodayTix" will-call file "two_valid_orders.csv"
+  And I visit the ticket sales import page
+  Then show me the page
+  When I press "Cancel Import"
+  Then I should see "Import of 'two_valid_orders.csv' cancelled"
+  And there should be no import with filename "two_valid_orders.csv"
+
 Scenario: import includes comps
 
   Given a show "Company" with the following tickets available:
@@ -115,3 +124,4 @@ Scenario: possibly wrong show
   When I upload the "TodayTix" will-call file "wrong_show.csv"
   Then I should see "This list contains an order for 'Wicked' on Sunday, Oct 3, 3:00 PM, but the show name associated with that date is 'Company'."
   But I should not see "This list contains an order for 'Company'"
+

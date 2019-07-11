@@ -83,4 +83,11 @@ class TicketSalesImportsController < ApplicationController
     end
     redirect_to ticket_sales_imports_path
   end
+
+  def destroy
+    i = TicketSalesImport.find(params[:id])
+    flash[:notice] = I18n.translate('import.import_cancelled', :filename => i.filename)
+    i.destroy
+    redirect_to ticket_sales_imports_path
+  end
 end

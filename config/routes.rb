@@ -6,17 +6,7 @@ Rails.application.routes.draw do
 
     resources :bulk_downloads
     resources :account_codes, :except => :show
-    resources :imports, :except => :show do
-      member do
-        get :download_invalid
-      end
-      collection do
-        get :help
-      end
-    end
-
-    resources :ticket_sales_imports, :only => [:index, :create, :edit, :update]
-
+    resources :ticket_sales_imports, :except => [:new,:show]
     resources :labels, :only => [:index, :create, :update, :destroy]
 
     resources :customers, :except => :destroy do

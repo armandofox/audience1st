@@ -1,6 +1,12 @@
 en:
   import:
 
+    import_cancelled: >
+      Import of '%{filename}' cancelled.
+
+    confirm_delete_import:
+      Are you sure you want to cancel this in-progress import?
+
     already_imported: >
       This list was already imported, on %{date}.      
 

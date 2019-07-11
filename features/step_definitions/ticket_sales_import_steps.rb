@@ -27,3 +27,7 @@ Then /the import for "(.*)" should show "(.*)"/ do |name,status|
   tr = find_import_row_for name
   expect(tr.find(:css, 'td.actions').text).to have_content(status)
 end
+
+Then /there should be no import with filename "(.*)"/ do |filename|
+  expect(TicketSalesImport.where(:filename => filename)).to be_empty
+end
