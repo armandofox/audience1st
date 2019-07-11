@@ -103,7 +103,6 @@ Scenario: partially-completed import can be deleted
 
   When I upload the "TodayTix" will-call file "two_valid_orders.csv"
   And I visit the ticket sales import page
-  Then show me the page
   When I press "Cancel Import"
   Then I should see "Import of 'two_valid_orders.csv' cancelled"
   And there should be no import with filename "two_valid_orders.csv"

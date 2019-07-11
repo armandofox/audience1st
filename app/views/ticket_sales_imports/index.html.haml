@@ -28,8 +28,9 @@
             %td= imp.vendor
             %td= imp.filename
             %td
-              = link_to 'Finish...', edit_ticket_sales_import_path(imp), :class => 'btn btn-primary mx-2'
-              = button_to 'Cancel Import', ticket_sales_import_path(imp), {:form_class => 'bb form-inline', :method => 'delete', :data => {:confirm => t('import.confirm_delete_import')}, :class => 'btn btn-danger'}
+              = form_for imp, :method => 'delete', :class => 'form-inline' do 
+                = link_to 'Finish...', edit_ticket_sales_import_path(imp), :class => 'btn btn-primary mx-1'
+                = submit_tag 'Cancel Import', :data => {:confirm => t('import.confirm_delete_import')}, :class => 'btn btn-danger'
 
 - unless @ticket_sales_imports.empty?
   .container
