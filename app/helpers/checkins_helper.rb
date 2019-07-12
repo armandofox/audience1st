@@ -1,5 +1,10 @@
 module CheckinsHelper
 
+  # if an availability number is zero, red background w/white text, else green w/white
+  def class_for(num)
+    num.to_i <= 0 ? 'text-white bg-danger' : 'text-white bg-success'
+  end
+
   # emit a guide letter in the leftmost column of a table when the first new item
   # starting with that letter is passed; otherwise emit nothing
   

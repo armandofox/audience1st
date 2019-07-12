@@ -139,16 +139,6 @@ class Showdate < ActiveRecord::Base
     house_capacity.zero? ? 100.0 : 100.0 * max_allowed_sales / house_capacity
   end
 
-  # release unsold seats from an external channel back to general inventory.
-  # if show cap == house cap, this has no effect.
-  # otherwise, show cap is boosted back up by the number of unsold seats,
-  # but never higher than the house cap.
-
-  def release_holdback(num)
-    self.update_attribute(:max_sales, max_sales + num)
-    max_sales
-  end
-
   def total_seats_left
     [self.house_capacity - compute_total_sales, 0].max
   end
