@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190708195812) do
+ActiveRecord::Schema.define(version: 20190716183715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -176,6 +176,7 @@ ActiveRecord::Schema.define(version: 20190708195812) do
     t.string   "stylesheet_url"
     t.boolean  "staff_access_only",                                                  default: false
     t.boolean  "allow_guest_checkout",                                               default: false
+    t.string   "feature_flags",                                                      default: "--- []\n"
   end
 
   create_table "orders", force: :cascade do |t|

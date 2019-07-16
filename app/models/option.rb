@@ -5,6 +5,8 @@ class Option < ActiveRecord::Base
   attr_encrypted :sendgrid_key_value
   attr_encrypted :mailchimp_key
 
+  serialize :feature_flags, Array
+
   # support singleton pattern by allowing Option.venue instead of Option.first.venue, its
   # NOTE!  Since we are doing explicit caching in this method, we must take account of the current tenant name.
 
@@ -18,6 +20,17 @@ class Option < ActiveRecord::Base
     @@option_cache.delete(tenant)
   end
 
+  # Feature flags
+  def self.feature_enabled?(str)
+    Option.first.feature_flags.include?(str)
+  end
+  def self.enable_feature!(str)
+    Option.first.update_attributes!(:feature_flags => Option.feature_flags | [str])
+  end
+  def self.disable_feature!(str)
+    Option.first.update_attributes!(:feature_flags => Option.feature_flags - [str])
+  end
+  
   validates_numericality_of :advance_sales_cutoff
   validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
   validate :availability_levels_monotonically_increase
