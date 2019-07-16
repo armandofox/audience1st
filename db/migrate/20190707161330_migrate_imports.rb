@@ -1,4 +1,8 @@
 class Import < ActiveRecord::Base;    end
+class GoldstarCsvImport < Import ; end
+class BrownPaperTicketsImport < Import ; end
+class TbaWebtixImport < Import ; end
+class GoldstarXmlImport < Import ; end
 class MigrateImports < ActiveRecord::Migration
   def change
     Import.all.each do |i|
