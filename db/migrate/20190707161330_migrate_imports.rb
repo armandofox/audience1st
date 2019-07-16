@@ -4,7 +4,7 @@ class BrownPaperTicketsImport < Import ; end
 class TbaWebtixImport < Import ; end
 class GoldstarXmlImport < Import ; end
 class TicketSalesImport < ActiveRecord::Base
-  attr_accessible :processed_by_id, :created_at, :updated_at
+  attr_accessible :processed_by_id, :created_at, :updated_at, :vendor,:tickets_sold, :processed_by_id
 end
 class MigrateImports < ActiveRecord::Migration
   def change
