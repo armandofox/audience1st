@@ -1,4 +1,5 @@
 class Import < ActiveRecord::Base;    end
+class CustomerImport < Import ; end
 class GoldstarCsvImport < Import ; end
 class BrownPaperTicketsImport < Import ; end
 class TbaWebtixImport < Import ; end
