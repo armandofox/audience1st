@@ -14,13 +14,13 @@ class Showdate < ActiveRecord::Base
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
-  validates_numericality_of :max_allowed_sales, :greater_than_or_equal_to => 0
+  validates_numericality_of :max_advance_sales, :greater_than_or_equal_to => 0
   validates_associated :show
   validates_presence_of :thedate
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
-  attr_accessible :thedate, :end_advance_sales, :max_allowed_sales, :description, :show_id
+  attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id
 
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
@@ -47,7 +47,7 @@ class Showdate < ActiveRecord::Base
   def self.placeholder(thedate)
     Showdate.new(:thedate => thedate,
       :end_advance_sales => thedate,
-      :max_allowed_sales => 0)
+      :max_advance_sales => 0)
   end
 
   def valid_vouchers_for_walkup
@@ -85,7 +85,7 @@ class Showdate < ActiveRecord::Base
   # reporting, comparisons
 
   def inspect
-    "#{self.id} #{name_and_date_with_capacity_stats}/#{max_allowed_sales}"
+    "#{self.id} #{name_and_date_with_capacity_stats}/#{max_advance_sales}"
   end
   
   def <=>(other_showdate)
@@ -131,8 +131,8 @@ class Showdate < ActiveRecord::Base
 
   def total_offered_for_sale ; house_capacity ; end
 
-  def percent_max_allowed_sales
-    house_capacity.zero? ? 100.0 : 100.0 * max_allowed_sales / house_capacity
+  def percent_max_advance_sales
+    house_capacity.zero? ? 100.0 : 100.0 * max_advance_sales / house_capacity
   end
 
   def total_seats_left
@@ -140,7 +140,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def saleable_seats_left
-    [self.max_allowed_sales - compute_total_sales, 0].max
+    [self.max_advance_sales - compute_total_sales, 0].max
   end
 
   def really_sold_out? ; saleable_seats_left < 1 ; end
@@ -151,7 +151,7 @@ class Showdate < ActiveRecord::Base
 
   # percent of max sales: may exceed 100
   def percent_sold
-    percent_of(max_allowed_sales)
+    percent_of(max_advance_sales)
   end
 
   # percent of house: may exceed 100

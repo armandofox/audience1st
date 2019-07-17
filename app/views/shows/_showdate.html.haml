@@ -5,8 +5,8 @@
     = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
   .col-4= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
   .col-2
-    = showdate.max_allowed_sales
-    - p = showdate.percent_max_allowed_sales
+    = showdate.max_advance_sales
+    - p = showdate.percent_max_advance_sales
     %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
   .col-2
     - if showdate.compute_total_sales.zero?

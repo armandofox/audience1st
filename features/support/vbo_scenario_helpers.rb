@@ -26,7 +26,7 @@ module VboScenarioHelpers
   end
 
   def make_valid_tickets(showdate,vtype,qty=nil,promo_code=nil)
-    qty ||= showdate.max_allowed_sales
+    qty ||= showdate.max_advance_sales
     options = {:vouchertype => vtype,
       :max_sales_for_type => qty.to_i,
       :end_sales => showdate.thedate + 5.minutes,

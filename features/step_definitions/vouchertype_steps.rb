@@ -35,7 +35,7 @@ Given /^a bundle "(.*)" for \$?([0-9.]+) containing:$/ do |name,price,tickets|
     bundle.included_vouchers[bundle_component.id] = h['qty']
     bundle.season = the_showdate.year
     # make it valid for just the one showdate
-    showdate = create(:showdate, :date => the_showdate, :max_allowed_sales => 100, :show_name => show_name)
+    showdate = create(:showdate, :date => the_showdate, :max_advance_sales => 100, :show_name => show_name)
     showdate.valid_vouchers.create!(:vouchertype => bundle_component,
       :start_sales => 1.week.ago, :end_sales => 1.week.from_now, :max_sales_for_type => 100)
   end

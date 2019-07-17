@@ -3,7 +3,7 @@
 %table.hilite.totalShowSales
   %tr.showSalesRow
     %td.showSalesDate{:style=>'width: 20em;'}
-      - hdr ||= "#{showdate.printable_date} (#{showdate.max_allowed_sales})"
+      - hdr ||= "#{showdate.printable_date} (#{showdate.max_advance_sales})"
       = link_to hdr, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"
     %td.showSalesDateQty= showdate.compute_total_sales
     %td.showSalesDatePercent

@@ -84,7 +84,7 @@ Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|
     sd.should_not be_nil
     sd.show.should == show
     if date[:max_sales]
-      sd.max_allowed_sales.should == date[:max_sales].to_i
+      sd.max_advance_sales.should == date[:max_sales].to_i
     end
     if date[:sales_cutoff]
       sd.end_advance_sales.should == Time.zone.parse(date[:sales_cutoff])
@@ -111,9 +111,9 @@ Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, num|
   showdate = Showdate.find_by_thedate! Time.zone.parse(date)
   num = num.to_i
   if num > 0
-    (showdate.compute_total_sales - showdate.max_allowed_sales).should == num
+    (showdate.compute_total_sales - showdate.max_advance_sales).should == num
   else
-    showdate.compute_total_sales.should be > showdate.max_allowed_sales
+    showdate.compute_total_sales.should be > showdate.max_advance_sales
   end
 end
 
@@ -148,5 +148,5 @@ Given /^there are (\d+) "(.*)" tickets and (\d+) total seats available$/ do |per
     :end_sales   => @showdate.thedate,
     :max_sales_for_type => per_ticket_limit
     )
-  @showdate.update_attributes!(:max_allowed_sales => seat_limit)
+  @showdate.update_attributes!(:max_advance_sales => seat_limit)
 end

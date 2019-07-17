@@ -17,5 +17,5 @@ Scenario: limit max sales
   And I press "Save Changes"
   Then the showdate should have the following attributes:
     | attribute         | value               |
-    | max_allowed_sales | 96                  |
+    | max_advance_sales | 96                  |
     | description       | Special performance |

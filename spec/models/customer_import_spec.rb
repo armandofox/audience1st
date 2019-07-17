@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe CustomerImport, :focus => true do
+describe CustomerImport do
 
   before(:all) do
     @testfiles_dir = File.join(Rails.root, 'spec', 'import_test_files', 'customer_list')

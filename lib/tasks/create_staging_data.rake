@@ -108,7 +108,7 @@ staging = namespace :staging do
         :listing_date => Time.current)
       showdates.each do |date|
         showdate = show.showdates.create!(
-          :max_allowed_sales => show.house_capacity,
+          :max_advance_sales => show.house_capacity,
           :thedate => date,
           :end_advance_sales => date - 3.hours)
       end

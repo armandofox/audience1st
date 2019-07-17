@@ -118,8 +118,8 @@ class Show < ActiveRecord::Base
     showdates.inject(0) { |t,s| t+s.compute_total_sales }
   end
 
-  def max_allowed_sales
-    showdates.inject(0) { |t,s| t+s.max_allowed_sales }
+  def max_advance_sales
+    showdates.inject(0) { |t,s| t+s.max_advance_sales }
   end
 
   def total_offered_for_sale ; showdates.length * house_capacity ; end

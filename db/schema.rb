@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190716183715) do
+ActiveRecord::Schema.define(version: 20190717195517) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -203,7 +203,7 @@ ActiveRecord::Schema.define(version: 20190716183715) do
   create_table "showdates", force: :cascade do |t|
     t.datetime "thedate"
     t.datetime "end_advance_sales"
-    t.integer  "max_sales",                     default: 0, null: false
+    t.integer  "max_advance_sales",             default: 0, null: false
     t.integer  "show_id",                       default: 0, null: false
     t.string   "description",       limit: 255
     t.datetime "created_at",                                null: false
