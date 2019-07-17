@@ -23,6 +23,12 @@ end
 
 # Checking the appearance/status of an importable order
 
+Then /the default import action for "(.*)" should be "(.*)"/ do |name,action|
+  tr = find_import_row_for name
+  select = tr.find(:css, 'select')
+  expect(select.find("option[@value='#{select.value}']").text).to eq(action)
+end  
+
 Then /the import for "(.*)" should show "(.*)"/ do |name,status|
   tr = find_import_row_for name
   expect(tr.find(:css, 'td.actions').text).to have_content(status)

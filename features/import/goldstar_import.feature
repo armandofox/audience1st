@@ -41,6 +41,13 @@ Scenario: successful import creates new customers; then attempt re-import of sam
   When I visit the edit contact info page for customer "Rosa Melendrez"
   Then I should see "Created by Goldstar import on Jan 1, 2010" within ".admin"
 
+Scenario: unique match on name defaults to using existing, but multiple match defaults to create new
+
+  Given the following customers exist: Lynn Chewning, R Melendrez, Rosa Melendrez
+  When I upload the "Goldstar" will-call file "2010-01-12-HandToGod.json"
+  Then the default import action for "Chewning, Lynn" should be "Lynn Chewning (lynn@chewning.com) (123 Fake St)"
+  But the default import action for "Melendrez, Rosa" should be "Create new customer"
+
 Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing; imported order shows original import name, not matched name
 
   Given customer "R Melendrez" exists with no email

@@ -10,10 +10,19 @@ module TicketSalesImportsHelper
         hidden_field_tag("o[#{oid}][customer_id]", c.id))
     elsif io.customers.empty?   # MUST create new
       content_tag('span', "Will create new customer")
-    else                        # MAY create new; other candidates exist
+    elsif io.customers.length == 1                        # default = use exact match; MAY create new
       select_tag("o[#{oid}][customer_id]",
-        (options_for_select([["Create new customer", ""]]) <<
-          options_from_collection_for_select(io.customers, :id, :full_name_with_email_and_address)),
+        (
+          options_from_collection_for_select(io.customers, :id, :full_name_with_email_and_address, io.customers.first.id) <<
+          options_for_select([["Create new customer", ""]])
+          ),
+        :class => 'form-control')
+    else                                                  # default = create new; other options exist
+      select_tag("o[#{oid}][customer_id]",
+        (
+          options_for_select([["Create new customer", ""]], "Create new customer") <<
+          options_from_collection_for_select(io.customers, :id, :full_name_with_email_and_address)
+          ),
         :class => 'form-control')
     end
   end
