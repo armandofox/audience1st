@@ -47,7 +47,7 @@ class VoucherPresenter
     if vt1 == vt2
       # same vouchertype: order by OPENING DATE of the show for which reserved, or display order
       # if not reserved
-      return (if sd1 then (sd1 <=> sd2) else (vt1.display_order <=> vt2.display_order) end)
+      return (if (sd1 && sd2) then (sd1 <=> sd2) else (vt1.display_order <=> vt2.display_order) end)
     end
     # else different vouchertypes, so the rules are:
     # vouchertypes WITH assigned showdates always go first
@@ -69,15 +69,16 @@ class VoucherPresenter
     # Ordering rules:
     # Subscriber vouchers all reserved for SAME SHOW (ie, same subscriber vouchertype) are grouped.
     # 
-    formatted_groups.sort do |g1,g2|
-      if g1.showdate && g2.showdate
-        g1.showdate<=>g2.showdate
-      elsif g1.showdate         # g2 has no showdate, it sorts earlier
-        1
-      else
-        -1
-      end
-    end
+    formatted_groups.sort
+    # formatted_groups.sort do |g1,g2|
+    #   if g1.showdate && g2.showdate
+    #     g1.showdate<=>g2.showdate
+    #   elsif g1.showdate         # g2 has no showdate, it sorts earlier
+    #     1
+    #   else
+    #     -1
+    #   end
+    # end
   end
 
   private
