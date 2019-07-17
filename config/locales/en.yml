@@ -1,6 +1,11 @@
 en:
   import:
 
+    goldstar:
+      invalid_offer_id: >
+        This will-call list is invalid because at least one purchase (for %{name}) refers to the
+        nonexistent offer ID %{offer_id}.
+
     import_cancelled: >
       Import of '%{filename}' cancelled.
 

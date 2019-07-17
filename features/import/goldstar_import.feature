@@ -85,3 +85,8 @@ Scenario: non-CSV, invalid JSON data
   Then I should see "Invalid JSON"
   But I should not see "This appears to be a CSV file"
   
+Scenario: nonexistent offer code
+
+  When I upload the "Goldstar" will-call file "nonexistent_offer_id.json"
+  Then show me the page
+  Then I should see "This will-call list is invalid because at least one purchase (for Rosa Melendrez) refers to the nonexistent offer ID 999999."

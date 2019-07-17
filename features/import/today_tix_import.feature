@@ -82,5 +82,8 @@ Scenario: import includes comps
   Then customer "Maria Moran" should have 3 "TodayTix - comp" tickets for "Company" on October 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on October 3, 2010, 3:00pm
 
+Scenario: possibly wrong show
 
-  
+  When I upload the "TodayTix" will-call file "wrong_show.csv"
+  Then I should see "This list contains an order for 'Wicked' on Sunday, Oct 3, 3:00 PM, but the show name associated with that date is 'Company'."
+  But I should not see "This list contains an order for 'Company'"

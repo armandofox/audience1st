@@ -15,6 +15,7 @@ module TicketSalesImportParser
       @import = import
       @j = nil
       @showdate = nil
+      @offer_ids = []           # all offer_id's referenced in inventories
       @redemptions = {}         # Goldstar offer_id => valid_voucher
     end
 
@@ -47,9 +48,16 @@ module TicketSalesImportParser
     private
 
     def populate_from_import(import, purchase)
+      name = "#{purchase['first_name']} #{purchase['last_name']}"
       purchase['claims'].each do |claim|
         num_seats = claim['quantity']
-        redemption = @redemptions[claim['offer_id']]
+        offer_id = claim['offer_id']
+        # does offer ID actually refer to an offer_id in this file?
+        unless @redemptions.has_key?(offer_id)
+          return @import.errors.add(:base, 
+            I18n.translate('import.goldstar.invalid_offer_id', :offer_id => offer_id, :name => name))
+        end
+        redemption = @redemptions[offer_id]
         import.add_tickets(redemption, num_seats)
         import.transaction_date = Time.zone.parse purchase['created_at']
         import.set_possible_customers

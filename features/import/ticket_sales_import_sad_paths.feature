@@ -48,9 +48,3 @@ Scenario: partially-completed import can be deleted
   When I press "Cancel Import"
   Then I should see "Import of 'two_valid_orders.csv' cancelled"
   And there should be no import with filename "two_valid_orders.csv"
-
-Scenario: possibly wrong show
-
-  When I upload the "TodayTix" will-call file "wrong_show.csv"
-  Then I should see "This list contains an order for 'Wicked' on Sunday, Oct 3, 3:00 PM, but the show name associated with that date is 'Company'."
-  But I should not see "This list contains an order for 'Company'"
