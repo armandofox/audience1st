@@ -38,6 +38,9 @@ Scenario: partially-completed import should not show up in Previous Imports, and
   Then I should see "two_valid_orders.csv" within "#in_progress_imports"
   When I follow "Finish..."
   Then I should see "Proposed Import From TodayTix"
+  When I select the following options for each import:
+    | import_name | action              |
+    | Ray, Adrian | Create new customer |
   When I press "Import Orders"
   Then I should see "4 tickets were imported for 2 total customers. None of the customers were already in your list. 2 new customers were created."
   
