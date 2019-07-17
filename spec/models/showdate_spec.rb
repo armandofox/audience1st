@@ -71,10 +71,10 @@ describe Showdate do
   end
   describe 'max sales' do
     before :each do
-      @s = create(:showdate, :date => Time.current, :max_sales => 200)
+      @s = create(:showdate, :date => Time.current, :max_allowed_sales => 200)
     end
     describe 'when zero' do
-      before(:each) { @s.update_attributes!(:max_sales => 0) }
+      before(:each) { @s.update_attributes!(:max_allowed_sales => 0) }
       it('should be allowed') {  expect(@s.max_allowed_sales).to be_zero }
       it('should make show sold-out') { expect(@s).to be_really_sold_out }
     end
@@ -83,12 +83,12 @@ describe Showdate do
   describe "computing" do
     before(:each) do
       @house_cap = 12
-      @max_sales = 10
+      @max_allowed_sales = 10
       @thedate = Time.current
       @showdate = FactoryBot.create(:showdate,
         :thedate => @thedate,
         :end_advance_sales => @thedate - 5.minutes,
-        :max_sales => @max_sales)
+        :max_allowed_sales => @max_allowed_sales)
       @showdate.show.update_attributes!(:house_capacity => @house_cap)
       @vouchers = {
         'subscriber' => 4,
@@ -154,7 +154,7 @@ describe Showdate do
           expect(@showdate.total_seats_left).to eq(3)
         end
         it "should compute percent of max sales" do
-          expect(@showdate.percent_sold).to eq(((@total_sold.to_f / @max_sales) * 100).floor)
+          expect(@showdate.percent_sold).to eq(((@total_sold.to_f / @max_allowed_sales) * 100).floor)
         end
         it "should compute percent of house" do
           expect(@showdate.percent_of_house).to eq(((@total_sold.to_f / @house_cap) * 100).floor)
@@ -181,8 +181,8 @@ describe Showdate do
       end
       describe "when sold beyond max sales but not house cap" do
         before(:each) do
-          @max_sales = 8
-          @showdate.update_attribute(:max_sales, @max_sales)
+          @max_allowed_sales = 8
+          @showdate.update_attribute(:max_allowed_sales, @max_allowed_sales)
         end
         it_should_behave_like "for normal sales"
         it "should compute saleable seats left" do

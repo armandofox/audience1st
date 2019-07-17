@@ -14,13 +14,13 @@ class Showdate < ActiveRecord::Base
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
-  validates_numericality_of :max_sales, :greater_than_or_equal_to => 0
+  validates_numericality_of :max_allowed_sales, :greater_than_or_equal_to => 0
   validates_associated :show
   validates_presence_of :thedate
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
-  attr_accessible :thedate, :end_advance_sales, :max_sales, :description, :show_id
+  attr_accessible :thedate, :end_advance_sales, :max_allowed_sales, :description, :show_id
 
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
@@ -47,7 +47,7 @@ class Showdate < ActiveRecord::Base
   def self.placeholder(thedate)
     Showdate.new(:thedate => thedate,
       :end_advance_sales => thedate,
-      :max_sales => 0)
+      :max_allowed_sales => 0)
   end
 
   def valid_vouchers_for_walkup
@@ -127,10 +127,6 @@ class Showdate < ActiveRecord::Base
 
   def advance_sales?
     (self.end_advance_sales - 5.minutes) > Time.current
-  end
-
-  def max_allowed_sales
-    self.max_sales
   end
 
   def total_offered_for_sale ; house_capacity ; end

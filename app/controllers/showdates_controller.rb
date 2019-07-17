@@ -65,7 +65,7 @@ class ShowdatesController < ApplicationController
 
   def showdates_from_date_list(dates, params)
     sales_cutoff = params[:advance_sales_cutoff].to_i
-    max_sales = params[:max_sales].to_i
+    max_allowed_sales = params[:max_allowed_sales].to_i
     description = params[:description].to_s
 
     existing_dates, new_dates = dates.partition { |date| Showdate.find_by(:thedate => date) }
@@ -79,7 +79,7 @@ class ShowdatesController < ApplicationController
     end
     new_dates.map do |date|
       s = @show.showdates.build(:thedate => date,
-        :max_sales => max_sales,
+        :max_allowed_sales => max_allowed_sales,
         :end_advance_sales => date - sales_cutoff.minutes,
         :description => description)
       unless s.valid?

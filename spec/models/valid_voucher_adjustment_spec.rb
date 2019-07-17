@@ -15,7 +15,7 @@ describe 'ValidVoucher adjusting' do
   describe 'for reservation using existing voucher' do
     context 'after deadline' do
       subject do
-        s = create(:showdate, :date => 1.day.from_now, :max_sales => 200)
+        s = create(:showdate, :date => 1.day.from_now, :max_allowed_sales => 200)
         v = ValidVoucher.new(:showdate => s, :end_sales => 1.day.ago, :max_sales_for_type => 100)
         v.adjust_for_customer_reservation
       end

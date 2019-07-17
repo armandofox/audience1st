@@ -16,6 +16,6 @@ Scenario: limit max sales
   And I fill in "Description (optional)" with "Special performance"
   And I press "Save Changes"
   Then the showdate should have the following attributes:
-    | attribute   | value               |
-    | max_sales   | 96                  |
-    | description | Special performance |
+    | attribute         | value               |
+    | max_allowed_sales | 96                  |
+    | description       | Special performance |

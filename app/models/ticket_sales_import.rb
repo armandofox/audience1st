@@ -86,9 +86,9 @@ class TicketSalesImport < ActiveRecord::Base
       current_sales = showdate.compute_total_sales
       warning_params = { :num_to_import => num_to_import, :current_sales => current_sales,
         :performance_date => showdate.thedate.to_formatted_s(:showtime) }
-      if current_sales + num_to_import > showdate.max_sales
+      if current_sales + num_to_import > showdate.max_allowed_sales
         @warnings.add(:base, I18n.translate('import.capacity_exceeded',
-            warning_params.merge({:capacity_control => "performance's sales cap", :capacity => showdate.max_sales})))
+            warning_params.merge({:capacity_control => "performance's sales cap", :capacity => showdate.max_allowed_sales})))
       end
       if current_sales + num_to_import > showdate.house_capacity
         @warnings.add(:base, I18n.translate('import.capacity_exceeded',

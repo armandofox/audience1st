@@ -22,9 +22,9 @@
     = number_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control col-1'
     %label.col-form-label.col-3 minutes before curtain
     .col-4.text-right
-      %label.col-form-label{:for => :max_sales} Max advance sales
+      %label.col-form-label{:for => :max_allowed_sales} Max advance sales
       = popup_help_for(:max_advance_sales)
-    = number_field_tag 'max_sales', @max_sales_default, :class => 'form-control col-1'
+    = number_field_tag 'max_allowed_sales', @max_sales_default, :class => 'form-control col-1'
     = hidden_field_tag "show_id", @show.id
 
   .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):

@@ -7,7 +7,7 @@ FactoryBot.define do
     end
     thedate { date }
     show { create(:show, :name => show_name, :including => date) }
-    max_sales { [100, show.house_capacity].min }
+    max_allowed_sales { [100, show.house_capacity].min }
     end_advance_sales { thedate - 1.minute }
   end
 
