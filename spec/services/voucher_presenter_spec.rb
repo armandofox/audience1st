@@ -24,7 +24,8 @@ describe VoucherPresenter do
   describe 'sorting' do
     before(:each) do
       @vt = Array.new(2) { create(:vouchertype_included_in_bundle) }
-      @sd = [create(:showdate), create(:showdate, :date => 2.weeks.from_now)]
+      s1 = create(:showdate)
+      @sd = [s1, create(:showdate, :show => s1.show, :date => 2.weeks.from_now)]
     end
     specify 'same showdates sort together' do
       (v1 = create(:revenue_voucher, :vouchertype => @vt[0])).reserve!(@sd[0]) # earlier showdate
