@@ -1,19 +1,18 @@
-= form_for @account_code do |f|
-  %fieldset
-    %legend Account Code
-    %label{:for => 'account_code_name'} Name
-    = f.text_field 'name', :size => 20
-    %br
-    %label{:for => 'account_code_code'} Code
-    = f.text_field 'code', :size => 6
-    %br
-    %label{:for => 'account_code_description'} Brief Description
-    = f.text_field 'description', :size => 40
-    %br
-    %label{:for => 'account_code_donation_prompt'} 
-      = popup_help_for 'account_code_donation_prompt'
-      Donation prompt
-    = f.text_field 'donation_prompt', :size => 40
-    %br
-    = f.submit
-    = link_to 'Cancel', account_codes_path, :class => 'btn btn-secondary'
+= form_for @account_code, :html => {:class => 'form'} do |f|
+  .form-row
+    .col-md-1
+      %label.col-form-label{:for => 'account_code_name'} Name
+    .col-md-3= f.text_field 'name', :class => 'form-control'
+    .col-md-1.text-right
+      %label.col-form-label{:for => 'account_code_code'} Code
+    .col-md-1= f.text_field 'code', :class => 'form-control'
+    .col-md-2.text-right
+      %label.col-form-label{:for => 'account_code_description'} Brief Description
+    .col-md-4= f.text_field 'description', :class => 'form-control'
+  .form-row.form-group
+    = popup_help_for 'account_code_donation_prompt'
+    %label.col-form-label{:for => 'account_code_donation_prompt'} Donation prompt
+    = f.text_area 'donation_prompt', :class => 'form-control'
+  .form-row
+    .col-md-2= f.submit :class => 'btn btn-success'
+    .col-md-2= link_to 'Cancel', account_codes_path, :class => 'btn btn-secondary'
