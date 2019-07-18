@@ -325,7 +325,7 @@ class Customer < ActiveRecord::Base
   end
 
   def full_name_with_email_and_address
-    "#{full_name_with_email} (#{street})"
+    street.blank? ?  full_name_with_email : "#{full_name_with_email} (#{street})"
   end
 
   def sortable_name
