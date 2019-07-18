@@ -86,6 +86,10 @@ class Customer < ActiveRecord::Base
       )
   end
 
+  def exact_name_match?(first,last)
+    first.strip.downcase == first_name.strip.downcase &&
+      last.strip.downcase == last_name.strip.downcase
+  end
   # support for find_unique
 
   def self.match_email_and_last_name(email,last_name)

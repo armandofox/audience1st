@@ -41,12 +41,13 @@ Scenario: successful import creates new customers; then attempt re-import of sam
   When I visit the edit contact info page for customer "Rosa Melendrez"
   Then I should see "Created by Goldstar import on Jan 1, 2010" within ".admin"
 
-Scenario: unique match on name defaults to using existing, but multiple match defaults to create new
+Scenario: unique match on name defaults to using existing, but inexact multiple match defaults to create new
 
-  Given the following customers exist: Lynn Chewning, R Melendrez, Rosa Melendrez
+  Given the following customers exist: Lynn Chewning, R Melendrez, Rosa Melendrez, A Granding, Ann Granding
   When I upload the "Goldstar" will-call file "2010-01-12-HandToGod.json"
   Then the default import action for "Chewning, Lynn" should be "Lynn Chewning (lynn@chewning.com) (123 Fake St)"
-  But the default import action for "Melendrez, Rosa" should be "Create new customer"
+  And the default import action for "Melendrez, Rosa" should be "Rosa Melendrez (rosa@melendrez.com) (123 Fake St)"
+  But the default import action for "Granding, Annabel" should be "Create new customer"
 
 Scenario: customer non-unique match, boxoffice agent decides whether to import as new or select existing; imported order shows original import name, not matched name
 
@@ -88,5 +89,4 @@ Scenario: non-CSV, invalid JSON data
 Scenario: nonexistent offer code
 
   When I upload the "Goldstar" will-call file "nonexistent_offer_id.json"
-  Then show me the page
   Then I should see "This will-call list is invalid because at least one purchase (for Rosa Melendrez) refers to the nonexistent offer ID 999999."
