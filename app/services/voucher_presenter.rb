@@ -50,6 +50,10 @@ class VoucherPresenter
       return (if (sd1 && sd2) then (sd1 <=> sd2) else (vt1.display_order <=> vt2.display_order) end)
     end
     # else different vouchertypes, so the rules are:
+    # if same show, order by showdate
+    if (sd1 && sd2 && (sd1.show  == sd2.show))
+      return sd1 <=> sd2
+    end
     # vouchertypes WITH assigned showdates always go first
     shows1,shows2 = vt1.showdates, vt2.showdates  # which showdates is vouchertype valid for?
     if    ! shows1.empty? && ! shows2.empty? then (shows1.min <=> shows2.min)
