@@ -3,10 +3,7 @@
     Details for 
     %span.show_name= @show.name
 
-  = form_tag show_path(@show), :method => :put do
-    = render :partial => 'form'
-    = submit_tag 'Save Changes', :class => 'btn btn-success'
-    = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'btn btn-primary'
+  = render :partial => 'form'
 
   %h2 Performances
 

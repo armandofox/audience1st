@@ -1,54 +1,58 @@
-%p
-  %label{:for=>:show_name} Show Name
-  = text_field 'show', 'name'
-
-%p
-  %label{:for=>:show_opening_date} Opens
-  = date_select 'show', 'opening_date'
-
-%p
-  %label{:for=>:show_closing_date} Closes
-  = date_select 'show', 'closing_date'
-
-%p
-  %label{:for=>:show_house_capacity} Actual house capacity
-  = text_field 'show', 'house_capacity', :size => 5
-  = popup_help_for :show_house_capacity
-
-%p
-  %label{:for=>:show_listing_date} List starting
-  = date_select 'show', 'listing_date'
-  = popup_help_for :show_listing_date
-
-%p
-  %label{:for => :show_description} Description (optional)
-  = text_area 'show', 'description', :rows => 4, :cols => 70, :maxlength => 255
-  = popup_help_for :show_description
-
-%p.strong If show is sold out:
-
-%p
-  %label{:for => :show_sold_out_dropdown_message} Dropdown menu says
-  = text_field 'show', 'sold_out_dropdown_message'
-  = popup_help_for :show_sold_out_dropdown_message
-
-%p
-  %label{:for => :show_sold_out_customer_info} Information for patron
-  = text_area 'show', 'sold_out_customer_info', :rows => 4, :cols => 70, :maxlength => 255
-  = popup_help_for :show_sold_out_customer_info
-
-%p
-  %label{:for=>:show_landing_page_url} Landing page URL (optional)
-  = text_field 'show', 'landing_page_url'
-  = popup_help_for :show_landing_page_url
-
-%p
-  %label{:for=>:show_event_type} Event type
-  = select 'show', 'event_type', Show::TYPES
-  = popup_help_for :show_is_special
-
-%p
-  %label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); leave blank if none
-  = text_area :show, :patron_notes, :cols =>70,:rows => 4,:maxlength => 255
+= form_for @show, :html => {:class => 'form'} do |f|
+  .form-row
+    .col-md-4.form-group
+      %label.col-form-label{:for=>:show_name} Show Name
+      = f.text_field 'name', :class => 'form-control'
+    .col-md-2.form-group
+      = popup_help_for :show_house_capacity
+      %label.col-form-label{:for=>:show_house_capacity} House capacity
+      = f.text_field 'house_capacity', :class => 'form-control'
+    .col-md-1
+    .col-md-4.form-group
+      = popup_help_for :show_listing_date
+      %label.col-form-label{:for=>:show_listing_date} List starting
+      .form-inline= f.date_select 'listing_date', {}, {:class => 'form-control date mx-1'}
+  .form-row
+    .col-md-3.form-group    
+      = popup_help_for :show_is_special
+      %label.col-form-label{:for=>:show_event_type} Event type
+      = f.select 'event_type', Show::TYPES, {}, {:class => 'form-control'}
+    .col-md-1
+    .col-md-6.form-group
+      = popup_help_for :show_landing_page_url
+      %label.col-form-label{:for=>:show_landing_page_url} Landing page URL (optional)
+      = f.text_field 'landing_page_url', :class => 'form-control'
 
 
+  .form-row
+    .col-md-6.form-group
+      %label.col-form-label{:for=>:show_opening_date} Opens
+      .form-inline= f.date_select 'opening_date', {}, {:class => 'form-control date mx-1'}
+    .col-md-6.form-group
+      %label.col-form-label{:for=>:show_closing_date} Closes
+      .form-inline= f.date_select 'closing_date', {}, {:class => 'form-control date mx-1'}
+
+  .form-row
+    .col-md-6.form-group
+      = popup_help_for :show_description
+      %label.col-form-label{:for => :show_description} Description (optional)
+      = f.text_area 'description', :maxlength => 255, :class => 'form-control'
+    .col-md-6.form-group
+      %label.col-form-label{:for=>:show_patron_notes} Special notes to patron (in confirmation email); blank if none
+      = f.text_area 'patron_notes', :maxlength => 255, :class => 'form-control'
+
+  .form-row
+    .col-md-6.form-group
+      = popup_help_for :show_sold_out_dropdown_message      
+      %label.col-form-label{:for => :show_sold_out_dropdown_message} If show is sold out, dropdown says:
+      = f.text_field 'sold_out_dropdown_message', :class => 'form-control'
+    .col-md-6.form-group
+      = popup_help_for :show_sold_out_customer_info
+      %label.col-form-label{:for => :show_sold_out_customer_info} If show is sold out, information for patron
+      = f.text_field 'sold_out_customer_info', :maxlength => 255, :class => 'form-control'
+
+  .form-row
+
+  .form-row
+    = f.submit :class => 'btn btn-success mx-2'
+    = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'btn btn-secondary'
