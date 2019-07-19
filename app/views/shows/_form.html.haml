@@ -1,4 +1,4 @@
-= form_for @show, :html => {:class => 'form'} do |f|
+= form_for @show, :html => {:class => 'form', :id => 'show'} do |f|
   .form-row
     .col-md-4.form-group
       %label.col-form-label{:for=>:show_name} Show Name
@@ -50,8 +50,6 @@
       = popup_help_for :show_sold_out_customer_info
       %label.col-form-label{:for => :show_sold_out_customer_info} If show is sold out, information for patron
       = f.text_field 'sold_out_customer_info', :maxlength => 255, :class => 'form-control'
-
-  .form-row
 
   .form-row
     = f.submit :class => 'btn btn-success mx-2'

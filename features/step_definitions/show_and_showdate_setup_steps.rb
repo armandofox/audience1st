@@ -68,6 +68,20 @@ Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
   Show.find_by_name!(show).showdates.count.should == num.to_i
 end
 
+Then /the show "(.*)" should have the following attributes:/ do |name,tbl|
+  show = Show.find_by!(:name => name)
+  tbl.hashes.each do |attr|
+    val = attr['value']
+    expected_val =
+      if val =~ /^\d{4}-\d\d-\d\d$/ then Date.parse val
+      elsif val =~ /^\d{4}-\d\d-\d\d\b/ then Time.zone.parse val
+      elsif val =~ /^[0-9.]+$/ then val.to_f
+      else val
+      end
+    expect(show.send attr['attribute']).to eq(expected_val)
+  end
+end
+
 Then /the showdate should have the following attributes:/ do |tbl|
   expect(@showdate).to be_a_kind_of Showdate
   @showdate.reload

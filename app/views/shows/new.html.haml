@@ -1,7 +1,3 @@
-%h1 Setup new show
+%h1 Set up new show (you'll add performance dates next)
 
-= form_tag shows_path do
-  = render :partial => 'form'
-  = submit_tag "Create", :class => 'btn btn-success'
-
-= link_to "Don't Create", shows_path, :class => 'btn btn-primary'
+= render :partial => 'form'

@@ -16,6 +16,7 @@ class ShowsController < ApplicationController
 
   def new
     @show = Show.new(:listing_date => Date.today,
+      :opening_date => Date.today,
       :sold_out_dropdown_message => '(Sold Out)',
       :sold_out_customer_info => 'No tickets on sale for this performance')
     @page_title = "Add new show"
