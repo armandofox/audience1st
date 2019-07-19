@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190717195517) do
+ActiveRecord::Schema.define(version: 20190719001113) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,6 +199,12 @@ ActiveRecord::Schema.define(version: 20190717195517) do
   end
 
   add_index "orders", ["external_key"], name: "index_orders_on_external_key", using: :btree
+
+  create_table "seatmaps", force: :cascade do |t|
+    t.string "name", null: false
+    t.text   "csv"
+    t.text   "json", null: false
+  end
 
   create_table "showdates", force: :cascade do |t|
     t.datetime "thedate"
