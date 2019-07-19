@@ -114,6 +114,7 @@ Rails.application.routes.draw do
     match '/store/:customer_id/shipping_address' => 'store#shipping_address', :via => [:get,:post], :as => 'shipping_address'
 
     # checkout requires you to be logged in:
+    get '/store/:customer_id/select_seats' => 'store#select_seats', :as => 'select_seats'
     get '/store/:customer_id/checkout' => 'store#checkout', :as => 'checkout'
 
     post '/store/:customer_id/place_order' => 'store#place_order', :as => 'place_order'

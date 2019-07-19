@@ -15,6 +15,10 @@ module ApplicationHelper
     tag('link', {rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity: "sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin: "anonymous"})
   end
 
+  def bootstrap_javascript_tag
+    %q{<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>}.html_safe
+  end
+
   def venue_stylesheet_link_tag
     if (url = Option.stylesheet_url).blank?
       # use local

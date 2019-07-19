@@ -1,0 +1,49 @@
+/* Overrides for default seat-charts styles */
+
+/* arrange to display extra picture/text along with rendered seats */
+
+/*
+#main {
+    width: auto;
+    margin: 0 100px 0 100px;
+}
+#main h2 {
+    text-align: center;
+}
+*/
+    
+div.seatCharts-seat.available {
+    background-color: lightGrey;
+}
+div.seatCharts-seat.selected {
+	background-color: green;
+}
+
+div#seating-charts-wrapper {
+    border: 1px solid black;
+    position: relative;
+}
+div.seatCharts-container {
+    border: 1px solid red;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+img#seating-charts-overlay {
+    border: 1px solid blue;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+div.seatCharts-cell {
+    height: 20px;
+    width: 20px;
+    margin: 1px;
+}
+div.seatCharts-row {
+    height: 25px;
+    width: auto;
+}
+

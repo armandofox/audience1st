@@ -14,7 +14,6 @@ class Seatmap < ActiveRecord::Base
         if cell =~ /^\s*$/
           row_string << '_'
         else
-          # row_string << "r[#{cell},#{cell}]"
           row_string << "r[#{cell}, ]"
         end
       end
