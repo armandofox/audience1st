@@ -13,7 +13,7 @@ Scenario: add ticket explanation to a show
 
   When I visit the show details page for "Chicago"
   And I fill in "Description (optional)" with "This show is racy"
-  And I press "Save Changes"
+  And I press "Update Show"
   Then show "Chicago" should have description "This show is racy"
 
 Scenario: see show-specific description on ticket page
