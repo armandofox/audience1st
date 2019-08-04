@@ -24,7 +24,6 @@ class ShowsController < ApplicationController
   end
 
   def create
-    byebug
     @show = Show.new(params[:show])
     if @show.save
       redirect_to edit_show_path(@show),
