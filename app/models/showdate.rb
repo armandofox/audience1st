@@ -4,7 +4,7 @@ class Showdate < ActiveRecord::Base
   
   belongs_to :show
 
-  delegate :house_capacity, :patron_notes, :name, :to => :show
+  delegate :seatmap, :house_capacity, :patron_notes, :name, :to => :show
 
   has_many :vouchers, -> { where.not(:category => 'nonticket') }
   has_many :all_vouchers, :class_name => 'Voucher'

@@ -19,6 +19,6 @@ class Seatmap < ActiveRecord::Base
       end
       @as_js << "'#{row_string}'"
     end
-    self.json = "{\n  map: [\n" << @as_js.join(",\n") << "\n  ]\n};\n"
+    self.json = "[\n" << @as_js.join(",\n") << "\n  ]"
   end
 end

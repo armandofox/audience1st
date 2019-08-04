@@ -73,6 +73,9 @@ Before do
   # static seed data - root user, venue options, etc.
   load File.join(Rails.root, 'db', 'seeds.rb')
   
+  # enabled reserved seating feature for testing
+  Option.enable_feature! 'rs'
+
   # make rspec mocks/stubs work
   #require 'cucumber/rspec/doubles'
   RSpec::Mocks::setup

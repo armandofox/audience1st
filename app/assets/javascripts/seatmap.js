@@ -3,7 +3,7 @@ A1.seatmap = {
   selectedSeats: [],
   max: 0,
   settings: {
-    map: {}
+    map: []
     ,naming: { top: false, left: false }
     ,click: function(evt) {
       switch(this.status()) {
@@ -66,5 +66,3 @@ A1.seatmap = {
     });
   }
 };
-
-$(A1.seatmap.setup);

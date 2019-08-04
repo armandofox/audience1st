@@ -99,7 +99,7 @@ class Audience1stSeeder
       :homepage_ticket_sales_text => 'Get Tickets',
       :homepage_subscription_sales_text => 'Subscribe to Our Season',
       :privacy_policy_url => '',
-      :stylesheet_url => 'https://rawgit.com/armandofox/stylesheets/master/sandbox/default.css',
+      :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
       :stripe_key => Figaro.env.STRIPE_KEY!,
       :stripe_secret => Figaro.env.STRIPE_SECRET!,
       :sendgrid_key_value => '',

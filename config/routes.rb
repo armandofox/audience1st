@@ -66,7 +66,11 @@ Rails.application.routes.draw do
 
     # shows
     resources :shows, :except => [:show] do
-      resources :showdates, :except => [:index]
+      resources :showdates, :except => [:index] do
+        member do
+          get :seatmap
+        end
+      end
     end
     resources :valid_vouchers, :except => [:index]
     resources :vouchertypes do
