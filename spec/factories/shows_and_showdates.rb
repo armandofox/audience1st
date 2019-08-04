@@ -17,6 +17,7 @@ FactoryBot.define do
     end
     house_capacity 200
     sequence(:name) { |n| "Show #{n}" }
+    seat_map nil
     opening_date { including - 1.week }
     closing_date { opening_date + 1.month }
     listing_date { Time.current }

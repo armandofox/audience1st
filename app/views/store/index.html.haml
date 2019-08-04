@@ -47,7 +47,7 @@
 
       .form-group.form-row  
         .col-md-4.offset-md-4
-          - if Option.feature_enabled? 'rs'
+          - if @sh.seatmap
             %button.btn.btn-primary{:type => 'button', 'data-toggle' => 'modal', 'data-target' => '#selectSeats'} Select Seats
           - else
             = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
