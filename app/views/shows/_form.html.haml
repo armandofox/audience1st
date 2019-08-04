@@ -3,22 +3,27 @@
     .col-md-4.form-group
       %label.col-form-label{:for=>:show_name} Show Name
       = f.text_field 'name', :class => 'form-control'
-    .col-md-2.form-group
-      = popup_help_for :show_house_capacity
-      %label.col-form-label{:for=>:show_house_capacity} House capacity
-      = f.text_field 'house_capacity', :class => 'form-control'
-    .col-md-1
     .col-md-4.form-group
       = popup_help_for :show_listing_date
       %label.col-form-label{:for=>:show_listing_date} List starting
       .form-inline= f.date_select 'listing_date', {}, {:class => 'form-control date mx-1'}
-  .form-row
-    .col-md-3.form-group    
+    .col-md-4.form-group    
       = popup_help_for :show_is_special
       %label.col-form-label{:for=>:show_event_type} Event type
       = f.select 'event_type', Show::TYPES, {}, {:class => 'form-control'}
-    .col-md-1
-    .col-md-6.form-group
+
+  .form-row
+    - if Option.feature_enabled? 'rs'
+      - if @seatmap_is_editable
+        .col-md-3.form-group
+          = popup_help_for :reserved_seating
+          %label.col-form-label{:for => :show_seatmap_id} Seat map
+          = f.select 'seatmap_id', seatmap_choices_for(@show), {}, {:class => 'form-control'}
+    .col-md-2.form-group
+      = popup_help_for :show_house_capacity
+      %label.col-form-label{:for=>:show_house_capacity} House capacity
+      = f.text_field 'house_capacity', :class => 'form-control'
+    .col-md-7.form-group
       = popup_help_for :show_landing_page_url
       %label.col-form-label{:for=>:show_landing_page_url} Landing page URL (optional)
       = f.text_field 'landing_page_url', :class => 'form-control'

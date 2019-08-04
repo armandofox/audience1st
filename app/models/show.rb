@@ -7,7 +7,8 @@ class Show < ActiveRecord::Base
   has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
   has_many :vouchers, :through => :showdates
   has_many :imports
-
+  belongs_to :seatmap
+  
   validates_presence_of :opening_date, :closing_date, :listing_date
   validates_inclusion_of :event_type, :in => Show::TYPES
   validates_length_of :name,                   :within => 1..40
@@ -19,7 +20,7 @@ class Show < ActiveRecord::Base
   validates_numericality_of :house_capacity, :greater_than => 0
 
   attr_accessible :name, :opening_date, :closing_date, :house_capacity, :patron_notes, :landing_page_url
-  attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
+  attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info, :seatmap_id
 
   # current_or_next returns the Show object corresponding to either the
   # currently running show, or the one with the next soonest opening date.

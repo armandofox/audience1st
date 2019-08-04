@@ -20,21 +20,24 @@ class ShowsController < ApplicationController
       :sold_out_dropdown_message => '(Sold Out)',
       :sold_out_customer_info => 'No tickets on sale for this performance')
     @page_title = "Add new show"
+    @seatmap_is_editable = (Seatmap.count > 0)
   end
 
   def create
+    byebug
     @show = Show.new(params[:show])
     if @show.save
       redirect_to edit_show_path(@show),
       :notice =>  'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
     else
-      flash[:alert] = ["There were errors creating the show: ", @show.errors.as_html]
+      flash[:alert] = "There were errors creating the show: #{@show.errors.as_html}"
       render :action => 'new'
     end
   end
 
   def edit
     @show = Show.find(params[:id])
+    @seatmap_is_editable = (Seatmap.count > 0  &&  @show.vouchers.count.zero?)
     @showdates = @show.showdates.includes(:valid_vouchers => :vouchertype).sort_by { |s| s.thedate }
     @is_boxoffice_manager = is_boxoffice_manager
     if params[:display].blank?
