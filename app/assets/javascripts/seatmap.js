@@ -3,7 +3,7 @@ A1.seatmap = {
   selectedSeats: [],
   max: 0,
   settings: {
-    map: Altarena.map
+    map: {}
     ,naming: { top: false, left: false }
     ,click: function(evt) {
       switch(this.status()) {
