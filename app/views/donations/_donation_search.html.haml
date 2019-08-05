@@ -1,49 +1,59 @@
-%table 
-  %tbody 
-    %tr 
-      %td= check_box_tag 'use_cid', 1, @params[:use_cid]
-      :javascript
-        $('#use_cid').change(function() { 
-          if (! $(this).is(':checked')) { 
-            $('#show_vouchers').prop('checked',false);
-            $('#show_vouchers').prop('disabled',true);
-          } else {
-            $('#show_vouchers').prop('disabled',false);
-            $('#cid').val('');
-          };
-        });
-      %td Only for this customer (type first or last name):
-      %td#donor_autocomplete
-        = text_field_tag 'donor_name', @full_name, :size => 20, :class => '_autocomplete', 'data-resultfield' => 'cid'
-        = hidden_field_tag 'cid', @params[:cid]
-        :javascript
-          $('#donor_name').focus(function() { $('#use_cid').prop('checked',true); })
-    %tr 
-      %td= check_box_tag 'use_date', 1, @params[:use_date] 
-      %td Date is in the range:
-      %td= select_date_with_shortcuts 'dates', :from => @params[:from], :to => @params[:to], :enables => '#use_date'
-    %tr 
-      %td= check_box_tag 'use_amount', 1, @params[:use_amount]
-      %td  Donation amount between:
-      %td
-        $
-        = text_field_tag 'donation_min', @params[:donation_min], :size => 4
-        \.00 and
-        = text_field_tag 'donation_max', @params[:donation_max], :size => 4 
-        \.00
-    %tr
-      %td.t= check_box_tag 'use_fund', 1, @params[:use_fund]
-      %td.t  Only donations to these funds:
-      %td.t= select_tag 'donation_funds', options_from_collection_for_select(AccountCode.all, :id, :name_with_code), :multiple => true
-    %tr
-      %td= check_box_tag 'use_ltr_sent', 1, @params[:use_ltr_sent]
-      %td  
-        Only if letter not yet sent
-        = popup_help_for :donation_search_by_letter_sent
-    %tr
-      %td= check_box_tag 'use_repeat_donor', 1, @params[:use_repeat_donor]
-      %td Only donors who have made at least
-      %td
-        = select_tag 'num_donations', options_for_select(2..12)
-        donations since
-        = select_date((@params[:donated_since] || Date.today), :prefix => 'since')
+.form-row
+  .col-md-5
+    = check_box_tag 'use_cid', 1, @params[:use_cid]
+    %label.col-form-label Only for this customer (type first or last name):
+  .col-md-5#donor_autocomplete
+    :javascript
+      $('#use_cid').change(function() { 
+        if (! $(this).is(':checked')) { 
+          $('#show_vouchers').prop('checked',false);
+          $('#show_vouchers').prop('disabled',true);
+        } else {
+          $('#show_vouchers').prop('disabled',false);
+          $('#cid').val('');
+        };
+      });
+      $('#donor_name').focus(function() { $('#use_cid').prop('checked',true); })
+    = text_field_tag 'donor_name', @full_name, :class => '_autocomplete form-control', 'data-resultfield' => 'cid'
+    = hidden_field_tag 'cid', @params[:cid]
+
+.form-row
+  .col-md-5
+    = check_box_tag 'use_date', 1, @params[:use_date] 
+    %label.col-form-label Date is in the range:
+  .col-md-5= select_date_with_shortcuts 'dates', :from => @params[:from], :to => @params[:to], :enables => '#use_date', :class => 'form-control'
+
+.form-row
+  .col-md-5
+    = check_box_tag 'use_amount', 1, @params[:use_amount]
+    %label.col-form-label Donation amount between:
+  .input-group.col-md-2
+    = text_field_tag 'donation_min', @params[:donation_min], :class => 'form-control'
+    .input-group-append
+      %span.input-group-text.form-control .00
+  .col-md-1.text-center and
+  .input-group.col-md-2
+    = text_field_tag 'donation_max', @params[:donation_max], :class => 'form-control'
+    .input-group-append
+      %span.input-group-text.form-control .00
+    
+.form-row
+  .col-md-5
+    = check_box_tag 'use_fund', 1, @params[:use_fund]
+    %label.col-form-label Only donations to these funds:
+  .col-md-5
+    = select_tag 'donation_funds', options_from_collection_for_select(AccountCode.all, :id, :name_with_code), :multiple => true, :class => 'form-control'
+    
+.form-row
+  .col-md-5
+    = check_box_tag 'use_ltr_sent', 1, @params[:use_ltr_sent]
+    %label.col-form-label Only if letter not yet sent
+    = popup_help_for :donation_search_by_letter_sent
+
+.form-row
+  .col-md-12
+    = check_box_tag 'use_repeat_donor', 1, @params[:use_repeat_donor]
+    %label.col-form-label Only donors who have made at least
+    = select_tag 'num_donations', options_for_select(2..12)
+    donations since
+    = select_date((@params[:donated_since] || Date.today), :prefix => 'since')

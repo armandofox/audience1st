@@ -1,15 +1,13 @@
 - s = showdate.class
 - divid = "#{s}_#{showdate.id}"
-%table.hilite.totalShowSales
-  %tr.showSalesRow
-    %td.showSalesDate{:style=>'width: 20em;'}
-      - hdr ||= "#{showdate.printable_date} (#{showdate.max_advance_sales})"
-      = link_to hdr, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"
-    %td.showSalesDateQty= showdate.compute_total_sales
-    %td.showSalesDatePercent
-      = number_to_percentage(showdate.percent_sold,:precision=>0)
-      (#{number_to_percentage(showdate.percent_of_house, :precision => 0)} house)
-    %td.currency.showSalesDateRevenue= number_to_currency(showdate.revenue)
+.row
+  - hdr ||= "#{showdate.printable_date} (#{showdate.max_advance_sales})"
+  .col-md-4= link_to hdr, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"  
+  .col-md-1= showdate.compute_total_sales
+  .col-md-2
+    = number_to_percentage(showdate.percent_sold,:precision=>0)
+    (#{number_to_percentage(showdate.percent_of_house, :precision => 0)} house)
+  .col-md-2.text-right= number_to_currency(showdate.revenue)
 
 %div{:id=>divid}
 

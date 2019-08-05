@@ -13,7 +13,7 @@
 
   %h1.text-center 
     Become A Subscriber
-    %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
+    %span.a1-text-small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   #subscription_menus
     = form_tag process_cart_path(@customer) do

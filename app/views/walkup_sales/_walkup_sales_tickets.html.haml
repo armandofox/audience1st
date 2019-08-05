@@ -22,7 +22,7 @@
           %span.alert.alert-warning= "#{v.name} (#{v.seats_of_type_remaining} left)"
         - if boxoffice_mgr_only
           %span.alert.alert-warning (Box office manager only)
-      %td= text_field_tag "price[#{v.id}]", number_to_currency(v.price, :unit => ''), :disabled => true, :size => 6, :class => 'disabledField currency'
+      %td= text_field_tag "price[#{v.id}]", number_to_currency(v.price, :unit => ''), :disabled => true, :size => 6, :class => 'disabledField text-right'
       %td
         - if boxoffice_mgr_only
           = popup_help_for :boxoffice_manager_only

@@ -2,7 +2,7 @@
   %p.strong No subscriptions
 - else
   = hidden_field_tag 'year', year
-  %table#subsList.hilite
+  %table.hilite
     %thead
       %tr
         %th Type 
@@ -15,15 +15,15 @@
         %tr
           %td.text-left= s[0]
           %td.text-right= s[2]
-          %td.currency= number_to_currency(s[1])
-          %td.currency= number_to_currency(s[1]*s[2])
+          %td.text-right= number_to_currency(s[1])
+          %td.text-right= number_to_currency(s[1]*s[2])
           - total += s[2] 
           - tprice += s[1]*s[2] 
       %tr.totalsRow
         %td Total  
         %td.text-right= total   
         %td
-        %td.currency= number_to_currency tprice  
+        %td.text-right= number_to_currency tprice  
 
   = link_to 'Download to Excel', subscriber_details_reports_path(:id => year, :download => true), :class => 'btn btn-primary'
 

@@ -25,9 +25,7 @@
         .form-group
           = select_tag 'credit_card_year', options_for_select(Time.current.year..Time.current.year+10), :class => 'form-control form-control-sm col-auto unsubmitted'
     .col-md-2.text-right
-      %label.col-form-label{:for => 'credit_card_verification_value'}
-        CVV code
-        = popup_help_for 'credit_card_verification_value'
+      %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
     .col-md-1
       = text_field_tag 'credit_card_verification_value', '', :class => 'form-control form-control-sm unsubmitted'
     .col-md-4

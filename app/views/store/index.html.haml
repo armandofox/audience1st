@@ -11,7 +11,7 @@
 #store
   %h1.text-center
     = label_for_page_header @what
-    %span.small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
+    %span.a1-text-small= "(Using Promo Code: #{h(@promo_code)})" if @promo_code
 
   = render :partial => 'event_types'
 

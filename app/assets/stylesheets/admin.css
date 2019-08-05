@@ -4,11 +4,6 @@ body.maintenance {
     border: 8px dashed yellow;
 }
 
-.enterCVV {
-  padding: 2px;
-  background-color: red;
-}
-
 .customer-vouchers-table, .a1-table {
     width: 90%;
     border-collapse: collapse;
@@ -20,27 +15,28 @@ body.maintenance {
 /* Additional field qualifiers for errors etc */
 
 .validationError {
-  color: red;
- }
+    color: red;
+}
 
 .highlighted {
-  background-color: #9f9;
+    background-color: #9f9;
 }
 
 .fieldWithErrors {
-  padding: 2px;
-  color: white;
-  background-color: red;
-  display: table;
+    padding: 2px;
+    color: white;
+    background-color: red;
+    display: table;
 }
 
 .disabledField {
-	background-color: #e6e6e6;
-	border: none;
-	color: #000;
-	font-weight: bold;
+    background-color: #e6e6e6;
+    border: none;
+    color: #000;
+    font-weight: bold;
 }
-x
+
+
 /***********************************************************************
  * Styles below this point are never seen by regular customers
  **********************************************************************/
@@ -51,56 +47,57 @@ x
 .a1-text-medium {
     font-size: 1.25rem;
 }
+.a1-text-small {
+    font-size: 0.8em;
+}
 
 /* General tabular styles */
 /* tables still need 'cellspacing="0"' in the markup */
 table {
-        border-collapse: separate;
-        border-spacing: 0;
-        border: 0;
-	margin-bottom: 10px;
-	margin-top: 4px;
-}
-thead {
-  background-color: #EEE;
-  color: black;
-}
-th {
-  margin: 0;
-  padding: 3px;
-  font-weight: bold;
-  text-align: center;
-  background: #333;
-  color: #fff;
-}
-td {
-  padding: 1px 2px;
-}
-
-table {
     font-size: 12pt;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 0;
+    margin-bottom: 10px;
+    margin-top: 4px;
 }
 /* easier to navigate if tabular rows hilited on hover */
 table.hilite tr:hover {
-	background-color: #fcfe69;
+    background-color: #fcfe69;
+}
+thead {
+    background-color: #EEE;
+    color: black;
+}
+th {
+    margin: 0;
+    padding: 3px;
+    font-weight: bold;
+    text-align: center;
+    background: #333;
+    color: #fff;
+}
+td {
+    padding: 1px 2px;
 }
 
+
 .admin {
-  background-color: #eff19e;
-  color: black; }
+    background-color: #eff19e;
+    color: black; }
 
 .adminDiv {
-  background-color: #eff19e;
-  display: block; }
+    background-color: #eff19e;
+    display: block; }
 
 .adminField {
     width: 100%;
     display: inline-block;
-  font-family: PT Sans, sans-serif;
-  clear: both;
-  padding: 2px 10px;
-  background-color: #eff19e;
-  color: black; }
+    font-family: PT Sans, sans-serif;
+    clear: both;
+    padding: 2px 10px;
+    background-color: #eff19e;
+    color: black; }
 
 
 
@@ -120,57 +117,57 @@ a.a1tooltip:hover span{
     display:inline; position:absolute; color:#111;
     border:1px solid #DCA; background:#fffAF0;}
 .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
-    
+
 /* Pagination of customer list */
 .pagination {
     width: auto;
-  margin: 0 auto; /* centered */
-  display: block;
-  /* self-clearing method: */ }
-  .pagination form {
-     float: left;
-   }
-  .pagination a, .pagination span, .pagination em {
+    margin: 0 auto; /* centered */
+    display: block;
+/* self-clearing method: */ }
+.pagination form {
+    float: left;
+}
+.pagination a, .pagination span, .pagination em {
     padding: 0.2em 0.5em;
     display: block;
     float: left;
     margin-right: 1px; }
-  .pagination .disabled {
+.pagination .disabled {
     color: #999999;
     border: 1px solid #dddddd; }
-  .pagination .current {
+.pagination .current {
     font-style: normal;
     font-weight: bold;
     background: #2e6ab1;
     color: white;
     border: 1px solid #2e6ab1; }
-  .pagination a {
+.pagination a {
     text-decoration: none;
     color: #105cb6;
     border: 1px solid #9aafe5; }
-    .pagination a:hover, .pagination a:focus {
-      color: #000033;
-      border-color: #000033; }
-  .pagination .page_info {
+.pagination a:hover, .pagination a:focus {
+    color: #000033;
+    border-color: #000033; }
+.pagination .page_info {
     background: #2e6ab1;
     color: white;
     padding: 0.4em 0.6em;
     width: 22em;
     margin-bottom: 0.3em;
     text-align: center; }
-    .pagination .page_info b {
-      color: #000033;
-      background: #6aa6ed;
-      padding: 0.1em 0.25em; }
-  .pagination:after {
+.pagination .page_info b {
+    color: #000033;
+    background: #6aa6ed;
+    padding: 0.1em 0.25em; }
+.pagination:after {
     content: ".";
     display: block;
     height: 0;
     clear: both;
     visibility: hidden; }
-  * html .pagination {
+* html .pagination {
     height: 1%; }
-  *:first-child + html .pagination {
+*:first-child + html .pagination {
     overflow: hidden; }
 
 
@@ -185,26 +182,26 @@ a.tooltip span
 
 /* Styling of the popup help */
 .popupHelpLink {
-	background-color: #fcfe17;
-	font-size: smaller;
-        display: inline;
-	color: #1c05fd;
-	padding: 2px;
+    background-color: #fcfe17;
+    font-size: smaller;
+    display: inline;
+    color: #1c05fd;
+    padding: 2px;
 }
 
 
 span.tooltip {
     position:relative; /*this is the key*/
     z-index:24; 
-    }
+}
 
 span.tooltip:hover{
-	z-index:25; 
-	background-color:#ff0
-	}
+    z-index:25; 
+    background-color:#ff0
+}
 
 span.tooltip span{
-	display: none  
+    display: none  
 }
 span.tooltip:hover span { /* will display just on :hover state*/
     display:block;
@@ -223,35 +220,35 @@ span.tooltip:hover span { /* will display just on :hover state*/
 
 /* Inline form buttons */
 .inline {
-   display: inline;
+    display: inline;
 }
 
 /* Printable receipts */
 /* plain style for receipts */
 body#receipt {
-  background: none;
-  font-family: Helvetica, Arial, sans-serif;
-  color: black;
-  border: 2px solid black;
-  padding: 0.5em;
-  margin: 0.5em;
-  font-size: larger; }
-  body#receipt * {
+    background: none;
+    font-family: Helvetica, Arial, sans-serif;
+    color: black;
+    border: 2px solid black;
+    padding: 0.5em;
+    margin: 0.5em;
+    font-size: larger; }
+body#receipt * {
     color: black;
     background: none; }
 
 /* Make autocomplete menu not be infinitely long */
 .ui-autocomplete {
-  max-height: 50ex;
-  overflow-y: auto;
-  /* prevent horizontal scrollbar */
-  overflow-x: hidden;
+    max-height: 50ex;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
 }
 /* IE 6 doesn't support max-height
  * we use height instead, but this forces the menu to always be this tall
  */
 * html .ui-autocomplete {
-  height: 50ex;
+    height: 50ex;
 }
 
 .customer_label {
@@ -270,129 +267,68 @@ tr.invalid {
 tr.subscriber {
     background-color: #9f9;
 }
-/*
- * General utility styles
- */
-.totalsRow {
-  font-weight: bold;
-  background-color: #ccc;
-  font-size: larger;
- }
-
-
-/* 
- * Edit shows and showdates
- */
-
-.show_name {
-	font-style: italic;
-}
-table.showdates_summary {
-	border-style: solid;
-	border-color: #000;
-	background-color: #e6e6e6;
-	line-height: normal;
-	padding-left: 20px;
-}
-table.showdates_summary th {
-	background-color: #e6e6e6;
-	color: #4c4c4c;
-	text-align: center;
-}
-table.showdates_summary td {
-	padding-right: 5px;
-	padding-left: 5px;
-}
 
 /*
  * Credit card payment error message
  */
 #payment_errors {
-	background-color: red;
-	color: white;
-	font-size: larger;
-	font-weight: bold;
-	padding: 0 2em;
+    background-color: red;
+    color: white;
+    font-size: larger;
+    font-weight: bold;
+    padding: 0 2em;
 }
 
 /*
  * Online check-in
  */
 table#checkin {
-	border: 1px solid grey;
+    border: 1px solid grey;
 }
 table#checkin tr {
-	line-height: 1.2;
+    line-height: 1.2;
 }
 table#checkin td.checkin_column {
-	width: 8em;
+    width: 8em;
 }
 table#checkin td {
-	border-bottom: 1px solid #ddd;
-	vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
 }
 span.un_check_in {
 }
 span.checkin_button {
-  text-align: center;
-  font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
-  margin: 0;
-  padding: 2px;
+    text-align: center;
+    font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
+    margin: 0;
+    padding: 2px;
 }
 span.checkin_button:hover, span.checked_in {
-  background-color: yellow;
+    background-color: yellow;
 }
 
 /*
  * Reports
  */
 
-/* Advance sales reports */
-
-
-
-div.show .showSalesDate {
-  width: 15em;
-}
-div.show .showSalesVoucherType {
-  padding-left: 1em;
-  width: 20em;
-}
-div.show .showSalesDateQty {
-  width: 5em;
-  text-align: right;
-  font-weight: bold;
-}
-div.show .showSalesDatePercent, div.show .showSalesPercent {
-  width: 5em;
-  text-align: center;
-}
-div.show .showSalesDateRevenue {
-  width: 10em;
-  font-weight: bold;
-}
-div.show .showSalesRevenue {
-  width: 10em;
-}
-
 /* output options for customer lists */
 
 #report_body ul	 {
-	list-style: disc;
+    list-style: disc;
 }
 
 #output_options p {
-	margin-left: 2ex;
-	margin: 4px;
+    margin-left: 2ex;
+    margin: 4px;
 }
 
 #output_options p.fieldgroup {
-	padding-top: 4px;
-	padding-bottom: 4px;
-	margin-top: 2px;
-	margin-bottom: 2px;
-	font-weight: bold;
-	margin-left: 0;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-weight: bold;
+    margin-left: 0;
 }
 
 
@@ -414,10 +350,10 @@ div.show .showSalesRevenue {
 
 /* Index letter column (style applies to TD) */
 #door_list .maincolumn {
-  border: none;
-  background-color: white;
-  font-size: large;
-  font-weight: bold;
+    border: none;
+    background-color: white;
+    font-size: large;
+    font-weight: bold;
 }
 @media screen {  #door_list .maincolumn {  color: red;     } }
 
