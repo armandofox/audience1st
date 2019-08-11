@@ -28,7 +28,7 @@ class InfoController < ActionController::Base
         desc = "Available" ; link  = true
       end
       if link
-        desc << " - " << (sd.advance_sales? ? "Buy online now" :
+        desc << " - " << (sd.advance_sales_open? ? "Buy online now" :
                           "Advance sales ended, box office sales only")
       end
       @showdate_avail << [sd, desc, link]

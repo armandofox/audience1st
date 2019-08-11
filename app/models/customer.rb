@@ -16,7 +16,7 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  has_many :vouchers, -> { includes(:vouchertype).order(:created_at => :desc) }
+  has_many :vouchers, -> { includes(:vouchertype).order(:updated_at => :desc) }
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
   has_many :orders, -> { where( 'sold_on IS NOT NULL').order(:sold_on => :desc) }

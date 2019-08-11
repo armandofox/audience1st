@@ -22,6 +22,9 @@ class Showdate < ActiveRecord::Base
   
   attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id
 
+  require_dependency 'showdate/sales_reporting'
+
+
   validates_uniqueness_of :thedate, :scope => :show_id,
   :message => "is already a performance for this show"
 
@@ -82,8 +85,6 @@ class Showdate < ActiveRecord::Base
     Showdate.where('thedate BETWEEN ? and ?', first, last).order('thedate')
   end
 
-  # reporting, comparisons
-
   def inspect
     "#{self.id} #{name_and_date_with_capacity_stats}/#{max_advance_sales}"
   end
@@ -96,73 +97,6 @@ class Showdate < ActiveRecord::Base
     thedate.this_season
   end
   
-  def sales_by_type(vouchertype_id)
-    return self.vouchers.where('vouchertype_id = ?', vouchertype_id).count
-  end
-
-  def revenue_by_type(vouchertype_id)
-    self.vouchers.find_by_id(vouchertype_id).inject(0) {|sum,v| sum + v.amount.to_f}
-  end
-
-  def revenue
-    self.vouchers.inject(0) {|sum,v| sum + v.amount.to_f}
-  end
-
-  def revenue_per_seat
-    total_seated = comp_seats + nonsubscriber_revenue_seats
-    if (revenue.zero? || total_seated.zero?) then 0.0 else revenue/total_seated end
-  end
-
-  def comp_seats
-    self.vouchers.comp.count
-  end
-
-  def nonsubscriber_revenue_seats
-    self.vouchers.revenue.count
-  end
-
-  def subscriber_seats
-    self.vouchers.subscriber.count
-  end
-
-  def advance_sales?
-    (self.end_advance_sales - 5.minutes) > Time.current
-  end
-
-  def total_offered_for_sale ; house_capacity ; end
-
-  def percent_max_advance_sales
-    house_capacity.zero? ? 100.0 : 100.0 * max_advance_sales / house_capacity
-  end
-
-  def total_seats_left
-    [self.house_capacity - compute_total_sales, 0].max
-  end
-
-  def saleable_seats_left
-    [self.max_advance_sales - compute_total_sales, 0].max
-  end
-
-  def really_sold_out? ; saleable_seats_left < 1 ; end
-
-  def percent_of(cap)
-    cap.to_f == 0.0 ?  100 : (100.0 * compute_total_sales / cap).floor
-  end
-
-  # percent of max sales: may exceed 100
-  def percent_sold
-    percent_of(max_advance_sales)
-  end
-
-  # percent of house: may exceed 100
-  def percent_of_house
-    percent_of(house_capacity)
-  end
-
-  def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
-
-  def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
-
   # returns two elements indicating the lowest-priced and highest-priced
   # publicly-available tickets.
   def price_range
@@ -186,37 +120,12 @@ class Showdate < ActiveRecord::Base
       :available
   end
 
-  def compute_total_sales
-    self.vouchers.count
-  end
-
-  def advance_sales_vouchers
-    self.vouchers.advance_sales
-  end
-  def compute_advance_sales
-    self.vouchers.advance_sales.count
-  end
-  def compute_walkup_sales
-    self.vouchers.walkup_sales.count
-  end
-
-  def checked_in
-    self.vouchers.checked_in.count
-  end
-  def waiting_for
-    [0, compute_advance_sales - checked_in].max
-  end
-
   def printable_name
     self.show.name + " - " + self.printable_date_with_description
   end
 
   def printable_date
     self.thedate.to_formatted_s(:showtime)
-  end
-
-  def full_date
-    self.thedate.to_formatted_s(:showtime_including_year)
   end
 
   def printable_date_with_description

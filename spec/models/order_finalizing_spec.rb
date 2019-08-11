@@ -155,7 +155,6 @@ describe Order, 'finalizing' do
     end
     describe 'walkup order'  do
       before :each do
-        Customer.walkup_customer.vouchers.delete_all
         @order.purchaser = @order.customer = Customer.walkup_customer
         @order.walkup = true
         @order.finalize!

@@ -97,10 +97,6 @@ class Show < ActiveRecord::Base
     v.zero? ? 0.0 : revenue / v
   end
 
-  def revenue_by_type(vouchertype_id)
-    self.vouchers.find_by_id(vouchertype_id).inject(0) {|sum,v| sum + v.amount}
-  end
-
   def capacity
     self.showdates.inject(0) { |cap,sd| cap + sd.capacity }
   end
