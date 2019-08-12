@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190810233841) do
+ActiveRecord::Schema.define(version: 20190812212127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,7 +83,6 @@ ActiveRecord::Schema.define(version: 20190810233841) do
     t.integer  "processed_by_id",                default: 2146722771, null: false
     t.integer  "bundle_id",                      default: 0,          null: false
     t.boolean  "checked_in",                     default: false,      null: false
-    t.string   "category",           limit: 10
     t.boolean  "walkup",                         default: false,      null: false
     t.float    "amount",                         default: 0.0
     t.integer  "account_code_id"
@@ -91,10 +90,7 @@ ActiveRecord::Schema.define(version: 20190810233841) do
     t.datetime "letter_sent"
     t.string   "type",               limit: 255
     t.integer  "order_id"
-    t.boolean  "finalized"
   end
-
-  add_index "items", ["finalized"], name: "index_items_on_finalized", using: :btree
 
   create_table "labels", force: :cascade do |t|
     t.string "name", limit: 255

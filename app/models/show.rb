@@ -5,7 +5,7 @@ class Show < ActiveRecord::Base
 
   has_many :showdates, -> { order('thedate') }, :dependent => :destroy
   has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
-  has_many :vouchers, :through => :showdates
+  has_many :vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes) }, :through => :showdates
   has_many :imports
   belongs_to :seatmap
   
@@ -90,11 +90,13 @@ class Show < ActiveRecord::Base
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
 
-  def revenue ; self.vouchers.inject(0) {|sum,v| sum + v.amount} ; end
+  def revenue
+    vouchers.map(&:amount).sum
+  end
 
   def revenue_per_seat
-    v = self.vouchers.count("category NOT IN ('comp','subscriber')")
-    v.zero? ? 0.0 : revenue / v
+    n = vouchers.count
+    n.zero? ? 0.0 : (revenue.to_f / n)
   end
 
   def capacity

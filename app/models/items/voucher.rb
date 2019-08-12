@@ -4,16 +4,11 @@ class Voucher < Item
   belongs_to :vouchertype
 
   class ReservationError < StandardError ;  end
-  validates_presence_of :vouchertype_id
 
-  validates_inclusion_of :category, :in => Vouchertype::CATEGORIES
+  validates_presence_of :vouchertype_id
+  delegate :category, :to => :vouchertype
 
   validate :checkin_requires_reservation
-
-  def checkin_requires_reservation
-    !checked_in or reserved?
-  end
-  private :checkin_requires_reservation
 
   delegate :gift?, :ship_to, :to => :order
 
@@ -73,7 +68,7 @@ class Voucher < Item
   # scopes that hide implementation of category
   scope :comp, -> { where(:category => 'comp') }
   scope :revenue, -> { where(:category => 'revenue') }
-  scope :subscriber, -> { where(:category => 'subscriber') }
+
   scope :advance_sales, -> { where.not(:customer_id => Customer.walkup_customer.id).includes(:customer,:order) }
   scope :walkup_sales, -> { where(:customer_id => Customer.walkup_customer.id) }
   scope :checked_in, -> { where(:checked_in => true) }
@@ -204,8 +199,8 @@ class Voucher < Item
     vt.vouchers.build({
         :fulfillment_needed => vt.fulfillment_needed,
         :amount => vt.price,
-        :account_code => vt.account_code,
-        :category => vt.category}.merge(args))
+        :account_code => vt.account_code
+      }.merge(args))
   end
 
   def add_comment(comment)
@@ -358,5 +353,12 @@ class Voucher < Item
         :explanation => 'This ticket is not valid for the selected performance.')
     end
   end
+
+  private
+  
+  def checkin_requires_reservation
+    !checked_in or reserved?
+  end
+
 
 end

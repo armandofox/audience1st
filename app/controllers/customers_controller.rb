@@ -34,7 +34,7 @@ class CustomersController < ApplicationController
   def show
     reset_shopping
     @admin = current_user
-    @vouchers = @customer.active_vouchers.sort_by(&:created_at)
+    @vouchers = @customer.active_vouchers.sort_by(&:updated_at)
 
     name = @customer.full_name.name_capitalize
     @subscriber = @customer.subscriber?

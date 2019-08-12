@@ -38,7 +38,7 @@ describe Showdate do
         expect(Showdate.current_or_next(:type => 'Special Event')).to be_nil
       end
     end
-      
+    
     context "when there are no showdates" do
       before(:each) do ; Showdate.delete_all ; end
       it "should be nil" do
@@ -66,131 +66,6 @@ describe Showdate do
       it "and 30-minute margin should return a showdate that started 5 minutes ago" do
         @now_show = create(:showdate, :thedate => 5.minutes.ago)
         expect(Showdate.current_or_next(:grace_period => 30.minutes).id).to eq(@now_show.id)
-      end
-    end
-  end
-  describe 'max sales' do
-    before :each do
-      @s = create(:showdate, :date => Time.current, :max_advance_sales => 200)
-    end
-    describe 'when zero' do
-      before(:each) { @s.update_attributes!(:max_advance_sales => 0) }
-      it('should be allowed') {  expect(@s.max_advance_sales).to be_zero }
-      it('should make show sold-out') { expect(@s).to be_really_sold_out }
-    end
-      
-  end
-  describe "computing" do
-    before(:each) do
-      @house_cap = 12
-      @max_advance_sales = 10
-      @thedate = Time.current
-      @showdate = FactoryBot.create(:showdate,
-        :thedate => @thedate,
-        :end_advance_sales => @thedate - 5.minutes,
-        :max_advance_sales => @max_advance_sales)
-      @showdate.show.update_attributes!(:house_capacity => @house_cap)
-      @vouchers = {
-        'subscriber' => 4,
-        'comp' => 3,
-        'revenue' => 2,
-      }
-      @nonticket_vouchers = {
-        'nonticket' => 1
-      }
-      @total_sold = @vouchers.values.inject(0) { |sum,n| sum + n }
-      (@vouchers.merge(@nonticket_vouchers)).each_pair do |type,qty|
-        qty.times do
-          Voucher.create!(:category => type,
-            :showdate_id => @showdate.id,
-            :vouchertype => mock_model(Vouchertype, :category => type))
-        end
-      end
-    end
-    describe "vouchers" do
-      it "should have 9 vouchers" do
-        expect(@showdate.vouchers.count).to eq(9)
-      end
-      it "should have 10 actual vouchers" do
-        expect(@showdate.all_vouchers.count).to eq(10)
-      end
-      it "should have 1 nonticket product" do
-        nonticket = @showdate.all_vouchers - @showdate.vouchers
-        expect(nonticket.size).to eq(1)
-        expect(nonticket.first.category).to eq('nonticket')
-      end
-    end
-    describe "revenue" do
-      before(:each) do
-        @showdate.vouchers.each do |v|
-          allow(v).to receive(:amount).and_return(11.00)
-        end
-      end
-      it "should be based on total seats sold" do
-        # based on selling 9 seats
-        expect(@showdate.revenue).to eq(99.00)
-      end
-      it "should not include nonticket revenue" do
-        @v = Voucher.new_from_vouchertype(create(:nonticket_vouchertype,:price => 22))
-        @v.reserve(@showdate, mock_model(Customer))
-        @v.save!
-        expect(@showdate.revenue).to eq(99.00)
-      end
-    end
-    describe "capacity computations" do
-      shared_examples "for normal sales" do
-        # house cap 12, max sales 10, sold 9
-        it "should compute total sales" do
-          expect(@showdate.compute_total_sales).to eq(@total_sold)
-          expect(@showdate.compute_advance_sales).to eq(@total_sold)
-        end
-        it "should compute total seats left" do
-          expect(@showdate.total_seats_left).to eq(3)
-        end
-        it "should not be affected by nonticket vouchers" do
-          @v = Voucher.new_from_vouchertype(create(:nonticket_vouchertype, :price => 99))
-          @v.reserve(@showdate, mock_model(Customer))
-          @v.save!
-          expect(@showdate.total_seats_left).to eq(3)
-        end
-        it "should compute percent of max sales" do
-          expect(@showdate.percent_sold).to eq(((@total_sold.to_f / @max_advance_sales) * 100).floor)
-        end
-        it "should compute percent of house" do
-          expect(@showdate.percent_of_house).to eq(((@total_sold.to_f / @house_cap) * 100).floor)
-        end
-      end
-      describe "when house is partly sold" do
-        it_should_behave_like "for normal sales"
-        it "should compute saleable seats left" do
-          expect(@showdate.saleable_seats_left).to eq(1)
-        end
-      end
-      describe "when house is oversold" do
-        before(:each) do
-          (@house_cap - @total_sold + 2).times do
-            Voucher.create!(:category => 'revenue',
-              :showdate_id => @showdate.id,
-              :vouchertype => mock_model(Vouchertype, :category => 'revenue'))
-          end
-        end
-        it "should show zero (not negative) seats remaining" do
-          expect(@showdate.total_seats_left).to eq(0)
-          expect(@showdate.saleable_seats_left).to eq(0)
-        end
-      end
-      describe "when sold beyond max sales but not house cap" do
-        before(:each) do
-          @max_advance_sales = 8
-          @showdate.update_attribute(:max_advance_sales, @max_advance_sales)
-        end
-        it_should_behave_like "for normal sales"
-        it "should compute saleable seats left" do
-          expect(@showdate.saleable_seats_left).to eq(0)
-        end
-        it "should show zero (not negative) seats remaining" do
-          expect(@showdate.saleable_seats_left).to eq(0)
-        end
       end
     end
   end
