@@ -2,7 +2,7 @@
 - svid = "save_#{gid}"
 %td.adminField
   = form_tag update_comment_customer_voucher_path(@customer,group.vouchers[0]), :method => 'put', 'data-remote' => true, :class => 'save_comment' do
-    = hidden_field_tag 'voucher_ids', group.voucherlist
+    = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
     - comment = multiple_voucher_comments(group.vouchers)
     .input-group
       = text_field_tag 'comments', comment, :id => "comments_#{gid}", :class => 'form-control form-control-sm'
