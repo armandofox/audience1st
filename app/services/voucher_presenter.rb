@@ -17,7 +17,7 @@ class VoucherPresenter
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
   class InvalidGroupError < StandardError ; end
   def initialize(vouchers,ignore_cutoff=false)
-    @vouchers = vouchers
+    @vouchers = vouchers.sort_by(&:id)
     raise InvalidGroupError.new("Vouchers don't belong together") unless vouchers_belong_together
     first = @vouchers[0]
     @ignore_cutoff = ignore_cutoff
@@ -74,15 +74,6 @@ class VoucherPresenter
     # Subscriber vouchers all reserved for SAME SHOW (ie, same subscriber vouchertype) are grouped.
     # 
     formatted_groups.sort
-    # formatted_groups.sort do |g1,g2|
-    #   if g1.showdate && g2.showdate
-    #     g1.showdate<=>g2.showdate
-    #   elsif g1.showdate         # g2 has no showdate, it sorts earlier
-    #     1
-    #   else
-    #     -1
-    #   end
-    # end
   end
 
   private

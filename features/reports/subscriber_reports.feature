@@ -10,12 +10,12 @@ Background: we have some subscribers
   Given I am logged in as boxoffice manager
   And subscription vouchers for seasons 2008, 2009, 2010
   And the following subscribers exist:
-  | customer | subscriptions |
-  | Joe      |               |
-  | Patrick  |          2008 |
-  | Elaine   |     2009,2010 |
-  | Diana    |          2010 |
-  | Star     |          2009 |
+  | customer         | subscriptions |
+  | Joe Mallon       |               |
+  | Patrick Tracy    |          2008 |
+  | Elaine Henninger |     2009,2010 |
+  | Diana Moore      |          2010 |
+  | Star Valdez      |          2009 |
 
 Scenario Outline: list all subscribers for specific season(s)
 

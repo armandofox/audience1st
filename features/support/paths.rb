@@ -43,10 +43,11 @@ module NavigationHelpers
     when /the order confirmation page/i then place_order_path(@customer)
       # reporting pages 
     when /the quick donation page/      then quick_donate_path
-    when /the donations page/i          then '/donations/'
-    when /the reports page/i            then '/reports'
-    when /the vouchertypes page$/i       then '/vouchertypes'
-    when /the vouchertypes page for the (\d+) season/ then "/vouchertypes?season=#{$1}"
+    when /the donations page/i          then donations_path
+    when /the reports page/i            then reports_path
+    when /the unfulfilled orders page/i then unfulfilled_orders_reports_path
+    when /the vouchertypes page$/i       then vouchertypes_path
+    when /the vouchertypes page for the (\d+) season/ then vouchertypes_path(:season => $1)
     when /the edit ticket redemptions page for "(.*)"/ then new_valid_voucher_path(:show_id => Show.find_by!(:name => $1))
     when /the walkup sales page for (.*)$/ then walkup_sale_path(sd $1)
     when /the walkup report page for (.*)$/ then report_walkup_sale_path(sd $1)

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190804190810) do
+ActiveRecord::Schema.define(version: 20190812212127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,11 +83,9 @@ ActiveRecord::Schema.define(version: 20190804190810) do
     t.integer  "processed_by_id",                default: 2146722771, null: false
     t.integer  "bundle_id",                      default: 0,          null: false
     t.boolean  "checked_in",                     default: false,      null: false
-    t.string   "category",           limit: 10
     t.boolean  "walkup",                         default: false,      null: false
     t.float    "amount",                         default: 0.0
     t.integer  "account_code_id"
-    t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "letter_sent"
     t.string   "type",               limit: 255

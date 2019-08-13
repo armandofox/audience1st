@@ -1,4 +1,4 @@
-%h1= "#{@vouchers.length} unfulfilled orders (#{@unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
+%h1= "#{@report.vouchers.length} unfulfilled orders (#{@report.unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
 
 = form_tag mark_fulfilled_path, :id=>'uf' do
   = link_to 'Download to Excel', unfulfilled_orders_reports_path(:csv => true), :class => 'btn btn-primary'
@@ -19,7 +19,7 @@
         = javascript_tag %q{$('#all').change(function() { $('#uf input.check').prop('checked', $(this).prop('checked')) }) }
 
 
-    - @vouchers.each do |v|
+    - @report.vouchers.each do |v|
       - cust = v.ship_to
       %tr{:class => ('highlighted' if v.gift?)}
         %td= rollover_with_contact_info(cust, :first_name)

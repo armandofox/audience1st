@@ -40,6 +40,7 @@ class Vouchertype < ActiveRecord::Base
   scope :for_season, ->(season) { where('season = ?', season) }
   scope :of_categories, ->(*cats)   { where('category IN (?)', cats.map(&:to_s)) }
   scope :except_categories, ->(*cats) { where('category NOT IN (?)', cats.map(&:to_s)) }
+  scope :seat_vouchertypes, -> { where('category != ?', 'nonticket') }
 
   protected
 

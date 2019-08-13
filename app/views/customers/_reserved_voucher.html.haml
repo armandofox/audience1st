@@ -1,7 +1,7 @@
 - if (@gAdminDisplay || group.cancelable_by(@customer))
   %tr.border-bottom.border-secondary[group.vouchers.first]
     = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline' do
-      = hidden_field_tag 'voucher_ids', group.voucherlist
+      = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
       %td.text-center= menu_or_static_text('cancelnumber', group.size)
       %td.text-center= group.name
       %td.text-center

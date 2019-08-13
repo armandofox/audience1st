@@ -1,19 +1,13 @@
 class Voucher < Item
-  require 'csv'
   belongs_to :showdate
   belongs_to :vouchertype
 
   class ReservationError < StandardError ;  end
-  validates_presence_of :vouchertype_id
 
-  validates_inclusion_of :category, :in => Vouchertype::CATEGORIES
+  validates_presence_of :vouchertype_id
+  delegate :category, :to => :vouchertype
 
   validate :checkin_requires_reservation
-
-  def checkin_requires_reservation
-    !checked_in or reserved?
-  end
-  private :checkin_requires_reservation
 
   delegate :gift?, :ship_to, :to => :order
 
@@ -61,19 +55,10 @@ class Voucher < Item
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
-  # scopes for reporting
-  scope :for_unfulfilled_orders, -> {
-    includes(:customer, :vouchertype, :order).
-    references(:customers, :orders).
-    where.not(:orders => {:sold_on => nil}).
-    where(:fulfillment_needed => true).
-    order('customers.last_name,orders.sold_on')
-  }
-
   # scopes that hide implementation of category
   scope :comp, -> { where(:category => 'comp') }
   scope :revenue, -> { where(:category => 'revenue') }
-  scope :subscriber, -> { where(:category => 'subscriber') }
+
   scope :advance_sales, -> { where.not(:customer_id => Customer.walkup_customer.id).includes(:customer,:order) }
   scope :walkup_sales, -> { where(:customer_id => Customer.walkup_customer.id) }
   scope :checked_in, -> { where(:checked_in => true) }
@@ -92,25 +77,7 @@ class Voucher < Item
       (if bundle? then '' else ' (open)' end))
   end
 
-  # accessors and convenience methods
-
-  # many are delegated to Vouchertype
-
-  def self.unfulfilled_orders_to_csv
-    CSV.generate(:headers => false) do |csv|
-      orders = all.group_by do |v|
-        [v.ship_to, v.vouchertype]
-      end
-      orders.each_pair do |k,v|
-        voucher = v[0]
-        row = k[0].name_and_address_to_csv
-        row << v[0].order.sold_on
-        row << v.size           # quantity
-        row << k[1].name        # product
-        csv << row
-      end
-    end
-  end
+  # accessors and convenience methods: many are delegated to Vouchertype
 
   delegate(
     :name,  :season,
@@ -204,8 +171,8 @@ class Voucher < Item
     vt.vouchers.build({
         :fulfillment_needed => vt.fulfillment_needed,
         :amount => vt.price,
-        :account_code => vt.account_code,
-        :category => vt.category}.merge(args))
+        :account_code => vt.account_code
+      }.merge(args))
   end
 
   def add_comment(comment)
@@ -358,5 +325,12 @@ class Voucher < Item
         :explanation => 'This ticket is not valid for the selected performance.')
     end
   end
+
+  private
+  
+  def checkin_requires_reservation
+    !checked_in or reserved?
+  end
+
 
 end

@@ -1,3 +1,12 @@
+# Unfulfilled orders
+
+When /I mark orders (.*) as fulfilled/ do |row_numbers|
+  row_numbers.split(/\s*,\s*/).each do |id|
+    check "voucher_#{id}"
+  end
+  click_button "Mark Checked Orders as Fulfilled"
+end
+
 # Revenue by payment type and account code report
 
 When /I view revenue by payment type from "(.*)" to "(.*)"$/ do |from,to|
@@ -71,5 +80,17 @@ When /^I fill in the special report "(.*)" with:$/ do |report_name, fields|
         raise "Unknown action #{form_field[:action]}"
       end
     end
+  end
+end
+
+# Check contents of downloaded report export
+
+Then /a CSV file should be downloaded containing:/ do |tbl|
+  header = page.response_headers['Content-Disposition']
+  expect(header).to match /^attachment/
+  expect(header).to match /filename=".*\.csv"$/
+  expected_rows = page.body.split(/\n/).map(&:strip)
+  tbl.raw.each_with_index do |row,ndx|
+    expect(expected_rows[ndx]).to eq row.join(',')
   end
 end

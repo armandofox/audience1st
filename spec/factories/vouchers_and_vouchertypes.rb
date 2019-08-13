@@ -16,7 +16,7 @@ FactoryBot.define do
     season Time.current.year
     fulfillment_needed false
     changeable true
-
+    
     factory :revenue_vouchertype do
       name 'Revenue vouchertype'
       offer_public Vouchertype::ANYONE
@@ -66,11 +66,10 @@ FactoryBot.define do
 
   factory :voucher do
     customer      
-
+    
     factory :revenue_voucher do
       association :vouchertype, :factory => :revenue_vouchertype
       amount { vouchertype.price }
-      category { vouchertype.category }
       account_code { vouchertype.account_code }
       
       factory :walkup_voucher do
@@ -79,19 +78,29 @@ FactoryBot.define do
       end
     end
 
+    factory :nonticket_item do
+      association :vouchertype, :factory => :nonticket_vouchertype
+    end
+
+    factory :comp_voucher do
+      association :vouchertype, :factory => :revenue_vouchertype
+      amount 0
+      account_code { vouchertype.account_code }
+    end
+    
     factory :subscriber_voucher do
       transient do
         season { Time.this_season }
       end
       association :vouchertype, :factory => :vouchertype_included_in_bundle
       amount 0
-      category 'subscriber'
     end
 
     factory :bundle_voucher do
       transient do
         including Hash.new
         subscription false
+        fulfillment_needed false
         season { Time.this_season }
       end
       vouchertype do
@@ -99,11 +108,11 @@ FactoryBot.define do
         including.each_pair do |voucher,count|
           included_vouchertypes[voucher.vouchertype] = count
         end
-        create(:bundle, :subscription => subscription, :season => season, :including => included_vouchertypes)
+        create(:bundle, :subscription => subscription, :fulfillment_needed => fulfillment_needed,
+          :season => season, :including => included_vouchertypes)
       end
       amount 50
       account_code { vouchertype.account_code }
-      category 'bundle'
     end
   end
 end

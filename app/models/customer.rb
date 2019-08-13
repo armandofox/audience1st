@@ -16,7 +16,15 @@ class Customer < ActiveRecord::Base
   require 'csv'
 
   has_and_belongs_to_many :labels
-  has_many :vouchers, -> { includes(:vouchertype).order(:created_at => :desc) }
+  has_many :vouchers,  -> {
+    includes(:showdate => :show).
+    includes(:vouchertype => :valid_vouchers).
+    order(:updated_at) }
+
+  def active_vouchers
+    vouchers.select { |v| Time.current <= Time.at_end_of_season(v.season) }
+  end
+  
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
   has_many :orders, -> { where( 'sold_on IS NOT NULL').order(:sold_on => :desc) }
@@ -111,14 +119,6 @@ class Customer < ActiveRecord::Base
   after_save :update_email_subscription
 
   before_destroy :cannot_destroy_special_customers
-
-  def active_vouchers
-    now = Time.current
-    vouchers.
-      includes(:showdate => :show).
-      includes(:vouchertype => :valid_vouchers).
-      select { |v| now <= Time.at_end_of_season(v.season) }
-  end
 
 
   #----------------------------------------------------------------------
