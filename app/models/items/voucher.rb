@@ -167,14 +167,6 @@ class Voucher < Item
 
   # constructors
 
-  def self.new_from_vouchertype(vt,args={})
-    vt = Vouchertype.find(vt) unless vt.kind_of?(Vouchertype)
-    vt.vouchers.build({
-        :fulfillment_needed => vt.fulfillment_needed,
-        :amount => vt.price,
-        :account_code => vt.account_code
-      }.merge(args))
-  end
 
   def add_comment(comment)
     self.comments = (self.comments.blank? ? comment : [self.comments,comment].join('; '))

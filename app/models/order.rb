@@ -5,6 +5,7 @@ class Order < ActiveRecord::Base
   belongs_to :ticket_sales_import # only for orders imported from external vendor (eg TodayTix)
   has_many :items, :dependent => :destroy
   has_many :vouchers, :dependent => :destroy
+  has_many :pending_vouchers
   has_many :donations, :dependent => :destroy
   has_many :retail_items, :dependent => :destroy
 

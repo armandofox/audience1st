@@ -7,7 +7,7 @@ module ScenarioHelpers
 
     def make_subscriber!(customer)
       vtype = create(:bundle, :subscription => true)
-      voucher = Voucher.new_from_vouchertype(vtype)
+      voucher = VoucherInstantiator.new_from_vouchertype(vtype)
       customer.vouchers << voucher
       customer.save!
       customer.should be_a_subscriber

@@ -23,7 +23,7 @@ describe Voucher do
         @customer = create(:customer)
         @invalid_voucher = Voucher.new
         allow(@invalid_voucher).to receive(:valid?).and_return(nil)
-        v = Voucher.new_from_vouchertype(@vt_regular)
+        v = VoucherInstantiator.new_from_vouchertype(@vt_regular)
         v.reserve(@from,@logged_in).update_attribute(:customer_id, @customer.id)
         v
       end
@@ -43,7 +43,7 @@ describe Voucher do
   end
 
   describe "templated from vouchertype" do
-    subject { Voucher.new_from_vouchertype(@vt_regular) }
+    subject { VoucherInstantiator.new_from_vouchertype(@vt_regular) }
     it { is_expected.to be_valid }
     it { is_expected.not_to be_reserved }
     its(:customer) { should be_nil }
@@ -56,7 +56,7 @@ describe Voucher do
   describe "expired voucher" do
     before(:each) do
       @vt_regular.update_attribute(:season, Time.current.year - 2)
-      @v = Voucher.new_from_vouchertype(@vt_regular)
+      @v = VoucherInstantiator.new_from_vouchertype(@vt_regular)
       expect(@v).to be_valid
     end
     it "should not be valid today" do
@@ -70,7 +70,7 @@ describe Voucher do
   describe "customer reserving a sold-out showdate" do
     before(:each) do
       @c = create(:customer)
-      @v = Voucher.new_from_vouchertype(@vt_regular)
+      @v = VoucherInstantiator.new_from_vouchertype(@vt_regular)
       @c.vouchers << @v
       @sd = create(:showdate, :date => 1.day.from_now)
       allow(@v).to receive(:valid_voucher_adjusted_for).and_return(mock_model(ValidVoucher, :max_sales_for_this_patron => 0, :explanation => 'Event is sold out'))
@@ -87,7 +87,7 @@ describe Voucher do
   describe "transferring" do
     before(:each) do
       @from = create(:customer)
-      @v = Voucher.new_from_vouchertype(@vt_regular)
+      @v = VoucherInstantiator.new_from_vouchertype(@vt_regular)
       expect(@v).to be_valid
       @from.vouchers << @v
       @from.save!

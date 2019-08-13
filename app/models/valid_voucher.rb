@@ -272,7 +272,20 @@ class ValidVoucher < ActiveRecord::Base
 
   def instantiate(quantity)
     raise InvalidProcessedByError unless customer.kind_of?(Customer)
-    vouchers = vouchertype.instantiate(quantity, :promo_code => self.promo_code)
+    vouchers = []
+    quantity.times do
+      voucher = VoucherInstantiator.new_from_vouchertype(vouchertype, :promo_code => self.promo_code)
+      vouchers << voucher
+      if vouchertype.bundle?
+        included_vouchers = []
+        vouchertype.get_included_vouchers.each_pair do |vtype_id,qty|
+          vtype = Vouchertype.find vtype_id
+          included_vouchers += Array.new(qty) { VoucherInstantiator.new_from_vouchertype(vtype, :promo_code => self.promo_code) }
+        end
+        voucher.bundled_vouchers += included_vouchers
+        vouchers += included_vouchers
+      end
+    end
     # if vouchertype was a bundle, check whether any of its components
     #   are monogamous, if so reserve them
     if vouchertype.bundle?

@@ -241,23 +241,6 @@ class Vouchertype < ActiveRecord::Base
     get_included_vouchers.values.sum
   end
 
-  def instantiate(howmany, args = {})
-    all_vouchers = []
-    howmany.times do
-      voucher = Voucher.new_from_vouchertype(self, args)
-      all_vouchers << voucher
-      if self.bundle?
-        included_vouchers = []
-        self.get_included_vouchers.each_pair do |vtype,qty|
-          included_vouchers += Vouchertype.find(vtype).instantiate(qty)
-        end
-        voucher.bundled_vouchers += included_vouchers
-        all_vouchers += included_vouchers
-      end
-    end
-    all_vouchers
-  end
-
   # a monogamous vouchertype is valid for exactly one showdate.
   def unique_showdate
     showdates.length == 1 ? showdates.first : nil
