@@ -113,11 +113,10 @@ class ReportsController < ApplicationController
   end
 
   def unfulfilled_orders
-    @vouchers = Voucher.for_unfulfilled_orders
-    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if @vouchers.empty?
-    @unique_addresses = @vouchers.group_by { |vc| vc.customer.street }.keys.length
+    @report = UnfulfilledOrdersReport.new
+    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if @report.empty?
     if params[:csv]
-      send_data @vouchers.unfulfilled_orders_to_csv, :type => 'text/csv', :filename => "unfulfilled_#{Date.today}.csv"
+      send_data @report.as_csv, :type => 'text/csv', :filename => "unfulfilled_#{Date.today}.csv"
     end
   end
 
