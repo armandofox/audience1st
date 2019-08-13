@@ -2,7 +2,7 @@ class UnfulfilledOrdersReport
 
   require 'csv'
 
-  attr_reader :csv, :vouchers, :unique_addresses
+  attr_reader :csv, :vouchers, :unique_addresses, :empty
   
   def initialize
     @vouchers = Voucher.
@@ -16,7 +16,9 @@ class UnfulfilledOrdersReport
   end
 
   def as_csv
-    @csv = CSV.generate(:headers => false) do |csv|
+    @csv = CSV.generate(:headers => true) do |csv|
+      csv << ['First name', 'Last name', 'Email', 'Street', 'City', 'State', 'Zip',
+        'Sold on', 'Quantity', 'Product']
       orders = @vouchers.group_by do |v|
         [v.ship_to, v.vouchertype]
       end

@@ -1,14 +1,16 @@
 Given /subscription vouchers for seasons? (.*)/ do |seasons|
   seasons.split(/\s*,\s*/).each do |season|
-    create(:bundle, :name => season, :subscription => true, :season => season)
+    create(:bundle, :name => season, :subscription => true, :fulfillment_needed => true, :season => season)
   end
 end
 
 Given /the following subscribers exist:/ do |subscribers|
   subscribers.hashes.each do |customer|
-    cust = create(:customer, :first_name => customer['customer'])
+    first,last = customer['customer'].split(/\s+/)
+    cust = create(:customer, :first_name => first, :last_name => last)
+    customer['quantity'] ||= '1'
     customer['subscriptions'].split(/\s*,\s*/).each do |season|
-      buy!(cust, Vouchertype.find_by(:name => season), 1)
+      buy!(cust, Vouchertype.find_by(:name => season), customer['quantity'].to_i)
     end
   end
 end

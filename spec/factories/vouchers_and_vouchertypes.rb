@@ -100,6 +100,7 @@ FactoryBot.define do
       transient do
         including Hash.new
         subscription false
+        fulfillment_needed false
         season { Time.this_season }
       end
       vouchertype do
@@ -107,7 +108,8 @@ FactoryBot.define do
         including.each_pair do |voucher,count|
           included_vouchertypes[voucher.vouchertype] = count
         end
-        create(:bundle, :subscription => subscription, :season => season, :including => included_vouchertypes)
+        create(:bundle, :subscription => subscription, :fulfillment_needed => fulfillment_needed,
+          :season => season, :including => included_vouchertypes)
       end
       amount 50
       account_code { vouchertype.account_code }

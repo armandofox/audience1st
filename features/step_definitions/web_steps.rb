@@ -131,10 +131,10 @@ Then /^(?:|I )should not see \/([^\/]*)\/(?: within "([^\"]*)")?$/ do |regexp, s
 end
 
 # Created test
-Then /^(?:|I )should not see the following: "([^\"]*)"$/ do |textlist|
-    textlist.split(', ').each do |text|
-      step "I should not see \"#{text}\""
-    end
+Then /^(?:|I )should (not )?see the following: "([^\"]*)"$/ do |no,textlist|
+  textlist.split(/\s*,\s*/).each do |text|
+    step "I should #{no}see \"#{text}\""
+  end
 end
 
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"]*)"$/ do |field, selector, equality_check, value|

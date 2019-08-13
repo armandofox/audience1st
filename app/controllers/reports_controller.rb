@@ -114,7 +114,7 @@ class ReportsController < ApplicationController
 
   def unfulfilled_orders
     @report = UnfulfilledOrdersReport.new
-    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if @report.empty?
+    return redirect_to(reports_path, :notice => 'No unfulfilled orders at this time.') if @report.empty
     if params[:csv]
       send_data @report.as_csv, :type => 'text/csv', :filename => "unfulfilled_#{Date.today}.csv"
     end
