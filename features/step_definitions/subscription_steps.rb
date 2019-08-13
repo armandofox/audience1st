@@ -7,7 +7,7 @@ end
 Given /the following subscribers exist:/ do |subscribers|
   subscribers.hashes.each do |customer|
     first,last = customer['customer'].split(/\s+/)
-    cust = create(:customer, :first_name => first, :last_name => last)
+    cust = find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
     customer['quantity'] ||= '1'
     customer['subscriptions'].split(/\s*,\s*/).each do |season|
       buy!(cust, Vouchertype.find_by(:name => season), customer['quantity'].to_i)
