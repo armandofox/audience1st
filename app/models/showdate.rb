@@ -4,7 +4,7 @@ class Showdate < ActiveRecord::Base
   
   belongs_to :show
 
-  delegate :seatmap, :house_capacity, :patron_notes, :name, :to => :show
+  delegate :seatmap, :house_capacity, :patron_notes, :name, :event_type, :to => :show
 
   has_many :vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes) }
   has_many :finalized_vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes).merge(Voucher.finalized) }, :class_name => 'Voucher'

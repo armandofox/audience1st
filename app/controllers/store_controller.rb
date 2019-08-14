@@ -301,6 +301,9 @@ class StoreController < ApplicationController
     (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
   def remember_cart_in_session!
+    # in case current_user has been reset since last interaction (maybe the user logged in),
+    # set it.
+    @cart.processed_by = current_user()
     @cart.save!
     session[:cart] = @cart.id
   end
@@ -392,7 +395,8 @@ class StoreController < ApplicationController
   def setup_ticket_menus_for_patron
     @valid_vouchers = @sd.valid_vouchers.includes(:vouchertype).map do |v|
       v.customer = @customer
-      v.adjust_for_customer @promo_code
+      v.supplied_promo_code = @promo_code
+      v.adjust_for_customer
     end.find_all(&:visible?).sort_by(&:display_order)
     
     @all_shows = Show.current_and_future.of_type(@what) || []
@@ -402,15 +406,13 @@ class StoreController < ApplicationController
   end
 
   def add_tickets_to_cart
-    tickets = ValidVoucher.from_params(params[:valid_voucher])
-    if @is_admin
-      tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
-    else
-      promo = params[:promo_code].to_s
-      tickets.each_pair do |vv, qty|
-        vv.customer = @customer
-        @cart.add_with_checking(vv,qty,promo)
-      end
+    tickets = ValidVoucher.from_params(
+      params[:valid_voucher].merge({
+          :supplied_promo_code => params[:promo_code].to_s,
+          :customer = current_user()
+        }))
+    tickets.each_pair do |vv, qty|
+      @cart.add_tickets(vv,qty)
     end
   end
 

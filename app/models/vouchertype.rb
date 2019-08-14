@@ -139,10 +139,11 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def bundle? ; category == 'bundle' ; end
-  def comp? ; category == 'comp' ; end
-  def external? ; offer_public == EXTERNAL ; end
-  def revenue? ; category == 'revenue' ; end
+  def bundle?    ; category == 'bundle'         ; end
+  def comp?      ; category == 'comp'           ; end
+  def external?  ; offer_public == EXTERNAL     ; end
+  def revenue?   ; category == 'revenue'        ; end
+  def nonticket? ; category == 'nonticket'      ; end
 
   def reservable?
     !(['bundle','nonticket'].include?(category))

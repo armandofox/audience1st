@@ -4,7 +4,7 @@ describe Order do
   before :each do
     @the_customer = create(:customer)
     @the_processed_by = create(:customer)
-    @order = Order.new(:processed_by => @the_processed_by)
+    @order = Order.create!(:processed_by => @the_processed_by)
   end
   describe 'new order' do
     subject { Order.new }
@@ -34,18 +34,27 @@ describe Order do
   end
 
   describe 'marshalling' do
-    it 'deserializes donation' do
-      @order = Order.new
+    it 'donation' do
+      @order = Order.create!(:processed_by => create(:customer))
       @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
       @order.save!
       @unserialized = Order.find(@order.id)
       expect(@unserialized.cart_empty?).to be_falsey
     end
+    it 'order with donations and tickets' do
+      @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
+      @order.add_tickets(create(:valid_voucher), 3)
+      @order.save!
+      reloaded = Order.find(@order.id)
+      expect(reloaded.ticket_count).to eq(3)
+      expect(reloaded.donation.amount).to eq(10)
+    end
+
   end
 
   describe 'guest checkout' do
     before :each do
-      @order = Order.new
+      @order = Order.create!(:processed_by => Customer.anonymous_customer)
       @order.add_tickets(create(:valid_voucher), 2)
     end
     context 'allowed when includes' do
@@ -95,10 +104,10 @@ describe Order do
 
   describe 'walkup confirmation' do
     before :each do
-      @o = Order.new
+      @o = Order.create!(:processed_by => create(:boxoffice))
       allow(@o).to receive(:purchase_medium).and_return("Cash")
       @v = create(:revenue_vouchertype,:price => 7)
-      @vv = @v.valid_vouchers.create!(:start_sales => 1.day.ago, :end_sales => 1.day.from_now)
+      @vv = create(:valid_voucher, :vouchertype => @v)
     end
     [ 1,0,"$5.00 donation paid by Cash",
       1,2, "$5.00 donation and 2 tickets (total $19.00) paid by Cash" ,

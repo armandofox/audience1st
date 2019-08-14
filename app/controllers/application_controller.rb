@@ -61,7 +61,7 @@ class ApplicationController < ActionController::Base
   end
 
   def reset_shopping           # called as a filter
-    @gCart.empty_cart!
+    @gCart.clear_contents!
     session.delete(:promo_code)
     session.delete(:cart)
     session.delete(:return_to)
@@ -110,7 +110,7 @@ class ApplicationController < ActionController::Base
   end
 
   def find_cart
-    Order.find_by_id(session[:cart]) || Order.new
+    Order.find_by_id(session[:cart]) || Order.new(:processed_by => current_user())
   end
 
   # setup session etc. for an "external" login, eg by a daemon

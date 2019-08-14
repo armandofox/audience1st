@@ -209,7 +209,8 @@ class ValidVoucher < ActiveRecord::Base
       order("season DESC,display_order,price DESC")
     bundles = bundles.map do |b|
       b.customer = customer
-      b.adjust_for_customer promo_code
+      b.supplied_promo_code = promo_code
+      b.adjust_for_customer
     end
     bundles.reject! { |b| b.max_sales_for_this_patron == 0 }
     bundles.sort_by(&:display_order)
@@ -218,13 +219,17 @@ class ValidVoucher < ActiveRecord::Base
   # returns a copy of this ValidVoucher, but with max_sales_for_this_patron adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to
   # THIS customer.
-  def adjust_for_customer(customer_supplied_promo_code = '')
+  def adjust_for_customer
     result = self.clone_with_id
-    result.supplied_promo_code = customer_supplied_promo_code.to_s
-    result.adjust_for_visibility ||
-      result.adjust_for_showdate ||
-      result.adjust_for_sales_dates ||
-      result.adjust_for_capacity # this one must be called last
+    # boxoffice and higher privilege can do anything
+    if customer.is_boxoffice
+      result.max_sales_for_this_patron = INFINITE
+    else
+      result.adjust_for_visibility ||
+        result.adjust_for_showdate ||
+        result.adjust_for_sales_dates ||
+        result.adjust_for_capacity # this one must be called last
+    end
     result.freeze
   end
 
@@ -232,9 +237,14 @@ class ValidVoucher < ActiveRecord::Base
   #  but adjusted to see if it can be redeemed
   def adjust_for_customer_reservation
     result = self.clone_with_id
-    result.adjust_for_showdate ||
-      result.adjust_for_advance_reservations ||
-      result.adjust_for_capacity # this one must be called last
+    # boxoffice and higher privilege can do anything
+    if customer.is_boxoffice
+      result.max_sales_for_this_patron = INFINITE
+    else
+      result.adjust_for_showdate ||
+        result.adjust_for_advance_reservations ||
+        result.adjust_for_capacity # this one must be called last
+    end
     result.freeze
   end
 
