@@ -28,6 +28,10 @@ class Item < ActiveRecord::Base
   def one_line_description ; raise "Must override this method" ; end
   def description_for_audit_txn ; raise "Must override this method" ; end
 
+  # Finalizing an item means it is no longer part of an in-process order that isn't finalized yet
+  def finalize! ; update_attributes!(:finalized => true) ; self; end
+  scope :finalized, -> { where(:finalized => true) }
+
   # Canceling an item forces its price to zero and copies its original
   #  description into the comment field of the item
 

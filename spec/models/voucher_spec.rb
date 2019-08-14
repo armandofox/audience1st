@@ -87,16 +87,14 @@ describe Voucher do
   describe "transferring" do
     before(:each) do
       @from = create(:customer)
-      @v = VoucherInstantiator.new(@vt_regular).from_vouchertype.first
-      expect(@v).to be_valid
-      @from.vouchers << @v
-      @from.save!
+      @v = create(:voucher, :customer => @from)
     end
     context "when recipient exists" do
       before(:each) do
         @to = create(:customer)
       end
       it "should add the voucher to the recipient's account" do
+        expect(@from.vouchers).to include(@v)
         @v.transfer_to_customer(@to)
         expect(@to.vouchers).to include(@v)
       end
@@ -113,7 +111,10 @@ describe Voucher do
         @bundle = create(:bundle, :including =>
           { (@vt1 = create(:vouchertype_included_in_bundle)) => 2,
             (@vt2 = create(:vouchertype_included_in_bundle)) => 1 })
-        @from.vouchers += VoucherInstantiator.new(@bundle).from_vouchertype
+        vouchers = VoucherInstantiator.new(@bundle).from_vouchertype
+        vouchers.each(&:finalize!)
+        @from.vouchers += vouchers
+        @from.save!
         # now transfer it
         @from.vouchers.find_by(:vouchertype_id => @bundle.id).transfer_to_customer(@to)
       end

@@ -63,7 +63,7 @@ class Order < ActiveRecord::Base
       # if this is a walkup order, mark the vouchers as walkup
       v.walkup = self.walkup?
       # mark the voucher as finalized
-      v.finalized = true
+      v.finalize!
     end
     vouchers
   end

@@ -57,8 +57,6 @@ class Voucher < Item
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
-  scope :finalized, -> { where(:finalized => true) }
-
   # scopes that hide implementation of category
   scope :comp, -> { joins(:vouchertype).merge(Vouchertype.of_categories('comp')) }
   scope :revenue, -> { joins(:vouchertype).merge(Vouchertype.of_categories('revenue')) }
