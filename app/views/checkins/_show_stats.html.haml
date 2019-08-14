@@ -12,7 +12,7 @@
       .col-md-2
     .row
       .col-md-3.text-right Advance sales:
-      .col-md-1{:class => class_for(showdate.saleable_seats_left)}= showdate.advance_sales.size
+      .col-md-1{:class => class_for(showdate.saleable_seats_left)}= showdate.advance_sales_vouchers.size
       .col-md-2.text-right Checked in:
       .col-md-1= showdate.num_checked_in
       .col-md-2.text-right Waiting for:
@@ -20,7 +20,7 @@
       .col-md-2
     .row
       .col-md-3.text-right Walkup sales:
-      .col-md-1= showdate.walkup_sales.size
+      .col-md-1= showdate.walkup_sales_vouchers.size
     .row
       .col-md-2
       .col-md-2.text-center= link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'

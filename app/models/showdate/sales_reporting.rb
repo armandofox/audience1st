@@ -74,7 +74,7 @@ class Showdate < ActiveRecord::Base
     finalized_vouchers.checked_in.count
   end
   def num_waiting_for
-    [0, advance_sales.size - checked_in].max
+    [0, advance_sales_vouchers.size - num_checked_in].max
   end
 
   
