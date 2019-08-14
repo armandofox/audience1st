@@ -125,9 +125,9 @@ Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, num|
   showdate = Showdate.find_by_thedate! Time.zone.parse(date)
   num = num.to_i
   if num > 0
-    (showdate.compute_total_sales - showdate.max_advance_sales).should == num
+    (showdate.total_sales.size - showdate.max_advance_sales).should == num
   else
-    showdate.compute_total_sales.should be > showdate.max_advance_sales
+    showdate.total_sales.size.should be > showdate.max_advance_sales
   end
 end
 

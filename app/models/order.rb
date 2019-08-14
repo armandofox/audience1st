@@ -59,9 +59,11 @@ class Order < ActiveRecord::Base
       vouchers += vv.instantiate(quantity)
     end
     vouchers.flatten!
-    # if this is a walkup order, mark the vouchers as walkup
     vouchers.each do |v|
+      # if this is a walkup order, mark the vouchers as walkup
       v.walkup = self.walkup?
+      # mark the voucher as finalized
+      v.finalized = true
     end
     vouchers
   end

@@ -9,6 +9,8 @@ class Voucher < Item
 
   validate :checkin_requires_reservation
 
+  validates :seat, :uniqueness => { :scope => :showdate_id, :allow_blank => true, :message => 'is a;ready occupied' }
+
   delegate :gift?, :ship_to, :to => :order
 
   # when a bundle voucher is cancelled, we must also cancel all its
@@ -54,6 +56,8 @@ class Voucher < Item
   # class methods
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
+
+  scope :finalized, -> { where(:finalized => true) }
 
   # scopes that hide implementation of category
   scope :comp, -> { joins(:vouchertype).merge(Vouchertype.of_categories('comp')) }

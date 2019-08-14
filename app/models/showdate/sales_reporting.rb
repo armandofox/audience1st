@@ -36,48 +36,45 @@ class Showdate < ActiveRecord::Base
   end
 
   def total_seats_left
-    [self.house_capacity - compute_total_sales, 0].max
+    [self.house_capacity - total_sales.size, 0].max
   end
 
   def saleable_seats_left
-    [self.max_advance_sales - compute_total_sales, 0].max
+    [self.max_advance_sales - total_sales.size, 0].max
   end
 
   def really_sold_out? ; saleable_seats_left < 1 ; end
 
   # percent of max sales: may exceed 100
   def percent_sold
-    max_advance_sales.zero? ? 100 : (100.0 * compute_total_sales/max_advance_sales).floor
+    max_advance_sales.zero? ? 100 : (100.0 * total_sales.size/max_advance_sales).floor
   end
 
   # percent of house: may exceed 100
   def percent_of_house
-    house_capacity.zero? ? 100 : (100.0 * compute_total_sales / house_capacity).floor
+    house_capacity.zero? ? 100 : (100.0 * total_sales.size / house_capacity).floor
   end
 
   def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
 
   def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
 
-  def compute_total_sales
-    self.vouchers.count
+  def total_sales
+    vouchers
   end
 
   def advance_sales_vouchers
-    self.vouchers.advance_sales
+    finalized_vouchers.advance_sales
   end
-  def compute_advance_sales
-    self.vouchers.advance_sales.count
-  end
-  def compute_walkup_sales
-    self.vouchers.walkup_sales.count
+  def walkup_sales_vouchers
+    finalized_vouchers.walkup_sales
   end
 
-  def checked_in
-    self.vouchers.checked_in.count
+  def num_checked_in
+    finalized_vouchers.checked_in.count
   end
-  def waiting_for
-    [0, compute_advance_sales - checked_in].max
+  def num_waiting_for
+    [0, advance_sales.size - checked_in].max
   end
 
   

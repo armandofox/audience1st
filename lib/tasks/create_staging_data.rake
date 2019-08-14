@@ -214,7 +214,7 @@ staging = namespace :staging do
     Showdate.all.each do |perf|
       valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertypes => {:category => :revenue}).to_a.freeze
       # sell percentage of tickets
-      while perf.compute_total_sales < (percent * perf.house_capacity) do
+      while perf.total_sales.size < (percent * perf.house_capacity) do
         # pick a customer
         customer = customers.sample
         # pick a number of tickets, 1-4, skewed towards 1 and 2

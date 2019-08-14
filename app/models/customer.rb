@@ -17,6 +17,7 @@ class Customer < ActiveRecord::Base
 
   has_and_belongs_to_many :labels
   has_many :vouchers,  -> {
+    where(:items => {:finalized => true}).
     includes(:showdate => :show).
     includes(:vouchertype => :valid_vouchers).
     order(:updated_at) }

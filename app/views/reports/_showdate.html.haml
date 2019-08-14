@@ -3,7 +3,7 @@
 .row
   - hdr ||= "#{showdate.printable_date} (#{showdate.max_advance_sales})"
   .col-md-4= link_to hdr, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"  
-  .col-md-1= showdate.compute_total_sales
+  .col-md-1= showdate.total_sales.size
   .col-md-2
     = number_to_percentage(showdate.percent_sold,:precision=>0)
     (#{number_to_percentage(showdate.percent_of_house, :precision => 0)} house)

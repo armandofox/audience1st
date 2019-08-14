@@ -66,6 +66,7 @@ FactoryBot.define do
 
   factory :voucher do
     customer      
+    finalized true
     
     factory :revenue_voucher do
       association :vouchertype, :factory => :revenue_vouchertype
