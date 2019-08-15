@@ -50,14 +50,15 @@ class Voucher < Item
   def cancelable?
     !part_of_bundle? &&  super
   end
-    
+  
   # class methods
 
   def expiration_date ; Time.at_end_of_season(self.season) ; end
 
   # scopes that hide implementation of category
-  scope :comp, -> { where(:category => 'comp') }
-  scope :revenue, -> { where(:category => 'revenue') }
+  scope :comp, -> { joins(:vouchertype).merge(Vouchertype.of_categories('comp')) }
+  scope :revenue, -> { joins(:vouchertype).merge(Vouchertype.of_categories('revenue')) }
+
 
   scope :advance_sales, -> { where.not(:customer_id => Customer.walkup_customer.id).includes(:customer,:order) }
   scope :walkup_sales, -> { where(:customer_id => Customer.walkup_customer.id) }
