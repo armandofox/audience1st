@@ -114,7 +114,6 @@ class Order < ActiveRecord::Base
   def clear_contents!
     self.vouchers.destroy_all
     self.donation_data = {}
-    self.reload
   end
 
   def cart_empty?
