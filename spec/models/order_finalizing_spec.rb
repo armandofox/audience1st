@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'finalizing', focus: true do
+describe 'finalizing' do
   # Simplify matching Customer vouchers for a particular showdate and vouchertype
   class Customer < ActiveRecord::Base
     def vouchers_for(showdate, vouchertype)

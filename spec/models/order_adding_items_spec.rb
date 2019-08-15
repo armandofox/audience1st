@@ -5,7 +5,7 @@ describe Order, 'adding' do
     @order = Order.create!(:processed_by => create(:customer)) # generic customer
     @vv = create(:valid_voucher)
   end
-  xdescribe 'retail items' do
+  describe 'retail items' do
     before :each do
       @thing = Array.new(2) { |i| RetailItem.from_amount_description_and_account_code_id(4*(i+1), "Thing #{i}") }
     end

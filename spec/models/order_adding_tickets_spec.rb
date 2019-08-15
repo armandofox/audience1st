@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-describe Order, 'adding tickets' do
+describe 'Order adding tickets' do
   # An Order is created and persisted the moment the customer tries to add something.
   # All the methods for adding stuff to orders require that the order be persisted first,
   # so that the added items inherit the correct order_id.
   before(:each) do
-    @order = Order.create!(:processed_by => create(:customer))
+    @order = create(:order)
     @vv = create(:valid_voucher, :max_sales_for_type => 2)
   end
   context 'when 2 seats left' do
@@ -32,6 +32,7 @@ describe Order, 'adding tickets' do
     expect { @order.add_tickets(@vv, 2) }.to change { @order.ticket_count }.by(2)
   end
   it 'empties order' do
+    @order.add_tickets(@vv, 2)
     expect { @order.clear_contents! }.to change { @order.ticket_count}.to(0)
   end
 end
