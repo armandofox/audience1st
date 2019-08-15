@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'finalizing' do
+describe 'finalizing', focus: true do
   # Simplify matching Customer vouchers for a particular showdate and vouchertype
   class Customer < ActiveRecord::Base
     def vouchers_for(showdate, vouchertype)
@@ -25,7 +25,7 @@ describe 'finalizing' do
 
   context 'successful' do
     before :each do
-      @order = create(:order)
+      @order = create(:order, :comments => 'Comment')
       @order.add_tickets(@vv,2)
       @order.add_tickets(@vv2,1)
       @order.add_donation(@donation)
@@ -55,7 +55,7 @@ describe 'finalizing' do
       end
       it 'should add donations to customer account if purchaser==recipient' do
         @order.finalize!
-        expect(@cust.donations).to include(@donation)
+        expect(@order.purchaser.donations).to include(@donation)
       end
       context 'when purchaser!=recipient' do
         before :each do

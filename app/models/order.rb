@@ -3,11 +3,10 @@ class Order < ActiveRecord::Base
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
   belongs_to :ticket_sales_import # only for orders imported from external vendor (eg TodayTix)
-  has_many :items, :dependent => :destroy
-  has_many :vouchers, :dependent => :destroy
-  has_many :pending_vouchers
-  has_many :donations, :dependent => :destroy
-  has_many :retail_items, :dependent => :destroy
+  has_many :items, :autosave => true, :dependent => :destroy
+  has_many :vouchers, :autosave => true,  :dependent => :destroy
+  has_many :donations, :autosave => true, :dependent => :destroy
+  has_many :retail_items, :autosave => true, :dependent => :destroy
 
   attr_accessor :purchase_args
   attr_reader :donation
@@ -261,18 +260,17 @@ class Order < ActiveRecord::Base
 
   def finalize!(sold_on_date = Time.current)
     raise Order::NotReadyError unless ready_for_purchase?
-
     begin
       transaction do
-        items.each do |i|
+        self.items += vouchers
+        self.items += retail_items
+        self.items << donation
+        self.items.each do |i|
           i.finalize!
           i.walkup = self.walkup? 
           i.processed_by = self.processed_by
           i.comments = self.comments if i.comments.blank?  && i.kind_of?(Voucher)
         end
-        self.items += vouchers
-        self.items += retail_items
-        self.items << donation
         # there is also a direct relationship Customer has-many Items, which we should get rid of...
         customer.add_items(vouchers)
         customer.add_items(retail_items)

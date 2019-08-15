@@ -10,7 +10,6 @@ FactoryBot.define do
     association :customer
     walkup nil
     purchasemethod { Purchasemethod.get_type_by_name(:box_cash) }
-    sold_on { Time.current }
 
     after(:build) do |order|
       if order.walkup
@@ -27,6 +26,11 @@ FactoryBot.define do
         order.add_donation(create(:donation, :customer => order.customer))
       end
     end
+
+    factory :completed_order do
+      sold_on { Time.current }
+    end
+    
   end
 
 end
