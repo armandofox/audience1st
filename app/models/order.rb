@@ -120,6 +120,16 @@ class Order < ActiveRecord::Base
     ticket_count.zero? &&  donation.nil? && retail_items.empty?
   end
 
+  def add_tickets_from_params(valid_voucher_params, customer, supplied_promo_code=nil)
+    return unless valid_voucher_params
+    valid_voucher_params.each_pair do |vv_id, qty|
+      vv = ValidVoucher.find(vv_id)
+      vv.supplied_promo_code = supplied_promo_code.to_s
+      vv.customer = customer
+      add_tickets(vv,qty.to_i)
+    end
+  end
+
   def add_tickets(valid_voucher, number)
     raise Order::NotPersistedError unless persisted?
     # is this order-placer allowed to exercise this redemption?
@@ -162,7 +172,7 @@ class Order < ActiveRecord::Base
   end
 
   def add_retail_item(r)
-    raise Order::NotPersistedError unless order.persisted?
+    raise Order::NotPersistedError unless persisted?
     self.retail_items << r if r
   end
 
@@ -263,7 +273,7 @@ class Order < ActiveRecord::Base
       transaction do
         self.items += vouchers
         self.items += retail_items
-        self.items << donation
+        self.items << donation if donation
         self.items.each do |i|
           i.finalize!
           i.walkup = self.walkup? 

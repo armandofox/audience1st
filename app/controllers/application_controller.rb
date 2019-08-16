@@ -61,7 +61,6 @@ class ApplicationController < ActionController::Base
   end
 
   def reset_shopping           # called as a filter
-    @gCart.clear_contents!
     session.delete(:promo_code)
     session.delete(:cart)
     session.delete(:return_to)

@@ -47,7 +47,7 @@
             #content.clear
               - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
                 %h1.text-center Your Order Is Not Yet Complete
-                = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
+                = render :partial => 'store/cart', :object => @gCart, :locals => {:editable => false}
               = render :partial => 'messages/notices'
               = yield
       - if current_user

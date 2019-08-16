@@ -1,10 +1,10 @@
-- @cart ||= cart 
+- @order ||= cart 
 
 #cart.container
-  - if @cart.cart_empty?
+  - if @order.cart_empty?
     .alert.alert-danger No items in your order.
   - else
-    - @cart.each_voucher do |v|
+    - @order.each_voucher do |v|
       .row.border-top.bg-light
         .col-md-5.text-truncate.h5
           .a1-cart-show-name= v.showdate.try(:name)
@@ -18,7 +18,7 @@
         .col-md-2.text-right.text-primary.h4
           .a1-cart-amount= number_to_currency(v.price)
 
-    - if (d = @cart.donation)
+    - if (d = @order.donation)
       .row.border-top.bg-light
         .col-md-5.text-truncate.h5
           .a1-cart-donation-to Donation to #{d.account_code.name}
@@ -27,20 +27,20 @@
         .col-md-2.h4.text-right.text-primary
           .a1-cart-amount= number_to_currency(d.amount)
 
-    - @cart.retail_items.each do |item|
+    - @order.retail_items.each do |item|
       .row.border-top.bg-light
         .col-md-10.h5
           .a1-cart-retail-item= item.comments
         .col-md-2.h4.text-right.text-primary
           .a1-cart-amount= number_to_currency(item.amount)
 
-    - unless @cart.comments.blank?
+    - unless @order.comments.blank?
       #order_notes.row.border-top.bg-secondary.text-light.a1-cart-comments
         .col-md-5.h5 Notes
-        .col-md-7.h5= @cart.comments
+        .col-md-7.h5= @order.comments
         
     .row.bg-primary.text-white.a1-total
       .a1-cart-total-label.col-md-2.offset-md-8.h3 Total
       .col-md-2.text-right.h3
-        .a1-cart-total-amount._stripe_total= number_to_currency(@cart.total_price)
+        .a1-cart-total-amount._stripe_total= number_to_currency(@order.total_price)
 

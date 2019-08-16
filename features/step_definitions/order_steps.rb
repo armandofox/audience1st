@@ -1,7 +1,7 @@
 module ScenarioHelpers
   module Orders
     def buy!(customer, vtype, qty, showdate=nil)
-      @order = build(:order,
+      @order = create(:order,
         :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
         :customer => customer,
         :purchaser => customer)
@@ -51,7 +51,7 @@ end
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
   customer = find_or_create_customer(first,last)
   # make it legal for customer to buy the things
-  @order = build(:order,
+  @order = create(:order,
     :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
     :customer => customer,
     :purchaser => customer)
@@ -69,7 +69,7 @@ Given /^the following orders have been placed:/ do |tbl|
   tbl.hashes.each do |order|
     pmt_types = {"credit card" => "web_cc", "cash" => "box_cash", "check" => "box_chk", "comp" => "none"}.freeze
     customer = find_or_create_customer(*(order['customer'].split(/\s+/)))
-    o = build(:order,
+    o = create(:order,
       :purchasemethod => Purchasemethod.get_type_by_name(pmt_types[order['payment']]),
       :purchase_args => {:credit_card_token => 'DUMMY'}, # to pass order validation for CC purchase
       :customer => customer, :purchaser => customer)

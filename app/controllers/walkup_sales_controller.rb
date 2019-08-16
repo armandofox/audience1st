@@ -20,9 +20,7 @@ class WalkupSalesController < ApplicationController
     if ((amount = params[:donation].to_f) > 0)
       @order.add_donation(Donation.walkup_donation amount)
     end
-    ValidVoucher.from_params(params[:qty]).each_pair do |valid_voucher, qty|
-      @order.add_tickets(valid_voucher, qty)
-    end
+    @order.add_tickets_from_params(params[:qty], current_user)
 
     # process order using appropriate payment method.
     # if Stripe was used for credit card processing, it resubmits the original

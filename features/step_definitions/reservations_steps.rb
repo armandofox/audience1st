@@ -6,7 +6,7 @@ Given /^customer "(.*) (.*)" has the following (subscriber )?reservations:/ do |
     showdate = setup_show_and_showdate(res[:show], res[:showdate])
     vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate)
     purchasemethod = purchasemethod_from_string res[:purchasemethod]
-    order = build(:order, :customer => customer, :purchaser => customer, :purchasemethod => purchasemethod)
+    order = create(:order, :customer => customer, :purchaser => customer, :purchasemethod => purchasemethod)
     order.add_tickets(vv, res[:qty].to_i)
     order.finalize!
   end

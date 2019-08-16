@@ -1,7 +1,7 @@
-- if @cart.includes_vouchers? &&  !@cart.gift?
+- if @order.includes_vouchers? &&  !@order.gift?
   .container#someone_else
     .form-row
-      - if @cart_contains_class_order
+      - if @order_contains_class_order
         .col-md-8 Who is attending the class?
         .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => "Enrollee's name"
       - else

@@ -66,17 +66,6 @@ class ValidVoucher < ActiveRecord::Base
     end
   end
 
-  def self.from_params(valid_vouchers_hash)
-    result = {}
-    (valid_vouchers_hash || {}).each_pair do |id,qty|
-      if ((vv = self.find_by_id(id)) &&
-          ((q = qty.to_i) > 0))
-        result[vv] = q
-      end
-    end
-    result
-  end
-
   private
 
   # A zero-price vouchertype that is marked as "available to public"
@@ -222,14 +211,11 @@ class ValidVoucher < ActiveRecord::Base
   def adjust_for_customer
     result = self.clone_with_id
     # boxoffice and higher privilege can do anything
-    if customer.is_boxoffice
-      result.max_sales_for_this_patron = INFINITE
-    else
-      result.adjust_for_visibility ||
-        result.adjust_for_showdate ||
-        result.adjust_for_sales_dates ||
-        result.adjust_for_capacity # this one must be called last
-    end
+    result.adjust_for_visibility ||
+      result.adjust_for_showdate ||
+      result.adjust_for_sales_dates ||
+      result.adjust_for_capacity # this one must be called last
+    result.max_sales_for_this_patron = INFINITE if customer.is_boxoffice
     result.freeze
   end
 

@@ -174,9 +174,9 @@ describe StoreController do
         expect(response).to redirect_to(:action => 'checkout')
       end
       it "should add the donation to the cart" do
-        allow(controller).to receive(:find_cart).and_return(@cart = Order.new)
+        allow(controller).to receive(:find_cart).and_return(@order = Order.new)
         expect(Donation).to receive(:from_amount_and_account_code_id).with(13, nil, nil).and_return(d = Donation.new)
-        expect(@cart).to receive(:add_donation).with(d)
+        expect(@order).to receive(:add_donation).with(d)
         post :process_cart, @params
       end
     end
