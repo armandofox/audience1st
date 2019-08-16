@@ -6,8 +6,8 @@
     = stylesheet_link_tag :application, :media => 'all'
     = venue_stylesheet_link_tag
 
-    = bootstrap_javascript_tag
     = javascript_include_tag :application
+    = bootstrap_javascript_tag
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
 
     %title= @page_title || h(action_name.humanize)
