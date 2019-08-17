@@ -55,7 +55,8 @@ class WalkupSalesController < ApplicationController
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:alert] = ["Transaction NOT processed: ", @order.errors.as_html]
+      flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"
+      @order.destroy
       redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
   end

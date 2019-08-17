@@ -46,10 +46,8 @@ class CheckinsController < ApplicationController
       @customer = Customer.where(:id => Customer.id_from_route(params[:cid])).
         includes(:vouchers => {:vouchertype => :valid_vouchers}).
         first
-      # which open vouchers are valid for this performance?
-      @customer_vouchers = @customer.vouchers.open.map do |v|
-        if (qty = v.redeemable_for?(@showdate)) then [v,qty] else nil end
-      end.compact
+      # which open vouchers are valid for this performance, and how many redemptions remaining?
+      @customer_vouchers = @customer.vouchers.open.valid_for_showdate(@showdate)
     end
   end
 

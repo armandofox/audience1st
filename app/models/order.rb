@@ -93,13 +93,6 @@ class Order < ActiveRecord::Base
 
   def purchase_medium ; Purchasemethod.get(purchasemethod).purchase_medium ; end
   
-  def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
-    other_args[:purchasemethod] ||= Purchasemethod.get_type_by_name('none')
-    order = Order.new(other_args)
-    order.add_tickets(valid_voucher, howmany)
-    order
-  end
-
   def self.new_from_donation(amount, account_code, donor)
     order = Order.new(:purchaser => donor, :customer => donor)
     order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))

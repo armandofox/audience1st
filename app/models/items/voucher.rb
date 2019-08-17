@@ -66,6 +66,11 @@ class Voucher < Item
   scope :walkup_sales, -> { where(:customer_id => Customer.walkup_customer.id) }
   scope :checked_in, -> { where(:checked_in => true) }
   
+  scope :valid_for_showdate, ->(showdate) {
+    includes(:vouchertype => :valid_vouchers).
+    where('valid_vouchers.showdate_id' => showdate.id)
+  }
+
   # count the number of subscriptions for a given season
   def self.subscription_vouchers(year)
     season_start = Time.current.at_beginning_of_season(year)
@@ -191,12 +196,6 @@ class Voucher < Item
     else
       "for all dates"
     end
-  end
-
-  def redeemable_for?(showdate, ignore_cutoff=false)
-    ours = vouchertype.valid_vouchers.where(:showdate => showdate)
-    redeemable = (ours & showdate.valid_vouchers).first
-    redeemable.try(:max_sales_for_this_patron)
   end
 
   def redeemable_showdates(ignore_cutoff = false)

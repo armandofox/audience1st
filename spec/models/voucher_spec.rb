@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Voucher do
-
+  
   before :each do
     #  some Vouchertype objects for these tests
     args = {
@@ -14,6 +14,30 @@ describe Voucher do
     @basic_showdate = create(:showdate, :date => Time.current.tomorrow)
   end
 
+  describe 'redeemability', focus:true do
+    before(:each) do
+      @showdates = Array.new(3) { create(:showdate) }
+      create(:valid_voucher, :vouchertype => @vt_regular, :showdate => @showdates[0])
+      create(:valid_voucher, :vouchertype => @vt_regular, :showdate => @showdates[2])
+      @v1 = create(:revenue_voucher, :vouchertype => @vt_regular)
+      @v2 = create(:revenue_voucher)
+      expect(Voucher.count).to eq(2)
+    end
+    it 'for some showdates' do
+      v = Voucher.valid_for_showdate(@showdates[0])
+      expect(v).to include(@v1)
+      expect(v).not_to include(@v2)
+    end
+    it 'and other shows' do
+      v = Voucher.valid_for_showdate(@showdates[0])
+      expect(v).to include(@v1)
+      expect(v).not_to include(@v2)
+    end      
+    it 'for no showdates' do
+      expect(Voucher.valid_for_showdate(@showdates[1])).to be_empty
+    end
+  end
+
   describe "multiple voucher" do
     before(:each) do
       @vouchers = Array.new(2) do |i|
@@ -23,7 +47,7 @@ describe Voucher do
         @customer = create(:customer)
         @invalid_voucher = Voucher.new
         allow(@invalid_voucher).to receive(:valid?).and_return(nil)
-        v = VoucherInstantiator.new(@vt_regular).from_vouchertype.first
+        v = VoucherInstantiator.new(create(:revenue_vouchertype)).from_vouchertype.first
         v.reserve(@from,@logged_in).update_attribute(:customer_id, @customer.id)
         v
       end
@@ -43,13 +67,13 @@ describe Voucher do
   end
 
   describe "templated from vouchertype" do
-    subject { VoucherInstantiator.new(@vt_regular).from_vouchertype.first }
+    subject { VoucherInstantiator.new(@vt=create(:revenue_vouchertype)).from_vouchertype.first }
     it { is_expected.to be_valid }
     it { is_expected.not_to be_reserved }
     its(:customer) { should be_nil }
-    its(:category) { should == @vt_regular.category }
+    its(:category) { should == 'revenue' }
     its(:processed_by) { should be_nil }
-    its(:vouchertype) { should == @vt_regular }
+    its(:vouchertype) { should == @vt }
     its(:amount) { should == 10.00 }
   end
 

@@ -19,15 +19,12 @@
           Check which voucher(s) to use.  
           Customer will be checked in and these vouchers will be marked as used.
         #open_subscriber_vouchers
-          - @customer_vouchers.each do |voucher,redeemable_qty|
+          - @customer_vouchers.each do |voucher|
             .open_subscriber_voucher
               - order = voucher.order
               %label
                 #{voucher.category.capitalize} - #{voucher.name}
                 = check_box_tag "vouchers[#{voucher.id}]"
-              - if redeemable_qty.zero?
-                %span.attention= link_to "(Order ##{order.id})", order_path(order), :title => 'Customer would not be able to redeem this voucher on their own, but as box office, you can override. ' << strip_tags(one_line_order_summary order)
-              - else
                 %span= link_to "(Order ##{order.id})", order_path(order), :title => strip_tags(one_line_order_summary order)
-        = submit_tag 'Confirm Check-In'
+        = submit_tag 'Confirm Check-In', :class => 'btn btn-primary'
         = link_to 'Cancel', checkin_path(@showdate), :class => 'btn btn-secondary'

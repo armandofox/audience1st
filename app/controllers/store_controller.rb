@@ -282,12 +282,12 @@ class StoreController < ApplicationController
       Rails.logger.error("SUCCESS purchase #{order.customer}; Cart summary: #{order.summary}")
       email_confirmation(:confirm_order,order.purchaser,order) if params[:email_confirmation]
       success = true
-    # rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
-    #   flash[:alert] = order.errors.full_messages
-    #   Rails.logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
-    # rescue StandardError => e
-    #   Rails.logger.error("Unexpected error: #{e.message} #{e.backtrace}")
-    #   flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError => e
+      flash[:alert] = order.errors.full_messages
+      Rails.logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
+    rescue StandardError => e
+      Rails.logger.error("Unexpected error: #{e.message} #{e.backtrace}")
+      flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
     end
     success
   end
