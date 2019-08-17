@@ -19,7 +19,6 @@ Scenario: successfully purchase comps as guest
   When I proceed to checkout
   And I try to checkout as guest using "Joe Tally, 123 Fake St., Alameda, CA 94501, 510-999-9999, joetally@mail.com"
   And I press "CONTINUE >>"
-  Then show me the page
   Then the cart should contain 2 "PromoComp" tickets for "Oct 1, 2010, 8pm"
   When I press "Complete Comp Order"
   Then customer "Joe Tally" should have 2 "PromoComp" tickets for "Hamlet" on Oct 1, 2010, 8pm

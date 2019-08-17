@@ -228,13 +228,6 @@ class Order < ActiveRecord::Base
     summary.join('; ')
   end
 
-  def each_voucher
-    valid_vouchers.each_pair do |id,num|
-      v = ValidVoucher.find(id)
-      num.times { yield v }
-    end
-  end
-
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def ready_for_purchase?

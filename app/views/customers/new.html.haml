@@ -20,5 +20,5 @@
 
     = render 'extra'
     .form-row
-      .col-md-3= link_to 'Cancel', (@gCheckoutInProgress ? store_path : login_path), :class => 'btn btn-danger btn-block'
+      .col-md-3= link_to 'Cancel', (@gOrderInProgress ? store_path : login_path), :class => 'btn btn-danger btn-block'
       .col-md-3.offset-md-6.text-right= submit_tag 'Create My Account', :class => 'btn btn-success btn-block'

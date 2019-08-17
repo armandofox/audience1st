@@ -147,6 +147,7 @@ class StoreController < ApplicationController
       render(:action => 'donate') and return
     end
     if finalize_order(@order)
+      reset_shopping
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
@@ -158,18 +159,25 @@ class StoreController < ApplicationController
   end
 
   def process_cart
-    remember_order_in_session!
+    @order = Order.create(:processed_by => current_user)
     @order.add_comment params[:comments].to_s
     @order.add_tickets_from_params params[:valid_voucher], current_user, params[:promo_code]
-    redirect_to_referer(@order.errors.full_messages) and return unless @order.errors.empty?
     add_retail_items_to_cart
-    redirect_to_referer(@order.errors.full_messages) and return unless @order.errors.empty?
-    # all well with cart, try to process donation if any
     add_donation_to_cart
-    redirect_to_referer('There is nothing in your order.') and return if @order.cart_empty?
-    # order looks OK; all subsequent actions should display in-progress order at top of page
     add_service_charge_to_cart
-    set_checkout_in_progress true
+    if ! @order.errors.empty?
+      flash[:alert] = @order.errors.as_html
+      @order.destroy
+      return redirect_to_referer
+    end
+    if @order.cart_empty?
+      flash[:alert] = I18n.t('store.errors.empty_order')
+      @order.destroy
+      return redirect_to_referer
+    end
+    # order looks OK; all subsequent actions should display in-progress order at top of page
+    @order.save!
+    set_order_in_progress @order
     # if gift, first collect separate shipping address...
     if params[:gift] && @order.includes_vouchers?
       redirect_to shipping_address_path(@customer)
@@ -300,13 +308,6 @@ class StoreController < ApplicationController
     recipient = Customer.find_unique(try_customer)
     (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
-  def remember_order_in_session!
-    # in case current_user has been reset since last interaction (maybe the user logged in),
-    # set it.
-    @order.processed_by = current_user()
-    @order.save!
-    session[:cart] = @order.id
-  end
 
   def redirect_to_checkout
     checkout_params = {}
@@ -326,7 +327,7 @@ class StoreController < ApplicationController
       when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what]))
       else store_path(@customer,promo_code_args)
       end
-    flash[:alert] = msg
+    flash[:alert] ||= msg
     redirect_to redirect_target
   end
 

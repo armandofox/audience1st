@@ -22,7 +22,7 @@
           %br
         %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
 
-    = render :partial => 'cart', :object => @order
+    = render :partial => 'cart'
 
     = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 

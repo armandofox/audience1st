@@ -6,8 +6,8 @@
     = stylesheet_link_tag :application, :media => 'all'
     = venue_stylesheet_link_tag
 
-    = bootstrap_javascript_tag
     = javascript_include_tag :application
+    = bootstrap_javascript_tag
     = javascript_include_tag "#{STRIPE_JS_HOST}/v1/"
 
     %title= @page_title || h(action_name.humanize)
@@ -45,9 +45,9 @@
               = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
 
             #content.clear
-              - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
+              - if @gOrderInProgress && %w(customers store sessions).include?(controller_name)
                 %h1.text-center Your Order Is Not Yet Complete
-                = render :partial => 'store/cart', :object => @gCart, :locals => {:editable => false}
+                = render :partial => 'store/cart'
               = render :partial => 'messages/notices'
               = yield
       - if current_user

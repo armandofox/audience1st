@@ -46,5 +46,5 @@
     - unless @valid_vouchers.empty?
       .form-group.form-row
         %label.col-form-label.text-right.col-sm-4= t('store.accessible_seating_prompt')
-        = text_area_tag 'comments', @order.comments, :rows => 1, :class => 'form-control col-sm-6', :placeholder => t('store.accessible_seating_description')
+        = text_area_tag 'comments', '', :rows => 1, :class => 'form-control col-sm-6', :placeholder => t('store.accessible_seating_description')
         .col-sm-2
