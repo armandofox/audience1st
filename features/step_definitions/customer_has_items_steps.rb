@@ -8,7 +8,7 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
     :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
     :customer => customer,
     :purchaser => customer)
-  order.add_tickets(vv, num.to_i)
+  order.add_tickets_without_capacity_checks(vv, num.to_i)
   order.finalize!
 end
 

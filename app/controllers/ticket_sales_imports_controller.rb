@@ -61,10 +61,10 @@ class TicketSalesImportsController < ApplicationController
           if o[:action] == ImportableOrder::MAY_CREATE_NEW_CUSTOMER && o[:customer_id].blank?
             customer = Customer.new(:first_name => o[:first], :last_name => o[:last],
               :email => o[:email], :ticket_sales_import => import)
-            order.finalize_with_new_customer!(customer, sold_on)
+            order.finalize_with_new_customer!(customer, current_user, sold_on)
             import.new_customers += 1
           else
-            order.finalize_with_existing_customer_id!(o[:customer_id], sold_on)
+            order.finalize_with_existing_customer_id!(o[:customer_id], current_user, sold_on)
             import.existing_customers += 1
           end
           import.tickets_sold += order.ticket_count unless o[:action] == ImportableOrder::ALREADY_IMPORTED

@@ -12,7 +12,7 @@ class WalkupSalesController < ApplicationController
 
   def create
     @showdate = Showdate.find params[:id]
-    @order = Order.new(
+    @order = Order.create(
       :walkup => true,
       :customer => Customer.walkup_customer,
       :purchaser => Customer.walkup_customer,

@@ -60,7 +60,7 @@ class Showdate < ActiveRecord::Base
   def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
 
   def total_sales
-    vouchers
+    vouchers.finalized
   end
 
   def advance_sales_vouchers

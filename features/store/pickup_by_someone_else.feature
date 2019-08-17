@@ -20,7 +20,6 @@ Scenario: customer can specify pickup name at purchase time
   When I fill in "pickup" with "Jason Gray"
   And the order is placed successfully
   Then I should be on the order confirmation page
-  Then show me the page
   And I should see "Pickup by: Jason Gray" within "#order_notes"
 
 Scenario: customer cannot specify alternate person for donation-only order

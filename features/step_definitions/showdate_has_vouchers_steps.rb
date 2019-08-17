@@ -44,7 +44,7 @@ Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
   offer = ValidVoucher.find_by_vouchertype_id_and_showdate_id!(
     Vouchertype.find_by_name!(vtype).id,
     showdate.id)
-  order.add_tickets(offer, qty)
+  order.add_tickets_without_capacity_checks(offer, qty)
   order.finalize!
 end
 

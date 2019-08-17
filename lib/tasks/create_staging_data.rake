@@ -182,7 +182,7 @@ staging = namespace :staging do
       o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer,
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
-      o.add_tickets(sub_voucher, num_tix)
+      o.add_tickets_without_capacity_checks(sub_voucher, num_tix)
       o.finalize!
       StagingHelper::dot
       # now reserve each of those vouchers for a random perf of each show
@@ -223,7 +223,7 @@ staging = namespace :staging do
         valid_voucher = valid_vouchers.sample
         # buy it
         o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
-        o.add_tickets(valid_voucher, num_tix)
+        o.add_tickets_without_capacity_checks(valid_voucher, num_tix)
         o.finalize!
       end
       StagingHelper::dot

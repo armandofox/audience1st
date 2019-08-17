@@ -136,14 +136,18 @@ class Order < ActiveRecord::Base
     valid_voucher.customer = self.processed_by || Customer.anonymous_customer
     redemption = valid_voucher.adjust_for_customer
     if redemption.max_sales_for_this_patron >= number
-      showdate = valid_voucher.showdate
-      new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
-      new_vouchers.each { |v| v.reserve!(showdate) }
-      self.vouchers += new_vouchers
-      self.save!
+      add_tickets_without_capacity_checks(valid_voucher, number)
     else
       self.errors.add(:base, "Only #{redemption.max_sales_for_this_patron} seats are available")
     end
+  end
+
+  def add_tickets_without_capacity_checks(valid_voucher, number)
+    raise Order::NotPersistedError unless persisted?
+    new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
+    new_vouchers.each { |v| v.reserve!(valid_voucher.showdate) }
+    self.vouchers += new_vouchers
+    self.save!
   end
   
   def ticket_count ;       vouchers.size        ; end
@@ -249,12 +253,13 @@ class Order < ActiveRecord::Base
     errors.empty?
   end
 
-  def finalize_with_existing_customer_id!(cid,sold_on=Time.current)
+  def finalize_with_existing_customer_id!(cid,processed_by,sold_on=Time.current)
     self.customer_id = self.purchaser_id = cid
+    self.processed_by = processed_by
     self.finalize!(sold_on)
   end
   
-  def finalize_with_new_customer!(customer,sold_on=Time.current)
+  def finalize_with_new_customer!(customer,processed_by,sold_on=Time.current)
     customer.force_valid = true
     self.customer = self.purchaser = customer
     self.finalize!(sold_on)
