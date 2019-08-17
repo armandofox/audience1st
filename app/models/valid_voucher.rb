@@ -211,15 +211,11 @@ class ValidVoucher < ActiveRecord::Base
   def adjust_for_customer
     result = self.clone_with_id
     # boxoffice and higher privilege can do anything
-    if customer.try(:is_boxoffice)
-      result.max_sales_for_this_patron = INFINITE
-    else
-      result.adjust_for_visibility ||
-        result.adjust_for_showdate ||
-        result.adjust_for_sales_dates ||
-        result.adjust_for_capacity # this one must be called last
-      result.max_sales_for_this_patron = INFINITE if customer.is_boxoffice
-    end
+    result.adjust_for_visibility ||
+      result.adjust_for_showdate ||
+      result.adjust_for_sales_dates ||
+      result.adjust_for_capacity # this one must be called last
+    result.max_sales_for_this_patron = INFINITE     if customer.try(:is_boxoffice)
     result.freeze
   end
 
@@ -228,13 +224,10 @@ class ValidVoucher < ActiveRecord::Base
   def adjust_for_customer_reservation
     result = self.clone_with_id
     # boxoffice and higher privilege can do anything
-    if customer.try(:is_boxoffice)
-      result.max_sales_for_this_patron = INFINITE
-    else
-      result.adjust_for_showdate ||
-        result.adjust_for_advance_reservations ||
-        result.adjust_for_capacity # this one must be called last
-    end
+    result.adjust_for_showdate ||
+      result.adjust_for_advance_reservations ||
+      result.adjust_for_capacity # this one must be called last
+    result.max_sales_for_this_patron = INFINITE     if customer.try(:is_boxoffice)
     result.freeze
   end
 
