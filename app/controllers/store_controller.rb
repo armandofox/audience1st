@@ -164,7 +164,6 @@ class StoreController < ApplicationController
     @order.add_tickets_from_params params[:valid_voucher], current_user, params[:promo_code]
     add_retail_items_to_cart
     add_donation_to_cart
-    add_service_charge_to_cart
     if ! @order.errors.empty?
       flash[:alert] = @order.errors.as_html
       @order.destroy
@@ -175,6 +174,7 @@ class StoreController < ApplicationController
       @order.destroy
       return redirect_to_referer
     end
+    add_service_charge_to_cart
     # order looks OK; all subsequent actions should display in-progress order at top of page
     @order.save!
     set_order_in_progress @order
@@ -248,7 +248,6 @@ class StoreController < ApplicationController
 
   def place_order
     @page_title = "Confirmation of Order #{@order.id}"
-    @order = @order
     # what payment type?
     @order.purchasemethod,@order.purchase_args = purchasemethod_from_params
     @recipient = @order.customer
@@ -262,8 +261,8 @@ class StoreController < ApplicationController
       redirect_to_checkout
       return
     end
-
     if finalize_order(@order)
+      @order.freeze             # for confirmation page
       reset_shopping
       if session[:guest_checkout]
         # forget customer after successful guest checkout

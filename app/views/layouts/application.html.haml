@@ -45,7 +45,7 @@
               = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
 
             #content.clear
-              - if @gOrderInProgress && %w(customers store sessions).include?(controller_name)
+              - if display_order_in_progress?
                 %h1.text-center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart'
               = render :partial => 'messages/notices'

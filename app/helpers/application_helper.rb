@@ -42,6 +42,13 @@ module ApplicationHelper
       (controller.controller_name == 'orders' && action_name == 'index'))
   end
 
+  def display_order_in_progress?
+    @gOrderInProgress &&
+      %w(customers store sessions).include?(controller_name)  &&
+      action_name != 'place_order'
+  end
+
+
   def in_rows_of(n,collection)
     return '' if (collection.nil? || collection.empty?)
     rows = ''
