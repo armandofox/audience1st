@@ -135,8 +135,9 @@ Given /^the "(.*)" performance (has reached its max sales|is truly sold out)$/ d
   showdate = Showdate.find_by(:thedate => Time.zone.parse(dt))
   to_sell = (sold =~ /max/ ? showdate.saleable_seats_left : showdate.total_seats_left)
   to_sell.times { create(:revenue_voucher, :showdate => showdate, :finalized => true) }
-  # vtype = create(:valid_voucher, :showdate => showdate).name
-  # steps %Q{Given #{to_sell} "#{vtype}" tickets have been sold for "#{dt}"}
+  # also create a valid_voucher that reflects the tickets that just got sold out, since
+  # that info is used to populate ticket menus on sales pages
+  create(:valid_voucher, :showdate => showdate)
 end
 
 #  @showdate is set by the function that most recently created a showdate for a scenario
