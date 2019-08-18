@@ -61,13 +61,6 @@ class ShowdatesController < ApplicationController
     redirect_to edit_show_path(@showdate.show)
   end
 
-  def seatmap
-    # return the seatmap for this production, and array of UNAVAILABLE seats for this performance
-    seatmap = Showdate.find(params[:id]).seatmap.json
-    unavailable = [].to_json
-    render :json => %Q{ {"map": #{seatmap}, "unavailable": #{unavailable}} }
-  end
-
   private
 
   def showdates_from_date_list(dates, params)

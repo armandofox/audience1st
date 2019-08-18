@@ -30,7 +30,7 @@ class Option < ActiveRecord::Base
   def self.disable_feature!(str)
     Option.first.update_attributes!(:feature_flags => Option.feature_flags - [str])
   end
-  
+
   validates_numericality_of :advance_sales_cutoff
   validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
   validate :availability_levels_monotonically_increase

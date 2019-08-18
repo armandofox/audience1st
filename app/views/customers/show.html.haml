@@ -11,6 +11,7 @@
         %th.text-center #Tix
         %th.text-center Show
         %th.text-center Your Reservation
+        %th.text-center Seats
         %th
         - if @gAdminDisplay
           %th.adminField Staff Comments
@@ -34,7 +35,7 @@
         %th.text-center #Tix
         %th.text-center Type
         %th.text-center Your Reservation
-        %th
+        %th.text-center Seats
         - if @gAdminDisplay
           %th.adminField Staff Comments
         - else
@@ -45,7 +46,3 @@
           = render :partial => 'reserved_voucher', :locals => {:group => group, :is_subscriber_voucher => false}
         - else
           = render :partial => 'open_voucher', :locals => {:group => group, :label_function => :name_and_date_with_capacity_stats}
-
-:javascript
-  $('.save_comment').on('ajax:success', function(e,s,x) { alert("Comment saved") });
-  $('.save_comment').on('ajax:error', function(e,s,x) { alert("Error, comment NOT saved") });

@@ -38,6 +38,16 @@ class VoucherPresenter
     user.is_boxoffice || vouchers.all?(&:can_be_changed?)
   end
 
+  def voucher_comments
+    vouchers.map(&:comments).map(&:to_s).reject(&:blank?).join('; ')
+  end
+  
+  def seats
+    return '' if @vouchers.all? { |v| v.seat.blank? }
+    (@vouchers.size > 1 ? '(Seats ' : '(Seat ') <<
+      @vouchers.map(&:seat).sort.join(',')  << ')'
+  end
+  
   # Within a show category, OPEN VOUCHERS are listed last, others are shown by order of showdate
   # vouchers for DIFFERENT SHOWS are ordered by opening date of the show
   # vouchers NOT VALID FOR any show are ordered by their vouchertype's display_order

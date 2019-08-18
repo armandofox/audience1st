@@ -1,5 +1,15 @@
 module ShowdatesHelper
 
+  def showdate_seating_choices(showdate)
+    if Option.feature_enabled? 'rs'
+      if showdate.seatmap
+        link_to 'Seats...', '', :class => 'btn btn-outline-primary btn-small'
+      else
+        content_tag 'span', 'General Admission'
+      end
+    end
+  end
+
   def time_in_words_relative_to(ed,sd)
     if (sd.month == ed.month) && (sd.day == ed.day) && (sd.year == ed.year)
       ed.strftime("%l:%M%p day of show")
