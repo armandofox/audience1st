@@ -32,7 +32,6 @@ describe 'reserved-seating showdate', :focus => true do
     end
     it 'fails to reserve occupied seat' do
       @v3 = build(:revenue_voucher, :showdate => @showdate, :seat => 'B1')
-      byebug
       expect(@v3).to_not be_valid
       expect(@v3.errors.full_messages).to include_match_for(/is already occupied/)
     end

@@ -1,17 +1,17 @@
 class Voucher < Item
   belongs_to :showdate
-  belongs_to :vouchertype
 
   class ReservationError < StandardError ;  end
 
+  belongs_to :vouchertype
   validates_presence_of :vouchertype_id
   delegate :category, :to => :vouchertype
 
   validate :checkin_requires_reservation
-
+  validate :existing_seat, :if => :reserved?
   validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => 'is already occupied', :if => :reserved?
 
-  delegate :gift?, :ship_to, :to => :order
+  delegate :gift?, :ship_to, :to => :order # association is via Item (ancestor class)
 
   # when a bundle voucher is cancelled, we must also cancel all its
   # constituent vouchers.  This method therefore extends the superclass method.
@@ -320,8 +320,13 @@ class Voucher < Item
   private
   
   def checkin_requires_reservation
-    !checked_in or reserved?
+    errors.add(:base, 'Unreserved voucher cannot be checked in') unless (!checked_in or reserved?)
+
   end
 
+  def existing_seat
+    errors.add(:seat, 'does not exist for this performance') unless
+      showdate.seatmap.nil?  || seat.blank?  || showdate.seatmap.includes_seat?(seat)
+  end
 
 end

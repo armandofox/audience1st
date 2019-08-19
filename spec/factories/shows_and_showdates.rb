@@ -34,6 +34,7 @@ FactoryBot.define do
     #   A1 - A2 -
     #     B1 -  B2
     name 'Default'
+    csv 'A1,A2,A3,A4'
     json %q{['r[A1, ]_r[A2, ]_', '_r[B1, ]_r[B2, ]']}
     seat_list 'A1,A2,B1,B2'
   end

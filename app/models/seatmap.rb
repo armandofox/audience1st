@@ -2,9 +2,15 @@ class Seatmap < ActiveRecord::Base
 
   require 'csv'
   
-  validates_presence_of :name
-  validates_uniqueness_of :name
+  validates :name, :presence => true, :uniqueness => true
+  validates :csv, :presence => true
+  validates :json,  :presence => true
+  validates :seat_list, :presence => true
 
+  def includes_seat?(seat)
+    seat_list.match Regexp.new("\\b#{seat}\\b")
+  end
+  
   def parse_csv
     @as_js = []
     list = []
@@ -27,3 +33,4 @@ class Seatmap < ActiveRecord::Base
     self.seat_list = list.sort.join(',')
   end
 end
+
