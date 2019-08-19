@@ -14,7 +14,7 @@ describe Voucher do
     @basic_showdate = create(:showdate, :date => Time.current.tomorrow)
   end
 
-  describe 'redeemability', focus:true do
+  describe 'redeemability' do
     before(:each) do
       @showdates = Array.new(3) { create(:showdate) }
       create(:valid_voucher, :vouchertype => @vt_regular, :showdate => @showdates[0])

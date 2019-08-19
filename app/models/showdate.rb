@@ -97,6 +97,13 @@ class Showdate < ActiveRecord::Base
   def season
     thedate.this_season
   end
+
+  # Calculation of available seats (for reserved seating)
+  def occupied_seats
+    return [] unless seatmap
+    # basically, collect seat info from all vouchers for this showdate
+    vouchers.map(&:seat).sort
+  end
   
   # returns two elements indicating the lowest-priced and highest-priced
   # publicly-available tickets.

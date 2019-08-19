@@ -9,7 +9,7 @@ class Voucher < Item
 
   validate :checkin_requires_reservation
 
-  validates :seat, :uniqueness => { :scope => :showdate_id, :allow_blank => true, :message => 'is a;ready occupied' }
+  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => 'is already occupied', :if => :reserved?
 
   delegate :gift?, :ship_to, :to => :order
 
@@ -96,9 +96,6 @@ class Voucher < Item
 
   scope :open, -> { where(:checked_in => false).where(:showdate => nil) }
 
-  # delegations
-  def account_code_reportable ; vouchertype.account_code.name_with_code ; end
-
   def unreserved? ; showdate_id.to_i.zero?  ;  end
   def reserved? ; !(unreserved?) ; end
   
@@ -111,10 +108,6 @@ class Voucher < Item
   # it's the show the voucher is associated with. If a bundle voucher,
   # it's the name of the bundle.
   def show ;  showdate ? showdate.show : nil ; end
-  def show_or_bundle_name
-    show.kind_of?(Show)  ? show.name :
-      (vouchertype_id > 0 && vouchertype.bundle? ? vouchertype.name : "??")
-  end
 
   def voucher_description
     if showdate.kind_of?(Showdate)
@@ -167,7 +160,7 @@ class Voucher < Item
     s = sprintf("%d %s", (new_record? ? object_id : id),
       (vouchertype.nil? ? '(nil!)' : vouchertype.name))
     if bundle?
-      s += sprintf("\n  <%s>,\n", bundled_vouchers.map(&:inspect).join("\n   "))
+      s += sprintf("\n  <%s>,\n", bundled_vouchers.map(&:to_s).join("\n   "))
     end
     s
   end
@@ -209,18 +202,6 @@ class Voucher < Item
     end
   end
   
-  def reserve_for(desired_showdate, processor, new_comments='')
-    errors.add :base,"This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
-    redemption = valid_voucher_adjusted_for processor,desired_showdate
-    if processor.is_boxoffice || redemption.max_sales_for_this_patron > 0
-      reserve!(desired_showdate, new_comments)
-      true
-    else
-      errors.add :base,redemption.explanation
-      false
-    end
-  end
-
   def can_be_changed?(who = Customer.walkup_customer)
     unless who.kind_of?(Customer)
       who = Customer.find(who) rescue Customer.walkup_customer
@@ -253,8 +234,23 @@ class Voucher < Item
   # 
   def unreserve
     self.showdate = nil
+    self.seat = nil
     self.checked_in = false
     save!
+  end
+
+  # BUG there should not be 3 separate methods here
+  
+  def reserve_for(desired_showdate, processor, new_comments='')
+    errors.add :base,"This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
+    redemption = valid_voucher_adjusted_for processor,desired_showdate
+    if processor.is_boxoffice || redemption.max_sales_for_this_patron > 0
+      reserve!(desired_showdate, new_comments)
+      true
+    else
+      errors.add :base,redemption.explanation
+      false
+    end
   end
   def reserve(showdate,logged_in_customer,comments='')
     self.showdate = showdate
@@ -262,6 +258,11 @@ class Voucher < Item
     self.comments = comments
     self
   end
+  def reserve!(desired_showdate, new_comments='')
+    update_attributes(:comments => new_comments, :showdate => desired_showdate)
+  end
+
+
 
   def self.change_showdate_multiple(vouchers, showdate, logged_in_customer)
     Voucher.transaction do
@@ -303,10 +304,6 @@ class Voucher < Item
     else
       nil
     end
-  end
-
-  def reserve!(desired_showdate, new_comments='')
-    update_attributes(:comments => new_comments, :showdate => desired_showdate)
   end
 
   def valid_voucher_adjusted_for customer,showdate

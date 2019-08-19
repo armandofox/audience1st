@@ -23,7 +23,7 @@
     
     #outer_header
     #outer_wrapper
-      #inner_wrapper.container
+      #inner_wrapper.container-fluid
         - if (url = Option.venue_homepage_url).blank?
           #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         - else
