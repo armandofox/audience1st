@@ -43,9 +43,10 @@ class VoucherPresenter
   end
   
   def seats
-    return '' if @vouchers.all? { |v| v.seat.blank? }
-    (@vouchers.size > 1 ? '(Seats ' : '(Seat ') <<
-      @vouchers.map(&:seat).sort.join(',')  << ')'
+    if ! @vouchers.first.reserved?              then ''
+    elsif  @vouchers.all? { |v| v.seat.blank? } then 'General Admission' 
+    else                                        @vouchers.map(&:seat).sort.join(',')
+    end
   end
   
   # Within a show category, OPEN VOUCHERS are listed last, others are shown by order of showdate

@@ -1,33 +1,34 @@
 - if (@gAdminDisplay || group.cancelable_by(@customer))
-  %tr.border-bottom.border-secondary[group.vouchers.first]
-    = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline' do
+  .row.border-top.border-secondary[group.vouchers.first]
+    = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth'   do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
-      %td.text-center= menu_or_static_text('cancelnumber', group.size)
-      %td.text-center= group.name
-      %td.text-center
+      .col-1= menu_or_static_text('cancelnumber', group.size)
+      .col-3.text-center= group.name
+      .col-4.text-center
         - if local_assigns[:is_subscriber_voucher]
           = group.showdate.printable_date
         - else
           %span.showName= group.showdate.name
           %br
           %span.showDate= group.showdate.printable_date_with_description
-        = group.seats
-      %td.text-center 
-        = submit_tag 'Cancel', |
-          :disable_with => 'Cancelling...', |
-          :class => 'btn btn-danger', |
-          :confirm => t('reservations.confirm_cancellation') |
-    - if @gAdminDisplay
-      = render :partial => 'update_voucher_comments', :locals => {:group => group}
-    - else
-      %td
+      .col-2.text-center= group.seats
+      .col-2.text-center= submit_tag 'Cancel', :disable_with => 'Cancelling...', :class => 'btn btn-danger', :confirm => t('reservations.confirm_cancellation') |
+
 - else
-  %tr.border-bottom.border-secondary[group.vouchers.first]
-    %td.text-center= group.size
-    %td.text-center= group.name
-    %td.text-center
+  .row.border-top.border-secondary[group.vouchers.first]
+    .col-1.text-center= group.size
+    .col-3.text-center= group.name
+    .col-4.text-center
       %span.showName= group.showdate.name
       %br
       %span.showDate= group.showdate.printable_date
-    %td
-    %td
+
+- if @gAdminDisplay
+  .row.adminField
+    = form_tag update_comment_customer_voucher_path(@customer,group.vouchers[0]), :method => 'put', 'data-remote' => true, :class => 'save_comment form-inline a1-force-fullwidth' do
+      = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
+      .col-2 Staff comments
+      .col-10
+        .input-group
+          = text_field_tag 'comments', group.voucher_comments, :id => nil, :class => 'form-control form-control-sm'
+          = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => nil, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'

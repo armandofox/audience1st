@@ -1,5 +1,5 @@
 A1.show_seating_options_for_showdate = function() {
-  var container = $(this).closest('tr'); // the enclosing element that contains the relevant form fields
+  var container = $(this).closest('.row'); // the enclosing element that contains the relevant form fields
   $(container).find('.special-seating').removeClass('invisible');
   var url = '/ajax/seating_options/' + $(this).val();
   var targetDiv = $(container).find('.seating-options');

@@ -1,7 +1,7 @@
 %p Search for customers with ANY of these labels:
 - labels = Label.all.sort_by(&:name)
 - columns = 5
-%table
+%table.a1-table
   %tr
     - labels.in_groups_of(labels.size / columns + 1) do |l|
       %td

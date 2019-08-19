@@ -4,11 +4,15 @@ body.maintenance {
     border: 8px dashed yellow;
 }
 
-.customer-vouchers-table, .a1-table {
+.a1-force-fullwidth {
+    width: 100% !important;
+}
+
+.a1-table {
     width: 90%;
     border-collapse: collapse;
 }
-.customer-vouchers-table td, .a1-table td {
+.a1-table td {
     vertical-align: top;
 }
 

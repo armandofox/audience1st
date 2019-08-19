@@ -16,7 +16,7 @@
       = render :partial => "#{@partial.gsub('_with_errors', '')}_messages", :locals => {:import => @import}
   #import_records
     - if @collection.length > 0
-      %table.hilite.import
+      %table.a1-table.hilite.import
         %thead
           = render :partial => "#{@partial.gsub('_with_errors', '')}_header"
         %tbody
