@@ -24,7 +24,7 @@
       %span.showDate= group.showdate.printable_date
 
 - if @gAdminDisplay
-  .row.adminField[group.vouchers.first]
+  .row.adminField
     = form_tag update_comment_customer_voucher_path(@customer,group.vouchers[0]), :method => 'put', 'data-remote' => true, :class => 'save_comment form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
       .col-2 Staff comments
