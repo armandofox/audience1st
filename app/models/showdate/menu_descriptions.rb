@@ -1,11 +1,15 @@
 class Showdate < ActiveRecord::Base
   
+  def show_name
+    show.name
+  end
+
   def printable_name
-    self.show.name + " - " + self.printable_date_with_description
+    show.name + " - " + printable_date_with_description
   end
 
   def printable_date
-    self.thedate.to_formatted_s(:showtime_brief)
+    thedate.to_formatted_s(:showtime)
   end
 
   def printable_date_with_description

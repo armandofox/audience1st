@@ -11,7 +11,7 @@ class VoucherPresenter
   # VoucherPresenter objects.
   #
   require 'set'
-  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist
+  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :redeemable_for_multiple_shows, :showdate, :voucherlist
   # Constructor takes a set of vouchers that should be part of a group, and constructs the
   # presentation logic for them.  It's an error for the provided vouchers not to "belong together"
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
@@ -25,9 +25,19 @@ class VoucherPresenter
     @group_id = first.id
     @size = @vouchers.length
     @vouchertype = first.vouchertype
-    @name = @vouchertype.name
     @showdate = first.showdate
     @voucherlist = @vouchers.map { |v| v.id }.join(',')
+    # group name: if ALL vouchers in group are redeemable for only a single production,
+    #  the production's name is the group name.  otherwise, use the vouchertype name (all of
+    #  them are guaranteed to be the same vouchertype anyway).
+    show_names = @vouchertype.valid_vouchers.map(&:show_name).compact.uniq
+    if show_names.length == 1
+      @name = show_names.first
+      @redeemable_for_multiple_shows = false
+    else
+      @name =  @vouchertype.name
+      @redeemable_for_multiple_shows = true
+    end
   end
 
   def redeemable_showdates
@@ -48,7 +58,7 @@ class VoucherPresenter
     else                                        @vouchers.map(&:seat).sort.join(',')
     end
   end
-  
+
   # Within a show category, OPEN VOUCHERS are listed last, others are shown by order of showdate
   # vouchers for DIFFERENT SHOWS are ordered by opening date of the show
   # vouchers NOT VALID FOR any show are ordered by their vouchertype's display_order

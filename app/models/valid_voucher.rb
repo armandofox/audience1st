@@ -57,6 +57,10 @@ class ValidVoucher < ActiveRecord::Base
     showdate.try(:show).try(:event_type)
   end
 
+  def show_name
+    showdate &&  showdate.show_name
+  end
+  
   def max_sales_for_this_patron
     @max_sales_for_this_patron ||= max_sales_for_type()
     if showdate # in case this is a valid-voucher for a bundle, vs for regular show
