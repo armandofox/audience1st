@@ -12,23 +12,27 @@
 }
 */
     
-div.seatCharts-seat.available {
-    background-color: lightGrey;
-}
-div.seatCharts-seat.focused {
+.seatCharts-seat.available {
     background-color: lightGreen;
 }
-div.seatCharts-seat.selected {
+.seatCharts-seat.unavailable {
+    background-color: lightGrey;
+}
+.seatCharts-seat.focused {
+    border: 2px solid yellow;
+    background-color: green;
+}
+.seatCharts-seat.selected {
     background-color: green;
 }
 
-div#seating-charts-wrapper {
+#seating-charts-wrapper {
     padding: 2px;
     margin: 2px;
     border: 1px solid black;
     position: relative;
 }
-div.seatCharts-container {
+.seatCharts-container {
     position: absolute;
     top: 0;
     left: 0;
