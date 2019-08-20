@@ -44,6 +44,19 @@ class VoucherPresenter
     @redeemable_showdates ||= if @vouchers[0].reservable? then @vouchers[0].redeemable_showdates(@ignore_cutoff) else [] end
   end
 
+  def menu_label_function(admin_display = false)
+    if admin_display
+      # :name_and_date_with_capacity_stats
+      :date_with_explanation_for_admin
+    elsif redeemable_for_multiple_shows
+      # dropdown menu should include showname AND date
+      :printable_name
+    else
+      # dropdown menu should show ONLY the date
+      :printable_date
+    end
+  end
+
   def cancelable_by(user)
     user.is_boxoffice || vouchers.all?(&:can_be_changed?)
   end
