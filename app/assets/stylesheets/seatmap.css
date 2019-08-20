@@ -15,8 +15,11 @@
 div.seatCharts-seat.available {
     background-color: lightGrey;
 }
+div.seatCharts-seat.focused {
+    background-color: lightGreen;
+}
 div.seatCharts-seat.selected {
-	background-color: green;
+    background-color: green;
 }
 
 div#seating-charts-wrapper {
@@ -24,12 +27,12 @@ div#seating-charts-wrapper {
     position: relative;
 }
 div.seatCharts-container {
-    border: 1px solid red;
     position: absolute;
     top: 0;
     left: 0;
+    border: 1px solid red;
 }
-img#seating-charts-overlay {
+img.seating-charts-overlay {
     border: 1px solid blue;
     position: absolute;
     top: 0;
@@ -38,6 +41,7 @@ img#seating-charts-overlay {
     pointer-events: none;
 }
 div.seatCharts-cell {
+    display: inline-block;
     height: 20px;
     width: 20px;
     margin: 1px;

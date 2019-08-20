@@ -11,6 +11,7 @@ A1.show_seating_options_for_showdate = function() {
 A1.reservations_page_setup = function() {
   // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
   $('select.showdate').change(A1.show_seating_options_for_showdate);
+  $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdate);
   // updating staff comments field (form-remote)
   $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
   $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });

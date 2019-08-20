@@ -1,9 +1,11 @@
 A1.seatmap = {
-  seats: null,
-  selectedSeats: [],
-  max: 0,
-  settings: {
-    map: []
+  selectedSeats: []
+  ,unavailable: []
+  ,max: 0
+  ,seats: null
+  ,settings: {
+    seats: {}
+    ,map: []
     ,naming: { top: false, left: false }
     ,click: function(evt) {
       switch(this.status()) {
@@ -18,6 +20,39 @@ A1.seatmap = {
       }
     }
   }
+  // Link/button that makes seatmap appear has a "data-showdate-id" attribute that will
+  // be used to fetch seatmap JSON and list of unavailable seats as JSON array
+  ,showSeatmapForShowdate: function(evt) {
+    evt.preventDefault();
+    // extract number of tickets to reserve and showdate_id from neighboring elements
+    var container = $(this).closest('.row');
+    var numTickets = container.find('.num_tickets').val();
+    var showdateID = container.find('.showdate').val();
+    var url = '/ajax/seatmap/' + showdateID;
+    // get the seatmap and unavailable seats for this showdate
+    $.getJSON(url, function(json_data) { 
+      A1.seatmap.max = parseInt(numTickets);
+      A1.seatmap.settings.map = json_data.map;
+      A1.seatmap.unavailable = json_data.unavailable;
+      A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+      $('#seatmap').removeClass('invisible');
+      A1.seatmap.setup();
+    });
+  }
+  ,setup: function() {
+    A1.seatmap.unselectAll();
+    A1.seatmap.centerMap();
+    A1.seatmap.refreshLegend();
+    A1.seatmap.unavailable.forEach(function(seat_num) {
+      A1.seatmap.seats.status(seat_num, 'unavailable');
+    });
+    $('#seatmap')[0].addEventListener('click', A1.seatmap.refreshLegend);
+    document.addEventListener('resize', A1.seatmap.centerMap);
+    // floating "tooltips" that show each seat number on hover
+    $('.seatCharts-seat').each(function(index) {
+      $(this).attr('title', $(this).attr('id'));
+    });
+  }
   ,select: function(seat) {
     var seatNum = seat.settings.id;
     if (A1.seatmap.selectedSeats.length > A1.seatmap.max-1) {
@@ -28,7 +63,7 @@ A1.seatmap = {
   }
   ,unselectAll: function() {
     A1.seatmap.seats.status(A1.seatmap.selectedSeats,'available');
-    A1.seatmap.selected_seats = [];
+    A1.seatmap.selectedSeats = [];
   }
   ,unselect: function(seat) {
     var seatNum = seat.settings.id;
@@ -51,18 +86,5 @@ A1.seatmap = {
     $('#seating-charts-overlay').width(mapWidth);
     $('#seatmap').css({"left": left});
     $('#seating-charts-wrapper').height($('#seatmap').height());
-  }
-  ,setup: function() {
-    A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
-    A1.seatmap.max = parseInt($('#num_seats').val());
-    A1.seatmap.unselectAll();
-    A1.seatmap.centerMap();
-    A1.seatmap.refreshLegend();
-    $('#seatmap')[0].addEventListener('click', A1.seatmap.refreshLegend);
-    document.addEventListener('resize', A1.seatmap.centerMap);
-    $('#num_seats').change(A1.seatmap.setup);
-    $('.seatCharts-seat').each(function(index) {
-      $(this).attr('title', $(this).attr('id'));
-    });
   }
 };

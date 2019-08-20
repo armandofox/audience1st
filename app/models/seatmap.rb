@@ -27,7 +27,7 @@ class Seatmap < ActiveRecord::Base
           list << cell
         end
       end
-      @as_js << "'#{row_string}'"
+      @as_js << %Q{"#{row_string}"}
     end
     self.json = "[\n" << @as_js.join(",\n") << "\n  ]"
     self.seat_list = list.sort.join(',')

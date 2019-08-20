@@ -1,6 +1,6 @@
 - if Option.feature_enabled? 'rs'
   - if @showdate.seatmap
-    = link_to 'Choose Seats...', '', :class => 'btn btn-outline-primary btn-small'
+    = button_tag 'Choose Seats...', :class => 'btn btn-outline-primary btn-small show-seatmap'
     -#= submit_tag 'Confirm', :disabled => 'disabled', :disable_with => 'Confirming...', :id => nil, :class => 'btn btn-success'
   - else
     = submit_tag 'Confirm', :disable_with => 'Confirming...', :id => nil, :class => 'btn btn-success'    
