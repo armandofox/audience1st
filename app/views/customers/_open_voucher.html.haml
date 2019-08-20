@@ -17,6 +17,6 @@
           :id => nil,                            |
           :class => 'showdate form-control overflow-auto a1-force-fullwidth'     |
         = text_field_tag 'comments', '', :class => 'invisible form-control form-control-sm special-seating a1-force-fullwidth', :placeholder => t('reservations.special_seating_requests')
-      .col-2.text-center= text_field_tag 'seats', '', :disabled => 'disabled', :class => 'seat-display shadow-none a1-passive-text-input'
+      .col-2.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
       .col-2.text-center
         .seating-options

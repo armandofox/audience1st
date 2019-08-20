@@ -104,9 +104,17 @@ class VouchersController < ApplicationController
     num = params[:number].to_i
     count = 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
+    if !params[:seats].blank?           # handle reserved seating reservation
+      seats = params[:seats].split(/\s*,\s*/)
+      vouchers.each { |v| v.seat = seats.pop }
+    end
     errors = []
     comments = params[:comments].to_s
     vouchers.each do |v|
+      if ! v.valid?
+        errors += v.errors.full_messages
+        break
+      end
       if v.reserve_for(the_showdate, current_user, comments)
         count += 1
         comments = '' # only first voucher gets comment field
@@ -130,7 +138,7 @@ class VouchersController < ApplicationController
     else
       flash[:alert] = "Some of your reservations could not be completed: " <<
         errors <<
-        "<br/>Please check the results below carefully before continuing."
+        ".  Please check the results below carefully before continuing."
       email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     end
     redirect_to customer_path(@customer)
