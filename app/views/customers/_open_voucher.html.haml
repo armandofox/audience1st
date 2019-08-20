@@ -18,7 +18,7 @@
           :class => 'showdate form-control',     |
           :style => 'max-width: 22em !important' |
         = text_field_tag 'comments', '', :class => 'invisible form-control form-control-sm special-seating', :placeholder => t('reservations.special_seating_requests')
-      .col-2
+      .col-2.text-center.seat-display
       .col-2.text-center
         - if Option.feature_enabled? 'rs'
           .seating-options

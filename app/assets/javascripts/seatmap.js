@@ -3,6 +3,8 @@ A1.seatmap = {
   ,unavailable: []
   ,max: 0
   ,seats: null
+  ,seatDisplayArea: null
+  ,url: null
   ,settings: {
     seats: {}
     ,map: []
@@ -18,21 +20,30 @@ A1.seatmap = {
       case 'unavailable':         // ignore; seat is taken
         break;
       }
+      // update display
+      if (A1.seatmap.seatDisplayArea) {
+        A1.seatmap.seatDisplayArea.html(A1.seatmap.selectedSeats.join(','));
+      }
     }
   }
-  // Link/button that makes seatmap appear has a "data-showdate-id" attribute that will
-  // be used to fetch seatmap JSON and list of unavailable seats as JSON array
+  ,findDomElements: function(container) {
+    // various important DOM elements, either for retrieving a value or modifying the
+    // display, are relative to the enclosing container (since multiple such containers
+    // may appear on the My Tickets page).
+    // num seats to select
+    A1.seatmap.max = parseInt(container.find('.num_tickets').val());
+    // where to display seats chosen so far
+    A1.seatmap.seatDisplayArea = container.find('.seat-display'); 
+    // URL to retrieve seatmap and unavailable seat info
+    A1.seatmap.url = '/ajax/seatmap/' + container.find('.showdate').val();
+  }
   ,showSeatmapForShowdate: function(evt) {
     evt.preventDefault();
-    // extract number of tickets to reserve and showdate_id from neighboring elements
-    var container = $(this).closest('.row');
-    var numTickets = container.find('.num_tickets').val();
-    var showdateID = container.find('.showdate').val();
-    var url = '/ajax/seatmap/' + showdateID;
-    // get the seatmap and unavailable seats for this showdate
-    $.getJSON(url, function(json_data) { 
-      A1.seatmap.max = parseInt(numTickets);
+    A1.seatmap.findDomElements($(this).closest('.row'));
+    // get the seatmap and list of unavailable seats for this showdate
+    $.getJSON(A1.seatmap.url, function(json_data) { 
       A1.seatmap.settings.map = json_data.map;
+      // list of already-taken seats
       A1.seatmap.unavailable = json_data.unavailable;
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
       $('#seatmap').removeClass('invisible');
@@ -42,11 +53,11 @@ A1.seatmap = {
   ,setup: function() {
     A1.seatmap.unselectAll();
     A1.seatmap.centerMap();
-    A1.seatmap.refreshLegend();
+    A1.seatmap.updateUI();
     A1.seatmap.unavailable.forEach(function(seat_num) {
       A1.seatmap.seats.status(seat_num, 'unavailable');
     });
-    $('#seatmap')[0].addEventListener('click', A1.seatmap.refreshLegend);
+    $('#seatmap')[0].addEventListener('click', A1.seatmap.updateUI);
     document.addEventListener('resize', A1.seatmap.centerMap);
     // floating "tooltips" that show each seat number on hover
     $('.seatCharts-seat').each(function(index) {
@@ -70,9 +81,9 @@ A1.seatmap = {
     var idx = A1.seatmap.selectedSeats.indexOf(seatNum);
     A1.seatmap.selectedSeats.splice(idx,1);
   }
-  ,refreshLegend: function() {
+  ,updateUI: function() {
     // refresh Done/Cancel button state
-    $('#your-seats').text(A1.seatmap.selectedSeats.join(', '));
+    A1.seatmap.seatDisplayArea.text(A1.seatmap.selectedSeats.join(', '));
     // if exact # seats selected, allow proceed
     if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
       $('#confirm-seats').removeClass('disabled');
