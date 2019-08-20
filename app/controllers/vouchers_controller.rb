@@ -98,17 +98,6 @@ class VouchersController < ApplicationController
 
   end
 
-  def reserve
-    @is_admin = current_user.is_boxoffice
-    redirect_to(customer_path(@customer), :alert => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
-    @valid_vouchers = @voucher.redeemable_showdates(@is_admin)
-    @valid_vouchers = @valid_vouchers.select(&:visible?) unless @is_admin
-    if @valid_vouchers.empty?
-      flash[:alert] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
-      redirect_to customer_path(@customer)
-    end
-  end
-
   def confirm_multiple
     the_showdate = Showdate.find_by_id params[:showdate_id]
     redirect_to(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
