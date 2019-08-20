@@ -35,7 +35,7 @@ A1.seatmap = {
     // move the seatmap's display frame to just below this enclosing container
     $('#seating-charts-wrapper').
       insertAfter(container).
-      removeClass('invisible').
+      removeClass('d-none').
       slideDown();
     // num seats to select
     A1.seatmap.max = parseInt(container.find('.num_tickets').val());
@@ -55,10 +55,10 @@ A1.seatmap = {
       // list of already-taken seats
       A1.seatmap.unavailable = json_data.unavailable;
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
-      A1.seatmap.setup();
+      A1.seatmap.setupMap();
     });
   }
-  ,setup: function() {
+  ,setupMap: function() {
     A1.seatmap.unselectAll();
     A1.seatmap.centerMap();
     A1.seatmap.updateUI();
@@ -108,4 +108,25 @@ A1.seatmap = {
     $('#seatmap').css({"left": left});
     $('#seating-charts-wrapper').height($('#seatmap').height());
   }
+  // triggered whenever showdate dropdown menu changes
+  ,showSeatingOptionsForShowdate: function() {
+    var container = $(this).closest('.row'); // the enclosing element that contains the relevant form fields
+    var url = '/ajax/seating_options/' + $(this).val();
+    // show the seating options for this showdate
+    $.get(url, function(data) { $(container).find('.seating-options').html(data) });
+    // clear out seat info from previous selection
+    $(container).find('.seat-display').val('')
+    // hide seat map in case it was shown before from previous selection
+    $('#seating-charts-wrapper').slideUp().addClass('d-none');
+  }
+  ,setup: function() {
+    // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
+    $('select.showdate').change(A1.seatmap.showSeatingOptionsForShowdate);
+    $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdate);
+    // updating staff comments field (form-remote)
+    $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
+    $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
+  }
 };
+
+$(A1.seatmap.setup);
