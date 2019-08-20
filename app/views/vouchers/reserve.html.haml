@@ -7,7 +7,7 @@
   = checkbox_guard_for 'special_seating'
   #special_seating{:style => 'display:none'}
     %label{:for => 'comments'} Please describe special seating needs
-    = text_field_tag 'comments', '', :size => '20em', :class => :showdate
+    = text_field_tag 'comments', '', :class => 'showdate form-control form-control-sm'
   %br
 
   - unless @valid_vouchers.empty?

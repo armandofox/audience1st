@@ -3,7 +3,7 @@ A1.seatmap = {
   ,unavailable: []
   ,max: 0
   ,seats: null
-  ,seatDisplayArea: null
+  ,seatDisplayField: null
   ,url: null
   ,settings: {
     seats: {}
@@ -21,8 +21,8 @@ A1.seatmap = {
         break;
       }
       // update display
-      if (A1.seatmap.seatDisplayArea) {
-        A1.seatmap.seatDisplayArea.html(A1.seatmap.selectedSeats.join(','));
+      if (A1.seatmap.seatDisplayField) {
+        A1.seatmap.seatDisplayField.html(A1.seatmap.selectedSeats.join(','));
       }
     }
   }
@@ -30,10 +30,15 @@ A1.seatmap = {
     // various important DOM elements, either for retrieving a value or modifying the
     // display, are relative to the enclosing container (since multiple such containers
     // may appear on the My Tickets page).
+    // move the seatmap's display frame to just below this enclosing container
+    $('#seating-charts-wrapper').
+      insertAfter(container).
+      removeClass('invisible').
+      slideDown();
     // num seats to select
     A1.seatmap.max = parseInt(container.find('.num_tickets').val());
     // where to display seats chosen so far
-    A1.seatmap.seatDisplayArea = container.find('.seat-display'); 
+    A1.seatmap.seatDisplayField = container.find('.seat-display'); 
     // URL to retrieve seatmap and unavailable seat info
     A1.seatmap.url = '/ajax/seatmap/' + container.find('.showdate').val();
   }
@@ -46,7 +51,6 @@ A1.seatmap = {
       // list of already-taken seats
       A1.seatmap.unavailable = json_data.unavailable;
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
-      $('#seatmap').removeClass('invisible');
       A1.seatmap.setup();
     });
   }
@@ -83,7 +87,7 @@ A1.seatmap = {
   }
   ,updateUI: function() {
     // refresh Done/Cancel button state
-    A1.seatmap.seatDisplayArea.text(A1.seatmap.selectedSeats.join(', '));
+    A1.seatmap.seatDisplayField.val(A1.seatmap.selectedSeats.sort().join(', '));
     // if exact # seats selected, allow proceed
     if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
       $('#confirm-seats').removeClass('disabled');

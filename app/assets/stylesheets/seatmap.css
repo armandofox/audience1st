@@ -23,6 +23,8 @@ div.seatCharts-seat.selected {
 }
 
 div#seating-charts-wrapper {
+    padding: 2px;
+    margin: 2px;
     border: 1px solid black;
     position: relative;
 }
