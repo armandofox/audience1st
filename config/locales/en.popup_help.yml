@@ -59,6 +59,12 @@ en:
       value selected above will be applied to BOTH pre-existing and newly-created
       redemptions.
 
+    reserved_seating: >
+
+      Choose whether this production is general admission or reserved seating.
+      The same choice applies to all performances, and cannot
+      be changed once reservations are made for any performance.
+
     # Customers and customer lists
 
     customer_labels: >

@@ -14,11 +14,10 @@
 
   .form-row
     - if Option.feature_enabled? 'rs'
-      - if @seatmap_is_editable
-        .col-md-3.form-group
-          = popup_help_for :reserved_seating
-          %label.col-form-label{:for => :show_seatmap_id} Seat map
-          = f.select 'seatmap_id', seatmap_choices_for(@show), {}, {:class => 'form-control'}
+      .col-md-3.form-group
+        = popup_help_for :reserved_seating
+        %label.col-form-label{:for => :show_seatmap_id} Seat map
+        = seatmap_choices_for(@show,@seatmap_is_editable)
     .col-md-2.form-group
       = popup_help_for :show_house_capacity
       %label.col-form-label{:for=>:show_house_capacity} House capacity
