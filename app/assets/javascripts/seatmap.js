@@ -4,6 +4,8 @@ A1.seatmap = {
   ,max: 0
   ,seats: null
   ,seatDisplayField: null
+  ,confirmSeatsButton: null
+  ,selectSeatsButton: null
   ,url: null
   ,settings: {
     seats: {}
@@ -37,8 +39,10 @@ A1.seatmap = {
       slideDown();
     // num seats to select
     A1.seatmap.max = parseInt(container.find('.num_tickets').val());
-    // where to display seats chosen so far
-    A1.seatmap.seatDisplayField = container.find('.seat-display'); 
+    // where to display seats chosen so far, Confirm button, Select More Seats button
+    A1.seatmap.seatDisplayField = container.find('.seat-display');
+    A1.seatmap.confirmSeatsButton = container.find('.confirm-seats');
+    A1.seatmap.selectSeatsButton = container.find('.show-seatmap');
     // URL to retrieve seatmap and unavailable seat info
     A1.seatmap.url = '/ajax/seatmap/' + container.find('.showdate').val();
   }
@@ -86,13 +90,15 @@ A1.seatmap = {
     A1.seatmap.selectedSeats.splice(idx,1);
   }
   ,updateUI: function() {
-    // refresh Done/Cancel button state
+    // refresh display of which seats chosen so far
     A1.seatmap.seatDisplayField.val(A1.seatmap.selectedSeats.sort().join(', '));
     // if exact # seats selected, allow proceed
     if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
-      $('#confirm-seats').removeClass('disabled');
+      A1.seatmap.confirmSeatsButton.removeClass('d-none');
+      A1.seatmap.selectSeatsButton.addClass('d-none');
     } else {
-      $('#confirm-seats').addClass('disabled');
+      A1.seatmap.confirmSeatsButton.addClass('d-none');
+      A1.seatmap.selectSeatsButton.removeClass('d-none');
     }      
   }
   ,centerMap: function() {
