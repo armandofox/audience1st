@@ -245,18 +245,20 @@ class ValidVoucher < ActiveRecord::Base
     display_name
   end
 
-  def date_with_explanation_for_admin
-    display_name = showdate.printable_date_with_description
+  def explanation_for_admin
     if max_sales_for_this_patron > 0
-      "#{display_name} (#{max_sales_for_this_patron} available)"
+      "#{max_sales_for_this_patron} available"
     else
-      "#{display_name} (Not available)"
+      "Not available for this patron"
     end
   end
 
-  def name_with_explanation
-    display_name = showdate.printable_name
-    max_sales_for_this_patron > 0 ? display_name : "#{display_name} (#{explanation})"
+  def date_with_explanation_for_admin
+    "#{showdate.printable_date_with_description} (#{explanation_for_admin})"
+  end
+
+  def name_with_explanation_for_admin
+    "#{showdate.show_name} - #{showdate.thedate.to_formatted_s(:showtime_brief)} (#{explanation_for_admin})"
   end
 
   def show_name_with_seats_of_type_remaining

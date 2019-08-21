@@ -46,8 +46,12 @@ class VoucherPresenter
 
   def menu_label_function(admin_display = false)
     if admin_display
-      # :name_and_date_with_capacity_stats
-      :date_with_explanation_for_admin
+      if redeemable_for_multiple_shows
+        :name_with_explanation_for_admin
+      else
+        # :name_and_date_with_capacity_stats
+        :date_with_explanation_for_admin
+      end
     elsif redeemable_for_multiple_shows
       # dropdown menu should include showname AND date
       :printable_name

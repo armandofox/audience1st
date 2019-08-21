@@ -13,6 +13,7 @@ body.maintenance {
     border: none;
     text-align: center;
     outline-width: 0;
+    background-color: inherit;
 }
 
 .a1-table {

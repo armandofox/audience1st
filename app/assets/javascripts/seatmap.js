@@ -20,6 +20,7 @@ A1.seatmap = {
         A1.seatmap.unselect(this);
         return('available');
       case 'unavailable':         // ignore; seat is taken
+        return('unavailable');
         break;
       }
       // update display
