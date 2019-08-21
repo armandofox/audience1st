@@ -105,7 +105,7 @@ A1.seatmap = {
   ,centerMap: function() {
     var mapWidth = $('#seatmap').width(); // computed width
     var left = ($('#seating-charts-wrapper').width() - mapWidth) / 2;
-    $('#seating-charts-overlay').width(mapWidth);
+    $('#seating-charts-wrapper img.seating-charts-overlay').css({"left": left+55});
     $('#seatmap').css({"left": left});
     $('#seating-charts-wrapper').height($('#seatmap').height());
   }

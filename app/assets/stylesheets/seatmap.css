@@ -39,8 +39,10 @@
     border: 1px solid red;
 }
 img.seating-charts-overlay {
-    border: 1px solid blue;
+    border: none;
     position: absolute;
+    height: 402px;
+    width: 460px;
     top: 0;
     left: 0;
     z-index: 1;
