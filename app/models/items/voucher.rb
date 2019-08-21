@@ -228,16 +228,6 @@ class Voucher < Item
   def un_check_in! ; update_attribute(:checked_in, false) ; self ; end
   
   # operations on vouchers:
-  #
-  # reserve(showdate_id, logged_in)
-  #  reservation binds it to a showdate and fills in who processed it
-  # 
-  def unreserve
-    self.showdate = nil
-    self.seat = nil
-    self.checked_in = false
-    save!
-  end
 
   # BUG there should not be 3 separate methods here
   
@@ -261,6 +251,28 @@ class Voucher < Item
   def reserve!(desired_showdate, new_comments='')
     update_attributes(:comments => new_comments, :showdate => desired_showdate)
   end
+
+  #
+  # BUG there should not be both #unreserve and #cancel - what is the difference??
+  # 
+  def unreserve
+    self.showdate = nil
+    self.seat = nil
+    self.checked_in = false
+    save!
+  end
+  def cancel(logged_in = Customer.walkup_customer.id)
+    save_showdate = self.showdate.clone
+    self.showdate = nil
+    self.checked_in = false
+    self.seat = nil
+    if (self.save)
+      save_showdate
+    else
+      nil
+    end
+  end
+
 
 
 
@@ -293,17 +305,6 @@ class Voucher < Item
       return nil, e.message
     end
     return true, total
-  end
-
-  def cancel(logged_in = Customer.walkup_customer.id)
-    save_showdate = self.showdate.clone
-    self.showdate = nil
-    self.checked_in = false
-    if (self.save)
-      save_showdate
-    else
-      nil
-    end
   end
 
   def valid_voucher_adjusted_for customer,showdate

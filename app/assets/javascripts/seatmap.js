@@ -14,8 +14,12 @@ A1.seatmap = {
     ,click: function(evt) {
       switch(this.status()) {
       case 'available':           // select seat
-        A1.seatmap.select(this);
-        return('selected');
+        if (A1.seatmap.selectedSeats.length < A1.seatmap.max) {
+          A1.seatmap.select(this);
+          return('selected');
+        } else {
+          return('available');
+        }
       case 'selected':            // unselect seat
         A1.seatmap.unselect(this);
         return('available');
@@ -75,10 +79,6 @@ A1.seatmap = {
   }
   ,select: function(seat) {
     var seatNum = seat.settings.id;
-    if (A1.seatmap.selectedSeats.length > A1.seatmap.max-1) {
-      var vacate = A1.seatmap.selectedSeats.shift();
-      A1.seatmap.seats.status(vacate, 'available');
-    }
     A1.seatmap.selectedSeats.push(seatNum);
   }
   ,unselectAll: function() {
