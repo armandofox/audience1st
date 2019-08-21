@@ -11,10 +11,11 @@
     .col-2.text-center Action
 
   - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, @gAdminDisplay).each do |group|
-    - if group.reserved
-      = render :partial => 'reserved_voucher', :locals => {:group => group}
-    - else
-      = render :partial => 'open_voucher', :locals => {:group => group}
+    %div[group.vouchers.first]
+      - if group.reserved
+        = render :partial => 'reserved_voucher', :locals => {:group => group}
+      - else
+        = render :partial => 'open_voucher', :locals => {:group => group}
 
 - unless @vouchers.empty?
   %h1.text-center #{@customer.full_name}'s Regular Tickets
@@ -27,10 +28,11 @@
     .col-2.text-center Action
 
   - VoucherPresenter.groups_from_vouchers(@other_vouchers, @gAdminDisplay).each do |group|
-    - if group.reserved
-      = render :partial => 'reserved_voucher', :locals => {:group => group}
-    - else
-      = render :partial => 'open_voucher', :locals => {:group => group}
+    %div[group.vouchers.first]
+      - if group.reserved
+        = render :partial => 'reserved_voucher', :locals => {:group => group}
+      - else
+        = render :partial => 'open_voucher', :locals => {:group => group}
 
 .d-none#seating-charts-wrapper
   #seatmap.seatCharts-container

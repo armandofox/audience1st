@@ -1,11 +1,11 @@
 - if group.redeemable_showdates.empty?
-  .row.border-top.border-secondary[group.vouchers.first]
+  .row.border-top.border-secondary
     .col-1.text-center= group.size
     .col-3.text-center= group.name
     .col-4.text-center= "Reservations unavailable for this show" if group.vouchertype.reservable?
 
 - else
-  .row.border-top.border-secondary[group.vouchers.first]
+  .row.border-top.border-secondary
     = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :class => 'voucherlist'
       = hidden_field_tag 'num_tickets', group.size, :class => 'num_tickets'
