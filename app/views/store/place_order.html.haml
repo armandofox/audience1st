@@ -7,14 +7,14 @@
   .notice
     %p 
       You have paid a total of 
-      %span.strong= number_to_currency @order.total_price
-      - if @order.total_price > 0 
+      %span.strong= number_to_currency @gOrderInProgress.total_price
+      - if @gOrderInProgress.total_price > 0 
         by 
-        %span.strong= humanize(@order.purchase_medium)
+        %span.strong= humanize(@gOrderInProgress.purchase_medium)
       for order number
-      %span.strong= @order.id
+      %span.strong= @gOrderInProgress.id
 
-    - if @order.gift?
+    - if @gOrderInProgress.gift?
       #gift
         %fieldset#gift_recipient
           %legend This order is a gift for:
@@ -22,14 +22,14 @@
           %br
         %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
 
-    = render :partial => 'cart', :object => @order
+    = render :partial => 'cart'
 
     = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
   .text-center.pt-2
     - if @is_admin
       = link_to 'Back to Customer List', customers_path, :class => 'btn btn-primary'
-      = link_to 'Back to This Customer', customer_path(@order.customer), :class => 'btn btn-primary'
+      = link_to 'Back to This Customer', customer_path(@gOrderInProgress.customer), :class => 'btn btn-primary'
     - else
       - unless @guest_checkout
-        = link_to 'Back to My Tickets', customer_path(@order.purchaser), :class => 'btn btn-primary'
+        = link_to 'Back to My Tickets', customer_path(@gOrderInProgress.purchaser), :class => 'btn btn-primary'

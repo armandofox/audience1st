@@ -23,7 +23,7 @@
     
     #outer_header
     #outer_wrapper
-      #inner_wrapper.container
+      #inner_wrapper.container-fluid
         - if (url = Option.venue_homepage_url).blank?
           #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         - else
@@ -45,9 +45,9 @@
               = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
 
             #content.clear
-              - if @gCheckoutInProgress && %w(customers store sessions).include?(controller_name)
+              - if display_order_in_progress?
                 %h1.text-center Your Order Is Not Yet Complete
-                = render :partial => 'store/cart', :locals => {:editable => false,:cart=>@gCart}
+                = render :partial => 'store/cart'
               = render :partial => 'messages/notices'
               = yield
       - if current_user

@@ -139,10 +139,11 @@ class Vouchertype < ActiveRecord::Base
     end
   end
 
-  def bundle? ; category == 'bundle' ; end
-  def comp? ; category == 'comp' ; end
-  def external? ; offer_public == EXTERNAL ; end
-  def revenue? ; category == 'revenue' ; end
+  def bundle?    ; category == 'bundle'         ; end
+  def comp?      ; category == 'comp'           ; end
+  def external?  ; offer_public == EXTERNAL     ; end
+  def revenue?   ; category == 'revenue'        ; end
+  def nonticket? ; category == 'nonticket'      ; end
 
   def reservable?
     !(['bundle','nonticket'].include?(category))
@@ -239,23 +240,6 @@ class Vouchertype < ActiveRecord::Base
 
   def num_included_vouchers
     get_included_vouchers.values.sum
-  end
-
-  def instantiate(howmany, args = {})
-    all_vouchers = []
-    howmany.times do
-      voucher = Voucher.new_from_vouchertype(self, args)
-      all_vouchers << voucher
-      if self.bundle?
-        included_vouchers = []
-        self.get_included_vouchers.each_pair do |vtype,qty|
-          included_vouchers += Vouchertype.find(vtype).instantiate(qty)
-        end
-        voucher.bundled_vouchers += included_vouchers
-        all_vouchers += included_vouchers
-      end
-    end
-    all_vouchers
   end
 
   # a monogamous vouchertype is valid for exactly one showdate.

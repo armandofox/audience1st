@@ -3,8 +3,7 @@ class SessionsController < ApplicationController
   def new
     redirect_to customer_path(current_user) and return if logged_in?
     @page_title = "Login or Create Account"
-    if (@gCheckoutInProgress)
-      @cart = find_cart
+    if (@gOrderInProgress)
       @display_guest_checkout = allow_guest_checkout?
     end
     @remember_me = true

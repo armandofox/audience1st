@@ -4,11 +4,11 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
   vtype = Vouchertype.find_by_name(type) || create(:revenue_vouchertype, :name => type)
   vv = ValidVoucher.find_by_vouchertype_id_and_showdate_id(vtype.id,@showdate.id) ||
     create(:valid_voucher, :vouchertype => vtype, :showdate => @showdate)
-  order = build(:order,
+  order = create(:order,
     :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
     :customer => customer,
     :purchaser => customer)
-  order.add_tickets(vv, num.to_i)
+  order.add_tickets_without_capacity_checks(vv, num.to_i)
   order.finalize!
 end
 

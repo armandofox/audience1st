@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe Order, 'adding' do
   before :each do 
+    @order = Order.create!(:processed_by => create(:customer)) # generic customer
     @vv = create(:valid_voucher)
-    @order = Order.new 
   end
   describe 'retail items' do
     before :each do
@@ -31,21 +31,6 @@ describe Order, 'adding' do
     end
     it 'excludes them from ticket count' do
       expect { @order.add_retail_item(@thing[0]) }.to_not change { @order.ticket_count }
-    end
-  end
-  describe 'tickets' do
-    before :each do  ;    @order.add_tickets(@vv, 3) ;   end
-    it 'should work when cart is empty' do ; expect(@order.ticket_count).to eq(3)  ; end
-    it 'should add to existing tickets' do
-      expect { @order.add_tickets(@vv, 2) }.to change { @order.ticket_count }.by(2)
-    end
-    it 'should empty cart' do
-      expect { @order.empty_cart! }.to change { @order.ticket_count}.to(0)
-    end
-    it 'should serialize cart' do
-      @order.save!
-      reloaded = Order.find(@order.id)
-      expect(reloaded.ticket_count).to eq(3)
     end
   end
   describe 'donations' do

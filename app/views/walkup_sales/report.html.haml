@@ -1,6 +1,6 @@
 .container
   %h1  Walkup Sales Summary 
-  %table.hilite
+  %table.a1-table.hilite
     - @vouchers.each_key do |howpurchased|
       %tr
         %td.text-right= @vouchers[howpurchased].length
@@ -21,7 +21,7 @@
       - @vouchers.each_pair do |howpurchased, vouchers|
         %div{:id => Purchasemethod.get(howpurchased).shortdesc}
           %h3= Purchasemethod.get(howpurchased).description
-          %table.hilite
+          %table.a1-table.hilite
             %thead= render :partial => 'vouchers/detail_header'
             %tbody
               = render :partial => 'vouchers/voucher', :collection => vouchers

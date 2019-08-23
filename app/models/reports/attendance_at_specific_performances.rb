@@ -11,7 +11,7 @@ class AttendanceAtSpecificPerformances < Report
       :name => "Attendance at specific performances",
       :shows => shows,
       :current_show => current_show,
-      :shows_showdates => shows_showdates.html_safe,
+      :shows_showdates => shows_showdates.html_safe
     }
     super
   end

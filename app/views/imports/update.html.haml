@@ -6,7 +6,7 @@
 %h2 #{@collection.length} records could not be imported:
 
 #import_preview
-  %table.hilite.import
+  %table.a1-table.hilite.import
     %thead
       = render :partial => "#{@partial.gsub('_with_errors', '')}_header"
     %tbody

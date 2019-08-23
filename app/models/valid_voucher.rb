@@ -45,7 +45,7 @@ class ValidVoucher < ActiveRecord::Base
   alias_method :visible?, :visible # for convenience and more readable specs
 
   delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public, :offer_public_as_string, :category, :comp?, :subscriber_voucher?, :to => :vouchertype
-  delegate :<=>, :printable_name, :name_and_date_with_capacity_stats, :saleable_seats_left, :thedate, :to => :showdate
+  delegate :<=>, :printable_name, :printable_date, :printable_date_with_description, :menu_selection_name, :name_and_date_with_capacity_stats, :saleable_seats_left, :thedate, :to => :showdate
 
   scope :for_shows, -> { where.not(:showdate => nil) }
 
@@ -57,6 +57,10 @@ class ValidVoucher < ActiveRecord::Base
     showdate.try(:show).try(:event_type)
   end
 
+  def show_name
+    showdate &&  showdate.show_name
+  end
+  
   def max_sales_for_this_patron
     @max_sales_for_this_patron ||= max_sales_for_type()
     if showdate # in case this is a valid-voucher for a bundle, vs for regular show
@@ -64,17 +68,6 @@ class ValidVoucher < ActiveRecord::Base
     else
       @max_sales_for_this_patron.to_i
     end
-  end
-
-  def self.from_params(valid_vouchers_hash)
-    result = {}
-    (valid_vouchers_hash || {}).each_pair do |id,qty|
-      if ((vv = self.find_by_id(id)) &&
-          ((q = qty.to_i) > 0))
-        result[vv] = q
-      end
-    end
-    result
   end
 
   private
@@ -209,7 +202,8 @@ class ValidVoucher < ActiveRecord::Base
       order("season DESC,display_order,price DESC")
     bundles = bundles.map do |b|
       b.customer = customer
-      b.adjust_for_customer promo_code
+      b.supplied_promo_code = promo_code
+      b.adjust_for_customer
     end
     bundles.reject! { |b| b.max_sales_for_this_patron == 0 }
     bundles.sort_by(&:display_order)
@@ -218,13 +212,14 @@ class ValidVoucher < ActiveRecord::Base
   # returns a copy of this ValidVoucher, but with max_sales_for_this_patron adjusted to
   # the number of tickets of THIS vouchertype for THIS show available to
   # THIS customer.
-  def adjust_for_customer(customer_supplied_promo_code = '')
+  def adjust_for_customer
     result = self.clone_with_id
-    result.supplied_promo_code = customer_supplied_promo_code.to_s
+    # boxoffice and higher privilege can do anything
     result.adjust_for_visibility ||
       result.adjust_for_showdate ||
       result.adjust_for_sales_dates ||
       result.adjust_for_capacity # this one must be called last
+    result.max_sales_for_this_patron = INFINITE     if customer.try(:is_boxoffice)
     result.freeze
   end
 
@@ -232,9 +227,11 @@ class ValidVoucher < ActiveRecord::Base
   #  but adjusted to see if it can be redeemed
   def adjust_for_customer_reservation
     result = self.clone_with_id
+    # boxoffice and higher privilege can do anything
     result.adjust_for_showdate ||
       result.adjust_for_advance_reservations ||
       result.adjust_for_capacity # this one must be called last
+    result.max_sales_for_this_patron = INFINITE     if customer.try(:is_boxoffice)
     result.freeze
   end
 
@@ -242,24 +239,32 @@ class ValidVoucher < ActiveRecord::Base
   #  so the valid-voucher in question has had its max_sales_for_this_patron ADJUSTED ALREADY
   #  to the value applicable for THIS PATRON, which may be DIFFERENT from the value
   #  specified for the valid-voucher's max_sales_for_type originally.
-  def date_with_explanation
-    display_name = showdate.printable_date_with_description
-    display_name << " (Not available)" if max_sales_for_this_patron.zero?
-    display_name
+  def name_with_explanation
+    showdate.printable_name_with_description << with_explanation
   end
 
-  def date_with_explanation_for_admin
-    display_name = showdate.printable_date_with_description
+  def date_with_explanation
+    showdate.printable_date_with_description << with_explanation
+  end
+
+  def with_explanation
+    max_sales_for_this_patron.zero? ? " (Not available)" : ""
+  end
+  
+  def explanation_for_admin
     if max_sales_for_this_patron > 0
-      "#{display_name} (#{max_sales_for_this_patron} available)"
+      "#{max_sales_for_this_patron} available"
     else
-      "#{display_name} (Not available)"
+      "Not available for this patron"
     end
   end
 
-  def name_with_explanation
-    display_name = showdate.printable_name
-    max_sales_for_this_patron > 0 ? display_name : "#{display_name} (#{explanation})"
+  def date_with_explanation_for_admin
+    "#{showdate.printable_date_with_description} (#{explanation_for_admin})"
+  end
+
+  def name_with_explanation_for_admin
+    "#{showdate.show_name} - #{showdate.thedate.to_formatted_s(:showtime_brief)} (#{explanation_for_admin})"
   end
 
   def show_name_with_seats_of_type_remaining
@@ -272,7 +277,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def instantiate(quantity)
     raise InvalidProcessedByError unless customer.kind_of?(Customer)
-    vouchers = vouchertype.instantiate(quantity, :promo_code => self.promo_code)
+    vouchers = VoucherInstantiator.new(vouchertype,:promo_code => self.promo_code).from_vouchertype(quantity)
     # if vouchertype was a bundle, check whether any of its components
     #   are monogamous, if so reserve them
     if vouchertype.bundle?

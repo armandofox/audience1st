@@ -46,8 +46,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_globals
 
   def set_globals
-    @gCart = find_cart
-    @gCheckoutInProgress = !@gCart.cart_empty?
+    @gOrderInProgress = find_cart
     @gAdminDisplay = is_staff && !session.has_key?(:admin_disabled)
     true
   end
@@ -55,17 +54,15 @@ class ApplicationController < ActionController::Base
   def allow_guest_checkout?
     # Only if option is enabled, and a self-purchase is in progress for an order that is OK for guest checkout
     !@gAdminDisplay               &&
-      @gCheckoutInProgress        &&
-      @gCart.ok_for_guest_checkout? &&
+      @gOrderInProgress        &&
+      @gOrderInProgress.ok_for_guest_checkout? &&
       Option.allow_guest_checkout
   end
 
   def reset_shopping           # called as a filter
-    @gCart.empty_cart!
     session.delete(:promo_code)
-    session.delete(:cart)
+    set_order_in_progress(nil)
     session.delete(:return_to)
-    set_checkout_in_progress(false)
     true
   end
 
@@ -81,13 +78,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_checkout_in_progress(val = true)
-    if val
-      session[:checkout_in_progress] = val
+  def set_order_in_progress(order)
+    if order
+      session[:cart] = order.id
     else
-      session.delete(:checkout_in_progress)
+      session.delete(:cart)
     end
-    @gCheckoutInProgress = val
   end
 
   # Store the action to return to, or URI of the current request if no action given.
@@ -110,7 +106,12 @@ class ApplicationController < ActionController::Base
   end
 
   def find_cart
-    Order.find_by_id(session[:cart]) || Order.new
+    if (o = Order.find_by(:id => session[:cart]))
+      return o
+    else
+      session.delete(:cart)
+      nil
+    end
   end
 
   # setup session etc. for an "external" login, eg by a daemon
@@ -182,7 +183,7 @@ class ApplicationController < ActionController::Base
       handle_remember_cookie! new_cookie_flag
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
-      reset_shopping unless @gCheckoutInProgress
+      reset_shopping unless @gOrderInProgress
       session[:new_session] = true
       if action == 'reset_token'
         return redirect_after_reset_token(@user)

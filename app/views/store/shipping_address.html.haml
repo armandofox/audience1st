@@ -19,7 +19,7 @@
         the gift recipient's full name, mailing address, and at least
         one phone number or email address.
 
-    - if @cart.includes_donation?
+    - if @gOrderInProgress.includes_donation?
       %p.strong Note: Donations will be credited to buyer, not to gift recipient.
 
     = render :partial => 'customers/billing_address', :locals => {:customer => @recipient, :legend => "Gift Recipient"}

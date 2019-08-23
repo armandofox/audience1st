@@ -12,25 +12,34 @@
 }
 */
     
-div.seatCharts-seat.available {
+.seatCharts-seat.available {
+    background-color: lightGreen;
+}
+.seatCharts-seat.unavailable {
     background-color: lightGrey;
 }
-div.seatCharts-seat.selected {
-	background-color: green;
+.seatCharts-seat.focused {
+    border: 2px solid yellow;
+    background-color: green;
+}
+.seatCharts-seat.selected {
+    background-color: green;
 }
 
-div#seating-charts-wrapper {
+#seating-charts-wrapper {
+    padding: 2px;
+    margin: 2px;
     border: 1px solid black;
     position: relative;
 }
-div.seatCharts-container {
-    border: 1px solid red;
+.seatCharts-container {
     position: absolute;
     top: 0;
     left: 0;
+    border: 1px solid red;
 }
-img#seating-charts-overlay {
-    border: 1px solid blue;
+img.seating-charts-overlay {
+    border: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -38,6 +47,7 @@ img#seating-charts-overlay {
     pointer-events: none;
 }
 div.seatCharts-cell {
+    display: inline-block;
     height: 20px;
     width: 20px;
     margin: 1px;

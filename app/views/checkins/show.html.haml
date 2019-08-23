@@ -1,11 +1,11 @@
 = render :partial => 'checkins/walkup_subscriber'
 
-%table#checkin
+%table.a1-table#checkin
   %tr
     %th
     %th Last
     %th First
-    %th Type
+    %th Type/Seats
     %th
     %th Checkin #{popup_help_for :checkin}
     %th Notes
@@ -16,7 +16,7 @@
       %td.maincolumn= letter_header_for(c.last_name)
       %td= link_to_customer c, :content_text => c.last_name.name_capitalize
       %td= link_to_customer c, :content_text => c.first_name.name_capitalize
-      %td= h vouchers.first.name
+      %td= ticket_type_with_seats(vouchers)
       %td
         %span.un_check_in= link_to image_tag('delete.png'), checkin_path(@showdate, :uncheck => 1, :vouchers => ids(vouchers)), 'data-remote' => true, 'data-method' => :put, 'data-type' => 'script'
       %td.checkin_column= render :partial => 'checkin_buttons', :locals => {:vouchers => vouchers}

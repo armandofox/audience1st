@@ -64,7 +64,7 @@ class ImportableOrder
   end
 
   def initialize(first: '', last: '', email: nil) # :nodoc:
-    @order = Order.new(:purchasemethod => Purchasemethod.get_type_by_name('ext'))
+    @order = Order.create(:purchasemethod => Purchasemethod.get_type_by_name('ext'))
     @import_first_name, @import_last_name, @import_email = first,last,email
     @customers = []
     @action = MAY_CREATE_NEW_CUSTOMER
@@ -107,7 +107,7 @@ class ImportableOrder
 
   # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
   def add_tickets(vv, num)
-    self.order.add_tickets(vv, num)
+    self.order.add_tickets_without_capacity_checks(vv, num)
     @valid_vouchers[vv] += num
   end
 

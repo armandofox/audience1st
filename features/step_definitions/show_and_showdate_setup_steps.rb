@@ -125,17 +125,19 @@ Then /^the (.*) performance should be oversold( by (\d+))?$/ do |date, num|
   showdate = Showdate.find_by_thedate! Time.zone.parse(date)
   num = num.to_i
   if num > 0
-    (showdate.compute_total_sales - showdate.max_advance_sales).should == num
+    (showdate.total_sales.size - showdate.max_advance_sales).should == num
   else
-    showdate.compute_total_sales.should be > showdate.max_advance_sales
+    showdate.total_sales.size.should be > showdate.max_advance_sales
   end
 end
 
 Given /^the "(.*)" performance (has reached its max sales|is truly sold out)$/ do |dt,sold|
   showdate = Showdate.find_by(:thedate => Time.zone.parse(dt))
   to_sell = (sold =~ /max/ ? showdate.saleable_seats_left : showdate.total_seats_left)
-  vtype = create(:valid_voucher, :showdate => showdate).name
-  steps %Q{Given #{to_sell} "#{vtype}" tickets have been sold for "#{dt}"}
+  to_sell.times { create(:revenue_voucher, :showdate => showdate, :finalized => true) }
+  # also create a valid_voucher that reflects the tickets that just got sold out, since
+  # that info is used to populate ticket menus on sales pages
+  create(:valid_voucher, :showdate => showdate)
 end
 
 #  @showdate is set by the function that most recently created a showdate for a scenario

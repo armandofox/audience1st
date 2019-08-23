@@ -11,7 +11,7 @@ class VoucherPresenter
   # VoucherPresenter objects.
   #
   require 'set'
-  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist
+  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :redeemable_for_multiple_shows, :showdate, :voucherlist
   # Constructor takes a set of vouchers that should be part of a group, and constructs the
   # presentation logic for them.  It's an error for the provided vouchers not to "belong together"
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
@@ -25,17 +25,55 @@ class VoucherPresenter
     @group_id = first.id
     @size = @vouchers.length
     @vouchertype = first.vouchertype
-    @name = @vouchertype.name
     @showdate = first.showdate
     @voucherlist = @vouchers.map { |v| v.id }.join(',')
+    # group name: if ALL vouchers in group are redeemable for only a single production,
+    #  the production's name is the group name.  otherwise, use the vouchertype name (all of
+    #  them are guaranteed to be the same vouchertype anyway).
+    show_names = @vouchertype.valid_vouchers.map(&:show_name).compact.uniq
+    if show_names.length == 1
+      @name = show_names.first
+      @redeemable_for_multiple_shows = false
+    else
+      @name =  @vouchertype.name
+      @redeemable_for_multiple_shows = true
+    end
   end
 
   def redeemable_showdates
     @redeemable_showdates ||= if @vouchers[0].reservable? then @vouchers[0].redeemable_showdates(@ignore_cutoff) else [] end
   end
 
+  def menu_label_function(admin_display = false)
+    if admin_display
+      if redeemable_for_multiple_shows
+        :name_with_explanation_for_admin
+      else
+        # :name_and_date_with_capacity_stats
+        :date_with_explanation_for_admin
+      end
+    elsif redeemable_for_multiple_shows
+      # dropdown menu should include showname AND date
+      :name_with_explanation
+    else
+      # dropdown menu should show ONLY the date
+      :date_with_explanation
+    end
+  end
+
   def cancelable_by(user)
     user.is_boxoffice || vouchers.all?(&:can_be_changed?)
+  end
+
+  def voucher_comments
+    vouchers.map(&:comments).map(&:to_s).reject(&:blank?).join('; ')
+  end
+  
+  def seats
+    if ! @vouchers.first.reserved?              then ''
+    elsif  @vouchers.all? { |v| v.seat.blank? } then 'General Admission' 
+    else                                        @vouchers.map(&:seat).sort.join(',')
+    end
   end
 
   # Within a show category, OPEN VOUCHERS are listed last, others are shown by order of showdate

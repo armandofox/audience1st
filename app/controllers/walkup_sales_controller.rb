@@ -12,7 +12,7 @@ class WalkupSalesController < ApplicationController
 
   def create
     @showdate = Showdate.find params[:id]
-    @order = Order.new(
+    @order = Order.create(
       :walkup => true,
       :customer => Customer.walkup_customer,
       :purchaser => Customer.walkup_customer,
@@ -20,9 +20,7 @@ class WalkupSalesController < ApplicationController
     if ((amount = params[:donation].to_f) > 0)
       @order.add_donation(Donation.walkup_donation amount)
     end
-    ValidVoucher.from_params(params[:qty]).each_pair do |valid_voucher, qty|
-      @order.add_tickets(valid_voucher, qty)
-    end
+    @order.add_tickets_from_params(params[:qty], current_user)
 
     # process order using appropriate payment method.
     # if Stripe was used for credit card processing, it resubmits the original
@@ -57,7 +55,8 @@ class WalkupSalesController < ApplicationController
       flash[:notice] = @order.walkup_confirmation_notice
       redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
-      flash[:alert] = ["Transaction NOT processed: ", @order.errors.as_html]
+      flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"
+      @order.destroy
       redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
     end
   end

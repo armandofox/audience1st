@@ -34,8 +34,7 @@ Scenario Outline: add comps to performance
 
 Scenario: email should be sent if customer_email is checked
 
-  Given it is currently Apr 20, 2010, 8:15pm
-  Given customer "Armando Fox" has email "armandoisafox@email.com" and password "pa$$w0rd"
+  Given customer "Armando Fox" exists with email "armandoisafox@gmail.com"
   When I visit the add comps page for customer "Armando Fox"
   When I select "Comp (2010)" from "What type:"
   And  I fill in "How many:" with "2"
@@ -47,8 +46,7 @@ Scenario: email should be sent if customer_email is checked
   
 Scenario: email should not be sent if customer_email is unchecked
 
-  Given it is currently Apr 20, 2010, 8:15pm
-  Given customer "Armando Fox" has email "armandoisafox@email.com" and password "pa$$w0rd"
+  Given customer "Armando Fox" exists with email "armandoisafox@gmail.com"
   When I visit the add comps page for customer "Armando Fox"
   When I select "Comp (2010)" from "What type:"
   And  I fill in "How many:" with "2"
@@ -60,7 +58,6 @@ Scenario: email should not be sent if customer_email is unchecked
 
 Scenario: checkbox unavailable if customer has no email
 
-  Given it is currently Apr 20, 2010, 8:15pm
   And customer "NoEmail Customer" has no email address
   When I visit the add comps page for customer "NoEmail Customer"
   Then the "Send Email Confirmation" checkbox should be disabled

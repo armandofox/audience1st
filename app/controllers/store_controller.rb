@@ -34,7 +34,6 @@ class StoreController < ApplicationController
     if redirect_customer == specified_customer # ok to proceed as is
       @customer = specified_customer
       @is_admin = is_boxoffice()
-      @cart = find_cart
     else      
       redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
     end
@@ -136,17 +135,18 @@ class StoreController < ApplicationController
       render(:action => 'donate') and return
     end
     # Given valid donation, customer, and charge token, create & place credit card order.
-    @order = Order.new_from_donation(@amount, AccountCode.default_account_code, @customer)
-    @order.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
-    @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
-    @order.processed_by = @customer
-    @order.comments = params[:comments].to_s
-    unless @order.ready_for_purchase?
-      flash[:alert] = @order.errors.as_html
+    @gOrderInProgress = Order.new_from_donation(@amount, AccountCode.default_account_code, @customer)
+    @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
+    @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
+    @gOrderInProgress.processed_by = @customer
+    @gOrderInProgress.comments = params[:comments].to_s
+    unless @gOrderInProgress.ready_for_purchase?
+      flash[:alert] = @gOrderInProgress.errors.as_html
       @customer =  (current_user() || Customer.new)
       render(:action => 'donate') and return
     end
-    if finalize_order(@order)
+    if finalize_order(@gOrderInProgress)
+      reset_shopping
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
@@ -158,20 +158,27 @@ class StoreController < ApplicationController
   end
 
   def process_cart
-    @cart.add_comment params[:comments].to_s
-    add_tickets_to_cart
-    redirect_to_referer(@cart.errors.full_messages) and return unless @cart.errors.empty?
+    @gOrderInProgress = Order.create(:processed_by => current_user)
+    @gOrderInProgress.add_comment params[:comments].to_s
+    @gOrderInProgress.add_tickets_from_params params[:valid_voucher], current_user, params[:promo_code]
     add_retail_items_to_cart
-    redirect_to_referer(@cart.errors.full_messages) and return unless @cart.errors.empty?
-    # all well with cart, try to process donation if any
     add_donation_to_cart
-    redirect_to_referer('There is nothing in your order.') and return if @cart.cart_empty?
-    # order looks OK; all subsequent actions should display in-progress order at top of page
+    if ! @gOrderInProgress.errors.empty?
+      flash[:alert] = @gOrderInProgress.errors.as_html
+      @gOrderInProgress.destroy
+      return redirect_to_referer
+    end
+    if @gOrderInProgress.cart_empty?
+      flash[:alert] = I18n.t('store.errors.empty_order')
+      @gOrderInProgress.destroy
+      return redirect_to_referer
+    end
     add_service_charge_to_cart
-    remember_cart_in_session!
-    set_checkout_in_progress true
+    # order looks OK; all subsequent actions should display in-progress order at top of page
+    @gOrderInProgress.save!
+    set_order_in_progress @gOrderInProgress
     # if gift, first collect separate shipping address...
-    if params[:gift] && @cart.includes_vouchers?
+    if params[:gift] && @gOrderInProgress.includes_vouchers?
       redirect_to shipping_address_path(@customer)
     else
       # otherwise go directly to checkout
@@ -181,11 +188,11 @@ class StoreController < ApplicationController
   end
 
   def shipping_address
-    @mailable = @cart.includes_mailable_items?
+    @mailable = @gOrderInProgress.includes_mailable_items?
     @recipient = Customer.new and return if request.get?
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
-    @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
+    @gOrderInProgress.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
     # if we can find a unique match for the customer AND our existing DB record
     #  has enough contact info, great.  OR, if the new record was already created but
     #  the buyer needs to modify it, great.
@@ -212,8 +219,8 @@ class StoreController < ApplicationController
     end
     @recipient.created_by_admin = @is_admin if @recipient.new_record?
     @recipient.save!
-    @cart.customer = @recipient
-    @cart.save!
+    @gOrderInProgress.customer = @recipient
+    @gOrderInProgress.save!
 
     if Customer.email_last_name_match_diff_address?(Customer.new params[:customer])
       flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
@@ -226,36 +233,34 @@ class StoreController < ApplicationController
   # Beyond this point, purchaser is logged in (or admin is logged in and acting on behalf of purchaser)
 
   def checkout
-    redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
+    redirect_to store_path, :alert => t('store.errors.empty_order') if @gOrderInProgress.cart_empty?
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
-    @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
-    @cart_contains_class_order = @cart.includes_enrollment?
-    @allow_pickup_by_other = (@cart.includes_vouchers? && !@cart.gift?)
-    @cart.processed_by ||= current_user()
-    @cart.purchaser ||= @customer
-    @cart.customer ||= @cart.purchaser
-    @cart.save!
+    @checkout_message = (@gOrderInProgress.includes_regular_vouchers? ? Option.precheckout_popup : '')
+    @order_contains_class_order = @gOrderInProgress.includes_enrollment?
+    @allow_pickup_by_other = (@gOrderInProgress.includes_vouchers? && !@gOrderInProgress.gift?)
+    @gOrderInProgress.processed_by ||= current_user()
+    @gOrderInProgress.purchaser ||= @customer
+    @gOrderInProgress.customer ||= @gOrderInProgress.purchaser
+    @gOrderInProgress.save!
   end
 
   def place_order
-    @page_title = "Confirmation of Order #{@cart.id}"
-    @order = @cart
+    @page_title = "Confirmation of Order #{@gOrderInProgress.id}"
     # what payment type?
-    @order.purchasemethod,@order.purchase_args = purchasemethod_from_params
-    @recipient = @order.customer
-    if ! @order.gift?
+    @gOrderInProgress.purchasemethod,@gOrderInProgress.purchase_args = purchasemethod_from_params
+    @recipient = @gOrderInProgress.customer
+    if ! @gOrderInProgress.gift?
       # record 'who will pickup' field if necessary
-      @order.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
+      @gOrderInProgress.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
-    @order.purchaser.update_attributes(params[:customer])
-    unless @order.ready_for_purchase?
-      flash[:alert] = @order.errors.as_html
+    @gOrderInProgress.purchaser.update_attributes(params[:customer])
+    unless @gOrderInProgress.ready_for_purchase?
+      flash[:alert] = @gOrderInProgress.errors.as_html
       redirect_to_checkout
       return
     end
-
-    if finalize_order(@order)
+    if finalize_order(@gOrderInProgress)
       reset_shopping
       if session[:guest_checkout]
         # forget customer after successful guest checkout
@@ -300,10 +305,6 @@ class StoreController < ApplicationController
     recipient = Customer.find_unique(try_customer)
     (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
-  def remember_cart_in_session!
-    @cart.save!
-    session[:cart] = @cart.id
-  end
 
   def redirect_to_checkout
     checkout_params = {}
@@ -323,7 +324,7 @@ class StoreController < ApplicationController
       when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what]))
       else store_path(@customer,promo_code_args)
       end
-    flash[:alert] = msg
+    flash[:alert] ||= msg
     redirect_to redirect_target
   end
 
@@ -392,7 +393,8 @@ class StoreController < ApplicationController
   def setup_ticket_menus_for_patron
     @valid_vouchers = @sd.valid_vouchers.includes(:vouchertype).map do |v|
       v.customer = @customer
-      v.adjust_for_customer @promo_code
+      v.supplied_promo_code = @promo_code
+      v.adjust_for_customer
     end.find_all(&:visible?).sort_by(&:display_order)
     
     @all_shows = Show.current_and_future.of_type(@what) || []
@@ -401,42 +403,29 @@ class StoreController < ApplicationController
     end
   end
 
-  def add_tickets_to_cart
-    tickets = ValidVoucher.from_params(params[:valid_voucher])
-    if @is_admin
-      tickets.each_pair { |vv, qty| @cart.add_tickets(vv, qty) }
-    else
-      promo = params[:promo_code].to_s
-      tickets.each_pair do |vv, qty|
-        vv.customer = @customer
-        @cart.add_with_checking(vv,qty,promo)
-      end
-    end
-  end
-
   def add_donation_to_cart
     if (amount = to_numeric(params[:donation])) > 0
-      @cart.add_donation(
+      @gOrderInProgress.add_donation(
         Donation.from_amount_and_account_code_id(amount, params[:account_code_id], params[:donation_comments]))
     end
   end
 
   def add_retail_items_to_cart
     return unless @is_admin && params[:retail].to_f > 0.0
-    @cart.errors.add(:base, "Retail items can't be included in a gift order") and return if
+    @gOrderInProgress.errors.add(:base, "Retail items can't be included in a gift order") and return if
       params[:gift]
     r = RetailItem.from_amount_description_and_account_code_id(
       *(params.values_at(:retail, :retail_comments, :retail_account_code_id)))
     if r.valid?
-      @cart.add_retail_item(r)
+      @gOrderInProgress.add_retail_item(r)
     else
-      @cart.errors.add(:base, "There were problems with your retail purchase: " <<
+      @gOrderInProgress.errors.add(:base, "There were problems with your retail purchase: " <<
         r.errors.full_messages.join(', '))
     end
   end
 
   def add_service_charge_to_cart
-    @cart.add_retail_item RetailItem.new_service_charge_for(params[:what])
+    @gOrderInProgress.add_retail_item RetailItem.new_service_charge_for(params[:what])
   end
 
 end

@@ -179,10 +179,10 @@ staging = namespace :staging do
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
     customers = customers.sample(customers.size * percent * 0.5) # since will sell avg of 2 per pax
     customers.each do |customer|
-      o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer,
+      o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
-      o.add_tickets(sub_voucher, num_tix)
+      o.add_tickets_without_capacity_checks(sub_voucher, num_tix)
       o.finalize!
       StagingHelper::dot
       # now reserve each of those vouchers for a random perf of each show
@@ -196,7 +196,7 @@ staging = namespace :staging do
     percent = (ENV['PERCENT'] || '50').to_i / 100.0    
     Customer.regular_customers.sample(Customer.all.size * percent).each do |customer|
       [1,1,1,1,2,2,3].sample.times do
-        o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer,
+        o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
           :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
         o.add_donation(Donation.from_amount_and_account_code_id(20 + 15 * rand(10), AccountCode.default_account_code_id))
         o.finalize!
@@ -214,7 +214,7 @@ staging = namespace :staging do
     Showdate.all.each do |perf|
       valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertypes => {:category => :revenue}).to_a.freeze
       # sell percentage of tickets
-      while perf.compute_total_sales < (percent * perf.house_capacity) do
+      while perf.total_sales.size < (percent * perf.house_capacity) do
         # pick a customer
         customer = customers.sample
         # pick a number of tickets, 1-4, skewed towards 1 and 2
@@ -222,8 +222,8 @@ staging = namespace :staging do
         # pick which price point they'll use
         valid_voucher = valid_vouchers.sample
         # buy it
-        o = Order.new(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
-        o.add_tickets(valid_voucher, num_tix)
+        o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
+        o.add_tickets_without_capacity_checks(valid_voucher, num_tix)
         o.finalize!
       end
       StagingHelper::dot

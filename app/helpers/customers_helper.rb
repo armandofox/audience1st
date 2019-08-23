@@ -53,10 +53,6 @@ module CustomersHelper
       h(s))
   end
 
-  def multiple_voucher_comments(vouchers)
-    vouchers.map { |v| v.comments unless v.comments.blank? }.compact.join('; ')
-  end
-  
   def display_class(c)
     return 'invalid' unless c.valid?
     klass = []

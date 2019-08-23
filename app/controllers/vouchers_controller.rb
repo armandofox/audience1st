@@ -44,27 +44,24 @@ class VouchersController < ApplicationController
 
   def create
     # post: add the actual comps, and possibly reserve
-    thenumtoadd = params[:howmany].to_i
-    thevouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
+    howmany = params[:howmany].to_i
+    vouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
     thecomment = params[:comments].to_s
-    theshowdate = Showdate.find_by_id(params[:showdate_id])
-    shouldEmail = params[:customer_email]
+    showdate = Showdate.find_by_id(params[:showdate_id])
 
     redir = new_customer_voucher_path(@customer)
     return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
-      thevouchertype && thenumtoadd > 0
+      vouchertype && howmany > 0
     return redirect_to(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
-      thevouchertype.comp?
-    return redirect_to(redir, 'Please select a performance.') unless theshowdate
-    return redirect_to(redir, 'This comp ticket type not valid for this performance.') unless
-      vv = ValidVoucher.find_by_showdate_id_and_vouchertype_id(theshowdate.id,thevouchertype.id)
-
-    order = Order.new_from_valid_voucher(vv, thenumtoadd,
-      :comments => thecomment,
-      :processed_by => current_user,
-      :customer => @customer,
-      :purchaser => @customer) # not a gift order
-
+      vouchertype.comp?
+    return redirect_to(redir, 'Please select a performance.') unless showdate
+    vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
+      return redirect_to(redir, 'This comp ticket type not valid for this performance.') 
+    
+    order = Order.create(:comments => thecomment, :processed_by => current_user,
+      :customer => @customer, :purchaser => @customer,
+      :purchasemethod => Purchasemethod.get_type_by_name('none')) # not a gift order
+    order.add_tickets_without_capacity_checks(vv, howmany)
     begin
       order.finalize!
       order.vouchers.each do |v|
@@ -72,20 +69,20 @@ class VouchersController < ApplicationController
           :order_id => order.id,
           :logged_in_id => current_user.id,
           :customer_id => @customer.id,
-          :showdate_id => theshowdate.id,
+          :showdate_id => showdate.id,
           :voucher_id => v.id,
           :purchasemethod => Purchasemethod.get_type_by_name('none'))
       end
-      flash[:notice] = "Added #{thenumtoadd} '#{vv.name}' comps for #{theshowdate.printable_name}."
+      flash[:notice] = "Added #{howmany} '#{vv.name}' comps for #{showdate.printable_name}."
     rescue Order::NotReadyError => e
-      flash[:alert] = ["Error adding comps: ", order]
+      flash[:alert] = "Error adding comps: #{order.errors.as_html}".html_safe
+      order.destroy
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
       Rails.logger.error e.backtrace.inspect
+      order.destroy
     end
-    if shouldEmail
-      email_confirmation(:confirm_reservation, @customer, theshowdate, thenumtoadd)
-    end
+    email_confirmation(:confirm_reservation, @customer, showdate, howmany) if params[:customer_email]
     redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
@@ -101,26 +98,23 @@ class VouchersController < ApplicationController
 
   end
 
-  def reserve
-    @is_admin = current_user.is_boxoffice
-    redirect_to(customer_path(@customer), :alert => "Voucher #{@voucher.id} already reserved for #{@voucher.showdate.printable_name}") and return if @voucher.reserved?
-    @valid_vouchers = @voucher.redeemable_showdates(@is_admin)
-    @valid_vouchers = @valid_vouchers.select(&:visible?) unless @is_admin
-    if @valid_vouchers.empty?
-      flash[:alert] = "Sorry, but there are no shows for which this voucher can be reserved at this time.  This could be because all shows for which it's valid are sold out, because all seats allocated for this type of ticket may be sold out, or because seats allocated for this type of ticket may not be available for reservation until a future date."
-      redirect_to customer_path(@customer)
-    end
-  end
-
   def confirm_multiple
     the_showdate = Showdate.find_by_id params[:showdate_id]
     redirect_to(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
     num = params[:number].to_i
     count = 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
+    if !params[:seats].blank?           # handle reserved seating reservation
+      seats = params[:seats].split(/\s*,\s*/)
+      vouchers.each { |v| v.seat = seats.pop }
+    end
     errors = []
     comments = params[:comments].to_s
     vouchers.each do |v|
+      if ! v.valid?
+        errors += v.errors.full_messages
+        break
+      end
       if v.reserve_for(the_showdate, current_user, comments)
         count += 1
         comments = '' # only first voucher gets comment field
@@ -144,7 +138,7 @@ class VouchersController < ApplicationController
     else
       flash[:alert] = "Some of your reservations could not be completed: " <<
         errors <<
-        "<br/>Please check the results below carefully before continuing."
+        ".  Please check the results below carefully before continuing."
       email_confirmation(:confirm_reservation, @customer, the_showdate, count)
     end
     redirect_to customer_path(@customer)

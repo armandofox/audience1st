@@ -32,8 +32,8 @@ describe Showdate do
     shared_examples "for normal sales" do
       # house cap 12, max sales 10, sold 9
       it "computes total sales" do
-        expect(@showdate.compute_total_sales).to eq(9)
-        expect(@showdate.compute_advance_sales).to eq(9)
+        expect(@showdate.total_sales.size).to eq(9)
+        expect(@showdate.advance_sales_vouchers.size).to eq(9)
       end
       it "computes seats left" do
         expect(@showdate.total_seats_left).to eq(3)

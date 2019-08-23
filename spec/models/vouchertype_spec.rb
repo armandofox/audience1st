@@ -124,25 +124,6 @@ describe Vouchertype do
       end
     end
   end
-  describe 'instantiating' do
-    describe 'bundle' do
-      before :each do
-        @v = Array.new(3) { create(:vouchertype_included_in_bundle) }
-        @vt_bundle = create(:bundle, :including => {@v[0] => 1, @v[1] => 2, @v[2] => 3})
-      end
-      it('should instantiate all vouchers in bundle') do
-        expect(@vt_bundle.instantiate(2).size).to eq(14)
-      end
-      it 'should set bundle-id when saved' do
-        all_vouchers = @vt_bundle.instantiate(2)
-        all_vouchers.map(&:save!)
-        saved_bundles = Voucher.where('vouchertype_id = ?', @vt_bundle.id)
-        expect(all_vouchers).to have_vouchers_matching(quantity=2, :vouchertype_id => @vt_bundle.id)
-        expect(all_vouchers).to have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[0].id)
-        expect(all_vouchers).to have_vouchers_matching(quantity=6, :bundle_id => saved_bundles[1].id)
-      end
-    end
-  end
   describe 'lifecycle' do
     before :each do
       @v = Vouchertype.create!(:category => 'bundle',

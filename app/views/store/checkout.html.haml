@@ -4,31 +4,31 @@
 
   #checkout_message.hidden= @checkout_message
 
-  - if @cart.gift?
+  - if @gOrderInProgress.gift?
     #gift_recipient
       %h2 This Order is a Gift For...
-      = render :partial => 'customers/gift_recipient_info', :locals => {:customer => @cart.customer, :passive => true, :legend => 'Gift Recipient Info' }
+      = render :partial => 'customers/gift_recipient_info', :locals => {:customer => @gOrderInProgress.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
-  = form_tag place_order_path(@cart.purchaser), :id => '_stripe_payment_form' do
+  = form_tag place_order_path(@gOrderInProgress.purchaser), :id => '_stripe_payment_form' do
 
-    %h2#purchaser Purchaser: #{@cart.purchaser.full_name_with_email}
+    %h2#purchaser Purchaser: #{@gOrderInProgress.purchaser.full_name_with_email}
 
     = render :partial => 'pickup_by' if @allow_pickup_by_other
 
-    - if @cart.total_price > 0
+    - if @gOrderInProgress.total_price > 0
 
       = hidden_field_tag 'email_confirmation', 1
-      #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @cart.purchaser}
-      = render :partial => 'credit_card', :locals => {:name => @cart.purchaser.full_name}
+      #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @gOrderInProgress.purchaser}
+      = render :partial => 'credit_card', :locals => {:name => @gOrderInProgress.purchaser.full_name}
 
     - if @is_admin
       #other_payments.adminDiv
-        - if @cart.total_price > 0
+        - if @gOrderInProgress.total_price > 0
           Or pay with check number: 
           = text_field_tag 'check_number', '', :size => 6
           = submit_tag "Accept Check Payment", :class => 'btn btn-warning'
           = submit_tag "Accept Cash Payment", :class => 'btn btn-warning'
-        - if @cart.purchaser.valid_email_address?
+        - if @gOrderInProgress.purchaser.valid_email_address?
           = check_box_tag('email_confirmation', 1, true)
           Send email confirmation
     - else 
@@ -39,7 +39,7 @@
       .col-md-6
         .alert.alert-warning.text-center= t('store.accept_terms_of_sale', :terms_of_sale_text => escape_javascript(Option.terms_of_sale)).html_safe
       .col-md-3
-        - if @cart.total_price > 0
+        - if @gOrderInProgress.total_price > 0
           = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'
           = hidden_field_tag '_stripe_commit'
         - else

@@ -3,10 +3,10 @@ class Order < ActiveRecord::Base
   belongs_to :purchaser, :class_name => 'Customer'
   belongs_to :processed_by, :class_name => 'Customer'
   belongs_to :ticket_sales_import # only for orders imported from external vendor (eg TodayTix)
-  has_many :items, :dependent => :destroy
-  has_many :vouchers, :dependent => :destroy
-  has_many :donations, :dependent => :destroy
-  has_many :retail_items, :dependent => :destroy
+  has_many :items, :autosave => true, :dependent => :destroy
+  has_many :vouchers, :autosave => true,  :dependent => :destroy
+  has_many :donations, :autosave => true, :dependent => :destroy
+  has_many :retail_items, :autosave => true, :dependent => :destroy
 
   attr_accessor :purchase_args
   attr_reader :donation
@@ -14,6 +14,9 @@ class Order < ActiveRecord::Base
   attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser, :external_key
 
   # errors
+
+  class Order::CannotAddItemError < StandardError ; end
+  class Order::NotPersistedError < StandardError ; end
 
   class Order::OrderFinalizeError < StandardError ; end
   class Order::NotReadyError < Order::OrderFinalizeError ; end
@@ -48,33 +51,6 @@ class Order < ActiveRecord::Base
     end
     self.valid_vouchers ||= {}
     self.retail_items ||= []
-  end
-
-  def prepare_vouchers_from_valid_vouchers
-    vouchers = []
-    valid_vouchers.each_pair do |valid_voucher_id, quantity|
-      vv = ValidVoucher.find(valid_voucher_id)
-      vv.customer = processed_by
-      vouchers += vv.instantiate(quantity)
-    end
-    vouchers.flatten!
-    # if this is a walkup order, mark the vouchers as walkup
-    vouchers.each do |v|
-      v.walkup = self.walkup?
-    end
-    vouchers
-  end
-
-  def add_items_to_order(vouchers)
-    self.items += vouchers
-    self.items += [ donation ] if donation
-    self.items += retail_items if retail_items
-    self.items.each do |i|
-      i.processed_by = self.processed_by
-      # any vouchers with blank comments get a copy of the order's comment
-      # (special seating needs, usually)
-      i.comments = self.comments if i.comments.blank? && i.kind_of?(Voucher)
-    end
   end
 
   def check_purchaser_info
@@ -117,13 +93,6 @@ class Order < ActiveRecord::Base
 
   def purchase_medium ; Purchasemethod.get(purchasemethod).purchase_medium ; end
   
-  def self.new_from_valid_voucher(valid_voucher, howmany, other_args)
-    other_args[:purchasemethod] ||= Purchasemethod.get_type_by_name('none')
-    order = Order.new(other_args)
-    order.add_tickets(valid_voucher, howmany)
-    order
-  end
-
   def self.new_from_donation(amount, account_code, donor)
     order = Order.new(:purchaser => donor, :customer => donor)
     order.add_donation(Donation.from_amount_and_account_code_id(amount, account_code.id))
@@ -135,29 +104,54 @@ class Order < ActiveRecord::Base
     self.comments += arg
   end
 
-  def empty_cart!
-    self.valid_vouchers = {}
+  def clear_contents!
+    self.vouchers.destroy_all
     self.donation_data = {}
   end
 
   def cart_empty?
-    valid_vouchers.empty? && donation.nil? && retail_items.empty?
+    ticket_count.zero? &&  donation.nil? && retail_items.empty?
   end
 
-  def add_with_checking(valid_voucher, number, promo_code)
-    adjusted = valid_voucher.adjust_for_customer(promo_code)
-    if number <= adjusted.max_sales_for_this_patron
-      self.add_tickets(valid_voucher, number)
-    else
-      self.errors.add(:base,adjusted.explanation)
+  def add_tickets_from_params(valid_voucher_params, customer, supplied_promo_code=nil)
+    return unless valid_voucher_params
+    valid_voucher_params.each_pair do |vv_id, qty|
+      vv = ValidVoucher.find(vv_id)
+      vv.supplied_promo_code = supplied_promo_code.to_s
+      vv.customer = customer
+      add_tickets(vv,qty.to_i)
     end
   end
 
   def add_tickets(valid_voucher, number)
-    key = valid_voucher.id
-    self.valid_vouchers[key] ||= 0
-    self.valid_vouchers[key] += number
+    raise Order::NotPersistedError unless persisted?
+    # is this order-placer allowed to exercise this redemption?
+    valid_voucher.customer = self.processed_by || Customer.anonymous_customer
+    redemption = valid_voucher.adjust_for_customer
+    if redemption.max_sales_for_this_patron >= number
+      add_tickets_without_capacity_checks(valid_voucher, number)
+    else
+      self.errors.add(:base, "Only #{redemption.max_sales_for_this_patron} seats are available")
+    end
   end
+
+  def add_tickets_without_capacity_checks(valid_voucher, number)
+    raise Order::NotPersistedError unless persisted?
+    new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
+    new_vouchers.each { |v| v.reserve!(valid_voucher.showdate) }
+    self.vouchers += new_vouchers
+    self.save!
+  end
+  
+  def ticket_count ;       vouchers.size        ; end
+  def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
+
+  def includes_vouchers?       ; ticket_count > 0  ; end
+  def includes_mailable_items? ; vouchers.any? { |v| v.vouchertype.fulfillment_needed? } ; end
+  def includes_enrollment?     ; vouchers.any? { |v| v.showdate.try(:event_type) == 'Class' } ; end
+  def includes_bundle?         ;  vouchers.any? { |v| v.vouchertype.bundle? }  ;  end
+  def includes_nonticket_item? ;  vouchers.any? { |v| v.vouchertype.nonticket? } ; end
+  def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
 
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
@@ -166,42 +160,6 @@ class Order < ActiveRecord::Base
     self.donation_data[:comments] = d.comments
     @donation = d
   end
-
-  def add_retail_item(r)
-    self.retail_items << r if r
-  end
-
-  def ticket_count
-    completed? ? vouchers.count : valid_vouchers.values.map(&:to_i).sum
-  end
-
-  def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
-
-  def includes_mailable_items?
-    # do any of the items require fulfillment?
-    if completed?
-      vouchers.any? { |v| v.vouchertype.fulfillment_needed? }
-    else
-      ValidVoucher.find(valid_vouchers.keys).any? { |vv| vv.vouchertype.fulfillment_needed? }
-    end
-  end
-
-  def includes_vouchers?
-    if completed?
-      items.any? { |v| v.kind_of?(Voucher) }
-    else
-      ticket_count > 0
-    end
-  end
-
-  def includes_regular_vouchers?
-    if completed?
-      items.any? { |v| v.kind_of?(Voucher) && !v.bundle? }
-    else
-      ValidVoucher.find(valid_vouchers.keys).any? { |vv| vv.vouchertype.category == 'revenue' }
-    end
-  end
-
   def includes_donation?
     if completed?
       items.any? { |v| v.kind_of?(Donation) }
@@ -210,17 +168,11 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def includes_enrollment?
-    ValidVoucher.find(valid_vouchers.keys).any? { |v| v.event_type == 'Class' }
+  def add_retail_item(r)
+    raise Order::NotPersistedError unless persisted?
+    self.retail_items << r if r
   end
 
-  def includes_bundle?
-    ValidVoucher.find(valid_vouchers.keys).any? { |v| v.vouchertype.category == 'bundle' }
-  end
-
-  def includes_nonticket_item?
-    ValidVoucher.find(valid_vouchers.keys).any? { |v| v.vouchertype.category == 'nonticket' }
-  end
 
   def ok_for_guest_checkout?
     # basically, the ONLY thing you can guest checkout for is single-ticket purchases for yourself.
@@ -228,12 +180,13 @@ class Order < ActiveRecord::Base
   end
 
   def total_price
-    return items.map(&:amount).sum if completed?
-    total = self.donation.try(:amount).to_f + self.retail_items.map(&:amount).sum
-    valid_vouchers.each_pair do |vv_id, qty|
-      total += ValidVoucher.find(vv_id).price * qty
+    if completed?
+      items.map(&:amount).sum
+    else
+      self.donation.try(:amount).to_f +
+        self.retail_items.map(&:amount).sum +
+        self.vouchers.sum(:amount)
     end
-    total
   end
 
   def walkup_confirmation_notice
@@ -272,13 +225,6 @@ class Order < ActiveRecord::Base
     summary.join('; ')
   end
 
-  def each_voucher
-    valid_vouchers.each_pair do |id,num|
-      v = ValidVoucher.find(id)
-      num.times { yield v }
-    end
-  end
-
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def ready_for_purchase?
@@ -300,12 +246,13 @@ class Order < ActiveRecord::Base
     errors.empty?
   end
 
-  def finalize_with_existing_customer_id!(cid,sold_on=Time.current)
+  def finalize_with_existing_customer_id!(cid,processed_by,sold_on=Time.current)
     self.customer_id = self.purchaser_id = cid
+    self.processed_by = processed_by
     self.finalize!(sold_on)
   end
   
-  def finalize_with_new_customer!(customer,sold_on=Time.current)
+  def finalize_with_new_customer!(customer,processed_by,sold_on=Time.current)
     customer.force_valid = true
     self.customer = self.purchaser = customer
     self.finalize!(sold_on)
@@ -313,11 +260,18 @@ class Order < ActiveRecord::Base
 
   def finalize!(sold_on_date = Time.current)
     raise Order::NotReadyError unless ready_for_purchase?
-
     begin
       transaction do
-        vouchers = prepare_vouchers_from_valid_vouchers()
-        add_items_to_order(vouchers)
+        self.items += vouchers
+        self.items += retail_items
+        self.items << donation if donation
+        self.items.each do |i|
+          i.finalize!
+          i.walkup = self.walkup? 
+          i.processed_by = self.processed_by
+          i.comments = self.comments if i.comments.blank?  && i.kind_of?(Voucher)
+        end
+        # there is also a direct relationship Customer has-many Items, which we should get rid of...
         customer.add_items(vouchers)
         customer.add_items(retail_items)
         purchaser.add_items([donation]) if donation

@@ -4,12 +4,48 @@ body.maintenance {
     border: 8px dashed yellow;
 }
 
-.customer-vouchers-table, .a1-table {
-    width: 90%;
-    border-collapse: collapse;
+.a1-force-fullwidth {
+    width: 100% !important;
 }
-.customer-vouchers-table td, .a1-table td {
+
+/* for passive text that needs to be submitted as part of a form */
+.a1-passive-text-input {
+    border: none;
+    text-align: center;
+    outline-width: 0;
+    background-color: inherit;
+}
+
+.a1-table {
+/* General tabular styles */
+/* tables still need 'cellspacing="0"' in the markup */
+    width: 100%;
+    border-collapse: collapse;
+/*    font-size: 12pt;*/
+    border-spacing: 0;
+    border: 0;
+    margin-bottom: 10px;
+    margin-top: 4px;
+}
+/* easier to navigate if tabular rows hilited on hover */
+table.hilite tr:hover {
+    background-color: #fcfe69;
+}
+.a1-table thead {
+    background-color: #EEE;
+    color: black;
+}
+.a1-table th {
+    margin: 0;
+    padding: 3px;
+    font-weight: bold;
+    text-align: center;
+    background: #333;
+    color: #fff;
+}
+.a1-table td {
     vertical-align: top;
+    padding: 1px 2px;
 }
 
 /* Additional field qualifiers for errors etc */
@@ -49,36 +85,6 @@ body.maintenance {
 }
 .a1-text-small {
     font-size: 0.8em;
-}
-
-/* General tabular styles */
-/* tables still need 'cellspacing="0"' in the markup */
-table {
-    font-size: 12pt;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 0;
-    margin-bottom: 10px;
-    margin-top: 4px;
-}
-/* easier to navigate if tabular rows hilited on hover */
-table.hilite tr:hover {
-    background-color: #fcfe69;
-}
-thead {
-    background-color: #EEE;
-    color: black;
-}
-th {
-    margin: 0;
-    padding: 3px;
-    font-weight: bold;
-    text-align: center;
-    background: #333;
-    color: #fff;
-}
-td {
-    padding: 1px 2px;
 }
 
 

@@ -1,3 +1,4 @@
+@javascript
 Feature: subscriber can make subscriber reservations
 
   As a subscriber

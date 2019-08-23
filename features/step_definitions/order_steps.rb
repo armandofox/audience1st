@@ -1,7 +1,7 @@
 module ScenarioHelpers
   module Orders
     def buy!(customer, vtype, qty, showdate=nil)
-      @order = build(:order,
+      @order = create(:order,
         :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
         :customer => customer,
         :purchaser => customer)
@@ -9,7 +9,7 @@ module ScenarioHelpers
       vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate,
         :start_sales => Time.at_beginning_of_season(vtype.season),
         :end_sales => Time.at_end_of_season(vtype.season))
-      @order.add_tickets(vv, qty.to_i)
+      @order.add_tickets_without_capacity_checks(vv, qty.to_i)
       @order.purchasemethod = Purchasemethod.get_type_by_name('none') if @order.total_price.zero?
       @order.finalize!
     end
@@ -51,7 +51,7 @@ end
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
   customer = find_or_create_customer(first,last)
   # make it legal for customer to buy the things
-  @order = build(:order,
+  @order = create(:order,
     :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
     :customer => customer,
     :purchaser => customer)
@@ -59,7 +59,7 @@ Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do 
   table.hashes.each do |voucher|
     vtype = Vouchertype.find_by_name(voucher[:name]) || create(:revenue_vouchertype, :name => voucher[:name])
     vv = create(:valid_voucher, :vouchertype => vtype, :showdate => nil)
-    @order.add_tickets(vv, voucher[:quantity].to_i)
+    @order.add_tickets_without_capacity_checks(vv, voucher[:quantity].to_i)
   end
   @order.finalize!
 end
@@ -69,7 +69,7 @@ Given /^the following orders have been placed:/ do |tbl|
   tbl.hashes.each do |order|
     pmt_types = {"credit card" => "web_cc", "cash" => "box_cash", "check" => "box_chk", "comp" => "none"}.freeze
     customer = find_or_create_customer(*(order['customer'].split(/\s+/)))
-    o = build(:order,
+    o = create(:order,
       :purchasemethod => Purchasemethod.get_type_by_name(pmt_types[order['payment']]),
       :purchase_args => {:credit_card_token => 'DUMMY'}, # to pass order validation for CC purchase
       :customer => customer, :purchaser => customer)
@@ -80,7 +80,7 @@ Given /^the following orders have been placed:/ do |tbl|
             Option.default_donation_account_code))
       when /(\d+)x (.*)$/
         vv = create(:valid_voucher, :vouchertype => Vouchertype.find_by!(:name => $2))
-        o.add_tickets(vv, $1.to_i)
+        o.add_tickets_without_capacity_checks(vv, $1.to_i)
       end
     end
     o.finalize!

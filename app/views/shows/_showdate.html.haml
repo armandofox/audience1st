@@ -9,7 +9,7 @@
     - p = showdate.percent_max_advance_sales
     %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
   .col-2
-    - if showdate.compute_total_sales.zero?
+    - if showdate.total_sales.size.zero?
       = form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|
         = submit_tag 'Delete Performance', :class => 'btn btn-sm btn-outline-danger d-inline', :id => "delete_showdate_#{showdate.id}", :confirm => t('season_setup.confirm_delete_performance')
 

@@ -113,8 +113,8 @@ class Show < ActiveRecord::Base
       showdates.inject(0) { |t,s| t+s.percent_of_house } / showdates.size
   end
 
-  def compute_total_sales
-    showdates.inject(0) { |t,s| t+s.compute_total_sales }
+  def total_sales
+    showdates.map(&:total_sales).flatten
   end
 
   def max_advance_sales

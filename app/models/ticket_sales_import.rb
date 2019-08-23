@@ -83,7 +83,7 @@ class TicketSalesImport < ActiveRecord::Base
       end
     end
     showdates.each_pair do |showdate,num_to_import|
-      current_sales = showdate.compute_total_sales
+      current_sales = showdate.total_sales.size
       warning_params = { :num_to_import => num_to_import, :current_sales => current_sales,
         :performance_date => showdate.thedate.to_formatted_s(:showtime) }
       if current_sales + num_to_import > showdate.max_advance_sales

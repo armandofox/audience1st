@@ -54,7 +54,7 @@ class DonationsController < ApplicationController
   end
 
   def create
-    @order = Order.new(:purchaser => @customer, :customer => @customer)
+    @order = Order.create(:purchaser => @customer, :customer => @customer, :processed_by => current_user)
     @donation = Donation.from_amount_and_account_code_id(
       params[:amount].to_f, params[:fund].to_i, params[:comments].to_s)
     @order.add_donation(@donation)
@@ -81,8 +81,10 @@ class DonationsController < ApplicationController
       @order.finalize!(sold_on)
       redirect_to(customer_path(@customer), :notice => 'Donation recorded.')
     rescue Order::PaymentFailedError => e
+      @order.destroy
       redirect_to(new_customer_donation_path(@customer), :alert => e.message)
     rescue StandardError => e
+      @order.destroy
       # rescue ActiveRecord::RecordInvalid => e
       # rescue Order::OrderFinalizeError => e
       # rescue RuntimeError => e

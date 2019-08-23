@@ -66,12 +66,11 @@ Rails.application.routes.draw do
 
     # shows
     resources :shows, :except => [:show] do
-      resources :showdates, :except => [:index] do
-        member do
-          get :seatmap
-        end
-      end
+      resources :showdates, :except => [:index]
     end
+    get '/ajax/seating_options/:id' => 'seatmaps#seating_options'
+    get '/ajax/seatmap/:id'         => 'seatmaps#seatmap'
+    
     resources :valid_vouchers, :except => [:index]
     resources :vouchertypes do
       member do

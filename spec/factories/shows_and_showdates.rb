@@ -9,7 +9,13 @@ FactoryBot.define do
     show { create(:show, :name => show_name, :including => date) }
     max_advance_sales { [100, show.house_capacity].min }
     end_advance_sales { thedate - 1.minute }
+
+    factory :reserved_seating_showdate do
+      show { create(:show, :seatmap => create(:seatmap), :name => show_name, :including => date) }
+    end
   end
+
+
 
   factory :show do
     transient do
@@ -22,5 +28,16 @@ FactoryBot.define do
     closing_date { opening_date + 1.month }
     listing_date { Time.current }
   end
+
+  factory :seatmap do
+    # looks like this:
+    #   A1 - A2 -
+    #     B1 -  B2
+    name 'Default'
+    csv 'A1,A2,A3,A4'
+    json %q{['r[A1, ]_r[A2, ]_', '_r[B1, ]_r[B2, ]']}
+    seat_list 'A1,A2,B1,B2'
+  end
+
 
 end
