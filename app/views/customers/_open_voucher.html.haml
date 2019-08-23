@@ -14,6 +14,7 @@
       .col-4.text-center
         = select_tag 'showdate_id', content_tag(:option, 'Select...', :value => 0) + options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, group.menu_label_function(@gAdminDisplay)), :id => nil, :class => 'showdate form-control'
         = text_field_tag 'comments', '', :class => 'invisible form-control form-control-sm special-seating a1-force-fullwidth', :placeholder => t('reservations.special_seating_requests')
-      .col-2.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
+      - if Option.feature_enabled? 'rs'
+        .col-2.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
       .col-2.text-center
         .seating-options

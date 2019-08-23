@@ -7,7 +7,8 @@
     .col-1.text-center #Tix
     .col-3.text-center Show
     .col-4.text-center Your Reservation
-    .col-2.text-center Seats
+    - if Option.feature_enabled? 'rs'
+      .col-2.text-center Seats
     .col-2.text-center Action
 
   - VoucherPresenter.groups_from_vouchers(subscriber_vouchers, @gAdminDisplay).each do |group|
@@ -24,7 +25,8 @@
     .col-1.text-center #Tix
     .col-3.text-center Type
     .col-4.text-center Your Reservation
-    .col-2.text-center Seats
+    - if Option.feature_enabled? 'rs'
+      .col-2.text-center Seats
     .col-2.text-center Action
 
   - VoucherPresenter.groups_from_vouchers(@other_vouchers, @gAdminDisplay).each do |group|
