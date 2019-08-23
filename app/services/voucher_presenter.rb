@@ -54,10 +54,10 @@ class VoucherPresenter
       end
     elsif redeemable_for_multiple_shows
       # dropdown menu should include showname AND date
-      :printable_name
+      :name_with_explanation
     else
       # dropdown menu should show ONLY the date
-      :printable_date
+      :date_with_explanation
     end
   end
 

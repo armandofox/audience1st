@@ -239,12 +239,18 @@ class ValidVoucher < ActiveRecord::Base
   #  so the valid-voucher in question has had its max_sales_for_this_patron ADJUSTED ALREADY
   #  to the value applicable for THIS PATRON, which may be DIFFERENT from the value
   #  specified for the valid-voucher's max_sales_for_type originally.
-  def date_with_explanation
-    display_name = showdate.printable_date_with_description
-    display_name << " (Not available)" if max_sales_for_this_patron.zero?
-    display_name
+  def name_with_explanation
+    showdate.printable_name_with_description << with_explanation
   end
 
+  def date_with_explanation
+    showdate.printable_date_with_description << with_explanation
+  end
+
+  def with_explanation
+    max_sales_for_this_patron.zero? ? " (Not available)" : ""
+  end
+  
   def explanation_for_admin
     if max_sales_for_this_patron > 0
       "#{max_sales_for_this_patron} available"
