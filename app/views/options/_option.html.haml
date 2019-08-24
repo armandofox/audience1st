@@ -19,4 +19,4 @@
           = f.text_field attr_name, :size => 6, :maxlength => 6, :class => 'form-control'
         - else raise "Unexpected option type for #{attr_name}: #{type.to_s}"
       - rescue StandardError => e
-        - raise attrib.to_s
+        - Rails.logger.error "Error on #{attrib}"
