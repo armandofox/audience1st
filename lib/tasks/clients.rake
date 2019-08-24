@@ -14,6 +14,7 @@ a1client = namespace :a1client  do
     raise 'TENANT is required' unless (tenant = ENV["TENANT"])
     puts "Dropping '#{tenant}'..."
     Apartment::Tenant.drop(tenant)
+    puts "Dropped.  Don't forget to remove from Heroku DNS, from `tenant_names` envar, and from Sendgrid allowed domains."
   end
 
   task :create => :environment do
@@ -27,7 +28,7 @@ a1client = namespace :a1client  do
     puts "done"
   end
 
-  desc "Configure (new) client named TENANT using VENUE_FULLNAME, SENDGRID_KEY, STRIPE_KEY, STRIPE_SECRET, all of which are required. Use underscores for spaces in VENUE_FULLNAME. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, and set DNS resolution for <tenant>.audience1st.com."
+  desc "Configure (new) client named TENANT using VENUE_FULLNAME, SENDGRID_KEY, STRIPE_KEY, STRIPE_SECRET, all of which are required. Use underscores for spaces in VENUE_FULLNAME. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
   task :configure => :environment do
     Audience1stRakeTasks.check_vars!
     Apartment::Tenant.switch(ENV['TENANT']) do
