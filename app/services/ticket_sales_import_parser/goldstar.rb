@@ -31,6 +31,15 @@ module TicketSalesImportParser
       @j['inventories'].map { |i| i['purchases'] }.flatten.each do |purchase|
         # relevant slots: created_at, purchase_id, first_name, last_name,
         # claims (array of {quantity => x, offer_id => y})
+        # Goldstar special case: a "purchase" can show up for which
+        # `claims` is an empty array. This is probably a bug on their part but we have to
+        # handle it.
+        purchase_id,first,last = purchase.values_at('purchase_id','first_name','last_name')
+        if purchase['claims'].empty?
+          @import.warnings.add(:base, I18n.translate('import.goldstar.empty_claims_list',
+              :purchase_id => purchase_id, :name => "#{first} #{last}"))
+          next
+        end
         i = ImportableOrder.new(first: purchase['first_name'], last: purchase['last_name'])
         # unfortunately we get no email from Golstar.
         # Order already imported?

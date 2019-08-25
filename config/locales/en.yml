@@ -5,7 +5,11 @@ en:
       invalid_offer_id: >
         This will-call list is invalid because at least one purchase (for %{name}) refers to the
         nonexistent offer ID %{offer_id}.
-
+      empty_claims_list: >
+        Warning: purchase ID %{purchase_id} for %{name} has an empty 'claims' list.  This is
+        probably a bug on Goldstar's part, but check with this customer to see whether they
+        successfully completed their purchase on Goldstar.
+                    
     import_cancelled: >
       Import of '%{filename}' cancelled.
 
