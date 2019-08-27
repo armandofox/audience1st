@@ -66,16 +66,14 @@ class Mailer < ActionMailer::Base
                then "call #{Option.boxoffice_telephone}"
                else "email #{Option.help_email} or call #{Option.boxoffice_telephone}"
                end
-    if Rails.env.production? and
-        (Option.sendgrid_key_value.blank? or
-        Option.sendgrid_domain.blank?)
+    if Rails.env.production? and Option.sendgrid_domain.blank?
       ActionMailer::Base.perform_deliveries = false
       Rails.logger.info "NOT sending email"
     else
       ActionMailer::Base.perform_deliveries = true
       ActionMailer::Base.smtp_settings = {
         :user_name => 'apikey',
-        :password => Option.sendgrid_key_value,
+        :password => Figaro.env.sendgrid_key_value,
         :domain   => Option.sendgrid_domain,
         :address  => 'smtp.sendgrid.net',
         :port     => 587,

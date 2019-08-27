@@ -68,8 +68,7 @@ staging = namespace :staging do
     Option.first.update_attributes!(
       :stripe_key => Figaro.env.STRIPE_KEY!,
       :stripe_secret => Figaro.env.STRIPE_SECRET!,
-      :sendgrid_key_value => '', # disables email sending
-      :sendgrid_domain => '')
+      :sendgrid_domain => '')   # domain blank disables email sending
   end
 
   desc "Populate database tenant '#{StagingHelper::TENANT}' with NUM_CUSTOMERS fake customers (default 100) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."

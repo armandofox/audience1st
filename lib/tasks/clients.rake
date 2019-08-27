@@ -2,7 +2,7 @@ require 'apartment/migrator'
 
 module Audience1stRakeTasks
   def self.check_vars!
-    %w(TENANT STRIPE_KEY STRIPE_SECRET SENDGRID_KEY VENUE_FULLNAME).each do |var|
+    %w(TENANT STRIPE_KEY STRIPE_SECRET VENUE_FULLNAME).each do |var|
       raise "#{var} is required" unless ENV[var]
     end
   end
@@ -28,13 +28,12 @@ a1client = namespace :a1client  do
     puts "done"
   end
 
-  desc "Configure (new) client named TENANT using VENUE_FULLNAME, SENDGRID_KEY, STRIPE_KEY, STRIPE_SECRET, all of which are required. Use underscores for spaces in VENUE_FULLNAME. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
+  desc "Configure (new) client named TENANT using VENUE_FULLNAME, STRIPE_KEY, STRIPE_SECRET, all of which are required. Use underscores for spaces in VENUE_FULLNAME. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
   task :configure => :environment do
     Audience1stRakeTasks.check_vars!
     Apartment::Tenant.switch(ENV['TENANT']) do
       Option.first.update_attributes!(
         :sendgrid_domain    => "#{ENV['TENANT']}.audience1st.com",
-        :sendgrid_key_value => ENV['SENDGRID_KEY'],
         :stripe_key         => ENV['STRIPE_KEY'],
         :stripe_secret      => ENV['STRIPE_SECRET'],
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
@@ -42,7 +41,7 @@ a1client = namespace :a1client  do
     end
   end
 
-  desc "Set up new client TENANT using VENUE_FULLNAME, SENDGRID_KEY, STRIPE_KEY, STRIPE_SECRET, all of which are required."
+  desc "Set up new client TENANT using VENUE_FULLNAME, STRIPE_KEY, STRIPE_SECRET, all of which are required."
   task :provision => :environment do
     Audience1stRakeTasks.check_vars!
     a1client['create'].invoke

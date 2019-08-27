@@ -421,12 +421,6 @@ en:
       configuration on Sendgrid is required, or else emails may not be
       delivered. 
 
-    sendgrid_key_value: >
-
-      Key value of the API key of the Sendgrid transactional email service (used to
-      send confirmation emails only; this is different from using Mailchimp
-      or ConstantContact to send marketing emails).
-
     stripe_key: >
 
       The publishable (non-secret) part of your Stripe API key.  See the

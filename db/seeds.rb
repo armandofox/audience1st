@@ -102,7 +102,7 @@ class Audience1stSeeder
       :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
       :stripe_key => Figaro.env.STRIPE_KEY!,
       :stripe_secret => Figaro.env.STRIPE_SECRET!,
-      :sendgrid_key_value => '',
+      :sendgrid_domain => '',
       :staff_access_only => false
       )
     option.save!

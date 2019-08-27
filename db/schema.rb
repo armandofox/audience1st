@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190819202309) do
+ActiveRecord::Schema.define(version: 20190827002729) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -171,8 +171,6 @@ ActiveRecord::Schema.define(version: 20190819202309) do
     t.string   "stripe_key"
     t.string   "encrypted_stripe_secret"
     t.string   "encrypted_stripe_secret_iv"
-    t.string   "encrypted_sendgrid_key_value"
-    t.string   "encrypted_sendgrid_key_value_iv"
     t.string   "sendgrid_domain"
     t.string   "encrypted_mailchimp_key"
     t.string   "encrypted_mailchimp_key_iv"
