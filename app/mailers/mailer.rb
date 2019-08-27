@@ -73,7 +73,7 @@ class Mailer < ActionMailer::Base
       ActionMailer::Base.perform_deliveries = true
       ActionMailer::Base.smtp_settings = {
         :user_name => 'apikey',
-        :password => Figaro.env.sendgrid_key_value,
+        :password => Figaro.env.SENDGRID_KEY,
         :domain   => Option.sendgrid_domain,
         :address  => 'smtp.sendgrid.net',
         :port     => 587,
