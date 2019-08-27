@@ -61,8 +61,8 @@ class VoucherPresenter
     end
   end
 
-  def cancelable_by(user)
-    user.is_boxoffice || vouchers.all?(&:can_be_changed?)
+  def cancelable?
+    vouchers.all?(&:can_be_changed?)
   end
 
   def voucher_comments

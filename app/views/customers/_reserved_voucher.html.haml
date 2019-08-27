@@ -1,4 +1,4 @@
-- if (@gAdminDisplay || group.cancelable_by(@customer))
+- if (@gAdminDisplay || group.cancelable?)
   .row.border-top.border-secondary
     = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth'   do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
