@@ -31,6 +31,12 @@ Scenario: landing on donation page with invalid account code
   When I visit the donation landing page coded for a nonexistent fund
   Then I should see "Donation to General Fund"
 
+Scenario: change donation prompt
+  When I login as boxoffice manager
+  And I change the "Donation prompt" for account code 7575 to "Donate to support our history"
+  And I visit the donation landing page coded for fund 7575
+  Then I should see "Donate to support our history"
+
 @stubs_successful_credit_card_payment
 Scenario: contents of donation prompt field are recorded as donation comment
   When I visit the donation landing page coded for fund 8080

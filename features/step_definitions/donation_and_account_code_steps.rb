@@ -30,6 +30,13 @@ Given /^the following account codes exist:$/ do |tbl|
   end
 end
 
+When /I change the "(.*)" for account code (\d+) to "(.*)"/ do |attrib, account_code, new_value|
+  ac = AccountCode.find_by!(:code => account_code)
+  visit edit_account_code_path(ac)
+  fill_in attrib, :with => new_value
+  click_button 'Update Account code'
+end
+
 When /^I record a (check|cash) donation of \$([\d.]+) to "(.*)" on (.*)(?: with comment "(.*)")?$/ do |type, amount, fund, date, comment|
   fill_in "Amount", :with => amount
   choose type.capitalize

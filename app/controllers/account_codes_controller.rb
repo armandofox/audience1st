@@ -45,6 +45,6 @@ class AccountCodesController < ApplicationController
   private
 
   def account_code_params
-    params.require(:account_code).permit(:name, :code, :description)
+    params.require(:account_code).permit(:name, :code, :description, :donation_prompt)
   end
 end
