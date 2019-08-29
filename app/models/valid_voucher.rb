@@ -240,7 +240,7 @@ class ValidVoucher < ActiveRecord::Base
   #  to the value applicable for THIS PATRON, which may be DIFFERENT from the value
   #  specified for the valid-voucher's max_sales_for_type originally.
   def name_with_explanation
-    showdate.printable_name_with_description << with_explanation
+    showdate.printable_name << with_explanation
   end
 
   def date_with_explanation
