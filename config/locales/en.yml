@@ -155,7 +155,7 @@ en:
   reservations:
 
     confirm_cancellation: >
-      Are you sure? Click OK to cancel this reservation, or Cancel to leave things as they are.
+      Are you sure? Click OK to continue with cancelling this reservation, or Cancel to leave things as they are.
 
     special_seating_requests: >
       Any special seating/mobility needs?
