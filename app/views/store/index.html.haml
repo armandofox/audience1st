@@ -37,19 +37,10 @@
         %label.col-form-label.text-right.col-sm-4.strong{:for=>:total} Order Total
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'text-right form-control form-control-sm col-md-1 col-sm-2'
         .col-md-6
-
-      - if Option.allow_gift_tickets? and @logged_in
-        .form-group.form-row
-          .col-md-4
-          .form-check.col-md-8
-            = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
-            %label.form-check-label{:for=>:gift} This order is a gift
-
-      .form-group.form-row  
-        .col-md-4.offset-md-4
-          - if @sh.try(:seatmap)
-            %button.btn.btn-primary{:type => 'button', 'data-toggle' => 'modal', 'data-target' => '#selectSeats'} Select Seats
-          - else
-            = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
-
+          
       = render :partial => 'select_seats'
+      = render :partial => 'gift_options_and_continue'
+
+.d-none#seating-charts-wrapper
+  #seatmap.seatCharts-container
+  %img.seating-charts-overlay

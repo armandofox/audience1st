@@ -120,7 +120,7 @@ A1.seatmap = {
     // hide seat map in case it was shown before from previous selection
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
   }
-  ,setup: function() {
+  ,setupReservations: function() {
     // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
     $('select.showdate').change(A1.seatmap.showSeatingOptionsForShowdate);
     $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdate);
@@ -130,4 +130,4 @@ A1.seatmap = {
   }
 };
 
-$(A1.seatmap.setup);
+$(A1.seatmap.setupReservations);
