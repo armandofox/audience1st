@@ -43,7 +43,9 @@ A1.seatmap = {
       removeClass('d-none').
       slideDown();
     // num seats to select
-    A1.seatmap.max = parseInt(container.find('.num_tickets').val());
+    var numSeatsMenu = container.find('.number');
+    A1.seatmap.max = parseInt(numSeatsMenu.val());
+    numSeatsMenu.prop('disabled', 'disabled');
     // where to display seats chosen so far, Confirm button, Select More Seats button
     A1.seatmap.seatDisplayField = container.find('.seat-display');
     A1.seatmap.confirmSeatsButton = container.find('.confirm-seats');
@@ -53,7 +55,7 @@ A1.seatmap = {
   }
   ,showSeatmapForShowdate: function(evt) {
     evt.preventDefault();
-    A1.seatmap.findDomElements($(this).closest('.row'));
+    A1.seatmap.findDomElements($(this).closest('.form-row'));
     // get the seatmap and list of unavailable seats for this showdate
     $.getJSON(A1.seatmap.url, function(json_data) { 
       A1.seatmap.settings.map = json_data.map;
@@ -110,8 +112,8 @@ A1.seatmap = {
     $('#seating-charts-wrapper').height($('#seatmap').height());
   }
   // triggered whenever showdate dropdown menu changes
-  ,showSeatingOptionsForShowdate: function() {
-    var container = $(this).closest('.row'); // the enclosing element that contains the relevant form fields
+  ,getSeatingOptionsForShowdate: function() {
+    var container = $(this).closest('.form-row'); // the enclosing element that contains the relevant form fields
     var url = '/ajax/seating_options/' + $(this).val();
     // show the seating options for this showdate
     $.get(url, function(data) { $(container).find('.seating-options').html(data) });
@@ -121,12 +123,18 @@ A1.seatmap = {
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
   }
   ,setupReservations: function() {
-    // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
-    $('select.showdate').change(A1.seatmap.showSeatingOptionsForShowdate);
-    $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdate);
-    // updating staff comments field (form-remote)
-    $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
-    $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
+    if ($('body#customers_show').length > 0) { // only do these bindings on "My Tickets" page
+      // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
+      $('select.showdate').change(A1.seatmap.getSeatingOptionsForShowdate);
+      $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdate);
+      // updating staff comments field (form-remote)
+      $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
+      $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
+    }
+  },
+  setupRegularSales: function() {
+    if ($('body#store_index').length > 0) {  // only do these bindings on "Buy Tickets" page
+    }
   }
 };
 
