@@ -134,8 +134,17 @@ A1.seatmap = {
   },
   setupRegularSales: function() {
     if ($('body#store_index').length > 0) {  // only do these bindings on "Buy Tickets" page
+      // when showdate changed, 
+      $('select.showdate').change(A1.seatmap.getSeatingOptionsForShowdate);
     }
+  },
+  setupWalkupSales: function() {
+    // bindings only for Walkup Sales page
   }
 };
 
+// at most one of the three Ready functions will actually do anything.
 $(A1.seatmap.setupReservations);
+$(A1.seatmap.setupRegularSales);
+$(A1.seatmap.setupWalkupSales);
+

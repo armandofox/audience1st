@@ -52,6 +52,9 @@ class CustomersController < ApplicationController
     @vouchers_by_season = @subscriber_vouchers.group_by(&:season)
     @reserved_vouchers,@unreserved_vouchers =
       @subscriber_vouchers.partition { |v| v.reserved? }
+
+    # for reservations, indicate which showdates are reserved seating.
+    @showdates_with_reserved_seats = Showdate.current_and_future.with_reserved_seating
     if new_session?
       flash.now[:notice] = (@current_user.login_message || "Logged in successfully")
       flash.delete(:alert)

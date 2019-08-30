@@ -31,9 +31,9 @@
           - max_sales = [30, v.max_sales_for_this_patron].min
           %label.col-form-label.text-right.col-sm-4{:for => "valid_voucher_#{v.id}"}= v.name_with_price
           - if @is_admin
-            .col-1
+            .col-sm-1
               = text_field_tag fieldname, '', :size => 3, 'data-price' => v.price, :class => 'itemQty form-control form-control-sm'
-            .col-7
+            .col-sm-7
               %span.alert.alert-danger.s-explain= v.explanation
           - else
             = select_tag(fieldname, options_for_select(0..max_sales), 'data-price' => v.price, :class => 'itemQty form-control form-control-sm col-sm-1')
