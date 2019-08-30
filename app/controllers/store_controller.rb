@@ -81,7 +81,7 @@ class StoreController < ApplicationController
       @all_shows.size == 1   && # no other shows coming up
       @all_showdates.empty?     # no other eligible showdates for this show
     # for reserved seating, include list of showdates that are reserved seating
-    if @sd.seatmap
+    if @sd.try(:seatmap)
       # might as well load the seatmap now!
       @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
     end
