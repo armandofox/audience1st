@@ -100,8 +100,9 @@ class VouchersController < ApplicationController
 
   def confirm_multiple
     the_showdate = Showdate.find_by_id params[:showdate_id]
-    redirect_to(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
     num = params[:number].to_i
+    return redirect_to(customer_path(@customer), :alert => "Please select a date.") unless the_showdate
+    return redirect_to(customer_path(@customer), :alert => "You must select at least 1 seat to reserve.") unless num > 0
     count = 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     if !params[:seats].blank?           # handle reserved seating reservation

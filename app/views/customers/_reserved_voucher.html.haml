@@ -2,7 +2,7 @@
   .form-row.border-top.border-secondary
     = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth'   do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
-      .col-1.text-center= menu_or_static_text('cancelnumber', group.size)
+      .col-1.text-center= menu_or_static_text 'cancelnumber', group.size, {:id => nil}
       .col-3.text-center= group.name
       .col-4.text-center
         - if group.redeemable_for_multiple_shows
@@ -11,7 +11,7 @@
         %span.showDate= group.showdate.printable_date_with_description
       - if Option.feature_enabled? 'rs'
         .col-2.text-center= group.seats
-      .col-2.text-center= submit_tag 'Cancel', :disable_with => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
+      .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
 
 - else
   .form-row.border-top.border-secondary

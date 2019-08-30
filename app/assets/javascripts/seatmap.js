@@ -114,12 +114,18 @@ A1.seatmap = {
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForShowdate: function() {
     var container = $(this).closest('.form-row'); // the enclosing element that contains the relevant form fields
-    var url = '/ajax/seating_options/' + $(this).val();
-    // show the seating options for this showdate
-    $.get(url, function(data) { $(container).find('.seating-options').html(data) });
-    // clear out seat info from previous selection
+    var showdateId = parseInt($(this).val());
+    var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
+    if (showdatesWithReservedSeating.includes(showdateId)) {
+      $(container).find('.reserved-seating').removeClass('d-none');
+      $(container).find('.general-seating').addClass('d-none');
+    } else {
+      $(container).find('.general-seating').removeClass('d-none');
+      $(container).find('.reserved-seating').addClass('d-none');
+    }
+    // in any case, clear out seat info from previous selection
     $(container).find('.seat-display').val('')
-    // hide seat map in case it was shown before from previous selection
+    // in any case, hide seat map in case it was shown before from previous selection
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
   }
   ,setupReservations: function() {

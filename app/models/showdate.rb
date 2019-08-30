@@ -55,8 +55,11 @@ class Showdate < ActiveRecord::Base
       :max_advance_sales => 0)
   end
 
-  def with_reserved_seating(shows = Show.all)
-    Showdate.joins(:shows).where(:show_id => shows.map(&:id)).where('shows.seatmap_id IS NOT NULL')
+  def self.with_reserved_seating_json(shows = Show.all)
+    Showdate.joins(:show).
+      where(:show_id => shows.map(&:id)).
+      where('shows.seatmap_id IS NOT NULL').
+      map(&:id).to_json
   end
 
   def valid_vouchers_for_walkup
