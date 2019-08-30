@@ -115,8 +115,9 @@ A1.seatmap = {
   ,getSeatingOptionsForShowdate: function() {
     var container = $(this).closest('.form-row'); // the enclosing element that contains the relevant form fields
     var showdateId = parseInt($(this).val());
+    console.log(showdateId.toString());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
-    if (showdatesWithReservedSeating.includes(showdateId)) {
+    if (showdatesWithReservedSeating.indexOf(showdateId) !== -1) {
       $(container).find('.reserved-seating').removeClass('d-none');
       $(container).find('.general-seating').addClass('d-none');
     } else {

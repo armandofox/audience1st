@@ -80,6 +80,8 @@ class StoreController < ApplicationController
       @valid_vouchers.empty? && # no tickets for this showdate
       @all_shows.size == 1   && # no other shows coming up
       @all_showdates.empty?     # no other eligible showdates for this show
+    # for reserved seating, include list of showdates that are reserved seating
+    @showdates_with_reserved_seating = Showdate.with_reserved_seating_json([@sh])
   end
 
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,

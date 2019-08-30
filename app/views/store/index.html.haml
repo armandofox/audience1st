@@ -2,6 +2,8 @@
 = render :partial => 'store/check_javascript'
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
+= hidden_field_tag 'showdates_with_reserved_seating', @showdates_with_reserved_seating
+
 - unless current_user
   %p.lead.text-center.bg-light.py-4
     %strong Already a subscriber?
@@ -38,7 +40,10 @@
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'text-right form-control form-control-sm col-md-1 col-sm-2'
         .col-md-6
           
-      = render :partial => 'select_seats'
+      .form-row.reserved-seating.d-none
+        .col-sm-2.col-offset-4= button_tag 'Choose Seats...', :class => 'btn btn-outline-primary btn-small show-seatmap'
+        .col-sm-3.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
+
       = render :partial => 'gift_options_and_continue'
 
 .d-none#seating-charts-wrapper
