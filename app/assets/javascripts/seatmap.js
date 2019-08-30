@@ -1,5 +1,6 @@
 A1.seatmap = {
   selectedSeats: []
+  ,enclosingSelector: ''
   ,unavailable: []
   ,max: 0
   ,seats: null
@@ -53,9 +54,9 @@ A1.seatmap = {
     // URL to retrieve seatmap and unavailable seat info
     A1.seatmap.url = '/ajax/seatmap/' + container.find('.showdate').val();
   }
-  ,showSeatmapForShowdate: function(evt) {
+  ,showSeatmapForShowdateReservation: function(evt) {
     evt.preventDefault();
-    A1.seatmap.findDomElements($(this).closest('.form-row'));
+    A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
     // get the seatmap and list of unavailable seats for this showdate
     $.getJSON(A1.seatmap.url, function(json_data) { 
       A1.seatmap.settings.map = json_data.map;
@@ -64,6 +65,21 @@ A1.seatmap = {
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
       A1.seatmap.setupMap();
     });
+  }
+  ,showSeatmapForShowdateRegularSales: function(evt) {
+    // triggered when "Select Seats" is clicked, so disable default submit action on button
+    evt.preventDefault();
+    // if this show has a seatmap, the info is ALREADY ON THE PAGE as a hidden form field
+    var seatmapInfo = JSON.parse($('#seatmap_info').val());
+    A1.seatmap.settings.map = seatmapInfo.map;
+    A1.seatmap.unavailable = seatmapInfo.unavailable;
+    A1.seatmap.max = A1.orderState.ticketCount;
+    A1.seatmap.seatDisplayField = $('.seat-display');
+    A1.seatmap.selectSeatsButton = $('.show-seatmap');
+    A1.seatmap.confirmSeatsButton = $('#submit');
+    A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+    $('#seating-charts-wrapper').removeClass('d-none').slideDown();
+    A1.seatmap.setupMap();
   }
   ,setupMap: function() {
     A1.seatmap.unselectAll();
@@ -112,10 +128,9 @@ A1.seatmap = {
     $('#seating-charts-wrapper').height($('#seatmap').height());
   }
   // triggered whenever showdate dropdown menu changes
-  ,getSeatingOptionsForShowdate: function() {
-    var container = $(this).closest('.form-row'); // the enclosing element that contains the relevant form fields
+  ,getSeatingOptionsForSubscriberReservation: function() {
+    var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = parseInt($(this).val());
-    console.log(showdateId.toString());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
     if (showdatesWithReservedSeating.indexOf(showdateId) !== -1) {
       $(container).find('.reserved-seating').removeClass('d-none');
@@ -132,20 +147,31 @@ A1.seatmap = {
   ,setupReservations: function() {
     if ($('body#customers_show').length > 0) { // only do these bindings on "My Tickets" page
       // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
-      $('select.showdate').change(A1.seatmap.getSeatingOptionsForShowdate);
-      $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdate);
+      A1.seatmap.enclosingSelector = '.form-row';
+      $('select.showdate').change(A1.seatmap.getSeatingOptionsForSubscriberReservation);
+      $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdateReservation);
       // updating staff comments field (form-remote)
       $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
       $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
     }
-  },
-  setupRegularSales: function() {
-    if ($('body#store_index').length > 0) {  // only do these bindings on "Buy Tickets" page
-      // when showdate changed, 
-      $('select.showdate').change(A1.seatmap.getSeatingOptionsForShowdate);
+  }
+  ,getSeatingOptionsForRegularSales: function() {
+    // triggered whenever the count of selected seats changes.
+    // If nonzero number of seats is selected, enable "choose seats" button.
+    if (A1.orderState.ticketCount > 0) {
+      $('.show-seatmap').prop('disabled', false);
     }
-  },
-  setupWalkupSales: function() {
+  }
+  ,setupRegularSales: function() {
+    if ($('body#store_index').length) {  // only do these bindings on "Buy Tickets" page
+      // when quantities change (triggering price recalc), determine whether to 
+      // show reserved seating controls and hide general seating controls, or vice versa
+      A1.seatmap.enclosingSelector = '#ticket_menus';
+      $('.ticket').change(A1.seatmap.getSeatingOptionsForRegularSales);
+      $('.show-seatmap').click(A1.seatmap.showSeatmapForShowdateRegularSales);
+    }
+  }
+  ,setupWalkupSales: function() {
     // bindings only for Walkup Sales page
   }
 };

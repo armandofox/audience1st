@@ -2,7 +2,8 @@
 = render :partial => 'store/check_javascript'
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
-= hidden_field_tag 'showdates_with_reserved_seating', @showdates_with_reserved_seating
+- if @seatmap_info
+  = hidden_field_tag 'seatmap_info', @seatmap_info
 
 - unless current_user
   %p.lead.text-center.bg-light.py-4
@@ -40,12 +41,23 @@
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'text-right form-control form-control-sm col-md-1 col-sm-2'
         .col-md-6
           
-      .form-row.reserved-seating.d-none
-        .col-sm-2.col-offset-4= button_tag 'Choose Seats...', :class => 'btn btn-outline-primary btn-small show-seatmap'
-        .col-sm-3.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
+      - if @seatmap_info
+        .form-row.reserved-seating
+          .col-sm-2.offset-sm-4= button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-outline-primary btn-small show-seatmap'
+          .col-sm-3.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
 
-      = render :partial => 'gift_options_and_continue'
+        .d-none#seating-charts-wrapper
+          #seatmap.seatCharts-container
+          %img.seating-charts-overlay
 
-.d-none#seating-charts-wrapper
-  #seatmap.seatCharts-container
-  %img.seating-charts-overlay
+      - if Option.allow_gift_tickets? and @logged_in
+        .form-group.form-row
+          .col-md-4
+          .form-check.col-md-8
+            = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
+            %label.form-check-label{:for=>:gift} This order is a gift
+
+      .form-group.form-row  
+        .col-md-4.offset-md-4
+          = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
+

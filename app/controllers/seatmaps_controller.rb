@@ -5,9 +5,7 @@ class SeatmapsController < ApplicationController
   def seatmap
     # return the seatmap for this production, and array of UNAVAILABLE seats for this performance
     showdate = Showdate.find(params[:id]) 
-    seatmap = showdate.seatmap.json
-    unavailable = showdate.occupied_seats.to_json
-    render :json => %Q{ {"map": #{seatmap}, "unavailable": #{unavailable}} }
+    render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate)
   end
 
 end

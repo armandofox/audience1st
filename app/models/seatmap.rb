@@ -7,10 +7,17 @@ class Seatmap < ActiveRecord::Base
   validates :json,  :presence => true
   validates :seat_list, :presence => true
 
+  def self.seatmap_and_unavailable_seats_as_json(showdate)
+    seatmap = showdate.seatmap.json
+    unavailable = showdate.occupied_seats.to_json
+    %Q{ {"map": #{seatmap}, "unavailable": #{unavailable}} }
+  end
+
+  # seatmap editor/parser stuff
   def includes_seat?(seat)
     seat_list.match Regexp.new("\\b#{seat}\\b")
   end
-  
+
   def parse_csv
     @as_js = []
     list = []

@@ -56,6 +56,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def self.with_reserved_seating_json(shows = Show.all)
+    (shows.nil? || shows.empty?) ? Showdate.none:
     Showdate.joins(:show).
       where(:show_id => shows.map(&:id)).
       where('shows.seatmap_id IS NOT NULL').
