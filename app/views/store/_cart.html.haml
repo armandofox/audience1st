@@ -10,6 +10,8 @@
             = v.name
           - else
             #{v.name} (#{v.promo_code})
+          - if !v.seat.blank?
+            = "&bull; Seat #{v.seat}".html_safe
       .col-md-2.text-right.text-primary.h4
         .a1-cart-amount= number_to_currency(v.amount)
 
