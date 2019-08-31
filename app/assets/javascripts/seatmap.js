@@ -16,6 +16,9 @@ A1.seatmap = {
       switch(this.status()) {
       case 'available':           // select seat
         if (A1.seatmap.selectedSeats.length < A1.seatmap.max) {
+          if (this.settings.character == "a") { // accessible seat: show warning
+            alert($('#accessibility_advisory_for_reserved_seating').val());
+          }
           A1.seatmap.select(this);
           return('selected');
         } else {
