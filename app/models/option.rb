@@ -62,9 +62,7 @@ class Option < ActiveRecord::Base
   validates_presence_of :classes_order_service_charge_description,
   :if => Proc.new { |o| o.classes_order_service_charge > 0 }
 
-  if Option.feature_enabled? 'rs'
-    validates_presence_of :accessibility_advisory_for_reserved_seating
-  end
+  #validates_presence_of :accessibility_advisory_for_reserved_seating
 
   if Rails.env.production?
     validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https?://')

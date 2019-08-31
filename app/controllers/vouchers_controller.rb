@@ -82,7 +82,7 @@ class VouchersController < ApplicationController
       Rails.logger.error e.backtrace.inspect
       order.destroy
     end
-    email_confirmation(:confirm_reservation, @customer, showdate, howmany) if params[:customer_email]
+    email_confirmation(:confirm_reservation, @customer, showdate, order.vouchers) if params[:customer_email]
     redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
@@ -135,12 +135,12 @@ class VouchersController < ApplicationController
       flash[:alert] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
-      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
     else
       flash[:alert] = "Some of your reservations could not be completed: " <<
         errors <<
         ".  Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
     end
     redirect_to customer_path(@customer)
   end
