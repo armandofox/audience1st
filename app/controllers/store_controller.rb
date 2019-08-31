@@ -261,7 +261,6 @@ class StoreController < ApplicationController
       return
     end
     if finalize_order(@gOrderInProgress)
-      reset_shopping
       if session[:guest_checkout]
         # forget customer after successful guest checkout
         logout_keeping_session!

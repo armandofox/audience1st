@@ -108,9 +108,10 @@ class ApplicationController < ActionController::Base
   end
 
   def find_cart
-    if (o = Order.find_by(:id => session[:cart]))
+    # if there is an existing order that HAS NOT BEEN finalized, return it....
+    if (o = Order.find_by(:id => session[:cart]))  &&  o.sold_on.nil?
       return o
-    else
+    else                        # nuke it
       session.delete(:cart)
       nil
     end
