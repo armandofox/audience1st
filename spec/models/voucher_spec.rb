@@ -74,7 +74,7 @@ describe Voucher do
     its(:category) { should == 'revenue' }
     its(:processed_by) { should be_nil }
     its(:vouchertype) { should == @vt }
-    its(:amount) { should == 10.00 }
+    its(:amount) { should == 12.00 }
   end
 
   describe "expired voucher" do
