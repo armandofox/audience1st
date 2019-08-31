@@ -62,6 +62,7 @@ class ApplicationController < ActionController::Base
   def reset_shopping           # called as a filter
     session.delete(:promo_code)
     @gOrderInProgress.destroy if @gOrderInProgress
+    @gOrderInProgress = nil
     set_order_in_progress(nil)
     session.delete(:return_to)
     true
