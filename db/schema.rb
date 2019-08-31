@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190831174058) do
+ActiveRecord::Schema.define(version: 20190831193831) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 40,  default: "", null: false
@@ -91,8 +94,8 @@ ActiveRecord::Schema.define(version: 20190831174058) do
     t.string   "seat"
   end
 
-  add_index "items", ["finalized"], name: "index_items_on_finalized"
-  add_index "items", ["seat"], name: "index_items_on_seat"
+  add_index "items", ["finalized"], name: "index_items_on_finalized", using: :btree
+  add_index "items", ["seat"], name: "index_items_on_seat", using: :btree
 
   create_table "labels", force: :cascade do |t|
     t.string "name", limit: 255
@@ -197,7 +200,7 @@ ActiveRecord::Schema.define(version: 20190831174058) do
     t.integer  "ticket_sales_import_id"
   end
 
-  add_index "orders", ["external_key"], name: "index_orders_on_external_key"
+  add_index "orders", ["external_key"], name: "index_orders_on_external_key", using: :btree
 
   create_table "seatmaps", force: :cascade do |t|
     t.string  "name",                  null: false
@@ -206,6 +209,7 @@ ActiveRecord::Schema.define(version: 20190831174058) do
     t.text    "seat_list"
     t.integer "rows",      default: 0, null: false
     t.integer "columns",   default: 0, null: false
+    t.string  "image_url"
   end
 
   create_table "showdates", force: :cascade do |t|
