@@ -124,6 +124,7 @@ class Customer < ActiveRecord::Base
           pass = nil
         end
         c1.destroy
+        c0.save!
         if pass
           Customer.connection.execute("UPDATE customers SET crypted_password='#{pass}',salt='#{salt}' WHERE id=#{c0.id}")
         end

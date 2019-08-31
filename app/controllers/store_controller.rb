@@ -151,7 +151,6 @@ class StoreController < ApplicationController
       render(:action => 'donate') and return
     end
     if finalize_order(@gOrderInProgress)
-      reset_shopping
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
