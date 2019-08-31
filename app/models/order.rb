@@ -224,6 +224,9 @@ class Order < ActiveRecord::Base
     vouchers.group_by { |v| [v.vouchertype, v.showdate] }.each_pair do |for_show,vouchers|
       summary << "#{vouchers.count} @ #{vouchers.first.one_line_description}"
     end
+    if vouchers.any? { |v| !v.seat.blank? }
+      summary << "Seats: #{vouchers.map(&:seat).join(', ')}"
+    end
     summary += nonvouchers.map(&:one_line_description)
     summary << self.comments
     summary.join(separator)
