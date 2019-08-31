@@ -59,20 +59,21 @@ A1.seatmap = {
     A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
     // get the seatmap and list of unavailable seats for this showdate
     $.getJSON(A1.seatmap.url, function(json_data) { 
-      A1.seatmap.settings.map = json_data.map;
-      // list of already-taken seats
-      A1.seatmap.unavailable = json_data.unavailable;
+      A1.seatmap.configureFrom(json_data);
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
       A1.seatmap.setupMap();
     });
+  }
+  ,configureFrom: function(j) {
+    A1.seatmap.settings.map = j.map; // the actual seat map
+    A1.seatmap.settings.seats = j.seats; // metadata for seat types
+    A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
   }
   ,showSeatmapForShowdateRegularSales: function(evt) {
     // triggered when "Select Seats" is clicked, so disable default submit action on button
     evt.preventDefault();
     // if this show has a seatmap, the info is ALREADY ON THE PAGE as a hidden form field
-    var seatmapInfo = JSON.parse($('#seatmap_info').val());
-    A1.seatmap.settings.map = seatmapInfo.map;
-    A1.seatmap.unavailable = seatmapInfo.unavailable;
+    A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
     A1.seatmap.max = A1.orderState.ticketCount;
     A1.seatmap.seatDisplayField = $('.seat-display');
     A1.seatmap.selectSeatsButton = $('.show-seatmap');
