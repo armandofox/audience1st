@@ -32,7 +32,7 @@
     background-color: blue;
 }
 .seatCharts-seat.available.accessible {
-    background-color: lightBlue;
+    background-color: CornflowerBlue;
 }
 .seatCharts-seat.focused.accessible {
     border: 2px solid yellow;

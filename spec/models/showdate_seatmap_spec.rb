@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'reserved-seating showdate', :focus => true do
+describe 'reserved-seating showdate' do
   before(:each) do
     @showdate = create(:reserved_seating_showdate) # has seats: A1,A2,B1,B2
     @seats = %w(A1 A2 B1 B2)
