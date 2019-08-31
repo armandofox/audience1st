@@ -113,32 +113,43 @@ class Order < ActiveRecord::Base
     ticket_count.zero? &&  donation.nil? && retail_items.empty?
   end
 
-  def add_tickets_from_params(valid_voucher_params, customer, supplied_promo_code=nil)
+  def add_tickets_from_params(valid_voucher_params, customer, promo_code: '', seats: [])
     return unless valid_voucher_params
-    valid_voucher_params.each_pair do |vv_id, qty|
-      vv = ValidVoucher.find(vv_id)
-      vv.supplied_promo_code = supplied_promo_code.to_s
-      vv.customer = customer
-      add_tickets(vv,qty.to_i)
+    # error unless number of seats matches number of requested tickets
+    total_tickets = valid_voucher_params.values.map(&:to_i).sum
+    if !seats.empty?
+      raise Order::CannotAddItemError.new("#{total_tickets} tickets requested but #{seats.length} seat assignments provided") unless total_tickets == seats.length
     end
+    valid_voucher_params.each_pair do |vv_id, qty|
+      qty = qty.to_i
+      vv = ValidVoucher.find(vv_id)
+      vv.supplied_promo_code = promo_code.to_s
+      vv.customer = customer
+      add_tickets(vv, qty, seats.slice!(0,qty))
+    end
+    # error if number of seats doesn't match number of vouchers
+
   end
 
-  def add_tickets(valid_voucher, number)
+  def add_tickets(valid_voucher, number, seats=[])
     raise Order::NotPersistedError unless persisted?
     # is this order-placer allowed to exercise this redemption?
     valid_voucher.customer = self.processed_by || Customer.anonymous_customer
     redemption = valid_voucher.adjust_for_customer
     if redemption.max_sales_for_this_patron >= number
-      add_tickets_without_capacity_checks(valid_voucher, number)
+      add_tickets_without_capacity_checks(valid_voucher, number, seats)
     else
       self.errors.add(:base, "Only #{redemption.max_sales_for_this_patron} seats are available")
     end
   end
 
-  def add_tickets_without_capacity_checks(valid_voucher, number)
+  def add_tickets_without_capacity_checks(valid_voucher, number, seats=[])
     raise Order::NotPersistedError unless persisted?
     new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
-    new_vouchers.each { |v| v.reserve!(valid_voucher.showdate) }
+    new_vouchers.each_with_index do |v,i|
+      v.seat = seats[i] unless seats.empty?
+      v.reserve!(valid_voucher.showdate)
+    end
     self.vouchers += new_vouchers
     self.save!
   end

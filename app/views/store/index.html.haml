@@ -40,15 +40,6 @@
         %label.col-form-label.text-right.col-sm-4.strong{:for=>:total} Order Total
         = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'text-right form-control form-control-sm col-md-1 col-sm-2'
         .col-md-6
-          
-      - if @seatmap_info
-        .form-row.reserved-seating
-          .col-sm-2.offset-sm-4= button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-outline-primary btn-small show-seatmap'
-          .col-sm-3.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
-
-        .d-none#seating-charts-wrapper
-          #seatmap.seatCharts-container
-          %img.seating-charts-overlay
 
       - if Option.allow_gift_tickets? and @logged_in
         .form-group.form-row
@@ -56,8 +47,22 @@
           .form-check.col-md-8
             = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
             %label.form-check-label{:for=>:gift} This order is a gift
+          
+      - if @seatmap_info
+        .form-row.reserved-seating
+          .col-md-4.offset-sm-4
+            = button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-outline-primary btn-block show-seatmap'
+            = submit_tag 'Continue to Billing Information', :id => 'submit', :class => 'd-none btn btn-block btn-success text-center'
+          .col-sm-3.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
+      - else
+        .form-row
+          .col-md-4.offset-md-4
+            = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
 
-      .form-group.form-row  
-        .col-md-4.offset-md-4
-          = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
+
+
+
+    .d-none#seating-charts-wrapper
+      #seatmap.seatCharts-container
+      %img.seating-charts-overlay
 
