@@ -1,5 +1,11 @@
 en:
   option_descriptions:
+    accessibility_advisory_for_reserved_seating: >
+
+      Pop-up message that appears when a patron tries to reserve a seat designated
+      as an accessible seat, gently reminding the patron to be sure they really need this
+      accommodation before proceeding with the seat reservation.
+
     advance_sales_cutoff: >
 
       Default time that online sales close (minutes before

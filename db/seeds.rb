@@ -92,6 +92,7 @@ class Audience1stSeeder
       :send_birthday_reminders => 0,
       :terms_of_sale => 'Sales Final',
       :precheckout_popup => 'Please double check dates',
+      :accessibility_advisory_for_reserved_seating => 'This seat is designated as an accessible seat.  Please ensure you need this accommodation before finalizing this reservation.',
       :default_retail_account_code =>  9999,
       :default_donation_account_code => 9999,
       :default_donation_account_code_with_subscriptions => 9999,
