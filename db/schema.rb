@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190827002729) do
+ActiveRecord::Schema.define(version: 20190831193831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -114,17 +114,17 @@ ActiveRecord::Schema.define(version: 20190827002729) do
     t.integer  "cancel_grace_period",                                                default: 1440
     t.string   "default_donation_account_code",                          limit: 255
     t.string   "default_donation_account_code_with_subscriptions",       limit: 255
-    t.string   "venue",                                                  limit: 255, default: "Enter Venue Name",                                           null: false
-    t.string   "venue_address",                                          limit: 255, default: "Enter Venue Address",                                        null: false
-    t.string   "venue_city_state_zip",                                   limit: 255, default: "Enter Venue City State Zip",                                 null: false
-    t.string   "venue_telephone",                                        limit: 255, default: "Enter Venue Main Phone",                                     null: false
+    t.string   "venue",                                                  limit: 255, default: "Enter Venue Name",                                                                                                              null: false
+    t.string   "venue_address",                                          limit: 255, default: "Enter Venue Address",                                                                                                           null: false
+    t.string   "venue_city_state_zip",                                   limit: 255, default: "Enter Venue City State Zip",                                                                                                    null: false
+    t.string   "venue_telephone",                                        limit: 255, default: "Enter Venue Main Phone",                                                                                                        null: false
     t.string   "venue_homepage_url",                                     limit: 255
-    t.string   "boxoffice_telephone",                                    limit: 255, default: "Enter Venue Box office phone",                               null: false
+    t.string   "boxoffice_telephone",                                    limit: 255, default: "Enter Venue Box office phone",                                                                                                  null: false
     t.string   "donation_ack_from",                                      limit: 255
     t.string   "boxoffice_daemon_notify",                                limit: 255
     t.string   "help_email",                                             limit: 255, default: ""
-    t.integer  "send_birthday_reminders",                                            default: 0,                                                            null: false
-    t.integer  "session_timeout",                                                    default: 1000,                                                         null: false
+    t.integer  "send_birthday_reminders",                                            default: 0,                                                                                                                               null: false
+    t.integer  "session_timeout",                                                    default: 1000,                                                                                                                            null: false
     t.text     "welcome_page_subscriber_message"
     t.text     "welcome_page_nonsubscriber_message"
     t.text     "special_event_sales_banner_for_current_subscribers"
@@ -148,7 +148,7 @@ ActiveRecord::Schema.define(version: 20190827002729) do
     t.text     "subscriber_confirmation_email_notes"
     t.text     "nonsubscriber_confirmation_email_notes"
     t.text     "terms_of_sale"
-    t.string   "privacy_policy_url",                                     limit: 255, default: "Enter privacy policy page URL",                              null: false
+    t.string   "privacy_policy_url",                                     limit: 255, default: "Enter privacy policy page URL",                                                                                                 null: false
     t.string   "mailchimp_default_list_name",                            limit: 255
     t.string   "default_retail_account_code",                            limit: 255
     t.string   "quick_donation_banner",                                  limit: 255, default: "Support us with a donation"
@@ -159,15 +159,15 @@ ActiveRecord::Schema.define(version: 20190827002729) do
     t.string   "class_sales_banner_for_next_season_subscribers",         limit: 255
     t.float    "subscription_order_service_charge",                                  default: 0.0
     t.string   "subscription_order_service_charge_description",          limit: 255
-    t.integer  "subscription_order_service_charge_account_code",                     default: 0,                                                            null: false
+    t.integer  "subscription_order_service_charge_account_code",                     default: 0,                                                                                                                               null: false
     t.float    "regular_order_service_charge",                                       default: 0.0
     t.string   "regular_order_service_charge_description",               limit: 255
-    t.integer  "regular_order_service_charge_account_code",                          default: 0,                                                            null: false
+    t.integer  "regular_order_service_charge_account_code",                          default: 0,                                                                                                                               null: false
     t.float    "classes_order_service_charge",                                       default: 0.0
     t.string   "classes_order_service_charge_description",               limit: 255
-    t.integer  "classes_order_service_charge_account_code",                          default: 0,                                                            null: false
-    t.string   "special_seating_requests",                               limit: 255, default: " Please describe (electric wheelchair, walker, cane, etc.)", null: false
-    t.integer  "limited_availability_threshold",                                     default: 40,                                                           null: false
+    t.integer  "classes_order_service_charge_account_code",                          default: 0,                                                                                                                               null: false
+    t.string   "special_seating_requests",                               limit: 255, default: " Please describe (electric wheelchair, walker, cane, etc.)",                                                                    null: false
+    t.integer  "limited_availability_threshold",                                     default: 40,                                                                                                                              null: false
     t.string   "stripe_key"
     t.string   "encrypted_stripe_secret"
     t.string   "encrypted_stripe_secret_iv"
@@ -178,6 +178,7 @@ ActiveRecord::Schema.define(version: 20190827002729) do
     t.boolean  "staff_access_only",                                                  default: false
     t.boolean  "allow_guest_checkout",                                               default: false
     t.string   "feature_flags",                                                      default: "--- []\n"
+    t.text     "accessibility_advisory_for_reserved_seating",                        default: "This seat is designated as an accessible seat.  Please ensure you need this accommodation before finalizing this reservation.", null: false
   end
 
   create_table "orders", force: :cascade do |t|
@@ -202,10 +203,13 @@ ActiveRecord::Schema.define(version: 20190827002729) do
   add_index "orders", ["external_key"], name: "index_orders_on_external_key", using: :btree
 
   create_table "seatmaps", force: :cascade do |t|
-    t.string "name",      null: false
-    t.text   "csv"
-    t.text   "json",      null: false
-    t.text   "seat_list"
+    t.string  "name",                  null: false
+    t.text    "csv"
+    t.text    "json",                  null: false
+    t.text    "seat_list"
+    t.integer "rows",      default: 0, null: false
+    t.integer "columns",   default: 0, null: false
+    t.string  "image_url"
   end
 
   create_table "showdates", force: :cascade do |t|

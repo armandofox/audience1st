@@ -1,5 +1,7 @@
 = themed
 
+= hidden_field_tag 'showdates_with_reserved_seating', @showdates_with_reserved_seating
+
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
 
   %h1.text-center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})

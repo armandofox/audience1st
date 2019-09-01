@@ -20,6 +20,7 @@
   %body{:id=>"#{controller.controller_name}_#{action_name}", :class => ('maintenance' if @gMaintMode)}
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
+    = hidden_field_tag 'accessibility_advisory_for_reserved_seating', Option.accessibility_advisory_for_reserved_seating
     
     #outer_header
     #outer_wrapper

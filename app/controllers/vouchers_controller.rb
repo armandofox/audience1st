@@ -82,7 +82,7 @@ class VouchersController < ApplicationController
       Rails.logger.error e.backtrace.inspect
       order.destroy
     end
-    email_confirmation(:confirm_reservation, @customer, showdate, howmany) if params[:customer_email]
+    email_confirmation(:confirm_reservation, @customer, showdate, order.vouchers) if params[:customer_email]
     redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
@@ -100,8 +100,9 @@ class VouchersController < ApplicationController
 
   def confirm_multiple
     the_showdate = Showdate.find_by_id params[:showdate_id]
-    redirect_to(customer_path(@customer), :alert => "Please select a date.") and return unless the_showdate
     num = params[:number].to_i
+    return redirect_to(customer_path(@customer), :alert => "Please select a date.") unless the_showdate
+    return redirect_to(customer_path(@customer), :alert => "You must select at least 1 seat to reserve.") unless num > 0
     count = 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     if !params[:seats].blank?           # handle reserved seating reservation
@@ -134,12 +135,12 @@ class VouchersController < ApplicationController
       flash[:alert] = "Your reservations could not be completed (#{errors})."
     when num
       flash[:notice] = "Your reservations are confirmed."
-      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
     else
       flash[:alert] = "Some of your reservations could not be completed: " <<
         errors <<
         ".  Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, @customer, the_showdate, count)
+      email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
     end
     redirect_to customer_path(@customer)
   end

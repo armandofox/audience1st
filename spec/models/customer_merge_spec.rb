@@ -192,9 +192,9 @@ describe Customer, "merging" do
         @from = create(:customer)
         @to = create(:customer)
         @random_purchaser = create(:customer)
-        @o1 = create(:order, :vouchers_count => 2, :contains_donation => true,
+        @o1 = create(:completed_order, :vouchers_count => 2, :contains_donation => true,
           :customer => @from, :purchaser => @random_purchaser)
-        @o2 = create(:order, :vouchers_count => 1, :contains_donation => false,
+        @o2 = create(:completed_order, :vouchers_count => 1, :contains_donation => false,
           :customer => @to, :purchaser => @to)
         @from.merge_automatically!(@to)
         @from.reload

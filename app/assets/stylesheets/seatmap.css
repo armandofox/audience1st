@@ -12,18 +12,31 @@
 }
 */
     
-.seatCharts-seat.available {
-    background-color: lightGreen;
-}
 .seatCharts-seat.unavailable {
     background-color: lightGrey;
 }
-.seatCharts-seat.focused {
+/* Seats may be of type 'regular' or 'accessible'; we may add other types later */
+/* Regular seats are green */
+.seatCharts-seat.selected.regular {
+    background-color: green;
+}
+.seatCharts-seat.available.regular {
+    background-color: lightGreen;
+}
+.seatCharts-seat.focused.regular {
     border: 2px solid yellow;
     background-color: green;
 }
-.seatCharts-seat.selected {
-    background-color: green;
+/* Accessible seats are blue */
+.seatCharts-seat.selected.accessible {
+    background-color: blue;
+}
+.seatCharts-seat.available.accessible {
+    background-color: CornflowerBlue;
+}
+.seatCharts-seat.focused.accessible {
+    border: 2px solid yellow;
+    background-color: blue;
 }
 
 #seating-charts-wrapper {

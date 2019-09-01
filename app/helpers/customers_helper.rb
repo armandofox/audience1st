@@ -73,12 +73,12 @@ module CustomersHelper
     (indx < 1 || indx > ques.length) ? '' : ques[indx]
   end
 
-  def menu_or_static_text(name, num)
+  def menu_or_static_text(name, num, html_opts={})
     if num > 1
-      select_tag name, options_for_select((1..num), num)
+      select_tag name, options_for_select((1..num), num), html_opts
     else
-      content_tag('span', '1') + hidden_field_tag(name, 1)
+      content_tag('span', '1') + hidden_field_tag(name, 1, html_opts)
     end
   end
-
+  
 end

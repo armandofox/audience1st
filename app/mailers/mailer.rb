@@ -28,10 +28,10 @@ class Mailer < ActionMailer::Base
     mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
   end
 
-  def confirm_reservation(customer,showdate,num=1)
+  def confirm_reservation(customer,showdate,vouchers)
     @customer = customer
     @showdate = showdate
-    @num = num
+    @seats = vouchers.any? { |v| !v.seat.blank? } ? vouchers.map(&:seat).join(', ') : vouchers.size
     @notes = @showdate.patron_notes
     mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end

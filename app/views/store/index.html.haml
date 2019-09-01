@@ -2,6 +2,9 @@
 = render :partial => 'store/check_javascript'
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
+- if @seatmap_info
+  = hidden_field_tag 'seatmap_info', @seatmap_info
+
 - unless current_user
   %p.lead.text-center.bg-light.py-4
     %strong Already a subscriber?
@@ -44,12 +47,22 @@
           .form-check.col-md-8
             = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
             %label.form-check-label{:for=>:gift} This order is a gift
-
-      .form-group.form-row  
-        .col-md-4.offset-md-4
-          - if @sh.try(:seatmap)
-            %button.btn.btn-primary{:type => 'button', 'data-toggle' => 'modal', 'data-target' => '#selectSeats'} Select Seats
-          - else
+          
+      - if @seatmap_info
+        .form-row.reserved-seating
+          .col-md-4.offset-sm-4
+            = button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-outline-primary btn-block show-seatmap'
+            = submit_tag 'Continue to Billing Information', :id => 'submit', :class => 'd-none btn btn-block btn-success text-center'
+          .col-sm-3.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :class => 'seat-display shadow-none a1-passive-text-input'
+      - else
+        .form-row
+          .col-md-4.offset-md-4
             = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
 
-      = render :partial => 'select_seats'
+
+
+
+    .d-none#seating-charts-wrapper
+      #seatmap.seatCharts-container
+      %img.seating-charts-overlay
+

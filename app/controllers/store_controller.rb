@@ -80,6 +80,11 @@ class StoreController < ApplicationController
       @valid_vouchers.empty? && # no tickets for this showdate
       @all_shows.size == 1   && # no other shows coming up
       @all_showdates.empty?     # no other eligible showdates for this show
+    # for reserved seating, include list of showdates that are reserved seating
+    if @sd.try(:seatmap)
+      # might as well load the seatmap now!
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
+    end
   end
 
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
@@ -159,7 +164,7 @@ class StoreController < ApplicationController
   def process_cart
     @gOrderInProgress = Order.create(:processed_by => current_user)
     @gOrderInProgress.add_comment params[:comments].to_s
-    @gOrderInProgress.add_tickets_from_params params[:valid_voucher], current_user, params[:promo_code]
+    @gOrderInProgress.add_tickets_from_params params[:valid_voucher], current_user, :promo_code => params[:promo_code], :seats => params[:seats].to_s.split(/\s*,\s*/)
     add_retail_items_to_cart
     add_donation_to_cart
     if ! @gOrderInProgress.errors.empty?
