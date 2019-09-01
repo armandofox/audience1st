@@ -49,6 +49,7 @@ group :test do
   gem 'launchy'
   gem 'rack-test'
   gem 'coveralls', :require => false
+  gem 'database_cleaner'
   gem 'email_spec'
   gem 'fake_stripe'
   gem 'poltergeist'
@@ -81,7 +82,6 @@ group :development, :test do
   gem 'spring-commands-rspec'   # for use with Guard
   gem 'minitest'
   gem 'faye-websocket'
-  gem 'database_cleaner'
   gem 'rb-readline'
   gem 'rspec', '~> 3.0'
   gem 'rspec-rails'

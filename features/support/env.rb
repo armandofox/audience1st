@@ -56,10 +56,8 @@ ActionController::Base.allow_rescue = false
 # block that will explicitly put your database in a known state.
 Cucumber::Rails::World.use_transactional_fixtures = false
 
-# How to clean your database when transactions are turned off. See
-# http://github.com/bmabey/database_cleaner for more info.
-DatabaseCleaner.strategy = :truncation
-DatabaseCleaner.clean_with(:truncation)
+DatabaseCleaner.strategy = :transaction
+Cucumber::Rails::Database.javascript_strategy = :truncation
 
 World(RSpec::Mocks::ExampleMethods)
 

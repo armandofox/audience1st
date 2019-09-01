@@ -80,7 +80,7 @@ RSpec.configure do |config|
     FakeStripe.stub_stripe
     DatabaseCleaner.cleaning do
       # Freeze time
-      Timecop.travel(Date.parse 'Mar 1, 2012')
+      Timecop.travel(Date.parse 'January 1, 2010')
       load File.join(Rails.root, 'db', 'seeds.rb')
       ex.run
       Timecop.return
