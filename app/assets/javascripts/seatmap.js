@@ -84,6 +84,12 @@ A1.seatmap = {
     A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
     $('#seating-charts-wrapper').removeClass('d-none').slideDown();
     A1.seatmap.setupMap();
+    // finally, disable selection from the ticket menu(s) or field(s).  Text inputs can
+    // just have readonly set; selects have all options disabled except the selected option.
+    // Both hacks enable the form value to be submitted.
+    $('input.ticket').prop('readonly', true);
+    $('select.ticket option').prop('disabled', true);
+    $('select.ticket option:selected').prop('disabled', false);
   }
   ,setupMap: function() {
     A1.seatmap.unselectAll();

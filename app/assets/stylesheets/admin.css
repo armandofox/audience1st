@@ -8,8 +8,8 @@ body.maintenance {
     width: 100% !important;
 }
 
-/* for passive text that needs to be submitted as part of a form */
 .a1-passive-text-input {
+    box-shadow: none;
     border: none;
     text-align: center;
     outline-width: 0;
