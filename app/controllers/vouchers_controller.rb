@@ -4,6 +4,8 @@ class VouchersController < ApplicationController
   before_filter :is_boxoffice_filter, :except => %w(update_shows confirm_multiple cancel_multiple)
   before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
 
+  ERR = 'reservations.errors.'  # prefix string for reservation error msgs in en.yml
+
   private
 
   def owns_voucher_or_is_boxoffice
@@ -99,48 +101,35 @@ class VouchersController < ApplicationController
   end
 
   def confirm_multiple
-    the_showdate = Showdate.find_by_id params[:showdate_id]
+    the_showdate = Showdate.find_by(:id => params[:showdate_id])
     num = params[:number].to_i
-    return redirect_to(customer_path(@customer), :alert => "Please select a date.") unless the_showdate
-    return redirect_to(customer_path(@customer), :alert => "You must select at least 1 seat to reserve.") unless num > 0
-    count = 0
+    return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_showdate")) unless the_showdate
+    return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_vouchers")) unless num > 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     if !params[:seats].blank?           # handle reserved seating reservation
       seats = params[:seats].split(/\s*,\s*/)
+      return redirect_to(customer_path(@customer), :alert => t("#{ERR}seat_count_mismatch")) unless seats.length == vouchers.length
       vouchers.each { |v| v.seat = seats.pop }
     end
-    errors = []
     comments = params[:comments].to_s
-    vouchers.each do |v|
-      if ! v.valid?
-        errors += v.errors.full_messages
-        break
+    Voucher.transaction do
+      vouchers.each do |v|
+        byebug
+        if v.reserve_for(the_showdate, current_user, comments)
+          comments = '' # only first voucher gets comment field
+          Txn.add_audit_record(:txn_type => 'res_made',
+            :customer_id => @customer.id,
+            :voucher_id => v.id,
+            :logged_in_id => current_user.id,
+            :showdate_id => the_showdate.id,
+            :comments => comments)
+        else
+          raise Voucher::ReservationError
+        end
       end
-      if v.reserve_for(the_showdate, current_user, comments)
-        count += 1
-        comments = '' # only first voucher gets comment field
-        Txn.add_audit_record(:txn_type => 'res_made',
-          :customer_id => @customer.id,
-          :voucher_id => v.id,
-          :logged_in_id => current_user.id,
-          :showdate_id => the_showdate.id,
-          :comments => comments)
-      else
-        errors += v.errors.full_messages
-      end
-    end
-    errors = errors.flatten.join ','
-    case count
-    when 0
-      flash[:alert] = "Your reservations could not be completed (#{errors})."
-    when num
-      flash[:notice] = "Your reservations are confirmed."
       email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
-    else
-      flash[:alert] = "Some of your reservations could not be completed: " <<
-        errors <<
-        ".  Please check the results below carefully before continuing."
-      email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
+    rescue Voucher::ReservationError, ActiveRecord::RecordInvalid => e
+      flash[:alert] = t("#{ERR}reservation_failed", :message => vouchers.map { |v| v.errors.as_html }.join(', '))
     end
     redirect_to customer_path(@customer)
   end
@@ -163,7 +152,7 @@ class VouchersController < ApplicationController
 
   def cancel_multiple
     vchs = Voucher.includes(:showdate).find(params[:voucher_ids].split(","))
-    return redirect_to(customer_path(@customer), :alert => t('reservations.cannot_be_changed'))unless
+    return redirect_to(customer_path(@customer), :alert => t("#{ERR}cannot_be_changed"))unless
       vchs.all? { |v| v.can_be_changed?(current_user) }
     num = params['cancelnumber'].to_i
     orig_showdate = vchs.first.showdate

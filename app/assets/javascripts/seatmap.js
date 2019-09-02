@@ -150,7 +150,7 @@ A1.seatmap = {
       container.find('.show-seatmap').addClass('d-none');
     }
     // in any case, clear out seat info from previous selection
-    $(container).find('.seat-display').val('')
+    container.find('.seat-display').val('')
     // in any case, hide seat map in case it was shown before from previous selection
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
   }

@@ -232,14 +232,16 @@ class Voucher < Item
   # BUG there should not be 3 separate methods here
   
   def reserve_for(desired_showdate, processor, new_comments='')
-    errors.add :base,"This ticket is already holding a reservation for #{reserved_date}." and return nil if reserved?
+    if reserved?
+      errors.add :base,"This ticket is already holding a reservation for #{reserved_date}." and return nil
+      raise ReservationError
+    end
     redemption = valid_voucher_adjusted_for processor,desired_showdate
     if processor.is_boxoffice || redemption.max_sales_for_this_patron > 0
       reserve!(desired_showdate, new_comments)
-      true
     else
       errors.add :base,redemption.explanation
-      false
+      raise ReservationError
     end
   end
   def reserve(showdate,logged_in_customer,comments='')
@@ -249,7 +251,7 @@ class Voucher < Item
     self
   end
   def reserve!(desired_showdate, new_comments='')
-    update_attributes(:comments => new_comments, :showdate => desired_showdate)
+    update_attributes!(:comments => new_comments, :showdate => desired_showdate)
   end
 
   #

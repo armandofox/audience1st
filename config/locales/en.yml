@@ -153,16 +153,26 @@ en:
       Please enter the email with which you originally signed up, and we will email you a link to reset your password.
 
   reservations:
-
+    errors:
+      no_showdate: >
+        Please select a date.
+      no_vouchers: >
+        You must select at least 1 seat to reserve.
+      seat_count_mismatch: >
+        Seat list length does not match number of vouchers to reserve.
+      seats_taken: >
+        One or more seats you selected are unavailable. Please try again.
+      cannot_be_changed: >
+        Some reservations could NOT be cancelled.  Please review your reservations below
+        and contact a box office agent if you need assistance.
+      reservation_failed: >
+        Your reservations could not be completed: %{message}
+        
     confirm_cancellation: >
       Are you sure? Click OK to continue with cancelling this reservation, or Cancel to leave things as they are.
 
     special_seating_requests: >
       Any special seating/mobility needs?
-
-    cannot_be_changed: >
-      Some reservations could NOT be cancelled.  Please review your reservations below and contact a
-      box office agent if you need assistance.
 
     cancelled: >
       %{canceled_num} of your reservations have been cancelled.
