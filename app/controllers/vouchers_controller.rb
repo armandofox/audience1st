@@ -114,7 +114,6 @@ class VouchersController < ApplicationController
     comments = params[:comments].to_s
     Voucher.transaction do
       vouchers.each do |v|
-        byebug
         if v.reserve_for(the_showdate, current_user, comments)
           comments = '' # only first voucher gets comment field
           Txn.add_audit_record(:txn_type => 'res_made',
