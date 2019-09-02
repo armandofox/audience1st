@@ -57,16 +57,6 @@ A1.seatmap = {
     // URL to retrieve seatmap and unavailable seat info
     A1.seatmap.url = '/ajax/seatmap/' + container.find('.showdate').val();
   }
-  ,showSeatmapForShowdateReservation: function(evt) {
-    evt.preventDefault();
-    A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
-    // get the seatmap and list of unavailable seats for this showdate
-    $.getJSON(A1.seatmap.url, function(json_data) { 
-      A1.seatmap.configureFrom(json_data);
-      A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
-      A1.seatmap.setupMap();
-    });
-  }
   ,configureFrom: function(j) {
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
@@ -110,7 +100,8 @@ A1.seatmap = {
     A1.seatmap.selectedSeats.push(seatNum);
   }
   ,unselectAll: function() {
-    A1.seatmap.seats.status(A1.seatmap.selectedSeats,'available');
+    // A1.seatmap.seats.status(A1.seatmap.selectedSeats,'available');
+    A1.seatmap.seats.find('unavailable').status('available'); // reset seatmap
     A1.seatmap.selectedSeats = [];
   }
   ,unselect: function(seat) {
@@ -139,20 +130,34 @@ A1.seatmap = {
   }
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForSubscriberReservation: function() {
+    // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
+    $('.confirm-seats').addClass('d-none');
+    // $('.show-seatmap').addClass('d-none');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = parseInt($(this).val());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
-    if (showdatesWithReservedSeating.indexOf(showdateId) !== -1) {
-      container.find('.confirm-seats').addClass('d-none');
-      container.find('.show-seatmap').removeClass('d-none');
-    } else {
-      container.find('.confirm-seats').removeClass('d-none');
-      container.find('.show-seatmap').addClass('d-none');
-    }
     // in any case, clear out seat info from previous selection
     container.find('.seat-display').val('')
     // in any case, hide seat map in case it was shown before from previous selection
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
+
+    if (showdatesWithReservedSeating.indexOf(showdateId) == -1) {
+      // general admission show
+      container.find('.confirm-seats').removeClass('d-none');
+      container.find('.show-seatmap').addClass('d-none');
+    } else {
+      container.find('.confirm-seats').addClass('d-none');
+      container.find('.show-seatmap').removeClass('d-none');
+      // now show seatmap for the div we are in, if reserved seating
+      
+      A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
+      // get the seatmap and list of unavailable seats for this showdate
+      $.getJSON(A1.seatmap.url, function(json_data) { 
+        A1.seatmap.configureFrom(json_data);
+        A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+        A1.seatmap.setupMap();
+      });
+    }
   }
   ,setupReservations: function() {
     if ($('body#customers_show').length > 0) { // only do these bindings on "My Tickets" page

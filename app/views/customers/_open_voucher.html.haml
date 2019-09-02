@@ -15,6 +15,4 @@
         = text_field_tag 'comments', '', :id => nil, :class => 'invisible form-control form-control-sm special-seating a1-force-fullwidth', :placeholder => t('reservations.special_seating_requests').strip
       - if Option.feature_enabled? 'rs'
         .col-2.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :id => nil, :class => 'seat-display a1-passive-text-input'
-      .col-2.text-center
-        = button_tag 'Choose Seats...', :class => 'd-none btn btn-outline-primary btn-small show-seatmap', :id => nil
-        = submit_tag 'Confirm', 'data-disable-with' => 'Confirming...', :id => nil, :class => 'd-none confirm-seats btn btn-success' 
+      .col-2.text-center= submit_tag 'Confirm', 'data-disable-with' => 'Confirming...', :id => nil, :class => 'd-none confirm-seats btn btn-success' 

@@ -111,7 +111,7 @@ class Showdate < ActiveRecord::Base
   def occupied_seats
     return [] unless seatmap
     # basically, collect seat info from all vouchers for this showdate
-    vouchers.map(&:seat).sort
+    vouchers.map(&:seat).map(&:to_s).sort
   end
 end
 

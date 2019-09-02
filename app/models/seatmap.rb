@@ -13,7 +13,7 @@ class Seatmap < ActiveRecord::Base
 
   def self.seatmap_and_unavailable_seats_as_json(showdate)
     seatmap = showdate.seatmap.json
-    unavailable = showdate.occupied_seats.to_json
+    unavailable = showdate.occupied_seats.compact.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
     %Q{ {"map": #{seatmap}, "seats": #{seats}, "unavailable": #{unavailable}} }
