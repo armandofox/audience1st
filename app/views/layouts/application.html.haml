@@ -49,7 +49,7 @@
               - if display_order_in_progress?
                 %h1.text-center Your Order Is Not Yet Complete
                 = render :partial => 'store/cart'
-              = render :partial => 'messages/notices'
+              = render :partial => 'components/notices'
               = yield
       - if current_user
         #welcome_header.pt-2.container= render :partial => 'layouts/login_banner'

@@ -2,7 +2,11 @@
 
 A1.orderState = {
   ticketCount: 0,
-  totalPrice: 0.0
+  totalPrice: 0.0,
+  reset: function() {
+    this.ticketCount = 0;
+    this.totalPrice = 0.0;
+  }
 };
 
 A1.show_only = function(div) {

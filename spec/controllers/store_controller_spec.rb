@@ -92,7 +92,7 @@ describe StoreController do
     it "should show the Session Expired page rather than throwing error" do
       expect(controller).to receive(:verify_authenticity_token).and_raise ActionController::InvalidAuthenticityToken
       post :place_order, {:customer_id => @buyer.id, :authenticity_token => 'wrong'}
-      expect(response).to render_template 'messages/session_expired'
+      expect(response).to render_template 'components/session_expired'
     end
   end
 

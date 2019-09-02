@@ -9,6 +9,7 @@ body.maintenance {
 }
 
 .a1-passive-text-input {
+    resize: none;
     box-shadow: none;
     border: none;
     text-align: center;

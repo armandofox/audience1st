@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
   #                        (BUG: logic should be moved to the session create logic for interactive login)
 
   def session_expired
-    render :template => 'messages/session_expired', :layout => 'application', :status => 400
+    render :template => 'components/session_expired', :layout => 'application', :status => 400
     true
   end
 

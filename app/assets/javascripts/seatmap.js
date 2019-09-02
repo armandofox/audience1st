@@ -62,9 +62,15 @@ A1.seatmap = {
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
   }
+  ,selectCountPrompt: function() {
+    var ct = A1.orderState.ticketCount;
+    return('Choose ' + ct + ' Seat' + (ct > 1 ? 's' : '') + ' ...');
+  }
   ,showSeatmapForShowdateRegularSales: function(evt) {
     // triggered when "Select Seats" is clicked, so disable default submit action on button
     evt.preventDefault();
+    // change button label to be prompt for how many seats to select
+    $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
     // if this show has a seatmap, the info is ALREADY ON THE PAGE as a hidden form field
     A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
     A1.seatmap.max = A1.orderState.ticketCount;
@@ -167,7 +173,8 @@ A1.seatmap = {
   ,getSeatingOptionsForRegularSales: function() {
     // triggered whenever the count of selected seats changes.
     // If nonzero number of seats is selected, enable "choose seats" button.
-    if (A1.orderState.ticketCount > 0) {
+    var ct = A1.orderState.ticketCount;
+    if (ct > 0) {
       $('.show-seatmap').prop('disabled', false);
     }
   }

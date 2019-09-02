@@ -19,7 +19,7 @@
       :onchange => "window.location = '#{@showdate_url}'.replace(/XXXX/,$('#showdate').val())", :class => 'form-control col-sm-4') |
     .col-sm-4
       - if @gAdminDisplay &&  (@sd.kind_of?(Showdate))
-        %span.alert.alert-warning= "#{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
+        %label.col-form-label.alert-warning= "#{@sd.saleable_seats_left} saleable/#{@sd.total_seats_left} in house"
 
   #voucher_menus
     - if @valid_vouchers.empty? && @sd
@@ -34,11 +34,11 @@
             .col-sm-1
               = text_field_tag fieldname, '', :size => 3, 'data-price' => v.price, :class => 'itemQty ticket form-control form-control-sm'
             .col-sm-7
-              %span.alert.alert-danger.s-explain= v.explanation
+              %label.col-form-label.form-control-sm.alert-warning.s-explain= v.explanation
           - else
             = select_tag(fieldname, options_for_select(0..max_sales), 'data-price' => v.price, :class => 'itemQty ticket form-control form-control-sm col-sm-1')
             - if max_sales.zero?
-              %span.text-info.col-sm-7.border.border-danger.s-explain= v.explanation if max_sales.zero?
+              %span.text-info.col-sm-7.border.border-danger.s-explain= v.explanation
           = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
     - unless @valid_vouchers.empty?
