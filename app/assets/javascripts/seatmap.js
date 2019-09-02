@@ -137,7 +137,7 @@ A1.seatmap = {
     $('.confirm-seats').addClass('d-none');
     // $('.show-seatmap').addClass('d-none');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
-    var showdateId = parseInt($(this).val());
+    var showdateId = Number($(this).val());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
     // in any case, clear out seat info from previous selection
     container.find('.seat-display').val('')
