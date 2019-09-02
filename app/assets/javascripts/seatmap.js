@@ -164,7 +164,6 @@ A1.seatmap = {
       // when a showdate is selected, show either "Select seats" button or "Confirm" button (for Gen Adm)
       A1.seatmap.enclosingSelector = '.form-row';
       $('select.showdate').change(A1.seatmap.getSeatingOptionsForSubscriberReservation);
-      $(document).on('click', '.show-seatmap', A1.seatmap.showSeatmapForShowdateReservation);
       // updating staff comments field (form-remote)
       $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
       $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
