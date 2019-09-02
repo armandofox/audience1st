@@ -17,7 +17,7 @@ module CheckinsHelper
     if vouchers.all? { |v| v.seat.blank? }
       vouchers.first.name
     else
-      "#{vouchers.first.name} - #{vouchers.map(&:seat).sort.join(', ')}"
+      "#{vouchers.first.name} - #{Voucher.seats_for(vouchers)}"
     end
   end
 

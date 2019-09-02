@@ -72,7 +72,7 @@ class VoucherPresenter
   def seats
     if ! @vouchers.first.reserved?              then ''
     elsif  @vouchers.all? { |v| v.seat.blank? } then 'General Admission' 
-    else                                        @vouchers.map(&:seat).sort.join(',')
+    else                                        Voucher.seats_for(@vouchers)
     end
   end
 

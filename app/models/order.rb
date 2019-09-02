@@ -225,7 +225,7 @@ class Order < ActiveRecord::Base
       summary << "#{vouchers.count} @ #{vouchers.first.one_line_description}"
     end
     if vouchers.any? { |v| !v.seat.blank? }
-      summary << "Seats: #{vouchers.map(&:seat).join(', ')}"
+      summary << "Seats: #{Voucher.seats_for(vouchers)}"
     end
     summary += nonvouchers.map(&:one_line_description)
     summary << self.comments

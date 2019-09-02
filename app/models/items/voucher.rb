@@ -39,6 +39,10 @@ class Voucher < Item
     end
   end
 
+  def self.seats_for(vouchers)
+    vouchers.map(&:seat).map(&:to_s).sort.join(', ')
+  end
+
   def cancel!(by_whom)
     result = super # cancel the main voucher
     bundled_vouchers.each { |v| v.cancel!(by_whom) }
