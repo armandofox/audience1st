@@ -82,7 +82,8 @@ A1.seatmap = {
     $('select.ticket option:selected').prop('disabled', false);
   }
   ,setupMap: function() {
-    A1.seatmap.unselectAll();
+    A1.seatmap.seats.find('unavailable').status('available'); // reset seatmap
+    A1.seatmap.selectedSeats = [];
     A1.seatmap.centerMap();
     A1.seatmap.updateUI();
     A1.seatmap.unavailable.forEach(function(seat_num) {
@@ -99,11 +100,6 @@ A1.seatmap = {
     var seatNum = seat.settings.id;
     A1.seatmap.selectedSeats.push(seatNum);
   }
-  ,unselectAll: function() {
-    // A1.seatmap.seats.status(A1.seatmap.selectedSeats,'available');
-    A1.seatmap.seats.find('unavailable').status('available'); // reset seatmap
-    A1.seatmap.selectedSeats = [];
-  }
   ,unselect: function(seat) {
     var seatNum = seat.settings.id;
     var idx = A1.seatmap.selectedSeats.indexOf(seatNum);
@@ -117,8 +113,9 @@ A1.seatmap = {
       A1.seatmap.confirmSeatsButton.removeClass('d-none');
       A1.seatmap.selectSeatsButton.addClass('d-none');
     } else {
+      // disable Confirm; show but disable SelectSeats
       A1.seatmap.confirmSeatsButton.addClass('d-none');
-      A1.seatmap.selectSeatsButton.removeClass('d-none');
+      A1.seatmap.selectSeatsButton.removeClass('d-none').prop('disabled', true);
     }      
   }
   ,centerMap: function() {
@@ -144,12 +141,9 @@ A1.seatmap = {
     if (showdatesWithReservedSeating.indexOf(showdateId) == -1) {
       // general admission show
       container.find('.confirm-seats').removeClass('d-none');
-      container.find('.show-seatmap').addClass('d-none');
     } else {
+      // reserved seating: hide 'Confirm' button, and show seatmap for the div we are in
       container.find('.confirm-seats').addClass('d-none');
-      container.find('.show-seatmap').removeClass('d-none');
-      // now show seatmap for the div we are in, if reserved seating
-      
       A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
       // get the seatmap and list of unavailable seats for this showdate
       $.getJSON(A1.seatmap.url, function(json_data) { 

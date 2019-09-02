@@ -40,7 +40,7 @@ class Voucher < Item
   end
 
   def self.seats_for(vouchers)
-    vouchers.map(&:seat).map(&:to_s).sort.join(', ')
+    vouchers.map(&:seat).compact.map(&:to_s).sort.join(', ')
   end
 
   def cancel!(by_whom)
