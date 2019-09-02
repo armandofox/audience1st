@@ -46,10 +46,10 @@ A1.seatmap = {
       insertAfter(container).
       removeClass('d-none').
       slideDown();
-    // num seats to select
-    var numSeatsMenu = container.find('.number');
-    A1.seatmap.max = parseInt(numSeatsMenu.val());
-    numSeatsMenu.prop('disabled', 'disabled');
+    // make it impossible to change # of selected seats while seat dialog active
+    container.find('select.number option').prop('disabled', true);
+    container.find('select.number option:selected').prop('disabled', false);
+    A1.seatmap.max = Number(container.find('.number').val());
     // where to display seats chosen so far, Confirm button, Select More Seats button
     A1.seatmap.seatDisplayField = container.find('.seat-display');
     A1.seatmap.confirmSeatsButton = container.find('.confirm-seats');
@@ -143,11 +143,11 @@ A1.seatmap = {
     var showdateId = parseInt($(this).val());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
     if (showdatesWithReservedSeating.indexOf(showdateId) !== -1) {
-      $(container).find('.reserved-seating').removeClass('d-none');
-      $(container).find('.general-seating').addClass('d-none');
+      container.find('.confirm-seats').addClass('d-none');
+      container.find('.show-seatmap').removeClass('d-none');
     } else {
-      $(container).find('.general-seating').removeClass('d-none');
-      $(container).find('.reserved-seating').addClass('d-none');
+      container.find('.confirm-seats').removeClass('d-none');
+      container.find('.show-seatmap').addClass('d-none');
     }
     // in any case, clear out seat info from previous selection
     $(container).find('.seat-display').val('')

@@ -1,5 +1,5 @@
 - if (@gAdminDisplay || group.cancelable?)
-  .form-row.border-top.border-secondary
+  .form-row.border-top.border-secondary.align-items-center
     = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth'   do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
       .col-1.text-center= menu_or_static_text 'cancelnumber', group.size, {:id => nil}
@@ -14,7 +14,7 @@
       .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
 
 - else
-  .form-row.border-top.border-secondary
+  .form-row.border-top.border-secondary.align-items-center
     .col-1.text-center= group.size
     .col-3.text-center= group.name
     .col-4.text-center
@@ -34,3 +34,4 @@
         .input-group
           = text_field_tag 'comments', group.voucher_comments, :id => nil, :class => 'form-control form-control-sm'
           = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => nil, 'data-disable-with' => '...', :class => 'btn btn-sm btn-outline-success'
+      

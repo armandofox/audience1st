@@ -1,11 +1,11 @@
 - if group.redeemable_showdates.empty?
-  .form-row.border-top.border-secondary
+  .form-row.border-top.border-secondary.align-items-center
     .col-1.text-center= group.size
     .col-3.text-center= group.name
     .col-4.text-center= "Reservations unavailable for this show" if group.vouchertype.reservable?
 
 - else
-  .form-row.border-top.border-secondary
+  .form-row.border-top.border-secondary.align-items-center
     = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :class => 'voucherlist', :id => nil
       .col-1.text-center= menu_or_static_text 'number', group.size, {:id => nil, :class => 'number'}
@@ -16,8 +16,5 @@
       - if Option.feature_enabled? 'rs'
         .col-2.text-center= text_field_tag 'seats', '', :readonly => 'readonly', :id => nil, :class => 'seat-display a1-passive-text-input'
       .col-2.text-center
-        .d-none.reserved-seating
-          = button_tag 'Choose Seats...', :class => 'btn btn-outline-primary btn-small show-seatmap', :id => nil
-          = submit_tag 'Confirm', 'data-disable-with' => 'Confirming...', :id => nil, :class => 'd-none confirm-seats btn btn-success', :onclick => %q{$('.number').prop('disabled', false)}
-        .d-none.general-seating
-          = submit_tag 'Confirm', 'data-disable-with' => 'Confirming...', :id => nil, :class => 'btn btn-success' 
+        = button_tag 'Choose Seats...', :class => 'd-none btn btn-outline-primary btn-small show-seatmap', :id => nil
+        = submit_tag 'Confirm', 'data-disable-with' => 'Confirming...', :id => nil, :class => 'd-none confirm-seats btn btn-success' 
