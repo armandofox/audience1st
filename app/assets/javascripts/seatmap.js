@@ -125,9 +125,9 @@ A1.seatmap = {
     }      
   }
   ,centerMap: function() {
-    var mapWidth = $('#seatmap').width(); // computed width
+    var mapWidth = $('#seatmap').width(); // computed width of actual seatmap
     var left = ($('#seating-charts-wrapper').width() - mapWidth) / 2;
-    $('#seating-charts-wrapper img.seating-charts-overlay').css({"left": left+55});
+    $('#seating-charts-wrapper img.seating-charts-overlay').css({"left": left, "width": mapWidth});
     $('#seatmap').css({"left": left});
     $('#seating-charts-wrapper').height($('#seatmap').height());
   }
