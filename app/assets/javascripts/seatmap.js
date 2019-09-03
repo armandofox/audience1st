@@ -63,14 +63,12 @@ A1.seatmap = {
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
   }
   ,selectCountPrompt: function() {
-    var ct = A1.orderState.ticketCount;
+    var ct = A1.seatmap.max - A1.seatmap.selectedSeats.length;
     return('Choose ' + ct + ' Seat' + (ct > 1 ? 's' : '') + ' ...');
   }
   ,showSeatmapForShowdateRegularSales: function(evt) {
     // triggered when "Select Seats" is clicked, so disable default submit action on button
     evt.preventDefault();
-    // change button label to be prompt for how many seats to select
-    $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
     // if this show has a seatmap, the info is ALREADY ON THE PAGE as a hidden form field
     A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
     A1.seatmap.max = A1.orderState.ticketCount;
@@ -88,7 +86,7 @@ A1.seatmap = {
     $('select.ticket option:selected').prop('disabled', false);
   }
   ,setupMap: function() {
-    A1.seatmap.seats.find('unavailable').status('available'); // reset seatmap
+    A1.seatmap.seats.find('selected').status('available'); // reset seatmap
     A1.seatmap.selectedSeats = [];
     A1.seatmap.centerMap();
     A1.seatmap.updateUI();
@@ -119,6 +117,8 @@ A1.seatmap = {
       A1.seatmap.confirmSeatsButton.removeClass('d-none');
       A1.seatmap.selectSeatsButton.addClass('d-none');
     } else {
+      // change button label to be prompt for how many seats to select
+      $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
       // disable Confirm; show but disable SelectSeats
       A1.seatmap.confirmSeatsButton.addClass('d-none');
       A1.seatmap.selectSeatsButton.removeClass('d-none').prop('disabled', true);
@@ -135,7 +135,6 @@ A1.seatmap = {
   ,getSeatingOptionsForSubscriberReservation: function() {
     // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
     $('.confirm-seats').addClass('d-none');
-    // $('.show-seatmap').addClass('d-none');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = Number($(this).val());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());

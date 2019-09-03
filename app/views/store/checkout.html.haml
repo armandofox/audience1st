@@ -2,7 +2,8 @@
 
 .container
 
-  #checkout_message.hidden= @checkout_message
+  - if !@checkout_message.blank?
+    = javascript_tag "$(function() { alert('#{j(@checkout_message)}'); });"
 
   - if @gOrderInProgress.gift?
     #gift_recipient

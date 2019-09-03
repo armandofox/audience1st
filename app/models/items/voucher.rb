@@ -40,7 +40,11 @@ class Voucher < Item
   end
 
   def self.seats_for(vouchers)
-    vouchers.map(&:seat).compact.map(&:to_s).sort.join(', ')
+    if vouchers.any? { |v| ! v.seat.blank? }
+      vouchers.map(&:seat).compact.map(&:to_s).sort.join(', ')
+    else
+      vouchers.size.to_s
+    end
   end
 
   def cancel!(by_whom)

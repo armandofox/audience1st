@@ -31,14 +31,14 @@ class Mailer < ActionMailer::Base
   def confirm_reservation(customer,showdate,vouchers)
     @customer = customer
     @showdate = showdate
-    @seats = vouchers.any? { |v| !v.seat.blank? } ? Voucher.seats_for(vouchers) : vouchers.size
+    @seats = Voucher.seats_for(vouchers)
     @notes = @showdate.patron_notes
     mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end
 
-  def cancel_reservation(old_customer, old_showdate, num = 1, confnum)
+  def cancel_reservation(old_customer, old_showdate, seats)
     @showdate,@customer = old_showdate, old_customer
-    @num,@confnum = num,confnum
+    @seats = seats
     mail(:to => @customer.email, :subject => "#{@subject} CANCELLED reservation")
   end
 

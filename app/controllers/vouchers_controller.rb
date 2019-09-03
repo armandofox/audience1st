@@ -155,13 +155,13 @@ class VouchersController < ApplicationController
       vchs.all? { |v| v.can_be_changed?(current_user) }
     num = params['cancelnumber'].to_i
     orig_showdate = vchs.first.showdate
-    result = Voucher.cancel_multiple!(vchs, num, current_user)
-    if result.nil?
-      redirect_to customer_path(@customer), :alert => t('reservations.cannot_be_changed')
-    else
+    orig_seats = Voucher.seats_for(vchs) # after cancel, seat info will be unavailable
+    if (result = Voucher.cancel_multiple!(vchs, num, current_user))
       redirect_to customer_path(@customer), :notice => t('reservations.cancelled', :canceled_num => num)
+      email_confirmation(:cancel_reservation, @customer, orig_showdate, orig_seats)
+    else
+      redirect_to customer_path(@customer), :alert => t('reservations.cannot_be_changed')
     end
-    email_confirmation(:cancel_reservation, @customer, orig_showdate, num, result) unless current_user.is_boxoffice
   end
 
 end
