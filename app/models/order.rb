@@ -125,7 +125,7 @@ class Order < ActiveRecord::Base
       vv = ValidVoucher.find(vv_id)
       vv.supplied_promo_code = promo_code.to_s
       vv.customer = customer
-      add_tickets(vv, qty, seats)
+      add_tickets(vv, qty, seats.slice!(0,qty))
     end
   end
 
