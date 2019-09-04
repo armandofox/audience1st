@@ -86,13 +86,16 @@ A1.seatmap = {
     $('select.ticket option:selected').prop('disabled', false);
   }
   ,setupMap: function() {
-    A1.seatmap.seats.find('selected').status('available'); // reset seatmap
+    // reset seatmap: clear out selected seats, and visually mark all seats available
     A1.seatmap.selectedSeats = [];
-    A1.seatmap.centerMap();
-    A1.seatmap.updateUI();
+    A1.seatmap.seats.find('selected').status('available'); 
+    A1.seatmap.seats.find('unavailable').status('available');
+    // now indicate unavailable seats for this new showdate
     A1.seatmap.unavailable.forEach(function(seat_num) {
       A1.seatmap.seats.status(seat_num, 'unavailable');
     });
+    A1.seatmap.centerMap();
+    A1.seatmap.updateUI();
     $('#seatmap')[0].addEventListener('click', A1.seatmap.updateUI);
     document.addEventListener('resize', A1.seatmap.centerMap);
     // floating "tooltips" that show each seat number on hover
