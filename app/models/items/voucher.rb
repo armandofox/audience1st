@@ -9,7 +9,7 @@ class Voucher < Item
 
   validate :checkin_requires_reservation
   validate :existing_seat, :if => :reserved?
-  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => 'is already occupied', :if => :reserved?
+  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => '%{value} is already taken'
 
   delegate :gift?, :ship_to, :to => :order # association is via Item (ancestor class)
 

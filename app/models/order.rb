@@ -118,17 +118,15 @@ class Order < ActiveRecord::Base
     # error unless number of seats matches number of requested tickets
     total_tickets = valid_voucher_params.values.map(&:to_i).sum
     if !seats.empty?
-      raise Order::CannotAddItemError.new("#{total_tickets} tickets requested but #{seats.length} seat assignments provided") unless total_tickets == seats.length
+      self.errors.add(:base, "#{total_tickets} tickets requested but #{seats.length} seat assignments provided") unless total_tickets == seats.length
     end
     valid_voucher_params.each_pair do |vv_id, qty|
       qty = qty.to_i
       vv = ValidVoucher.find(vv_id)
       vv.supplied_promo_code = promo_code.to_s
       vv.customer = customer
-      add_tickets(vv, qty, seats.slice!(0,qty))
+      add_tickets(vv, qty, seats)
     end
-    # error if number of seats doesn't match number of vouchers
-
   end
 
   def add_tickets(valid_voucher, number, seats=[])
@@ -148,10 +146,19 @@ class Order < ActiveRecord::Base
     new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
     new_vouchers.each_with_index do |v,i|
       v.seat = seats[i] unless seats.empty?
-      v.reserve!(valid_voucher.showdate)
+      begin
+        v.reserve!(valid_voucher.showdate)
+      rescue ActiveRecord::RecordInvalid, ReservationError #  reservation couldn't be processed
+        self.errors.add(:base, v.errors.full_messages.join(', '))
+        v.destroy               # otherwise it'll end up with no order ID and can't be reaped
+      end
     end
-    self.vouchers += new_vouchers
-    self.save!
+    if self.errors.empty?       # all vouchers were added OK
+      self.vouchers += new_vouchers
+      self.save!
+    else                        # since order can't proceed, DESTROY all vouchers so not orphaned
+      new_vouchers.each { |v| v.destroy if v.persisted? } 
+    end
   end
   
   def ticket_count ;       vouchers.size        ; end
