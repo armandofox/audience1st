@@ -30,6 +30,8 @@ class Option < ActiveRecord::Base
     Option.first.update_attributes!(:feature_flags => Option.feature_flags - [str])
   end
 
+  validates_format_of :restrict_customer_email_to_domain, :with => /\A[^-_][-_.A-Za-z0-9]*[^-_]\z/, :allow_blank => true
+
   validates_numericality_of :advance_sales_cutoff
   validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
   validate :availability_levels_monotonically_increase

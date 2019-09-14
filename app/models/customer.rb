@@ -55,6 +55,13 @@ class Customer < ActiveRecord::Base
   VALID_EMAIL_REGEXP = /\A\S+@\S+\z/
   validates_format_of :email, :if => :self_created?, :with => VALID_EMAIL_REGEXP
 
+  def restricted_email
+    return if (domain = Option.restrict_customer_email_to_domain.to_s).blank?
+    errors.add(:email, "must end in '#{domain}'") if
+      !email.blank?  &&  !email.match( /#{domain}\z/i )
+  end
+  validate :restricted_email, :if => :self_created?, :on => :create
+  
   EMAIL_UNIQUENESS_ERROR_MESSAGE = 'has already been registered.'
   validates_uniqueness_of :email,
   :allow_blank => true,

@@ -1,7 +1,8 @@
 class Seatmap < ActiveRecord::Base
 
   require 'csv'
-
+  require 'uri'
+  
   VALID_SEAT_LABEL_REGEX = /^\s*[A-Za-z0-9]+\+?\s*$/
 
   validates :name, :presence => true, :uniqueness => true
@@ -10,6 +11,8 @@ class Seatmap < ActiveRecord::Base
   validates :seat_list, :presence => true
   validates_numericality_of :rows, :greater_than => 0
   validates_numericality_of :columns, :greater_than => 0
+
+  validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
 
   def self.seatmap_and_unavailable_seats_as_json(showdate)
     seatmap = showdate.seatmap.json

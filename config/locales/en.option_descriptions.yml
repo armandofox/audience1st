@@ -268,6 +268,14 @@ en:
       Homepage message that will take customer to Buy Subscriptions page; if
       blank, link to Subscriptions page won't be displayed
 
+    restrict_customer_email_to_domain: >
+
+      If nonblank, customers who self-signup must provide an email address ending 
+      with this pattern (case-insensitive), for example "mycompany.org".  Useful if you
+      are using Audience1st internally and only want members of your organization to be
+      able to sign up as patrons; otherwise leave blank.  The restriction does not apply
+      to customers created by staff.
+
     welcome_page_subscriber_message: >
 
       Banner message that will appear on post-login (welcome) screen for

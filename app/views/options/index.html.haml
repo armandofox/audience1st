@@ -38,8 +38,9 @@
       ) |
 
   .container
-    %h1 Info Messages Displayed on Customer's "My Account" Page
+    %h1 Customer Account
     = render_collection_of_options f, %w( |
+      restrict_customer_email_to_domain |
       welcome_page_subscriber_message |
       welcome_page_nonsubscriber_message |
       homepage_ticket_sales_text |
