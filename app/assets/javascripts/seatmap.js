@@ -61,6 +61,8 @@ A1.seatmap = {
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
+    // set background image
+    $('img.seating-charts-overlay').attr('src', j.image_url);
   }
   ,selectCountPrompt: function() {
     var ct = A1.seatmap.max - A1.seatmap.selectedSeats.length;
