@@ -5,4 +5,8 @@ module VouchersHelper
     comments.unshift(vouchers.first.order.comments) if vouchers.first.order
     comments.compact.uniq.join(";")
   end
+
+  def errors_for_voucherlist_as_html(vouchers)
+    vouchers.to_a.select { |item| !item.errors.empty? }.map { |item| item.errors.as_html }.join(', ')
+  end
 end

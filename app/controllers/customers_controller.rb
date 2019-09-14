@@ -54,7 +54,7 @@ class CustomersController < ApplicationController
       @subscriber_vouchers.partition { |v| v.reserved? }
 
     # for reservations, indicate which showdates are reserved seating.
-    @showdates_with_reserved_seating = Showdate.current_and_future.with_reserved_seating_json
+    @showdates_with_reserved_seating = Showdate.with_reserved_seating_json
     if new_session?
       flash.now[:notice] = (@current_user.login_message || "Logged in successfully")
       flash.delete(:alert)

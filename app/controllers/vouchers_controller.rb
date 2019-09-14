@@ -6,6 +6,8 @@ class VouchersController < ApplicationController
 
   ERR = 'reservations.errors.'  # prefix string for reservation error msgs in en.yml
 
+  include VouchersHelper
+  
   private
 
   def owns_voucher_or_is_boxoffice
@@ -128,7 +130,7 @@ class VouchersController < ApplicationController
       end
       email_confirmation(:confirm_reservation, @customer, the_showdate, vouchers)
     rescue Voucher::ReservationError, ActiveRecord::RecordInvalid => e
-      flash[:alert] = t("#{ERR}reservation_failed", :message => vouchers.map { |v| v.errors.as_html }.join(', '))
+      flash[:alert] = t("#{ERR}reservation_failed", :message => errors_for_voucherlist_as_html(vouchers))
     end
     redirect_to customer_path(@customer)
   end

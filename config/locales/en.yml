@@ -1,4 +1,18 @@
 en:
+  email:
+
+    success: >
+      An email confirmation was sent to %{addr}.  If you don't
+      receive it in a few minutes, please make sure 'audience1st.com'
+      is on your trusted senders list, or the confirmation email may
+      end up in your Junk Mail or Spam folder.
+
+    error: >
+      Your transaction was successful, but we couldn't send an email confirmation to %{addr}.
+      The error message was: %{message}
+
+    not_attempted: >
+      Email confirmation was NOT sent because there isn't a valid email address in your Contact Info.
   import:
 
     goldstar:

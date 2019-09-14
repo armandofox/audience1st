@@ -5,9 +5,8 @@ describe VouchersController do
     before :each do
       @customer = create(:customer)
       login_as @customer
-      @vouchers = Array.new(3) { Voucher.new }
+      @vouchers = Array.new(3) { build(:subscriber_voucher, :customer => @customer) }
       @vouchers.each do |v|
-        allow(v).to receive(:customer).and_return(@customer)
         allow(v).to receive(:reserve_for).and_return(true)
       end
       @showdate = create(:showdate, :thedate => 1.week.from_now)
@@ -20,7 +19,7 @@ describe VouchersController do
     describe 'successful reservations' do
       describe 'for all 3 vouchers' do
         before :each do ; @successful = 3 ; post :confirm_multiple, @params.merge(:number => 3) ; end
-        it 'notifies' do ; expect(flash[:notice]).to match(/^Your reservations are confirmed./) ; end
+        it 'notifies' do ; expect(flash[:notice]).to match(/^An email confirmation was sent to #{@customer.email}/) ; end
         it_should_behave_like 'all reservations'
       end
       describe 'for 2 vouchers' do
@@ -29,7 +28,7 @@ describe VouchersController do
           @successful = 2
           post :confirm_multiple, @params.merge(:number => 2)
         end
-        it 'notifies' do ; expect(flash[:notice]).to match(/^Your reservations are confirmed./) ; end
+        it 'notifies' do ; expect(flash[:notice]).to match(/^An email confirmation was sent to #{@customer.email}./) ; end
         it_should_behave_like 'all reservations'
       end
     end
