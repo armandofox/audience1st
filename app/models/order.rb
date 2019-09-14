@@ -170,6 +170,7 @@ class Order < ActiveRecord::Base
   def includes_bundle?         ;  vouchers.any? { |v| v.vouchertype.bundle? }  ;  end
   def includes_nonticket_item? ;  vouchers.any? { |v| v.vouchertype.nonticket? } ; end
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
+  def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)

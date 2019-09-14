@@ -240,7 +240,7 @@ class StoreController < ApplicationController
     redirect_to store_path, :alert => t('store.errors.empty_order') if @gOrderInProgress.cart_empty?
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
-    @checkout_message = (@gOrderInProgress.includes_regular_vouchers? ? Option.precheckout_popup : '')
+    @checkout_message = (@gOrderInProgress.includes_reserved_vouchers? ? Option.precheckout_popup : '')
     @order_contains_class_order = @gOrderInProgress.includes_enrollment?
     @allow_pickup_by_other = (@gOrderInProgress.includes_vouchers? && !@gOrderInProgress.gift?)
     @gOrderInProgress.processed_by ||= current_user()
