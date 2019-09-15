@@ -43,12 +43,14 @@ class ShowdatesController < ApplicationController
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = @show.house_capacity
+    @seatmap_is_editable = (Seatmap.count > 0)
   end
 
   def edit
     @showdate = Showdate.find(params[:id])
     @default_date = @showdate.thedate
     @default_cutoff_date = @showdate.end_advance_sales
+    @seatmap_is_editable = (Seatmap.count > 0  &&  @showdate.vouchers.count.zero?)
   end
 
   def update

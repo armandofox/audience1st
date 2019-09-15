@@ -20,7 +20,6 @@ class ShowsController < ApplicationController
       :sold_out_dropdown_message => '(Sold Out)',
       :sold_out_customer_info => 'No tickets on sale for this performance')
     @page_title = "Add new show"
-    @seatmap_is_editable = (Seatmap.count > 0)
   end
 
   def create
@@ -36,7 +35,6 @@ class ShowsController < ApplicationController
 
   def edit
     @show = Show.find(params[:id])
-    @seatmap_is_editable = (Seatmap.count > 0  &&  @show.vouchers.count.zero?)
     @showdates = @show.showdates.includes(:valid_vouchers => :vouchertype).sort_by { |s| s.thedate }
     @is_boxoffice_manager = is_boxoffice_manager
     if params[:display].blank?

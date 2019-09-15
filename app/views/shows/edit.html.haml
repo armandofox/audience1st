@@ -12,11 +12,12 @@
     = link_to 'Add/Change Ticket Type(s) For Performance(s)', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary'
 
   .row.bg-dark.text-light
-    .col-4 Date/time (click to edit show date details)
-    .col-4 Adv sales stop
+    .col-3 Date/time (click to edit show date details)
+    .col-3 Adv sales stop
     .col-2 Max Sell<br/>(% of House)
+    .col-2 Seating
   .row
-    .col-4
+    .col-3
       %a{:name => 'dummy'}
       = link_to 'Expand All', '#dummy', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); false;}
       &nbsp;&bull;&nbsp;

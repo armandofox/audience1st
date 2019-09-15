@@ -3,8 +3,9 @@ class Showdate < ActiveRecord::Base
   include Comparable
   
   belongs_to :show
-
-  delegate :seatmap, :house_capacity, :patron_notes, :name, :event_type, :to => :show
+  belongs_to :seatmap
+  
+  delegate :house_capacity, :patron_notes, :name, :event_type, :to => :show
 
   has_many :vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes) }
   has_many :finalized_vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes).merge(Voucher.finalized) }, :class_name => 'Voucher'
@@ -21,7 +22,7 @@ class Showdate < ActiveRecord::Base
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
-  attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id
+  attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
 
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
@@ -58,8 +59,8 @@ class Showdate < ActiveRecord::Base
   def self.with_reserved_seating_json(shows = Show.all)
     (shows.nil? || shows.empty?) ? Showdate.none:
     Showdate.joins(:show).
+      where('seatmap_id IS NOT NULL').
       where(:show_id => shows.map(&:id)).
-      where('shows.seatmap_id IS NOT NULL').
       map(&:id).to_json
   end
 
