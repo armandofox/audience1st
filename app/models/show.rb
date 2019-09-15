@@ -11,7 +11,7 @@ class Show < ActiveRecord::Base
   
   validates_presence_of :opening_date, :closing_date, :listing_date
   validates_inclusion_of :event_type, :in => Show::TYPES
-  validates_length_of :name,                   :within => 1..40
+  validates_length_of :name,                   :within => 1..255
   validates_length_of :description,            :maximum => 255
   validates_length_of :landing_page_url,       :maximum => 255
   validates_length_of :sold_out_customer_info, :maximum => 255
