@@ -11,7 +11,7 @@ FactoryBot.define do
     end_advance_sales { thedate - 1.minute }
 
     factory :reserved_seating_showdate do
-      show { create(:show, :seatmap => create(:seatmap), :name => show_name, :including => date) }
+      seatmap { create(:seatmap) }
     end
   end
 
@@ -23,7 +23,6 @@ FactoryBot.define do
     end
     house_capacity 200
     sequence(:name) { |n| "Show #{n}" }
-    seatmap nil
     opening_date { including - 1.week }
     closing_date { opening_date + 1.month }
     listing_date { Time.current }
