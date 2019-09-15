@@ -2,7 +2,8 @@ A1.checkout = {
   showCheckoutWarning: function() {
     var message = $('#checkout_message').val();
     if (message != '') {
-      alert(message);
+      // delay showing the alert until whole page is loaded.  Ugh.
+      window.onload(function() { alert(message); });
     }
   }
   ,startTimer: function() {
