@@ -156,6 +156,12 @@ en:
       Daemon Notify, above.  A value of 0 will suppress birthday
       notification emails completely.
 
+    order_timeout: >
+      
+      Number of minutes allowed to complete an order once tickets have been chosen.
+      This number must be between 1 and 15 minutes and is enforced for all types
+      of orders (reserved seating, general admission, subscription purchases, etc.)
+
     session_timeout: >
 
       Number of minutes of inactivity after which a user is automatically

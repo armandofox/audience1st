@@ -28,6 +28,16 @@ body.maintenance {
     margin-bottom: 10px;
     margin-top: 4px;
 }
+
+/* Countdown timer for order completion */
+.timer {
+    text-align: center;
+}
+span#timer {
+    font-weight: bold;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+
 /* easier to navigate if tabular rows hilited on hover */
 table.hilite tr:hover {
     background-color: #fcfe69;
