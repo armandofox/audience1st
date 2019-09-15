@@ -1,17 +1,5 @@
 /* Overrides for default seat-charts styles */
 
-/* arrange to display extra picture/text along with rendered seats */
-
-/*
-#main {
-    width: auto;
-    margin: 0 100px 0 100px;
-}
-#main h2 {
-    text-align: center;
-}
-*/
-    
 .seatCharts-seat.unavailable {
     background-color: lightGrey;
 }
@@ -39,6 +27,32 @@
     background-color: blue;
 }
 
+/* Hovering over seat shows seat number */
+[data-seatnum] {
+    position: relative;
+}
+[data-seatnum]:hover:after {
+    opacity: 1;
+    transition: all 0.1s ease 0.1s;
+    visibility: visible;
+}
+[data-seatnum]:after {
+    content: attr(data-seatnum);
+    background-color: white;
+    font-family: Helvetica, Arial, sans-serif;
+    color: #111;
+    position: absolute;
+    padding: 1px 5px 2px 5px;
+    bottom: -1.6em;
+    left: 100%;
+    white-space: nowrap;
+    box-shadow: 1px 1px 3px #222222;
+    opacity: 0;
+    border: 1px solid #111111;
+    z-index: 99999;
+    visibility: hidden;
+}
+
 #seating-charts-wrapper {
     padding: 2px;
     margin: 2px;
@@ -49,8 +63,10 @@
     position: absolute;
     top: 0;
     left: 0;
-    border: 1px solid red;
 }
+
+/* WARNING: do not override the following, or seatmap background image won't display correctly */
+
 img.seating-charts-overlay {
     border: none;
     position: absolute;
