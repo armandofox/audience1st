@@ -102,7 +102,7 @@ A1.seatmap = {
     document.addEventListener('resize', A1.seatmap.centerMap);
     // floating "tooltips" that show each seat number on hover
     $('.seatCharts-seat').each(function(index) {
-      $(this).attr('title', $(this).attr('id'));
+      $(this).attr('data-seatnum', $(this).attr('id'));
     });
   }
   ,select: function(seat) {
