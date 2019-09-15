@@ -140,9 +140,12 @@ A1.seatmap = {
   ,getSeatingOptionsForSubscriberReservation: function() {
     // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
     $('.confirm-seats').addClass('d-none');
+    $('.special-seating').addClass('invisible');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = Number($(this).val());
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
+    // show 'special seating needs' field for both G/A and R/S showdates
+    container.find('.special-seating').removeClass('invisible')
     // in any case, clear out seat info from previous selection
     container.find('.seat-display').val('')
     // in any case, hide seat map in case it was shown before from previous selection

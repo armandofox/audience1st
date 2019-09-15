@@ -61,7 +61,7 @@ Then /^customer "(\S+) (.*)" should have the following vouchers?:$/ do |first,la
   @customer = find_customer first,last
   @vouchers = @customer.vouchers
   vouchers.hashes.each do |v|
-    vtype = Vouchertype.find_by_name!(v[:vouchertype])
+    vtype = Vouchertype.find_by!(:name => v[:vouchertype])
     found_vouchers = @vouchers.where('vouchertype_id = ?',vtype.id)
     expect(found_vouchers.length).to eq(v[:quantity].to_i)
     if v.has_key?(:showdate)
@@ -75,17 +75,22 @@ Then /^customer "(\S+) (.*)" should have the following vouchers?:$/ do |first,la
   end
 end
 
-Then /^customer "(\S+) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |first,last,num,type,show,date|
+Then /customer "(\S+) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)/ do |first,last,num,type,show,date|
   @customer = find_customer first,last
   steps %Q{Then he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}
 end
 
-Then /^s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)$/ do |num,type,show,date|
-  @showdate = Showdate.find_by_thedate!(Time.zone.parse(date))
+Then /s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)/ do |num,type,show,date|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(date))
   expect(@showdate.show.name).to eq(show)
-  @vouchertype = Vouchertype.find_by_name!(type)
-  expect(@customer.vouchers.where(:vouchertype_id => @vouchertype.id, :showdate_id => @showdate.id).count).
-    to eq(num.to_i)
+  @vouchertype = Vouchertype.find_by!(:name => type)
+  @vouchers = @customer.vouchers.where(:vouchertype_id => @vouchertype.id, :showdate_id => @showdate.id)
+  expect(@vouchers.count).to eq(num.to_i)
+end
+
+# This step should only be used after/in conjunction with "Then s?he shoudl have __ tickets for..."
+And /one of those tickets should have comment "(.*)"/ do |comment|
+  expect(@vouchers.any? { |v| v.comments == comment }).to be_truthy
 end
 
 Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,comments,table|

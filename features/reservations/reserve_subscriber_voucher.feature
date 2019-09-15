@@ -15,12 +15,14 @@ Background: show with at least one available performance
   And I am logged in as customer "Tom Foolery"
   And I am on the home page for customer "Tom Foolery"
 
-Scenario: reserve all vouchers for available performance
+Scenario: reserve all vouchers for available performance, and add special seating comment
 
   When I select "2" from "number"
   And I select "Saturday, May 1, 8:00 PM" from "showdate_id"
+  And I fill in "comments" with "No stairs please"
   And I press "Confirm"
   Then customer "Tom Foolery" should have 2 "Hairspray (Subscriber)" tickets for "Hairspray" on May 1, 8pm
+  And one of those tickets should have comment "No stairs please"
 
 Scenario: reserve single voucher for available performance
 
