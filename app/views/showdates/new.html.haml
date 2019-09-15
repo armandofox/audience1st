@@ -19,13 +19,21 @@
     .col-3.text-right
       %label.col-form-label{:for => :advance_sales_cutoff} Advance sales stop
       = popup_help_for :advance_sales_cutoff
-    = number_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control col-1'
-    %label.col-form-label.col-3 minutes before curtain
-    .col-4.text-right
+    .col-1
+      = number_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control'
+    .col-2
+      %label.col-form-label minutes before curtain
+    .col-3.text-right
       %label.col-form-label{:for => :max_advance_sales} Max advance sales
       = popup_help_for(:max_advance_sales)
-    = number_field_tag 'max_advance_sales', @max_sales_default, :class => 'form-control col-1'
+    .col-1= number_field_tag 'max_advance_sales', @max_sales_default, :class => 'form-control'
     = hidden_field_tag "show_id", @show.id
+
+  .form-row.py-1
+    .col-3.text-right
+      %label.col-form-label{:for => :seatmap_id} Seat map
+      = popup_help_for :reserved_seating
+    .col-3= select_tag 'seatmap_id', seatmap_options, :class => 'form-control'
 
   .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
 
