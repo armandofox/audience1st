@@ -7,7 +7,9 @@ A1.checkout = {
     }
   }
   ,startTimer: function() {
-    var timerExpiresAt = Number($('#timer_expires').val()); // seconds since epoch, from Ruby
+    var timerExpiresField = $('#timer_expires');
+    if (timerExpiresField.length < 1) { return; } // field not present = order is done
+    var timerExpiresAt = Number(timerExpiresField.val()); // seconds since epoch, from Ruby
     var now = (Date.now() / 1000) >> 0; // seconds since epoch; Date.now returns millisecs
     var diff = timerExpiresAt - now;
     var handler;
