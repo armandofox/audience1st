@@ -159,8 +159,9 @@ en:
     order_timeout: >
       
       Number of minutes allowed to complete an order once tickets have been chosen.
-      This number must be between 1 and 15 minutes and is enforced for all types
-      of orders (reserved seating, general admission, subscription purchases, etc.)
+      This number must be between 1 and 15 minutes and is enforced for all orders
+      containing any ticket valid for a specific show date, whether
+      reserved seating or general admission.  
 
     session_timeout: >
 
