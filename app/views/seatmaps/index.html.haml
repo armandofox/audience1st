@@ -1,0 +1,24 @@
+.row.text-light.text-center.bg-dark.py-2
+  .col-3 Name
+  .col-5 Background Image URL
+  .col-1 
+
+- @seatmaps.each do |sm|
+  = form_for sm do |f|
+    .form-row.py-2{:id => "sm-#{sm.id}"}
+      .col-3= f.text_field :name, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
+      .col-5= f.text_field :image_url, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
+      .col-4
+        = button_tag 'Preview', :class => 'btn btn-outline-primary'
+        = link_to 'Download CSV', seatmap_path(sm), :class => 'btn btn-outline-primary'
+        = link_to 'Edit', '#', :class => 'btn btn-primary', :onclick => %Q{$('.sm-#{sm.id}').prop('disabled',false); false;}
+        = f.submit 'Save', :class => "btn btn-success sm-#{sm.id}", :disabled => true
+
+= form_tag seatmaps_path, :multipart => true, :class => 'form' do
+  .form-row.py-2.px-2
+    %label.col-4.text-right{:for => 'csv'} Create new seatmap from .csv file
+    %label.col-2.mx-2.btn.btn-primary{:for => 'csv'} Choose file...
+    = file_field_tag 'csv', :accept => '.csv', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#csv')[0].files[0].name)}
+    %label.col-3.col-form-label.a1-text-small#filename (No file chosen)
+    = submit_tag 'Create New Seatmap', :class => 'col-2 btn btn-success'
+

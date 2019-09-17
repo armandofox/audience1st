@@ -1,5 +1,16 @@
 class SeatmapsController < ApplicationController
 
+  before_action :is_boxoffice_manager_filter, :except => 'seatmap'
+
+  def index
+    @seatmaps = Seatmap.all.order(:name)
+  end
+
+  def show
+    seatmap = Seatmap.find params[:id]
+    send_data seatmap.csv, :type => 'text/csv', :filename => "#{seatmap.name}.csv"
+  end
+
   # AJAX responders for seatmap-related functions
 
   def seatmap
