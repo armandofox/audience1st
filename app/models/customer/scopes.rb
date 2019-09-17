@@ -18,11 +18,14 @@ class Customer < ActiveRecord::Base
   }
   
   scope :purchased_any_vouchertypes, ->(vouchertype_ids) {
-    joins(:vouchertypes).where('vouchertypes.id IN (?)', vouchertype_ids)
+    joins(:vouchertypes,:vouchers).
+    where('vouchertypes.id' => vouchertype_ids).
+    where('items.finalized' => true)
   }
   
   scope :purchased_no_vouchertypes, ->(vouchertype_ids) {
-    matching_vouchers = Voucher.where('items.customer_id = customers.id').where('items.vouchertype_id IN (?)', vouchertype_ids)
+    matching_vouchers = Voucher.where('items.customer_id' => customers.id,
+      'items.vouchertype_id' => vouchertype_ids, 'items.finalized' => true)
     where("NOT EXISTS(#{matching_vouchers.to_sql})")
   }
 
@@ -32,29 +35,34 @@ class Customer < ActiveRecord::Base
 
   scope :seen_any_of, ->(show_ids) {
     joins(:vouchers, :showdates).
-    where('items.customer_id = customers.id AND items.showdate_id = showdates.id AND
-           items.type = \'Voucher\' AND showdates.show_id IN (?)', show_ids)
+    where('items.finalized' => true,
+      'items.customer_id' => customers.id,
+      'items.showdate_id' => showdates.id,
+      'items.type' => 'Voucher',
+      'showdates.show_id' => show_ids)
   }
   
   def self.seen_none_of(show_ids)
     not_seen_these_shows = Customer.
       includes(:vouchers, :showdates).
+      where('items.finalized' => true).
       where.not(:showdates => {:show_id => show_ids})
     not_seen_any_shows = Customer.
       includes(:vouchers, :showdates).
+      where('items.finalized' => true).
       where(:items => {:customer_id => nil})
     not_seen_these_shows.or(not_seen_any_shows).distinct
   end
 
   scope :with_open_subscriber_vouchers, ->(vtypes) {
     joins(:items).
-    where('items.customer_id = customers.id AND items.type = \'Voucher\' AND
-                       (items.showdate_id = 0 OR items.showdate_id IS NULL) AND
-                       items.vouchertype_id IN (?)', vtypes)
+    where('items.customer_id' => customers.id, 'items.type' => 'Voucher', 'items.vouchertype_id' => vtypes).
+    where('items.showdate_id = 0 OR items.showdate_id IS NULL')
   }
 
   scope :donated_during, ->(start_date, end_date, amount) {
     joins(:items, :orders).
+    where('items.finalized' => true).
     where(%q{items.customer_id = customers.id AND items.amount >= ? AND items.type = 'Donation'
             AND orders.sold_on BETWEEN ? AND ?},
       amount, start_date, end_date)
