@@ -17,7 +17,16 @@ Scenario: download CSV of existing seatmap
   | A1 |     | A2 |    |
   |    | B1+ |    | B2 |
 
+@javascript
+Scenario: edit existing seatmap image URL and name
 
+  When I follow "Edit" for the "Default" seatmap
+  When I fill in the "Default" seatmap image URL as "http://foo.com" and name as "Simple"
+  And I press "Save" for the "Default" seatmap
+  Then that seatmap should have image URL "http://foo.com" and name "Simple"
+  And I should be on the seatmap editor page
+  
 Scenario: Create new seatmap from valid CSV
 
   When I upload the seatmap "valid_seatmap.csv"
+  

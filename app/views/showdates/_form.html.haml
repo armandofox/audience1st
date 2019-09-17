@@ -1,34 +1,41 @@
 - args = {:start_year => @show.opening_date.year, :end_year => @show.closing_date.year, :minute_step => 15, :date => @showdate.thedate }
-%table.a1-table
-  %tr
-    %td
-      %label{:for => :showdate_thedate} Date and time
-    %td= datetime_select 'showdate', 'thedate', args
-  - if Option.feature_enabled? 'rs'
-    %tr
-      %td
-        %label{:for => :showdate_seatmap_id} Seat map
-      %td
-        = seatmap_choices_for(@showdate,@seatmap_is_editable)
-        = popup_help_for :reserved_seating
-  %tr
-    %td
-      %label{:for => :showdate_description} Description (optional)
-    %td
-      = text_field 'showdate', 'description', :size => 20
-      = popup_help_for :showdate_description
-  %tr
-    %td 
-      %label{:for => :showdate_end_advance_sales} Advance sales cutoff
-    %td
-      = datetime_select 'showdate', 'end_advance_sales', args
-      = popup_help_for :advance_sales_cutoff
-  %tr
-    %td 
-      %label{:for => :showdate_max_advance_sales} Max advance sales
-    %td
-      = text_field 'showdate', 'max_advance_sales', 'size' => 5
-      = popup_help_for(:max_advance_sales)
+
+.form-row
+  .col-3.text-right
+    %label.col-form-label{:for => :showdate_thedate} Date and time
+  .col-8
+    = datetime_select 'showdate', 'thedate', args
+
+- if Option.feature_enabled? 'rs'
+  .form-row
+    .col-3.text-right
+      %label.col-form-label{:for => :showdate_seatmap_id} Seat map
+      = popup_help_for :reserved_seating
+    .col-6
+      = seatmap_choices_for(@showdate,@seatmap_is_editable)
+    .col-3
+      = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
+
+.form-row
+  .col-3.text-right
+    %label.col-form-label{:for => :showdate_description} Description (optional)
+    = popup_help_for :showdate_description
+  .col-6
+    = text_field 'showdate', 'description', :class => 'form-control'
+
+.form-row
+  .col-3.text-right
+    %label.col-form-label{:for => :showdate_end_advance_sales} Advance sales cutoff
+    = popup_help_for :advance_sales_cutoff
+  .col-6
+    = datetime_select 'showdate', 'end_advance_sales', args
+
+.form-row
+  .col-3.text-right
+    %label.col-form-label{:for => :showdate_max_advance_sales} Max advance sales
+    = popup_help_for(:max_advance_sales)
+  .col-6
+    = text_field 'showdate', 'max_advance_sales', :class => 'form-control'
 
 = link_to  "Don't Save Changes", edit_show_path(@showdate.show), :class => 'btn btn-secondary'
 

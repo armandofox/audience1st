@@ -13,6 +13,8 @@ class Seatmap < ActiveRecord::Base
   validates_numericality_of :columns, :greater_than => 0
 
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
+  # remove when we move to strong params
+  attr_accessible :image_url, :name
 
   def self.seatmap_and_unavailable_seats_as_json(showdate)
     seatmap = showdate.seatmap.json

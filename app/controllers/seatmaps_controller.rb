@@ -11,6 +11,17 @@ class SeatmapsController < ApplicationController
     send_data seatmap.csv, :type => 'text/csv', :filename => "#{seatmap.name}.csv"
   end
 
+  def update
+    seatmap = Seatmap.find params[:id]
+    params.require(:seatmap).permit(:image_url, :name)
+    if seatmap.update_attributes(params[:seatmap])
+      flash[:notice] = 'Seatmap successfully updated.'
+    else
+      flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
+    end
+    redirect_to seatmaps_path
+  end
+
   # AJAX responders for seatmap-related functions
 
   def seatmap

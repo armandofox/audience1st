@@ -16,9 +16,10 @@
 
 = form_tag seatmaps_path, :multipart => true, :class => 'form' do
   .form-row.py-2.px-2
-    %label.col-4.text-right{:for => 'csv'} Create new seatmap from .csv file
+    %label.col-3.text-right{:for => 'csv'} Create new seatmap from .csv
     %label.col-2.mx-2.btn.btn-primary{:for => 'csv'} Choose file...
     = file_field_tag 'csv', :accept => '.csv', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#csv')[0].files[0].name)}
     %label.col-3.col-form-label.a1-text-small#filename (No file chosen)
-    = submit_tag 'Create New Seatmap', :class => 'col-2 btn btn-success'
+    = submit_tag 'Upload', :class => 'col-1 btn btn-success'
 
+= render :partial => 'components/seatmap'
