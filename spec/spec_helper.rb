@@ -4,6 +4,7 @@ ENV['RAILS_ENV'] = 'test'
 # from the project root directory.
 require File.dirname(__FILE__) + "/../config/environment" unless defined?(Rails.root)
 require 'rspec/its'
+require 'rspec/json_expectations'
 require 'timecop'
 
 TEST_FILES_DIR = File.join(Rails.root, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)

@@ -53,6 +53,7 @@ group :test do
   gem 'email_spec'
   gem 'fake_stripe'
   gem 'poltergeist'
+  gem 'rspec-json_expectations'
   gem 'simplecov', :require => false
   gem 'spring'                  # for 'guard'
   gem 'timecop'

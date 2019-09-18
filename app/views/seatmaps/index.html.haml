@@ -6,6 +6,7 @@
 - @seatmaps.each do |sm|
   = form_for sm do |f|
     .form-row.py-2{:id => "sm-#{sm.id}"}
+       = hidden_field_tag :seatmap_data, j(sm.json)
       .col-3= f.text_field :name, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
       .col-5= f.text_field :image_url, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
       .col-4

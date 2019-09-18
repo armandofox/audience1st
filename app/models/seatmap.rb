@@ -1,5 +1,7 @@
 class Seatmap < ActiveRecord::Base
 
+  has_many :showdates
+  
   require 'csv'
   require 'uri'
   
@@ -16,6 +18,20 @@ class Seatmap < ActiveRecord::Base
   # remove when we move to strong params
   attr_accessible :image_url, :name
 
+  # Return JSON object with fields 'map' (JSON representation of actual seatmap),
+  # 'seats' (types of seats to display), 'image_url' (background image)
+  def seatmap_as_json
+    seatmap = self.json
+    image_url = self.image_url.to_json
+    unavailable = [].to_json
+    # seat classes: 'r' = regular, 'a' = accessible
+    seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
+    %Q{ {"map": #{seatmap}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
+  end
+
+  # Return JSON object with fields 'map' (JSON representation of actual seatmap),
+  # 'seats' (types of seats to display), 'image_url' (background image),
+  # 'unavailable' (list of unavailable seats for a given showdate)
   def self.seatmap_and_unavailable_seats_as_json(showdate)
     seatmap = showdate.seatmap.json
     unavailable = showdate.occupied_seats.compact.to_json

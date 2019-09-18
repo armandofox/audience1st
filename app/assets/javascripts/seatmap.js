@@ -68,6 +68,9 @@ A1.seatmap = {
     var ct = A1.seatmap.max - A1.seatmap.selectedSeats.length;
     return('Choose ' + ct + ' Seat' + (ct > 1 ? 's' : '') + ' ...');
   }
+  ,showSeatmapForPreviewOnly: function() {
+    
+  }
   ,showSeatmapForShowdateRegularSales: function(evt) {
     // triggered when "Select Seats" is clicked, so disable default submit action on button
     evt.preventDefault();
