@@ -8,7 +8,7 @@ Rails.application.routes.draw do
     resources :account_codes, :except => :show
     resources :ticket_sales_imports, :except => [:new,:show]
     resources :labels, :only => [:index, :create, :update, :destroy]
-    resources :seatmaps, :only => [:index, :create, :show, :update]
+    resources :seatmaps, :except => [:new,:destroy] 
 
     resources :customers, :except => :destroy do
       collection do

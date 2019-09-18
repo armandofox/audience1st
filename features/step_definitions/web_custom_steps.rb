@@ -1,4 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
+require 'webmock/cucumber'
 
 World(ModelAccess)
 
@@ -100,3 +101,14 @@ Then /I should (not )?see the message for "(.*)"/ do |no,i18n_key|
     expect(page).to have_content(message)
   end
 end
+
+# Selectively allow successful and unsuccessful external requests
+Given /the URI "(.*)" is (not )?readable/ do |uri,no|
+  uri.gsub!(/^https?:\/\//, '')
+  if no
+    stub_request(:any, uri).to_return(:status => [400, 'Bad request'])
+  else
+    stub_request(:any, uri).to_return(:headers => {})
+  end
+end
+

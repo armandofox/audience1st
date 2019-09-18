@@ -11,6 +11,21 @@ class SeatmapsController < ApplicationController
     send_data seatmap.csv, :type => 'text/csv', :filename => "#{seatmap.name}.csv"
   end
 
+  def create                    # must be reached by 'post' due to file upload
+    params.permit(:csv, :name,:image_url)
+    @seatmap = Seatmap.new(:image_url => params[:image_url], :name => params[:name])
+    @seatmap.csv = params[:csv].read
+    @seatmap.parse_csv
+    return redirect_to(seatmaps_path, :alert => "Seatmap CSV has errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
+    # as a courtesy, check if URI is fetchable
+    unless @seatmap.image_url.blank?
+      u = SimpleURIChecker.new(@seatmap.image_url)
+      flash[:alert] = "Warning: #{u.errors.as_html}" unless u.check(:allowed_content_types => ['image/png', 'image/jpeg', 'image/svg'])
+    end
+    @seatmap.save!
+    redirect_to seatmaps_path
+  end
+
   def update
     seatmap = Seatmap.find params[:id]
     params.require(:seatmap).permit(:image_url, :name)

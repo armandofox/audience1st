@@ -28,5 +28,9 @@ Scenario: edit existing seatmap image URL and name
   
 Scenario: Create new seatmap from valid CSV
 
-  When I upload the seatmap "valid_seatmap.csv"
+  When I fill in "New" and "http://foo.com/x.jpg" as the name and image for a new seatmap
+  And the URI "http://foo.com/x.jpg" is readable
+  And I upload the seatmap "valid_seatmap.csv"
+  Then show me the page
+  
   
