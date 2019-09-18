@@ -3,17 +3,23 @@
   .col-5 Background Image URL
   .col-1 
 
+:javascript
+  A1.seatmaps = {};
 - @seatmaps.each do |sm|
+  :javascript
+    A1.seatmaps["#{sm.id}"] = #{sm.emit_json.html_safe};
   = form_for sm do |f|
     .form-row.py-2{:id => "sm-#{sm.id}"}
-       = hidden_field_tag :seatmap_data, j(sm.json)
       .col-3= f.text_field :name, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
       .col-5= f.text_field :image_url, :class => "form-control sm-#{sm.id}", :id => nil, :disabled => true
       .col-4
-        = button_tag 'Preview', :class => 'btn btn-outline-primary'
+        = link_to 'Preview', '#', :class => 'btn btn-outline-primary preview', 'data-seatmap-id' => sm.id
         = link_to 'Download CSV', seatmap_path(sm), :class => 'btn btn-outline-primary'
         = link_to 'Edit', '#', :class => 'btn btn-primary', :onclick => %Q{$('.sm-#{sm.id}').prop('disabled',false); false;}
         = f.submit 'Save', :class => "btn btn-success sm-#{sm.id}", :disabled => true
+
+
+= render :partial => 'components/seatmap'
 
 .row.text-light.text-left.bg-dark.py-2
   .col-12 Create new seatmap from .CSV file

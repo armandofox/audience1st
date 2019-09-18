@@ -20,10 +20,11 @@ class Seatmap < ActiveRecord::Base
 
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image)
-  def seatmap_as_json
+
+  def emit_json(unavailable = [])
     seatmap = self.json
     image_url = self.image_url.to_json
-    unavailable = [].to_json
+    unavailable = unavailable.compact.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
     %Q{ {"map": #{seatmap}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
@@ -33,12 +34,7 @@ class Seatmap < ActiveRecord::Base
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
   def self.seatmap_and_unavailable_seats_as_json(showdate)
-    seatmap = showdate.seatmap.json
-    unavailable = showdate.occupied_seats.compact.to_json
-    image_url = showdate.seatmap.image_url.to_json
-    # seat classes: 'r' = regular, 'a' = accessible
-    seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
-    %Q{ {"map": #{seatmap}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
+    showdate.seatmap.emit_json(showdate.occupied_seats)
   end
 
   # seatmap editor/parser stuff

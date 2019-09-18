@@ -58,6 +58,8 @@ A1.seatmap = {
     A1.seatmap.url = '/ajax/seatmap/' + container.find('.showdate').val();
   }
   ,configureFrom: function(j) {
+    $('#seatmap').removeData('seatCharts'); // flush old data
+    $('#seatmap').html('');
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
@@ -68,8 +70,17 @@ A1.seatmap = {
     var ct = A1.seatmap.max - A1.seatmap.selectedSeats.length;
     return('Choose ' + ct + ' Seat' + (ct > 1 ? 's' : '') + ' ...');
   }
-  ,showSeatmapForPreviewOnly: function() {
-    
+  ,showSeatmapForPreviewOnly: function(evt) {
+    // un-hilite all "Preview" buttons, then re-hilite us
+    // $('.preview').removeClass('active');
+    // $(this).addClass('active');
+    evt.preventDefault();
+    var seatmapId = $(this).data('seatmap-id');
+    A1.seatmap.configureFrom(A1.seatmaps[seatmapId]);
+    A1.seatmap.max = 0;         // don't allow seat selection
+    A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+    $('#seating-charts-wrapper').removeClass('d-none').slideDown();
+    A1.seatmap.setupMap("passive");
   }
   ,showSeatmapForShowdateRegularSales: function(evt) {
     // triggered when "Select Seats" is clicked, so disable default submit action on button
@@ -90,7 +101,7 @@ A1.seatmap = {
     $('select.ticket option').prop('disabled', true);
     $('select.ticket option:selected').prop('disabled', false);
   }
-  ,setupMap: function() {
+  ,setupMap: function(passive) {
     // reset seatmap: clear out selected seats, and visually mark all seats available
     A1.seatmap.selectedSeats = [];
     A1.seatmap.seats.find('selected').status('available'); 
@@ -100,8 +111,11 @@ A1.seatmap = {
       A1.seatmap.seats.status(seat_num, 'unavailable');
     });
     A1.seatmap.centerMap();
-    A1.seatmap.updateUI();
-    $('#seatmap')[0].addEventListener('click', A1.seatmap.updateUI);
+    if (typeof(passive) == 'undefined'  ||  !passive) {
+      // unless passive, seatmap should respond to clicks etc
+      A1.seatmap.updateUI();
+      $('#seatmap')[0].addEventListener('click', A1.seatmap.updateUI);
+    }
     document.addEventListener('resize', A1.seatmap.centerMap);
     // floating "tooltips" that show each seat number on hover
     $('.seatCharts-seat').each(function(index) {
@@ -199,10 +213,17 @@ A1.seatmap = {
   ,setupWalkupSales: function() {
     // bindings only for Walkup Sales page
   }
+  ,setupSeatmapEditor: function() {
+    // bindings only for Seatmap Editor
+    if ($('body#seatmaps_index').length) {
+      $('.preview').click(A1.seatmap.showSeatmapForPreviewOnly);
+    }
+  }
 };
 
 // at most one of the three Ready functions will actually do anything.
 $(A1.seatmap.setupReservations);
 $(A1.seatmap.setupRegularSales);
+$(A1.seatmap.setupSeatmapEditor);
 $(A1.seatmap.setupWalkupSales);
 

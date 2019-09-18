@@ -18,22 +18,20 @@ class SeatmapsController < ApplicationController
     @seatmap.parse_csv
     return redirect_to(seatmaps_path, :alert => "Seatmap CSV has errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
     # as a courtesy, check if URI is fetchable
-    unless @seatmap.image_url.blank?
-      u = SimpleURIChecker.new(@seatmap.image_url)
-      flash[:alert] = "Warning: #{u.errors.as_html}" unless u.check(:allowed_content_types => ['image/png', 'image/jpeg', 'image/svg'])
-    end
+    check_image
     @seatmap.save!
     redirect_to seatmaps_path
   end
 
   def update
-    seatmap = Seatmap.find params[:id]
+    @seatmap = Seatmap.find params[:id]
     params.require(:seatmap).permit(:image_url, :name)
-    if seatmap.update_attributes(params[:seatmap])
+    if @seatmap.update_attributes(params[:seatmap])
       flash[:notice] = 'Seatmap successfully updated.'
     else
       flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
     end
+    check_image
     redirect_to seatmaps_path
   end
 
@@ -43,6 +41,15 @@ class SeatmapsController < ApplicationController
     # return the seatmap for this production, and array of UNAVAILABLE seats for this performance
     showdate = Showdate.find(params[:id]) 
     render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate)
+  end
+
+  # helpers
+
+  def check_image
+    unless @seatmap.image_url.blank?
+      u = SimpleURIChecker.new(@seatmap.image_url)
+      flash[:alert] = "Warning: #{u.errors.as_html}" unless u.check(:allowed_content_types => ['image/png', 'image/jpeg', 'image/svg'])
+    end
   end
 
 end
