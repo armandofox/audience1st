@@ -24,8 +24,8 @@ class Customer < ActiveRecord::Base
   }
   
   scope :purchased_no_vouchertypes, ->(vouchertype_ids) {
-    matching_vouchers = Voucher.where('items.customer_id' => customers.id,
-      'items.vouchertype_id' => vouchertype_ids, 'items.finalized' => true)
+    matching_vouchers = Voucher.where('items.customer_id = customers.id').
+    where('items.vouchertype_id' => vouchertype_ids, 'items.finalized' => true)
     where("NOT EXISTS(#{matching_vouchers.to_sql})")
   }
 
@@ -35,9 +35,9 @@ class Customer < ActiveRecord::Base
 
   scope :seen_any_of, ->(show_ids) {
     joins(:vouchers, :showdates).
+    where('items.customer_id = customers.id').
+    where('items.showdate_id = showdates.id').
     where('items.finalized' => true,
-      'items.customer_id' => customers.id,
-      'items.showdate_id' => showdates.id,
       'items.type' => 'Voucher',
       'showdates.show_id' => show_ids)
   }
@@ -56,7 +56,8 @@ class Customer < ActiveRecord::Base
 
   scope :with_open_subscriber_vouchers, ->(vtypes) {
     joins(:items).
-    where('items.customer_id' => customers.id, 'items.type' => 'Voucher', 'items.vouchertype_id' => vtypes).
+    where('items.customer_id = customers.id').
+    where('items.type' => 'Voucher', 'items.vouchertype_id' => vtypes).
     where('items.showdate_id = 0 OR items.showdate_id IS NULL')
   }
 
