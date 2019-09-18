@@ -31,6 +31,16 @@ Scenario: Create new seatmap from valid CSV
   When I fill in "New" and "http://foo.com/x.jpg" as the name and image for a new seatmap
   And the URI "http://foo.com/x.jpg" is readable
   And I upload the seatmap "valid_seatmap.csv"
-  Then show me the page
-  
+  Then I should be on the seatmap editor page
+  And a seatmap named "New" should exist
+  When I follow "Download CSV" for the "New" seatmap
+  Then a CSV file should be downloaded containing:
+    | A1 |    | B1+ |
+    |    | A2 | B2  |
+
+Scenario: Delete seatmap
+
+  When I press "Delete" for the "Default" seatmap
+  Then I should see "Seatmap 'Default' deleted."
+  And a seatmap named "Default" should not exist
   

@@ -24,14 +24,26 @@ class SeatmapsController < ApplicationController
   end
 
   def update
-    @seatmap = Seatmap.find params[:id]
+    return destroy if params[:commit] =~ /delete/i
     params.require(:seatmap).permit(:image_url, :name)
+    @seatmap = Seatmap.find params[:id]
     if @seatmap.update_attributes(params[:seatmap])
       flash[:notice] = 'Seatmap successfully updated.'
     else
       flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
     end
     check_image
+    redirect_to seatmaps_path
+  end
+
+  def destroy
+    @seatmap = Seatmap.find params[:id]
+    return redirect_to(seatmaps_path, :alert => 'You cannot delete a seatmap if it is associated with any performances.') unless @seatmap.showdates.empty?
+    if @seatmap.destroy
+      flash[:notice] = "Seatmap '#{@seatmap.name}' deleted."
+    else
+      flash[:alert] = "Seatmap '#{@seatmap.name}' could not be deleted: #{@seatmap.errors.as_html}"
+    end
     redirect_to seatmaps_path
   end
 

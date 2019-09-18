@@ -2,6 +2,14 @@ Given /the seatmap "(.*)" exists/ do |name|
   create(:seatmap, :name => name)
 end
 
+Then /a seatmap named "(.*)" should (not )?exist/ do |name,no|
+  if no
+    expect(Seatmap.find_by(:name => name)).to be_nil
+  else
+    expect(Seatmap.find_by(:name => name)).to be_a_kind_of Seatmap
+  end
+end
+
 When /I (press|follow) "(.*)" for the "(.*)" seatmap/ do |action,control,name|
   @seatmap = Seatmap.find_by!(:name => name)
   within("#sm-#{@seatmap.id}") do
