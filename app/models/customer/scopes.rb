@@ -45,11 +45,9 @@ class Customer < ActiveRecord::Base
   def self.seen_none_of(show_ids)
     not_seen_these_shows = Customer.
       includes(:vouchers, :showdates).
-      where('items.finalized' => true).
       where.not(:showdates => {:show_id => show_ids})
     not_seen_any_shows = Customer.
       includes(:vouchers, :showdates).
-      where('items.finalized' => true).
       where(:items => {:customer_id => nil})
     not_seen_these_shows.or(not_seen_any_shows).distinct
   end
