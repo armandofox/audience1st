@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-describe Seatmap do
-  describe 'JSON', focus: true  do
+describe Seatmap, focus: true do
+  describe 'JSON' do
     before(:each) do
       @sd = create(:showdate, :seatmap => (@s = create(:seatmap)))
       @unavailable = ['A1', 'B2']
@@ -23,6 +23,14 @@ describe Seatmap do
         image_url: @s.image_url,
         seats: {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}
         )
+    end
+  end
+  describe 'valid seatmap' do
+    it 'has no duplicate seats' do
+      s = build(:seatmap, :csv => "A1,A2,A1,B1+,B1\r\n")
+      s.parse_csv
+      expect(s).not_to be_valid
+      expect(s.errors.full_messages).to include("Seatmap contains duplicate seats: A1, B1")
     end
   end
   describe 'seat existence' do
