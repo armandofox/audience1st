@@ -1,4 +1,8 @@
 en:
+  seatmaps:
+    confirm_delete: >
+      Delete '%{name}' seatmap: are you sure?
+
   email:
 
     success: >

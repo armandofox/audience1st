@@ -64,6 +64,17 @@ en:
       Sets whether a performance is general admission or reserved seating.
       This cannot be changed once reservations for the performance have been made.
 
+    # Seatmap editing
+
+    seatmap_background_image: >
+
+      Optional publicly-accessible URL of an image that will be
+      displayed "behind" the seatmap.  The image must be in PNG, JPEG,
+      GIF, or SVG format, and must have an aspect ratio (width divided
+      by height) the same as that of the seatmap it belongs to.  A
+      seatmap's aspect ratio is the number of columns of the .csv
+      divided by the number of rows.
+
     # Customers and customer lists
 
     customer_labels: >

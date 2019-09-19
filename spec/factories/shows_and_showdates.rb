@@ -34,10 +34,11 @@ FactoryBot.define do
     #     B1 -  B2     (B1 is an accessible seat)
     name 'Default'
     csv "A1,,A2\r\n,B1+,,B2\r\n"
-    json %q{['r[A1, ]_r[A2, ]_', '_a[B1, ]_r[B2, ]']}
+    json ['r[A1, ]_r[A2, ]_', '_a[B1, ]_r[B2, ]'].to_json
     seat_list 'A1,A2,B1,B2'
     rows 2
     columns 4
+    image_url 'http://foo.com/seatmap.png'
   end
 
 
