@@ -61,9 +61,8 @@ en:
 
     reserved_seating: >
 
-      Choose whether this production is general admission or reserved seating.
-      The same choice applies to all performances, and cannot
-      be changed once reservations are made for any performance.
+      Sets whether a performance is general admission or reserved seating.
+      This cannot be changed once reservations for the performance have been made.
 
     # Customers and customer lists
 

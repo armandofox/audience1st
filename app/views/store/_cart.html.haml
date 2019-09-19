@@ -1,4 +1,11 @@
 #cart.container
+  - unless @checkout_message.blank?
+    = hidden_field_tag 'timer_expires', (@gOrderInProgress.created_at + Option.order_timeout.minutes).to_i
+  .h3.timer.d-none
+    Please complete your order in
+    %span#timer 0:00
+    minutes.
+
   - @gOrderInProgress.vouchers.each do |v|
     .row.border-top.bg-light
       .col-md-5.text-truncate.h5

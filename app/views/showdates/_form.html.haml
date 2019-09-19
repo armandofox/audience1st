@@ -4,6 +4,13 @@
     %td
       %label{:for => :showdate_thedate} Date and time
     %td= datetime_select 'showdate', 'thedate', args
+  - if Option.feature_enabled? 'rs'
+    %tr
+      %td
+        %label{:for => :showdate_seatmap_id} Seat map
+      %td
+        = seatmap_choices_for(@showdate,@seatmap_is_editable)
+        = popup_help_for :reserved_seating
   %tr
     %td
       %label{:for => :showdate_description} Description (optional)

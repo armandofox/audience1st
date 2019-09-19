@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190914230747) do
+ActiveRecord::Schema.define(version: 20190915202419) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -180,6 +180,7 @@ ActiveRecord::Schema.define(version: 20190914230747) do
     t.string   "feature_flags",                                                      default: "--- []\n"
     t.text     "accessibility_advisory_for_reserved_seating",                        default: "This seat is designated as an accessible seat.  Please ensure you need this accommodation before finalizing this reservation.", null: false
     t.string   "restrict_customer_email_to_domain"
+    t.integer  "order_timeout",                                                      default: 5,                                                                                                                               null: false
   end
 
   create_table "orders", force: :cascade do |t|
@@ -221,6 +222,7 @@ ActiveRecord::Schema.define(version: 20190914230747) do
     t.string   "description",       limit: 255
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
+    t.integer  "seatmap_id"
   end
 
   create_table "shows", force: :cascade do |t|
@@ -237,7 +239,6 @@ ActiveRecord::Schema.define(version: 20190914230747) do
     t.string   "event_type",                limit: 255, default: "Regular Show", null: false
     t.string   "sold_out_dropdown_message", limit: 255
     t.string   "sold_out_customer_info",    limit: 255
-    t.integer  "seatmap_id"
   end
 
   create_table "ticket_sales_imports", force: :cascade do |t|

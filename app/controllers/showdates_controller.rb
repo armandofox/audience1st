@@ -43,12 +43,14 @@ class ShowdatesController < ApplicationController
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = @show.house_capacity
+    @seatmap_is_editable = (Seatmap.count > 0)
   end
 
   def edit
     @showdate = Showdate.find(params[:id])
     @default_date = @showdate.thedate
     @default_cutoff_date = @showdate.end_advance_sales
+    @seatmap_is_editable = (Seatmap.count > 0  &&  @showdate.vouchers.count.zero?)
   end
 
   def update
@@ -67,6 +69,7 @@ class ShowdatesController < ApplicationController
     sales_cutoff = params[:advance_sales_cutoff].to_i
     max_advance_sales = params[:max_advance_sales].to_i
     description = params[:description].to_s
+    seatmap_id = if params[:seatmap_id].to_i.zero? then nil else params[:seatmap_id].to_i end
 
     existing_dates, new_dates = dates.partition { |date| Showdate.find_by(:thedate => date) }
     unless existing_dates.empty?
@@ -81,6 +84,7 @@ class ShowdatesController < ApplicationController
       s = @show.showdates.build(:thedate => date,
         :max_advance_sales => max_advance_sales,
         :end_advance_sales => date - sales_cutoff.minutes,
+        :seatmap_id => seatmap_id,
         :description => description)
       unless s.valid?
         flash[:alert] = I18n.translate('season_setup.error_adding_showdates',
