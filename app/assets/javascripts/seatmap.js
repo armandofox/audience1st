@@ -124,7 +124,7 @@ A1.seatmap = {
       A1.seatmap.updateUI();
       $('#seatmap')[0].addEventListener('click', A1.seatmap.updateUI);
     }
-    document.addEventListener('resize', A1.seatmap.centerMap);
+    $(window).resize(A1.seatmap.centerMap);
     // floating "tooltips" that show each seat number on hover
     $('.seatCharts-seat').each(function(index) {
       $(this).attr('data-seatnum', $(this).attr('id'));

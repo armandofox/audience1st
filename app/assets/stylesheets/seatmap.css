@@ -70,7 +70,7 @@
 img.seating-charts-overlay {
     border: none;
     position: absolute;
-    top: 0;
+n    top: 0;
     left: 0;
     z-index: 1;
     pointer-events: none;
@@ -90,5 +90,13 @@ div.seatCharts-row {
 
 .seatCharts-legendList {
     list-style: none;
+    padding-inline-start: 0;
+    padding-left: 0;
+    margin-left: 4ex;           /* should match value for .seat-select-cancel */
 }
 
+/* Cancel button */
+
+.seat-select-cancel {
+    margin-left: 4ex;
+}
