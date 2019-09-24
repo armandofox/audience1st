@@ -3,7 +3,7 @@ A1.checkout = {
     var message = $('#checkout_message').val();
     if (message != '') {
       // delay showing the alert until whole page is loaded.  Ugh.
-      window.onload(function() { alert(message); });
+      $(window).load(function() { alert(message); });
     }
   }
   ,startTimer: function() {
