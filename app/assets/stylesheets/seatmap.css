@@ -86,3 +86,9 @@ div.seatCharts-row {
     width: auto;
 }
 
+/* Legend */
+
+.seatCharts-legendList {
+    list-style: none;
+}
+

@@ -12,6 +12,13 @@ A1.seatmap = {
     seats: {}
     ,map: []
     ,naming: { top: false, left: false }
+    ,legend: {          // can't set statically above, since relies on character keys in items hash to be defined as local vars - ugh
+      items: [
+        ['r', 'available', 'Available seat'],
+        ['a', 'available', 'Available accessible seat'],
+        ['r', 'unavailable', 'Unavailable seat']
+      ]
+    }
     ,click: function(evt) {
       switch(this.status()) {
       case 'available':           // select seat
@@ -60,6 +67,7 @@ A1.seatmap = {
   ,configureFrom: function(j) {
     $('#seatmap').removeData('seatCharts'); // flush old data
     $('#seatmap').html('');
+    $('.seatCharts-legend').html('');
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
@@ -72,8 +80,8 @@ A1.seatmap = {
   }
   ,showSeatmapForPreviewOnly: function(evt) {
     // un-hilite all "Preview" buttons, then re-hilite us
-    // $('.preview').removeClass('active');
-    // $(this).addClass('active');
+    $('.preview').removeClass('active');
+    $(this).addClass('active');
     evt.preventDefault();
     var seatmapId = $(this).data('seatmap-id');
     A1.seatmap.configureFrom(A1.seatmaps[seatmapId]);
