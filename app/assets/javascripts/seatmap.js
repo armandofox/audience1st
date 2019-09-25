@@ -7,6 +7,7 @@ A1.seatmap = {
   ,seatDisplayField: null
   ,confirmSeatsButton: null
   ,selectSeatsButton: null
+  ,resetAfterCancel: null
   ,url: null
   ,settings: {
     seats: {}
@@ -37,10 +38,6 @@ A1.seatmap = {
       case 'unavailable':         // ignore; seat is taken
         return('unavailable');
         break;
-      }
-      // update display
-      if (A1.seatmap.seatDisplayField) {
-        A1.seatmap.seatDisplayField.html(A1.seatmap.selectedSeats.join(','));
       }
     }
   }
@@ -73,6 +70,23 @@ A1.seatmap = {
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
     // set background image
     $('img.seating-charts-overlay').attr('src', j.image_url);
+    // bind Cancel button
+    $('.seat-select-cancel').click(A1.seatmap.cancel);
+  }
+  ,cancel: function(evt) {
+    evt.preventDefault();
+    // hide seatmap
+    $('#seating-charts-wrapper').slideUp().addClass('d-none');
+    // cancel all seat selections, then delegate to screen-specific cancellation
+    A1.seatmap.selectedSeats
+    // erase any text showing selected seats
+    if (A1.seatmap.seatDisplayField) {
+      A1.seatmap.seatDisplayField.val('');
+    }
+    // call screen-specific cancellation function
+    if (A1.seatmap.resetAfterCancel) {
+      A1.seatmap.resetAfterCancel.call();
+    }
   }
   ,selectCountPrompt: function() {
     var ct = A1.seatmap.max - A1.seatmap.selectedSeats.length;
@@ -99,6 +113,9 @@ A1.seatmap = {
     A1.seatmap.seatDisplayField = $('.seat-display');
     A1.seatmap.selectSeatsButton = $('.show-seatmap');
     A1.seatmap.confirmSeatsButton = $('#submit');
+    A1.seatmap.resetAfterCancel = function() {
+      window.location.reload();
+    };
     A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
     $('#seating-charts-wrapper').removeClass('d-none').slideDown();
     A1.seatmap.setupMap();
@@ -168,6 +185,7 @@ A1.seatmap = {
     $('.special-seating').addClass('invisible');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = Number($(this).val());
+    var showdateMenu = $(this)[0];
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
     // show 'special seating needs' field for both G/A and R/S showdates
     container.find('.special-seating').removeClass('invisible')
@@ -184,6 +202,10 @@ A1.seatmap = {
       container.find('.confirm-seats').addClass('d-none');
       A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
       // get the seatmap and list of unavailable seats for this showdate
+      A1.seatmap.resetAfterCancel = function() {
+        // reset showdate menu to "Select..."
+        showdateMenu.selectedIndex = 0;
+      };
       $.getJSON(A1.seatmap.url, function(json_data) { 
         A1.seatmap.configureFrom(json_data);
         A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
