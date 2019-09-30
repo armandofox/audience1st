@@ -17,7 +17,9 @@ A1.seatmap = {
       items: [
         ['r', 'available', 'Available seat'],
         ['a', 'available', 'Available accessible seat'],
-        ['r', 'unavailable', 'Unavailable seat']
+        ['r', 'unavailable', 'Unavailable seat'],
+        ['r', 'selected', 'Seat you have selected'],
+        ['a', 'selected', 'Accessible seat you have selected']
       ]
     }
     ,click: function(evt) {
