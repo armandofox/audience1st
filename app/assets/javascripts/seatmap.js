@@ -190,9 +190,9 @@ A1.seatmap = {
     var showdateMenu = $(this)[0];
     var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
     // show 'special seating needs' field for both G/A and R/S showdates
-    container.find('.special-seating').removeClass('invisible')
+    container.find('.special-seating').removeClass('invisible');
     // in any case, clear out seat info from previous selection
-    container.find('.seat-display').val('')
+    container.find('.seat-display').val('');
     // in any case, hide seat map in case it was shown before from previous selection
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
 
@@ -207,6 +207,8 @@ A1.seatmap = {
       A1.seatmap.resetAfterCancel = function() {
         // reset showdate menu to "Select..."
         showdateMenu.selectedIndex = 0;
+        // hide 'Confirm' button
+        container.find('.confirm-seats').addClass('d-none');
       };
       $.getJSON(A1.seatmap.url, function(json_data) { 
         A1.seatmap.configureFrom(json_data);
