@@ -6,7 +6,7 @@
 
 - else
   .form-row.border-top.border-secondary.align-items-center
-    = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post, :class => 'form-inline a1-force-fullwidth' do
+    = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post, :autocomplete => 'off', :class => 'form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :class => 'voucherlist', :id => nil
       .col-1.text-center= menu_or_static_text 'number', group.size, {:id => nil, :class => 'number'}
       .col-3.text-center= group.name

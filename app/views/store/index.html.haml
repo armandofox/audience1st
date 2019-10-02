@@ -19,7 +19,7 @@
   = render :partial => 'event_types'
 
   #ticket_menus
-    = form_tag process_cart_path(@customer) do
+    = form_tag process_cart_path(@customer), :autocomplete => 'off' do
       = hidden_field_tag 'what', h(@what)
       - if @nothing_to_buy
         #show_description.text-center.border.border-danger There are no #{label_for_page_header @what} on sale at this time.
