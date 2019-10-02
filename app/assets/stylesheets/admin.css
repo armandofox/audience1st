@@ -105,6 +105,7 @@ table.hilite tr:hover {
 
 .adminDiv {
     background-color: #eff19e;
+    color: black;
     display: block; }
 
 .adminField {
