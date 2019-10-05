@@ -35,7 +35,7 @@ describe 'Order adding tickets' do
     @order.add_tickets(@vv, 2)
     expect { @order.clear_contents! }.to change { @order.ticket_count}.to(0)
   end
-  context 'if admin', :focus => true do
+  context 'if admin' do
     before :each do
       @boxoffice_user = create(:customer, :role => 'boxoffice')
       @order.processed_by = @boxoffice_user

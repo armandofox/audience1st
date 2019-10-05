@@ -132,10 +132,10 @@ class Order < ActiveRecord::Base
   def add_tickets(valid_voucher, number, seats=[])
     raise Order::NotPersistedError unless persisted?
     # is this order-placer allowed to exercise this redemption?
+    valid_voucher.customer ||= self.processed_by || Customer.anonymous_customer
     if valid_voucher.customer.is_boxoffice    
       return add_tickets_without_capacity_checks(valid_voucher, number, seats)
     end
-    valid_voucher.customer ||= Customer.anonymous_customer
     redemption = valid_voucher.adjust_for_customer
     if redemption.max_sales_for_this_patron >= number
       add_tickets_without_capacity_checks(valid_voucher, number, seats)
