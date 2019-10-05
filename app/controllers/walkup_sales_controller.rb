@@ -40,9 +40,7 @@ class WalkupSalesController < ApplicationController
       @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
     end
     
-    flash[:alert] = 'There are no items to purchase.' if @order.item_count.zero?
-    flash[:alert] ||= @order.errors.as_html unless @order.ready_for_purchase?
-    return redirect_to(walkup_sale_path(@showdate)) if flash[:alert]
+    return redirect_to(walkup_sale_path(@showdate), :alert => "Cannot complete order: #{@order.errors.as_html}") unless @order.errors.empty?
 
     # all set to try the purchase
     begin
