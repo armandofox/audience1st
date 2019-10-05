@@ -5,7 +5,12 @@ Given /^(\d+) "(.*)" comps are available for "(.*)" on "([^\"]+)"(?: with promo 
   @comp.update_attributes!(:offer_public => Vouchertype::ANYONE) if code
   make_valid_tickets(@showdate, @comp, num, code)
 end
-                                   
+
+Given /an advance sales limit of (\d+) for the (.*) performance/ do |limit,thedate|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  @showdate.update_attributes!(:max_advance_sales => limit)
+end
+
 Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
   tickets.hashes.each do |t|
     steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
