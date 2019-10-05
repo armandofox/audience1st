@@ -4,7 +4,7 @@ describe 'Order pre-purchase checks' do
   before :each do
     @order = create(:order)
     @vv = create(:valid_voucher)
-    @order.add_tickets(@vv, 2)
+    @order.add_tickets_without_capacity_checks(@vv, 2)
   end
   it 'should pass if all attributes valid' do
     expect(@order).to be_ready_for_purchase

@@ -26,8 +26,8 @@ describe 'finalizing' do
   context 'successful' do
     before :each do
       @order = create(:order, :comments => 'Comment')
-      @order.add_tickets(@vv,2)
-      @order.add_tickets(@vv2,1)
+      @order.add_tickets_without_capacity_checks(@vv,2)
+      @order.add_tickets_without_capacity_checks(@vv2,1)
       @order.add_donation(@donation)
       expect(Store).not_to receive(:pay_with_credit_card) # stub this out, it has its own tests
       expect(@order.errors).to be_empty
@@ -93,8 +93,8 @@ describe 'finalizing' do
     before :each do
       @order = create(:order,:purchasemethod => Purchasemethod.get_type_by_name('web_cc'))
       allow(@order).to receive(:ready_for_purchase?).and_return(true)
-      @order.add_tickets(@vv,2)
-      @order.add_tickets(@vv2,1)
+      @order.add_tickets_without_capacity_checks(@vv,2)
+      @order.add_tickets_without_capacity_checks(@vv2,1)
       @order.add_donation(@donation)
       @previous_vouchers_count = Voucher.count
       @previous_donations_count = Donation.count

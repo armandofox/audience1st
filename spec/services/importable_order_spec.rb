@@ -5,7 +5,7 @@ describe ImportableOrder do
     before(:each) do
       @i = ImportableOrder.new
       @v = create(:valid_voucher)
-      @i.order.add_tickets(@v, 2)
+      @i.order.add_tickets_without_capacity_checks(@v, 2)
       @i.order.purchaser
     end
     it 'sets sold_on to original sale date'
