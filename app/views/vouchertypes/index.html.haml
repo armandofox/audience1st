@@ -6,7 +6,7 @@
 = in_rows_of(3, { 'Regular revenue vouchers (single tickets)' => 'revenue', 'Comps (single tickets)' => 'comp', 'Subscription Bundles' => 'bundle-sub', 'Nonsubscription Bundles' => 'bundle-nonsub', 'Vouchers included in a bundle' => 'subscriber', 'Nonticket products' => 'nonticket'}) do |name, category|
   - check_box_tag(category, 1, true, :class => 'vouchertype-filter') + content_tag('label', name, :for => category)
 
-%table.table.hilite#vouchertypes
+%table.a1-table.hilite#vouchertypes
   %thead
     %tr 
       %th
