@@ -6,7 +6,7 @@
 = in_rows_of(3, { 'Regular revenue vouchers (single tickets)' => 'revenue', 'Comps (single tickets)' => 'comp', 'Subscription Bundles' => 'bundle-sub', 'Nonsubscription Bundles' => 'bundle-nonsub', 'Vouchers included in a bundle' => 'subscriber', 'Nonticket products' => 'nonticket'}) do |name, category|
   - check_box_tag(category, 1, true, :class => 'vouchertype-filter') + content_tag('label', name, :for => category)
 
-%table.a1-table.hilite#vouchertypes
+%table.table.hilite#vouchertypes
   %thead
     %tr 
       %th
@@ -22,14 +22,16 @@
       %th
   %tbody
     - @vouchertypes.each do |vouchertype|
-      %tr{:class => [(vouchertype.subscription? ? 'subscriberVouchertype' : ''),css_class_for_vouchertype(vouchertype)] }
+      %tr[vouchertype]{:class => [(vouchertype.subscription? ? 'subscriberVouchertype' : ''),css_class_for_vouchertype(vouchertype)] }
         %td
           - if @superadmin && vouchertype.vouchers.count == 0
             = link_to(image_tag('delete.png',:border => 0, :id => "delete_#{vouchertype.id}", :alt => '[Delete]'),{ :action => 'destroy', :id => vouchertype }, {:method =>:delete, :confirm => "Deleting the '#{h vouchertype.name}' voucher type cannot be undone. Continue?" })
         %td= vouchertype.display_order
         %td= link_to h(vouchertype.name), edit_vouchertype_path(vouchertype)
         %td.text-right= number_to_currency(vouchertype.price)   
-        %td.text-right= account_code_with_popup_link(vouchertype.account_code)
+        %td.text-right
+          - unless vouchertype.zero_cost?
+            = account_code_with_popup_link(vouchertype.account_code)
         %td.text-center= vouchertype.subscription? ? "Yes" : ""
         %td= h(vouchertype.visibility)  
         %td.text-center= purchase_link_popup(link_icon, link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
@@ -38,7 +40,9 @@
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
               = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name).html_safe if qty>0 
         %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
-        %td= link_to 'Clone', clone_vouchertype_path(vouchertype), :class => 'btn btn-sm btn-warning'
+        %td
+          - unless vouchertype.bundle?
+            = link_to 'Clone', clone_vouchertype_path(vouchertype), :class => 'btn btn-sm btn-warning'
 
 %br/
 = link_to  'New Voucher Type', new_vouchertype_path, :class => 'btn btn-primary'

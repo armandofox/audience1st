@@ -42,6 +42,7 @@ class VouchertypesController < ApplicationController
   end
 
   def clone
+    @vouchertype = @vouchertype.dup
     @vouchertype.name[0,0] = 'Copy of '
     render :action => :new
   end

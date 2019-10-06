@@ -149,6 +149,10 @@ class Vouchertype < ActiveRecord::Base
     !(['bundle','nonticket'].include?(category))
   end
 
+  def zero_cost?
+    price.zero?
+  end
+  
   def self_service_comp?
     category == 'comp' &&
       (offer_public == SUBSCRIBERS || offer_public == ANYONE)

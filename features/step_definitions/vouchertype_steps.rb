@@ -21,8 +21,16 @@ Given /^a "(.*)" vouchertype costing \$?(.*) for the (.*) season$/i do |name,pri
     )
 end
 
-When /^I click the delete icon for the "(.*)" vouchertype$/ do |vtype|
-  page.find(:css, "img#delete_#{Vouchertype.find_by_name!(vtype).id}").click
+When /I click the delete icon for the "(.*)" vouchertype/ do |vtype|
+  vouchertype = Vouchertype.find_by!(:name => vtype)
+  page.find(:css, "img#delete_#{vouchertype.id}").click
+end
+
+When /I try to clone the "(.*)" vouchertype/ do |vtype|
+  vouchertype = Vouchertype.find_by!(:name => vtype)
+  within("#vouchertype_#{vouchertype.id}") do
+    click_link 'Clone'
+  end
 end
 
 Given /^a bundle "(.*)" for \$?([0-9.]+) containing:$/ do |name,price,tickets|
@@ -63,11 +71,17 @@ Then /a vouchertype with name "(.*)" should (not )?exist/i do |name,no|
   if no then @vouchertype.should be_nil else @vouchertype.should be_a_kind_of(Vouchertype) end
 end
 
+Then /it should have these attributes:/ do |tbl|
+  tbl.hashes.each do |h|
+    steps %Q{Then it should have a #{h['attribute']} of #{h['value']}}
+  end
+end
+
 Then /it should have a (.*) of (.*)/i do |attr,val|
   if val =~ /"(.*)"/
-    @vouchertype.send(attr.downcase).to_s.should == val.to_s
+    expect(@vouchertype.send(attr.downcase).to_s).to eq(val.to_s)
   else
-    @vouchertype.send(attr.downcase).should == val.to_i
+    expect(@vouchertype.send(attr.downcase)).to eq(val.to_i)
   end
 end
 
