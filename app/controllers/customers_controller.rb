@@ -381,7 +381,7 @@ class CustomersController < ApplicationController
       flash[:notice] = I18n.t('login.send_magic_link')
       return nil
     end
-    @customer = Customer.where('email LIKE ?', email).first
+    @customer = Customer.find_by_email(email)
     unless @customer
       flash[:notice] = "Sorry, '#{email}' is not in our database.  You might try under a different email, or create a new account."
       return nil

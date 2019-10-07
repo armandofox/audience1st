@@ -10,7 +10,7 @@ Background:
 
 Scenario: send magic link to user
 
-  When I ask to send a password reset email to "john@doe.com"
+  When I ask to send a password reset email to "John@DOE.com"
   Then an email should be sent to "john@doe.com" containing "http://www.example.com/customers/reset_token?token=test_token"
   Given it is currently 'January 1, 2019 12:09'
   When "john@doe.com" opens the email
