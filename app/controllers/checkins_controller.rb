@@ -28,20 +28,10 @@ class CheckinsController < ApplicationController
     end
   end
 
-  def vouchers_for_showdate(showdate)
-    perf_vouchers = @showdate.advance_sales_vouchers
-    total = perf_vouchers.size
-    num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
-    vouchers = perf_vouchers.group_by do |v|
-      "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
-    end
-    return [total,num_subscribers,vouchers]
-  end
-
   public
 
   def show
-    @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
+    @total,@num_subscribers,@vouchers = @showdate.grouped_vouchers
     if params[:cid]
       @customer = Customer.where(:id => Customer.id_from_route(params[:cid])).
         includes(:vouchers => {:vouchertype => :valid_vouchers}).
@@ -91,7 +81,7 @@ class CheckinsController < ApplicationController
   end
 
   def door_list
-    @total,@num_subscribers,@vouchers = vouchers_for_showdate(@showdate)
+    @total,@num_subscribers,@vouchers = @showdate.grouped_vouchers
     if @vouchers.empty?
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
       redirect_to walkup_sale_path(@showdate)

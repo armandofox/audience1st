@@ -7,7 +7,7 @@ class Customer < ActiveRecord::Base
   # The "customer" to whom all walkup tickets are sold
   
   def self.walkup_customer
-    Customer.find_by!(:role => -1)
+    @result ||= Customer.find_by!(:role => -1)
   end
   
   def is_walkup_customer? ;  self.role == -1 && self.first_name =~ /^walkup$/i;   end

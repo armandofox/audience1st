@@ -1,5 +1,17 @@
 class Showdate < ActiveRecord::Base
 
+  # for reservation list
+
+  def grouped_vouchers
+    perf_vouchers = self.advance_sales_vouchers.includes(:customer)
+    total = perf_vouchers.size
+    num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
+    vouchers = perf_vouchers.group_by do |v|
+      "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
+    end
+    return [total,num_subscribers,vouchers]
+  end
+
   # reporting
 
   def sales_by_type(vouchertype_id)

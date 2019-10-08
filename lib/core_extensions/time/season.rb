@@ -31,14 +31,13 @@ module CoreExtensions
           self.at_beginning_of_season + 1.year - 1.second
         end
       end
-
+      
       def this_season ; self.at_beginning_of_season.year ;  end
 
       def within_season?(year)
         year = year.year unless year.kind_of?(Numeric)
-        start = ::Time.local(year,Option.season_start_month,
-          Option.season_start_day).at_beginning_of_season
-        (start <= self) && (self <= start.at_end_of_season)
+        start,_end = Time.season_boundaries(year)
+        start <= self && self <= _end
       end
 
       module ClassMethods
@@ -47,6 +46,14 @@ module CoreExtensions
         def this_season ; ::Time.current.this_season ; end
         def at_beginning_of_season(arg=nil) ; ::Time.current.at_beginning_of_season(arg) ; end
         def at_end_of_season(arg=nil) ; ::Time.current.at_end_of_season(arg) ; end
+        def season_boundaries(year)
+          year = year.year unless year.kind_of?(Numeric)
+          start = ::Time.local(year,Option.season_start_month,
+            Option.season_start_day).at_beginning_of_season
+          _end = start.at_end_of_season
+          [start, _end]
+        end
+
         def from_param(param,default=::Time.current)
           return default if param.blank?
           return ::Time.zone.parse(param) unless param.kind_of?(Hash)
