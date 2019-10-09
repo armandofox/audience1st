@@ -31,7 +31,7 @@ class CheckinsController < ApplicationController
   public
 
   def show
-    @total,@num_subscribers,@vouchers = @showdate.grouped_vouchers
+    @total,@vouchers = @showdate.grouped_vouchers
     if params[:cid]
       @customer = Customer.where(:id => Customer.id_from_route(params[:cid])).
         includes(:vouchers => {:vouchertype => :valid_vouchers}).
@@ -81,7 +81,8 @@ class CheckinsController < ApplicationController
   end
 
   def door_list
-    @total,@num_subscribers,@vouchers = @showdate.grouped_vouchers
+    @total,@vouchers = @showdate.grouped_vouchers
+    @num_subscriber_reservations = @vouchers.values.flatten.count { |v| v.vouchertype.subscriber_voucher? }
     if @vouchers.empty?
       flash[:notice] = "No reservations for '#{@showdate.printable_name}'"
       redirect_to walkup_sale_path(@showdate)

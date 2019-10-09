@@ -1,5 +1,5 @@
 %h1.text-center= @showdate.printable_name
-%h2.text-center= "#{@num_subscribers} subscribers, #{@total} total reservations"
+%h2.text-center= "#{@num_subscriber_reservations} subscriber reservations, #{@total} total reservations"
 .container
   %table.a1-table.hilite
     %thead
@@ -22,7 +22,6 @@
           / concatenate all nonempty comments
           %td= comments_for_voucherlist(v)
 
-  %h2= "#{@num_subscribers} subscribers, #{@total} total reservations"
   %p
     = "Box office report generated #{Time.current.to_formatted_s(:showtime)}"
     %span{:style => 'float: right;'}= link_to '<< Back', checkin_path(@showdate)
