@@ -3,12 +3,17 @@ class Showdate < ActiveRecord::Base
   # for reservation list
 
   def grouped_vouchers
+    t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     perf_vouchers = self.advance_sales_vouchers.includes(:customer)
     total = perf_vouchers.size
+    t1 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     num_subscribers = perf_vouchers.select { |v| v.customer.subscriber? }.size
+    t2 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     vouchers = perf_vouchers.group_by do |v|
       "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
     end
+    t3 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    Rails.logger.warn ":~~: #{t0}, #{t1}, #{t2}, #{t3}"
     return [total,num_subscribers,vouchers]
   end
 
