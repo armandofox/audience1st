@@ -36,7 +36,10 @@ module CoreExtensions
 
       def within_season?(year)
         year = year.year unless year.kind_of?(Numeric)
-        start,_end = Time.season_boundaries(year)
+        start = ::Time.local(year,Option.season_start_month,
+          Option.season_start_day).at_beginning_of_season
+        _end = start.at_end_of_season
+
         start <= self && self <= _end
       end
 
