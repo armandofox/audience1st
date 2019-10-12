@@ -166,6 +166,10 @@ class Vouchertype < ActiveRecord::Base
     @@offer_to.rassoc(self.offer_public).first rescue "Error (#{self.offer_public})"
   end
 
+  scope :subscription_vouchertypes, -> {  where(:subscription => true) }
+  scope :valid_now, -> {
+    s,e = Time.season_boundaries(Time.this_season)
+  }
   def self.comp_vouchertypes(season=nil)
     vtypes =  season ? for_season(season) : self
     vtypes.of_categories('comp').order('created_at')
@@ -219,12 +223,8 @@ class Vouchertype < ActiveRecord::Base
     end
   end
   
-  def valid_as_of?(date)
-    date.to_time <= Time.current.at_end_of_season(self.season)
-  end
-
   def valid_now?
-    valid_as_of?(Time.current)
+    Time.current <= Time.at_end_of_season(self.season)
   end
 
   def valid_for_season?(which_season = Time.current.year)

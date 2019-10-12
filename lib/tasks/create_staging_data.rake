@@ -210,12 +210,13 @@ staging = namespace :staging do
     StagingHelper::switch_to_staging!
     percent = (ENV['PERCENT'] || '50').to_i / 100.0
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
-    Showdate.all.each do |perf|
+    Showdate.general_admission.each do |perf|
       valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertypes => {:category => :revenue}).to_a.freeze
       # sell percentage of tickets
       while perf.total_sales.size < (percent * perf.house_capacity) do
         # pick a customer
         customer = customers.sample
+        customer = customers.sample until customer.valid_as_purchaser?
         # pick a number of tickets, 1-4, skewed towards 1 and 2
         num_tix = [1,1,2,2,2,2,3,4,4].sample
         # pick which price point they'll use
@@ -223,7 +224,12 @@ staging = namespace :staging do
         # buy it
         o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
         o.add_tickets_without_capacity_checks(valid_voucher, num_tix)
-        o.finalize!
+        begin
+          o.finalize!
+        rescue Order::NotReadyError => e
+          puts o.errors.full_messages
+          byebug
+        end
       end
       StagingHelper::dot
     end

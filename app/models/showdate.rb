@@ -38,6 +38,9 @@ class Showdate < ActiveRecord::Base
   #  so set that up here to avoid n+1 query problems
   default_scope { includes(:show) }
 
+  scope :general_admission, -> { where(:seatmap_id => nil) }
+  scope :reserved_seating,  -> { where.not(:seatmap_id => nil) }
+
   private
 
   def truncate_showdate_to_nearest_minute
