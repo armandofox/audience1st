@@ -48,8 +48,8 @@ the name carefully.
 
 ```yaml
 tenant_names: my-tenant-name
-session_secret: "30 or more random characters string"
-attr_encrypted_key: "long string used to encrypt sensitive data"
+session_secret: "exactly 128 random ASCII characters"
+attr_encrypted_key: "exactly 32 random characters"
 STRIPE_KEY: "Publishable key from a Stripe account in test mode"
 STRIPE_SECRET: "Secret key from a Stripe account in test mode"
 ```
@@ -58,7 +58,7 @@ STRIPE_SECRET: "Secret key from a Stripe account in test mode"
 commas.)
 **Please don't version this file or include it in pull requests, nor
 modify the existing `config/application.yml.asc`.  The `.gitignore` is
-set to ignore this file when versioning.** 
+set to ignore `config/application.yml` when versioning.** 
 
 2. Create a `config/database.yml` file (and don't version it; it is
 also git-ignored) containing `development:` and
@@ -106,24 +106,34 @@ shows, etc., courtesy of the `faker` gem.
 
 1. Deploy.
 
-2. Ensure that the `config/application.yml` on the staging/production
-server contains the correct data.
+2. Ensure that the `config/application.yml` on your development
+computer contains the correct configuration data.
 
 3. If using Heroku, `figaro heroku:set -e production` to make
 `application.yml`'s environment variables available to Heroku.
 
-4. `RAILS_ENV=production rake db:seed` to create the basic admin
+4. In addition, ensure that the environment variable `tenant_names` in
+your deployment environment is set to a comma-separated list of all
+your tenants.  For staging-type deployments to Heroku, the correct
+value is the Heroku appname, so if your app is
+`luminous-coconut.herokuapp.com`, the `tenant_names` environment
+variable should be set to `luminous-coconut`.  (It's best **not** to
+put this in `config/application.yml`, because you may have different
+tenant(s) in development than in production/staging.)
+
+5. If using Heroku, `heroku run rake db:seed` to create the basic admin
 account, etc.  Only portable SQL features are used,
 and the schema has been tried with MySQL, Postgres, and SQLite.
 
-5. If the environment variable `EDGE_URL` is set,
+6. If the environment variable `EDGE_URL` is set,
 `config.action_controller.asset_host` will be set to that value to
 serve static assets from a CDN, which you must configure (the
 current deployment uses the Edge CDN add-on for Heroku, which uses
 Amazon CloudFront as a CDN).  If not set, assets will be served the
-usual way without CDN.
+usual way without CDN.  (If you're just deploying a staging server,
+you should not set this variable.)
 
-6. The task `Customer.notify_upcoming_birthdays` emails an administrator or boxoffice manager with information about customers whose birthdays are coming up soon.  The threshold for "soon" can be set in Admin > Options.
+7. The task `Customer.notify_upcoming_birthdays` emails an administrator or boxoffice manager with information about customers whose birthdays are coming up soon.  The threshold for "soon" can be set in Admin > Options.
 
 ## Integration: Sending transactional email in production
 
