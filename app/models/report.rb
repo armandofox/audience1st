@@ -34,7 +34,7 @@ class Report
     @output = CSV.generate do |csv|
       begin
         if multicolumn
-          csv << %w[first_name last_name email day_phone eve_phone street city state zip labels created_at] 
+          csv << %w[first_name last_name email day_phone eve_phone street city state zip labels created_at role] 
           self.customers.each do |c|
             csv << [c.first_name.name_capitalize,
               c.last_name.name_capitalize,
@@ -43,11 +43,12 @@ class Report
               c.eve_phone,
               c.street,c.city,c.state,c.zip,
               c.labels.map(&:name).join(':'),
-              (c.created_at.to_formatted_s(:db) rescue nil)
+              (c.created_at.to_formatted_s(:db) rescue nil),
+              c.role_name
             ]
           end
         else
-          csv << %w[first_name last_name email day_phone eve_phone address labels created_at] 
+          csv << %w[first_name last_name email day_phone eve_phone address labels created_at role] 
           self.customers.each do |c|
             addr = [c.street, c.city, c.state, c.zip].map { |str| str.to_s.gsub(/,/, ' ') }
             addr = addr[0,3].join(', ') << ' ' << addr[3]
@@ -58,7 +59,8 @@ class Report
               c.eve_phone,
               addr,
               c.labels.map(&:name).join(':'),
-              (c.created_at.to_formatted_s(:db) rescue nil)
+              (c.created_at.to_formatted_s(:db) rescue nil),
+              c.role_name
             ]
           end
         end
