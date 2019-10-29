@@ -1,12 +1,14 @@
 require 'apartment/migrator'
 
 namespace :a1client do
-  desc "Import CSV customer data to LHT from FILE"
+  desc "Import Vendini-format CSV customer data to TENANT from FILE"
   task :import_customers => :environment do
-    Apartment::Tenant.switch! 'lhtsf'
+    raise "TENANT is required" unless ENV['TENANT']
+    raise "FILE is required and must be checked into version control" unless ENV['FILE']
+    Apartment::Tenant.switch! ENV['TENANT']
     begin
       Customer.transaction do
-        sold_on = Time.parse("June 1, 2019")
+        sold_on = Time.current
         cust_count = order_count = 0
         ac = {
           2017 => AccountCode.create!(:name => '2017 Ticket Sales', :code => '7001'),
@@ -19,7 +21,7 @@ namespace :a1client do
           2018 => Vouchertype.create!(params.merge({:name => '2018 Ticket Purchases', :season => 2018, :account_code => ac[2018]})),
           2019 => Vouchertype.create!(params.merge({:name => '2019 Ticket Purchases', :season => 2019, :account_code => ac[2019]}))
         }
-        CSV.foreach("#{Rails.root}/LHT.csv", :headers => true) do |row|
+        CSV.foreach(ENV['FILE'], :headers => true) do |row|
           hrow = row.to_h
           params = {
             :first_name => hrow['First Name'],
