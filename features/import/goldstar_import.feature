@@ -90,3 +90,9 @@ Scenario: nonexistent offer code
 
   When I upload the "Goldstar" will-call file "nonexistent_offer_id.json"
   Then I should see "This will-call list is invalid because at least one purchase (for Rosa Melendrez) refers to the nonexistent offer ID 999999."
+
+Scenario: one of the claims is empty because of Goldstar bug or idiosyncrasy
+
+  When I upload the "Goldstar" will-call file "empty_claim.json"
+  Then I should see "Warning: purchase ID 11911841 for Annabel Granding has an empty 'claims' list."
+  But I should not see "Warning: purchase ID 11926368 for Rosa Melendrez has an empty 'claims' list."
