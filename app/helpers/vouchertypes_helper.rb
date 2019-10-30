@@ -8,7 +8,8 @@ module VouchertypesHelper
 
   def options_for_voucher_types()
     # TODO: make use of Vouchertype.subscription_vouchertypes.map(&:id)
-    options_for_select([['all', 'All voucher types'], ['bundle', 'Bundle (subscription or otherwise)'], ['Comp (single ticket)', 'comp'], ['Voucher included in a bundle', 'subscriber'], ['Regular revenue voucher (single ticket)', 'revenue'], ['Nonticket product', 'nonticket']])
+    # # TODO: add an "all_sub" option: ['all_sub', 'All subscription voucher types'], 
+    options_for_select([['bundle', 'Bundle (subscription or otherwise)'], ['comp', 'Comp (single ticket)'], ['subscriber', 'Voucher included in a bundle'], ['revenue', 'Regular revenue voucher (single ticket)'], ['nonticket', 'Nonticket product']])
   end
 
   def options_for_seasons_range(from=0,to=0,selected = Time.this_season)
