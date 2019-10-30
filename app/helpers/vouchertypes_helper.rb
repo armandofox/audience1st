@@ -6,6 +6,11 @@ module VouchertypesHelper
       year.to_s
   end
 
+  def options_for_voucher_types()
+    # all_catrgories = ['bundle', 'comp', 'subscriber', 'revenue', 'nonticket']
+    options_for_select([['bundle', 'Bundle (subscription or otherwise)'], ['Comp (single ticket)', 'comp'], ['Voucher included in a bundle', 'subscriber'], ['Regular revenue voucher (single ticket)', 'revenue'], ['Nonticket product', 'nonticket']])
+  end
+
   def options_for_seasons_range(from=0,to=0,selected = Time.this_season)
     from,to = to,from if from > to
     now = Time.this_season
