@@ -48,7 +48,7 @@ Scenario: customer unique match on email; verify customer is linked to this impo
   And customer "Maria Moran" should have 3 "TodayTix - half off" tickets for "Company" on Oct 1, 2010, 8:00pm
   And customer "Adrian Ray" should have 1 "TodayTix - half off" tickets for "Company" on Oct 3, 2010, 3:00pm
   When I visit the edit contact info page for customer "Adrian Ray"
-  Then I should see "Created by TodayTix import on Jan 1, 2010" within ".admin"
+  Then I should see "Created by TodayTix import on Jan 1, 2010" within "#adminPrefs"
   And customer "Adrian Ray" should have the following attributes:
     | attribute | value                      |
     | email     | arrayavalani@not.gmail.com |

@@ -39,7 +39,7 @@ Scenario: successful import creates new customers; then attempt re-import of sam
   Then I should see "This list was already imported"
   And  I should be on the ticket sales import page
   When I visit the edit contact info page for customer "Rosa Melendrez"
-  Then I should see "Created by Goldstar import on Jan 1, 2010" within ".admin"
+  Then I should see "Created by Goldstar import on Jan 1, 2010" within "#adminPrefs"
 
 Scenario: unique match on name defaults to using existing, but inexact multiple match defaults to create new
 

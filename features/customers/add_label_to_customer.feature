@@ -13,8 +13,8 @@ Scenario: add label to customer
 
   When I go to the edit contact info page for customer "Tom Foolery"
   Then I should see "Contact Info for Tom Foolery"
-  And I should see "Labels" within "fieldset.admin"
-  And I should see "Volunteer" within "div#current_labels"
+  And I should see "Labels" within "#adminPrefs"
+  And I should see "Volunteer" within "#current_labels"
 
   When I check "Volunteer"
   And I press "Save Changes"
