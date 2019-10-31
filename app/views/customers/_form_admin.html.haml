@@ -1,5 +1,4 @@
-%fieldset.admin
-  %legend Administrator Preferences
+.admin.container
   .row
     .col-md-6
       %label{:for => :customer_last_login} Last login
@@ -40,5 +39,4 @@
   .form-check.form-check-inline
     .form-check-input= check_box_tag 'dont_send_email', '1', true
     %label.form-check-label{:for=>:dont_send_email} 
-      %span.strong Do not
-      email customer a confirmation of these changes
+      DO NOT email customer a confirmation of these changes

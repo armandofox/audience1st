@@ -22,7 +22,6 @@
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     = hidden_field_tag 'accessibility_advisory_for_reserved_seating', Option.accessibility_advisory_for_reserved_seating
     
-    #outer_header
     #outer_wrapper
       #inner_wrapper.container-fluid
         - if (url = Option.venue_homepage_url).blank?
@@ -31,26 +30,23 @@
           %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         #page_body
-          #left_sidebar
-          #right_main
-            #themed-nav.clearfix
-              - if existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
-                = render :partial => 'navbars/main_tabs'
-              - if @gAdminDisplay
-                = render :partial => 'navbars/season_tabs'
-            - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales/
+          #themed-nav.themed
+            - if existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
+              = render :partial => 'navbars/main_tabs'
+            - if @gAdminDisplay
+              = render :partial => 'navbars/season_tabs'
+          #content.plain
+            - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales|store/
               = render :partial => 'customers/quick_search'
               = render :partial => 'navbars/staff_buttons' if display_customer_actions?
             - if controller.controller_name =~ /checkins|walkup_sales/
               = render :partial => 'checkins/change_showdate'
               = render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
-
-            #content.clear
-              - if display_order_in_progress?
-                %h1.text-center Your Order Is Not Yet Complete
-                = render :partial => 'store/cart'
-              = render :partial => 'components/notices'
-              = yield
+            - if display_order_in_progress?
+              %h1.text-center Your Order Is Not Yet Complete
+              = render :partial => 'store/cart'
+            = render :partial => 'components/notices'
+            = yield
       - if current_user
         #welcome_header.pt-2.container= render :partial => 'layouts/login_banner'
 

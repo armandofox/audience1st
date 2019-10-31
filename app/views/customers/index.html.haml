@@ -1,14 +1,15 @@
 .pagination
-  %h1.text-center= @page_title
-  = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
-  = form_tag @list_action, :method => :get do
-    - first,last,total = @customers.offset+1, @customers.offset+@customers.length, @customers.total_entries
-    &nbsp;&bull;&nbsp; 
-    %b #{first}-#{last} of #{total}
-    - if total > @customers.per_page
-      &nbsp;&bull;&nbsp; Jump to page:
-      = text_field_tag 'page', '', :size => 4
-      = submit_tag 'Go'
+  .h1.text-center= @page_title
+  .pagination-container
+    = will_paginate @customers, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
+    = form_tag @list_action, :method => :get do
+      - first,last,total = @customers.offset+1, @customers.offset+@customers.length, @customers.total_entries
+      &nbsp;&bull;&nbsp; 
+      %b #{first}-#{last} of #{total}
+      - if total > @customers.per_page
+        &nbsp;&bull;&nbsp; Jump to page:
+        = text_field_tag 'page', '', :size => 4
+        = submit_tag 'Go', :class => 'btn btn-outline-primary btn-sm'
 
 %br/
 
@@ -16,7 +17,7 @@
   .container.px-0
     = form_tag merge_customers_path, :method => :get, :class => 'form' do
       .form-group
-        %label.col-form-label.a1-text-large Select customers to:
+        %label.col-form-label Select customers to:
         = popup_help_for 'merge_customers'
         = submit_tag 'Manual Merge&hellip;'.html_safe, :class => 'btn btn-primary'
         = submit_tag 'Auto Merge', :class => 'btn btn-danger'
@@ -37,9 +38,7 @@
             %th State
             %th Zip
             %th Day/Main Phone
-            %th Eve/Alt Phone
             %th Email
-            %th Company
             %th Labels
         %tbody
           = render :partial => 'customers/customer', :collection => @customers
