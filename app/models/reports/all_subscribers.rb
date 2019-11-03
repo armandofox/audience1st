@@ -3,6 +3,7 @@ class AllSubscribers < Report
   def initialize(output_options = {})
     @view_params = {
       :name => 'All subscribers',
+      :current_season => Time.this_season, 
       :vouchertypes => Vouchertype.subscription_vouchertypes()
     }
     super
@@ -17,7 +18,7 @@ class AllSubscribers < Report
     @relation = 
       if vouchertypes.empty? # TODO: add an "all_sub" option, returns all subscription_vouchertypes
       then Customer.purchased_any_vouchertypes(Vouchertype.subscription_vouchertypes.map(&:id))
-      else Customer.purchased_any_vouchertypes(vouchertypes)
+      else Customer.purchased_any_vouchertypes(vouchertypes) 
       end
     @relation = @relation.subscriber_during seasons unless seasons.empty?
     #TODO: currently the generated resport only contains 26 consumers 
