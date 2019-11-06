@@ -244,6 +244,7 @@ A1.seatmap = {
       $('#seating-charts-wrapper').addClass('d-none');
       $('#seats').addClass('d-none');
       $('#howmany').prop('disabled', false); // allow changing ticket count
+      $('.seat-display').addClass('d-none');
     }
     $.getJSON('/ajax/seatmap/' + showdateID, function(jsonData) {
       if (jsonData.map == null) { 
@@ -254,8 +255,7 @@ A1.seatmap = {
         A1.seatmap.configureFrom(jsonData); // setup unavailable seats, etc
         A1.seatmap.max = Number($('#howmany').val());
         $('#howmany').prop('disabled', true);
-        A1.seatmap.seatDisplayField = $('#seats');
-        $('#seats').removeClass('d-none');
+        A1.seatmap.seatDisplayField = $('.seat-display').removeClass('d-none');
         A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
         $('#seating-charts-wrapper').removeClass('d-none').slideDown();
         A1.seatmap.setupMap();
