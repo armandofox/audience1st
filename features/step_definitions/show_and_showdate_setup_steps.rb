@@ -42,6 +42,18 @@ Given /^the following shows exist:$/ do |shows|
   end
 end
 
+Given /the "(.*)" performance has reserved seating/ do |datetime|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(datetime))
+  steps %Q{Given that performance has reserved seating}
+end
+
+Given /that performance has reserved seating/ do
+  @seatmap = create(:seatmap)
+  @showdate.seatmap = @seatmap
+  @showdate.save!
+end
+
+
 When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,cap,list|
   fill_in "Show Name", :with => name
   select_date_from_dropdowns(eval(opens), :from => "Opens")
@@ -166,3 +178,4 @@ Given /^there are (\d+) "(.*)" tickets and (\d+) total seats available$/ do |per
     )
   @showdate.update_attributes!(:max_advance_sales => seat_limit)
 end
+

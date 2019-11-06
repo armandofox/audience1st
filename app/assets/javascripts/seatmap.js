@@ -170,7 +170,9 @@ A1.seatmap = {
       $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
       // disable Confirm; show but disable SelectSeats
       A1.seatmap.confirmSeatsButton.addClass('d-none');
-      A1.seatmap.selectSeatsButton.removeClass('d-none').prop('disabled', true);
+      if (A1.seatmap.selectSeatsButton) {
+        A1.seatmap.selectSeatsButton.removeClass('d-none').prop('disabled', true);
+      }
     }      
   }
   ,centerMap: function() {
@@ -235,6 +237,37 @@ A1.seatmap = {
       $('.show-seatmap').prop('disabled', false);
     }
   }
+  ,getSeatingOptionsForAddComps: function() {
+    // triggered when a new perf is selected during Add Comps flow
+    var showdateID = $('#showdate_id').val();
+    var resetAfter = function() {
+      $('#seating-charts-wrapper').addClass('d-none');
+      $('#seats').addClass('d-none');
+      $('#howmany').prop('disabled', false); // allow changing ticket count
+    }
+    $.getJSON('/ajax/seatmap/' + showdateID, function(jsonData) {
+      if (jsonData.map == null) { 
+        resetAfter();
+      } else {
+        A1.seatmap.resetAfterCancel = resetAfter;
+        A1.seatmap.confirmSeatsButton = $('.confirm-seats');
+        A1.seatmap.configureFrom(jsonData); // setup unavailable seats, etc
+        A1.seatmap.max = Number($('#howmany').val());
+        $('#howmany').prop('disabled', true);
+        A1.seatmap.seatDisplayField = $('#seats');
+        $('#seats').removeClass('d-none');
+        A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+        $('#seating-charts-wrapper').removeClass('d-none').slideDown();
+        A1.seatmap.setupMap();
+      }
+    });
+  }
+  ,setupAddComps: function() {
+    if ($('body#vouchers_new').length) { // only do these bindings on "Add Comps" page
+      A1.seatmap.enclosingSelector = '#add_comps_form';
+      $('#add_comps_form').on('change', '#showdate_id', A1.seatmap.getSeatingOptionsForAddComps);
+    }
+  }
   ,setupRegularSales: function() {
     if ($('body#store_index').length) {  // only do these bindings on "Buy Tickets" page
       // when quantities change (triggering price recalc), determine whether to 
@@ -255,9 +288,10 @@ A1.seatmap = {
   }
 };
 
-// at most one of the three Ready functions will actually do anything.
+// at most one of the these Ready functions will actually do anything.
 $(A1.seatmap.setupReservations);
 $(A1.seatmap.setupRegularSales);
 $(A1.seatmap.setupSeatmapEditor);
 $(A1.seatmap.setupWalkupSales);
+$(A1.seatmap.setupAddComps);
 
