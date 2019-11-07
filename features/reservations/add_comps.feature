@@ -32,6 +32,19 @@ Scenario Outline: add comps to performance
   | Apr 20, 2010, 8:15pm |      4 |
 
 
+Scenrario: add comps without reserving for a specific showdate
+
+When I visit the add comps page for customer "Armando Fox"
+When I select "Comp(2010)" from "What type:"
+And I fill in "How many with:" with "<number>"
+And I select "Leave Open" from "Reserve for:"
+And  I fill in "Optional comments:" with "Courtesy Comp"
+And  I press "Add Vouchers"
+Then customer "Armando Fox" should have an order with comment "Courtesy Comp" containing the following tickets:
+| qty      | type | showdate       |
+| <number> | Comp |                |
+
+
 Scenario: email should be sent if customer_email is checked
 
   Given customer "Armando Fox" exists with email "armandoisafox@gmail.com"
