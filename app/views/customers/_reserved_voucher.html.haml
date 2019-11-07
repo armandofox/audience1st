@@ -9,8 +9,7 @@
           %span.showName= group.showdate.name
           %br
         %span.showDate= group.showdate.printable_date_with_description
-      - if Option.feature_enabled? 'rs'
-        .col-2.text-center= group.seats
+      .col-2.text-center= group.seats
       .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
 
 - else
@@ -22,8 +21,7 @@
         %span.showName= group.showdate.name
         %br
       %span.showDate= group.showdate.printable_date_with_description
-    - if Option.feature_enabled? 'rs'
-      .col-2.text-center= group.seats
+    .col-2.text-center= group.seats
 
 - if @gAdminDisplay
   .form-row.admin
