@@ -46,6 +46,10 @@ class VouchersController < ApplicationController
     @email_disabled = @customer.email.blank?
   end
 
+    #TODO: rediecr to the path where the customer can select showdate herself
+    #find create_voucher from voucher_type, without specfiying showdate_id, skip the reserve_for the showdate, but still
+    #create order, with 
+    #lib/task/staging data
   def create
     # post: add the actual comps, and possibly reserve
     howmany = params[:howmany].to_i
@@ -53,14 +57,21 @@ class VouchersController < ApplicationController
     thecomment = params[:comments].to_s
     showdate = Showdate.find_by_id(params[:showdate_id])
 
+    leave_open = params[:showdate_id].empty? ? true : false
+
     redir = new_customer_voucher_path(@customer)
     return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
       vouchertype && howmany > 0
     return redirect_to(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
       vouchertype.comp?
-    return redirect_to(redir, 'Please select a performance.') unless showdate
-    vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
+    return redirect_to(redir, 'Please select a performance.') unless showdate || leave_open
+
+    if !leave_open
+      vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
       return redirect_to(redir, 'This comp ticket type not valid for this performance.') 
+    else 
+      vv = ValidVoucher.find_by(:vouchertype_id => vouchertype.id)
+    end
     
     order = Order.create(:comments => thecomment, :processed_by => current_user,
       :customer => @customer, :purchaser => @customer,
@@ -69,15 +80,33 @@ class VouchersController < ApplicationController
     begin
       order.finalize!
       order.vouchers.each do |v|
-        Txn.add_audit_record(:txn_type => 'add_tkts',
+        if !leave_open
+          Txn.add_audit_record(:txn_type => 'add_tkts',
           :order_id => order.id,
           :logged_in_id => current_user.id,
           :customer_id => @customer.id,
           :showdate_id => showdate.id,
           :voucher_id => v.id,
           :purchasemethod => Purchasemethod.get_type_by_name('none'))
+          flash[:notice] = "Added #{howmany} '#{vv.name}' comps for #{showdate.printable_name}."
+        else 
+          Txn.add_audit_record(:txn_type => 'add_tkts',
+          :order_id => order.id,
+          :logged_in_id => current_user.id,
+          :customer_id => @customer.id,
+          #:showdate_id => showdate.id,
+          :voucher_id => v.id,
+          :purchasemethod => Purchasemethod.get_type_by_name('none'))
+          Txn.add_audit_record(:txn_type => 'res_cancl',
+            :customer_id => v.customer.id,
+            :logged_in_id => current_user.id,
+            #:showdate_id => v.showdate_id,
+            #:show_id => v.showdate.show_id,
+            :voucher_id => v.id)
+          v.cancel(current_user)
+          flash[:notice] = "Added #{howmany} '#{vv.name}' comps and customer can choose the show later."
+        end
       end
-      flash[:notice] = "Added #{howmany} '#{vv.name}' comps for #{showdate.printable_name}."
     rescue Order::NotReadyError => e
       flash[:alert] = "Error adding comps: #{order.errors.as_html}".html_safe
       order.destroy
@@ -89,6 +118,7 @@ class VouchersController < ApplicationController
     email_confirmation(:confirm_reservation, @customer, showdate, order.vouchers) if params[:customer_email]
     redirect_to customer_path(@customer, :notice => flash[:notice])
   end
+
 
   def update_comment
     vchr = Voucher.find(params[:voucher_ids].split(",").first)
