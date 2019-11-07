@@ -26,7 +26,7 @@ A1.recalc_store_total = function() {
   var ready;
   $('#total').val(total.toFixed(2));
   ready = (A1.orderState.ticketCount > 0 || A1.orderState.totalPrice > 0.0);
-  $('#submit').prop('disabled', !ready);
+  $('#submit.unreserved').prop('disabled', !ready);
   // Enable "select seats" if nonzero tickets being selected, regardless of total (could be comps)
   ready = (A1.orderState.ticketCount > 0);
   $('.show-seatmap').prop('disabled', !ready);

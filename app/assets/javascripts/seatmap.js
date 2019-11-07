@@ -163,15 +163,15 @@ A1.seatmap = {
     A1.seatmap.seatDisplayField.val(A1.seatmap.selectedSeats.sort().join(', '));
     // if exact # seats selected, allow proceed
     if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
-      A1.seatmap.confirmSeatsButton.removeClass('d-none');
-      A1.seatmap.selectSeatsButton.addClass('d-none');
+      A1.seatmap.confirmSeatsButton.prop('disabled', false);
+      A1.seatmap.selectSeatsButton.prop('disabled', true);
     } else {
       // change button label to be prompt for how many seats to select
       $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
       // disable Confirm; show but disable SelectSeats
-      A1.seatmap.confirmSeatsButton.addClass('d-none');
+      A1.seatmap.confirmSeatsButton.prop('disabled', true);
       if (A1.seatmap.selectSeatsButton) {
-        A1.seatmap.selectSeatsButton.removeClass('d-none').prop('disabled', true);
+        A1.seatmap.selectSeatsButton.prop('disabled', true);
       }
     }      
   }
@@ -185,7 +185,7 @@ A1.seatmap = {
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForSubscriberReservation: function() {
     // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
-    $('.confirm-seats').addClass('d-none');
+    $('.confirm-seats').prop('disabled', true);
     $('.special-seating').addClass('invisible');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = Number($(this).val());
@@ -200,17 +200,17 @@ A1.seatmap = {
 
     if (showdatesWithReservedSeating.indexOf(showdateId) == -1) {
       // general admission show
-      container.find('.confirm-seats').removeClass('d-none');
+      container.find('.confirm-seats').prop('disabled', false);
     } else {
       // reserved seating: hide 'Confirm' button, and show seatmap for the div we are in
-      container.find('.confirm-seats').addClass('d-none');
+      container.find('.confirm-seats').prop('disabled', true);
       A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
       // get the seatmap and list of unavailable seats for this showdate
       A1.seatmap.resetAfterCancel = function() {
         // reset showdate menu to "Select..."
         showdateMenu.selectedIndex = 0;
         // hide 'Confirm' button
-        container.find('.confirm-seats').addClass('d-none');
+        container.find('.confirm-seats').prop('disabled', true);
       };
       $.getJSON(A1.seatmap.url, function(json_data) { 
         A1.seatmap.configureFrom(json_data);
@@ -242,7 +242,6 @@ A1.seatmap = {
     var showdateID = $('#showdate_id').val();
     var resetAfter = function() {
       $('#seating-charts-wrapper').addClass('d-none');
-      $('#seats').addClass('d-none');
       $('#howmany').prop('disabled', false); // allow changing ticket count
       $('.seat-display').addClass('d-none');
     }
