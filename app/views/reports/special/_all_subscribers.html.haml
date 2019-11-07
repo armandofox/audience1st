@@ -2,7 +2,7 @@
   %p Include subscribers for the following voucher categories and season(s) (Apple-click or Ctrl-click to select multiple):
 
   -#TODO: affirm filter logic. Make sure the db query matches the selections.
-  = select_tag 'vouchertypes', options_for_voucher_types(), :multiple => true
+  = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true
   = hidden_field_tag '_report', 'AllSubscribers'
 
   = select_tag 'seasons', options_for_seasons_range(-5, 1), :multiple => true
