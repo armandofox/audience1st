@@ -5,9 +5,6 @@
   = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true
   = hidden_field_tag '_report', 'AllSubscribers'
 
-  = select_tag 'seasons', options_for_seasons_range(-5, 1), :multiple => true
-  = hidden_field_tag '_report', 'AllSubscribers'
-
   %ul
     %li 
       Listing will not identify which season(s) a particular subscriber 
