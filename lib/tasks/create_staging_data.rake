@@ -154,26 +154,10 @@ staging = namespace :staging do
       :category => :bundle,
       :subscription => true,
       :price => 70.00,
-      :name => 'Season Subscription 1',
+      :name => 'Season Subscription',
       :season => Time.this_season,
       :offer_public => Vouchertype::ANYONE,
       :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
-    sub = Vouchertype.create!(
-        :category => :bundle,
-        :subscription => true,
-        :price => 80.00,
-        :name => 'Season Subscription 2',
-        :season => Time.this_season,
-        :offer_public => Vouchertype::ANYONE,
-        :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
-    sub = Vouchertype.create!(
-          :category => :bundle,
-          :subscription => true,
-          :price => 90.00,
-          :name => 'Season Subscription 3',
-          :season => Time.this_season,
-          :offer_public => Vouchertype::ANYONE,
-          :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
   end
   
   desc "In tenant '#{StagingHelper::TENANT}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers, shows, and show dates"
@@ -188,24 +172,15 @@ staging = namespace :staging do
   task :sell_subscriptions => :environment do
     StagingHelper::switch_to_staging!
     percent = (ENV['PERCENT'] || '50').to_i / 100.0
-    sub_voucher1 = ValidVoucher.includes(:vouchertype).
-      where(:vouchertypes => {:category => :bundle, :subscription => true, :price => 70.00}).
+    sub_voucher = ValidVoucher.includes(:vouchertype).
+      where(:vouchertypes => {:category => :bundle, :subscription => true}).
       first
-    sub_voucher2 = ValidVoucher.includes(:vouchertype).
-      where(:vouchertypes => {:category => :bundle, :subscription => true, :price => 80.00}).
-      first
-    sub_voucher3 = ValidVoucher.includes(:vouchertype).
-      where(:vouchertypes => {:category => :bundle, :subscription => true, :price => 90.00}).
-      first
-    sub_vouchers = [sub_voucher1, sub_voucher2, sub_voucher3]
-
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
     customers = customers.sample(customers.size * percent * 0.5) # since will sell avg of 2 per pax
     customers.each do |customer|
       o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
-      sub_voucher = sub_vouchers.sample()
       o.add_tickets_without_capacity_checks(sub_voucher, num_tix)
       o.finalize!
       StagingHelper::dot
@@ -260,4 +235,3 @@ staging = namespace :staging do
     end
   end
 end
-
