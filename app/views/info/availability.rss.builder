@@ -10,22 +10,26 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1", "xm
     xml.link do
       xml.cdata! store_url.html_safe
     end
-    xml.description "Ticket Availability for #{@venue}"
-    @showdates.each do |sd|
-      xml.item do
-        xml.title h(sd.printable_name)
-        xml.link do 
-          xml.cdata! link_to_showdate_tickets(sd)
+    if @showdates.nil?
+      xml.description "No Tickets Currently On Sale"
+    else                  
+      xml.description "Ticket Availability for #{@venue}"
+      @showdates.each do |sd|
+        xml.item do
+          xml.title h(sd.printable_name)
+          xml.link do 
+            xml.cdata! link_to_showdate_tickets(sd)
+          end
+          xml.guid :isPermaLink => false do 
+            xml.cdata! link_to_showdate_tickets(sd) 
+          end
+          xml.__send__('audience1st:show', sd.show.name)
+          xml.__send__('audience1st:showDateTime', sd.thedate.strftime('%a, %b %e, %l:%M%p'))
+          xml.__send__('audience1st:showDateTime8601', sd.thedate.strftime('%FT%R'))
+          xml.__send__('audience1st:availabilityGrade', sd.availability_grade)
+          minprice,maxprice = sd.price_range
+          xml.__send__('audience1st:priceRange', "#{number_to_currency minprice} - #{number_to_currency maxprice}")
         end
-        xml.guid :isPermaLink => false do 
-          xml.cdata! link_to_showdate_tickets(sd) 
-        end
-        xml.__send__('audience1st:show', sd.show.name)
-        xml.__send__('audience1st:showDateTime', sd.thedate.strftime('%a, %b %e, %l:%M%p'))
-        xml.__send__('audience1st:showDateTime8601', sd.thedate.strftime('%FT%R'))
-        xml.__send__('audience1st:availabilityGrade', sd.availability_grade)
-        minprice,maxprice = sd.price_range
-        xml.__send__('audience1st:priceRange', "#{number_to_currency minprice} - #{number_to_currency maxprice}")
       end
     end
   end

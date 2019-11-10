@@ -5,7 +5,11 @@ class Showdate < ActiveRecord::Base
   end
 
   def printable_name
-    show.name + " - " + printable_date_with_description
+    show_name + " - " + printable_date_with_description
+  end
+
+  def printable_name_with_description
+    description.blank? ? show_name : "#{show_name} (#{description})"
   end
 
   def printable_date

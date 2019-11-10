@@ -4,11 +4,19 @@ class InfoController < ActionController::Base
   # filter and force_ssl
 
   # Force all requests to 'look like' RSS
-  before_action do
-    request.format = :rss
+  # before_action do
+  #   request.format = :rss
+  # end
+  # respond_to :rss
+  # showdates in iCalendar/vCalendar format
+  def showdates
+    # these could be overridden by params[] later:
+    year = Time.this_season
+    from = Time.at_beginning_of_season(year - 1)
+    to = Time.at_end_of_season(year + 1)
+    @showdates = Showdate.where('thedate BETWEEN ? AND ?', from, to)
+    @host = request.host
   end
-
-  respond_to :rss
   
   # RSS feed of ticket availability info: renders an XML view for external use
   def ticket_rss
