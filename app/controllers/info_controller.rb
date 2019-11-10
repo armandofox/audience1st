@@ -11,9 +11,8 @@ class InfoController < ActionController::Base
   # showdates in iCalendar/vCalendar format
   def showdates
     # these could be overridden by params[] later:
-    year = Time.this_season
-    from = Time.at_beginning_of_season(year - 1)
-    to = Time.at_end_of_season(year + 1)
+    from = Time.current
+    to = Time.at_end_of_season(1 + Time.this_season)
     @showdates = Showdate.where('thedate BETWEEN ? AND ?', from, to)
     @host = request.host
   end
