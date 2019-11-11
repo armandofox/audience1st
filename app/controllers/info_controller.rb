@@ -13,7 +13,7 @@ class InfoController < ActionController::Base
     # these could be overridden by params[] later:
     from = Time.current
     to = Time.at_end_of_season(1 + Time.this_season)
-    @showdates = Showdate.where('thedate BETWEEN ? AND ?', from, to)
+    @showdates = Showdate.where('thedate BETWEEN ? AND ?', from, to).includes(:show)
     @host = request.host
   end
   
