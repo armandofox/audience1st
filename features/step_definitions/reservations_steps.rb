@@ -12,3 +12,9 @@ Given /^customer "(.*) (.*)" has the following (subscriber )?reservations:/ do |
   end
 end
 
+When /I select the "(.*)" performance of "(.*)" from "(.*)"/ do |thedate, show,menu_selector|
+  showdate_id = Show.includes(:showdates).find_by!(:name => show).
+    showdates.find_by!(:thedate => Time.zone.parse(thedate)).
+    id
+  page.find_field(menu_selector).find("option[value='#{showdate_id}']").select_option
+end
