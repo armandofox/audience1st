@@ -48,6 +48,7 @@ class VouchersController < ApplicationController
 
   def create
     # post: add the actual comps, and possibly reserve
+    seats = params[:seats].to_s.split(/\s*,\s*/)
     howmany = params[:howmany].to_i
     vouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
     thecomment = params[:comments].to_s
@@ -65,7 +66,7 @@ class VouchersController < ApplicationController
     order = Order.create(:comments => thecomment, :processed_by => current_user,
       :customer => @customer, :purchaser => @customer,
       :purchasemethod => Purchasemethod.get_type_by_name('none')) # not a gift order
-    order.add_tickets_without_capacity_checks(vv, howmany)
+    order.add_tickets_without_capacity_checks(vv, howmany, seats)
     begin
       order.finalize!
       order.vouchers.each do |v|

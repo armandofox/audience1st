@@ -164,7 +164,9 @@ A1.seatmap = {
     // if exact # seats selected, allow proceed
     if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
       A1.seatmap.confirmSeatsButton.prop('disabled', false);
-      A1.seatmap.selectSeatsButton.prop('disabled', true);
+      if (A1.seatmap.selectSeatsButton) {
+        A1.seatmap.selectSeatsButton.prop('disabled', true);
+      }
     } else {
       // change button label to be prompt for how many seats to select
       $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
@@ -242,7 +244,7 @@ A1.seatmap = {
     var showdateID = $('#showdate_id').val();
     var resetAfter = function() {
       $('#seating-charts-wrapper').addClass('d-none');
-      $('#howmany').prop('disabled', false); // allow changing ticket count
+      $('#howmany').prop('readonly', false); // allow changing ticket count
       $('.seat-display').addClass('d-none');
     }
     $.getJSON('/ajax/seatmap/' + showdateID, function(jsonData) {
@@ -253,7 +255,7 @@ A1.seatmap = {
         A1.seatmap.confirmSeatsButton = $('.confirm-seats');
         A1.seatmap.configureFrom(jsonData); // setup unavailable seats, etc
         A1.seatmap.max = Number($('#howmany').val());
-        $('#howmany').prop('disabled', true);
+        $('#howmany').prop('readonly', true); // still submits as part of form, but can't change
         A1.seatmap.seatDisplayField = $('.seat-display').removeClass('d-none');
         A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
         $('#seating-charts-wrapper').removeClass('d-none').slideDown();

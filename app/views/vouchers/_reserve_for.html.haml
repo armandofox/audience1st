@@ -2,7 +2,7 @@
   %label.col-2.text-right.col-form-label{:for => 'showdate_id'}  Reserve for:
   - options = @valid_vouchers.empty? ? options_for_select(['(Select comp type first)']) : options_from_collection_for_select(@valid_vouchers, 'showdate_id', 'show_name_with_seats_of_type_remaining')
   = select_tag('showdate_id', options, :class => 'form-control col-4')
-  .col-3.text-left.seat-display.a1-passive-text-input.d-none= text_field_tag 'seats', '', :readonly => 'readonly', :id => nil
+  .col-3.text-left= text_field_tag 'seats', '', :readonly => 'readonly', :id => nil, :class => 'seat-display a1-passive-text-input d-none'
   :javascript
     $('#vouchertype_id').change(function() {
       var url = "#{escape_javascript(update_shows_path)}" + '?' + $.param({"vouchertype_id" : $(this).val()});
