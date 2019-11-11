@@ -16,12 +16,13 @@ Audience1st  integrates your own ticket sales, third-party ticket sales (such as
 
 Audience1st was developed specifically for the needs of nonprofit community performing-arts organizations, with extensive functions for donor tracking and email campaigns integrated with ticket sales and box office operations, integration with social networking such as Facebook, streamlined user interfaces that are easy for your volunteers to learn (the box office agent’s user interface closely follows the patron user interface, so your patrons can easily become volunteer box office agents), and a high degree of automation around ticket sales, phone-based information and sales, reporting/bookkeeping, and box office management, to minimize human resources needed on your end.
 
-### I already have a ticketing solution—why would I need Audience1st?
+### I already have a ticketing solution -- why would I need Audience1st?
 
 If all you do is sell tickets, you're probably set; but if you care about tracking your donors, building up a subscriber base, and connecting all of your patron-related functions together, you should ask what support your existing ticketing solution offers.  Even if you continue to use your existing solutions for ticketing, Audience1st can import that information and tie it to your patron-building activities.
 
 ### Feature overview
 
+* Both general admission and reserved seating; use any spreadsheet program (Excel, Google Sheets, etc.) to define seat maps
 * Patron convenience: Patrons can buy or reserve online, or your phone staff can easily enter phone orders. Patrons or staff can then track their reservations and purchases all in one place, from any Web browser, and get automatic email confirmations whenever reservations are made or cancelled.
 *  Front of house integration: A separate streamlined GUI lets you sell “walk-up” tickets at the box office, by cash, check, or a USB-attached card swipe device.
 *  Subscriptions: Create and sell virtually any combination of tickets imaginable as a subscription; easily identify subscribers on all reports and give them exclusive or advance access to certain tickets.
@@ -34,14 +35,23 @@ If all you do is sell tickets, you're probably set; but if you care about tracki
 * Sell course enrollments and retail items (swag, raffle tickets, etc.) as well as tickets.
 * Sell virtually any kind of subscription: one ticket per production, flex passes, matinee-only or preview-only passes, offer special prices for students or artists, etc.
 * Ability to give subscribers exclusive or advance access to certain tickets before general public gets them.
-* Display real-time ticket availability on your theater's main web site via an RSS feed.  (Most popular website content management systems such as WordPress and Drupal have an RSS widget that can be configured to display this information somewhere on your front page.)
+* Allows multiple price points for same performance, with both date and capacity limits possible on any ticket type
 
-# Limitations, or Reasons Not to Use Audience1st
+### Integration with other Internet services/sites
 
-* Can Audience1st send large amounts of email (for example, to advertise a show to our customers)?
-  * No, though it does integrate with MailChimp (an email-list-blast service) and (soon) could easily integrate with ConstantContact (similar service).  The reason for this deliberate choice is that sending "blast" emails does not work: spam filters are very, very aggressive, CAN-SPAM laws are strict, and the only chance for an email to get through to lots of people is if it is sent by a reputable and well managed email list service.  MailChimp and ConstantContact are probably the two most popular, though others exist. 
+* MailChimp integration: allows targeted sending of emails to customers matching any set of fine-grained criteria (shows they have/have not seen, last login, donation history, etc.)
+* WordPress integration: our free WordPress plugin shows real-time ticket availability for upcoming shows, or design your own plugin that consumes an RSS feed
+* WordPress integration: display a calendar of upcoming performances right on your web site, using Events Calendar Pro or any plugin/site that can consume an iCalendar feed
+* Seamlessly import will-call files from Goldstar(tm) and TodayTix(tm)
 
-* What about reserved seating?
-  * Currently Audience1st handles only general/unreserved seating.
+### FAQs
 
-
+* Does Audience1st provide telephone sales to our patrons?
+  * No.  Accepting phone orders and transcribing them is your responsibility.
+  
+* Can Audience1st just charge a service fee to the patron so we don't have to pay for it?
+  * If you want to host Audience1st yourself, you may do so at your own expense.  If we host it for you, every dollar patrons pay will go straight to you, and you will pay us for hosting.  This keeps us out of the critical path of your revenue stream.  Audience1st does allow you to configure charging a service fee if you wish to do so to cover expenses.
+  
+* Who pays the credit card processing fees?
+  * Audience1st sends your money directly to your Stripe account, and Stripe will deduct their fees directly from that account as well.  Again, we do not touch your revenue stream at all.
+  
