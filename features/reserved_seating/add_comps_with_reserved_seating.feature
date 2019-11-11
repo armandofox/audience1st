@@ -14,10 +14,22 @@ Background: show with some reserved seating and some general admission performan
 Scenario: add comps and reserve specific seats
 
   When I fill in "How many:" with "1"
-  When I select "Comp (2010)" from "What type:"
+  And I select "Comp (2010)" from "What type:"
   And I select the "March 2, 2:00pm" performance of "Chicago" from "Reserve for:"
   Then I should see the seatmap  
   When I choose seats B1,B2
-  
+  Then I should see "B1" in the list of selected seats
+  When I press "Add Vouchers"
+  Then customer "Joe Mallon" should have seat B1 for the March 2, 2010, 2pm performance of "Chicago"
 
-Scenario: cannot add comps without specifying seats  
+Scenario: selecting general admission show should make seatmap disappear
+
+  When I fill in "How many:" with "2"
+  And I select "Comp (2010)" from "What type:"
+  And I select the "March 2, 2pm" performance of "Chicago" from "Reserve for:"
+  Then I should see the seatmap  
+  When I select the "March 1, 8pm" performance of "Chicago" from "Reserve for:"
+  Then I should not see the seatmap
+  When I fill in "How many:" with "2"
+  And I press "Add Vouchers"
+  Then customer "Joe Mallon" should have 2 "Comp" tickets for "Chicago" on Mar 1, 2010, 8pm

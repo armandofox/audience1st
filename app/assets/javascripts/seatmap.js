@@ -246,6 +246,7 @@ A1.seatmap = {
       $('#seating-charts-wrapper').addClass('d-none');
       $('#howmany').prop('readonly', false); // allow changing ticket count
       $('.seat-display').addClass('d-none');
+      $('.confirm-seats').prop('disabled', false);
     }
     $.getJSON('/ajax/seatmap/' + showdateID, function(jsonData) {
       if (jsonData.map == null) { 
