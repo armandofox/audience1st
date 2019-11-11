@@ -1,8 +1,8 @@
-#select_show.form.form-row.clear.bg-light
+#select_show.form.form-row
   .col.text-right
-    %label.col-form-label.a1-text-large Show and Date:
-  .col-text-left
+    %label.col-form-label Show and Date:
+  .col.text-center
     = select_tag 'new_showdate', showdates_with_urls(walkup_sale_path(@showdate)), |
-      :class => 'form-control form-control-lg', |
+      :class => 'form-control', |
       :onchange => 'window.location = $("#new_showdate").val()' |
   .col

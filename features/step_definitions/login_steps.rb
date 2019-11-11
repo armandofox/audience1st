@@ -9,7 +9,7 @@ module CustomerLoginHelper
     fill_in 'password', :with => @password
     click_button 'Login'
     expect(page).to have_content("Log Out #{@customer.full_name}")
-    expect(page).to have_css('.adminField') if @is_admin
+    expect(page).to have_css('.admin') if @is_admin
   end
 end
 World(CustomerLoginHelper)
