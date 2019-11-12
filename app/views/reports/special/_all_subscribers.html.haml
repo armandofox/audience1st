@@ -1,7 +1,6 @@
 %fieldset{:legend => @args[:name]}
   %p Include subscribers for the following subscription vouchertypes (Apple-click or Ctrl-click to select multiple):
 
-  -#TODO: affirm filter logic. Make sure the db query matches the selections.
   = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true
   = hidden_field_tag '_report', 'AllSubscribers'
 
