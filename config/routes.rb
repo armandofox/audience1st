@@ -54,8 +54,8 @@ Rails.application.routes.draw do
     # RSS
 
     get '/ics/showdates.ics' => 'info#showdates'
-    get '/rss/showdates.rss' => 'info#ticket_rss'
-    get '/rss/availability.rss' => 'info#availability'
+    get '/rss/showdates.rss' => 'info#ticket_rss', :defaults => { :format => 'rss' }
+    get '/rss/availability.rss' => 'info#availability', :defaults => { :format => 'rss' }
 
     get '/rss/ticket_rss' =>  'info#ticket_rss', :defaults => { :format => 'rss' }
     get '/rss/availability' => 'info#availability', :as => 'availability_rss', :defaults => { :format => 'rss' } 
