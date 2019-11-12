@@ -32,7 +32,6 @@ Scenario Outline: add comps to performance
   | Apr 18, 2010         |      4 |
   | Apr 20, 2010, 8:15pm |      4 |
 
-
 Scenario Outline: add comps without reserving for a specific showdate
 
 Given it is currently <time>
@@ -52,7 +51,6 @@ Examples:
   | Apr 18, 2010         |      2 |
   | Apr 18, 2010         |      4 |
   | Apr 20, 2010, 8:15pm |      4 |
-
 
 Scenario: email should be sent if customer_email is checked
 
