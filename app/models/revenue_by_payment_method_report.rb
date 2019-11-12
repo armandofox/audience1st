@@ -18,6 +18,7 @@ class RevenueByPaymentMethodReport
       :vouchertype,
       :showdate => :show).
       where('amount > 0').
+      where(:finalized => true).
       where("type != 'CanceledItem'").
       order('items.updated_at')
     payment_types = {:credit_card => :web_cc, :cash => :box_cash, :check => :box_chk}

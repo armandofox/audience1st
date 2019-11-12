@@ -1,8 +1,6 @@
 %table.a1-table#walkup_tickets.hilite
   %tr
-    %td
-      %strong Tickets to be issued
-    %td
+    %td.strong{:colspan => 2} Tickets to be issued
     %td= text_field_tag 'totaltix', 0, :id => 'totaltix',  |
       :size => 4, :disabled => true, :class => 'bg-info text-white'  |
   %tr

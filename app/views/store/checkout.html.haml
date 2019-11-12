@@ -20,7 +20,7 @@
       = render :partial => 'credit_card', :locals => {:name => @gOrderInProgress.purchaser.full_name}
 
     - if @is_admin
-      #other_payments.adminDiv
+      #other_payments.admin
         - if @gOrderInProgress.total_price > 0
           Or pay with check number: 
           = text_field_tag 'check_number', '', :size => 6
@@ -35,7 +35,7 @@
     .form-row
       .col-md-3= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger btn-block' }
       .col-md-6
-        .alert.alert-warning.text-center= t('store.accept_terms_of_sale', :terms_of_sale_text => escape_javascript(Option.terms_of_sale)).html_safe
+        = link_to t('store.accept_terms_of_sale'), '#', :onclick => "alert('#{escape_javascript(Option.terms_of_sale)}'); return(false);", :class => 'btn btn-outline-primary btn-block'
       .col-md-3
         - if @gOrderInProgress.total_price > 0
           = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'

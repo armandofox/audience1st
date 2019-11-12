@@ -208,7 +208,7 @@ en:
       Please describe (wheelchair, no stairs, etc.)
 
     accept_terms_of_sale: >
-      By completing your order, you agree to the <a href="#" onclick="alert('%{terms_of_sale_text}')">terms of sale</a>.
+      By completing your order, you agree to the terms of sale.
     
     gift_recipient_on_file: >
       We have the gift recipient's address and phone number on file.

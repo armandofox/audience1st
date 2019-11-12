@@ -2,17 +2,18 @@
 
 - unless @txns.empty?
   %br
-  .pagination
-    = will_paginate @txns,:previous_label => '&laquo;', :next_label => '&raquo;', :container => false
-    = form_tag txns_path, :method => :get do
-      &nbsp;&bull;&nbsp; 
-      %b #{@txns.offset+1}-#{@txns.offset+@txns.length}
-      of 
-      %b #{@txns.total_entries}
-      &nbsp;&bull;&nbsp; Jump to page:
-      = text_field_tag 'page', '', :size => 4
-      = hidden_field_tag 'txn_filter', @txn_filter
-      = submit_tag 'Go'
+  .pagination-container
+    .pagination
+      = will_paginate @txns,:previous_label => '&laquo;', :next_label => '&raquo;', :container => false
+      = form_tag txns_path, :method => :get do
+        &nbsp;&bull;&nbsp; 
+        %b #{@txns.offset+1}-#{@txns.offset+@txns.length}
+        of 
+        %b #{@txns.total_entries}
+        &nbsp;&bull;&nbsp; Jump to page:
+        = text_field_tag 'page', '', :size => 4
+        = hidden_field_tag 'txn_filter', @txn_filter
+        = submit_tag 'Go', :class => 'btn btn-outline-primary btn-sm'
 
   %br
   %table.a1-table

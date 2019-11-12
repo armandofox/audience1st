@@ -28,7 +28,7 @@ module ApplicationHelper
   end
 
   def themed
-    javascript_tag %Q{$(function() { $('body').addClass('themed'); });}
+    javascript_tag %Q{$(function() { $('#content').removeClass('plain').addClass('themed'); });}
   end
 
   def link_icon

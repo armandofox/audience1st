@@ -9,8 +9,7 @@
           %span.showName= group.showdate.name
           %br
         %span.showDate= group.showdate.printable_date_with_description
-      - if Option.feature_enabled? 'rs'
-        .col-2.text-center= group.seats
+      .col-2.text-center= group.seats
       .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
 
 - else
@@ -22,11 +21,10 @@
         %span.showName= group.showdate.name
         %br
       %span.showDate= group.showdate.printable_date_with_description
-    - if Option.feature_enabled? 'rs'
-      .col-2.text-center= group.seats
+    .col-2.text-center= group.seats
 
 - if @gAdminDisplay
-  .form-row.adminField
+  .form-row.admin
     = form_tag update_comment_customer_voucher_path(@customer,group.vouchers[0]), :method => 'put', 'data-remote' => true, :autocomplete => 'off', :class => 'save_comment form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
       .col-2 Staff comments

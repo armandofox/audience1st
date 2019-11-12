@@ -39,7 +39,7 @@ Scenario: successful import creates new customers; then attempt re-import of sam
   Then I should see "This list was already imported"
   And  I should be on the ticket sales import page
   When I visit the edit contact info page for customer "Rosa Melendrez"
-  Then I should see "Created by Goldstar import on Jan 1, 2010" within ".admin"
+  Then I should see "Created by Goldstar import on Jan 1, 2010" within "#adminPrefs"
 
 Scenario: unique match on name defaults to using existing, but inexact multiple match defaults to create new
 
@@ -90,3 +90,9 @@ Scenario: nonexistent offer code
 
   When I upload the "Goldstar" will-call file "nonexistent_offer_id.json"
   Then I should see "This will-call list is invalid because at least one purchase (for Rosa Melendrez) refers to the nonexistent offer ID 999999."
+
+Scenario: one of the claims is empty because of Goldstar bug or idiosyncrasy
+
+  When I upload the "Goldstar" will-call file "empty_claim.json"
+  Then I should see "Warning: purchase ID 11911841 for Annabel Granding has an empty 'claims' list."
+  But I should not see "Warning: purchase ID 11926368 for Rosa Melendrez has an empty 'claims' list."
