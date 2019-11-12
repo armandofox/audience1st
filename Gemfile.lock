@@ -246,7 +246,6 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rack-timeout (0.4.2)
-    railroady (1.5.3)
     rails (4.2.9)
       actionmailer (= 4.2.9)
       actionpack (= 4.2.9)
@@ -447,7 +446,6 @@ DEPENDENCIES
   query_trail
   rack-test
   rack-timeout
-  railroady
   rails (= 4.2.9)
   rails_12factor
   rake
@@ -484,4 +482,4 @@ RUBY VERSION
    ruby 2.5.5p157
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
