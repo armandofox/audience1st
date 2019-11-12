@@ -104,7 +104,7 @@ class Voucher < Item
 
   scope :open, -> { where(:checked_in => false).where(:showdate => nil) }
 
-  def unreserved? ; showdate_id.to_i.zero? | showdate_id.blank? ;  end
+  def unreserved? ; showdate_id.to_i.zero? end
   def reserved? ; !(unreserved?) ; end
   
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end

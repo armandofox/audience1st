@@ -46,10 +46,6 @@ class VouchersController < ApplicationController
     @email_disabled = @customer.email.blank?
   end
 
-    #TODO: rediecr to the path where the customer can select showdate herself
-    #find create_voucher from voucher_type, without specfiying showdate_id, skip the reserve_for the showdate, but still
-    #create order, with 
-    #lib/task/staging data
   def create
     # post: add the actual comps, and possibly reserve
     howmany = params[:howmany].to_i
@@ -57,7 +53,7 @@ class VouchersController < ApplicationController
     thecomment = params[:comments].to_s
     showdate = Showdate.find_by_id(params[:showdate_id])
 
-    leave_open = params[:showdate_id].empty? ? true : false
+    leave_open = params[:showdate_id].empty?
 
     redir = new_customer_voucher_path(@customer)
     return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
@@ -94,14 +90,11 @@ class VouchersController < ApplicationController
           :order_id => order.id,
           :logged_in_id => current_user.id,
           :customer_id => @customer.id,
-          #:showdate_id => showdate.id,
           :voucher_id => v.id,
           :purchasemethod => Purchasemethod.get_type_by_name('none'))
           Txn.add_audit_record(:txn_type => 'res_cancl',
             :customer_id => v.customer.id,
             :logged_in_id => current_user.id,
-            #:showdate_id => v.showdate_id,
-            #:show_id => v.showdate.show_id,
             :voucher_id => v.id)
           v.cancel(current_user)
           flash[:notice] = "Added #{howmany} '#{vv.name}' comps and customer can choose the show later."
