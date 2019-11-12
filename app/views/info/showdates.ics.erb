@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+PRODID:-//Audience1st//<%= Option.venue %> Performance Calendar//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+<% @showdates.each do |s| %>
+BEGIN:VEVENT
+DTSTART:<%= s.thedate.strftime('%Y%m%dT%H%M00') %>
+DTEND:<%= (s.thedate + s.duration).strftime('%Y%m%dT%H%M00') %>
+DTSTAMP:<%= Time.current.strftime('%Y%m%dT%H%M00') %>
+UID:<%= "#{s.id}@#{@host}" %>
+CREATED:20111213T123901Z
+SUMMARY:<%= s.show_name.html_safe %>
+DESCRIPTION:<%= s.show.description.to_s.gsub(/[\r\n]+/, ' ').html_safe %>
+LAST-MODIFIED:<%= s.updated_at.strftime('%Y%m%dT%H%M%S') %>
+URL:<%= link_to_showdate_tickets(s) %>
+END:VEVENT
+<% end %>
+END:VCALENDAR

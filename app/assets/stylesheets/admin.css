@@ -1,7 +1,14 @@
 /* in testing or sandbox mode, body should look different */
 
+html {
+    font-size: smaller;
+}
 body.maintenance {
     border: 8px dashed yellow;
+}
+
+#content.plain {
+    background-color: white;
 }
 
 .a1-force-fullwidth {
@@ -101,23 +108,11 @@ table.hilite tr:hover {
 
 .admin {
     background-color: #eff19e;
-    color: black; }
-
-.adminDiv {
-    background-color: #eff19e;
     color: black;
-    display: block; }
-
-.adminField {
-    width: 100%;
     display: inline-block;
-    font-family: PT Sans, sans-serif;
-    clear: both;
-    padding: 2px 10px;
-    background-color: #eff19e;
-    color: black; }
-
-
+    margin: 0 auto;
+    width: 100%;
+}
 
 /*
  * Popup-help styles (http://psacake.com/web/jl.asp)
@@ -137,11 +132,16 @@ a.a1tooltip:hover span{
 .callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
 
 /* Pagination of customer list */
+.pagination-container {
+    text-align: center;
+    padding-bottom: 1ex;
+}
+
 .pagination {
-    width: auto;
+    width: 95%;
     margin: 0 auto; /* centered */
     display: block;
-/* self-clearing method: */ }
+}
 .pagination form {
     float: left;
 }

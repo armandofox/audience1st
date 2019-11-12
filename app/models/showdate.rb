@@ -111,6 +111,15 @@ class Showdate < ActiveRecord::Base
     thedate.this_season
   end
 
+  def advance_sales_open?
+    valid_vouchers.any? { |vv| Time.current >= vv.start_sales }
+  end
+  
+  def duration
+    # for now a fixed amount.  in future may be settable
+    150.minutes
+  end
+
   # Calculation of available seats (for reserved seating)
   def occupied_seats
     return [] unless seatmap

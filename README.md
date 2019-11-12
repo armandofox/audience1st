@@ -104,7 +104,13 @@ shows, etc., courtesy of the `faker` gem.
 
 # Deploying to production or staging
 
-1. Deploy.
+These instructions are for Heroku and assume that you have created a
+Heroku app container and provisioned it with the basic (free) level of
+Heroku Postgres.  You can adapt these instructions for other
+deployment environments.
+
+1. Get the code pushed to the deployment environment (`git push heroku
+master` usually).
 
 2. Ensure that the `config/application.yml` on your development
 computer contains the correct configuration data.
@@ -121,11 +127,13 @@ variable should be set to `luminous-coconut`.  (It's best **not** to
 put this in `config/application.yml`, because you may have different
 tenant(s) in development than in production/staging.)
 
-5. If using Heroku, `heroku run rake db:seed` to create the basic admin
-account, etc.  Only portable SQL features are used,
+5.  If this is the first deployment, `heroku run rake db:migrate` 
+to create all the tenant schemata,
+then `heroku run rake db:seed` to create the basic admin
+account for each tenant.  Only portable SQL features are used,
 and the schema has been tried with MySQL, Postgres, and SQLite.
 
-6. If the environment variable `EDGE_URL` is set,
+6. If the environment variable `EDGE_URL` is set on Heroku,
 `config.action_controller.asset_host` will be set to that value to
 serve static assets from a CDN, which you must configure (the
 current deployment uses the Edge CDN add-on for Heroku, which uses
@@ -138,9 +146,27 @@ you should not set this variable.)
 ## Integration: Sending transactional email in production
 
 In production, email confirmations are sent for various things.
-Audience1st is configured to use Sendgrid.  Log in to Audience1st as
-an administrator, go to Options, and enter a Sendgrid key.  If it's
-left blank, email sending is disabled.
+Audience1st is configured to use Sendgrid.  If you do nothing,
+transactional emails will be suppressed in your staging/production
+environment.  If you want to use
+Sendgrid for real email sending in your staging/production app, do the following:
+
+1. Provision the Sendgrid add-on for Heroku and obtain a Sendgrid API key.
+
+2. `config/application.yml` file should contain a valid Sendgrid API key
+value for `SENDGRID_KEY`.  You may need to `figaro heroku:set -e
+production` to get the key value into Heroku's production environment.
+
+3. Login to Audience1st as
+an administrator, go to Options, and enter the Sendgrid domain
+(i.e. the domain from which transactional emails will appear to come,
+usually something like `your-app.herokuapp.com` for a staging
+environment).
+
+4.  Be sure that same domain name appears among the "allowed domains"
+in the Sendgrid settings, which can be accessed via the Resources >
+Sendgrid control panel in Heroku.
+
 
 ## Integration: MailChimp
 
