@@ -28,7 +28,6 @@ module VouchertypesHelper
     else '???'
     end
   end
-
   def categories_with_printable_names
     Vouchertype::CATEGORIES.map do |category|
       name = human_name_for_category(category)
