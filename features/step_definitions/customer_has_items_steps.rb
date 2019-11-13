@@ -99,8 +99,13 @@ Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containi
   order.comments.should == comments
   table.hashes.each do |item|
     matching_items = order.vouchers.select { |v| v.vouchertype.name == item['type'] }
-    unless item['showdate'].blank?
+    if !item['showdate'].blank?
       matching_items.reject! { |v| v.showdate != Showdate.find_by_thedate(Time.zone.parse(item['showdate'])) }
+    else
+      #then the vouchers should have no showdate associated to it
+      matching_items.each do |v|
+        v.showdate.should == nil
+      end
     end
     matching_items.length.should == item['qty'].to_i
   end
