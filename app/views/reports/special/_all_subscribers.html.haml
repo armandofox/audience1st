@@ -1,7 +1,7 @@
 %fieldset{:legend => @args[:name]}
-  %p Include subscribers for the following season(s) (Apple-click or Ctrl-click to select multiple):
+  %p Include subscribers for the following subscription vouchertypes (Apple-click or Ctrl-click to select multiple):
 
-  = select_tag 'seasons', options_for_seasons_range(-5, 1), :multiple => true
+  = select_tag 'vouchertypes', options_from_collection_for_select(@args[:vouchertypes], :id, :name_with_season_and_price), :multiple => true
   = hidden_field_tag '_report', 'AllSubscribers'
 
   %ul
