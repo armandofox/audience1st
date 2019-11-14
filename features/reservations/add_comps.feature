@@ -32,25 +32,17 @@ Scenario Outline: add comps to performance
   | Apr 18, 2010         |      4 |
   | Apr 20, 2010, 8:15pm |      4 |
 
-Scenario Outline: add comps without reserving for a specific showdate
+Scenario: add comps without reserving for a specific showdate
 
-Given it is currently <time>
-When I visit the add comps page for customer "Armando Fox"
-When I select "Comp (2010)" from "What type:"
-And I fill in "How many:" with "<number>"
-And I select "Leave Open" from "Reserve for:"
-And  I press "Add Vouchers"
-Then customer "Armando Fox" should have an order with comment "" containing the following tickets:
-| qty      | type | showdate       |
-| <number> | Comp |                |
-
-Examples:
-
-  | time                 | number |
-  | Apr 20, 2010, 8:15pm |      2 |
-  | Apr 18, 2010         |      2 |
-  | Apr 18, 2010         |      4 |
-  | Apr 20, 2010, 8:15pm |      4 |
+  Given it is currently Apr 20, 2010, 8:15pm
+  When I visit the add comps page for customer "Armando Fox"
+  When I select "Comp (2010)" from "What type:"
+  And I fill in "How many:" with "2"
+  And I select "Leave Open" from "Reserve for:"
+  And  I press "Add Vouchers"
+  Then customer "Armando Fox" should have an order with comment "" containing the following tickets:
+    | qty | type | showdate |
+    |   2 | Comp |          |
 
 Scenario: email should be sent if customer_email is checked
 

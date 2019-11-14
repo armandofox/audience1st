@@ -248,6 +248,11 @@ A1.seatmap = {
       $('.seat-display').addClass('d-none');
       $('.confirm-seats').prop('disabled', false);
     }
+    // if it's not a valid showdate, do nothing:
+    if (showdateID == '' ||  isNaN(showdateID) )  {
+      resetAfter();
+      return;
+    }
     $.getJSON('/ajax/seatmap/' + showdateID, function(jsonData) {
       if (jsonData.map == null) { 
         resetAfter();
