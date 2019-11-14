@@ -3,17 +3,17 @@ class AllSubscribers < Report
   def initialize(output_options = {})
     @view_params = {
       :name => 'All subscribers',
-      :current_season => Time.this_season
+      :vouchertypes => Vouchertype.subscription_vouchertypes()
     }
     super
   end
 
   def generate(params = {})
-    seasons = params[:seasons]
+    vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
     @relation = 
-      if seasons.empty?
+      if vouchertypes.empty? 
       then Customer.purchased_any_vouchertypes(Vouchertype.subscription_vouchertypes.map(&:id))
-      else Customer.subscriber_during seasons
+      else Customer.purchased_any_vouchertypes(vouchertypes) 
       end
   end
 end

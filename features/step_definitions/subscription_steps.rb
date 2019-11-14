@@ -4,13 +4,19 @@ Given /subscription vouchers for seasons? (.*)/ do |seasons|
   end
 end
 
+Given /subscription vouchers for vouchertypes? (.*)/ do |voucher_types|
+  voucher_types.split(/\s*,\s*/).each do |voucher_type|
+    create(:bundle, :name => voucher_type, :subscription => true, :fulfillment_needed => true)
+  end
+end
+
 Given /the following subscribers exist:/ do |subscribers|
   subscribers.hashes.each do |customer|
     first,last = customer['customer'].split(/\s+/)
     cust = find_customer(first,last) || create(:customer, :first_name => first, :last_name => last)
     customer['quantity'] ||= '1'
-    customer['subscriptions'].split(/\s*,\s*/).each do |season|
-      buy!(cust, Vouchertype.find_by(:name => season), customer['quantity'].to_i)
+    customer['subscriptions'].split(/\s*,\s*/).each do |subscription_type|
+      buy!(cust, Vouchertype.find_by(:name => subscription_type), customer['quantity'].to_i)
     end
   end
 end
