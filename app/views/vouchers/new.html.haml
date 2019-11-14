@@ -1,25 +1,27 @@
 %h2 Add Comps for #{@customer.full_name}
 
-= form_tag customer_vouchers_path(@customer), :id => 'addcomps' do
+= form_tag customer_vouchers_path(@customer), :id => 'addcomps', :class => 'form', :id => 'add_comps_form' do
 
-  %label{:for => 'howmany'} How many:
-  = text_field_tag 'howmany', '', :size => 3, :maxlength => 2
-  %br
+  .form-row
+    %label.col-2.text-right.col-form-label{:for => 'howmany'} How many:
+    = text_field_tag 'howmany', '', :class => 'form-control col-1'
 
-  %label{:for => 'vouchertype_id'} What type:
-  = select_tag('vouchertype_id', disabled_select_default('Select type...') + options_from_collection_for_select(@vouchers,'id','name_with_season'))
-  %br
+  .form-row
+    %label.col-2.text-right.col-form-label{:for => 'vouchertype_id'} What type:
+    = select_tag('vouchertype_id', disabled_select_default('Select type...') + options_from_collection_for_select(@vouchers,'id','name_with_season'), :class => 'col-4 form-control')
     
-  %label{:for => 'comments'}  Optional comments:
-  = text_area_tag 'comments', '', {:size => '40x2'}
-  %br
-  
+  .form-row
+    %label.col-2.text-right.col-form-label{:for => 'comments'}  Optional comments:
+    = text_area_tag 'comments', '', :class => 'form-control col-4'
+
   #reserve_for= render :partial => 'reserve_for'
-  %br
     
-  %label{:for => 'customer_email'} Send Email Confirmation
-  = check_box_tag 'customer_email', 1, false, :disabled => @email_disabled
-  %br
-  
-  = submit_tag "Add Vouchers", :class => 'btn btn-success'
-  = link_to  "Cancel", customer_path(@customer), :class => 'btn btn-secondary'
+  = render :partial => 'components/seatmap'
+
+  .form-row
+    %label.col-2.text-right.col-form-label{:for => 'customer_email'} Send Email Confirmation
+    = check_box_tag 'customer_email', 1, false, :disabled => @email_disabled, :class => 'form-control col-1'
+
+  .form-row  
+    = link_to  "Cancel", customer_path(@customer), :class => 'btn btn-secondary offset-2 col-2'
+    = submit_tag "Add Vouchers", :class => 'confirm-seats btn btn-success col-2 mx-2'

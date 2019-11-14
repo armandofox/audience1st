@@ -163,14 +163,18 @@ A1.seatmap = {
     A1.seatmap.seatDisplayField.val(A1.seatmap.selectedSeats.sort().join(', '));
     // if exact # seats selected, allow proceed
     if (A1.seatmap.selectedSeats.length == A1.seatmap.max) {
-      A1.seatmap.confirmSeatsButton.removeClass('d-none');
-      A1.seatmap.selectSeatsButton.addClass('d-none');
+      A1.seatmap.confirmSeatsButton.prop('disabled', false);
+      if (A1.seatmap.selectSeatsButton) {
+        A1.seatmap.selectSeatsButton.prop('disabled', true);
+      }
     } else {
       // change button label to be prompt for how many seats to select
       $('.show-seatmap').html(A1.seatmap.selectCountPrompt);
       // disable Confirm; show but disable SelectSeats
-      A1.seatmap.confirmSeatsButton.addClass('d-none');
-      A1.seatmap.selectSeatsButton.removeClass('d-none').prop('disabled', true);
+      A1.seatmap.confirmSeatsButton.prop('disabled', true);
+      if (A1.seatmap.selectSeatsButton) {
+        A1.seatmap.selectSeatsButton.prop('disabled', true);
+      }
     }      
   }
   ,centerMap: function() {
@@ -183,7 +187,7 @@ A1.seatmap = {
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForSubscriberReservation: function() {
     // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
-    $('.confirm-seats').addClass('d-none');
+    $('.confirm-seats').prop('disabled', true);
     $('.special-seating').addClass('invisible');
     var container = $(this).closest(A1.seatmap.enclosingSelector); // the enclosing element that contains the relevant form fields
     var showdateId = Number($(this).val());
@@ -198,17 +202,17 @@ A1.seatmap = {
 
     if (showdatesWithReservedSeating.indexOf(showdateId) == -1) {
       // general admission show
-      container.find('.confirm-seats').removeClass('d-none');
+      container.find('.confirm-seats').prop('disabled', false);
     } else {
       // reserved seating: hide 'Confirm' button, and show seatmap for the div we are in
-      container.find('.confirm-seats').addClass('d-none');
+      container.find('.confirm-seats').prop('disabled', true);
       A1.seatmap.findDomElements($(this).closest(A1.seatmap.enclosingSelector));
       // get the seatmap and list of unavailable seats for this showdate
       A1.seatmap.resetAfterCancel = function() {
         // reset showdate menu to "Select..."
         showdateMenu.selectedIndex = 0;
         // hide 'Confirm' button
-        container.find('.confirm-seats').addClass('d-none');
+        container.find('.confirm-seats').prop('disabled', true);
       };
       $.getJSON(A1.seatmap.url, function(json_data) { 
         A1.seatmap.configureFrom(json_data);
@@ -235,6 +239,37 @@ A1.seatmap = {
       $('.show-seatmap').prop('disabled', false);
     }
   }
+  ,getSeatingOptionsForAddComps: function() {
+    // triggered when a new perf is selected during Add Comps flow
+    var showdateID = $('#showdate_id').val();
+    var resetAfter = function() {
+      $('#seating-charts-wrapper').addClass('d-none');
+      $('#howmany').prop('readonly', false); // allow changing ticket count
+      $('.seat-display').addClass('d-none');
+      $('.confirm-seats').prop('disabled', false);
+    }
+    $.getJSON('/ajax/seatmap/' + showdateID, function(jsonData) {
+      if (jsonData.map == null) { 
+        resetAfter();
+      } else {
+        A1.seatmap.resetAfterCancel = resetAfter;
+        A1.seatmap.confirmSeatsButton = $('.confirm-seats');
+        A1.seatmap.configureFrom(jsonData); // setup unavailable seats, etc
+        A1.seatmap.max = Number($('#howmany').val());
+        $('#howmany').prop('readonly', true); // still submits as part of form, but can't change
+        A1.seatmap.seatDisplayField = $('.seat-display').removeClass('d-none');
+        A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+        $('#seating-charts-wrapper').removeClass('d-none').slideDown();
+        A1.seatmap.setupMap();
+      }
+    });
+  }
+  ,setupAddComps: function() {
+    if ($('body#vouchers_new').length) { // only do these bindings on "Add Comps" page
+      A1.seatmap.enclosingSelector = '#add_comps_form';
+      $('#add_comps_form').on('change', '#showdate_id', A1.seatmap.getSeatingOptionsForAddComps);
+    }
+  }
   ,setupRegularSales: function() {
     if ($('body#store_index').length) {  // only do these bindings on "Buy Tickets" page
       // when quantities change (triggering price recalc), determine whether to 
@@ -255,9 +290,10 @@ A1.seatmap = {
   }
 };
 
-// at most one of the three Ready functions will actually do anything.
+// at most one of the these Ready functions will actually do anything.
 $(A1.seatmap.setupReservations);
 $(A1.seatmap.setupRegularSales);
 $(A1.seatmap.setupSeatmapEditor);
 $(A1.seatmap.setupWalkupSales);
+$(A1.seatmap.setupAddComps);
 

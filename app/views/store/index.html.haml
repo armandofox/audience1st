@@ -46,11 +46,11 @@
         .form-row.reserved-seating
           .col-md-4.offset-sm-4
             = button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-outline-primary btn-block show-seatmap'
-            = submit_tag 'Continue to Billing Information', :id => 'submit', :class => 'd-none btn btn-block btn-success text-center'
+            = submit_tag 'Continue to Billing Information', :id => 'submit', :disabled => true, :class => 'btn btn-block btn-success text-center'
           .col-sm-3.text-center= text_area_tag 'seats', '', :rows => 3, :readonly => 'readonly', :class => 'seat-display a1-passive-text-input'
       - else
         .form-row
           .col-md-4.offset-md-4
-            = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'btn btn-block btn-success text-center'
+            = submit_tag 'Continue to Billing Information', :disabled => true, :id => 'submit', :class => 'unreserved btn btn-block btn-success text-center'
 
     = render :partial => 'components/seatmap'

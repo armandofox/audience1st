@@ -75,6 +75,15 @@ Then /^customer "(\S+) (.*)" should have the following vouchers?:$/ do |first,la
   end
 end
 
+Then /customer "(\S+) (.*)" should have seats? (.*) for the (.*) performance of "(.*)"/ do |first,last,seats,date,show|
+  @customer = find_customer first,last
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(date))
+  @vouchers = @customer.vouchers.finalized.where(:showdate => @showdate)
+  seats = seats.split(/\s*,\s*/)
+  customer_seats = @vouchers.map(&:seat)
+  expect(seats & customer_seats).to eq(seats)
+end
+
 Then /customer "(\S+) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)/ do |first,last,num,type,show,date|
   @customer = find_customer first,last
   steps %Q{Then he should have #{num} "#{type}" tickets for "#{show}" on "#{date}"}

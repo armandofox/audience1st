@@ -1,7 +1,7 @@
 Given /^(\d+) "(.*)" comps are available for "(.*)" on "([^\"]+)"(?: with promo code "(.*)")?$/ do |num,comp_type,show_name,date,code|
   show_date = Time.zone.parse(date)
   @showdate = setup_show_and_showdate(show_name,show_date)
-  @comp = create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
+  @comp = Vouchertype.find_by(:name => comp_type) || create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
   @comp.update_attributes!(:offer_public => Vouchertype::ANYONE) if code
   make_valid_tickets(@showdate, @comp, num, code)
 end
