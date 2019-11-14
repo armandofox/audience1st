@@ -1,45 +1,20 @@
-Given /the seatmap "(.*)" exists/ do |name|
-  create(:seatmap, :name => name)
-end
-
-Then /a seatmap named "(.*)" should (not )?exist/ do |name,no|
+Then /I should (not )?see the seatmap/ do |no|
   if no
-    expect(Seatmap.find_by(:name => name)).to be_nil
+    expect(page).not_to have_selector('#seating-charts-wrapper', :visible => true)
   else
-    expect(Seatmap.find_by(:name => name)).to be_a_kind_of Seatmap
+    expect(page).to have_selector('#seating-charts-wrapper', :visible => true)
   end
 end
 
-When /I (press|follow) "(.*)" for the "(.*)" seatmap/ do |action,control,name|
-  @seatmap = Seatmap.find_by!(:name => name)
-  within("#sm-#{@seatmap.id}") do
-    steps %Q{When I #{action} "#{control}"}
+When /I choose seats (.*)/ do |seat_list|
+  seat_list.split(/\s*,\s*/).each do |seat|
+    page.find("##{seat}").click
   end
 end
 
-When /I fill in the "(.*)" seatmap image URL as "(.*)" and name as "(.*)"/ do |sm,url,name|
-  within("#sm-#{Seatmap.find_by!(:name => sm).id}") do
-    fill_in "seatmap[image_url]", :with => url
-    fill_in "seatmap[name]", :with => name
+Then /I should see "(.*)" in the list of selected seats/ do |seat_list|
+  selected_seats = page.find('.seat-display').value.split(/\s*,\s*/)
+  seat_list.split(/\s*,\s*/).each do |seat|
+    expect(selected_seats).to include(seat)
   end
-end
-
-When /I fill in "(.*)" and "(.*)" as the name and image for a new seatmap/ do |name,image_url|
-  within '#new_seatmap_form' do
-    fill_in :name, :with => name
-    fill_in :image_url, :with => image_url
-  end
-end
-
-When /I upload the seatmap "(.*\.csv)"/ do |file|
-  within '#new_seatmap_form' do
-    attach_file 'csv', "#{Rails.root}/spec/import_test_files/seatmaps/#{file}", :visible => false
-    click_button 'Upload'
-  end
-end
-
-Then /that seatmap should have image URL "(.*)" and name "(.*)"/ do |url,name|
-  @seatmap.reload
-  expect(@seatmap.name).to eq(name)
-  expect(@seatmap.image_url).to eq(url)
 end
