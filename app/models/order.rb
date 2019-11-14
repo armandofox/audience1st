@@ -148,7 +148,7 @@ class Order < ActiveRecord::Base
     raise Order::NotPersistedError unless persisted?
     new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
     new_vouchers.each_with_index do |v,i|
-      v.seat = seats[i] unless seats.empty?
+      v.seat = seats[i] unless seats.empty? && valid_voucher.showdate == nil
       begin
         v.reserve!(valid_voucher.showdate)
       rescue ActiveRecord::RecordInvalid, ReservationError #  reservation couldn't be processed
