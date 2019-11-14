@@ -9,6 +9,7 @@ Background: logged in as admin and shows are available
 
   Given I am logged in as boxoffice manager
   And 2 "Comp" comps are available for "Macbeth" on "April 20, 2010, 8pm"
+  And 2 "Test Comp" comps are available for "Mac" on "April 21, 2010, 8pm"
 
 Scenario Outline: add comps to performance
 
@@ -31,6 +32,25 @@ Scenario Outline: add comps to performance
   | Apr 18, 2010         |      4 |
   | Apr 20, 2010, 8:15pm |      4 |
 
+Scenario Outline: add comps without reserving for a specific showdate
+
+Given it is currently <time>
+When I visit the add comps page for customer "Armando Fox"
+When I select "Comp (2010)" from "What type:"
+And I fill in "How many:" with "<number>"
+And I select "Leave Open" from "Reserve for:"
+And  I press "Add Vouchers"
+Then customer "Armando Fox" should have an order with comment "" containing the following tickets:
+| qty      | type | showdate       |
+| <number> | Comp |                |
+
+Examples:
+
+  | time                 | number |
+  | Apr 20, 2010, 8:15pm |      2 |
+  | Apr 18, 2010         |      2 |
+  | Apr 18, 2010         |      4 |
+  | Apr 20, 2010, 8:15pm |      4 |
 
 Scenario: email should be sent if customer_email is checked
 
