@@ -57,9 +57,6 @@ Rails.application.routes.draw do
     get '/rss/showdates.rss' => 'info#ticket_rss', :defaults => { :format => 'rss' }
     get '/rss/availability.rss' => 'info#availability', :defaults => { :format => 'rss' }
 
-    get '/rss/ticket_rss' =>  'info#ticket_rss', :defaults => { :format => 'rss' }
-    get '/rss/availability' => 'info#availability', :as => 'availability_rss', :defaults => { :format => 'rss' } 
-
     # AJAX responders
     get '/ajax/update_shows' => 'vouchers#update_shows', :as => 'update_shows'
     get '/ajax/customer_autocomplete' => 'customers#auto_complete_for_customer', :as => 'customer_autocomplete'
@@ -68,11 +65,12 @@ Rails.application.routes.draw do
     post '/ajax/mark_fulfilled' => 'reports#mark_fulfilled', :as => 'mark_fulfilled'
     get '/ajax/create_sublist' => 'reports#create_sublist', :as => 'create_sublist'
 
+    get '/ajax/seatmap/:id'         => 'seatmaps#seatmap'
+
     # shows
     resources :shows, :except => [:show] do
       resources :showdates, :except => [:index]
     end
-    get '/ajax/seatmap/:id'         => 'seatmaps#seatmap'
     
     resources :valid_vouchers, :except => [:index]
     resources :vouchertypes do
