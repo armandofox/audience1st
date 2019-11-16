@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Seatmap do
+describe Seatmap, focus: true do
   describe 'JSON' do
     before(:each) do
       @sd = create(:showdate, :seatmap => (@s = create(:seatmap)))
