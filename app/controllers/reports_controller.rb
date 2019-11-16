@@ -27,7 +27,7 @@ class ReportsController < ApplicationController
     entity = Object.const_get(params[:klass])
     render :status => :unprocessable_entity and return unless (entity == Show || entity == Showdate)
     entity = entity.find(params[:id])
-    vouchers = entity.vouchers
+    vouchers = entity.vouchers.finalized
 
     sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype),
       entity.revenue_per_seat, entity.total_offered_for_sale)
