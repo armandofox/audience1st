@@ -114,17 +114,18 @@ class VouchersController < ApplicationController
   end
 
 
-  def update_comment
-    vchr = Voucher.find(params[:voucher_ids].split(",").first)
-    vchr.update_attributes(:comments => params[:comments], :processed_by => current_user)
-    Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @customer.id,
-      :voucher_id => vchr.id,
-      :comments => params[:comments],
-      :logged_in_id => current_user.id)
-    render :nothing => true
-
-  end
+  def update_comment
+    params[:voucher_ids].split(",").each do |id|
+      v = Voucher.find(id)
+      v.update_attributes(:comments => params[:comments], :processed_by => current_user)
+      Txn.add_audit_record(:txn_type => 'edit',
+        :customer_id => @customer.id,
+        :voucher_id => v.id,
+        :comments => params[:comments],
+        :logged_in_id => current_user.id)
+    end
+    render :nothing => true
+end
 
   def confirm_multiple
     the_showdate = Showdate.find_by(:id => params[:showdate_id])
