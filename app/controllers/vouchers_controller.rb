@@ -113,19 +113,18 @@ class VouchersController < ApplicationController
     redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
-
-  def update_comment
-    params[:voucher_ids].split(",").each do |id|
-      v = Voucher.find(id)
-      v.update_attributes(:comments => params[:comments], :processed_by => current_user)
-      Txn.add_audit_record(:txn_type => 'edit',
-        :customer_id => @customer.id,
-        :voucher_id => v.id,
-        :comments => params[:comments],
-        :logged_in_id => current_user.id)
-    end
-    render :nothing => true
-end
+  def update_comment
+    params[:voucher_ids].split(",").each do |id|
+      v = Voucher.find(id)
+      v.update_attributes(:comments => params[:comments], :processed_by => current_user)
+      Txn.add_audit_record(:txn_type => 'edit',
+        :customer_id => @customer.id,
+        :voucher_id => v.id,
+        :comments => params[:comments],
+        :logged_in_id => current_user.id)
+    end
+    render :nothing => true
+  end
 
   def confirm_multiple
     the_showdate = Showdate.find_by(:id => params[:showdate_id])
