@@ -1,32 +1,30 @@
 language: ruby
 rvm:
-- 2.5.5
+  - 2.5.5
 sudo: false
 cache: bundler
-bundler_args: "--without production"
+bundler_args: --without production
 env:
   global:
-  - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-  - CC_TEST_REPORTER_ID=c2b95b25d30ce5fa83d28309f1857d559be106347c00705aeb5325bc10c46935
-  - CCTR=/tmp/cc-test-reporter
-  - secure: mkA3zVyCwdx9p42PsnPGYHrAL4LmplZIjbpMcihOlJvJ1NomvotISDTVLm/QHpe+b8Bwbwq2UgG4f59JbKKd8ZW+TvfgjgB3+e4+gIFVi/XeO4p4WQLKNbunuZC9epefBOdyXSGm9JmCnJkoZ1TJkOyZyVdop6qTa6mn4qX47LybohQ6cIhsTMz4k/z2RZPKWeBuWV+VFb0aP5rgZ1WtD2q92Gtum624OYTlipA3ku4PiSTdzVM4w3PTm16AqBB60eEj4skkCzG8bRyeamVtVgp5GWl4dJFlEkfE+au16xCYsrMSZPTSzH/9iArjcdNsKhcJSSYHwgRU1xLmXBXI7DfXeAJd2+fICv9gaVjfLhdeJXZpWbq62JWCS9WifnQbQl5hdJ20bGhZo5kDojrnn5mHLt8Nc5aPk/qMqmtnZD2Tk4Scaxp7Hm/XdE4bfsRxLpRur6uy8yO0XHv5YWcOpLbOtoPy6Z7b0a/euFlQfbxjpHdM49/b8qHVT3UIetkec5DVVYu/Xe4pSz8yCz7lEi9izoHLTWfT2M+bxPv8ctaz4FBVAbEMEgY807wj+hRzUYC5/qQ7x5VJ4ScLHsM01tcm1tFbbzw/PTy85ctn7KF8pvIEfYw0hTydQiQGQ+9qqykq8XWnooHYVSctsVd00CQBiEu2Jp+D1GKEZmGxMyo=
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+    - CC_TEST_REPORTER_ID=c2b95b25d30ce5fa83d28309f1857d559be106347c00705aeb5325bc10c46935
+    - CCTR=/tmp/cc-test-reporter
 before_install:
-- export TZ=America/Los_Angeles
-- gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-  > $CCTR
-- chmod +x $CCTR
-- "$CCTR before-build"
-- gem install bundler --version=1.17.2
-- bundle config build.nokogiri --use-system-libraries
+  - export TZ=America/Los_Angeles
+  - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
+  - chmod +x $CCTR
+  - $CCTR before-build
+  - gem install bundler --version=1.17.2
+  - bundle config build.nokogiri --use-system-libraries
 script:
-- cp config/database.yml.test config/database.yml
-- bundle exec rake db:setup
-- bundle exec cucumber --retry 1
-- "$CCTR format-coverage --output coverage/codeclimate.$SUITE.json"
-- bundle exec rspec
-- "$CCTR format-coverage --output coverage/codeclimate.$SUITE.json"
+  - cp config/database.yml.test config/database.yml
+  - bundle exec rake db:setup
+  - bundle exec cucumber --retry 1
+  - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
+  - bundle exec rspec
+  - $CCTR format-coverage --output coverage/codeclimate.$SUITE.json
 after_script:
-- "$CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage"
-- "$CCTR after-build --exit-code $TRAVIS_TEST_RESULT"
-- rm -f config/application.yml
+  - $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
+  - $CCTR after-build --exit-code $TRAVIS_TEST_RESULT
+  - rm -f config/application.yml
