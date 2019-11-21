@@ -1,11 +1,11 @@
 ---
 layout: page
-title: "Show Calendar"
+title: Show Calendar
 category: IntegrationWithYourWebsite
-date: 2017-11-23 16:45:26
-order: 30
----
+date: 2017-11-23T16:45:26.000+00:00
+order: "30"
 
+---
 You can display a month-at-a-time, week-at-a-time, or other calendar
 view on your WordPress-based website by using any WordPress plugin
 that can consume and display a calendar feed in "ICS" or "iCalendar"
@@ -18,22 +18,17 @@ more feeds, but does not allow you to manually create one-off events
 (for example, a party or fundraiser that is not also listed as an
 event in Audience1st).
 
-**The Events Calendar** from Modern Tribe
-allows you to both create events manually and import events from an
-external source, but you must pay for the Pro version (about $89/year)
-for the ability to import.
+**The Events Calendar** from Modern Tribe allows you to both create events manually and import events from an external source, but you must pay for the Pro version (about $90/year) for the ability to import.
 
 ## Using the ICS Calendar plug-in
 
 To install and configure the free version of ICS Calendar:
 
 1. In your WordPress Dashboard, select Plugins > Add New, and search
-for the "ICS Calendar" plugin.  Install it and activate it.
-
+   for the "ICS Calendar" plugin.  Install it and activate it.
 2. Configure the settings for ICS Calendar however you like.
-
 3. To insert a calendar display on a page or page component, use the
-following "shortcode":
+   following "shortcode":
 
 `[ics_calendar url="http://`_your-theater-name_`.audience1st.com/ics/showdates.ics" title="Show Calendar" eventdesc="true" linktitles="true" view="month" toggle="true"]`
 
