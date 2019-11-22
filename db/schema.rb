@@ -202,7 +202,6 @@ ActiveRecord::Schema.define(version: 20191009223123) do
     t.integer  "purchaser_id"
     t.text     "valid_vouchers"
     t.text     "donation_data"
-    t.string   "comments",               limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "walkup",                             default: false
