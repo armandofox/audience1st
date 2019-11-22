@@ -80,7 +80,7 @@ A1.seatmap = {
     // hide seatmap
     $('#seating-charts-wrapper').slideUp().addClass('d-none');
     // cancel all seat selections, then delegate to screen-specific cancellation
-    A1.seatmap.selectedSeats
+    A1.seatmap.selectedSeats = [];
     // erase any text showing selected seats
     if (A1.seatmap.seatDisplayField) {
       A1.seatmap.seatDisplayField.val('');
