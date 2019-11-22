@@ -71,7 +71,7 @@ class DonationsController < ApplicationController
       @order.purchase_args =  { :credit_card_token => params[:credit_card_token] }
       sold_on = Time.current
     end
-    @order.comments = params[:comments].to_s
+    self.comments = params[:comments].to_s
     unless @order.ready_for_purchase?
       flash[:alert] = @order.errors.as_html
       render :action => 'new'

@@ -230,7 +230,11 @@ A1.seatmap = {
       $('.save_comment').on('ajax:success', function() { alert("Comment saved") });
       $('.save_comment').on('ajax:error', function() { alert("Error, comment NOT saved") });
     }
+    function changeComments() {
+        vouchers.map(&:comments).map(&:to_s).reject(&:blank?).uniq.join('; ');
+    }
   }
+
   ,getSeatingOptionsForRegularSales: function() {
     // triggered whenever the count of selected seats changes.
     // If nonzero number of seats is selected, enable "choose seats" button.

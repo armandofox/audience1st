@@ -42,7 +42,7 @@ class Donation < Item
           d.account_code.name,
           d.letter_sent,
           (d.letter_sent ? d.processed_by.full_name : ''),
-          [d.comments.to_s, d.order.comments.to_s].join('; ')
+          [d.comments.to_s].join('; ')
         ]
       end
     end
