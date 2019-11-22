@@ -53,6 +53,6 @@ colors, etc.)
 
 To install and configure the Pro version of The Events Calendar (Pro
 version is required for importing and displaying the Audience1st
-feed):
+feed)
 
-(Instructions TBD)
+(Instructions coming soon)
