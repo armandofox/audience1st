@@ -117,6 +117,7 @@ class VouchersController < ApplicationController
     params[:voucher_ids].split(",").each do |id|
       v = Voucher.find(id)
       v.update_attributes(:comments => params[:comments], :processed_by => current_user)
+      v.save!
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :voucher_id => v.id,
