@@ -46,6 +46,16 @@ Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,i
   end
 end
 
+Then /^customer "(\S+) (.*)" should have the following comments:$/ do |first,last,items|
+  @customer = find_customer first,last
+  items.hashes.each do |item|
+    if !item[:comments].blank?
+      conds_clause = 'comments = ?'
+      conds_values = item[:comments]
+    end 
+    expect(Item.where(comments: item[:comments])).not_to be_nil
+  end
+end
 
 Then /^customer "(.*) (.*)" should (not )?have a donation of \$([0-9.]+) to "(.*?)"(?: with comment "(.*)")?$/ do |first,last,no,amount,fund,comment|
   fund_id = AccountCode.find_by(:name => fund).id
