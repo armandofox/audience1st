@@ -148,6 +148,17 @@ Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"
   end
 end
 
+Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should not (contain|equal) "([^\"]*)"$/ do |field, selector, equality_check, value|
+  with_scope(selector) do
+    val = find_field(field).value
+    if equality_check =~ /equal/
+      expect(val).to_not eq(value)
+    else
+      expect(val).to_not match(/#{value}/)
+    end
+  end
+end
+
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should be blank$/ do |field, selector|
   with_scope(selector) do
     expect(find_field(field).value).to be_blank

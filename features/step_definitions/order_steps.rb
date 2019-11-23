@@ -48,6 +48,14 @@ Then /^I should see the following details for that order:$/ do |table|
   end
 end
 
+Then /^I should not see the following details for that order:$/ do |table|
+  within("div#details_order_#{@order.id}") do
+    table.hashes.each do |h|
+      page.should_not have_content h[:content]
+    end
+  end
+end
+
 Given /^an order for customer "(.*) (.*)" containing the following tickets:/ do |first,last,table|
   customer = find_or_create_customer(first,last)
   # make it legal for customer to buy the things
