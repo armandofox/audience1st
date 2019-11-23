@@ -28,4 +28,3 @@ after_script:
   - $CCTR sum-coverage coverage/codeclimate.*.json | $CCTR upload-coverage
   - $CCTR after-build --exit-code $TRAVIS_TEST_RESULT
   - rm -f config/application.yml
-  
