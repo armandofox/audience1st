@@ -11,7 +11,12 @@ class Showdate < ActiveRecord::Base
   has_many :finalized_vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes).merge(Voucher.finalized) }, :class_name => 'Voucher'
   has_many :all_vouchers, :class_name => 'Voucher'
   has_many :walkup_vouchers, -> { where(:walkup => true) }, :class_name => 'Voucher'
-  has_many :customers, -> { where('customers.role >= 0').uniq(true) }, :through => :vouchers
+  # Workaround for story #169936179
+  # has_many :customers, -> { where('customers.role >= 0').uniq(true) }, :through => :vouchers
+  #   -- though should really be ':through => :finalized_vouchers'
+  def customers
+    finalized_vouchers.map(&:customer).uniq.select { |c| ! c.special_customer? }
+  end
   has_many :vouchertypes, -> { uniq(true) }, :through => :vouchers
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy

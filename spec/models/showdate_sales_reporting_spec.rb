@@ -13,6 +13,13 @@ describe Showdate do
     2.times { create(:revenue_voucher, :amount => 11,  :showdate => @showdate) }
     1.times { create(:nonticket_item,     :showdate => @showdate) }
   end
+  describe "relations", focus:true do
+    it 'dereferences Customers correctly (story #169936179)' do
+      order = create(:order, :vouchers_count => 1)
+      order.vouchers.first.update_attribute(:showdate_id, @showdate.id)
+      expect(@showdate.customers).to include(order.customer)
+    end
+  end
   it "has 9 seats sold" do
     expect(@showdate.vouchers.count).to eq(9)
   end
