@@ -18,13 +18,8 @@ Scenario: add comment to subscriber reservation
   When I visit the home page for customer "Tom Foolery"
   And I fill in "comments" with "Will be late" within "#voucher_1"
   And I press "✔" within "#voucher_1"
-  And I visit the home page for customer "Tom Foolery"
-  Then the "comments" field within "#voucher_1" should not equal "Will be late"
   And I visit the orders page for customer "Tom Foolery"
   Then customer "Tom Foolery" should have the following comments:
-  | Item      | showdate         | comments |
-  | Hamlet    | Feb 1, 2010, 8pm | "Will be late" |
+  | showdate         | comment      |
+  | Feb 1, 2010, 8pm | Will be late |
   
-
-
-

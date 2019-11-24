@@ -46,14 +46,13 @@ Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,i
   end
 end
 
-Then /^customer "(\S+) (.*)" should have the following comments:$/ do |first,last,shows|
+Then /^customer "(\S+) (.*)" should have the following comments:$/ do |first,last,dates_and_comments|
   customer = find_customer first,last
-  puts customer
-  shows.hashes.each do |show|
-    # TODO: how do we uniquely identify an item? Are customer_id and showdate all we need?
-    item_showdate = Showdate.where(:thedate => Time.zone.parse(show[:showdate]))
+  dates_and_comments.hashes.each do |date_and_comment|
+    # TODO: Are customer_id, showdate and the expected comment all we need for this test?
+    item_showdate = Showdate.where(:thedate => Time.zone.parse(date_and_comment[:showdate]))
     item = Item.where(:customer_id => customer.id, :showdate => item_showdate).first
-    expect(item.comments).to eq(show[:comment])
+    expect(item.comments).to eq(date_and_comment[:comment])
   end
 end
 
