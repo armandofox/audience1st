@@ -22,8 +22,8 @@
           = select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'item itemCount ticket', 'data-price' => v.price})
     - if (! v.sales_unlimited?)
       %tr
-        %td.alert.alert-warning{:colspan => 2}= "#{v.name} (#{v.seats_of_type_remaining} left)"
         %td
+        %td.alert.alert-warning{:colspan => 2}= "#{v.seats_of_type_remaining} left"
     - if boxoffice_mgr_only
       %tr
         %td.alert.alert-danger{:colspan => 2} (Box office manager only)
