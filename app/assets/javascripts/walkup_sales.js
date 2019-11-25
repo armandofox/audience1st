@@ -34,8 +34,15 @@ A1.recalc_store_total = function() {
 
 A1.recalc_all_walkup_sales = function() {
   var total = A1.recalculate('#total', '.item', 2, 'price');
-  $('#_stripe_submit').prop('disabled', (total <= 0.0));
   A1.recalculate('#totaltix', '.itemCount', 0);
+  if (A1.seatmapWalkupSales.seatmapInfo == '') {
+    // general adm: enable credit card charge if total>0; check/cash always enabled
+    $('#_stripe_submit').prop('disabled', (total <= 0.0));
+  } else {
+    // reserved seating: if nonzero # tickets selected, enable seatmap
+    var ready = (A1.orderState.ticketCount > 0);
+    $('.select-seats').prop('disabled', !ready);
+  }
 }
 
 A1.recalculate = function(total_field,selector,decplaces,attrib) {
@@ -63,6 +70,41 @@ A1.recalculate = function(total_field,selector,decplaces,attrib) {
   return(tot);
 }
 
+
+A1.seatmapWalkupSales = {
+  seatmapInfo: null
+  ,showSeatmap: function() {
+    A1.seatmap.max = A1.orderState.ticketCount;
+    $('#seating-charts-wrapper').removeClass('d-none').slideDown();
+    A1.seatmap.setupMap();
+    // disallow changing ticket count menus while seats are being selected
+    $('.item').prop('disabled', true);
+    // disable "Choose Seats" button
+    $('.select-seats').prop('disabled', true);
+  }
+  ,resetAfter: function() {
+    // re-allow changing ticket counts
+    $('.item').prop('disabled', false);
+    // disable "Choose Seats" button
+  }
+  ,getSeatingOptions: function() {
+    this.seatmapInfo = $('#seatmap_info').val();
+    if (this.seatmapInfo == '') {
+      return;
+    }
+    // setup for reserved seating
+    $('#seatInfo').removeClass('invisible');
+    A1.seatmap.selectSeatsButton = $('.select-seats').click(A1.seatmapWalkupSales.showSeatmap);
+    A1.seatmap.resetAfterCancel = this.resetAfter;
+    A1.seatmap.seatDisplayField = $('.seat-display');
+    A1.seatmap.confirmSeatsButton = $('.confirm-walkup-sale');
+    // prepare to display seatmap.  'max' (seat count) will be filled in when map is shown
+    A1.seatmap.configureFrom(JSON.parse(this.seatmapInfo));
+    A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+  }
+}
+
+
 A1.setup_walkup_sales = function() {
   $('#store_index .itemQty').change(A1.recalc_store_total);
   $('#store_subscribe .itemQty').change(A1.recalc_store_total);
@@ -72,6 +114,7 @@ A1.setup_walkup_sales = function() {
   if ($('#walkup_sales_show').length) { // walkup sales page
     A1.recalc_all_walkup_sales();
   }
+  A1.seatmapWalkupSales.getSeatingOptions();
 };
 
 $(A1.setup_walkup_sales);

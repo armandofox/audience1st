@@ -25,4 +25,9 @@
         - if boxoffice_mgr_only
           = popup_help_for :boxoffice_manager_only
         - else
-          = select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'item itemCount', 'data-price' => v.price})
+          = select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'item itemCount ticket', 'data-price' => v.price})
+
+
+.invisible#seatInfo
+  = button_tag 'Choose Seats...', :type => 'button', :class => 'btn btn-outline-primary d-inline select-seats', :disabled => true
+  = display_seats_field('text-center')
