@@ -22,13 +22,13 @@
           = select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'item itemCount ticket', 'data-price' => v.price})
     - if (! v.sales_unlimited?)
       %tr
-        %td{:colspan => 3}.alert.alert-warning= "#{v.name} (#{v.seats_of_type_remaining} left)"
+        %td.alert.alert-warning{:colspan => 2}= "#{v.name} (#{v.seats_of_type_remaining} left)"
+        %td
     - if boxoffice_mgr_only
       %tr
-        %td
-          %span.alert.alert-danger (Box office manager only)
-          = popup_help_for :boxoffice_manager_only
-
+        %td.alert.alert-danger{:colspan => 2} (Box office manager only)
+        %td= popup_help_for :boxoffice_manager_only
+        
 
 .invisible#seatInfo
   = button_tag 'Choose Seats...', :type => 'button', :class => 'btn btn-outline-primary d-inline select-seats', :disabled => true
