@@ -8,6 +8,10 @@ class WalkupSalesController < ApplicationController
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
     @donation = params[:donation]
+    # if reserved seating show, populate hidden field
+    if @showdate.seatmap
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    end
   end
 
   def create

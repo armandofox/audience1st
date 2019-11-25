@@ -1,4 +1,7 @@
 module SeatmapsHelper
+  def display_seats_field(extra_classes = '')
+    text_field_tag 'seats', '', :readonly => 'readonly', :id => nil, :class => "seat-display a1-passive-text-input #{extra_classes}"
+  end
   def seatmap_options(selected = nil)
     options_for_select([['None (general admission)', '']]) +
       options_from_collection_for_select(Seatmap.all, :id, :name, selected)

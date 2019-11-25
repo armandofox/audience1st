@@ -28,12 +28,12 @@
             #credit_card_payment
               = render :partial => 'store/credit_card'
               = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
-              = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :class => 'btn btn-success mt-2', :onclick => 'A1.stripeSubmit()'
+              = submit_tag 'Charge Credit Card', :name => 'commit', :id => '_stripe_submit', :class => 'confirm-walkup-sale btn btn-success mt-2', :onclick => 'A1.stripeSubmit()'
             #cash_payment{:style => 'display: none;'}
               %fieldset
                 %legend Cash Payment
                 %label.col-form-label.px-2 Collect Cash, then
-                = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash', :class => 'btn btn-success mb-2'}
+                = submit_tag 'Record Cash Payment or Zero Revenue Transaction', {:id => 'submit_cash', :class => 'confirm-walkup-sale btn btn-success mb-2'}
             #check_payment{:style => 'display: none;'}
               %fieldset
                 %legend Check Payment
@@ -41,4 +41,8 @@
                   .input-group-prepend
                     %span.input-group-text Check Number (optional)
                   = text_field_tag 'check_number', '', :size => 4, :class => 'form-control'
-                = submit_tag 'Record Check Payment', {:id => 'submit_check', :class => 'btn btn-success m-2'}
+                = submit_tag 'Record Check Payment', {:id => 'submit_check', :class => 'confirm-walkup-sale btn btn-success m-2'}
+
+
+= render :partial => 'components/seatmap'
+                
