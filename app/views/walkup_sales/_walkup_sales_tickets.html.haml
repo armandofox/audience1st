@@ -17,7 +17,7 @@
       %td.label
         %label{:for => "qty_#{v.id}"}= v.name
       - if boxoffice_mgr_only
-        %td{:colspan => 2}.text-danger
+        %td.text-danger{:colspan => 2}
           Box Ofc Mgr Only
           = popup_help_for :boxoffice_manager_only
       - else
