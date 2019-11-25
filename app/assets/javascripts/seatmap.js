@@ -284,9 +284,6 @@ A1.seatmap = {
       $('.show-seatmap').click(A1.seatmap.showSeatmapForShowdateRegularSales);
     }
   }
-  ,setupWalkupSales: function() {
-    // bindings only for Walkup Sales page
-  }
   ,setupSeatmapEditor: function() {
     // bindings only for Seatmap Editor
     if ($('body#seatmaps_index').length) {
@@ -299,6 +296,5 @@ A1.seatmap = {
 $(A1.seatmap.setupReservations);
 $(A1.seatmap.setupRegularSales);
 $(A1.seatmap.setupSeatmapEditor);
-$(A1.seatmap.setupWalkupSales);
 $(A1.seatmap.setupAddComps);
 
