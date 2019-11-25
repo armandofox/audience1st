@@ -16,16 +16,18 @@
     %tr
       %td.label
         %label{:for => "qty_#{v.id}"}= v.name
-        - unless v.sales_unlimited?
-          %span.alert.alert-warning= "#{v.name} (#{v.seats_of_type_remaining} left)"
-        - if boxoffice_mgr_only
-          %span.alert.alert-warning (Box office manager only)
       %td= text_field_tag "price[#{v.id}]", number_to_currency(v.price, :unit => ''), :disabled => true, :size => 6, :class => 'disabledField text-right'
       %td
-        - if boxoffice_mgr_only
-          = popup_help_for :boxoffice_manager_only
-        - else
+        - unless boxoffice_mgr_only
           = select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'item itemCount ticket', 'data-price' => v.price})
+    - if (! v.sales_unlimited?)
+      %tr
+        %td{:colspan => 3}.alert.alert-warning= "#{v.name} (#{v.seats_of_type_remaining} left)"
+    - if boxoffice_mgr_only
+      %tr
+        %td
+          %span.alert.alert-danger (Box office manager only)
+          = popup_help_for :boxoffice_manager_only
 
 
 .invisible#seatInfo
