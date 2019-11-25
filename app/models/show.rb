@@ -32,7 +32,7 @@ class Show < ActiveRecord::Base
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
     select('DISTINCT shows.*').
-    order('opening_date ASC')
+    order('opening_date')
   }
 
   def has_showdates? ; !showdates.empty? ; end
@@ -56,7 +56,8 @@ class Show < ActiveRecord::Base
 
   scope :all_for_seasons, ->(from,to) {
     where('opening_date BETWEEN ? AND ?',
-        Time.at_beginning_of_season(from), Time.at_end_of_season(to))
+      Time.at_beginning_of_season(from), Time.at_end_of_season(to)).
+    order('opening_date')
   }
 
   def self.seasons_range
