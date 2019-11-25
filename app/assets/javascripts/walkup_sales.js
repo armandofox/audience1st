@@ -82,11 +82,6 @@ A1.seatmapWalkupSales = {
     // disable "Choose Seats" button
     $('.select-seats').prop('disabled', true);
   }
-  ,resetAfter: function() {
-    // re-allow changing ticket counts
-    $('.item').prop('disabled', false);
-    // disable "Choose Seats" button
-  }
   ,getSeatingOptions: function() {
     this.seatmapInfo = $('#seatmap_info').val();
     if (this.seatmapInfo == '') {
@@ -95,7 +90,7 @@ A1.seatmapWalkupSales = {
     // setup for reserved seating
     $('#seatInfo').removeClass('invisible');
     A1.seatmap.selectSeatsButton = $('.select-seats').click(A1.seatmapWalkupSales.showSeatmap);
-    A1.seatmap.resetAfterCancel = this.resetAfter;
+    A1.seatmap.resetAfterCancel = function() { window.location.reload(); };
     A1.seatmap.seatDisplayField = $('.seat-display');
     A1.seatmap.confirmSeatsButton = $('.confirm-walkup-sale');
     // prepare to display seatmap.  'max' (seat count) will be filled in when map is shown
@@ -114,7 +109,9 @@ A1.setup_walkup_sales = function() {
   if ($('#walkup_sales_show').length) { // walkup sales page
     A1.recalc_all_walkup_sales();
   }
-  A1.seatmapWalkupSales.getSeatingOptions();
+  if ($('body#walkup_sales_show').length) {
+    A1.seatmapWalkupSales.getSeatingOptions();
+  }
 };
 
 $(A1.setup_walkup_sales);
