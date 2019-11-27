@@ -10,17 +10,11 @@ class AllSubscribers < Report
 
   def generate(params = {})
     vouchertypes = Report.list_of_ints_from_multiselect(params[:vouchertypes])
-
-    if vouchertypes.empty?
-      then flash[:notice] = "message"
-    else @relation = Customer.purchased_any_vouchertypes(vouchertypes) 
-    end 
-    # @relation = 
-    #   if vouchertypes.empty? 
-    #   # then Customer.purchased_any_vouchertypes(Vouchertype.subscription_vouchertypes.map(&:id))
-    #   then
-    #   else 
-    #   end
+    @relation = 
+      if vouchertypes.empty? 
+      then Customer.purchased_any_vouchertypes(Vouchertype.subscription_vouchertypes.map(&:id))
+      else Customer.purchased_any_vouchertypes(vouchertypes) 
+      end
   end
 end
 
