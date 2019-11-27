@@ -70,10 +70,11 @@ class VouchersController < ApplicationController
       vv = ValidVoucher.find_by(:vouchertype_id => vouchertype.id)
     end
     
-    order = Order.create(:comments => thecomment, :processed_by => current_user,
+    order = Order.create(:processed_by => current_user,
       :customer => @customer, :purchaser => @customer,
       :purchasemethod => Purchasemethod.get_type_by_name('none')) # not a gift order
     order.add_tickets_without_capacity_checks(vv, howmany, seats)
+    order.add_comment(thecomment)
     begin
       order.finalize!
       order.vouchers.each do |v|

@@ -11,7 +11,9 @@ class Order < ActiveRecord::Base
   attr_accessor :purchase_args
   attr_reader :donation
 
-  attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser, :external_key
+  attr_accessible :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser, :external_key
+
+  @@comments = ""
 
   # errors
 
@@ -100,8 +102,8 @@ class Order < ActiveRecord::Base
   end
 
   def add_comment(arg)
-    self.comments ||= ''
-    self.comments += arg
+    @@comments ||= ''
+    @@comments += arg
   end
 
   def clear_contents!
@@ -285,6 +287,7 @@ class Order < ActiveRecord::Base
 
   def finalize!(sold_on_date = Time.current)
     raise Order::NotReadyError unless ready_for_purchase?
+
     begin
       transaction do
         self.items += vouchers
@@ -294,7 +297,7 @@ class Order < ActiveRecord::Base
           i.finalize!
           i.walkup = self.walkup? 
           i.processed_by = self.processed_by
-          i.comments = self.comments if i.comments.blank?  && i.kind_of?(Voucher)
+          i.comments = @@comments if i.comments.blank?  && i.kind_of?(Voucher)
         end
         # there is also a direct relationship Customer has-many Items, which we should get rid of...
         customer.add_items(vouchers)
