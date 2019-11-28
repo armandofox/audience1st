@@ -51,7 +51,7 @@ end
 Then /^I should not see the following details for that order:$/ do |table|
   within("div#details_order_#{@order.id}") do
     table.hashes.each do |h|
-      page.should_not have_content h[:content]
+      expect(page).not_to have_content( h[:content])
     end
   end
 end
