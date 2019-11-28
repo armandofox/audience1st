@@ -44,6 +44,6 @@ exclude_patterns:
 - script/
 - spec/
 - vendor/
-- "app/assets/jquery.*.js"
-- "app/assets/*.min.js"
+- "app/assets/javascripts/jquery.*.js"
+- "app/assets/javascripts/*.min.js"
 
