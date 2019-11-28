@@ -79,7 +79,11 @@ class Showdate < ActiveRecord::Base
   end
 
   def valid_vouchers_for_walkup
-    self.valid_vouchers.includes(:vouchertype).select { |vv| vv.vouchertype.walkup_sale_allowed? }
+    self.valid_vouchers.
+      includes(:vouchertype).
+      references(:vouchertype).
+      where(:vouchertypes => {:walkup_sale_allowed => true}).
+      order('vouchertypes.display_order')
   end
 
   # finders
