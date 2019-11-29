@@ -25,4 +25,5 @@ Scenario Outline: browse reports
     | Subscriber open vouchers            | Please specify one or more subscriber voucher types |
     | Attendance by show                  | Please specify one or more productions              |
     | Donor appeal                        | 0 matches                                           |
+    | All subscribers                     | Please specify one or more subscriber voucher types |
 
