@@ -1,5 +1,6 @@
 When /I complete the walkup sale with cash/ do
-  page.find('#submit_cash', :visible => false).click
+  choose('Cash or Zero-Revenue')
+  click_button 'submit_cash'
   expect(page.find(:css, '#notices').text).to match( /tickets \(total[^\)]+\) paid/ )
 end
 
@@ -7,7 +8,6 @@ When /I complete the walkup sale with credit card/ do
   steps %Q{
 When I fill in a valid credit card for "John Doe"
 And I press "Charge Credit Card"
-Then show me the page
 }
   end
 

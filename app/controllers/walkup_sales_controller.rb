@@ -61,7 +61,7 @@ class WalkupSalesController < ApplicationController
         :purchasemethod => p,
         :logged_in_id => current_user.id)
       flash[:notice] = @order.walkup_confirmation_notice
-      flash[:notice] << " Seats: #{params[:seats]}" unless seats.blank?
+      flash[:notice] << ". Seats: #{params[:seats]}" unless params[:seats].blank?
       redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
       flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"

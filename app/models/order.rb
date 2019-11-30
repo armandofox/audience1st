@@ -115,17 +115,18 @@ class Order < ActiveRecord::Base
 
   def add_tickets_from_params(valid_voucher_params, customer, promo_code: '', seats: [])
     return unless valid_voucher_params
+    seats2 = seats.dup
     # error unless number of seats matches number of requested tickets
     total_tickets = valid_voucher_params.values.map(&:to_i).sum
-    if !seats.empty?
-      self.errors.add(:base, "#{total_tickets} tickets requested but #{seats.length} seat assignments provided") unless total_tickets == seats.length
+    if !seats2.empty?
+      self.errors.add(:base, "#{total_tickets} tickets requested but #{seats2.length} seat assignments provided") unless total_tickets == seats2.length
     end
     valid_voucher_params.each_pair do |vv_id, qty|
       qty = qty.to_i
       vv = ValidVoucher.find(vv_id)
       vv.supplied_promo_code = promo_code.to_s
       vv.customer = customer
-      add_tickets(vv, qty, seats.slice!(0,qty))
+      add_tickets(vv, qty, seats2.slice!(0,qty))
     end
   end
 

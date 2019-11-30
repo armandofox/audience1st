@@ -78,7 +78,7 @@ A1.seatmapWalkupSales = {
     $('#seating-charts-wrapper').removeClass('d-none').slideDown();
     A1.seatmap.setupMap();
     // disallow changing ticket count menus while seats are being selected
-    $('.item').prop('disabled', true);
+    $('.item').prop('readonly', true);
     // disable "Choose Seats" button
     $('.select-seats').prop('disabled', true);
   }
