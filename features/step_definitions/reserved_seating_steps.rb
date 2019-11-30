@@ -18,3 +18,14 @@ Then /I should see "(.*)" in the list of selected seats/ do |seat_list|
     expect(selected_seats).to include(seat)
   end
 end
+
+Then /seats (.*) should be (occupied|available) for the (.*) performance/ do |seats,avail,thedate|
+  @showdate = Showdate.find_by(:thedate => Time.zone.parse(thedate))
+  @seats = seats.split(/\s*,\s*/)
+  occupied = @showdate.occupied_seats & @seats
+  if avail =~ /available/
+    expect(occupied).to be_empty
+  else
+    expect(occupied).to eq(@seats)
+  end
+end

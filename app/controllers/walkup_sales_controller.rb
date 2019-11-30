@@ -2,6 +2,8 @@ class WalkupSalesController < ApplicationController
 
   before_filter :is_boxoffice_filter
 
+  include SeatmapsHelper
+
   def show
     @showdate = Showdate.find params[:id]
     @valid_vouchers = @showdate.valid_vouchers_for_walkup
@@ -24,7 +26,11 @@ class WalkupSalesController < ApplicationController
     if ((amount = params[:donation].to_f) > 0)
       @order.add_donation(Donation.walkup_donation amount)
     end
-    @order.add_tickets_from_params(params[:qty], current_user)
+    seats = seats_from_params(params)
+    @order.add_tickets_from_params(params[:qty], current_user, :seats => seats)
+
+    return redirect_to(walkup_sale_path(@showdate), :alert => t('store.errors.empty_order')) if
+      (amount.zero? && @order.vouchers.empty?)
 
     # process order using appropriate payment method.
     # if Stripe was used for credit card processing, it resubmits the original
@@ -55,6 +61,7 @@ class WalkupSalesController < ApplicationController
         :purchasemethod => p,
         :logged_in_id => current_user.id)
       flash[:notice] = @order.walkup_confirmation_notice
+      flash[:notice] << " Seats: #{params[:seats]}" unless seats.blank?
       redirect_to walkup_sale_path(@showdate)
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
       flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"

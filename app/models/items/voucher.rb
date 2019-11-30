@@ -8,6 +8,7 @@ class Voucher < Item
   delegate :category, :to => :vouchertype
 
   validate :checkin_requires_reservation
+  validates_presence_of :seat, :if => :for_reserved_seating_performance?
   validate :existing_seat, :if => :reserved?
   validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => '%{value} is already taken'
 
@@ -106,7 +107,9 @@ class Voucher < Item
 
   def unreserved? ; showdate_id.to_i.zero? end
   def reserved? ; !(unreserved?) ; end
-  
+  def for_reserved_seating_performance?
+    showdate && showdate.seatmap
+  end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.name if reserved?).to_s ;  end
   def reserved_date ; (showdate.printable_name if reserved?).to_s ; end
