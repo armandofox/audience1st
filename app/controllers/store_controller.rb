@@ -1,7 +1,8 @@
 class StoreController < ApplicationController
 
   include StoreHelper
-
+  include SeatmapsHelper
+  
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
   before_filter :set_customer, :except => %w[donate]
@@ -164,7 +165,7 @@ class StoreController < ApplicationController
   def process_cart
     @gOrderInProgress = Order.create(:processed_by => current_user)
     @gOrderInProgress.add_comment params[:comments].to_s
-    @gOrderInProgress.add_tickets_from_params params[:valid_voucher], current_user, :promo_code => params[:promo_code], :seats => params[:seats].to_s.split(/\s*,\s*/)
+    @gOrderInProgress.add_tickets_from_params params[:valid_voucher], current_user, :promo_code => params[:promo_code], :seats => seats_from_params(params)
     add_retail_items_to_cart
     add_donation_to_cart
     if ! @gOrderInProgress.errors.empty?

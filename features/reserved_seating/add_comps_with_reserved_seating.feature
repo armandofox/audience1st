@@ -1,6 +1,10 @@
 @javascript
 Feature: boxoffice agent can add reserved-seat comps
 
+  As a box office agent
+  So that I can comp customers to reserved-seating shows
+  I want to add comps for a specific showdate with reserved seats
+
 Background: show with some reserved seating and some general admission performances
 
   Given a performance of "Chicago" on March 1, 2010, 8:00pm
