@@ -22,7 +22,7 @@
           = popup_help_for :boxoffice_manager_only
       - else
         %td= text_field_tag "price[#{v.id}]", number_to_currency(v.price, :unit => ''), :disabled => true, :size => 6, :class => 'disabledField text-right'
-        %td= select_tag("qty[#{v.id}]", options_for_select((0..12), @qty[v.id.to_s].to_i), {:class => 'item itemCount ticket', 'data-price' => v.price})
+        %td= number_field_tag "qty[#{v.id}]", '', :in => 0..12, :class => 'item itemCount ticket', 'data-price' => v.price
     - if (! v.sales_unlimited?)
       %tr.alert.alert-warning
         %td= v.name

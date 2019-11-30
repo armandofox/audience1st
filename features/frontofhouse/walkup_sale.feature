@@ -14,14 +14,14 @@ Feature: Sell walkup tickets
 
   Scenario: purchase 2 tickets with cash
 
-    When I select "2" from "General"
+    When I fill in "General" with "2"
     And I complete the walkup sale with cash
     Then I should see "General 1 left"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
 
   Scenario: purchase 2 tickets with check
   
-    When I select "2" from "General"
+    When I fill in "General" with "2"
     And I choose "Check"
     And I press "Record Check Payment"
     Then I should see "2 tickets (total $22.00) paid by Check"
@@ -31,7 +31,7 @@ Feature: Sell walkup tickets
 @stubs_successful_credit_card_payment
   Scenario: purchase 2 tickets with valid credit card info
 
-    When I select "2" from "General"
+    When I fill in "General" with "2"
     And I choose "Credit Card"
     And I fill in a valid credit card for "John Doe"
     And I press "Charge Credit Card"
@@ -42,7 +42,7 @@ Feature: Sell walkup tickets
 @stubs_failed_credit_card_payment
   Scenario: attempt purchase with invalid credit card
 
-    When I select "2" from "General"
+    When I fill in "General" with "2"
     And I fill in an invalid credit card for "John Doe"
     And I press "Charge Credit Card"
     Then I should see "Transaction NOT processed"
