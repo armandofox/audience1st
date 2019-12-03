@@ -46,14 +46,13 @@ Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,i
   end
 end
 
-Then /^customer "(\S+) (.*)" should have the following comments:$/ do |first,last,items|
-  @customer = find_customer first,last
-  items.hashes.each do |item|
-    if !item[:comments].blank?
-      conds_clause = 'comments = ?'
-      conds_values = item[:comments]
-    end 
-    expect(Item.where(comments: item[:comments])).not_to be_nil
+Then /^customer "(\S+) (.*)" should have the following comments:$/ do |first,last,dates_and_comments|
+  customer = find_customer first,last
+  dates_and_comments.hashes.each do |date_and_comment|
+    # TODO: Are customer_id, showdate and the expected comment all we need for this test?
+    item_showdate = Showdate.where(:thedate => Time.zone.parse(date_and_comment[:showdate]))
+    item = Item.where(:customer_id => customer.id, :showdate => item_showdate).first
+    expect(item.comments).to eq(date_and_comment[:comment])
   end
 end
 
