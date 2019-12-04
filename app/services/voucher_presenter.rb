@@ -66,7 +66,7 @@ class VoucherPresenter
   end
 
   def voucher_comments
-    vouchers.map(&:comments).map(&:to_s).reject(&:blank?).join('; ')
+    vouchers.map(&:comments).map(&:to_s).reject(&:blank?).uniq.join('; ')
   end
   
   def seats

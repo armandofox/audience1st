@@ -46,6 +46,15 @@ Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,i
   end
 end
 
+Then /^customer "(\S+) (.*)" should have the following comments:$/ do |first,last,dates_and_comments|
+  customer = find_customer first,last
+  dates_and_comments.hashes.each do |date_and_comment|
+    # TODO: Are customer_id, showdate and the expected comment all we need for this test?
+    item_showdate = Showdate.where(:thedate => Time.zone.parse(date_and_comment[:showdate]))
+    item = Item.where(:customer_id => customer.id, :showdate => item_showdate).first
+    expect(item.comments).to eq(date_and_comment[:comment])
+  end
+end
 
 Then /^customer "(.*) (.*)" should (not )?have a donation of \$([0-9.]+) to "(.*?)"(?: with comment "(.*)")?$/ do |first,last,no,amount,fund,comment|
   fund_id = AccountCode.find_by(:name => fund).id
