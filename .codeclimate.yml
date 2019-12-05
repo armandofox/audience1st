@@ -37,12 +37,13 @@ ratings:
   - "**.module"
   - "**.php"
   - "**.py"
-exclude_paths:
+exclude_patterns:
 - config/
 - db/
 - features/
 - script/
 - spec/
 - vendor/
-- "*/**/*.min.js"
-- "*/**/jquery.js"
+- "app/assets/javascripts/jquery.*.js"
+- "app/assets/javascripts/*.min.js"
+

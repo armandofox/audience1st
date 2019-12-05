@@ -38,7 +38,7 @@ class Showdate < ActiveRecord::Base
   # returns two elements indicating the lowest-priced and highest-priced
   # publicly-available tickets.
   def price_range
-    public_prices = valid_vouchers.select(&:public?).map(&:price)
+    public_prices = valid_vouchers.select(&:public?).map(&:price).reject(&:zero?)
     public_prices.empty? ? [] : [public_prices.min, public_prices.max]
   end
 

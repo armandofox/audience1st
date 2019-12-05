@@ -13,6 +13,21 @@ describe Showdate do
     2.times { create(:revenue_voucher, :amount => 11,  :showdate => @showdate) }
     1.times { create(:nonticket_item,     :showdate => @showdate) }
   end
+  describe "relations (story #169936179)"  do
+    before(:each) do
+      @order = create(:order, :vouchers_count => 1)
+      @order.vouchers.first.update_attribute(:showdate_id, @showdate.id)
+      @result = @showdate.customers
+      expect(@result).not_to be_nil
+    end
+    it 'is the correct class' do
+      expect(@result).to be_a_kind_of(Customer::ActiveRecord_Relation)
+    end
+    it 'dereferences Customers correctly' do
+      customers_from_vouchers = @showdate.finalized_vouchers.map(&:customer).uniq.select { |c| ! c.special_customer? }
+      expect(@result.sort).to eq(customers_from_vouchers.sort)
+    end
+  end
   it "has 9 seats sold" do
     expect(@showdate.vouchers.count).to eq(9)
   end
