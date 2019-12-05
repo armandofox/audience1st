@@ -234,7 +234,6 @@ A1.seatmap = {
         vouchers.map(&:comments).map(&:to_s).reject(&:blank?).uniq.join('; ');
     }
   }
-
   ,getSeatingOptionsForRegularSales: function() {
     // triggered whenever the count of selected seats changes.
     // If nonzero number of seats is selected, enable "choose seats" button.
