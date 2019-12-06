@@ -4,7 +4,7 @@ class WalkupSalesController < ApplicationController
 
   before_action do
     @showdate = Showdate.find params[:id]
-    @page_title = "Walkups: #{@showdate.thedate.to_formatted-s(:foh)}"
+    @page_title = "Walkups: #{@showdate.thedate.to_formatted_s(:foh)}"
   end
   
   include SeatmapsHelper

@@ -43,8 +43,10 @@ Feature: Sell walkup tickets
   Scenario: attempt purchase with invalid credit card
 
     When I fill in "General" with "2"
+    And I fill in "donation" with "10"
     And I fill in an invalid credit card for "John Doe"
     And I press "Charge Credit Card"
     Then I should see "Transaction NOT processed"
     And I should see "General 3 left"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
+    And I should see "32.00" within "#total"
