@@ -108,7 +108,7 @@ class Voucher < Item
   def unreserved? ; showdate_id.to_i.zero? end
   def reserved? ; !(unreserved?) ; end
   def for_reserved_seating_performance?
-    showdate && showdate.seatmap
+    showdate && showdate.has_reserved_seating?
   end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.name if reserved?).to_s ;  end
@@ -340,7 +340,7 @@ class Voucher < Item
 
   def existing_seat
     errors.add(:seat, 'does not exist for this performance') unless
-      showdate.seatmap.nil?  || seat.blank?  || showdate.seatmap.includes_seat?(seat)
+      ! showdate.has_reserved_seating?  || seat.blank?  || showdate.seatmap.includes_seat?(seat)
   end
 
 end

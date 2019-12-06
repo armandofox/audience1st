@@ -2,23 +2,26 @@ class WalkupSalesController < ApplicationController
 
   before_filter :is_boxoffice_filter
 
+  before_action do
+    @showdate = Showdate.find params[:id]
+    @page_title = "Walkups: #{@showdate.thedate.to_formatted-s(:foh)}"
+  end
+  
   include SeatmapsHelper
 
   def show
-    @showdate = Showdate.find params[:id]
     @valid_vouchers = @showdate.valid_vouchers_for_walkup
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
     @donation = params[:donation]
     @seats = params[:seats]
     # if reserved seating show, populate hidden field
-    if @showdate.seatmap
+    if @showdate.has_reserved_seating?
       @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
     end
   end
 
   def create
-    @showdate = Showdate.find params[:id]
     @order = Order.create(
       :walkup => true,
       :customer => Customer.walkup_customer,
@@ -75,7 +78,6 @@ class WalkupSalesController < ApplicationController
 
   # process a change of walkup vouchers by moving them to another showdate, as directed
   def update
-    @showdate = Showdate.find params[:id]
     return redirect_to(walkup_sale_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
     voucher_ids = params[:vouchers]
     begin
@@ -90,7 +92,6 @@ class WalkupSalesController < ApplicationController
   end
 
   def report
-    @showdate = Showdate.find params[:id]
     @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
     @subtotal = {}
     @total = 0
