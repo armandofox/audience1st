@@ -2,7 +2,7 @@
   %tr
     %td.strong{:colspan => 2} Tickets to be issued
     %td= text_field_tag 'totaltix', 0, :id => 'totaltix',  |
-      :size => 4, :disabled => true, :class => 'bg-info text-white'  |
+      :size => 4, :disabled => true, :class => 'bg-info text-white text-center'  |
   %tr
     %td{:colspan=>2}
       %strong TOTAL TO COLLECT
@@ -10,7 +10,7 @@
       :disabled => true, :class => 'disabledField strong _stripe_total' |
   %tr
     %td.label{:colspan => 2} Additional donation:
-    %td= text_field_tag 'donation', @donation, :maxlength => 7, :size => 5, :class => 'item'
+    %td= text_field_tag 'donation', @donation, :size => 6, :class => 'item'
   - @valid_vouchers.each do |v|
     - boxoffice_mgr_only = (v.vouchertype.comp? && !@admin.is_boxoffice_manager)
     %tr
@@ -22,14 +22,12 @@
           = popup_help_for :boxoffice_manager_only
       - else
         %td= text_field_tag "price[#{v.id}]", number_to_currency(v.price, :unit => ''), :disabled => true, :size => 6, :class => 'disabledField text-right'
-        %td= number_field_tag "qty[#{v.id}]", '', :in => 0..12, :class => 'item itemCount ticket', 'data-price' => v.price
+        %td= number_field_tag "qty[#{v.id}]", (@qty[v.id.to_s].to_i if @qty[v.id.to_s]), :in => 0..12, :class => 'item itemCount ticket', 'data-price' => v.price
     - if (! v.sales_unlimited?)
       %tr.alert.alert-warning
         %td= v.name
         %td{:colspan => 2} #{v.seats_of_type_remaining} left
 
-        
-
 .invisible#seatInfo
   = button_tag 'Choose Seats...', :type => 'button', :class => 'btn btn-outline-primary d-inline select-seats', :disabled => true
-  = display_seats_field('text-center')
+  = display_seats_field(:seats => @seats, :extra_classes => 'text-center')

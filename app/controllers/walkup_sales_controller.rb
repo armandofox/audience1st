@@ -10,6 +10,7 @@ class WalkupSalesController < ApplicationController
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
     @donation = params[:donation]
+    @seats = params[:seats]
     # if reserved seating show, populate hidden field
     if @showdate.seatmap
       @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
@@ -23,14 +24,16 @@ class WalkupSalesController < ApplicationController
       :customer => Customer.walkup_customer,
       :purchaser => Customer.walkup_customer,
       :processed_by => current_user)
-    if ((amount = params[:donation].to_f) > 0)
-      @order.add_donation(Donation.walkup_donation amount)
+    if ((donation = params[:donation].to_f) > 0)
+      @order.add_donation(Donation.walkup_donation donation)
     end
     seats = seats_from_params(params)
-    @order.add_tickets_from_params(params[:qty], current_user, :seats => seats)
-
+    qtys = params[:qty]
+    @order.add_tickets_from_params(qtys, current_user, :seats => seats)
+    saved_params = {:qty => qtys, :donation => donation, :seats => display_seats(seats)} # in case have to retry
+    
     return redirect_to(walkup_sale_path(@showdate), :alert => t('store.errors.empty_order')) if
-      (amount.zero? && @order.vouchers.empty?)
+      (donation.zero? && @order.vouchers.empty?)
 
     # process order using appropriate payment method.
     # if Stripe was used for credit card processing, it resubmits the original
@@ -50,7 +53,7 @@ class WalkupSalesController < ApplicationController
       @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
     end
     
-    return redirect_to(walkup_sale_path(@showdate), :alert => "Cannot complete order: #{@order.errors.as_html}") unless @order.errors.empty?
+    return redirect_to(walkup_sale_path(@showdate, saved_params), :alert => "Cannot complete order: #{@order.errors.as_html}") unless @order.errors.empty?
 
     # all set to try the purchase
     begin

@@ -5,15 +5,18 @@
     .col-md-4
       .card
         .card-header.text-center.text-sm
-          %h4 1. Select items
+          %h4
+            1. Select items
+            = link_to 'Clear Order', walkup_sale_path(@showdate), :class => 'btn btn-sm btn-outline-danger mx-2'
         .card-body
           = render :partial => 'walkup_sales_tickets'
     .col-md-8#payment
       .card
         .card-header.text-center
-          %h4 2. Collect & record payment
+          %h4
+            2. Collect & record payment
+            = link_to 'Whoops, I Made a Mistake...', report_walkup_sale_path(@showdate), :class => 'btn btn-sm btn-outline-danger mx-2'
         .card-body
-          #whoops_button.text-center= link_to 'Whoops, I Made a Mistake...', report_walkup_sale_path(@showdate), :class => 'btn btn-danger'
           #payment_types.py-2
             .form-check.form-check-inline
               = radio_button_tag 'payment_type', 'credit_card', true, :onclick => "A1.show_only('credit_card')"
