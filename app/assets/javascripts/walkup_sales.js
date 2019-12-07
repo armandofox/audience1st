@@ -34,14 +34,30 @@ A1.recalc_store_total = function() {
 
 A1.recalc_all_walkup_sales = function() {
   var total = A1.recalculate('#total', '.item', 2, 'price');
+  var numTickets = A1.orderState.ticketCount;
   A1.recalculate('#totaltix', '.itemCount', 0);
   if (A1.seatmapWalkupSales.seatmapInfo == '') {
-    // general adm: enable credit card charge if total>0; check/cash always enabled
-    $('#_stripe_submit').prop('disabled', (total <= 0.0));
+    // general adm:
+    if (total == 0.0) {
+      $('.confirm-walkup-sale').prop('disabled', true);
+      if (numTickets > 0) { // no donation, but comp tickets: allow cash/0-rev purchase
+        $('#submit_cash').prop('disabled', false);
+      }
+    } else {
+      // nonzero total: enable all payment types
+      $('.confirm-walkup-sale').prop('disabled', false);
+    }
   } else {
-    // reserved seating: if nonzero # tickets selected, enable seatmap
-    var ready = (A1.orderState.ticketCount > 0);
-    $('.select-seats').prop('disabled', !ready);
+    // reserved seating:
+    // if nonzero # tickets selected, enable seatmap
+    if (numTickets > 0) {
+      // disable payment buttons, enable seatmap selection
+      $('.select-seats').prop('disabled', false);
+      $('.confirm-walkup-sale').prop('disabled',true);
+    } else if (total > 0) {
+      // donation specified, but no tickets specified: enable payment button
+      $('.confirm-walkup-sale').prop('disabled',false);
+    }
   }
 }
 
@@ -92,7 +108,7 @@ A1.seatmapWalkupSales = {
     A1.seatmap.selectSeatsButton = $('.select-seats').click(A1.seatmapWalkupSales.showSeatmap);
     A1.seatmap.resetAfterCancel = function() { window.location.reload(); };
     A1.seatmap.seatDisplayField = $('.seat-display');
-    A1.seatmap.confirmSeatsButton = $('.confirm-walkup-sale');
+    A1.seatmap.confirmSeatsButton = $('.confirm-walkup-sale').prop('disabled',true);
     // prepare to display seatmap.  'max' (seat count) will be filled in when map is shown
     A1.seatmap.configureFrom(JSON.parse(this.seatmapInfo));
     A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
@@ -107,8 +123,8 @@ A1.setup_walkup_sales = function() {
   $('#walkup_tickets .item').change(A1.recalc_all_walkup_sales);
   // if page reloaded due to failed payment txn, recalculate totals
   if ($('#walkup_sales_show').length) { // walkup sales page
-    A1.recalc_all_walkup_sales();
     A1.seatmapWalkupSales.getSeatingOptions();
+    A1.recalc_all_walkup_sales();
   }
 };
 

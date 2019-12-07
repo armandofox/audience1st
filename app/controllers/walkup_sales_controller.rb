@@ -35,7 +35,7 @@ class WalkupSalesController < ApplicationController
     @order.add_tickets_from_params(qtys, current_user, :seats => seats)
     saved_params = {:qty => qtys, :donation => donation, :seats => display_seats(seats)} # in case have to retry
     
-    return redirect_to(walkup_sale_path(@showdate), :alert => t('store.errors.empty_order')) if
+    return redirect_to(walkup_sale_path(@showdate,saved_params), :alert => t('store.errors.empty_order')) if
       (donation.zero? && @order.vouchers.empty?)
 
     # process order using appropriate payment method.
@@ -69,7 +69,7 @@ class WalkupSalesController < ApplicationController
       flash[:notice] = @order.walkup_confirmation_notice
       flash[:notice] << ". Seats: #{params[:seats]}" unless params[:seats].blank?
       redirect_to walkup_sale_path(@showdate)
-    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError, Order::NotReadyError
       flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"
       @order.destroy
       redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
