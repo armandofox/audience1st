@@ -150,88 +150,61 @@ staging = namespace :staging do
       end
       sub_voucher
     end
-    sub = Vouchertype.create!(
       :category => :bundle,
       :subscription => true,
       :price => 70.00,
+      :name => 'Season Subscription 1',
       :name => 'Season Subscription',
       :season => Time.this_season,
       :offer_public => Vouchertype::ANYONE,
       :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
-  end
-  
-  desc "In tenant '#{StagingHelper::TENANT}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers, shows, and show dates"
-  task :reset_sales => :environment do
-    StagingHelper::switch_to_staging!
-    Item.delete_all
-    Order.delete_all
-    Txn.delete_all
+    sub = Vouchertype.create!(
+        :category => :bundle,
+        :subscription => true,
+        :price => 80.00,
+        :name => 'Season Subscription 2',
+        :season => Time.this_season,
+        :offer_public => Vouchertype::ANYONE,
+        :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
+    sub = Vouchertype.create!(
+          :category => :bundle,
+          :subscription => true,
+          :price => 90.00,
+          :name => 'Season Subscription 3',
+          :season => Time.this_season,
+          :offer_public => Vouchertype::ANYONE,
+          :included_vouchers => sub_vouchers.map(&:id).map(&:to_s).zip(Array.new(sub_vouchers.size) { 1 }).to_h)
   end
 
-  desc "Sell 1,2, or 3 subscriptions to PERCENT of all customers (default 50) so that average # of subs per customer is 2, and reserve sub vouchers for randomly chosen showdates"
+  desc "In tenant '#{StagingHelper::TENANT}', delete all sales data (vouchertypes, valid-vouchers, orders) but keep customers, shows, and show dates"
+@@ -188,24 +172,15 @@ staging = namespace :staging do
   task :sell_subscriptions => :environment do
     StagingHelper::switch_to_staging!
     percent = (ENV['PERCENT'] || '50').to_i / 100.0
+    sub_voucher1 = ValidVoucher.includes(:vouchertype).
+      where(:vouchertypes => {:category => :bundle, :subscription => true, :price => 70.00}).
+      first
+    sub_voucher2 = ValidVoucher.includes(:vouchertype).
+      where(:vouchertypes => {:category => :bundle, :subscription => true, :price => 80.00}).
     sub_voucher = ValidVoucher.includes(:vouchertype).
       where(:vouchertypes => {:category => :bundle, :subscription => true}).
       first
+    sub_voucher3 = ValidVoucher.includes(:vouchertype).
+      where(:vouchertypes => {:category => :bundle, :subscription => true, :price => 90.00}).
+      first
+    sub_vouchers = [sub_voucher1, sub_voucher2, sub_voucher3]
+
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
     customers = customers.sample(customers.size * percent * 0.5) # since will sell avg of 2 per pax
     customers.each do |customer|
       o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
+      sub_voucher = sub_vouchers.sample()
       o.add_tickets_without_capacity_checks(sub_voucher, num_tix)
       o.finalize!
       StagingHelper::dot
-      # now reserve each of those vouchers for a random perf of each show
-      # TBD
-    end
-  end
-
-  desc "Randomly pick PERCENT of all customers (default 50) and have each of these make 1 to 3 donations of $20 to $150 apiece"
-  task :fake_donations => :environment do
-    StagingHelper::switch_to_staging!
-    percent = (ENV['PERCENT'] || '50').to_i / 100.0    
-    Customer.regular_customers.sample(Customer.all.size * percent).each do |customer|
-      [1,1,1,1,2,2,3].sample.times do
-        o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
-          :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
-        o.add_donation(Donation.from_amount_and_account_code_id(20 + 15 * rand(10), AccountCode.default_account_code_id))
-        o.finalize!
-        o.update_attribute(:sold_on, Time.current - rand(180).days)
-        StagingHelper::dot
-      end
-    end
-  end
-
-  desc "For each showdate, sell PERCENT of remaining seats (default 50) using a random mix of revenue vouchertypes for that showdate"
-  task :sell_revenue => :environment do
-    StagingHelper::switch_to_staging!
-    percent = (ENV['PERCENT'] || '50').to_i / 100.0
-    customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
-    Showdate.general_admission.each do |perf|
-      valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertypes => {:category => :revenue}).to_a.freeze
-      # sell percentage of tickets
-      while perf.total_sales.size < (percent * perf.house_capacity) do
-        # pick a customer
-        customer = customers.sample
-        customer = customers.sample until customer.valid_as_purchaser?
-        # pick a number of tickets, 1-4, skewed towards 1 and 2
-        num_tix = [1,1,2,2,2,2,3,4,4].sample
-        # pick which price point they'll use
-        valid_voucher = valid_vouchers.sample
-        # buy it
-        o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer, :purchasemethod => Purchasemethod.get_type_by_name('box_cash'))
-        o.add_tickets_without_capacity_checks(valid_voucher, num_tix)
-        begin
-          o.finalize!
-        rescue Order::NotReadyError => e
-          puts o.errors.full_messages
-          byebug
-        end
-      end
-      StagingHelper::dot
-    end
+@@ -261,4 +236,3 @@ staging = namespace :staging do
   end
 end
+
