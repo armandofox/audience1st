@@ -228,10 +228,10 @@ staging = namespace :staging do
           o.finalize!
         rescue Order::NotReadyError => e
           puts o.errors.full_messages
+          byebug
         end
       end
       StagingHelper::dot
     end
   end
 end
-
