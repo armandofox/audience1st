@@ -34,6 +34,7 @@ class Showdate < ActiveRecord::Base
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
   attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
+  attr_accessible :valid_vouchers
 
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
@@ -51,6 +52,7 @@ class Showdate < ActiveRecord::Base
 
   scope :general_admission, -> { where(:seatmap_id => nil) }
   scope :reserved_seating,  -> { where.not(:seatmap_id => nil) }
+  scope :blah, -> { joins(:valid_vouchers) }
 
   private
 

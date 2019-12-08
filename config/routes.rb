@@ -96,6 +96,7 @@ Rails.application.routes.draw do
         get :revenue_by_payment_method
         get :retail
         get :unfulfilled_orders
+        get :advanced_details
       end
     end
 
