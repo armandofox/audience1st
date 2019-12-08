@@ -1,4 +1,5 @@
-= render :partial => 'checkins/walkup_subscriber'
+- unless @showdate.has_reserved_seating?
+  = render :partial => 'checkins/walkup_subscriber'
 
 %table.a1-table#checkin
   %tr

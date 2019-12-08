@@ -1,13 +1,15 @@
 class VouchersController < ApplicationController
-
+  
   before_filter :is_logged_in
   before_filter :is_boxoffice_filter, :except => %w(update_shows confirm_multiple cancel_multiple)
   before_filter :owns_voucher_or_is_boxoffice, :except => :update_shows
 
+  
   ERR = 'reservations.errors.'  # prefix string for reservation error msgs in en.yml
 
   include VouchersHelper
-  
+  include SeatmapsHelper
+
   private
 
   def owns_voucher_or_is_boxoffice
@@ -48,7 +50,7 @@ class VouchersController < ApplicationController
 
   def create
     # post: add the actual comps, and possibly reserve
-    seats = params[:seats].to_s.split(/\s*,\s*/)
+    seats = seats_from_params(params)
     howmany = params[:howmany].to_i
     vouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
     thecomment = params[:comments].to_s
@@ -134,7 +136,7 @@ class VouchersController < ApplicationController
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_vouchers")) unless num > 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     if !params[:seats].blank?           # handle reserved seating reservation
-      seats = params[:seats].split(/\s*,\s*/)
+      seats = seats_from_params(params)
       return redirect_to(customer_path(@customer), :alert => t("#{ERR}seat_count_mismatch")) unless seats.length == vouchers.length
       vouchers.each { |v| v.seat = seats.pop }
     end

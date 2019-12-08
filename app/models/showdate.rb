@@ -52,6 +52,8 @@ class Showdate < ActiveRecord::Base
   scope :general_admission, -> { where(:seatmap_id => nil) }
   scope :reserved_seating,  -> { where.not(:seatmap_id => nil) }
 
+  def has_reserved_seating? ; !! seatmap ; end
+  
   private
 
   def truncate_showdate_to_nearest_minute
@@ -79,7 +81,11 @@ class Showdate < ActiveRecord::Base
   end
 
   def valid_vouchers_for_walkup
-    self.valid_vouchers.includes(:vouchertype).select { |vv| vv.vouchertype.walkup_sale_allowed? }
+    self.valid_vouchers.
+      includes(:vouchertype).
+      references(:vouchertype).
+      where(:vouchertypes => {:walkup_sale_allowed => true}).
+      order('vouchertypes.display_order')
   end
 
   # finders
