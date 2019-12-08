@@ -19,8 +19,12 @@ class ReportsController < ApplicationController
 
   def advance_sales
     show_ids = params[:shows]
+    download = params[:download]
     redirect_to(reports_path, :alert => "Please select one or more shows.") if show_ids.blank?
     @shows = Show.where(:id => show_ids).includes(:showdates => :vouchers)
+    if (download == true)
+      redirect_to(advanced_details_reports_path, :shows => params[:shows])
+    end
   end
 
   def showdate_sales
@@ -72,6 +76,8 @@ class ReportsController < ApplicationController
     y = (params[:id] || Time.current.year).to_i
     show_ids = params[:shows]
     show = Show.where(:id => show_ids).includes(:showdates => :vouchers).first
+
+
     puts "blah0"
     puts show_ids
 
@@ -91,23 +97,25 @@ class ReportsController < ApplicationController
                 Gross\ Receipts]
 
       show.showdates.each do |sd|
-        puts "blah2"
-        sd.valid_vouchers.each do |vv|
-
-          puts "blah3"
+        vouchers = sd.vouchers.finalized
+        sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype), sd.revenue_per_seat, sd.total_offered_for_sale)
+        sales.vouchers.each_pair do |vt,v|
           csv << [
               show.name,
               (show.run_dates),
               sd.thedate,
               show.house_capacity,
               sd.max_advance_sales,
-              vv.name,
-              (vv.subscriber_voucher?),
-              (if vv.max_sales_for_type != ValidVoucher::INFINITE then vv.max_sales_for_type else "" end),
-              sd.sales_by_type(vv.id),
-              sd.valid_vouchers.size,
-              vv.price,
-              (sd.sales_by_type(vv.id) * vv.price)
+              vt.name,
+              (if vt.subscriber_voucher? then "YES" else "NO" end),
+              (if vt.valid_vouchers.find { |v| v.showdate_id == sd.id }.max_sales_for_type != ValidVoucher::INFINITE
+                  then vt.valid_vouchers.find { |v| v.showdate_id == sd.id }.max_sales_for_type
+               else
+                 ""
+               end),
+              v.size,
+              vt.price,
+              (ActionController::Base.helpers.number_to_currency(vt.price * v.size))
           ]
         end
       end

@@ -44,6 +44,9 @@ class Vouchertype < ActiveRecord::Base
 
   protected
 
+  def find_valid_voucher
+    self.valid_vouchers.fin
+  end
   # for bundle vouchers, the included_vouchers values should be ints
   # and the keys (id's) should be strings, eg {"3" => 1, "2" => 2} etc
   def convert_bundle_quantities_to_ints
