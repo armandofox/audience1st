@@ -34,6 +34,15 @@ class ReportsController < ApplicationController
     render :partial => 'showdate_sales', :locals => { :sales => sales }
   end
 
+  def get_sales
+    entity = Object.const_get(params[:klass])
+    entity = entity.find(params[:id])
+    vouchers = entity.vouchers.finalized
+    sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype),
+                                entity.revenue_per_seat, entity.total_offered_for_sale)
+
+  end
+
   def subscriber_details
     y = (params[:id] || Time.current.year).to_i
     subs = Voucher.subscription_vouchers(y)
@@ -48,6 +57,64 @@ class ReportsController < ApplicationController
     else
       render :partial => 'subscriptions', :object => subs, :locals => {:year => y}
     end
+  end
+
+  def advanced_details
+    if params[:commit] == 'Go'
+      redirect_to advance_sales_reports_path, :shows => params[:shows]
+      return
+    end
+    # entity = Object.const_get(params[:klass])
+    # entity = entity.find(params[:id])
+    # vouchers = entity.vouchers.finalized
+    # sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype),
+    #                             entity.revenue_per_seat, entity.total_offered_for_sale)
+    y = (params[:id] || Time.current.year).to_i
+    show_ids = params[:shows]
+    show = Show.where(:id => show_ids).includes(:showdates => :vouchers).first
+    puts "blah0"
+    puts show_ids
+
+    output = CSV.generate do |csv|
+      puts "blah1"
+      puts show.showdates
+      csv << %w[Show\ Name
+                Run\ Dates
+                Show\ Date
+                House\ Capacity
+                Max\ Advance\ Sales\ for\ Performance
+                Voucher\ Type
+                Subscriber\ Voucher?
+                Max\ Sales\ for\ voucher\ type
+                Sold
+                Price
+                Gross\ Receipts]
+
+      show.showdates.each do |sd|
+        puts "blah2"
+        sd.valid_vouchers.each do |vv|
+
+          puts "blah3"
+          csv << [
+              show.name,
+              (show.run_dates),
+              sd.thedate,
+              show.house_capacity,
+              sd.max_advance_sales,
+              vv.name,
+              (vv.subscriber_voucher?),
+              (if vv.max_sales_for_type != ValidVoucher::INFINITE then vv.max_sales_for_type else "" end),
+              sd.sales_by_type(vv.id),
+              sd.valid_vouchers.size,
+              vv.price,
+              (sd.sales_by_type(vv.id) * vv.price)
+          ]
+        end
+      end
+
+
+    end
+    download_to_excel(output, "advanced_details#{y}")
   end
 
   def  attendance

@@ -24,9 +24,9 @@ class Show < ActiveRecord::Base
   # current_or_next returns the Show object corresponding to either the
   # currently running show, or the one with the next soonest opening date.
 
-  def self.current_or_next
-    Showdate.current_or_next.try(:show)
-  end
+  # def self.current_or_next
+  #   Showdate.current_or_next.try(:show)
+  # end
 
   scope :current_and_future, -> {
     joins(:showdates).
@@ -171,5 +171,5 @@ class Show < ActiveRecord::Base
     self.closing_date = last if closing_date < last
     return self.changed?
   end
-      
+
 end

@@ -2,14 +2,23 @@
   .container
     %h1 Advance Sales and Orders
     = form_tag advance_sales_reports_path, :method => :get do
-      %fieldset#advance_sales_report
+      %fieldset#view_advance_sales_report
         %legend Advance Sales
-        %p 
+        %p
           (Shift-click to select multiple productions)
           %br
-          = select_tag('shows', |
-            options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true) 
-          = submit_tag 'Go', :id => 'advance_sales', :class => 'btn btn-primary'
+          = select_tag('shows',
+            options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true)
+          = submit_tag 'View', :id => 'advance_sales', :class => 'btn btn-primary'
+    = form_tag advanced_details_reports_path, :method => :get do
+      %fieldset#download_advance_sales_report
+        %legend Advance Sales
+        %p
+          (Shift-click to select multiple productions)
+          %br
+          = select_tag('shows',
+            options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true)
+          = submit_tag 'Download to Excel', :id => 'advanced_details', :download => true, :class => 'btn btn-primary'
 
 .container
   = form_tag unfulfilled_orders_reports_path, :method => :get do
@@ -35,5 +44,5 @@
     Subscription Counts for
     - y = Time.this_season
     = select_tag('year', options_for_seasons(y-5, y+1), :onchange => "\$('#subscriber_stats').load('#{subscriber_details_reports_path}', 'id=' + \$('#year').val())" )
-  #subscriber_stats= render :partial => 'subscriptions', :object => @subscriptions, :locals => {:year => y} 
+  #subscriber_stats= render :partial => 'subscriptions', :object => @subscriptions, :locals => {:year => y}
 
