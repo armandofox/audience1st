@@ -20,8 +20,8 @@ Scenario: view correct order info
   Then I should see the following details for that order:
   | content                           |
   | Purchaser: Tom Foolery            |
-  | Comments: Pickup by: Al Foolery   |
   | Gift? No                          |
   | Order total: $19.00 (Credit card) |
-
+  And I should not see the following details for that order:
+  | Comments: Pickup by: Al Foolery   |
  
