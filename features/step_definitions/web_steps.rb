@@ -197,3 +197,9 @@ end
 Then /^show me the page$/ do
   save_and_open_page
 end
+
+And /^(?:|I )should not have the comment "(.*)" on (.+)$/ do |comment, page_name|
+  expect(page_name).to have_no_content(comment)
+end
+
+

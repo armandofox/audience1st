@@ -5,3 +5,12 @@ Then /customer "(.*) (.*)" should be checked in for (\d+) seats? on (.*)$/ do |f
   expect(customer.vouchers.where(:showdate => showdate, :checked_in => true).size).to eq(seats)
 end
 
+Then /^I should see the following details in door list:$/ do |table|
+    table.hashes.each do |h|
+      page.should have_content h[:content]
+    end
+end
+
+Then /^I should not see the following details in door list: "([^\"]*)"$/ do |text|
+  expect(page).not_to have_content(text)
+end
