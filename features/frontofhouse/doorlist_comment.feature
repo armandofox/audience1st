@@ -36,7 +36,8 @@ Scenario: Doorlist correctly reflects comments
   | Last  | First | Type | Qty | Notes |
   | Foolery | Tom | General | 2 | 2 wheelchairs |
   Then I should not see the following details in door list: 
-  2 wheelchairs
+  | Last  | First | Type | Qty | Notes |
+  | Foolery | Tom | General | 2 | " - Pickup by: Jason Gray;2 wheelchairs" |
 
   When I visit the home page for customer "Tom Foolery"
   And I select "2" from "cancelnumber" within "#voucher_1"
@@ -45,4 +46,3 @@ Scenario: Doorlist correctly reflects comments
   Then I should see the following details in door list:
   | Last  | First | Notes |
   | Foolery | Tom | 2 wheelchairs |
-
