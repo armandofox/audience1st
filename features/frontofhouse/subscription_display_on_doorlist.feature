@@ -1,9 +1,9 @@
 @javascript
 Feature: subscriber can make subscriber reservations and staff can change comments 
 
-  As a subscriber
-  So that I can conveniently enjoy subscription benefits
-  I want to make subscriber reservations online
+  As a boxoffice
+  So that I can change the comments for tickets redeemed from open vouchers
+  The doorlist should reflect the correct comments
 
 Background: show with at least one available performance
 
@@ -30,13 +30,13 @@ Scenario: Subscription tickets have correct comments
   And I visit the home page for customer "Tom Foolery"
   Then the "comments" field within "#voucher_1" should equal "2 wheelchairs needed"
   Then customer "Tom Foolery" should have the following comments:
-  | showdate         | comment      |
+  | showdate         | comment              |
   | May 3, 2010, 8pm | 2 wheelchairs needed |
 
   When I go to the door list page for May 3, 2010, 8:00pm
   Then I should see the following details in door list: 
-  | Last  | First | Type | Qty | Notes |
-  | Foolery | Tom | General | 2 | 2 wheelchairs needed |
+  | Last    | First | Type    | Qty | Notes |
+  | Foolery |   Tom | General | 2   | 2 wheelchairs needed |
   Then I should not see "No stairs please"
 
   When I visit the home page for customer "Tom Foolery"
