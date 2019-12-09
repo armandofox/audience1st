@@ -32,17 +32,15 @@ Scenario: Doorlist correctly reflects comments
   Given a performance of "Chicago" on April 2, 2010, 8:00pm
   And customer Tom Foolery has 2 "General" tickets
   When I go to the door list page for April 2, 2010, 8:00pm
-  Then I should see the following details in door list: 
+  Then I should see the following details in door list:
   | Last  | First | Type | Qty | Notes |
   | Foolery | Tom | General | 2 | 2 wheelchairs |
-  Then I should not see the following details in door list: 
-  | Last  | First | Type | Qty | Notes |
-  | Foolery | Tom | General | 2 | " - Pickup by: Jason Gray;2 wheelchairs" |
+
+  Then I should not see " - Pickup by: Jason Gray;2 wheelchairs"
 
   When I visit the home page for customer "Tom Foolery"
   And I select "2" from "cancelnumber" within "#voucher_1"
   And I press "Cancel" within "#voucher_1"
   When I go to the door list page for April 2, 2010, 8:00pm
-  Then I should see the following details in door list:
-  | Last  | First | Notes |
-  | Foolery | Tom | 2 wheelchairs |
+  Then I should not see "2 wheelchairs"
+

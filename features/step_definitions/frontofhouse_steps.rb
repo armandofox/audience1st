@@ -10,9 +10,3 @@ Then /^I should see the following details in door list:$/ do |table|
       page.should have_content h[:content]
     end
 end
-
-Then /^I should not see the following details in door list:$/ do |table|
-  table.hashes.each do |h|
-    page.should have_content h[:content]
-  end
-end
