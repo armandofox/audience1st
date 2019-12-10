@@ -19,12 +19,8 @@ class ReportsController < ApplicationController
 
   def advance_sales
     show_ids = params[:shows]
-    download = params[:download]
     redirect_to(reports_path, :alert => "Please select one or more shows.") if show_ids.blank?
     @shows = Show.where(:id => show_ids).includes(:showdates => :vouchers)
-    if (download == true)
-      redirect_to(advanced_details_reports_path, :shows => params[:shows])
-    end
   end
 
   def showdate_sales
@@ -64,10 +60,12 @@ class ReportsController < ApplicationController
   end
 
   def advanced_details
-    if params[:commit] == 'Go'
+    if params[:commit] == 'View'
       redirect_to advance_sales_reports_path, :shows => params[:shows]
       return
     end
+    # TODO: fix revenue info
+    # TODO: when multiple shows are selected at the same time
     # entity = Object.const_get(params[:klass])
     # entity = entity.find(params[:id])
     # vouchers = entity.vouchers.finalized
@@ -77,13 +75,7 @@ class ReportsController < ApplicationController
     show_ids = params[:shows]
     show = Show.where(:id => show_ids).includes(:showdates => :vouchers).first
 
-
-    puts "blah0"
-    puts show_ids
-
     output = CSV.generate do |csv|
-      puts "blah1"
-      puts show.showdates
       csv << %w[Show\ Name
                 Run\ Dates
                 Show\ Date
