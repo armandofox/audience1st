@@ -60,7 +60,7 @@ class ReportsController < ApplicationController
   end
 
   def advanced_details
-    if params[:commit] == 'View'
+    if params[:commit] == 'Display on Screen'
       redirect_to advance_sales_reports_path(params)
       return
     end
@@ -106,7 +106,7 @@ class ReportsController < ApplicationController
         end
       end
     end
-    
+
     y = (params[:id] || Time.current.year).to_i
     download_to_excel(output, "advanced_details#{y}")
   end
