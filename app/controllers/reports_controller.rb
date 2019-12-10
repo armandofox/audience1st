@@ -64,16 +64,6 @@ class ReportsController < ApplicationController
       redirect_to advance_sales_reports_path(params)
       return
     end
-    # TODO: fix revenue info
-    # TODO: when multiple shows are selected at the same time
-    # entity = Object.const_get(params[:klass])
-    # entity = entity.find(params[:id])
-    # vouchers = entity.vouchers.finalized
-    # sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype),
-    #                             entity.revenue_per_seat, entity.total_offered_for_sale)
-    y = (params[:id] || Time.current.year).to_i
-    show_ids = params[:shows]
-    show = Show.where(:id => show_ids).includes(:showdates => :vouchers).first
 
     output = CSV.generate do |csv|
       csv << %w[Show\ Name
@@ -88,32 +78,36 @@ class ReportsController < ApplicationController
                 Price
                 Gross\ Receipts]
 
-      show.showdates.each do |sd|
-        vouchers = sd.vouchers.finalized
-        sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype), sd.revenue_per_seat, sd.total_offered_for_sale)
-        sales.vouchers.each_pair do |vt,v|
-          csv << [
-              show.name,
-              (show.run_dates),
-              sd.thedate,
-              show.house_capacity,
-              sd.max_advance_sales,
-              vt.name,
-              (if vt.subscriber_voucher? then "YES" else "NO" end),
-              (if vt.valid_vouchers.find { |v| v.showdate_id == sd.id }.max_sales_for_type != ValidVoucher::INFINITE
-                  then vt.valid_vouchers.find { |v| v.showdate_id == sd.id }.max_sales_for_type
-               else
-                 ""
-               end),
-              v.size,
-              vt.price,
-              (ActionController::Base.helpers.number_to_currency(vt.price * v.size))
-          ]
+      show_ids = params[:shows]
+      show_ids.each do |show_id|
+        show = Show.where(:id => show_id).includes(:showdates => :vouchers).first
+        show.showdates.each do |sd|
+          vouchers = sd.vouchers.finalized
+          sales = Showdate::Sales.new(vouchers.group_by(&:vouchertype), sd.revenue_per_seat, sd.total_offered_for_sale)
+          sales.vouchers.each_pair do |vt,v|
+            csv << [
+                show.name,
+                (show.run_dates),
+                sd.thedate,
+                show.house_capacity,
+                sd.max_advance_sales,
+                vt.name,
+                (if vt.subscriber_voucher? then "YES" else "NO" end),
+                (if vt.valid_vouchers.find { |v| v.showdate_id == sd.id }.max_sales_for_type != ValidVoucher::INFINITE
+                    then vt.valid_vouchers.find { |v| v.showdate_id == sd.id }.max_sales_for_type
+                else
+                  ""
+                end),
+                v.size,
+                vt.price,
+                (ActionController::Base.helpers.number_to_currency(vt.price * v.size))
+            ]
+          end
         end
       end
-
-
     end
+    
+    y = (params[:id] || Time.current.year).to_i
     download_to_excel(output, "advanced_details#{y}")
   end
 
