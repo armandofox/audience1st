@@ -61,7 +61,7 @@ class ReportsController < ApplicationController
 
   def advanced_details
     if params[:commit] == 'View'
-      redirect_to advance_sales_reports_path, :shows => params[:shows]
+      redirect_to advance_sales_reports_path(params)
       return
     end
     # TODO: fix revenue info
