@@ -19,6 +19,7 @@
           %br
           = select_tag('shows',
             options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true)
+          = submit_tag 'View', :id => 'advance_sales', :class => 'btn btn-primary'
           = submit_tag 'Download to Excel', :id => 'advanced_details', :download => true, :class => 'btn btn-primary'
 
 .container
