@@ -28,7 +28,7 @@ class Seatmap < ActiveRecord::Base
     unavailable = unavailable.compact.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
-    %Q{ {"map": #{seatmap}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
+    %Q{ {"map": #{seatmap}, "rows": #{rows}, "columns": #{columns}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
   end
 
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
