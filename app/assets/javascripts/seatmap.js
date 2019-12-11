@@ -178,10 +178,12 @@ A1.seatmap = {
   ,centerMap: function() {
     // mandate a min-width on the seatmap container
     var screenWidth = $('#seating-charts-wrapper').width(); // computed width of container (should fill window)
-    var margin = parseInt($('div.seatCharts-cell').css('margin')); // eg "1px" => 1
-    var seatmapWidth = A1.seatmap.columns * (2 * margin + $('div.seatCharts-cell').width());
+    var seatWidth = $('div.seatCharts-cell').width();
+    var seatMargin = parseInt($('div.seatCharts-cell').css('margin')); // eg "1px" => 1
+    var mapMargin = parseInt($('#seating-charts-wrapper').css('margin'));
+    var seatmapWidth = A1.seatmap.columns * (seatWidth + 2*seatMargin) +  (2*mapMargin)+ 4;
     // enforce seatmap min width based on # of cols
-    $('#seating-charts-wrapper').css('min-width', (2 + seatmapWidth).toString() + 'px');
+    $('#seating-charts-wrapper').css('min-width', seatmapWidth.toString() + 'px');
     // if window wider than map, center map
     if (screenWidth > seatmapWidth) {
       var left = ($('#seating-charts-wrapper').width() - seatmapWidth) / 2;
