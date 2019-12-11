@@ -2,26 +2,32 @@
 [![Build Status](https://travis-ci.org/armandofox/audience1st.svg?branch=master)](https://travis-ci.org/armandofox/audience1st)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
 
-Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from
+Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Xiao Fu](https://github.com/fxdawnn),
+[Jasper Gan](https://github.com/jasgan)
+[CiCi Huang](https://github.com/chengchenghuang),
+[Xu Huang](https://github.com/Hexhu),
+[Xiaoyu He (Alan)](https://github.com/AlanHe-Xiaoyu),
 [Wayne Leung](https://github.com/WayneLeung12),
+[Autumn Li](https://github.com/autumnli11)
+[Yowsean Li](https://github.com/yowsean),
+[Anthony Ling](https://github.com/Ant1ng2),
 [Jason Lum](https://github.com/jayl109),
 [Sanket Padmanabhan](https://github.com/sanketq),
 [Andrew Sun](https://github.com/andrewsun98),
-[Jack Wan](https://github.com/WanNJ),
-[Jasper Gan](https://github.com/jasgan)
-[Yowsean Li](https://github.com/yowsean),
-[Anthony Ling](https://github.com/Ant1ng2),
 [Tanji Saraf-Chavez](https://github.com/tsarafchavez),
+[Jack Wan](https://github.com/WanNJ),
 [Alex Wang](https://github.com/raisindoc),
 [Kevin Yen](https://github.com/crazyberry7)
+[Casper Yang](https://github.com/cyang2020),
+[Hang (Arthur) Yin](https://github.com/LoserNoOne)
 
 
 # This information is for developers and deployers
 
 Perhaps you intended to [learn about Audience1st features and/or have us install and host it for you](https://docs.audience1st.com)?
 
-You only need the information on this page if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 4/Ruby 2.3 app deployed.
+You only need the information in this repo and its wiki if you are deploying and maintaining Audience1st yourself.  If so, this page assumes you are IT-savvy and provides the information needed to help you get this Rails 4/Ruby 2.5 app deployed.
 
 # Preparing to develop
 
