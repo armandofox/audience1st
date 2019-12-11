@@ -1,7 +1,7 @@
 #store
   #donation_panel
     = form_tag process_cart_path(@customer) do
-      - if @is_admin
+      - if @gAdminDisplay
         %h1.text-center Record Donation
         %label{:for => :account_code_id} Fund or Account:
         = select_tag 'account_code_id', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @account_code.id)

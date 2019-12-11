@@ -20,7 +20,7 @@
       - else
         = render :partial => 'ticket_menus'
 
-      = render :partial => 'retail' if @is_admin
+      = render :partial => 'retail' if @gAdminDisplay
 
       .form-group.form-row  
         %label.col-form-label.text-right.col-sm-4{:for => :donation} Additional tax-deductible donation

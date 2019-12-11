@@ -19,7 +19,7 @@
       #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @gOrderInProgress.purchaser}
       = render :partial => 'credit_card', :locals => {:name => @gOrderInProgress.purchaser.full_name}
 
-    - if @is_admin
+    - if @gAdminDisplay
       #other_payments.admin
         - if @gOrderInProgress.total_price > 0
           Or pay with check number: 

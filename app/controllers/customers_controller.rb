@@ -63,19 +63,17 @@ class CustomersController < ApplicationController
   end
 
   def edit
-    @is_admin = current_user.is_staff
     @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
   end
 
   def update
-    @is_admin = current_user.is_staff
     @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     # unless admin, remove "extra contact" fields
-    params[:customer] = delete_admin_only_attributes(params[:customer]) unless @is_admin
+    params[:customer] = delete_admin_only_attributes(params[:customer]) unless @gAdminDisplay
     notice = ''
     begin
       if ((newrole = params[:customer].delete(:role))  &&
@@ -85,7 +83,7 @@ class CustomersController < ApplicationController
         notice << "  Privilege level set to '#{newrole}.'"
       end
       # update generic attribs
-      @customer.created_by_admin = @is_admin # to skip validations if admin is editing
+      @customer.created_by_admin = @gAdminDisplay # to skip validations if admin is editing
       @customer.update_attributes!(params[:customer])
       @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
       # if success, and the update is NOT being performed by an admin,
