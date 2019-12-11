@@ -67,7 +67,9 @@
     margin: 0;
     padding: 0;
 }
-
+#seatmap {
+    z-index: 2;
+}
 /* WARNING: do not override the following, or seatmap background image won't display correctly */
 
 img.seating-charts-overlay {
