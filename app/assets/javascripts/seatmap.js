@@ -64,6 +64,7 @@ A1.seatmap = {
     $('#seatmap').removeData('seatCharts'); // flush old data
     $('#seatmap').html('');
     $('.seatCharts-legend').html('');
+    A1.seatmap.settings.legend.node = $('.legend-container .legend');
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
@@ -181,19 +182,26 @@ A1.seatmap = {
     var seatWidth = $('div.seatCharts-cell').width();
     var seatMargin = parseInt($('div.seatCharts-cell').css('margin')); // eg "1px" => 1
     var mapMargin = parseInt($('#seating-charts-wrapper').css('margin'));
-    var seatmapWidth = A1.seatmap.columns * (seatWidth + 2*seatMargin) +  (2*mapMargin)+ 4;
+    var slop = 6;               // slop added to width to ensure rows don't wrap
+    var left = 0;
+    var seatmapHeight = $('#seatmap').height();
+    var seatmapWidth = A1.seatmap.columns * (seatWidth + 2*seatMargin) +  (2*mapMargin);
     // enforce seatmap min width based on # of cols
-    $('#seating-charts-wrapper').css('min-width', seatmapWidth.toString() + 'px');
+    $('#seating-charts-wrapper').css('min-width', (slop + seatmapWidth).toString() + 'px');
     // if window wider than map, center map
-    if (screenWidth > seatmapWidth) {
-      var left = ($('#seating-charts-wrapper').width() - seatmapWidth) / 2;
-      $('img.seating-charts-overlay').css({"left": left});
-      $('#seatmap').css({"left": left});
+    if (screenWidth > slop + seatmapWidth) {
+      left = (screenWidth - seatmapWidth) / 2;
     } 
-    $('#seating-charts-wrapper').height($('#seatmap').height());
+    var legend = $('.legend-container');
+    $('#seating-charts-wrapper').height(legend.height() +
+                                        parseInt(legend.css('padding-top')) +
+                                        seatmapHeight);
     // always scale background image to match seatmap width.  image is expected to have
     // correct aspect ratio so vertical scaling will take care of itself.
-    $('img.seating-charts-overlay').css({"width": seatmapWidth});
+    $('img.seating-charts-overlay').css({"left": left, "width": seatmapWidth - 4});
+    $('#seatmap').css({"left": left});
+    // reposition the legend as well
+    $('.legend-container').css({"left": left, "top": 2 + seatmapHeight, "width": seatmapWidth - 4});
   }
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForSubscriberReservation: function() {
