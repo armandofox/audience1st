@@ -64,9 +64,16 @@
     position: absolute;
     top: 0;
     left: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /* WARNING: do not override the following, or seatmap background image won't display correctly */
+
+.map-container {
+    margin: 0;
+    padding: -1px;
+}
 
 img.seating-charts-overlay {
     border: 1px solid red;
