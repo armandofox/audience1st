@@ -2,25 +2,41 @@ class WalkupSalesController < ApplicationController
 
   before_filter :is_boxoffice_filter
 
-  def show
+  before_action do
     @showdate = Showdate.find params[:id]
+    @page_title = "Walkups: #{@showdate.thedate.to_formatted_s(:foh)}"
+  end
+  
+  include SeatmapsHelper
+
+  def show
     @valid_vouchers = @showdate.valid_vouchers_for_walkup
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
     @donation = params[:donation]
+    @seats = params[:seats]
+    # if reserved seating show, populate hidden field
+    if @showdate.has_reserved_seating?
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    end
   end
 
   def create
-    @showdate = Showdate.find params[:id]
     @order = Order.create(
       :walkup => true,
       :customer => Customer.walkup_customer,
       :purchaser => Customer.walkup_customer,
       :processed_by => current_user)
-    if ((amount = params[:donation].to_f) > 0)
-      @order.add_donation(Donation.walkup_donation amount)
+    if ((donation = params[:donation].to_f) > 0)
+      @order.add_donation(Donation.walkup_donation donation)
     end
-    @order.add_tickets_from_params(params[:qty], current_user)
+    seats = seats_from_params(params)
+    qtys = params[:qty]
+    @order.add_tickets_from_params(qtys, current_user, :seats => seats)
+    saved_params = {:qty => qtys, :donation => donation, :seats => display_seats(seats)} # in case have to retry
+    
+    return redirect_to(walkup_sale_path(@showdate,saved_params), :alert => t('store.errors.empty_order')) if
+      (donation.zero? && @order.vouchers.empty?)
 
     # process order using appropriate payment method.
     # if Stripe was used for credit card processing, it resubmits the original
@@ -40,7 +56,7 @@ class WalkupSalesController < ApplicationController
       @order.purchase_args = {:credit_card_token => params[:credit_card_token]}
     end
     
-    return redirect_to(walkup_sale_path(@showdate), :alert => "Cannot complete order: #{@order.errors.as_html}") unless @order.errors.empty?
+    return redirect_to(walkup_sale_path(@showdate, saved_params), :alert => "Cannot complete order: #{@order.errors.as_html}") unless @order.errors.empty?
 
     # all set to try the purchase
     begin
@@ -51,8 +67,9 @@ class WalkupSalesController < ApplicationController
         :purchasemethod => p,
         :logged_in_id => current_user.id)
       flash[:notice] = @order.walkup_confirmation_notice
+      flash[:notice] << ". Seats: #{params[:seats]}" unless params[:seats].blank?
       redirect_to walkup_sale_path(@showdate)
-    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError
+    rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError, Order::NotReadyError
       flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"
       @order.destroy
       redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
@@ -61,7 +78,6 @@ class WalkupSalesController < ApplicationController
 
   # process a change of walkup vouchers by moving them to another showdate, as directed
   def update
-    @showdate = Showdate.find params[:id]
     return redirect_to(walkup_sale_path(@showdate), :alert => "You didn't select any vouchers to transfer.") if params[:vouchers].blank?
     voucher_ids = params[:vouchers]
     begin
@@ -76,7 +92,6 @@ class WalkupSalesController < ApplicationController
   end
 
   def report
-    @showdate = Showdate.find params[:id]
     @vouchers = @showdate.walkup_vouchers.group_by(&:purchasemethod)
     @subtotal = {}
     @total = 0

@@ -26,6 +26,7 @@ class CheckinsController < ApplicationController
       @showdates = Showdate.all_showdates_for_seasons(year, year+1)
       @showdates << @showdate unless @showdates.include?(@showdate)
     end
+    @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
   end
 
   public

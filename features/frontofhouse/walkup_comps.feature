@@ -22,4 +22,5 @@ Scenario: Box office worker cannot give walkup comps
   Given I am logged in as boxoffice
   And I go to the walkup sales page for April 7, 2010, 8:00pm
   Then I should see "General" within "#walkup_tickets"
-  And I should see "Comp (1 left) (Box office manager only)" within "#walkup_tickets"
+  And I should see "Comp 1 left" within "#walkup_tickets"
+  And I should see "Comp Box Ofc Mgr Only" within "#walkup_tickets"
