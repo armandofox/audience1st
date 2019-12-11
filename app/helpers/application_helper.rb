@@ -45,7 +45,7 @@ module ApplicationHelper
   def display_order_in_progress?
     @gOrderInProgress &&
       %w(customers store sessions).include?(controller_name)  &&
-      action_name != 'place_order'
+      ! %w(place_order process_donation).include?(action_name)
   end
 
 

@@ -41,9 +41,19 @@ Scenario: donor not logged in and no previous account
   And I fill in the ".billing_info" fields with "Joe Mallon, 123 Fake St, Oakland, CA 94611, 555-1212, joe@joescafe.com"
   And I fill in "Donation amount" with "10"
   And I press "Charge Donation to Credit Card"
-
-  Then customer "Joe Mallon" should exist
+  Then I should see "Thank You for Your Purchase!"
+  And customer "Joe Mallon" should exist
   And customer "Joe Mallon" should have a donation of $10.00 to "General Fund"
   And I should not see "Back to My Tickets"
   And customer "Joe Mallon" should not be logged in
+  
+Scenario: admin logged in, records donation on behalf of patron
+
+  Given I am logged in as boxoffice manager
+  When I switch to customer "Joe Mallon"
+  And I follow "Donate"
+  And I fill in "Donation amount" with "9"
+  And I press "Charge Donation to Credit Card"
+  Then I should see "Thank You for Your Purchase!"
+  And customer "Joe Mallon" should have a donation of $9.00 to "General Fund"
   

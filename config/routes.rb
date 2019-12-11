@@ -125,7 +125,8 @@ Rails.application.routes.draw do
 
     # quick-donation neither requires nor sets customer-id:
 
-    match '/donate' => 'store#donate', :as => 'quick_donate', :via => [:get, :post]
+    get '/donate/(:customer_id)' => 'store#donate', :as => 'quick_donate'
+    post '/process_donation/(:customer_id)' => 'store#process_donation', :as => 'process_donation'
 
     # config options
 

@@ -5,7 +5,7 @@ class StoreController < ApplicationController
   
   skip_before_filter :verify_authenticity_token, :only => %w(show_changed showdate_changed)
 
-  before_filter :set_customer, :except => %w[donate]
+  before_filter :set_customer, :except => %w[process_donation]
   before_filter :is_logged_in, :only => %w[checkout place_order]
 
   #        ACTION                      INVARIANT BEFORE ACTION
@@ -30,6 +30,7 @@ class StoreController < ApplicationController
   def set_customer
     logged_in_user = current_user()
     specified_customer = Customer.find_by_id(params[:customer_id])
+#    byebug
     # OK to proceed given this URL?
     redirect_customer = resolve_customer_in_url(logged_in_user, specified_customer)
     if redirect_customer == specified_customer # ok to proceed as is
@@ -119,46 +120,41 @@ class StoreController < ApplicationController
   # This single action handles quick_donate: GET serves the form, POST places the order
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
-    unless (@customer = current_user)
+    if @customer == Customer.anonymous_customer
       # handle donation as a 'guest checkout', even though may end up being tied to real customer
       @customer = Customer.new
       session[:guest_checkout] = true
     end
-    return if request.get?
+  end
 
+  def process_donation
+    if params[:customer_id].blank?     # we got here via a logged-in customer
+      @customer = Customer.for_donation(params[:customer])
+    else
+      @customer = Customer.find params[:customer_id]
+    end
     # If donor doesn't exist, create them and marked created-by-admin
     # If donor exists, make that the order's customer.
     # Create an order consisting of just a donation.
-
     @amount = to_numeric(params[:donation])
-    unless @amount > 0
-      flash[:alert] = 'Donation amount must be provided'
-      render(:action => 'donate') and return
-    end
-    @customer = Customer.for_donation(params[:customer])
-    unless @customer.valid_as_purchaser?
-      flash[:alert] = ["Incomplete or invalid donor information: ", @customer.errors.as_html]
-      render(:action => 'donate') and return
-    end
+    return redirect_to(quick_donate_path(@customer), :alert => 'Donation amount must be provided')  unless
+      @amount > 0
+    return redirect_to(quick_donate_path(@customer), :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}") unless
+      @customer.valid_as_purchaser?
     # Given valid donation, customer, and charge token, create & place credit card order.
     @gOrderInProgress = Order.new_from_donation(@amount, AccountCode.default_account_code, @customer)
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
     @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
     @gOrderInProgress.processed_by = @customer
     @gOrderInProgress.comments = params[:comments].to_s
-    unless @gOrderInProgress.ready_for_purchase?
-      flash[:alert] = @gOrderInProgress.errors.as_html
-      @customer =  (current_user() || Customer.new)
-      render(:action => 'donate') and return
-    end
+    return redirect_to(quick_donate_path(@customer), :alert => @gOrderInProgress.errors.as_html)     unless @gOrderInProgress.ready_for_purchase?
     if finalize_order(@gOrderInProgress)
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
       render :action => 'place_order'
     else
-      @customer =  (current_user() || Customer.new)
-      render :action => 'donate'
+      redirect_to quick_donate_path(@customer), :alert => @gOrderInProgress.errors.as_html
     end
   end
 
