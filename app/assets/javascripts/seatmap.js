@@ -176,20 +176,22 @@ A1.seatmap = {
     }      
   }
   ,centerMap: function() {
-    // computed seatmap with - must be consistent with seatmap.css
-    //var screenWidth = $('#seatmap').width(); // computed width of container (should fill window)
+    // mandate a min-width on the seatmap container
     var screenWidth = $('#seating-charts-wrapper').width(); // computed width of container (should fill window)
     var margin = parseInt($('div.seatCharts-cell').css('margin')); // eg "1px" => 1
     var seatmapWidth = A1.seatmap.columns * (2 * margin + $('div.seatCharts-cell').width());
     // enforce seatmap min width based on # of cols
-    $('#seating-charts-wrapper').css('min-width', seatmapWidth.toString() + 'px');
+    $('#seating-charts-wrapper').css('min-width', (2 + seatmapWidth).toString() + 'px');
     // if window wider than map, center map
     if (screenWidth > seatmapWidth) {
       var left = ($('#seating-charts-wrapper').width() - seatmapWidth) / 2;
-      $('#seating-charts-wrapper img.seating-charts-overlay').css({"left": left, "width": seatmapWidth});
+      $('img.seating-charts-overlay').css({"left": left});
       $('#seatmap').css({"left": left});
     } 
     $('#seating-charts-wrapper').height($('#seatmap').height());
+    // always scale background image to match seatmap width.  image is expected to have
+    // correct aspect ratio so vertical scaling will take care of itself.
+    $('img.seating-charts-overlay').css({"width": seatmapWidth});
   }
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForSubscriberReservation: function() {
