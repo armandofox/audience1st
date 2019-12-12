@@ -139,7 +139,7 @@ end
 
 Then /^the "([^\"]*)" field(?: within "([^\"]*)")? should (contain|equal) "([^\"]*)"$/ do |field, selector, equality_check, value|
   with_scope(selector) do
-    val = find_field(field).value
+    val = find_field(field, :disabled => :all).value
     if equality_check =~ /equal/
       expect(val).to eq(value)
     else

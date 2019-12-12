@@ -49,4 +49,4 @@ Feature: Sell walkup tickets
     Then I should see "Transaction NOT processed"
     And I should see "General 3 left"
     And I should be on the walkup sales page for October 1, 2015, 7:00pm
-    And I should see "32.00" within "#total"
+    And the "total" field should equal "32.00"
