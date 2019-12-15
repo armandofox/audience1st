@@ -11,10 +11,13 @@ view on your WordPress-based website by using any WordPress plugin
 that can consume and display a calendar feed in "ICS" or "iCalendar"
 format.
 
-We recommend the **ICS Calendar** plugin from Room34 Designs.  It is
+We recommend the [ICS
+Calendar](https://wordpress.org/plugins/ics-calendar/) 
+WordPress plugin from Room34 Designs.  It is
 free to install and use, or you can upgrade to the Pro version that
-has additional features.  The free version displays events from one or
-more feeds, but does not allow you to manually create one-off events
+has additional features.  The free version is sufficient for use with 
+Audience1st; it displays events from one or
+more feeds, but does not allow you to manually create events
 (for example, a party or fundraiser that is not also listed as an
 event in Audience1st).
 
