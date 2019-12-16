@@ -3,7 +3,7 @@ class Showdate < ActiveRecord::Base
   # for reservation list
 
   def grouped_vouchers
-    perf_vouchers = self.advance_sales_vouchers.includes(:customer)
+    perf_vouchers = self.finalized_vouchers.includes(:customer)
     total = perf_vouchers.size
     vouchers = perf_vouchers.group_by do |v|
       "#{v.customer.last_name},#{v.customer.first_name},#{v.customer_id},#{v.vouchertype_id}"
@@ -13,17 +13,34 @@ class Showdate < ActiveRecord::Base
 
   # reporting
 
+  def total_sales
+    finalized_vouchers
+  end
+
+  def advance_sales_vouchers
+    total_sales.advance_sales
+  end
+  def walkup_sales_vouchers
+    total_sales.walkup_sales
+  end
+
+  def num_checked_in
+    total_sales.checked_in.count
+  end
+  def num_waiting_for
+    [0, advance_sales_vouchers.size - num_checked_in].max
+  end
+
   def sales_by_type(vouchertype_id)
-    return self.vouchers.where('vouchertype_id = ?', vouchertype_id).count
+    total_sales.where('vouchertype_id = ?', vouchertype_id).count
   end
 
   def revenue
-    self.vouchers.inject(0) {|sum,v| sum + v.amount.to_f}
+    total_sales.inject(0) {|sum,v| sum + v.amount.to_f}
   end
 
   def revenue_per_seat
-    all_vouchers = self.vouchers.joins(:vouchertype).
-      where(:vouchertypes => {:category => ['comp', 'revenue']})
+    all_vouchers = total_sales.where(:vouchertypes => {:category => ['comp', 'revenue']})
     total_seated = comp_seats + nonsubscriber_revenue_seats
     if (revenue.zero? || total_seated.zero?) then 0.0 else revenue/total_seated end
   end
@@ -31,11 +48,11 @@ class Showdate < ActiveRecord::Base
   private
   
   def comp_seats
-    self.vouchers.comp.count
+    total_sales.comp.count
   end
 
   def nonsubscriber_revenue_seats
-    self.vouchers.revenue.count
+    total_sales.revenue.count
   end
 
   public
@@ -69,24 +86,6 @@ class Showdate < ActiveRecord::Base
   def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
 
   def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
-
-  def total_sales
-    vouchers.finalized
-  end
-
-  def advance_sales_vouchers
-    finalized_vouchers.advance_sales
-  end
-  def walkup_sales_vouchers
-    finalized_vouchers.walkup_sales
-  end
-
-  def num_checked_in
-    finalized_vouchers.checked_in.count
-  end
-  def num_waiting_for
-    [0, advance_sales_vouchers.size - num_checked_in].max
-  end
 
   
 

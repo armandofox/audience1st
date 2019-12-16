@@ -5,7 +5,7 @@ class Show < ActiveRecord::Base
 
   has_many :showdates, -> { order('thedate') }, :dependent => :destroy
   has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
-  has_many :vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes) }, :through => :showdates
+  has_many :vouchers, -> { joins(:vouchertype).merge(Voucher.finalized).merge(Vouchertype.seat_vouchertypes) }, :through => :showdates
   has_many :imports
   
   validates_presence_of :opening_date, :closing_date, :listing_date
