@@ -13,7 +13,7 @@ When /I view revenue by payment type from "(.*)" to "(.*)"$/ do |from,to|
   steps %Q{
 When I visit the reports page
 And I select "#{from} to #{to}" as the "txn_report_dates" date range
-And I press "Display on Screen"
+And I press "Display on Screen" within "#financial_reports"
 }
 end
 
