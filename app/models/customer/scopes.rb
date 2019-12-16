@@ -18,8 +18,8 @@ class Customer < ActiveRecord::Base
   }
   
   scope :purchased_any_vouchertypes, ->(vouchertype_ids) {
-    joins(:vouchertypes,:vouchers).
-    where('vouchertypes.id' => vouchertype_ids).
+    joins(:vouchers).
+    where('items.vouchertype_id' => vouchertype_ids).
     where('items.finalized' => true)
   }
   
