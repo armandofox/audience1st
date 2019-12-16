@@ -19,7 +19,7 @@ class ShowAdvanceSalesReport
         'Voucher Type',
         'Subscriber Voucher?',
         'Max Sales for voucher type',
-        'Number Sold',
+        'Number Sold or Reserved',
         'Price',
         'Gross Receipts'
         ]
@@ -40,7 +40,7 @@ class ShowAdvanceSalesReport
               (if vt.subscriber_voucher? then "YES" else "" end),
               (if max_sales != ValidVoucher::INFINITE then max_sales else "" end),
               v.size,
-              vt.price,
+              (sprintf "%.02f", vt.price),
               (sprintf "%.02f", vt.price * v.size)
             ]
           end

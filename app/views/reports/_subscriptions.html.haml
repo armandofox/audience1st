@@ -26,4 +26,4 @@
         %td.text-right= number_to_currency tprice  
 
   = link_to 'Download to Excel', subscriber_details_reports_path(:id => year, :download => true), :class => 'btn btn-primary'
-
+  = popup_help_for 'download_to_excel'

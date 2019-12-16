@@ -1,38 +1,36 @@
 - if @next_showdate.kind_of?(Showdate)
-  .container
-    %h1 Advance Sales and Orders
+  #advance_sales_report
+    %h2 Advance Sales
     = form_tag advance_sales_reports_path, :method => :get do
-      %fieldset#advance_sales_report
-        %legend Advance Sales
-        %p 
-          (Shift-click to select multiple productions)
-          %br
-          = select_tag('shows', |
-            options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true) 
-          = submit_tag 'Display on Screen', :id => 'advance_sales', :class => 'btn btn-primary'
-          = submit_tag 'Download', :class => 'btn btn-primary'
+      %p 
+        (Shift-click to select multiple productions)
+        %br
+        = select_tag('shows', |
+          options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true) 
+        = submit_tag 'Display on Screen', :id => 'advance_sales', :class => 'btn btn-primary'
+        = submit_tag 'Download to Excel', :class => 'btn btn-primary'
+        = popup_help_for 'download_to_excel'
 
-.container
+#unfulfilled_orders
+  %h2 Orders Needing Mail Fulfillment 
   = form_tag unfulfilled_orders_reports_path, :method => :get do
-    %fieldset#unfulfilled_orders
-      %legend Orders Needing Mail Fulfillment 
-      = submit_tag 'Generate Listing', :class => 'btn btn-primary'
+    = submit_tag 'Generate Listing', :class => 'btn btn-primary'
 
-.container#financial_reports
-  %h1 Revenue By Payment Method and Account Code
+#financial_reports
+  %h2 Revenue By Payment Method and Account Code
   = form_tag revenue_by_payment_method_reports_path, :method => :get, :class => 'form-inline' do
     %label.col-form-label.px-2 Select Dates (3 month maximum window)
     = select_date_with_shortcuts 'txn_report_dates', :from => @from, :to => @to
     .px-2= submit_tag 'Display on Screen', :class => 'btn btn-primary'
-    -# .px-2= submit_tag 'Download as Excel', :class => 'btn btn-primary px-2'
+    -# .px-2= submit_tag 'Download to Excel', :class => 'btn btn-primary px-2'
 
-.container#customer_lists
-  %h1 Customer Lists
+#customer_lists
+  %h2 Customer Lists
   = select_tag 'special_report_name', options_for_select(@special_report_names, :selected => 'Select report...'), 'data-submit' => attendance_reports_path, :class => 'form-control form-control-lg'
   #report_body
 
-.container#subscription_counts
-  %h1
+#subscription_counts
+  %h2
     Subscription Counts for
     - y = Time.this_season
     = select_tag('year', options_for_seasons(y-5, y+1), :onchange => "\$('#subscriber_stats').load('#{subscriber_details_reports_path}', 'id=' + \$('#year').val())" )

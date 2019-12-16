@@ -3,7 +3,8 @@
   = will_paginate @orders, :previous_label => '&laquo;', :next_label => '&raquo;', :container => false
   = form_tag report_orders_path, :method => :get do
     = hidden_field_tag 'txn_report_dates', Time.range_to_params(@from,@to)
-    = submit_tag 'Download Results as Excel'
+    = submit_tag 'Download to Excel'
+    = popup_help_for 'download_to_excel'
 
 .container
   %table.a1-table.hilite
