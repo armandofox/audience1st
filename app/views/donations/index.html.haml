@@ -19,7 +19,9 @@
     = render :partial => 'donation_search', :locals => {:params => @params}
     .form-row
       = submit_tag "Search", :class => 'btn btn-success mx-1'
-      = submit_tag(@export_label, :class => 'btn btn-primary mx-1') unless @donations.empty?
+      - unless @donations.empty?
+        = submit_tag 'Download to Excel', :class => 'btn btn-primary mx-1'
+        = popup_help_for 'download_to_excel'
       = link_to "Add/Edit Account Codes&hellip;".html_safe, account_codes_path, :class => 'btn btn-primary mx-1'
 
 .container

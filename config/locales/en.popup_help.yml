@@ -8,6 +8,11 @@ en:
       Lets you switch between viewing the site with admin privileges vs. how
       a regular patron would see it.  
 
+    download_to_excel: >
+
+      Download this report as a .csv (comma-separated values) file, which can
+      be opened in Microsoft Excel, Google Sheets, or any spreadsheet app.
+
     # Logging in
 
     secret_question: >
