@@ -15,8 +15,8 @@ A1.seatmap = {
     ,naming: { top: false, left: false }
     ,legend: {          // can't set statically above, since relies on character keys in items hash to be defined as local vars - ugh
       items: [
-        ['r', 'available', 'Open'],
-        ['a', 'available', 'Open, accessible']
+        ['r', 'available', 'Available'],
+        ['a', 'available', 'Available accessible']
       ]
     }
     ,click: function(evt) {
@@ -37,6 +37,8 @@ A1.seatmap = {
       case 'unavailable':         // ignore; seat is taken
         return('unavailable');
         break;
+      default:
+        return this.style();
       }
     }
   }
@@ -180,8 +182,11 @@ A1.seatmap = {
     // mandate a min-width on the seatmap container
     var screenWidth = $('#seating-charts-wrapper').width(); // computed width of container (should fill window)
     var seatWidth = $('div.seatCharts-cell').width();
-    var seatMargin = parseInt($('div.seatCharts-cell').css('margin')); // eg "1px" => 1
-    var mapMargin = parseInt($('#seating-charts-wrapper').css('margin'));
+    // CAUTION: because Firefox doesn't properly return the css 'margin' property (it returns
+    // an empty string), the following 2 lines assume the left and right margins are the
+    // same for div.seatCharts-cell and #seating-charts-wrapper.
+    var seatMargin = parseInt($('div.seatCharts-cell').css('margin-left')); // eg "1px" => 1
+    var mapMargin = parseInt($('#seating-charts-wrapper').css('margin-left'));
     var slop = 6;               // slop added to width to ensure rows don't wrap
     var left = 0;
     var seatmapHeight = $('#seatmap').height();
