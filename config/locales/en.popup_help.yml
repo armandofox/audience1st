@@ -82,6 +82,12 @@ en:
       You can 'tag' customers with labels of your choice, such as Volunteer,
       Merchant Partner, etc.  Labels can then be used in report generation.
 
+    filter_by_valid_mailing_address: >
+
+      A valid mailing address is one in which the street, city, and state are
+      all non-blank.  The zip code could be blank.  To enforce a nonblank zip code,
+      specify a value in the "Limit to zip codes starting with" option.
+
     filter_by_zip: >
 
       Patterns that match the start of a zip code, separated by

@@ -102,8 +102,7 @@ class Report
       when :exclude_e_blacklist then @relation = @relation.where('customers.e_blacklist' => false)
       when :require_valid_email then @relation = @relation.where.not('customers.email' => [nil,''])
       when :require_valid_address then @relation = @relation.where.
-          not('customers.street' => [nil,'']).
-          not('customers.city' => [nil,'']).not('customers.state' => [nil,''])
+          not('customers.street' => [nil,''], 'customers.city' => [nil,''], 'customers.state' => [nil,''])
       when :include
         if value =~ /non-subscribers/i
           @relation = @relation.nonsubscriber_during(Time.this_season)
