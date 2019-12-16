@@ -1,5 +1,4 @@
 = themed
-= render :partial => 'store/check_javascript'
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
 - if @seatmap_info
@@ -20,12 +19,12 @@
       - else
         = render :partial => 'ticket_menus'
 
-      = render :partial => 'retail' if @is_admin
+      = render :partial => 'retail' if @gAdminDisplay
 
       .form-group.form-row  
         %label.col-form-label.text-right.col-sm-4{:for => :donation} Additional tax-deductible donation
         .input-group.col-md-2.col-xs-2
-          = text_field_tag 'donation', '', :type => :number, :class => 'itemQty text-right form-control form-control-sm'
+          = text_field_tag 'donation', '', :type => 'number', :size => 4, :class => 'itemQty text-right form-control form-control-sm a1-no-spinner'
           .input-group-append
             %span.input-group-text.form-control-sm .00
         .col-sm-6

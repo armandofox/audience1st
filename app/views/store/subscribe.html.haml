@@ -1,5 +1,4 @@
 = themed
-= render :partial => 'store/check_javascript'
 = sales_banners_for :subscription, @subscriber, @next_season_subscriber
 
 - if @nobody_really_logged_in
@@ -8,7 +7,7 @@
     = link_to "Sign in to your account", login_path
     to manage your reservations and get your Subscriber benefits.
 
-#store
+#store.container
   = render :partial => 'event_types'
 
   %h1.text-center 
@@ -22,28 +21,25 @@
 
       - @subs_to_offer.each do |v|
         .form-row
-          .col-md-5.text-right
+          .col-md-4.text-right
             %label.col-form-label{:for => "valid_voucher_#{v.id}"}= v.name_with_price
           .col-md-1
             = select_tag("valid_voucher[#{v.id}]", options_for_select(0..20), :class => 'itemQty form-control form-control-sm', 'data-price' => v.price)
           .col-md-6
 
-      .form-row  
-        .col-md-5.text-right
-          %label.col-form-label{:for => :donation} Additional tax-deductible donation
-        .col-md-2
-          .input-group
-            = text_field_tag 'donation', '', :size => 3, :class => 'itemQty form-control form-control-sm'
-            .input-group-append.form-control-sm
-              %span.input-group-text .00
-        .col-md-5
+      .form-group.form-row  
+        %label.col-form-label.text-right.col-md-4{:for => :donation} Additional tax-deductible donation
+        .input-group.col-md-2.col-xs-2
+          = text_field_tag 'donation', '', :type => 'number', :size => 4, :class => 'itemQty text-right form-control form-control-sm a1-no-spinner'
+          .input-group-append
+            %span.input-group-text.form-control-sm .00
+        .col-md-6
 
-      .form-row#orderTotal
-        .col-md-5.text-right
+      .form-group.form-row#orderTotal
+        .col-md-4.text-right
           %label.col-form-label.strong{:for=>:total} Order Total:
-        .col-md-2
+        .col-md-1.col-xs-1
           = text_field_tag 'total', '0.00', :size => 6, :disabled => true, :class => 'form-control form-control-sm'
-        .col-md-5
 
       - if Option.allow_gift_subscriptions?
         .form-group.form-row

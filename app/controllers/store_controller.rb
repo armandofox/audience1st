@@ -30,12 +30,10 @@ class StoreController < ApplicationController
   def set_customer
     logged_in_user = current_user()
     specified_customer = Customer.find_by_id(params[:customer_id])
-#    byebug
     # OK to proceed given this URL?
     redirect_customer = resolve_customer_in_url(logged_in_user, specified_customer)
     if redirect_customer == specified_customer # ok to proceed as is
       @customer = specified_customer
-      @is_admin = is_boxoffice()
     else      
       redirect_to url_for(params.merge(:customer_id => redirect_customer.id, :only_path => true))
     end
@@ -101,7 +99,7 @@ class StoreController < ApplicationController
     @next_season_subscriber = @customer.next_season_subscriber?
     reset_shopping unless @promo_code = params[:promo_code]
     # which subscriptions/bundles are available now?
-    if @is_admin
+    if @gAdminDisplay
       this_season = Time.this_season
       @subs_to_offer = ValidVoucher.bundles([this_season, this_season+1])
     else
@@ -218,7 +216,7 @@ class StoreController < ApplicationController
       render :action => :shipping_address
       return
     end
-    @recipient.created_by_admin = @is_admin if @recipient.new_record?
+    @recipient.created_by_admin = @gAdminDisplay if @recipient.new_record?
     @recipient.save!
     @gOrderInProgress.customer = @recipient
     @gOrderInProgress.save!
@@ -237,7 +235,7 @@ class StoreController < ApplicationController
     redirect_to store_path, :alert => t('store.errors.empty_order') if @gOrderInProgress.cart_empty?
     # only show timer if cart has any vouchers for specific dates
     @page_title = "Review Order For #{@customer.full_name}"
-    @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
+    @sales_final_acknowledged = @gAdminDisplay || (params[:sales_final].to_i > 0)
     @checkout_message = (@gOrderInProgress.includes_reserved_vouchers? ? Option.precheckout_popup : '')
     @order_contains_class_order = @gOrderInProgress.includes_enrollment?
     @allow_pickup_by_other = (@gOrderInProgress.includes_vouchers? && !@gOrderInProgress.gift?)
@@ -341,11 +339,11 @@ class StoreController < ApplicationController
       meth = Purchasemethod.get_type_by_name('web_cc')
       args = { :credit_card_token => params[:credit_card_token] }
     when /check/i
-      return redirect_to(checkout_path, :alert => "Only box office can process check payments") unless @is_admin
+      return redirect_to(checkout_path, :alert => "Only box office can process check payments") unless @gAdminDisplay
       meth = Purchasemethod.get_type_by_name('box_chk')
       args = {:check_number => params[:check_number] }
     when /cash/i
-      return redirect_to(checkout_path, :alert => "Only box office can process cash payments") unless @is_admin
+      return redirect_to(checkout_path, :alert => "Only box office can process cash payments") unless @gAdminDisplay
       meth = Purchasemethod.get_type_by_name('box_cash')
       args = {}
     when /comp/i
@@ -364,7 +362,7 @@ class StoreController < ApplicationController
     @what = sd.show.event_type
     @sd = sd
     @sh = @sd.show
-    if @is_admin
+    if @gAdminDisplay
       @all_showdates = @sh.showdates
       setup_ticket_menus_for_admin
     else
@@ -412,7 +410,7 @@ class StoreController < ApplicationController
   end
 
   def add_retail_items_to_cart
-    return unless @is_admin && params[:retail].to_f > 0.0
+    return unless @gAdminDisplay && params[:retail].to_f > 0.0
     @gOrderInProgress.errors.add(:base, "Retail items can't be included in a gift order") and return if
       params[:gift]
     r = RetailItem.from_amount_description_and_account_code_id(

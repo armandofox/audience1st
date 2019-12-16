@@ -18,6 +18,11 @@
     = csrf_meta_tags
 
   %body{:id=>"#{controller.controller_name}_#{action_name}", :class => ('maintenance' if @gMaintMode)}
+    %noscript
+      %p.lead.text-danger.border.border-danger
+        JavaScript appears to be disabled in your browser.  
+        This site requires JavaScript.  Please enable 
+        JavaScript in your browser and reload this page.
 
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     = hidden_field_tag 'accessibility_advisory_for_reserved_seating', Option.accessibility_advisory_for_reserved_seating
@@ -47,14 +52,15 @@
               = render :partial => 'store/cart'
             = render :partial => 'components/notices'
             = yield
-      - if current_user
-        #welcome_header.pt-2.container= render :partial => 'layouts/login_banner'
+        - if current_user
+          #welcome_header.pt-2= render :partial => 'layouts/login_banner'
 
     #footer
       %p
         Powered by&nbsp;
         = link_to 'Audience1st', 'http://www.audience1st.com', :target => '_blank'
         - unless (s = Option.privacy_policy_url).blank?
-          = link_to "&nbsp;&bull;&nbsp; Terms of Use & Privacy Policy".html_safe, s
+          \&nbsp;&bull;&nbsp;
+          = link_to 'Terms of Use & Privacy Policy', s
         \&nbsp;&bull;&nbsp;
         = link_to Option.venue, Option.venue_homepage_url

@@ -27,7 +27,7 @@
     = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
   .text-center.pt-2
-    - if @is_admin
+    - if @gAdminDisplay
       = link_to 'Back to Customer List', customers_path, :class => 'btn btn-primary'
       = link_to 'Back to This Customer', customer_path(@gOrderInProgress.customer), :class => 'btn btn-primary'
     - else
