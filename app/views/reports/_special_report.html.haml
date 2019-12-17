@@ -1,12 +1,11 @@
 = form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report' do
   = hidden_field_tag :authenticity_token, form_authenticity_token
-  %fieldset{:id => name}
-    %legend= name.humanize.capitalize
+  %div.border.m-2.py-2{:id => name}
     = hidden_field_tag 'report_name', name
     = render :partial => "reports/special/#{name}"
-  = render :partial => 'output_options'
-  %fieldset.generate_report
-    %legend What to do with the results
+  #output_options.border.m-2.p-2= render :partial => 'output_options'
+  .generate_report.border.m-2.p-2
+    %h3 What to do with the results
 
     = radio_button_tag 'what', 'estimate'
     %label.plain{:for => 'what_estimate'} Estimate number of matches
