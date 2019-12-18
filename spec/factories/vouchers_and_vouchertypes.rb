@@ -18,14 +18,14 @@ FactoryBot.define do
     changeable true
     
     factory :revenue_vouchertype do
-      name 'Revenue vouchertype'
+      sequence(:name)  { |n| "Revenue vouchertype #{n}" }
       offer_public Vouchertype::ANYONE
       category 'revenue'
       price 12
     end
 
     factory :comp_vouchertype do
-      name 'Free'
+      sequence(:name) { |n| "Comp #{n}" }
       category 'comp'
       price 0
       offer_public Vouchertype::BOXOFFICE
@@ -33,14 +33,14 @@ FactoryBot.define do
 
     factory :vouchertype_included_in_bundle do
       offer_public Vouchertype::BOXOFFICE
-      name 'Subscriber voucher'
+      sequence(:name) { |n| "Subscriber voucher #{n}" }
       category 'subscriber'
       price 0
     end
 
     factory :nonticket_vouchertype do
       offer_public Vouchertype::ANYONE
-      name 'nonticket product'
+      sequence(:name) { |n| "nonticket product #{n}" }
       category 'nonticket'
       price 10
     end
@@ -49,7 +49,7 @@ FactoryBot.define do
       transient do
         including { Hash.new }
       end
-      name 'Bundle'
+      sequence(:name) { |n| "Bundle #{n}" }
       category 'bundle'
       price 50
       offer_public Vouchertype::ANYONE
