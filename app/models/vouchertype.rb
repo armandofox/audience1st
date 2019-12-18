@@ -18,7 +18,9 @@ class Vouchertype < ActiveRecord::Base
   SINGLE_TICKET_CATEGORIES = %w(revenue comp).freeze
   
   validates_length_of :name, :within => 3..NAME_LIMIT, :message => "Voucher type name must be between 3 and #{NAME_LIMIT} characters"
+  validates_uniqueness_of :name, :scope => :season
   validates_numericality_of :price, :greater_than => 0, :if => :revenue?
+  validates_numericality_of :price
   validates_numericality_of :season, :in => 1900..2100
   #validates_presence_of(:account_code, :if => lambda { |v| v.price != 0 },
   #:message => "Vouchers that create revenue must have an account code")
