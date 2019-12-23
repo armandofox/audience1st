@@ -115,7 +115,7 @@ class StoreController < ApplicationController
       AccountCode.default_account_code
   end
 
-  # This single action handles quick_donate: GET serves the form, POST places the order
+  # Serve quick_donate page; POST calls #process_donation
   def donate
     reset_shopping                 # even if order in progress, going to donation page cancels it
     if @customer == Customer.anonymous_customer

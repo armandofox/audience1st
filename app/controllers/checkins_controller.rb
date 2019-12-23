@@ -17,9 +17,9 @@ class CheckinsController < ApplicationController
       @showdate = Showdate.current_or_next(:grace_period => 2.hours)
       if @showdate.nil?
         flash[:alert] = "There are no shows this season eligible for check-in right now.  Please add some."
-        redirect_to shows_path
+        return redirect_to(shows_path)
       else
-        redirect_to params.to_hash.merge(:id => @showdate.id)
+        return redirect_to(params.to_hash.merge(:id => @showdate.id))
       end
     else
       year = Time.current.year

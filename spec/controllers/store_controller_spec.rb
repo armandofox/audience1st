@@ -96,22 +96,20 @@ describe StoreController do
     end
   end
 
-  describe 'quick donation' do
+  describe 'quick donation with nonexistent customer', focus: true do
     before :each do
-      @new_valid_customer = {
-        :first_name => 'Joe', :last_name => 'Mallon',
-        :street => '123 Fake St', :city => 'Oakland', :state => 'CA',
-        :zip => '94111', :day_phone => '510-999-9999', :eve_phone => '333-3333'}
+      @new_valid_customer = build(:customer, :last_name => 'Zzxx')
     end
     shared_examples_for 'failure' do
-      before :each do ; @count = Customer.count(:all) ; end
-      it 'redirects' do ; expect(response).to render_template 'store/donate' ;  end
+      before :each do ; @count = Customer.all.size ; end
+      it 'redirects' do
+        expect(response).to  redirect_to(quick_donate_path(Customer.find_by(:last_name => 'Zzxx')))
+      end
       it 'shows error messages' do ; expect(render_multiline_message(flash[:alert])).to match(@alert) ; end
-      it 'does not create new customer' do ; expect(Customer.count(:all)).to eq(@count) ; end
+      it 'does not create new customer' do ; expect(Customer.all.size).to eq(@count) ; end
     end
     context 'with invalid donation amount' do
       before :each do
-        @count = Customer.count(:all)
         @alert = /Donation amount must be provided/
         post :donate, {:customer => @new_valid_customer}
       end
@@ -119,15 +117,15 @@ describe StoreController do
     end
     context 'when new customer not valid as purchaser' do
       before :each do
-        @new_valid_customer.delete(:city)
+        @new_valid_customer.city = nil
         @alert = /Incomplete or invalid donor information:/
         post :donate, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
       end
       it_should_behave_like 'failure'
     end
-    context 'when credit card token invalid' do
-      before :each do
-        @alert = /Invalid credit card transaction/
+    describe 'when credit card token invalid' do
+      before(:each) do
+        @alert = /Invalid credit card/
         allow(Stripe::Charge).to receive(:create).and_raise(Stripe::StripeError)
         post :donate, {:customer => @new_valid_customer, :donation => 5}
       end

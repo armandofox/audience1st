@@ -72,7 +72,7 @@ module ApplicationHelper
   # String elements are separated with +sep+.
   # Array elements become embedded lists.
   def render_multiline_message(msg,sep="<br/>\n")
-    (msg.kind_of?(Array) ? msg.flatten.join(sep.html_safe) : msg).
+    (msg.kind_of?(Array) ? msg.flatten.join(sep.html_safe) : msg.to_s).
       html_safe
   end
   
