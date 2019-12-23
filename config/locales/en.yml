@@ -237,6 +237,14 @@ en:
       empty_order: >
         There are no items in your order.
 
+      not_enough_seats_selected: >
+        Number of seats selected (%{seats}) doesn't match number of tickets specified (%{tickets})
+
+      not_enough_seats:
+        zero:  "No more seats are available for this performance."
+        one:   "Only one seat is available for this performance."
+        other: "Only %{count} seats are available for this performance."
+
   options:
 
     integration_warning: >

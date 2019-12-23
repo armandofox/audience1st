@@ -116,10 +116,25 @@ class Order < ActiveRecord::Base
   def add_tickets_from_params(valid_voucher_params, customer, promo_code: '', seats: [])
     return unless valid_voucher_params
     seats2 = seats.dup
-    # error unless number of seats matches number of requested tickets
     total_tickets = valid_voucher_params.values.map(&:to_i).sum
-    if !seats2.empty?
-      self.errors.add(:base, "#{total_tickets} tickets requested but #{seats2.length} seat assignments provided") unless total_tickets == seats2.length
+    # Ugly: do overall capacity check here; per-vouchertype capacity checks will be
+    # done in add_tickets. This is ugly because we must allow "boxoffice override" both
+    # here and there.
+    if seats2.empty?
+      # error if total tickets requested exceeds available.  We have to do this check here
+      # because even though it's repeated in the per-ticket-type checks, this is the only
+      # place we can compute the *total* number of saleable seats (for displaying the error
+      # message), since the number of saleable seats is modified each time we add stuff
+      # to the order.
+      # even uglier: the check only matters if this is for a specific showdate. gah.
+      sd = ValidVoucher.find(valid_voucher_params.keys.first).showdate
+      if sd
+        max = sd.saleable_seats_left
+        self.errors.add(:base, I18n.translate('store.errors.not_enough_seats', :count => max)) and return if total_tickets > max
+      end
+    else
+      # error unless number of seats matches number of requested tickets
+      self.errors.add(:base, I18n.translate('store.errors.not_enough_seats_selected', :tickets => total_tickets, :seats => seats2.length)) and return unless total_tickets == seats2.length
     end
     valid_voucher_params.each_pair do |vv_id, qty|
       qty = qty.to_i
@@ -141,7 +156,7 @@ class Order < ActiveRecord::Base
     if redemption.max_sales_for_this_patron >= number
       add_tickets_without_capacity_checks(valid_voucher, number, seats)
     else
-      self.errors.add(:base, "Only #{redemption.max_sales_for_this_patron} seats are available")
+      self.errors.add(:base, I18n.translate('store.errors.not_enough_seats', :count => redemption.max_sales_for_this_patron))
     end
   end
 
