@@ -43,7 +43,7 @@ describe Order do
     end
     it 'order with donations and tickets' do
       @order.add_donation(Donation.from_amount_and_account_code_id(10,nil))
-      @order.add_tickets(create(:valid_voucher), 3)
+      @order.add_tickets_without_capacity_checks(create(:valid_voucher), 3)
       @order.save!
       reloaded = Order.find(@order.id)
       expect(reloaded.ticket_count).to eq(3)
@@ -55,7 +55,7 @@ describe Order do
   describe 'guest checkout' do
     before :each do
       @order = Order.create!(:processed_by => Customer.anonymous_customer)
-      @order.add_tickets(create(:valid_voucher), 2)
+      @order.add_tickets_without_capacity_checks(create(:valid_voucher), 2)
     end
     context 'allowed when includes' do
       specify 'regular tickets only' do
@@ -68,16 +68,16 @@ describe Order do
     end
     context 'not allowed when includes' do
       specify 'subscription' do
-        @order.add_tickets(create(:valid_voucher, :vouchertype => create(:bundle, :subscription => true)), 1)
+        @order.add_tickets_without_capacity_checks(create(:valid_voucher, :vouchertype => create(:bundle, :subscription => true)), 1)
         expect(@order).not_to be_ok_for_guest_checkout
       end
       specify 'class enrollment' do
         some_class = create(:show, :event_type => 'Class')
-        @order.add_tickets(create(:valid_voucher, :showdate => create(:showdate, :show => some_class)), 1)
+        @order.add_tickets_without_capacity_checks(create(:valid_voucher, :showdate => create(:showdate, :show => some_class)), 1)
         expect(@order).not_to be_ok_for_guest_checkout
       end
       specify 'retail items' do
-        @order.add_tickets(create(:valid_voucher, :vouchertype => create(:nonticket_vouchertype)), 1)
+        @order.add_tickets_without_capacity_checks(create(:valid_voucher, :vouchertype => create(:nonticket_vouchertype)), 1)
         expect(@order).not_to be_ok_for_guest_checkout
       end
     end
@@ -116,7 +116,7 @@ describe Order do
     ].each_slice(3) do |donations,tickets,message|
       specify "#{donations} donations and #{tickets} tickets" do
         @o.add_donation(Donation.new(:amount => 5)) if donations > 0
-        @o.add_tickets(@vv,tickets) if tickets > 0
+        @o.add_tickets_without_capacity_checks(@vv,tickets) if tickets > 0
         expect(@o.walkup_confirmation_notice).to eq(message)
       end
     end

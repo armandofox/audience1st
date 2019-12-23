@@ -47,6 +47,6 @@ Scenario: Cannot buy past max sales even if combining ticket types
   And I select "1" from "General - $15.00"
   And I select "2" from "Senior - $10.00"
   And I proceed to checkout
-  Then I should see "Only 2 seats are available for this performance."
+  Then I should see "Only 2 total seat(s) and/or 1 'Senior' seat(s) left for this performance."
   
   
