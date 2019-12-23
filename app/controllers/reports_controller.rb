@@ -21,6 +21,13 @@ class ReportsController < ApplicationController
     show_ids = params[:shows]
     redirect_to(reports_path, :alert => "Please select one or more shows.") if show_ids.blank?
     @shows = Show.where(:id => show_ids).includes(:showdates => :vouchers)
+    return unless params[:commit] =~ /download/i # fall through to render on screen
+    report = ShowAdvanceSalesReport.new(@shows).generate
+    if report.errors.empty?
+      download_to_excel(report.csv, "advance_sales")
+    else
+      redirect_to(reports_path, :alert => report.errors.as_html)
+    end
   end
 
   def showdate_sales

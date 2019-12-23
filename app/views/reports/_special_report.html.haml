@@ -14,7 +14,8 @@
     %label.plain{:for => 'what_display'} Display list on screen
     %br
     = radio_button_tag 'what', 'download'
-    %label.plain{:for => 'what_download'} Download list to Excel
+    %label.plain{:for => 'what_download'} Download to Excel
+    = popup_help_for 'download_to_excel'
     %br
     &nbsp;&nbsp;&nbsp;&nbsp;
     Format mailing address in:

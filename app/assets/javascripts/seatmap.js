@@ -15,11 +15,8 @@ A1.seatmap = {
     ,naming: { top: false, left: false }
     ,legend: {          // can't set statically above, since relies on character keys in items hash to be defined as local vars - ugh
       items: [
-        ['r', 'available', 'Available seat'],
-        ['a', 'available', 'Available accessible seat'],
-        ['r', 'unavailable', 'Unavailable seat'],
-        ['r', 'selected', 'Seat you have selected'],
-        ['a', 'selected', 'Accessible seat you have selected']
+        ['r', 'available', 'Available'],
+        ['a', 'available', 'Available accessible']
       ]
     }
     ,click: function(evt) {
@@ -40,6 +37,8 @@ A1.seatmap = {
       case 'unavailable':         // ignore; seat is taken
         return('unavailable');
         break;
+      default:
+        return this.style();
       }
     }
   }
@@ -67,9 +66,11 @@ A1.seatmap = {
     $('#seatmap').removeData('seatCharts'); // flush old data
     $('#seatmap').html('');
     $('.seatCharts-legend').html('');
+    A1.seatmap.settings.legend.node = $('.legend-container .legend');
     A1.seatmap.settings.map = j.map; // the actual seat map
     A1.seatmap.settings.seats = j.seats; // metadata for seat types
     A1.seatmap.unavailable = j.unavailable; // list of unavailable seats
+    A1.seatmap.columns = j.columns;         // determines minimum displaywidth
     // set background image
     $('img.seating-charts-overlay').attr('src', j.image_url);
     // bind Cancel button
@@ -146,7 +147,10 @@ A1.seatmap = {
     $(window).resize(A1.seatmap.centerMap);
     // floating "tooltips" that show each seat number on hover
     $('.seatCharts-seat').each(function(index) {
-      $(this).attr('data-seatnum', $(this).attr('id'));
+      var id = $(this).attr('id');
+      if ((typeof(id) != 'undefined')  &&  (id != '')) {
+        $(this).attr('data-seatnum', id);
+      }
     });
   }
   ,select: function(seat) {
@@ -178,11 +182,34 @@ A1.seatmap = {
     }      
   }
   ,centerMap: function() {
-    var mapWidth = $('#seatmap').width(); // computed width of actual seatmap
-    var left = ($('#seating-charts-wrapper').width() - mapWidth) / 2;
-    $('#seating-charts-wrapper img.seating-charts-overlay').css({"left": left, "width": mapWidth});
+    // mandate a min-width on the seatmap container
+    var screenWidth = $('#seating-charts-wrapper').width(); // computed width of container (should fill window)
+    var seatWidth = $('div.seatCharts-cell').width();
+    // CAUTION: because Firefox doesn't properly return the css 'margin' property (it returns
+    // an empty string), the following 2 lines assume the left and right margins are the
+    // same for div.seatCharts-cell and #seating-charts-wrapper.
+    var seatMargin = parseInt($('div.seatCharts-cell').css('margin-left')); // eg "1px" => 1
+    var mapMargin = parseInt($('#seating-charts-wrapper').css('margin-left'));
+    var slop = 6;               // slop added to width to ensure rows don't wrap
+    var left = 0;
+    var seatmapHeight = $('#seatmap').height();
+    var seatmapWidth = A1.seatmap.columns * (seatWidth + 2*seatMargin) +  (2*mapMargin);
+    // enforce seatmap min width based on # of cols
+    $('#seating-charts-wrapper').css('min-width', (slop + seatmapWidth).toString() + 'px');
+    // if window wider than map, center map
+    if (screenWidth > slop + seatmapWidth) {
+      left = (screenWidth - seatmapWidth) / 2;
+    } 
+    var legend = $('.legend-container');
+    $('#seating-charts-wrapper').height(legend.height() +
+                                        parseInt(legend.css('padding-top')) +
+                                        seatmapHeight);
+    // always scale background image to match seatmap width.  image is expected to have
+    // correct aspect ratio so vertical scaling will take care of itself.
+    $('img.seating-charts-overlay').css({"left": left, "width": seatmapWidth - 4});
     $('#seatmap').css({"left": left});
-    $('#seating-charts-wrapper').height($('#seatmap').height());
+    // reposition the legend as well
+    $('.legend-container').css({"left": left, "top": 2 + seatmapHeight, "width": seatmapWidth - 4});
   }
   // triggered whenever showdate dropdown menu changes
   ,getSeatingOptionsForSubscriberReservation: function() {

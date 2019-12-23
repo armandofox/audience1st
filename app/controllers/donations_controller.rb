@@ -40,9 +40,8 @@ class DonationsController < ApplicationController
       @donations = @donations.where(:account_code_id => params[:donation_funds])
     end
     @total = @donations.sum(:amount)
-    @export_label = "Download in Excel Format"
     @params = params
-    if params[:commit] == @export_label
+    if params[:commit] =~ /download/i
       send_data @donations.to_csv,  :type => 'text/csv', :filename => filename_from_dates('donations',mindate,maxdate,'csv')
     else
       @donations = @donations.paginate(:page => @page)

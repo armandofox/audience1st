@@ -1,4 +1,7 @@
 .d-none#seating-charts-wrapper
-  #seatmap.seatCharts-container
-  %img.seating-charts-overlay
-  = link_to 'Cancel Seat Selection', '#', :class => 'btn btn-outline-danger btn-sm seat-select-cancel'
+  .legend-container
+    = link_to 'Cancel Seat Selection', '#', :class => 'btn btn-outline-danger btn-sm seat-select-cancel'
+    .legend
+  .map-container
+    #seatmap.seatCharts-container
+    %img.seating-charts-overlay

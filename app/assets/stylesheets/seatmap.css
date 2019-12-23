@@ -58,17 +58,21 @@
     margin: 2px;
     border: 1px solid black;
     position: relative;
+    x-overflow: scroll;
 }
 .seatCharts-container {
     position: absolute;
     top: 0;
     left: 0;
+    margin: 0;
+    padding: 0;
 }
-
+#seatmap {
+    z-index: 2;
+}
 /* WARNING: do not override the following, or seatmap background image won't display correctly */
 
 img.seating-charts-overlay {
-    border: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -88,15 +92,30 @@ div.seatCharts-row {
 
 /* Legend */
 
+.legend-container {
+    height: 36px;
+    padding-top: 2px;
+    border-top: 1px solid grey;
+    position: absolute;
+    background-color: #eee;
+}
+
 .seatCharts-legendList {
+    display: inline;
     list-style: none;
     padding-inline-start: 0;
     padding-left: 0;
     margin-left: 4ex;           /* should match value for .seat-select-cancel */
 }
+.seatCharts-legendItem {
+    display: inline;
+    padding-right: 4px;
+}
+
 
 /* Cancel button */
 
 .seat-select-cancel {
     margin-left: 4ex;
+    float: left;
 }
