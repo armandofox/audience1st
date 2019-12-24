@@ -24,3 +24,24 @@ Scenario: generate sales report for two shows
   And   I press "advance_sales"
   Then  I should see "1 performance" within the div for the show with name "Hamlet"
   And   I should see "2 performances" within the div for the show with name "King Lear"
+
+
+
+Scenario: download advance_sales cvs for one show
+
+  Given a "General" vouchertype costing $37.00 for the 2012 season
+  And a "Student" vouchertype costing $31.00 for the 2012 season
+  And the following voucher types are valid for "King Lear":
+    | showdate                 | vouchertype | end_sales                 | max_sales |
+    | January 23, 2012, 8:00pm | General     | January 30, 2012, 10:00pm |        50 |
+    | January 23, 2012, 8:00pm | Student     | January 30, 2012, 10:00pm |        50 |
+  And the following orders have been placed:
+    |       date | customer      | item1        | item2        | payment     |
+    | 2012-01-20 | Tom Foolery   | 2x General   |              | credit card |
+    | 2010-01-20 | Armando Fox   | 1x Student   |              | credit card |
+  And   I select "King Lear (Dec 2011 - Feb 2012)" from "shows"
+  When  I press "Download to Excel" within "#advance_sales_report"
+  Then  a CSV file should be downloaded containing:
+    | Show Name | Run Dates               | Show Date                | House Capacity | Max Advance Sales for Performance | Voucher Type | Subscriber Voucher? | Max Sales for voucher type | Number Sold | Price | Gross Receipts |
+    | King Lear | 2012-01-20 - 2012-01-31 | January 23, 2012, 8:00pm | 50             | 50                                | General      | NO                  | 50                         | 2           | 37.00 | 74.00          |
+    | King Lear | 2012-01-20 - 2012-01-31 | January 23, 2012, 8:00pm | 50             | 50                                | Student      | NO                  | 50                         | 1           | 31.00 | 31.00          |
