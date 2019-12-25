@@ -240,8 +240,10 @@ en:
       not_enough_seats_selected: >
         Number of seats selected (%{seats}) doesn't match number of tickets specified (%{tickets})
 
-      not_enough_seats: >
-        Only %{total_count} total seat(s) and/or %{count} '%{vouchertype}' seat(s) left for this performance.
+      not_enough_seats:
+        zero: Sorry, no seats left for this performance.
+        one:  Sorry, Only 1 seat left for this performance.
+        other: Sorry, only %{count} seats left for this performance.
 
   options:
 

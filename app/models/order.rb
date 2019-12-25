@@ -70,7 +70,8 @@ class Order < ActiveRecord::Base
   public
 
   scope :completed, ->() { where('sold_on IS NOT NULL') }
-
+  scope :abandoned_since, ->(since) { where('sold_on IS NULL').where('updated_at < ?', since) }
+  
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
     includes(:donations => [:customer, :account_code]).
@@ -134,7 +135,7 @@ class Order < ActiveRecord::Base
       if redemption.max_sales_for_this_patron >= qty
         add_tickets_without_capacity_checks(vv, qty, seats)
       else
-        self.errors.add(:base, I18n.translate('store.errors.not_enough_seats', :vouchertype => vv.vouchertype.name, :total_count => saleable_seats, :count => redemption.max_sales_for_this_patron))
+        self.errors.add(:base, I18n.translate('store.errors.not_enough_seats', :count => saleable_seats))
       end
     end
   end

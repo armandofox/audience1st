@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191009223123) do
+ActiveRecord::Schema.define(version: 20191225014906) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -192,6 +192,7 @@ ActiveRecord::Schema.define(version: 20191009223123) do
     t.text     "accessibility_advisory_for_reserved_seating",                        default: "This seat is designated as an accessible seat.  Please ensure you need this accommodation before finalizing this reservation.", null: false
     t.string   "restrict_customer_email_to_domain"
     t.integer  "order_timeout",                                                      default: 5,                                                                                                                               null: false
+    t.datetime "last_sweep",                                                         default: '2019-12-24 17:59:23',                                                                                                           null: false
   end
 
   create_table "orders", force: :cascade do |t|
