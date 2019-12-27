@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191225014906) do
+ActiveRecord::Schema.define(version: 20191227033456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,7 +116,6 @@ ActiveRecord::Schema.define(version: 20191225014906) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "advance_sales_cutoff",                                               default: 5
-    t.integer  "sold_out_threshold",                                                 default: 90
     t.integer  "nearly_sold_out_threshold",                                          default: 80
     t.boolean  "allow_gift_tickets",                                                 default: false
     t.boolean  "allow_gift_subscriptions",                                           default: false
