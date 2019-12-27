@@ -121,7 +121,7 @@ class ValidVoucher < ActiveRecord::Base
     if showdate.thedate < Time.current
       self.explanation = 'Event date is in the past'
       self.visible = false
-    elsif showdate.really_sold_out?
+    elsif showdate.sold_out?
       self.explanation = 'Event is sold out'
       self.visible = true
     end

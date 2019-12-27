@@ -73,7 +73,7 @@ class Showdate < ActiveRecord::Base
     [self.max_advance_sales - vouchers.size, 0].max
   end
 
-  def really_sold_out? ; saleable_seats_left < 1 ; end
+  def sold_out? ; saleable_seats_left < 1 ; end
 
   # percent of max sales: may exceed 100
   def percent_sold
@@ -85,10 +85,6 @@ class Showdate < ActiveRecord::Base
     house_capacity.zero? ? 100 : (100.0 * total_sales.size / house_capacity).floor
   end
 
-  def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
-
   def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
-
-  
 
 end

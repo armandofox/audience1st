@@ -95,7 +95,7 @@ describe Showdate do
       end
       it 'shows sold-out if max sales is zero' do
         @showdate.update_attributes!(:max_advance_sales => 0)
-        expect(@showdate).to be_really_sold_out
+        expect(@showdate).to be_sold_out
       end
     end
   end

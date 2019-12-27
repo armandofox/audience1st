@@ -44,7 +44,7 @@ class Showdate < ActiveRecord::Base
 
   def availability_grade
     sales = percent_sold.to_i
-    if sales >= Option.sold_out_threshold then 0
+    if sold_out? then 0
     elsif sales >= Option.nearly_sold_out_threshold then 1
     elsif sales >= Option.limited_availability_threshold then 2
     else 3
@@ -53,10 +53,9 @@ class Showdate < ActiveRecord::Base
 
   def availability_in_words
     pct = percent_sold
-    pct >= Option.sold_out_threshold ?  :sold_out :
+    sold_out? ? :sold_out :
       pct >= Option.nearly_sold_out_threshold ? :nearly_sold_out :
       :available
   end
-
 
 end

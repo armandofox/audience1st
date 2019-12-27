@@ -7,7 +7,6 @@
    opts = {
      'venue' => "Test Theater",
      'advance_sales_cutoff' => "60",
-     'sold_out_threshold' => "90",
      'nearly_sold_out_threshold' => "80",
      'cancel_grace_period' => "1440",
      'send_birthday_reminders' => "0",

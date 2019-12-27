@@ -11,11 +11,6 @@ en:
       Default time that online sales close (minutes before
       curtain) -- can be overridden for specific performances.
 
-    sold_out_threshold: >
-
-      Performance is listed as 'sold out' when this percentage of the house
-      is sold.  Also corresponds to availability grade 0 in the RSS feed.
-
     nearly_sold_out_threshold: >
 
       Performance is listed as 'nearly sold out' when this percentage of the
