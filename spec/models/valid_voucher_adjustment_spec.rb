@@ -74,7 +74,7 @@ describe 'ValidVoucher adjusting' do
       its(:explanation) { should == 'Event date is in the past' }
     end
     describe 'that is sold out' do
-      let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 0, :really_sold_out? => true) }
+      let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 0, :sold_out? => true) }
       it_should_behave_like 'visible, zero capacity'
       its(:explanation) { should == 'Event is sold out' }
     end
