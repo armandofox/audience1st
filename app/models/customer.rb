@@ -170,7 +170,6 @@ class Customer < ActiveRecord::Base
         Customer.find_or_create!(customer_info)
       else
         # invalid info given
-        raise ActiveRecord::RecordInvalid.new(customer_info.errors.full_messages.join(', '))
         customer_info           # has failed validation as purchaser
       end
   end
