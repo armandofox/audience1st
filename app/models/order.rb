@@ -132,7 +132,7 @@ class Order < ActiveRecord::Base
       seats = seats2.slice!(0,qty)
       # is this order-placer allowed to exercise this redemption?
       redemption = vv.adjust_for_customer
-      if redemption.max_sales_for_this_patron >= qty
+      if (vv.customer.try(:is_boxoffice) || redemption.max_sales_for_this_patron >= qty)
         add_tickets_without_capacity_checks(vv, qty, seats)
       else
         self.errors.add(:base, I18n.translate('store.errors.not_enough_seats', :count => saleable_seats))

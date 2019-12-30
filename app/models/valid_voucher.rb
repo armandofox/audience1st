@@ -62,7 +62,6 @@ class ValidVoucher < ActiveRecord::Base
 
   attr_writer :max_sales_for_this_patron
   def max_sales_for_this_patron
-    return INFINITE if customer.try(:is_boxoffice)
     return @max_sales_for_this_patron.to_i if @max_sales_for_this_patron
     @max_sales_for_this_patron ||= max_sales_for_type()
     if showdate # in case this is a valid-voucher for a bundle, vs for regular show
