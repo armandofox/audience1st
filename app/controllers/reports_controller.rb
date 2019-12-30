@@ -10,7 +10,7 @@ class ReportsController < ApplicationController
     # next showdate
     @next_showdate = Showdate.current_or_next
     # all show names
-    @all_shows = Show.all
+    @all_shows = Show.all.order('opening_date DESC')
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.this_season)
     # list of all special reports
