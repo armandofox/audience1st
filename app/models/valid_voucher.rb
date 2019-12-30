@@ -15,7 +15,7 @@ class ValidVoucher < ActiveRecord::Base
 
   attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
   # auxiliary attributes that aren't persisted
-  attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
+  attr_accessor :explanation, :visible, :supplied_promo_code, :customer
 
   belongs_to :showdate
   belongs_to :vouchertype
@@ -41,7 +41,6 @@ class ValidVoucher < ActiveRecord::Base
   attr_accessor :customer, :supplied_promo_code # used only when checking visibility - not stored
   attr_accessor :explanation # tells customer/staff why the # of avail seats is what it is
   attr_accessor :visible     # should this offer be viewable by non-admins?
-  attr_writer :max_sales_for_this_patron
   alias_method :visible?, :visible # for convenience and more readable specs
 
   delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public, :offer_public_as_string, :category, :comp?, :subscriber_voucher?, :to => :vouchertype
@@ -60,8 +59,11 @@ class ValidVoucher < ActiveRecord::Base
   def show_name
     showdate &&  showdate.show_name
   end
-  
+
+  attr_writer :max_sales_for_this_patron
   def max_sales_for_this_patron
+    return INFINITE if customer.try(:is_boxoffice)
+    return @max_sales_for_this_patron.to_i if @max_sales_for_this_patron
     @max_sales_for_this_patron ||= max_sales_for_type()
     if showdate # in case this is a valid-voucher for a bundle, vs for regular show
       [@max_sales_for_this_patron, showdate.saleable_seats_left.to_i].min
@@ -219,7 +221,6 @@ class ValidVoucher < ActiveRecord::Base
       result.adjust_for_showdate ||
       result.adjust_for_sales_dates ||
       result.adjust_for_capacity # this one must be called last
-    result.max_sales_for_this_patron = INFINITE     if customer.try(:is_boxoffice)
     result.freeze
   end
 
@@ -231,7 +232,6 @@ class ValidVoucher < ActiveRecord::Base
     result.adjust_for_showdate ||
       result.adjust_for_advance_reservations ||
       result.adjust_for_capacity # this one must be called last
-    result.max_sales_for_this_patron = INFINITE     if customer.try(:is_boxoffice)
     result.freeze
   end
 

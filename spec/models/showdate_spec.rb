@@ -7,12 +7,10 @@ describe Showdate do
       allow(@sd).to receive(:percent_sold).and_return(70)
     end
     cases = {
-      [20,50,60] => 0,          # sold out
-      [20,50,70] => 0,          # sold out -boundary cond
-      [20,50,80] => 1,          # nearly sold out
-      [20,70,90] => 1,          # nearly sold out - boundary cond
-      [20,90,95] => 2,          # limited avail
-      [75,80,90] => 3
+      [20,50] => 1,          # nearly sold out
+      [20,70] => 1,          # nearly sold out - boundary cond
+      [20,90] => 2,          # limited avail
+      [75,80] => 3
     }
     cases.each do |c,grade|
       specify "with thresholds #{c.join ','}" do
