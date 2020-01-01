@@ -70,7 +70,8 @@ class Order < ActiveRecord::Base
   public
 
   scope :completed, ->() { where('sold_on IS NOT NULL') }
-
+  scope :abandoned_since, ->(since) { where('sold_on IS NULL').where('updated_at < ?', since) }
+  
   scope :for_customer_reporting, ->() {
     includes(:vouchers => [:customer, :showdate,:vouchertype]).
     includes(:donations => [:customer, :account_code]).
@@ -116,32 +117,26 @@ class Order < ActiveRecord::Base
   def add_tickets_from_params(valid_voucher_params, customer, promo_code: '', seats: [])
     return unless valid_voucher_params
     seats2 = seats.dup
-    # error unless number of seats matches number of requested tickets
     total_tickets = valid_voucher_params.values.map(&:to_i).sum
+    saleable_seats = if (sd = ValidVoucher.find(valid_voucher_params.keys.first).showdate) then sd.saleable_seats_left else 0 end
     if !seats2.empty?
-      self.errors.add(:base, "#{total_tickets} tickets requested but #{seats2.length} seat assignments provided") unless total_tickets == seats2.length
+      # error unless number of seats matches number of requested tickets
+      self.errors.add(:base, I18n.translate('store.errors.not_enough_seats_selected', :tickets => total_tickets, :seats => seats2.length)) and return unless total_tickets == seats2.length
     end
+    raise Order::NotPersistedError unless persisted?
     valid_voucher_params.each_pair do |vv_id, qty|
       qty = qty.to_i
       vv = ValidVoucher.find(vv_id)
       vv.supplied_promo_code = promo_code.to_s
-      vv.customer = customer
-      add_tickets(vv, qty, seats2.slice!(0,qty))
-    end
-  end
-
-  def add_tickets(valid_voucher, number, seats=[])
-    raise Order::NotPersistedError unless persisted?
-    # is this order-placer allowed to exercise this redemption?
-    valid_voucher.customer ||= self.processed_by || Customer.anonymous_customer
-    if valid_voucher.customer.is_boxoffice    
-      return add_tickets_without_capacity_checks(valid_voucher, number, seats)
-    end
-    redemption = valid_voucher.adjust_for_customer
-    if redemption.max_sales_for_this_patron >= number
-      add_tickets_without_capacity_checks(valid_voucher, number, seats)
-    else
-      self.errors.add(:base, "Only #{redemption.max_sales_for_this_patron} seats are available")
+      vv.customer = customer || self.processed_by || Customer.anonymous_customer
+      seats = seats2.slice!(0,qty)
+      # is this order-placer allowed to exercise this redemption?
+      redemption = vv.adjust_for_customer
+      if (vv.customer.try(:is_boxoffice) || redemption.max_sales_for_this_patron >= qty)
+        add_tickets_without_capacity_checks(vv, qty, seats)
+      else
+        self.errors.add(:base, I18n.translate('store.errors.not_enough_seats', :count => saleable_seats))
+      end
     end
   end
 

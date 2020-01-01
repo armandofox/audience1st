@@ -89,8 +89,6 @@ class Customer < ActiveRecord::Base
   # Note: This method should only be called inside a transaction block!
   def self.update_foreign_keys_from_to(old,new)
     msg = []
-    l = Label.rename_customer(old, new)
-    msg << "#{l} labels"
     [Order, Item, Txn].each do |t|
       howmany = 0
       t.foreign_keys_to_customer.each do |field|
@@ -109,6 +107,10 @@ class Customer < ActiveRecord::Base
     begin
       transaction do
         msg = Customer.update_foreign_keys_from_to(old, new)
+        # Add/merge labels from old record to new
+        label_count = (c1.labels - c0.labels).size
+        c0.labels += c1.labels
+        msg << "#{label_count} labels"
         # Definitively propagate provenance (either ticket_sales_import_id, or nil)
         # from the older record.
         if c0.created_at > c1.created_at # c1 is older,but c0 will be result of merge

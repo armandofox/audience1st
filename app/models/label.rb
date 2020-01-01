@@ -14,10 +14,6 @@ class Label < ActiveRecord::Base
     ActiveRecord::Base.connection.execute("DELETE FROM customers_labels WHERE label_id=#{id}")
   end
 
-  def self.rename_customer(old_id, new_id)
-    connection.update("UPDATE customers_labels SET customer_id='#{new_id}' WHERE customer_id='#{old_id}'", "CustomersLabels Update")
-  end
-
   def self.all_labels
     Label.all
   end

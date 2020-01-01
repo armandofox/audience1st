@@ -1,6 +1,6 @@
 %h2 Add Comps for #{@customer.full_name}
 
-= form_tag customer_vouchers_path(@customer), :id => 'addcomps', :class => 'form', :id => 'add_comps_form' do
+= form_tag customer_vouchers_path(@customer), :class => 'form', :id => 'add_comps_form' do
 
   .form-row
     %label.col-2.text-right.col-form-label{:for => 'howmany'} How many:

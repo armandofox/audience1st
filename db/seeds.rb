@@ -82,7 +82,6 @@ class Audience1stSeeder
     option = Option.new(
       :venue => 'A1 Staging Theater',
       :advance_sales_cutoff => 60,
-      :sold_out_threshold => 90,
       :nearly_sold_out_threshold => 80,
       :allow_gift_tickets => false,
       :allow_gift_subscriptions => false,

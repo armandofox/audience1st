@@ -50,12 +50,12 @@ describe Order, 'adding' do
   describe 'and getting total price' do
     it 'without donation' do
       vv2 = create(:valid_voucher)
-      expect { @order.add_tickets(@vv, 2) ; @order.add_tickets(vv2, 3) }.to change { @order.total_price }.to(60.0)
+      expect { @order.add_tickets_without_capacity_checks(@vv, 2) ; @order.add_tickets_without_capacity_checks(vv2, 3) }.to change { @order.total_price }.to(60.0)
     end
     describe 'with donation' do
       before :each do ; @donation = build(:donation, :amount => 17) ; end
       specify 'and tickets' do
-        @order.add_tickets(@vv, 2)
+        @order.add_tickets_without_capacity_checks(@vv, 2)
         @order.add_donation(@donation)   # at $17
         expect(@order.total_price).to eq(41.0)
       end

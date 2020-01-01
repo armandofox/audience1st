@@ -55,6 +55,12 @@ When /^I select \/([^\/]+)\/ from "(.*)"$/ do |rxp, field|
   select(Regexp.new(rxp), :from => field)
 end
 
+# Check if menu does or does not contain an option
+Then /the "(.*)" menu should have options: (.*)/ do |menu,option|
+  options = option.split(/\s*,\s*/)
+  expect(page).to have_select(menu, :options => options)
+end
+
 # 'I should see' within divs corresponding to named entities
 Then /^(?:|I )should see "([^\"]*)" within the (.*) for(?: the) (.*) with (.*) "(.*)"$/ do |text,tag_type,entity_type,attribute,value|
   entity = get_model_instance(entity_type, attribute, value)

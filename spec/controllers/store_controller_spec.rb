@@ -98,38 +98,49 @@ describe StoreController do
 
   describe 'quick donation with nonexistent customer', focus: true do
     before :each do
-      @new_valid_customer = build(:customer, :last_name => 'Zzxx')
+      @new_valid_customer = attributes_for(:customer).except(:password,:password_confirmation)
     end
-    shared_examples_for 'failure' do
-      before :each do ; @count = Customer.all.size ; end
-      it 'redirects' do
-        expect(response).to  redirect_to(quick_donate_path(Customer.find_by(:last_name => 'Zzxx')))
+    context 'when credit card token invalid' do
+      before(:each) do
+        allow(Stripe::Charge).to receive(:create).and_raise(Stripe::StripeError)
       end
-      it 'shows error messages' do ; expect(render_multiline_message(flash[:alert])).to match(@alert) ; end
-      it 'does not create new customer' do ; expect(Customer.all.size).to eq(@count) ; end
+      it 'redirects having created the customer' do
+        post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
+        expect(response).to redirect_to(quick_donate_path(:donation => 5, :customer_id => created_customer.id))
+      end
+      it 'shows error message' do
+        post :process_donation, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
+        expect(flash[:alert]).to match(/credit card payment error/i)
+      end
     end
     context 'with invalid donation amount' do
-      before :each do
-        @alert = /Donation amount must be provided/
-        post :donate, {:customer => @new_valid_customer}
+      it 'redirects having created the customer' do
+        post :process_donation, {:customer => @new_valid_customer, :credit_card_token => 'dummy'}
+        created_customer = Customer.find_by!(:email => @new_valid_customer[:email])
+        expect(response).to redirect_to(quick_donate_path(:donation => 0, :customer_id => created_customer.id))
       end
-      it_should_behave_like 'failure'
+      it 'shows error message' do
+        post :process_donation, :customer => @new_valid_customer, :credit_card_token => 'dummy'
+        expect(flash[:alert]).to match(/donation amount must be provided/i)
+      end
     end
     context 'when new customer not valid as purchaser' do
-      before :each do
-        @new_valid_customer.city = nil
-        @alert = /Incomplete or invalid donor information:/
-        post :donate, {:customer => @new_valid_customer, :donation => 5, :credit_card_token => 'dummy'}
-      end
-      it_should_behave_like 'failure'
-    end
-    describe 'when credit card token invalid' do
       before(:each) do
-        @alert = /Invalid credit card/
-        allow(Stripe::Charge).to receive(:create).and_raise(Stripe::StripeError)
-        post :donate, {:customer => @new_valid_customer, :donation => 5}
+        @invalid_customer = attributes_for(:customer).except(:city,:state)
+        @params = {:customer => @invalid_customer, :donation => 5, :credit_card_token => 'dummy'}
       end
-      it_should_behave_like 'failure'
+      it 'does not create new customer' do
+        expect { post :process_donation, @params }.not_to change { Customer.all.size }
+      end
+      it 'redirects preserving customer info' do
+        post :process_donation, @params
+        expect(response).to redirect_to(quick_donate_path(@params.except(:credit_card_token)))
+      end
+      it 'shows error' do
+        post :process_donation, @params
+        expect(flash[:alert]).to match(/Incomplete or invalid donor/i)
+      end
     end
     
   end

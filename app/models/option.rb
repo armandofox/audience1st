@@ -34,7 +34,7 @@ class Option < ActiveRecord::Base
 
   validates_numericality_of :advance_sales_cutoff
   validates_numericality_of :order_timeout, :greater_than_or_equal_to => 1, :less_than_or_equal_to => 15
-  validates_inclusion_of :sold_out_threshold, :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
+  validates_inclusion_of :nearly_sold_out_threshold, :limited_availability_threshold, :in => (1..100), :message => 'must be between 1 and 100 percent'
   validate :availability_levels_monotonically_increase
   validates_inclusion_of :season_start_month, :in => 1..12
   validates_inclusion_of :season_start_day, :in => 1..31
@@ -72,7 +72,6 @@ class Option < ActiveRecord::Base
   end
   
   def availability_levels_monotonically_increase
-    errors.add(:nearly_sold_out_threshold, 'must be less than Sold Out threshold') unless sold_out_threshold > nearly_sold_out_threshold
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
   end
 

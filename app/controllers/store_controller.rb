@@ -126,33 +126,30 @@ class StoreController < ApplicationController
   end
 
   def process_donation
-    if params[:customer_id].blank?     # we got here via a logged-in customer
+    @amount = to_numeric(params[:donation])
+    if params[:customer_id].blank?
       @customer = Customer.for_donation(params[:customer])
-    else
+      @customer.errors.empty? or return redirect_to(quick_donate_path(:customer => params[:customer], :donation => @amount), :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}")
+    else     # we got here via a logged-in customer
       @customer = Customer.find params[:customer_id]
     end
-    # If donor doesn't exist, create them and marked created-by-admin
-    # If donor exists, make that the order's customer.
-    # Create an order consisting of just a donation.
-    @amount = to_numeric(params[:donation])
-    return redirect_to(quick_donate_path(@customer), :alert => 'Donation amount must be provided')  unless
-      @amount > 0
-    return redirect_to(quick_donate_path(@customer), :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}") unless
-      @customer.valid_as_purchaser?
+    # At this point, the customer has been persisted, so future redirects just use the customer id.
+    redirect_route = quick_donate_path(:customer_id => @customer.id, :donation => @amount)
+    @amount > 0 or return redirect_to(redirect_route, :alert => 'Donation amount must be provided')
     # Given valid donation, customer, and charge token, create & place credit card order.
     @gOrderInProgress = Order.new_from_donation(@amount, AccountCode.default_account_code, @customer)
     @gOrderInProgress.purchasemethod = Purchasemethod.get_type_by_name('web_cc')
     @gOrderInProgress.purchase_args = {:credit_card_token => params[:credit_card_token]}
     @gOrderInProgress.processed_by = @customer
     @gOrderInProgress.comments = params[:comments].to_s
-    return redirect_to(quick_donate_path(@customer), :alert => @gOrderInProgress.errors.as_html)     unless @gOrderInProgress.ready_for_purchase?
+    @gOrderInProgress.ready_for_purchase? or return redirect_to(redirect_route, :alert => @gOrderInProgress.errors.as_html)
     if finalize_order(@gOrderInProgress)
       # forget customer after successful guest checkout
       @guest_checkout = true
       logout_keeping_session!
       render :action => 'place_order'
     else
-      redirect_to quick_donate_path(@customer), :alert => @gOrderInProgress.errors.as_html
+      redirect_to redirect_route, :alert => @gOrderInProgress.errors.as_html
     end
   end
 

@@ -42,8 +42,16 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  # periodically sweep stale orders.  Check is made before every action but only actually
+  # does anything every couple of minutes.
+  before_action :maybe_run_sweepers
+
+  def maybe_run_sweepers
+    StaleOrderSweeper.sweep! if Option.last_sweep > 1.minute.ago
+  end
+
   # set_globals tries to set globals based on current_user, among other things.
-  before_filter :set_globals
+  before_action :set_globals
 
   def set_globals
     @gOrderInProgress = find_cart

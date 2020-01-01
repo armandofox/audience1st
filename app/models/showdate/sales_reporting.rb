@@ -63,15 +63,17 @@ class Showdate < ActiveRecord::Base
     house_capacity.zero? ? 100.0 : 100.0 * max_advance_sales / house_capacity
   end
 
+  # Total (in house) and Saleable (advance sales open to patrons) seats left should
+  # pessimistically include non-finalized vouchers (orders in progress)
   def total_seats_left
-    [self.house_capacity - total_sales.size, 0].max
+    [self.house_capacity - vouchers.size, 0].max
   end
 
   def saleable_seats_left
-    [self.max_advance_sales - total_sales.size, 0].max
+    [self.max_advance_sales - vouchers.size, 0].max
   end
 
-  def really_sold_out? ; saleable_seats_left < 1 ; end
+  def sold_out? ; saleable_seats_left < 1 ; end
 
   # percent of max sales: may exceed 100
   def percent_sold
@@ -83,10 +85,6 @@ class Showdate < ActiveRecord::Base
     house_capacity.zero? ? 100 : (100.0 * total_sales.size / house_capacity).floor
   end
 
-  def sold_out? ; really_sold_out? || percent_sold.to_i >= Option.sold_out_threshold ; end
-
   def nearly_sold_out? ; !sold_out? && percent_sold.to_i >= Option.nearly_sold_out_threshold ; end
-
-  
 
 end
