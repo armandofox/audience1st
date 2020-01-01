@@ -1,6 +1,21 @@
 require 'rails_helper'
 
 describe Showdate do
+  describe "when changing seatmap fails", focus:true do
+    before(:each) do
+      @s = create(:showdate, :seatmap => create(:seatmap))
+      @v1 = create(:revenue_voucher, :showdate => @s, :seat => 'A1')
+      @v2 = create(:revenue_voucher, :showdate => @s, :seat => 'B1')
+      allow(@s.seatmap).to receive(:cannot_accommodate).and_return([@v2])
+    end
+    it 'is not valid' do
+      expect(@s).not_to be_valid
+    end
+    it 'lists customers who need accommodating' do
+      @s.valid?
+      expect(@s.errors[:seatmap]).to include_match_for('(B1)')
+    end
+  end
   describe "availability grade" do
     before(:each) do
       @sd = create(:showdate)

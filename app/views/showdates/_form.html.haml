@@ -12,6 +12,8 @@
     = popup_help_for :reserved_seating
   .col-3
     = seatmap_choices_for(@showdate,@seatmap_is_editable)
+  .col-1
+    = link_to 'Change', '#', :id => 'change_seatmap', :onclick => %q{$('#showdate_seatmap_id').prop('disabled',false); return(false)}, :class => 'btn btn-primary btn-block'
   .col-3
     = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
 

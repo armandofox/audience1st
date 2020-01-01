@@ -16,7 +16,7 @@ module SeatmapsHelper
     if editable
       select_tag('showdate[seatmap_id]', seatmap_options(showdate.seatmap_id), :class => 'form-control')
     else
-      content_tag 'span', (showdate.seatmap.try(:name) || 'General admission'), :class => 'form-control'
+      select_tag('showdate[seatmap_id]', seatmap_options(showdate.seatmap_id), :class => 'form-control', :disabled => 'disabled')
     end
   end
 end

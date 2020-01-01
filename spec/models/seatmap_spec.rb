@@ -48,4 +48,33 @@ describe Seatmap do
       %w(A1 B2 A2 B1).each { |s| expect(@s.includes_seat?(s)).to be_truthy }
     end
   end
+  describe 'checking availability of reserved seats' do
+    before(:each) do
+      @s = create(:seatmap)     # with seats A1,A2,B1,B2
+    end
+    def create_vouchers(seat_list)
+      s = Showdate.first || create(:showdate)
+      vouchers = seat_list.map do |seat|
+        create(:revenue_voucher, :showdate => s, :seat => seat)
+      end
+    end
+    context 'is empty' do
+      specify 'when seats match exactly' do
+        v = create_vouchers %w(A2 B1 B2 A1)
+        expect(@s.cannot_accommodate(v)).to be_empty
+      end
+      specify 'when no seats specified' do
+        v = create_vouchers(['','',''])
+        expect(@s.cannot_accommodate(v)).to be_empty
+      end
+    end
+    context 'is nonempty' do
+      specify 'when 1 seat is unavailable even if others blank' do
+        v = create_vouchers(['','A1','B1','C1'])
+        list = @s.cannot_accommodate(v)
+        expect(list.size).to eq(1)
+        expect(list.first.seat).to eq('C1')
+      end
+    end
+  end
 end

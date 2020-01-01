@@ -33,6 +33,8 @@ class Showdate < ActiveRecord::Base
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
+  validate :seatmap_can_accommodate_existing_reservations
+
   attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
 
   require_dependency 'showdate/sales_reporting'
@@ -142,6 +144,19 @@ class Showdate < ActiveRecord::Base
     return [] unless seatmap
     # basically, collect seat info from all vouchers for this showdate
     vouchers.map(&:seat).compact.map(&:to_s).sort
+  end
+
+  def seatmap_can_accommodate_existing_reservations
+    return if seatmap.blank?
+    cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
+    unless cannot_accommodate.empty?
+      h = ApplicationController.helpers
+      r = Rails.application.routes.url_helpers
+      self.errors.add(:seatmap,
+        I18n.translate('showdates.errors.cannot_change_seatmap', :map => seatmap.name) +
+        '<br/>' + 
+        cannot_accommodate.map { |v| "#{h.link_to v.customer.full_name,r.customer_path(v.customer)} (#{v.seat})" }.join('<br/>'))
+    end
   end
 end
 

@@ -38,6 +38,16 @@ class Seatmap < ActiveRecord::Base
     showdate.seatmap.emit_json(showdate.occupied_seats)
   end
 
+  # Given a collection of vouchers, some of which may have seat numbers, return the subset
+  # that COULD NOT be accommodated by this seatmap.  Used to determine if it's possible to
+  # change a seatmap for a performance after sales have begun.
+  def cannot_accommodate(vouchers)
+    seats = self.seat_list.split(/\s*,\s*/)
+    vouchers.select do |v|
+      ! v.seat.blank?  &&  ! seats.include?(v.seat)
+    end
+  end
+
   # seatmap editor/parser stuff
   def includes_seat?(seat)
     seat_list.match Regexp.new("\\b#{seat}\\b")

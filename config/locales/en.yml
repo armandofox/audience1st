@@ -3,6 +3,13 @@ en:
     confirm_delete: >
       Delete '%{name}' seatmap: are you sure?
 
+  showdates:
+    errors:
+      cannot_change_seatmap: >
+        cannot be changed because the following patrons have reserved seats
+        that don't exist in '%{map}'.  (Suggestion: Shift-click on each patron name to
+        visit their My Tickets page in a new window.)
+
   email:
 
     success: >
