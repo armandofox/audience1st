@@ -29,7 +29,7 @@ module CheckinsHelper
     showdates = Showdate.
       includes(:show).
       includes({:vouchers => [:vouchertype,:customer]}).
-      where(:thedate => (current - 2.months .. current + 2.months)).order(:thedate)
+      where(:thedate => (current - 6.months .. current + 2.months)).order(:thedate)
     choices = showdates.map do |sd|
       [sd.name_and_date_with_capacity_stats, walkup_sale_path(sd)]
     end
