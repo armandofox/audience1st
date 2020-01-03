@@ -70,7 +70,7 @@ module NavigationHelpers
     when /the new showdate page for "(.*)"/i then new_show_showdate_path(@show = Show.find_by_name!($1))
 
     when /the edit showdate page for (.*)/i 
-      @showdate = Showdate.find_by_thedate! Time.zone.parse($1) unless $1 =~ /that performance/
+      @showdate = Showdate.find_by!(:thedate => Time.zone.parse($1)) unless $1 =~ /that performance/
       edit_show_showdate_path(@showdate.show,@showdate)
 
     when /the donation landing page coded for fund (.*)/i then donate_to_fund_path(AccountCode.find_by_code!($1))

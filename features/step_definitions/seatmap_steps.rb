@@ -42,6 +42,13 @@ When /I upload the seatmap "(.*\.csv)"/ do |file|
   end
 end
 
+When /I try to change the seatmap for that performance to "(.*)"/ do |seatmap_name|
+  visit edit_show_showdate_path(@showdate.show,@showdate)
+  click_link 'Change'
+  select seatmap_name, :from => 'Seat map'
+  click_button 'Save Changes'
+end
+
 Then /that seatmap should have image URL "(.*)" and name "(.*)"/ do |url,name|
   @seatmap.reload
   expect(@seatmap.name).to eq(name)

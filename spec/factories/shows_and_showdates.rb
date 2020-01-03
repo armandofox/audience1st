@@ -29,25 +29,15 @@ FactoryBot.define do
   end
 
   factory :seatmap do
-    # looks like this:
+    # default one looks like this:
     #   A1 - A2 -
     #     B1 -  B2     (B1 is an accessible seat)
-    name 'Default'
+    sequence(:name) { |n| "Seatmap #{n}" }
     csv "A1,,A2\r\n,B1+,,B2\r\n"
-    json ['r[A1, ]_r[A2, ]_', '_a[B1, ]_r[B2, ]'].to_json
-    seat_list 'A1,A2,B1,B2'
-    rows 2
-    columns 4
+    seat_rows [['A1',nil,'A2',nil],[nil,'B1',nil,'B2']]
     image_url 'http://foo.com/seatmap.png'
-
-    factory :custom_seatmap do
-      seat_rows [%w(R1 R2),%w(S1 S2)]
-      sequence(:name) { |n| "Seatmap #{n}" }
-      after(:build) do |s,ev|
-        s.parse_rows
-      end
+    after(:build) do |s,ev|
+      s.parse_rows
     end
   end
-
-  
 end

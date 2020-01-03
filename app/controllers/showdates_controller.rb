@@ -50,17 +50,18 @@ class ShowdatesController < ApplicationController
     @showdate = Showdate.find(params[:id])
     @default_date = @showdate.thedate
     @default_cutoff_date = @showdate.end_advance_sales
-    @seatmap_is_editable = (Seatmap.count > 0  &&  @showdate.vouchers.count.zero?)
+    @seatmap_is_editable = (Seatmap.count > 0)
   end
 
   def update
     @showdate = Showdate.find(params[:id])
     if @showdate.update_attributes(params[:showdate])
-      flash[:notice] = 'Showdate ID ' + params[:id].to_s + ' was successfully updated.'
+      flash[:notice] = 'Changes saved.'
+      redirect_to edit_show_path(@showdate.show)
     else
-      flash[:alert] = ["Your changes were not saved because of errors:<br>", @showdate.errors.as_html]
+      flash[:alert] = @showdate.errors.as_html
+      redirect_to edit_show_showdate_path(@showdate.show,@showdate)
     end
-    redirect_to edit_show_path(@showdate.show)
   end
 
   private

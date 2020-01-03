@@ -1,3 +1,5 @@
+World(ScenarioHelpers::Orders)
+
 Given /^there is no show named "([^\"]+)"$/ do |name|
   expect(Show.find_by(:name => name)).to be_nil
 end
@@ -68,6 +70,16 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
   @show = @showdate.show
+end
+
+Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|
+  @showdate = create(:showdate, :thedate => Time.zone.parse(time), :seatmap => create(:seatmap))
+  tbl.hashes.each do |h|
+    customer = find_or_create_customer h['first'], h['last']
+    vouchertype = Vouchertype.find_by(:name => h['vouchertype']) || create(:revenue_vouchertype, :name => h['vouchertype'])
+    seats = h['seats'].split(/\s*,\s*/)
+    buy!(customer, vouchertype, seats.length, showdate: @showdate, seats: seats)
+  end
 end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|

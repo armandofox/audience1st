@@ -1,4 +1,4 @@
-.row.text-white.bg-warning
+.row.text-white.bg-warning[showdate, :details_row]
   .col-3
     %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
     = link_to showdate.printable_date, edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'

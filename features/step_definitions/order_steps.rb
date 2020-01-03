@@ -6,7 +6,8 @@ module ScenarioHelpers
         :customer => customer,
         :purchaser => customer)
       @order.vouchers = []
-      vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate,
+      vv = ValidVoucher.find_by(:vouchertype => vtype, :showdate => showdate) ||
+        create(:valid_voucher, :vouchertype => vtype, :showdate => showdate,
         :start_sales => Time.at_beginning_of_season(vtype.season),
         :end_sales => Time.at_end_of_season(vtype.season))
       @order.add_tickets_without_capacity_checks(vv, qty.to_i, seats)
