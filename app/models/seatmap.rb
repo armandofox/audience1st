@@ -18,7 +18,8 @@ class Seatmap < ActiveRecord::Base
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
   # remove when we move to strong params
   attr_accessible :image_url, :name
-
+  attr_accessor :seat_rows
+  
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image)
 
@@ -59,11 +60,15 @@ class Seatmap < ActiveRecord::Base
   end
 
   def parse_csv
-    @as_js = []
-    list = []
-    @rows = CSV.parse(self.csv)
+    @seat_rows = CSV.parse(self.csv)
     pad_rows_to_uniform_length!
-    @rows.each do |row|
+    parse_rows
+  end
+
+  def parse_rows
+    list = []
+    @as_js = []
+    @seat_rows.each do |row|
       row_string = ''
       row.each do |cell|
         if cell.blank?   # no seat in this location
@@ -86,15 +91,15 @@ class Seatmap < ActiveRecord::Base
     end
     self.json = "[\n" << @as_js.join(",\n") << "\n  ]"
     self.seat_list = list.sort.join(',')
+    self.columns = @seat_rows.map(&:length).max
+    self.rows = @seat_rows.length
   end
 
   private
 
   def pad_rows_to_uniform_length!
-    len = @rows.map(&:length).max
-    @rows.each { |r| (r << Array.new(len - r.length) {''}).flatten! }
-    self.columns = len
-    self.rows = @rows.length
+    len = @seat_rows.map(&:length).max
+    @seat_rows.each { |r| (r << Array.new(len - r.length) {''}).flatten! }
   end
 
   def no_duplicate_seats

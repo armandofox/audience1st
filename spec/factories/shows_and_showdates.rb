@@ -39,7 +39,15 @@ FactoryBot.define do
     rows 2
     columns 4
     image_url 'http://foo.com/seatmap.png'
+
+    factory :custom_seatmap do
+      seat_rows [%w(R1 R2),%w(S1 S2)]
+      sequence(:name) { |n| "Seatmap #{n}" }
+      after(:build) do |s,ev|
+        s.parse_rows
+      end
+    end
   end
 
-
+  
 end

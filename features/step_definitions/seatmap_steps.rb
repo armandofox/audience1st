@@ -1,3 +1,7 @@
+Given /a seatmap "(.*)" with seats (.*)/ do |name,seats|
+  create(:seatmap, :name => name, :seat_rows => [seats.split(/\s*,\s*/)])
+end
+
 Given /the seatmap "(.*)" exists/ do |name|
   create(:seatmap, :name => name)
 end

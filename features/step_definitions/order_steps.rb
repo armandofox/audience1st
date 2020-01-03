@@ -1,6 +1,6 @@
 module ScenarioHelpers
   module Orders
-    def buy!(customer, vtype, qty, showdate=nil)
+    def buy!(customer, vtype, qty, showdate: nil, seats: [])
       @order = create(:order,
         :purchasemethod => Purchasemethod.get_type_by_name('box_cash'),
         :customer => customer,
@@ -9,7 +9,7 @@ module ScenarioHelpers
       vv = create(:valid_voucher, :vouchertype => vtype, :showdate => showdate,
         :start_sales => Time.at_beginning_of_season(vtype.season),
         :end_sales => Time.at_end_of_season(vtype.season))
-      @order.add_tickets_without_capacity_checks(vv, qty.to_i)
+      @order.add_tickets_without_capacity_checks(vv, qty.to_i, seats)
       @order.purchasemethod = Purchasemethod.get_type_by_name('none') if @order.total_price.zero?
       @order.finalize!
     end
@@ -28,7 +28,7 @@ Given /^a comp order for customer "(.*) (.*)" containing (\d+) "(.*)" comps to "
   comp = create(:comp_vouchertype, :name => comp_type)
   sd = create(:showdate, :show_name => show_name)
   customer = find_or_create_customer first,last
-  buy!(customer, comp, qty.to_i, sd)
+  buy!(customer, comp, qty.to_i, showdate: sd)
 end
 
 Given /^an order of (\d+) "(.*)" comp subscriptions for customer "(.*) (.*)"$/ do |qty, sub, first, last|

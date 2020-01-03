@@ -12,6 +12,13 @@ Given /^customer (.*) (.*) has ([0-9]+) "(.*)" tickets$/ do |first,last,num,type
   order.finalize!
 end
 
+Given /customer "(\S+) (.*)" has seats? (.*) for the "(.*)" performance/ do |first,last,seat_list,thedate|
+  customer = find_or_create_customer first,last
+  dt = Time.parse thedate
+  sd = Showdate.find_by(:thedate => dt) || create(:showdate, :thedate => dt)
+  seats = seat_list.split(/\s*,\s*/)
+  ScenarioHelpers::Orders.buy!(customer, create(:vouchertype), seats.length, seats)
+end
 
 Given /^customer "(\S+) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.*)"$/ do |first,last,num_free,num_total,show|
   c = find_or_create_customer first,last
@@ -106,7 +113,7 @@ Then /s?he should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)/ do |num,type
   expect(@vouchers.count).to eq(num.to_i)
 end
 
-# This step should only be used after/in conjunction with "Then s?he shoudl have __ tickets for..."
+# This step should only be used after/in conjunction with "Then s?he should have __ tickets for..."
 And /one of those tickets should have comment "(.*)"/ do |comment|
   expect(@vouchers.any? { |v| v.comments == comment }).to be_truthy
 end
