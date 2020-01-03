@@ -32,7 +32,7 @@ class Mailer < ActionMailer::Base
     @customer = customer
     @showdate = showdate
     @seats = Voucher.seats_for(vouchers)
-    @notes = @showdate.patron_notes
+    @notes = @showdate.patron_notes if @showdate
     mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
   end
 
