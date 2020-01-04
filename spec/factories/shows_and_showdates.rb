@@ -34,7 +34,7 @@ FactoryBot.define do
     #     B1 -  B2     (B1 is an accessible seat)
     sequence(:name) { |n| "Seatmap #{n}" }
     csv "A1,,A2\r\n,B1+,,B2\r\n"
-    seat_rows [['A1',nil,'A2',nil],[nil,'B1',nil,'B2']]
+    seat_rows [['A1',nil,'A2',nil],[nil,'B1+',nil,'B2']]
     image_url 'http://foo.com/seatmap.png'
     after(:build) do |s,ev|
       s.parse_rows
