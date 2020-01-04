@@ -15,7 +15,7 @@ class ValidVoucher < ActiveRecord::Base
 
   attr_accessible :showdate_id, :showdate, :vouchertype_id, :vouchertype, :promo_code, :start_sales, :end_sales, :max_sales_for_type
   # auxiliary attributes that aren't persisted
-   attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
+  attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
   belongs_to :showdate
   belongs_to :vouchertype
   validate :self_service_comps_must_have_promo_code
@@ -177,7 +177,10 @@ class ValidVoucher < ActiveRecord::Base
   public
   
   def seats_of_type_remaining
-    return INFINITE unless showdate
+    unless showdate
+      self.explanation = "No limit"
+      return INFINITE unless showdate
+    end
     total_empty = showdate.saleable_seats_left
     remain = if sales_unlimited? # no limit on ticket type: only limit is show capacity
              then total_empty
@@ -250,8 +253,9 @@ class ValidVoucher < ActiveRecord::Base
   end
   
   def explanation_for_admin
-    if max_sales_for_this_patron > 0
-      "#{max_sales_for_this_patron} available"
+    m = max_sales_for_this_patron 
+    if  m > 0
+      "#{m} available"
     else
       "Not available for this patron"
     end
