@@ -66,8 +66,11 @@ en:
 
     reserved_seating: >
 
-      Sets whether a performance is general admission or reserved seating.
-      This cannot be changed once reservations for the performance have been made.
+      Sets whether a performance is General Admission or reserved seating.
+      A General Admission performance cannot be changed to reserved seating, nor vice versa, after 
+      any reservations have been made for the performance.
+      A reserved seating performance can be changed to use a different seat map
+      if all existing patrons' seats can be accommodated in the new seat map.
 
     # Seatmap editing
 

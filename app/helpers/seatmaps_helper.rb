@@ -8,15 +8,19 @@ module SeatmapsHelper
   def display_seats(seats)
     seats.map(&:strip).join(',')
   end
+  def ga_option ; options_for_select([['None (general admission)', '']]) ; end
   def seatmap_options(selected = nil)
-    options_for_select([['None (general admission)', '']]) +
-      options_from_collection_for_select(Seatmap.all, :id, :name, selected)
+    options_from_collection_for_select(Seatmap.all, :id, :name, selected)
   end
-  def seatmap_choices_for(showdate,editable)
-    if editable
-      select_tag('showdate[seatmap_id]', seatmap_options(showdate.seatmap_id), :class => 'form-control')
-    else
-      select_tag('showdate[seatmap_id]', seatmap_options(showdate.seatmap_id), :class => 'form-control', :disabled => 'disabled')
-    end
+  def seatmap_choices_for(showdate)
+    ga = !showdate.has_reserved_seating?
+    sold = (showdate.total_sales.size > 0)
+    choices =
+      if    !sold then ga_option + seatmap_options(showdate.seatmap_id)
+      elsif ga    then ga_option
+      else  seatmap_options(showdate.seatmap_id)
+      end
+    select_tag('showdate[seatmap_id]', choices, :class => 'form-control')
   end
 end
+

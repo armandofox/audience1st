@@ -44,9 +44,18 @@ end
 
 When /I try to change the seatmap for that performance to "(.*)"/ do |seatmap_name|
   visit edit_show_showdate_path(@showdate.show,@showdate)
-  click_link 'Change'
   select seatmap_name, :from => 'Seat map'
   click_button 'Save Changes'
+end
+
+# After making changes - need to reload the AR objects that have been instance variables throughout
+# the scenario
+Then /that performance should use the "(.*)" seatmap/ do |name|
+  expect(@showdate.reload.seatmap.name).to eq(name)
+end
+
+Then /that performance should be General Admission/ do
+  expect(@showdate.reload.seatmap).to be_blank
 end
 
 Then /that seatmap should have image URL "(.*)" and name "(.*)"/ do |url,name|

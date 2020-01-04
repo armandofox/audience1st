@@ -6,9 +6,13 @@ en:
   showdates:
     errors:
       cannot_change_seatmap: >
-        cannot be changed because the following patrons have reserved seats
-        that don't exist in '%{map}'.  (Suggestion: Shift-click on each patron name to
+        Seat map cannot be changed because the following patrons have reserved seats
+        that don't exist in the new seat map.  (Suggestion: Shift-click on each patron name to
         visit their My Tickets page in a new window.)
+
+      cannot_change_seating_type: >
+        Cannot change performance from reserved to general admission or vice versa because 
+        reservations have already been made.
 
   email:
 

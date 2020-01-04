@@ -20,14 +20,20 @@ Scenario: All existing patrons can be accommodated in new seatmap
   When I try to change the seatmap for that performance to "Alternate"
   Then I should be on the show details page for "Show"
   And I should see "Changes saved"
-  Then I should see "Alternate" within "#details_row_showdate_1"
+  And that performance should use the "Alternate" seatmap
 
 Scenario: Some patrons must be reassigned to new seats
 
   Given a seatmap "Alternate" with seats A1,B2
   When I try to change the seatmap for that performance to "Alternate"
   Then I should be on the edit showdate page for that performance
-  And I should see "Seatmap cannot be changed because the following patrons have reserved seats that don't exist in 'Alternate'"
+  And I should see "Seat map cannot be changed because the following patrons have reserved seats that don't exist in the new seat map"
   And I should see "Jerry Bock (A2)"
   And I should see "Tom Jones (B1)"
+  
+Scenario: cannot change general admission showdate to use seatmap if any tickets have been sold
+
+Scenario: can change general admission showdate to reserved seating if no tickets have been sold
+
+  
   

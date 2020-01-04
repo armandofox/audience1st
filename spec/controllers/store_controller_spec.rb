@@ -96,7 +96,7 @@ describe StoreController do
     end
   end
 
-  describe 'quick donation with nonexistent customer', focus: true do
+  describe 'quick donation with nonexistent customer' do
     before :each do
       @new_valid_customer = attributes_for(:customer).except(:password,:password_confirmation)
     end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Showdate do
-  describe "when changing seatmap fails", focus:true do
+  describe "when changing seatmap fails" do
     before(:each) do
       @s = create(:showdate, :seatmap => create(:seatmap))
       @v1 = create(:revenue_voucher, :showdate => @s, :seat => 'A1')
@@ -13,7 +13,18 @@ describe Showdate do
     end
     it 'lists customers who need accommodating' do
       @s.valid?
-      expect(@s.errors[:seatmap]).to include_match_for('(B1)')
+      expect(@s.errors[:base]).to include_match_for('(B1)')
+    end
+    it 'forbids changing to general admission' do
+      @s.seatmap = nil
+      expect(@s).not_to be_valid
+      expect(@s.errors[:base]).to include_match_for /Cannot change performance/
+    end
+    it 'allows changing if no reservations' do
+      @v1.destroy
+      @v2.destroy
+      @s.seatmap = nil
+      expect(@s).to be_valid
     end
   end
   describe "availability grade" do

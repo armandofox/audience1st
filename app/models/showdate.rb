@@ -33,7 +33,8 @@ class Showdate < ActiveRecord::Base
   validates_presence_of :end_advance_sales
   validates_length_of :description, :maximum => 32, :allow_nil => true
   
-  validate :seatmap_can_accommodate_existing_reservations
+  validate :cannot_change_seating_type_if_existing_reservations, :on => :update
+  validate :seatmap_can_accommodate_existing_reservations, :on => :update
 
   attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
 
@@ -146,16 +147,21 @@ class Showdate < ActiveRecord::Base
     vouchers.map(&:seat).compact.map(&:to_s).sort
   end
 
+  def cannot_change_seating_type_if_existing_reservations
+    return if total_sales.empty?
+    errors.add(:base, I18n.translate('showdates.errors.cannot_change_seating_type')) if (seatmap_id_was.nil? && !seatmap_id.nil?) || (!seatmap_id_was.blank? && seatmap_id.blank?)
+  end
+  
   def seatmap_can_accommodate_existing_reservations
     return if seatmap.blank?
     cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
     unless cannot_accommodate.empty?
       h = ApplicationController.helpers
       r = Rails.application.routes.url_helpers
-      self.errors.add(:seatmap,
-        I18n.translate('showdates.errors.cannot_change_seatmap', :map => seatmap.name) +
+      self.errors.add(:base,
+        I18n.translate('showdates.errors.cannot_change_seatmap') +
         '<br/>' + 
-        cannot_accommodate.map { |v| "#{h.link_to v.customer.full_name,r.customer_path(v.customer)} (#{v.seat})" }.join('<br/>'))
+        cannot_accommodate.sort_by(&:seat).map { |v| "#{h.link_to v.customer.full_name,r.customer_path(v.customer)} (#{v.seat})" }.join('<br/>'))
     end
   end
 end
