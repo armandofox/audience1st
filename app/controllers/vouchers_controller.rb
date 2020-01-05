@@ -63,7 +63,6 @@ class VouchersController < ApplicationController
       vouchertype && howmany > 0
     return redirect_to(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
       vouchertype.comp?
-    return redirect_to(redir, 'Please select a performance.') unless showdate || leave_open
 
     if !leave_open
       vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
@@ -91,10 +90,12 @@ class VouchersController < ApplicationController
         :logged_in_id => current_user.id,
         :customer_id => @customer.id,
         :showdate_id => showdate_id,
-        :voucher_id => v.id,
+        :voucher_id => order.vouchers.first.id,
         :purchasemethod => Purchasemethod.get_type_by_name('none'))
     rescue Order::NotReadyError => e
       flash[:alert] = "Error adding comps: #{order.errors.as_html}".html_safe
+      Rails.logger.error e.message
+      Rails.logger.error e.backtrace.inspect
       order.destroy
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
