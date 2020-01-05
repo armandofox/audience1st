@@ -64,45 +64,42 @@ class VouchersController < ApplicationController
     return redirect_to(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
       vouchertype.comp?
 
-    if !leave_open
-      vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
-      return redirect_to(redir, 'This comp ticket type not valid for this performance.') 
-    else 
-      vv = ValidVoucher.find_by(:vouchertype_id => vouchertype.id)
-    end
-    
-    order = Order.create(:comments => thecomment, :processed_by => current_user,
+    order_params = { :comments => thecomment, :processed_by => current_user,
       :customer => @customer, :purchaser => @customer,
-      :purchasemethod => Purchasemethod.get_type_by_name('none')) # not a gift order
-    order.add_tickets_without_capacity_checks(vv, howmany, seats)
+      :purchasemethod => Purchasemethod.get_type_by_name('none') }
+
     begin
-      order.finalize!
       if leave_open
-        flash[:notice] = "Added #{howmany} '#{vv.name}' comps and customer can choose the show later."
-        order.vouchers.each { |v| v.cancel(current_user) }
-        showdate_id = nil
+        order = Order.create!(order_params)
+        order.add_open_vouchers_without_capacity_checks(vouchertype, howmany)
+        message = "Added #{howmany} '#{vouchertype.name}' comps and customer can choose the show later."
       else
-        flash[:notice] = "Added #{howmany} '#{vv.name}' comps for #{showdate.printable_name}."
-        showdate_id = showdate.id
+        vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
+          return redirect_to(redir, 'This comp ticket type not valid for this performance.') 
+        order = Order.create(order_params) # not a gift order
+        order.add_tickets_without_capacity_checks(vv, howmany, seats)
+        message = "Added #{howmany} '#{vv.name}' comps for #{vv.showdate.printable_name}."
       end
+      order.finalize!
+      flash[:notice] = message
       Txn.add_audit_record(:txn_type => 'add_tkts',
         :order_id => order.id,
         :logged_in_id => current_user.id,
         :customer_id => @customer.id,
-        :showdate_id => showdate_id,
+        :showdate_id => params[:showdate_id],
         :voucher_id => order.vouchers.first.id,
         :purchasemethod => Purchasemethod.get_type_by_name('none'))
+      if !leave_open && params[:customer_email]
+        email_confirmation(:confirm_reservation, @customer, showdate, order.vouchers)
+      end
     rescue Order::NotReadyError => e
       flash[:alert] = "Error adding comps: #{order.errors.as_html}".html_safe
-      Rails.logger.error e.message
-      Rails.logger.error e.backtrace.inspect
       order.destroy
     rescue RuntimeError => e
       flash[:alert] = "Unexpected error:<br/>#{e.message}"
       Rails.logger.error e.backtrace.inspect
       order.destroy
     end
-    email_confirmation(:confirm_reservation, @customer, showdate, order.vouchers) if params[:customer_email]
     redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 

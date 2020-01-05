@@ -140,6 +140,13 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def add_open_vouchers_without_capacity_checks(vouchertype, number)
+    raise Order::NotPersistedError unless persisted?
+    new_vouchers = VoucherInstantiator.new(vouchertype).from_vouchertype(number)
+    self.vouchers += new_vouchers
+    self.save!
+  end
+
   def add_tickets_without_capacity_checks(valid_voucher, number, seats=[])
     raise Order::NotPersistedError unless persisted?
     new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
