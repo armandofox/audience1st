@@ -156,12 +156,9 @@ class Showdate < ActiveRecord::Base
     return if seatmap.blank?
     cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
     unless cannot_accommodate.empty?
-      h = ApplicationController.helpers
-      r = Rails.application.routes.url_helpers
       self.errors.add(:base,
-        I18n.translate('showdates.errors.cannot_change_seatmap') +
-        '<br/>' + 
-        cannot_accommodate.sort_by(&:seat).map { |v| "#{h.link_to v.customer.full_name,r.customer_path(v.customer)} (#{v.seat})" }.join('<br/>'))
+        I18n.translate('showdates.errors.cannot_change_seatmap') +  '<br/>' + 
+        ApplicationController.helpers.vouchers_sorted_by_seat(cannot_accommodate))
     end
   end
 end
