@@ -40,7 +40,8 @@ Scenario: add comps without reserving for a specific showdate
   And I fill in "How many:" with "2"
   And I select "Leave Open" from "Reserve for:"
   And  I press "Add Vouchers"
-  Then customer "Armando Fox" should have an order with comment "" containing the following tickets:
+  Then I should see "Added 2 'Comp' comps and customer can choose the show later"
+  And customer "Armando Fox" should have an order with comment "" containing the following tickets:
     | qty | type | showdate |
     |   2 | Comp |          |
 

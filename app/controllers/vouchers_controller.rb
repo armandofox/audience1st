@@ -78,31 +78,21 @@ class VouchersController < ApplicationController
     order.add_tickets_without_capacity_checks(vv, howmany, seats)
     begin
       order.finalize!
-      order.vouchers.each do |v|
-        if !leave_open
-          Txn.add_audit_record(:txn_type => 'add_tkts',
-          :order_id => order.id,
-          :logged_in_id => current_user.id,
-          :customer_id => @customer.id,
-          :showdate_id => showdate.id,
-          :voucher_id => v.id,
-          :purchasemethod => Purchasemethod.get_type_by_name('none'))
-          flash[:notice] = "Added #{howmany} '#{vv.name}' comps for #{showdate.printable_name}."
-        else 
-          Txn.add_audit_record(:txn_type => 'add_tkts',
-          :order_id => order.id,
-          :logged_in_id => current_user.id,
-          :customer_id => @customer.id,
-          :voucher_id => v.id,
-          :purchasemethod => Purchasemethod.get_type_by_name('none'))
-          Txn.add_audit_record(:txn_type => 'res_cancl',
-            :customer_id => v.customer.id,
-            :logged_in_id => current_user.id,
-            :voucher_id => v.id)
-          v.cancel(current_user)
-          flash[:notice] = "Added #{howmany} '#{vv.name}' comps and customer can choose the show later."
-        end
+      if leave_open
+        flash[:notice] = "Added #{howmany} '#{vv.name}' comps and customer can choose the show later."
+        order.vouchers.each { |v| v.cancel(current_user) }
+        showdate_id = nil
+      else
+        flash[:notice] = "Added #{howmany} '#{vv.name}' comps for #{showdate.printable_name}."
+        showdate_id = showdate.id
       end
+      Txn.add_audit_record(:txn_type => 'add_tkts',
+        :order_id => order.id,
+        :logged_in_id => current_user.id,
+        :customer_id => @customer.id,
+        :showdate_id => showdate_id,
+        :voucher_id => v.id,
+        :purchasemethod => Purchasemethod.get_type_by_name('none'))
     rescue Order::NotReadyError => e
       flash[:alert] = "Error adding comps: #{order.errors.as_html}".html_safe
       order.destroy

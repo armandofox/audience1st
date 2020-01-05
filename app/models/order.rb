@@ -143,13 +143,17 @@ class Order < ActiveRecord::Base
   def add_tickets_without_capacity_checks(valid_voucher, number, seats=[])
     raise Order::NotPersistedError unless persisted?
     new_vouchers = VoucherInstantiator.new(valid_voucher.vouchertype).from_vouchertype(number)
-    new_vouchers.each_with_index do |v,i|
-      v.seat = seats[i] unless seats.empty? && valid_voucher.showdate == nil
+    # reserve only if a specific showdate is indicated.  it seems like this method
+    # should really take a vouchertype and showdate.
+    if valid_voucher.showdate
       begin
-        v.reserve!(valid_voucher.showdate)
-      rescue ActiveRecord::RecordInvalid, ReservationError #  reservation couldn't be processed
-        self.errors.add(:base, v.errors.full_messages.join(', '))
-        v.destroy               # otherwise it'll end up with no order ID and can't be reaped
+        new_vouchers.each_with_index do |v,i|
+          v.seat = seats[i] unless seats.empty?
+          v.reserve!(valid_voucher.showdate)
+        rescue ActiveRecord::RecordInvalid, ReservationError #  reservation couldn't be processed
+          self.errors.add(:base, v.errors.full_messages.join(', '))
+          v.destroy               # otherwise it'll end up with no order ID and can't be reaped
+        end
       end
     end
     if self.errors.empty?       # all vouchers were added OK
