@@ -4,7 +4,7 @@
   = select_tag('showdate_id', options, :include_blank => "Leave Open", :class => 'form-control col-4')
   .col-3.text-left= display_seats_field(:extra_classes => 'd-none')
   :javascript
-    $('#vouchertype_id').change(function() {
+    $('#comp_order_vouchertype_id').change(function() {
       var url = "#{escape_javascript(update_shows_path)}" + '?' + $.param({"vouchertype_id" : $(this).val()});
       $('#reserve_for').load(url);
     });

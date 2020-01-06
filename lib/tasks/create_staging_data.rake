@@ -9,7 +9,7 @@
 require 'csv'
 
 module StagingHelper
-  TENANT = ENV['TENANT'] || 'a1-staging'
+  TENANT = ENV['TENANT']
   SHOWS = ['Company', 'Fiddler on the Roof', 'West Side Story']
   CITIES = ['Oakland', 'San Francisco', 'Alameda', 'Hayward', 'San Leandro', 'Berkeley',
     'Daly City', 'Castro Valley', 'Pleasanton', 'Walnut Creek', 'Concord', 'Antioch', 'Pittsburg',
@@ -20,6 +20,7 @@ module StagingHelper
   end
   def self.switch_to_staging!
     abort_if_production!
+    abort "Only a1-staging and sandbox are valid tenants" unless ['a1-staging','sandbox'].include?(StagingHelper::TENANT)
     Apartment::Tenant.switch! StagingHelper::TENANT
   end
   def self.dot

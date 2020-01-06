@@ -3,16 +3,16 @@
 = form_tag customer_vouchers_path(@customer), :class => 'form', :id => 'add_comps_form' do
 
   .form-row
-    %label.col-2.text-right.col-form-label{:for => 'howmany'} How many:
-    = text_field_tag 'howmany', '', :class => 'form-control col-1'
+    %label.col-2.text-right.col-form-label{:for => 'comp_order_howmany'} How many:
+    = text_field 'comp_order', 'howmany', :class => 'form-control col-1'
 
   .form-row
-    %label.col-2.text-right.col-form-label{:for => 'vouchertype_id'} What type:
-    = select_tag('vouchertype_id', disabled_select_default('Select type...') + options_from_collection_for_select(@vouchers,'id','name_with_season'), :class => 'col-4 form-control')
+    %label.col-2.text-right.col-form-label{:for => 'comp_order_vouchertype_id'} What type:
+    = select 'comp_order', 'vouchertype_id', disabled_select_default('Select type...') + options_from_collection_for_select(@vouchers,'id','name_with_season'), {}, {:class => 'col-4 form-control'}
     
   .form-row
-    %label.col-2.text-right.col-form-label{:for => 'comments'}  Optional comments:
-    = text_area_tag 'comments', '', :class => 'form-control col-4'
+    %label.col-2.text-right.col-form-label{:for => 'comp_order_comments'}  Optional comments:
+    = text_area 'comp_order', 'comments', :class => 'form-control col-4'
 
   #reserve_for= render :partial => 'reserve_for'
     

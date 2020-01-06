@@ -50,57 +50,26 @@ class VouchersController < ApplicationController
 
   def create
     # post: add the actual comps, and possibly reserve
-    seats = seats_from_params(params)
-    howmany = params[:howmany].to_i
-    vouchertype = Vouchertype.find_by_id(params[:vouchertype_id])
-    thecomment = params[:comments].to_s
-    showdate = Showdate.find_by_id(params[:showdate_id])
+    comp_order = params[:comp_order].merge({:seats => seats_from_params(params),
+        :showdate_id => params[:showdate_id], :processed_by => current_user, :customer => @customer})
 
-    leave_open = params[:showdate_id].empty?
+    add_comps_order = CompOrder.new(comp_order)
 
-    redir = new_customer_voucher_path(@customer)
-    return redirect_to(redir, :alert => 'Please select number and type of vouchers to add.') unless
-      vouchertype && howmany > 0
-    return redirect_to(redir, 'Only comp vouchers can be added this way. For revenue vouchers, use the Buy Tickets purchase flow, and choose Check or Cash Payment.') unless
-      vouchertype.comp?
-
-    order_params = { :comments => thecomment, :processed_by => current_user,
-      :customer => @customer, :purchaser => @customer,
-      :purchasemethod => Purchasemethod.get_type_by_name('none') }
-
-    begin
-      if leave_open
-        order = Order.create!(order_params)
-        order.add_open_vouchers_without_capacity_checks(vouchertype, howmany)
-        message = "Added #{howmany} '#{vouchertype.name}' comps and customer can choose the show later."
-      else
-        vv = ValidVoucher.find_by(:showdate_id => showdate.id, :vouchertype_id => vouchertype.id) or
-          return redirect_to(redir, 'This comp ticket type not valid for this performance.') 
-        order = Order.create(order_params) # not a gift order
-        order.add_tickets_without_capacity_checks(vv, howmany, seats)
-        message = "Added #{howmany} '#{vv.name}' comps for #{vv.showdate.printable_name}."
-      end
-      order.finalize!
-      flash[:notice] = message
+    if  !add_comps_order.valid?  ||  add_comps_order.finalize.nil?
+      redirect_to new_customer_voucher_path(@customer), :alert => add_comps_order.errors.as_html
+    else
       Txn.add_audit_record(:txn_type => 'add_tkts',
-        :order_id => order.id,
+        :order_id => add_comps_order.order.id,
         :logged_in_id => current_user.id,
         :customer_id => @customer.id,
-        :showdate_id => params[:showdate_id],
-        :voucher_id => order.vouchers.first.id,
+        :showdate_id => add_comps_order.showdate_id,
+        :voucher_id => add_comps_order.order.vouchers.first.id,
         :purchasemethod => Purchasemethod.get_type_by_name('none'))
-      if !leave_open && params[:customer_email]
-        email_confirmation(:confirm_reservation, @customer, showdate, order.vouchers)
+      if !add_comps_order.showdate_id.blank? && params[:customer_email]
+        email_confirmation(:confirm_reservation, @customer, add_comps_order.showdate, add_comps_order.order.vouchers)
       end
-    rescue Order::NotReadyError => e
-      flash[:alert] = "Error adding comps: #{order.errors.as_html}".html_safe
-      order.destroy
-    rescue RuntimeError => e
-      flash[:alert] = "Unexpected error:<br/>#{e.message}"
-      Rails.logger.error e.backtrace.inspect
-      order.destroy
+      redirect_to customer_path(@customer), :notice => add_comps_order.confirmation_message
     end
-    redirect_to customer_path(@customer, :notice => flash[:notice])
   end
 
   def update_comment
