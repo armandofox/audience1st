@@ -29,7 +29,7 @@ class VouchersController < ApplicationController
       includes(:showdate => :show).
       order('showdates.thedate')
     # Vouchertype.find(params[:vouchertype_id]).valid_vouchers.sort_by(&:showdate)
-    render :partial => 'reserve_for'
+    render :partial => 'reserve_comps_for'
   end
 
   def index
@@ -51,7 +51,7 @@ class VouchersController < ApplicationController
   def create
     # post: add the actual comps, and possibly reserve
     comp_order = params[:comp_order].merge({:seats => seats_from_params(params),
-        :showdate_id => params[:showdate_id], :processed_by => current_user, :customer => @customer})
+        :processed_by => current_user, :customer => @customer})
 
     add_comps_order = CompOrder.new(comp_order)
 

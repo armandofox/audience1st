@@ -268,10 +268,10 @@ A1.seatmap = {
   }
   ,getSeatingOptionsForAddComps: function() {
     // triggered when a new perf is selected during Add Comps flow
-    var showdateID = $('#showdate_id').val();
+    var showdateID = $('#comp_order_showdate_id').val();
     var resetAfter = function() {
       $('#seating-charts-wrapper').addClass('d-none');
-      $('#howmany').prop('readonly', false); // allow changing ticket count
+      $('#comp_order_howmany').prop('readonly', false); // allow changing ticket count
       $('.seat-display').addClass('d-none');
       $('.confirm-seats').prop('disabled', false);
     }
@@ -287,8 +287,8 @@ A1.seatmap = {
         A1.seatmap.resetAfterCancel = resetAfter;
         A1.seatmap.confirmSeatsButton = $('.confirm-seats');
         A1.seatmap.configureFrom(jsonData); // setup unavailable seats, etc
-        A1.seatmap.max = Number($('#howmany').val());
-        $('#howmany').prop('readonly', true); // still submits as part of form, but can't change
+        A1.seatmap.max = Number($('#comp_order_howmany').val());
+        $('#comp_order_howmany').prop('readonly', true); // still submits as part of form, but can't change
         A1.seatmap.seatDisplayField = $('.seat-display').removeClass('d-none');
         A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
         $('#seating-charts-wrapper').removeClass('d-none').slideDown();
@@ -299,7 +299,7 @@ A1.seatmap = {
   ,setupAddComps: function() {
     if ($('body#vouchers_new').length) { // only do these bindings on "Add Comps" page
       A1.seatmap.enclosingSelector = '#add_comps_form';
-      $('#add_comps_form').on('change', '#showdate_id', A1.seatmap.getSeatingOptionsForAddComps);
+      $('#add_comps_form').on('change', '#comp_order_showdate_id', A1.seatmap.getSeatingOptionsForAddComps);
     }
   }
   ,setupRegularSales: function() {
