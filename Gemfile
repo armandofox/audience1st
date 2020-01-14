@@ -5,7 +5,7 @@ ruby '2.5.5'
 # basic app components
 gem 'pg', '~> 0.21'
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
-gem 'rails', '4.2.9'
+gem 'rails', '4.2.11.1'
 
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
@@ -37,7 +37,7 @@ group :production do
   gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
   gem 'newrelic_rpm'
   gem 'puma-heroku'
-  gem 'puma'
+  gem 'puma', '~> 3.12.2'
   gem 'rails_12factor'
 end
 
