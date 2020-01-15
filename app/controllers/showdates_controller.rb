@@ -25,7 +25,7 @@ class ShowdatesController < ApplicationController
         return
       end
     end
-    flash[:notice] = "#{new_showdates.size} showdates were successfully added."
+    flash[:notice] = t('showdates.added', :count => new_showdates.size)
     if params[:commit] =~ /back to list/i
       redirect_to shows_path(:season => @show.season)
     else

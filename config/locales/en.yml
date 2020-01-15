@@ -4,6 +4,11 @@ en:
       Delete '%{name}' seatmap: are you sure?
 
   showdates:
+    added:
+      zero: No showdates were added.
+      one: One showdate was successfully added.
+      other: "%{count} showdates were successfully added."
+
     errors:
       cannot_change_seatmap: >
         Seat map cannot be changed because the following patrons have reserved seats

@@ -63,9 +63,9 @@ end
 
 group :development do
   gem 'derailed_benchmarks'
-  gem 'query_trail'
-  gem 'ruby-prof'
-  gem 'stackprof'
+  # gem 'query_trail'
+  # gem 'ruby-prof'
+  # gem 'stackprof'
   gem 'web-console', '~> 2.0'
   gem 'sdoc', '~> 0.4.0'
 end

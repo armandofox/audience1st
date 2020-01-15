@@ -44,18 +44,6 @@ Given /^the following shows exist:$/ do |shows|
   end
 end
 
-Given /the "(.*)" performance has reserved seating/ do |datetime|
-  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(datetime))
-  steps %Q{Given that performance has reserved seating}
-end
-
-Given /that performance has reserved seating/ do
-  @seatmap = create(:seatmap)
-  @showdate.seatmap = @seatmap
-  @showdate.save!
-end
-
-
 When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,cap,list|
   fill_in "Show Name", :with => name
   select_date_from_dropdowns(eval(opens), :from => "Opens")
@@ -70,16 +58,6 @@ Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   name ||= "New Show"
   @showdate = setup_show_and_showdate(name,time)
   @show = @showdate.show
-end
-
-Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|
-  @showdate = create(:showdate, :thedate => Time.zone.parse(time), :seatmap => create(:seatmap))
-  tbl.hashes.each do |h|
-    customer = find_or_create_customer h['first'], h['last']
-    vouchertype = Vouchertype.find_by(:name => h['vouchertype']) || create(:revenue_vouchertype, :name => h['vouchertype'])
-    seats = h['seats'].split(/\s*,\s*/)
-    buy!(customer, vouchertype, seats.length, showdate: @showdate, seats: seats)
-  end
 end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|

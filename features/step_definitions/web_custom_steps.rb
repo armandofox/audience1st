@@ -84,15 +84,20 @@ end
 # Fill in all fields in a fieldset
 When /^I fill in the "(.*)" fields as follows:$/ do |fieldset, table|
   table.hashes.each do |t|
-    case t[:value]
+    attr,val = t[:field],t[:value]
+    case val
+    when /^date range "(.*)" to "(.*)"$/
+      steps %Q{When I select "#{$1} to #{$2}" as the "#{attr}" date range}
+    when /^select time "(.*)"/
+      steps %Q{When I select "#{$1}" as the "#{attr}" time}
     when /^select date "(.*)"$/
-      steps %Q{When I select "#{$1}" as the "#{t[:field]}" date}
+      steps %Q{When I select "#{$1}" as the "#{attr}" date}
     when /^select "(.*)"$/
-      steps %Q{When I select "#{$1}" from "#{t[:field]}"}
+      steps %Q{When I select "#{$1}" from "#{attr}"}
     when /^(un)?checked$/
-      steps %Q{When I #{$1}check "#{t[:field]}"}
+      steps %Q{When I #{$1}check "#{attr}"}
     else
-      steps %Q{When I fill in "#{t[:field]}" with "#{t[:value]}"}
+      steps %Q{When I fill in "#{attr}" with "#{val}"}
     end
   end
 end

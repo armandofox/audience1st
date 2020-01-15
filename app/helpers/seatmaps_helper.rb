@@ -20,7 +20,6 @@ module SeatmapsHelper
       elsif ga    then ga_option
       else  seatmap_options(showdate.seatmap_id)
       end
-    select_tag('showdate[seatmap_id]', choices, :class => 'form-control')
   end
 end
 

@@ -11,7 +11,7 @@
     %label.col-form-label{:for => :showdate_seatmap_id} Seat map
     = popup_help_for :reserved_seating
   .col-3
-    = seatmap_choices_for(@showdate)
+    = select_tag 'showdate[seatmap_id]', seatmap_choices_for(@showdate), :class => 'form-control'
   .col-3
     = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
 

@@ -1,3 +1,24 @@
+Given /the "(.*)" performance has reserved seating/ do |datetime|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(datetime))
+  steps %Q{Given that performance has reserved seating}
+end
+
+Given /that performance has reserved seating/ do
+  @seatmap = create(:seatmap)
+  @showdate.seatmap = @seatmap
+  @showdate.save!
+end
+
+Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|
+  @showdate = create(:showdate, :thedate => Time.zone.parse(time), :seatmap => create(:seatmap))
+  tbl.hashes.each do |h|
+    customer = find_or_create_customer h['first'], h['last']
+    vouchertype = Vouchertype.find_by(:name => h['vouchertype']) || create(:revenue_vouchertype, :name => h['vouchertype'])
+    seats = h['seats'].split(/\s*,\s*/)
+    buy!(customer, vouchertype, seats.length, showdate: @showdate, seats: seats)
+  end
+end
+
 Then /I should (not )?see the seatmap/ do |no|
   if no
     expect(page).not_to have_selector('#seating-charts-wrapper', :visible => true)
