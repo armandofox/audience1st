@@ -5,7 +5,7 @@ ruby '2.5.5'
 # basic app components
 gem 'pg', '~> 0.21'
 gem 'apartment', '>= 2.1.0'     # multi-tenancy: see README.md
-gem 'rails', '4.2.9'
+gem 'rails', '4.2.11.1'
 
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
@@ -20,7 +20,6 @@ gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', '= 4.0.5'
 gem 'jquery-ui-rails', '= 5.0.5'
 gem 'nokogiri'
-#gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'responders', '~> 2.0'
 gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attributes (https://github.com/attr-encrypted/attr_encrypted/issues/107)
@@ -37,7 +36,7 @@ group :production do
   gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
   gem 'newrelic_rpm'
   gem 'puma-heroku'
-  gem 'puma'
+  gem 'puma', '~> 3.12.2'
   gem 'rails_12factor'
 end
 
