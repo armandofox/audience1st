@@ -24,7 +24,7 @@ class ReportsController < ApplicationController
     return unless params[:commit] =~ /download/i # fall through to render on screen
     report = ShowAdvanceSalesReport.new(@shows).generate
     if report.errors.empty?
-      download_to_excel(report.csv, "advance_sales")
+      download_to_excel(report.csv, "sales_by_show")
     else
       redirect_to(reports_path, :alert => report.errors.as_html)
     end
