@@ -26,9 +26,6 @@
     border: 2px solid yellow;
     background-color: blue;
 }
-.modal-dialog { border: 1px solid red; }
-.modal-content { border: 1px solid green; }
-.modal-body { border: 1px solid black; }
 /* Hovering over seat shows seat number */
 [data-seatnum] {
     position: relative;
