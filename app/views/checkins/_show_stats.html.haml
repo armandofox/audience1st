@@ -22,9 +22,21 @@
       .col-md-3.text-right Walkup sales:
       .col-md-1= showdate.walkup_sales_vouchers.size
     .row
-      .col-md-2
+      .col-md-2.text-center
+        - if showdate.has_reserved_seating?
+          %button.btn.btn-primary{:type => 'button', 'data-toggle' => 'modal', 'data-target' => '#static-seatmap'} Seat Map
+        - else
+          = link_to 'Seat Map', '#', :class => 'btn btn-primary disabled'
       .col-md-2.text-center= link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'
       .col-md-2.text-center= link_to 'Walkup Sales', walkup_sale_path(showdate), :class => 'btn btn-primary d-inline-block'
       .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary  d-inline-block'
       .col-md-1
       .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary  d-inline-block', :target => '_blank'
+
+- if showdate.has_reserved_seating?
+  #static-seatmap.modal{:tabindex => -2}
+    .modal-dialog
+      .modal-content
+        .modal-body= render :partial => 'components/seatmap'
+        .modal-footer
+          %button.btn-secondary{:type => 'button', 'data-dismiss' => 'modal'} Close

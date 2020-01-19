@@ -36,7 +36,11 @@ class Seatmap < ActiveRecord::Base
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
   def self.seatmap_and_unavailable_seats_as_json(showdate)
-    showdate.seatmap.emit_json(showdate.occupied_seats)
+    if showdate.seatmap
+      showdate.seatmap.emit_json(showdate.occupied_seats)
+    else
+      {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0, }.to_json
+    end
   end
 
   # Given a collection of vouchers, some of which may have seat numbers, return the subset
