@@ -148,6 +148,7 @@ Rails.application.routes.draw do
     resources :checkins, :only => [:show, :update] do
       member do
         get :door_list
+        get :seatmap
         get :walkup_subscriber
         post :walkup_subscriber_confirm
       end

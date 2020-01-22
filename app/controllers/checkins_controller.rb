@@ -82,6 +82,11 @@ class CheckinsController < ApplicationController
      render :js => script
   end
 
+  def seatmap
+    # @seatmap_info has already been setup
+    render :layout => 'door_list'
+  end
+  
   def door_list
     @total,@vouchers = @showdate.grouped_vouchers
     @num_subscriber_reservations = @vouchers.values.flatten.count { |v| v.vouchertype.subscriber_voucher? }

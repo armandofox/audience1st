@@ -22,6 +22,3 @@
           / concatenate all nonempty comments
           %td= comments_for_voucherlist(v)
 
-  %p
-    = "Box office report generated #{Time.current.to_formatted_s(:showtime)}"
-    %span{:style => 'float: right;'}= link_to '<< Back', checkin_path(@showdate)

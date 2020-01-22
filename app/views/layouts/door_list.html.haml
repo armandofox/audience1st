@@ -7,6 +7,9 @@
     = venue_stylesheet_link_tag
   %body#door_list{:class => ('maintenance' if @gMaintMode)}
     = yield
+    #footer
+      .h5= "Generated on #{Time.current.to_formatted_s(:showtime)}"
+      = link_to '<< Back', checkin_path(@showdate), :class => 'btn btn-secondary'
 
 
 
