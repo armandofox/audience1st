@@ -11,6 +11,10 @@ body.maintenance {
     background-color: white;
 }
 
+#footer {
+    text-align: center;
+}
+
 /* prevent Webkit-based browsers from showing 'spinner' arrows on number fields */
 input[type=number].a1-no-spinner::-webkit-inner-spin-button, 
 input[type=number].a1-no-spinner::-webkit-outer-spin-button {

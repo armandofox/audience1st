@@ -27,6 +27,9 @@ class CheckinsController < ApplicationController
       @showdates << @showdate unless @showdates.include?(@showdate)
     end
     @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
+    if @showdate.has_reserved_seating?
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    end
   end
 
   public
@@ -81,7 +84,18 @@ class CheckinsController < ApplicationController
      render :js => script
   end
 
+  def seatmap
+    # @seatmap_info has already been setup
+    @page_title = 'Seat map'
+    sold = @showdate.finalized_vouchers.size
+    cap = @showdate.house_capacity
+    available = [0, cap-sold].max
+    @seats_available = "#{@showdate.printable_date}: #{available} of #{cap} seats available"
+    render :layout => 'door_list'
+  end
+  
   def door_list
+    @page_title = 'Door list'
     @total,@vouchers = @showdate.grouped_vouchers
     @num_subscriber_reservations = @vouchers.values.flatten.count { |v| v.vouchertype.subscriber_voucher? }
     if @vouchers.empty?

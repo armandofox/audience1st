@@ -26,7 +26,6 @@
     border: 2px solid yellow;
     background-color: blue;
 }
-
 /* Hovering over seat shows seat number */
 [data-seatnum] {
     position: relative;
@@ -119,3 +118,4 @@ div.seatCharts-row {
     margin-left: 4ex;
     float: left;
 }
+

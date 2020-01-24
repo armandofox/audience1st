@@ -5,6 +5,9 @@ class WalkupSalesController < ApplicationController
   before_action do
     @showdate = Showdate.find params[:id]
     @page_title = "Walkups: #{@showdate.thedate.to_formatted_s(:foh)}"
+    if @showdate.has_reserved_seating?
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    end
   end
   
   include SeatmapsHelper
@@ -16,9 +19,6 @@ class WalkupSalesController < ApplicationController
     @donation = params[:donation]
     @seats = params[:seats]
     # if reserved seating show, populate hidden field
-    if @showdate.has_reserved_seating?
-      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
-    end
   end
 
   def create

@@ -1,12 +1,15 @@
 !!! 5
 %html
   %head
-    %title Door List: #{@showdate.printable_name}
+    %title #{@page_title}: #{@showdate.printable_name}
     = bootstrap_stylesheet_link_tag
     = stylesheet_link_tag :application, :media => 'all'
-    = venue_stylesheet_link_tag
+    = javascript_include_tag :application
   %body#door_list{:class => ('maintenance' if @gMaintMode)}
     = yield
+    #footer
+      .h5= "Generated on #{Time.current.to_formatted_s(:showtime)}"
+      = link_to '<< Back', checkin_path(@showdate), :class => 'btn btn-secondary'
 
 
 
