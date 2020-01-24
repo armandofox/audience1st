@@ -30,7 +30,3 @@
       .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary  d-inline-block'
       .col-md-1
       .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary  d-inline-block', :target => '_blank'
-
-- if showdate.has_reserved_seating?
-  #static-seatmap.modal
-    .modal-dialog= render :partial => 'components/seatmap'
