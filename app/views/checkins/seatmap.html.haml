@@ -1,0 +1,4 @@
+%h1.text-center= @seats_available
+
+#static-seatmap= hidden_field_tag 'seatmap_info', @seatmap_info
+= render 'components/seatmap'

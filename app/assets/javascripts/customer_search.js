@@ -16,6 +16,9 @@ A1.select_search_result = function(customer,textField,idField) {
 };
 
 A1.setup_autocomplete_fields = function() {
+  if (! $('#autocomplete_route').length) {
+    return;
+  }
   var autocomplete_url = $('#autocomplete_route').val().toString();
   $(A1.autocomplete_selector).each(function(i,elt) {
     var e = $(elt);

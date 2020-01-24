@@ -317,6 +317,16 @@ A1.seatmap = {
       $('.preview').click(A1.seatmap.showSeatmapForPreviewOnly);
     }
   }
+  ,setupWalkupSalesPreview: function() {
+    if ($('#static-seatmap').length) {
+      A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
+      A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+      $('#seating-charts-wrapper').removeClass('d-none');
+      A1.seatmap.setupMap("passive");
+      // cancel button can be hidden
+      $('.seat-select-cancel').hide();
+    }
+  }
 };
 
 // at most one of the these Ready functions will actually do anything.
@@ -324,3 +334,4 @@ $(A1.seatmap.setupReservations);
 $(A1.seatmap.setupRegularSales);
 $(A1.seatmap.setupSeatmapEditor);
 $(A1.seatmap.setupAddComps);
+$(A1.seatmap.setupWalkupSalesPreview);

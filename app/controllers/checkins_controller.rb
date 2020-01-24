@@ -84,10 +84,13 @@ class CheckinsController < ApplicationController
 
   def seatmap
     # @seatmap_info has already been setup
+    @page_title = 'Seat map'
+    @seats_available = "#{@showdate.printable_date}: #{@showdate.finalized_vouchers.size} of #{@showdate.house_capacity} seats available"
     render :layout => 'door_list'
   end
   
   def door_list
+    @page_title = 'Door list'
     @total,@vouchers = @showdate.grouped_vouchers
     @num_subscriber_reservations = @vouchers.values.flatten.count { |v| v.vouchertype.subscriber_voucher? }
     if @vouchers.empty?
