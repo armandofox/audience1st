@@ -85,7 +85,10 @@ class CheckinsController < ApplicationController
   def seatmap
     # @seatmap_info has already been setup
     @page_title = 'Seat map'
-    @seats_available = "#{@showdate.printable_date}: #{@showdate.finalized_vouchers.size} of #{@showdate.house_capacity} seats available"
+    sold = @showdate.finalized_vouchers.size
+    cap = @showdate.house_capacity
+    available = [0, cap-sold].max
+    @seats_available = "#{@showdate.printable_date}: #{available} of #{cap} seats available"
     render :layout => 'door_list'
   end
   
