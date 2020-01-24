@@ -90,7 +90,7 @@ class CheckinsController < ApplicationController
     sold = @showdate.finalized_vouchers.size
     cap = @showdate.house_capacity
     available = [0, cap-sold].max
-    @seats_available = "#{@showdate.printable_date}: #{available} of #{cap} seats available"
+    @seats_available = "#{@showdate.printable_name}: #{available} of #{cap} seats available"
     render :layout => 'door_list'
   end
   
