@@ -11,7 +11,7 @@ class VoucherPresenter
   # VoucherPresenter objects.
   #
   require 'set'
-  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :redeemable_for_multiple_shows, :showdate, :voucherlist
+  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :redeemable_for_multiple_shows, :showdate, :voucherlist, :has_reserved_seating
   # Constructor takes a set of vouchers that should be part of a group, and constructs the
   # presentation logic for them.  It's an error for the provided vouchers not to "belong together"
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
@@ -21,11 +21,12 @@ class VoucherPresenter
     raise InvalidGroupError.new("Vouchers don't belong together") unless vouchers_belong_together
     first = @vouchers[0]
     @ignore_cutoff = ignore_cutoff
+    @showdate = first.showdate
     @reserved = first.reserved?
+    @has_reserved_seating = first.reserved?  &&  @showdate.has_reserved_seating?
     @group_id = first.id
     @size = @vouchers.length
     @vouchertype = first.vouchertype
-    @showdate = first.showdate
     @voucherlist = @vouchers.map { |v| v.id }.join(',')
     # group name: if ALL vouchers in group are redeemable for only a single production,
     #  the production's name is the group name.  otherwise, use the vouchertype name (all of

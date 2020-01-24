@@ -3,6 +3,16 @@ require 'webmock/cucumber'
 
 World(ModelAccess)
 
+# Non-existence of a field type
+Then /I should not see a (.*) "(.*)"/ do |elt, selector|
+  case elt
+  when 'menu'
+    expect(page).not_to have_select(selector)
+  else
+    raise "Don't know how to check for absence of '#{elt}'"
+  end
+end
+
 # Element should be disabled
 Then /^the "(.*)" (?:checkbox|button|field|control) should be disabled/ do |field|
   expect(page).to have_field(field, :disabled => true)

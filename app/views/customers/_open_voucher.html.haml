@@ -8,7 +8,7 @@
   .form-row.border-top.border-secondary.align-items-center
     = form_tag confirm_multiple_customer_vouchers_path(@customer), :method => :post, :autocomplete => 'off', :class => 'form-inline a1-force-fullwidth' do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :class => 'voucherlist', :id => nil
-      .col-1.text-center= menu_or_static_text 'number', group.size, {:id => nil, :class => 'number'}
+      .col-1.text-center= menu_or_static_text 'number', group, {:id => nil, :class => 'number'}
       .col-3.text-center= group.name
       .col-4.text-center
         = select_tag 'showdate_id', content_tag(:option, 'Select...', :value => 0) + options_from_collection_for_select(group.redeemable_showdates.sort, :showdate_id, group.menu_label_function(@gAdminDisplay)), :id => nil, :class => 'showdate form-control a1-force-fullwidth'
