@@ -27,7 +27,9 @@ class CheckinsController < ApplicationController
       @showdates << @showdate unless @showdates.include?(@showdate)
     end
     @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
-    @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    if @showdate.has_reserved_seating?
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    end
   end
 
   public
