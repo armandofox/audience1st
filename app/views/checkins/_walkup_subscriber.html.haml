@@ -4,7 +4,8 @@
   = text_field_tag 'customer', @customer.try(:full_name), :size => 20, :class => '_autocomplete'
   :javascript
     $('#customer').on('autocompleteselect', function(evt,selection) { 
-      window.location.assign(window.location.href + "?cid=" + selection.item.value);
+      var newUrl = A1.replaceUrlParam(window.location.href, 'cid', selection.item.value);
+      window.location.assign(newUrl);
     })
 
   - if @customer
