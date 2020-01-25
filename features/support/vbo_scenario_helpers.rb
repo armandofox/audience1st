@@ -40,6 +40,7 @@ module VboScenarioHelpers
     vouchertype_name = "#{show.name} (Subscriber)"
     sub_vouchertype = Vouchertype.find_by(:name => vouchertype_name) || create(:vouchertype_included_in_bundle, :name => vouchertype_name, :changeable => changeable)
     sub_vouchers = create_list(:subscriber_voucher, num.to_i, :vouchertype => sub_vouchertype, :customer => customer)
+    show.showdates.each { |s| make_valid_tickets s, sub_vouchertype }
     create(:order, :items => sub_vouchers, :customer => customer, :sold_on => Time.current.yesterday)
     sub_vouchers
   end

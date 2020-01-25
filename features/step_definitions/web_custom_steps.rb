@@ -4,7 +4,7 @@ require 'webmock/cucumber'
 World(ModelAccess)
 
 # Non-existence of a field type
-Then /I should not see a (.*) "(.*)"/ do |elt, selector|
+Then /I should not see a (.*) named "(.*)"/ do |elt, selector|
   case elt
   when 'menu'
     expect(page).not_to have_select(selector)

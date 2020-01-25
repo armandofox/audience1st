@@ -27,7 +27,7 @@ Scenario: for reserved seating shows, must cancel all at once
   And that performance has reserved seating
   And customer "Tom Foolery" has 2 cancelable subscriber reservations with seats "A1,B2" for May 4, 8pm
   And I am on the home page for customer "Tom Foolery"
-  Then I should not see a menu "cancelnumber"
+  Then I should not see a menu named "cancelnumber"
   And I should see "2" within ".cancelnumber"
   When I press "Cancel"
   Then I should see "2 of your reservations have been cancelled"
