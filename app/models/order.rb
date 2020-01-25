@@ -182,6 +182,10 @@ class Order < ActiveRecord::Base
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
+  def allow_comments?
+    includes_vouchers?  and  ! gift?
+  end
+
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
     self.donation_data[:amount] = d.amount

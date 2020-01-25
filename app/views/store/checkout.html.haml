@@ -13,7 +13,7 @@
 
     %h2#purchaser Purchaser: #{@gOrderInProgress.purchaser.full_name_with_email}
 
-    = render :partial => 'pickup_by' if @allow_pickup_by_other
+    = render :partial => 'pickup_by' if @gOrderInProgress.allow_comments?
 
     - if @gOrderInProgress.total_price > 0
       #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @gOrderInProgress.purchaser}
