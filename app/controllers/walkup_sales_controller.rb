@@ -14,7 +14,7 @@ class WalkupSalesController < ApplicationController
 
   def show
     all_valid_vouchers = @showdate.valid_vouchers_for_walkup
-    (@nonticket_items, @valid_vouchers) = all_valid_vouchers.partition { |vv| vv.vouchertype.nonticket? }
+    (@nonticket_items, @valid_vouchers) = all_valid_vouchers.partition { |vv| vv.vouchertype.nonticket? }.map(&:to_a)
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
     @nonticket = params[:nonticket] || {} # retail item quantities
@@ -38,9 +38,8 @@ class WalkupSalesController < ApplicationController
     qtys = params[:qty]
     @order.add_tickets_from_params(qtys, current_user, :seats => seats)
     saved_params = {:qty => qtys, :nonticket => nonticket, :donation => donation, :seats => display_seats(seats)} # in case have to retry
-    
     return redirect_to(walkup_sale_path(@showdate,saved_params), :alert => t('store.errors.empty_order')) if
-      (donation.zero? && @order.vouchers.empty?)
+      (donation.zero? && @order.vouchers.empty? && @order.retail_items.empty?)
 
     # process order using appropriate payment method.
     # if Stripe was used for credit card processing, it resubmits the original
@@ -76,7 +75,7 @@ class WalkupSalesController < ApplicationController
     rescue Order::PaymentFailedError, Order::SaveRecipientError, Order::SavePurchaserError, Order::NotReadyError
       flash[:alert] = "Transaction NOT processed: #{@order.errors.as_html}"
       @order.destroy
-      redirect_to walkup_sale_path(@showdate, :qty => params[:qty], :donation => params[:donation])
+      redirect_to walkup_sale_path(@showdate, saved_params)
     end
   end
 

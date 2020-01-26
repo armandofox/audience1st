@@ -19,6 +19,14 @@ Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl
   end
 end
 
+When /I successfully choose seats? (.*)/ do |seats|
+  steps %Q{
+When I press "Choose Seats..."
+Then I should see the seatmap
+When I choose seats #{seats}
+}
+end
+
 Then /I should (not )?see the seatmap/ do |no|
   if no
     expect(page).not_to have_selector('#seating-charts-wrapper', :visible => true)

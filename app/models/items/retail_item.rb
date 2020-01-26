@@ -35,6 +35,10 @@ class RetailItem < Item
     AccountCode.find(Option.default_retail_account_code)
   end
 
+  def self.from_vouchertype(vt)
+    item = RetailItem.new(:vouchertype => vt, :amount => vt.price, :account_code => vt.account_code, :comments => vt.name)
+  end
+  
   def self.from_amount_description_and_account_code_id(amount, description, id=nil)
     item = RetailItem.new(:amount => amount, :comments => description,
       :account_code => (AccountCode.find_by_id(id) || RetailItem.default_code))

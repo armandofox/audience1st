@@ -117,9 +117,8 @@ class Order < ActiveRecord::Base
   def add_nonticket_items_from_params(params)
     return if params.empty?
     params.each_pair do |vv_id,qty|
-      qty = qty.to_i
       vv = ValidVoucher.find(vv_id)
-      add_tickets_without_capacity_checks(vv, qty)
+      qty.to_i.times { add_retail_item(RetailItem.from_vouchertype vv.vouchertype) }
     end
   end
 
@@ -184,10 +183,10 @@ class Order < ActiveRecord::Base
   def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
 
   def includes_vouchers?       ; ticket_count > 0  ; end
-  def includes_mailable_items? ; vouchers.any? { |v| v.vouchertype.fulfillment_needed? } ; end
-  def includes_enrollment?     ; vouchers.any? { |v| v.showdate.try(:event_type) == 'Class' } ; end
-  def includes_bundle?         ;  vouchers.any? { |v| v.vouchertype.bundle? }  ;  end
-  def includes_nonticket_item? ;  vouchers.any? { |v| v.vouchertype.nonticket? } ; end
+  def includes_mailable_items? ; items.any? { |v| v.vouchertype.fulfillment_needed? } ; end
+  def includes_enrollment?     ; items.any? { |v| v.showdate.try(:event_type) == 'Class' } ; end
+  def includes_bundle?         ;  items.any? { |v| v.vouchertype.bundle? }  ;  end
+  def includes_nonticket_item? ;  items.any? { |v| v.vouchertype.nonticket? } ; end
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
@@ -232,6 +231,10 @@ class Order < ActiveRecord::Base
     notice << "#{'$%.02f' % donation.amount} donation" if includes_donation?
     if includes_vouchers?
       notice << "#{ticket_count} ticket" + (ticket_count > 1 ? 's' : '')
+    end
+    if ! retail_items.empty?
+      nonticket_count = retail_items.size
+      notice << "#{nonticket_count} retail item" + (nonticket_count > 1 ? 's' : '')
     end
     message = notice.join(' and ')
     if total_price.zero?
