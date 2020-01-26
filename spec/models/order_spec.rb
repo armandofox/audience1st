@@ -109,7 +109,7 @@ describe Order do
       @v = create(:revenue_vouchertype,:price => 7)
       @vv = create(:valid_voucher, :vouchertype => @v)
     end
-    [ 1,0,"$5.00 donation paid by Cash",
+    [ 1,0,"$5.00 donation (total $5.00) paid by Cash",
       1,2, "$5.00 donation and 2 tickets (total $19.00) paid by Cash" ,
       0,2, "2 tickets (total $14.00) paid by Cash",
       1,1, "$5.00 donation and 1 ticket (total $12.00) paid by Cash"
