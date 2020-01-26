@@ -115,7 +115,7 @@ class Order < ActiveRecord::Base
   end
 
   def add_nonticket_items_from_params(params)
-    return if params.empty?
+    return if params.nil? || params.empty?
     params.each_pair do |vv_id,qty|
       vv = ValidVoucher.find(vv_id)
       qty.to_i.times { add_retail_item(RetailItem.from_vouchertype vv.vouchertype) }
@@ -240,9 +240,7 @@ class Order < ActiveRecord::Base
     if total_price.zero?
       message = "Issued #{message} as zero-revenue order"
     else
-      if includes_vouchers?
-        message << " (total #{'$%.02f' % total_price})"
-      end
+      message << " (total #{'$%.02f' % total_price})"
       message << " paid by #{ActiveSupport::Inflector::humanize(purchase_medium)}"
     end
     message
