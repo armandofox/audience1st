@@ -2,7 +2,7 @@
   .form-row.border-top.border-secondary.align-items-center
     = form_tag cancel_multiple_customer_vouchers_path(@customer), :method => :post, :autocomplete => 'off', :class => 'form-inline a1-force-fullwidth'   do
       = hidden_field_tag 'voucher_ids', group.voucherlist, :id => nil
-      .col-1.text-center= menu_or_static_text 'cancelnumber', group.size, {:id => nil}
+      .col-1.text-center.cancelnumber= menu_or_static_text 'cancelnumber', group, {:id => nil}
       .col-3.text-center= group.name
       .col-4.text-center
         - if group.redeemable_for_multiple_shows

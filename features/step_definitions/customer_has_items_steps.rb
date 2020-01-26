@@ -23,17 +23,24 @@ end
 Given /^customer "(\S+) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.*)"$/ do |first,last,num_free,num_total,show|
   c = find_or_create_customer first,last
   show = Show.find_by_name!(show)
-  sub_vouchers = setup_subscriber_tickets(c, show, num_total)
+  sub_vouchers = setup_subscriber_tickets(c, num_total, show)
   # reserve some of them?
   dummy_showdate = create(:showdate, :thedate => show.showdates.first.thedate + 1.day, :show => show)
-  sub_vouchers[0, num_total.to_i - num_free.to_i].each { |v| v.reserve_for(dummy_showdate, Customer.boxoffice_daemon) }
+  sub_vouchers[0, num_total.to_i - num_free.to_i].each { |v| v.reserve!(dummy_showdate) }
 end
 
-Given /^customer "(\S+) (.*)" has (\d+) (non-)?cancelable subscriber reservations for (.*)$/ do |first,last,num,non,date|
+Given /^customer "(\S+) (.*)" has (\d+) (non-)?cancelable subscriber reservations(?: with seats "(.*)")? for (.*)$/ do |first,last,num,non,seats,date|
   @customer = find_or_create_customer first,last
   @showdate = Showdate.find_by_thedate! Time.zone.parse(date) unless date =~ /that performance/
-  sub_vouchers = setup_subscriber_tickets(@customer, @showdate.show, num, non.nil?)
-  sub_vouchers.each { |v| v.reserve_for(@showdate, Customer.boxoffice_daemon) }
+  if seats
+    steps %Q{And that performance has reserved seating}
+    seats = seats.split(/\s*,\s*/)
+  end
+  sub_vouchers = setup_subscriber_tickets(@customer, num, @showdate.show, changeable: non.nil?)
+  sub_vouchers.each_with_index do |v,i|
+    v.seat = seats[i] if seats
+    v.reserve!(@showdate)
+  end
 end
 
 Then /^customer "(\S+) (.*)" should have the following items:$/ do |first,last,items|
