@@ -269,6 +269,19 @@ class Order < ActiveRecord::Base
 
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
+  def comment_prompt
+    if (! includes_vouchers? || gift?) then nil
+    elsif includes_enrollment?  then {
+        prompt: 'Who is attending the class?',
+        placeholder: "Enrollee's name"
+      }
+    else {
+        prompt: 'Is someone other than the purchaser picking up the tickets?',
+        placeholder: "If yes, attendee's name"
+      }
+    end
+  end
+
   def ready_for_purchase?
     errors.clear
     errors.add(:base, 'Shopping cart is empty') if cart_empty?

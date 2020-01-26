@@ -234,7 +234,6 @@ class StoreController < ApplicationController
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @gAdminDisplay || (params[:sales_final].to_i > 0)
     @checkout_message = (@gOrderInProgress.includes_reserved_vouchers? ? Option.precheckout_popup : '')
-    @order_contains_class_order = @gOrderInProgress.includes_enrollment?
     @gOrderInProgress.processed_by ||= current_user()
     @gOrderInProgress.purchaser ||= @customer
     @gOrderInProgress.customer ||= @gOrderInProgress.purchaser
