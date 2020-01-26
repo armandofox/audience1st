@@ -22,7 +22,8 @@
           = popup_help_for :boxoffice_manager_only
       - else
         %td= text_field_tag "price[#{v.id}]", number_to_currency(v.price, :unit => ''), :disabled => true, :size => 6, :class => 'disabledField text-right'
-        %td= number_field_tag "qty[#{v.id}]", (@qty[v.id.to_s].to_i if @qty[v.id.to_s]), :in => 0..12, :class => 'item itemCount ticket', 'data-price' => v.price
+        - item_class = 'item itemCount' + (' ticket' if v.vouchertype.reservable?).to_s
+        %td= number_field_tag "qty[#{v.id}]", (@qty[v.id.to_s].to_i if @qty[v.id.to_s]), :in => 0..12, :class => item_class, 'data-price' => v.price
     - if (! v.sales_unlimited?)
       %tr.alert.alert-warning
         %td= v.name
