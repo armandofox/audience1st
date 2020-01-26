@@ -13,9 +13,11 @@ class WalkupSalesController < ApplicationController
   include SeatmapsHelper
 
   def show
-    @valid_vouchers = @showdate.valid_vouchers_for_walkup
+    all_valid_vouchers = @showdate.valid_vouchers_for_walkup
+    (@nonticket_items, @valid_vouchers) = all_valid_vouchers.partition { |vv| vv.vouchertype.nonticket? }
     @admin = current_user
     @qty = params[:qty] || {}     # voucher quantities
+    @nonticket = params[:nonticket] || {} # retail item quantities
     @donation = params[:donation]
     @seats = params[:seats]
     # if reserved seating show, populate hidden field
@@ -30,10 +32,12 @@ class WalkupSalesController < ApplicationController
     if ((donation = params[:donation].to_f) > 0)
       @order.add_donation(Donation.walkup_donation donation)
     end
+    nonticket = params[:nonticket]
+    @order.add_nonticket_items_from_params(nonticket)
     seats = seats_from_params(params)
     qtys = params[:qty]
     @order.add_tickets_from_params(qtys, current_user, :seats => seats)
-    saved_params = {:qty => qtys, :donation => donation, :seats => display_seats(seats)} # in case have to retry
+    saved_params = {:qty => qtys, :nonticket => nonticket, :donation => donation, :seats => display_seats(seats)} # in case have to retry
     
     return redirect_to(walkup_sale_path(@showdate,saved_params), :alert => t('store.errors.empty_order')) if
       (donation.zero? && @order.vouchers.empty?)

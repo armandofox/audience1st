@@ -114,6 +114,15 @@ class Order < ActiveRecord::Base
     ticket_count.zero? &&  donation.nil? && retail_items.empty?
   end
 
+  def add_nonticket_items_from_params(params)
+    return if params.empty?
+    params.each_pair do |vv_id,qty|
+      qty = qty.to_i
+      vv = ValidVoucher.find(vv_id)
+      add_tickets_without_capacity_checks(vv, qty)
+    end
+  end
+
   def add_tickets_from_params(valid_voucher_params, customer, promo_code: '', seats: [])
     return unless valid_voucher_params
     seats2 = seats.dup

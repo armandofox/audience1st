@@ -162,12 +162,12 @@ class StoreController < ApplicationController
     if ! @gOrderInProgress.errors.empty?
       flash[:alert] = @gOrderInProgress.errors.as_html
       @gOrderInProgress.destroy
-      return redirect_to_referer
+      return redirect_to(referer_target)
     end
     if @gOrderInProgress.cart_empty?
       flash[:alert] = I18n.t('store.errors.empty_order')
       @gOrderInProgress.destroy
-      return redirect_to_referer
+      return redirect_to(referer_target)
     end
     add_service_charge_to_cart
     # order looks OK; all subsequent actions should display in-progress order at top of page
@@ -235,7 +235,6 @@ class StoreController < ApplicationController
     @sales_final_acknowledged = @gAdminDisplay || (params[:sales_final].to_i > 0)
     @checkout_message = (@gOrderInProgress.includes_reserved_vouchers? ? Option.precheckout_popup : '')
     @order_contains_class_order = @gOrderInProgress.includes_enrollment?
-    @allow_pickup_by_other = (@gOrderInProgress.includes_vouchers? && !@gOrderInProgress.gift?)
     @gOrderInProgress.processed_by ||= current_user()
     @gOrderInProgress.purchaser ||= @customer
     @gOrderInProgress.customer ||= @gOrderInProgress.purchaser
@@ -310,18 +309,16 @@ class StoreController < ApplicationController
     true
   end
 
-  def redirect_to_referer(msg=nil)
+  def referer_target
     promo_code_args = (@promo.blank? ? {} : {:promo_code => @promo})
     redirect_target =
       case params[:referer].to_s
       when 'donate' then quick_donate_path # no @customer assumed
       when 'donate_to_fund' then donate_to_fund_path(params[:account_code_id], @customer)
       when 'subscribe' then store_subscribe_path(@customer,promo_code_args)
-      when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what]))
+      when 'index' then store_path(@customer, promo_code_args.merge(:what => params[:what], :showdate_id => params[:showdate_id]))
       else store_path(@customer,promo_code_args)
       end
-    flash[:alert] ||= msg
-    redirect_to redirect_target
   end
 
   def purchasemethod_from_params
