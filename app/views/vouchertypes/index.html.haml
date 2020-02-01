@@ -38,7 +38,10 @@
         %td 
           -if vouchertype.bundle? 
             - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
-              = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name).html_safe if qty>0 
+              - if (v = Vouchertype.find_by(:id => vt))
+                = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name).html_safe if qty>0
+              - else
+                (Deleted Vouchertype ID #{vt})
         %td= vouchertype.walkup_sale_allowed? ? "Yes" : ""
         %td
           - unless vouchertype.bundle?
