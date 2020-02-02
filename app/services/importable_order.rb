@@ -107,7 +107,8 @@ class ImportableOrder
 
   # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
   def add_tickets(vv, num)
-    self.order.add_tickets_without_capacity_checks(vv, num)
+    order.add_tickets_without_capacity_checks(vv, num)
+    raise MissingDataError.new("Cannot add tickets to order: #{order.errors.full_messages.join(', ')}") unless order.errors.empty?
     @valid_vouchers[vv] += num
   end
 

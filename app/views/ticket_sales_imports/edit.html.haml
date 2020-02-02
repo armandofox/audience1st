@@ -11,6 +11,7 @@
           %th{:scope => 'col'} Vendor's order#
           %th{:scope => 'col'} Txn date
           %th{:scope => 'col'} Tickets
+          %th{:scope => 'col'} Seats
           %th{:scope => 'col'} Name on import
           %th{:scope => 'col'} Email on import
           %th{:scope => 'col', :width => '20%'}= @importable ? 'Import to customer' : ''
@@ -22,6 +23,7 @@
             %td= @order.external_key
             %td= ord.transaction_date.strftime('%b %d, %-l:%M%p')
             %td= ord.description.html_safe
+            %td 
             %td #{ord.import_last_name}, #{ord.import_first_name}
             %td= ord.import_email
             = hidden_field_tag "o[#{oid}][transaction_date]", ord.transaction_date
