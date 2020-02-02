@@ -61,7 +61,7 @@ group :test do
 end
 
 group :development do
-  gem 'derailed_benchmarks'
+  # gem 'derailed_benchmarks'
   # gem 'query_trail'
   # gem 'ruby-prof'
   # gem 'stackprof'
@@ -73,7 +73,7 @@ group :development, :test do
   # the following really belong in a separate 'staging' environment
   gem 'faker', :git => 'https://github.com/armandofox/faker'
   gem 'factory_bot_rails'       # used by fake_data stuff
-  gem 'bullet'
+  gem 'bullet'                # show needed/needless eager loads
   gem 'byebug'                  # 4
   gem 'pry'
   gem 'listen', '~> 2.2'
@@ -90,5 +90,5 @@ group :development, :test do
   gem 'rspec-collection_matchers' # should have(n).items, etc
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'sqlite3'
-  gem 'traceroute'
+  gem 'traceroute'              # find unused routes
 end
