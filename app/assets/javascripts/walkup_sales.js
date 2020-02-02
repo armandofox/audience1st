@@ -144,17 +144,17 @@ A1.setup_walkup_sales = function() {
 };
 
 A1.setupWalkupSalesPreview = function() {
-    if ($('#static-seatmap').length) {
-      A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
-      A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
-      $('#seating-charts-wrapper').removeClass('d-none');
-      A1.seatmap.setupMap("passive");
-      // cancel button can be hidden
-      $('.seat-select-cancel').hide();
-    }
+  if ($('#static-seatmap').length) {
+    A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
+    A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+    $('#seating-charts-wrapper').removeClass('d-none');
+    A1.seatmap.setupMap("passive");
+    // cancel button can be hidden
+    $('.seat-select-cancel').hide();
   }
+}
 
 $(A1.setup_walkup_sales);
-$(A1.seatmap.setupWalkupSalesPreview);
+$(A1.setupWalkupSalesPreview);
 
 
