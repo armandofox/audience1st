@@ -50,6 +50,7 @@ A1.recalc_all_walkup_sales = function() {
   } else {
     // reserved seating:
     // if nonzero # tickets selected, enable seatmap
+    $('.select-seats').prop('disabled', true);
     if (numTickets > 0) {
       // disable payment buttons, enable seatmap selection
       $('.select-seats').prop('disabled', false);
@@ -99,16 +100,21 @@ A1.seatmapWalkupSales = {
     $('.select-seats').prop('disabled', true);
   }
   ,getSeatingOptions: function() {
+    var confirmButton = $('.confirm-walkup-sale').prop('disabled',true);
+
     this.seatmapInfo = $('#seatmap_info').val();
     if (this.seatmapInfo == '') {
       return;
     }
     // setup for reserved seating
     $('#seatInfo').removeClass('invisible');
-    A1.seatmap.selectSeatsButton = $('.select-seats').click(A1.seatmapWalkupSales.showSeatmap);
+    $('.select-seats').click(A1.seatmapWalkupSales.showSeatmap);
+    A1.seatmap.onSelect = function() {
+      $('.seat-display').val(A1.seatmap.selectedSeatsAsString);
+      confirmButton.prop('disabled', true);
+    }
+    A1.seatmap.allSeatsSelected = function() {  confirmButton.prop('disabled', false);  }  
     A1.seatmap.resetAfterCancel = function() { window.location.reload(); };
-    A1.seatmap.seatDisplayField = $('.seat-display');
-    A1.seatmap.confirmSeatsButton = $('.confirm-walkup-sale').prop('disabled',true);
     // prepare to display seatmap.  'max' (seat count) will be filled in when map is shown
     A1.seatmap.configureFrom(JSON.parse(this.seatmapInfo));
     A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
@@ -125,9 +131,30 @@ A1.setup_walkup_sales = function() {
   if ($('#walkup_sales_show').length) { // walkup sales page
     A1.seatmapWalkupSales.getSeatingOptions();
     A1.recalc_all_walkup_sales();
+    // SPECIAL CASE: if this is a page reload due to failed CC charge, DON'T ALLOW changing
+    // seats or ticket quantities (except by clearing the order) and ONLY enable payment button.
+    // We detect this because A1.seatmap.seats[] is empty on page load, BUT the actual
+    // seat display form field will be populated with the previously chosen seat values from params[]
+    if (A1.seatmap.selectedSeats.length == 0  &&  $('.seat-display').val() != '') {
+      $('.item').prop('readonly', true);
+      $('.select-seats').prop('disabled', true);
+      $('.confirm-walkup-sale').prop('disabled', false);
+    }
   }
 };
 
+A1.setupWalkupSalesPreview = function() {
+    if ($('#static-seatmap').length) {
+      A1.seatmap.configureFrom(JSON.parse($('#seatmap_info').val()));
+      A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
+      $('#seating-charts-wrapper').removeClass('d-none');
+      A1.seatmap.setupMap("passive");
+      // cancel button can be hidden
+      $('.seat-select-cancel').hide();
+    }
+  }
+
 $(A1.setup_walkup_sales);
+$(A1.seatmap.setupWalkupSalesPreview);
 
 
