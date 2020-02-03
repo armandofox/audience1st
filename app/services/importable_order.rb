@@ -107,7 +107,12 @@ class ImportableOrder
 
   # Delegates the actual work to the Order, but keeps track of ticket count per valid-voucher
   def add_tickets(vv, num)
-    order.add_tickets_without_capacity_checks(vv, num)
+    if vv.showdate.has_reserved_seating?
+      # put in "placeholder" seat numbers
+      order.add_tickets_without_capacity_checks(vv, num, Array.new(num) { Voucher::PLACEHOLDER })
+    else
+      order.add_tickets_without_capacity_checks(vv, num)
+    end
     raise MissingDataError.new("Cannot add tickets to order: #{order.errors.full_messages.join(', ')}") unless order.errors.empty?
     @valid_vouchers[vv] += num
   end

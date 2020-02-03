@@ -19,11 +19,16 @@ class Voucher < Item
 
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
 
-  # a non-typeable value that can never appear in a seatmap, BUT serves as a placeholder
+  # a non-typeable value that can never appear in a seatmap, CAN LEGALLY be stored in the
+  # database (most databases use Latin-1 encoding by default), BUT serves as a placeholder
   # for a voucher that is being processed, eg as part of an import, for validity checks.
   # I don't like this hack and you shouldn't either, because it special-cases the validations.
+  PLACEHOLDER = "\001"
   def is_placeholder?
-    seat == "\000"
+    attributes['seat'] == PLACEHOLDER
+  end
+  def seat
+    if is_placeholder? then nil else attributes['seat'] end
   end
 
   def self.cancel_multiple!(vchs, num, by_whom)

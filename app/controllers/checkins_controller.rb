@@ -50,7 +50,7 @@ class CheckinsController < ApplicationController
     begin
       Voucher.find(@vouchers).each do |v|
         v.reserve_for(@showdate, current_user)
-        raise ReservationError.new(v.errors.full_messages.join(', ')) unless v.errors.empty?
+        raise Voucher::ReservationError.new(v.errors.full_messages.join(', ')) unless v.errors.empty?
         v.check_in!
         @customer = v.customer
       end

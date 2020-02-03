@@ -1,57 +1,54 @@
-.container
-  %h1 Import External Vendor Ticket Sales
-  = form_tag ticket_sales_imports_path, :multipart => true, :class => 'form' do
-    .form-row.px-2
-      %label.col-2.text-right.col-form-label{:for => 'vendor'} Import from
-      = select_tag 'vendor', options_for_select(@vendors), :class => 'form-control col-2'
-      %label.col-2.mx-2.btn.btn-primary{:for => 'file'} Choose file...
-      = file_field_tag 'file', :accept => '.csv,.json', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#file')[0].files[0].name)}
-      %label.col-3.col-form-label.a1-text-small#filename (No file chosen)
-      = submit_tag 'Upload', :class => 'col-2 btn btn-success'
+%h1 Import External Vendor Ticket Sales
+= form_tag ticket_sales_imports_path, :multipart => true, :class => 'form' do
+  .form-row.px-2
+    %label.col-2.text-right.col-form-label{:for => 'vendor'} Import from
+    = select_tag 'vendor', options_for_select(@vendors), :class => 'form-control col-2'
+    %label.col-2.mx-2.btn.btn-primary{:for => 'file'} Choose file...
+    = file_field_tag 'file', :accept => '.csv,.json', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#file')[0].files[0].name)}
+    %label.col-3.col-form-label.a1-text-small#filename (No file chosen)
+    = submit_tag 'Upload', :class => 'col-2 btn btn-success'
 
 - unless @in_progress_imports.empty?
-  .container
-    %h1 Imports Not Yet Finalized
-    %table#in_progress_imports.table
-      %thead
-        %tr
-          %th Date Uploaded
-          %th Uploaded by
-          %th Vendor
-          %th File name
-          %th
-      %tbody
-        - @in_progress_imports.each do |imp|
-          %tr[imp]
-            %td= imp.updated_at.to_formatted_s(:compact)
-            %td= imp.processed_by.first_name rescue ''
-            %td= imp.vendor
-            %td= imp.filename
-            %td
-              = form_for imp, :method => 'delete', :class => 'form-inline' do 
-                = link_to 'Finish...', edit_ticket_sales_import_path(imp), :class => 'btn btn-primary mx-1'
-                = submit_tag 'Cancel Import', :data => {:confirm => t('import.confirm_delete_import')}, :class => 'btn btn-danger'
+  %h1 Imports Not Yet Finalized
+  %table#in_progress_imports.table
+    %thead
+      %tr
+        %th Date Uploaded
+        %th Uploaded by
+        %th Vendor
+        %th File name
+        %th
+    %tbody
+      - @in_progress_imports.each do |imp|
+        %tr[imp]
+          %td= imp.updated_at.to_formatted_s(:compact)
+          %td= imp.processed_by.first_name rescue ''
+          %td= imp.vendor
+          %td= imp.filename
+          %td
+            = form_for imp, :method => 'delete', :class => 'form-inline' do 
+              = link_to 'Finish...', edit_ticket_sales_import_path(imp), :class => 'btn btn-primary mx-1'
+              = submit_tag 'Cancel Import', :data => {:confirm => t('import.confirm_delete_import')}, :class => 'btn btn-danger'
 
 - unless @ticket_sales_imports.empty?
-  .container
-    %h1 Completed Imports
-    %table#ticket_sales_imports.table
-      %thead
-        %tr
-          %th Date of Import
-          %th Imported by
-          %th Vendor
-          %th File name
-          %th Tickets Sold
-          %th New Customers Added
-          %th Existing Customers Found
-      %tbody
-        - @ticket_sales_imports.each do |imp|
-          %tr[imp]
-            %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
-            %td= imp.processed_by.first_name rescue ''
-            %td= imp.vendor
-            %td= imp.filename
-            %td= imp.tickets_sold
-            %td= imp.new_customers
-            %td= imp.existing_customers
+  %h1 Completed Imports
+  %table#ticket_sales_imports.table
+    %thead
+      %tr
+        %th Date of Import
+        %th Imported by
+        %th Vendor
+        %th File name
+        %th Tickets Sold
+        %th New Customers Added
+        %th Existing Customers Found
+    %tbody
+      - @ticket_sales_imports.each do |imp|
+        %tr[imp]
+          %td= link_to imp.updated_at.to_formatted_s(:compact), edit_ticket_sales_import_path(imp)
+          %td= imp.processed_by.first_name rescue ''
+          %td= imp.vendor
+          %td= imp.filename
+          %td= imp.tickets_sold
+          %td= imp.new_customers
+          %td= imp.existing_customers

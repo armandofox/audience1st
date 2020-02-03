@@ -169,7 +169,8 @@ class Order < ActiveRecord::Base
         new_vouchers.each_with_index do |v,i|
           v.seat = seats[i] unless seats.empty?
           v.reserve!(valid_voucher.showdate)
-        rescue ActiveRecord::RecordInvalid, ReservationError #  reservation couldn't be processed
+        rescue ActiveRecord::RecordInvalid, Voucher::ReservationError #  reservation couldn't be processed
+          byebug
           self.errors.add(:base, v.errors.full_messages.join(', '))
           v.destroy               # otherwise it'll end up with no order ID and can't be reaped
         end
