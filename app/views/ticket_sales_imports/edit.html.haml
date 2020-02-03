@@ -6,7 +6,7 @@
 = form_for @import do
   %table.table#proposed_import
     %thead
-      %tr
+      %tr.text-center
         %th{:scope => 'col'} Vendor's order#
         %th{:scope => 'col'} Txn date
         %th{:scope => 'col'} Tickets
@@ -14,17 +14,20 @@
         %th{:scope => 'col'} Name on import
         %th{:scope => 'col'} Email on import
         %th{:scope => 'col', :width => '20%'}= @importable ? 'Import to customer' : ''
-    %tbody
+    %tbody.tbody-import
       - @import.importable_orders.each do |ord|
         - @order = ord.order
         - oid = @order.id
-        %tr{:class => ('font-italic' if ord.already_imported?)}
+        %tr.import-row{:class => ('font-italic' if ord.already_imported?)}
           %td= @order.external_key
           %td= ord.transaction_date.strftime('%b %d, %-l:%M%p')
           %td= ord.description.html_safe
-          %td 
-            - if @importable && @order.vouchers.first.is_placeholder?
-              = button_tag 'Choose Seats...', :type => 'button', :class => 'btn btn-outline-primary d-inline select-seats'
+          %td.text-center
+            - if @importable && (s = @order.reserved_seating_params)
+              = hidden_field_tag 'showdate_id', s[:showdate_id], :id => nil, :class => 'showdate-id'
+              = hidden_field_tag 'num_seats', s[:num_seats], :id => nil, :class => 'num-seats'
+              = button_tag 'Choose...', :type => 'button', :class => 'btn btn-sm btn-outline-primary  d-inline select-seats'
+              = display_seats_field
             - else
               = display_seats_field(seats: Voucher.seats_for(@order.vouchers))
           %td #{ord.import_last_name}, #{ord.import_first_name}
@@ -35,11 +38,11 @@
           = hidden_field_tag "o[#{oid}][email]", ord.import_email
           = hidden_field_tag "o[#{oid}][action]", ord.action
           %td.actions= import_choices(ord).html_safe
-      %tr
+      %tr#seatmap-table-row
         %td{:colspan => 7}
           = render :partial => 'components/seatmap'
 
   - if @importable
-    = submit_tag 'Import Orders', :class => 'btn btn-success'
+    = submit_tag 'Import Orders', :class => 'btn btn-success confirm-import'
   = link_to 'Back', ticket_sales_imports_path, :class => 'btn btn-primary'
 

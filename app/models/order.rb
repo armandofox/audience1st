@@ -195,6 +195,14 @@ class Order < ActiveRecord::Base
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
+  def reserved_seating_params
+    if vouchers.any? { |v| v.showdate.has_reserved_seating? }
+      {:showdate_id => vouchers.first.showdate_id, :num_seats => vouchers.size}
+    else
+      nil
+    end
+  end
+  
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
     self.donation_data[:amount] = d.amount
