@@ -44,7 +44,7 @@ Rails.application.configure do
 
   # Find n+1 query problems and unused eager-loads
   config.after_initialize do
-    Bullet.enable = true
+    Bullet.enable = false
     Bullet.bullet_logger = true # log/bullet.log
     Bullet.add_footer = true    # add footer to each page view
   end
