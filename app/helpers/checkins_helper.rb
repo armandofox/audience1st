@@ -17,7 +17,7 @@ module CheckinsHelper
     if vouchers.all? { |v| v.seat.blank? }
       vouchers.first.name
     else
-      "#{vouchers.first.name} - #{Voucher.seats_for(vouchers)}"
+      "#{Voucher.seats_for(vouchers)} - #{vouchers.first.name}"
     end
   end
 
