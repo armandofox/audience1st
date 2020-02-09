@@ -18,7 +18,7 @@ Password" mechanism later to reset your password by email.
 
 0. While still logged in as admin, click the Options tab in the main
 navigation bar to setup [site-wide options including venue
-information](sitewide-options.html).   
+information]({% post_url 2017-11-04-sitewide-options %}).   
 Some of it
 is necessary before patrons can buy tickets.  (Whoever deployed the site
 for you should have taken care of the necessary steps to connect
@@ -27,7 +27,8 @@ ConstantContact for sending marketing emails.)
 
 [![questionmark](../assets/video.png)](https://www.youtube.com/watch?v=4PeeZ0km4Ac&list=PLQEw_5c_LyHytBYEpodNlT2cGFExI_iqt&index=16)
 
-0. Next, [create user records](../customers/looking-up-a-customer.html) for additional staff (box office, phone
+0. Next, [create user records]({% post_url 2017-10-28-looking-up-a-customer %}) 
+for additional staff (box office, phone
 orders, FOH staff, anyone who will need some level of administrative
 access).  Edit each user's
 Billing/Contact info, and under Admin settings for that user, set their
