@@ -1,6 +1,6 @@
 %h1.text-center= @showdate.printable_name
 %h2.text-center= "#{@num_subscriber_reservations} subscriber reservations, #{@total} total reservations"
-.container
+.container#doorlist
   %table.a1-table.hilite
     %thead
       %tr
@@ -15,8 +15,8 @@
         - c = v.first.customer
         %tr{:class=>(c.subscriber? ? 'subscriber' : nil)}
           %td.maincolumn= letter_header_for(c.last_name) 
-          %td= link_to c.last_name.name_capitalize, customer_path(c)
-          %td= link_to c.first_name.name_capitalize, customer_path(c)
+          %td.lastname= link_to c.last_name.name_capitalize, customer_path(c)
+          %td.firstname= link_to c.first_name.name_capitalize, customer_path(c)
           %td= ticket_type_with_seats(v)
           %td.text-center= v.size
           / concatenate all nonempty comments

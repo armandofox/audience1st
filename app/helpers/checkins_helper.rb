@@ -15,9 +15,10 @@ module CheckinsHelper
   # for a reserved-seating checkin list, show the seat number(s) alongside voucher type
   def ticket_type_with_seats(vouchers)
     if vouchers.all? { |v| v.seat.blank? }
-      vouchers.first.name
+      content_tag('span', vouchers.first.name, :class => 'vouchertype')
     else
-      "#{Voucher.seats_for(vouchers)} - #{vouchers.first.name}"
+      content_tag('span', "#{Voucher.seats_for(vouchers)}", :class => 'seats') +
+        content_tag('span', " - #{vouchers.first.name}", :class => 'vouchertype')
     end
   end
 
