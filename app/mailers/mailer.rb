@@ -80,6 +80,8 @@ class Mailer < ActionMailer::Base
         :enable_starttls_auto => true,
         :authentication => :plain
       }
+      # use Sendgrid's "category" tag to identify which venue sent this email
+      headers['X-SMTPAPI'] = {'category' => "#{Option.venue} <#{Option.sendgrid_domain}>"}.to_json
     end
   end
 end
