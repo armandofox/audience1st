@@ -266,7 +266,7 @@ class ValidVoucher < ActiveRecord::Base
   end
 
   def name_with_explanation_for_admin
-    "#{showdate.show_name} - #{showdate.thedate.to_formatted_s(:showtime_brief)} (#{explanation_for_admin})"
+    "#{showdate.printable_name} (#{explanation_for_admin})"
   end
 
   def show_name_with_seats_of_type_remaining
