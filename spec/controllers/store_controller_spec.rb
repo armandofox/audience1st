@@ -209,6 +209,21 @@ describe StoreController do
     end
   end
 
+  describe 'redirect if error adding to cart', focus: true do
+    before(:each) do
+      allow(controller).to receive(:add_retail_items_to_cart)
+      allow(controller).to receive(:add_donation_to_cart)
+      allow_any_instance_of(Order).to receive(:errors).and_return(['Error']) # make #empty? false
+      3.times { create(:showdate) }
+      @sd = create(:showdate).id # so it's not the first one
+      @anon = Customer.anonymous_customer.id
+    end
+    it 'redirects to correct showdate' do
+      post :process_cart, {:referer => 'index', :customer_id => @anon, :showdate_id => @sd}
+      expect(response).to redirect_to(store_path(:customer_id => @anon, :showdate_id => @sd))
+    end
+  end
+
   describe "user-created gift recipient" do
     before(:each) do
       login_as @buyer
