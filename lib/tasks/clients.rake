@@ -46,5 +46,6 @@ a1client = namespace :a1client  do
     Audience1stRakeTasks.check_vars!
     a1client['create'].invoke
     a1client['configure'].invoke
+    puts "Client provisioned. Next: Set up DNS subdomain resolution in Heroku, add to tenant_names envar, and add the subdomian in Sendgrid settings."
   end
 end
