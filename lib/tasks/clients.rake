@@ -34,8 +34,6 @@ a1client = namespace :a1client  do
     Apartment::Tenant.switch(ENV['TENANT']) do
       Option.first.update_attributes!(
         :sendgrid_domain    => "#{ENV['TENANT']}.audience1st.com",
-        :stripe_key         => ENV['STRIPE_KEY'],
-        :stripe_secret      => ENV['STRIPE_SECRET'],
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
         :staff_access_only  => true )
     end
