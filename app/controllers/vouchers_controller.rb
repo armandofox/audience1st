@@ -73,16 +73,16 @@ class VouchersController < ApplicationController
   end
 
   def update_comment
-    params[:voucher_ids].split(",").each do |id|
-      v = Voucher.find(id)
-      v.update_attributes(:comments => params[:comments], :processed_by => current_user)
-      v.save!
-      Txn.add_audit_record(:txn_type => 'edit',
-        :customer_id => @customer.id,
-        :voucher_id => v.id,
-        :comments => params[:comments],
-        :logged_in_id => current_user.id)
+    comment = params[:comments].to_s
+    vouchers = Voucher.find(params[:voucher_ids].split(","))
+    vouchers.each do |v|
+      v.update_attributes(:comments => comment, :processed_by => current_user)
     end
+    Txn.add_audit_record(:txn_type => 'edit',
+      :customer_id => @customer.id,
+      :voucher_id => vouchers.first.id,
+      :comments => params[:comments],
+      :logged_in_id => current_user.id)
     render :nothing => true
   end
 
