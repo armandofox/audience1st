@@ -2,7 +2,7 @@ require 'apartment/migrator'
 
 module Audience1stRakeTasks
   def self.check_vars!
-    %w(TENANT STRIPE_KEY STRIPE_SECRET VENUE_FULLNAME).each do |var|
+    %w(TENANT VENUE_FULLNAME).each do |var|
       raise "#{var} is required" unless ENV[var]
     end
   end
