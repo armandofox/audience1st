@@ -31,6 +31,7 @@ Scenario: customer gifting to oneself should be unsuccessful
   Then I should be on the shipping info page
   And I should see "Please enter a gift recipient email different from your own."
     
+@stubs_successful_credit_card_payment
 Scenario: Confidential information is removed, street address, phone number
   Given I go to the shipping info page for customer "Tom Foolery"
   When I fill in the ".billing_info" fields with "John Lennon, Imagine St., Berkeley, CA 99999, 123-456-7890, john@lennon.com"
