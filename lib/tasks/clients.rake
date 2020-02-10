@@ -2,7 +2,7 @@ require 'apartment/migrator'
 
 module Audience1stRakeTasks
   def self.check_vars!
-    %w(TENANT VENUE_FULLNAME).each do |var|
+    %w(TENANT STRIPE_KEY STRIPE_SECRET VENUE_FULLNAME).each do |var|
       raise "#{var} is required" unless ENV[var]
     end
   end
@@ -34,6 +34,8 @@ a1client = namespace :a1client  do
     Apartment::Tenant.switch(ENV['TENANT']) do
       Option.first.update_attributes!(
         :sendgrid_domain    => "#{ENV['TENANT']}.audience1st.com",
+        :stripe_key         => "Replace with real Stripe key",
+        :stripe_secret      => "Replace with real Stripe secret",
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
         :staff_access_only  => true )
     end
