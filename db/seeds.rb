@@ -100,8 +100,8 @@ class Audience1stSeeder
       :homepage_subscription_sales_text => 'Subscribe to Our Season',
       :privacy_policy_url => '',
       :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
-      :stripe_key => Figaro.env.STRIPE_KEY!,
-      :stripe_secret => Figaro.env.STRIPE_SECRET!,
+      :stripe_key => 'Replace with real Stripe key',
+      :stripe_secret => 'Replace with real Stripe secret',
       :sendgrid_domain => '',
       :staff_access_only => false
       )
