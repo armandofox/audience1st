@@ -22,11 +22,21 @@ screen for your changes to take effect.  They will typically take effect
 within a few minutes.
 
 Most of the options are self-explanatory, but a few that deserve
-special mention include:
+special mention are the ones at the bottom under "Integrations".
+These are important options and you must explicitly click "Allow
+Changes" before you can edit them:
+
+## Stripe Key and Stripe Secret
+
+Replace these with the **live mode** (not "test mode") key and secret
+in your Stripe.com account.
 
 ## Stylesheet URL
 
-You can 
+If you leave this blank, Audience1st will display using its standard,
+nondescript visual styling.
+
+However, you can 
 [customize the appearance]({% post_url 2020-02-09-css-styling %}) of all
 Audience1st patron-facing screens using Cascading Style Sheets.  To do so,
 create your stylesheet, post it somewhere publicly available and accessible via
@@ -45,4 +55,18 @@ are publicly served), host the file there
 Note that when you update your stylesheet, depending on how it is hosted, it may
 take a few minutes for the changes to propagate.
 
+## Mailchimp Key and Mailchimp Default List Name
 
+If you use Mailchimp, you can have the results of customer reports
+exported there for email marketing campaigns.  See the [Mailchimp
+Integration]({% post_url 2020-02-10-mailchimp %}) article for help.
+
+## Staff Access Only
+
+Once you change this to "No", your Audience1st site will be accessible
+to the world.  "Yes" means only staff members can login.
+
+## Sendgrid Domain
+
+Don't change this unless you plan to use a different email provider
+setup than the one we've provided using Sendgrid.
