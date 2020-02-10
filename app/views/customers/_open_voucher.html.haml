@@ -2,7 +2,7 @@
   .form-row.border-top.border-secondary.align-items-center
     .col-1.text-center= group.size
     .col-3.text-center= group.name
-    .col-4.text-center= "Reservations unavailable for this show" if group.vouchertype.reservable?
+    .col-4.text-center= "Reservations unavailable" if group.vouchertype.reservable?
 
 - else
   .form-row.border-top.border-secondary.align-items-center

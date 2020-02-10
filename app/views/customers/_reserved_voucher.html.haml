@@ -5,9 +5,8 @@
       .col-1.text-center.cancelnumber= menu_or_static_text 'cancelnumber', group, {:id => nil}
       .col-3.text-center= group.name
       .col-4.text-center
-        - if group.redeemable_for_multiple_shows
-          %span.showName= group.showdate.name
-          %br
+        %span.showName= group.showdate.name
+        %br
         %span.showDate= group.showdate.printable_date_with_description
       .col-2.text-center= group.seats
       .col-2.text-center= submit_tag 'Cancel', 'data-disable-with' => 'Cancelling...', :class => 'btn btn-danger', 'data-confirm' => t('reservations.confirm_cancellation') |
@@ -17,9 +16,8 @@
     .col-1.text-center= group.size
     .col-3.text-center= group.name
     .col-4.text-center
-      - if group.redeemable_for_multiple_shows
-        %span.showName= group.showdate.name
-        %br
+      %span.showName= group.showdate.name
+      %br
       %span.showDate= group.showdate.printable_date_with_description
     .col-2.text-center= group.seats
 
