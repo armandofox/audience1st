@@ -270,7 +270,7 @@ class Order < ActiveRecord::Base
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def comment_prompt
-    if (! includes_vouchers? || gift?) then nil
+    if (! includes_vouchers? || includes_bundle? || gift?) then nil
     elsif includes_enrollment?  then {
         prompt: 'Who is attending the class?',
         placeholder: "Enrollee's name"
