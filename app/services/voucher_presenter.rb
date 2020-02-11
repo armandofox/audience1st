@@ -11,7 +11,7 @@ class VoucherPresenter
   # VoucherPresenter objects.
   #
   require 'set'
-  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist, :has_reserved_seating
+  attr_reader :vouchers, :reserved, :group_id, :size,  :vouchertype, :name, :showdate, :voucherlist, :has_reserved_seating, :single_production
   # Constructor takes a set of vouchers that should be part of a group, and constructs the
   # presentation logic for them.  It's an error for the provided vouchers not to "belong together"
   # (must all have same showdate and vouchertype, OR must all be unreserved and same vouchertype)
@@ -31,6 +31,8 @@ class VoucherPresenter
     # group name: if ALL vouchers in group are redeemable for only a single production,
     #  the production's name is the group name.  otherwise, use the vouchertype name (all of
     #  them are guaranteed to be the same vouchertype anyway).
+    shows = @vouchertype.valid_vouchers.map(&:show_name).compact.uniq
+    @single_production = (shows.length == 1) ? shows.first : nil
     @name =  @vouchertype.name
   end
 
@@ -40,10 +42,9 @@ class VoucherPresenter
 
   def menu_label_function(admin_display = false)
     if admin_display
-      :name_with_explanation_for_admin
+      single_production ? :date_with_explanation_for_admin : :name_with_explanation_for_admin
     else
-      # dropdown menu should include showname AND date
-      :name_with_explanation
+      single_production ? :date_with_explanation : :name_with_explanation
     end
   end
 
