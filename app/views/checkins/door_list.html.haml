@@ -20,5 +20,5 @@
           %td= ticket_type_with_seats(v)
           %td.text-center= v.size
           / concatenate all nonempty comments
-          %td.comments= comments_for_voucherlist(v)
+          %td.comments= Voucher.combined_comments(v)
 

@@ -49,13 +49,4 @@ describe VouchersController do
       end
     end
   end
-  describe 'update comments' do
-    before :each do
-      @customer = create(:customer)
-      login_as @customer
-      @vouchers = Array.new(3) { Voucher.new }
-      allow(Voucher).to receive(:find).and_return(@vouchers)
-      @params = {:id => 2,:customer_id => @customer.id, :voucher_ids => @vouchers.map(&:id)}
-    end
-  end
 end

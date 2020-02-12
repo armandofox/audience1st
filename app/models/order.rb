@@ -134,6 +134,7 @@ class Order < ActiveRecord::Base
     raise Order::NotPersistedError unless persisted?
     valid_voucher_params.each_pair do |vv_id, qty|
       qty = qty.to_i
+      next if qty.zero?
       vv = ValidVoucher.find(vv_id)
       vv.supplied_promo_code = promo_code.to_s
       vv.customer = customer || self.processed_by || Customer.anonymous_customer
@@ -185,7 +186,7 @@ class Order < ActiveRecord::Base
   def includes_vouchers?       ; ticket_count > 0  ; end
   def includes_mailable_items? ; items.any? { |v| v.vouchertype.fulfillment_needed? } ; end
   def includes_enrollment?     ; items.any? { |v| v.showdate.try(:event_type) == 'Class' } ; end
-  def includes_bundle?         ;  items.any? { |v| v.vouchertype.bundle? }  ;  end
+  def includes_bundle?         ;  items.any? { |v| v.vouchertype.try(:bundle?) }  ;  end
   def includes_nonticket_item? ;  items.any? { |v| v.vouchertype.nonticket? } ; end
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
@@ -270,7 +271,7 @@ class Order < ActiveRecord::Base
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def comment_prompt
-    if (! includes_vouchers? || gift?) then nil
+    if (! includes_vouchers? || includes_bundle? || gift?) then nil
     elsif includes_enrollment?  then {
         prompt: 'Who is attending the class?',
         placeholder: "Enrollee's name"

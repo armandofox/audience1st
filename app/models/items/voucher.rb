@@ -20,13 +20,14 @@ class Voucher < Item
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
 
   def self.cancel_multiple!(vchs, num, by_whom)
-    to_cancel = vchs[0,num]
-    to_leave_reserved = vchs[num + 1]
-    preserve_comments = to_cancel.map(&:comments)
+    to_cancel = vchs.take(num)
+    to_leave_reserved = vchs.drop(num)
+    preserved_comments = vchs.map(&:comments).compact.
+      map { |c| c.split(/\s*;\s*/) }.flatten.
+      uniq.join('; ')
     Voucher.transaction do
-      if to_leave_reserved && !preserve_comments.blank?
-        preserve_comments.unshift(to_leave_reserved.comments.to_s)
-        to_leave_reserved.update_attributes!(:comments => preserve_comments.join('; '))
+      to_leave_reserved.each do |v|
+        v.update_attributes!(:comments => preserved_comments)
       end
       to_cancel.each do |v|
         Txn.add_audit_record(:txn_type => 'res_cancl',
@@ -40,6 +41,12 @@ class Voucher < Item
     end
   end
 
+  def self.combined_comments(vouchers)
+    vouchers.map(&:comments).reject(&:blank?).map do |c|
+      c.split(/\s*;\s*/)
+    end.flatten.uniq.join('; ')
+  end
+  
   def self.seats_for(vouchers)
     if vouchers.any? { |v| ! v.seat.blank? }
       vouchers.map(&:seat).compact.map(&:to_s).sort.join(', ')
