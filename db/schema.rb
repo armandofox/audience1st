@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191227033456) do
+ActiveRecord::Schema.define(version: 20200212232420) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -202,7 +202,6 @@ ActiveRecord::Schema.define(version: 20191227033456) do
     t.integer  "purchaser_id"
     t.text     "valid_vouchers"
     t.text     "donation_data"
-    t.string   "comments",               limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "walkup",                             default: false

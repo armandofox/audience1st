@@ -9,6 +9,7 @@ class Order < ActiveRecord::Base
   has_many :retail_items, :autosave => true, :dependent => :destroy
 
   attr_accessor :purchase_args
+  attr_accessor :comments
   attr_reader :donation
 
   attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser, :external_key
