@@ -7,7 +7,8 @@ class StoreController < ApplicationController
 
   before_filter :set_customer, :except => %w[process_donation]
   before_filter :is_logged_in, :only => %w[checkout place_order]
-
+  before_filter :order_is_not_empty, :only => %w[shipping_address checkout place_order]
+  
   #        ACTION                      INVARIANT BEFORE ACTION
   #        ------                      -----------------------
   # index, subscribe, donate_to_fund    valid @customer
@@ -25,6 +26,13 @@ class StoreController < ApplicationController
   #           place_order
 
   private
+
+  # if order is nil or empty after checkout phase, abort. This should never happen normally,
+  # but can happen if customer does weird things trying to have multiple sessions open.
+  def order_is_not_empty
+    redirect_to store_path, :alert => t('store.errors.empty_order') if
+      @gOrderInProgress.nil? || @gOrderInProgress.cart_empty?
+  end
 
   # invariant: after set_customer runs, the URL contains ID of customer doing the shopping
   def set_customer
@@ -229,7 +237,6 @@ class StoreController < ApplicationController
   # Beyond this point, purchaser is logged in (or admin is logged in and acting on behalf of purchaser)
 
   def checkout
-    redirect_to store_path, :alert => t('store.errors.empty_order') if @gOrderInProgress.cart_empty?
     # only show timer if cart has any vouchers for specific dates
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @gAdminDisplay || (params[:sales_final].to_i > 0)
