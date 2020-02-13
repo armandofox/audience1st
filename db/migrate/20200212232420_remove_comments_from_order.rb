@@ -13,7 +13,7 @@ class RemoveCommentsFromOrder < ActiveRecord::Migration
             item.comments = "#{item.comments.to_s}; #{o.comments}"
             nonblank_comments += 1
           end
-          item.save(false)
+          item.save(:validate => false)
         end
       end
       puts "Updated #{blank_comments} blank and #{nonblank_comments} nonblank comments on #{orders.size} orders"
