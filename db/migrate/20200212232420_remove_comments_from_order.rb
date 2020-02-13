@@ -8,10 +8,10 @@ class RemoveCommentsFromOrder < ActiveRecord::Migration
       orders.each do |o|
         o.items.each do |item|
           if item.comments.blank?
-            item.comments = o.comments.split(/\s*;\s*/).uniq.join('; ').truncate(255)
+            item.comments = o.comments.truncate(255)
             blank_comments += 1
           else
-            item.comments = "#{item.comments.to_s}; #{o.comments}".split(/\s*;\s*/).uniq.join('; ').truncate(255)
+            item.comments = "#{item.comments.to_s};#{o.comments}".split(/\s*;\s*/).uniq.join('; ').truncate(255)
             nonblank_comments += 1
           end
           invalid.push(item.id) unless item.valid?
