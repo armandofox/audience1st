@@ -2,6 +2,7 @@ class RemoveCommentsFromOrder < ActiveRecord::Migration
   def change
     orders = Order.where.not(:comments => [nil, '']).includes(:items)
     invalid = []
+    item = nil
     Order.transaction do
       orders.each do |o|
         next unless (item = o.items.first)
