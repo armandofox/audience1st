@@ -9,10 +9,11 @@ class RemoveCommentsFromOrder < ActiveRecord::Migration
       end
       invalid.push(item.id) unless item.valid?
       item.save(:validate => false)
+      puts "Updated comments on #{orders.size} orders"
+      puts "#{invalid.length} invalid items:"
+      puts invalid.join(',')
+      remove_column :orders, :comments
     end
-    puts "Updated comments on #{orders.size} orders"
-    puts "#{invalid.length} invalid items:"
-    puts invalid.join(',')
-    remove_column :orders, :comments
   end
 end
+  
