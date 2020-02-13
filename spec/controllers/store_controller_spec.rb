@@ -230,7 +230,8 @@ describe StoreController do
       @customer = {:first_name => "John", :last_name => "Bob",
         :street => "742 Evergreen Terrace", :city => "Springfield",
         :state => "IL", :zip => "09091"}
-      allow(controller).to receive(:find_cart).and_return(mock_model(Order).as_null_object)
+      o = double('Order', :cart_empty? => false).as_null_object
+      allow(controller).to receive(:find_cart).and_return(o)
     end
     it "should be valid with only a phone number" do
       @customer[:day_phone] = "999-999-9999"
