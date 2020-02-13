@@ -6,14 +6,13 @@ class RemoveCommentsFromOrder < ActiveRecord::Migration
       orders.each do |o|
         item = o.items.first
         item.comments = "#{item.comments.to_s};#{o.comments}".split(/\s*;\s*/).uniq.join('; ').truncate(255)
-        end
-        invalid.push(item.id) unless item.valid?
-        item.save(:validate => false)
       end
-      puts "Updated comments on #{orders.size} orders"
-      puts "#{invalid.length} invalid items:"
-      puts invalid.join(',')
-      remove_column :orders, :comments
+      invalid.push(item.id) unless item.valid?
+      item.save(:validate => false)
     end
+    puts "Updated comments on #{orders.size} orders"
+    puts "#{invalid.length} invalid items:"
+    puts invalid.join(',')
+    remove_column :orders, :comments
   end
 end
