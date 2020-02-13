@@ -209,7 +209,7 @@ describe StoreController do
     end
   end
 
-  describe 'redirect if error adding to cart', focus: true do
+  describe 'redirect if error adding to cart' do
     before(:each) do
       allow(controller).to receive(:add_retail_items_to_cart)
       allow(controller).to receive(:add_donation_to_cart)

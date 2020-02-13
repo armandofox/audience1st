@@ -128,7 +128,7 @@ end
 Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containing the following tickets:$/ do |first,last,comments,table|
   @customer = find_customer(first,last)
   order = @customer.orders.first
-  order.comments.should == comments
+  expect(order.items.first.comments).to eq(comments)
   table.hashes.each do |item|
     matching_items = order.vouchers.select { |v| v.vouchertype.name == item['type'] }
     if !item['showdate'].blank?
@@ -136,10 +136,10 @@ Then /^customer "(.*) (.*)" should have an order (with comment "(.*)" )?containi
     else
       #then the vouchers should have no showdate associated to it
       matching_items.each do |v|
-        v.showdate.should == nil
+        expect(v.showdate).to be_nil
       end
     end
-    matching_items.length.should == item['qty'].to_i
+    expect(matching_items.length).to eq(item['qty'].to_i)
   end
 end
 
