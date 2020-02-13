@@ -4,7 +4,7 @@ class RemoveCommentsFromOrder < ActiveRecord::Migration
     invalid = []
     Order.transaction do
       orders.each do |o|
-        item = o.items.first
+        next unless (item = o.items.first)
         item.comments = "#{item.comments.to_s};#{o.comments}".split(/\s*;\s*/).uniq.join('; ').truncate(255)
       end
       invalid.push(item.id) unless item.valid?
