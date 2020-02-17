@@ -14,8 +14,8 @@ Then /I should not see a (.*) named "(.*)"/ do |elt, selector|
 end
 
 # Element should be disabled
-Then /^the "(.*)" (?:checkbox|button|field|control) should be disabled/ do |field|
-  expect(page).to have_field(field, :disabled => true)
+Then /^the "(.*)" (?:checkbox|button|field|control) should be (enabled|disabled)/ do |field,able|
+  expect(page).to have_field(field, :disabled => (able == 'disabled'))
 end
 
 # Field should have value

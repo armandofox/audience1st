@@ -53,11 +53,11 @@ Given /^(\d+) "(.*)" tickets? have been sold for "(.*)"$/ do |qty,vtype,dt|
   order.finalize!
 end
 
-Given /"(.*)" for \$?([0-9.]+) is available at checkin for all performances of "(.*)"/ do |item,price,show|
+Given /"(.*)" for \$?([0-9.]+) is available (at checkin )?for all performances of "(.*)"/ do |item,price,walkup,show|
   price = price.to_f
   showdates = Show.find_by!(:name => show).showdates
   vtype = Vouchertype.find_by(:name => item, :price => price, :category => 'nonticket') ||
-    create(:vouchertype, :walkup_sale_allowed => true, :name => item, :price => price, :category => 'nonticket')
+    create(:vouchertype, :walkup_sale_allowed => (!walkup.blank?), :name => item, :price => price, :category => 'nonticket')
   showdates.each do |date|
     create(:valid_voucher, :showdate => date, :vouchertype => vtype)
   end

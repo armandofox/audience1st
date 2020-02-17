@@ -98,6 +98,7 @@ class Audience1stSeeder
       :allow_guest_checkout => true,
       :homepage_ticket_sales_text => 'Get Tickets',
       :homepage_subscription_sales_text => 'Subscribe to Our Season',
+      :order_timeout => 15,
       :privacy_policy_url => '',
       :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
       :stripe_key => 'Replace with real Stripe key',

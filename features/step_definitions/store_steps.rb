@@ -74,8 +74,11 @@ Then /^the cart should show the following items:$/ do |table|
   table.hashes.each do |item|
     formatted_price = number_to_currency(item['price'].to_f)
     page.all('#cart .row').any? do |entry|
-      (entry.find('.a1-cart-amount').has_content?(formatted_price) rescue  nil) &&
-        entry.has_content?(item['description'])
+      seats_match = item['seats'].blank? ||  (entry.has_content?('Seat') && entry.has_content?(item['seats']))
+      price_matches = (entry.find('.a1-cart-amount').has_content?(formatted_price, :normalize_ws => true) rescue  nil)
+      description_matches = entry.has_content?(item['description'], :normalize_ws => true)
+
+      description_matches && price_matches && seats_match
     end
   end
 end
