@@ -25,7 +25,7 @@ sections: [
     ['SeasonSetup', 'Season Setup'], 
     ['AdvanceSalesAndReservations', 'Advance Sales And Reservations'],
     ['FrontOfHouse', 'Front of House Operations'],
-    ['IntegrationWithYourWebsite', 'Integration With Your WordPress-Based Website'],
+    ['IntegrationWithYourWebsite', "Integration With Your Theater's Website"],
     ['IntegrationWithOtherSites', 'Integration With Other Sites'],
     ['Donations', 'Donations'], 
     ['Reports', 'Reports'], 
