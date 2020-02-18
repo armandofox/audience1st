@@ -30,16 +30,13 @@ Scenario: purchase tickets with reserved seating
 Scenario: when admin purchases tickets, nonticket items shouldn't require seats
 
   Given I am logged in as boxoffice
-  And I am acting on behalf of customer "Tom Foolery"
   And "Wine" for $7.00 is available for all performances of "The Nerd"
   When I go to the store page for the show "The Nerd"
   And I fill in "General - $11.00" with "2"
   And I fill in "Wine - $7.00" with "1"
   And I press "Choose Seats..."
   And I choose seats B1,B2
-  Then the "Continue to Billing Information" button should be enabled
   When I press "Continue to Billing Information"
-  Then show me the page
   Then the cart should show the following items:
     | description             | seats | price |
     | Tuesday, Mar 2, 8:00 PM | B1    | 11.00 |

@@ -115,7 +115,7 @@ class Voucher < Item
   def unreserved? ; showdate_id.to_i.zero? end
   def reserved? ; !(unreserved?) ; end
   def for_reserved_seating_performance?
-    showdate && showdate.has_reserved_seating?
+    reservable? && showdate && showdate.has_reserved_seating?
   end
   def reservable? ; !bundle? && unreserved? && valid_today? ;  end
   def reserved_show ; (showdate.name if reserved?).to_s ;  end
