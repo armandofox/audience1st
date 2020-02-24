@@ -40,3 +40,36 @@ performances, then click "Save & Add More Dates", then add all
 the Sunday matinees.  Continue adding performances until all the
 performances for this show have been added.  It doesn't matter in what
 order you add them, as they'll always be listed in date order.
+
+## General Admission or Reserved Seating?
+
+Audience1st supports both general admission (GA) and reserved seating (RS).  For
+a complete description of how reserved seating works and how to set up
+seat maps, see [this
+article]({% post_url 2020-02-18-reserved-seating %}).
+
+At the time each show date is set up, you choose whether it will be GA
+or RS.  (This means that you can have some performances of a
+production be GA and others RS if you wish.)
+
+When you set up a performance as GA, you enter a number representing
+the maximum house capacity, that is, the actual number of patrons that
+can be seated.  When you set up a performance as RS, the house
+capacity is determined by the number of seats in the seat map.  
+In either case, you can (and probably should) set the maximum advance
+sales to a lower
+number in order to hold back some seats.
+
+**Once the first ticket to a performance has been sold, you cannot
+change that performance from GA to RS or vice versa.**  For RS
+performances, it is possible to change which seat map is used, as long
+as all patrons with current seat reservations can be accommodated.
+(For example, some existing reserved seats may not exist in the new
+seat map.)  If
+you try to make such a change and some patrons cannot be accommodated,
+you'll be told which patrons need to have their reservations cancelled
+and rebooked, with links to each patron's "My Tickets" page to help
+you do that.  But in general, if you think you might have to change seat maps after tickets have
+been sold, make the initial seat map the most restrictive, so that any
+other seat map you might change to still has all the seats of the
+original seat map.

@@ -21,7 +21,9 @@ You cannot delete a voucher type from a performance if some vouchers of that typ
 
 ## Redemptions: An Example (Single Tickets)
 
-Suppose we have a run of the play Hamlet, every Fri, Sat and Sun night from Jan 1-17, 2015 (nine performances), and we have a house capacity of 100.  Our general admission price is $40 adults, $25 youth, but we also want to do promotions to sell more seats at matinees.  We might set up tickets and validity records as follows:
+Suppose we have a run of the play Hamlet, every Fri, Sat and Sun night
+from Jan 1-17, 2015 (nine performances), and we have a house capacity
+of 100 with general admission (no reserved seats).  Our general admission price is $40 adults, $25 youth, but we also want to do promotions to sell more seats at matinees.  We might set up tickets and validity records as follows:
 
 | Voucher type and price | Validity |
 |------------------------|----------|
