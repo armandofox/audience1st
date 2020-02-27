@@ -109,6 +109,7 @@ class ImportableOrder
   def add_tickets(vv, num)
     if vv.showdate.has_reserved_seating?
       # put in "placeholder" seat numbers
+      # BUG::This will screw up seatmap display!!
       order.add_tickets_without_capacity_checks(vv, num, Array.new(num) { Voucher::PLACEHOLDER })
     else
       order.add_tickets_without_capacity_checks(vv, num)
