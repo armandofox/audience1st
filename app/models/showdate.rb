@@ -142,6 +142,7 @@ class Showdate < ActiveRecord::Base
 
   # Calculation of available seats (for reserved seating)
   def occupied_seats
+    byebug
     return [] unless seatmap
     # basically, collect seat info from all vouchers for this showdate
     vouchers.map(&:seat).compact.map(&:to_s).sort
