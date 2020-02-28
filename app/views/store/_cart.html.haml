@@ -7,7 +7,7 @@
     minutes.
 
   - @gOrderInProgress.vouchers.each do |v|
-    .row.border-top.bg-light
+    .row.order-row.border-top.bg-light
       .col-md-5.text-truncate.h5
         .a1-cart-show-name= v.showdate.try(:name)
       .col-md-5.font-italic.h5
@@ -23,7 +23,7 @@
         .a1-cart-amount= number_to_currency(v.amount)
 
   - if (d = @gOrderInProgress.donation)
-    .row.border-top.bg-light
+    .row.order-row.border-top.bg-light
       .col-md-5.text-truncate.h5
         .a1-cart-donation-to Donation to #{d.account_code.name}
       .col-md-5.font-italic.text-truncate.h5
@@ -32,7 +32,7 @@
         .a1-cart-amount= number_to_currency(d.amount)
 
   - @gOrderInProgress.retail_items.each do |item|
-    .row.border-top.bg-light
+    .row.order-row.border-top.bg-light
       .col-md-10.h5
         .a1-cart-retail-item= item.comments
       .col-md-2.h4.text-right.text-primary
