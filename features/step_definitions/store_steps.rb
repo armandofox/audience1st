@@ -71,7 +71,7 @@ Then /^the cart should not contain a donation$/ do
 end
 
 Then /^the cart should show the following items:$/ do |table|
-  order_rows = page.all('#cart .row')
+  order_rows = page.all('#cart .order-row')
   table.hashes.each do |item|
     found_match = order_rows.any? do |entry|
       seats_match = item['seats'].blank? ||  (entry.has_content?('Seat') && entry.has_content?(item['seats']))

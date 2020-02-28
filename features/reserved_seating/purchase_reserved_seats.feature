@@ -40,7 +40,7 @@ Scenario: when admin purchases tickets, nonticket items shouldn't require seats
   Then the cart should show the following items:
     | description             | seats | price |
     | Tuesday, Mar 2, 8:00 PM | B1    | 11.00 |
-    | Tuesday, Mar 2, 8:00 PM | B2    |  9.00 |
+    | Tuesday, Mar 2, 8:00 PM | B2    | 11.00 |
     | Wine                    |       |  7.00 |
   
   
