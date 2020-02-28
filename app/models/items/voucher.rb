@@ -4,7 +4,7 @@ class Voucher < Item
   class ReservationError < StandardError ;  end
 
   belongs_to :vouchertype
-  validates_presence_of :vouchertype_id
+  validates_associated :vouchertype
   delegate :category, :to => :vouchertype
 
   validate :checkin_requires_reservation
