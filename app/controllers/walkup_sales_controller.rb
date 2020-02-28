@@ -103,7 +103,8 @@ class WalkupSalesController < ApplicationController
       @subtotal[purch] = vouchers.map(&:amount).sum
       @total += @subtotal[purch]
     end
-    @other_showdates = @showdate.show.showdates
+    @other_showdates = @showdate.show.showdates.reject { |s| s.has_reserved_seating? }
+    @transferable = !(@showdate.has_reserved_seating?) && !(@other_showdates.empty?)
   end
 
 end
