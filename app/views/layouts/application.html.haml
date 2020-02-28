@@ -24,6 +24,9 @@
         This site requires JavaScript.  Please enable 
         JavaScript in your browser and reload this page.
 
+    - if Rails.env.test?
+      :javascript
+        window.Date.now = function() { return(#{(Time.current.to_f * 1000.0).to_i}); }
     = hidden_field_tag 'autocomplete_route', customer_autocomplete_url
     = hidden_field_tag 'accessibility_advisory_for_reserved_seating', Option.accessibility_advisory_for_reserved_seating
     
