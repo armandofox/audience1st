@@ -110,7 +110,7 @@ describe Voucher do
   describe "transferring" do
     before(:each) do
       @from = create(:customer)
-      @v = create(:voucher, :customer => @from)
+      @v = create(:revenue_voucher, :customer => @from)
     end
     context "when recipient exists" do
       before(:each) do

@@ -175,12 +175,15 @@ class Voucher < Item
   end
   
   def inspect
-    s = sprintf("%d %s", (new_record? ? object_id : id),
-      (vouchertype.nil? ? '(nil!)' : vouchertype.name))
-    if bundle?
-      s += sprintf("\n  <%s>,\n", bundled_vouchers.map(&:to_s).join("\n   "))
+    if vouchertype_id.nil?
+      sprintf("%d (No vouchertype)", (new_record? ? object_id : id))
+    else
+      s = sprintf("%d #{vouchertype.name}", (new_record? ? object_id : id))
+      if bundle?
+        s += sprintf("\n  <%s>,\n", bundled_vouchers.map(&:to_s).join("\n   "))
+      end
+      s
     end
-    s
   end
 
   # constructors
