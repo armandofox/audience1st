@@ -187,10 +187,10 @@ class Order < ActiveRecord::Base
   def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
 
   def includes_vouchers?       ; ticket_count > 0  ; end
-  def includes_mailable_items? ; items.any? { |v| v.vouchertype.fulfillment_needed? } ; end
+  def includes_mailable_items? ; items.any? { |v| v.vouchertype.try(:fulfillment_needed?) } ; end
   def includes_enrollment?     ; items.any? { |v| v.showdate.try(:event_type) == 'Class' } ; end
   def includes_bundle?         ;  items.any? { |v| v.vouchertype.try(:bundle?) }  ;  end
-  def includes_nonticket_item? ;  items.any? { |v| v.vouchertype.nonticket? } ; end
+  def includes_nonticket_item? ;  items.any? { |v| v.vouchertype.try(:nonticket?) } ; end
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
