@@ -33,7 +33,7 @@ Scenario: Cannot buy past max sales
     |   3 | General | $15.00 | October 1, 2013, 7:00pm |
   And today is September 30, 2013
   When I go to the store page
-  Then the "General - $15.00" menu should have options: 0,1,2,3
+  Then the "General - $15.00" menu should have options: 0;1;2;3
 
 Scenario: Cannot buy past max sales even if combining ticket types
   

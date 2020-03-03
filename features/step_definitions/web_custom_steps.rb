@@ -67,7 +67,7 @@ end
 
 # Check if menu does or does not contain an option
 Then /the "(.*)" menu should have options: (.*)/ do |menu,option|
-  options = option.split(/\s*,\s*/)
+  options = option.split(/\s*;\s*/)
   expect(page).to have_select(menu, :options => options)
 end
 
