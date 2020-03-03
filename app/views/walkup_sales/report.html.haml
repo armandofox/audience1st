@@ -14,10 +14,11 @@
   - unless @vouchers.empty?
     %h1 Walkup Sales Detail
     = form_tag walkup_sale_path(@showdate), :method => :put do
-      %p
-        Transfer checked vouchers to a different performance:
-        = select_tag 'to_showdate', options_from_collection_for_select(@other_showdates, :id, :menu_selection_name)
-        = submit_tag 'Transfer', :class => 'btn btn-danger'
+      - unless @other_showdates.empty?
+        %p
+          %label{:for => 'to_showdate'} Transfer checked vouchers to a different performance:
+          = select_tag 'to_showdate', options_from_collection_for_select(@other_showdates, :id, :menu_selection_name)
+          = submit_tag 'Transfer', :class => 'btn btn-danger'
       - @vouchers.each_pair do |howpurchased, vouchers|
         %div{:id => Purchasemethod.get(howpurchased).shortdesc}
           %h3= Purchasemethod.get(howpurchased).description
