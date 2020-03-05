@@ -33,7 +33,7 @@ Scenario: donor not logged in but has matching account
   Then I should see "Donation to General Fund $20.00"
   And customer "Tom Foolery" should have a donation of $20.00 to "General Fund"
   And  customer "Tom Foolery" should have a donation of $10.00 to "General Fund"
-  And customer "Tom Foolery" should have an order dated "2009-12-01" containing a credit_card donation of $20.00 to "General Fund"
+  And customer "Tom Foolery" should have an order dated "2010-01-01" containing a credit_card donation of $20.00 to "General Fund"
   And I should not see "Back to My Tickets"
   And customer "Tom Foolery" should not be logged in
 

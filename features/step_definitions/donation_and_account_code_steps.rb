@@ -79,8 +79,7 @@ Then /^customer "(\S+) (.*)" should have an order dated "(.*)" containing a (.*)
   date = Time.zone.parse(date)
   account_code = AccountCode.find_by_name!(fund)
   amount = amount.to_f
-  orders = find_customer(first,last).orders.where('sold_on = ?',date)
-  byebug
+  orders = find_customer(first,last).orders.where(:sold_on => (date.at_beginning_of_day..date.at_end_of_day))
   matching_order = orders.any? do |order|
     order.purchase_medium == type.to_sym &&
       order.donations.length > 0 &&
