@@ -90,6 +90,7 @@ class Customer < ActiveRecord::Base
     first.strip.downcase == first_name.strip.downcase &&
       last.strip.downcase == last_name.strip.downcase
   end
+
   # support for find_unique
 
   def self.match_email_and_last_name(email,last_name)
@@ -107,6 +108,13 @@ class Customer < ActiveRecord::Base
     m = Customer.where('lower(last_name) LIKE ? AND lower(first_name) LIKE ?',  last_name.strip.downcase, first_name.strip.downcase)
     m && m.length == 1 ?  m.first : nil
   end
+
+  def copy_nonblank_attributes(from)
+    Customer.replaceable_attributes.each do |attr|
+      self.send("#{attr}=", from.send(attr)) if self.send(attr).blank?
+    end
+  end
+
 
   # If customer can be uniquely identified in DB, return match from DB
   # and fill in blank attributes with nonblank values from provided attrs.

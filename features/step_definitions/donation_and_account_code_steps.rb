@@ -79,12 +79,14 @@ Then /^customer "(\S+) (.*)" should have an order dated "(.*)" containing a (.*)
   date = Time.zone.parse(date)
   account_code = AccountCode.find_by_name!(fund)
   amount = amount.to_f
-  find_customer(first,last).orders.where('sold_on = ?',date) do |order|
+  cust = find_customer(first,last)
+  matching_order = cust.orders.where('sold_on = ?',date).any? do |order|
     order.purchase_medium == type.to_sym &&
       order.donations.length > 0 &&
       (d = order.donations.first).amount == amount &&
       d.account_code == account_code
-  end.should be_truthy
+  end
+  expect(matching_order).to be_truthy
 end
 
 Then /^I should (not )?see the following donations:$/ do |no,donations|

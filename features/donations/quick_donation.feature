@@ -20,17 +20,20 @@ Scenario: donor logged in, page gets prepopulated with donor info
   
 Scenario: donor not logged in but has matching account
 
-  Given a donation of $10 on 2009-12-01 from "Tom Foolery" to the "General Fund"
+  Given customer "Tom Foolery" exists with email "fool@gmail.com"
+  And customer "Tom Foolery" has no contact info
+
   And   I am not logged in
 
   And   I go to the quick donation page
-  When  I fill in the ".billing_info" fields with "Tom Foolery, 123 Fake St, Oakland, CA 94601, 510-555-5555, tom@foolery.com"
+  When  I fill in the ".billing_info" fields with "Tom Foolery, 123 Fake St, Oakland, CA 94601, 510-555-5555, fool@gmail.com"
   And   I fill in "Donation amount" with "20"
   And   I press "Charge Donation to Credit Card"
 
-  Then customer "Tom Foolery" should have a donation of $20.00 to "General Fund"
+  Then I should see "Donation to General Fund $20.00"
+  And customer "Tom Foolery" should have a donation of $20.00 to "General Fund"
   And  customer "Tom Foolery" should have a donation of $10.00 to "General Fund"
-  And customer "Tom Foolery" should have an order dated "2009-12-01" containing a credit_card donation of $15.00 to "General Fund"
+  And customer "Tom Foolery" should have an order dated "2009-12-01" containing a credit_card donation of $20.00 to "General Fund"
   And I should not see "Back to My Tickets"
   And customer "Tom Foolery" should not be logged in
 
