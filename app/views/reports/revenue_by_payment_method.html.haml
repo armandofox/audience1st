@@ -1,8 +1,5 @@
 %h1.text-center Revenue by payment method and account code
-%h2.text-center
-  = @report.from.to_formatted_s(:filename)
-  to
-  = @report.to.to_formatted_s(:filename)
+%h2.text-center= @report.title
 
 - @report.payment_types.each_pair do |payment_type, account_code_groups|
   .row.text-light.bg-primary.font-weight-bold

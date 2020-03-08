@@ -1,17 +1,32 @@
 class RevenueByPaymentMethodReport
 
-  attr_reader :from, :to, :payment_types, :totals
+  attr_reader :from, :to, :show_id, :title, :payment_types, :totals
   
-  def initialize(from,to)
-    @from,@to = from,to
+  def initialize
+    @errors = ActiveModel::Errors.new(self)
+    @show_id = nil
+    @from = @to = nil
+    @header = ''
     @payment_types = {:credit_card => {}, :cash => {}, :check => {}}
     @totals = {:credit_card => {}, :cash => {}, :check => {}}
+  end
+
+  def by_dates(from,to)
+    @from,@to = from,to
+    @title = "#{@from.to_formatted_s(:filename)} to #{@to.to_formatted_s(:filename)}"
+    self
+  end
+
+  def by_show_id(show_id)
+    @show_id = show_id
+    @title = Show.find(show_id).name
+    self
   end
 
   def run
     items =
       Item.
-      joins(:order).where('orders.sold_on' => @from..@to).
+      joins(:order).
       includes(:account_code,
       :order,
       :customer,
@@ -21,6 +36,14 @@ class RevenueByPaymentMethodReport
       where(:finalized => true).
       where("type != 'CanceledItem'").
       order('items.updated_at')
+    if show_id
+      items = items.where('shows.id' => @show_id)
+    elsif from
+      items = items.where('orders.sold_on' => @from..@to)
+    else
+      self.errors.add(:base, 'You must specify either a date range or a production.')
+      return nil
+    end
     payment_types = {:credit_card => :web_cc, :cash => :box_cash, :check => :box_chk}
     payment_types.each_pair do |payment_type, purchasemethod|
       results = 

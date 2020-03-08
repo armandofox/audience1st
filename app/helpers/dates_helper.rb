@@ -71,7 +71,7 @@ $('##{name}').daterangepicker('setRange', #{init_range});
 $('##{name}').daterangepicker({ open: function() { $('#{en}').prop('checked',true); } })
 })
     end
-    popup_help_for(:select_dates) <<  "\n" << text_field_tag(name,'',:class => options[:class]) << "\n" << js
+    text_field_tag(name,'',:class => options[:class]) << "\n" << popup_help_for(:select_dates) <<  "\n" << js
 
   end
 

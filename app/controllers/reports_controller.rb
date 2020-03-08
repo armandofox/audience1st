@@ -11,6 +11,8 @@ class ReportsController < ApplicationController
     @next_showdate = Showdate.current_or_next
     # all show names
     @all_shows = Show.all.order('opening_date DESC')
+    # currently playing show
+    @current_show = @next_showdate.show
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.this_season)
     # list of all special reports
@@ -145,9 +147,15 @@ class ReportsController < ApplicationController
   end
 
   def revenue_by_payment_method
-    from,to = Time.range_from_params(params[:txn_report_dates])
-    return redirect_to(reports_path, :alert => 'Please select a date range of 3 months or less for the revenue by payment method report.') if (to - from > 93.days)
-    @report = RevenueByPaymentMethodReport.new(from,to).run
+    # report may be by date range or by production
+    if params[:txn_report_by] == 'date'
+      from,to = Time.range_from_params(params[:txn_report_dates])
+      return redirect_to(reports_path, :alert => 'Please select a date range of 3 months or less for the revenue by payment method report.') if (to - from > 93.days)
+      @report = RevenueByPaymentMethodReport.new.by_dates(from,to)
+    else
+      @report = RevenueByPaymentMethodReport.new.by_show_id(params[:txn_report_show_id])
+    end
+    return redirect_to(reports_path, :alert => @report.errors.as_html) unless @report.run
   end
 
   def retail
