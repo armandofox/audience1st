@@ -19,7 +19,10 @@ class RevenueByPaymentMethodReport
 
   def by_show_id(show_id)
     @show_id = show_id
-    @title = Show.find(show_id).name
+    show = Show.find(show_id)
+    @title = show.name
+    @from = show.opening_date
+    @to = show.closing_date
     self
   end
 
@@ -54,4 +57,30 @@ class RevenueByPaymentMethodReport
     self
   end
   
+  def csv
+    csv = CSV.generate(:force_quotes => true) do |csv|
+      csv << ['Order date','Order#','Show','Show Date','Description','Customer','Promo Code','Amount','Payment Type','Account Code #','Account Code']
+      self.payment_types.each_pair do |payment_type, account_code_groups|
+        account_code_groups.each do |account_code,items|
+          items.each do |item|
+            csv << [
+              item.order.sold_on.strftime('%Y-%m-%d %H:%M'),
+              item.order_id,
+              (item.showdate_id ? item.show.name : ''),
+              (item.showdate_id ? item.showdate.thedate : ''),
+              item.description_for_report,
+              item.customer.full_name,
+              item.promo_code,
+              sprintf("%.02f", item.amount),
+              payment_type,
+              account_code.code.to_s,
+              account_code.name
+            ]
+          end
+        end
+      end
+    end
+    csv
+  end
+
 end

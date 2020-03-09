@@ -58,6 +58,8 @@ class Donation < Item
     sprintf("$%6.2f  Donation to #{account_code.name}", amount)
   end
 
+  def description_for_report ; 'Donation' ; end
+
   def description_for_audit_txn
     sprintf("%.2f #{account_code.name} donation [#{id}]", amount)
   end

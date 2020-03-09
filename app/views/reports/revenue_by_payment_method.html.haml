@@ -19,6 +19,7 @@
             %th{:scope => 'col'} Item
             %th{:scope => 'col'} Sold on
             %th{:scope => 'col'} Customer
+            %th{:scope => 'col'} Promo Code
             %th{:scope => 'col'} Amount
         %tbody
           - time_fmt = (@report.to - @report.from > 1.day) ? '%a %b %-d %-l:%M%P' : '%-l:%M%P'
@@ -28,6 +29,7 @@
               %td= item.one_line_description
               %td= item.order.sold_on.strftime(time_fmt)
               %td= item.customer.full_name
+              %td= item.promo_code
               %td.text-right= number_to_currency item.amount
 
 

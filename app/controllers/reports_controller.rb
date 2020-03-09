@@ -156,6 +156,9 @@ class ReportsController < ApplicationController
       @report = RevenueByPaymentMethodReport.new.by_show_id(params[:txn_report_show_id])
     end
     return redirect_to(reports_path, :alert => @report.errors.as_html) unless @report.run
+    if params[:commit] =~ /download/i # fall thru to screen display
+      download_to_excel(@report.csv, "transaction_detail_by_show")
+    end
   end
 
   def retail

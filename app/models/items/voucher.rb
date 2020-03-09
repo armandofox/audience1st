@@ -169,6 +169,10 @@ class Voucher < Item
     s
   end
 
+  def description_for_report
+    vouchertype.name
+  end
+
   def description_for_audit_txn
     sprintf("%.2f #{vouchertype.name} (%s) [#{id}]", amount,
       (reserved? ? showdate.printable_name : 'open'))

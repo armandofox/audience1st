@@ -48,6 +48,8 @@ class RetailItem < Item
     sprintf("$%6.2f  #{comments}", amount)
   end
 
+  def description_for_report ; comments.to_s.gsub("\n", "; ") ; end
+
   def description_for_audit_txn
     sprintf("%.2f #{comments} [#{id}]", amount)
 
