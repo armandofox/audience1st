@@ -12,7 +12,7 @@ class ReportsController < ApplicationController
     # all show names
     @all_shows = Show.all.order('opening_date DESC')
     # currently playing show
-    @current_show = @next_showdate.show
+    @current_show = @next_showdate.try(:show) || @all_shows.first
     # quick subscription stats
     @subscriptions = Voucher.subscription_vouchers(Time.this_season)
     # list of all special reports

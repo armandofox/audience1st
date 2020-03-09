@@ -21,12 +21,13 @@
   %label.h3.col-md-4 Revenue Details
   .col-md-8
     = form_tag revenue_by_payment_method_reports_path, :method => :get, :class => 'form' do
-      .form-row
-        .col-md-4
-          = radio_button_tag 'txn_report_by', 'production', false, :class => 'form-check-input'
-          %label.form-check-label{:for => 'txn_report_by_production'} By production
-        .col-md-8
-          = select_tag 'txn_report_show_id', options_from_collection_for_select(@all_shows, :id, :name, @current_show.id), :class => 'form-control'
+      - if @current_show
+        .form-row
+          .col-md-4
+            = radio_button_tag 'txn_report_by', 'production', false, :class => 'form-check-input'
+            %label.form-check-label{:for => 'txn_report_by_production'} By production
+          .col-md-8
+            = select_tag 'txn_report_show_id', options_from_collection_for_select(@all_shows, :id, :name, @current_show.id), :class => 'form-control'
       .form-row.py-2
         .col-md-4
           = radio_button_tag 'txn_report_by', 'date', true, :class => 'form-check-input'
