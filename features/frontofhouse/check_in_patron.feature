@@ -1,3 +1,4 @@
+@javascript
 Feature: Check in a patron
 
   As a box office worker
@@ -21,5 +22,3 @@ Scenario: correct checkin information appears
   And I should see a row "|Smith|Joe|Senior||3" within "table[@id='checkin']"
 
 Scenario: check in everyone in small party
-
-  

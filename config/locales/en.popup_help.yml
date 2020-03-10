@@ -364,6 +364,12 @@ en:
       checked in.  
       Click the X to "un-check-in" everyone in that customer's party.
 
+    checkin_reserved_seating: >
+
+      Click a seat number to check in that particular seat.
+      A highlighted seat number indicates someone who has checked in.
+      Click the X to "un-check-in" everyone in that customer's party.
+
     checkin_house_capacity: >
 
       This is the ACTUAL (physical) capacity of the house, not the max sales

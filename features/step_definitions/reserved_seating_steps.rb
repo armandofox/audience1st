@@ -10,7 +10,7 @@ Given /that performance has reserved seating/ do
 end
 
 Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|
-  @showdate = create(:showdate, :thedate => Time.zone.parse(time), :seatmap => create(:seatmap))
+  @showdate ||= create(:showdate, :thedate => Time.zone.parse(time), :seatmap => create(:seatmap))
   tbl.hashes.each do |h|
     customer = find_or_create_customer h['first'], h['last']
     vouchertype = Vouchertype.find_by(:name => h['vouchertype']) || create(:revenue_vouchertype, :name => h['vouchertype'])
