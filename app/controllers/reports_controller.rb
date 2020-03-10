@@ -150,14 +150,14 @@ class ReportsController < ApplicationController
     # report may be by date range or by production
     if params[:txn_report_by] == 'date'
       from,to = Time.range_from_params(params[:txn_report_dates])
-      return redirect_to(reports_path, :alert => 'Please select a date range of 3 months or less for the revenue by payment method report.') if (to - from > 93.days)
+      return redirect_to(reports_path, :alert => 'Please select a date range of 3 months or less for the Revenue Details report.') if (to - from > 93.days)
       @report = RevenueByPaymentMethodReport.new.by_dates(from,to)
     else
       @report = RevenueByPaymentMethodReport.new.by_show_id(params[:txn_report_show_id])
     end
     return redirect_to(reports_path, :alert => @report.errors.as_html) unless @report.run
     if params[:commit] =~ /download/i # fall thru to screen display
-      download_to_excel(@report.csv, "transaction_detail_by_show")
+      download_to_excel(@report.csv, 'revenue_details')
     end
   end
 
