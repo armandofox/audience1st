@@ -8,7 +8,7 @@
     %th First
     %th Type/Seats
     %th
-    %th Checkin #{popup_help_for(@showdate.has_reserved_seating? ? :checkin_reserved_seating :checkin)}
+    %th Checkin #{popup_help_for(@showdate.has_reserved_seating? ? :checkin_reserved_seating : :checkin)}
     %th Notes
   - @vouchers.keys.sort_by(&:downcase).each do |entry|
     - vouchers = @vouchers[entry]
