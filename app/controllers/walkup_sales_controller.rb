@@ -64,6 +64,8 @@ class WalkupSalesController < ApplicationController
 
     # all set to try the purchase
     begin
+      # walkup sales should automatically be checked in
+      @order.vouchers.map(&:check_in!)
       @order.finalize!
       Txn.add_audit_record(:txn_type => 'tkt_purch',
         :customer_id => Customer.walkup_customer.id,
