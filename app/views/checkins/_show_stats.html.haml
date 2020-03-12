@@ -1,32 +1,31 @@
-#show_stats.card.m-3
-  .card-body
-    .row
-      .col-md-3.text-right
-        = popup_help_for 'checkin_house_capacity'
-        True Cap:
-      .col-md-1= showdate.house_capacity
-      .col-md-2.text-right Sales cutoff:
-      .col-md-1= showdate.max_advance_sales
-      .col-md-2.text-right Available:
-      .col-md-1{:class => class_for(showdate.total_seats_left)}= showdate.total_seats_left
-      .col-md-2
-    .row
-      .col-md-3.text-right Advance sales:
-      .col-md-1{:class => class_for(showdate.saleable_seats_left)}= showdate.advance_sales_vouchers.size
-      .col-md-2.text-right Checked in:
-      .col-md-1= showdate.num_checked_in
-      .col-md-2.text-right Waiting for:
-      .col-md-1= showdate.num_waiting_for
-      .col-md-2
-    .row
-      .col-md-3.text-right Walkup sales:
-      .col-md-1= showdate.walkup_sales_vouchers.size
-    .row
-      .col-md-2.text-center
-        - if showdate.has_reserved_seating?
-          = link_to 'Seat Map', seatmap_checkin_path(showdate), :class => 'btn btn-primary'
-      .col-md-2.text-center= link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'
-      .col-md-2.text-center= link_to 'Walkup Sales', walkup_sale_path(showdate), :class => 'btn btn-primary d-inline-block'
-      .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary  d-inline-block'
-      .col-md-1
-      .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary  d-inline-block', :target => '_blank'
+.card-body
+  .row
+    .col-md-3.text-right
+      = popup_help_for 'checkin_house_capacity'
+      True Cap:
+    .col-md-1= showdate.house_capacity
+    .col-md-2.text-right Sales cutoff:
+    .col-md-1= showdate.max_advance_sales
+    .col-md-2.text-right Available:
+    .col-md-1{:class => class_for(showdate.total_seats_left)}= showdate.total_seats_left
+    .col-md-2
+  .row
+    .col-md-3.text-right Advance sales:
+    .col-md-1{:class => class_for(showdate.saleable_seats_left)}= showdate.advance_sales_vouchers.size
+    .col-md-2.text-right Checked in:
+    .col-md-1= showdate.num_checked_in
+    .col-md-2.text-right Waiting for:
+    .col-md-1= showdate.num_waiting_for
+    .col-md-2
+  .row
+    .col-md-3.text-right Walkup sales:
+    .col-md-1= showdate.walkup_sales_vouchers.size
+  .row
+    .col-md-2.text-center
+      - if showdate.has_reserved_seating?
+        = link_to 'Seat Map', seatmap_checkin_path(showdate), :class => 'btn btn-primary'
+    .col-md-2.text-center= link_to 'Reservations', checkin_path(showdate), :class => 'btn btn-primary d-inline-block'
+    .col-md-2.text-center= link_to 'Walkup Sales', walkup_sale_path(showdate), :class => 'btn btn-primary d-inline-block'
+    .col-md-2.text-center= link_to 'Walkup Sales Report', report_walkup_sale_path(showdate), :class => 'btn btn-secondary  d-inline-block'
+    .col-md-1
+    .col-md-2.text-center= link_to 'Printable Door List', door_list_checkin_path(showdate), :class => 'btn btn-secondary  d-inline-block', :target => '_blank'
