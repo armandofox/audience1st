@@ -47,15 +47,6 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
     margin-top: 4px;
 }
 
-/* Countdown timer for order completion */
-.timer {
-    text-align: center;
-}
-span#timer {
-    font-weight: bold;
-    font-family: "Lucida Console", Monaco, monospace;
-}
-
 /* easier to navigate if tabular rows hilited on hover */
 table.hilite tr:hover {
     background-color: #fcfe69;
@@ -76,6 +67,26 @@ table.hilite tr:hover {
     vertical-align: top;
     padding: 1px 2px;
 }
+/*
+ * Styles used by online check-in table only
+ */
+table#checkin td.maincolumn {
+    vertical-align: middle;
+}
+table#checkin td {
+    border-top: 1px solid black;
+}
+
+/* Countdown timer for order completion */
+.timer {
+    text-align: center;
+}
+span#timer {
+    font-weight: bold;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+
+
 
 /* Additional field qualifiers for errors etc */
 
@@ -308,24 +319,6 @@ tr.subscriber {
     padding: 0 2em;
 }
 
-/*
- * Online check-in
- */
-table#checkin {
-    border: 1px solid grey;
-}
-table#checkin tr {
-    line-height: 1.2;
-}
-table#checkin td.checkin_column {
-    width: 8em;
-}
-table#checkin td {
-    border-bottom: 1px solid #ddd;
-    vertical-align: middle;
-}
-span.un_check_in {
-}
 span.checkin_button {
     text-align: center;
     font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
