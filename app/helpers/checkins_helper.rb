@@ -12,16 +12,6 @@ module CheckinsHelper
     (val[0,1].upcase==@cur_ltr ? '' : @cur_ltr=val[0,1].upcase)
   end
 
-  # for a reserved-seating checkin list, show the seat number(s) alongside voucher type
-  def ticket_type_with_seats(vouchers)
-    if vouchers.all? { |v| v.seat.blank? }
-      content_tag('span', vouchers.first.name, :class => 'vouchertype')
-    else
-      content_tag('span', "#{Voucher.seats_for(vouchers)}", :class => 'seats') +
-        content_tag('span', " - #{vouchers.first.name}", :class => 'vouchertype')
-    end
-  end
-
   # return a list of this and next season's showdates and the corresponding
   # route URLs for checkin, suitable for options_for_select.
 
