@@ -19,11 +19,10 @@ Each time you check-in an advance-reservation customer or make a walkup sale, th
 
 From the FOH dashboard you can:
 
-* [Sell walkup tickets](walkup-sales.html) (day of show, sold at box office), including a
+* [Sell walkup tickets]({% post_url 2017-11-04-walkup-sales %}) (day of show, sold at box office), including a
 walkup-sales report when the box office closes
 
-* [Check in advance reservations](willcallresrevation-checkin.html)
-(will call).  As you sell walkup tickets and check-in customers
-electronically, Audience1st tells you how many will-call customers you're
-still waiting on, and how many walkup seats are still available to be
-sold. 
+* [Check in advance reservations]({% post_url 2017-11-04-willcallreservation-checkin %})
+(will call), either interactively or from a printable door list. 
+
+* [Check in Subscribers who don't have advance reservations]({% post_url 2020-03-15-checkin-subscribers-without-reservations %}) so they can use one of their Subscriber vouchers at the door.

@@ -3,6 +3,7 @@ layout: page
 title: "Simple RSS Ticket Availability"
 category: IntegrationWithYourWebsite
 date: 2019-11-14
+order: 10
 ---
 
 If you just want to display a list of show dates along with

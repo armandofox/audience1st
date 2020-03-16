@@ -25,10 +25,10 @@ sections: [
     ['SeasonSetup', 'Season Setup'], 
     ['AdvanceSalesAndReservations', 'Advance Sales And Reservations'],
     ['FrontOfHouse', 'Front of House Operations'],
-    ['IntegrationWithYourWebsite', "Integration With Your Theater's Website"],
-    ['IntegrationWithOtherSites', 'Integration With Other Sites'],
     ['Donations', 'Donations'], 
     ['Reports', 'Reports'], 
+    ['IntegrationWithYourWebsite', "Integration With Your Theater's Website"],
+    ['IntegrationWithOtherSites', 'Integration With Other Sites'],
  ]
 
 # Keep as an empty string if served up at the root. If served up at a specific

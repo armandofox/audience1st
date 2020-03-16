@@ -7,7 +7,7 @@ order: 3
 ---
 
 (See also: how to create links for
-[subscriptions or course/camp enrollments]({% post_url 2020-03-15 link-to-subscriptions-or-enrollments %}))
+[subscriptions or course/camp enrollments]({% post_url 2020-03-15-link-to-subscriptions-or-enrollments %}))
 
 When you're ready to start selling tickets for a production, you will
 probably want a way to provide a "Buy Tickets" link from your
