@@ -3,8 +3,11 @@ layout: page
 title: "Creating Links to Productions or Performances"
 category: IntegrationWithYourWebsite
 date: 2017-11-23 16:45:26
-order: 1
+order: 3
 ---
+
+(See also: how to create links for
+[subscriptions or course/camp enrollments]({% post_url 2020-03-15 link-to-subscriptions-or-enrollments %}))
 
 When you're ready to start selling tickets for a production, you will
 probably want a way to provide a "Buy Tickets" link from your
