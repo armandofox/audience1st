@@ -10,14 +10,17 @@ Every dollar of earned revenue (i.e. ticket sales) and unearned revenue (i.e. do
 
 Audience1st always comes with one "default" account code for the General Fund.  You can add your own account codes and you can delete the default one, but you can never delete the only account code.  Adding and editing account codes is available from most screens where you must provide an account code in order to do something.
 
-To run a financial report, select the desired transaction dates and the report type, and select which Account Codes you want to include in the report (control-click or command-click to select multiple).
+In a transaction detail report, each individual item sold is shown,
+grouped by payment type (credit card, cash, etc.), production, and
+account code.  
 
-* Transaction Details shows you a record per payment transaction, where every element of the record (order number, customer name, etc.) is clickable to go to the details of that order.
+If you run  the report by  selecting a date range of up to 3
+months, it will include **all transactions** (ticket purchases,
+donations, nonticket/retail item purchases, etc.) in that date range.
 
-* Earned and Unearned Revenue shows you ticket, retail item, and donation income, subtotaled by payment type, production name, and account code.
+If you run the report by limiting to a specific production, it will
+include **only ticket sales** related to that production, **not** any
+donations or nonticket purchases.
 
-When the report results are displayed, at the top of the report output
-you'll see buttons to allow you to generate an Excel (CSV) spreadsheet
-or a nicely-formatted PDF file of the report. 
-
-
+The report can either be displayed on the screen or downloaded as an
+Excel-style (CSV or comma-separated values) file for further processing.

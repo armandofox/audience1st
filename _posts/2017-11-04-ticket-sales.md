@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Ticket Sales"
+title: "Ticket and Subscription Sales Reports"
 category: Reports
 date: 2017-11-04 14:10:46
 order: 20
