@@ -42,7 +42,7 @@ class ShowdatesController < ApplicationController
 
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
-    @max_sales_default = @show.house_capacity
+    @max_sales_default = 0
   end
 
   def edit

@@ -28,6 +28,7 @@ class Showdate < ActiveRecord::Base
   has_many :valid_vouchers, :dependent => :destroy
 
   validates_numericality_of :max_advance_sales, :greater_than_or_equal_to => 0
+  validates_numericality_of :house_capacity, :greater_than_or_equal_to => 0
   validates_associated :show
   validates_presence_of :thedate
   validates_presence_of :end_advance_sales

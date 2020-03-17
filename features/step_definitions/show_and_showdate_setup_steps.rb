@@ -44,11 +44,10 @@ Given /^the following shows exist:$/ do |shows|
   end
 end
 
-When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,cap,list|
+When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,list|
   fill_in "Show Name", :with => name
   select_date_from_dropdowns(eval(opens), :from => "Opens")
   select_date_from_dropdowns(eval(closes), :from => "Closes")
-  fill_in "Actual house capacity", :with => cap
   select_date_from_dropdowns(eval(list), :from => "List starting")
 
 end

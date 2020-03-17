@@ -34,7 +34,7 @@ class ShowAdvanceSalesReport
               show.name,
               show.run_dates,
               sd.thedate,
-              show.house_capacity,
+              sd.house_capacity,
               sd.max_advance_sales,
               vt.name,
               (if vt.subscriber_voucher? then "YES" else "" end),

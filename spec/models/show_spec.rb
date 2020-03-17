@@ -11,31 +11,4 @@ describe Show do
     expect { @s.revenue_per_seat }.not_to raise_error
     expect(@s.revenue_per_seat).to be_zero
   end
-  describe "adjusting showdates post-hoc" do
-    before :each do
-      @s = create(:show, :opening_date => Time.current, :closing_date => 1.day.from_now)
-      @now = Time.current
-      dates_and_tix = [
-        [@now+1.day,  10],
-        [@now,        5],
-        [@now+2.days, 12],
-        [@now+5.days, 0],
-        [@now+3.days, 0]
-      ]
-      dates_and_tix.map do |params|
-        sd = create(:showdate, :show => @s, :date => params[0])
-        create_list(:revenue_voucher, params[1], :showdate => sd)
-      end
-      @s.adjust_metadata_from_showdates
-    end
-    it "should not change house cap" do
-      expect(@s.house_capacity_changed?).not_to be_truthy
-    end
-    it "should set opening date" do
-      expect(@s.opening_date).to eq(@now.to_date)
-    end
-    it "should set closing date" do
-      expect(@s.closing_date).to eq((@now+5.days).to_date)
-    end
-  end
 end
