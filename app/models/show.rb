@@ -16,9 +16,7 @@ class Show < ActiveRecord::Base
   validates_length_of :sold_out_customer_info, :maximum => 255
   validates_length_of :patron_notes,           :maximum => 255
 
-  validates_numericality_of :house_capacity, :greater_than => 0
-
-  attr_accessible :name, :opening_date, :closing_date, :house_capacity, :patron_notes, :landing_page_url
+  attr_accessible :name, :opening_date, :closing_date, :patron_notes, :landing_page_url
   attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
 
   # current_or_next returns the Show object corresponding to either the
@@ -121,7 +119,7 @@ class Show < ActiveRecord::Base
     showdates.inject(0) { |t,s| t+s.max_advance_sales }
   end
 
-  def total_offered_for_sale ; showdates.length * house_capacity ; end
+  def total_offered_for_sale ; showdates.sum(:house_capacity) ; end
 
   def menu_selection_name ; name ; end
 
