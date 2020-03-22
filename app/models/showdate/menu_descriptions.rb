@@ -4,6 +4,10 @@ class Showdate < ActiveRecord::Base
     show.name
   end
 
+  def seating_type_and_capacity
+    has_reserved_seating? ? seatmap.name_with_capacity : "General Admission (#{house_capacity})"
+  end
+
   def printable_name
     show_name + " - " + printable_date_with_description
   end

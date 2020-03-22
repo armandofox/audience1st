@@ -83,7 +83,10 @@ Then /the show "(.*)" should have the following attributes:/ do |name,tbl|
   end
 end
 
-Then /the showdate should have the following attributes:/ do |tbl|
+Then /the ("(.*)" )?showdate should have the following attributes:/ do |thedate,tbl|
+  if (thedate)
+    @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  end
   expect(@showdate).to be_a_kind_of Showdate
   @showdate.reload
   tbl.hashes.each do |attr|

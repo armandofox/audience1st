@@ -10,7 +10,7 @@ module SeatmapsHelper
   end
   def ga_option ; options_for_select([['None (general admission)', '']]) ; end
   def seatmap_options(selected = nil)
-    options_from_collection_for_select(Seatmap.all, :id, :name, selected)
+    options_from_collection_for_select(Seatmap.all, :id, :name_with_capacity, selected)
   end
   def seatmap_choices_for(showdate)
     ga = !showdate.has_reserved_seating?

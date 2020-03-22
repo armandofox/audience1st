@@ -63,7 +63,7 @@ end
 
 When /^I select "(.*) to (.*)" as the "(.*)" date range$/ do |start,endr, selector|
   # relies on the formatting of the target field used as the datepicker; doesn't need JS
-  fill_in selector, :with => date_range_to_json(start,endr)
+  fill_in selector, :with => date_range_to_json(start,endr), :visible => false
 end
 
 Then /^"(.*) to (.*)" should be selected as the "(.*)" date range$/ do |from,to,selector|

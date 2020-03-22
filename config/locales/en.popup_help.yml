@@ -161,13 +161,14 @@ en:
 
     showdate_house_capacity: >
 
-      The true (physical) capacity of the house for this performance, used
-      for reporting purposes and for keeping track of how many seats are 
+      For General Admission shows, specify the true (physical) seating
+      capacity of the house, which must be greater than zero.  For Reserved Seating shows,
+      the capacity is automatically determined from the seat map used.
+      House capacity is used for sales reporting and for keeping track of how many seats are 
       available while checking in customers during Front of House
-      operations.  You MUST enter a number greater than zero
-      here, or all performances will appear to be sold out.
-      To set the maximum allowed advance sales for a performance, which may be lower,
-      click on the Edit link next to the performance date below.
+      operations.  
+      Note that you can always set the maximum allowed advance sales
+      for a performance to be lower than the house capacity.
 
     show_sold_out_dropdown_message: >
 

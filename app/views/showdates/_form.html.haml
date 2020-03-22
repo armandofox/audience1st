@@ -11,9 +11,16 @@
     %label.col-form-label{:for => :showdate_seatmap_id} Seat map
     = popup_help_for :reserved_seating
   .col-3
-    = select_tag 'showdate[seatmap_id]', seatmap_choices_for(@showdate), :class => 'form-control'
+    = select_tag 'showdate[seatmap_id]', seatmap_choices_for(@showdate), :class => 'form-control showdate-seating-choices'
   .col-3
     = link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
+
+.form-row
+  .col-3.text-right
+    %label.col-form-label{:for => :showdate_house_capacity} House capacity
+    = popup_help_for :showdate_house_capacity
+  .col-2
+    = text_field 'showdate', 'house_capacity', :class => 'form-control showdate-house-capacity'
 
 .form-row
   .col-3.text-right
@@ -33,7 +40,7 @@
   .col-3.text-right
     %label.col-form-label{:for => :showdate_max_advance_sales} Max advance sales
     = popup_help_for(:max_advance_sales)
-  .col-6
+  .col-2
     = text_field 'showdate', 'max_advance_sales', :class => 'form-control'
 
 = link_to  "Don't Save Changes", edit_show_path(@showdate.show), :class => 'btn btn-secondary'

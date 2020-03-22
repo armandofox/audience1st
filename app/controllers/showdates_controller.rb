@@ -69,6 +69,7 @@ class ShowdatesController < ApplicationController
     max_advance_sales = params[:max_advance_sales].to_i
     description = params[:description].to_s
     seatmap_id = if params[:seatmap_id].to_i.zero? then nil else params[:seatmap_id].to_i end
+    house_capacity = if seatmap_id then 0 else params[:house_capacity].to_i end
 
     existing_dates, new_dates = dates.partition { |date| Showdate.find_by(:thedate => date) }
     unless existing_dates.empty?
@@ -84,6 +85,7 @@ class ShowdatesController < ApplicationController
         :max_advance_sales => max_advance_sales,
         :end_advance_sales => date - sales_cutoff.minutes,
         :seatmap_id => seatmap_id,
+        :house_capacity => house_capacity,
         :description => description)
       unless s.valid?
         flash[:alert] = I18n.translate('season_setup.error_adding_showdates',
