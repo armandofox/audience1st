@@ -17,7 +17,6 @@ Background: reserved seating performance
 Scenario: with reserved seating, check in one seat at a time
 
   Given I am on the checkin page for March 2, 2010, 8:00pm
-  Then show me the page
   Then I should see a row "|Schmidt|Harvey|General||A1 B1 A2" within "table[@id='checkin']"
   Then I should see a row "|Jones|Tom|General||B2" within "table[@id='checkin']"
 
