@@ -25,6 +25,8 @@ class Mailer < ActionMailer::Base
 
   def confirm_order(purchaser,order)
     @order = order
+    # show-specific notes
+    @notes = @order.collect_notes.join("\n\n")
     mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
   end
 

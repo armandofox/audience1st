@@ -83,6 +83,29 @@ describe Order do
     end
   end
 
+  describe 'showdate notes', focus:true do
+    before :each do
+      @s1 = create(:show, :patron_notes => 'Enjoy')
+      @s2 = create(:show)
+      @v1 = create(:valid_voucher, :showdate => create(:showdate, :show => @s1))
+      @v2 = create(:valid_voucher, :showdate => create(:showdate, :show => @s2))
+      @o = Order.create!(:processed_by => create(:boxoffice))
+    end
+    it 'includes de-duplicated patron notes' do
+      @o.add_tickets_without_capacity_checks(@v1, 2)
+      @o.add_tickets_without_capacity_checks(@v2, 2)
+      expect(@o.collect_notes).to eq(['Enjoy'])
+    end
+    it "doesn't include blank notes" do
+      @o.add_tickets_without_capacity_checks(@v2,2)
+      expect(@o.collect_notes).to eq([])
+    end
+    it "doesn't barf on donation-only orders" do
+      @o.add_donation(Donation.new(:amount => 5))
+      expect(@o.collect_notes).to eq([])
+    end
+  end
+
   describe 'gift' do
     before :each do ; @c = create(:customer) ; @p = create(:customer) ; end
     context 'sent to purchaser' do

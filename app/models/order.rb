@@ -271,6 +271,11 @@ class Order < ActiveRecord::Base
     summary.join('; ')
   end
 
+  def collect_notes
+    # collect the showdate-specific (= show-specific) notes in the order
+    items.map(&:showdate).compact.uniq.map(&:patron_notes).compact
+  end
+
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def comment_prompt
