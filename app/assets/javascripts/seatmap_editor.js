@@ -14,7 +14,7 @@ A1.showSeatmapForPreviewOnly = function(evt) {
 
 A1.setupSeatmapEditor = function() {
   // bindings only for Seatmap Editor
-  if ($('body#seatmaps_index').length) {
+  if ($('body#seatmaps_index').length > 0) {
     $('.preview').click(A1.seatmap.showSeatmapForPreviewOnly);
   }
 }
