@@ -1,11 +1,11 @@
+
 A1.adjustHouseCap = function() {
-  var menu = $(this);
-  var seatmapId = menu.val();
-  if (seatmapId == '')    {  // general admission
-    $('.showdate-house-capacity').val('').removeClass('.a1-passive-text-input').prop('readonly',false);
+  var chosenSeatmap = $(this);
+  if (chosenSeatmap.val() == '')    {  // general admission
+    $('.showdate-house-capacity').removeClass('.a1-passive-text-input').prop('readonly',false);
   } else {
-    var seatmapCap = menu.text().match( /\(([0-9]+)\)$/ )[1];
-    $('.showdate-house-capacity').val(seatmapCap).addClass('.a1-passive-text-input').prop('readonly',true);
+    var capacity = chosenSeatmap.find('option:selected').text().match( /\(([0-9]+)\)$/ )[1];
+    $('.showdate-house-capacity').val(capacity).addClass('.a1-passive-text-input').prop('readonly',true);
   }
 };
 
