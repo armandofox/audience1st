@@ -17,34 +17,36 @@ navbar).
 
 ![ticket availability widget](../assets/ticket-widget.png)
 
-### Installation
+## Installation
 
-1. Download the [latest zip
-file](https://github.com/armandofox/audience1st-ticket-availability/raw/master/audience1st-ticket-availability.zip)
-of the plugin.
+Log in to your WordPress installation as an administrator, and in the
+left-hand nav bar select Plugins, then Add New Plugin.
 
-2. Log in to your WordPress administration interface and from the left
-hand navbar, select Plugins > Add New.
+Search for "Audience1st Ticket Availability" and it should be found in
+the public WordPress plugins directory.
 
-3. Select "Upload Plugin" as the method of adding a plugin.
-
-4. Navigate to the zip file you downloaded, and click Install Now.
-
-5. Once installation is complete, click Activate Plugin.
-
-### Configuration
+Click "Install" to install, then "Activate Plugin" to activate it.
 
 Once the plugin is installed, in the WordPress navbar select
 Settings > Audience1st Ticket Availability.
 
-1. Fill in the "base URL" of your theater's Audience1st installation, as
+Fill in the "base URL" of your theater's Audience1st installation, as
 in `http://my-theater.audience1st.com`.
 
-2. Fill in the maximum number of upcoming performances for which the
+Fill in the maximum number of upcoming performances for which the
 plugin should display availability information.
 
-3. (TBD) how to edit or override CSS styles for the thermometer
+## To change the thresholds for Excellent, Good, and Limited
 
 4. In Audience1st, go to the Options screen and you can set the
 thresholds for "Excellent", "Good", and "Limited" availability.
+
+## To change the styling of the thermometer (advanced users)
+
+In the WordPress navbar, select Plugins > Plugin Editor and choose
+this plugin.  You should now be able to see the contents of the file
+`style.css` in the plugin's directory.  This gives you the classes of
+all the HTML elements used in the plugin; you can override these in
+your top-level CSS file.
+
 
