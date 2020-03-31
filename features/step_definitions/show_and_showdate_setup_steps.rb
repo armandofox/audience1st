@@ -44,11 +44,10 @@ Given /^the following shows exist:$/ do |shows|
   end
 end
 
-When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" with capacity "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,cap,list|
+When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,list|
   fill_in "Show Name", :with => name
   select_date_from_dropdowns(eval(opens), :from => "Opens")
   select_date_from_dropdowns(eval(closes), :from => "Closes")
-  fill_in "Actual house capacity", :with => cap
   select_date_from_dropdowns(eval(list), :from => "List starting")
 
 end
@@ -84,7 +83,10 @@ Then /the show "(.*)" should have the following attributes:/ do |name,tbl|
   end
 end
 
-Then /the showdate should have the following attributes:/ do |tbl|
+Then /the ("(.*)" )?showdate should have the following attributes:/ do |thedate,tbl|
+  if (thedate)
+    @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  end
   expect(@showdate).to be_a_kind_of Showdate
   @showdate.reload
   tbl.hashes.each do |attr|

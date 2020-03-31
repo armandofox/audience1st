@@ -4,7 +4,6 @@ Rails.application.routes.draw do
 
     root :to => 'customers#show'
 
-    resources :bulk_downloads
     resources :account_codes, :except => :show
     resources :ticket_sales_imports, :except => [:new,:show]
     resources :labels, :only => [:index, :create, :update, :destroy]

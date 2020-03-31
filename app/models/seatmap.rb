@@ -43,6 +43,20 @@ class Seatmap < ActiveRecord::Base
     end
   end
 
+  # Return JSON hash of ids to seat counts
+  def self.capacities_as_json
+    Hash[Seatmap.all.map { |s| [s.id.to_s, s.seat_count.to_s] }].to_json
+  end
+
+  # How many seats?  (includes accessible)
+  def seat_count
+    @seat_count ||= seat_list.split(/\s*,\s*/).size
+  end
+
+  def name_with_capacity
+    "#{name} (#{seat_count})"
+  end
+  
   # Given a collection of vouchers, some of which may have seat numbers, return the subset
   # that COULD NOT be accommodated by this seatmap.  Used to determine if it's possible to
   # change a seatmap for a performance after sales have begun.

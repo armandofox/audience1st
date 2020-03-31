@@ -13,10 +13,6 @@
       = f.select 'event_type', Show::TYPES, {}, {:class => 'form-control'}
 
   .form-row
-    .col-md-2.form-group
-      = popup_help_for :show_house_capacity
-      %label.col-form-label{:for=>:show_house_capacity} House capacity
-      = f.text_field 'house_capacity', :class => 'form-control'
     .col-md-7.form-group
       = popup_help_for :show_landing_page_url
       %label.col-form-label{:for=>:show_landing_page_url} Landing page URL (optional)

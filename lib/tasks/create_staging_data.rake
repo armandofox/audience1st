@@ -102,13 +102,13 @@ staging = namespace :staging do
         dates
       show = Show.create!(
         :name => show,
-        :house_capacity => 50,
         :opening_date => showdates.first,
         :closing_date => showdates.last,
         :listing_date => Time.current)
       showdates.each do |date|
         showdate = show.showdates.create!(
-          :max_advance_sales => show.house_capacity,
+          :house_capacity => 50,
+          :max_advance_sales => 50,
           :thedate => date,
           :end_advance_sales => date - 3.hours)
       end

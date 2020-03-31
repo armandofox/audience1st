@@ -5,7 +5,7 @@ class Showdate < ActiveRecord::Base
   belongs_to :show
   belongs_to :seatmap
   
-  delegate :house_capacity, :patron_notes, :name, :event_type, :to => :show
+  delegate :patron_notes, :name, :event_type, :to => :show
 
   has_many :vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes) }
   has_many :finalized_vouchers, -> { joins(:vouchertype).merge(Vouchertype.seat_vouchertypes).merge(Voucher.finalized) }, :class_name => 'Voucher'
@@ -27,16 +27,17 @@ class Showdate < ActiveRecord::Base
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
-  validates_numericality_of :max_advance_sales, :greater_than_or_equal_to => 0
+  validates :max_advance_sales, numericality: { greater_than_or_equal_to: 0, only_integer: true }
+  validates :house_capacity, unless: -> { has_reserved_seating? }, numericality: { greater_than: 0, only_integer: true }
   validates_associated :show
-  validates_presence_of :thedate
-  validates_presence_of :end_advance_sales
-  validates_length_of :description, :maximum => 32, :allow_nil => true
+  validates :thedate, presence: true
+  validates :end_advance_sales, presence: true
+  validates :description, length: {maximum: 32}, :allow_nil => true
   
   validate :cannot_change_seating_type_if_existing_reservations, :on => :update
   validate :seatmap_can_accommodate_existing_reservations, :on => :update
 
-  attr_accessible :thedate, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
+  attr_accessible :thedate, :house_capacity, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
 
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
@@ -145,6 +146,12 @@ class Showdate < ActiveRecord::Base
     return [] unless seatmap
     # basically, collect seat info from all vouchers for this showdate
     vouchers.map(&:seat).compact.map(&:to_s).sort
+  end
+
+  # For general admission shows, use the specified house cap; for reserved seating,
+  #  it shoudl be derived from the seatmap
+  def house_capacity
+    has_reserved_seating? ? seatmap.seat_count : attributes['house_capacity']
   end
 
   def cannot_change_seating_type_if_existing_reservations

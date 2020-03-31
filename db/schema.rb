@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200212232420) do
+ActiveRecord::Schema.define(version: 20200317010234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -237,6 +237,7 @@ ActiveRecord::Schema.define(version: 20200212232420) do
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
     t.integer  "seatmap_id"
+    t.integer  "house_capacity",                default: 0, null: false
   end
 
   add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree
@@ -246,7 +247,6 @@ ActiveRecord::Schema.define(version: 20200212232420) do
     t.string   "name",                      limit: 255
     t.date     "opening_date"
     t.date     "closing_date"
-    t.integer  "house_capacity",            limit: 2,   default: 0,              null: false
     t.text     "patron_notes"
     t.string   "landing_page_url",          limit: 255
     t.date     "listing_date",                                                   null: false

@@ -8,7 +8,7 @@
     = showdate.max_advance_sales
     - p = showdate.percent_max_advance_sales
     %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
-  .col-2= if showdate.has_reserved_seating? then showdate.seatmap.name else 'General Admission' end
+  .col-2=  showdate.seating_type_and_capacity
   .col-2
     - if showdate.total_sales.size.zero?
       = form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|

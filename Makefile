@@ -1,7 +1,5 @@
 FILES = $(shell find app public lib features spec config db '(' -name '*.rb' -or -name '*.rhtml'  -or -name '*.haml' -or -name '*.html.erb' -or -name '*.haml.erb' -or -name '*.html.haml' -or -name '*.js' -or -name '*.rake' -or -name '*.yml' -or -name '*.feature' ')' -a '!' -name '*.min.js' -a '!' -name rails.js)
 
-PLUGINS = $(shell find vendor/plugins -name '*.rb' -print -or -name '*.yml')
-
 all:
 	@echo Must force explicit target: dev, TAGS, doc
 
@@ -12,12 +10,6 @@ dev: TAGS
 	touch log/development.log
 	-rake db:migrate
 	-ln -s ~/Documents/fox/projects/stylesheets/sandbox public/stylesheets/venue
-
-#TAGS: $(FILES) $(PLUGINS)
-#	etags $(FILES) $(PLUGINS)
-
-tt:
-	echo $(FILES)
 
 TAGS: $(FILES)
 	@etags $(FILES) >/dev/null

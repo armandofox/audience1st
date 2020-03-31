@@ -27,6 +27,31 @@ describe Showdate do
       expect(@s).to be_valid
     end
   end
+  describe "house capacity" do
+    before(:each) do
+      @s = build(:showdate)
+    end
+    describe "for General Admission" do
+      it "must be specified" do
+        @s.update_attributes!(:house_capacity => 73)
+        expect(@s.house_capacity).to eq(73)
+      end
+    end
+    describe "for Reserved Seating" do
+      before(:each) do
+        @s.seatmap = create(:seatmap) # default for testing has 4 seats
+      end
+      it "is valid even if numerical field is zero" do
+        @s.house_capacity = 0
+        expect(@s).to be_valid
+      end
+      it "overrides static value" do
+        @s.update_attributes!(:house_capacity => 100)
+        expect(@s.house_capacity).to eq(4)
+      end
+    end
+  end
+    
   describe "availability grade" do
     before(:each) do
       @sd = create(:showdate)
