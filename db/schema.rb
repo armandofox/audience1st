@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200317010234) do
+ActiveRecord::Schema.define(version: 20200404215746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "account_codes", force: :cascade do |t|
-    t.string "name",            limit: 40,  default: "", null: false
+    t.string "name",            limit: 255, default: "", null: false
     t.string "code",            limit: 255
     t.string "description",     limit: 255
     t.string "donation_prompt", limit: 255

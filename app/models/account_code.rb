@@ -5,12 +5,12 @@ class AccountCode < ActiveRecord::Base
   has_many :donations
   has_many :vouchertypes
 
-  validates_length_of :name, :maximum => 30, :allow_nil => true
+  validates_length_of :name, :maximum => 255, :allow_nil => true
   validates_uniqueness_of :name, :allow_nil => true
   validates_uniqueness_of :code
   validate :name_or_code_given
 
-  validates_length_of :donation_prompt, :maximum => 80, :allow_nil => true
+  validates_length_of :donation_prompt, :maximum => 255, :allow_nil => true
 
   def name_or_code_given
     !name.blank? || !code.blank?
