@@ -374,12 +374,15 @@ class StoreController < ApplicationController
   def setup_ticket_menus_for_admin
     @valid_vouchers =
       @sd.valid_vouchers.includes(:vouchertype).to_a.
-      delete_if(&:comp?).
       delete_if(&:subscriber_voucher?).
       map do |v|
       v.customer = @customer
       v.adjust_for_customer
     end.sort_by(&:display_order)
+    # remove any comps, EXCEPT those that are "self service with promo code"
+    @valid_vouchers = @valid_vouchers.reject do |vv|
+      vv.comp? && vv.promo_code.blank?
+    end
     @all_shows = Show.
       all_for_seasons(Time.this_season - 1, Time.this_season + 1).
       of_type(@what)  ||  []

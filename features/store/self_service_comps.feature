@@ -23,6 +23,12 @@ Scenario: successfully purchase comps as guest
   When I press "Complete Comp Order"
   Then customer "Joe Tally" should have 2 "PromoComp" tickets for "Hamlet" on Oct 1, 2010, 8pm
 
+Scenario: admin can see promo code comps
+
+  Given I am logged in as boxoffice manager
+  When I visit the store page
+  Then I should see "PromoComp - $0.00"
+
 @stubs_successful_credit_card_payment
 Scenario: purchase both comps and regular tickets
   
