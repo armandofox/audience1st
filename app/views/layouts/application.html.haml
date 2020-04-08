@@ -38,7 +38,7 @@
           %a{:id => 'top_level_banner_link', :href => url}
             #header= sanitize_option_text(:top_level_banner_text, 'p', :id => 'top_level_banner_text')
         #page_body
-          #themed-nav.themed
+          #themed-nav.themed.clearfix
             - if existing_customer(@customer) && (@customer.has_ever_logged_in? || @gAdminDisplay)
               = render :partial => 'navbars/main_tabs'
             - if @gAdminDisplay
