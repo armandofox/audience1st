@@ -70,7 +70,8 @@ class RevenueByPaymentMethodReport
         'Description',
         'Customer',
         'Promo Code',
-        'Amount'
+        'Amount',
+        'Stripe ID'
       ]
       self.payment_types.each_pair do |payment_type, account_code_groups|
         account_code_groups.each do |account_code,items|
@@ -86,8 +87,10 @@ class RevenueByPaymentMethodReport
               item.description_for_report,
               item.customer.full_name,
               item.promo_code,
-              sprintf("%.02f", item.amount)
+              sprintf("%.02f", item.amount),
+              item.order.authorization
             ]
+            # dashboard.stripe.com/test/payments/{payment_id}
           end
         end
       end
