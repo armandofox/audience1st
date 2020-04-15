@@ -51,7 +51,22 @@ describe Showdate do
       end
     end
   end
-    
+  describe "it can have only one stream-anytime performance" do
+    before(:each) do
+      @d1 = create(:stream_anytime_showdate)
+      @next = @d1.thedate + 1.day
+    end
+    specify 'normally' do
+      d2 = build(:stream_anytime_showdate, :show => @d1.show, :thedate => @next)
+      expect(d2).not_to be_valid
+      expect(d2.errors[:base]).not_to be_blank
+    end
+    specify 'but live streams are OK' do
+      d2 = build(:live_stream_showdate, :show => @d1.show, :thedate => @next)
+      expect(d2).to be_valid
+    end
+  end
+  
   describe "availability grade" do
     before(:each) do
       @sd = create(:showdate)

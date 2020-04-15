@@ -16,7 +16,7 @@ class ShowdatesController < ApplicationController
     start_date,end_date = Time.range_from_params(params[:show_run_dates])
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
-    new_showdates = showdates_from_date_list(all_dates, params)
+    new_showdates = Showdate.from_date_list(all_dates, params)
     return redirect_to(new_show_showdate_path(@show)) unless flash[:alert].blank?
     new_showdates.each do |showdate|
       unless showdate.save
@@ -62,36 +62,4 @@ class ShowdatesController < ApplicationController
     end
   end
 
-  private
-
-  def showdates_from_date_list(dates, params)
-    sales_cutoff = params[:advance_sales_cutoff].to_i
-    max_advance_sales = params[:max_advance_sales].to_i
-    description = params[:description].to_s
-    seatmap_id = if params[:seatmap_id].to_i.zero? then nil else params[:seatmap_id].to_i end
-    house_capacity = if seatmap_id then 0 else params[:house_capacity].to_i end
-
-    existing_dates, new_dates = dates.partition { |date| Showdate.find_by(:thedate => date) }
-    unless existing_dates.empty?
-      flash[:notice] = I18n.translate('season_setup.showdates_already_exist', :dates =>
-        existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', '))
-    end
-    if new_dates.empty?
-      flash[:alert] = I18n.translate('season_setup.no_showdates_added')
-      return []
-    end
-    new_dates.map do |date|
-      s = @show.showdates.build(:thedate => date,
-        :max_advance_sales => max_advance_sales,
-        :end_advance_sales => date - sales_cutoff.minutes,
-        :seatmap_id => seatmap_id,
-        :house_capacity => house_capacity,
-        :description => description)
-      unless s.valid?
-        flash[:alert] = I18n.translate('season_setup.error_adding_showdates',
-          :date => date.to_formatted_s(:showtime), :errors => s.errors.as_html)
-      end
-      s
-    end
-  end
 end

@@ -35,10 +35,6 @@ Scenario: set up multiple valid showdates
   | 2011-12-30 7:00pm |        50 | 2011-12-30 6:00pm |
   | 2012-01-01 7:00pm |        50 | 2012-01-01 6:00pm |
   And the "2012-01-01 7:00pm" performance should be General Admission
-  And the "2012-01-01 7:00pm" performance should have the following attributes:
-  | House capacity     | 20 |
-  | Max advance sales  | 50 |
-  | Advance sales stop | 60 |
 
 Scenario: set up new showdate with reserved seating
 

@@ -15,6 +15,10 @@ en:
       other: "%{count} showdates were successfully added."
 
     errors:
+      already_has_stream_anytime: >
+        This show already has a "stream anytime" performance.  Please add or modify 
+        its redemptions rather than creating another "stream anytime" performance.
+        
       cannot_change_seatmap: >
         Seat map cannot be changed because the following patrons have reserved seats
         that don't exist in the new seat map.  (Suggestion: Shift-click on each patron name to

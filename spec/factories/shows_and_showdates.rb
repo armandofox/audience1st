@@ -14,9 +14,16 @@ FactoryBot.define do
     factory :reserved_seating_showdate do
       seatmap { create(:seatmap) }
     end
+
+    factory :live_stream_showdate do
+      live_stream true
+      house_capacity ValidVoucher::INFINITE
+    end
+    factory :stream_anytime_showdate do
+      stream_anytime true
+      house_capacity ValidVoucher::INFINITE
+    end
   end
-
-
 
   factory :show do
     transient do
