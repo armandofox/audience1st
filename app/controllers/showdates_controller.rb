@@ -13,24 +13,30 @@ class ShowdatesController < ApplicationController
   public
   
   def create
+    warnings = []
     start_date,end_date = Time.range_from_params(params[:show_run_dates])
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
-    new_showdates = Showdate.from_date_list(all_dates, params)
-    return redirect_to(new_show_showdate_path(@show)) unless flash[:alert].blank?
-    new_showdates.each do |showdate|
-      unless showdate.save
-        flash[:alert] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: #{showdate.errors.as_html}"
-        redirect_to new_show_showdate_path(@show)
-        return
+
+    existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }
+    unless existing_dates.empty?
+      warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
+    end
+    new_showdates = Showdate.from_date_list(new_dates, params)
+    Showdate.transaction do
+      begin
+        new_showdates.each { |showdate|  showdate.save! }
+      rescue ActiveRecord::RecordInvalid => e
+        sd = e.record
+        return redirect_to(new_show_showdate_path(@show),
+          :alert => I18n.translate('showdates.errors.invalid', :date => sd.thedate.to_formatted_s(:showtime), :errors => sd.errors.as_html))
       end
     end
-    flash[:notice] = t('showdates.added', :count => new_showdates.size)
-    if params[:commit] =~ /back to list/i
-      redirect_to shows_path(:season => @show.season)
-    else
-      redirect_to new_show_showdate_path(@show)
-    end
+    warnings.unshift(t('showdates.added', :count => new_showdates.size))
+
+    redirect_to((params[:commit] =~ /back/i ? shows_path(:season => @show.season) : new_show_showdate_path(@show)),
+      :notice => warnings.join('<br/>'.html_safe))
+
   end
     
   def destroy

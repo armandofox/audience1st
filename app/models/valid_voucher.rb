@@ -103,7 +103,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def adjust_for_visibility
     if !match_promo_code(supplied_promo_code)
-      self.explanation = "Promo code #{promo_code.upcase} required"
+      self.explanation = "Promo code #{promo_code.to_s.upcase} required"
       self.visible = false
     elsif !visible_to?(customer)
       self.explanation = "Ticket sales of this type restricted to #{offer_public_as_string}"

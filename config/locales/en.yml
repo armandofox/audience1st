@@ -10,11 +10,17 @@ en:
 
   showdates:
     added:
-      zero: No showdates were added.
-      one: One showdate was successfully added.
-      other: "%{count} showdates were successfully added."
+      zero: No new performances were added.
+      one: One performance was successfully added.
+      other: "%{count} performances were successfully added."
+
+    already_exist: >
+      The following performances were not created because they already exist: %{dates}
 
     errors:
+      invalid: >
+        No performances were added, because the %{date} performance had errors: %{errors}
+
       already_has_stream_anytime: >
         This show already has a "stream anytime" performance.  Please add or modify 
         its redemptions rather than creating another "stream anytime" performance.
@@ -145,15 +151,6 @@ en:
     no_valid_vouchers_added: >
       NO changes were made, because some voucher type(s) could not be added to some show 
       date(s)--try adding them one at a time to isolate specific errors.  %{error_message}
-
-    showdates_already_exist: >
-      The following performances were not created because they already exist: %{dates}
-
-    no_showdates_added: >
-      No new performances were added.
-
-    error_adding_showdates: >
-      No performances were added, because the %{date} performance had errors: %{errors}
 
     no_comps_defined: >
       You must define some comp voucher types first.
