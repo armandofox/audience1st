@@ -28,7 +28,7 @@ class Showdate < ActiveRecord::Base
   has_many :valid_vouchers, :dependent => :destroy
 
   validates :max_advance_sales, numericality: { greater_than_or_equal_to: 0, only_integer: true }
-  validates :house_capacity, unless: -> { has_reserved_seating? }, numericality: { greater_than: 0, only_integer: true }
+  validates :house_capacity, :unless => :has_reserved_seating?, :numericality => { :greater_than => 0, :only_integer => true }
   validates_associated :show
   validates :thedate, presence: true
   validates :end_advance_sales, presence: true
@@ -67,14 +67,6 @@ class Showdate < ActiveRecord::Base
   public
 
   Showdate::Sales = Struct.new(:vouchers, :revenue_per_seat, :total_offered_for_sale)
-
-  # create new showdate (for use by imports/daemons)
-
-  def self.placeholder(thedate)
-    Showdate.new(:thedate => thedate,
-      :end_advance_sales => thedate,
-      :max_advance_sales => 0)
-  end
 
   def self.with_reserved_seating_json(shows = Show.all)
     (shows.nil? || shows.empty?) ? Showdate.none:
@@ -126,6 +118,12 @@ class Showdate < ActiveRecord::Base
   
   def <=>(other_showdate)
     other_showdate ? thedate <=> other_showdate.thedate : 1
+  end
+
+  # pseudo-accessors
+
+  def stream?
+    live_stream? || stream_anytime?
   end
 
   def season

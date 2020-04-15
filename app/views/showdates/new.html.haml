@@ -8,7 +8,15 @@
   separately instead of all at once.
 
 = form_tag show_showdates_path(@show) do
-  .form-row  
+  .form-row
+    .col-3.text-right
+      %label.col-form-label{:for => :showdate_type} Performance type
+      = popup_help_for :showdate_type
+    .col-3
+      = select_tag 'showdate_type', options_for_select([['In-theater','Tt'], ['Live stream','Tl'], ['Stream anytime','Ts']]), :class => 'form-control showdate-type'
+      = hidden_field_tag 'showdate[live_stream]', nil
+      = hidden_field_tag 'showdate[stream_anytime]', nil
+  .form-row.py-1
     .col-3.text-right
       %label.col-form-label{:for => :description} Description (optional)
       = popup_help_for :showdate_description
@@ -19,48 +27,67 @@
     .col-3.text-right
       %label.col-form-label{:for => :advance_sales_cutoff} Advance sales stop
       = popup_help_for :advance_sales_cutoff
-    .col-1
+
+    .col-1.Tt.Tl
       = number_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control'
-    .col-2
+    .col-3.Tt.Tl
       %label.col-form-label minutes before curtain
+
+    .col-4.Ts.d-none= select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'sales_cutoff', :start_year => Time.current.year, :class => 'form-control'
+
     .col-3.text-right
-      %label.col-form-label{:for => :max_advance_sales} Max advance sales
+      %label.col-form-label{:for => :max_advance_sales}
+        Max
+        %span.Tt advance
+        sales
       = popup_help_for(:max_advance_sales)
     .col-1= number_field_tag 'max_advance_sales', @max_sales_default, :class => 'form-control'
     = hidden_field_tag "show_id", @show.id
+    = hidden_field_tag "saved_max_sales", @max_sales_default
 
-  .form-row.py-1
+  .form-row.py-1.Tt
     .col-3.text-right
       %label.col-form-label{:for => :seatmap_id} Seat map
       = popup_help_for :reserved_seating
     .col-3= select_tag 'seatmap_id', ga_option + seatmap_options, :class => 'form-control showdate-seating-choices'
     .col-2= link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
 
-  .form-row.py-1
+  .form-row.py-1.Tt
     .col-3.text-right
       %label.col-form-label{:for => :house_capacity} House capacity
       = popup_help_for :showdate_house_capacity
     .col-2
       = text_field_tag 'house_capacity', '', :class => 'form-control showdate-house-capacity'
 
-  .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
+  .form-row.py-1.Tl.Ts.d-none
+    .col-3.text-right
+      %label.col-form-label{:for => :access_instructions} Access instructions
+      = popup_help_for :showdate_access_instructions
+    .col-9= text_area_tag 'access_instructions', '', :rows => 8, :class => 'form-control'
 
-  .form-row
-    %label.col-form-label Every
-    - %w(Mon Tue Wed Thu Fri Sat Sun).each_with_index do |day,i|
-      - idx = (i+1) % 7
-      .form-check.form-check-inline
-        %label.form-check-label{:for => "day_#{idx}"}= day
-        = check_box_tag 'day', idx, false, :name => 'day[]', :id => "day_#{idx}", :class => 'form-check-input'
-    %label.col-form-label.px-3{:for => 'time'} At
-    = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :class => 'form-control')
+  .Tt.Tl
+    .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
+    .form-row
+      %label.col-form-label Every
+      - %w(Mon Tue Wed Thu Fri Sat Sun).each_with_index do |day,i|
+        - idx = (i+1) % 7
+        .form-check.form-check-inline
+          %label.form-check-label{:for => "day_#{idx}"}= day
+          = check_box_tag 'day', idx, false, :name => 'day[]', :id => "day_#{idx}", :class => 'form-check-input'
+      %label.col-form-label.px-3{:for => 'time'} At
+      = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :class => 'form-control')
 
-  .form-row
-    %label.col-form-label{:for => 'start'} From
-    = select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date, :class => 'form-control'
+    .form-row.py-2
+      %label.col-form-label{:for => 'start'} From
+      = select_date_with_shortcuts 'show_run_dates', :from => @show.opening_date, :to => @show.closing_date, :class => 'form-control'
 
-  %p.feedback
-    
+  .Ts.d-none
+    .form-row.py-2
+      .col-3.text-right
+        %label.col-form-label{:for => 'stream_until'} Stream available until
+      .col-6
+        = select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'stream_until', :start_year => Time.current.year, :class => 'form-control'
+
   = submit_tag 'Save & Back to List of Shows', :class => 'btn btn-success' 
   = submit_tag 'Save & Add More Dates for This Show', :class => 'btn btn-success'
   = link_to 'Cancel', edit_show_path(@show), :class => 'btn btn-secondary'

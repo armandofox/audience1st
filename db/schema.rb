@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200404215746) do
+ActiveRecord::Schema.define(version: 20200412180412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -231,13 +231,16 @@ ActiveRecord::Schema.define(version: 20200404215746) do
   create_table "showdates", force: :cascade do |t|
     t.datetime "thedate"
     t.datetime "end_advance_sales"
-    t.integer  "max_advance_sales",             default: 0, null: false
-    t.integer  "show_id",                       default: 0, null: false
-    t.string   "description",       limit: 255
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+    t.integer  "max_advance_sales",               default: 0, null: false
+    t.integer  "show_id",                         default: 0, null: false
+    t.string   "description",         limit: 255
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
     t.integer  "seatmap_id"
-    t.integer  "house_capacity",                default: 0, null: false
+    t.integer  "house_capacity",                  default: 0, null: false
+    t.boolean  "live_stream"
+    t.boolean  "stream_anytime"
+    t.text     "access_instructions"
   end
 
   add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree
