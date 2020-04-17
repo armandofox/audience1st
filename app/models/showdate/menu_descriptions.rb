@@ -4,9 +4,15 @@ class Showdate < ActiveRecord::Base
     show.name
   end
 
+  def performance_type
+    if live_stream? then "Live Stream"
+    elsif stream_anytime? then "Stream Anytime"
+    else "In-theater"
+    end
+  end
+
   def seating_type_and_capacity
-    if live_stream?             then "Live Stream"
-    elsif stream_anytime?       then "Stream Anytime"
+    if stream?                  then performance_type
     elsif has_reserved_seating? then seatmap.name_with_capacity
     else                             "General Admission (#{house_capacity})"
     end
