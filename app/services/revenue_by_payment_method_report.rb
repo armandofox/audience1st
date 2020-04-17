@@ -72,12 +72,14 @@ class RevenueByPaymentMethodReport
         'Customer',
         'Promo Code',
         'Amount',
-        'Stripe ID'
+        'Stripe ID',
+        'Stripe Link'
       ]
       self.payment_types.each_pair do |payment_type, account_code_groups|
         account_code_groups.each do |account_code,items|
           items.each do |item|
             begin
+              auth = item.order.authorization
               csv << [
                 payment_type,
                 account_code.code.to_s,
@@ -90,7 +92,9 @@ class RevenueByPaymentMethodReport
                 item.customer.full_name,
                 item.promo_code,
                 sprintf("%.02f", item.amount),
-                item.order.authorization
+                auth,
+                "https://dashboard.stripe.com/payments/#{auth}"
+                # for test mode: "dashboard.stripe.com/test/payments/#{auth}"
               ]
             rescue StandardError => e
               err = I18n.translate('reports.revenue_details.csv_error', :item => item.id, :message => e.message)
@@ -98,7 +102,6 @@ class RevenueByPaymentMethodReport
               Rails.logger.error(err << "\n" << e.backtrace.join("\n   "))
               return nil
             end
-            # dashboard.stripe.com/test/payments/{payment_id}
           end
         end
       end
