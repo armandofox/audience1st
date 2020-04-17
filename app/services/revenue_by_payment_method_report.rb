@@ -95,7 +95,7 @@ class RevenueByPaymentMethodReport
             rescue StandardError => e
               err = I18n.translate('reports.revenue_details.csv_error', :item => item.id, :message => e.message)
               self.errors.add(:base, err)
-              Rails.logger.error err << "\n" << e.backtrace
+              Rails.logger.error("#{err}\n#{e.backtrace}")
               return nil
             end
             # dashboard.stripe.com/test/payments/{payment_id}
