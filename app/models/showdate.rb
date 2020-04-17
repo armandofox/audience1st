@@ -40,7 +40,7 @@ class Showdate < ActiveRecord::Base
   validate :seatmap_can_accommodate_existing_reservations, :on => :update
   validate :at_most_one_stream_anytime_performance
 
-  attr_accessible :thedate, :house_capacity, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
+  attr_accessible :thedate, :house_capacity, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id, :live_stream, :stream_anytime, :access_instructions
 
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
@@ -111,21 +111,18 @@ class Showdate < ActiveRecord::Base
 
   # builders used by controller
 
-  def self.from_date_list(dates, params)
-    notice = ''
-    sales_cutoff = params[:advance_sales_cutoff].to_i
-    max_advance_sales = params[:max_advance_sales].to_i
-    description = params[:description].to_s
-    seatmap_id = if params[:seatmap_id].to_i.zero? then nil else params[:seatmap_id].to_i end
-    house_capacity = if seatmap_id then 0 else params[:house_capacity].to_i end
+  def self.from_date_list(dates, sales_cutoff, params)
+    params.delete(:seatmap_id) if params[:seatmap_id].to_i.zero?
+    if !params[:live_stream].blank? || !params[:stream_anytime].blank?
+      params[:house_capacity] = ValidVoucher::INFINITE
+    elsif !params[:seatmap_id].blank?
+      params[:house_capacity] = 0
+    end
     show = Show.find(params[:show_id])
     new_showdates = dates.map do |date|
-      show.showdates.build(:thedate => date,
-        :max_advance_sales => max_advance_sales,
-        :end_advance_sales => date - sales_cutoff.minutes,
-        :seatmap_id => seatmap_id,
-        :house_capacity => house_capacity,
-        :description => description)
+      params[:thedate] = date
+      params[:end_advance_sales] = date - sales_cutoff unless !params[:stream_anytime].blank?
+      show.showdates.build(params)
     end
   end
   

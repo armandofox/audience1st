@@ -14,6 +14,7 @@ class ShowdatesController < ApplicationController
   
   def create
     warnings = []
+    cutoff = params[:advance_sales_cutoff].to_i.minutes
     start_date,end_date = Time.range_from_params(params[:show_run_dates])
     all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
@@ -22,7 +23,7 @@ class ShowdatesController < ApplicationController
     unless existing_dates.empty?
       warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
     end
-    new_showdates = Showdate.from_date_list(new_dates, params)
+    new_showdates = Showdate.from_date_list(new_dates, cutoff, params[:showdate])
     Showdate.transaction do
       begin
         new_showdates.each { |showdate|  showdate.save! }
@@ -49,6 +50,7 @@ class ShowdatesController < ApplicationController
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = 0
+    #@showdate = @show.showdates.build(:max_advance_sales => @max_sales_default, :thedate => Time.zone.now)
   end
 
   def edit

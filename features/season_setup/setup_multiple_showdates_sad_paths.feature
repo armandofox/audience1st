@@ -51,6 +51,5 @@ Feature: setup multiple showdates - sad paths
       | House capacity | 20                                      |
     And I press "Save & Back to List of Shows"
     Then I should see "3 performances were successfully added."
-    Then show me the page
     And I should see "The following performances were not created because they already exist: Saturday, Mar 20, 8:00 PM, Saturday, Mar 27, 8:00 PM"
     And "Macbeth" should have 6 showdates

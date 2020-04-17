@@ -14,7 +14,7 @@ end
 
 Given /customer "(\S+) (.*)" has seats? (.*) for the "(.*)" performance/ do |first,last,seat_list,thedate|
   customer = find_or_create_customer first,last
-  dt = Time.parse thedate
+  dt = Time.zone.parse thedate
   sd = Showdate.find_by(:thedate => dt) || create(:showdate, :thedate => dt)
   seats = seat_list.split(/\s*,\s*/)
   ScenarioHelpers::Orders.buy!(customer, create(:vouchertype), seats.length, seats)

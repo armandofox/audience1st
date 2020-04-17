@@ -152,6 +152,6 @@ end
 
 When /I select the following show dates: (.*)/ do |dates|
   dates.split(/\s*,\s*/).each do |date|
-    check(Time.parse(date).to_formatted_s(:showtime_brief))
+    check(Time.zone.parse(date).to_formatted_s(:showtime_brief))
   end
 end

@@ -18,10 +18,10 @@
       = hidden_field_tag 'showdate[stream_anytime]', nil
   .form-row.py-1
     .col-3.text-right
-      %label.col-form-label{:for => :description} Description (optional)
+      %label.col-form-label{:for => :showdate_description} Description (optional)
       = popup_help_for :showdate_description
     .col-9
-      = text_field_tag 'description', '', :class => 'form-control'
+      = text_field 'showdate', 'description', :class => 'form-control'
 
   .form-row.py-1
     .col-3.text-right
@@ -29,41 +29,41 @@
       = popup_help_for :advance_sales_cutoff
 
     .col-1.Tt.Tl
-      = number_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control'
+      = text_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control'
     .col-3.Tt.Tl
       %label.col-form-label minutes before curtain
 
-    .col-4.Ts.d-none= select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'sales_cutoff', :start_year => Time.current.year, :class => 'form-control'
+    .col-4.Ts.d-none= select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'showdate[end_advance_sales]', :start_year => Time.current.year, :class => 'form-control'
 
     .col-3.text-right
-      %label.col-form-label{:for => :max_advance_sales}
+      %label.col-form-label{:for => :showdate_max_advance_sales}
         Max
         %span.Tt advance
         sales
       = popup_help_for(:max_advance_sales)
-    .col-1= number_field_tag 'max_advance_sales', @max_sales_default, :class => 'form-control'
-    = hidden_field_tag "show_id", @show.id
+    .col-1= text_field 'showdate', 'max_advance_sales', :class => 'form-control'
+    = hidden_field_tag "showdate[show_id]", @show.id
     = hidden_field_tag "saved_max_sales", @max_sales_default
 
   .form-row.py-1.Tt
     .col-3.text-right
-      %label.col-form-label{:for => :seatmap_id} Seat map
+      %label.col-form-label{:for => :showdate_seatmap_id} Seat map
       = popup_help_for :reserved_seating
-    .col-3= select_tag 'seatmap_id', ga_option + seatmap_options, :class => 'form-control showdate-seating-choices'
+    .col-3= select_tag 'showdate[seatmap_id]', ga_option + seatmap_options, :class => 'form-control showdate-seating-choices'
     .col-2= link_to 'Add/Edit Seatmaps...', seatmaps_path, :class => 'btn btn-primary'
 
   .form-row.py-1.Tt
     .col-3.text-right
-      %label.col-form-label{:for => :house_capacity} House capacity
+      %label.col-form-label{:for => :showdate_house_capacity} House capacity
       = popup_help_for :showdate_house_capacity
     .col-2
-      = text_field_tag 'house_capacity', '', :class => 'form-control showdate-house-capacity'
+      = text_field 'showdate', 'house_capacity', :class => 'form-control showdate-house-capacity'
 
   .form-row.py-1.Tl.Ts.d-none
     .col-3.text-right
-      %label.col-form-label{:for => :access_instructions} Access instructions
+      %label.col-form-label{:for => :showdate_access_instructions} Access instructions
       = popup_help_for :showdate_access_instructions
-    .col-9= text_area_tag 'access_instructions', '', :rows => 8, :class => 'form-control'
+    .col-9= text_area 'showdate', 'access_instructions', :rows => 8, :class => 'form-control'
 
   .Tt.Tl
     .alert.alert-info Enter recurring dates (you can add more later, or delete exceptions later):
