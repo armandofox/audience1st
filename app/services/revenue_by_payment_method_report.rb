@@ -93,7 +93,7 @@ class RevenueByPaymentMethodReport
                 item.promo_code,
                 sprintf("%.02f", item.amount),
                 auth,
-                "https://dashboard.stripe.com/payments/#{auth}"
+                %q{=HYPERLINK("https://dashboard.stripe.com/payments/#{auth}")}
                 # for test mode: "dashboard.stripe.com/test/payments/#{auth}"
               ]
             rescue StandardError => e
