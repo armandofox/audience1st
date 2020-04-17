@@ -171,3 +171,35 @@ Given /^there are (\d+) "(.*)" tickets and (\d+) total seats available$/ do |per
   @showdate.update_attributes!(:max_advance_sales => seat_limit)
 end
 
+# Types of showdates: GA in theater, RS in theater, live stream, stream anytime
+
+# After making changes - need to reload the AR objects that have been instance variables throughout
+# the scenario
+Then /the "(.*)" performance should use the "(.*)" seatmap/ do |thedate,name|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  steps %Q{Then that performance should use the "#{name}" seatmap}
+end
+
+Then /that performance should use the "(.*)" seatmap/ do |name|
+  expect(@showdate.reload.seatmap.name).to eq(name)
+end
+
+Then /the "(.*)" performance should be General Admission/ do |thedate|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  expect(@showdate.seatmap).to be_blank
+end
+
+Then /that performance should be General Admission/ do
+  expect(@showdate.reload.seatmap).to be_blank
+end
+
+Then /the "(.*)" performance should be (Stream Anytime|Live Stream)/ do |thedate,type|
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  if type =~ /anytime/i
+    expect(@showdate.stream_anytime).to be_truthy
+    expect(@showdate.live_stream).to be_falsy
+  else
+    expect(@showdate.stream_anytime).to be_falsy
+    expect(@showdate.live_stream).to be_truthy
+  end
+end

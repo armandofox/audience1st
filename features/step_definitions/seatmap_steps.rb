@@ -48,26 +48,6 @@ When /I try to change the seatmap for that performance to "(.*)"/ do |seatmap_na
   click_button 'Save Changes'
 end
 
-# After making changes - need to reload the AR objects that have been instance variables throughout
-# the scenario
-Then /the "(.*)" performance should use the "(.*)" seatmap/ do |thedate,name|
-  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
-  steps %Q{Then that performance should use the "#{name}" seatmap}
-end
-
-Then /that performance should use the "(.*)" seatmap/ do |name|
-  expect(@showdate.reload.seatmap.name).to eq(name)
-end
-
-Then /the "(.*)" performance should be General Admission/ do |thedate|
-  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
-  expect(@showdate.seatmap).to be_blank
-end
-
-Then /that performance should be General Admission/ do
-  expect(@showdate.reload.seatmap).to be_blank
-end
-
 Then /that seatmap should have image URL "(.*)" and name "(.*)"/ do |url,name|
   @seatmap.reload
   expect(@seatmap.name).to eq(name)

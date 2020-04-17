@@ -49,3 +49,19 @@ Feature: set up multiple showdates at once
     And I press "Save & Back to List of Shows"
     Then I should see "One performance was successfully added"
     And the "2012-01-01 2:00pm" performance should use the "Default" seatmap
+
+  @javascript
+  Scenario: set up stream-anytime showdate
+
+    When I select "Stream anytime" from "Performance type"
+    And I fill in the "new_showdate" fields as follows:
+      | field                  | value                            |
+      | Stream available until | select time "2012-12-31 11:30pm" |
+      | Max advance sales      | 50000                            |
+      | Advance sales stop     | select time "2012-12-28 10:00pm" |
+      | Access instructions    | It's on YouTube                  |
+    And I press "Save & Back to List of Shows"
+    Then I should see "One performance was successfully added"
+    And the "2012-12-31 11:30pm" performance should be Stream Anytime
+    
+

@@ -112,12 +112,13 @@ class Showdate < ActiveRecord::Base
   # builders used by controller
 
   def self.from_date_list(dates, sales_cutoff, params)
-    params.delete(:seatmap_id) if params[:seatmap_id].to_i.zero?
     if !params[:live_stream].blank? || !params[:stream_anytime].blank?
       params[:house_capacity] = ValidVoucher::INFINITE
+      params.delete(:seatmap_id)
     elsif !params[:seatmap_id].blank?
       params[:house_capacity] = 0
     end
+    params.delete(:seatmap_id) if params[:seatmap_id].to_i.zero?
     show = Show.find(params[:show_id])
     new_showdates = dates.map do |date|
       params[:thedate] = date

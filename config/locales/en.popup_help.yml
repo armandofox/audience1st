@@ -164,15 +164,14 @@ en:
 
     max_advance_sales: >
 
-      The maximum allowed advance sales/reservations for an in-theater performance,
-      which may be less than the performance's house capacity (specified
-      as part of the overall show information).  For streaming performances,
-      the maximum allowed sales; leave blank for unlimited.
+      For in-theater performances, the maximum allowed advance sales/reservations,
+      which may be less than the performance's house capacity.
+      For streaming performances, the maximum allowed sales.
       The ticket availability shown to customers
       when they self-purchase/reserve, or via the RSS feed, is based on
       this number, so a performance whose max sales is 100 will report
       "sold out" when 100 tickets are sold, even if the house
-      capacity is higher than 100 for that performance.
+      capacity is higher.
 
     keep_existing_redemptions_as_is: >
 

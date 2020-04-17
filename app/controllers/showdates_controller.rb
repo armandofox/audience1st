@@ -15,9 +15,14 @@ class ShowdatesController < ApplicationController
   def create
     warnings = []
     cutoff = params[:advance_sales_cutoff].to_i.minutes
-    start_date,end_date = Time.range_from_params(params[:show_run_dates])
-    all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
+    # determine date list from EITHER the date range, or for stream-anytime, single date
+    if params[:showdate][:stream_anytime].blank?
+      start_date,end_date = Time.range_from_params(params[:show_run_dates])
+      all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
+    else
+      all_dates = [ Time.zone.local(*['year','month','day','hour','minute'].map { |i| params[:stream_until][i].to_i }) ]
+    end
 
     existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }
     unless existing_dates.empty?
@@ -27,7 +32,8 @@ class ShowdatesController < ApplicationController
     Showdate.transaction do
       begin
         new_showdates.each { |showdate|  showdate.save! }
-      rescue ActiveRecord::RecordInvalid => e
+        #rescue ActiveRecord::RecordInvalid => e
+      rescue StandardError => e
         sd = e.record
         return redirect_to(new_show_showdate_path(@show),
           :alert => I18n.translate('showdates.errors.invalid', :date => sd.thedate.to_formatted_s(:showtime), :errors => sd.errors.as_html))
@@ -50,7 +56,7 @@ class ShowdatesController < ApplicationController
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = 0
-    #@showdate = @show.showdates.build(:max_advance_sales => @max_sales_default, :thedate => Time.zone.now)
+    @showdate = @show.showdates.build(:max_advance_sales => @max_sales_default, :thedate => Time.zone.now, :end_advance_sales => @show.closing_date.to_time.change(:hour => 23, :min => 59))
   end
 
   def edit
