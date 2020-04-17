@@ -157,7 +157,9 @@ class ReportsController < ApplicationController
     end
     return redirect_to(reports_path, :alert => @report.errors.as_html) unless @report.run
     if params[:commit] =~ /download/i # fall thru to screen display
-      download_to_excel(@report.csv, 'revenue_details')
+      return ((csv = @report.csv) ?
+        download_to_excel(@report.csv, 'revenue_details') :
+        redirect_to(reports_path, :alert => @report.errors.as_html))
     end
   end
 

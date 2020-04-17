@@ -76,20 +76,27 @@ class RevenueByPaymentMethodReport
       self.payment_types.each_pair do |payment_type, account_code_groups|
         account_code_groups.each do |account_code,items|
           items.each do |item|
-            csv << [
-              payment_type,
-              account_code.code.to_s,
-              account_code.name,
-              item.order.sold_on.strftime('%Y-%m-%d %H:%M'),
-              item.order_id,
-              (item.showdate_id ? item.show.name : ''),
-              (item.showdate_id ? item.showdate.thedate : ''),
-              item.description_for_report,
-              item.customer.full_name,
-              item.promo_code,
-              sprintf("%.02f", item.amount),
-              item.order.authorization
-            ]
+            begin
+              csv << [
+                payment_type,
+                account_code.code.to_s,
+                account_code.name,
+                item.order.sold_on.strftime('%Y-%m-%d %H:%M'),
+                item.order_id,
+                (item.showdate_id ? item.show.name : ''),
+                (item.showdate_id ? item.showdate.thedate : ''),
+                item.description_for_report,
+                item.customer.full_name,
+                item.promo_code,
+                sprintf("%.02f", item.amount),
+                item.order.authorization
+              ]
+            rescue StandardError => e
+              err = I18n.translate('reports.revenue_details.csv_error', :item => item.id, :message => e.message)
+              self.errors.add(:base, err)
+              Rails.logger.error err << "\n" << e.backtrace
+              return nil
+            end
             # dashboard.stripe.com/test/payments/{payment_id}
           end
         end

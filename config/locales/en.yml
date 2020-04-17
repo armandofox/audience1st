@@ -1,4 +1,9 @@
 en:
+  reports:
+    revenue_details:
+      csv_error: >
+        Unexpected error RRE1 for item %{item}: %{message}
+
   seatmaps:
     confirm_delete: >
       Delete '%{name}' seatmap: are you sure?
