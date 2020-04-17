@@ -1,13 +1,19 @@
 .row.text-white.bg-warning[showdate, :details_row]
   .col-3
     %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
-    = link_to showdate.printable_date, edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'
+    - pfx = if showdate.stream_anytime? then 'Until ' else '' end
+    = link_to "#{pfx}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'
     = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
-  .col-3= time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
+  .col-3
+    - if showdate.stream_anytime? 
+      = showdate.end_advance_sales.to_formatted_s(:showtime)
+    - else 
+      = time_in_words_relative_to(showdate.end_advance_sales,showdate.thedate)
   .col-2
     = showdate.max_advance_sales
-    - p = showdate.percent_max_advance_sales
-    %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
+    - unless showdate.stream?
+      - p = showdate.percent_max_advance_sales
+      %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
   .col-2=  showdate.seating_type_and_capacity
   .col-2
     - if showdate.total_sales.size.zero?

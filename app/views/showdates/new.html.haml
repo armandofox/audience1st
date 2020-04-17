@@ -36,7 +36,7 @@
     .col-3.text-right
       %label.col-form-label{:for => :showdate_end_advance_sales} Advance sales stop
       = popup_help_for :advance_sales_cutoff
-    .col-4= datetime_select 'showdate', 'end_advance_sales', {:time_separator => ':', :start_year => Time.current.year}, {:class => 'form-control'}
+    .col-4= datetime_select 'showdate', 'end_advance_sales', {:time_separator => ':', :start_year => Time.current.year}
 
     .col-3.text-right
       %label.col-form-label{:for => :showdate_max_advance_sales}
@@ -88,8 +88,9 @@
     .form-row.py-2
       .col-3.text-right
         %label.col-form-label{:for => 'stream_until'} Stream available until
+        = popup_help_for :stream_available_until
       .col-6
-        = select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'stream_until', :start_year => Time.current.year, :class => 'form-control'
+        = select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'stream_until', :start_year => Time.current.year
 
   = submit_tag 'Save & Back to List of Shows', :class => 'btn btn-success' 
   = submit_tag 'Save & Add More Dates for This Show', :class => 'btn btn-success'

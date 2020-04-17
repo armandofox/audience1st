@@ -200,6 +200,12 @@ en:
       Note that you can always set the maximum allowed advance sales
       for a performance to be lower than the house capacity.
 
+    stream_available_until: >
+
+      The latest date and time the patron will be able to stream the show.  
+      Note that it is your responsibility to enforce this (if you wish)--the information
+      is provided only as advice to the patron and will appear in confirmation emails.
+
     showdate_access_instructions: >
 
       For online (live stream or stream-anytime) performances, provide instructions
