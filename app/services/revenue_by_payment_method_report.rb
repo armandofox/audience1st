@@ -1,6 +1,7 @@
 class RevenueByPaymentMethodReport
 
   attr_reader :from, :to, :show_id, :title, :payment_types, :totals
+  attr_accessor :errors
   
   def initialize
     @errors = ActiveModel::Errors.new(self)
