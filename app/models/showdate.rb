@@ -112,7 +112,8 @@ class Showdate < ActiveRecord::Base
   # builders used by controller
 
   def self.from_date_list(dates, sales_cutoff, params)
-    if !params[:live_stream].blank? || !params[:stream_anytime].blank?
+    stream_anytime = !params[:stream_anytime].blank?
+    if !params[:live_stream].blank? || stream_anytime
       params[:house_capacity] = ValidVoucher::INFINITE
       params.delete(:seatmap_id)
     elsif !params[:seatmap_id].blank?
@@ -122,7 +123,7 @@ class Showdate < ActiveRecord::Base
     show = Show.find(params[:show_id])
     new_showdates = dates.map do |date|
       params[:thedate] = date
-      params[:end_advance_sales] = date - sales_cutoff unless !params[:stream_anytime].blank?
+      params = params.merge((date - sales_cutoff).to_form_param("end_advance_sales")) unless stream_anytime
       show.showdates.build(params)
     end
   end

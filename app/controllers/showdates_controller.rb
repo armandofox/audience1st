@@ -21,7 +21,7 @@ class ShowdatesController < ApplicationController
       all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
     else
-      all_dates = [ Time.zone.local(*['year','month','day','hour','minute'].map { |i| params[:stream_until][i].to_i }) ]
+      all_dates = [ Time.from_hash(params[:stream_until]) ]
     end
 
     existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }

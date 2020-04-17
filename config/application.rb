@@ -50,6 +50,7 @@ module Audience1st
       Time.include CoreExtensions::Time::ShowtimeDateFormats
       Time.include CoreExtensions::Time::RoundedTo
       Time.include CoreExtensions::Time::Season
+      Time.include CoreExtensions::Time::ToParam
       Date.include CoreExtensions::Date::Season
       String.include CoreExtensions::String::Name
       String.include CoreExtensions::String::Colorize
