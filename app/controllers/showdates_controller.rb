@@ -32,7 +32,6 @@ class ShowdatesController < ApplicationController
     Showdate.transaction do
       begin
         new_showdates.each { |showdate|  showdate.save! }
-        #rescue ActiveRecord::RecordInvalid => e
       rescue StandardError => e
         sd = e.record
         return redirect_to(new_show_showdate_path(@show),
@@ -40,7 +39,9 @@ class ShowdatesController < ApplicationController
       end
     end
     warnings.unshift(t('showdates.added', :count => new_showdates.size))
-
+    if new_showdates.any? { |v| v.max_advance_sales.zero? }
+      warnings.push(t('showdates.zero_max_sales', :advance => (new_showdates.any?(&:stream?) ? '' : 'advance ')))
+    end
     redirect_to((params[:commit] =~ /back/i ? shows_path(:season => @show.season) : new_show_showdate_path(@show)),
       :notice => warnings.join('<br/>'.html_safe))
 

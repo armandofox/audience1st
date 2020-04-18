@@ -68,10 +68,10 @@ class Showdate < ActiveRecord::Base
   #  validations
 
   def at_most_one_stream_anytime_performance
-    if stream_anytime? &&  show.reload.showdates.any?(&:stream_anytime?)
-      self.errors.add(:base,
-        I18n.translate('showdates.errors.already_has_stream_anytime'))
-    end
+    return unless stream_anytime?
+    showdates = show.reload.showdates
+    showdates -= [self] if !new_record?
+    errors.add(:base, I18n.translate('showdates.errors.already_has_stream_anytime')) if showdates.any?(&:stream_anytime?)
   end
 
   def cannot_change_seating_type_if_existing_reservations
@@ -168,6 +168,10 @@ class Showdate < ActiveRecord::Base
 
   def stream?
     live_stream? || stream_anytime?
+  end
+
+  def in_theater?
+    !live_stream? && !stream_anytime?
   end
 
   def season

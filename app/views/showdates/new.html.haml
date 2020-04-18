@@ -13,7 +13,7 @@
       %label.col-form-label{:for => :showdate_type} Performance type
       = popup_help_for :showdate_type
     .col-3
-      = select_tag 'showdate_type', options_for_select([['In-theater','Tt'], ['Live stream','Tl'], ['Stream anytime','Ts']]), :class => 'form-control showdate-type'
+      = select_tag 'showdate_type', showdate_type_choices, :class => 'form-control showdate-type'
       = hidden_field_tag 'showdate[live_stream]', nil
       = hidden_field_tag 'showdate[stream_anytime]', nil
   .form-row.py-1

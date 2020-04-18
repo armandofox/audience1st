@@ -31,7 +31,9 @@ class Showdate < ActiveRecord::Base
   end
 
   def printable_date_with_description
-    description.blank? ? printable_date : "#{printable_date} (#{description})"
+    label = live_stream? ? 'Live Stream ' : stream_anytime? ? 'Stream Anytime Until ' : ''
+    label << (description.blank? ? printable_date : "#{printable_date} (#{description})")
+    label
   end
 
   def name_and_date_with_capacity_stats
