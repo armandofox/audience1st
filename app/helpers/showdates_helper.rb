@@ -4,6 +4,10 @@ module ShowdatesHelper
     options_for_select([['In-theater','Tt'], ['Live stream','Tl'], ['Stream anytime','Ts']])
   end
 
+  def class_for_showdate_type(sd)
+    if sd.live_stream? then 'Tl' elsif sd.stream_anytime? then 'Ts' else 'Tt' end
+  end
+
   def showdate_seating_choices(showdate)
     if showdate.seatmap
       link_to 'Seats...', '', :class => 'btn btn-outline-primary btn-small'

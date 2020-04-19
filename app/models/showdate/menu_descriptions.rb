@@ -26,6 +26,11 @@ class Showdate < ActiveRecord::Base
     description.blank? ? show_name : "#{show_name} (#{description})"
   end
 
+  def printable_date_with_type
+    label = thedate.to_formatted_s(:showtime_brief)
+    label << " (#{performance_type})" if stream?
+    label
+  end
   def printable_date
     thedate.to_formatted_s(:showtime)
   end

@@ -49,7 +49,7 @@ A1.adjustHouseCap = function() {
 A1.showdateSetup = function() {
   A1.firstTrigger = true;
   $('.showdate-seating-choices').change(A1.adjustHouseCap).trigger('change');
-  $('.showdate-type').change(A1.adjustShowdateType);
+  $('.showdate-type').change(A1.adjustShowdateType).trigger('change');
 };
 
 $(A1.showdateSetup);
