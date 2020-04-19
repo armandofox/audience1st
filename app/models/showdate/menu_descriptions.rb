@@ -4,6 +4,11 @@ class Showdate < ActiveRecord::Base
     show.name
   end
 
+  # Used for CSS classes, Option menu values, etc for type of showdate
+  Showdate::IN_THEATER = 'Tt'
+  Showdate::LIVE_STREAM = 'Tl'
+  Showdate::STREAM_ANYTIME = 'Ts'
+
   def performance_type
     if live_stream? then "Live Stream"
     elsif stream_anytime? then "Stream Anytime"

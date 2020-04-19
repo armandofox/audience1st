@@ -49,13 +49,15 @@ class RedemptionBatchUpdater
   
   def selectively_assign_to_existing
     args = valid_voucher_params.clone
-    # special case:  start_sales args are a set of start_sales(1i), etc, so reject all if must be preserved
+    raise ArgumentError.new("Showdate type not given") unless (perf_type = args.delete(:showdate_type))
+    # special case: to preserve start/end_sales args, delete datepicker parms (start_sales(1i), etc)
     args.reject!  { |k,v| k =~ /start_sales/ }  if preserve[:start_sales]
+    args.reject!  { |k,v| k =~ /end_sales/   }  if preserve[:end_sales]
     preserve.keys.each { |k| args.delete(k.to_sym) }
     # assign all remaining (non-preserved) attributes
     @vv.assign_attributes(args)
-    # special case: IF end_sales should be overwrittn, set to @before_showtime before curtain
-    unless preserve[:end_sales]
+    # special case: IF end_sales should be overwritten for live shows, use @before_showtime
+    if !preserve[:end_sales] && perf_type != Showdate::STREAM_ANYTIME
       @vv.end_sales = (@vv.showdate.thedate - @before_showtime).rounded_to(:minute)
     end
   end

@@ -4,11 +4,8 @@ A1.adjustShowdateType = function() {
   function saveMaxSalesDefault() { $('#saved_max_sales').val($('#max_advance_sales').val()); }
   function restoreMaxSalesDefault() { $('#max_advance_sales').val($('#saved_max_sales').val()); }
   // hide/unset all fields, then selectively show/set the ones we need
-  $('.Tt').addClass('d-none');
-  $('.Tl').addClass('d-none');
-  $('.Ts').addClass('d-none');
-  $('#showdate_live_stream').val('');
-  $('#showdate_stream_anytime').val('');
+  $('.Tt,.Tl,.Ts').addClass('d-none');
+  $('#showdate_live_stream,#showdate_stream_anytime').val('');
   switch(perfType) {
   case 'Tt':                     // in theater
     restoreMaxSalesDefault();
