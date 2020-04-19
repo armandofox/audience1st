@@ -166,13 +166,9 @@ class Showdate < ActiveRecord::Base
 
   # pseudo-accessors
 
-  def stream?
-    live_stream? || stream_anytime?
-  end
-
-  def in_theater?
-    !live_stream? && !stream_anytime?
-  end
+  def stream?  ;    live_stream? || stream_anytime?  ;  end
+  def in_theater? ; !live_stream? && !stream_anytime?;  end
+  def live?       ; !stream_anytime? ; end
 
   def season
     thedate.this_season

@@ -7,8 +7,6 @@ class RedemptionBatchUpdater
     @showdates = showdates
     @vouchertypes = vouchertypes
     @valid_voucher_params = valid_voucher_params.symbolize_keys
-    raise ArgumentError.new("Showdate type not given") unless
-      @performance_type = @valid_voucher_params.delete(:showdate_type)
     @preserve = preserve.symbolize_keys
     @errs = Hash.new { |h,k| h[k] = [] } # vouchertype => showdate_id's to which it could NOT be added
     @possible_cause = {}
@@ -58,7 +56,7 @@ class RedemptionBatchUpdater
     # assign all remaining (non-preserved) attributes
     @vv.assign_attributes(args)
     # special case: IF end_sales should be overwritten for live shows, use @before_showtime
-    if !preserve[:end_sales] && performance_type != Showdate::STREAM_ANYTIME
+    if !preserve[:end_sales] && @vv.showdate.live?
       @vv.end_sales = (@vv.showdate.thedate - @before_showtime).rounded_to(:minute)
     end
   end
@@ -67,15 +65,8 @@ class RedemptionBatchUpdater
     params = valid_voucher_params.merge({:showdate => showdate, :vouchertype => vouchertype})
     @vv = ValidVoucher.new(params)
     # set end sales appropriately for performance type if live performance
-    @vv.end_sales = (showdate.thedate - @before_showtime).rounded_to(:minute) if performance_type != Showdate::STREAM_ANYTIME
+    @vv.end_sales = (showdate.thedate - @before_showtime).rounded_to(:minute) if showdate.live?
     @vv
-  end
-
-  def adjust_end_time_for_assignment(vv)
-    raise ArgumentError.new("Showdate type not given") unless
-      perf_type = valid_voucher_params.delete(:showdate_type)
-    if perf_
-    end
   end
 
   def add_error

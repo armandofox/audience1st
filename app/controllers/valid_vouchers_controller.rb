@@ -22,7 +22,7 @@ class ValidVouchersController < ApplicationController
 
   def update
     @valid_voucher = ValidVoucher.find(params[:id])
-    args = params[:valid_voucher].except(:showdate_type)
+    args = params[:valid_voucher]
     # max_sales_for_type if blank should be "infinity"
     if args[:max_sales_for_type].blank?
       args[:max_sales_for_type] = ValidVoucher::INFINITE
