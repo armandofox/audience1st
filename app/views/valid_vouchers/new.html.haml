@@ -9,17 +9,17 @@
         .form-check
           - field_id = "vouchertypes[#{v.id}]"
           .form-check-input= check_box_tag "vouchertypes[]", v.id, false, :id => field_id, :class => 'vouchertype'
-          %label.form-check-label{:for => field_id}= v.name_with_season_and_price
+          %label.form-check-label.col-form-label{:for => field_id}= v.name_with_season_and_price
           %br
 
-  .alert.alert-info= t('season_setup.options_apply_to_all_selected_performances')
+  .alert.alert-info.Tl.Tt= t('season_setup.options_apply_to_all_selected_performances')
 
   - if @show.showdates.any?(&:stream?)
     .form-row.py-1.border-bottom
       .col-5.text-right
         %label.col-form-label{:for => :showdate_type} Add/change redemptions for performances that are
       .col-2
-        = select_tag 'showdate_type', showdate_type_choices, :class => 'form-control showdate-type'
+        = select_tag 'showdate_type', showdate_type_choices(@show), :class => 'form-control showdate-type'
 
   #adjust-max-sales
     .form-group.form-row.pb-0.mb-0
@@ -105,7 +105,7 @@
         - wkday = showdate.thedate.strftime('%a')
         - field_id = "showdates[#{showdate.id}]"
         .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
-        %label.form-check-label{:for => field_id}= showdate.printable_date_with_type
+        %label.form-check-label{:for => field_id}= showdate.printable_date_brief
       - if idx % 3 == 2
         </div>
     - if @show.showdates.size % 3 != 0

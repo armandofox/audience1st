@@ -1,3 +1,4 @@
+@javascript
 Feature: setup multiple showdates - sad paths
 
   As a box office manager

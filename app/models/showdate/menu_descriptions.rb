@@ -36,6 +36,9 @@ class Showdate < ActiveRecord::Base
     label << " (#{performance_type})" if stream?
     label
   end
+  def printable_date_brief
+    thedate.to_formatted_s(:showtime_brief)
+  end
   def printable_date
     thedate.to_formatted_s(:showtime)
   end

@@ -1,6 +1,6 @@
 %h2 Editing #{@showdate.printable_name}
 
-= form_tag show_showdate_path(@show,@showdate), :method => :put do 
+= form_tag show_showdate_path(@show,@showdate), :method => :put, :class => 'showdate-form' do 
   - args = {:start_year => @show.opening_date.year, :end_year => @show.closing_date.year, :minute_step => 15, :date => @showdate.thedate }
 
   .form-row.py-1

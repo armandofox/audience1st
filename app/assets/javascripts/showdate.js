@@ -1,3 +1,10 @@
+A1.warnZeroMaxSales = function(evt) {
+  if ((Number($('#showdate_max_advance_sales').val()) == 0) &&
+      !(confirm("You have set max sales to zero, which will prevent any tickets from being sold for this performance, regardless of other settings.  If this is really what you intended, click OK.  Otherwise click Cancel to make changes."))) {
+    evt.preventDefault();
+  }
+};
+    
 A1.adjustShowdateType = function() {
   var perfType = $(this).val();
   var maxSalesDefault;
@@ -47,6 +54,7 @@ A1.showdateSetup = function() {
   A1.firstTrigger = true;
   $('.showdate-seating-choices').change(A1.adjustHouseCap).trigger('change');
   $('.showdate-type').change(A1.adjustShowdateType).trigger('change');
+  $('form.showdate-form').submit(A1.warnZeroMaxSales);
 };
 
 $(A1.showdateSetup);

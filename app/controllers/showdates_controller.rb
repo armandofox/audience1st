@@ -26,7 +26,7 @@ class ShowdatesController < ApplicationController
 
     existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }
     unless existing_dates.empty?
-      warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
+      warnings.push(t('showdates.already_exist', :dates => existing_dates.map(&:printable_date).join(', ')))
     end
     new_showdates = Showdate.from_date_list(new_dates, cutoff, params[:showdate])
     Showdate.transaction do

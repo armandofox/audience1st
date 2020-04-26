@@ -1,7 +1,12 @@
 module ShowdatesHelper
 
-  def showdate_type_choices
-    options_for_select([['In-theater',Showdate::IN_THEATER], ['Live stream',Showdate::LIVE_STREAM], ['Stream anytime',Showdate::STREAM_ANYTIME]])
+  def showdate_type_choices(show,new_showdate: nil)
+    showdates = show.showdates
+    options = []
+    options.push(['In-theater',Showdate::IN_THEATER]) if new_showdate||showdates.any?(&:in_theater?)
+    options.push(['Live stream',Showdate::LIVE_STREAM]) if new_showdate||showdates.any?(&:live_stream?)
+    options.push(['Stream anytime',Showdate::STREAM_ANYTIME]) if new_showdate||showdates.any?(&:stream_anytime?)
+    options_for_select(options)
   end
 
   def class_for_showdate_type(sd)
