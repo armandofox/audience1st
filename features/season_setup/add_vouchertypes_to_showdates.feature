@@ -1,4 +1,3 @@
-@javascript
 Feature: add vouchertype(s) to showdate(s)
 
   As a boxoffice manager
