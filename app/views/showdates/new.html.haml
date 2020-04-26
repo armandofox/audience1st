@@ -7,13 +7,13 @@
   options, you can either edit them after they're created, or create them 
   separately instead of all at once.
 
-= form_tag show_showdates_path(@show) do
+= form_tag show_showdates_path(@show), :class => 'showdate-form' do
   .form-row
     .col-3.text-right
       %label.col-form-label{:for => :showdate_type} Performance type
       = popup_help_for :showdate_type
     .col-3
-      = select_tag 'showdate_type', showdate_type_choices, :class => 'form-control showdate-type'
+      = select_tag 'showdate_type', showdate_type_choices(@show, new_showdate: true), :class => 'form-control showdate-type'
       = hidden_field_tag 'showdate[live_stream]', nil
       = hidden_field_tag 'showdate[stream_anytime]', nil
   .form-row.py-1
@@ -32,13 +32,22 @@
     .col-3
       %label.col-form-label minutes before curtain
 
+    .col-2.text-right
+      %label.col-form-label{:for => :showdate_max_advance_sales}
+        Max
+        %span.Tt advance
+        sales
+      = popup_help_for(:max_advance_sales)
+    .col-1= text_field 'showdate', 'max_advance_sales', :class => 'form-control'
+
+
   .form-row.py-1.Ts.d-none
     .col-3.text-right
       %label.col-form-label{:for => :showdate_end_advance_sales} Advance sales stop
       = popup_help_for :advance_sales_cutoff
-    .col-4= datetime_select 'showdate', 'end_advance_sales', {:time_separator => ':', :start_year => Time.current.year}
+    .col-4= datetime_select 'showdate', 'end_advance_sales', {:minute_step => 15, :time_separator => ':', :start_year => Time.current.year}
 
-    .col-3.text-right
+    .col-2.text-right
       %label.col-form-label{:for => :showdate_max_advance_sales}
         Max
         %span.Tt advance
