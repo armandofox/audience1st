@@ -1,5 +1,6 @@
 A1.warnZeroMaxSales = function(evt) {
-  if ((Number($('#showdate_max_advance_sales').val()) == 0) &&
+  var maxSales = $('#showdate_max_advance_sales').val();
+  if ((maxSales != '') && (Number(maxSales) == 0) &&
       !(confirm("You have set max sales to zero, which will prevent any tickets from being sold for this performance, regardless of other settings.  If this is really what you intended, click OK.  Otherwise click Cancel to make changes."))) {
     evt.preventDefault();
   }

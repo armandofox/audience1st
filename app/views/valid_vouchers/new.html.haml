@@ -105,7 +105,9 @@
         - wkday = showdate.thedate.strftime('%a')
         - field_id = "showdates[#{showdate.id}]"
         .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
-        %label.form-check-label{:for => field_id}= showdate.printable_date_brief
+        %label.form-check-label{:for => field_id}
+          %span.Ts Stream until
+          = showdate.printable_date_brief
       - if idx % 3 == 2
         </div>
     - if @show.showdates.size % 3 != 0
