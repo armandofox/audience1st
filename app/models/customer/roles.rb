@@ -26,7 +26,14 @@ class Customer < ActiveRecord::Base
   end
 
   def self.role_name(rval)
-    PRIV_VALS.detect { |val| val.first <= rval }.last.to_s || 'patron'
+    r = rval.to_i
+    if r > 30 then 'admin'
+    elsif r > 20 then 'boxoffice_manager'
+    elsif r > 15 then 'boxoffice'
+    elsif r > 10 then 'walkup'
+    elsif r > 10 then 'staff'
+    else 'patron'
+    end
   end
 
   def role_name
