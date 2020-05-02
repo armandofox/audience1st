@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
   before_action :maybe_run_sweepers
 
   def maybe_run_sweepers
-    StaleOrderSweeper.sweep! if Option.last_sweep > 1.minute.ago
+    StaleOrderSweeper.sweep! if Option.last_sweep < 5.minutes.ago
   end
 
   # set_globals tries to set globals based on current_user, among other things.
