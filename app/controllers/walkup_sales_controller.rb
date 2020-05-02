@@ -3,7 +3,7 @@ class WalkupSalesController < ApplicationController
   before_filter :is_boxoffice_filter
 
   before_action do
-    @showdate = Showdate.find params[:id]
+    @showdate = Showdate.in_theater.find params[:id]
     @page_title = "Walkups: #{@showdate.thedate.to_formatted_s(:foh)}"
     if @showdate.has_reserved_seating?
       @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)

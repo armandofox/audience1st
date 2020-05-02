@@ -72,7 +72,7 @@
           %label.form-check-label{:for => "day_#{idx}"}= day
           = check_box_tag 'day', idx, false, :name => 'day[]', :id => "day_#{idx}", :class => 'form-check-input'
       %label.col-form-label.px-3{:for => 'time'} At
-      = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :class => 'form-control')
+      = select_time(Time.zone.parse("8:00pm"), :time_separator => ':', :prefix => 'time', :minute_step => 15, :class => 'form-control')
 
     .form-row.py-2
       %label.col-form-label{:for => 'start'} From
@@ -84,7 +84,7 @@
         %label.col-form-label{:for => 'stream_until'} Stream available until
         = popup_help_for :stream_available_until
       .col-6
-        = select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 59), :time_separator => ':', :prefix => 'stream_until', :start_year => Time.current.year
+        = select_datetime @show.closing_date.to_time.change(:hour => 23, :min => 45), :time_separator => ':', :prefix => 'stream_until', :minute_step => 15, :start_year => Time.current.year
 
   = submit_tag 'Save & Back to List of Shows', :class => 'btn btn-success' 
   = submit_tag 'Save & Add More Dates for This Show', :class => 'btn btn-success'

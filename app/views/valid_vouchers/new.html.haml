@@ -52,7 +52,7 @@
       .col-md-5.text-right
         = popup_help_for :valid_voucher_sales_dates
         %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales for each performance
-      .col-md-6= datetime_select 'valid_voucher', 'start_sales'
+      .col-md-6= datetime_select 'valid_voucher', 'start_sales', :minute_step => 15
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
@@ -68,7 +68,7 @@
       .col-md-6.form-check.form-check-inline.Tt.Tl
         = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
         %label.col-form-label{:for => :minutes_before} minutes before show time
-      .col-md-6.Ts= datetime_select 'valid_voucher', 'end_sales', :class => 'valid-voucher-end-sales'
+      .col-md-6.Ts= datetime_select 'valid_voucher', 'end_sales', :minute_step => 15, :class => 'valid-voucher-end-sales'
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
@@ -83,18 +83,18 @@
       .col-md-2.text-center
         Select Dates:
         %br
-        = link_to 'All', '#',  :onclick => %Q{$('.showdate').prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+        = link_to 'All', '#',  :onclick => %Q{$('.showdate.'+$('#showdate_type').val()).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
         = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
       .col-md-5.text-center
         Or Select Every:
         %br
         - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+          = link_to wday, '#', :onclick => %Q{$('.showdate.#{wday}.' + $('#showdate_type').val()).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
       .col-md-5.text-center
         Or Un-select Every:
         %br
         - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+          = link_to wday, '#', :onclick => %Q{$('.showdate.#{wday}').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
 
 
   .mx-2.pb-2
@@ -104,7 +104,7 @@
       .col-3.form-check.form-check-inline{:class => class_for_showdate_type(showdate)}
         - wkday = showdate.thedate.strftime('%a')
         - field_id = "showdates[#{showdate.id}]"
-        .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
+        .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate #{wkday} #{class_for_showdate_type(showdate)}", :id => field_id)
         %label.form-check-label{:for => field_id}
           %span.Ts Stream until
           = showdate.printable_date_brief

@@ -56,6 +56,7 @@ class Showdate < ActiveRecord::Base
 
   scope :general_admission, -> { where(:seatmap_id => nil) }
   scope :reserved_seating,  -> { where.not(:seatmap_id => nil) }
+  scope :in_theater, -> { where(:live_stream => false).where(:stream_anytime => false) }
 
   def has_reserved_seating? ; !stream?  &&  !!seatmap ; end
   

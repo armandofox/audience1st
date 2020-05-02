@@ -59,7 +59,7 @@ class VoucherPresenter
   
   def seats
     sd = @vouchers.first.showdate
-    if sd.stream? then link_to(sd.performance_type, '#', :onclick => %Q{alert('#{escape_javascript sd.access_instructions}')}, :class => 'btn btn-sm btn-outline-primary btn-block')
+    if sd.stream? then link_to('Access...', '#', :onclick => %Q{alert('#{escape_javascript sd.access_instructions}')}, :class => 'btn btn-sm btn-outline-primary btn-block')
     elsif ! @vouchers.first.reserved?              then ''
     elsif  @vouchers.all? { |v| v.seat.blank? } then 'General Admission' 
     else                                        Voucher.seats_for(@vouchers)

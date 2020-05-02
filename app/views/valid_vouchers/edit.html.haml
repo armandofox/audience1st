@@ -26,12 +26,12 @@
     .col-md-5.text-right
       = popup_help_for :valid_voucher_sales_dates
       %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales
-    .col-md-6= datetime_select 'valid_voucher', 'start_sales'
+    .col-md-6= datetime_select 'valid_voucher', 'start_sales', :minute_step => 15
 
   .form-group.form-row
     .col-md-5.text-right
       %label.col-form-label{:for => :valid_voucher_end_sales} End sales
-    .col-md-6= datetime_select 'valid_voucher', 'end_sales'
+    .col-md-6= datetime_select 'valid_voucher', 'end_sales', :minute_step => 15
 
   .form-group.form-row
     .col-md-2.offset-md-5= submit_tag 'Save Changes', :class => 'btn btn-success btn-block'

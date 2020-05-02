@@ -54,6 +54,7 @@ en:
 
     not_attempted: >
       Email confirmation was NOT sent because there isn't a valid email address in your Contact Info.
+
   import:
 
     goldstar:
@@ -121,6 +122,11 @@ en:
 
     import_failed: >
       NO orders were imported because of problems completing the import: %{message}
+
+  checkins:
+
+    no_showdates: >
+      There are no shows this season eligible for check-in right now.  Please add some.
 
   customers:
 
