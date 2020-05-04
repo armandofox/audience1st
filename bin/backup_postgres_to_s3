@@ -2,6 +2,11 @@
 
 if [ "$(date +%u)" != 1 ]; then exit 0; fi
 
+# Download heroku CLI to get `heroku` executable
+# (https://help.heroku.com/6MAA5ALV/how-to-run-heroku-cli-commands-from-heroku-scheduler)
+# it relies on HEROKU_API_KEY envariable set on main app
+curl -s https://cli-assets.heroku.com/heroku-linux-x64.tar.gz | tar xz
+
 # Download the latest backup from Heroku and gzip it
 
 heroku pg:backups:download --output=/tmp/pg_backup.dump --app $APP_NAME
