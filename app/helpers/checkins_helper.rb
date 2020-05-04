@@ -29,6 +29,7 @@ module CheckinsHelper
   def showdates_with_urls(selected)
     current = @showdate.thedate
     showdates = Showdate.
+      in_theater.
       includes(:show).
       includes({:vouchers => [:vouchertype,:customer]}).
       where(:thedate => (current - 6.months .. current + 2.months)).order(:thedate)
