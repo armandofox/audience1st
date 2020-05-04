@@ -8,10 +8,12 @@ if [ "$(date +%u)" != 1 ]; then exit 0; fi
 cd /tmp && (curl -s https://cli-assets.heroku.com/heroku-linux-x64.tar.gz | tar -zx)
 export PATH=/tmp/heroku/bin:$PATH
 
-# Download the latest backup from Heroku and gzip it
+# Download the latest backup from Heroku, gzip it, encrypt it
 
 heroku pg:backups:download --output=/tmp/pg_backup.dump --app $APP_NAME
 gzip /tmp/pg_backup.dump
+gpg --yes --batch --passphrase=$BACKUP_GPG_KEY -c /tmp/pg_backup.dump.gz -o /tmp/pg_backup.dump.gpg
+/bin/rm /tmp/pg_backup.dump.gz
 
 # Generate backup filename based on current timestamp
 
@@ -24,7 +26,7 @@ S3_PATH="${BACKUP_S3_BUCKET}/${BACKUP_FILE_NAME}"
 
 # Generate S3 signature needed to upload file to the bucket
 
-MD5="$(openssl md5 -binary < "/tmp/pg_backup.dump.gz" | base64)"
+MD5="$(openssl md5 -binary < "/tmp/pg_backup.dump.gz.gpg" | base64)"
 CONTENT_TYPE="application/octet-stream"
 S3_STRING="PUT\n$MD5\napplication/octet-stream\n${DATE}\n${S3_PATH}"
 
@@ -32,7 +34,7 @@ S3_SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\n/$S3_PATH" | openssl sh
 
 # Upload the file to S3 using the signature auth header
 
-curl -X PUT -T "/tmp/pg_backup.dump.gz" \
+curl -X PUT -T "/tmp/pg_backup.dump.gz.gpg" \
   -H "Host: ${BACKUP_S3_BUCKET}.s3-ap-southeast-1.amazonaws.com" \
   -H "Date: ${DATE}" \
   -H "Content-Type: application/octet-stream" \
@@ -41,4 +43,4 @@ curl -X PUT -T "/tmp/pg_backup.dump.gz" \
   https://${BACKUP_S3_BUCKET}.s3.amazonaws.com/${BACKUP_FILE_NAME}
 
 # Remove the backup file
-rm /tmp/pg_backup.dump.gz
+rm /tmp/pg_backup.dump.gz.gpg
