@@ -12,7 +12,7 @@ export PATH=/tmp/heroku/bin:$PATH
 
 heroku pg:backups:download --output=/tmp/pg_backup.dump --app $APP_NAME
 gzip /tmp/pg_backup.dump
-gpg --yes --batch --passphrase=$BACKUP_GPG_KEY -c /tmp/pg_backup.dump.gz -o /tmp/pg_backup.dump.gz.gpg
+gpg --yes --batch --passphrase=$BACKUP_GPG_KEY -c -o /tmp/pg_backup.dump.gz.gpg /tmp/pg_backup.dump.gz 
 /bin/rm /tmp/pg_backup.dump.gz
 
 # Generate backup filename based on current timestamp
