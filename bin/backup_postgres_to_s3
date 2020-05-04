@@ -37,7 +37,7 @@ S3_SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\n/$S3_PATH" | openssl sh
 
 # Upload the file to S3 using the signature auth header
 
-curl -X PUT -T "/tmp/pg_backup.dump.gz.gpg" \
+curl -X PUT -T "$BACKUP_FILE_NAME" \
   -H "Host: ${BACKUP_S3_BUCKET}.s3-ap-southeast-1.amazonaws.com" \
   -H "Date: ${DATE}" \
   -H "Content-Type: application/octet-stream" \
