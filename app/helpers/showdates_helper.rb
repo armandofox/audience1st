@@ -1,5 +1,13 @@
 module ShowdatesHelper
 
+  def showdate_time_limit_for(thing, attr)
+    showdate = if thing.kind_of?(Showdate) then thing else thing.showdate end
+    if showdate.stream_anytime?
+      thing.send(attr).to_formatted_s(:showtime)
+    else
+      time_in_words_relative_to(thing.send(attr), showdate.thedate)
+    end
+  end
   def showdate_type_choices(show,new_showdate: nil)
     showdates = show.showdates
     options = []

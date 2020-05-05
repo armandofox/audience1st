@@ -13,22 +13,29 @@ A1.adjustShowdateType = function() {
   function restoreMaxSalesDefault() { $('#max_advance_sales').val($('#saved_max_sales').val()); }
   // hide/unset all fields, then selectively show/set the ones we need
   $('.Tt,.Tl,.Ts').addClass('d-none');
+  // for the showdate checkboxes (Add/Change Redemptions), make them *disabled* to preserve
+  // layout, and uncheck all the boxes whenever showdate type changes
+  $('input[type=checkbox].showdate').prop('checked', false);
+  $('.Ttd,.Tld,.Tsd').attr('disabled','disabled');
   $('#showdate_live_stream,#showdate_stream_anytime').val('');
   switch(perfType) {
   case 'Tt':                     // in theater
     restoreMaxSalesDefault();
     $('.Tt').removeClass('d-none');
+    $('.Ttd').removeAttr('disabled');
     break;
   case 'Tl':                     // live stream
     saveMaxSalesDefault();
     $('#showdate_live_stream').val('1');
     $('.Tl').removeClass('d-none');
+    $('.Tld').removeAttr('disabled');
     $('#max_advance_sales').val('');
     break;
   case 'Ts':                       // stream anytime
     saveMaxSalesDefault();
     $('#showdate_stream_anytime').val('1');
     $('.Ts').removeClass('d-none');
+    $('.Tsd').removeAttr('disabled');
     $('#max_advance_sales').val('');
     break;
   default:

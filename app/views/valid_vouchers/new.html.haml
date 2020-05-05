@@ -101,12 +101,13 @@
     - @show.showdates.each_with_index do |showdate,idx|  
       - if idx % 3 == 0
         <div class="form-row">
-      .col-3.form-check.form-check-inline{:class => class_for_showdate_type(showdate)}
+      - klass = class_for_showdate_type(showdate) + 'd'
+      .col-3.form-check.form-check-inline{:class => klass}
         - wkday = showdate.thedate.strftime('%a')
         - field_id = "showdates[#{showdate.id}]"
-        .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate #{wkday} #{class_for_showdate_type(showdate)}", :id => field_id)
+        = check_box_tag('showdates[]', showdate.id, false, :class => "form-check-input showdate #{wkday} #{klass}", :id => field_id)
         %label.form-check-label{:for => field_id}
-          %span.Ts Stream until
+          = "Stream until" if klass=='Tsd'
           = showdate.printable_date_brief
       - if idx % 3 == 2
         </div>

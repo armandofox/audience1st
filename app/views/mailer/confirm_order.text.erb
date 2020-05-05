@@ -17,8 +17,6 @@ PAYMENT AMOUNT: <%= number_to_currency(@order.total_price) %>
 PAYMENT METHOD: <%= Purchasemethod.get(@order.purchasemethod).description %>
 ------------------------------------------------------------
 
-<%= word_wrap("Streaming access instructions: " << @order.streaming_access_instructions, :line_width => 60) if @order.includes_streaming? -%>
-
 <%= word_wrap(@notes, :line_width => 60) unless @notes.blank? -%>
 
 <%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, 'p', :spanify=> false)), :line_width => 60) -%>

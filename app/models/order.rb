@@ -266,7 +266,7 @@ class Order < ActiveRecord::Base
     end
     summary += nonvouchers.map(&:one_line_description)
     summary << self.comments
-    summary << "Access instructions: #{streaming_access_instructions}" if includes_streaming?
+    summary << streaming_access_instructions if includes_streaming?
     summary.join(separator)
   end
 
