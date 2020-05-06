@@ -83,13 +83,13 @@
       .col-md-2.text-center
         Select Dates:
         %br
-        = link_to 'All', '#',  :onclick => %Q{$('.showdate.'+$('#showdate_type').val()).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+        = link_to 'All', '#',  :onclick => %Q{$('.showdate.'+($('#showdate_type').val()+'d')).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
         = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
       .col-md-5.text-center
         Or Select Every:
         %br
         - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-          = link_to wday, '#', :onclick => %Q{$('.showdate.#{wday}.' + $('#showdate_type').val()).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+          = link_to wday, '#', :onclick => %Q{$('.showdate.#{wday}.' + ($('#showdate_type').val()+'d')).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
       .col-md-5.text-center
         Or Un-select Every:
         %br
