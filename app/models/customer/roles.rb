@@ -28,10 +28,10 @@ class Customer < ActiveRecord::Base
   def self.role_name(rval)
     r = rval.to_i
     if r > 30 then 'admin'
-    elsif r > 20 then 'boxoffice_manager'
-    elsif r > 15 then 'boxoffice'
-    elsif r > 10 then 'walkup'
-    elsif r > 10 then 'staff'
+    elsif r >= 30 then 'boxoffice_manager'
+    elsif r >= 20 then 'boxoffice'
+    elsif r >= 15 then 'walkup'
+    elsif r >= 10 then 'staff'
     else 'patron'
     end
   end
