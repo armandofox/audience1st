@@ -27,24 +27,25 @@ class Showdate < ActiveRecord::Base
   has_many :available_vouchertypes, -> { uniq(true) }, :source => :vouchertype, :through => :valid_vouchers
   has_many :valid_vouchers, :dependent => :destroy
 
-  validates :max_advance_sales, numericality: { greater_than_or_equal_to: 0, only_integer: true }
-  validates :house_capacity, unless: -> { has_reserved_seating? }, numericality: { greater_than: 0, only_integer: true }
+  validates :max_advance_sales, :numericality => { :greater_than_or_equal_to => 0, :only_integer => true }
+  validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?
   validates_associated :show
-  validates :thedate, presence: true
+  validates :thedate, :presence => true, :uniqueness => {:scope => :show_id, :message => "is already a performance for this show"}
+
   validates :end_advance_sales, presence: true
-  validates :description, length: {maximum: 32}, :allow_nil => true
-  
+  validates :description, :length => {:maximum => 255}, :allow_blank => true
+  validates :access_instructions, :presence => true, :if => :stream?
+
   validate :cannot_change_seating_type_if_existing_reservations, :on => :update
   validate :seatmap_can_accommodate_existing_reservations, :on => :update
+  validate :at_most_one_stream_anytime_performance
 
-  attr_accessible :thedate, :house_capacity, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id
+  attr_accessible :thedate, :house_capacity, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id, :live_stream, :stream_anytime, :access_instructions
 
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
 
 
-  validates_uniqueness_of :thedate, :scope => :show_id,
-  :message => "is already a performance for this show"
 
   # round off all showdates to the nearest minute
   before_save :truncate_showdate_to_nearest_minute
@@ -55,8 +56,9 @@ class Showdate < ActiveRecord::Base
 
   scope :general_admission, -> { where(:seatmap_id => nil) }
   scope :reserved_seating,  -> { where.not(:seatmap_id => nil) }
+  scope :in_theater, -> { where(:live_stream => false).where(:stream_anytime => false) }
 
-  def has_reserved_seating? ; !! seatmap ; end
+  def has_reserved_seating? ; !stream?  &&  !!seatmap ; end
   
   private
 
@@ -64,17 +66,33 @@ class Showdate < ActiveRecord::Base
     self.thedate.change(:sec => 0)
   end
 
+  #  validations
+
+  def at_most_one_stream_anytime_performance
+    return unless stream_anytime?
+    showdates = show.reload.showdates
+    showdates -= [self] if !new_record?
+    errors.add(:base, I18n.translate('showdates.errors.already_has_stream_anytime')) if showdates.any?(&:stream_anytime?)
+  end
+
+  def cannot_change_seating_type_if_existing_reservations
+    return if total_sales.empty?
+    errors.add(:base, I18n.translate('showdates.errors.cannot_change_seating_type')) if (seatmap_id_was.nil? && !seatmap_id.nil?) || (!seatmap_id_was.blank? && seatmap_id.blank?)
+  end
+  
+  def seatmap_can_accommodate_existing_reservations
+    return if seatmap.blank?
+    cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
+    unless cannot_accommodate.empty?
+      self.errors.add(:base,
+        I18n.translate('showdates.errors.cannot_change_seatmap') +  '<br/>' + 
+        ApplicationController.helpers.vouchers_sorted_by_seat(cannot_accommodate))
+    end
+  end
+
   public
 
   Showdate::Sales = Struct.new(:vouchers, :revenue_per_seat, :total_offered_for_sale)
-
-  # create new showdate (for use by imports/daemons)
-
-  def self.placeholder(thedate)
-    Showdate.new(:thedate => thedate,
-      :end_advance_sales => thedate,
-      :max_advance_sales => 0)
-  end
 
   def self.with_reserved_seating_json(shows = Show.all)
     (shows.nil? || shows.empty?) ? Showdate.none:
@@ -92,6 +110,27 @@ class Showdate < ActiveRecord::Base
       order('vouchertypes.display_order')
   end
 
+  # builders used by controller
+
+  def self.from_date_list(dates, sales_cutoff, params)
+    # force boolean values to be false if fields are blank
+    params[:stream_anytime] = false if params[:stream_anytime].blank?
+    params[:live_stream] = false    if params[:live_stream].blank?
+    if params[:live_stream] || params[:stream_anytime]
+      params[:house_capacity] = ValidVoucher::INFINITE
+      params.delete(:seatmap_id)
+    elsif !params[:seatmap_id].blank?
+      params[:house_capacity] = 0
+    end
+    params.delete(:seatmap_id) if params[:seatmap_id].to_i.zero?
+    show = Show.find(params[:show_id])
+    new_showdates = dates.map do |date|
+      params[:thedate] = date
+      params = params.merge((date - sales_cutoff).to_form_param("end_advance_sales")) unless params[:stream_anytime]
+      show.showdates.build(params)
+    end
+  end
+  
   # finders
   
   def self.current_and_future
@@ -128,6 +167,12 @@ class Showdate < ActiveRecord::Base
     other_showdate ? thedate <=> other_showdate.thedate : 1
   end
 
+  # pseudo-accessors
+
+  def stream?  ;    live_stream? || stream_anytime?  ;  end
+  def in_theater? ; !live_stream? && !stream_anytime?;  end
+  def live?       ; !stream_anytime? ; end
+
   def season
     thedate.this_season
   end
@@ -154,19 +199,8 @@ class Showdate < ActiveRecord::Base
     has_reserved_seating? ? seatmap.seat_count : attributes['house_capacity']
   end
 
-  def cannot_change_seating_type_if_existing_reservations
-    return if total_sales.empty?
-    errors.add(:base, I18n.translate('showdates.errors.cannot_change_seating_type')) if (seatmap_id_was.nil? && !seatmap_id.nil?) || (!seatmap_id_was.blank? && seatmap_id.blank?)
-  end
-  
-  def seatmap_can_accommodate_existing_reservations
-    return if seatmap.blank?
-    cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
-    unless cannot_accommodate.empty?
-      self.errors.add(:base,
-        I18n.translate('showdates.errors.cannot_change_seatmap') +  '<br/>' + 
-        ApplicationController.helpers.vouchers_sorted_by_seat(cannot_accommodate))
-    end
+  def can_accommodate?(seat)
+    !has_reserved_seating? ||  seat.blank?  ||  seatmap.includes_seat?(seat)
   end
 end
 

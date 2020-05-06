@@ -10,11 +10,27 @@ en:
 
   showdates:
     added:
-      zero: No showdates were added.
-      one: One showdate was successfully added.
-      other: "%{count} showdates were successfully added."
+      zero: No new performances were added.
+      one: One performance was successfully added.
+      other: "%{count} performances were successfully added."
+
+    already_exist: >
+      The following performances were not created because they already exist: %{dates}
+
+    zero_max_sales: >
+      You've added performance(s) whose max %{advance}sales are set to
+      zero, meaning no tickets can be purchased. If this isn't what
+      you intended, you can click on the performance date in the Show
+      Details view to edit it.
 
     errors:
+      invalid: >
+        No performances were added, because the %{date} performance had errors: %{errors}
+
+      already_has_stream_anytime: >
+        This show already has a "stream anytime" performance.  Please add or modify 
+        its redemptions rather than creating another "stream anytime" performance.
+        
       cannot_change_seatmap: >
         Seat map cannot be changed because the following patrons have reserved seats
         that don't exist in the new seat map.  (Suggestion: Shift-click on each patron name to
@@ -38,6 +54,7 @@ en:
 
     not_attempted: >
       Email confirmation was NOT sent because there isn't a valid email address in your Contact Info.
+
   import:
 
     goldstar:
@@ -106,6 +123,11 @@ en:
     import_failed: >
       NO orders were imported because of problems completing the import: %{message}
 
+  checkins:
+
+    no_showdates: >
+      There are no upcoming performances eligible for check-in right now.
+
   customers:
 
     confirm_delete: >
@@ -141,15 +163,6 @@ en:
     no_valid_vouchers_added: >
       NO changes were made, because some voucher type(s) could not be added to some show 
       date(s)--try adding them one at a time to isolate specific errors.  %{error_message}
-
-    showdates_already_exist: >
-      The following performances were not created because they already exist: %{dates}
-
-    no_showdates_added: >
-      No new performances were added.
-
-    error_adding_showdates: >
-      No performances were added, because the %{date} performance had errors: %{errors}
 
     no_comps_defined: >
       You must define some comp voucher types first.

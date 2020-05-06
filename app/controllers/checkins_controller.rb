@@ -11,24 +11,18 @@ class CheckinsController < ApplicationController
   # (current showdate, to which walkup sales will apply), or if not possible to set them,
   # force a redirect to a different controller & action
   def get_showdate
-    @showdate = Showdate.find_by_id(params[:id])
-    if @showdate.nil?
-      # use default showdate, and redirect
-      @showdate = Showdate.current_or_next(:grace_period => 2.hours)
-      if @showdate.nil?
-        flash[:alert] = "There are no shows this season eligible for check-in right now.  Please add some."
-        return redirect_to(shows_path)
-      else
-        return redirect_to(params.to_hash.merge(:id => @showdate.id))
-      end
-    else
-      year = Time.current.year
-      @showdates = Showdate.all_showdates_for_seasons(year, year+1)
+    if (@showdate = Showdate.in_theater.find_by(:id => params[:id]))
+      @showdates = Showdate.in_theater.all_showdates_for_seasons(Time.current.year, Time.current.year+1)
       @showdates << @showdate unless @showdates.include?(@showdate)
+      @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
+      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate) if @showdate.has_reserved_seating?
+      return
     end
-    @page_title = "Will call: #{@showdate.thedate.to_formatted_s(:foh)}"
-    if @showdate.has_reserved_seating?
-      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@showdate)
+    # nil showdate: try defaulting to current or next
+    if (@showdate = Showdate.in_theater.current_or_next(:grace_period => 2.hours))
+      redirect_to(params.to_hash.merge(:id => @showdate.id))
+    else
+      redirect_to(shows_path, :alert => I18n.t('checkins.no_showdates'))
     end
   end
 

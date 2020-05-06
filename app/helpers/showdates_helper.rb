@@ -1,5 +1,29 @@
 module ShowdatesHelper
 
+  def showdate_time_limit_for(thing, attr)
+    showdate = if thing.kind_of?(Showdate) then thing else thing.showdate end
+    if showdate.stream_anytime?
+      thing.send(attr).to_formatted_s(:showtime)
+    else
+      time_in_words_relative_to(thing.send(attr), showdate.thedate)
+    end
+  end
+  def showdate_type_choices(show,new_showdate: nil)
+    showdates = show.showdates
+    options = []
+    options.push(['In-theater',Showdate::IN_THEATER]) if new_showdate||showdates.any?(&:in_theater?)
+    options.push(['Live stream',Showdate::LIVE_STREAM]) if new_showdate||showdates.any?(&:live_stream?)
+    options.push(['Stream anytime',Showdate::STREAM_ANYTIME]) if new_showdate||showdates.any?(&:stream_anytime?)
+    options_for_select(options)
+  end
+
+  def class_for_showdate_type(sd)
+    if sd.live_stream? then Showdate::LIVE_STREAM
+    elsif sd.stream_anytime? then Showdate::STREAM_ANYTIME
+    else Showdate::IN_THEATER
+    end
+  end
+
   def showdate_seating_choices(showdate)
     if showdate.seatmap
       link_to 'Seats...', '', :class => 'btn btn-outline-primary btn-small'

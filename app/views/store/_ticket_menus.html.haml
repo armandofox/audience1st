@@ -42,7 +42,7 @@
               %span.text-info.col-sm-7.border.border-danger.s-explain= v.explanation
           = hidden_field_tag "price[#{v.id}]", v.price, {:id => "valid_voucher_#{v.id}_price"}
 
-    - unless @valid_vouchers.empty?
+    - if ! @valid_vouchers.empty? && !@sd.stream?
       .form-group.form-row
         %label.col-form-label.text-right.col-sm-4= t('store.accessible_seating_prompt')
         = text_area_tag 'comments', '', :rows => 1, :class => 'form-control col-sm-6', :placeholder => t('store.accessible_seating_description')

@@ -1,4 +1,5 @@
 class VoucherPresenter
+  include ActionView::Helpers
   #
   # Presentation logic to show ValidVouchers in customer view.
   # Vouchers of same type and reserved for same showdate are grouped together.
@@ -57,7 +58,9 @@ class VoucherPresenter
   end
   
   def seats
-    if ! @vouchers.first.reserved?              then ''
+    sd = @vouchers.first.showdate
+    if sd.stream? then link_to('Access Info', '#', :onclick => %Q{alert('#{escape_javascript sd.access_instructions}')}, :class => 'btn btn-sm btn-outline-primary btn-block')
+    elsif ! @vouchers.first.reserved?              then ''
     elsif  @vouchers.all? { |v| v.seat.blank? } then 'General Admission' 
     else                                        Voucher.seats_for(@vouchers)
     end

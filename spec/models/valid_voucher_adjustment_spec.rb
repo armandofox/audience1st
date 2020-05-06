@@ -47,7 +47,7 @@ describe 'ValidVoucher adjusting' do
       let(:promo_matched)    { nil }
       let(:visible_to_customer) { true }
       it_should_behave_like 'invisible, zero capacity'
-      its(:explanation) { should == 'Promo code required' }
+      its(:explanation) { should == 'Promo code  required' }
     end
     describe 'when invisible to customer' do
       let(:promo_matched)       { true }

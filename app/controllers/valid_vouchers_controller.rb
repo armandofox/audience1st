@@ -12,6 +12,13 @@ class ValidVouchersController < ApplicationController
     @show = Show.find params[:show_id]
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@show.season)
     @valid_voucher = ValidVoucher.new(:start_sales => @show.listing_date)
+    # special case: if showdate has ANY stream-anytime perfs, default the end-sales time to the
+    # first such perf's showtime.  (if the user displays 'live stream' or 'in-theater' on
+    # the form, the date menus disappear anyway in favor of a "Minutes before curtain" field,
+    # so doing this only affects anything if the show has a stream-anytime perf.)
+    if (sd = @show.showdates.find_by(:stream_anytime => true))
+      @valid_voucher.end_sales = sd.thedate - 15.minutes
+    end
     @minutes_before = Option.advance_sales_cutoff
   end
 
@@ -27,7 +34,6 @@ class ValidVouchersController < ApplicationController
     if args[:max_sales_for_type].blank?
       args[:max_sales_for_type] = ValidVoucher::INFINITE
     end
-
     if @valid_voucher.update_attributes(args)
       redirect_to edit_show_path(@valid_voucher.showdate.show), :notice => 'Update successful.'
     else

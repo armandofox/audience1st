@@ -11,7 +11,7 @@
       .col-md-5.text-truncate.h5
         .a1-cart-show-name= v.showdate.try(:name)
       .col-md-5.font-italic.h5
-        .a1-cart-show-date= v.showdate.thedate.to_formatted_s(:showtime) if v.showdate
+        .a1-cart-show-date= v.showdate.try(:printable_date_with_description)
         .a1-cart-voucher-type.text-secondary
           - if v.promo_code.blank?
             = v.name

@@ -7,7 +7,11 @@ We're confirming your reservation for the following performance:
 
   <%= @showdate.printable_name %>
 
+<%- if @showdate.in_theater? %>
   Seats: <%= @seats %>
+<%- else %>
+<%= @showdate.access_instructions %>
+<% end %>
 
 <%= word_wrap(@notes, :line_width => 60) unless @notes.blank? %>
 

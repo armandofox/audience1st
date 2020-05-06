@@ -4,8 +4,23 @@ class Showdate < ActiveRecord::Base
     show.name
   end
 
+  # Used for CSS classes, Option menu values, etc for type of showdate
+  Showdate::IN_THEATER = 'Tt'
+  Showdate::LIVE_STREAM = 'Tl'
+  Showdate::STREAM_ANYTIME = 'Ts'
+
+  def performance_type
+    if live_stream? then "Live Stream"
+    elsif stream_anytime? then "Stream Anytime"
+    else "In-theater"
+    end
+  end
+
   def seating_type_and_capacity
-    has_reserved_seating? ? seatmap.name_with_capacity : "General Admission (#{house_capacity})"
+    if stream?                  then performance_type
+    elsif has_reserved_seating? then seatmap.name_with_capacity
+    else                             "General Admission (#{house_capacity})"
+    end
   end
 
   def printable_name
@@ -16,12 +31,22 @@ class Showdate < ActiveRecord::Base
     description.blank? ? show_name : "#{show_name} (#{description})"
   end
 
+  def printable_date_with_type
+    label = thedate.to_formatted_s(:showtime_brief)
+    label << " (#{performance_type})" if stream?
+    label
+  end
+  def printable_date_brief
+    thedate.to_formatted_s(:showtime_brief)
+  end
   def printable_date
     thedate.to_formatted_s(:showtime)
   end
 
   def printable_date_with_description
-    description.blank? ? printable_date : "#{printable_date} (#{description})"
+    label = live_stream? ? 'Live Stream ' : stream_anytime? ? 'Stream Anytime Until ' : ''
+    label << (description.blank? ? printable_date : "#{printable_date} (#{description})")
+    label
   end
 
   def name_and_date_with_capacity_stats

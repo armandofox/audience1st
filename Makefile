@@ -1,15 +1,6 @@
 FILES = $(shell find app public lib features spec config db '(' -name '*.rb' -or -name '*.rhtml'  -or -name '*.haml' -or -name '*.html.erb' -or -name '*.haml.erb' -or -name '*.html.haml' -or -name '*.js' -or -name '*.rake' -or -name '*.yml' -or -name '*.feature' ')' -a '!' -name '*.min.js' -a '!' -name rails.js)
 
-all:
-	@echo Must force explicit target: dev, TAGS, doc
-
-dev: TAGS
-	-cd config && ln -s database.yml.dev database.yml
-	-cd config && ln -s facebooker.yml.dev facebooker.yml
-	mkdir log
-	touch log/development.log
-	-rake db:migrate
-	-ln -s ~/Documents/fox/projects/stylesheets/sandbox public/stylesheets/venue
+all: TAGS
 
 TAGS: $(FILES)
 	@etags $(FILES) >/dev/null

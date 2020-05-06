@@ -13,24 +13,38 @@ class ShowdatesController < ApplicationController
   public
   
   def create
-    start_date,end_date = Time.range_from_params(params[:show_run_dates])
-    all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
+    warnings = []
+    cutoff = params[:advance_sales_cutoff].to_i.minutes
+    # determine date list from EITHER the date range, or for stream-anytime, single date
+    if params[:showdate][:stream_anytime].blank?
+      start_date,end_date = Time.range_from_params(params[:show_run_dates])
+      all_dates = DatetimeRange.new(:start_date => start_date, :end_date => end_date, :days => params[:day],
       :hour => params[:time][:hour], :minute => params[:time][:minute]).dates
-    new_showdates = showdates_from_date_list(all_dates, params)
-    return redirect_to(new_show_showdate_path(@show)) unless flash[:alert].blank?
-    new_showdates.each do |showdate|
-      unless showdate.save
-        flash[:alert] = "Showdate #{showdate.thedate.to_formatted_s(:showtime)} could not be created: #{showdate.errors.as_html}"
-        redirect_to new_show_showdate_path(@show)
-        return
+    else
+      all_dates = [ Time.from_hash(params[:stream_until]) ]
+    end
+
+    existing_dates, new_dates = all_dates.partition { |date| Showdate.find_by(:thedate => date) }
+    unless existing_dates.empty?
+      warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
+    end
+    new_showdates = Showdate.from_date_list(new_dates, cutoff, params[:showdate])
+    Showdate.transaction do
+      begin
+        new_showdates.each { |showdate|  showdate.save! }
+      rescue StandardError => e
+        sd = e.record
+        return redirect_to(new_show_showdate_path(@show),
+          :alert => I18n.translate('showdates.errors.invalid', :date => sd.thedate.to_formatted_s(:showtime), :errors => sd.errors.as_html))
       end
     end
-    flash[:notice] = t('showdates.added', :count => new_showdates.size)
-    if params[:commit] =~ /back to list/i
-      redirect_to shows_path(:season => @show.season)
-    else
-      redirect_to new_show_showdate_path(@show)
+    warnings.unshift(t('showdates.added', :count => new_showdates.size))
+    if new_showdates.any? { |v| v.max_advance_sales.zero? }
+      warnings.push(t('showdates.zero_max_sales', :advance => (new_showdates.any?(&:stream?) ? '' : 'advance ')))
     end
+    redirect_to((params[:commit] =~ /back/i ? shows_path(:season => @show.season) : new_show_showdate_path(@show)),
+      :notice => warnings.join('<br/>'.html_safe))
+
   end
     
   def destroy
@@ -43,6 +57,7 @@ class ShowdatesController < ApplicationController
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = 0
+    @showdate = @show.showdates.build(:max_advance_sales => @max_sales_default, :thedate => Time.zone.now, :end_advance_sales => @show.closing_date.to_time.change(:hour => 23, :min => 59))
   end
 
   def edit
@@ -62,36 +77,4 @@ class ShowdatesController < ApplicationController
     end
   end
 
-  private
-
-  def showdates_from_date_list(dates, params)
-    sales_cutoff = params[:advance_sales_cutoff].to_i
-    max_advance_sales = params[:max_advance_sales].to_i
-    description = params[:description].to_s
-    seatmap_id = if params[:seatmap_id].to_i.zero? then nil else params[:seatmap_id].to_i end
-    house_capacity = if seatmap_id then 0 else params[:house_capacity].to_i end
-
-    existing_dates, new_dates = dates.partition { |date| Showdate.find_by(:thedate => date) }
-    unless existing_dates.empty?
-      flash[:notice] = I18n.translate('season_setup.showdates_already_exist', :dates =>
-        existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', '))
-    end
-    if new_dates.empty?
-      flash[:alert] = I18n.translate('season_setup.no_showdates_added')
-      return []
-    end
-    new_dates.map do |date|
-      s = @show.showdates.build(:thedate => date,
-        :max_advance_sales => max_advance_sales,
-        :end_advance_sales => date - sales_cutoff.minutes,
-        :seatmap_id => seatmap_id,
-        :house_capacity => house_capacity,
-        :description => description)
-      unless s.valid?
-        flash[:alert] = I18n.translate('season_setup.error_adding_showdates',
-          :date => date.to_formatted_s(:showtime), :errors => s.errors.as_html)
-      end
-      s
-    end
-  end
 end

@@ -19,6 +19,20 @@ class Voucher < Item
 
   has_many :bundled_vouchers, :class_name => 'Voucher', :foreign_key => 'bundle_id'
 
+  private
+  
+  def checkin_requires_reservation
+    errors.add(:base, 'Unreserved voucher cannot be checked in') unless (!checked_in or reserved?)
+  end
+
+  def existing_seat
+    errors.add(:seat, 'does not exist for this performance') unless
+      showdate.can_accommodate?(seat)
+      ! showdate.has_reserved_seating?  || seat.blank?  || showdate.seatmap.includes_seat?(seat)
+  end
+
+  public
+
   def self.cancel_multiple!(vchs, num, by_whom)
     to_cancel = vchs.take(num)
     to_leave_reserved = vchs.drop(num)
@@ -343,18 +357,6 @@ class Voucher < Item
       redemption = ValidVoucher.new(:max_sales_for_this_patron => 0,
         :explanation => 'This ticket is not valid for the selected performance.')
     end
-  end
-
-  private
-  
-  def checkin_requires_reservation
-    errors.add(:base, 'Unreserved voucher cannot be checked in') unless (!checked_in or reserved?)
-
-  end
-
-  def existing_seat
-    errors.add(:seat, 'does not exist for this performance') unless
-      ! showdate.has_reserved_seating?  || seat.blank?  || showdate.seatmap.includes_seat?(seat)
   end
 
 end

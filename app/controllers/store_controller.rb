@@ -288,7 +288,7 @@ class StoreController < ApplicationController
       Rails.logger.error("FAILED purchase for #{order.customer}: #{order.errors.inspect}") rescue nil
     rescue StandardError => e
       Rails.logger.error("Unexpected error: #{e.message} #{e.backtrace}")
-      flash[:alert] = "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}"
+      return redirect_to(store_path, :alert => "Sorry, an unexpected problem occurred with your order.  Please try your order again.  Message: #{e.message}")
     end
     success
   end

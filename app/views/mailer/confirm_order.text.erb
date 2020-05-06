@@ -17,13 +17,13 @@ PAYMENT AMOUNT: <%= number_to_currency(@order.total_price) %>
 PAYMENT METHOD: <%= Purchasemethod.get(@order.purchasemethod).description %>
 ------------------------------------------------------------
 
-<%= word_wrap(@notes, :line_width => 60) unless @notes.blank? %>
+<%= word_wrap(@notes, :line_width => 60) unless @notes.blank? -%>
 
-<%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, 'p', :spanify=> false)), :line_width => 60) %>
+<%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, 'p', :spanify=> false)), :line_width => 60) -%>
 
-<%= word_wrap(strip_tags(sanitize_option_text((@order.purchaser.subscriber? ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), 'p', :spanify => false)), :line_width => 60) %>
+<%= word_wrap(strip_tags(sanitize_option_text((@order.purchaser.subscriber? ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), 'p', :spanify => false)), :line_width => 60) -%>
 
-<% if @order.gift? %>
+<% if @order.gift? -%>
 This order is a GIFT for the following recipient.
 NOTE: The recipient HAS NOT BEEN notified of your gift!
 
@@ -33,6 +33,6 @@ NOTE: The recipient HAS NOT BEEN notified of your gift!
   <%= r.city -%>, <%= r.state -%>  <%= r.zip %>
   <%= [r.day_phone,r.eve_phone,r.email].compact.join(' - ') %>
 
-<% end %>
+<% end -%>
 
 <%= render :partial => 'contact_us' %>

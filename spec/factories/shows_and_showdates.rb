@@ -10,13 +10,23 @@ FactoryBot.define do
     show { create(:show, :name => show_name, :including => date) }
     max_advance_sales { [100, house_capacity].min }
     end_advance_sales { thedate - 1.minute }
-
+    live_stream false
+    stream_anytime false
     factory :reserved_seating_showdate do
       seatmap { create(:seatmap) }
     end
+
+    factory :live_stream_showdate do
+      live_stream true
+      house_capacity ValidVoucher::INFINITE
+      access_instructions 'Instructions here for live stream access'
+    end
+    factory :stream_anytime_showdate do
+      stream_anytime true
+      house_capacity ValidVoucher::INFINITE
+      access_instructions 'Instructions here for stream-anytime access'
+    end
   end
-
-
 
   factory :show do
     transient do

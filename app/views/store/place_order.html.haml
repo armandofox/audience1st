@@ -26,6 +26,11 @@
 
     = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
+  - if @gOrderInProgress.includes_streaming?
+    .alert.alert-success
+      %h4.alert-heading Streaming Access Instructions
+      %p.mb-0= @gOrderInProgress.streaming_access_instructions
+
   .text-center.pt-2
     - if @gAdminDisplay
       = link_to 'Back to Customer List', customers_path, :class => 'btn btn-primary'

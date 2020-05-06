@@ -187,12 +187,17 @@ class Order < ActiveRecord::Base
   def item_count ; ticket_count + (includes_donation? ? 1 : 0) + retail_items.size; end
 
   def includes_vouchers?       ; ticket_count > 0  ; end
+  def includes_streaming?      ; vouchers.any? { |v| v.showdate.try(&:stream?) } ; end
   def includes_mailable_items? ; items.any? { |v| v.vouchertype.try(:fulfillment_needed?) } ; end
   def includes_enrollment?     ; items.any? { |v| v.showdate.try(:event_type) == 'Class' } ; end
-  def includes_bundle?         ;  items.any? { |v| v.vouchertype.try(:bundle?) }  ;  end
   def includes_nonticket_item? ;  items.any? { |v| v.vouchertype.try(:nonticket?) } ; end
+  #def includes_bundle?         ;  vouchers.any?(&:bundle?)     ;  end
+  #def includes_regular_vouchers? ; vouchers.any? { |v| !v.bundle? }   ; end
+  #def includes_reserved_vouchers? ; vouchers.any?(&:reserved?) ; end
+  def includes_bundle?         ;  items.any? { |v| v.vouchertype.try(:bundle?) }  ;  end
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
+
 
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
@@ -261,6 +266,7 @@ class Order < ActiveRecord::Base
     end
     summary += nonvouchers.map(&:one_line_description)
     summary << self.comments
+    summary << streaming_access_instructions if includes_streaming?
     summary.join(separator)
   end
 
@@ -271,6 +277,11 @@ class Order < ActiveRecord::Base
     summary.join('; ')
   end
 
+  def streaming_access_instructions
+    # this is almost certainly a Demeter violation...but not sure how to make better
+    vouchers.first.showdate.access_instructions
+  end
+  
   def collect_notes
     # collect the showdate-specific (= show-specific) notes in the order
     items.map(&:showdate).compact.uniq.map(&:patron_notes).compact
@@ -279,7 +290,7 @@ class Order < ActiveRecord::Base
   def completed? ;  persisted?  &&  !sold_on.blank? ; end
 
   def comment_prompt
-    if (! includes_vouchers? || includes_bundle? || gift?) then nil
+    if (! includes_vouchers? || includes_bundle? || gift? || includes_streaming?) then nil
     elsif includes_enrollment?  then {
         prompt: 'Who is attending the class?',
         placeholder: "Enrollee's name"

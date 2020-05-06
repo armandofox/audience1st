@@ -2,8 +2,6 @@
   .col.text-right
     %label.col-form-label Show and Date:
   .col.text-center
-    = select_tag 'new_showdate', showdates_with_urls(walkup_sale_path(@showdate)), |
-      :class => 'form-control', |
-      :onchange => 'window.location = $("#new_showdate").val()' |
+    = select_tag 'new_showdate', showdates_with_urls(@showdate), :class => 'form-control', :onchange => 'window.location = $("#new_showdate").val()'
   .col
     = hidden_field_tag 'seatmap_info', @seatmap_info, :class => 'walkup_preview_seatmap'

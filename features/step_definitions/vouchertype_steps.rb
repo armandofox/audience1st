@@ -116,10 +116,10 @@ Then /(only )?the following voucher types should be valid for "(.*)":$/ do |only
          rescue ActiveRecord::RecordNotFound
            raise "Can't find valid_voucher for #{v['vouchertype']}:#{v['showdate']}"
          end
-    expect(vv.end_sales).to eq(Time.zone.parse(v['end_sales']))
-    expect(vv.max_sales_for_type).to eq(v['max_sales'].to_i)
+    expect(vv.end_sales).to eq(Time.zone.parse(v['end_sales'])), "(for id: #{vv.id})"
+    expect(vv.max_sales_for_type).to eq(v['max_sales'].to_i), "(for id: #{vv.id})"
     if v['promo_code']
-      expect(vv.promo_code.to_s).to eq v['promo_code'].to_s
+      expect(vv.promo_code.to_s).to eq(v['promo_code'].to_s), "(for id: #{vv.id})"
     end
     vv
   end
@@ -152,6 +152,6 @@ end
 
 When /I select the following show dates: (.*)/ do |dates|
   dates.split(/\s*,\s*/).each do |date|
-    check(Time.parse(date).to_formatted_s(:showtime_brief))
+    check(Time.zone.parse(date).to_formatted_s(:showtime_brief))
   end
 end

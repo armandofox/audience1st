@@ -83,7 +83,7 @@ describe Order do
     end
   end
 
-  describe 'showdate notes', focus:true do
+  describe 'showdate notes' do
     before :each do
       @s1 = create(:show, :patron_notes => 'Enjoy')
       @s2 = create(:show)

@@ -9,10 +9,17 @@
         .form-check
           - field_id = "vouchertypes[#{v.id}]"
           .form-check-input= check_box_tag "vouchertypes[]", v.id, false, :id => field_id, :class => 'vouchertype'
-          %label.form-check-label{:for => field_id}= v.name_with_season_and_price
+          %label.form-check-label.col-form-label{:for => field_id}= v.name_with_season_and_price
           %br
 
-  .alert.alert-info= t('season_setup.options_apply_to_all_selected_performances')
+  .alert.alert-info.Tl.Tt= t('season_setup.options_apply_to_all_selected_performances')
+
+  - if @show.showdates.any?(&:stream?)
+    .form-row.py-1.border-bottom
+      .col-5.text-right
+        %label.col-form-label{:for => :showdate_type} Add/change redemptions for performances that are
+      .col-2
+        = select_tag 'showdate_type', showdate_type_choices(@show), :class => 'form-control showdate-type'
 
   #adjust-max-sales
     .form-group.form-row.pb-0.mb-0
@@ -45,7 +52,7 @@
       .col-md-5.text-right
         = popup_help_for :valid_voucher_sales_dates
         %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales for each performance
-      .col-md-6= datetime_select 'valid_voucher', 'start_sales'
+      .col-md-6= datetime_select 'valid_voucher', 'start_sales', :minute_step => 15
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
@@ -58,9 +65,10 @@
       .col-md-5.text-right
         = popup_help_for :valid_voucher_sales_dates
         %label.col-form-label End sales for each performance
-      .form-check.form-check-inline.col-md-6
+      .col-md-6.form-check.form-check-inline.Tt.Tl
         = number_field_tag 'minutes_before', @minutes_before, :class => 'form-control form-control-sm col-md-2'
         %label.col-form-label{:for => :minutes_before} minutes before show time
+      .col-md-6.Ts= datetime_select 'valid_voucher', 'end_sales', :minute_step => 15, :class => 'valid-voucher-end-sales'
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
@@ -70,33 +78,37 @@
     
   .alert.alert-info= t('season_setup.apply_to_which_performances')
 
-  .container.pb-2#select-performances
+  .pb-2.Tt.Tl#select-performances
     .form-row.pl-4.pb-3
       .col-md-2.text-center
         Select Dates:
         %br
-        = link_to 'All', '#',  :onclick => %Q{$('.showdate').prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+        = link_to 'All', '#',  :onclick => %Q{$('.showdate.'+($('#showdate_type').val()+'d')).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
         = link_to 'None', '#', :onclick => %Q{$('.showdate').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
       .col-md-5.text-center
         Or Select Every:
         %br
         - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+          = link_to wday, '#', :onclick => %Q{$('.showdate.#{wday}.' + ($('#showdate_type').val()+'d')).prop('checked', true).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
       .col-md-5.text-center
         Or Un-select Every:
         %br
         - %w(Mon Tue Wed Thu Fri Sat Sun).each do |wday|
-          = link_to wday, '#', :onclick => %Q{$('.showdate-#{wday}').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
+          = link_to wday, '#', :onclick => %Q{$('.showdate.#{wday}').prop('checked', false).change(); return(false);}, :class => 'btn btn-outline-secondary btn-sm px-1'
 
 
+  .mx-2.pb-2
     - @show.showdates.each_with_index do |showdate,idx|  
       - if idx % 3 == 0
         <div class="form-row">
-      .col-3.form-check.form-check-inline
+      - klass = class_for_showdate_type(showdate) + 'd'
+      .col-3.form-check.form-check-inline{:class => klass}
         - wkday = showdate.thedate.strftime('%a')
         - field_id = "showdates[#{showdate.id}]"
-        .form-check-input= check_box_tag('showdates[]', showdate.id, false, :class => "showdate showdate-#{wkday}", :id => field_id)
-        %label.form-check-label{:for => field_id}= showdate.thedate.to_formatted_s(:showtime_brief)
+        = check_box_tag('showdates[]', showdate.id, false, :class => "form-check-input showdate #{wkday} #{klass}", :id => field_id)
+        %label.form-check-label{:for => field_id}
+          = "Stream until" if klass=='Tsd'
+          = showdate.printable_date_brief
       - if idx % 3 == 2
         </div>
     - if @show.showdates.size % 3 != 0
