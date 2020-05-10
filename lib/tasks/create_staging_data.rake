@@ -235,6 +235,7 @@ staging = namespace :staging do
           puts o.errors.full_messages
           $stdout.flush
         end
+        byebug
         StagingHelper::dot
       end
     end
