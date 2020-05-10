@@ -212,8 +212,10 @@ staging = namespace :staging do
   task :sell_revenue => :environment do
     StagingHelper::switch_to_staging!
     percent = (ENV['PERCENT'] || '50').to_i / 100.0
+    puts sprintf("Selling to capacity %.02f\n", percent) ; $stdout.flush
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
     Showdate.general_admission.each do |perf|
+      puts perf.id ; $stdout.flush
       valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertypes => {:category => :revenue}).to_a.freeze
       # sell percentage of tickets
       while perf.total_sales.size < (percent * perf.house_capacity) do
@@ -233,8 +235,8 @@ staging = namespace :staging do
           puts o.errors.full_messages
           $stdout.flush
         end
+        StagingHelper::dot
       end
-      StagingHelper::dot
     end
   end
 end
