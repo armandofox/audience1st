@@ -32,21 +32,15 @@ staging = namespace :staging do
   
   desc "Re-create fake data in staging database (tenant '#{StagingHelper::TENANT}')"
   task :initialize => :environment do
-    puts "Clearing out old staging data..."
     staging['reset'].invoke     # truncate & re-seed DB
     staging['api_keys'].invoke  # set correct API keys for staging/test mode
-    print "\nCreating customers"
     staging['fake_customers'].invoke # create fake customers
-    print "\nCreating productions and vouchers..."
     staging['fake_season'].invoke    # create 3 shows with 3 weekend runs each
     staging['fake_vouchers'].invoke  # create 2 revenue vouchertypes, make valid for all showdates
     staging['fake_subscriptions'].invoke # create a sub with 1tx per show
     staging['reset_sales'].invoke
-    print "\n'Selling' revenue tickets"
     staging['sell_revenue'].invoke
-    print "\n'Selling' subscriptions..."
     staging['sell_subscriptions'].invoke
-    print "\nRecording donations"
     staging['fake_donations'].invoke
     puts "\nStaging data is ready"
   end
@@ -54,6 +48,7 @@ staging = namespace :staging do
   desc "Reset fake data in staging database (tenant '#{StagingHelper::TENANT}')"
   task :reset => :environment do
     StagingHelper.abort_if_production!
+    puts "Clearing existing staging data and resetting database..."
     Apartment::Tenant.drop(StagingHelper::TENANT) rescue nil
     Apartment::Tenant.create StagingHelper::TENANT
     StagingHelper.switch_to_staging!
@@ -76,8 +71,9 @@ staging = namespace :staging do
   task :fake_customers => :environment do
     StagingHelper.switch_to_staging!
     num_customers = (ENV['NUM_CUSTOMERS'] || '100').to_i
+    print "Creating #{num_customers} fake customers:    "
     now = Time.current.at_beginning_of_day
-    (CSV.read(File.join(Rails.root, 'spec', 'fake_names.csv')))[0,num_customers].each do |c|
+    (CSV.read(File.join(Rails.root, 'spec', 'fake_names.csv')))[0,num_customers].each_with_index do |c,i|
       cust = Customer.new(
         :last_name => c[0], :first_name => c[1], :street => c[2], :day_phone => c[3], :email => c[4],
         :password => 'pass',
@@ -86,14 +82,16 @@ staging = namespace :staging do
         )
       cust.last_login = now
       cust.save!
-      StagingHelper::dot
+      printf "\b\b\b\b%4d",1+i
     end
+    puts
   end
 
-  desc "Create 3 fake productions, each with 3-weekend (Fri/Sat/Sun) run, with first show opening on the first Friday of next month, each show's tickets going on sale 2 weeks before opening, two price points for each production, and a Subscription that includes all three."
+  desc "Create 3 fake productions, each with 3-weekend (Fri/Sat/Sun) run, with first show opening on the first Friday of next month, each show's tickets going on sale 2 weeks before opening, two price points for each production."
   task :fake_season => :environment do
     StagingHelper::switch_to_staging!
     range_start = Time.now.at_beginning_of_month + 1.month
+    puts "Creating 3 fake productions with 3-weekend (Fri/Sat/Sun) runs..."
     StagingHelper::SHOWS.each_with_index do |show,index|
       # every Fri, Sat, Sun at 8pm
       showdates = DatetimeRange.new(
@@ -130,6 +128,7 @@ staging = namespace :staging do
     price1 = Vouchertype.create!({:name => 'General', :price => 35}.merge(vtype_opts)) if Vouchertype.where(:name => 'General').empty?
     price2 = Vouchertype.create!({:name => 'Student/TBA', :price => 25}.merge(vtype_opts)) if Vouchertype.where(:name => 'Student/TBA').empty?
     now = Time.current.at_beginning_of_day
+    puts "Making General ($35) and Student/TBA ($30) vouchers redeemable for all performances..."
     Showdate.all.each do |perf|
       perf.valid_vouchers.create!(:vouchertype => price1, :start_sales => now, :end_sales => perf.thedate - 1.hour)
       perf.valid_vouchers.create!(:vouchertype => price2, :start_sales => now, :end_sales => perf.thedate - 1.hour)
@@ -171,7 +170,7 @@ staging = namespace :staging do
     Txn.delete_all
   end
 
-  desc "Sell 1,2, or 3 subscriptions to PERCENT of all customers (default 50) so that average # of subs per customer is 2, and reserve sub vouchers for randomly chosen showdates"
+  desc "Sell 1,2, or 3 subscriptions to PERCENT of all customers (default 50) so that average # of subs per customer is 2"
   task :sell_subscriptions => :environment do
     StagingHelper::switch_to_staging!
     percent = (ENV['PERCENT'] || '50').to_i / 100.0
@@ -179,47 +178,51 @@ staging = namespace :staging do
       where(:vouchertypes => {:category => :bundle, :subscription => true}).
       first
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
-    customers = customers.sample(customers.size * percent * 0.5) # since will sell avg of 2 per pax
+    num_customers = customers.size * percent * 0.5
+    customers = customers.sample(num_customers) # since will sell avg of 2 per pax
+    print "Selling 1-4 subscriptions (usually 2) to #{customers.size} customers:  "
     customers.each do |customer|
       o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
         :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
       num_tix = [1,2,2,2,2,3,4].sample
       o.add_tickets_without_capacity_checks(sub_voucher, num_tix)
       o.finalize!
-      StagingHelper::dot
-      # now reserve each of those vouchers for a random perf of each show
-      # TBD
+      print num_tix
     end
+    puts
   end
 
   desc "Randomly pick PERCENT of all customers (default 50) and have each of these make 1 to 3 donations of $20 to $150 apiece"
   task :fake_donations => :environment do
     StagingHelper::switch_to_staging!
-    percent = (ENV['PERCENT'] || '50').to_i / 100.0    
-    Customer.regular_customers.sample(Customer.all.size * percent).each do |customer|
+    percent = (ENV['PERCENT'] || '50').to_i / 100.0
+    num_customers = (Customer.count * percent).to_i
+    print "Recording 1-3 donations (usually 1) of $20-$150 apiece for #{num_customers} customers"
+    Customer.regular_customers.sample(num_customers).each do |customer|
       [1,1,1,1,2,2,3].sample.times do
         o = Order.create(:purchaser => customer, :processed_by => customer, :customer => customer,
           :purchasemethod => Purchasemethod.get_type_by_name('box_chk'))
         o.add_donation(Donation.from_amount_and_account_code_id(20 + 15 * rand(10), AccountCode.default_account_code_id))
         o.finalize!
         o.update_attribute(:sold_on, Time.current - rand(180).days)
-        StagingHelper::dot
+        print "."
       end
     end
+    puts
   end
 
   desc "For each showdate, sell PERCENT of remaining seats (default 50) using a random mix of revenue vouchertypes for that showdate"
   task :sell_revenue => :environment do
     StagingHelper::switch_to_staging!
-    percent = (ENV['PERCENT'] || '50').to_i / 100.0
+    pct = (ENV['PERCENT'] || '50').to_i
+    percent =  pct / 100.0
     customers = Customer.where('role >= 0 AND role<100') # hack: exclude special customers & admin
     showdates = Showdate.general_admission
-    puts sprintf(" to %d performances to capacity %d", showdates.size, 100*percent) ; $stdout.flush
+    print "Selling #{showdates.size} performances to #{pct}%, 1-4 tickets at a time:  "
     showdates.each_with_index do |perf,i|
-      puts "\n#{i}: " ; $stdout.flush
       valid_vouchers = ValidVoucher.includes(:vouchertype).where(:showdate => perf, :vouchertypes => {:category => :revenue}).to_a.freeze
       # sell percentage of tickets
-      while perf.total_sales.size < (percent * perf.house_capacity) do
+      while perf.total_sales.count < (percent * perf.house_capacity) do
         # pick a customer
         customer = customers.sample
         customer = customers.sample until customer.valid_as_purchaser?
@@ -232,13 +235,14 @@ staging = namespace :staging do
         o.add_tickets_without_capacity_checks(valid_voucher, num_tix)
         begin
           o.finalize!
-          puts num_tix
+          print "\b#{num_tix}"
         rescue Order::NotReadyError => e
           puts o.errors.full_messages
         end
-        perf.reload             # to force update to sales count
       end
+      print "\b. "
     end
+    puts
   end
 end
 

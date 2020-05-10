@@ -7,13 +7,8 @@ class EmailList
 
   def initialize(key = nil)
     @apikey = key || (Option.mailchimp_key rescue nil)
-    if @apikey.blank?
-      @disabled = true
-      Rails.logger.info("email_list: NOT initializing mailchimp")
-    else
-      Rails.logger.info "email_list: Init Mailchimp"
-    end
-    !@disabled
+    @disabled = !! @apikey.blank?
+    @errors = nil
   end
 
   private
@@ -63,7 +58,7 @@ class EmailList
   end
 
   def update(cust, old_email)
-    return nil if @isabled
+    return nil if disabled
     what = "updating #{cust.full_name} from #{old_email} to #{cust.email}"
     begin
       # 'upsert' modifies a user if exists, or adds if not. But can still fail if the
@@ -119,7 +114,7 @@ class EmailList
 
   def get_sublists
     # returns names of sublists
-    return [] if @disabled
+    return [] if disabled
     begin
       segments.map { |s| s[:name] }
     rescue Gibbon::MailChimpError => e
@@ -129,7 +124,7 @@ class EmailList
   end
 
   def add_to_sublist(sublist,customers=[])
-    return nil if @disabled
+    return nil if disabled
     segs = segments
     begin
       seg_id = segment_id_from_name(sublist)
