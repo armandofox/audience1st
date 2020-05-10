@@ -110,6 +110,8 @@ staging = namespace :staging do
           :house_capacity => 50,
           :max_advance_sales => 50,
           :thedate => date,
+          :live_stream => false,
+          :stream_anytime => false,
           :end_advance_sales => date - 3.hours)
       end
       range_start += 1.month
@@ -229,6 +231,7 @@ staging = namespace :staging do
           o.finalize!
         rescue Order::NotReadyError => e
           puts o.errors.full_messages
+          $stdout.flush
         end
       end
       StagingHelper::dot
