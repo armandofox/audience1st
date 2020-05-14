@@ -9,14 +9,14 @@
 require 'csv'
 
 module StagingHelper
-  TENANT = Figaro.env.TENANT!
+  TENANT = ENV['TENANT']
   SHOWS = ['Company', 'Fiddler on the Roof', 'West Side Story']
   CITIES = ['Oakland', 'San Francisco', 'Alameda', 'Hayward', 'San Leandro', 'Berkeley',
     'Daly City', 'Castro Valley', 'Pleasanton', 'Walnut Creek', 'Concord', 'Antioch', 'Pittsburg',
     'Union City', 'Fremont', 'Albany', 'El Cerrito', 'Dublin', 'Livermore', 'Newark']
   def self.abort_if_production!
     abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if
-      Rails.env.production? && Figaro.env.CLOBBER_PRODUCTION.blank?
+      Rails.env.production? && ENV['CLOBBER_PRODUCTION'].blank?
   end
   def self.switch_to_staging!
     abort_if_production!
@@ -87,7 +87,7 @@ staging = namespace :staging do
   desc "Create 3 fake productions, each with 3-weekend (Fri/Sat/Sun) run, with first show opening on the first Friday after START_DATE (any format Time.parse can handle), each show's tickets going on sale 2 weeks before opening, two price points for each production."
   task :fake_season => :environment do
     StagingHelper::switch_to_staging!
-    start_date = Figaro.env.START_DATE
+    start_date = ENV['START_DATE']
     range_start =  start_date.blank? ? Time.now.at_beginning_of_month + 1.month : Time.parse(start_date)
     puts "Creating 3 fake productions with 3-weekend (Fri/Sat/Sun) runs starting #{range_start.strftime('%B %Y')}..."
     StagingHelper::SHOWS.each_with_index do |show,index|
