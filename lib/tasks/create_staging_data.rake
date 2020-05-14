@@ -9,22 +9,19 @@
 require 'csv'
 
 module StagingHelper
-  TENANT = ENV['TENANT']
+  TENANT = Figaro.env.TENANT!
   SHOWS = ['Company', 'Fiddler on the Roof', 'West Side Story']
   CITIES = ['Oakland', 'San Francisco', 'Alameda', 'Hayward', 'San Leandro', 'Berkeley',
     'Daly City', 'Castro Valley', 'Pleasanton', 'Walnut Creek', 'Concord', 'Antioch', 'Pittsburg',
     'Union City', 'Fremont', 'Albany', 'El Cerrito', 'Dublin', 'Livermore', 'Newark']
   def self.abort_if_production!
     abort "Must set CLOBBER_PRODUCTION=1 to do this on production DB" if
-      Rails.env.production? && ENV['CLOBBER_PRODUCTION'].blank?
+      Rails.env.production? && Figaro.env.CLOBBER_PRODUCTION.blank?
   end
   def self.switch_to_staging!
     abort_if_production!
     abort "Only a1-staging and sandbox are valid tenants" unless ['a1-staging','sandbox'].include?(StagingHelper::TENANT)
     Apartment::Tenant.switch! StagingHelper::TENANT
-  end
-  def self.dot
-    print "."; $stdout.flush
   end
 end
 
@@ -54,7 +51,7 @@ staging = namespace :staging do
     StagingHelper.switch_to_staging!
     load File.join(Rails.root, 'db', 'seeds.rb')
     Option.first.update_attributes!(
-      :venue => 'A1 Staging Theater',
+      :venue => StagingHelper::TENANT.humanize.name_capitalize,
       :season_start_month => (1.month.ago).month)
   end
 
@@ -62,8 +59,8 @@ staging = namespace :staging do
   task :api_keys => :environment do
     StagingHelper::switch_to_staging!
     Option.first.update_attributes!(
-      :stripe_key => Figaro.env.STRIPE_KEY!,
-      :stripe_secret => Figaro.env.STRIPE_SECRET!,
+      :stripe_key => Figaro.env.STRIPE_TEST_KEY_FOR_PROVISIONING!,
+      :stripe_secret => Figaro.env.STRIPE_TEST_SECRET_FOR_PROVISIONING!,
       :sendgrid_domain => '')   # domain blank disables email sending
   end
 
@@ -87,11 +84,12 @@ staging = namespace :staging do
     puts
   end
 
-  desc "Create 3 fake productions, each with 3-weekend (Fri/Sat/Sun) run, with first show opening on the first Friday of next month, each show's tickets going on sale 2 weeks before opening, two price points for each production."
+  desc "Create 3 fake productions, each with 3-weekend (Fri/Sat/Sun) run, with first show opening on the first Friday after START_DATE (any format Time.parse can handle), each show's tickets going on sale 2 weeks before opening, two price points for each production."
   task :fake_season => :environment do
     StagingHelper::switch_to_staging!
-    range_start = Time.now.at_beginning_of_month + 1.month
-    puts "Creating 3 fake productions with 3-weekend (Fri/Sat/Sun) runs..."
+    start_date = Figaro.env.START_DATE
+    range_start =  start_date.blank? ? Time.now.at_beginning_of_month + 1.month : Time.parse(start_date)
+    puts "Creating 3 fake productions with 3-weekend (Fri/Sat/Sun) runs starting #{range_start.strftime('%B %Y')}..."
     StagingHelper::SHOWS.each_with_index do |show,index|
       # every Fri, Sat, Sun at 8pm
       showdates = DatetimeRange.new(
