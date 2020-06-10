@@ -16,13 +16,13 @@ class DonationsController < ApplicationController
     @params = {}
     @page_title = "Donation history"
     @page = (params[:page] || '1').to_i
-    if params[:dates]
+    if !params[:dates].blank?
       mindate,maxdate = Time.range_from_params(params[:dates])
+      @header = "#{mindate.to_formatted_s(:compact)}-#{maxdate.to_formatted_s(:compact)}: "
     else
-      mindate,maxdate = [Time.current.at_beginning_of_season,Time.current]
-      params[:use_date] = true  # force limiting by date if 'default' landing
+      mindate,maxdate = [Time.parse("2007-01-01"), Time.current]
+      @header = ''
     end
-    params[:from],params[:to] = mindate,maxdate
     @donations = Donation.
       includes(:order,:customer,:account_code).
       where.not(:customer_id => Customer.walkup_customer.id).
@@ -41,15 +41,18 @@ class DonationsController < ApplicationController
     if params[:use_ltr_sent]
       @donations = @donations.where(:letter_sent => nil)
     end
-    if params[:use_fund] && !params[:donation_funds].blank?
+    if !params[:use_fund].blank? && !params[:donation_funds].blank?
       @donations = @donations.where(:account_code_id => params[:donation_funds])
     end
     @total = @donations.sum(:amount)
     @params = params
+
     if params[:commit] =~ /download/i
       send_data @donations.to_csv,  :type => 'text/csv', :filename => filename_from_dates('donations',mindate,maxdate,'csv')
     else
       @donations = @donations.paginate(:page => @page)
+      @header << "#{@donations.total_entries} transactions, " <<
+        ActionController::Base.helpers.number_to_currency(@total)
     end
   end
 

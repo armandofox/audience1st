@@ -1,6 +1,4 @@
-%h1
-  = if @params[:from] then "#{date_range(@params[:from],@params[:to])}: " end
-  #{@donations.total_entries} transactions, #{number_to_currency @total}
+%h1= @header
 
 .pagination-container
   .pagination.mx-auto
