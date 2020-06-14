@@ -3,17 +3,19 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
-  force_ssl if Rails.env.production?
+  if Rails.env.production?
+    force_ssl
+    before_action :strict_transport_security
+  end
 
   include AuthenticatedSystem
   include FilenameUtils
-
-  require 'csv'
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
   before_action :maintenance_mode?
 
   private
+
   def maintenance_mode?
     return unless Option.staff_access_only?
     # allow login/logout even in maint mode
@@ -23,6 +25,12 @@ class ApplicationController < ActionController::Base
       @gMaintMode = true
     else
       render 'sessions/maintenance'
+    end
+  end
+
+  def strict_transport_security # :rails4: can be omitted for rails >=5
+    if request.ssl?
+      response.headers['Strict-Transport-Security'] = "max-age=31536000; includeSubDomains"
     end
   end
 
