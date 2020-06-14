@@ -13,7 +13,7 @@
     .form-row
       .form-group.col-md-6
         %label.col-form-label{:for=>:customer_password}= defined?(newpassword) ? 'New Password' : 'Password'
-        = password_field 'customer', 'password', :size => 20, :value => '', :class => 'form-control form-control-sm'
+        = password_field 'customer', 'password', :size => 20, :value => '', :autocomplete => 'off', :class => 'form-control form-control-sm'
       .form-group.col-md-6
         %label.col-form-label{:for=>:customer_password_confirmation}= defined?(newpassword) ? 'Confirm New Password' : 'Confirm Password'
         = password_field 'customer', 'password_confirmation', :size => 20, :value => '', :class => 'form-control form-control-sm'
