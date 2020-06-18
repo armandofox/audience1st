@@ -14,9 +14,9 @@ module GenerateRefundItem
       failed = []
       c.each do |item|
         begin
-          p = Parser.new(c.comments)
+          p = Parser.new(item.attributes['comments'])
         rescue StandardError => e
-          failed << "[#{c.id}] c.comments"
+          failed << "[#{item.id}] #{item.comments}"
         end
       end
       puts "#{failed.size} failed out of #{c.size}"
@@ -46,15 +46,23 @@ module GenerateRefundItem
     attr_accessor :attr
     def initialize(canceled_item)
       @item = canceled_item
-      @attr = Parser.new(canceled_item.comments)
+      @attr = Parser.new(canceled_item.attributes['comments'])
     end
     def refundable?
       attr.orig_price > 0.0 && @item.finalized?
     end
 
     def generate_attributes
-      fields_to_copy = %w(customer_id vouchertype_id processed_by_id bundle_id account_code_id order_id) 
-      refund = RefundItem.new()
+      fields_to_copy = %w(customer_id vouchertype_id showdate_id promo_code processed_by_id bundle_id walkup amount account_code_id order_id letter_sent finalized seat) 
+      refund = RefundItem.new
+      fields_to_copy.each do |f|
+        refund.send("#{f}=", item.f)
+      end
+      # set price on the new item
+      refund.amount = - attr.orig_price
+      # MODIFY price on the canceled item
+      item.amount = attr.orig_price
+      # the new item's create and update timestamps should match canceled item's
     end
 
   end

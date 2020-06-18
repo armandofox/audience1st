@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe GenerateRefundItem, focus:true do
+describe GenerateRefundItem do
 
   before(:each) do
     @cases = [
@@ -22,6 +22,18 @@ describe GenerateRefundItem, focus:true do
       expect(p.desc).to eq(c[3])
     end
   end
-  describe 'migrator' do
+  describe 'refunding' do
+    before(:each) do
+      @who = create(:boxoffice_manager)
+      @ci = create(:revenue_voucher)
+      @orig_price = @ci.amount
+      @ci.cancel!(@who)
+    end
+    it "has created-at and updated-at set to canceled item's updated-at"
+    it 'does not affect seat count'
+    it 'has amount (alias price) set to original purchase amount' do
+      expect(@ci.amount).to eq(@orig_price)
+      expect(@ci.price).to eq(@orig_price)
+    end
   end
 end

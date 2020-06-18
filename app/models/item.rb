@@ -36,9 +36,13 @@ class Item < ActiveRecord::Base
   #  description into the comment field of the item
 
   def cancel!(by_whom)
+    refund_item = RefundedItem.from_cancellation(self) if amount > 0
     self.comments = "[CANCELED #{by_whom.full_name} #{Time.current.to_formatted_s :long}] #{description_for_audit_txn}"
     self.type = 'CanceledItem'
-    self.save!
+    Item.transaction do
+      self.save!
+      refund_item.save! if refund_item
+    end
     CanceledItem.find(self.id)  #  !
   end
 
