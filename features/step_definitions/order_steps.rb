@@ -133,9 +133,12 @@ When /^I check the transfer box for the (\d)(?:th|st|rd) "(.*)" voucher$/ do |or
 end
 
 Then /^there should be refund items for that order with amounts:(.*)/ do |list|
-  amounts = list.strip.split(/\s*,\s*/).map(&:to_f)
+  amounts = list.strip.split(/\s*,\s*/).map(&:to_f).sort.map { |x| -x }
   order_item_ids = @order.items.where('type != "RefundedItem"').map(&:id)
-  refunds = RefundedItem.where(:order_id => @order.id, :bundle_id => order_item_ids)
-  expect(refunds.count).to eq(order_item_ids.length)
-  expect(refunds.map(&:bundle_id).sort).to eq(order_item_ids.sort)
+  refunds = RefundedItem.where(:order_id => @order.id, :bundle_id => order_item_ids).order(:amount)
+  expect(amounts.count).to eq(refunds.count)
+end
+
+Then /^there should be no refund items for that order/ do
+  expect(@order.items.where('type = "RefundedItem"').count).to eq(0)
 end

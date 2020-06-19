@@ -22,7 +22,6 @@ Scenario: successful refund of credit card order
   And  I refund that order
   Then I should be on the order page for that order
   And  I should see "Credit card refund of $23.00 successfully processed."
-  Then show me the page
   And  there should be refund items for that order with amounts: 7.00,7.00,5.00,4.00
 
 @stubs_successful_refund
@@ -34,6 +33,7 @@ Scenario: partial refund credit card order
   And I should see "Order total: $11.00"
   And I should see /CANCELED Mary Manager.*7.00 General/
   But I should not see /CANCELED Mary Manager.*4.00 Senior/
+  And there should be refund items for that order with amounts: 7.00,7.00
 
 @stubs_successful_refund
 Scenario: refund multiple items in separate transactions
@@ -42,11 +42,12 @@ Scenario: refund multiple items in separate transactions
   And I refund items 3,4 of that order
   Then I should see "Order total: $7.00"
   And I should see "Credit card refund of $9.00 successfully processed"
+  And there should be refund items for that order with amounts: 7.00,4.00,5.00
 
 @stubs_failed_refund
 Scenario: cannot refund credit card order
 
   When I refund item 1 of that order
   Then I should see "Could not process credit card refund"
-
+  And there should be no refund items for that order
   
