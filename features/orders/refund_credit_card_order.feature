@@ -22,6 +22,8 @@ Scenario: successful refund of credit card order
   And  I refund that order
   Then I should be on the order page for that order
   And  I should see "Credit card refund of $23.00 successfully processed."
+  Then show me the page
+  And  there should be refund items for that order with amounts: 7.00,7.00,5.00,4.00
 
 @stubs_successful_refund
 Scenario: partial refund credit card order

@@ -131,3 +131,11 @@ When /^I check the transfer box for the (\d)(?:th|st|rd) "(.*)" voucher$/ do |or
   checkbox = "#{td}/..//input[@type='checkbox']"
   find_all(:xpath, checkbox)[ordinal - 1].set(true)
 end
+
+Then /^there should be refund items for that order with amounts:(.*)/ do |list|
+  amounts = list.strip.split(/\s*,\s*/).map(&:to_f)
+  order_item_ids = @order.items.where('type != "RefundedItem"').map(&:id)
+  refunds = RefundedItem.where(:order_id => @order.id, :bundle_id => order_item_ids)
+  expect(refunds.count).to eq(order_item_ids.length)
+  expect(refunds.map(&:bundle_id).sort).to eq(order_item_ids.sort)
+end

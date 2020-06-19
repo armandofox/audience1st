@@ -36,12 +36,12 @@ describe RefundedItem, focus:true do
         })
     end
     it 'generates exactly one refund item' do
-      expect(RefundedItem).to receive(:from_cancellation).exactly(1).time
+      expect(RefundedItem).to receive(:from_cancellation).exactly(1).times
       @sub.cancel!(@by)
     end
     it 'links refund item to actual sub purchase' do
       @sub = @sub.cancel!(@by)
-      refund = RefundedItem.where(:bundle_id => @sub.id)
+      refund = RefundedItem.where(:bundle_id => @sub.id).first
       expect(refund.canceled_item).to eq(@sub)
     end
   end
