@@ -4,7 +4,11 @@ describe RefundedItem, focus:true do
   before(:each) do ; @by = mock_model(Customer, :full_name => 'A B') ; end
   describe 'revenue voucher cancellation' do
     before(:each) do
-      @voucher = create(:revenue_voucher, :amount => 15.50)
+      @purchase_date = 2.days.ago
+      Timecop.travel @purchase_date do
+        @voucher = create(:revenue_voucher, :amount => 15.50)
+        @voucher.save!
+      end
       @refund = RefundedItem.from_cancellation(@voucher)
     end
     it 'is valid' do ; expect(@refund).to be_valid ; end
@@ -21,6 +25,9 @@ describe RefundedItem, focus:true do
       it 'canceled item has correct price' do
         expect(@voucher.amount).to eq(15.50)
       end
+      it 'canceled item updated_at matches original purchase date' do
+        expect(@voucher.updated_at).to be_within(1.second).of @purchase_date
+      end
     end
   end
   specify 'zero-revenue voucher cancellation does not generate a refund item' do
@@ -30,10 +37,13 @@ describe RefundedItem, focus:true do
   end
   describe 'subscription voucher cancellation' do
     before(:each) do
-      @sub = create(:bundle_voucher, :including => {
-          create(:subscriber_voucher) => 2,
-          create(:subscriber_voucher) => 1
-        })
+      @purchase_date = 2.days.ago
+      Timecop.travel @purchase_date do
+        @sub = create(:bundle_voucher, :including => {
+            create(:subscriber_voucher) => 2,
+            create(:subscriber_voucher) => 1
+          })
+      end
     end
     it 'generates exactly one refund item' do
       expect(RefundedItem).to receive(:from_cancellation).exactly(1).times
@@ -43,6 +53,10 @@ describe RefundedItem, focus:true do
       @sub = @sub.cancel!(@by)
       refund = RefundedItem.where(:bundle_id => @sub.id).first
       expect(refund.canceled_item).to eq(@sub)
+    end
+    it "leaves canceled item's updated_on as original purchase date" do
+      @sub = @sub.cancel!(@by)
+      expect(@sub.updated_at).to be_within(1.second).of @purchase_date
     end
   end
 end
