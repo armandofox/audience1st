@@ -30,7 +30,8 @@ class RevenueByPaymentMethodReport
   def run
     items =
       Item.
-      includes(:account_code,:customer,:vouchertype, :showdate => :show).
+      joins(:order).
+      includes(:order,:account_code,:customer,:vouchertype, :showdate => :show).
       where('amount != 0').
       where(:finalized => true).
       order(:sold_on)

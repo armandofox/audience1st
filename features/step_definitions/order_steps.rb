@@ -92,8 +92,7 @@ Given /^the following orders have been placed:/ do |tbl|
         @order.add_tickets_without_capacity_checks(vv, $1.to_i)
       end
     end
-    @order.finalize!
-    @order.update_attribute(:sold_on,Time.zone.parse(order['date']))
+    @order.finalize!(Time.zone.parse(order['date']))
   end
 end
 

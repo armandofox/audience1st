@@ -22,6 +22,7 @@ class RefundedItem < Item
     refund.bundle_id = orig_item.id
     # set price on the new item
     refund.amount = -(orig_item.amount)
+    refund.sold_on = Time.current
     refund
   end
 end

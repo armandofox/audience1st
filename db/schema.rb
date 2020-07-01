@@ -68,14 +68,38 @@ ActiveRecord::Schema.define(version: 20200701003048) do
     t.integer  "ticket_sales_import_id"
   end
 
+  add_index "customers", ["city"], name: "index_customers_on_city", using: :btree
+  add_index "customers", ["city"], name: "public_customers_city4_idx", using: :btree
+  add_index "customers", ["day_phone"], name: "index_customers_on_day_phone", using: :btree
+  add_index "customers", ["day_phone"], name: "public_customers_day_phone7_idx", using: :btree
+  add_index "customers", ["email"], name: "index_customers_on_email", using: :btree
+  add_index "customers", ["email"], name: "public_customers_email2_idx", using: :btree
+  add_index "customers", ["eve_phone"], name: "index_customers_on_eve_phone", using: :btree
+  add_index "customers", ["eve_phone"], name: "public_customers_eve_phone8_idx", using: :btree
+  add_index "customers", ["first_name"], name: "index_customers_on_first_name", using: :btree
+  add_index "customers", ["first_name"], name: "public_customers_first_name1_idx", using: :btree
+  add_index "customers", ["last_name"], name: "index_customers_on_last_name", using: :btree
+  add_index "customers", ["last_name"], name: "public_customers_last_name0_idx", using: :btree
+  add_index "customers", ["role"], name: "index_customers_on_role", using: :btree
+  add_index "customers", ["role"], name: "public_customers_role9_idx", using: :btree
+  add_index "customers", ["state"], name: "index_customers_on_state", using: :btree
+  add_index "customers", ["state"], name: "public_customers_state5_idx", using: :btree
+  add_index "customers", ["street"], name: "index_customers_on_street", using: :btree
+  add_index "customers", ["street"], name: "public_customers_street3_idx", using: :btree
   add_index "customers", ["ticket_sales_import_id"], name: "index_customers_on_ticket_sales_import_id", using: :btree
+  add_index "customers", ["zip"], name: "index_customers_on_zip", using: :btree
+  add_index "customers", ["zip"], name: "public_customers_zip6_idx", using: :btree
 
   create_table "customers_labels", id: false, force: :cascade do |t|
     t.integer "customer_id"
     t.integer "label_id"
   end
 
-  add_index "customers_labels", ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", unique: true, using: :btree
+  add_index "customers_labels", ["customer_id", "label_id"], name: "index_customers_labels_on_customer_id_and_label_id", using: :btree
+  add_index "customers_labels", ["customer_id"], name: "index_customers_labels_on_customer_id", using: :btree
+  add_index "customers_labels", ["customer_id"], name: "public_customers_labels_customer_id0_idx", using: :btree
+  add_index "customers_labels", ["label_id"], name: "index_customers_labels_on_label_id", using: :btree
+  add_index "customers_labels", ["label_id"], name: "public_customers_labels_label_id1_idx", using: :btree
 
   create_table "items", force: :cascade do |t|
     t.integer  "vouchertype_id",                 default: 0,          null: false
@@ -100,14 +124,24 @@ ActiveRecord::Schema.define(version: 20200701003048) do
   end
 
   add_index "items", ["account_code_id"], name: "index_items_on_account_code_id", using: :btree
+  add_index "items", ["account_code_id"], name: "public_items_account_code_id6_idx", using: :btree
   add_index "items", ["bundle_id"], name: "index_items_on_bundle_id", using: :btree
+  add_index "items", ["bundle_id"], name: "public_items_bundle_id4_idx", using: :btree
+  add_index "items", ["customer_id"], name: "customer_id", using: :btree
   add_index "items", ["customer_id"], name: "index_items_on_customer_id", using: :btree
+  add_index "items", ["customer_id"], name: "public_items_customer_id0_idx", using: :btree
   add_index "items", ["finalized"], name: "index_items_on_finalized", using: :btree
   add_index "items", ["order_id"], name: "index_items_on_order_id", using: :btree
+  add_index "items", ["order_id"], name: "public_items_order_id3_idx", using: :btree
   add_index "items", ["processed_by_id"], name: "index_items_on_processed_by_id", using: :btree
   add_index "items", ["seat"], name: "index_items_on_seat", using: :btree
   add_index "items", ["showdate_id"], name: "index_items_on_showdate_id", using: :btree
+  add_index "items", ["showdate_id"], name: "index_vouchers_on_showdate_id", using: :btree
+  add_index "items", ["showdate_id"], name: "public_items_showdate_id1_idx", using: :btree
+  add_index "items", ["type"], name: "index_items_on_type", using: :btree
+  add_index "items", ["type"], name: "public_items_type2_idx", using: :btree
   add_index "items", ["vouchertype_id"], name: "index_items_on_vouchertype_id", using: :btree
+  add_index "items", ["vouchertype_id"], name: "public_items_vouchertype_id5_idx", using: :btree
 
   create_table "labels", force: :cascade do |t|
     t.string "name", limit: 255
@@ -192,10 +226,11 @@ ActiveRecord::Schema.define(version: 20200701003048) do
     t.text     "accessibility_advisory_for_reserved_seating",                        default: "This seat is designated as an accessible seat.  Please ensure you need this accommodation before finalizing this reservation.", null: false
     t.string   "restrict_customer_email_to_domain"
     t.integer  "order_timeout",                                                      default: 5,                                                                                                                               null: false
-    t.datetime "last_sweep",                                                         default: '2019-12-24 17:59:23',                                                                                                           null: false
+    t.datetime "last_sweep",                                                         default: '2020-01-03 12:12:28',                                                                                                           null: false
   end
 
   create_table "orders", force: :cascade do |t|
+    t.string   "authorization",          limit: 255
     t.integer  "customer_id"
     t.integer  "purchasemethod"
     t.integer  "processed_by_id"
@@ -207,17 +242,22 @@ ActiveRecord::Schema.define(version: 20200701003048) do
     t.datetime "updated_at"
     t.boolean  "walkup",                             default: false
     t.boolean  "ship_to_purchaser",                  default: true
-    t.string   "authorization",          limit: 255
     t.text     "retail_items"
     t.string   "external_key"
     t.integer  "ticket_sales_import_id"
   end
 
+  add_index "orders", ["authorization"], name: "index_orders_on_authorization", using: :btree
+  add_index "orders", ["authorization"], name: "public_orders_authorization0_idx", using: :btree
   add_index "orders", ["customer_id"], name: "index_orders_on_customer_id", using: :btree
+  add_index "orders", ["customer_id"], name: "public_orders_customer_id2_idx", using: :btree
   add_index "orders", ["external_key"], name: "index_orders_on_external_key", using: :btree
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
   add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
+  add_index "orders", ["purchaser_id"], name: "public_orders_purchaser_id3_idx", using: :btree
   add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
+  add_index "orders", ["walkup"], name: "index_orders_on_walkup", using: :btree
+  add_index "orders", ["walkup"], name: "public_orders_walkup1_idx", using: :btree
 
   create_table "seatmaps", force: :cascade do |t|
     t.string  "name",                  null: false
@@ -244,8 +284,11 @@ ActiveRecord::Schema.define(version: 20200701003048) do
     t.text     "access_instructions"
   end
 
+  add_index "showdates", ["end_advance_sales"], name: "end_advance_sales", using: :btree
+  add_index "showdates", ["end_advance_sales"], name: "public_showdates_end_advance_sales0_idx", using: :btree
   add_index "showdates", ["seatmap_id"], name: "index_showdates_on_seatmap_id", using: :btree
   add_index "showdates", ["show_id"], name: "index_showdates_on_show_id", using: :btree
+  add_index "showdates", ["show_id"], name: "public_showdates_show_id1_idx", using: :btree
 
   create_table "shows", force: :cascade do |t|
     t.string   "name",                      limit: 255
@@ -291,6 +334,7 @@ ActiveRecord::Schema.define(version: 20200701003048) do
   end
 
   add_index "txns", ["customer_id"], name: "index_txns_on_customer_id", using: :btree
+  add_index "txns", ["customer_id"], name: "public_txns_customer_id0_idx", using: :btree
   add_index "txns", ["entered_by_id"], name: "index_txns_on_entered_by_id", using: :btree
   add_index "txns", ["order_id"], name: "index_txns_on_order_id", using: :btree
   add_index "txns", ["show_id"], name: "index_txns_on_show_id", using: :btree
@@ -308,8 +352,14 @@ ActiveRecord::Schema.define(version: 20200701003048) do
     t.datetime "updated_at",                     null: false
   end
 
+  add_index "valid_vouchers", ["showdate_id", "vouchertype_id"], name: "index_valid_vouchers_on_showdate_id_and_vouchertype_id", using: :btree
+  add_index "valid_vouchers", ["showdate_id", "vouchertype_id"], name: "public_valid_vouchers_showdate_id1_idx", using: :btree
   add_index "valid_vouchers", ["showdate_id"], name: "index_valid_vouchers_on_showdate_id", using: :btree
+  add_index "valid_vouchers", ["showdate_id"], name: "public_valid_vouchers_showdate_id3_idx", using: :btree
+  add_index "valid_vouchers", ["start_sales"], name: "index_valid_vouchers_on_start_sales", using: :btree
+  add_index "valid_vouchers", ["start_sales"], name: "public_valid_vouchers_start_sales0_idx", using: :btree
   add_index "valid_vouchers", ["vouchertype_id"], name: "index_valid_vouchers_on_vouchertype_id", using: :btree
+  add_index "valid_vouchers", ["vouchertype_id"], name: "public_valid_vouchers_vouchertype_id2_idx", using: :btree
 
   create_table "vouchertypes", force: :cascade do |t|
     t.string   "name",                limit: 255
@@ -329,5 +379,15 @@ ActiveRecord::Schema.define(version: 20200701003048) do
   end
 
   add_index "vouchertypes", ["account_code_id"], name: "index_vouchertypes_on_account_code_id", using: :btree
+  add_index "vouchertypes", ["category", "season"], name: "index_vouchertypes_on_category_and_season", using: :btree
+  add_index "vouchertypes", ["category", "season"], name: "public_vouchertypes_category4_idx", using: :btree
+  add_index "vouchertypes", ["category"], name: "index_vouchertypes_on_category", using: :btree
+  add_index "vouchertypes", ["category"], name: "public_vouchertypes_category2_idx", using: :btree
+  add_index "vouchertypes", ["season"], name: "index_vouchertypes_on_season", using: :btree
+  add_index "vouchertypes", ["season"], name: "public_vouchertypes_season3_idx", using: :btree
+  add_index "vouchertypes", ["subscription"], name: "index_vouchertypes_on_subscription", using: :btree
+  add_index "vouchertypes", ["subscription"], name: "public_vouchertypes_subscription0_idx", using: :btree
+  add_index "vouchertypes", ["walkup_sale_allowed"], name: "index_vouchertypes_on_walkup_sale_allowed", using: :btree
+  add_index "vouchertypes", ["walkup_sale_allowed"], name: "public_vouchertypes_walkup_sale_allowed1_idx", using: :btree
 
 end

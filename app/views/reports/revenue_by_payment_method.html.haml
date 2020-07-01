@@ -17,7 +17,7 @@
           %tr
             %th{:scope => 'col'} Order
             %th{:scope => 'col'} Item
-            %th{:scope => 'col'}
+            %th{:scope => 'col'} Description
             %th{:scope => 'col'} Sold on
             %th{:scope => 'col'} Customer
             %th{:scope => 'col'} Promo Code
@@ -32,6 +32,3 @@
               %td= item.customer.full_name
               %td= item.promo_code
               %td.text-right= number_to_currency item.amount
-
-
-

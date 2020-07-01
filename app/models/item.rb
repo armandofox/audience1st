@@ -13,7 +13,7 @@ class Item < ActiveRecord::Base
   belongs_to :showdate
 
   validates_associated :order
-  delegate :sold_on, :purchaser, :purchasemethod, :to => :order
+  delegate :purchaser, :purchasemethod, :to => :order
   
   belongs_to :processed_by, :class_name => 'Customer'
   validates_presence_of :processed_by_id
