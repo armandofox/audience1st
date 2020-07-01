@@ -1,6 +1,6 @@
 class AddSoldOnToItems < ActiveRecord::Migration
   def change
-    add_column :items, :sold_on, :datetime, :null => false
+    add_column :items, :sold_on, :datetime
     Item.reset_column_information
     # Set the sold_on date for CanceledItems to the date of cancellation (= item.updated_at)
     # Set the sold_on date for all other item types to the order's sold_on
