@@ -30,18 +30,16 @@ class RevenueByPaymentMethodReport
   def run
     items =
       Item.
-      joins(:order).
-      includes(:account_code,:order,:customer,:vouchertype, :showdate => :show).
+      includes(:account_code,:customer,:vouchertype, :showdate => :show).
       where('amount != 0').
       where(:finalized => true).
-      order('items.updated_at')
+      order(:sold_on)
     if show_id
       items = items.where('shows.id' => @show_id)
     elsif from
       # Everything except RefundedItems should be sorted based on orders.sold_on.
       # Refunds should be sorted based on the item's updated_at, which is always LATER than sold_on
-      items = items.where('orders.sold_on' => @from..@to)
-      # ??? items = items.or(:updated_at => @from..@to)
+      items = items.where(:sold_on => @from..@to)
     else
       self.errors.add(:base, 'You must specify either a date range or a production.')
       return nil
