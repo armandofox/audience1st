@@ -12,21 +12,27 @@
       .col-md-9.text-left= account_code.name_with_code
       .col-md-2.text-right{:id => "subtotal_#{payment_type}_#{account_code.id}"}= number_to_currency(items.map(&:amount).sum)
     .flippy-div{:id => "details_#{payment_type}_#{account_code.id}"}
-      %table.a1-table
+      %table.a1-table{:id => "table_#{payment_type}_#{account_code.id}"}
         %thead
           %tr
             %th{:scope => 'col'} Order
             %th{:scope => 'col'} Item
+            %th{:scope => 'col'}
             %th{:scope => 'col'} Sold on
             %th{:scope => 'col'} Customer
             %th{:scope => 'col'} Promo Code
             %th{:scope => 'col'} Amount
         %tbody
           - items.each do |item|
-            %tr
+            %tr{:id => "item_#{item.id}"}
               %td= link_to item.order_id, order_path(item.order)
+              %td= item.id
               %td= item.one_line_description
-              %td= item.order.sold_on.strftime('%Y-%m-%d %H:%M')
+              %td
+                - if item.kind_of?(RefundedItem)
+                  = item.updated_at.strftime('%Y-%m-%d %H:%M')
+                - else
+                  = item.order.sold_on.strftime('%Y-%m-%d %H:%M')
               %td= item.customer.full_name
               %td= item.promo_code
               %td.text-right= number_to_currency item.amount

@@ -31,19 +31,17 @@ class RevenueByPaymentMethodReport
     items =
       Item.
       joins(:order).
-      includes(:account_code,
-      :order,
-      :customer,
-      :vouchertype,
-      :showdate => :show).
-      where('amount > 0').
+      includes(:account_code,:order,:customer,:vouchertype, :showdate => :show).
+      where('amount != 0').
       where(:finalized => true).
-      where("type != 'CanceledItem'").
       order('items.updated_at')
     if show_id
       items = items.where('shows.id' => @show_id)
     elsif from
+      # Everything except RefundedItems should be sorted based on orders.sold_on.
+      # Refunds should be sorted based on the item's updated_at, which is always LATER than sold_on
       items = items.where('orders.sold_on' => @from..@to)
+      # ??? items = items.or(:updated_at => @from..@to)
     else
       self.errors.add(:base, 'You must specify either a date range or a production.')
       return nil
@@ -66,6 +64,7 @@ class RevenueByPaymentMethodReport
         'Account Code',
         'Order date',
         'Order#',
+        'Item#',
         'Show',
         'Show Date',
         'Description',
@@ -86,6 +85,7 @@ class RevenueByPaymentMethodReport
                 account_code.name,
                 item.order.sold_on.strftime('%Y-%m-%d %H:%M'),
                 item.order_id,
+                item.id,
                 (item.showdate_id ? item.show.name : ''),
                 (item.showdate_id ? item.showdate.thedate : ''),
                 item.description_for_report,

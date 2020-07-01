@@ -3,7 +3,7 @@ class RefundedItem < Item
   belongs_to :canceled_item, :foreign_key => 'bundle_id'
   validates_associated :canceled_item, :on => :create
   
-  def shortdesc ; "[REFUND] for item #{canceled_item.id}" ; end
+  def shortdesc ; "[REFUND for item #{canceled_item.id}]" ; end
   def one_line_description; shortdesc; end
   def description_for_report ; shortdesc ; end
   def description_for_audit_txn ; shortdesc; end
@@ -18,7 +18,7 @@ class RefundedItem < Item
     fields_to_copy.each do |f|
       refund.send("#{f}=", orig_item.send(f))
     end
-    refund.comments = "(REFUND) for item #{orig_item.id}"
+    refund.comments = "[REFUND for item #{orig_item.id}]"
     refund.bundle_id = orig_item.id
     # set price on the new item
     refund.amount = -(orig_item.amount)

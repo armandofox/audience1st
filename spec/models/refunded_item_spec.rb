@@ -18,6 +18,7 @@ describe RefundedItem, focus:true do
     describe 'after cancellation' do
       before(:each) do
         @voucher = @voucher.cancel!(@by)
+        @refund = @voucher.refunded_item
       end
       it 'is linked to original item' do
         expect(@refund.canceled_item).to eq(@voucher)
@@ -27,6 +28,9 @@ describe RefundedItem, focus:true do
       end
       it 'canceled item updated_at matches original purchase date' do
         expect(@voucher.updated_at).to be_within(1.second).of @purchase_date
+      end
+      specify 'refund item updated_at matches refund date' do
+        expect(@refund.updated_at).to be_within(1.second).of Time.current
       end
     end
   end

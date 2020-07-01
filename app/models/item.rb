@@ -21,6 +21,8 @@ class Item < ActiveRecord::Base
   belongs_to :account_code
   validates_presence_of :account_code_id, :if => Proc.new { |a| a.amount > 0 }
 
+  has_one :refunded_item, :foreign_key => 'bundle_id' # if item gets refunded
+
   def self.foreign_keys_to_customer
     [:customer_id, :processed_by_id]
   end

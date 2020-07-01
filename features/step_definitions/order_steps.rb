@@ -25,7 +25,7 @@ Given /^an order for customer "(.*)" paid with "credit card" containing:$/ do |c
   step %Q{I place my order with a valid credit card}
 end
 
-Given /^a comp order for customer "(.*) (.*)" containing (\d+) "(.*)" comps to "(.*)"$/ do |first,last, qty, comp_type, show_name|
+Given /^a comp order for customer "(.*) (.*)" containing (\d+) "(.*)" comps? to "(.*)"$/ do |first,last, qty, comp_type, show_name|
   comp = create(:comp_vouchertype, :name => comp_type)
   sd = create(:showdate, :show_name => show_name)
   customer = find_or_create_customer first,last
@@ -78,26 +78,28 @@ Given /^the following orders have been placed:/ do |tbl|
   tbl.hashes.each do |order|
     pmt_types = {"credit card" => "web_cc", "cash" => "box_cash", "check" => "box_chk", "comp" => "none"}.freeze
     customer = find_or_create_customer(*(order['customer'].split(/\s+/)))
-    o = create(:order,
+    @order = create(:order,
       :purchasemethod => Purchasemethod.get_type_by_name(pmt_types[order['payment']]),
       :purchase_args => {:credit_card_token => 'DUMMY'}, # to pass order validation for CC purchase
       :customer => customer, :purchaser => customer)
     [order['item1'],order['item2']].each do |item|
       case item
       when /\$(\d+) donation/
-        o.add_donation(Donation.from_amount_and_account_code_id($1.to_i,
+        @order.add_donation(Donation.from_amount_and_account_code_id($1.to_i,
             Option.default_donation_account_code))
       when /(\d+)x (.*)$/
         vv = create(:valid_voucher, :vouchertype => Vouchertype.find_by!(:name => $2))
-        o.add_tickets_without_capacity_checks(vv, $1.to_i)
+        @order.add_tickets_without_capacity_checks(vv, $1.to_i)
       end
     end
-    o.finalize!
-    o.update_attribute(:sold_on,Time.zone.parse(order['date']))
+    @order.finalize!
+    @order.update_attribute(:sold_on,Time.zone.parse(order['date']))
   end
 end
 
-When /^I (?:refund|cancel) items? (.*) of that order$/ do |items|
+When /^I (?:refund|cancel) items? (.*) of (?:that )?order ?(\d*)?$/ do |items,ord_id|
+  @order = Order.find(ord_id) unless ord_id.blank?
+  visit order_path(@order)
   steps %Q{
     When I select items #{items} of that order
     And I refund that order
