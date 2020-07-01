@@ -342,6 +342,7 @@ class Order < ActiveRecord::Base
         self.items << donation if donation
         self.items.each do |i|
           i.finalize!
+          i.sold_on = sold_on_date
           i.walkup = self.walkup? 
           i.processed_by = self.processed_by
           i.comments = self.comments if i.comments.blank?  && i.kind_of?(Voucher)
