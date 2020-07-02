@@ -6,9 +6,9 @@ class UnfulfilledOrdersReport
   
   def initialize
     @vouchers = Voucher.
+      finalized.
       includes(:customer, :vouchertype, :order).
       references(:customers, :orders).
-      where.not(:orders => {:sold_on => nil}).
       where(:fulfillment_needed => true).
       order('customers.last_name,orders.sold_on')
     @empty = @vouchers.empty?

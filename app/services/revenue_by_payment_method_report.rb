@@ -38,8 +38,6 @@ class RevenueByPaymentMethodReport
     if show_id
       items = items.where('shows.id' => @show_id)
     elsif from
-      # Everything except RefundedItems should be sorted based on orders.sold_on.
-      # Refunds should be sorted based on the item's updated_at, which is always LATER than sold_on
       items = items.where(:sold_on => @from..@to)
     else
       self.errors.add(:base, 'You must specify either a date range or a production.')
@@ -82,7 +80,7 @@ class RevenueByPaymentMethodReport
                 payment_type,
                 account_code.code.to_s,
                 account_code.name,
-                item.order.sold_on.strftime('%Y-%m-%d %H:%M'),
+                item.sold_on.strftime('%Y-%m-%d %H:%M'),
                 item.order_id,
                 item.id,
                 (item.showdate_id ? item.show.name : ''),

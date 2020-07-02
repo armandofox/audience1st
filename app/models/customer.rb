@@ -28,7 +28,7 @@ class Customer < ActiveRecord::Base
   
   has_many :vouchertypes, :through => :vouchers
   has_many :showdates, :through => :vouchers
-  has_many :orders, -> { where( 'sold_on IS NOT NULL').order(:sold_on => :desc) }
+  has_many :orders, -> { where( 'orders.sold_on IS NOT NULL').order(:sold_on => :desc) }
 
   # nested has_many :through doesn't work in Rails 2, so we define a method instead
   # has_many :shows, :through => :showdates

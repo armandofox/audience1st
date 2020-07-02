@@ -26,14 +26,14 @@ class DonationsController < ApplicationController
     @donations = Donation.
       includes(:order,:customer,:account_code).
       where.not(:customer_id => Customer.walkup_customer.id).
-      order('orders.sold_on')
+      order(:sold_on)
     if params[:use_cid]         # cust id will be embedded in route in autocomplete field
       cid = if params[:cid] =~ /^\d+$/ then params[:cid] else Customer.id_from_route(params[:cid]) end
       @donations = @donations.where(:customer_id => cid)
       @full_name = Customer.find(cid).full_name
     end
     if params[:use_date]
-      @donations = @donations.where('orders.sold_on' => mindate..maxdate)
+      @donations = @donations.where(:sold_on => mindate..maxdate)
     end
     if params[:use_amount]
       @donations = @donations.where(:amount => params[:donation_min].to_f .. params[:donation_max].to_f)
