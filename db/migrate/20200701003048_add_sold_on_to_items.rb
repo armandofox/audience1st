@@ -18,37 +18,19 @@ VALUES
 
 
     add_column :items, :sold_on, :datetime
+    count = 0
     Item.reset_column_information
-    offset = 0
-    refunds = {}
-    while (1)
-      items =  Item.finalized.offset(offset).limit(500)
-      offset += 500
-      break if items.empty?
-      items.each do |i|
-        case i
-        when CanceledItem
-          if i.amount != 0 && i.account_code_id.blank?
-            i.update_column(:account_code_id, i.vouchertype.account_code_id)
-          end
-          cancel_time = i.updated_at
-          i.update_column(:sold_on, i.order.sold_on)
-          refunds[i.id] = cancel_time
-        when RefundedItem
-          # do nothing
-        else
-          i.update_column(:sold_on, i.order.sold_on)
-        end
+    Item.finalized.each do |i|
+      if i.amount != 0 && i.account_code_id.blank?
+        i.update_column(:account_code_id, i.vouchertype.account_code_id)
       end
-      print "."
+      i.update_column(:sold_on, i.order.sold_on)
+      i.reload
+      puts "Item #{i.id} still has null sold_on" if i.sold_on.blank?
+
+      count += 1
+      print "." if count % 100 == 0
     end
-    puts "Creating #{refunds.keys.size} refunds"
-    refunds.each_pair do |id, cancel_time|
-      i = Item.find(id)
-      # create the Refund transaction
-      ref = RefundedItem.from_cancellation(i)
-      ref.sold_on = cancel_time
-      ref.save!
-    end
+    puts "Examined #{count} records"
   end
 end
