@@ -50,6 +50,5 @@ VALUES
       ref.sold_on = cancel_time
       ref.save!
     end
-    puts "\n#{refunds_created} refund items created"
   end
 end
