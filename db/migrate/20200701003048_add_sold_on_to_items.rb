@@ -1,5 +1,22 @@
 class AddSoldOnToItems < ActiveRecord::Migration
   def change
+
+    if Option.first.try(:venue) =~ /Altarena/i
+      execute %q{
+INSERT INTO "altarena"."vouchertypes"("id","name","price","created_at","comments","offer_public","subscription","included_vouchers","walkup_sale_allowed","fulfillment_needed","category","season","changeable","account_code_id","display_order")
+VALUES
+(697,E'Unknown Comp 697',0,E'2020-01-30 17:03:35.787283',E'',0,FALSE,NULL,FALSE,FALSE,E'comp',2020,FALSE,1,0);}
+      execute %q{
+INSERT INTO "altarena"."vouchertypes"("id","name","price","created_at","comments","offer_public","subscription","included_vouchers","walkup_sale_allowed","fulfillment_needed","category","season","changeable","account_code_id","display_order")
+VALUES
+(699,E'Unknown Comp 699',0,E'2020-01-30 17:03:35.787283',E'',0,FALSE,NULL,FALSE,FALSE,E'comp',2020,FALSE,1,0);}
+      execute %q{
+INSERT INTO "altarena"."vouchertypes"("id","name","price","created_at","comments","offer_public","subscription","included_vouchers","walkup_sale_allowed","fulfillment_needed","category","season","changeable","account_code_id","display_order")
+VALUES
+(704,E'Unknown Comp 704',0,E'2020-01-30 17:03:35.787283',E'',0,FALSE,NULL,FALSE,FALSE,E'comp',2020,FALSE,1,0);}
+    end
+
+
     add_column :items, :sold_on, :datetime
     Item.reset_column_information
     # Set the sold_on date for CanceledItems to the date of cancellation (= item.updated_at)
@@ -20,8 +37,8 @@ class AddSoldOnToItems < ActiveRecord::Migration
           # create the Refund transaction
           ref = RefundedItem.from_cancellation(i)
           ref.sold_on = cancel_time
-          ref.save!
-          i.save!
+          ref.save(validate: false)
+          i.save(validate: false)
           i.update_attribute(:updated_at, cancel_time)
           refunds_created += 1
         when RefundedItem
@@ -29,7 +46,7 @@ class AddSoldOnToItems < ActiveRecord::Migration
         else
           orig_updated_at = i.updated_at
           i.sold_on = i.order.sold_on
-          i.save!
+          i.save(validate: false)
           i.update_attribute(:updated_at, orig_updated_at)
         end
       end
