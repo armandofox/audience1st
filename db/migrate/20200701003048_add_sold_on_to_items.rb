@@ -9,12 +9,34 @@ class AddSoldOnToItems < ActiveRecord::Migration
     while (1)
       items =  Item.finalized.offset(offset).limit(1000)
       offset += 1000
+      refunds_created = 0
       break if items.empty?
       items.each do |i|
-        i.update_attribute(:sold_on,
-          (if i.kind_of?(CanceledItem) then i.updated_at else i.order.sold_on end))
+        case i
+        when CanceledItem
+          i.account_code_id ||= i.vouchertype.account_code_id if item.amount != 0
+          i.sold_on = i.order.sold_on
+          cancel_time = i.updated_at
+          # create the Refund transaction
+          ref = RefundedItem.from_cancellation(i)
+          ref.sold_on = cancel_time
+          ref.save!
+          i.save!
+          i.update_attribute(:updated_at, cancel_time)
+          refunds_created += 1
+          break
+        when RefundedItem
+          # do nothing
+          break
+        else
+          orig_updated_at = i.updated_at
+          i.sold_on = i.order.sold_on
+          i.save!
+          i.update_attribute(:updated_at, orig_updated_at)
+        end
       end
       print "."
     end
+    puts "\n#{refunds_created} refund items created"
   end
 end
