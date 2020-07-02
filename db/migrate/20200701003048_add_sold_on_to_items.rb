@@ -18,19 +18,29 @@ VALUES
 
 
     add_column :items, :sold_on, :datetime
+    add_column :items, :migrated, :boolean, :default => false
     count = 0
     Item.reset_column_information
-    Item.finalized.each do |i|
-      if i.amount != 0 && i.account_code_id.blank?
-        i.update_column(:account_code_id, i.vouchertype.account_code_id)
+    offset = 0
+    puts "Examining #{Item.finalized.count} items"
+    while (1)
+      items = Item.finalized.order(:id).offset(offset).limit(100)
+      offset += 100
+      break if items.empty?
+      items.each do |i|
+        if i.amount != 0 && i.account_code_id.blank?
+          i.update_column(:account_code_id, i.vouchertype.account_code_id)
+        end
+        i.update_column(:sold_on, i.order.sold_on)
+        i.reload
+        if i.sold_on.blank?
+          puts "Item #{i.id} still has null sold_on"
+        else
+          count += 1
+        end
+        print "." if count % 100 == 0
       end
-      i.update_column(:sold_on, i.order.sold_on)
-      i.reload
-      puts "Item #{i.id} still has null sold_on" if i.sold_on.blank?
-
-      count += 1
-      print "." if count % 100 == 0
     end
-    puts "Examined #{count} records"
+    puts "Fixed #{count} records"
   end
 end
