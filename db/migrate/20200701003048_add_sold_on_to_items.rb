@@ -24,10 +24,8 @@ class AddSoldOnToItems < ActiveRecord::Migration
           i.save!
           i.update_attribute(:updated_at, cancel_time)
           refunds_created += 1
-          break
         when RefundedItem
           # do nothing
-          break
         else
           orig_updated_at = i.updated_at
           i.sold_on = i.order.sold_on
