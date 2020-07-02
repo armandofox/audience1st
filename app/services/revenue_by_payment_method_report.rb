@@ -31,19 +31,14 @@ class RevenueByPaymentMethodReport
     items =
       Item.
       joins(:order).
-      includes(:account_code,
-      :order,
-      :customer,
-      :vouchertype,
-      :showdate => :show).
-      where('amount > 0').
+      includes(:order,:account_code,:customer,:vouchertype, :showdate => :show).
+      where('amount != 0').
       where(:finalized => true).
-      where("type != 'CanceledItem'").
-      order('items.updated_at')
+      order(:sold_on)
     if show_id
       items = items.where('shows.id' => @show_id)
     elsif from
-      items = items.where('orders.sold_on' => @from..@to)
+      items = items.where(:sold_on => @from..@to)
     else
       self.errors.add(:base, 'You must specify either a date range or a production.')
       return nil
@@ -66,6 +61,7 @@ class RevenueByPaymentMethodReport
         'Account Code',
         'Order date',
         'Order#',
+        'Item#',
         'Show',
         'Show Date',
         'Description',
@@ -84,8 +80,9 @@ class RevenueByPaymentMethodReport
                 payment_type,
                 account_code.code.to_s,
                 account_code.name,
-                item.order.sold_on.strftime('%Y-%m-%d %H:%M'),
+                item.sold_on.strftime('%Y-%m-%d %H:%M'),
                 item.order_id,
+                item.id,
                 (item.showdate_id ? item.show.name : ''),
                 (item.showdate_id ? item.showdate.thedate : ''),
                 item.description_for_report,

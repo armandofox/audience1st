@@ -13,13 +13,15 @@ class Item < ActiveRecord::Base
   belongs_to :showdate
 
   validates_associated :order
-  delegate :sold_on, :purchaser, :purchasemethod, :to => :order
+  delegate :purchaser, :purchasemethod, :to => :order
   
   belongs_to :processed_by, :class_name => 'Customer'
   validates_presence_of :processed_by_id
 
   belongs_to :account_code
   validates_presence_of :account_code_id, :if => Proc.new { |a| a.amount > 0 }
+
+  has_one :refunded_item, :foreign_key => 'bundle_id' # if item gets refunded
 
   def self.foreign_keys_to_customer
     [:customer_id, :processed_by_id]
@@ -36,9 +38,18 @@ class Item < ActiveRecord::Base
   #  description into the comment field of the item
 
   def cancel!(by_whom)
+    refund_item = RefundedItem.from_cancellation(self) if amount > 0
     self.comments = "[CANCELED #{by_whom.full_name} #{Time.current.to_formatted_s :long}] #{description_for_audit_txn}"
     self.type = 'CanceledItem'
-    self.save!
+    original_updated_at = self.updated_at.clone
+    Item.transaction do
+      refund_item.save! if refund_item
+      self.save!
+      # we have to explicitly do this to preserve updated_at.
+      # Rails 5 would allow touch:false on save! to avoid updating :rails4:
+      self.updated_at = original_updated_at
+      self.save
+    end
     CanceledItem.find(self.id)  #  !
   end
 

@@ -77,6 +77,12 @@ FactoryBot.define do
         walkup true
         customer { Customer.walkup_customer }
       end
+
+      factory :canceled_revenue_voucher do
+        after(:create) do |vch,evaluator|
+          vch.cancel!(create(:boxoffice_manager))
+        end
+      end
     end
 
     factory :nonticket_item do

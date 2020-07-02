@@ -33,6 +33,7 @@ module NavigationHelpers
     when /the orders page/i             then orders_path(:customer_id => @customer)
       # store purchase flow
     when /the order page for that order/ then order_path(@order)
+    when /the order page for order (\d+)/ then order_path($1)
     when /the store page/i              then store_path(@customer,({:show_id => @show} if @show))
     when /the special events page/      then store_path(:what => 'Special Event')
     when /the classes and camps page/   then store_path(:what => 'Class')
