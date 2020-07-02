@@ -14,7 +14,7 @@ class AddSoldOnToItems < ActiveRecord::Migration
       items.each do |i|
         case i
         when CanceledItem
-          i.account_code_id ||= i.vouchertype.account_code_id if item.amount != 0
+          i.account_code_id ||= i.vouchertype.account_code_id if i.amount != 0
           i.sold_on = i.order.sold_on
           cancel_time = i.updated_at
           # create the Refund transaction
