@@ -23,8 +23,8 @@ Feature: refund appears as separate item in reports
     Then table "#table_credit_card_1" should include:
       | Item | Description                                                                                          | Sold on          | Amount  |
       |    1 | [CANCELED Mary Manager January 01, 2010 00:00] 75.00 SeasonSub (Show - Saturday, Jan 2, 8:00 PM) [1] | 2009-12-21 00:00 | $75.00  |
-      |    2 | $ 75.00 Show - Saturday, Jan 2, 8:00 PM SeasonSub                                                    | 2009-12-21 00:00 | $75.00  |
-      |    3 | $ 20.00 Donation to General Fund                                                                     | 2009-12-21 00:00 | $20.00  |
+      |    2 | Show - Saturday, Jan 2, 8:00 PM SeasonSub                                                            | 2009-12-21 00:00 | $75.00  |
+      |    3 | Donation to General Fund                                                                             | 2009-12-21 00:00 | $20.00  |
       |    4 | 	[REFUND for item 1]                                                                                 | 2010-01-01 00:00 | -$75.00 |
 
   Scenario: refund does not appear if outside date range
@@ -36,8 +36,8 @@ Feature: refund appears as separate item in reports
     But table "#table_credit_card_1" should include:
       | Item | Description                                                                                          | Sold on          | Amount |
       |    1 | [CANCELED Mary Manager January 01, 2010 00:00] 75.00 SeasonSub (Show - Saturday, Jan 2, 8:00 PM) [1] | 2009-12-21 00:00 | $75.00 |
-      |    2 | $ 75.00 Show - Saturday, Jan 2, 8:00 PM SeasonSub                                                    | 2009-12-21 00:00 | $75.00 |
-      |    3 | $ 20.00 Donation to General Fund                                                                     | 2009-12-21 00:00 | $20.00 |
+      |    2 | Show - Saturday, Jan 2, 8:00 PM SeasonSub                                                            | 2009-12-21 00:00 | $75.00 |
+      |    3 | Donation to General Fund                                                                             | 2009-12-21 00:00 | $20.00 |
 
   Scenario: purchase does not appear if outside date range
     
@@ -45,8 +45,8 @@ Feature: refund appears as separate item in reports
     Then table "#table_credit_card_1" should not include:
       | Item | Description                                                                                          | Sold on          | Amount |
       |    1 | [CANCELED Mary Manager January 01, 2010 00:00] 75.00 SeasonSub (Show - Saturday, Jan 2, 8:00 PM) [1] | 2009-12-21 00:00 | $75.00  |
-      |    2 | $ 75.00 Show - Saturday, Jan 2, 8:00 PM SeasonSub                                                    | 2009-12-21 00:00 | $75.00  |
-      |    3 | $ 20.00 Donation to General Fund                                                                     | 2009-12-21 00:00 | $20.00  |
+      |    2 | Show - Saturday, Jan 2, 8:00 PM SeasonSub                                                            | 2009-12-21 00:00 | $75.00  |
+      |    3 | Donation to General Fund                                                                             | 2009-12-21 00:00 | $20.00  |
     But table "#table_credit_card_1" should include:
       | Item | Description                 | Sold on          | Amount  |
       |    4 | 	[REFUND for item 1]        | 2010-01-01 00:00 | -$75.00 |
