@@ -18,16 +18,16 @@
             %th{:scope => 'col'} Order
             %th{:scope => 'col'} Item
             %th{:scope => 'col'} Description
-            %th{:scope => 'col'} Sold on
+            %th.a1-date{:scope => 'col'} Sold on
             %th{:scope => 'col'} Customer
             %th{:scope => 'col'} Promo Code
-            %th{:scope => 'col'} Amount
+            %th.a1-amount{:scope => 'col'} Amount
         %tbody
           - items.each do |item|
             %tr{:id => "item_#{item.id}"}
               %td= link_to item.order_id, order_path(item.order)
               %td= item.id
-              %td= item.one_line_description
+              %td= item.one_line_description(suppress_price: true)
               %td= item.sold_on.strftime('%Y-%m-%d %H:%M')
               %td= item.customer.full_name
               %td= item.promo_code

@@ -54,8 +54,12 @@ class Donation < Item
     "Donation: #{account_code.name_or_code}"
   end
 
-  def one_line_description
-    sprintf("$%6.2f  Donation to #{account_code.name}", amount)
+  def one_line_description(suppress_price: false)
+    if suppress_price
+      "Donation to #{account_code.name}"
+    else
+      sprintf("$%6.2f  Donation to #{account_code.name}", amount)
+    end
   end
 
   def description_for_report ; 'Donation' ; end

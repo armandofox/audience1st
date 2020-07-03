@@ -22,6 +22,13 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
     margin: 0; 
 }
 
+.a1-date {
+    min-width: 8em !important;
+}
+.a1-amount {
+    min-width: 5em !important;
+}
+
 .a1-force-fullwidth {
     width: 100% !important;
 }

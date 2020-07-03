@@ -173,12 +173,12 @@ class Voucher < Item
   # Sort all reserved vouchers by showdate, then all unreserved ones
   def reservation_status_then_showdate ; reserved? ? -(showdate.thedate.to_i) : -1.0e15 ; end
 
-  def one_line_description
+  def one_line_description(suppress_price: false)
+    s = suppress_price ? '' : sprintf("$%6.2f  ", amount)
     if reserved?
-      s = sprintf("$%6.2f  %s\n         %s %s", amount, showdate.printable_name, name, seat)
-      s << "\n         Notes: #{comments}" unless comments.blank?
+      s << sprintf("%s\n         %s %s", showdate.printable_name, name, seat)
     else
-      s = sprintf("$%6.2f  %s", amount, name)
+      s << name
     end
     s
   end
