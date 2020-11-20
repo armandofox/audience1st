@@ -20,7 +20,7 @@
 
   .form-row
     %label.col-2.text-right.col-form-label{:for => 'customer_email'} Send Email Confirmation
-    = check_box_tag 'customer_email', 1, false, :disabled => @email_disabled, :class => 'form-control col-1'
+    .col-1= check_box_tag 'customer_email', 1, false, :disabled => @email_disabled, :class => 'form-control-sm'
 
   .form-row  
     = link_to  "Cancel", customer_path(@customer), :class => 'btn btn-secondary offset-2 col-2'

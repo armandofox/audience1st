@@ -10,6 +10,7 @@ class ValidVouchersController < ApplicationController
 
   def new
     @show = Show.find params[:show_id]
+    return redirect_to(edit_show_path(@show), :alert => t('season_setup.errors.no_performances_exist')) unless @show.showdates.count > 0
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@show.season)
     @valid_voucher = ValidVoucher.new(:start_sales => @show.listing_date)
     # special case: if showdate has ANY stream-anytime perfs, default the end-sales time to the

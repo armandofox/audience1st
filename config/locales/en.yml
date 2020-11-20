@@ -136,6 +136,10 @@ en:
 
   season_setup:
 
+    errors:
+      no_performances_exist: >
+        You must add some performances before you can add or change ticket types for performances.
+
     vouchers_already_issued: >
       %{num} vouchers of this voucher type have already been issued.  Any changes you make
       will be retroactively reflected to all of them.  If this is not what you want, click Cancel below.

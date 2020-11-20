@@ -20,6 +20,8 @@
         %label.col-form-label{:for => :showdate_type} Add/change redemptions for performances that are
       .col-2
         = select_tag 'showdate_type', showdate_type_choices(@show), :class => 'form-control showdate-type'
+  - else
+    = hidden_field_tag 'showdate_type', 'Tt', :class => 'showdate-type'
 
   #adjust-max-sales
     .form-group.form-row.pb-0.mb-0

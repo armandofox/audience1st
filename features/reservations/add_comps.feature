@@ -38,6 +38,7 @@ Feature: add comps and reserve for a show
     When I select "Comp (2010)" from "What type:"
     And I fill in "How many:" with "2"
     And I select "Leave Open" from "Reserve for:"
+    Then show me the page and debug
     And  I press "Add Vouchers"
     Then I should see "Added 2 'Comp' comps and customer can choose the show later"
     And customer "Armando Fox" should have an order with comment "" containing the following tickets:
