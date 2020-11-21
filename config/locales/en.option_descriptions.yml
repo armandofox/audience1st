@@ -8,8 +8,8 @@ en:
 
     advance_sales_cutoff: >
 
-      Default time that online sales close (minutes before
-      curtain) -- can be overridden for specific performances.
+      Default time that online sales close -- can be overridden for specific performances 
+      and specific ticket types.
 
     nearly_sold_out_threshold: >
 
