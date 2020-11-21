@@ -11,9 +11,20 @@ Given /an advance sales limit of (\d+) for the (.*) performance/ do |limit,theda
   @showdate.update_attributes!(:max_advance_sales => limit)
 end
 
+Given /sales for the "(.*)" performance end at "(.*)"/ do |perf_date, end_sales_date|
+  @showdate = Showdate.find_by!(:thedate => Time.parse(perf_date))
+  @showdate.update_attributes(:end_advance_sales => Time.parse(end_sales_date))
+end
+
 Given /^a show "(.*)" with the following tickets available:$/ do |show_name, tickets|
   tickets.hashes.each do |t|
     steps %Q{Given a show "#{show_name}" with #{t[:qty]} "#{t[:type]}" tickets for #{t[:price]} on "#{t[:showdate]}"}
+    # if sales cutoff time is specified, modify the valid-voucher once created
+    if (cutoff = t[:sales_cutoff])
+      sd = Showdate.find_by!(:thedate => Time.parse(t[:showdate]))
+      vv = ValidVoucher.find_by!(:showdate => sd, :vouchertype => Vouchertype.find_by!(:name => t[:type]))
+      vv.update_attributes(:end_sales => sd.thedate - cutoff.to_i.minutes)
+    end
   end
 end
 

@@ -30,7 +30,4 @@ Scenario: Add regular tickets to my order with a donation
   And the cart total price should be $47.00
   And the cart should contain 2 "General" tickets for "October 1, 2010, 7:00pm"
   And the cart should contain a donation of $17.00 to "General Fund"  
-
-Scenario: cannot continue to checkout if cart is empty
-
   
