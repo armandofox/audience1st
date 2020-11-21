@@ -17,10 +17,10 @@ class ValidVouchersController < ApplicationController
     # first such perf's showtime.  (if the user displays 'live stream' or 'in-theater' on
     # the form, the date menus disappear anyway in favor of a "Minutes before curtain" field,
     # so doing this only affects anything if the show has a stream-anytime perf.)
-    if (sd = @show.showdates.find_by(:stream_anytime => true))
-      @valid_voucher.end_sales = sd.thedate - 15.minutes
-    end
     @minutes_before = Option.advance_sales_cutoff
+    if (sd = @show.showdates.find_by(:stream_anytime => true))
+      @valid_voucher.end_sales = sd.thedate - @minutes_before.minutes
+    end
   end
 
   def edit
