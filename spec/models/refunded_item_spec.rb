@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe RefundedItem, focus:true do
+describe RefundedItem do
   before(:each) do ; @by = mock_model(Customer, :full_name => 'A B') ; end
   describe 'revenue voucher cancellation' do
     before(:each) do

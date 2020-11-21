@@ -1,30 +1,11 @@
 require 'rails_helper'
 
 describe Showdate do
-  describe "when changing seatmap fails" do
-    before(:each) do
-      @s = create(:showdate, :seatmap => create(:seatmap))
-      @v1 = create(:revenue_voucher, :showdate => @s, :seat => 'A1')
-      @v2 = create(:revenue_voucher, :showdate => @s, :seat => 'B1')
-      allow(@s.seatmap).to receive(:cannot_accommodate).and_return([@v2])
-    end
-    it 'is not valid' do
-      expect(@s).not_to be_valid
-    end
-    it 'lists customers who need accommodating' do
-      @s.valid?
-      expect(@s.errors[:base]).to include_match_for('(B1)')
-    end
-    it 'forbids changing to general admission' do
-      @s.seatmap = nil
-      expect(@s).not_to be_valid
-      expect(@s.errors[:base]).to include_match_for /Cannot change performance/
-    end
-    it 'allows changing if no reservations' do
-      @v1.destroy
-      @v2.destroy
-      @s.seatmap = nil
-      expect(@s).to be_valid
+  describe "when created" do
+    it "can have end-sales later than start date" do
+      s = build(:showdate)
+      s.end_advance_sales += 15.minutes
+      expect(s).to be_valid
     end
   end
   describe "house capacity" do
@@ -51,7 +32,7 @@ describe Showdate do
       end
     end
   end
-  describe "it can have only one stream-anytime performance" do
+  describe "can have only one stream-anytime performance" do
     before(:each) do
       @d1 = create(:stream_anytime_showdate)
       @next = @d1.thedate + 1.day

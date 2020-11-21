@@ -89,8 +89,13 @@ Then /it should be a (.*) voucher/i do |typ|
   @vouchertype.category.to_s.should == typ.downcase
 end
 
-When /I set end sales to "(.*)" minutes before show ?time/ do |minutes|
+When /I set end sales to "(.*)" minutes (before|after) show ?time/ do |minutes,before_after|
   fill_in "minutes_before", with: minutes
+  if before_after =~ /before/
+    select 'minutes before curtain', from: 'before_or_after'
+  else
+    select 'minutes after curtain', from: 'before_or_after'
+  end    
 end
 
 When /I choose to leave as-is on existing redemptions:\s+(.*)/ do |props|

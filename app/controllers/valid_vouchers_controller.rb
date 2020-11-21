@@ -54,8 +54,10 @@ class ValidVouchersController < ApplicationController
     showdates = Showdate.find sd
     # max_sales_for_type if blank should be "infinity"
     args[:max_sales_for_type] = ValidVoucher::INFINITE if args[:max_sales_for_type].blank?
-    args[:before_showtime] = params[:minutes_before].to_i.minutes
-    return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if args[:before_showtime].zero?
+
+    # params[:before_or_after] is either '+1' or '-1' to possibly negate minutes_before_curtain
+    # (so the value stored is "Minutes before", but may be negative to indicate "minutes after")
+    args[:before_showtime] = (params[:minutes_before].to_i * params[:before_or_after].to_i).minutes
 
     updater = RedemptionBatchUpdater.new(showdates,vouchertypes,
       :valid_voucher_params => args, :preserve => preserve)
