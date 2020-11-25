@@ -107,8 +107,7 @@ staging = namespace :staging do
           :max_advance_sales => 50,
           :thedate => date,
           :live_stream => false,
-          :stream_anytime => false,
-          :end_advance_sales => date - 3.hours)
+          :stream_anytime => false)
       end
       range_start += 1.month
     end

@@ -156,12 +156,6 @@ en:
       date in the dropdown menu when the customer is purchasing tickets for that
       show.
 
-    advance_sales_cutoff: >
-
-      The time after which customers cannot self-purchase tickets online for
-      this performance.  (You can set a default value for this in Admin >
-      Options.) 
-
     max_advance_sales: >
 
       For in-theater performances, the maximum allowed advance sales/reservations,

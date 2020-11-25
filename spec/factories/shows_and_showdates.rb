@@ -9,7 +9,6 @@ FactoryBot.define do
     thedate { date }
     show { create(:show, :name => show_name, :including => date) }
     max_advance_sales { [100, house_capacity].min }
-    end_advance_sales { thedate - 1.minute }
     live_stream false
     stream_anytime false
     factory :reserved_seating_showdate do

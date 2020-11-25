@@ -80,23 +80,6 @@ describe 'ValidVoucher adjusting' do
     end
   end
 
-  describe "whose showdate's advance sales have ended" do
-    before :each do
-      ValidVoucher.send(:public, :adjust_for_sales_dates)
-      @showdate = mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 10, :end_advance_sales => 1.day.ago)
-      @v = ValidVoucher.new(:start_sales => 2.days.ago, :end_sales => 1.week.from_now,
-        :showdate => @showdate)
-      @v.adjust_for_sales_dates
-      @v
-    end
-    it 'should have no seats available' do
-      expect(@v.max_sales_for_this_patron).to be_zero
-    end
-    it 'should say advance sales are closed' do
-      expect(@v.explanation).to eq('Advance sales for this performance are closed')
-    end
-  end
-
   describe 'for per-ticket-type sales dates' do
     before :all do ; ValidVoucher.send(:public, :adjust_for_sales_dates) ; end
     subject do

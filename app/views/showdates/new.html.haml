@@ -16,30 +16,14 @@
       = select_tag 'showdate_type', showdate_type_choices(@show, new_showdate: true), :class => 'form-control showdate-type'
       = hidden_field_tag 'showdate[live_stream]', nil
       = hidden_field_tag 'showdate[stream_anytime]', nil
+
+
   .form-row.py-1
     .col-3.text-right
       %label.col-form-label{:for => :showdate_description} Description (optional)
       = popup_help_for :showdate_description
     .col-9
       = text_field 'showdate', 'description', :class => 'form-control'
-
-  .form-row.py-1
-    .col-3.text-right
-      %label.col-form-label{:for => :advance_sales_cutoff} Advance sales stop
-      = popup_help_for :advance_sales_cutoff
-    .col-1.Tt.Tl= text_field_tag 'advance_sales_cutoff', @advance_sales_cutoff, :class => 'form-control'
-    .col-3.Tt.Tl= select_tag 'before_or_after', options_for_select([['minutes before curtain', '+1'], ['minutes after curtain', '-1']]), :class => 'form-control'
-    .col-4.Ts.d-none= datetime_select 'showdate', 'end_advance_sales', {:minute_step => 15, :time_separator => ':', :start_year => Time.current.year}
-
-    .col-3.text-right
-      %label.col-form-label{:for => :showdate_max_advance_sales}
-        Max
-        %span.Tt.Tl advance
-        sales
-      = popup_help_for(:max_advance_sales)
-    .col-1= number_field 'showdate', 'max_advance_sales', :class => 'form-control'
-    = hidden_field_tag "showdate[show_id]", @show.id
-    = hidden_field_tag "saved_max_sales", @max_sales_default
 
   .form-row.py-1.Tt
     .col-3.text-right
@@ -52,8 +36,19 @@
     .col-3.text-right
       %label.col-form-label{:for => :showdate_house_capacity} House capacity
       = popup_help_for :showdate_house_capacity
-    .col-2
+    .col-1
       = text_field 'showdate', 'house_capacity', :class => 'form-control showdate-house-capacity'
+
+    .col-3.text-right
+      %label.col-form-label{:for => :showdate_max_advance_sales}
+        Max
+        %span.Tt.Tl advance
+        sales
+      = popup_help_for(:max_advance_sales)
+    .col-1= number_field 'showdate', 'max_advance_sales', :class => 'form-control'
+    = hidden_field_tag "showdate[show_id]", @show.id
+    = hidden_field_tag "saved_max_sales", @max_sales_default
+
 
   .form-row.py-1.Tl.Ts.d-none
     .col-3.text-right

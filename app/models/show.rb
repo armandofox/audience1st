@@ -19,13 +19,6 @@ class Show < ActiveRecord::Base
   attr_accessible :name, :opening_date, :closing_date, :patron_notes, :landing_page_url
   attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
 
-  # current_or_next returns the Show object corresponding to either the
-  # currently running show, or the one with the next soonest opening date.
-
-  def self.current_or_next
-    Showdate.current_or_next.try(:show)
-  end
-
   scope :current_and_future, -> {
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
@@ -36,11 +29,12 @@ class Show < ActiveRecord::Base
   def has_showdates? ; !showdates.empty? ; end
   
   def upcoming_showdates
-    showdates.where('thedate > ?', Time.current).includes(:valid_vouchers)
-  end
-
-  def next_showdate
-    showdates.where('thedate > ?', Time.current).includes(:valid_vouchers).first
+    # showdates for which there is at least one ValidVoucher that is still on sale,
+    #   sorted in order of curtain time
+    showdates.
+      includes(:valid_vouchers).references('valid_vouchers').
+      where('valid_vouchers.end_sales >= ?', Time.current).
+      order(:thedate)
   end
 
   def self.all_for_season(season=Time.this_season)
@@ -78,12 +72,6 @@ class Show < ActiveRecord::Base
     # latest season that contains opening date
     self.opening_date.at_beginning_of_season.year
   end
-
-  def future_showdates
-    self.showdates.where('end_advance_sales >= ?', Time.current).order('thedate')
-  end
-
-    
 
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
