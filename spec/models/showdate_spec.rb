@@ -1,13 +1,6 @@
 require 'rails_helper'
 
 describe Showdate do
-  describe "when created" do
-    it "can have end-sales later than start date" do
-      s = build(:showdate)
-      s.end_advance_sales += 15.minutes
-      expect(s).to be_valid
-    end
-  end
   describe "house capacity" do
     before(:each) do
       @s = build(:showdate)
@@ -94,7 +87,7 @@ describe Showdate do
     end
     context "when there is only 1 showdate and it's in the past" do
       it "should return that showdate" do
-        @showdate  = create(:showdate, :thedate => 1.day.ago, :end_advance_sales => 1.day.ago)
+        @showdate  = create(:showdate, :thedate => 1.day.ago)
         expect(Showdate.current_or_next.id).to eq(@showdate.id)
       end
     end

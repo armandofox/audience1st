@@ -12,7 +12,6 @@ Feature: setup multiple showdates - sad paths
     And I am on the new showdate page for "Macbeth"
     And I fill in the "new_showdate" fields as follows:
       | field              | value                                   |
-      | Advance sales stop | 60                                      |
       | Max advance sales  | 50                                      |
       | Seat map           | select "None (general admission)"       |
       | House capacity     | 20                                      |

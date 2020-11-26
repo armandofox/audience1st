@@ -68,11 +68,6 @@ describe 'ValidVoucher adjusting' do
       v.adjust_for_showdate
       v
     end
-    describe 'in the past' do
-      let(:the_showdate) { create(:showdate, :thedate => 1.day.ago) }
-      it_should_behave_like 'invisible, zero capacity'
-      its(:explanation) { should == 'Event date is in the past' }
-    end
     describe 'that is sold out' do
       let(:the_showdate) { mock_model(Showdate, :thedate => 1.day.from_now, :saleable_seats_left => 0, :sold_out? => true) }
       it_should_behave_like 'visible, zero capacity'
@@ -83,7 +78,7 @@ describe 'ValidVoucher adjusting' do
   describe 'for per-ticket-type sales dates' do
     before :all do ; ValidVoucher.send(:public, :adjust_for_sales_dates) ; end
     subject do
-      v = ValidVoucher.new(:start_sales => starts, :end_sales => ends, :showdate => create(:showdate, :end_advance_sales => 1.day.from_now))
+      v = ValidVoucher.new(:start_sales => starts, :end_sales => ends, :showdate => create(:showdate))
       v.adjust_for_sales_dates
       v
     end
