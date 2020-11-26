@@ -68,9 +68,15 @@
 
   .container
     %h1 Ticket Sales
+    .form-row
+      .col-4.text-right
+        %label.col-form-label{:for => 'option_advance_sales_cutoff'} Advance Sales Cutoff
+        = option_description_for 'advance_sales_cutoff'
+      .col-2= number_field_tag 'option[advance_sales_cutoff]', @o.advance_sales_cutoff.abs, :class => 'form-control'
+      .col-3= select_tag 'before_or_after', options_for_select(['minutes before curtain','minutes after curtain'], (@o.advance_sales_cutoff < 0 ? 'minutes after curtain' : 'minutes before curtain')), :class => 'form-control'
+
     = render_collection_of_options f, %w( |
       accessibility_advisory_for_reserved_seating |
-      advance_sales_cutoff  |
       nearly_sold_out_threshold!%   |
       limited_availability_threshold!% |
       cancel_grace_period!minutes    |
@@ -114,7 +120,7 @@
     %h1 Email Reports Sent to Box Office Manager
     = render_collection_of_options f, %w( |
       boxoffice_daemon_notify  | 
-      send_birthday_reminders  |
+      send_birthday_reminders!days  |
       ) |
 
   .container.text-center#configOptions
