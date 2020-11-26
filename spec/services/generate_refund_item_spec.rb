@@ -33,7 +33,6 @@ describe GenerateRefundItem do
     it 'does not affect seat count'
     it 'has amount (alias price) set to original purchase amount' do
       expect(@ci.amount).to eq(@orig_price)
-      expect(@ci.price).to eq(@orig_price)
     end
   end
 end
