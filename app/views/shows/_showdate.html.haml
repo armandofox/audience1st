@@ -4,7 +4,7 @@
     - pfx = if showdate.stream_anytime? then 'Until ' else '' end
     = link_to "#{pfx}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'
     = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
-  .col-3= showdate_time_limit_for(showdate, :end_advance_sales)
+  .col-3
   .col-2
     = showdate.max_advance_sales
     - unless showdate.stream?
@@ -19,7 +19,7 @@
 - unless showdate.valid_vouchers.empty?
   %div.flippy-div[showdate, :details]
     .row.bg-light.text-dark.border.border-top
-      .col-3 Type
+      .col-3 Ticket Type
       .col-3 Sales start
       .col-3 Sales end
       .col-1 Sold
