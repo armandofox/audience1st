@@ -14,7 +14,7 @@
         ) |
     .form-row
       .col-md-4.text-right
-        Season Start Date
+        %label.col-form-label Season Start Date
         = option_description_for(:season_start_month)   
       .col-md-8
         - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
@@ -71,10 +71,10 @@
     = render_collection_of_options f, %w( |
       accessibility_advisory_for_reserved_seating |
       advance_sales_cutoff  |
-      nearly_sold_out_threshold   |
-      limited_availability_threshold |
-      cancel_grace_period    |
-      order_timeout |
+      nearly_sold_out_threshold!%   |
+      limited_availability_threshold!% |
+      cancel_grace_period!minutes    |
+      order_timeout!minutes |
       allow_guest_checkout |
       allow_gift_tickets |
       allow_gift_subscriptions |

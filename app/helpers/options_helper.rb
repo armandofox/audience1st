@@ -2,8 +2,9 @@ module OptionsHelper
 
   def render_collection_of_options(frm, collection)
     content = ''
-    collection.each do |attrib|
-      content << (render :partial => 'option', :locals => {:attrib => attrib, :f => frm}).html_safe
+    collection.each do |attrib_with_decoration|
+      attrib_with_decoration =~ /^([^!]+)!?(.*)$/
+      content << (render :partial => 'option', :locals => {:attrib => $1, :decoration => $2, :f => frm}).html_safe
     end
     content.html_safe
   end
