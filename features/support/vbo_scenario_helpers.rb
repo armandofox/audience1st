@@ -29,7 +29,7 @@ module VboScenarioHelpers
     qty ||= showdate.max_advance_sales
     options = {:vouchertype => vtype,
       :max_sales_for_type => qty.to_i,
-      :end_sales => showdate.thedate + 5.minutes,
+      :end_sales => showdate.thedate - 1.minute,
       :start_sales => [Time.current - 1.day, showdate.thedate - 1.week].min
     }
     options[:promo_code] = promo_code if promo_code

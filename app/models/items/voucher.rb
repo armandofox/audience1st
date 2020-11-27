@@ -237,7 +237,6 @@ class Voucher < Item
     else
       # make sure advance reservations and other constraints fulfilled
       valid_vouchers.map(&:adjust_for_customer_reservation).delete_if { |v| v.explanation =~ /in the past/i }
-
     end
   end
   

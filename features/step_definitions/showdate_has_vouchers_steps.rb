@@ -69,6 +69,13 @@ Given /"(.*)" for \$?([0-9.]+) is available (at checkin )?for all performances o
   end
 end
 
+Given /the "(.*)" redemption for "(.*)" ends sales at "(.*)"/ do |vtype_name, showdate_s, end_sales_s|
+  vouchertype = Vouchertype.find_by!(:name => vtype_name)
+  showdate = Showdate.find_by!(:thedate => Time.zone.parse(showdate_s))
+  new_end_sales = Time.zone.parse(end_sales_s)
+  ValidVoucher.find_by!(:showdate => showdate, :vouchertype => vouchertype).update_attributes!(:end_sales => new_end_sales)
+end
+
 Then /^ticket sales should be as follows:$/ do |tickets|
   tickets.hashes.each do |t|
     steps %Q{Then there should be #{t[:qty]} "#{t[:type]}" tickets sold for "#{t[:showdate]}"}

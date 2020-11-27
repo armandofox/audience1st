@@ -25,6 +25,5 @@ Feature: purchase tickets after performance starts
 
     Given it is currently Jan 1, 2021, 8:30pm
     When I go to the store page
-    Then show me the page
     Then the "Early purchase - $25.00" menu should have options: 0
     And  the "Late purchase - $23.00" menu should have options: 0
