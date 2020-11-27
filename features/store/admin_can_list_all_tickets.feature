@@ -14,15 +14,15 @@ Background: logged in as admin
 
 Scenario Outline: Date-related restrictions
 
-  Given sales cutoff at "<end_advance_sales>", with "General" tickets selling from <start_sales> to <end_sales>
+  Given "General" tickets selling from <start_sales> to <end_sales>
   When I visit the store page for the show "Fame"
   Then I should see "<message>" within the container for "General" tickets
 
   Examples:
-  | end_advance_sales | start_sales    | end_sales         | message                                                         |
-  | 2011-04-10 6pm    | 2011-04-02 8pm | 2011-04-04 5:00pm | Tickets of this type not on sale until Saturday, Apr 2, 8:00 PM |
-  | 2011-04-10 6pm    | 2011-03-30 8pm | 2011-03-31 5pm    | Tickets of this type not sold after Thursday, Mar 31, 5:00 PM   |
-  | 2011-03-31 6pm    | 2011-03-29 6pm | 2011-03-30 5pm    | Advance sales for this performance are closed                   |
+  | start_sales    | end_sales         | message                                                         |
+  | 2011-04-02 8pm | 2011-04-04 5:00pm | Tickets of this type not on sale until Saturday, Apr 2, 8:00 PM |
+  | 2011-03-30 8pm | 2011-03-31 5pm    | Tickets of this type not sold after Thursday, Mar 31, 5:00 PM   |
+  | 2011-03-29 6pm | 2011-03-30 5pm    | Tickets of this type not sold after Wednesday, Mar 30, 5:00 PM  |
 
 Scenario Outline: Capacity-related restrictions
 

@@ -42,13 +42,6 @@
 
   .form-row
     .col-3.text-right
-      %label.col-form-label{:for => :showdate_end_advance_sales} Advance sales cutoff
-      = popup_help_for :advance_sales_cutoff
-    .col-6
-      = datetime_select 'showdate', 'end_advance_sales', args
-
-  .form-row
-    .col-3.text-right
       %label.col-form-label{:for => :showdate_max_advance_sales}
         = @showdate.stream_anytime? ? 'Max sales' : 'Max advance sales'
       = popup_help_for(:max_advance_sales)

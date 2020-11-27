@@ -32,7 +32,6 @@ class Showdate < ActiveRecord::Base
   validates_associated :show
   validates :thedate, :presence => true, :uniqueness => {:scope => :show_id, :message => "is already a performance for this show"}
 
-  validates :end_advance_sales, presence: true
   validates :description, :length => {:maximum => 255}, :allow_blank => true
   validates :access_instructions, :presence => true, :if => :stream?
 
@@ -40,12 +39,10 @@ class Showdate < ActiveRecord::Base
   validate :seatmap_can_accommodate_existing_reservations, :on => :update
   validate :at_most_one_stream_anytime_performance
 
-  attr_accessible :thedate, :house_capacity, :end_advance_sales, :max_advance_sales, :description, :show_id, :seatmap_id, :live_stream, :stream_anytime, :access_instructions
+  attr_accessible :thedate, :house_capacity, :max_advance_sales, :description, :show_id, :seatmap_id, :live_stream, :stream_anytime, :access_instructions
 
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
-
-
 
   # round off all showdates to the nearest minute
   before_save :truncate_showdate_to_nearest_minute
@@ -126,17 +123,12 @@ class Showdate < ActiveRecord::Base
     show = Show.find(params[:show_id])
     new_showdates = dates.map do |date|
       params[:thedate] = date
-      params = params.merge((date - sales_cutoff).to_form_param("end_advance_sales")) unless params[:stream_anytime]
       show.showdates.build(params)
     end
   end
   
   # finders
   
-  def self.current_and_future
-    Showdate.where("thedate >= ?", Time.current - 1.day).order('thedate')
-  end
-
   def self.current_or_next(opts={})
     buffer = opts[:grace_period] || 0
     type = opts[:type] || 'Regular Show'

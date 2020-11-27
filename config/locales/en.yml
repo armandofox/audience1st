@@ -136,6 +136,10 @@ en:
 
   season_setup:
 
+    errors:
+      no_performances_exist: >
+        You must add some performances before you can add or change ticket types for performances.
+
     vouchers_already_issued: >
       %{num} vouchers of this voucher type have already been issued.  Any changes you make
       will be retroactively reflected to all of them.  If this is not what you want, click Cancel below.
@@ -149,10 +153,6 @@ en:
 
     confirm_delete_performance: >
       Delete this performance: are you sure?
-
-    minutes_before_cant_be_blank: >
-      Please enter how many minutes before showtime to end sales, or choose a different 
-      option for setting the sales cutoff.
 
     must_select_vouchertypes: >
       You must select 1 or more voucher types to add.

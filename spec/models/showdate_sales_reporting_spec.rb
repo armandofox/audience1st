@@ -7,7 +7,6 @@ describe Showdate do
     @showdate = create(:showdate,
       :show => create(:show),
       :house_capacity => @house_cap,
-      :end_advance_sales => Time.current - 5.minutes,
       :max_advance_sales => @max_advance_sales)
     4.times { create(:subscriber_voucher, :showdate => @showdate) }
     3.times { create(:comp_voucher,       :showdate => @showdate) }

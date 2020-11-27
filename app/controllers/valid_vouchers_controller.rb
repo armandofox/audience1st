@@ -10,16 +10,17 @@ class ValidVouchersController < ApplicationController
 
   def new
     @show = Show.find params[:show_id]
+    return redirect_to(edit_show_path(@show), :alert => t('season_setup.errors.no_performances_exist')) unless @show.showdates.count > 0
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@show.season)
     @valid_voucher = ValidVoucher.new(:start_sales => @show.listing_date)
     # special case: if showdate has ANY stream-anytime perfs, default the end-sales time to the
     # first such perf's showtime.  (if the user displays 'live stream' or 'in-theater' on
     # the form, the date menus disappear anyway in favor of a "Minutes before curtain" field,
     # so doing this only affects anything if the show has a stream-anytime perf.)
-    if (sd = @show.showdates.find_by(:stream_anytime => true))
-      @valid_voucher.end_sales = sd.thedate - 15.minutes
-    end
     @minutes_before = Option.advance_sales_cutoff
+    if (sd = @show.showdates.find_by(:stream_anytime => true))
+      @valid_voucher.end_sales = sd.thedate - @minutes_before.minutes
+    end
   end
 
   def edit
@@ -53,8 +54,10 @@ class ValidVouchersController < ApplicationController
     showdates = Showdate.find sd
     # max_sales_for_type if blank should be "infinity"
     args[:max_sales_for_type] = ValidVoucher::INFINITE if args[:max_sales_for_type].blank?
-    args[:before_showtime] = params[:minutes_before].to_i.minutes
-    return redirect_to(back, :alert => t('season_setup.minutes_before_cant_be_blank')) if args[:before_showtime].zero?
+
+    # params[:before_or_after] is either '+1' or '-1' to possibly negate minutes_before_curtain
+    # (so the value stored is "Minutes before", but may be negative to indicate "minutes after")
+    args[:before_showtime] = (params[:minutes_before].to_i * params[:before_or_after].to_i).minutes
 
     updater = RedemptionBatchUpdater.new(showdates,vouchertypes,
       :valid_voucher_params => args, :preserve => preserve)

@@ -33,7 +33,10 @@ module ShowdatesHelper
   end
 
   def time_in_words_relative_to(ed,sd)
-    if (sd.month == ed.month) && (sd.day == ed.day) && (sd.year == ed.year)
+    seconds_between = (ed - sd).abs
+    if seconds_between < 1.hour
+      "#{(seconds_between / 60).to_i} minutes %s curtain" % ( ed > sd ? 'after' : 'before' )
+    elsif (sd.month == ed.month) && (sd.day == ed.day) && (sd.year == ed.year)
       ed.strftime("%l:%M%p day of show")
     elsif sd.year != ed.year
       ed.to_formatted_s(:showtime_including_year)

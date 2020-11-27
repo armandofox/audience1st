@@ -57,13 +57,12 @@ class ShowdatesController < ApplicationController
   def new
     @advance_sales_cutoff = Option.advance_sales_cutoff
     @max_sales_default = 0
-    @showdate = @show.showdates.build(:max_advance_sales => @max_sales_default, :thedate => Time.zone.now, :end_advance_sales => @show.closing_date.to_time.change(:hour => 23, :min => 59))
+    @showdate = @show.showdates.build(:max_advance_sales => @max_sales_default, :thedate => Time.current)
   end
 
   def edit
     @showdate = Showdate.find(params[:id])
     @default_date = @showdate.thedate
-    @default_cutoff_date = @showdate.end_advance_sales
   end
 
   def update

@@ -20,7 +20,6 @@ Feature: set up multiple showdates at once
       | Fri                | checked                                 |
       | Sun                | checked                                 |
       | At                 | select time "7:00pm"                    |
-      | Advance sales stop | 60                                      |
       | Max advance sales  | 50                                      |
       | Seat map           | select "None (general admission)"       |
       | House capacity     | 20                                      |
@@ -42,7 +41,6 @@ Feature: set up multiple showdates at once
       | field              | value                                   |
       | show_run_dates     | date range "2012-01-01" to "2012-01-03" |
       | At                 | select time "2:00 pm"                   |
-      | Advance sales stop | 60                                      |
       | Max advance sales  | 50                                      |
       | Seat map           | select "Default (4)"                    |
       | Sun                | checked                                 |
@@ -58,7 +56,6 @@ Feature: set up multiple showdates at once
       | field                  | value                            |
       | Stream available until | select time "2012-12-31 11:30pm" |
       | Max advance sales      | 50000                            |
-      | Advance sales stop     | select time "2012-12-28 10:00pm" |
       | Access instructions    | It's on YouTube                  |
     And I press "Save & Back to List of Shows"
     Then I should see "One performance was successfully added"

@@ -18,7 +18,7 @@ class ValidVoucher < ActiveRecord::Base
   attr_accessible :explanation, :visible, :supplied_promo_code, :customer, :max_sales_for_this_patron
   belongs_to :showdate
   belongs_to :vouchertype
-  validate :self_service_comps_must_have_promo_code
+  # validate :self_service_comps_must_have_promo_code
   validates_associated :showdate, :if => lambda { |v| !(v.vouchertype.bundle?) }
   validates_associated :vouchertype
   validates_numericality_of :max_sales_for_type, :allow_nil => true, :greater_than_or_equal_to => 0
@@ -118,10 +118,7 @@ class ValidVoucher < ActiveRecord::Base
       self.max_sales_for_this_patron = 0
       return nil
     end
-    if showdate.thedate < Time.current
-      self.explanation = 'Event date is in the past'
-      self.visible = false
-    elsif showdate.sold_out?
+    if showdate.sold_out?
       self.explanation = 'Event is sold out'
       self.visible = true
     end
@@ -131,10 +128,7 @@ class ValidVoucher < ActiveRecord::Base
 
   def adjust_for_sales_dates
     now = Time.current
-    if showdate && (now > showdate.end_advance_sales)
-      self.explanation = 'Advance sales for this performance are closed'
-      self.visible = true
-    elsif now < start_sales
+    if now < start_sales
       self.explanation = "Tickets of this type not on sale until #{start_sales.to_formatted_s(:showtime)}"
       self.visible = true
     elsif now > end_sales

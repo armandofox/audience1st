@@ -8,9 +8,8 @@ en:
 
     advance_sales_cutoff: >
 
-      When setting up new redemptions, the default time that online sales close
-      for a particular ticket type and performance.  Can be overridden for 
-      specific performances and ticket types.
+      Default time that online sales close -- can be overridden for specific performances 
+      and specific ticket types.
 
     nearly_sold_out_threshold: >
 

@@ -2,6 +2,14 @@ require 'rails_helper'
 
 describe ValidVoucher do
 
+  describe "sales cutoff" do
+    it "may be later than perf date" do
+      s = create(:showdate)
+      v = build(:valid_voucher, :showdate => s, :end_sales => s.thedate + 10.minutes)
+      expect(v).to be_valid
+    end
+  end
+
   describe "seats remaining" do 
     subject do
       ValidVoucher.new(
@@ -52,8 +60,8 @@ describe ValidVoucher do
         @sd = create(:showdate)
         @vv = build(:valid_voucher, :vouchertype => @vt, :showdate => @sd)
       end
-      it "should be invalid without a promo code" do
-        expect(@vv).not_to be_valid
+      it "should be valid without a promo code" do
+        expect(@vv).to be_valid
       end
       it "should be valid with a promo code" do
         @vv.promo_code = 'Gloof'

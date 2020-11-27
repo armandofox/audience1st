@@ -24,6 +24,19 @@ Scenario: add vouchertypes for subset of performances
     | showdate      | vouchertype | end_sales        | max_sales |
     | Mon 3/15, 8pm | Student     | Mon 3/15, 6:30pm |        45 |
     | Sat 3/20, 3pm | Student     | Sat 3/20, 1:30pm |        45 |
+
+Scenario: add vouchertypes where end-sales is after start of performance
+
+  When I visit the edit ticket redemptions page for "Chicago"
+  And I select the following vouchertypes: Student
+  And I set end sales to "30" minutes after show time
+  And I fill in "Max sales for type (leave blank for unlimited)" with "45"
+  And I select the following show dates: 3/15 8:00pm
+  And I press "Apply Changes"
+  Then only the following voucher types should be valid for "Chicago":
+    | showdate      | vouchertype | end_sales        | max_sales |
+    | Mon 3/15, 8pm | Student     | Mon 3/15, 8:30pm |        45 |
+
     
 Scenario: add vouchertypes in a way that also changes existing ones
 
