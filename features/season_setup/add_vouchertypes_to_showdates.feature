@@ -17,7 +17,7 @@ Scenario: add vouchertypes for subset of performances
   And I select the following vouchertypes: Student
   And I select "March 1, 2010, 12:00am" as the "Start sales for each performance" time
   And I set end sales to "90" minutes before show time
-  And I fill in "Max sales for type (leave blank for unlimited)" with "45"
+  And I fill in "Max sales for type" with "45"
   And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
   And I press "Apply Changes"
   Then only the following voucher types should be valid for "Chicago":
@@ -30,7 +30,7 @@ Scenario: add vouchertypes where end-sales is after start of performance
   When I visit the edit ticket redemptions page for "Chicago"
   And I select the following vouchertypes: Student
   And I set end sales to "30" minutes after show time
-  And I fill in "Max sales for type (leave blank for unlimited)" with "45"
+  And I fill in "Max sales for type" with "45"
   And I select the following show dates: 3/15 8:00pm
   And I press "Apply Changes"
   Then only the following voucher types should be valid for "Chicago":
@@ -50,7 +50,7 @@ Scenario: add vouchertypes in a way that also changes existing ones
   And I select the following vouchertypes: Student, General
   And I select the following show dates: 3/15 8:00pm, 3/20 8:00pm
   And I set end sales to "20" minutes before show time
-  And I fill in "Max sales for type (leave blank for unlimited)" with "50"
+  And I fill in "Max sales for type" with "50"
   And I choose to overwrite existing redemptions
   And I press "Apply Changes"
   Then only the following voucher types should be valid for "Chicago":
@@ -74,7 +74,7 @@ Scenario: leave end sales unchanged while updating max sales
   And I select the following vouchertypes: Student
   And I select the following show dates: 3/15 8:00pm, 3/20 3:00pm
   And I choose to leave as-is on existing redemptions: end sales
-  And I fill in "Max sales for type (leave blank for unlimited)" with "21"
+  And I fill in "Max sales for type" with "21"
   And I press "Apply Changes"
   Then only the following voucher types should be valid for "Chicago":
     | showdate      | vouchertype | end_sales        | max_sales |

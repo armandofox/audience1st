@@ -4,7 +4,7 @@
     %label.col-form-label{:for => "option_#{attr_name}"}= humanize(attr_name).capitalize_each_word
     = option_description_for(attr_name)
   - if attrib.to_s =~ /account_code/i
-    .col-4
+    .col-md-4
       = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i), {}, {:class => 'form-control'}
   - elsif attrib.to_s =~ /advance_sales_cutoff/i
     .col-md-1= f.number_field attr_name, :class => 'form-control'
@@ -12,18 +12,18 @@
   - else 
     - case Option.columns_hash[attrib.to_s].type
     - when :string
-      .col-8= f.text_field attr_name, {:class => 'form-control', :autocomplete => 'off'}
+      .col-md-8= f.text_field attr_name, {:class => 'form-control', :autocomplete => 'off'}
     - when :text
-      .col-8= f.text_area attr_name, :rows => 4, :class => 'form-control'
+      .col-md-8= f.text_area attr_name, :rows => 4, :class => 'form-control'
     - when :boolean
-      .col-2= f.select attr_name, [['Yes', true], ['No', false]], {}, {:class => 'form-control'}
+      .col-md-2= f.select attr_name, [['Yes', true], ['No', false]], {}, {:class => 'form-control'}
     - when :integer
-      .col-2.input-group
+      .col-md-2.input-group
         = f.number_field attr_name, :class => 'form-control'
         - unless decoration.blank?
           %span.input-group-text= decoration
     - when :float
-      .col-2.input-group
+      .col-md-2.input-group
         .input-group-prepend
           %span.input-group-text $
         = text_field_tag "option[#{attr_name}]", number_to_currency(@o.send(attr_name), :unit => ''), :class => 'form-control'

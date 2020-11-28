@@ -13,7 +13,7 @@
   .form-group.form-row
     .col-md-5.text-right
       = popup_help_for :valid_voucher_max_sales_for_type
-      %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type (Leave blank for unlimited)
+      %label.col-form-label{:for=>:valid_voucher_max_sales_for_type} Max sales for type
     = number_field_tag 'valid_voucher_max_sales_for_type', (@valid_voucher.max_sales_for_type unless @valid_voucher.max_sales_for_type == ValidVoucher::INFINITE), :name => 'valid_voucher[max_sales_for_type]', :class => 'form-control col-md-2'
 
   .form-group.form-row

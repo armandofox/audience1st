@@ -306,12 +306,18 @@ en:
       A box office agent can always sell 
       beyond this limit either in advance or at walkup sales time; the limit 
       applies ONLY to customer self-purchase.
+      Leave blank for unlimited.
+
+    valid_voucher_max_sales_for_type_subscription:
+
+      Maximum number of bundles/subscriptions of this type that may be sold.
+      Leave blank for unlimited.                  
 
     valid_voucher_promo_code: >
 
       If you enter a promo code here, customers (but not box office staff) 
-      will have to enter it in order to purchase this type of ticket for 
-      this show.  You can associate multiple promo codes (separated by commas) with the same
+      will have to enter it in order to purchase this type of ticket.
+      You can associate multiple promo codes (separated by commas) with the same
       redemption, since their sales are reported separately. 
       Promo codes are not case-sensitive, so "Discount", "DISCOUNT", and
       "discount" are all equivalent.

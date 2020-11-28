@@ -23,9 +23,9 @@ Scenario: change properties on a single redemption
   And I should see "Chicago - Monday, Mar 15, 8:00 PM"
   And I should see "StudentDiscount"
   And the "Redemption (promo) code, if any" field should equal "STU"
-  And the "Max sales for type (Leave blank for unlimited)" field should equal "45"
+  And the "Max sales for type" field should equal "45"
   And "Mon, 3/15, 6:30pm" should be selected as the "End sales" date
-  When I fill in "Max sales for type (Leave blank for unlimited)" with "25"
+  When I fill in "Max sales for type" with "25"
   And I fill in "Redemption (promo) code, if any" with "ZOOX"
   And I press "Save Changes"
   Then only the following voucher types should be valid for "Chicago":

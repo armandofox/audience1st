@@ -27,3 +27,8 @@ Feature: purchase tickets after performance starts
     When I go to the store page
     Then the "Early purchase - $25.00" menu should have options: 0
     And  the "Late purchase - $23.00" menu should have options: 0
+
+  Scenario: late reservation using subscriber voucher
+
+    Given customer "Tom Foolery" has 2 of 2 open subscriber vouchers for "Chicago"
+    And I am logged in as customer "Tom Foolery"
