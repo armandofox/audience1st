@@ -32,7 +32,7 @@ FactoryBot.define do
       including { Time.current }
     end
     sequence(:name) { |n| "Show #{n}" }
-    opening_date { including - 1.week }
+    opening_date { including }
     closing_date { opening_date + 1.month }
     listing_date { Time.current }
   end

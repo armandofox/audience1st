@@ -7,11 +7,11 @@ Feature: purchase tickets after performance starts
 
   Background: a performance set up for at least some late sales
 
-    Given a show "Chicago" with the following tickets available:
+    Given it is currently Jan 1, 2021, 8:05pm
+    And a show "Chicago" with the following tickets available:
       | showdate         | type           | qty | price | sales_cutoff |
       | Jan 1, 2021, 8pm | Early purchase | 100 | $25   |           10 |
       | Jan 1, 2021, 8pm | Late purchase  | 100 | $23   |          -10 |
-    And it is currently Jan 1, 2021, 8:05pm
 
   Scenario: some redemptions allow late sales
 

@@ -13,7 +13,7 @@ FactoryBot.define do
 
   factory :vouchertype do
     account_code { AccountCode.default_account_code }
-    season Time.current.year
+    season { Time.current.year }
     fulfillment_needed false
     changeable true
     
