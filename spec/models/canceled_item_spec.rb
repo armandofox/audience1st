@@ -6,9 +6,9 @@ describe CanceledItem do
     its(:amount) { should be_zero }
   end
   describe 'created from existing item' do
-    subject { create(:revenue_voucher).cancel!(create(:customer)) }
+    subject { create(:revenue_voucher, :amount => 13).cancel!(create(:customer)) }
     its(:class) { should == CanceledItem }
-    its(:amount) { should eq(0) }
+    its(:amount) { should eq(13) }
   end
 end
   
