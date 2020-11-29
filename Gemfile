@@ -1,6 +1,6 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '2.5.5'
+ruby '2.6.6'
 
 # basic app components
 gem 'pg', '~> 0.21'
@@ -10,7 +10,7 @@ gem 'rails', '4.2.11.1'
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
 gem 'builder'
-gem 'bundler', '1.17.2'
+gem 'bundler', '1.17.3'
 gem 'figaro'
 gem 'sslrequirement'
 gem 'haml'

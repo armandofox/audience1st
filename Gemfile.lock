@@ -42,8 +42,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.6.0)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
     apartment (2.2.0)
       activerecord (>= 3.1.2, < 6.0)
       parallel (>= 0.7.1)
@@ -80,8 +80,7 @@ GEM
       simplecov (>= 0.7)
       term-ansicolor
       thor
-    crack (0.4.3)
-      safe_yaml (~> 1.0.0)
+    crack (0.4.4)
     crass (1.0.6)
     cucumber (3.0.2)
       builder (>= 2.1.2)
@@ -164,7 +163,7 @@ GEM
     haml (5.0.4)
       temple (>= 0.8.0)
       tilt
-    hashdiff (0.3.7)
+    hashdiff (1.0.1)
     hitimes (1.2.6)
     htmlentities (4.3.4)
     http-cookie (1.0.3)
@@ -222,7 +221,7 @@ GEM
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    public_suffix (3.1.0)
+    public_suffix (4.0.6)
     puma (3.12.2)
     puma-heroku (1.0.0)
       puma (~> 3.0)
@@ -309,7 +308,6 @@ GEM
       rspec-mocks (~> 3.8.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.2)
-    safe_yaml (1.0.4)
     sassc (2.0.1)
       ffi (~> 1.9)
       rake
@@ -373,10 +371,10 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
-    webmock (3.3.0)
+    webmock (3.10.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
-      hashdiff
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
@@ -393,7 +391,7 @@ DEPENDENCIES
   attr_encrypted
   builder
   bullet
-  bundler (= 1.17.2)
+  bundler (= 1.17.3)
   byebug
   capybara (~> 3.0)
   chronic
@@ -459,7 +457,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 2.5.5p157
+   ruby 2.6.6p146
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
