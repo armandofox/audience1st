@@ -10,7 +10,8 @@ class OptionsController < ApplicationController
     @o = Option.first
     option_params = params.require('option').permit!
     # for sales cutoff, use dropdown menu 'minutes before/after' to modify actual value
-    option_params['advance_sales_cutoff'][0,0] = "-" if params['before_or_after'] =~ /after/i
+    option_params['advance_sales_cutoff'] =
+      option_params['advance_sales_cutoff'].to_i * params['before_or_after'].to_i
     if (@o.update_attributes(option_params))
       flash[:notice] = "Update successful."
     else

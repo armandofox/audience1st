@@ -73,7 +73,7 @@
         %label.col-form-label{:for => 'option_advance_sales_cutoff'} Advance Sales Cutoff
         = option_description_for 'advance_sales_cutoff'
       .col-md-2= number_field_tag 'option[advance_sales_cutoff]', @o.advance_sales_cutoff.abs, :class => 'form-control'
-      .col-md-3= select_tag 'before_or_after', options_for_select(['minutes before curtain','minutes after curtain'], (@o.advance_sales_cutoff < 0 ? 'minutes after curtain' : 'minutes before curtain')), :class => 'form-control'
+      .col-md-3= select_tag 'before_or_after', options_for_before_or_after_curtain(@o.advance_sales_cutoff), :class => 'form-control'
 
     = render_collection_of_options f, %w( |
       accessibility_advisory_for_reserved_seating |

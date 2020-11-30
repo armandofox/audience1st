@@ -6,9 +6,6 @@
   - if attrib.to_s =~ /account_code/i
     .col-md-4
       = f.select attrib, options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @o.send(attrib).to_i), {}, {:class => 'form-control'}
-  - elsif attrib.to_s =~ /advance_sales_cutoff/i
-    .col-md-1= f.number_field attr_name, :class => 'form-control'
-    .col-md-3= select_tag 'before_or_after', options_for_select([['minutes before curtain',1], ['minutes after curtain',-1]]), {:class => 'form-control'}
   - else 
     - case Option.columns_hash[attrib.to_s].type
     - when :string

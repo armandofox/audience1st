@@ -8,6 +8,14 @@ module ShowdatesHelper
       time_in_words_relative_to(thing.send(attr), showdate.thedate)
     end
   end
+
+  def options_for_before_or_after_curtain(time=0)
+    before = 'minutes before performance starts'
+    after = 'minutes after performance starts'
+    selected = (time < 0 ? '-1' : '+1')
+    options_for_select([[before, '+1'], [after, '-1']], selected)
+  end
+
   def showdate_type_choices(show,new_showdate: nil)
     showdates = show.showdates
     options = []
@@ -35,7 +43,7 @@ module ShowdatesHelper
   def time_in_words_relative_to(ed,sd)
     seconds_between = (ed - sd).abs
     if seconds_between < 1.hour
-      "#{(seconds_between / 60).to_i} minutes %s curtain" % ( ed > sd ? 'after' : 'before' )
+      "#{(seconds_between / 60).to_i} minutes %s performance starts" % ( ed > sd ? 'after' : 'before' )
     elsif (sd.month == ed.month) && (sd.day == ed.day) && (sd.year == ed.year)
       ed.strftime("%l:%M%p day of show")
     elsif sd.year != ed.year
