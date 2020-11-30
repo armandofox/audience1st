@@ -58,7 +58,7 @@ en:
     cancel_grace_period: >
 
       Latest a patron can self-cancel a reservation (minutes before
-      curtain), if the ticket type being used has been designated as one for
+      performance starts), if the ticket type being used has been designated as one for
       which a patron can make their own changes online for free.
 
     default_donation_account_code: >

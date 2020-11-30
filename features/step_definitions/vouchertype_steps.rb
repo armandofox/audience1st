@@ -92,9 +92,9 @@ end
 When /I set end sales to "(.*)" minutes (before|after) show ?time/ do |minutes,before_after|
   fill_in "minutes_before", with: minutes
   if before_after =~ /before/
-    select 'minutes before curtain', from: 'before_or_after'
+    select 'minutes before performance starts', from: 'before_or_after'
   else
-    select 'minutes after curtain', from: 'before_or_after'
+    select 'minutes after performance starts', from: 'before_or_after'
   end    
 end
 
