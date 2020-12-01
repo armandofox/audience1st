@@ -1,7 +1,7 @@
 .form-row
   .col-md-5
     = check_box_tag 'use_cid', 1, @params[:use_cid]
-    %label.col-form-label Only for this customer (type first or last name):
+    %label.col-form-label Only for customer (type first or last name):
   .col-md-5#donor_autocomplete
     :javascript
       $('#use_cid').change(function() { 
