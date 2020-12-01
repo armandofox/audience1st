@@ -1,7 +1,7 @@
 %h2 Editing #{@showdate.printable_name}
 
 = form_tag show_showdate_path(@show,@showdate), :method => :put, :class => 'showdate-form' do 
-  - args = {:start_year => @show.season.at_beginning_of_season.year, :end_year => @show.season.at_end_of_season.year, :minute_step => 15, :date => @showdate.thedate }
+  - args = {:start_year => Time.at_beginning_of_season(@show.season).year, :end_year => Time.at_end_of_season(@show.season.year), :minute_step => 15, :date => @showdate.thedate }
 
   .form-row.py-1
     .col-3.text-right
