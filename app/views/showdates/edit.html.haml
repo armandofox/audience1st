@@ -12,8 +12,8 @@
     .col-3.text-right
       %label.col-form-label{:for => :showdate_thedate}
         = @showdate.stream_anytime? ? 'Stream available until' : 'Date and time'
-    .col-8
-      = datetime_select 'showdate', 'thedate', args
+    .col-8.form-inline
+      = datetime_select 'showdate', 'thedate', args, {:class => 'form-control'}
 
   - unless @showdate.stream?
     .form-row

@@ -53,8 +53,10 @@
     .form-group.form-row.pb-0.mb-0
       .col-md-5.text-right
         = popup_help_for :valid_voucher_sales_dates
-        %label.col-form-label{:for=>:valid_voucher_start_sales}  Start sales for each performance
-      .col-md-6= datetime_select 'valid_voucher', 'start_sales', :minute_step => 15
+        %label.col-form-label{:for=>:valid_voucher_start_sales}
+          Start sales
+          %span.Tt.Tl for each performance
+      .col-md-6.form-inline= datetime_select 'valid_voucher', 'start_sales', {:minute_step => 15}, {:class => 'form-control'}
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
@@ -66,10 +68,12 @@
     .form-group.form-row.pb-0.mb-0
       .col-md-5.text-right
         = popup_help_for :valid_voucher_sales_dates
-        %label.col-form-label End sales for each performance
+        %label.col-form-label
+          End sales
+          %span.Tt.Tl for each performance
       .col-md-1.Tt.Tl= number_field_tag 'minutes_before', @minutes_before.abs, :class => 'form-control'
       .col-md-3.Tt.Tl= select_tag 'before_or_after', options_for_before_or_after_curtain(@minutes_before), :class => 'form-control'
-      .col-md-6.Ts= datetime_select 'valid_voucher', 'end_sales', :minute_step => 15, :class => 'valid-voucher-end-sales'
+      .col-md-6.Ts.form-inline= datetime_select 'valid_voucher', 'end_sales', {:minute_step => 15}, {:class => 'form-control'}
 
     .form-group.form-row.pt-0.mt-0.border-bottom
       .form-check.form-check-inline.col-md-5.offset-md-5
