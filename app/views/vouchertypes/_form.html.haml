@@ -1,143 +1,144 @@
 - existing_bundle = @vouchertype.bundle? && !@vouchertype.new_record?
 
-.form-row
-  .col-md-3.text-right
-    %label.col-form-label{:for => :vouchertype_category} Type
-    = popup_help_for :vouchertype_type
-  .col-md-4
-    - @vouchertype.category ||= 'revenue'
-    = select 'vouchertype', 'category', |
-      options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym), {}, |
-     {:disabled => !@vouchertype.new_record?, :class => 'form-control',  |
-     :onchange => 'A1.vouchertype.reset_fields'} |
-
-- if @new_record
-  .form-row.my-2.revenue.comp.subscriber.nonticket 
-    .col-md-8.offset-2.alert.alert-info Enter bundle/subscription info below, click "Create", then edit this bundle/subscription to add the appropriate tickets to it.
-
-.form-row
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_name} Name
-  .col-md-4
-    = text_field 'vouchertype', 'name', :class => 'form-control'
-
-.form-row.subscriber.comp
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_price} Price
-  .col-md-2
-    = text_field 'vouchertype', 'price', :class => 'form-control subscriber comp'
-
-.form-row.subscriber.comp
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_account_code_id} Account Code
-    = popup_help_for :vouchertype_account_code
-  .col-md-4
-    = collection_select 'vouchertype', 'account_code_id', AccountCode.all, :id, :name_with_code, {}, {:class => 'form-control'}
-  .col-md-2
-    = link_to "Add/Edit Account Codes", account_codes_path, :class => 'btn btn-primary'
-
-.form-row.subscriber
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_offer_public} Availability
-    = popup_help_for :vouchertype_availability
-  .col-md-4
-    = select "vouchertype", "offer_public", Vouchertype.offer_to, {}, {:class => 'form-control'}
-
-.form-row
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_season} Season
-    = popup_help_for :vouchertype_season
-  .col-md-2
-    - if existing_bundle
-      = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season), {}, {:onchange => "$('input.bundle_component').map(Element.clear); $('#included_vouchers').hide(); ", :class => 'form-control'}
-    - else
-      = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season), {}, {:class => 'form-control'}
-
-- if existing_bundle
+#vouchertype-form
   .form-row
-    .col-md-7.offset-3.alert.alert-info
-      If you change the season of a bundle, first save the change, then edit the bundle again to add vouchers for the new season.
+    .col-md-3.text-right
+      %label.col-form-label{:for => :vouchertype_category} Type
+      = popup_help_for :vouchertype_type
+    .col-md-4
+      - @vouchertype.category ||= 'revenue'
+      = select 'vouchertype', 'category', |
+        options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym), {}, |
+       {:disabled => !@vouchertype.new_record?, :class => 'form-control',  |
+       :onchange => 'A1.vouchertype.reset_fields'} |
 
-.form-row
-  .col-md-3.text-right
-    %label.col-form-label{:for => :vouchertype_display_order} Display order
-    = popup_help_for :vouchertype_display_order
-  .col-md-1
-    = number_field 'vouchertype', 'display_order', :class => 'form-control'
+  - if @new_record
+    .form-row.my-2.revenue.comp.subscriber.nonticket 
+      .col-md-8.offset-2.alert.alert-info Enter bundle/subscription info below, click "Create", then edit this bundle/subscription to add the appropriate tickets to it.
 
-.form-row.subscriber.comp
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
-    = popup_help_for :vouchertype_fulfillment_needed
-  .col-md-1
-    = check_box 'vouchertype', 'fulfillment_needed', :class => 'form-control-sm'
+  .form-row
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_name} Name
+    .col-md-4
+      = text_field 'vouchertype', 'name', :class => 'form-control'
 
-.form-row.bundle.subscriber
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_walkup_sale_allowed} Walkup sales allowed
-    = popup_help_for :vouchertype_walkup_sale_allowed
-  .col-md-1
-    = check_box 'vouchertype', 'walkup_sale_allowed', :disabled => (@vouchertype.bundle? || @vouchertype.subscriber_voucher?), :class => 'form-control-sm'
+  .form-row.subscriber.comp
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_price} Price
+    .col-md-2
+      = text_field 'vouchertype', 'price', :class => 'form-control subscriber comp'
 
-.form-row.bundle.nonticket
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_changeable} Self-changes allowed
-    = popup_help_for :vouchertype_changeable
-  .col-md-1
-    = check_box 'vouchertype', 'changeable', :disabled => @vouchertype.bundle?, :class => 'form-control-sm'
+  .form-row.subscriber.comp
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_account_code_id} Account Code
+      = popup_help_for :vouchertype_account_code
+    .col-md-4
+      = collection_select 'vouchertype', 'account_code_id', AccountCode.all, :id, :name_with_code, {}, {:class => 'form-control'}
+    .col-md-2
+      = link_to "Add/Edit Account Codes", account_codes_path, :class => 'btn btn-primary'
 
-.form-row.subscriber.comp
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_subscription} Qualifies buyer as a Subscriber
-    = popup_help_for :vouchertype_subscription
-  .col-md-1
-    = check_box 'vouchertype', 'subscription', :class => 'form-control-sm'
+  .form-row.subscriber
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_offer_public} Availability
+      = popup_help_for :vouchertype_availability
+    .col-md-4
+      = select "vouchertype", "offer_public", Vouchertype.offer_to, {}, {:class => 'form-control'}
 
-.form-row.subscriber
-  .col-md-3.text-right
-    %label.col-form-label{:for=>:vouchertype_comments} Comments/description
-  .col-md-7
-    = text_area 'vouchertype', 'comments', 'rows' => 3, :class => 'form-control'
+  .form-row
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_season} Season
+      = popup_help_for :vouchertype_season
+    .col-md-2
+      - if existing_bundle
+        = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season), {}, {:onchange => "$('input.bundle_component').map(Element.clear); $('#included_vouchers').hide(); ", :class => 'form-control'}
+      - else
+        = select "vouchertype", "season", options_for_seasons_range(-5,2,@vouchertype.season || Time.this_season), {}, {:class => 'form-control'}
 
-- if existing_bundle
-  #for_bundles
-    = fields_for @valid_voucher do |vv|
-      .form-row
-        .col-md-3.text-right
-          %label.col-form-label{:for => :valid_voucher_max_sales_for_type} Max sales
-          = popup_help_for :valid_voucher_max_sales_for_type_subscription
-        .col-md-2
-          = vv.text_field :max_sales_for_type, :class => 'form-control'
-      .form-row
-        .col-md-3.text-right
-          = vv.label :start_sales, :class => 'col-form-label'
-          = popup_help_for :valid_voucher_sales_dates
-        .col-md-6
-          = vv.datetime_select 'start_sales', {}, {:class => 'form-control-sm'}
-      .form-row
-        .col-md-3.text-right
-          = vv.label :end_sales, :class => 'col-form-label'
-          = popup_help_for :valid_voucher_sales_dates
-        .col-md-6
-          = vv.datetime_select 'end_sales', {}, {:class => 'form-control-sm'}
-      .form-row
-        .col-md-3.text-right
-          = vv.label :promo_code, :class => 'col-form-label'
-          = popup_help_for :valid_voucher_promo_code
-        .col-md-3
-          = vv.text_field 'promo_code', :class => 'form-control'
+  - if existing_bundle
+    .form-row
+      .col-md-7.offset-3.alert.alert-info
+        If you change the season of a bundle, first save the change, then edit the bundle again to add vouchers for the new season.
 
-    %fieldset#included_vouchers
-      %legend Included vouchers:
-      - Vouchertype.zero_cost_vouchertypes(@vouchertype.season).reject { |v| v.bundle? }.each_with_index do |v,i|
-        - input_name = "vouchertype[included_vouchers][#{v.id}]"
-        - input_id = "vouchertype_included_vouchers[#{v.id}]"
-        - if i.even?
-          <div class="form-row">
-        .col-md-4.text-right
-          %label.col-form-label{:for => input_id}= v.name
-        .col-md-1
-          = number_field_tag input_name, @vouchertype.included_vouchers[v.id.to_s], :id => input_id, :class => 'bundle_component form-control'
-        - if i.odd?
-          </div>
+  .form-row
+    .col-md-3.text-right
+      %label.col-form-label{:for => :vouchertype_display_order} Display order
+      = popup_help_for :vouchertype_display_order
+    .col-md-1
+      = number_field 'vouchertype', 'display_order', :class => 'form-control'
+
+  .form-row.subscriber.comp
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_fulfillment_needed} Mail fulfillment needed
+      = popup_help_for :vouchertype_fulfillment_needed
+    .col-md-1
+      = check_box 'vouchertype', 'fulfillment_needed', :class => 'form-control-sm'
+
+  .form-row.bundle.subscriber
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_walkup_sale_allowed} Walkup sales allowed
+      = popup_help_for :vouchertype_walkup_sale_allowed
+    .col-md-1
+      = check_box 'vouchertype', 'walkup_sale_allowed', :disabled => (@vouchertype.bundle? || @vouchertype.subscriber_voucher?), :class => 'form-control-sm'
+
+  .form-row.bundle.nonticket
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_changeable} Self-changes allowed
+      = popup_help_for :vouchertype_changeable
+    .col-md-1
+      = check_box 'vouchertype', 'changeable', :disabled => @vouchertype.bundle?, :class => 'form-control-sm'
+
+  .form-row.subscriber.comp
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_subscription} Qualifies buyer as a Subscriber
+      = popup_help_for :vouchertype_subscription
+    .col-md-1
+      = check_box 'vouchertype', 'subscription', :class => 'form-control-sm'
+
+  .form-row.subscriber
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_comments} Comments/description
+    .col-md-7
+      = text_area 'vouchertype', 'comments', 'rows' => 3, :class => 'form-control'
+
+  - if existing_bundle
+    #for_bundles
+      = fields_for @valid_voucher do |vv|
+        .form-row
+          .col-md-3.text-right
+            %label.col-form-label{:for => :valid_voucher_max_sales_for_type} Max sales
+            = popup_help_for :valid_voucher_max_sales_for_type_subscription
+          .col-md-2
+            = vv.text_field :max_sales_for_type, :class => 'form-control'
+        .form-row
+          .col-md-3.text-right
+            = vv.label :start_sales, :class => 'col-form-label'
+            = popup_help_for :valid_voucher_sales_dates
+          .col-md-6
+            = vv.datetime_select 'start_sales', {}, {:class => 'form-control-sm'}
+        .form-row
+          .col-md-3.text-right
+            = vv.label :end_sales, :class => 'col-form-label'
+            = popup_help_for :valid_voucher_sales_dates
+          .col-md-6
+            = vv.datetime_select 'end_sales', {}, {:class => 'form-control-sm'}
+        .form-row
+          .col-md-3.text-right
+            = vv.label :promo_code, :class => 'col-form-label'
+            = popup_help_for :valid_voucher_promo_code
+          .col-md-3
+            = vv.text_field 'promo_code', :class => 'form-control'
+
+      %fieldset#included_vouchers
+        %legend Included vouchers:
+        - Vouchertype.zero_cost_vouchertypes(@vouchertype.season).reject { |v| v.bundle? }.each_with_index do |v,i|
+          - input_name = "vouchertype[included_vouchers][#{v.id}]"
+          - input_id = "vouchertype_included_vouchers[#{v.id}]"
+          - if i.even?
+            <div class="form-row">
+          .col-md-4.text-right
+            %label.col-form-label{:for => input_id}= v.name
+          .col-md-1
+            = number_field_tag input_name, @vouchertype.included_vouchers[v.id.to_s], :id => input_id, :class => 'bundle_component form-control'
+          - if i.odd?
+            </div>
 
