@@ -147,18 +147,62 @@ span#timer {
  * Popup-help styles (http://psacake.com/web/jl.asp)
  */
 
+@media screen and (max-width: 768px) {
+    a.a1tooltip {outline:none; text-decoration: none; }
+    span.a1tooltip {
+        text-align: left;
+
+        display: inline;
+        position: fixed;
+        top: 2ex; left: 0;
+        width: 100%;
+        padding: 10px;
+        margin: 0;
+        line-height: 1.1rem;
+        color: white;
+        border:1px solid #DCA;
+        background: #111;
+        border-radius: 1rem;
+    }
+    span.a1hidden { visibility: hidden; }
+    span.a1tooltip::after {
+        content: "(Tap to dismiss)";
+    }
+}
+@media not (screen and (max-width: 768px)) {
 a.a1tooltip {outline:none; font-size: 1rem; }
 a.a1tooltip strong {line-height:30px;}
 a.a1tooltip:hover {text-decoration:none;} 
 a.a1tooltip span {
-    z-index:10;display:none; padding:14px 20px;
-    margin-top:-30px; margin-left:28px;
-    width:300px; line-height:16px;
+    z-index:10;
+    display:none;
+    padding: 1rem;
+    margin-top:-30px;
+    margin-left:28px;
+    width:300px;
+    line-height:16px;
 }
+
+/*
 a.a1tooltip:hover span{
-    display:inline; position:absolute; color:#111;
-    border:1px solid #DCA; background:#fffAF0;}
-.callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
+    display:inline;
+    position:absolute; 
+    color:#111;
+    border:1px solid #DCA;
+    background:#fffAF0;
+}
+*/
+/*
+a.a1tooltip:hover span{
+    display:inline;
+    position: fixed;
+    left: 10%; top: 10%;
+    color:#111;
+    border:1px solid #DCA;
+    background:#fffAF0;
+}
+*/
+}
 
 /* Pagination of customer list */
 .pagination-container {

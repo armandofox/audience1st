@@ -1,5 +1,3 @@
-%a.a1tooltip{:href => '#'}
+%a.a1tooltip{:href => '#', :onclick => '$(this).find("span.a1tooltip").toggleClass("a1hidden"); event.preventDefault();' }
   = image_tag 'question.png'
-  %span.text-left
-    = image_tag 'callout.gif', :class => 'callout'
-    = word_wrap(popup_help, :line_width => 20).html_safe
+  %span.a1tooltip.a1hidden{:onclick => 'console.log("here"); $("span.a1tooltip").addClass("a1hidden"); '}= popup_help
