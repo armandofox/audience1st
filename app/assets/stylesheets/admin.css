@@ -144,18 +144,31 @@ span#timer {
 }
 
 /*
- * Popup-help styles (http://psacake.com/web/jl.asp)
+ * Popup-help styles
  */
 
 @media screen and (max-width: 768px) {
-    a.a1tooltip {outline:none; text-decoration: none; }
+
+    a.a1tooltip {
+        background-image: radial-gradient(#d0dce8,#5b7ca3);
+        border-color: white;
+        border-radius: 1rem;
+        border-type: ridge;
+        color: white;
+        display: inline-block;
+        font-weight: bold;
+        height: 2rem;
+        padding-top: 0.2rem;
+        width: 2rem;
+
+    } 
     span.a1tooltip {
         text-align: left;
-
+        font-weight: normal;
         display: inline;
         position: fixed;
         top: 2ex; left: 0;
-        width: 100%;
+        width: 90%;
         padding: 10px;
         margin: 0;
         line-height: 1.1rem;
@@ -166,13 +179,25 @@ span#timer {
     }
     span.a1hidden { visibility: hidden; }
     span.a1tooltip::after {
+        color: grey;
+        font-style: italic;
         content: "(Tap to dismiss)";
     }
 }
-@media not (screen and (max-width: 768px)) {
-a.a1tooltip {outline:none; font-size: 1rem; }
-a.a1tooltip strong {line-height:30px;}
+@media not (max-width: 768px) {
+a.a1tooltip {
+    background-image: radial-gradient(#d0dce8,#5b7ca3);
+    height: 1.2rem;
+    width: 1.2rem;
+    display: inline-block;
+    color: white;
+    border-color: white;
+    border-radius: 1rem;
+    border-type: ridge;
+}
+
 a.a1tooltip:hover {text-decoration:none;} 
+span.a1tooltip,
 a.a1tooltip span {
     z-index:10;
     display:none;
