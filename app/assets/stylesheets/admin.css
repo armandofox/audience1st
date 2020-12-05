@@ -156,6 +156,8 @@ span#timer {
         border-type: ridge;
         color: white;
         display: inline-block;
+        text-align: center;
+        text-decoration: none;
         font-weight: bold;
         height: 2rem;
         padding-top: 0.2rem;
@@ -179,7 +181,6 @@ span#timer {
     }
     span.a1hidden { visibility: hidden; }
     span.a1tooltip::after {
-        color: grey;
         font-style: italic;
         content: "(Tap to dismiss)";
     }
