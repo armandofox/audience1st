@@ -1,3 +1,3 @@
-%a.a1tooltip{:href => '#', :onclick =>  '$("span.a1tooltip").addClass("a1hidden"); $(this).find("span.a1tooltip").removeClass("a1hidden"); event.preventDefault();' }
+%a.a1tooltip{:onclick =>  '$("span.a1tooltip").css("visibility","hidden"); $(this).find("span.a1tooltip").css("visibility","visible"); event.preventDefault();' }
   ?
-  %span.a1tooltip.a1hidden{:onclick => 'console.log("here"); this.style.visibility="hidden"; event.preventDefault(); '}= popup_help
+  %span.a1tooltip{:onclick => '$("span.a1tooltip").css("visibility","hidden"); event.stopPropagation(); event.preventDefault(); '}= popup_help

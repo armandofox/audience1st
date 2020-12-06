@@ -16,13 +16,15 @@
 - unless @customers.empty?
   .container.px-0
     = form_tag merge_customers_path, :method => :get, :class => 'form' do
-      .form-group
-        %label.col-form-label Select customers to:
-        = popup_help_for 'merge_customers'
-        = submit_tag 'Manual Merge&hellip;'.html_safe, :class => 'btn btn-primary'
-        = submit_tag 'Auto Merge', :class => 'btn btn-danger'
-        = submit_tag 'Forget', :class => 'btn btn-danger', :onclick => "return confirm('#{escape_javascript t(%q{customers.confirm_delete})}')"
-        = popup_help_for 'delete_customers'
+      .row
+        .col-md-3.text-right
+          %label.col-form-label Select customers to:
+          = popup_help_for 'merge_customers'
+        .col-8
+          = submit_tag 'Manual Merge&hellip;'.html_safe, :class => 'btn btn-primary'
+          = submit_tag 'Auto Merge', :class => 'btn btn-danger'
+          = submit_tag 'Forget', :class => 'btn btn-danger', :onclick => "return confirm('#{escape_javascript t(%q{customers.confirm_delete})}')"
+          = popup_help_for 'delete_customers'
 
       = hidden_field_tag 'action_name', action_name
       = hidden_field_tag 'customers_filter', @customers_filter
@@ -30,7 +32,7 @@
       %table.a1-table.hilite#customers
         %thead
           %tr
-            %th= check_box_tag 'selectAll', 1, false
+            %th= check_box_tag 'selectAll', 1, false, :onchange => '$(".selectForMerge").prop("checked", $(this).prop("checked"))'
             %th First name
             %th Last name
             %th Street
@@ -42,6 +44,4 @@
             %th Labels
         %tbody
           = render :partial => 'customers/customer', :collection => @customers
-:javascript
-  $('#selectAll').change(function() { $('.selectForMerge').prop('checked', $(this).prop('checked')); })
 
