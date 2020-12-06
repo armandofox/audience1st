@@ -1,18 +1,18 @@
-.row.text-white.bg-warning
-  .center
-    %a.flippy[showdate, :flippy]{:href => '#'} &#x25BC;
+.row
+  .col-md-1
+    %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
+  .col-md-3
+    = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
+    = link_to "#{'Until' if showdate.stream_anytime?}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate)
+  .col-md-4
+    = showdate.max_advance_sales
+    = percent_max_advance_sales_if_not_streaming(showdate)
+  .col-md-4= showdate.seating_type_and_capacity
+
 
 .row.text-white.bg-warning[showdate, :details_row]
   .col-3
-    = link_to "#{'Until' if showdate.stream_anytime?}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'
-    = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
   .col-3
-  .col-2
-    = showdate.max_advance_sales
-    - unless showdate.stream?
-      - p = showdate.percent_max_advance_sales
-      %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
-  .col-2=  showdate.seating_type_and_capacity
   .col-2
     - if showdate.total_sales.size.zero?
       = form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|

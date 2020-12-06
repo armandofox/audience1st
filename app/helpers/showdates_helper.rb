@@ -1,5 +1,18 @@
 module ShowdatesHelper
 
+  def percent_max_advance_sales_if_not_streaming(showdate)
+    advance = showdate.percent_max_advance_sales
+    p = " (#{number_to_percentage(advance, :precision => 0)})"
+    if showdate.stream?
+      ''
+    elsif (advance >= 100)
+      (content_tag 'span', p, :class => 'callout').html_safe
+    else
+      p
+    end
+  end
+
+
   def showdate_time_limit_for(thing, attr)
     showdate = if thing.kind_of?(Showdate) then thing else thing.showdate end
     if showdate.stream_anytime?

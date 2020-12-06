@@ -16,10 +16,8 @@
     .col-md-2 Seating
   .row
     .col-md-3
-      %a{:name => 'dummy'}
-      = link_to 'Expand All', '#dummy', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); false;}
-      &nbsp;&bull;&nbsp;
-      = link_to 'Collapse All', '#dummy', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); false;}
+      = button_tag 'Expand All', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); event.preventDefault();}, :class => 'btn btn-sm btn-outline-primary mx-2'
+      = button_tag 'Collapse All', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); event.preventDefault();}, :class => 'btn btn-sm btn-outline-primary mx-2'
 
   = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 
