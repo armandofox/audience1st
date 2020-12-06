@@ -1,0 +1,66 @@
+/* Tooltip styles.  A few style attributes are common to both
+ desktop and mobile, some are mobile-only */
+
+a.a1tooltip {
+    background-image: radial-gradient(#d0dce8,#5b7ca3);
+    border-radius: 1rem;
+    display: inline-block;
+    color: white !important;
+    text-align: center;
+    
+}
+
+span.a1tooltip {
+    background: #111;
+    border-radius: 1rem;
+    color: white;
+    font-weight: normal;
+    line-height: 1.1rem;
+    margin: 0;
+    padding: 6px;
+    position: absolute;
+    text-align: left;
+    z-index: 10;
+}
+
+
+@media screen and (max-width: 768px) {
+
+    /* for mobile/touchscreen/small screens, where cannot hover */
+
+    a.a1tooltip {
+        font-weight: bold;
+        height: 2rem;
+        padding-top: 0.2rem;
+        width: 2rem;
+    } 
+    span.a1tooltip {
+        visibility: hidden;
+        width: 80%;
+        top: 2ex;
+        left: 1ex;
+    }
+    span.a1tooltip::after {
+        font-style: italic;
+        content: "(Tap to dismiss)";
+    }
+}
+@media (min-width: 768px) {
+
+    /* desktop/default behavior */
+    
+    a.a1tooltip {
+        height: 1.2rem;
+        width: 1.2rem;
+    }
+    span.a1tooltip
+    {
+        display: none;
+        width:300px;
+        top: 4ex;
+        left: 1ex;
+    }
+    a.a1tooltip:hover span {
+        display:inline;
+    }
+}

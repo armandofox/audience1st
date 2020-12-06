@@ -7,8 +7,8 @@
 
   %h2 Performances
 
-  %p
-    = link_to 'Add Performances', new_show_showdate_path(@show), :class => 'btn btn-primary'
+  .row
+    = link_to 'Add Performances', new_show_showdate_path(@show), :class => 'btn btn-primary mx-2'
     = link_to 'Add/Change Ticket Type(s) For Performance(s)', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary'
   .row.bg-dark.text-light
     .col-3 Date/time (click to edit show date details)
