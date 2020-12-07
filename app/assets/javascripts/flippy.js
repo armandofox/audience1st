@@ -24,8 +24,8 @@ var Flippy = {
     return(false);
   },
   setup: function() {
-    $('.flippy').click(Flippy.handleClick);
     $('.flippy-div').hide();
+    $('.flippy').click(Flippy.handleClick);
   }
 };
 $(Flippy.setup);

@@ -8,16 +8,11 @@
   %h2 Performances
 
   .row
-    = link_to 'Add Performances', new_show_showdate_path(@show), :class => 'btn btn-primary mx-2'
-    = link_to 'Add/Change Ticket Type(s) For Performance(s)', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary'
-  .row.bg-dark.text-light
-    .col-md-6
-    .col-md-2 Max Sell<br/>(% of House)
-    .col-md-2 Seating
-  .row
-    .col-md-3
-      = button_tag 'Expand All', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); event.preventDefault();}, :class => 'btn btn-sm btn-outline-primary mx-2'
-      = button_tag 'Collapse All', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); event.preventDefault();}, :class => 'btn btn-sm btn-outline-primary mx-2'
+    .col-1= button_tag '&#x25BA'.html_safe, :onclick => %Q{$('.flippy-div,#collapse').show(); $('.flippy').html('&#x25BC')}, :class => 'btn btn-outline-primary mx-2'
+    #collapse.d-none.col-1= button_tag '&#x25BC'.html_safe, :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA')}, :class => 'btn btn-outline-primary', :style => 'display:none;'
+    .col-md-3= link_to 'Add Performances...', new_show_showdate_path(@show), :class => 'btn btn-primary btn-block'
+    .col-md-4= link_to 'Add/Change Ticket Redemptions...', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary btn-block'
 
-  = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
+  .accordion.md-accordion{:role => 'tablist', 'aria-multiselectable' => true}
+    = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 

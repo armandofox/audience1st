@@ -46,5 +46,5 @@
         = link_to 'Back to Customer', customer_path(order.customer), :class => 'btn btn-primary'
         - if order.refundable?
           - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Cancel')
-          = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order), :class => 'btn btn-danger', :id => 'refund'
+          = submit_tag "#{submit_name} Checked Items", 'data-confirm' => deletion_warning_for(order), :class => 'btn btn-danger', :id => 'refund'
 

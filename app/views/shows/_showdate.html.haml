@@ -1,26 +1,19 @@
-.row
-  .col-md-1
-    %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
-  .col-md-3
+.row.bg-light
+  .col-xs-1.col-md-1
+    %a{:href => "#details_showdate_#{showdate.id}", 'data-toggle' => 'collapse'} &#x25BA;
+  .col-md-4.col-xs-10
+    = link_to "#{'Until ' if showdate.stream_anytime?}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate)
     = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
-    = link_to "#{'Until' if showdate.stream_anytime?}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate)
-  .col-md-4
+  .col-md-3
+    Max sales:
     = showdate.max_advance_sales
     = percent_max_advance_sales_if_not_streaming(showdate)
-  .col-md-4= showdate.seating_type_and_capacity
-
-
-.row.text-white.bg-warning[showdate, :details_row]
-  .col-3
-  .col-3
-  .col-2
-    - if showdate.total_sales.size.zero?
-      = form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|
-        = submit_tag 'Delete Performance', :class => 'btn btn-sm btn-outline-danger d-inline', :id => "delete_showdate_#{showdate.id}", :confirm => t('season_setup.confirm_delete_performance')
+  .col-md-3= showdate.seating_type_and_capacity
+  .col-1= button_to_delete_performance(showdate)
 
 - unless showdate.valid_vouchers.empty?
-  %div.flippy-div[showdate, :details]
-    .row.bg-light.text-dark.border.border-top
+  .collapse[showdate, :details]
+    .row.bg-light.text-dark.border.border-bottom
       .col-3 Ticket Type
       .col-3 Sales start
       .col-3 Sales end

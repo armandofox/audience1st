@@ -42,6 +42,15 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
     background-color: inherit;
 }
 
+/* 'x' buttons for deleting things */
+.a1-x-icon {
+    font-color: red !important;
+    outline: none;
+    background-color: inherit;
+    box-shadow: none;
+    text-align: center;
+}
+
 .a1-table {
 /* General tabular styles */
 /* tables still need 'cellspacing="0"' in the markup */
@@ -200,10 +209,18 @@ span#timer {
 *:first-child + html .pagination {
     overflow: hidden; }
 
-/* Flippy triangles */
+/* Flippy triangles and "purchase link" icon */
 .flippy, .flippy:hover, .flippy:visited {
     text-decoration: none;
 }
+/* Make larger for mobile/small screens */
+@media screen and (max-width: 768px) {
+    .flippy, .a1-purchase-link {
+        font-size: 150%;
+    }
+}
+
+/* "purchase link" icon - larger for mobile */
 
 /* Inline form buttons */
 .inline {
