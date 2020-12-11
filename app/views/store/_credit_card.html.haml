@@ -1,33 +1,31 @@
-%fieldset#credit_card
-  %legend= local_assigns[:legend] || 'Credit Card Information'
-  %p.text-center.bg-secondary.text-light.py-2= t('store.credit_card_security_notice')
-  = hidden_field_tag 'credit_card_token', 'DUMMY'
-  = hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
-  .form-row
-    .col-md-2.text-right
-      %label.col-form-label{:for => 'credit_card_name'} Name
-    .col-md-3
-      = text_field_tag 'credit_card_name', local_assigns[:name] || '', :autocomplete => 'off', :class => 'form-control form-control-sm unsubmitted'
-    .col-md-2.text-right
-      %label.col-form-label{:for => 'credit_card_number'} Number
-    .col-md-3
-      = text_field_tag 'credit_card_number', '', :maxlength => 16, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
-    .col-md-2
-  .form-row
-    .col-md-2.text-right
-      %label.col-form-label Expiration
-    .col-md-3
-      .row.mx-auto.px-auto
-        .form-group
-          = select_tag 'credit_card_month', options_for_select(1..12), :class => 'form-control form-control-sm col-auto unsubmitted'
-        .form-group
-          %span.col-auto &nbsp;/&nbsp;
-        .form-group
-          = select_tag 'credit_card_year', options_for_select(Time.current.year..Time.current.year+10), :class => 'form-control form-control-sm col-auto unsubmitted'
-    .col-md-2.text-right
-      %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
-    .col-md-1
-      = text_field_tag 'credit_card_verification_value', '', :class => 'form-control form-control-sm unsubmitted'
-    .col-md-4
-      = image_tag 'credit_card_logos_horizontal.png'
-  .container#payment_errors.bg-danger.text-center
+%p.text-center.bg-secondary.text-light.py-2= t('store.credit_card_security_notice')
+= hidden_field_tag 'credit_card_token', 'DUMMY'
+= hidden_field_tag '_stripe_api_key', Option.stripe_key, :class => 'unsubmitted'
+.form-row
+  .col-md-2.text-right
+    %label.col-form-label{:for => 'credit_card_name'} Name
+  .col-md-3
+    = text_field_tag 'credit_card_name', local_assigns[:name] || '', :autocomplete => 'off', :class => 'form-control form-control-sm unsubmitted'
+  .col-md-2.text-right
+    %label.col-form-label{:for => 'credit_card_number'} Number
+  .col-md-3
+    = text_field_tag 'credit_card_number', '', :maxlength => 16, :autocomplete => :off, :class => 'form-control form-control-sm unsubmitted'
+  .col-md-2
+.form-row
+  .col-md-2.text-right
+    %label.col-form-label Expiration
+  .col-md-3
+    .row.mx-auto.px-auto
+      .form-group
+        = select_tag 'credit_card_month', options_for_select(1..12), :class => 'form-control form-control-sm col-auto unsubmitted'
+      .form-group
+        %span.col-auto &nbsp;/&nbsp;
+      .form-group
+        = select_tag 'credit_card_year', options_for_select(Time.current.year..Time.current.year+10), :class => 'form-control form-control-sm col-auto unsubmitted'
+  .col-md-2.text-right
+    %label.col-form-label{:for => 'credit_card_verification_value'} CVV code
+  .col-md-1
+    = text_field_tag 'credit_card_verification_value', '', :class => 'form-control form-control-sm unsubmitted'
+  .col-md-4
+    = image_tag 'credit_card_logos_horizontal.png'
+.container#payment_errors.bg-danger.text-center

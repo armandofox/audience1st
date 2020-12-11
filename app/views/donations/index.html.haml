@@ -12,39 +12,37 @@
         = text_field_tag 'page', '', :size => 4
         = submit_tag 'Go', :class => 'btn btn-outline-primary btn-sm'
 
-.container
-  = form_tag donations_path, {:method => :get} do
-    = render :partial => 'donation_search', :locals => {:params => @params}
-    .form-row
+= form_tag donations_path, {:method => :get} do
+  = render :partial => 'donation_search', :locals => {:params => @params}
+  .form-row
+    .col-md-4
       = submit_tag "Search", :class => 'btn btn-success mx-1'
       - unless @donations.empty?
         = submit_tag 'Download to Excel', :class => 'btn btn-primary mx-1'
         = popup_help_for 'download_to_excel'
-      = link_to "Add/Edit Account Codes&hellip;".html_safe, account_codes_path, :class => 'btn btn-primary mx-1'
 
-.container
-  - unless @donations.empty?
-    %table.a1-table#donations.hilite
-      %thead
-        %tr
-          %th Customer
-          %th Order#
-          %th Date
-          %th Item Amount
-          %th Item Description or Acct Code
-          %th Thanks Ltr Sent?
-          %th Comments
-      %tbody 
-        - @donations.each do |t|
-          %tr{:id => "donation_row_#{t.id}"}
-            %td= link_to t.customer.full_name, donations_path(:use_cid => 1, :cid => t.customer, :show_vouchers => true, :commit => 'Go')
-            %td= link_to_order_containing t
-            %td= t.sold_on.strftime '%D'
-            %td.right= number_to_currency(t.amount)
-            %td= t.item_description
-            %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
-            %td
-              = form_tag update_comment_for_donation_path(t), 'data-remote' => true, 'data-method' => 'put', 'data-type' => 'script', :class => 'form form-inline' do
-                = text_field_tag 'comments', t.comments, :id => "donation_comment_{t.id}", :class => 'donation-comment form-control form-control-sm'
-                = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => "save_#{t.id}", :class => 'btn btn-sm btn-outline-success'              
-    %br
+- unless @donations.empty?
+  %table.a1-table#donations.hilite
+    %thead
+      %tr
+        %th Customer
+        %th Order#
+        %th Date
+        %th Item Amount
+        %th Item Description or Acct Code
+        %th Thanks Ltr Sent?
+        %th Comments
+    %tbody 
+      - @donations.each do |t|
+        %tr{:id => "donation_row_#{t.id}"}
+          %td= link_to t.customer.full_name, donations_path(:use_cid => 1, :cid => t.customer, :show_vouchers => true, :commit => 'Go')
+          %td= link_to_order_containing t
+          %td= t.sold_on.strftime '%D'
+          %td.right= number_to_currency(t.amount)
+          %td= t.item_description
+          %td= render :partial => 'donation_letter_sent', :locals => {:donation => t}
+          %td
+            = form_tag update_comment_for_donation_path(t), 'data-remote' => true, 'data-method' => 'put', 'data-type' => 'script', :class => 'form form-inline' do
+              = text_field_tag 'comments', t.comments, :id => "donation_comment_{t.id}", :class => 'donation-comment form-control form-control-sm'
+              = submit_tag '&#x2714;'.html_safe, :name => 'save', :id => "save_#{t.id}", :class => 'btn btn-sm btn-outline-success'              
+  %br

@@ -41,6 +41,9 @@
   .col-md-5
     = check_box_tag 'use_fund', 1, @params[:use_fund]
     %label.col-form-label Only donations to these funds:
+    %br
+    = link_to "Add/Edit Account Codes&hellip;".html_safe, account_codes_path, :class => 'btn btn-primary mx-1'
+
   .col-md-5
     = select_tag 'donation_funds', options_from_collection_for_select(AccountCode.all, :id, :name_with_code), :multiple => true, :class => 'form-control'
     
