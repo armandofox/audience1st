@@ -28,5 +28,5 @@ var Flippy = {
     $('.flippy').click(Flippy.handleClick);
   }
 };
-$(Flippy.setup);
+// $(Flippy.setup);
 

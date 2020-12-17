@@ -8,10 +8,11 @@
   %h2 Performances
 
   .row
-    .col-1= button_tag '&#x25BA'.html_safe, :onclick => %Q{$('.flippy-div,#collapse').show(); $('.flippy').html('&#x25BC')}, :class => 'btn btn-outline-primary mx-2'
-    #collapse.d-none.col-1= button_tag '&#x25BC'.html_safe, :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA')}, :class => 'btn btn-outline-primary', :style => 'display:none;'
-    .col-md-3= link_to 'Add Performances...', new_show_showdate_path(@show), :class => 'btn btn-primary btn-block'
-    .col-md-4= link_to 'Add/Change Ticket Redemptions...', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary btn-block'
+    .col-md-2
+      = button_tag '&#x2335'.html_safe, :onclick => %Q{$('.collapse').collapse('show'); $('#_uncollapse').removeClass('d-none'); $(this).addClass('d-none');}, :id => '_collapse', :class => 'flippy btn btn-outline-none'
+      = button_tag '&#x2335'.html_safe, :onclick => %Q{$('.collapse').collapse('hide'); $('#_collapse').removeClass('d-none'); $(this).addClass('d-none');}, :id => '_uncollapse', :class => 'd-none flippy btn btn-outline-none'
+    .col-md-3= link_to 'Add Performances...', new_show_showdate_path(@show), :class => 'btn btn-primary btn-block my-1'
+    .col-md-4= link_to 'Add/Change Ticket Redemptions...', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary btn-block my-1'
 
   .accordion.md-accordion{:role => 'tablist', 'aria-multiselectable' => true}
     = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
