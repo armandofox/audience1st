@@ -1,14 +1,22 @@
 %h1 Test Integrations
 
-%fieldset#test_email
-  %legend Test Sending Confirmation Emails
+#test_email
+  %h2 Test Sending Transactional Emails
+  %p
+    By sending a test email, you can verify that email sending for confirmations,
+    purchases, and so on is working correctly, and that your HTML email template looks
+    the way you want.
+    
   = form_tag email_test_options_path do
-    %label Send a test email to: 
-    = text_field_tag 'email', 'you@example.com', :size => 20
-    = submit_tag 'Send'
+    .form-row
+      .col-md-2.text-right
+        %label.col-form-label Send a test email to: 
+      .col-md-3
+        = email_field_tag 'email', '', :class => 'form-control', :placeholder => 'you@example.com'
+      .col-md-1= submit_tag 'Send', :class => 'btn btn-success'
 
-%fieldset#test_swipe
-  %legend Test Your Card Swipe
+#test_swipe
+  %h2 Test Your Card Swipe
 
   %p 
     Plug in your card reader and scan a card.  No card information will be
