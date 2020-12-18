@@ -1,10 +1,10 @@
 = form_tag customer_donations_path(@customer), :id => '_stripe_payment_form' do
   
   .form-row
-    .col-md-2.text-right
+    .col-2.text-right
       %label.col-form-label{:for => 'amount'} Amount
-    .col-md-1= number_field_tag 'amount', number_to_currency(@donation.amount, :unit => ''), :class => 'form-control'
-    .col-md-1
+    .col-md-1.col-4= number_field_tag 'amount', number_to_currency(@donation.amount, :unit => ''), :class => 'form-control'
+    .col-md-2
     .col-md-2.text-right
       %label{:for => 'comments'} Comments/Check no.
     .col-md-4= text_area_tag 'comments', @donation.comments, :class => 'form-control'
@@ -12,15 +12,13 @@
   .form-row
     .col-md-2.text-right
       %label.col-form-label{:for => 'fund'} Fund
-    .col-md-2= select_tag 'fund', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @donation.account_code.try(:id)), :class => 'form-control'
+    .col-md-3= select_tag 'fund', options_from_collection_for_select(AccountCode.all, :id, :name_with_code, @donation.account_code.try(:id)), :class => 'form-control'
     .col-md-2.text-right
       %label.col-form-label{:for => 'date'} Date Posted
     .col-md-4.form-inline= select_date Date.current, {:order => [:month, :day, :year]}, {:class => 'form-control'}
 
   .form-row
-    .col-md-2.text-right
-      %label.col-form-label Payment
-    .col-md-4
+    .col-md-4.offset-2
       .form-check.form-check-inline
         = radio_button_tag 'payment', 'check', true, :class => 'form-check-input', :onclick => '$("#credit_card_info").addClass("d-none"); $("#cash_check_info").removeClass("d-none");'
         %label.form-check-label{:for => 'payment_check'} Check
