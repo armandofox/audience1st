@@ -28,7 +28,7 @@ class OptionsController < ApplicationController
     rescue Net::SMTPError,RuntimeError => e
       flash[:alert] = "Test email could not be sent.  The error was: #{e.message}"
     end
-    redirect_to options_path
+    redirect_to option_path(Option.first)
   end
 
 end

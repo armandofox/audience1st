@@ -123,7 +123,7 @@
       send_birthday_reminders!days  |
       ) |
 
-  .container.text-center#configOptions
+  .container#configOptions
     %h1 Integrations
     #integrationWarning.sr-only= t('options.integration_warning')
     #enableMaintenanceWarning.sr-only= t('options.enable_maintenance_warning')
@@ -143,4 +143,4 @@
 
   .container
     %h1 Save Your Changes
-    %p.text-center= submit_tag  "Update Settings", :class => 'btn btn-success'
+    %p= submit_tag  "Update Settings", :class => 'btn btn-success'
