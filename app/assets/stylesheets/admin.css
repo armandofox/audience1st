@@ -44,7 +44,7 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
 
 /* 'x' buttons for deleting things */
 .a1-x-icon {
-    font-color: red !important;
+    color: red !important;
     outline: none;
     background-color: inherit;
     box-shadow: none;
@@ -209,14 +209,22 @@ span#timer {
 *:first-child + html .pagination {
     overflow: hidden; }
 
-/* Flippy triangles and "purchase link" icon */
-.flippy, .flippy:hover, .flippy:visited {
-    text-decoration: none;
+/* Flippy buttons toggle their text when collapse/expand */
+button.flippy {
+    display: block;
+    background-color: none;
+    border: none;
 }
+button.flippy.collapsed:before {
+    content: '+';
+  }
+button.flippy:before {
+    content: '-';
+ }
 /* Make larger for mobile/small screens */
 @media screen and (max-width: 768px) {
     .flippy, .a1-purchase-link {
-        font-size: 200%;
+        font-size: larger;
     }
 }
 

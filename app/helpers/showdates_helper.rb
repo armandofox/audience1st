@@ -14,7 +14,7 @@ module ShowdatesHelper
 
   def button_to_delete_performance(showdate)
     if showdate.total_sales.size.zero?
-      form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|
+      form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form form-inline' do |f|
         submit_tag '&#x2716'.html_safe, :class => 'btn btn-sm d-inline a1-x-icon', :id => "delete_showdate_#{showdate.id}", 'data-confirm' => t('season_setup.confirm_delete_performance')
       end.html_safe
     end
