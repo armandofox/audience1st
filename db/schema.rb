@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201125215217) do
+ActiveRecord::Schema.define(version: 20201218223848) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -193,6 +193,7 @@ ActiveRecord::Schema.define(version: 20201125215217) do
     t.string   "restrict_customer_email_to_domain"
     t.integer  "order_timeout",                                                      default: 5,                                                                                                                               null: false
     t.datetime "last_sweep",                                                         default: '2019-12-24 17:59:23',                                                                                                           null: false
+    t.text     "html_email_template",                                                default: "<!DOCTYPE html><html><head></head><body>{{body}}</body></html>",                                                                null: false
   end
 
   create_table "orders", force: :cascade do |t|

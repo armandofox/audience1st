@@ -281,6 +281,10 @@ en:
 
   options:
 
+    leave_page_warning: >
+      If you leave this page, changes made since loading the page may be lost.
+      Click OK to leave anyway, or Cancel to stay on this page and save your changes first.
+
     integration_warning: >
       Integration options can now be edited. Proceed with care.
       You must click 'Update Settings' to save your changes before you

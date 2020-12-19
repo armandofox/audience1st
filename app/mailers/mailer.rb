@@ -8,9 +8,12 @@ class Mailer < ActionMailer::Base
 
   before_action :set_delivery_options
 
+  BODY_TAG = '{{body}}'
+  MINIMAL_TEMPLATE = "<!DOCTYPE html><html><head></head><body>#{Mailer::BODY_TAG}</body></html>"
+
   def email_test(destination_address)
     @time = Time.current
-    mail(:to => destination_address, :subject => 'Testing')
+    render_and_send_email(destination_address, 'Test email', :email_test)
   end
   
   def confirm_account_change(customer, whathappened, token=nil, requestURL=nil)
@@ -44,12 +47,6 @@ class Mailer < ActionMailer::Base
     mail(:to => @customer.email, :subject => "#{@subject} CANCELLED reservation")
   end
 
-  def donation_ack(customer,amount,nonprofit=true)
-    @customer,@amount,@nonprofit = customer, amount, nonprofit
-    @donation_chair = Option.donation_ack_from
-    mail(:to => @customer.email, :subject => "#{@subject} Thank you for your donation!")
-  end
-   
   def general_mailer(template_name, params, subject)
     params.keys.each do |key|
       self.instance_variable_set("@#{key}", params[key])
@@ -60,6 +57,18 @@ class Mailer < ActionMailer::Base
              :template_name => template_name)        
   end
   protected
+
+  def render_and_send_email(address, subject, body_template)
+    html = IO.read("/tmp/template.html")
+    body_as_string =
+      %Q{<div class="a1mail #{body_template}">\n}.html_safe  <<
+      render_to_string(:action => body_template, :layout => false).html_safe  <<
+      %Q{</div>}.html_safe
+    html.gsub! BODY_TAG, body_as_string
+    mail(:to => address, :subject => subject) do |fmt|
+      fmt.html { render :inline => html }
+    end
+  end
 
   def set_delivery_options
     @venue = Option.venue

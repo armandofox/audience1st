@@ -129,12 +129,13 @@ Rails.application.routes.draw do
 
     # config options
 
-    resources :options, :only => [:index, :show, :update] do
+    resources :options, :only => [:index, :update] do
       collection do
+        get :download_email_template
+        get :swipe_test
         post :email_test
       end
     end
-    get 'swipe_test' => 'options#swipe_test', :as => 'swipe_test'
 
     # walkup sales
 

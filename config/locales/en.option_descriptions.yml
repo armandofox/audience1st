@@ -390,6 +390,13 @@ en:
       Set to Yes to temporarily place Audience1st in "maintenance mode" in
       which only staff are able to login.
 
+    html_email_template: >
+
+      An HTML template that will be used for confirmation-transaction emails.
+      It must be a complete and well-formed HTML5 document, including a DOCTYPE declaration,
+      and all CSS styles must be inline.  See the Audience1st documentation
+      for details on template construction.
+
     subscriber_confirmation_email_notes: >
 
       Specific instructions to subscribers that appear in order confirmation

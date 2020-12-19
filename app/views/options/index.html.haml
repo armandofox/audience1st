@@ -1,4 +1,4 @@
-= form_for @o do |f|
+= form_for @o, :html => {:multipart => true} do |f|
   .container
     %h1 Your Venue Info As Seen By Customers
     = render_collection_of_options f, |
@@ -17,15 +17,15 @@
         %label.col-form-label Season Start Date
         = option_description_for(:season_start_month)   
       .col-md-8
-        - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
-        = select_month season_start, :prefix => 'option', :field_name => 'season_start_month'
-        = select_day   season_start, :prefix => 'option', :field_name => 'season_start_day'
+        .form-group.form-inline
+          - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
+          = select_month season_start, {:prefix => 'option', :field_name => 'season_start_month'}, :class => 'form-control'
+          = select_day   season_start, {:prefix => 'option', :field_name => 'season_start_day'}, :class => 'form-control'
         
   .container
     %h1 Accepting Donations and Retail Sales Online
     .form-row
-      .col-md-4
-      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+      .col-md-4.text-right= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary', 'data-confirm' => t('options.leave_page_warning')
 
     = render_collection_of_options f, %w( |
       default_retail_account_code |
@@ -92,8 +92,7 @@
   .container
     %h1 Order Service Charges
     .form-row
-      .col-md-4
-      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+      .col-md-4.text-right= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary', 'data-confirm' => t('options.leave_page_warning')
 
     = render_collection_of_options f, %w( |
       subscription_order_service_charge |
@@ -108,14 +107,26 @@
       ) |
  
   .container
-    %h1 Email Confirmation of Reservation Sent to Customer
+    %h1 Transaction Confirmation Emails
+    .form-row
+      .col-md-4.text-right
+        %label.col-form-label HTML email template
+        = option_description_for 'html_email_template'
+      .col-md-8
+        = hidden_field_tag 'test_email_addr', current_user.email
+        = link_to 'Send Test Email...', '#', :id => 'send_test', :class => 'btn btn-primary'
+        = link_to 'Download', download_email_template_options_path, :class => 'btn btn-primary'
+        %label.btn.btn-primary.align-top{:for => 'html_email_template'} Replace with file...
+        = file_field_tag 'html_email_template', :accept => '.html', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#html_email_template')[0].files[0].name + ' <i>(click Update Settings below to upload)</i>')}
+        %label.col-form-label#filename (No file chosen)
+
     = render_collection_of_options f, %w( |
       general_confirmation_email_notes |
       subscriber_confirmation_email_notes |
       nonsubscriber_confirmation_email_notes |
       subscription_purchase_email_notes |
       ) |
-    
+
   .container
     %h1 Email Reports Sent to Box Office Manager
     = render_collection_of_options f, %w( |
@@ -129,10 +140,11 @@
     #enableMaintenanceWarning.sr-only= t('options.enable_maintenance_warning')
     #disableMaintenanceWarning.sr-only= t('options.disable_maintenance_warning')
     %p.text-danger.lead= t('options.change_basic_settings_warning')
-    %p
-      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'
-      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'btn btn-primary'
-      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'btn btn-primary'
+
+    .form-row.my-2
+      .col-md-8.offset-4
+        = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'
+        = link_to 'Test USB Card Swipe...', swipe_test_options_path, :class => 'btn btn-primary'
 
     = render_collection_of_options f, %w( |
       stripe_key  encrypted_stripe_secret |

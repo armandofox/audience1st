@@ -1,0 +1,12 @@
+<p>
+  The following customers have birthdays in the next <%= @num -%> days:
+</p>
+
+<ul>
+  <% @customers.each do |c| %>
+  <li>
+    <%= sprintf("%30.30s %12.12s %12.12s %s\n", c.full_name, c.day_phone, c.eve_phone, c.email) %>
+  </li>
+  <% end %>
+</ul>
+
