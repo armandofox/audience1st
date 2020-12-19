@@ -23,7 +23,7 @@ class Mailer < ActionMailer::Base
       @token_link = reset_token_customers_url(:token => token, :host => uri.host, :protocol => uri.scheme)
     end
     @customer = customer
-    render_and_send_email(customer_email, "#{@subject} #{customer.full_name}'s account", :confirm_account_change)
+    render_and_send_email(customer.email, "#{@subject} #{customer.full_name}'s account", :confirm_account_change)
   end
 
   def confirm_order(purchaser,order)
@@ -56,6 +56,7 @@ class Mailer < ActionMailer::Base
              :subject => @subject, 
              :template_name => template_name)        
   end
+
   protected
 
   def render_and_send_email(address, subject, body_template)
