@@ -212,14 +212,16 @@ span#timer {
 /* Flippy buttons toggle their text when collapse/expand */
 button.flippy {
     display: block;
+    width: 2em;
+    text-align: center;
     background-color: none;
     border: none;
 }
 button.flippy.collapsed:before {
-    content: '+';
+    content: '\2335';
   }
 button.flippy:before {
-    content: '-';
+    content: '\2303';
  }
 /* Make larger for mobile/small screens */
 @media screen and (max-width: 768px) {

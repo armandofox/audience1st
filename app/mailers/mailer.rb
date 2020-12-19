@@ -59,12 +59,11 @@ class Mailer < ActionMailer::Base
   protected
 
   def render_and_send_email(address, subject, body_template)
-    html = IO.read("/tmp/template.html")
     body_as_string =
       %Q{<div class="a1mail #{body_template}">\n}.html_safe  <<
       render_to_string(:action => body_template, :layout => false).html_safe  <<
       %Q{</div>}.html_safe
-    html.gsub! BODY_TAG, body_as_string
+    html = Option.html_email_template.gsub(BODY_TAG, body_as_string)
     mail(:to => address, :subject => subject) do |fmt|
       fmt.html { render :inline => html }
     end
