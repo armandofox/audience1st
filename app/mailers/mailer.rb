@@ -8,7 +8,7 @@ class Mailer < ActionMailer::Base
 
   before_action :set_delivery_options
 
-  BODY_TAG = '{{body}}'
+  BODY_TAG = '=+MESSAGE+='
   MINIMAL_TEMPLATE = "<!DOCTYPE html><html><head></head><body>#{Mailer::BODY_TAG}</body></html>"
 
   def email_test(destination_address)
