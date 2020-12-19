@@ -65,14 +65,23 @@ class Option < ActiveRecord::Base
   validates_presence_of :classes_order_service_charge_description,
   :if => Proc.new { |o| o.classes_order_service_charge > 0 }
 
+  validates_presence_of :html_email_template
+  validate :html_email_template_checks
+
   #validates_presence_of :accessibility_advisory_for_reserved_seating
 
   if Rails.env.production?
-    validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https?://')
+    validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https://')
   end
   
   def availability_levels_monotonically_increase
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
   end
 
+  def html_email_template_checks
+    errors.add(:html_email_template, "must begin with a <!DOCTYPE html> declaration") unless
+      html_email_template =~ /\A<!doctype\s+html>/i
+    errors.add(:html_email_template, "must contain exactly one occurrence of the placeholder '#{Mailer::BODY_TAG}' for the email message body") unless
+      html_email_template.scan(Mailer::BODY_TAG).size == 1
+  end
 end

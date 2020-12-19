@@ -20,8 +20,7 @@ Scenario: venue cannot be blank
 
   When I fill in "Venue" with ""
   And I press "Update Settings"
-  Then I should be on the admin:settings page
-  And I should see "Venue can't be blank"
+  Then I should see "Venue can't be blank"
 
 Scenario: change an encrypted option
 

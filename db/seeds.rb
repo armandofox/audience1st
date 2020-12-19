@@ -101,6 +101,7 @@ class Audience1stSeeder
       :order_timeout => 15,
       :last_sweep => Time.zone.now,
       :privacy_policy_url => '',
+      :html_email_template => Mailer::MINIMAL_TEMPLATE,
       :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
       :stripe_key => 'Replace with real Stripe key',
       :stripe_secret => 'Replace with real Stripe secret',
