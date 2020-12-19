@@ -13,7 +13,7 @@
       = f.select 'event_type', Show::TYPES, {}, {:class => 'form-control'}
 
   .form-row
-    .col-md-7.form-group
+    .col-md-6.form-group
       = popup_help_for :show_landing_page_url
       %label.col-form-label{:for=>:show_landing_page_url} Landing page URL (optional)
       = f.text_field 'landing_page_url', :class => 'form-control'

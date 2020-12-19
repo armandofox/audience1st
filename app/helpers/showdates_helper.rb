@@ -1,5 +1,25 @@
 module ShowdatesHelper
 
+  def percent_max_advance_sales_if_not_streaming(showdate)
+    advance = showdate.percent_max_advance_sales
+    p = " (#{number_to_percentage(advance, :precision => 0)} house)"
+    if showdate.stream?
+      ''
+    elsif (advance >= 100)
+      (content_tag 'span', p, :class => 'callout').html_safe
+    else
+      p
+    end
+  end
+
+  def button_to_delete_performance(showdate)
+    if showdate.total_sales.size.zero?
+      form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form form-inline' do |f|
+        submit_tag '&#x2716'.html_safe, :class => 'btn btn-sm d-inline a1-x-icon', :id => "delete_showdate_#{showdate.id}", 'data-confirm' => t('season_setup.confirm_delete_performance')
+      end.html_safe
+    end
+  end
+
   def showdate_time_limit_for(thing, attr)
     showdate = if thing.kind_of?(Showdate) then thing else thing.showdate end
     if showdate.stream_anytime?

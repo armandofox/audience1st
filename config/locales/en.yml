@@ -154,6 +154,9 @@ en:
     confirm_delete_performance: >
       Delete this performance: are you sure?
 
+    confirm_delete_redemption: >
+      Don't allow "%{type}" tickets for this performance: are you sure?
+
     must_select_vouchertypes: >
       You must select 1 or more voucher types to add.
 
