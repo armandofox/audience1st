@@ -3,7 +3,7 @@
    Option.first.update_attributes!(:season_start_month => d.month, :season_start_day => d.day)
  end
  
- Given /^I fill in all valid options$/ do
+ When /^I fill in all valid options$/ do
    opts = {
      'venue' => "Test Theater",
      'advance_sales_cutoff' => "60",
@@ -23,7 +23,14 @@
    val = !!(val =~ /true/i) if bool
    Option.first.update_attributes!(opt.downcase.gsub(/\s+/, '_') => val)
  end
- 
+
+ When /I upload the email template "(.*)"/ do |filename|
+   within '#edit_options_form' do
+     attach_file 'html_email_template', "#{TEST_FILES_DIR}/email/#{filename}", :visible => false
+     click_button 'Update Settings'
+   end
+ end
+
  Then /^the setting "(.*)" should be "(.*)"$/ do |opt,val|
    expect(Option.send(opt.tr(' ','').underscore)).to eq(val)
  end

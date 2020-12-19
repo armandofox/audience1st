@@ -1,4 +1,4 @@
-= form_for @o, :html => {:multipart => true} do |f|
+= form_for @o, :html => {:multipart => true, :id => 'edit_options_form'} do |f|
   .container
     %h1 Your Venue Info As Seen By Customers
     = render_collection_of_options f, |

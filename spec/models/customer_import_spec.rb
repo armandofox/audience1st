@@ -3,7 +3,7 @@ require 'rails_helper'
 describe CustomerImport do
 
   before(:all) do
-    @testfiles_dir = File.join(Rails.root, 'spec', 'import_test_files', 'customer_list')
+    @testfiles_dir = File.join(TEST_FILES_DIR, 'customer_list')
     @file_with_2_customers = File.join(@testfiles_dir, 'list_with_2_customers.csv')
   end
   

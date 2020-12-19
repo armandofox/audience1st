@@ -23,14 +23,14 @@ class Mailer < ActionMailer::Base
       @token_link = reset_token_customers_url(:token => token, :host => uri.host, :protocol => uri.scheme)
     end
     @customer = customer
-    mail(:to => customer.email, :subject => "#{@subject} #{customer.full_name}'s account")
+    render_and_send_email(customer_email, "#{@subject} #{customer.full_name}'s account", :confirm_account_change)
   end
 
   def confirm_order(purchaser,order)
     @order = order
     # show-specific notes
     @notes = @order.collect_notes.join("\n\n")
-    mail(:to => purchaser.email, :subject => "#{@subject} order confirmation")
+    render_and_send_email(purchaser.email, "#{@subject} order confirmation", :confirm_order)
   end
 
   def confirm_reservation(customer,showdate,vouchers)
@@ -38,13 +38,13 @@ class Mailer < ActionMailer::Base
     @showdate = showdate
     @seats = Voucher.seats_for(vouchers)
     @notes = @showdate.patron_notes if @showdate
-    mail(:to => customer.email, :subject => "#{@subject} reservation confirmation")
+    render_and_send_email(customer.email,"#{@subject} reservation confirmation", :confirm_reservation)
   end
 
   def cancel_reservation(old_customer, old_showdate, seats)
     @showdate,@customer = old_showdate, old_customer
     @seats = seats
-    mail(:to => @customer.email, :subject => "#{@subject} CANCELLED reservation")
+    render_and_send_email(@customer.email, "#{@subject} CANCELLED reservation", :cancel_reservation)
   end
 
   def general_mailer(template_name, params, subject)

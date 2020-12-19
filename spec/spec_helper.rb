@@ -7,7 +7,7 @@ require 'rspec/its'
 require 'rspec/json_expectations'
 require 'timecop'
 
-TEST_FILES_DIR = File.join(Rails.root, 'spec', 'import_test_files') unless defined?(TEST_FILES_DIR)
+TEST_FILES_DIR = File.join(Rails.root, 'spec', 'test_files') unless defined?(TEST_FILES_DIR)
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.

@@ -1,12 +1,29 @@
-<p>
-  The following customers have birthdays in the next <%= @num -%> days:
-</p>
+<div class="upcoming-birthdays">
+  <p>
+    The following customers have birthdays in the next <%= @num -%> days:
+  </p>
 
-<ul>
-  <% @customers.each do |c| %>
-  <li>
-    <%= sprintf("%30.30s %12.12s %12.12s %s\n", c.full_name, c.day_phone, c.eve_phone, c.email) %>
-  </li>
-  <% end %>
-</ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Full name</th>
+        <th>Day phone</th>
+        <th>Evening phone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @customers.each do |c| %>
+      <tr>
+        <td><%= c.full_name %></td>
+        <td><%= c.day_phone %></td>
+        <td><%= c.eve_phone %></td>
+        <td><%= c.email %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<%= render 'contact_us' %>
 
