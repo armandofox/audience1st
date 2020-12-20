@@ -13,7 +13,7 @@ class VoucherInstantiator
       vouchers << voucher
       if @vouchertype.bundle?
         # add the included vouchers
-        @vouchertype.get_included_vouchers.each_pair do |vtype_id,qty|
+        @vouchertype.included_vouchers.each_pair do |vtype_id,qty|
           vtype = Vouchertype.find vtype_id
           included_vouchers = Array.new(qty) { create_simple_voucher(vtype) }
           voucher.bundled_vouchers += included_vouchers

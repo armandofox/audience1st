@@ -57,7 +57,7 @@ FactoryBot.define do
       included_vouchers { Hash.new }
       after(:build) do |vt,evaluator|
         evaluator.including.each_pair do |vtype, count|
-          vt.included_vouchers[vtype.id] = count
+          vt.included_vouchers[vtype.id.to_s] = count
         end
       end
     end

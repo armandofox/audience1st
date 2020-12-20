@@ -37,7 +37,7 @@
         %td.text-center= purchase_link_popup(link_icon, link_to_subscription_purchase(vouchertype.id), "'#{vouchertype.name}' subscriptions") if (vouchertype.subscription? && vouchertype.offer_public > 0)
         %td 
           -if vouchertype.bundle? 
-            - vouchertype.get_included_vouchers.each_pair do |vt,qty| 
+            - vouchertype.included_vouchers.each_pair do |vt,qty| 
               - if (v = Vouchertype.find_by(:id => vt))
                 = sprintf("%2d  %s<br/>",qty,Vouchertype.find(vt).name).html_safe if qty>0
               - else

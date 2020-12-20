@@ -117,23 +117,25 @@ describe Vouchertype do
       it "should be invalid if contains any nonzero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 1}
         expect(@vtb).not_to be_valid
-        expect(@vtb.errors.full_messages).to include("Bundle can't include revenue voucher #{@vt_notfree.id} (#{@vt_notfree.name})"), @vtb.errors.full_messages.join(',')
+        expect(@vtb.errors.full_messages).to include("Bundles cannot include revenue vouchers (#{@vt_notfree.name})"), @vtb.errors.full_messages.join(',')
       end
       it "should  be valid with only zero-price vouchers" do
         @vtb.included_vouchers = {@vt_free.id => 1, @vt_notfree.id => 0}
       end
     end
   end
-  describe 'lifecycle', focus:true do
+  describe 'lifecycle' do
     before :each do
       @b1 = create(:vouchertype_included_in_bundle)
       @b2 = create(:vouchertype_included_in_bundle)
       @v = create(:bundle, :including => { @b1 => 1, @b2 => 2 })
+      @v2 = create(:bundle, :including => { @b1 => 2, @b2 => 1 })
     end
     describe 'deleting a vouchertype included in a bundle' do
       it 'adjusts the bundle' do
         @b1.destroy
-        expect(@v.get_included_vouchers.keys.map(&:to_i)).not_to include(@b1.id)
+        @v.reload
+        expect(@v.included_vouchers.keys.map(&:to_i)).not_to include(@b1.id)
       end
     end
     it 'should be linked to a new valid-voucher with season start/end dates as default when created' do

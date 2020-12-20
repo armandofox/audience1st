@@ -37,7 +37,8 @@ class Vouchertype < ActiveRecord::Base
   before_save :convert_bundle_quantities_to_ints
   before_update :cannot_change_category
   after_create :setup_valid_voucher_for_bundle, :if => :bundle?
-  
+  before_destroy :remove_deleted_vouchertype_from_bundle
+
   # Stackable scopes
   scope :for_season, ->(season) { where('season = ?', season) }
   scope :of_categories, ->(*cats)   { where('category IN (?)', cats.map(&:to_s)) }
@@ -45,6 +46,17 @@ class Vouchertype < ActiveRecord::Base
   scope :seat_vouchertypes, -> { where('category != ?', 'nonticket') }
 
   protected
+
+  def remove_deleted_vouchertype_from_bundle
+    return unless category == 'subscriber'
+    id_s = self.id.to_s
+    # delete from all bundles that contain it
+    Vouchertype.transaction do
+      Vouchertype.bundle_vouchertypes.each do |vt|
+        vt.save! if vt.included_vouchers.delete(id_s)
+      end
+    end
+  end
 
   # for bundle vouchers, the included_vouchers values should be ints
   # and the keys (id's) should be strings, eg {"3" => 1, "2" => 2} etc
@@ -82,16 +94,10 @@ class Vouchertype < ActiveRecord::Base
   
   # BUG clean up this method
   def bundles_include_only_zero_cost_vouchers
-    return if self.get_included_vouchers.empty?
-    self.get_included_vouchers.each_pair do |id,num|
-      next if num.to_i.zero?
-      unless v = Vouchertype.find_by_id(id)
-        errors.add :base,"Vouchertype #{id} doesn't exist"
-      else
-        unless v.price.to_i.zero?
-          errors.add :base,"Bundle can't include revenue voucher #{id} (#{v.name})"
-        end
-      end
+    included_vtypes = Vouchertype.find(included_vouchers.keys)
+    non_free = included_vtypes.select { |v| v.price.to_i != 0 }
+    unless non_free.empty?
+      errors.add(:base, "Bundles cannot include revenue vouchers (#{non_free.map(&:name).join(', ')})")
     end
   end
 
@@ -233,18 +239,8 @@ class Vouchertype < ActiveRecord::Base
     season == which_season
   end
 
-  def get_included_vouchers
-    if self.bundle?
-      (self.included_vouchers ||= {}).
-        delete_if { |k,v| v.blank? }.
-        inject(Hash.new) { |h,(k,v)| h[k.to_i] = v.to_i ; h }
-    else
-      {}
-    end
-  end
-
   def num_included_vouchers
-    get_included_vouchers.values.sum
+    included_vouchers.values.sum
   end
 
   # a monogamous vouchertype is valid for exactly one showdate.
