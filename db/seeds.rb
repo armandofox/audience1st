@@ -45,7 +45,7 @@ class Audience1stSeeder
     unless Customer.find_by_role(100)
       admin = Customer.new(:first_name => 'Super',
         :last_name => 'Administrator',
-        :password => 'admin',
+        :password => ('a'..'z').to_a.shuffle[0,8].join,
         :email => 'admin@audience1st.com')
       admin.created_by_admin = true
       admin.role = 100

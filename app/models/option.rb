@@ -68,11 +68,7 @@ class Option < ActiveRecord::Base
   validates_presence_of :html_email_template
   validate :html_email_template_checks
 
-  #validates_presence_of :accessibility_advisory_for_reserved_seating
-
-  if Rails.env.production?
-    validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https://')
-  end
+  validates_format_of :stylesheet_url, :if => Proc.new { Rails.env.production? }, :allow_blank => true, :with => URI.regexp(['https']), :message => 'must be a valid URI beginning with "https://"'
   
   def availability_levels_monotonically_increase
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
