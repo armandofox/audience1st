@@ -233,7 +233,6 @@ class Vouchertype < ActiveRecord::Base
     season == which_season
   end
 
-  # BUG can we delete this method??
   def get_included_vouchers
     if self.bundle?
       (self.included_vouchers ||= {}).

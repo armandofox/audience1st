@@ -124,12 +124,17 @@ describe Vouchertype do
       end
     end
   end
-  describe 'lifecycle' do
+  describe 'lifecycle', focus:true do
     before :each do
-      @v = Vouchertype.create!(:category => 'bundle',
-        :name => 'test', :price => 10,
-        :offer_public => Vouchertype::ANYONE,
-        :subscription => false, :season => Time.current.year)
+      @b1 = create(:vouchertype_included_in_bundle)
+      @b2 = create(:vouchertype_included_in_bundle)
+      @v = create(:bundle, :including => { @b1 => 1, @b2 => 2 })
+    end
+    describe 'deleting a vouchertype included in a bundle' do
+      it 'adjusts the bundle' do
+        @b1.destroy
+        expect(@v.get_included_vouchers.keys.map(&:to_i)).not_to include(@b1.id)
+      end
     end
     it 'should be linked to a new valid-voucher with season start/end dates as default when created' do
       expect(@v.valid_vouchers.length).to eq(1)
