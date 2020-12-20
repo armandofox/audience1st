@@ -210,22 +210,22 @@ span#timer {
     overflow: hidden; }
 
 /* Flippy buttons toggle their text when collapse/expand */
-button.flippy {
+button.a1-flippy {
     display: block;
     width: 2em;
     text-align: center;
     background-color: none;
     border: none;
 }
-button.flippy.collapsed:before {
+button.a1-flippy.collapsed:before {
     content: '\2335';
   }
-button.flippy:before {
+button.a1-flippy:before {
     content: '\2303';
  }
 /* Make larger for mobile/small screens */
 @media screen and (max-width: 768px) {
-    .flippy, .a1-purchase-link {
+    .a1-flippy, .a1-purchase-link {
         font-size: larger;
     }
 }

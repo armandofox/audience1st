@@ -1,7 +1,7 @@
 .ml-2
   .row.bg-light
     .col-1
-      %button.flippy.collapsed{:href => "#details_showdate_#{showdate.id}", 'data-toggle' => 'collapse'}
+      %button.a1-flippy.collapsed{:href => "#details_showdate_#{showdate.id}", 'data-toggle' => 'collapse'}
     .col-md-4.col-10
       = link_to "#{'Until ' if showdate.stream_anytime?}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate)
       = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name

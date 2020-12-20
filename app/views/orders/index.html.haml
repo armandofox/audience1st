@@ -1,4 +1,7 @@
-= link_to 'Expand All', '#', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); false;}
-&nbsp;&bull;&nbsp;
-= link_to 'Collapse All', '#', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); false;}
-= render :partial => 'order', :collection => @orders
+.row
+  .col-md-4
+    = button_tag 'Expand All', :onclick => %Q{$('.collapse').collapse('show')}, :class => 'btn btn-outline-primary'
+    = button_tag 'Collapse All', :onclick => %Q{$('.collapse').collapse('hide')}, :class => 'btn btn-outline-primary'
+
+.accordion.md-accordion{:role => 'tablist', 'aria-multiselectable' => true}
+  = render :partial => 'order', :collection => @orders
