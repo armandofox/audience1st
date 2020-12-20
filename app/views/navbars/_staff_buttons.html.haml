@@ -1,8 +1,8 @@
 - if @customer
-  #staffButtons.admin.container
+  #staffButtons.admin.px-1
     .row
       .col-md-3
-        .lead.text-left.text-primary= @customer.full_name
+        .lead.text-left.text-danger.text-bold= @customer.full_name
       .col-md-9.text-right
         = link_to 'Add Comps&hellip;'.html_safe, new_customer_voucher_path(@customer), :class => 'btn btn-sm btn-outline-secondary'
         = link_to 'Orders&hellip;'.html_safe, orders_path(:customer_id => @customer), :class => 'btn btn-sm btn-outline-secondary'

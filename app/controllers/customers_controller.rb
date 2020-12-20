@@ -154,6 +154,7 @@ class CustomersController < ApplicationController
     end
     create_session(@customer, 'reset_token')
   end
+
   # Regular user creating new account
   def new
     @customer = Customer.new
@@ -167,6 +168,7 @@ class CustomersController < ApplicationController
 
   # Admin adding customer to database
   def admin_new                 # admin create customer
+    @superadmin = current_user.is_admin
     @customer = Customer.new
   end
 

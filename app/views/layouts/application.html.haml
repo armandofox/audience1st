@@ -43,10 +43,10 @@
               = render :partial => 'navbars/main_tabs'
             - if @gAdminDisplay
               = render :partial => 'navbars/season_tabs'
-          #content.plain
             - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales|store/
               = render :partial => 'customers/quick_search'
               = render :partial => 'navbars/staff_buttons' if display_customer_actions?
+          #content.plain.p-1
             - if controller.controller_name =~ /checkins|walkup_sales/
               = render :partial => 'checkins/change_showdate'
               #show_stats.card.m-3= render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}

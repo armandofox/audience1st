@@ -5,6 +5,8 @@ a.a1tooltip {
     background-image: radial-gradient(#d0dce8,#5b7ca3);
     border-radius: 1rem;
     display: inline-block;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
     color: white !important;
     text-align: center;
     

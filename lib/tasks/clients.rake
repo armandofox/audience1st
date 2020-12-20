@@ -28,17 +28,16 @@ a1client = namespace :a1client  do
     puts "done"
   end
 
-  desc "Configure (new) client named TENANT using VENUE_FULLNAME, STRIPE_KEY, STRIPE_SECRET, all of which are required. Use underscores for spaces in VENUE_FULLNAME. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
+  desc "Configure (new) client named TENANT using VENUE_FULLNAME, using underscores for spaces. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
   task :configure => :environment do
     Audience1stRakeTasks.check_vars!
     Apartment::Tenant.switch(ENV['TENANT']) do
       Option.first.update_attributes!(
         :sendgrid_domain    => "#{ENV['TENANT']}.audience1st.com",
-        :stripe_key         => "Replace with real Stripe key",
-        :stripe_secret      => "Replace with real Stripe secret",
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
         :staff_access_only  => true )
     end
+    puts "Sendgrid domain configured and staff-only access enabled for #{ENV['VENUE_FULLNAME']} (#{ENV['TENANT']})"
   end
 
   desc "Set up new client TENANT using VENUE_FULLNAME, STRIPE_KEY, STRIPE_SECRET, all of which are required."

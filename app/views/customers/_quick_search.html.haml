@@ -1,4 +1,4 @@
-.admin.container
+.admin.px-1
   = form_tag(customers_path,{:method =>:get, :id => 'search_field'}) do
     Search:
     = text_field_tag 'customers_filter', @customers_filter, :size => 32, :class => '_autocomplete _autosubmit', 'data-resultfield' => 'id'
