@@ -36,8 +36,10 @@ a1client = namespace :a1client  do
         :sendgrid_domain    => "#{ENV['TENANT']}.audience1st.com",
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
         :staff_access_only  => true )
+      Customer.find_by(:first_name => 'Super', :last_name => 'Administrator').
+        update_attributes!(:password => ('a'..'z').to_a.shuffle[0,8].join)
     end
-    puts "Sendgrid domain configured and staff-only access enabled for #{ENV['VENUE_FULLNAME']} (#{ENV['TENANT']})"
+    puts "Sendgrid domain configured, admin password randomized, and staff-only access enabled for #{ENV['VENUE_FULLNAME']} (#{ENV['TENANT']})"
   end
 
   desc "Set up new client TENANT using VENUE_FULLNAME, STRIPE_KEY, STRIPE_SECRET, all of which are required."
