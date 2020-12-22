@@ -123,9 +123,9 @@
           = option_description_for 'html_email_template'
         .col-md-8
           = hidden_field_tag 'test_email_addr', current_user.email
-          = link_to 'Send Test Email...', '#', :id => 'send_test', :class => 'btn btn-primary'
-          = link_to 'Download', download_email_template_options_path, :class => 'btn btn-primary'
-          %label.btn.btn-primary.align-top{:for => 'html_email_template'} Replace with file...
+          = link_to 'Send Test Email...', '#', :id => 'send_test', :class => 'btn btn-primary align-baseline'
+          = link_to 'Download', download_email_template_options_path, :class => 'btn btn-primary align-baseline'
+          %label.btn.btn-primary.align-baseline{:for => 'html_email_template'} Replace with file...
           = file_field_tag 'html_email_template', :accept => '.html', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#html_email_template')[0].files[0].name + ' <i>(click Update Settings below to upload)</i>')}
           %label.col-form-label#filename (No file chosen)
 
