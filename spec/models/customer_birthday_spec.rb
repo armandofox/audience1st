@@ -42,14 +42,9 @@ describe Customer, "birthdays" do
       Option.first.update_attributes!(:send_birthday_reminders => -2)
       Customer.notify_upcoming_birthdays
     end
-    specify 'when no recipient specified in options' do
-      Option.first.update_attributes!(:send_birthday_reminders => 5,
-        :box_office_email => '')
-      Customer.notify_upcoming_birthdays
-    end
     specify 'when day modulo n doesn\'t match up' do
       Option.first.update_attributes!(:send_birthday_reminders => 3,
-        :box_office_email => '')
+        :box_office_email => 'n@ai')
       Timecop.travel('Jan 1, 2012') do
         Customer.notify_upcoming_birthdays
       end
