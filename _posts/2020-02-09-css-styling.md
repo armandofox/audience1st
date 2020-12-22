@@ -45,3 +45,31 @@ customized to highlight the show name, date, and so on in different
 ways, by styling the CSS classes shown below.
 
 ![questionmark](../assets/css-checkout.png)
+
+## Confirmation emails and other transactional emails
+
+Confirmation-transaction emails (orders, reservations, account profile
+changes, etc.) are delivered as HTML.  On the Options screen, you can
+upload an HTML template to use for such emails that has the following
+properties:
+
+* It should be a well-formed HTML 5 document including the opening
+`<!DOCTYPE html>` declaration.
+
+* Any CSS style information should be embedded in the document itself
+using the `<style>` element.
+
+* The template *must* contain exactly one instance of the string
+`=+MESSAGE+=`, which will be replaced by the specific message contents
+(order confirmation details, etc.) when the email is sent.
+The body portion of the email will be inside an element
+`div.a1-email`.  The examples below show what elements are present in
+specific transactional emails.
+
+* The template *may* contain exacty one instance of the string
+`=+FOOTER+=`, which if present will be replaced by some basic
+information about how to contact the theater in case of questions
+(inside a `div.a1-footer` element).
+If this string is absent, the template is assumed to already include
+this information.
+
