@@ -1,4 +1,4 @@
-ruby '2.5.5'
+ruby '2.6.6'
 source 'https://rubygems.org'
 gem 'jekyll'
 gem 'github-pages'

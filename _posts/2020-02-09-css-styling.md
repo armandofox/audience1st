@@ -68,8 +68,9 @@ specific transactional emails.
 
 * The template *may* contain exacty one instance of the string
 `=+FOOTER+=`, which if present will be replaced by some basic
-information about how to contact the theater in case of questions
-(inside a `div.a1-footer` element).
+information (inside a `div.a1-footer` element)
+about how to contact the theater in case of questions, based on the
+information filled in on the Options screen.
 If this string is absent, the template is assumed to already include
 this information.
 
