@@ -5,12 +5,13 @@ class Mailer < ActionMailer::Base
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.
   default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
+  default :reply_to => Proc.new { Option.box_office_email }
 
   before_action :set_delivery_options
 
   BODY_TAG = '=+MESSAGE+='
-  MINIMAL_TEMPLATE = "<!DOCTYPE html><html><head></head><body>#{Mailer::BODY_TAG}</body></html>"
-
+  FOOTER_TAG = '=+FOOTER+='
+  
   def email_test(destination_address)
     @time = Time.current
     render_and_send_email(destination_address, 'Test email', :email_test)
@@ -61,10 +62,12 @@ class Mailer < ActionMailer::Base
 
   def render_and_send_email(address, subject, body_template)
     body_as_string =
-      %Q{<div class="a1mail #{body_template}">\n}.html_safe  <<
+      %Q{<div class="a1-email-body #{body_template}">\n}.html_safe  <<
       render_to_string(:action => body_template, :layout => false).html_safe  <<
       %Q{</div>}.html_safe
-    html = Option.html_email_template.gsub(BODY_TAG, body_as_string)
+    html = Option.html_email_template.
+             gsub(BODY_TAG, body_as_string).
+             gsub(FOOTER_TAG, render_to_string(:partial => 'contact_us', :layout => false))
     mail(:to => address, :subject => subject) do |fmt|
       fmt.html { render :inline => html }
     end

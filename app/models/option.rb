@@ -49,7 +49,12 @@ class Option < ActiveRecord::Base
     :classes_order_service_charge_account_code
     )
 
-  validates_format_of :boxoffice_daemon_notify, :help_email, :with => /@/, :allow_blank => true, :allow_nil => true
+  validates_format_of :box_office_email,
+                      :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
+                      :allow_nil => false, :message => 'must be a valid email address'
+  validates_format_of :help_email,
+                      :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
+                      :allow_nil => false, :message => 'must be a valid email address'
 
   validates_numericality_of :send_birthday_reminders
 
@@ -79,5 +84,7 @@ class Option < ActiveRecord::Base
       html_email_template =~ /\A<!doctype\s+html>/i
     errors.add(:html_email_template, "must contain exactly one occurrence of the placeholder '#{Mailer::BODY_TAG}' for the email message body") unless
       html_email_template.scan(Mailer::BODY_TAG).size == 1
+    errors.add(:html_email_template, "cannot contain more than one occurrence of '#{Mailer::FOOTER_TAG}'") if
+      html_email_template.scan(Mailer::FOOTER_TAG).size > 1
   end
 end

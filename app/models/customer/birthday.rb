@@ -19,7 +19,7 @@ class Customer < ActiveRecord::Base
     venue = Option.venue
     subject = "#{venue} - "
     n = Option.send_birthday_reminders
-    recipient = Option.boxoffice_daemon_notify
+    recipient = Option.box_office_email
     now = Time.current.at_beginning_of_day
     return if n <= 0 || now.strftime('%j').to_i % n != 0 || recipient.blank?
     from_date = now + n.days
