@@ -1,11 +1,10 @@
 = themed
 
-.container
-  %h1 Checkout As Guest
+%h1 Checkout As Guest
 
-  = form_tag guest_checkout_create_customers_path do
-    = render :partial => 'billing_address', :locals => {:customer => @customer}
-    .form-row.py-2
-      .col-md-2.offset-md-5= link_to 'Cancel', store_cancel_path, :class => 'btn btn-danger btn-block'
-      .col-md-2
-      .col-md-2= submit_tag 'CONTINUE >>', :class => 'btn btn-success btn-block', :id => 'submit'
+= form_tag guest_checkout_create_customers_path, :class => 'form' do
+  = render :partial => 'billing_address', :locals => {:customer => @customer}
+  .form-row.py-2
+    .col-md-2.offset-md-5= link_to 'Cancel', store_cancel_path, :class => 'btn btn-danger btn-block'
+    .col-md-2
+    .col-md-2= submit_tag 'CONTINUE >>', :class => 'btn btn-success btn-block', :id => 'submit'

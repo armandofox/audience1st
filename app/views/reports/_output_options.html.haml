@@ -1,33 +1,49 @@
-%h2 Report filtering options
-%p
-  Include:
-  - season = humanize_season(Time.this_season)
-  = select_tag 'output[include]', options_for_select(["All patrons", "#{season} subscribers only", "#{season} non-subscribers only"])
-  %br
-  = check_box_tag 'output[login_since]', '1'
-  Limit to patrons who
-  = select_tag 'output[login_since_test]', options_for_select(['have','have not'])
-  logged in since
-  = select_date Time.current.at_beginning_of_season, :prefix => 'output[login_from]', :start_year => 2007
-  %br
-  = check_box_tag 'output[require_valid_address]', '1'
-  Require valid mailing address
-  = popup_help_for 'filter_by_valid_mailing_address'
-  %br
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  = check_box_tag 'output[filter_by_zip]', '1'
-  Limit to zip codes starting with 
-  = text_field_tag 'output[zip_glob]', '', :size => 12
-  = popup_help_for 'filter_by_zip'
-  %br
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  = check_box_tag 'output[exclude_blacklist]', '1'
-  Exclude patrons who have opted out of US Mail mailings
-  %br
-  = check_box_tag 'output[require_valid_email]', '1'
-  Require valid email address
-  %br
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  = check_box_tag 'output[exclude_e_blacklist]', '1'
-  Exclude patrons who have opted out of email
+%h4 Report filtering options
+.row.form-inline
+  .form-group.col-12
+    %label.col-form-label{:for => 'output_include'} Include
+    - season = humanize_season(Time.this_season)
+    = select_tag 'output[include]', options_for_select(["All patrons", "#{season} subscribers only", "#{season} non-subscribers only"]), :class => 'form-control form-inline'
+  
+.row.form-inline
+  .form-group.col-12
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'output[login_since]', '1'
+      %label.form-check-label{:for => 'output_login_since'} Limit to patrons who
+    = select_tag 'output[login_since_test]', options_for_select(['have','have not']), {:class => 'form-control'}
+    .mx-2 logged in since
+    = select_date Time.current.at_beginning_of_season, {:prefix => 'output[login_from]', :start_year => 2007}, {:class => 'form-control'}
+
+.row.form-inline
+  .form-group.col-12
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'output[require_valid_address]', '1'
+      %label.form-check-label{:for => 'output_require_valid_address'} Require valid mailing address
+    = popup_help_for 'filter_by_valid_mailing_address'
+
+.row.form-inline
+  .form-group.col-12.ml-4
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'output[filter_by_zip]', '1'
+      %label.form-check-label{:for => 'output_filter_by_zip'} Limit to zip codes starting with 
+    = popup_help_for 'filter_by_zip'
+    = text_field_tag 'output[zip_glob]', '', :size => 12, :class => 'form-control'
+
+.row.form-inline
+  .form-group.col-12.ml-4
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'output[exclude_blacklist]', '1'
+      %label.form-check-label{:for => 'output_exclude_blacklist'} Exclude patrons who have opted out of US Mail mailings
+
+.row.form-inline
+  .form-group.col-12
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'output[require_valid_email]', '1'
+      %label.form-check-label{:for => 'output_require_valid_email'} Require valid email address
+
+.row.form-inline
+  .form-group.col-md-12.ml-4
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'output[exclude_e_blacklist]', '1'
+      %label.form-check-label{:for => 'output_exclude_e_blacklist'} Exclude patrons who have opted out of email
 

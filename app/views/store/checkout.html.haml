@@ -1,50 +1,46 @@
 = themed
 
-.container
+= hidden_field_tag 'checkout_message', j(@checkout_message);
 
-  = hidden_field_tag 'checkout_message', j(@checkout_message);
+- if @gOrderInProgress.gift?
+  #gift_recipient
+    %h2 This Order is a Gift For...
+    = render :partial => 'customers/gift_recipient_info', :locals => {:customer => @gOrderInProgress.customer, :passive => true, :legend => 'Gift Recipient Info' }
 
-  - if @gOrderInProgress.gift?
-    #gift_recipient
-      %h2 This Order is a Gift For...
-      = render :partial => 'customers/gift_recipient_info', :locals => {:customer => @gOrderInProgress.customer, :passive => true, :legend => 'Gift Recipient Info' }
+= form_tag place_order_path(@gOrderInProgress.purchaser), :id => '_stripe_payment_form' do
 
-  = form_tag place_order_path(@gOrderInProgress.purchaser), :id => '_stripe_payment_form' do
+  %h2#purchaser Purchaser: #{@gOrderInProgress.purchaser.full_name_with_email}
 
-    %h2#purchaser Purchaser: #{@gOrderInProgress.purchaser.full_name_with_email}
+  - if (comment = @gOrderInProgress.comment_prompt)
+    .form-row#someone_else
+      .col-md-6.text-right
+        %label.col-form-label{:for => 'pickup'}= comment[:prompt]
+      .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => comment[:placeholder]
 
-    - if (comment = @gOrderInProgress.comment_prompt)
-      .form-row#someone_else
-        .col-md-6.text-right
-          %label.col-form-label{:for => 'pickup'}= comment[:prompt]
-        .col-md-4= text_field_tag 'pickup', '', :class => 'form-control', :placeholder => comment[:placeholder]
+  - if @gOrderInProgress.total_price > 0
+    #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @gOrderInProgress.purchaser}
+    = render :partial => 'credit_card', :locals => {:name => @gOrderInProgress.purchaser.full_name}
 
-    - if @gOrderInProgress.total_price > 0
-      #street_city_only= render :partial => 'customers/street_city_only', :locals => {:customer => @gOrderInProgress.purchaser}
-      = render :partial => 'credit_card', :locals => {:name => @gOrderInProgress.purchaser.full_name}
+  - if @gAdminDisplay
+    #other_payments.admin
+      - if @gOrderInProgress.total_price > 0
+        Or pay with check number: 
+        = text_field_tag 'check_number', '', :size => 6
+        = submit_tag "Accept Check Payment", :class => 'btn btn-warning'
+        = submit_tag "Accept Cash Payment", :class => 'btn btn-warning'
+      - if @gOrderInProgress.purchaser.valid_email_address?
+        = check_box_tag('email_confirmation', 1, true)
+        Send email confirmation
+  - else 
+    = hidden_field_tag 'email_confirmation', 1
 
-    - if @gAdminDisplay
-      #other_payments.admin
-        - if @gOrderInProgress.total_price > 0
-          Or pay with check number: 
-          = text_field_tag 'check_number', '', :size => 6
-          = submit_tag "Accept Check Payment", :class => 'btn btn-warning'
-          = submit_tag "Accept Cash Payment", :class => 'btn btn-warning'
-        - if @gOrderInProgress.purchaser.valid_email_address?
-          = check_box_tag('email_confirmation', 1, true)
-          Send email confirmation
-    - else 
-      = hidden_field_tag 'email_confirmation', 1
-
-    .form-row
-      .col-md-3= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger btn-block' }
-      .col-md-6
-        = link_to t('store.accept_terms_of_sale'), '#', :onclick => "alert('#{escape_javascript(Option.terms_of_sale)}'); return(false);", :class => 'btn btn-outline-primary btn-block'
-      .col-md-3
-        - if @gOrderInProgress.total_price > 0
-          = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'
-          = hidden_field_tag '_stripe_commit'
-        - else
-          = submit_tag "Complete Comp Order", :class => 'btn btn-success btn-block'
-
-
+  .form-row
+    .col-md-3= link_to 'Cancel/Start Over', store_cancel_path, { :class => 'btn btn-danger btn-block' }
+    .col-md-6
+      = link_to t('store.accept_terms_of_sale'), '#', :onclick => "alert('#{escape_javascript(Option.terms_of_sale)}'); return(false);", :class => 'btn btn-outline-primary btn-block'
+    .col-md-3
+      - if @gOrderInProgress.total_price > 0
+        = submit_tag 'Charge Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block', :onclick => 'A1.stripeSubmit()'
+        = hidden_field_tag '_stripe_commit'
+      - else
+        = submit_tag "Complete Comp Order", :class => 'btn btn-success btn-block'
