@@ -3,7 +3,7 @@
     Listing shows for season:
     = select_tag 'season', options_for_seasons(@earliest,@latest,@season), :onchange => 'this.form.submit();', :class => 'form-control'
 
-%table.a1-table.hilite
+%table.a1-table.table.table-hover
   %thead
     %tr
       %th Show Name

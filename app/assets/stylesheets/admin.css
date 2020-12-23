@@ -63,10 +63,6 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
     margin-top: 4px;
 }
 
-/* easier to navigate if tabular rows hilited on hover */
-table.hilite tr:hover {
-    background-color: #fcfe69;
-}
 .a1-table thead {
     background-color: #EEE;
     color: black;

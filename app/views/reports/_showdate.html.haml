@@ -2,13 +2,16 @@
 - divid = "#{s}_#{showdate.id}"
 .row
   - hdr ||= "#{showdate.printable_date} (#{showdate.max_advance_sales})"
-  .col-md-4= link_to hdr, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"  
+  .col-md-4
+    %button.a1-flippy.collapsed{:href => "", 'data-toggle' => 'collapse'}
+    = hdr
   .col-md-1= showdate.total_sales.size
   .col-md-2
     = number_to_percentage(showdate.percent_sold,:precision=>0)
     (#{number_to_percentage(showdate.percent_of_house, :precision => 0)} house)
   .col-md-2.text-right= number_to_currency(showdate.revenue)
-
+  = render :partial => 
 %div{:id=>divid}
 
 
+, '#', :onclick => "\$('##{divid}').load('#{showdate_sales_report_path(showdate, :klass => showdate.class)}'); return(false)"  
