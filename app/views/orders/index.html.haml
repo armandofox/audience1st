@@ -3,5 +3,5 @@
     = button_tag 'Expand All', :onclick => %Q{$('.collapse').collapse('show')}, :class => 'btn btn-outline-primary'
     = button_tag 'Collapse All', :onclick => %Q{$('.collapse').collapse('hide')}, :class => 'btn btn-outline-primary'
 
-.accordion.md-accordion{:role => 'tablist', 'aria-multiselectable' => true}
+.accordion{:role => 'tablist', 'aria-multiselectable' => true}
   = render :partial => 'order', :collection => @orders

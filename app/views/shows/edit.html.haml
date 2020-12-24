@@ -13,6 +13,6 @@
   .col-md-3= link_to 'Add Performances...', new_show_showdate_path(@show), :class => 'btn btn-primary btn-block my-1'
   .col-md-4= link_to 'Add/Change Ticket Redemptions...', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary btn-block my-1'
 
-.accordion.md-accordion{:role => 'tablist', 'aria-multiselectable' => true}
+.accordion{:role => 'tablist', 'aria-multiselectable' => true}
   = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 

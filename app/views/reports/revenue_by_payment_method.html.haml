@@ -1,7 +1,7 @@
 %h1.text-center Revenue Details
 %h2.text-center= @report.title
 
-.accordion.md-accordion{:role => 'tablist', 'aria-multiselectable' => true}
+.accordion{:role => 'tablist', 'aria-multiselectable' => true}
   - @report.payment_types.each_pair do |payment_type, account_code_groups|
     .card
       .card-header.text-light.bg-primary.font-weight-bold
