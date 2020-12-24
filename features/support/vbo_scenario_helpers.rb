@@ -19,8 +19,7 @@ module VboScenarioHelpers
 
   def setup_show_and_showdate(name,time)
     time = Time.zone.parse(time) unless time.kind_of? Time
-    show = Show.find_by_name(name) ||
-      create(:show, :name => name, :opening_date => time, :closing_date => (time + 1.month))
+    show = Show.find_by_name(name) || create(:show, :name => name)
     return Showdate.find_by_show_id_and_thedate(show.id, time) ||
       create(:showdate, :show => show, :thedate => time)
   end

@@ -1,6 +1,35 @@
 require 'rails_helper'
 
 describe Showdate do
+  describe "season calculation", focus: true do
+    before(:each) do ; @t = Time.this_season ; end
+    it 'returns this season if no shows or showdates' do
+      expect(Showdate.seasons_range).to eq([@t,@t])
+    end
+    it 'works if exactly one showdate' do
+      sd = create(:showdate)
+      t = sd.show.season
+      expect(Showdate.seasons_range).to eq([t,t])
+    end
+    context 'works for multiple shows' do
+      before(:each) do
+        @s = create(:show)
+        @s2 = create(:show)
+      end
+      specify 'if not all have showdates' do
+        sd2 = create(:showdate, :show => @s2, :thedate => 2.years.from_now)
+        expect(Showdate.seasons_range).to eq([@t,@t+2])
+      end
+      specify 'if none have showdates' do
+        expect(Showdate.seasons_range).to eq([@t,@t])
+      end
+      specify 'if both have showdates' do
+        sd1 = create(:showdate, :show => @s, :thedate => 1.year.ago)
+        sd1 = create(:showdate, :show => @s2, :thedate => 1.year.from_now)
+        expect(Showdate.seasons_range).to eq([@t-1,@t+1])
+      end
+    end
+  end
   describe "house capacity" do
     before(:each) do
       @s = build(:showdate)

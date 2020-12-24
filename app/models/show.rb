@@ -8,7 +8,7 @@ class Show < ActiveRecord::Base
   has_many :vouchers, -> { joins(:vouchertype).merge(Voucher.finalized).merge(Vouchertype.seat_vouchertypes) }, :through => :showdates
   has_many :imports
   
-  validates_presence_of :opening_date, :closing_date, :listing_date
+  validates_presence_of :listing_date
   validates_inclusion_of :event_type, :in => Show::TYPES
   validates_length_of :name,                   :within => 1..255
   validates_length_of :description,            :maximum => 255
@@ -16,18 +16,24 @@ class Show < ActiveRecord::Base
   validates_length_of :sold_out_customer_info, :maximum => 255
   validates_length_of :patron_notes,           :maximum => 255
 
-  attr_accessible :name, :opening_date, :closing_date, :patron_notes, :landing_page_url
+  attr_accessible :name, :patron_notes, :landing_page_url
   attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
 
   scope :current_and_future, -> {
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
     select('DISTINCT shows.*').
-    order('opening_date')
+    order('listing_date')
   }
 
-  def has_showdates? ; !showdates.empty? ; end
-  
+  def opening_date
+    showdates.empty? ? listing_date : showdates.order('thedate').first.thedate.to_date
+  end
+
+  def closing_date
+    showdates.empty? ? listing_date : showdates.order('thedate DESC').first.thedate.to_date
+  end
+
   def upcoming_showdates
     # showdates for which there is at least one ValidVoucher that is still on sale,
     #   sorted in order of curtain time
@@ -38,6 +44,7 @@ class Show < ActiveRecord::Base
   end
 
   def self.all_for_season(season=Time.this_season)
+    raise "BUG: need test for all_for_season"
     startdate = Time.at_beginning_of_season(season)
     enddate = startdate + 1.year - 1.day
     Show.where('opening_date BETWEEN ? AND ?', startdate, enddate).
@@ -47,16 +54,12 @@ class Show < ActiveRecord::Base
   end
 
   scope :all_for_seasons, ->(from,to) {
+    raise "BUG: need test for all_for_seasons, and is it redundant with all_for_season?"
     where('opening_date BETWEEN ? AND ?',
       Time.at_beginning_of_season(from), Time.at_end_of_season(to)).
     order('opening_date')
   }
 
-  def self.seasons_range
-    [Show.order('opening_date').first.season,
-      Show.order('opening_date DESC').first.season]
-  end
-  
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
 
@@ -137,13 +140,4 @@ class Show < ActiveRecord::Base
     Show.where('name LIKE ?', name.strip).first
   end
 
-  def adjust_metadata_from_showdates
-    return if showdates.empty?
-    dates = showdates.map(&:thedate)
-    first,last = dates.min.to_date, dates.max.to_date
-    self.opening_date = first if opening_date > first
-    self.closing_date = last if closing_date < last
-    return self.changed?
-  end
-      
 end

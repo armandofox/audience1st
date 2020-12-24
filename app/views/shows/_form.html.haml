@@ -18,15 +18,6 @@
       %label.col-form-label{:for=>:show_landing_page_url} Landing page URL (optional)
       = f.text_field 'landing_page_url', :class => 'form-control'
 
-
-  .form-row
-    .col-md-6.form-group
-      %label.col-form-label{:for=>:show_opening_date} Opens
-      .form-inline= f.date_select 'opening_date', {}, {:class => 'form-control date mx-1'}
-    .col-md-6.form-group
-      %label.col-form-label{:for=>:show_closing_date} Closes
-      .form-inline= f.date_select 'closing_date', {}, {:class => 'form-control date mx-1'}
-
   .form-row
     .col-md-6.form-group
       = popup_help_for :show_description

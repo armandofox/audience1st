@@ -24,10 +24,8 @@ Given /^a class "(.*)" available for enrollment now$/ do |name|
   @show.update_attributes!(:event_type => "Class")
 end
 
-Given /^there is a show named "([^\"]+)" opening "([^\"]+)" and closing "([^\"]+)"$/ do |name,opening,closing|
-  @show = create(:show, :name => name,
-    :opening_date => Date.parse(opening),
-    :closing_date => Date.parse(closing))
+Given /^there is a show named "([^\"]+)"$/ do |name|
+  @show = create(:show, :name => name)
 end
 
 Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
@@ -35,12 +33,6 @@ Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
   showdates.hashes.each do |showdate|
     s = create(:showdate, :show => @show, :thedate => Time.zone.parse(showdate[:date]))
     showdate[:tickets_sold].to_i.times { create(:revenue_voucher, :showdate => s) }
-  end
-end
-
-Given /^the following shows exist:$/ do |shows|
-  shows.hashes.each do |show|
-    %Q{Given there is a show named "#{show[:name]}" opening "#{show[:opens]}" and closing "#{show[:closes]}"}
   end
 end
 
@@ -61,7 +53,7 @@ end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|
   dates = dates.split(/\s*,\s*/).map {  |dt| Time.zone.parse(dt) }
-  @show = create(:show, :name => name, :opening_date => dates.first)
+  @show = create(:show, :name => name)
   @showdates = dates.each { |d|  create(:showdate, :show => @show, :thedate => d) }
 end
 

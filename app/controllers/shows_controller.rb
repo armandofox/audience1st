@@ -5,7 +5,7 @@ class ShowsController < ApplicationController
   def index
     @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @earliest,@latest = Show.seasons_range
+    @earliest,@latest = Showdate.seasons_range
     @season = @latest unless @season.between?(@earliest,@latest)
     @shows = Show.all_for_season(@season)
     @page_title = "#{view_context.humanize_season @season} Shows"
@@ -13,7 +13,6 @@ class ShowsController < ApplicationController
 
   def new
     @show = Show.new(:listing_date => Date.today,
-      :opening_date => Date.today,
       :sold_out_dropdown_message => '(Sold Out)',
       :sold_out_customer_info => 'No tickets on sale for this performance')
     @page_title = "Add new show"
