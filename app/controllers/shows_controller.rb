@@ -5,10 +5,10 @@ class ShowsController < ApplicationController
   def index
     @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @earliest,@latest = Showdate.seasons_range
+    @earliest,@latest = SeasonCalculations.seasons_range
     @season = @latest unless @season.between?(@earliest,@latest)
-    @shows = Show.all_for_season(@season)
-    @page_title = "#{view_context.humanize_season @season} Shows"
+    @shows = SeasonCalculations.all_shows_for_seasons(@season,@season)
+    @page_title = "#{humanize_season @season} Shows"
   end
 
   def new

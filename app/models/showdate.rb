@@ -129,19 +129,6 @@ class Showdate < ActiveRecord::Base
   
   # finders
 
-  def self.seasons_range
-    # earliest and latest season for which shows exist
-    earliest = [
-      (self.order('thedate').first.thedate.this_season rescue Time.this_season),
-      (Show.order('listing_date').first.this_season rescue Time.this_season)
-    ].min
-    latest = [
-      (self.order('thedate DESC').first.thedate.this_season rescue Time.this_season),
-      (Show.order('listing_date DESC').first.this_season rescue Time.this_season)
-    ].max
-    [earliest, latest]
-  end
-
   def self.current_or_next(opts={})
     buffer = opts[:grace_period] || 0
     type = opts[:type] || 'Regular Show'
