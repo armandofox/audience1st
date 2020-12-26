@@ -15,8 +15,8 @@ Background:
 Scenario: generate sales report for two shows
 
 
-  When  I select "Hamlet (Jan - Feb 2010)" from "shows"
-  And   I select "King Lear (Jan - Feb 2012)" from "shows"
+  When  I select "Hamlet (Jan 2010)" from "shows"
+  And   I select "King Lear (Jan 2012)" from "shows"
   And   I press "advance_sales"
   Then  I should see "1 performance" within the div for the show with name "Hamlet"
   And   I should see "2 performances" within the div for the show with name "King Lear"
