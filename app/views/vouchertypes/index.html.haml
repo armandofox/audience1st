@@ -1,24 +1,49 @@
-= form_tag vouchertypes_path, :method=>:get, :class => 'form-inline' do
-  %p.lead
-    Listing voucher types for season:
-    = select_tag 'season', options_for_seasons(3.years.ago.year,2.years.from_now.year,@season), :onchange => 'this.form.submit();', :class => 'form-control'
+= form_tag vouchertypes_path, :method=>:get, :class => 'form' do
+  .row.form-group
+    .col-md-3.text-right
+      %label.col-form-label{:for => 'season'} Listing voucher types for season:
+    .col-md-2= select_tag 'season', options_for_seasons(3.years.ago.year,2.years.from_now.year,@season), :onchange => 'this.form.submit();', :class => 'form-control'
 
-= in_rows_of(3, { 'Regular revenue vouchers (single tickets)' => 'revenue', 'Comps (single tickets)' => 'comp', 'Subscription Bundles' => 'bundle-sub', 'Nonsubscription Bundles' => 'bundle-nonsub', 'Vouchers included in a bundle' => 'subscriber', 'Nonticket products' => 'nonticket'}) do |name, category|
-  - check_box_tag(category, 1, true, :class => 'vouchertype-filter') + content_tag('label', name, :for => category)
+.row
+  .col-md-4.form-group
+    .form-check.form-check-inline
+      = check_box_tag 'revenue', 1, true, :class => 'vouchertype-filter form-check-input'
+      %label.form-check-label{:for => 'revenue'} Regular revenue vouchers (single tickets)
+  .col-md-4.form-group
+    .form-check.form-check-inline
+      = check_box_tag 'comp', 1, true, :class => 'vouchertype-filter form-check-input'
+      %label.form-check-label{:for => 'comp'} Comps (single tickets)
+  .col-md-4.form-group
+    .form-check.form-check-inline
+      = check_box_tag 'nonticket', 1, true, :class => 'vouchertype-filter form-check-input'
+      %label.form-check-label{:for => 'nonticket'} Nonticket products
+.row
+  .col-md-4.form-group
+    .form-check.form-check-inline
+      = check_box_tag 'bundle-sub', 1, true, :class => 'vouchertype-filter form-check-input'
+      %label.form-check-label{:for => 'bundle-sub'} Subscription Bundles
+  .col-md-4.form-group
+    .form-check.form-check-inline
+      = check_box_tag 'bundle-nonsub', 1, true, :class => 'vouchertype-filter form-check-input'
+      %label.form-check-label{:for => 'bundle-nonsub'} Nonsubscription Bundles
+  .col-md-4.form-group
+    .form-check.form-check-inline
+      = check_box_tag 'subscriber', 1, true, :class => 'vouchertype-filter form-check-input'
+      %label.form-check-label{:for => 'subscriber'} Vouchers included in a bundle
 
 %table.a1-table.table.table-hover#vouchertypes
   %thead
     %tr 
       %th
-      %th Sort
+      %th Sort #{popup_help_for(:vouchertype_display_order)}
       %th Name
       %th Price
-      %th Acc#
+      %th Acc# #{popup_help_for(:vouchertype_account_code)}
       %th Sub?
       %th Who can purchase?
       %th Link
       %th Description
-      %th Walkup?
+      %th Walkup? #{popup_help_for(:vouchertype_walkup_sale_allowed)}
       %th
   %tbody
     - @vouchertypes.each do |vouchertype|
