@@ -169,10 +169,6 @@ Rails.application.routes.draw do
     match '/logout' => 'sessions#destroy', :as => 'logout', :via => [:get, :post]
 
     # Routes for viewing and refunding orders
-    resources :orders, :only => [:index, :show, :update] do
-      collection do
-        get :report
-      end
-    end
+    resources :orders, :only => [:index, :show, :update]
   end
 end
