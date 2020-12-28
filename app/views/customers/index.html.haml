@@ -11,10 +11,8 @@
         = text_field_tag 'page', '', :size => 4
         = submit_tag 'Go', :class => 'btn btn-outline-primary btn-sm'
 
-%br/
-
 - unless @customers.empty?
-  .container.px-0
+  .container.px-0.mt-2
     = form_tag merge_customers_path, :method => :get, :class => 'form' do
       .row
         .col-md-3.text-right

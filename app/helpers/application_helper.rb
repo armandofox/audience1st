@@ -28,7 +28,7 @@ module ApplicationHelper
   end
 
   def themed
-    javascript_tag %Q{$(function() { $('#content').removeClass('plain').addClass('themed'); });}
+    javascript_tag %Q{$(function() { $('#content').removeClass('a1-plain').addClass('themed'); });}
   end
 
   def link_icon
@@ -46,26 +46,6 @@ module ApplicationHelper
     @gOrderInProgress &&
       %w(customers store sessions).include?(controller_name)  &&
       ! %w(place_order process_donation).include?(action_name)
-  end
-
-
-  def in_rows_of(n,collection)
-    return '' if (collection.nil? || collection.empty?)
-    rows = ''
-    collection.each_slice(n) do |things|
-      row = ''
-      things.each { |l|  row << content_tag('td', yield(l)) }
-      rows << content_tag('tr', row.html_safe)
-    end
-    content_tag('table') do
-      content_tag('tbody', rows.html_safe)
-    end
-  end
-
-  def truncate_with_hovering(str, opts={})
-    str = h(str)
-    content_tag(:span, truncate(str,opts) + content_tag(:span, str),
-      :class => 'tooltip') 
   end
 
   # Render as HTML a multiline message passed as an array.
@@ -93,16 +73,6 @@ module ApplicationHelper
   def disabled_select_default(str)
     str = [str]
     options_for_select(str, :selected => str, :disabled => str).html_safe
-  end
-
-  # return a checkbox that "protects" another form element by hiding/showing it
-  # when checked/unchecked, given initial state.  It's the caller's responsibility
-  # to ensure the initial state matches the actual display state of the
-  # guarded element.
-
-  def checkbox_guard_for(elt_name, visible=false)
-    check_box_tag("show_" << elt_name.to_s, '1', visible,
-                  :onclick => %Q{$('##{elt_name}').slideToggle();})
   end
 
   # a checkbox that toggles the innerHTML of another guarded element.

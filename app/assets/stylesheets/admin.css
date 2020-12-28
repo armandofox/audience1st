@@ -7,7 +7,7 @@ body.maintenance {
     border: 8px dashed yellow;
 }
 
-#content.plain {
+#content.a1-plain {
     background-color: white;
 }
 
@@ -52,11 +52,8 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
 }
 
 .a1-table {
-/* General tabular styles */
-/* tables still need 'cellspacing="0"' in the markup */
     width: 100%;
     border-collapse: collapse;
-/*    font-size: 12pt;*/
     border-spacing: 0;
     border: 0;
     margin-bottom: 10px;
@@ -289,13 +286,13 @@ tr.subscriber {
     padding: 0 2em;
 }
 
-span.checkin_button {
+span.a1-checkin-button {
     text-align: center;
     font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
     margin: 0;
     padding: 2px;
 }
-span.checkin_button:hover, span.checked_in {
+span.a1-checkin-button:hover, span.a1-checked-in {
     background-color: yellow;
 }
 

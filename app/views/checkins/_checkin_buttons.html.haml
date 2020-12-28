@@ -1,6 +1,6 @@
 %span
 - vouchers.each_with_index do |voucher,i|
-  %span.checkin_button{:id => voucher.id, :class => ('checked_in' if voucher.checked_in?)}
+  %span.a1-checkin-button{:id => voucher.id, :class => ('a1-checked-in' if voucher.checked_in?)}
     - label = voucher.seat || i+1
     - vouchers_list = if voucher.seat then voucher.id else ids(vouchers[0..i]) end
     = link_to label, checkin_path(@showdate, :vouchers => vouchers_list), 'data-remote' => true, 'data-method' => :put, 'data-type' => 'script'

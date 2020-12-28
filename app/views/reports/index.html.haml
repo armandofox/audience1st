@@ -1,26 +1,26 @@
 - if @next_showdate.kind_of?(Showdate)
-  .row.border#advance_sales_report
-    %label.h3.col-md-4{:for => 'shows'} Sales by Show
+  .row.py-1.no-gutters#advance_sales_report
+    %label.h5.col-md-4{:for => 'shows'} Sales by Show
     .col-md-8
       = form_tag advance_sales_reports_path, :method => :get do
         %p 
           (Shift-click to select multiple productions)
           %br
-          = select_tag('shows', options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true, :class => 'form-control') 
+          = select_tag('shows', options_from_collection_for_select(@all_shows, :id, :name_with_run_dates_short, @next_showdate.show.id), :multiple => true, :class => 'form-control my-2') 
           = submit_tag 'Display on Screen', :id => 'advance_sales', :class => 'btn btn-primary'
           = submit_tag 'Download to Excel', :class => 'btn btn-primary'
           = popup_help_for 'download_to_excel'
 
-.row.border#unfulfilled_orders
+.row.py-1.no-gutters.border-top#unfulfilled_orders
   .col-md-4
-    %label.h3 Orders Needing Mail Fulfillment 
+    %label.h5 Orders Needing Mail Fulfillment 
   .col-md-8
     = form_tag unfulfilled_orders_reports_path, :method => :get do
       = submit_tag 'Display on Screen', :class => 'btn btn-primary'
 
-.row.border#financial_reports
+.row.py-1.no-gutters.border-top#financial_reports
   .col-md-4
-    %label.h3 Revenue Details
+    %label.h5 Revenue Details
   .col-md-8
     = form_tag revenue_by_payment_method_reports_path, :method => :get, :class => 'form' do
       - if @current_show
@@ -41,18 +41,18 @@
         = submit_tag 'Download to Excel', :class => 'btn btn-primary mx-2'
         = popup_help_for 'download_to_excel'
         
-.row.border-top#customer_lists
-  .col-md-4.h3 Customer Lists
+.row.py-1.no-gutters.border-top#customer_lists
+  .col-md-4.h5 Customer Lists
   .col-md-8
     = select_tag 'special_report_name', options_for_select(@special_report_names, :selected => 'Select report...'), 'data-submit' => attendance_reports_path, :class => 'form-control form-control-lg'
 
 #report_body
 
-.row#subscription_counts
+.row.py-1.no-gutters.border-top#subscription_counts
   .col-md-4
-    %label.h3{:for => 'year'} Subscription Counts
+    %label.h5{:for => 'year'} Subscription Counts
   .col-md-8
     - y = Time.this_season
     = select_tag('year', options_for_seasons(y-5, y+1), :onchange => "\$('#subscriber_stats').load('#{subscriber_details_reports_path}', 'id=' + \$('#year').val())" , :class => 'form-control form-control-lg')
-.row
+.row.py-1
   .col-md-8.offset-md-4#subscriber_stats= render :partial => 'subscriptions', :object => @subscriptions, :locals => {:year => y} 

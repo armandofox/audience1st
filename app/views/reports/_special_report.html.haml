@@ -9,14 +9,14 @@
     .form-row
       .col-md-3
         = radio_button_tag 'what', 'download'
-        %label.plain{:for => 'what_download'} Download to Excel
+        %label{:for => 'what_download'} Download to Excel
         = popup_help_for 'download_to_excel'
       .col-md-3
         = radio_button_tag 'what', 'estimate'
-        %label.plain{:for => 'what_estimate'} Estimate number of matches
+        %label{:for => 'what_estimate'} Estimate number of matches
       .col-md-3
         = radio_button_tag 'what', 'display', 1
-        %label.plain{:for => 'what_display'} Display list on screen
+        %label{:for => 'what_display'} Display list on screen
     .form-row
       .col-md-6.h6 Format mailing address in:
       .col-md-6.h6 Sort spreadsheet by:
@@ -38,11 +38,11 @@
     .form-row
     - if !@sublists.blank?
       = radio_button_tag 'what', 'add'
-      %label.plain{:for => 'what_add'} Add to existing mailing list:
+      %label{:for => 'what_add'} Add to existing mailing list:
       = select_tag 'sublist', options_for_select(@sublists)
       %br
       = radio_button_tag 'what', 'create'
-      %label.plain{:for => 'what_create'} Create new mailing list named:
+      %label{:for => 'what_create'} Create new mailing list named:
       = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
       %br
     = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...', :class => 'btn btn-primary'

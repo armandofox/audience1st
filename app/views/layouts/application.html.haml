@@ -46,7 +46,7 @@
             - if current_user && @gAdminDisplay && controller.controller_name !~ /checkins|walkup_sales|store/
               = render :partial => 'customers/quick_search'
               = render :partial => 'navbars/staff_buttons' if display_customer_actions?
-          #content.plain.p-3
+          #content.a1-plain.p-3
             - if controller.controller_name =~ /checkins|walkup_sales/
               = render :partial => 'checkins/change_showdate'
               #show_stats.card.m-3= render :partial => 'checkins/show_stats', :locals => {:showdate => @showdate}
