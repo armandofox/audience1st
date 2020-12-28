@@ -14,13 +14,15 @@
 
     <%= Mailer::BODY_TAG %>
 
-    <!-- It will be replaced with the actual email contents, inside of a div.a1-email -->
+    <!-- It will be replaced with the email body, in a <div> with class "a1-email" -->
 
     <hr>
     
-    <!-- If your template doesn't contain contact info, include the following string
-         and it will be replaced by appropriate contact info inside a div.a1-email-footer: -->
-    
+    <!-- 
+         If your template doesn't contain contact info, include the following string
+         and it will be replaced by contact info inside a <div> with class "a1-email-footer"
+      -->
+      
     <%= Mailer::FOOTER_TAG %>
     
   </body>
