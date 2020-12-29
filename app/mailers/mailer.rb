@@ -76,10 +76,6 @@ class Mailer < ActionMailer::Base
   def set_delivery_options
     @venue = Option.venue
     @subject = "#{@venue} - "
-    @contact = if Option.help_email.blank?
-               then "call #{Option.boxoffice_telephone}"
-               else "contact the box office at <a href='mailto:#{Option.box_office_email}'>#{Option.box_office_email}</a> or call #{Option.boxoffice_telephone}".html_safe
-               end
     if Rails.env.production? and Option.sendgrid_domain.blank?
       ActionMailer::Base.perform_deliveries = false
       Rails.logger.info "NOT sending email"
