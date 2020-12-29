@@ -1,12 +1,9 @@
 %p Search for customers with ANY of these labels:
-- labels = Label.all.sort_by(&:name)
-- columns = 5
-%table.a1-table
-  %tr
-    - labels.in_groups_of(labels.size / columns + 1) do |l|
-      %td
-        - l.each do |label|
-          - next if label.nil?
-          = check_box_tag "labels[#{label.id}]"
-          %label.plain{:for => "labels_#{label.id}"}= label.name
-          %br
+- labels = Label.all.compact.sort_by(&:name)
+- (0..((labels.size - 1) / 4)).each do |slice|
+  <div class="row">
+  - labels.slice(slice * 4, 4).each do |label|
+    .col-md-3
+      = check_box_tag "labels[#{label.id}]"
+      %label{:for => "labels_#{label.id}"}= label.name
+  </div>

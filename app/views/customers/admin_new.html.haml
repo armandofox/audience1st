@@ -1,7 +1,7 @@
-%h1.text-center Add Customer
+.p-2
+  %h1.text-center Add Customer
 
-.container.pb-2
-  = form_tag customers_path do
+  = form_tag customers_path, :class => 'form' do
     = render :partial =>  'billing_address', :locals => {:customer => @customer}
     = render 'form_admin'
     .form-row

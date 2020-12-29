@@ -37,7 +37,7 @@ end
 
 When /I upload the seatmap "(.*\.csv)"/ do |file|
   within '#new_seatmap_form' do
-    attach_file 'csv', "#{Rails.root}/spec/import_test_files/seatmaps/#{file}", :visible => false
+    attach_file 'csv', "#{TEST_FILES_DIR}/seatmaps/#{file}", :visible => false
     click_button 'Upload'
   end
 end

@@ -8,6 +8,8 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path(File.dirname(__FILE__) + '/../../config/environment')
 
+TEST_FILES_DIR = File.join(Rails.root, 'spec', 'test_files') unless defined?(TEST_FILES_DIR)
+
 require 'cucumber/rails'
 require 'webmock/cucumber'
 require 'coveralls'

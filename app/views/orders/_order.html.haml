@@ -1,8 +1,8 @@
-%div[order]
-  %h3 
-    %a.flippy[order, :flippy]{:href=>orders_path} &#x25BA;
-    = one_line_order_summary(order)
-  %div.flippy-div.order_info[order, :details]
+.card[order]
+  .card-header
+    %button.a1-flippy.collapsed.d-inline{:href => "#details_order_#{order.id}", 'data-toggle' => 'collapse'}
+    .d-inline= one_line_order_summary(order)
+  .card-body.collapse[order, :details]
     = form_tag order_path(order), :method => :put do
       .form-row
         .col-md-3
@@ -21,7 +21,7 @@
             %label.col-form-label Refundable:
             = order.refundable? ? "Yes" : "No"
 
-      %table#order_items.hilite.a1-table
+      %table.a1-table.a1-force-fullwidth.table.table-hover
         %thead
           %tr
             %th{:colspan => 2} Item#
@@ -46,5 +46,5 @@
         = link_to 'Back to Customer', customer_path(order.customer), :class => 'btn btn-primary'
         - if order.refundable?
           - submit_name = (order.purchase_medium == :credit_card ? 'Refund' : 'Cancel')
-          = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order), :class => 'btn btn-danger', :id => 'refund'
+          = submit_tag "#{submit_name} Checked Items", 'data-confirm' => deletion_warning_for(order), :class => 'btn btn-danger', :id => 'refund'
 

@@ -154,6 +154,9 @@ en:
     confirm_delete_performance: >
       Delete this performance: are you sure?
 
+    confirm_delete_redemption: >
+      Don't allow "%{type}" tickets for this performance: are you sure?
+
     must_select_vouchertypes: >
       You must select 1 or more voucher types to add.
 
@@ -280,6 +283,10 @@ en:
         other: Sorry, only %{count} seats left for this performance.
 
   options:
+
+    leave_page_warning: >
+      If you leave this page, changes made since loading the page may be lost.
+      Click OK to leave anyway, or Cancel to stay on this page and save your changes first.
 
     integration_warning: >
       Integration options can now be edited. Proceed with care.

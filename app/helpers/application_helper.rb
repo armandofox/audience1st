@@ -22,13 +22,13 @@ module ApplicationHelper
   def venue_stylesheet_link_tag
     if (url = Option.stylesheet_url).blank?
       # use local
-      url = '/assets/default.css'
+      url = '/assets/venue/default.css'
     end
     tag('link', {rel: "stylesheet", href: url, :media => 'all'})
   end
 
   def themed
-    javascript_tag %Q{$(function() { $('#content').removeClass('plain').addClass('themed'); });}
+    javascript_tag %Q{$(function() { $('#content').removeClass('a1-plain').addClass('themed'); });}
   end
 
   def link_icon
@@ -46,26 +46,6 @@ module ApplicationHelper
     @gOrderInProgress &&
       %w(customers store sessions).include?(controller_name)  &&
       ! %w(place_order process_donation).include?(action_name)
-  end
-
-
-  def in_rows_of(n,collection)
-    return '' if (collection.nil? || collection.empty?)
-    rows = ''
-    collection.each_slice(n) do |things|
-      row = ''
-      things.each { |l|  row << content_tag('td', yield(l)) }
-      rows << content_tag('tr', row.html_safe)
-    end
-    content_tag('table') do
-      content_tag('tbody', rows.html_safe)
-    end
-  end
-
-  def truncate_with_hovering(str, opts={})
-    str = h(str)
-    content_tag(:span, truncate(str,opts) + content_tag(:span, str),
-      :class => 'tooltip') 
   end
 
   # Render as HTML a multiline message passed as an array.
@@ -95,16 +75,6 @@ module ApplicationHelper
     options_for_select(str, :selected => str, :disabled => str).html_safe
   end
 
-  # return a checkbox that "protects" another form element by hiding/showing it
-  # when checked/unchecked, given initial state.  It's the caller's responsibility
-  # to ensure the initial state matches the actual display state of the
-  # guarded element.
-
-  def checkbox_guard_for(elt_name, visible=false)
-    check_box_tag("show_" << elt_name.to_s, '1', visible,
-                  :onclick => %Q{$('##{elt_name}').slideToggle();})
-  end
-
   # a checkbox that toggles the innerHTML of another guarded element.
   def check_box_toggle(name, checked, elt, ifchecked, ifnotchecked, opts={})
     check_box_tag name, 1, checked, opts.merge(:onchange => %Q{$('##{elt}').val($(this).is(':checked') ? '#{escape_javascript ifchecked}' : '#{escape_javascript ifnotchecked}' )})
@@ -114,7 +84,7 @@ module ApplicationHelper
     msg = "This link points to a prepopulated Store page"
     msg << " for #{name}" if name
     msg << ":"
-    link_to(text, '#', :onclick => "prompt('#{escape_javascript(msg)}', '#{escape_javascript(url)}')")
+    link_to(text, '#', :onclick => "prompt('#{escape_javascript(msg)}', '#{escape_javascript(url)}')", :class => 'a1-purchase-link')
   end
 
   def link_to_subscription_purchase(vouchertype_id)

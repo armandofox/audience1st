@@ -20,8 +20,7 @@ Scenario: venue cannot be blank
 
   When I fill in "Venue" with ""
   And I press "Update Settings"
-  Then I should be on the admin:settings page
-  And I should see "Venue can't be blank"
+  Then I should see "Venue can't be blank"
 
 Scenario: change an encrypted option
 
@@ -29,3 +28,7 @@ Scenario: change an encrypted option
   And I press "Update Settings"
   Then the setting "Stripe Secret" should be "sekret"
 
+Scenario: invalid HTML email template because no placeholder
+
+  When I upload the email template "invalid_template_no_placeholder.html"
+  Then I should see "must contain exactly one occurrence of the placeholder"

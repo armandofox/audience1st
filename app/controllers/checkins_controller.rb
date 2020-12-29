@@ -73,7 +73,7 @@ class CheckinsController < ApplicationController
     new_stats = ActionController::Base.helpers.escape_javascript(render_to_string :partial => 'show_stats', :locals => {:showdate => showdate}, :layout => false)
     script = %Q{
 \$('#show_stats').html('#{new_stats}');
-\$('#{voucher_ids_for_js}').#{method}('checked_in');
+\$('#{voucher_ids_for_js}').#{method}('a1-checked-in');
 }
      render :js => script
   end

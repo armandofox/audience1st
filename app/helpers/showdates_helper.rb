@@ -1,5 +1,25 @@
 module ShowdatesHelper
 
+  def percent_max_advance_sales_if_not_streaming(showdate)
+    advance = showdate.percent_max_advance_sales
+    p = " (#{number_to_percentage(advance, :precision => 0)} house)"
+    if showdate.stream?
+      ''
+    elsif (advance >= 100)
+      (content_tag 'span', p, :class => 'callout').html_safe
+    else
+      p
+    end
+  end
+
+  def button_to_delete_performance(showdate)
+    if showdate.total_sales.size.zero?
+      form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form form-inline' do |f|
+        submit_tag '&#x2716'.html_safe, :class => 'btn btn-sm d-inline a1-x-icon', :id => "delete_showdate_#{showdate.id}", 'data-confirm' => t('season_setup.confirm_delete_performance')
+      end.html_safe
+    end
+  end
+
   def showdate_time_limit_for(thing, attr)
     showdate = if thing.kind_of?(Showdate) then thing else thing.showdate end
     if showdate.stream_anytime?
@@ -52,21 +72,4 @@ module ShowdatesHelper
       ed.to_formatted_s(:showtime)
     end
   end
-
-  def day_of_week_checkboxes(prefix)
-    dow = %w[Mon Tue Wed Thu Fri Sat Sun]
-    tag = ''
-    dow.each_with_index do |day,i|
-      idx = (i+1) % 7
-      tag <<
-        (content_tag('span', :class => 'hilite') do
-          check_box_tag(prefix, idx, false,
-            :name => "#{prefix}[]", :id => "#{prefix}_#{idx}") +
-            content_tag('label', day, :for => "#{prefix}_#{idx}") 
-        end)
-    end
-    tag.html_safe
-  end
-
-
 end

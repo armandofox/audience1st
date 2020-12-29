@@ -31,7 +31,7 @@ describe Customer, "birthdays" do
   describe "no email should be created" do
     before :each do
       Option.first.update_attributes!(:send_birthday_reminders => 5,
-        :boxoffice_daemon_notify => 'n@ai')
+        :box_office_email => 'n@ai')
       expect(Mailer).not_to receive(:general_mailer)
     end
     specify 'when feature is turned off' do
@@ -42,14 +42,9 @@ describe Customer, "birthdays" do
       Option.first.update_attributes!(:send_birthday_reminders => -2)
       Customer.notify_upcoming_birthdays
     end
-    specify 'when no recipient specified in options' do
-      Option.first.update_attributes!(:send_birthday_reminders => 5,
-        :boxoffice_daemon_notify => '')
-      Customer.notify_upcoming_birthdays
-    end
     specify 'when day modulo n doesn\'t match up' do
       Option.first.update_attributes!(:send_birthday_reminders => 3,
-        :boxoffice_daemon_notify => '')
+        :box_office_email => 'n@ai')
       Timecop.travel('Jan 1, 2012') do
         Customer.notify_upcoming_birthdays
       end
@@ -65,7 +60,7 @@ describe Customer, "birthdays" do
     before :each do
       expect(Customer).to receive(:birthdays_in_range).and_return([@c1,@c2])
       Option.first.update_attributes!(:send_birthday_reminders => 5,
-        :boxoffice_daemon_notify => 'n@ai')
+        :box_office_email => 'n@ai')
       ActionMailer::Base.deliveries = []
       Timecop.travel('Jan 5, 2012') { Customer.notify_upcoming_birthdays }
       @sent = ActionMailer::Base.deliveries

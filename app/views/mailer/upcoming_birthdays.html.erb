@@ -1,0 +1,26 @@
+<div class="upcoming-birthdays">
+  <p>
+    The following customers have birthdays in the next <%= @num -%> days:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Full name</th>
+        <th>Day phone</th>
+        <th>Evening phone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @customers.each do |c| %>
+      <tr>
+        <td><%= c.full_name %></td>
+        <td><%= c.day_phone %></td>
+        <td><%= c.eve_phone %></td>
+        <td><%= c.email %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

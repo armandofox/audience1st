@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201125215217) do
+ActiveRecord::Schema.define(version: 20201222174013) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,7 +132,7 @@ ActiveRecord::Schema.define(version: 20201125215217) do
     t.string   "venue_homepage_url",                                     limit: 255
     t.string   "boxoffice_telephone",                                    limit: 255, default: "Enter Venue Box office phone",                                                                                                  null: false
     t.string   "donation_ack_from",                                      limit: 255
-    t.string   "boxoffice_daemon_notify",                                limit: 255
+    t.string   "box_office_email",                                       limit: 255
     t.string   "help_email",                                             limit: 255, default: ""
     t.integer  "send_birthday_reminders",                                            default: 0,                                                                                                                               null: false
     t.integer  "session_timeout",                                                    default: 1000,                                                                                                                            null: false
@@ -193,6 +193,7 @@ ActiveRecord::Schema.define(version: 20201125215217) do
     t.string   "restrict_customer_email_to_domain"
     t.integer  "order_timeout",                                                      default: 5,                                                                                                                               null: false
     t.datetime "last_sweep",                                                         default: '2019-12-24 17:59:23',                                                                                                           null: false
+    t.text     "html_email_template",                                                default: "<!DOCTYPE html><html><head></head><body>{{body}}</body></html>",                                                                null: false
   end
 
   create_table "orders", force: :cascade do |t|

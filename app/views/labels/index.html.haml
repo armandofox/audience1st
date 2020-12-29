@@ -1,16 +1,14 @@
 %h1 Create/Edit Labels
 
-.container
-
-  - @labels.each do |label|
-    = form_tag label_path(label), :method => 'put', :class => 'form' do |f|
-      .form-row.py-1
-        = hidden_field_tag 'id', label.id
-        .col-md-3= text_field_tag 'label_name', label.name, :class => 'form-control'
-        .col-md-2= submit_tag 'Change Name', :class => 'btn btn-primary btn-block'
-        .col-md-2= link_to 'Delete Label', label, "data-confirm" => 'Are you sure? This label will be removed from all customers that have it.  This action cannot be undone.', :method => :delete, :class => 'btn btn-danger'
-
-  = form_tag labels_path, :method => 'post', :class => 'form' do |f|
+- @labels.each do |label|
+  = form_tag label_path(label), :method => 'put', :class => 'form' do |f|
     .form-row.py-1
-      .col-md-3= text_field_tag 'label_name', '', :class => 'form-control'
-      .col-md-2= submit_tag 'Create New Label', :class => 'btn btn-success btn-block'
+      = hidden_field_tag 'id', label.id
+      .col-md-3= text_field_tag 'label_name', label.name, :class => 'form-control'
+      .col-md-2= submit_tag 'Change Name', :class => 'btn btn-primary btn-block'
+      .col-md-2= link_to 'Delete Label', label, "data-confirm" => 'Are you sure? This label will be removed from all customers that have it.  This action cannot be undone.', :method => :delete, :class => 'btn btn-danger'
+
+= form_tag labels_path, :method => 'post', :class => 'form' do |f|
+  .form-row.py-1
+    .col-md-3= text_field_tag 'label_name', '', :class => 'form-control'
+    .col-md-2= submit_tag 'Create New Label', :class => 'btn btn-success btn-block'

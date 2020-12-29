@@ -5,7 +5,7 @@
   = hidden_field_tag 'offset', @offset
   = hidden_field_tag 'cust0', @cust[0].id
   = hidden_field_tag 'cust1', @cust[1].id
-  %table.a1-table.hilite.table-striped
+  %table.a1-table.table.table-hover
     %tr
       %td Last login
       %td= @cust[0].last_login.to_formatted_s(:long)

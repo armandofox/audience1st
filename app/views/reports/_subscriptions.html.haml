@@ -2,7 +2,7 @@
   %p.strong No subscriptions
 - else
   = hidden_field_tag 'year', year
-  %table.a1-table.hilite
+  %table.a1-table.table.table-hover
     %thead
       %tr
         %th Type 
@@ -19,7 +19,7 @@
           %td.text-right= number_to_currency(s[1]*s[2])
           - total += s[2] 
           - tprice += s[1]*s[2] 
-      %tr.totalsRow
+      %tr
         %td Total  
         %td.text-right= total   
         %td

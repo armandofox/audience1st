@@ -49,7 +49,12 @@ class Option < ActiveRecord::Base
     :classes_order_service_charge_account_code
     )
 
-  validates_format_of :boxoffice_daemon_notify, :help_email, :with => /@/, :allow_blank => true, :allow_nil => true
+  validates_format_of :box_office_email,
+                      :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
+                      :allow_nil => false, :message => 'must be a valid email address'
+  validates_format_of :help_email,
+                      :with => URI::MailTo::EMAIL_REGEXP, :allow_blank => false,
+                      :allow_nil => false, :message => 'must be a valid email address'
 
   validates_numericality_of :send_birthday_reminders
 
@@ -65,14 +70,21 @@ class Option < ActiveRecord::Base
   validates_presence_of :classes_order_service_charge_description,
   :if => Proc.new { |o| o.classes_order_service_charge > 0 }
 
-  #validates_presence_of :accessibility_advisory_for_reserved_seating
+  validates_presence_of :html_email_template
+  validate :html_email_template_checks
 
-  if Rails.env.production?
-    validates_format_of :stylesheet_url, :with => Regexp.new('\A/?/stylesheets/default.css\Z|\A\s*https?://')
-  end
+  validates_format_of :stylesheet_url, :if => Proc.new { Rails.env.production? }, :allow_blank => true, :with => URI.regexp(['https']), :message => 'must be a valid URI beginning with "https://"'
   
   def availability_levels_monotonically_increase
     errors.add(:limited_availability_threshold, 'must be less than Nearly Sold Out threshold') unless nearly_sold_out_threshold > limited_availability_threshold
   end
 
+  def html_email_template_checks
+    errors.add(:html_email_template, "must begin with a <!DOCTYPE html> declaration") unless
+      html_email_template =~ /\A<!doctype\s+html>/i
+    errors.add(:html_email_template, "must contain exactly one occurrence of the placeholder '#{Mailer::BODY_TAG}' for the email message body") unless
+      html_email_template.scan(Mailer::BODY_TAG).size == 1
+    errors.add(:html_email_template, "cannot contain more than one occurrence of '#{Mailer::FOOTER_TAG}'") if
+      html_email_template.scan(Mailer::FOOTER_TAG).size > 1
+  end
 end

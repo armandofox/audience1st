@@ -1,146 +1,160 @@
-= form_for @o do |f|
-  .container
-    %h1 Your Venue Info As Seen By Customers
-    = render_collection_of_options f, |
-     %w(venue |
-        venue_address |
-        venue_city_state_zip    |
-        venue_telephone |
-        venue_homepage_url |
-        boxoffice_telephone |
-        help_email |
-        top_level_banner_text |
-        privacy_policy_url |
-        ) |
-    .form-row
-      .col-md-4.text-right
-        %label.col-form-label Season Start Date
-        = option_description_for(:season_start_month)   
-      .col-md-8
-        - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
-        = select_month season_start, :prefix => 'option', :field_name => 'season_start_month'
-        = select_day   season_start, :prefix => 'option', :field_name => 'season_start_day'
+= form_for @o, :html => {:multipart => true, :id => 'edit_options_form'} do |f|
+  .card.my-1
+    .card-header.h3 Your Venue Info As Seen By Customers
+    .card-body
+      = render_collection_of_options f, |
+       %w(venue |
+          venue_address |
+          venue_city_state_zip    |
+          venue_telephone |
+          venue_homepage_url |
+          boxoffice_telephone |
+          help_email |
+          box_office_email  | 
+          send_birthday_reminders!days  |
+          top_level_banner_text |
+          privacy_policy_url |
+          ) |
+      .form-row
+        .col-md-4.text-right
+          %label.col-form-label Season Start Date
+          = option_description_for(:season_start_month)   
+        .col-md-8
+          .form-group.form-inline
+            - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
+            = select_month season_start, {:prefix => 'option', :field_name => 'season_start_month'}, :class => 'form-control'
+            = select_day   season_start, {:prefix => 'option', :field_name => 'season_start_day'}, :class => 'form-control'
         
-  .container
-    %h1 Accepting Donations and Retail Sales Online
-    .form-row
-      .col-md-4
-      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+  .card.my-1
+    .card-header.h3 Accepting Donations and Retail Sales Online
+    .card-body
+      .form-row
+        .col-md-4.text-right= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary', 'data-confirm' => t('options.leave_page_warning')
 
-    = render_collection_of_options f, %w( |
-      default_retail_account_code |
-      default_donation_account_code |
-      default_donation_account_code_with_subscriptions |
-      quick_donation_banner |
-      quick_donation_explanation |
-      quick_donation_redirect |
-      donation_ack_from |
-      ) |
+      = render_collection_of_options f, %w( |
+        default_retail_account_code |
+        default_donation_account_code |
+        default_donation_account_code_with_subscriptions |
+        quick_donation_banner |
+        quick_donation_explanation |
+        quick_donation_redirect |
+        donation_ack_from |
+        ) |
 
-  .container
-    %h1 Customer Account
-    = render_collection_of_options f, %w( |
-      restrict_customer_email_to_domain |
-      welcome_page_subscriber_message |
-      welcome_page_nonsubscriber_message |
-      homepage_ticket_sales_text |
-      homepage_subscription_sales_text |
-      encourage_email_opt_in |
-      display_email_opt_out |
-      ) |
+  .card.my-1
+    .card-header.h3 Customer Account
+    .card-body
+      = render_collection_of_options f, %w( |
+        restrict_customer_email_to_domain |
+        welcome_page_subscriber_message |
+        welcome_page_nonsubscriber_message |
+        homepage_ticket_sales_text |
+        homepage_subscription_sales_text |
+        encourage_email_opt_in |
+        display_email_opt_out |
+        ) |
 
-  .container
-    %h1 Info Messages Displayed on Ticket Sales Pages
-    = render_collection_of_options f, %w( |
-      regular_show_sales_banner_for_nonsubscribers        |
-      regular_show_sales_banner_for_current_subscribers        |
-      regular_show_sales_banner_for_next_season_subscribers       |
-      subscription_sales_banner_for_nonsubscribers        |
-      subscription_sales_banner_for_current_subscribers        |
-      subscription_sales_banner_for_next_season_subscribers       |
-      class_sales_banner_for_nonsubscribers        |
-      class_sales_banner_for_current_subscribers        |
-      class_sales_banner_for_next_season_subscribers       |
-      special_event_sales_banner_for_nonsubscribers        |
-      special_event_sales_banner_for_current_subscribers        |
-      special_event_sales_banner_for_next_season_subscribers       |
-      ) |
+  .card.my-1
+    .card-header.h3 Info Messages Displayed on Ticket Sales Pages
+    .card-body
+      = render_collection_of_options f, %w( |
+        regular_show_sales_banner_for_nonsubscribers        |
+        regular_show_sales_banner_for_current_subscribers        |
+        regular_show_sales_banner_for_next_season_subscribers       |
+        subscription_sales_banner_for_nonsubscribers        |
+        subscription_sales_banner_for_current_subscribers        |
+        subscription_sales_banner_for_next_season_subscribers       |
+        class_sales_banner_for_nonsubscribers        |
+        class_sales_banner_for_current_subscribers        |
+        class_sales_banner_for_next_season_subscribers       |
+        special_event_sales_banner_for_nonsubscribers        |
+        special_event_sales_banner_for_current_subscribers        |
+        special_event_sales_banner_for_next_season_subscribers       |
+        ) |
 
-  .container
-    %h1 Ticket Sales
-    .form-row
-      .col-md-4.text-right
-        %label.col-form-label{:for => 'option_advance_sales_cutoff'} Advance Sales Cutoff
-        = option_description_for 'advance_sales_cutoff'
-      .col-md-2= number_field_tag 'option[advance_sales_cutoff]', @o.advance_sales_cutoff.abs, :class => 'form-control'
-      .col-md-5= select_tag 'before_or_after', options_for_before_or_after_curtain(@o.advance_sales_cutoff), :class => 'form-control'
+  .card.my-1
+    .card-header.h3 Ticket Sales
+    .card-body
+      .form-row
+        .col-md-4.text-right
+          %label.col-form-label{:for => 'option_advance_sales_cutoff'} Advance Sales Cutoff
+          = option_description_for 'advance_sales_cutoff'
+        .col-md-2= number_field_tag 'option[advance_sales_cutoff]', @o.advance_sales_cutoff.abs, :class => 'form-control'
+        .col-md-5= select_tag 'before_or_after', options_for_before_or_after_curtain(@o.advance_sales_cutoff), :class => 'form-control'
 
-    = render_collection_of_options f, %w( |
-      accessibility_advisory_for_reserved_seating |
-      nearly_sold_out_threshold!%   |
-      limited_availability_threshold!% |
-      cancel_grace_period!minutes    |
-      order_timeout!minutes |
-      allow_guest_checkout |
-      allow_gift_tickets |
-      allow_gift_subscriptions |
-      precheckout_popup  |
-      terms_of_sale  |       
-      checkout_notices |
-      ) |
+      = render_collection_of_options f, %w( |
+        accessibility_advisory_for_reserved_seating |
+        nearly_sold_out_threshold!%   |
+        limited_availability_threshold!% |
+        cancel_grace_period!minutes    |
+        order_timeout!minutes |
+        allow_guest_checkout |
+        allow_gift_tickets |
+        allow_gift_subscriptions |
+        precheckout_popup  |
+        terms_of_sale  |       
+        checkout_notices |
+        ) |
 
-  .container
-    %h1 Order Service Charges
-    .form-row
-      .col-md-4
-      .col-md-8= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary'
+  .card.my-1
+    .card-header.h3 Order Service Charges
+    .card-body
+      .form-row
+        .col-md-4.text-right= link_to 'Create/Edit Account Codes...', account_codes_path, :class => 'btn btn-primary', 'data-confirm' => t('options.leave_page_warning')
 
-    = render_collection_of_options f, %w( |
-      subscription_order_service_charge |
-      subscription_order_service_charge_description |
-      subscription_order_service_charge_account_code |
-      regular_order_service_charge |
-      regular_order_service_charge_description |
-      regular_order_service_charge_account_code |
-      classes_order_service_charge |
-      classes_order_service_charge_description |
-      classes_order_service_charge_account_code |
-      ) |
+      = render_collection_of_options f, %w( |
+        subscription_order_service_charge |
+        subscription_order_service_charge_description |
+        subscription_order_service_charge_account_code |
+        regular_order_service_charge |
+        regular_order_service_charge_description |
+        regular_order_service_charge_account_code |
+        classes_order_service_charge |
+        classes_order_service_charge_description |
+        classes_order_service_charge_account_code |
+        ) |
  
-  .container
-    %h1 Email Confirmation of Reservation Sent to Customer
-    = render_collection_of_options f, %w( |
-      general_confirmation_email_notes |
-      subscriber_confirmation_email_notes |
-      nonsubscriber_confirmation_email_notes |
-      subscription_purchase_email_notes |
-      ) |
-    
-  .container
-    %h1 Email Reports Sent to Box Office Manager
-    = render_collection_of_options f, %w( |
-      boxoffice_daemon_notify  | 
-      send_birthday_reminders!days  |
-      ) |
+  .card.my-1
+    .card-header.h3 Confirmation Emails
+    .card-body
+      .form-row
+        .col-md-4.text-right
+          %label.col-form-label HTML email template
+          = option_description_for 'html_email_template'
+        .col-md-8
+          = hidden_field_tag 'test_email_addr', current_user.email
+          = link_to 'Send Test Email...', '#', :id => 'send_test', :class => 'btn btn-primary align-baseline'
+          = link_to 'Download', download_email_template_options_path, :class => 'btn btn-primary align-baseline'
+          %label.btn.btn-primary.align-baseline{:for => 'html_email_template'} Replace with file...
+          = file_field_tag 'html_email_template', :accept => '.html', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#html_email_template')[0].files[0].name + ' <i>(click Update Settings below to upload)</i>')}
+          %label.col-form-label#filename (No file chosen)
 
-  .container.text-center#configOptions
-    %h1 Integrations
-    #integrationWarning.sr-only= t('options.integration_warning')
-    #enableMaintenanceWarning.sr-only= t('options.enable_maintenance_warning')
-    #disableMaintenanceWarning.sr-only= t('options.disable_maintenance_warning')
-    %p.text-danger.lead= t('options.change_basic_settings_warning')
-    %p
-      = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'
-      = link_to 'Test Integrations...', option_path(@o), :id => 'testIntegrations', :class => 'btn btn-primary'
-      = link_to 'Test USB Card Swipe...', swipe_test_path, :class => 'btn btn-primary'
+      = render_collection_of_options f, %w( |
+        general_confirmation_email_notes |
+        subscriber_confirmation_email_notes |
+        nonsubscriber_confirmation_email_notes |
+        subscription_purchase_email_notes |
+        ) |
 
-    = render_collection_of_options f, %w( |
-      stripe_key  encrypted_stripe_secret |
-      sendgrid_domain |
-      encrypted_mailchimp_key  mailchimp_default_list_name |
-      stylesheet_url |
-      staff_access_only ) |
+  .card.my-1#configOptions
+    .card-header
+      %h3 Integrations
+      #integrationWarning.sr-only= t('options.integration_warning')
+      #enableMaintenanceWarning.sr-only= t('options.enable_maintenance_warning')
+      #disableMaintenanceWarning.sr-only= t('options.disable_maintenance_warning')
+      %p.text-danger= t('options.change_basic_settings_warning')
+    .card-body
+      .form-row.my-2
+        .col-md-8.offset-4
+          = button_tag 'Allow Changes', :type => 'button', :id => 'allowChanges', :class => 'btn btn-danger'
+          = link_to 'Test USB Card Swipe...', swipe_test_options_path, :class => 'btn btn-primary'
 
-  .container
-    %h1 Save Your Changes
-    %p.text-center= submit_tag  "Update Settings", :class => 'btn btn-success'
+      = render_collection_of_options f, %w( |
+        stripe_key  encrypted_stripe_secret |
+        sendgrid_domain |
+        encrypted_mailchimp_key  mailchimp_default_list_name |
+        stylesheet_url |
+        staff_access_only ) |
+
+  .form-row.my-2
+    .col-md-2.offset-4= submit_tag  "Update Settings", :class => 'btn btn-success'

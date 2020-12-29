@@ -1,7 +1,6 @@
 - disabled = defined?(passive) && passive
-%fieldset.billing_info
-  %legend= local_assigns[:legend] || 'Address'
-  %p.text-center.bg-secondary.text-light  Fields <span class="strong">like this</span> are required.
+.billing_info
+  .h3= local_assigns[:legend] || 'Address'
   = fields_for customer, :namespace => (disabled ? 'gift' : '') do |f|
     .form-row
       .form-group.col-md-4

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe 'TodayTix parser' do
   before(:each) do
-    @dir = "spec/import_test_files/today_tix"
+    @dir = "#{TEST_FILES_DIR}/today_tix"
   end
   def parser_for(file)
     @import = TicketSalesImport.new(:vendor => "TodayTix", :raw_data => IO.read("#{@dir}/#{file}"))

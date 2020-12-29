@@ -1,26 +1,18 @@
-.container
-  %h1
-    Details for 
-    %span.font-italic= @show.name
+%h1
+  Details for 
+  %span.font-italic= @show.name
 
-  = render :partial => 'form'
+= render :partial => 'form'
 
-  %h2 Performances
+%h2 Performances
 
-  .row
-    = link_to 'Add Performances', new_show_showdate_path(@show), :class => 'btn btn-primary mx-2'
-    = link_to 'Add/Change Ticket Type(s) For Performance(s)', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary'
-  .row.bg-dark.text-light
-    .col-3 Date/time (click to edit show date details)
-    .col-3
-    .col-2 Max Sell<br/>(% of House)
-    .col-2 Seating
-  .row
-    .col-3
-      %a{:name => 'dummy'}
-      = link_to 'Expand All', '#dummy', :onclick => %Q{$('.flippy-div').show(); $('.flippy').html('&#x25BC'); false;}
-      &nbsp;&bull;&nbsp;
-      = link_to 'Collapse All', '#dummy', :onclick => %Q{$('.flippy-div').hide(); $('.flippy').html('&#x25BA'); false;}
+.row
+  .col-md-4
+    = button_tag 'Expand All', :onclick => %Q{$('.collapse').collapse('show')}, :class => 'btn btn-outline-primary'
+    = button_tag 'Collapse All', :onclick => %Q{$('.collapse').collapse('hide')}, :class => 'btn btn-outline-primary'
+  .col-md-3= link_to 'Add Performances...', new_show_showdate_path(@show), :class => 'btn btn-primary btn-block my-1'
+  .col-md-4= link_to 'Add/Change Ticket Redemptions...', new_valid_voucher_path(:show_id => @show.id), :class => 'btn btn-primary btn-block my-1'
 
+.accordion{:role => 'tablist', 'aria-multiselectable' => true}
   = render :partial => 'showdate', :collection => @showdates, :locals => {:is_boxoffice_manager => @is_boxoffice_manager}
 

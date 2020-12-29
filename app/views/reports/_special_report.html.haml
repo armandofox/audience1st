@@ -1,43 +1,48 @@
 = form_tag run_special_reports_path, :method => 'get', 'data-remote' => true, 'data-method' => :get, 'data-type' => 'script', :id => 'special_report' do
   = hidden_field_tag :authenticity_token, form_authenticity_token
-  %div.border.m-2.py-2{:id => name}
+  .border.m-2.p-2{:id => name}
     = hidden_field_tag 'report_name', name
     = render :partial => "reports/special/#{name}"
   #output_options.border.m-2.p-2= render :partial => 'output_options'
   .generate_report.border.m-2.p-2
-    %h3 What to do with the results
+    %h4 What to do with the results
+    .form-row
+      .col-md-3
+        = radio_button_tag 'what', 'download'
+        %label{:for => 'what_download'} Download to Excel
+        = popup_help_for 'download_to_excel'
+      .col-md-3
+        = radio_button_tag 'what', 'estimate'
+        %label{:for => 'what_estimate'} Estimate number of matches
+      .col-md-3
+        = radio_button_tag 'what', 'display', 1
+        %label{:for => 'what_display'} Display list on screen
+    .form-row
+      .col-md-6.h6 Format mailing address in:
+      .col-md-6.h6 Sort spreadsheet by:
+    .form-row
+      .col-md-6
+        = radio_button_tag 'output[multi_column_address]', 1, true
+        %label{:for => 'output_multi_column_address_1'} Four spreadsheet columns (street, city, state, zip)
+      .col-md-6
+        = radio_button_tag 'output[sort_by_zip]', 1, true
+        %label Zip, then last name
+    .form-row
+      .col-md-6
+        = radio_button_tag 'output[multi_column_address]', 0, false
+        %label{:for => 'output_multi_column_address_0'} One spreadsheet column (complete street address with zip)
+      .col-md-6
+        = radio_button_tag 'output[sort_by_zip]', 0, false
+        %label Last name, then zip
 
-    = radio_button_tag 'what', 'estimate'
-    %label.plain{:for => 'what_estimate'} Estimate number of matches
-    %br
-    = radio_button_tag 'what', 'display', 1
-    %label.plain{:for => 'what_display'} Display list on screen
-    %br
-    = radio_button_tag 'what', 'download'
-    %label.plain{:for => 'what_download'} Download to Excel
-    = popup_help_for 'download_to_excel'
-    %br
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    Format mailing address in:
-    = radio_button_tag 'output[multi_column_address]', 1, true
-    Four spreadsheet columns (street, city, state, zip)
-    = radio_button_tag 'output[multi_column_address]', 0, false
-    One spreadsheet column (complete street address with zip)
-    %br 
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    Sort spreadsheet by:
-    = radio_button_tag 'output[sort_by_zip]', 1, true
-    Zip, then last name
-    = radio_button_tag 'output[sort_by_zip]', 0, false
-    Last name, then zip
-    %br 
+    .form-row
     - if !@sublists.blank?
       = radio_button_tag 'what', 'add'
-      %label.plain{:for => 'what_add'} Add to existing mailing list:
+      %label{:for => 'what_add'} Add to existing mailing list:
       = select_tag 'sublist', options_for_select(@sublists)
       %br
       = radio_button_tag 'what', 'create'
-      %label.plain{:for => 'what_create'} Create new mailing list named:
+      %label{:for => 'what_create'} Create new mailing list named:
       = text_field_tag 'sublist_name', '', :size => 12, :maxlength => 20
       %br
     = submit_tag 'Run Report', 'data-disable-with' => 'Just a minute...', :class => 'btn btn-primary'

@@ -7,7 +7,7 @@ body.maintenance {
     border: 8px dashed yellow;
 }
 
-#content.plain {
+#content.a1-plain {
     background-color: white;
 }
 
@@ -42,22 +42,24 @@ input[type=number].a1-no-spinner::-webkit-outer-spin-button {
     background-color: inherit;
 }
 
+/* 'x' buttons for deleting things */
+.a1-x-icon {
+    color: red !important;
+    outline: none;
+    background-color: inherit;
+    box-shadow: none;
+    text-align: center;
+}
+
 .a1-table {
-/* General tabular styles */
-/* tables still need 'cellspacing="0"' in the markup */
     width: 100%;
     border-collapse: collapse;
-/*    font-size: 12pt;*/
     border-spacing: 0;
     border: 0;
     margin-bottom: 10px;
     margin-top: 4px;
 }
 
-/* easier to navigate if tabular rows hilited on hover */
-table.hilite tr:hover {
-    background-color: #fcfe69;
-}
 .a1-table thead {
     background-color: #EEE;
     color: black;
@@ -200,10 +202,28 @@ span#timer {
 *:first-child + html .pagination {
     overflow: hidden; }
 
-/* Flippy triangles */
-.flippy, .flippy:hover, .flippy:visited {
-    text-decoration: none;
+/* Flippy buttons toggle their text when collapse/expand */
+button.a1-flippy {
+    display: block;
+    width: 2em;
+    text-align: center;
+    background-color: none;
+    border: none;
 }
+button.a1-flippy.collapsed:before {
+    content: '\2335';
+  }
+button.a1-flippy:before {
+    content: '\2303';
+ }
+/* Make larger for mobile/small screens */
+@media screen and (max-width: 768px) {
+    .a1-flippy, .a1-purchase-link {
+        font-size: larger;
+    }
+}
+
+/* "purchase link" icon - larger for mobile */
 
 /* Inline form buttons */
 .inline {
@@ -266,69 +286,47 @@ tr.subscriber {
     padding: 0 2em;
 }
 
-span.checkin_button {
+span.a1-checkin-button {
     text-align: center;
     font-family: "Lucida Sans Typewriter", "Andale Mono", "Courier", "Courier New", fixed;
     margin: 0;
     padding: 2px;
 }
-span.checkin_button:hover, span.checked_in {
+span.a1-checkin-button:hover, span.a1-checked-in {
     background-color: yellow;
 }
-
-/*
- * Reports
- */
-
-/* output options for customer lists */
-
-#report_body ul	 {
-    list-style: disc;
-}
-
-#output_options p {
-    margin-left: 2ex;
-    margin: 4px;
-}
-
-#output_options p.fieldgroup {
-    padding-top: 4px;
-    padding-bottom: 4px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    font-weight: bold;
-    margin-left: 0;
-}
-
 
 /*
  * Door list
  */
 
-#door_list {
+#a1-doorlist {
     background-color: white;
+    padding: 1em;
 }
-#door_list table {
+#a1-doorlist table {
     width: 100%;
 }
-#door_list table, #door_list th, #door_list td {
+#a1-doorlist table, #a1-doorlist th, #a1-doorlist td {
     font-size: 1.5rem;
     border: 1px solid black;
     border-collapse: collapse;
 }
 
 /* Index letter column (style applies to TD) */
-#door_list .maincolumn {
+#a1-doorlist .maincolumn {
     border: none;
     background-color: white;
     font-size: large;
     font-weight: bold;
+    text-align: center;
+    width: 3em;
 }
-@media screen {  #door_list .maincolumn {  color: red;     } }
+@media screen {  #a1-doorlist .maincolumn {  color: red;     } }
 
 /* Subscribers are hilited on door list on screen, but bolded in print */
-@media screen {  #door_list .subscriber {  background-color: #9f9;  } }
-@media print  {  #door_list .subscriber {  font-style: italic;  } }
+@media screen {  #a1-doorlist .subscriber {  background-color: #9f9;  } }
+@media print  {  #a1-doorlist .subscriber {  font-style: italic;  } }
 
 /* Don't underline links in printed door list */
-@media print { #door_list a { text-decoration: none; color: black; } }
+@media print { #a1-doorlist a { text-decoration: none; color: black; } }

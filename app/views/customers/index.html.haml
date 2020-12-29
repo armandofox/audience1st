@@ -11,10 +11,8 @@
         = text_field_tag 'page', '', :size => 4
         = submit_tag 'Go', :class => 'btn btn-outline-primary btn-sm'
 
-%br/
-
 - unless @customers.empty?
-  .container.px-0
+  .container.px-0.mt-2
     = form_tag merge_customers_path, :method => :get, :class => 'form' do
       .row
         .col-md-3.text-right
@@ -29,7 +27,7 @@
       = hidden_field_tag 'action_name', action_name
       = hidden_field_tag 'customers_filter', @customers_filter
       = hidden_field_tag 'page', @page
-      %table.a1-table.hilite#customers
+      %table.a1-table.table.table-hover#customers
         %thead
           %tr
             %th= check_box_tag 'selectAll', 1, false, :onchange => '$(".selectForMerge").prop("checked", $(this).prop("checked"))'

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <!-- 
+       You can replace this with an HTML template to style your transactional emails.
+  -->
+  <head>
+    <!-- CSS styling must be inline using <style> tags, preferably inside <head> element -->
+  </head>
+  <body>
+    <!-- Links to publicly-serveable external images are OK. -->
+    <!-- Avoid scripts (inline or linked) -- you'll be seen as a malware purveyor. -->
+
+    <!-- Body MUST contain the following string exactly once: -->
+
+    <%= Mailer::BODY_TAG %>
+
+    <!-- It will be replaced with the email body, in a <div> with class "a1-email" -->
+
+    <hr>
+    
+    <!-- 
+         If your template doesn't contain contact info, include the following string
+         and it will be replaced by contact info inside a <div> with class "a1-email-footer"
+      -->
+      
+    <%= Mailer::FOOTER_TAG %>
+    
+  </body>
+</html>

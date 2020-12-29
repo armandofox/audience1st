@@ -226,8 +226,7 @@ en:
 
       Controls the order in which voucher types are displayed to customers
       (on self-purchase screen).  Lower numbers appear earlier in the list.
-      Numbers don't have to be consecutive, so you can add a vouchertype
-      later and position it between two existing vouchertypes.  In case of a
+      Numbers don't have to be consecutive.  In case of a
       tie, or if you don't specify, the vouchertype created earlier appears
       earlier in the list.
 
@@ -275,9 +274,9 @@ en:
 
     vouchertype_walkup_sale_allowed: >
 
-      If this box is checked, this ticket type will appear on the Walk-up
-      Sales screen.  Leave unchecked for any ticket types that require
-      advance purchase.
+      Whether this ticket type will appear on the Walk-up
+      Sales screen, as opposed to ticket types that can be purchased
+      only in advance.
 
     vouchertype_changeable: >
 

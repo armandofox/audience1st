@@ -1,40 +1,38 @@
 = themed
 
-.container
+%h1.text-center Thank You for Your Purchase!
 
-  %h1.text-center Thank You for Your Purchase!
+.notice
+  %p 
+    You have paid a total of 
+    %span.strong= number_to_currency @gOrderInProgress.total_price
+    - if @gOrderInProgress.total_price > 0 
+      by 
+      %span.strong= humanize(@gOrderInProgress.purchase_medium)
+    for order number
+    %span.strong= @gOrderInProgress.id
 
-  .notice
-    %p 
-      You have paid a total of 
-      %span.strong= number_to_currency @gOrderInProgress.total_price
-      - if @gOrderInProgress.total_price > 0 
-        by 
-        %span.strong= humanize(@gOrderInProgress.purchase_medium)
-      for order number
-      %span.strong= @gOrderInProgress.id
+  - if @gOrderInProgress.gift?
+    #gift
+      %fieldset#gift_recipient
+        %legend This order is a gift for:
+        %label= @recipient.full_name
+        %br
+      %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
 
-    - if @gOrderInProgress.gift?
-      #gift
-        %fieldset#gift_recipient
-          %legend This order is a gift for:
-          %label= @recipient.full_name
-          %br
-        %p.alert.alert-warning Note: Recipient has NOT been notified of this gift.
+  = render :partial => 'cart'
 
-    = render :partial => 'cart'
+  = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
 
-    = sanitize_option_text(:checkout_notices, 'div', :id => 'checkout_notices')
+- if @gOrderInProgress.includes_streaming?
+  .alert.alert-success
+    %h4.alert-heading Streaming Access Instructions
+    %p.mb-0= @gOrderInProgress.streaming_access_instructions
 
-  - if @gOrderInProgress.includes_streaming?
-    .alert.alert-success
-      %h4.alert-heading Streaming Access Instructions
-      %p.mb-0= @gOrderInProgress.streaming_access_instructions
-
-  .text-center.pt-2
-    - if @gAdminDisplay
-      = link_to 'Back to Customer List', customers_path, :class => 'btn btn-primary'
-      = link_to 'Back to This Customer', customer_path(@gOrderInProgress.customer), :class => 'btn btn-primary'
-    - else
-      - unless @guest_checkout
-        = link_to 'Back to My Tickets', customer_path(@gOrderInProgress.purchaser), :class => 'btn btn-primary'
+.text-center.pt-2
+  - if @gAdminDisplay
+    = link_to 'Back to Customer List', customers_path, :class => 'btn btn-primary'
+    = link_to 'Back to This Customer', customer_path(@gOrderInProgress.customer), :class => 'btn btn-primary'
+  - else
+    - unless @guest_checkout
+      = link_to 'Back to My Tickets', customer_path(@gOrderInProgress.purchaser), :class => 'btn btn-primary'

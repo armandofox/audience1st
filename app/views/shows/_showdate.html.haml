@@ -1,29 +1,23 @@
-.row.text-white.bg-warning[showdate, :details_row]
-  .col-3
-    %a.flippy[showdate, :flippy]{:href => '#'} &#x25BA;
-    - pfx = if showdate.stream_anytime? then 'Until ' else '' end
-    = link_to "#{pfx}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate), :class => 'text-bold'
+.row.bg-light.no-gutters
+  .col-1
+    %button.a1-flippy.collapsed{:href => "#details_showdate_#{showdate.id}", 'data-toggle' => 'collapse'}
+  .col-md-4.col-10
+    = link_to "#{'Until ' if showdate.stream_anytime?}#{showdate.printable_date}", edit_show_showdate_path(showdate.show, showdate)
     = purchase_link_popup link_icon, link_to_showdate_tickets(showdate), showdate.printable_name
-  .col-3
-  .col-2
+  .col-md-3
+    Max sales:
     = showdate.max_advance_sales
-    - unless showdate.stream?
-      - p = showdate.percent_max_advance_sales
-      %span{:class => ('callout' if p > 100)}= "(#{number_to_percentage p, :precision => 0})"
-  .col-2=  showdate.seating_type_and_capacity
-  .col-2
-    - if showdate.total_sales.size.zero?
-      = form_tag show_showdate_path(showdate.show, showdate), :method => :delete, :class => 'form-inline' do |f|
-        = submit_tag 'Delete Performance', :class => 'btn btn-sm btn-outline-danger d-inline', :id => "delete_showdate_#{showdate.id}", :confirm => t('season_setup.confirm_delete_performance')
+    = percent_max_advance_sales_if_not_streaming(showdate)
+  .col-md-3= showdate.seating_type_and_capacity
+  .col-md-1= button_to_delete_performance(showdate)
 
 - unless showdate.valid_vouchers.empty?
-  %div.flippy-div[showdate, :details]
-    .row.bg-light.text-dark.border.border-top
+  .collapse[showdate, :details]
+    .row.bg-light.text-dark.border.border-bottom.no-gutters
       .col-3 Ticket Type
       .col-3 Sales start
       .col-3 Sales end
-      .col-1 Sold
-      .col-2 Max
+      .col-2 Sold/Max
     - showdate.valid_vouchers.sorted.each do |v|
       .row[v]
         - nsales = showdate.sales_by_type(v.vouchertype_id)
@@ -32,8 +26,7 @@
           = "(#{h(v.promo_code)})" unless v.promo_code.blank?
         .col-3= time_in_words_relative_to(v.start_sales,showdate.thedate)
         .col-3= showdate_time_limit_for(v, :end_sales)
-        .col-1= nsales
-        .col-2
-          = humanize_sales_limit(v.max_sales_for_type)
+        .col-3
+          #{nsales}/#{humanize_sales_limit(v.max_sales_for_type)}
           - if nsales.zero?
-            = link_to '&#x2716;'.html_safe, valid_voucher_path(v), 'data-remote' => true, 'data-method' => :delete, 'data-type' => 'script', :class => 'text-danger'
+            = link_to '&#x2716;'.html_safe, valid_voucher_path(v), 'data-remote' => true, 'data-method' => :delete, 'data-confirm' => t('season_setup.confirm_delete_redemption', :type => v.vouchertype.name), 'data-type' => 'script', :class => 'text-danger'

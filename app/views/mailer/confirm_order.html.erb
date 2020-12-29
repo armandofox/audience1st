@@ -1,0 +1,45 @@
+<div class="a1-confirm-order">
+  <p>Dear <%= greet(@order.purchaser) %>,</p>
+
+  <p>Thank you for your order from <%= @venue %>!</p>
+
+  <p>Please check this information carefully:</p>
+
+  <hr/>
+
+  <h2>Order Summary</h2>
+
+  <pre>
+    <%= @order.summary("\n\n") %>
+  </pre>
+
+  <hr>
+
+  <p>PAYMENT AMOUNT: <%= number_to_currency(@order.total_price) %></p>
+
+  <p>PAYMENT METHOD: <%= Purchasemethod.get(@order.purchasemethod).description %></p>
+
+  <hr>
+
+  <%= word_wrap(@notes, :line_width => 60) unless @notes.blank? -%>
+
+  <%= word_wrap(strip_tags( sanitize_option_text(:general_confirmation_email_notes, 'p', :spanify=> false)), :line_width => 60) -%>
+
+  <%= word_wrap(strip_tags(sanitize_option_text((@order.purchaser.subscriber? ? :subscriber_confirmation_email_notes :  :nonsubscriber_confirmation_email_notes), 'p', :spanify => false)), :line_width => 60) -%>
+
+  <% if @order.gift? -%>
+  <p>
+    This order is a <strong>gift</strong> for the following recipient.
+    <strong>NOTE:</strong> The recipient <i>has not been notified</i> of your gift!
+  </p>
+
+  <p>
+    <%  r = @order.customer -%>
+    <%= r.full_name %> <br/>
+    <%= r.street %> <br/>
+    <%= r.city -%>, <%= r.state -%>  <%= r.zip %> <br/>
+    <%= [r.day_phone,r.eve_phone,r.email].compact.join(' - ') %> <br/>
+  </p>
+
+  <% end -%>
+</div>

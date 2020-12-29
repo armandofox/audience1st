@@ -1,0 +1,23 @@
+<div class="a1-confirm-reservation">
+  <p>Dear <%= greet(@customer) -%>,</p>
+
+  <p>We're confirming your reservation for the following performance  at <%= @venue -%>:</p>
+
+  <p><%= @showdate.printable_name %></p>
+
+  <%- if @showdate.in_theater? %>
+  <p>Seats: <%= @seats %></p>
+  <%- else %>
+  <p><%= @showdate.access_instructions %></p>
+  <% end %>
+
+  <p> <%= @notes %> </p>
+
+  <p class="general-confirmation-email-notes">
+    <%= Option.general_confirmation_email_notes %>
+  </p>
+
+  <p class="subscriber-confirmation-email-notes">
+    <%= @customer.subscriber? ? Option.subscriber_confirmation_email_notes : Option.nonsubscriber_confirmation_email_notes %>
+  </p>
+</div>

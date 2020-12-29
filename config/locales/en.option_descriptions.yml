@@ -126,11 +126,11 @@ en:
       appended to the URL.  If blank, the standard Audience1st donation
       thank-you page will appear.
 
-    boxoffice_daemon_notify: >
+    box_office_email: >
 
-      Whenever the box office does automatic background processing, such as
-      when a third-party ticket list is received and parsed, an email report
-      will be sent to this address.  If blank, no reports will be emailed.
+      Email address for box office inquiries.  Used as the reply address for transactional
+      emails, and as the address where email is sent whenever Audience1st
+      imports third-party ticket information.
 
     help_email: >
 
@@ -146,10 +146,9 @@ en:
       showing all birthdays starting 10 days from now until 10 days after
       that.  In other words, the email sent on January 10 would show
       birthdays from January 20 to January 30, the email sent on January 20 would show
-      birthdays from January 30 to February 10, and so on.  The email is not
-      sent to the customer, but to the same email address as Box Office
-      Daemon Notify, above.  A value of 0 will suppress birthday
-      notification emails completely.
+      birthdays from January 30 to February 9, and so on.  The email is not
+      sent to the customer, but to the Box Office Email address above.
+      A value of 0 will suppress birthday notification emails completely.
 
     order_timeout: >
       
@@ -389,6 +388,13 @@ en:
 
       Set to Yes to temporarily place Audience1st in "maintenance mode" in
       which only staff are able to login.
+
+    html_email_template: >
+
+      An HTML template that will be used for confirmation-transaction emails.
+      It must be a complete and well-formed HTML5 document, including a DOCTYPE declaration,
+      and all CSS styles must be inline.  See the Audience1st documentation
+      for details on template construction.
 
     subscriber_confirmation_email_notes: >
 

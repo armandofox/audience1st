@@ -1,0 +1,37 @@
+<div class="a1-confirm-account-change">
+  <p>Dear <%= greet(@customer) -%>,</p>
+
+  <p>Hello from the online box office at <%= @venue -%>!</p>
+
+  <p>
+    You're receiving this message because you, or someone on your behalf,
+    <%= @whathappened %>.
+  </p>
+
+  <p>
+    Your account login name is your email:   <%= @customer.email %>
+  </p>
+
+  <% unless @token_link.blank? -%>
+  <p>
+    <a href="<%= @token_link %>">Click here to reset your password.</a>
+  </p>
+  <% end %>
+
+  <% unless (question = secret_question_text(@customer.secret_question)).blank? -%>
+  <p>
+    The secret question you chose is:<br/>
+    "<%= question %>"
+  </p>
+
+  <p>The answer you provided is:<br/>
+    "<%= @customer.secret_answer %>"
+  </p>
+
+  <p>
+    If you ever forget your password, click the Reset My Password
+    link on our login screen and verify the answer to the above
+    question.
+  </p>
+  <% end %>
+</div>

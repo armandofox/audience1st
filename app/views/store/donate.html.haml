@@ -22,7 +22,7 @@
   } 
 
 
-#store.container
+#store
   #quick_donation
     %h1.text-center= sanitize(Option.quick_donation_banner)
     %p.text-center.lead-= sanitize(Option.quick_donation_explanation)
@@ -51,5 +51,4 @@
       -# hidden field necessary for Stripe submit handler to fill in
       = hidden_field_tag 'commit', '', :name => 'commit', :id => '_stripe_commit'
       .row.py-3
-        .col-md-8
-        .col-md-4= submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block'
+        .col-md-4.offset-md-8= submit_tag 'Charge Donation to Credit Card', :id => '_stripe_submit', :class => 'btn btn-success btn-block'

@@ -1,42 +1,45 @@
-#adminPrefs.admin.container
-  .row
-    .col-md-6
-      %label{:for => :customer_last_login} Last login
-      %span= last_login_for @customer
+#adminPrefs.admin
+  .form-row
+    .col-md-2.text-right
+      %label.col-form-label Last login
+    .col-md-3= text_field_tag 'last_login', last_login_for(@customer), :disabled => 'disabled', :class => 'form-control'
     .col-md-6
       - if (imp = @customer.ticket_sales_import)
         Created by
         = link_to "#{imp.vendor} import on #{imp.updated_at.to_formatted_s(:month_day_year)}", edit_ticket_sales_import_path(imp)
 
   - if @superadmin
-    %p
-      %label{:for=>:customer_role} Role
-      =select('customer', 'role',  roles_with_names, {:selected => @customer.role_name })
-      %br/ 
+    .form-row
+      .col-md-2.text-right
+        %label.col-form-label{:for=>:customer_role} Role
+      .col-md-3
+        = select('customer', 'role',  roles_with_names, {:selected => @customer.role_name }, {:class => 'form-control'})
 
-  = link_to 'Create/Edit Labels&hellip;'.html_safe, labels_path(:return_to => request.path), :class => 'btn btn-sm btn-primary'
-  = popup_help_for 'customer_labels'
-
-  #customer_labels
-    #current_labels
-      - labels = Label.all
-      - labels.each_with_index do |l, idx|
-        - if idx % 4 == 0
-          <div id="row">
-        .col-3.form-check.form-check-inline
-          .form-check-input= check_box_tag("label[#{l.id}]", 1, @customer.labels.include?(l))
-          %label.form-check-label{:for => "label_#{l.id}"}= l.name
-        - if idx % 4 == 3
+  .card
+    .card-header
+      = link_to 'Create/Edit Labels&hellip;'.html_safe, labels_path(:return_to => request.path), :class => 'btn btn-primary'
+      = popup_help_for 'customer_labels'
+    .card-body#customer_labels
+      #current_labels
+        - labels = Label.all
+        - labels.each_with_index do |l, idx|
+          - if idx % 4 == 0
+            <div id="row">
+          .col-3.form-check.form-check-inline
+            .form-check-input= check_box_tag("label[#{l.id}]", 1, @customer.labels.include?(l))
+            %label.form-check-label{:for => "label_#{l.id}"}= l.name
+          - if idx % 4 == 3
+            </div>
+        - if labels.size % 4 != 0
           </div>
-      - if labels.size % 4 != 0
-        </div>
 
 
   .form-group
     %label{:for=>:customer_comments} Staff Comments (not seen by customer):
     = text_area :customer, :comments, :class => 'form-control'
 
-  .form-check.form-check-inline
-    .form-check-input= check_box_tag 'dont_send_email', '1', true
-    %label.form-check-label{:for=>:dont_send_email} 
-      DO NOT email customer a confirmation of these changes
+  .form-group
+    .form-check.form-check-inline
+      .form-check-input= check_box_tag 'dont_send_email', '1', true
+      %label.form-check-label{:for=>:dont_send_email} 
+        DO NOT email customer a confirmation of these changes

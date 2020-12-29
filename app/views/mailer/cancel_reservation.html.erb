@@ -1,0 +1,12 @@
+<div class="a1-cancel-reservation">
+  <p>Dear <%= greet(@customer) -%>,</p>
+
+  <p>Hello from the online box office at <%= @venue -%>!</p>
+
+  <p>This email confirms that you, or a box office agent acting on your behalf,
+    has CANCELLED the following reservation:</p>
+
+  <p>CANCELLED: <%= @showdate.printable_name %></p>
+
+  <p>Seats released: <%= @seats %></p>
+</div>
