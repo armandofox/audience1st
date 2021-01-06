@@ -1,9 +1,5 @@
 module VouchersHelper
 
-  def errors_for_voucherlist_as_html(vouchers)
-    vouchers.to_a.select { |item| !item.errors.empty? }.map { |item| item.errors.as_html }.join(', ')
-  end
-
   def vouchers_sorted_by_seat(list)
     list.sort_by(&:seat).map do |v|
       if v.customer             # customer may be undetermined for non-finalized vouchers
