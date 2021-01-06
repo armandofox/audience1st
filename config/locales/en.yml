@@ -224,6 +224,8 @@ en:
         and contact a box office agent if you need assistance.
       reservation_failed: >
         Your reservations could not be completed: %{message}
+      not_your_voucher: >
+        That voucher isn't yours.
         
     confirm_cancellation: >
       Are you sure? Click OK to continue with cancelling this reservation, or Cancel to leave things as they are.

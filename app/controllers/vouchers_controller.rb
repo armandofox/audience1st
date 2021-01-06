@@ -7,17 +7,20 @@ class VouchersController < ApplicationController
   
   ERR = 'reservations.errors.'  # prefix string for reservation error msgs in en.yml
 
-  include VouchersHelper
-  include SeatmapsHelper
-
   private
 
   def owns_voucher_or_is_boxoffice
     @voucher = Voucher.find(params[:id]) if params[:id]
     @customer = Customer.find params[:customer_id]
     return if current_user.is_boxoffice
-    redirect_to(customer_path(current_user), :alert => "That voucher isn't yours.") unless
+    redirect_to(customer_path(current_user), :alert => t("#{ERR}not_your_voucher")) unless
       (current_user == @customer  && (@voucher.nil? || @voucher.customer == @customer))
+  end
+
+  def errors_for_voucherlist_as_html(vouchers)
+    vouchers.to_a.select { |item| !item.errors.empty? }.
+      map { |item| item.errors.as_html }.
+      join(', ')
   end
 
   public
@@ -49,7 +52,7 @@ class VouchersController < ApplicationController
 
   def create
     # post: add the actual comps, and possibly reserve
-    comp_order = params[:comp_order].merge({:seats => seats_from_params(params),
+    comp_order = params[:comp_order].merge({:seats => view_context.seats_from_params(params),
         :processed_by => current_user, :customer => @customer})
 
     add_comps_order = CompOrder.new(comp_order)
