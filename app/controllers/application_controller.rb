@@ -13,6 +13,8 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
   before_action :maintenance_mode?
+  before_action :maybe_run_sweepers  # periodically sweep stale orders
+  before_action :set_globals  # set current_user, among other things
 
   private
 
@@ -50,16 +52,9 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  # periodically sweep stale orders.  Check is made before every action but only actually
-  # does anything every couple of minutes.
-  before_action :maybe_run_sweepers
-
   def maybe_run_sweepers
     StaleOrderSweeper.sweep! if Option.last_sweep < 5.minutes.ago
   end
-
-  # set_globals tries to set globals based on current_user, among other things.
-  before_action :set_globals
 
   def set_globals
     @gOrderInProgress = find_cart
@@ -82,18 +77,6 @@ class ApplicationController < ActionController::Base
     set_order_in_progress(nil)
     session.delete(:return_to)
     true
-  end
-
-  # a generic filter that can be used by any RESTful controller that checks
-  # there's at least one instance of the model in the DB
-
-  def has_at_least_one
-    contr = self.controller_name
-    klass = Kernel.const_get(contr.singularize.camelize)
-    unless klass.count > 0
-      flash[:alert] = "You have not set up any #{contr} yet."
-      redirect_to :action => 'new'
-    end
   end
 
   def set_order_in_progress(order)

@@ -28,7 +28,6 @@ class VouchersController < ApplicationController
       where(:vouchertype_id => params[:vouchertype_id]).
       includes(:showdate => :show).
       order('showdates.thedate')
-    # Vouchertype.find(params[:vouchertype_id]).valid_vouchers.sort_by(&:showdate)
     render :partial => 'reserve_comps_for'
   end
 

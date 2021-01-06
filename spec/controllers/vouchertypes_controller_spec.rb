@@ -3,7 +3,6 @@ require 'rails_helper'
 describe VouchertypesController do
   before(:each) do
     login_as_boxoffice_manager
-    @vtype = create(:revenue_vouchertype)
   end
   describe "default season" do
     it "is remembered  after #index" do
@@ -28,6 +27,9 @@ describe VouchertypesController do
     end
   end
   describe "destroying" do
+    before(:each) do
+      @vtype = create(:revenue_vouchertype)
+    end
     it "should fail if vouchertype has any associated vouchers" do
       create(:revenue_voucher, :vouchertype => @vtype)
       delete :destroy, :id => @vtype.id

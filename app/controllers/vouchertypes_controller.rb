@@ -1,9 +1,7 @@
 class VouchertypesController < ApplicationController
 
   before_action :is_boxoffice_manager_filter
-  before_action :has_at_least_one, :except => [:new, :create]
   before_action :load_vouchertype, :only => [:clone, :edit, :update, :destroy]
-
   after_action :remember_vouchertype_season!, :except => :index
 
   private
@@ -32,9 +30,6 @@ class VouchertypesController < ApplicationController
       where(:season => @season).
       includes(:account_code).
       order(:display_order,:category,:created_at)
-    if @vouchertypes.empty?
-      flash[:alert] = "No vouchertypes matched your criteria."
-    end
   end
 
   def new

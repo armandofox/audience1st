@@ -139,6 +139,8 @@ en:
     errors:
       no_performances_exist: >
         You must add some performances before you can add or change ticket types for performances.
+      no_vouchertypes_exist: >
+        No matching voucher types found for the %{season} season yet. 
 
     vouchers_already_issued: >
       %{num} vouchers of this voucher type have already been issued.  Any changes you make

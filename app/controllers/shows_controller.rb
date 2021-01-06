@@ -1,7 +1,6 @@
 class ShowsController < ApplicationController
 
   before_filter :is_boxoffice_manager_filter
-  before_filter :has_at_least_one, :except => [:new, :create]
 
   include VouchertypesHelper    # for season formatting
   
