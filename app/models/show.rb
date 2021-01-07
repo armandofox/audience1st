@@ -27,11 +27,13 @@ class Show < ActiveRecord::Base
   }
 
   def opening_date
-    showdates.empty? ? listing_date : showdates.order('thedate').first.thedate.to_date
+    first_showdate = showdates.order('thedate').first
+    first_showdate ? first_showdate.thedate.to_date : listing_date
   end
 
   def closing_date
-    showdates.empty? ? listing_date : showdates.order('thedate DESC').first.thedate.to_date
+    last_showdate = showdates.reorder('thedate' => :desc).first
+    last_showdate ? last_showdate.thedate.to_date : listing_date
   end
 
   def upcoming_showdates
