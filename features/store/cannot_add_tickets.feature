@@ -1,4 +1,3 @@
-@time
 Feature: Cannot add tickets
 
   As a box office manager
@@ -9,18 +8,17 @@ Background: show with 3 tickets available
 
   Given I am logged in as customer "Tom Foolery"
 
-Scenario: Cannot buy tickets that aren't on sale yet
+  Scenario: Cannot buy tickets that aren't on sale yet
 
-  Given today is May 1, 2010
-  And a show "The Nerd" with the following tickets available:
+  Given a show "The Nerd" with the following tickets available:
   | qty | type    | price  | showdate                |
   |   3 | General | $15.00 | October 1, 2010, 7:00pm |
+  And today is December 1, 2009
   When I go to the store page
   Then I should see "Tickets of this type not on sale until" within "#voucher_menus"
 
 Scenario: Cannot buy tickets to sold-out performance
 
-  Given today is September 30, 2010
   And a performance of "The Nerd" on October 1, 2010, 7:00pm
   And the "Oct 1, 2010, 7:00pm" performance has reached its max sales
   When I go to the store page
@@ -28,7 +26,6 @@ Scenario: Cannot buy tickets to sold-out performance
 
 Scenario: Cannot buy past max sales
 
-  Given today is September 30, 2010
   Given a show "The Nerd" with the following tickets available:
     | qty | type    | price  | showdate                |
     |   3 | General | $15.00 | October 1, 2010, 7:00pm |
@@ -37,7 +34,6 @@ Scenario: Cannot buy past max sales
 
 Scenario: Cannot buy past max sales even if combining ticket types
   
-  Given today is September 30, 2010
   And a show "The Nerd" with the following tickets available:
     | qty | type    | price  | showdate                |
     |   1 | General | $15.00 | October 1, 2010, 7:00pm |
