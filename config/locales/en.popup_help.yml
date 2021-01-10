@@ -108,6 +108,10 @@ en:
 
     # Editing shows and showdates
 
+    show_season: >
+
+      Which season the show is in.  Cannot be changed once the show is created.
+
     show_listing_date: >
 
       The date the show will first appear on any customer-facing screens.

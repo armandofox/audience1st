@@ -36,14 +36,6 @@ Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
   end
 end
 
-When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,list|
-  fill_in "Show Name", :with => name
-  select_date_from_dropdowns(eval(opens), :from => "Opens")
-  select_date_from_dropdowns(eval(closes), :from => "Closes")
-  select_date_from_dropdowns(eval(list), :from => "List starting")
-
-end
-
 Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
   time = Time.zone.parse(time)
   name ||= "New Show"
@@ -53,7 +45,7 @@ end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|
   dates = dates.split(/\s*,\s*/).map {  |dt| Time.zone.parse(dt) }
-  @show = create(:show, :name => name)
+  @show = create(:show, :name => name, :season => dates.first.year)
   @showdates = dates.each { |d|  create(:showdate, :show => @show, :thedate => d) }
 end
 

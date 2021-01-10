@@ -28,7 +28,7 @@ class Show < ActiveRecord::Base
     order('listing_date')
   }
 
-  scope :for_seasons, ->(from,to) {  where(:season => [from,to]) }
+  scope :for_seasons, ->(from,to) {  where(:season => from..to) }
   
   def opening_date
     first_showdate = showdates.order('thedate').first

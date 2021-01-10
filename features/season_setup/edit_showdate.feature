@@ -7,7 +7,7 @@ Feature: boxoffice manager can edit showdate details
 Background:
 
   Given I am logged in as boxoffice manager
-  And a performance of "Hamlet" on May 1, 2011, 8:00pm
+  And a performance of "Hamlet" on May 1, 2010, 8:00pm
   And I am on the edit showdate page for that performance
 
 Scenario: limit max sales
