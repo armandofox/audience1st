@@ -4,7 +4,7 @@
 
 - @vouchers_by_season.each_pair do |season,subscriber_vouchers|
 
-  %h1.text-center #{@customer.full_name}'s #{@package_type} Reservations (#{humanize_season(season)})
+  %h1.text-center #{@customer.full_name}'s #{@package_type} Reservations (#{Option.humanize_season(season)})
   .row.text-light.bg-dark
     .col-1.text-center #Tix
     .col-3.text-center Show

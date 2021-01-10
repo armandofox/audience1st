@@ -31,6 +31,7 @@ class Showdate < ActiveRecord::Base
   validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?
   validates_associated :show
   validates :thedate, :presence => true, :uniqueness => {:scope => :show_id, :message => "is already a performance for this show"}
+  validate :date_must_be_within_season, :on => :create
 
   validates :description, :length => {:maximum => 255}, :allow_blank => true
   validates :access_instructions, :presence => true, :if => :stream?
@@ -65,6 +66,16 @@ class Showdate < ActiveRecord::Base
 
   #  validations
 
+  def date_must_be_within_season
+    season = show.season
+    from,to = Time.at_beginning_of_season(season),Time.at_end_of_season(season)
+    unless thedate.between?(from,to)
+      errors.add(:base, I18n.translate('showdates.errors.date_outside_season',
+                                       :season => Option.humanize_season(season),
+                                       :from => from.to_formatted_s(:month_day_year),                                       :to => to.to_formatted_s(:month_day_year)))
+    end
+  end
+  
   def at_most_one_stream_anytime_performance
     return unless stream_anytime?
     showdates = show.reload.showdates

@@ -9,6 +9,8 @@ class Show < ActiveRecord::Base
   has_many :imports
   
   validates_presence_of :listing_date
+  validates_presence_of :season
+  validates :season, :presence => true, :numericality => {:greater_than_or_equal_to => 1900}
   validates_inclusion_of :event_type, :in => Show::TYPES
   validates_length_of :name,                   :within => 1..255
   validates_length_of :description,            :maximum => 255
@@ -17,7 +19,7 @@ class Show < ActiveRecord::Base
   validates_length_of :patron_notes,           :maximum => 255
 
   attr_accessible :name, :patron_notes, :landing_page_url
-  attr_accessible :listing_date, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
+  attr_accessible :listing_date, :season, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
 
   scope :current_and_future, -> {
     joins(:showdates).
@@ -26,6 +28,8 @@ class Show < ActiveRecord::Base
     order('listing_date')
   }
 
+  scope :for_seasons, ->(from,to) {  where(:season => [from,to]) }
+  
   def opening_date
     first_showdate = showdates.order('thedate').first
     first_showdate ? first_showdate.thedate.to_date : listing_date
@@ -56,11 +60,6 @@ class Show < ActiveRecord::Base
     where('event_type = ?', self.type(type))
   }
   
-  def season
-    # latest season that contains opening date
-    self.opening_date.at_beginning_of_season.year
-  end
-
   def special? ; event_type != 'Regular Show' ; end
   def special ; special? ; end
 

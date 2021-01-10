@@ -33,6 +33,7 @@ FactoryBot.define do
     end
     sequence(:name) { |n| "Show #{n}" }
     listing_date { Time.current }
+    season { Time.this_season }
   end
 
   factory :seatmap do
