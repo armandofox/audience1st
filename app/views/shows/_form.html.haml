@@ -3,11 +3,11 @@
     .col-md-4.form-group
       %label.col-form-label{:for=>:show_name} Show Name
       = f.text_field 'name', :class => 'form-control'
-    .col-md-4.form-group
+    .col-md-2.form-group
       = popup_help_for :show_season
       %label.col-form-label{:for=>:show_season} Season
       - if @show.new_record?
-        .form-inline= select_tag 'show_season', options_for_seasons(Time.this_season, Time.this_season + 3), :class => 'form-control'
+        .form-inline= select_tag 'show_season', options_for_seasons([Time.this_season,@show.season].min, Time.this_season + 3, @show.season), :class => 'form-control'
       - else
         = text_field_tag 'show_season', Option.humanize_season(@show.season), :disabled => true, :class => 'form-control a1-passive-text-input'
     .col-md-4.form-group    
