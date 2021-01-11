@@ -76,6 +76,8 @@ class VouchertypesController < ApplicationController
   end
 
   def update
+    # :rails5: this can be simplified since Rails 5.1+ allows :included_vouchers => {} to
+    #  pass through ANY keys in that hash
     included_voucher_keys = params[:vouchertype][:included_vouchers] ? params[:vouchertype][:included_vouchers].keys : []
     vouchertype_update_params =
       params.require(:vouchertype).
