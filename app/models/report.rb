@@ -1,5 +1,4 @@
 class Report
-  include FilenameUtils
   require 'csv'
 
   attr_accessor :output_options, :filename, :query
@@ -19,7 +18,7 @@ class Report
     @errors = nil
     @output = ''
     @output_options = output_options
-    @filename = filename_from_object(self)
+    @filename = "report-#{Time.current.to_formatted_s(:filename).csv"
     @relation = nil   # generic empty chainable relation
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
@@ -68,7 +67,6 @@ class Report
         Rails.logger.error add_error("Error in create_csv: #{e.message}")
       end
     end
-    @filename = filename_from_object(self)
   end
 
   def add_error(itm)

@@ -9,7 +9,6 @@ class ApplicationController < ActionController::Base
   end
 
   include AuthenticatedSystem
-  include FilenameUtils
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
   before_action :maintenance_mode?

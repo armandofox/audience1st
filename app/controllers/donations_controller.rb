@@ -48,7 +48,7 @@ class DonationsController < ApplicationController
     @params = params
 
     if params[:commit] =~ /download/i
-      send_data @donations.to_csv,  :type => 'text/csv', :filename => filename_from_dates('donations',mindate,maxdate,'csv')
+      send_data @donations.to_csv,  :type => 'text/csv', :filename => 'donations_report.csv'
     else
       @donations = @donations.paginate(:page => @page)
       @header << "#{@donations.total_entries} transactions, " <<
