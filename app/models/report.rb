@@ -18,7 +18,7 @@ class Report
     @errors = nil
     @output = ''
     @output_options = output_options
-    @filename = "report-#{Time.current.to_formatted_s(:filename).csv"
+    @filename = "report-#{Time.current.to_formatted_s(:filename)}.csv"
     @relation = nil   # generic empty chainable relation
     (@view_params ||= {})[:name] ||= self.class.to_s.humanize
   end
