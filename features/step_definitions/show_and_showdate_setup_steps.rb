@@ -70,11 +70,19 @@ end
 Then /the ("(.*)" )?showdate should have the following attributes:/ do |thedate,tbl|
   if (thedate)
     @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  else
+    expect(@showdate).to be_a_kind_of Showdate
   end
-  expect(@showdate).to be_a_kind_of Showdate
   @showdate.reload
   tbl.hashes.each do |attr|
-    expect(@showdate.send(attr['attribute']).to_s).to eq(attr['value'].to_s)
+    val = attr['value']
+    expected_val =
+      if val =~ /^\d{4}-\d\d-\d\d$/ then Date.parse val
+      elsif val =~ /^\d{4}-\d\d-\d\d\b/ then Time.zone.parse val
+      elsif val =~ /^[0-9.]+$/ then val.to_f
+      else val
+      end
+    expect(@showdate.send(attr['attribute'])).to eq(expected_val)
   end
 end
 

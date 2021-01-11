@@ -31,7 +31,7 @@ class Showdate < ActiveRecord::Base
   validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?
   validates_associated :show
   validates :thedate, :presence => true, :uniqueness => {:scope => :show_id, :message => "is already a performance for this show"}
-  validate :date_must_be_within_season, :on => :create
+  validate :date_must_be_within_season
 
   validates :description, :length => {:maximum => 255}, :allow_blank => true
   validates :access_instructions, :presence => true, :if => :stream?

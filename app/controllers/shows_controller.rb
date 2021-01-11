@@ -26,7 +26,7 @@ class ShowsController < ApplicationController
     @show = Show.new(params[:show])
     if @show.save
       redirect_to edit_show_path(@show),
-      :notice =>  'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
+      :notice =>  'Show was successfully created. Click "Add Performances" below to start adding show dates.'
     else
       flash[:alert] = "There were errors creating the show: #{@show.errors.as_html}"
       render :action => 'new'
