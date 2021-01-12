@@ -14,15 +14,14 @@
       %th
   %tbody
     - @shows.each do |show|
+      - num_perfs = show.showdates.size
       %tr
         %td= link_to show.name, edit_show_path(show)
         %td= purchase_link_popup link_icon, link_to_show_tickets(show), show.name
-        %td.text-center= humanize_date_range(show.opening_date, show.closing_date)
+        %td.text-center= humanize_date_range(show.opening_date, show.closing_date) if num_perfs > 0
         %td= show.listing_date.to_formatted_s(:showtime)
-        - if (n = show.showdates.length) > 0
-          %td.text-center= n
-          %td
-        - else
-          %td
-          %td= button_to 'Delete', show_path(show), :method => :delete, :data => {:confirm => "Delete '#{show.name}': are you sure?"}, :class => 'btn btn-sm btn-danger' 
-= link_to 'Add New Show', new_show_path, :class => 'btn btn-primary'
+        %td.text-center= num_perfs if num_perfs > 0
+        %td
+          - if num_perfs.zero?
+            = button_to 'Delete', show_path(show), :method => :delete, :data => {:confirm => "Delete '#{show.name}': are you sure?"}, :class => 'btn btn-sm btn-danger' 
+= link_to 'Add New Show', new_show_path(:season => @season), :class => 'btn btn-primary'

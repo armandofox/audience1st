@@ -24,10 +24,8 @@ Given /^a class "(.*)" available for enrollment now$/ do |name|
   @show.update_attributes!(:event_type => "Class")
 end
 
-Given /^there is a show named "([^\"]+)" opening "([^\"]+)" and closing "([^\"]+)"$/ do |name,opening,closing|
-  @show = create(:show, :name => name,
-    :opening_date => Date.parse(opening),
-    :closing_date => Date.parse(closing))
+Given /^there is a show named "([^\"]+)"$/ do |name|
+  @show = create(:show, :name => name)
 end
 
 Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
@@ -36,20 +34,6 @@ Given /^there is a show named "(.*)" with showdates:$/ do |name,showdates|
     s = create(:showdate, :show => @show, :thedate => Time.zone.parse(showdate[:date]))
     showdate[:tickets_sold].to_i.times { create(:revenue_voucher, :showdate => s) }
   end
-end
-
-Given /^the following shows exist:$/ do |shows|
-  shows.hashes.each do |show|
-    %Q{Given there is a show named "#{show[:name]}" opening "#{show[:opens]}" and closing "#{show[:closes]}"}
-  end
-end
-
-When /^I specify a show "(.*)" playing from "(.*)" until "(.*)" to be listed starting "(.*)"/i do |name,opens,closes,list|
-  fill_in "Show Name", :with => name
-  select_date_from_dropdowns(eval(opens), :from => "Opens")
-  select_date_from_dropdowns(eval(closes), :from => "Closes")
-  select_date_from_dropdowns(eval(list), :from => "List starting")
-
 end
 
 Given /^a performance (?:of "([^\"]+)" )?(?:at|on) (.*)$/ do |name,time|
@@ -61,7 +45,7 @@ end
 
 Given /^a show "(.*)" with the following performances: (.*)$/ do |name,dates|
   dates = dates.split(/\s*,\s*/).map {  |dt| Time.zone.parse(dt) }
-  @show = create(:show, :name => name, :opening_date => dates.first)
+  @show = create(:show, :name => name, :season => dates.first.year)
   @showdates = dates.each { |d|  create(:showdate, :show => @show, :thedate => d) }
 end
 
@@ -86,11 +70,19 @@ end
 Then /the ("(.*)" )?showdate should have the following attributes:/ do |thedate,tbl|
   if (thedate)
     @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
+  else
+    expect(@showdate).to be_a_kind_of Showdate
   end
-  expect(@showdate).to be_a_kind_of Showdate
   @showdate.reload
   tbl.hashes.each do |attr|
-    expect(@showdate.send(attr['attribute']).to_s).to eq(attr['value'].to_s)
+    val = attr['value']
+    expected_val =
+      if val =~ /^\d{4}-\d\d-\d\d$/ then Date.parse val
+      elsif val =~ /^\d{4}-\d\d-\d\d\b/ then Time.zone.parse val
+      elsif val =~ /^[0-9.]+$/ then val.to_f
+      else val
+      end
+    expect(@showdate.send(attr['attribute'])).to eq(expected_val)
   end
 end
 

@@ -71,7 +71,6 @@ end
 
 group :development, :test do
   # the following really belong in a separate 'staging' environment
-  gem 'faker', :git => 'https://github.com/armandofox/faker'
   gem 'factory_bot_rails'       # used by fake_data stuff
   gem 'bullet'                # show needed/needless eager loads
   gem 'byebug'                  # 4

@@ -27,6 +27,10 @@ en:
       invalid: >
         No performances were added, because the %{date} performance had errors: %{errors}
 
+      date_outside_season: >
+        Since this show belongs to the %{season} season, the performance date must be
+        between %{from} and %{to}.
+
       already_has_stream_anytime: >
         This show already has a "stream anytime" performance.  Please add or modify 
         its redemptions rather than creating another "stream anytime" performance.
@@ -140,7 +144,10 @@ en:
       no_performances_exist: >
         You must add some performances before you can add or change ticket types for performances.
       no_vouchertypes_exist: >
-        No matching voucher types found for the %{season} season yet. 
+        No matching voucher types found for the %{season} season. 
+      no_redemptions_without_vouchertypes: >
+        No matching voucher types found for the %{season} season.
+        Please create voucher types before adding ticket redemptions to performances of this show.
 
     vouchers_already_issued: >
       %{num} vouchers of this voucher type have already been issued.  Any changes you make

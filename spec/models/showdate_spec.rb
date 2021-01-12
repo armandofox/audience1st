@@ -1,6 +1,26 @@
 require 'rails_helper'
 
 describe Showdate do
+  describe "for show in some season", :focus => true do
+    before(:each) do
+      @s = create(:show, :season => 2017)
+    end
+    it "must be within season" do
+      s = build(:showdate, :show => @s, :thedate => Time.parse("Jan 1, 2019, 8:00pm"))
+      s.valid?
+      expect(s.errors[:base]).to include_match_for(/show belongs to the 2017 season/)
+    end
+    it "is valid if within season" do
+      s = build(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
+      expect(s).to be_valid
+    end
+    it "is invalid if date changed later" do
+      s = create(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
+      s.thedate = Time.parse "Jan 1, 2019, 8:00pm"
+      s.valid?
+      expect(s.errors[:base]).to include_match_for(/show belongs to the 2017 season/)
+    end
+  end
   describe "house capacity" do
     before(:each) do
       @s = build(:showdate)

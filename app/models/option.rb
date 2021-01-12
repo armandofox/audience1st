@@ -78,4 +78,13 @@ class Option < ActiveRecord::Base
     errors.add(:html_email_template, "cannot contain more than one occurrence of '#{Mailer::FOOTER_TAG}'") if
       html_email_template.scan(Mailer::FOOTER_TAG).size > 1
   end
+
+  # utility methods on specific options
+
+  def self.humanize_season(year=Time.this_season)
+    Option.first.season_start_month >= 6  ?
+      "#{year.to_i}-#{year.to_i + 1}" :
+      year.to_s
+  end
+  
 end

@@ -98,8 +98,6 @@ staging = namespace :staging do
         dates
       show = Show.create!(
         :name => show,
-        :opening_date => showdates.first,
-        :closing_date => showdates.last,
         :listing_date => Time.current)
       showdates.each do |date|
         showdate = show.showdates.create!(

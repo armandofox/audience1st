@@ -5,17 +5,20 @@ class ShowsController < ApplicationController
   def index
     @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @earliest,@latest = Show.seasons_range
+    @earliest,@latest = Show.minimum(:season), Show.maximum(:season)
     @season = @latest unless @season.between?(@earliest,@latest)
-    @shows = Show.all_for_season(@season)
-    @page_title = "#{view_context.humanize_season @season} Shows"
+    @shows = Show.for_seasons(@season,@season)
+    @page_title = "#{Option.humanize_season(@season)} Shows"
   end
 
   def new
-    @show = Show.new(:listing_date => Date.today,
-      :opening_date => Date.today,
-      :sold_out_dropdown_message => '(Sold Out)',
-      :sold_out_customer_info => 'No tickets on sale for this performance')
+    show_season = (params[:season] || Time.this_season).to_i
+    listing_date = (show_season == Time.this_season ?
+                      Date.today :  Time.at_beginning_of_season(show_season))
+    @show = Show.new(:listing_date => listing_date,
+                     :season => show_season,
+                     :sold_out_dropdown_message => '(Sold Out)',
+                     :sold_out_customer_info => 'No tickets on sale for this performance')
     @page_title = "Add new show"
   end
 
@@ -23,7 +26,7 @@ class ShowsController < ApplicationController
     @show = Show.new(params[:show])
     if @show.save
       redirect_to edit_show_path(@show),
-      :notice =>  'Show was successfully created. Click "Add A Performance" below to start adding show dates.'
+      :notice =>  'Show was successfully created. Click "Add Performances" below to start adding show dates.'
     else
       flash[:alert] = "There were errors creating the show: #{@show.errors.as_html}"
       render :action => 'new'

@@ -2,7 +2,7 @@
 .row.form-inline
   .form-group.col-12
     %label.col-form-label{:for => 'output_include'} Include
-    - season = humanize_season(Time.this_season)
+    - season = Option.humanize_season(Time.this_season)
     = select_tag 'output[include]', options_for_select(["All patrons", "#{season} subscribers only", "#{season} non-subscribers only"]), :class => 'form-control form-inline'
   
 .row.form-inline

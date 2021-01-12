@@ -1,5 +1,4 @@
 class Vouchertype < ActiveRecord::Base
-  include VouchertypesHelper
   
   attr_accessible :category, :name, :price, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :included_vouchers
   attr_accessible :account_code_id, :account_code
@@ -252,7 +251,7 @@ class Vouchertype < ActiveRecord::Base
 
   def name_with_price ;  sprintf("%s - $%0.2f", name, price) ;  end
 
-  def name_with_season ; "#{name} (#{humanize_season(season)})" ; end
+  def name_with_season ; "#{name} (#{Option.humanize_season(season)})" ; end
 
   def name_with_season_and_price; sprintf("%s - $%0.2f", name_with_season, price) ; end
 
