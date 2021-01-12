@@ -14,15 +14,11 @@ describe Showdate do
       s = build(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
       expect(s).to be_valid
     end
-    it "is valid if date changed later" do
+    it "is invalid if date changed later" do
       s = create(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
       s.thedate = Time.parse "Jan 1, 2019, 8:00pm"
-      expect(s).to be_valid
-    end
-    it "is valid if season start date changed later" do
-      s = create(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
-      Option.first.update_attributes!(:season_start_month => 12)
-      expect(s).to be_valid
+      s.valid?
+      expect(s.errors[:base]).to include_match_for(/show belongs to the 2017 season/)
     end
   end
   describe "house capacity" do
