@@ -11,6 +11,7 @@ Background:
 Scenario: admin can create customer by name only
 
   When I visit the add customer page for staff
+  Then show me the page
   And I fill in the following:
   | First name | Bob    |
   | Last name  | Barker |
