@@ -29,6 +29,8 @@ class Showdate < ActiveRecord::Base
 
   validates :max_advance_sales, :numericality => { :greater_than_or_equal_to => 0, :only_integer => true }
   validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?
+  validate :max_sales_cannot_exceed_house_cap, :if => :general_admission_in_theater?
+  
   validates_associated :show
   validates :thedate, :presence => true, :uniqueness => {:scope => :show_id, :message => "is already a performance for this show"}
   validate :date_must_be_within_season
@@ -57,7 +59,8 @@ class Showdate < ActiveRecord::Base
   scope :in_theater, -> { where(:live_stream => false).where(:stream_anytime => false) }
 
   def has_reserved_seating? ; !stream?  &&  !!seatmap ; end
-  
+  def general_admission_in_theater? ; !stream? && !seatmap ; end
+
   private
 
   def truncate_showdate_to_nearest_minute
@@ -66,11 +69,16 @@ class Showdate < ActiveRecord::Base
 
   #  validations
 
+  def max_sales_cannot_exceed_house_cap
+    errors.add(:max_advance_sales, I18n.translate('showdates.validations.cannot_exceed_house_cap')) if
+      max_advance_sales > house_capacity
+  end
+  
   def date_must_be_within_season
     season = show.season
     from,to = Time.at_beginning_of_season(season),Time.at_end_of_season(season)
     unless thedate.between?(from,to)
-      errors.add(:base, I18n.translate('showdates.errors.date_outside_season',
+      errors.add(:base, I18n.translate('showdates.validations.date_outside_season',
                                        :season => Option.humanize_season(season),
                                        :from => from.to_formatted_s(:month_day_year),                                       :to => to.to_formatted_s(:month_day_year)))
     end
@@ -80,12 +88,12 @@ class Showdate < ActiveRecord::Base
     return unless stream_anytime?
     showdates = show.reload.showdates
     showdates -= [self] if !new_record?
-    errors.add(:base, I18n.translate('showdates.errors.already_has_stream_anytime')) if showdates.any?(&:stream_anytime?)
+    errors.add(:base, I18n.translate('showdates.validations.already_has_stream_anytime')) if showdates.any?(&:stream_anytime?)
   end
 
   def cannot_change_seating_type_if_existing_reservations
     return if total_sales.empty?
-    errors.add(:base, I18n.translate('showdates.errors.cannot_change_seating_type')) if (seatmap_id_was.nil? && !seatmap_id.nil?) || (!seatmap_id_was.blank? && seatmap_id.blank?)
+    errors.add(:base, I18n.translate('showdates.validations.cannot_change_seating_type')) if (seatmap_id_was.nil? && !seatmap_id.nil?) || (!seatmap_id_was.blank? && seatmap_id.blank?)
   end
   
   def seatmap_can_accommodate_existing_reservations
@@ -93,7 +101,7 @@ class Showdate < ActiveRecord::Base
     cannot_accommodate = seatmap.cannot_accommodate(self.vouchers)
     unless cannot_accommodate.empty?
       self.errors.add(:base,
-        I18n.translate('showdates.errors.cannot_change_seatmap') +  '<br/>' + 
+        I18n.translate('showdates.validations.cannot_change_seatmap') +  '<br/>' + 
         ApplicationController.helpers.vouchers_sorted_by_seat(cannot_accommodate))
     end
   end

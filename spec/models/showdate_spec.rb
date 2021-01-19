@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Showdate do
-  describe "for show in some season", :focus => true do
+  describe "for show in some season" do
     before(:each) do
       @s = create(:show, :season => 2017)
     end
@@ -27,8 +27,14 @@ describe Showdate do
     end
     describe "for General Admission" do
       it "must be specified" do
-        @s.update_attributes!(:house_capacity => 73)
+        @s.update_attributes!(:house_capacity => 73, :max_advance_sales => 70)
         expect(@s.house_capacity).to eq(73)
+      end
+      it "must be >= max advance sales" do
+        @s.house_capacity = 73
+        @s.max_advance_sales = 74
+        expect(@s).not_to be_valid
+        expect(@s.errors[:max_advance_sales]).to include_match_for(/cannot exceed the house capacity/)
       end
     end
     describe "for Reserved Seating" do
