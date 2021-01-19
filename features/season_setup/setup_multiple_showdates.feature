@@ -8,14 +8,14 @@ Feature: set up multiple showdates at once
 
     Given I am logged in as box office manager
     And the seatmap "Default" exists
-    And there is a show named "Hamlet" opening "2011-12-20" and closing "2012-01-10"
+    And there is a show named "Hamlet"
     And I am on the new showdate page for "Hamlet"
 
   Scenario: set up multiple valid showdates
 
     When I fill in the "new_showdate" fields as follows:
       | field              | value                                   |
-      | show_run_dates     | date range "2012-01-01" to "2011-12-23" |
+      | show_run_dates     | date range "2010-01-01" to "2010-01-13" |
       | Thu                | checked                                 |
       | Fri                | checked                                 |
       | Sun                | checked                                 |
@@ -28,25 +28,25 @@ Feature: set up multiple showdates at once
     And "Hamlet" should have 5 showdates
     And the following showdates for "Hamlet" should exist:
       | date              | max_sales | sales_cutoff      |
-      | 2011-12-23 7:00pm |        50 | 2011-12-23 6:00pm |
-      | 2011-12-25 7:00pm |        50 | 2011-12-25 6:00pm |
-      | 2011-12-29 7:00pm |        50 | 2011-12-29 6:00pm |
-      | 2011-12-30 7:00pm |        50 | 2011-12-30 6:00pm |
-      | 2012-01-01 7:00pm |        50 | 2012-01-01 6:00pm |
-    And the "2012-01-01 7:00pm" performance should be General Admission
+      | 2010-01-01 7:00pm |        50 | 2010-01-01 6:00pm |
+      | 2010-01-03 7:00pm |        50 | 2010-01-03 6:00pm |
+      | 2010-01-07 7:00pm |        50 | 2010-01-07 6:00pm |
+      | 2010-01-08 7:00pm |        50 | 2010-01-08 6:00pm |
+      | 2010-01-10 7:00pm |        50 | 2010-01-10 6:00pm |
+    And the "2010-01-01 7:00pm" performance should be General Admission
 
   Scenario: set up new showdate with reserved seating
 
     When I fill in the "new_showdate" fields as follows:
       | field              | value                                   |
-      | show_run_dates     | date range "2012-01-01" to "2012-01-03" |
+      | show_run_dates     | date range "2010-01-01" to "2010-01-03" |
       | At                 | select time "2:00 pm"                   |
       | Max advance sales  | 50                                      |
       | Seat map           | select "Default (4)"                    |
       | Sun                | checked                                 |
     And I press "Save & Back to List of Shows"
     Then I should see "One performance was successfully added"
-    And the "2012-01-01 2:00pm" performance should use the "Default" seatmap
+    And the "2010-01-03 2:00pm" performance should use the "Default" seatmap
 
   @javascript
   Scenario: set up stream-anytime showdate
@@ -54,11 +54,11 @@ Feature: set up multiple showdates at once
     When I select "Stream anytime" from "Performance type"
     And I fill in the "new_showdate" fields as follows:
       | field                  | value                            |
-      | Stream available until | select time "2012-12-31 11:30pm" |
+      | Stream available until | select time "2010-12-31 11:30pm" |
       | Max advance sales      | 50000                            |
       | Access instructions    | It's on YouTube                  |
     And I press "Save & Back to List of Shows"
     Then I should see "One performance was successfully added"
-    And the "2012-12-31 11:30pm" performance should be Stream Anytime
+    And the "2010-12-31 11:30pm" performance should be Stream Anytime
     
 
