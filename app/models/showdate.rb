@@ -29,7 +29,7 @@ class Showdate < ActiveRecord::Base
 
   validates :max_advance_sales, :numericality => { :greater_than_or_equal_to => 0, :only_integer => true }
   validates :house_capacity, :numericality => { :greater_than => 0, :only_integer => true }, :unless => :has_reserved_seating?
-  validate :max_sales_cannot_exceed_house_cap, :if => :general_admission_in_theater?
+  validate :max_sales_cannot_exceed_house_cap, :unless => :stream?
   
   validates_associated :show
   validates :thedate, :presence => true, :uniqueness => {:scope => :show_id, :message => "is already a performance for this show"}
@@ -59,7 +59,6 @@ class Showdate < ActiveRecord::Base
   scope :in_theater, -> { where(:live_stream => false).where(:stream_anytime => false) }
 
   def has_reserved_seating? ; !stream?  &&  !!seatmap ; end
-  def general_admission_in_theater? ; !stream? && !seatmap ; end
 
   private
 
@@ -70,8 +69,10 @@ class Showdate < ActiveRecord::Base
   #  validations
 
   def max_sales_cannot_exceed_house_cap
-    errors.add(:max_advance_sales, I18n.translate('showdates.validations.cannot_exceed_house_cap')) if
-      max_advance_sales > house_capacity
+    if max_advance_sales.to_i > house_capacity
+      errors.add(:max_advance_sales, I18n.translate('showdates.validations.cannot_exceed_house_cap')) 
+
+    end
   end
   
   def date_must_be_within_season
