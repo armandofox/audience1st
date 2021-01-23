@@ -6,6 +6,7 @@ end
 Given /that performance has reserved seating/ do
   @seatmap = create(:seatmap)
   @showdate.seatmap = @seatmap
+  @showdate.max_advance_sales = [@showdate.max_advance_sales, @seatmap.seat_count].min
   @showdate.save!
 end
 
