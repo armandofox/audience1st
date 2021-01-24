@@ -15,7 +15,7 @@ describe ValidVouchersController do
       create(:showdate, :show => @show)
       get :new, :show_id => @show.id
       expect(response).to redirect_to(edit_show_path(@show))
-      expect(flash[:alert]).to eq(t('season_setup.errors.no_vouchertypes_exist', :season => '2010'))
+      expect(flash[:alert]).to eq(t('season_setup.errors.no_redemptions_without_vouchertypes', :season => '2010'))
     end
   end
 end

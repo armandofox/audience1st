@@ -25,7 +25,8 @@ describe CheckinsController do
     end
     context 'with good showdate' do
       it "should work with valid showdate even if no others exist" do
-        @m = create(:showdate, :date => 1.year.ago)
+        show = create(:show, :season => 2009)
+        @m = create(:showdate, :date => 1.year.ago, :show => show)
         get :show, :id => @m.id
         expect(response).to render_template(:show)
       end
