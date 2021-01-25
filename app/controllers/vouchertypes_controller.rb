@@ -43,10 +43,10 @@ class VouchertypesController < ApplicationController
   end
 
   def create
-    unless params[:vouchertype][:included_vouchers].is_a?(Hash)
-      params[:vouchertype][:included_vouchers] = Hash.new
-    end
-    @vouchertype = Vouchertype.new(params[:vouchertype])
+    creation_params =
+      params.require(:vouchertype).
+        permit(:category, :name, :price, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :account_code_id)
+    @vouchertype = Vouchertype.new(creation_params)
     if @vouchertype.save
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
                            :commments => "Create voucher type #{@vouchertype.name}")
@@ -62,8 +62,7 @@ class VouchertypesController < ApplicationController
         end
       end
     else
-      flash[:alert] = 'Vouchertype could not be created: ' << @vouchertype.errors.as_html
-      redirect_to new_vouchertype_path
+      redirect_to new_vouchertype_path, :alert => ('Vouchertype could not be created: ' << @vouchertype.errors.as_html)
     end
   end
 
@@ -77,6 +76,16 @@ class VouchertypesController < ApplicationController
   end
 
   def update
+    # :rails5: this can be simplified since Rails 5.1+ allows :included_vouchers => {} to
+    #  pass through ANY keys in that hash
+    included_voucher_keys = params[:vouchertype][:included_vouchers] ? params[:vouchertype][:included_vouchers].keys : []
+    vouchertype_update_params =
+      params.require(:vouchertype).
+        permit(:name, :price, :offer_public, :season,
+                :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable,
+                :subscription, :comments, :account_code_id, :account_code,
+                :included_vouchers => included_voucher_keys)
+    valid_voucher_update_params = params.permit(:valid_voucher => [:max_sales_for_type, :start_sales, :end_sales, :promo_code])
     @num_vouchers = @vouchertype.vouchers.count
     unless @vouchertype.included_vouchers.is_a?(Hash)
       @vouchertype.included_vouchers = Hash.new
@@ -84,11 +93,11 @@ class VouchertypesController < ApplicationController
 
     Vouchertype.transaction do
       begin
-        if params[:valid_voucher]
+        if valid_voucher_update_params
           valid_voucher = @vouchertype.valid_vouchers.first
-          valid_voucher.update_attributes!(params[:valid_voucher])
+          valid_voucher.update_attributes!(valid_voucher_update_params[:valid_voucher])
         end
-        @vouchertype.update_attributes!(params[:vouchertype].except(:valid_voucher))
+        @vouchertype.update_attributes!(vouchertype_update_params)
         Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
           :comments => "Modify voucher type #{@vouchertype.name}")
         flash[:notice] = 'Vouchertype was successfully updated.'

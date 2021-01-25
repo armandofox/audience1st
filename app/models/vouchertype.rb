@@ -1,8 +1,5 @@
 class Vouchertype < ActiveRecord::Base
   
-  attr_accessible :category, :name, :price, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :included_vouchers
-  attr_accessible :account_code_id, :account_code
-
   belongs_to :account_code
   validates_associated :account_code
 
