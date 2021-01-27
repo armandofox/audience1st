@@ -69,7 +69,7 @@ class Showdate < ActiveRecord::Base
   #  validations
 
   def max_sales_cannot_exceed_house_cap
-    if max_advance_sales.to_i > house_capacity
+    if max_advance_sales.to_i > house_capacity.to_i
       errors.add(:max_advance_sales, I18n.translate('showdates.validations.cannot_exceed_house_cap')) 
 
     end
