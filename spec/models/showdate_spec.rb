@@ -1,24 +1,24 @@
 require 'rails_helper'
 
 describe Showdate do
-  describe "for show in some season", :focus => true do
+  describe "for show in some season" do
     before(:each) do
-      @s = create(:show, :season => 2017)
+      @s = create(:show, :season => 2010)
     end
     it "must be within season" do
-      s = build(:showdate, :show => @s, :thedate => Time.parse("Jan 1, 2019, 8:00pm"))
+      s = build(:showdate, :show => @s, :thedate => Time.parse("Jan 1, 2012, 8:00pm"))
       s.valid?
-      expect(s.errors[:base]).to include_match_for(/show belongs to the 2017 season/)
+      expect(s.errors[:base]).to include_match_for(/show belongs to the 2010 season/)
     end
     it "is valid if within season" do
-      s = build(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
+      s = build(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2010, 8:00pm"))
       expect(s).to be_valid
     end
     it "is invalid if date changed later" do
-      s = create(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2017, 8:00pm"))
+      s = create(:showdate, :show => @s, :thedate => Time.parse("Nov 1, 2010, 8:00pm"))
       s.thedate = Time.parse "Jan 1, 2019, 8:00pm"
       s.valid?
-      expect(s.errors[:base]).to include_match_for(/show belongs to the 2017 season/)
+      expect(s.errors[:base]).to include_match_for(/show belongs to the 2010 season/)
     end
   end
   describe "house capacity" do
@@ -27,13 +27,20 @@ describe Showdate do
     end
     describe "for General Admission" do
       it "must be specified" do
-        @s.update_attributes!(:house_capacity => 73)
+        @s.update_attributes!(:house_capacity => 73, :max_advance_sales => 70)
         expect(@s.house_capacity).to eq(73)
+      end
+      it "must be >= max advance sales" do
+        @s.house_capacity = 73
+        @s.max_advance_sales = 74
+        expect(@s).not_to be_valid
+        expect(@s.errors[:max_advance_sales]).to include_match_for(/cannot exceed the house capacity/)
       end
     end
     describe "for Reserved Seating" do
       before(:each) do
         @s.seatmap = create(:seatmap) # default for testing has 4 seats
+        @s.max_advance_sales = @s.seatmap.seat_count
       end
       it "is valid even if numerical field is zero" do
         @s.house_capacity = 0
@@ -82,6 +89,9 @@ describe Showdate do
     end
   end
   describe "of next show" do
+    before(:each) do
+      @past_show = create(:show, :season => 2009)
+    end
     context "for non-regular shows" do
       it 'returns correct entry' do
         regular = create(:show, :event_type => 'Regular Show')
@@ -106,22 +116,18 @@ describe Showdate do
       end
     end
     context "when there is only 1 showdate and it's in the past" do
-      it "should return that showdate" do
-        @showdate  = create(:showdate, :thedate => 1.day.ago)
-        expect(Showdate.current_or_next.id).to eq(@showdate.id)
-      end
+    end
+    it "should return that showdate" do
+      @showdate  = create(:showdate, :thedate => 1.day.ago, :show => @past_show)
+      expect(Showdate.current_or_next.id).to eq(@showdate.id)
     end
     context "when there are past and future showdates" do
-      before :each do
-        @past_show = create(:showdate, :thedate => 1.day.ago)
-        @show_in_1_hour = create(:showdate, :thedate => 1.hour.from_now)
-      end
       it "should return the next showdate" do
         @now_show = create(:showdate, :thedate => 5.minutes.from_now)
         expect(Showdate.current_or_next.id).to eq(@now_show.id)
       end
       it "and 30-minute margin should return a showdate that started 5 minutes ago" do
-        @now_show = create(:showdate, :thedate => 5.minutes.ago)
+        @now_show = create(:showdate, :thedate => 5.minutes.ago, :show => @past_show)
         expect(Showdate.current_or_next(:grace_period => 30.minutes).id).to eq(@now_show.id)
       end
     end

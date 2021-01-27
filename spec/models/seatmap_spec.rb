@@ -3,7 +3,8 @@ require 'rails_helper'
 describe Seatmap do
   describe 'JSON' do
     before(:each) do
-      @sd = create(:showdate, :seatmap => (@s = create(:seatmap)))
+      @sd = create(:reserved_seating_showdate)
+      @s = @sd.seatmap
       @unavailable = ['A1', 'B2']
       allow(@sd).to receive(:occupied_seats).and_return(@unavailable)
     end

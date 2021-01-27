@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Showdate do
   describe "when changing seatmap fails" do
     before(:each) do
-      @s = create(:showdate, :seatmap => create(:seatmap))
+      @s = create(:reserved_seating_showdate)
       @v1 = create(:revenue_voucher, :showdate => @s, :seat => 'A1')
       @v2 = create(:revenue_voucher, :showdate => @s, :seat => 'B1')
       allow(@s.seatmap).to receive(:cannot_accommodate).and_return([@v2])
