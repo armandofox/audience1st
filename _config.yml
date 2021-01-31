@@ -21,6 +21,7 @@ codeurl: 'https://github.com/armandofox/audience1st'
 
 sections: [ 
     ['FirstTimeSetup', 'First Time Setup'], 
+    ['PatronReportedIssues', 'Patron-Reported Issues'],
     ['WorkingWithPatronRecords', 'Working With Patron Records'],  
     ['SeasonSetup', 'Season Setup'], 
     ['AdvanceSalesAndReservations', 'Advance Sales And Reservations'],
