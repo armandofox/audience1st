@@ -12,7 +12,6 @@ env:
 before_install:
   - phantomjs --version
   - export TZ=America/Los_Angeles
-  - gpg --passphrase $KEY -d -o config/application.yml config/application.yml.asc
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
   - chmod +x $CCTR
   - $CCTR before-build
