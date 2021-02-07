@@ -90,4 +90,5 @@ group :development, :test do
   gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'sqlite3'
   gem 'traceroute'              # find unused routes
+  gem 'travis'
 end

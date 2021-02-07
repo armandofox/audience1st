@@ -40,6 +40,8 @@ VCR.configure do |config|
   config.ignore_localhost = true # to allow Stripe stubbing to work
   config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'
   config.hook_into :webmock
+  WebMock.enable!
+  WebMock.disable_net_connect!(:allow_localhost => true)
 end
 
 require 'coveralls'
