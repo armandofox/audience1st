@@ -81,6 +81,7 @@ group :development, :test do
   gem 'spring-commands-rspec'   # for use with Guard
   gem 'minitest'
   gem 'faye-websocket'
+  gem 'railroady'
   gem 'rb-readline'
   gem 'rspec', '~> 3.0'
   gem 'rspec-rails'
@@ -91,5 +92,4 @@ group :development, :test do
   gem 'sqlite3'
   gem 'traceroute'              # find unused routes
   gem 'travis'
-  gem 'railroady'
 end
