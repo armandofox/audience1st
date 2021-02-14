@@ -13,6 +13,7 @@ before_install:
   - phantomjs --version
   - export TZ=America/Los_Angeles
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
+  - sudo apt-get install graphviz
   - chmod +x $CCTR
   - $CCTR before-build
   - gem install bundler --version=1.17.2
