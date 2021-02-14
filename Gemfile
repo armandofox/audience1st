@@ -91,4 +91,5 @@ group :development, :test do
   gem 'sqlite3'
   gem 'traceroute'              # find unused routes
   gem 'travis'
+  gem 'railroady'
 end

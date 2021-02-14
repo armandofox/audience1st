@@ -243,6 +243,7 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rack-timeout (0.4.2)
+    railroady (1.5.3)
     rails (4.2.11.1)
       actionmailer (= 4.2.11.1)
       actionpack (= 4.2.11.1)
@@ -449,6 +450,7 @@ DEPENDENCIES
   puma-heroku
   rack-test
   rack-timeout
+  railroady
   rails (= 4.2.11.1)
   rails_12factor
   rake
