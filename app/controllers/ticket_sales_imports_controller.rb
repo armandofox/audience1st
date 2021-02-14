@@ -17,11 +17,7 @@ class TicketSalesImportsController < ApplicationController
 
   def create
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
-    @import = TicketSalesImport.new(
-      :vendor => params[:vendor], :raw_data => params[:file].read,:processed_by => current_user,
-      :filename => params[:file].original_filename,
-      :completed => false,
-      :existing_customers => 0, :new_customers => 0, :tickets_sold => 0)
+    @import = TicketSalesImport.new(ticketsalesimport_params)
     if @import.valid?
       @import.save!
       redirect_to edit_ticket_sales_import_path(@import)
@@ -89,5 +85,16 @@ class TicketSalesImportsController < ApplicationController
     flash[:notice] = I18n.translate('import.import_cancelled', :filename => i.filename)
     i.destroy
     redirect_to ticket_sales_imports_path
+  end
+
+  private
+  def ticketsalesimport_params
+    params.permit(:vendor, :file)
+    {
+      :vendor => params[:vendor],
+      :raw_data => params[:file].read,
+      :filename => params[:file].original_filename,
+      :completed => false, :processed_by => current_user, :existing_customers => 0, :new_customers => 0, :tickets_sold => 0
+    }
   end
 end
