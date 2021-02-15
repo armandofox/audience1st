@@ -12,7 +12,7 @@ class ShowsController < ApplicationController
   end
 
   def new
-    show_season = (permit_new_show || Time.this_season).to_i
+    show_season = permit_new_show.to_i
     listing_date = (show_season == Time.this_season ?
                       Date.today :  Time.at_beginning_of_season(show_season))
     @show = Show.new(:listing_date => listing_date,
@@ -23,7 +23,7 @@ class ShowsController < ApplicationController
   end
 
   def create
-    @show = Show.new(permit_create_show)
+    @show = Show.new(permit_update_show)
     if @show.save
       redirect_to edit_show_path(@show),
       :notice =>  'Show was successfully created. Click "Add Performances" below to start adding show dates.'
@@ -46,7 +46,7 @@ class ShowsController < ApplicationController
   def update
     @show = Show.find(params[:id])
     @showdates = @show.showdates
-    if @show.update_attributes(params[:show])
+    if @show.update_attributes(permit_update_show)
       redirect_to edit_show_path(@show), :notice => 'Show details successfully updated.'
     else
       flash[:alert] = ["Show details could not be updated: ", @show.errors.as_html]
@@ -62,13 +62,13 @@ class ShowsController < ApplicationController
   # migrating from protected attr to strong param
   # standard found here: https://www.fastruby.io/blog/rails/upgrades/strong-parameters-migration-guide.html
   private
-  def permit_new_show
+  def season_new_params
     params.permit :season
-    params.require :season
+    params.fetch :season, Time.this_season
   end
 
-  def permit_create_show
-    params.permit :show
-    params.require :show
+  def permit_update_show
+    params.require(:show).permit :name, :event_type, :listing_date, :landing_page_url, :description,
+                                 :patron_notes, :sold_out_dropdown_message, :sold_out_customer_info
   end
 end
