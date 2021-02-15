@@ -6,7 +6,7 @@ class Label < ActiveRecord::Base
 
   before_destroy :remove_from_join_table
 
-  attr_accessible :name
+  # attr_accessible :name
 
   default_scope { order('name') }
   
