@@ -14,7 +14,7 @@ class ShowsController < ApplicationController
   end
 
   def new
-    show_season = permit_new_show.to_i
+    show_season = season_new_params.to_i
     listing_date = (show_season == Time.this_season ?
                       Date.today :  Time.at_beginning_of_season(show_season))
     @show = Show.new(:listing_date => listing_date,
