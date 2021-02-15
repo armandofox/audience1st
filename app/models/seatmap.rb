@@ -16,8 +16,7 @@ class Seatmap < ActiveRecord::Base
   validate :no_duplicate_seats
   
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
-  # remove when we move to strong params
-  attr_accessible :image_url, :name
+
   attr_accessor :seat_rows
   
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
