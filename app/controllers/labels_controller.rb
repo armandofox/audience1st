@@ -12,7 +12,7 @@ class LabelsController < ApplicationController
   end
 
   def create
-    @label = Label.create(:name => params[:label_name])
+    @label = Label.create(label_params)
     if @label.errors.empty?
       return_to = session.delete(:return_to)
       redirect_to (return_to || labels_path)
@@ -36,5 +36,13 @@ class LabelsController < ApplicationController
     @label = Label.find(params[:id])
     @label.destroy
     redirect_to labels_path, :notice => "Label '#{@label.name}' was deleted and removed from all customers that had it."
+  end
+
+  private
+  def label_params
+    params.permit(:label_name)
+    {
+      :name => params[:label_name]
+    }
   end
 end

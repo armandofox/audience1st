@@ -12,9 +12,7 @@ class SeatmapsController < ApplicationController
   end
 
   def create                    # must be reached by 'post' due to file upload
-    params.permit(:csv, :name,:image_url)
-    @seatmap = Seatmap.new(:image_url => params[:image_url], :name => params[:name])
-    @seatmap.csv = params[:csv].read
+    @seatmap = Seatmap.new(seatmaps_new_params)
     @seatmap.parse_csv
     return redirect_to(seatmaps_path, :alert => "Seatmap CSV has errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
     # as a courtesy, check if URI is fetchable
@@ -25,9 +23,8 @@ class SeatmapsController < ApplicationController
 
   def update
     return destroy if params[:commit] =~ /delete/i
-    params.require(:seatmap).permit(:image_url, :name)
     @seatmap = Seatmap.find params[:id]
-    if @seatmap.update_attributes(params[:seatmap])
+    if @seatmap.update(seatmaps_update_params)
       flash[:notice] = 'Seatmap successfully updated.'
     else
       flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
@@ -68,4 +65,20 @@ class SeatmapsController < ApplicationController
     end
   end
 
+  private
+
+  def seatmaps_new_params
+    params.permit(:csv, :name,:image_url)
+    {
+      :image_url => params[:image_url],
+      :name => params[:name],
+      :csv => params[:csv].read
+    }
+  end
+
+  def seatmaps_update_params
+    params.require(:seatmap).permit(:csv, :name,:image_url)
+  end
+
 end
+

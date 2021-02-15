@@ -1,6 +1,5 @@
 class TicketSalesImport < ActiveRecord::Base
 
-  attr_accessible :vendor, :raw_data, :filename, :completed, :processed_by, :existing_customers, :new_customers, :tickets_sold
   attr_reader :importable_orders
   attr_accessor :warnings
   belongs_to :processed_by, :class_name => 'Customer'
@@ -18,7 +17,7 @@ class TicketSalesImport < ActiveRecord::Base
   validates_length_of :raw_data, :within => 1..65535
   validate :not_previously_imported?
   validate :valid_for_parsing?
-  
+
   scope :sorted, -> { order('updated_at DESC') }
   scope :completed, -> { where(:completed => true) }
   scope :in_progress, -> { where(:completed => false) }
