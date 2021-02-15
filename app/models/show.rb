@@ -18,9 +18,6 @@ class Show < ActiveRecord::Base
   validates_length_of :sold_out_customer_info, :maximum => 255
   validates_length_of :patron_notes,           :maximum => 255
 
-  attr_accessible :name, :patron_notes, :landing_page_url
-  attr_accessible :listing_date, :season, :description, :event_type, :sold_out_dropdown_message, :sold_out_customer_info
-
   scope :current_and_future, -> {
     joins(:showdates).
     where('showdates.thedate >= ?', 1.day.ago).
