@@ -11,6 +11,7 @@ env:
     - CCTR=/tmp/cc-test-reporter
 before_install:
   - phantomjs --version
+  - sudo apt-get install graphviz
   - export TZ=America/Los_Angeles
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
   - chmod +x $CCTR
