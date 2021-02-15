@@ -23,8 +23,6 @@ class SeatmapsController < ApplicationController
 
   def update
     return destroy if params[:commit] =~ /delete/i
-    # params.require(:seatmap).permit(:image_url, :name)
-    @seatmap = Seatmap.find params[:id]
     @seatmap = Seatmap.find params[:id]
     if @seatmap.update seatmaps_update_params
       flash[:notice] = 'Seatmap successfully updated.'
