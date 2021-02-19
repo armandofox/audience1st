@@ -47,7 +47,6 @@ group :test do
   gem 'chronic'
   gem 'launchy'
   gem 'rack-test'
-  gem 'coveralls', :require => false
   gem 'database_cleaner'
   gem 'email_spec'
   gem 'fake_stripe'

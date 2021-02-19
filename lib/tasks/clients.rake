@@ -31,8 +31,8 @@ a1client = namespace :a1client  do
   desc "Configures Sendgrid domain, venue full name, random admin password, boxoffice & help email addresses, and staff-only access for the (new) client named TENANT using VENUE_FULLNAME, using underscores for spaces. Don't forget to also add the tenant name to the `tenant_names` runtime environment variable, set DNS resolution for <tenant>.audience1st.com, and add the subdomain explicitly to Sendgrid settings."
   task :configure => :environment do
     Audience1stRakeTasks.check_vars!
-    venue = ENV['TENANT']
-    Apartment::Tenant.switch(venue) do
+    tenant = ENV['TENANT']
+    Apartment::Tenant.switch(tenant) do
       Option.first.update_attributes!(
         :sendgrid_domain    => "#{tenant}.audience1st.com",
         :venue              => ENV['VENUE_FULLNAME'].gsub(/_/,' '),
