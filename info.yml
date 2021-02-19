@@ -9,7 +9,7 @@ project:
     heroku:
       url: 'https://calvisitor.herokuapp.com/'
     travis:
-      url: 'https://github.com/abhinavDhulipala/audience1st'
+      url: 'https://travis-ci.org/github/abhinavDhulipala/audience1st'
   members:    
     member1:
       name: 'Kyle'
