@@ -115,24 +115,25 @@ class CustomersController < ApplicationController
 
   def change_password_for
     return if request.get?
+    customer_params = params.require(:customer).permit(:password, :password_confirmation)
     @customer.must_revalidate_password = true
-    return redirect_to(change_password_for_customer_path(@customer), :alert => @customer.errors.as_html) unless  @customer.update_attributes(params[:customer])
-      Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @customer.id,
-      :comments => 'Change password')
-    redirect_to customer_path(@customer), :notice => "Password change confirmed."
+    if @customer.update_attributes(customer_params)
+      Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id, :comments => 'Change password')
+      redirect_to customer_path(@customer), :notice => "Password change confirmed."
+    else
+      redirect_to change_password_for_customer_path(@customer), :alert => @customer.errors.as_html
+    end
   end
 
   def change_secret_question
     return if request.get?
-    if @customer.update_attributes(params[:customer])
+    customer_params = params.require(:customer).permit(:secret_question,:secret_answer)
+    if @customer.update_attributes(customer_params)
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
         :comments => 'Change secret question or answer')
-      flash[:notice] = 'Secret question change confirmed.'
-      redirect_to customer_path(@customer)
+      redirect_to customer_path(@customer), :notice => 'Secret question change confirmed.'
     else
-      flash[:alert] = "Could not update secret question: #{@customer.errors.as_html}"
-      render :action => :change_secret_question, :id => @customer
+      redirect_to change_secret_question_customer_path(@customer), :alert => "Could not update secret question: #{@customer.errors.as_html}"
     end
   end
 
@@ -369,7 +370,7 @@ class CustomersController < ApplicationController
   private
 
   def user_modifiable_customer_params
-    [:first_name, :last_name, :email, :password, :blacklist, :e_blacklist,
+    [:first_name, :last_name, :email, :password, :password_confirmation, :blacklist, :e_blacklist,
      :day_phone, :eve_phone, :street, :city, :state, :zip, :birthday]
   end
     
