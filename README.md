@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/abhinavDhulipala/audience1st.svg?branch=main)](https://travis-ci.org/abhinavDhulipala/audience1st)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
 [![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2488109)
-
+[![Bluejay Dashboard](https://img.shields.io/badge/Bluejay-Dashboard_6-blue.svg)](http://dashboard.bluejay.governify.io/dashboard/script/dashboardLoader.js?dashboardURL=https://reporter.bluejay.governify.io/api/v4/dashboards/tpa-CS169L-GH-abhinavDhulipala_audience1st/main)
 
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Xiao Fu](https://github.com/fxdawnn),
