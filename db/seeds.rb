@@ -43,10 +43,10 @@ class Audience1stSeeder
     Rails.logger.info "Creating special customers"
     # Create Admin (God) login
     unless Customer.find_by_role(100)
-      admin = Customer.new(:first_name => 'Super',
+      admin = Customer.new({:first_name => 'Super',
         :last_name => 'Administrator',
         :password => 'admin',
-        :email => 'admin@audience1st.com')
+        :email => 'admin@audience1st.com'}, :without_protection => true)
       admin.created_by_admin = true
       admin.role = 100
       admin.last_login = Time.current
@@ -54,7 +54,7 @@ class Audience1stSeeder
     end
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])
-        c = Customer.new(attrs.except(:role))
+        c = Customer.new(attrs.except(:role), :without_protection => true)
         c.role = attrs[:role]
         c.created_by_admin = true
         c.save!
@@ -68,18 +68,19 @@ class Audience1stSeeder
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
     # set it as default account code for various things
-    Option.first.update_attributes!(
+    Option.first.update_attributes!( {
       :default_donation_account_code => a.id,
       :default_donation_account_code_with_subscriptions => a.id,
       :default_retail_account_code => a.id,
       :subscription_order_service_charge_account_code => a.id,
       :regular_order_service_charge_account_code => a.id,
-      :classes_order_service_charge_account_code => a.id)
+      :classes_order_service_charge_account_code => a.id },
+                                     :without_protection => true)
   end
 
   def self.create_options
     Rails.logger.info "Creating default options"
-    option = Option.new(
+    option = Option.new({
       :venue => 'A1 Staging Theater',
       :advance_sales_cutoff => 60,
       :nearly_sold_out_threshold => 80,
@@ -108,7 +109,8 @@ class Audience1stSeeder
       :stripe_key => 'Replace with real Stripe key',
       :stripe_secret => 'Replace with real Stripe secret',
       :sendgrid_domain => '',
-      :staff_access_only => false
+      :staff_access_only => false},
+                        :without_protection => true
       )
     option.save!
   end 
