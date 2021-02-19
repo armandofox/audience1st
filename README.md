@@ -1,6 +1,6 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/maintainability)](https://codeclimate.com/github/armandofox/audience1st/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6fac2ed488c86289954b/maintainability)](https://codeclimate.com/github/abhinavDhulipala/audience1st/maintainability)
 [![Build Status](https://travis-ci.org/abhinavDhulipala/audience1st.svg?branch=main)](https://travis-ci.org/abhinavDhulipala/audience1st)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6fac2ed488c86289954b/test_coverage)](https://codeclimate.com/github/abhinavDhulipala/audience1st/test_coverage)
 [![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2488109)
 [![Bluejay Dashboard](https://img.shields.io/badge/Bluejay-Dashboard_6-blue.svg)](http://dashboard.bluejay.governify.io/dashboard/script/dashboardLoader.js?dashboardURL=https://reporter.bluejay.governify.io/api/v4/dashboards/tpa-CS169L-GH-abhinavDhulipala_audience1st/main)
 
