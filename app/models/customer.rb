@@ -98,17 +98,6 @@ class Customer < ActiveRecord::Base
   attr_accessor :force_valid
   attr_accessor :gift_recipient_only
   attr_accessor :password
-  attr_accessor :save_address_info
-
-  attr_accessible :first_name, :last_name, :street, :city, :state, :zip,
-  :day_phone, :eve_phone, :blacklist,  :email, :e_blacklist, :birthday,
-  :password, :password_confirmation, :token, :token_created_at, :comments,
-  :ticket_sales_import,
-  :secret_question, :secret_answer,
-  :company, :title, :company_url, :company_address_line_1,
-  :company_address_line_2, :company_city, :company_state, :company_zip,
-  :cell_phone, :work_phone, :work_fax, :best_way_to_contact
-
 
   cattr_reader :replaceable_attributes, :extra_attributes
   @@replaceable_attributes  =
