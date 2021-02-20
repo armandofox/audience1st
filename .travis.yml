@@ -7,7 +7,7 @@ bundler_args: --without production
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - CC_TEST_REPORTER_ID=c2b95b25d30ce5fa83d28309f1857d559be106347c00705aeb5325bc10c46935
+    - CC_TEST_REPORTER_ID=14424c8b4617210f92c218cb2f18299b06e9f219cf6be6642b9da830b7fa6bfa
     - CCTR=/tmp/cc-test-reporter
 before_install:
   - phantomjs --version
