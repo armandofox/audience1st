@@ -72,7 +72,7 @@ class Mailer < ActionMailer::Base
     
     mail(:to => address, :subject => subject) do |fmt|
       fmt.text { render :inline => text }
-      #fmt.html { render :inline => html }
+      fmt.html { render :inline => html }
     end
   end
 
