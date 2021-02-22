@@ -68,7 +68,10 @@ class Mailer < ActionMailer::Base
     html = Option.html_email_template.
              gsub(BODY_TAG, body_as_string).
              gsub(FOOTER_TAG, render_to_string(:partial => 'contact_us', :layout => false))
+    text = ActionController::Base.helpers.strip_tags(body_as_string)
+    
     mail(:to => address, :subject => subject) do |fmt|
+      fmt.text { render :inline => text }
       fmt.html { render :inline => html }
     end
   end
