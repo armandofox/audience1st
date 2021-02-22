@@ -74,9 +74,9 @@ class CustomersController < ApplicationController
     # unless admin, remove "extra contact" fields
     if @gAdminDisplay
       customer_params = params.require(:customer).permit(
-        user_modifiable_customer_params + [:comments,:role] + Customer.extra_attributes)
+        Customer.user_modifiable_attributes + [:comments,:role] + Customer.extra_attributes)
     else
-      customer_params = params.require(:customer).permit(user_modifiable_customer_params)
+      customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
     end
     notice = ''
     begin
@@ -177,7 +177,7 @@ class CustomersController < ApplicationController
   end
 
   def create
-    customer_params = params.require(:customer).permit(user_modifiable_customer_params + [:role, :comments])
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes + [:role, :comments])
     @customer = Customer.new(customer_params)
     @customer.created_by_admin = true
     begin
@@ -203,7 +203,7 @@ class CustomersController < ApplicationController
   end
 
   def user_create
-    customer_params = params.require(:customer).permit(user_modifiable_customer_params)
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
     @customer = Customer.new(customer_params)
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
@@ -369,11 +369,6 @@ class CustomersController < ApplicationController
 
   private
 
-  def user_modifiable_customer_params
-    [:first_name, :last_name, :email, :password, :password_confirmation, :blacklist, :e_blacklist,
-     :day_phone, :eve_phone, :street, :city, :state, :zip, :birthday]
-  end
-    
   def generate_token
     length_of_token = 15
     token = rand(36**length_of_token).to_s(36)
@@ -428,7 +423,7 @@ class CustomersController < ApplicationController
 
   def continue_as_new_guest
     # email does not exist: try to create customer and continue
-    customer_params = params.require(:customer).permit(user_modifiable_customer_params)
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
     @customer = Customer.new(customer_params)
     # HACK: this check can be replaced by regular validations once Customer is factored into subclasses
     if @customer.valid_as_guest_checkout?

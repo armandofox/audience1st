@@ -111,6 +111,11 @@ class Customer < ActiveRecord::Base
      :company_city, :company_state, :company_zip, :work_phone, :cell_phone,
      :work_fax, :company_url]
 
+  def self.user_modifiable_attributes
+    [:first_name, :last_name, :email, :password, :password_confirmation, :blacklist, :e_blacklist,
+     :day_phone, :eve_phone, :street, :city, :state, :zip, :birthday]
+  end
+
   before_validation :force_valid_fields, :on => :create
   before_save :trim_whitespace_from_user_entered_strings
   after_save :update_email_subscription
