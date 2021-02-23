@@ -1,11 +1,14 @@
+require 'digest/sha2'
+
 class Mailer < ActionMailer::Base
 
   helper :customers, :application, :options
 
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.
-  default :from => Proc.new { "AutoConfirm@mail.audience1st.com" }
+  default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
   default :reply_to => Proc.new { Option.box_office_email }
+  default "Message-ID" => Proc.new { "#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Option.sendgrid_domain}" }
 
   before_action :set_delivery_options
 
