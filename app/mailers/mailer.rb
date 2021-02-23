@@ -4,7 +4,7 @@ class Mailer < ActionMailer::Base
 
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.
-  default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
+  default :from => Proc.new { "AutoConfirm@mail.audience1st.com" }
   default :reply_to => Proc.new { Option.box_office_email }
 
   before_action :set_delivery_options
