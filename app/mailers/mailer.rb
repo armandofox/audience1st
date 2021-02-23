@@ -6,9 +6,9 @@ class Mailer < ActionMailer::Base
 
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.
-  default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
+  default :from => Proc.new { "AutoConfirm@#{Figaro.env.MAILGUN_DOMAIN}" }
   default :reply_to => Proc.new { Option.box_office_email }
-  default "Message-ID" => Proc.new { "#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Option.sendgrid_domain}" }
+  default "Message-ID" => Proc.new { "#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Figaro.env.MAILGUN_DOMAIN}" }
 
   before_action :set_delivery_options
 
@@ -88,16 +88,13 @@ class Mailer < ActionMailer::Base
     else
       ActionMailer::Base.perform_deliveries = true
       ActionMailer::Base.smtp_settings = {
-        :user_name => 'apikey',
-        :password => Figaro.env.SENDGRID_KEY,
-        :domain   => Option.sendgrid_domain,
-        :address  => 'smtp.sendgrid.net',
-        :port     => 587,
-        :enable_starttls_auto => true,
+        :port           => 587,
+        :address        => 'smtp.mailgun.org',
+        :user_name      => Figaro.env.MAILGUN_SMTP_LOGIN,
+        :password       => Figaro.env.MAILGUN_SMTP_PASSWORD,
+        :domain         => 'a1-staging.herokuapp.com',
         :authentication => :plain
       }
-      # use Sendgrid's "category" tag to identify which venue sent this email
-      headers['X-SMTPAPI'] = {'category' => "#{Option.venue} <#{Option.sendgrid_domain}>"}.to_json
     end
   end
 end
