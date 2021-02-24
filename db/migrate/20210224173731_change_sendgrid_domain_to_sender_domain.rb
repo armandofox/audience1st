@@ -1,8 +1,10 @@
 class ChangeSendgridDomainToSenderDomain < ActiveRecord::Migration
   def change
     o = Option.first
-    o.sendgrid_domain = 'mail.audience1st.com'
-    o.save!
+    if (o)
+      o.sendgrid_domain = 'mail.audience1st.com'
+      o.save!
+    end
     rename_column 'options', 'sendgrid_domain', 'sender_domain'
     # match current mailgun configuration
   end
