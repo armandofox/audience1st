@@ -95,7 +95,7 @@ class Mailer < ActionMailer::Base
         :address        => 'smtp.mailgun.org',
         :user_name      => Figaro.env.MAILGUN_SMTP_LOGIN,
         :password       => Figaro.env.MAILGUN_SMTP_PASSWORD,
-        :domain         => Option.sender_domain
+        :domain         => Option.sender_domain,
         :authentication => :plain
       }
     end
