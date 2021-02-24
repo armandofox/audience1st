@@ -85,7 +85,7 @@ class Mailer < ActionMailer::Base
   def set_delivery_options
     @venue = Option.venue
     @subject = "#{@venue} - "
-    if Rails.env.production? and Option.sendgrid_domain.blank?
+    if Rails.env.production? and Option.sender_domain.blank?
       ActionMailer::Base.perform_deliveries = false
       Rails.logger.info "NOT sending email"
     else
