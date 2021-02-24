@@ -6,7 +6,7 @@ class Mailer < ActionMailer::Base
 
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.
-  default :from => Proc.new { "AutoConfirm@#{Figaro.env.MAILGUN_DOMAIN}" }
+  default :from => Proc.new { "AutoConfirm@#{Option.sender_domain}" }
   default :reply_to => Proc.new { Option.box_office_email }
   # Prevent ActionMailer from constructing invalid message-IDs in which the domain doesn't match
   default "Message-ID" => Proc.new { "#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Figaro.env.MAILGUN_DOMAIN}" }
@@ -95,7 +95,7 @@ class Mailer < ActionMailer::Base
         :address        => 'smtp.mailgun.org',
         :user_name      => Figaro.env.MAILGUN_SMTP_LOGIN,
         :password       => Figaro.env.MAILGUN_SMTP_PASSWORD,
-        :domain         => 'a1-staging.herokuapp.com',
+        :domain         => Option.sender_domain
         :authentication => :plain
       }
     end
