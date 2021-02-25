@@ -11,7 +11,9 @@ describe StoreController do
       @extra = {:show_id => '25', :promo_code => 'x'}.merge(@extra ||= {})
     end
     context 'when not logged in' do
-      before :each do ; login_as(nil) ; end
+      before :each do
+        login_as(nil)
+      end
       it 'redirects as generic customer' do
         get :index
         expect(response).to redirect_to(store_path(@anon))
@@ -27,7 +29,9 @@ describe StoreController do
       end
     end
     context 'when logged in as regular user' do
-      before :each do ; login_as(@c) ;  end
+      before :each do
+        login_as(@c)
+      end
       it 'redirects to your login keeping params' do
         get :index, @extra
         expect(response).to redirect_to(store_path(@c, @extra))

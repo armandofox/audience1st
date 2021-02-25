@@ -107,7 +107,7 @@ class Audience1stSeeder
       :stylesheet_url => 'https://cdn.jsdelivr.net/gh/armandofox/stylesheets@master/sandbox/default.css',
       :stripe_key => 'Replace with real Stripe key',
       :stripe_secret => 'Replace with real Stripe secret',
-      :sendgrid_domain => '',
+      :sender_domain => '',
       :staff_access_only => false
       )
     option.save!
