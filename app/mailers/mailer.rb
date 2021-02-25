@@ -54,6 +54,12 @@ class Mailer < ActionMailer::Base
     render_and_send_email(@customer.email, "#{@subject} CANCELLED reservation", :cancel_reservation)
   end
 
+  def upcoming_birthdays(num, customers, subject, recipient)
+    @num = num
+    @customers = customers
+    render_and_send_email(recipient, subject, :upcoming_birthdays)
+  end
+  
   def general_mailer(template_name, params, subject)
     params.keys.each do |key|
       self.instance_variable_set("@#{key}", params[key])
