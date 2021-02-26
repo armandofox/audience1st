@@ -39,10 +39,9 @@ class LabelsController < ApplicationController
   end
 
   private
+
   def label_params
     params.permit(:label_name)
-    {
-      :name => params[:label_name]
-    }
+    { :name => params[:label_name] }
   end
 end

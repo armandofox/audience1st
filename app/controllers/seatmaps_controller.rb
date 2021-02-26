@@ -77,8 +77,6 @@ class SeatmapsController < ApplicationController
   end
 
   def seatmaps_update_params
-    params.require(:seatmap).permit(:csv, :name,:image_url)
+    params.require(:seatmap).permit(:csv , :name,:image_url)
   end
-
 end
-
