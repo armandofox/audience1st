@@ -68,12 +68,10 @@ class SeatmapsController < ApplicationController
   private
 
   def seatmaps_new_params
-    params.permit(:csv, :name,:image_url)
-    {
-      :image_url => params[:image_url],
-      :name => params[:name],
-      :csv => params[:csv].read
-    }
+    params.permit(:csv, :name, :image_url)
+    { image_url: params[:image_url],
+      name: params[:name],
+      csv: params[:csv].read }
   end
 
   def seatmaps_update_params
