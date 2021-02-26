@@ -18,6 +18,7 @@ before_install:
   - gem install bundler --version=1.17.2
   - bundle config build.nokogiri --use-system-libraries
 script:
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi'
   - cp config/database.yml.test config/database.yml
   - bundle exec rake db:setup
   - bundle exec cucumber --retry 1 --format progress
