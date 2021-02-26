@@ -69,8 +69,10 @@ class ShowsController < ApplicationController
   end
 
   def show_params
-    params.require(:show).permit :name, :event_type, :listing_date, 
-                                 :landing_page_url, :description, :patron_notes, 
-                                 :sold_out_dropdown_message, :sold_out_customer_info
+    params.require(:show).permit :name, :event_type, :listing_date,
+                                 :landing_page_url, :description,
+                                 :patron_notes,
+                                 :sold_out_dropdown_message,
+                                 :sold_out_customer_info
   end
 end
