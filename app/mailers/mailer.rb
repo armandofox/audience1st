@@ -9,7 +9,7 @@ class Mailer < ActionMailer::Base
   default :from => Proc.new { "AutoConfirm@#{Option.sender_domain}" }
   default :reply_to => Proc.new { Option.box_office_email }
   # Prevent ActionMailer from constructing invalid message-IDs in which the domain doesn't match
-  default "Message-ID" => Proc.new { "#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Figaro.env.MAILGUN_DOMAIN}" }
+  default "Message-ID" => Proc.new { "<#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Figaro.env.MAILGUN_DOMAIN}>" }
   # include to get past many spam filters
   default "List-Unsubscribe" => Proc.new { "<mailto:#{Option.box_office_email}>" }
 
