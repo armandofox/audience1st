@@ -123,6 +123,8 @@ GEM
       capybara
       sinatra
       webmock
+    faker (2.2.1)
+      i18n (>= 0.8)
     faraday (0.14.0)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.14.0)
@@ -426,6 +428,7 @@ DEPENDENCIES
   email_spec
   factory_bot_rails
   fake_stripe
+  faker
   faye-websocket
   figaro
   gibbon

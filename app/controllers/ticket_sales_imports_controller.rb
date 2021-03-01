@@ -86,7 +86,6 @@ class TicketSalesImportsController < ApplicationController
     i.destroy
     redirect_to ticket_sales_imports_path
   end
-end
 
   private
   def ticketsalesimport_params

@@ -50,6 +50,7 @@ group :test do
   gem 'coveralls', :require => false
   gem 'database_cleaner'
   gem 'email_spec'
+  gem 'faker'
   gem 'fake_stripe'
   gem 'poltergeist'
   gem 'rspec-json_expectations'
