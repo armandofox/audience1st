@@ -23,7 +23,7 @@ class LabelsController < ApplicationController
 
   def update
     @label = Label.find(params[:id])
-    if @label.update_attributes(:name => params[:label_name])
+    if @label.update_attributes(label_params)
       redirect_to labels_path
     else
       redirect_to labels_path, :alert => @label.errors.as_html
@@ -39,9 +39,20 @@ class LabelsController < ApplicationController
   end
 
   private
-
+  # Label Params Gracefully handles Required Missing Parameters
+  # Adds Error to the Label instance, referencing 
+  # https://api.rubyonrails.org/v6.1.0/classes/ActiveModel/Errors.html#method-i-add
   def label_params
-    params.permit(:label_name)
-    { name: params[:label_name] }
+    begin 
+      params.require(:label_name)
+      params.permit(:label_name)
+      { name: params[:label_name] }
+    rescue ActionController::ParameterMissing => err
+      @label = Label.find(params[:id])
+      @label.errors.add(:name, 
+                        :invalid, 
+                        message: "Missing label_name parameter")
+      {}
+    end
   end
 end
