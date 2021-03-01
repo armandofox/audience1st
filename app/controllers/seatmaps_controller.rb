@@ -71,7 +71,6 @@ class SeatmapsController < ApplicationController
     name_param = params.require(:name)
     image_url_param = params.require(:image_url)
     csv_param = params.require(:csv)
-    #csv_params, name_params, image_url_params = params.require([:name, :image_url, :csv])
     params.permit(:csv, :name, :image_url)
     { name: name_param,
       image_url: image_url_param,
