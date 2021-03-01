@@ -73,6 +73,6 @@ class SessionsController < ApplicationController
   private
 
   def secret_question_params
-    params.require(:email).permit(:secret_question, :secret_answer)
+    params.permit(:secret_question, :secret_answer)
   end
 end
