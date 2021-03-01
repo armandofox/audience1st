@@ -76,4 +76,9 @@ class ShowdatesController < ApplicationController
     end
   end
 
+  private
+  def showdate_params
+    #params.require(:showdate).permit
+  end
+
 end
