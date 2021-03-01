@@ -68,13 +68,18 @@ class SeatmapsController < ApplicationController
   private
 
   def seatmaps_new_params
+    name_param = params.require(:name)
+    image_url_param = params.require(:image_url)
+    csv_param = params.require(:csv)
+    #csv_params, name_params, image_url_params = params.require([:name, :image_url, :csv])
     params.permit(:csv, :name, :image_url)
-    { image_url: params[:image_url],
-      name: params[:name],
-      csv: params[:csv].read }
+    { name: name_param,
+      image_url: image_url_param,
+      csv: csv_param.read }
   end
 
   def seatmaps_update_params
     params.require(:seatmap).permit(:csv, :name, :image_url)
   end
 end
+

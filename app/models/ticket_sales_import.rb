@@ -102,5 +102,4 @@ class TicketSalesImport < ActiveRecord::Base
       end
     end
   end
-
 end

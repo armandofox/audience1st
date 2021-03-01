@@ -28,18 +28,21 @@ describe LabelsController do
       end
     end
 
-    describe "update bad label" do
-      it "should be a bad update due to a possible db issue and include label missing param error" do
+    describe "bad update label" do
+      it "should be a bad update due to a possible db issue" do
+        #allow(@lab).to receive(:update_attributes).and_return(false)
         Label.any_instance.stub(:update_attributes).and_return(false)
 
-        response = put :update, :id => @lab.id, :bad_param => "bad update call"
+        response = put :update, { :id => @lab.id, :label_name => "update name" }
+        expect(@lab.name).to eq("valid name")
         expect(response).to redirect_to(labels_path)
-        expect(flash[:alert]).not_to be_nil
       end
 
       it "bad update due to missing param" do
-        response = put :update, :id => @lab.id, :bad_param => "bad update call"
-        expect(response).to redirect_to(labels_path)
+        expect {
+          put :update, :id => @lab.id, :bad_param => "bad update call"
+        }.to raise_error(ActionController::ParameterMissing)
+
         expect(flash[:alert]).to be_nil
         end
       end

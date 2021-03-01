@@ -1,0 +1,19 @@
+project:
+  name: 'audience1st'
+  owner: 'cs169'
+  coach: 'Nick Mecklenburg'
+  teamId: '6'
+  identities:
+    pivotal:
+      url: 'https://www.pivotaltracker.com/n/projects/2488109'
+    heroku:
+      url: 'https://calvisitor.herokuapp.com/'
+    travis:
+      url: 'https://travis-ci.org/github/abhinavDhulipala/audience1st'
+  members:    
+    member1:
+      name: 'Kyle'
+      surname: 'Khus'
+      githubUsername: 'kkhus5'
+      pivotalUsername: 'kylekhus'
+      herokuEmail: 'kkhus5@berkeley.edu'

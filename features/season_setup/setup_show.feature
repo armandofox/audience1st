@@ -44,3 +44,21 @@ Scenario: Setup new show
     | sold_out_customer_info    | Tough                    |
     | description               | A classic                |
 
+
+Scenario: Unable to Setup new show
+
+  Given the show does not save
+  When I go to the New Show page
+  And I fill in the "show" fields as follows:
+  | field                                                          | value                        |
+  | Show Name                                                      | Fiddler on the Roof          |
+  | List starting                                                  | select date "2010-03-11"     |
+  | Event type                                                     | select "Regular Show"        |
+  | Landing page URL (optional)                                    | http://mytheatre.com/fiddler |
+  | Description (optional)                                         | A classic                    |
+  | Special notes to patron (in confirmation email); blank if none | Enjoy                        |
+  | If show is sold out, dropdown says:                            | Sold Out!                    |
+  | If show is sold out, information for patron                    | Tough                        |
+  And I press "Create Show"
+  Then I should see "There were errors creating the show" within "body"
+
