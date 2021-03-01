@@ -39,7 +39,7 @@ class LabelsController < ApplicationController
   end
 
   private
-  
+
   # Adds Error to the Label instance, referencing 
   # https://api.rubyonrails.org/v6.1.0/classes/ActiveModel/Errors.html#method-i-add
   def label_params
