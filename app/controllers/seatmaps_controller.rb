@@ -24,7 +24,7 @@ class SeatmapsController < ApplicationController
   def update
     return destroy if params[:commit] =~ /delete/i
     @seatmap = Seatmap.find params[:id]
-    if @seatmap.update(seatmaps_update_params)
+    if @seatmap.update_attributes(seatmaps_update_params)
       flash[:notice] = 'Seatmap successfully updated.'
     else
       flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
@@ -68,17 +68,17 @@ class SeatmapsController < ApplicationController
   private
 
   def seatmaps_new_params
-    params.permit(:csv, :name,:image_url)
-    {
-      :image_url => params[:image_url],
-      :name => params[:name],
-      :csv => params[:csv].read
-    }
+    params.require(:csv)
+    params.require(:name)
+    params.require(:image_url)
+    permitted = params.permit(:csv, :name, :image_url)
+    { :csv => permitted[:csv].read, 
+      :name => permitted[:name],
+      :image_url => permitted[:image_url] }
   end
 
   def seatmaps_update_params
-    params.require(:seatmap).permit(:csv, :name,:image_url)
+    params.require(:seatmap).permit(:name, :image_url)
   end
-
 end
 
