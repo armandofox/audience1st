@@ -90,10 +90,10 @@ class TicketSalesImportsController < ApplicationController
   private
 
   def ticketsalesimport_params
-    params.permit(:vendor, :file)
-    { vendor: params[:vendor],
-      raw_data: params[:file].read,
-      filename: params[:file].original_filename,
+    permitted = params.permit(:vendor, :file)
+    { vendor: permitted[:vendor],
+      raw_data: permitted[:file].read,
+      filename: permitted[:file].original_filename,
       completed: false, processed_by: current_user,
       existing_customers: 0, new_customers: 0,
       tickets_sold: 0 }
