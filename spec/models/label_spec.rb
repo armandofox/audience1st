@@ -37,4 +37,15 @@ describe Label do
       expect(@foo_label.customers).to include(@c2)
     end
   end
+  describe "all labels" do
+    before(:each) do
+      (2..5).each do |i|
+        Label.create!(:name => "foo-#{i}")
+      end
+    end
+
+    it "should find 5 labels" do
+      expect(Label.all_labels.length()).to eq(5)
+    end
+  end
 end
