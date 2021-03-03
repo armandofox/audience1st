@@ -32,8 +32,7 @@ describe ShowsController do
           description: "desc",
           bad_param: "bad",
           listing_date: Date.today
-        },
-        format: :json
+        }
       }
     }
     let(:mixed_update_params) {
@@ -49,7 +48,6 @@ describe ShowsController do
       end
       it "create will not set value of unpermitted param" do
         expect(response).to redirect_to(edit_show_path( id:1 ))
-        expect(response["bad_param"]).not_to eq("bad")
         
         @post_show = Show.find(1)
         expect { @post_show.bad_parmam }.to raise_error(NoMethodError)
