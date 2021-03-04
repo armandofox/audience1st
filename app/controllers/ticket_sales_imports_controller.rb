@@ -89,7 +89,8 @@ class TicketSalesImportsController < ApplicationController
 
   private
 
-  def ticketsalesimport_params
+  def ticketsualesimport_params
+    params.require(:vendor)
     permitted = params.permit(:vendor, :file)
     { vendor: permitted[:vendor],
       raw_data: permitted[:file].read,
