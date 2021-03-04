@@ -17,9 +17,9 @@
     }
     if (confirm("Please confirm amount: OK to continue with payment of $" + amountInt.toString() + ".00 ?")) {
         A1.stripeSubmit();
-    }
+    } 
     return false;   // disable form submission, since stripeResponseHandler will do it
-  }
+  } 
 
 
 #store
@@ -41,7 +41,7 @@
             .input-group-append
               %span.input-group-text.form-control-sm .00
         .form-group.form-row
-          %label.col-form-label{:for => :donation_comments}
+          %label.col-form-label{:for => :donation_comments} 
             If you'd like to be recognized as Anonymous, or if you'd like to donate in honor
             of someone else, please provide that information here:
           = text_area_tag 'donation_comments', '', :rows => 4, :class => 'form-control form-control-sm'
