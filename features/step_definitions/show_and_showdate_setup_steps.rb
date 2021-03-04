@@ -192,6 +192,6 @@ Then /the "(.*)" performance should be (Stream Anytime|Live Stream)/ do |thedate
   end
 end
 
-Given /the show does not save/ do
+Given /^the show does not save$/ do
   Show.any_instance.stub(:save).and_return(false)
 end
