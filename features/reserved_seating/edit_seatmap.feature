@@ -38,6 +38,13 @@ Scenario: Create new seatmap from valid CSV
     | A1 |    | B1+ |
     |    | A2 | B2  |
 
+Scenario: Create new seatmap from invalid CSV
+  
+  When I fill in "New" and "http://foo.com/x.jpg" as the name and image for a new seatmap
+  And the URI "http://foo.com/x.jpg" is readable
+  And I upload the seatmap "blank_seatmap.csv"
+  Then I should see "Seatmap CSV has errors"
+
 Scenario: Delete seatmap
 
   When I press "Delete" for the "Default" seatmap
