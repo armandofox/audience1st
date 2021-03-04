@@ -67,7 +67,7 @@ class ShowdatesController < ApplicationController
 
   def update
     @showdate = Showdate.find(params[:id])
-    if @showdate.update_attributes(params[:showdate])
+    if @showdate.update_attributes(showdate_params)
       flash[:notice] = 'Changes saved.'
       redirect_to edit_show_path(@showdate.show)
     else
