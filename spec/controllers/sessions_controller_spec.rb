@@ -115,5 +115,42 @@ describe SessionsController do
     it 'logs me out'                   do expect(controller).to receive(:logout_killing_session!); do_destroy end
     it 'redirects me to the home page' do do_destroy; expect(response).to be_redirect     end
   end
-  
+
+  describe "secret question params" do
+    before(:each) do 
+      @user.update_attribute(:secret_question, "do you like jazz?")
+      @user.update_attribute(:secret_answer, "yes")
+    end
+
+    let(:secret_question_params) {
+      {
+        email: "quentin@email.com"
+        secret_question: "do you like jazz?",
+        secret_answer: "yes",
+        answer: "yes",
+        bad_param: "can't assign or update this"
+      }
+    }
+
+    context "when creating a secret question and secret answer with a mix of permitted and unpermitted params" do 
+      before :each do 
+        post :create_from_secret, secret_question_params
+      end
+
+      it "returns associated user" do
+        expect(response.email).to eq("quentin@email.com")
+      end
+
+      it "will not set value of nonexistent param" do        
+        @u = Customer.find(1)
+        expect { @u.bad_param }.to raise_error(NoMethodError)
+      end
+
+      it "will set the value of permitted params" do
+        @u = Customer.find(1)
+        expect( @u.secret_question ).to eq("do you like jazz?")
+        expect( @u.secret_answer ).to eq("yes")
+      end
+    end
+  end
 end

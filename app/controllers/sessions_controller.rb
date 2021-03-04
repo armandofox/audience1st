@@ -74,5 +74,6 @@ class SessionsController < ApplicationController
 
   def secret_question_params
     params.permit(:secret_question, :secret_answer)
+    params.fetch(:secret_question)
   end
 end
