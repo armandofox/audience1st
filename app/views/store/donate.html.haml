@@ -26,8 +26,7 @@
     %h1.text-center= sanitize(Option.quick_donation_banner)
     %p.text-center.lead-= sanitize(Option.quick_donation_explanation)
 
-    = form_tag(process_donation_path, {:id => '_stripe_payment_form', :onsubmit => 'return confirmAndSubmit()',
-}) do
+    = form_tag(process_donation_path, {:id => '_stripe_payment_form', :onsubmit => 'return confirmAndSubmit()',}) do
       = hidden_field_tag 'referer', 'donate'
       = hidden_field_tag 'customer_id', @customer.id
       #billing= render :partial => 'customers/billing_address', :locals => {:customer => @customer}
