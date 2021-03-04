@@ -31,17 +31,14 @@ describe TicketSalesImportsController do
     context 'when creating ticketsalesimport with a mix of permitted and unpermitted params' do
       before :each do
         post :create, mixed_params
+        @post_tsi = TicketSalesImport.find(1)
       end
-
       it 'create will not set value of unpermitted param' do
         expect(response).to redirect_to(edit_ticket_sales_import_path id: 1)
-
-        @post_tsi = TicketSalesImport.find(1)
         expect(@post_tsi).not_to have_attribute 'bad_param_one'
       end
       it 'create will set the value of permitted params' do
         expect(response).to redirect_to(edit_ticket_sales_import_path id: 1)
-        @post_tsi = TicketSalesImport.find(1)
         expect(@post_tsi.vendor).to eq 'TodayTix'
       end
     end
