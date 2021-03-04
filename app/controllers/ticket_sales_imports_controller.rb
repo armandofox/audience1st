@@ -17,7 +17,7 @@ class TicketSalesImportsController < ApplicationController
 
   def create
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
-    @import = TicketSalesImport.new(ticketsalesimport_params)
+    @import = TicketSalesImport.create!(ticketsalesimport_params)
     if @import.valid?
       @import.save!
       redirect_to edit_ticket_sales_import_path(@import)
@@ -89,8 +89,7 @@ class TicketSalesImportsController < ApplicationController
 
   private
 
-  def ticketsualesimport_params
-    params.require(:vendor)
+  def ticketsalesimport_params
     permitted = params.permit(:vendor, :file)
     { vendor: permitted[:vendor],
       raw_data: permitted[:file].read,
