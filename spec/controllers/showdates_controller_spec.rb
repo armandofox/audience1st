@@ -31,17 +31,19 @@ describe ShowdatesController do
       }
 
     end
-    it 'checks strong params' do
-      # this is the error caused if you have the attr_accessible to protect from mass assignment (deprecated rails 3)
-      expect{post :create, @mass_assignment_attack_params}.not_to raise_error ActiveModel::MassAssignmentSecurity::Error
-      # this is the new error will be raised if you delete attr_accessible and don't use permit (rails 4)
-      expect{post :create, @mass_assignment_attack_params}.not_to raise_error ActiveModel::ForbiddenAttributesError
-      # ensure that the attribute hasn't been pushed to the model
+    it 'checks strong params on create' do
+      message = 'error caused if you have the attr_accessible to protect from mass assignment (deprecated rails 3)'
+      expect{post :create, @mass_assignment_attack_params}.not_to raise_error ActiveModel::MassAssignmentSecurity::Error, message
+      message = "new error will be raised if you delete attr_accessible and leave it unprotected (rails 4)"
+      expect{post :create, @mass_assignment_attack_params}.not_to raise_error ActiveModel::ForbiddenAttributesError, message
+      message = "ensure that the attribute hasn't been pushed to the model"
       post :create, @mass_assignment_attack_params
       last_showdate = Showdate.last
-      [:dummy_param_1, :dummy_param_2].each { |symb| expect(last_showdate.attributes).not_to have_key symb}
-      expect(last_showdate[:stream_anytime]).to be_truthy
+      [:dummy_param_1, :dummy_param_2].each { |symb| expect(last_showdate.attributes).not_to have_key(symb), message}
+      message = 'ensure proper attribute is persisted'
+      expect(last_showdate[:stream_anytime]).to be_truthy, message
     end
+
   end
 
 end
