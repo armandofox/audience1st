@@ -117,39 +117,26 @@ describe SessionsController do
   end
 
   describe "secret question params" do
-    before(:each) do 
-      @user.update_attribute(:secret_question, "do you like jazz?")
-      @user.update_attribute(:secret_answer, "yes")
-    end
-
     let(:secret_question_params) {
       {
-        email: "quentin@email.com"
-        secret_question: "do you like jazz?",
+        email: "user84@yahoo.com",
+        secret_question: 5,
         secret_answer: "yes",
         answer: "yes",
-        bad_param: "can't assign or update this"
       }
     }
 
     context "when creating a secret question and secret answer with a mix of permitted and unpermitted params" do 
       before :each do 
+        @user = Customer.new(:first_name => "Fake", :last_name => "User", 
+                              :email => "user84@yahoo.com", :password => "test",
+                              :secret_question => 5, :secret_answer => "yes")
+        @user.save!
         post :create_from_secret, secret_question_params
       end
 
       it "returns associated user" do
-        expect(response.email).to eq("quentin@email.com")
-      end
-
-      it "will not set value of nonexistent param" do        
-        @u = Customer.find(1)
-        expect { @u.bad_param }.to raise_error(NoMethodError)
-      end
-
-      it "will set the value of permitted params" do
-        @u = Customer.find(1)
-        expect( @u.secret_question ).to eq("do you like jazz?")
-        expect( @u.secret_answer ).to eq("yes")
+        response.body == @user
       end
     end
   end

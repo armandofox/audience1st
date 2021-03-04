@@ -32,8 +32,10 @@ class SessionsController < ApplicationController
 
   def create_from_secret
     create_session do |params|
+      permitted = secret_question_params
       @email = params[:email]
-      u = Customer.authenticate_from_secret_question(@email, secret_question_params, params[:answer])
+      puts params.as_json
+      u = Customer.authenticate_from_secret_question(@email, permitted, params[:answer])
       if u.nil? || !u.errors.empty?
         note_failed_signin(@email, u)
         redirect_to (u.errors.has_key?(:no_secret_question) ? login_path : new_from_secret_session_path)
@@ -73,7 +75,6 @@ class SessionsController < ApplicationController
   private
 
   def secret_question_params
-    params.permit(:secret_question, :secret_answer)
-    params.fetch(:secret_question)
+    params.permit :secret_question
   end
 end
