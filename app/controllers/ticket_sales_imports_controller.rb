@@ -17,7 +17,7 @@ class TicketSalesImportsController < ApplicationController
 
   def create
     return redirect_to(ticket_sales_imports_path, :alert => 'Please choose a will-call list to upload.') if params[:file].blank?
-    @import = TicketSalesImport.create!(ticketsalesimport_params)
+    @import = TicketSalesImport.new(ticketsalesimport_params)
     if @import.valid?
       @import.save!
       redirect_to edit_ticket_sales_import_path(@import)
