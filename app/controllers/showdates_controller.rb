@@ -28,7 +28,7 @@ class ShowdatesController < ApplicationController
     unless existing_dates.empty?
       warnings.push(t('showdates.already_exist', :dates => existing_dates.map { |d| d.to_formatted_s(:showtime) }.join(', ')))
     end
-    new_showdates = Showdate.from_date_list(new_dates, cutoff, params[:showdate])
+    new_showdates = Showdate.from_date_list(new_dates, cutoff, showdate_params)
     Showdate.transaction do
       begin
         new_showdates.each { |showdate|  showdate.save! }
@@ -78,7 +78,7 @@ class ShowdatesController < ApplicationController
 
   private
   def showdate_params
-    params.require(:showdate).permit  :thedate, :house_capacity, :max_advance_sales, :description, :show_id,
+    params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales, :description, :show_id,
     :seatmap_id, :live_stream, :stream_anytime, :access_instructions
   end
 
