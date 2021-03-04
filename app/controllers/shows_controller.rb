@@ -5,7 +5,9 @@ class ShowsController < ApplicationController
   def index
     @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @earliest,@latest = Show.minimum(:season), Show.maximum(:season)
+    year = Time.current.year
+    @earliest = Show.minimum(:season) || year
+    @latest = Show.maximum(:season) || year
     @season = @latest unless @season.between?(@earliest,@latest)
     @shows = Show.for_seasons(@season,@season)
     @page_title = "#{Option.humanize_season(@season)} Shows"
