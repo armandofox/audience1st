@@ -7,7 +7,6 @@ describe ShowdatesController do
 
   context 'test strong params' do
     before :each do
-      puts Time.current
       show = Show.create!(listing_date: 1.month.ago, season: Time.this_season, name: 'Dummy show')
       @mass_assignment_attack_params = {
         showdate_type: 'Ts',
@@ -30,7 +29,6 @@ describe ShowdatesController do
         show_run_dates: {start: '"2010-01-01"', end: '"2010-01-03"'},
         stream_until: {year: 2010, month: 1, day: 1, hour: 23, minute: 45},
       }
-
 
     end
     it 'checks strong params' do
