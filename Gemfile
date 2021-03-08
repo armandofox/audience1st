@@ -67,7 +67,6 @@ group :development do
   # gem 'stackprof'
   gem 'web-console', '~> 2.0'
   gem 'sdoc', '~> 0.4.0'
-  gem 'faker'
 end
 
 group :development, :test do
