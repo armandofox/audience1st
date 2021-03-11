@@ -32,8 +32,9 @@ class SessionsController < ApplicationController
 
   def create_from_secret
     create_session do |params|
+      permitted = secret_question_params
       @email = params[:email]
-      u = Customer.authenticate_from_secret_question(@email, params[:secret_question], params[:answer])
+      u = Customer.authenticate_from_secret_question(@email, permitted, params[:answer])
       if u.nil? || !u.errors.empty?
         note_failed_signin(@email, u)
         redirect_to (u.errors.has_key?(:no_secret_question) ? login_path : new_from_secret_session_path)
@@ -70,4 +71,9 @@ class SessionsController < ApplicationController
     Rails.logger.warn "Failed login for '#{attempted_username}' from #{request.remote_ip} at #{Time.current.utc}: #{flash[:alert]}"
   end
 
+  private
+
+  def secret_question_params
+    params.permit :secret_question
+  end
 end
