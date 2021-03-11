@@ -136,7 +136,7 @@ class StoreController < ApplicationController
   def process_donation
     @amount = to_numeric(params[:donation])
     if params[:customer_id].blank?
-      customer_params = params.require(:customer).permit(Customer.user_modifiable_attribute)
+      customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
       @customer = Customer.for_donation(customer_params)
       @customer.errors.empty? or return redirect_to(quick_donate_path(:customer => params[:customer], :donation => @amount), :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}")
     else     # we got here via a logged-in customer

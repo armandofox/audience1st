@@ -4,13 +4,10 @@ Feature: update customer information
   So that I can get to know my customers and keep their info timely
   I want to update information about customers
 
-Background: existing customer
+Scenario: change staff-only comment, labels, blacklist; don't email
 
   Given I am logged in as boxoffice manager
   And I visit the edit contact info page for customer "Armando Fox"
-
-Scenario: change staff-only comment, labels, blacklist; don't email
-
   When I fill in "Staff Comments" with "Lush"
   And I check "dont_send_email"
   And I check "customer_blacklist"
@@ -30,3 +27,17 @@ Scenario: superadmin can change customer role
   And I select "Staff" from "Role"
   And I press "Save Changes"
   Then customer "Armando Fox" should have the "staff" role
+
+Scenario: customer can change their own info
+
+  Given I am logged in as customer "Armando Fox"
+  And I visit the edit contact info page for customer "Armando Fox"
+  And I fill in the following:
+    | First name | Alex        |
+    | Street     | 233 E 69 St |
+  And I uncheck "customer_e_blacklist"
+  And I press "Save Changes"
+  Then customer "Alex Fox" should have the following attributes:
+  | attribute   | value       |
+  | e_blacklist | false       |
+  | street      | 233 E 69 St |

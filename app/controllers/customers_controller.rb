@@ -91,10 +91,11 @@ class CustomersController < ApplicationController
       @customer.update_attributes! customer_params
       if @gAdminDisplay
         @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
+      else
+        # if success, and the update is NOT being performed by an admin,
+        # clear the created-by-admin flag
+        @customer.update_attribute(:created_by_admin, false)
       end
-      # if success, and the update is NOT being performed by an admin,
-      # clear the created-by-admin flag
-      @customer.update_attribute(:created_by_admin, false) unless current_user.is_staff
       notice << "Contact information for #{@customer.full_name} successfully updated."
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
