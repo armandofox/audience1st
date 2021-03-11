@@ -259,8 +259,10 @@ class StoreController < ApplicationController
       # record 'who will pickup' field if necessary
       @gOrderInProgress.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
-    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
-    @gOrderInProgress.purchaser.update_attributes(customer_params)
+    if params.has_key?(:customer)
+      customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+      @gOrderInProgress.purchaser.update_attributes(customer_params)
+    end
     unless @gOrderInProgress.ready_for_purchase?
       flash[:alert] = @gOrderInProgress.errors.as_html
       redirect_to_checkout
