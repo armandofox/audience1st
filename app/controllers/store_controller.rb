@@ -136,7 +136,8 @@ class StoreController < ApplicationController
   def process_donation
     @amount = to_numeric(params[:donation])
     if params[:customer_id].blank?
-      @customer = Customer.for_donation(params[:customer])
+      customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+      @customer = Customer.for_donation(customer_params)
       @customer.errors.empty? or return redirect_to(quick_donate_path(:customer => params[:customer], :donation => @amount), :alert => "Incomplete or invalid donor information: #{@customer.errors.as_html}")
     else     # we got here via a logged-in customer
       @customer = Customer.find params[:customer_id]
@@ -202,14 +203,16 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    recipient = recipient_from_params
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+    try_customer = Customer.new(customer_params).freeze
+    recipient = recipient_from_params(customer_params)
     @recipient =  recipient[0]
     if @recipient.email == @customer.email
       flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
       render :action => :shipping_address
       return
     end 
-    if Customer.email_matches_diff_last_name?(Customer.new params[:customer])
+    if Customer.email_matches_diff_last_name?(try_customer)
       flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
       render :action => :shipping_address
       return
@@ -226,9 +229,9 @@ class StoreController < ApplicationController
     @gOrderInProgress.customer = @recipient
     @gOrderInProgress.save!
 
-    if Customer.email_last_name_match_diff_address?(Customer.new params[:customer])
+    if Customer.email_last_name_match_diff_address?(try_customer)
       flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
-    elsif recipient_from_params[1] == "found_matching_customer"
+    elsif recipient_from_params(customer_params)[1] == "found_matching_customer"
       flash[:notice] = I18n.t('store.gift_recipient_on_file')  
     end
     redirect_to_checkout
@@ -256,7 +259,8 @@ class StoreController < ApplicationController
       # record 'who will pickup' field if necessary
       @gOrderInProgress.add_comment(" - Pickup by: #{ActionController::Base.helpers.sanitize(params[:pickup])}") unless params[:pickup].blank?
     end
-    @gOrderInProgress.purchaser.update_attributes(params[:customer])
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+    @gOrderInProgress.purchaser.update_attributes(customer_params)
     unless @gOrderInProgress.ready_for_purchase?
       flash[:alert] = @gOrderInProgress.errors.as_html
       redirect_to_checkout
@@ -301,8 +305,8 @@ class StoreController < ApplicationController
       (s.upcoming_showdates.first || s.showdates.first)
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
-  def recipient_from_params
-    try_customer = Customer.new(params[:customer])
+  def recipient_from_params(customer_params)
+    try_customer = Customer.new(customer_params)
     recipient = Customer.find_unique(try_customer)
     (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end

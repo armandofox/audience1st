@@ -69,36 +69,41 @@ class CustomersController < ApplicationController
   end
 
   def update
-    @superadmin = current_user.is_admin
     # editing contact info may be called from various places. correctly
     # set the return-to so that form buttons can do the right thing.
     # unless admin, remove "extra contact" fields
-    params[:customer] = delete_admin_only_attributes(params[:customer]) unless @gAdminDisplay
+    if @gAdminDisplay
+      customer_params = params.require(:customer).permit(
+        Customer.user_modifiable_attributes + [:comments,:role] + Customer.extra_attributes)
+    else
+      customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+    end
     notice = ''
     begin
-      if ((newrole = params[:customer].delete(:role))  &&
+      if ((newrole = customer_params.delete(:role))  &&
           newrole != @customer.role_name  &&
           current_user.can_grant(newrole))
         @customer.update_attribute(:role, Customer.role_value(newrole))
-        notice << "  Privilege level set to '#{newrole}.'"
+        notice << "  Privilege level set to '#{newrole}.' "
       end
       # update generic attribs
       @customer.created_by_admin = @gAdminDisplay # to skip validations if admin is editing
-      @customer.update_attributes!(params[:customer])
-      @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
-      # if success, and the update is NOT being performed by an admin,
-      # clear the created-by-admin flag
-      @customer.update_attribute(:created_by_admin, false) unless current_user.is_staff
+      @customer.update_attributes! customer_params
+      if @gAdminDisplay
+        @customer.update_labels!(params[:label] ? params[:label].keys.map(&:to_i) : nil)
+      else
+        # if success, and the update is NOT being performed by an admin,
+        # clear the created-by-admin flag
+        @customer.update_attribute(:created_by_admin, false)
+      end
       notice << "Contact information for #{@customer.full_name} successfully updated."
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
         :logged_in_id => current_user.id,
         :comments => notice)
-      if @customer.email_changed? && @customer.valid_email_address? &&
-          params[:dont_send_email].blank?
+      if @customer.email_changed? && @customer.valid_email_address? && params[:dont_send_email].blank?
         # send confirmation email
-        email_confirmation(:confirm_account_change,@customer,
-                           "updated your email address in our system")
+        email_confirmation(:confirm_account_change,@customer,"updated your email address in our system")
       end
       redirect_to customer_path(@customer), :notice => notice
     rescue ActiveRecord::RecordInvalid
@@ -111,24 +116,25 @@ class CustomersController < ApplicationController
 
   def change_password_for
     return if request.get?
+    customer_params = params.require(:customer).permit(:password, :password_confirmation)
     @customer.must_revalidate_password = true
-    return redirect_to(change_password_for_customer_path(@customer), :alert => @customer.errors.as_html) unless  @customer.update_attributes(params[:customer])
-      Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @customer.id,
-      :comments => 'Change password')
-    redirect_to customer_path(@customer), :notice => "Password change confirmed."
+    if @customer.update_attributes(customer_params)
+      Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id, :comments => 'Change password')
+      redirect_to customer_path(@customer), :notice => "Password change confirmed."
+    else
+      redirect_to change_password_for_customer_path(@customer), :alert => @customer.errors.as_html
+    end
   end
 
   def change_secret_question
     return if request.get?
-    if @customer.update_attributes(params[:customer])
+    customer_params = params.require(:customer).permit(:secret_question,:secret_answer)
+    if @customer.update_attributes(customer_params)
       Txn.add_audit_record(:txn_type => 'edit', :customer_id => @customer.id,
         :comments => 'Change secret question or answer')
-      flash[:notice] = 'Secret question change confirmed.'
-      redirect_to customer_path(@customer)
+      redirect_to customer_path(@customer), :notice => 'Secret question change confirmed.'
     else
-      flash[:alert] = "Could not update secret question: #{@customer.errors.as_html}"
-      render :action => :change_secret_question, :id => @customer
+      redirect_to change_secret_question_customer_path(@customer), :alert => "Could not update secret question: #{@customer.errors.as_html}"
     end
   end
 
@@ -169,37 +175,38 @@ class CustomersController < ApplicationController
 
   # Admin adding customer to database
   def admin_new                 # admin create customer
-    @superadmin = current_user.is_admin
     @customer = Customer.new
   end
 
   def create
-    @customer = Customer.new(params[:customer])
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes + [:role, :comments])
+    @customer = Customer.new(customer_params)
     @customer.created_by_admin = true
-    unless @customer.save
+    begin
+      @customer.save!
+      Txn.add_audit_record(:txn_type => 'edit',
+                           :customer_id => @customer.id,
+                           :comments => 'new customer added',
+                           :logged_in_id => current_user.id)
+      redirect_to customer_path(@customer), :notice => 'Account was successfully created.'
+    rescue ActiveRecord::RecordInvalid
       flash.now[:alert] = 'Creating customer failed: ' + @customer.errors.as_html
       render :action => 'admin_new'
-      return
+    rescue RuntimeError => e
+      redirect_to customers_path, :alert => "Unexpected error creating customer: #{e.message}"
     end
-
-    (flash[:notice] ||= '') <<  'Account was successfully created.'
-    Txn.add_audit_record(:txn_type => 'edit',
-      :customer_id => @customer.id,
-      :comments => 'new customer added',
-      :logged_in_id => current_user.id)
-    redirect_to customer_path(@customer)
   end
 
   def guest_checkout_create
     email = params[:customer][:email].to_s.strip
     return redirect_to(guest_checkout_customers_path, :alert => "Email can't be blank.") if email.blank?
     @customer = Customer.where(:email => email.downcase).first
-
     redirect_to_real_login || continue_as_existing_guest || continue_as_new_guest || render(:action => :guest_checkout)
   end
 
   def user_create
-    @customer = Customer.new(params[:customer])
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+    @customer = Customer.new(customer_params)
     if @customer.save
       email_confirmation(:confirm_account_change,@customer,"set up an account with us")
       Txn.add_audit_record(:txn_type => 'edit',
@@ -364,13 +371,6 @@ class CustomersController < ApplicationController
 
   private
 
-  def delete_admin_only_attributes(params)
-    Customer.extra_attributes.each { |a| params.delete(a) }
-    params.delete(:comments)
-    params.delete(:role)
-    params
-  end
-
   def generate_token
     length_of_token = 15
     token = rand(36**length_of_token).to_s(36)
@@ -425,7 +425,8 @@ class CustomersController < ApplicationController
 
   def continue_as_new_guest
     # email does not exist: try to create customer and continue
-    @customer = Customer.new(params[:customer])
+    customer_params = params.require(:customer).permit(Customer.user_modifiable_attributes)
+    @customer = Customer.new(customer_params)
     # HACK: this check can be replaced by regular validations once Customer is factored into subclasses
     if @customer.valid_as_guest_checkout?
       @customer.save!
