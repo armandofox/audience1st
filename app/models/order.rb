@@ -12,8 +12,6 @@ class Order < ActiveRecord::Base
   attr_accessor :comments
   attr_reader :donation
 
-  #attr_accessible :comments, :processed_by, :customer, :purchaser, :walkup, :purchasemethod, :ship_to_purchaser, :external_key
-
   # errors
 
   class Order::CannotAddItemError < StandardError ; end
