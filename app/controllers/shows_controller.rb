@@ -14,7 +14,7 @@ class ShowsController < ApplicationController
   end
 
   def new
-    show_season = (permit_new_show || Time.this_season).to_i
+    show_season = permit_new_show.to_i
     listing_date = (show_season == Time.this_season ?
                       Date.today :  Time.at_beginning_of_season(show_season))
     @show = Show.new(:listing_date => listing_date,
@@ -25,7 +25,7 @@ class ShowsController < ApplicationController
   end
 
   def create
-    @show = Show.new(permit_create_show)
+    @show = Show.new(permit_update_show)
     if @show.save
       redirect_to edit_show_path(@show),
       :notice =>  'Show was successfully created. Click "Add Performances" below to start adding show dates.'
@@ -48,7 +48,7 @@ class ShowsController < ApplicationController
   def update
     @show = Show.find(params[:id])
     @showdates = @show.showdates
-    if @show.update_attributes(show_params)
+    if @show.update_attributes(permit_update_show)
       redirect_to edit_show_path(@show), :notice => 'Show details successfully updated.'
     else
       flash[:alert] = ["Show details could not be updated: ", @show.errors.as_html]
