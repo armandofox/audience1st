@@ -1,5 +1,10 @@
 class Customer < ActiveRecord::Base
 
+<<<<<<< HEAD
+=======
+  #attr_accessible :secret_question, :secret_answer
+  
+>>>>>>> f4033361 ([chore] converting secret_question to strong params)
   validates_numericality_of(:secret_question,
     :greater_than_or_equal_to => 0,
     :less_than => I18n.t('app_config.secret_questions').length)
