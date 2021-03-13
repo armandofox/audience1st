@@ -6,6 +6,11 @@ class Label < ActiveRecord::Base
 
   before_destroy :remove_from_join_table
 
+<<<<<<< HEAD
+=======
+  # attr_accessible :name
+
+>>>>>>> 02d694ff (changed labels_controller and label to strong params)
   default_scope { order('name') }
   
   def remove_from_join_table

@@ -12,10 +12,6 @@ class LabelsController < ApplicationController
   end
 
   def create
-<<<<<<< HEAD
-=======
-    #@label = Label.create(:name => params[:label_name])
->>>>>>> 24a038ce (changed labels_controller and label to strong params)
     @label = Label.create(label_params)
     if @label.errors.empty?
       return_to = session.delete(:return_to)
