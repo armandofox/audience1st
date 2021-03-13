@@ -14,7 +14,7 @@ class ShowsController < ApplicationController
   end
 
   def new
-    show_season = season_new_params.to_i
+    show_season = (permit_new_show || Time.this_season).to_i
     listing_date = (show_season == Time.this_season ?
                       Date.today :  Time.at_beginning_of_season(show_season))
     @show = Show.new(:listing_date => listing_date,
@@ -25,7 +25,7 @@ class ShowsController < ApplicationController
   end
 
   def create
-    @show = Show.new(show_params)
+    @show = Show.new(permit_create_show)
     if @show.save
       redirect_to edit_show_path(@show),
       :notice =>  'Show was successfully created. Click "Add Performances" below to start adding show dates.'
@@ -64,6 +64,7 @@ class ShowsController < ApplicationController
   # migrating from protected attr to strong param
   # standard found here: https://www.fastruby.io/blog/rails/upgrades/strong-parameters-migration-guide.html
   private
+
   def season_new_params
     params.permit :season
     params.fetch :season, Time.this_season
