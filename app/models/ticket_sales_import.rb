@@ -29,7 +29,7 @@ class TicketSalesImport < ActiveRecord::Base
 
   def set_parser
     @importable_orders = []
-    @warnings = ActiveModel::Errors.new(self)
+    @warnings = ActiveModel::Errors.new
     if IMPORTERS.include?(vendor)
       @parser = TicketSalesImportParser.const_get(vendor).send(:new, self)
     else
