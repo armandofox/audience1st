@@ -1,4 +1,8 @@
 class Customer < ActiveRecord::Base
+<<<<<<< HEAD
+=======
+  
+>>>>>>> 886acd1740e134d1e4ba340e0c44b3224a5eb019
   validates_numericality_of(:secret_question,
     :greater_than_or_equal_to => 0,
     :less_than => I18n.t('app_config.secret_questions').length)

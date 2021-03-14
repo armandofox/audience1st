@@ -258,7 +258,7 @@ ActiveRecord::Schema.define(version: 20210224173731) do
     t.string   "event_type",                limit: 255, default: "Regular Show", null: false
     t.string   "sold_out_dropdown_message", limit: 255
     t.string   "sold_out_customer_info",    limit: 255
-    t.integer  "season",                                default: 2020,           null: false
+    t.integer  "season",                                default: 2021,           null: false
   end
 
   create_table "ticket_sales_imports", force: :cascade do |t|
