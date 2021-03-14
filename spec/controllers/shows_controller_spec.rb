@@ -46,7 +46,6 @@ describe ShowsController do
       end
       it "create will not set value of unpermitted param" do
         expect(response).to redirect_to(edit_show_path( id:1 ))
-
         expect( @post_show.attributes.has_key? "bad_param").to eq(false)
       end
       it "create will set the value of permitted params" do
