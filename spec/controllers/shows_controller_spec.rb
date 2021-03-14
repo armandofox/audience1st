@@ -1,10 +1,7 @@
 require 'rails_helper'
 
 describe ShowsController do
-
-  before(:each) do
-    login_as_boxoffice_manager
-  end
+  before(:each) do ; login_as_boxoffice_manager ;  end
 
   describe "index" do
     it "should assign season" do
@@ -45,17 +42,14 @@ describe ShowsController do
     context "when creating show with a mix of permitted and unpermitted params" do 
       before :each do 
         post :create, mixed_params
+        @post_show = Show.find(1)
       end
       it "create will not set value of unpermitted param" do
         expect(response).to redirect_to(edit_show_path( id:1 ))
-        
-        @post_show = Show.find(1)
         expect( @post_show.attributes.has_key? "bad_param").to eq(false)
       end
       it "create will set the value of permitted params" do
         expect(response).to redirect_to(edit_show_path( id:1 ))
-        
-        @post_show = Show.find(1)
         expect( @post_show.name ).to eq("some show")
         expect( @post_show.description ).to eq("desc")
         expect( @post_show.listing_date ).to eq(Date.today)
@@ -65,9 +59,9 @@ describe ShowsController do
     context "when updating with a mix of permitted and unpermitted params" do
       before :each do
         post :create, mixed_params
+        @s = Show.find(1)
       end
       it "should update the name" do
-        @s = Show.find(1)
         response = post :update, :id => @s.id, :show => mixed_update_params
         expect(response).to redirect_to edit_show_path(@s)
         
@@ -86,6 +80,19 @@ describe ShowsController do
 
       @s.reload
       expect(@s.description).to eq("updated description")
+    end
+  end
+
+  describe '#index (Season tab)' do
+    before(:each) do
+      get :index
+    end
+    describe 'season menus range' do
+      it 'defaults to current year if there are no shows' do
+        year = Time.current.year
+        expect(assigns(:earliest)).to eq year
+        expect(assigns(:latest)).to eq year
+      end
     end
   end
 end

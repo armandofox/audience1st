@@ -30,6 +30,7 @@ FactoryBot.define do
     max_advance_sales { [100, house_capacity].min }
     live_stream false
     stream_anytime false
+    
     factory :reserved_seating_showdate do
       transient do
         sm { FactoryBot.create(:seatmap) }

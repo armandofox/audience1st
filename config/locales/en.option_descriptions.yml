@@ -435,13 +435,13 @@ en:
       credit card numbers nor share any information used in processing the
       transactions except as required by law."
 
-    sendgrid_domain: >
+    sender_domain: >
 
       Where transactional emails appear to come from (confirmation
       emails, etc.).  This is separate from sending marketing emails
-      via MailChimp, ConstantContact, etc.  NOTE: Proper DNS
-      configuration on Sendgrid is required, or else emails may not be
-      delivered. 
+      via MailChimp, ConstantContact, etc.  WARNING: This value is based on the DNS
+      configuration of your email service provider.  If you change this value
+      without also updating the settings on your ESP, emails may silently go undelivered.
 
     stripe_key: >
 

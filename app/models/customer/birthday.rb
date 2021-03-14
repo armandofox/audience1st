@@ -27,9 +27,7 @@ class Customer < ActiveRecord::Base
     customers = Customer.birthdays_in_range(from_date, to_date)
     unless customers.empty?
       subject << "Birthdays between #{from_date.strftime('%x')} and #{to_date.strftime('%x')}"
-      NotifyBoxOfficeManager.notify("upcoming_birthdays", 
-                           {:num => n, :customers => customers, :recipient => recipient}, 
-                           subject)
+      Mailer.upcoming_birthdays(n, customers, subject, recipient).deliver_now
     end
   end
 end
