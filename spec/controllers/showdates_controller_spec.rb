@@ -79,6 +79,7 @@ describe ShowdatesController do
         @dummies.each { |symbol| expect(last_sdate.attributes).not_to have_key(symbol) }
       end
     end
+
   end
 
 end
