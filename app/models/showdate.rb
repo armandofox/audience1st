@@ -42,6 +42,11 @@ class Showdate < ActiveRecord::Base
   validate :seatmap_can_accommodate_existing_reservations, :on => :update
   validate :at_most_one_stream_anytime_performance
 
+<<<<<<< HEAD
+=======
+  attr_accessible :thedate, :house_capacity, :max_advance_sales, :description, :show_id, :seatmap_id, :live_stream, :stream_anytime, :access_instructions
+
+>>>>>>> f9780b9b (made failing tests, ready to implement permit)
   require_dependency 'showdate/sales_reporting'
   require_dependency 'showdate/menu_descriptions'
 
