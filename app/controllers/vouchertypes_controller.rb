@@ -93,7 +93,8 @@ class VouchertypesController < ApplicationController
 
     Vouchertype.transaction do
       begin
-        if valid_voucher_update_params
+        if !(valid_voucher_update_params.empty?)
+          # subscription/bundle vouchers have start/end/max sales params editable on same screen
           valid_voucher = @vouchertype.valid_vouchers.first
           valid_voucher.update_attributes!(valid_voucher_update_params[:valid_voucher])
         end
