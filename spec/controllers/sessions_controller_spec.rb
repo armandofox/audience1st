@@ -115,5 +115,28 @@ describe SessionsController do
     it 'logs me out'                   do expect(controller).to receive(:logout_killing_session!); do_destroy end
     it 'redirects me to the home page' do do_destroy; expect(response).to be_redirect     end
   end
-  
+
+  describe "secret question params" do
+    let(:secret_question_params) {
+      {
+        email: "user84@yahoo.com",
+        secret_question: 5,
+        secret_answer: "yes",
+        answer: "yes",
+      }
+    }
+
+    context "when creating a secret question and secret answer with a mix of permitted and unpermitted params" do 
+      before :each do 
+        @user = Customer.create!(:first_name => "Fake", :last_name => "User", 
+                              :email => "user84@yahoo.com", :password => "test",
+                              :secret_question => 5, :secret_answer => "yes")
+        post :create_from_secret, secret_question_params
+      end
+
+      it "returns associated user" do
+        response.body == @user
+      end
+    end
+  end
 end

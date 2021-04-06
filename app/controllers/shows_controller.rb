@@ -5,7 +5,9 @@ class ShowsController < ApplicationController
   def index
     @superadmin = current_user.is_admin
     @season = (params[:season].to_i > 1900 ? params[:season].to_i : Time.this_season)
-    @earliest,@latest = Show.minimum(:season), Show.maximum(:season)
+    year = Time.current.year
+    @earliest = Show.minimum(:season) || year
+    @latest = Show.maximum(:season) || year
     @season = @latest unless @season.between?(@earliest,@latest)
     @shows = Show.for_seasons(@season,@season)
     @page_title = "#{Option.humanize_season(@season)} Shows"
@@ -62,13 +64,20 @@ class ShowsController < ApplicationController
   # migrating from protected attr to strong param
   # standard found here: https://www.fastruby.io/blog/rails/upgrades/strong-parameters-migration-guide.html
   private
+
   def season_new_params
     params.permit :season
     params.fetch :season, Time.this_season
   end
 
   def show_params
-    params.require(:show).permit :name, :event_type, :listing_date, :landing_page_url, :description,
-                                 :patron_notes, :sold_out_dropdown_message, :sold_out_customer_info
+    permitted = params.require(:show).permit(:name, :event_type,
+                                             :listing_date,
+                                             :landing_page_url,
+                                             :description,
+                                             :patron_notes,
+                                             :sold_out_dropdown_message,
+                                             :sold_out_customer_info)
+    permitted
   end
 end

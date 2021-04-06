@@ -11,8 +11,6 @@ Given /that performance has reserved seating/ do
 end
 
 Given /^the following seat reservations for the (.*) performance:$/ do |time,tbl|
-  #  @showdate ||= create(:showdate, :thedate => Time.zone.parse(time), :seatmap => create(:seatmap))
-
   @showdate ||= create(:reserved_seating_showdate, :date => Time.zone.parse(time))
   tbl.hashes.each do |h|
     customer = find_or_create_customer h['first'], h['last']

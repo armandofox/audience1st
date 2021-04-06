@@ -1,11 +1,17 @@
+require 'digest/sha2'
+
 class Mailer < ActionMailer::Base
 
   helper :customers, :application, :options
 
   # the default :from needs to be wrapped in a callable because the dereferencing of Option may
   #  cause an error at class-loading time.
-  default :from => Proc.new { "AutoConfirm@#{Option.sendgrid_domain}" }
+  default :from => Proc.new { "AutoConfirm@#{Option.sender_domain}" }
   default :reply_to => Proc.new { Option.box_office_email }
+  # Prevent ActionMailer from constructing invalid message-IDs in which the domain doesn't match
+  default "Message-ID" => Proc.new { "<#{Digest::SHA2.hexdigest(Time.current.to_i.to_s)}@#{Figaro.env.MAILGUN_DOMAIN}>" }
+  # include to get past many spam filters
+  default "List-Unsubscribe" => Proc.new { "<mailto:#{Option.box_office_email}>" }
 
   before_action :set_delivery_options
 
@@ -48,6 +54,12 @@ class Mailer < ActionMailer::Base
     render_and_send_email(@customer.email, "#{@subject} CANCELLED reservation", :cancel_reservation)
   end
 
+  def upcoming_birthdays(num, customers, subject, recipient)
+    @num = num
+    @customers = customers
+    render_and_send_email(recipient, subject, :upcoming_birthdays)
+  end
+  
   def general_mailer(template_name, params, subject)
     params.keys.each do |key|
       self.instance_variable_set("@#{key}", params[key])
@@ -68,7 +80,10 @@ class Mailer < ActionMailer::Base
     html = Option.html_email_template.
              gsub(BODY_TAG, body_as_string).
              gsub(FOOTER_TAG, render_to_string(:partial => 'contact_us', :layout => false))
+    text = ActionController::Base.helpers.strip_tags(body_as_string)
+    
     mail(:to => address, :subject => subject) do |fmt|
+      fmt.text { render :inline => text }
       fmt.html { render :inline => html }
     end
   end
@@ -76,22 +91,19 @@ class Mailer < ActionMailer::Base
   def set_delivery_options
     @venue = Option.venue
     @subject = "#{@venue} - "
-    if Rails.env.production? and Option.sendgrid_domain.blank?
+    if Rails.env.production? and Option.sender_domain.blank?
       ActionMailer::Base.perform_deliveries = false
       Rails.logger.info "NOT sending email"
     else
       ActionMailer::Base.perform_deliveries = true
       ActionMailer::Base.smtp_settings = {
-        :user_name => 'apikey',
-        :password => Figaro.env.SENDGRID_KEY,
-        :domain   => Option.sendgrid_domain,
-        :address  => 'smtp.sendgrid.net',
-        :port     => 587,
-        :enable_starttls_auto => true,
+        :port           => 587,
+        :address        => 'smtp.mailgun.org',
+        :user_name      => Figaro.env.MAILGUN_SMTP_LOGIN,
+        :password       => Figaro.env.MAILGUN_SMTP_PASSWORD,
+        :domain         => Option.sender_domain,
         :authentication => :plain
       }
-      # use Sendgrid's "category" tag to identify which venue sent this email
-      headers['X-SMTPAPI'] = {'category' => "#{Option.venue} <#{Option.sendgrid_domain}>"}.to_json
     end
   end
 end

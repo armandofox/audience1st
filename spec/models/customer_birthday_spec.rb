@@ -32,7 +32,7 @@ describe Customer, "birthdays" do
     before :each do
       Option.first.update_attributes!(:send_birthday_reminders => 5,
         :box_office_email => 'n@ai')
-      expect(Mailer).not_to receive(:general_mailer)
+      expect(Mailer).not_to receive(:upcoming_birthdays)
     end
     specify 'when feature is turned off' do
       Option.first.update_attributes!(:send_birthday_reminders => 0)
@@ -72,8 +72,10 @@ describe Customer, "birthdays" do
       expect(@sent.first.subject).to match(Regexp.new 'Birthdays between 01/10/12 and 01/15/12')
     end
     specify 'with both customers' do
-      expect(@sent.first.body).to include(@c1.full_name)
-      expect(@sent.first.body).to include(@c2.full_name)
+      # email is sent as multipart MIME; we check the text part here
+      body = @sent.first.parts.find  { |part| part.content_type =~ /text\/plain/ }.body.raw_source
+      expect(body).to include(@c1.full_name)
+      expect(body).to include(@c2.full_name)
     end
   end
 end

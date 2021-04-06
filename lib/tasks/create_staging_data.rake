@@ -20,7 +20,7 @@ module StagingHelper
   end
   def self.switch_to_staging!
     abort_if_production!
-    abort "Only a1-staging and sandbox are valid tenants" unless ['a1-staging','sandbox'].include?(StagingHelper::TENANT)
+    abort "Only a1-staging and sandbox are valid tenants" unless ['a1-staging','sandbox','calvisitor'].include?(StagingHelper::TENANT)
     Apartment::Tenant.switch! StagingHelper::TENANT
   end
 end
@@ -61,7 +61,7 @@ staging = namespace :staging do
     Option.first.update_attributes!(
       :stripe_key => Figaro.env.STRIPE_TEST_KEY_FOR_PROVISIONING!,
       :stripe_secret => Figaro.env.STRIPE_TEST_SECRET_FOR_PROVISIONING!,
-      :sendgrid_domain => '')   # domain blank disables email sending
+      :sender_domain => '')   # domain blank disables email sending
   end
 
   desc "Populate database tenant '#{StagingHelper::TENANT}' with NUM_CUSTOMERS fake customers (default 100) all with password 'pass', plus an admin whose login/pass is admin@audience1st.com/admin."
