@@ -29,42 +29,34 @@ class Report
   end
   
   def create_csv
-    multicolumn = (@output_options['multi_column_address'].to_i > 0)
-    @output = CSV.generate do |csv|
+    headers = %w[first_name last_name email day_phone eve_phone street city state zip no_mail no_email labels created_at role_name] 
+    current_tenant = Apartment::Tenant.current
+    @output = Enumerator.new do |csv|
       begin
-        if multicolumn
-          csv << %w[first_name last_name email day_phone eve_phone street city state zip labels created_at role_name] 
-          self.customers.each do |c|
-            csv << [c.first_name.name_capitalize,
-              c.last_name.name_capitalize,
-              c.email,
-              c.day_phone,
-              c.eve_phone,
-              c.street,c.city,c.state,c.zip,
-              c.labels.map(&:name).join(':'),
-              (c.created_at.to_formatted_s(:db) rescue nil),
-              c.role_name
-            ]
+        csv << CSV::Row.new(headers, headers, header_row = true).to_s
+        Apartment::Tenant.switch(current_tenant) do
+          self.customers.find_each do |c|
+            csv << CSV::Row.new(
+              headers,
+              [ c.first_name.name_capitalize,
+                c.last_name.name_capitalize,
+                c.email,
+                c.day_phone,
+                c.eve_phone,
+                c.street,c.city,c.state,c.zip,
+                ("true" if c.blacklist?),
+                ("true" if c.e_blacklist?),
+                c.labels.map(&:name).join(':'),
+                (c.created_at.to_formatted_s(:db) rescue nil),
+                c.role_name
+              ],
+              header_row = false
+            ).to_s
           end
-        else
-          csv << %w[first_name last_name email day_phone eve_phone address labels created_at role_name] 
-          self.customers.each do |c|
-            addr = [c.street, c.city, c.state, c.zip].map { |str| str.to_s.gsub(/,/, ' ') }
-            addr = addr[0,3].join(', ') << ' ' << addr[3]
-            csv << [c.first_name.name_capitalize,
-              c.last_name.name_capitalize,
-              c.email,
-              c.day_phone,
-              c.eve_phone,
-              addr,
-              c.labels.map(&:name).join(':'),
-              (c.created_at.to_formatted_s(:db) rescue nil),
-              c.role_name
-            ]
-          end
+        rescue RuntimeError => e
+          raise e
+          Rails.logger.error add_error("Error in create_csv: #{e.message}")
         end
-      rescue RuntimeError => e
-        Rails.logger.error add_error("Error in create_csv: #{e.message}")
       end
     end
   end
