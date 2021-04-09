@@ -29,33 +29,23 @@ class Report
   end
   
   def create_csv
-    headers = %w[first_name last_name email day_phone eve_phone street city state zip no_mail no_email labels created_at role_name] 
-    current_tenant = Apartment::Tenant.current
-    @output = Enumerator.new do |csv|
-      begin
-        csv << CSV::Row.new(headers, headers, header_row = true).to_s
+    # if multi-tenancy in use, we MUST capture the tenant name so we can EXPLICITLY switch
+    # to that tenant in the block passed to Enumerator.new.  This is because that block will
+    # be executed (ie the enumerator will be unrolled) AFTER we have left Rails and the
+    # response is being played back by Rack, so the block will execute OUTSIDE the scope
+    # of the "current tenant".
+    if Figaro.env.tenant_names.blank?
+      # no multitenant
+      @output = Enumerator.new do |csv|
+        add_header_row(csv)
+        add_data_rows(csv)
+      end
+    else
+      current_tenant = Apartment::Tenant.current      # capture for use in closure
+      @output = Enumerator.new do |csv|
+        add_header_row(csv)
         Apartment::Tenant.switch(current_tenant) do
-          self.customers.find_each do |c|
-            csv << CSV::Row.new(
-              headers,
-              [ c.first_name.name_capitalize,
-                c.last_name.name_capitalize,
-                c.email,
-                c.day_phone,
-                c.eve_phone,
-                c.street,c.city,c.state,c.zip,
-                ("true" if c.blacklist?),
-                ("true" if c.e_blacklist?),
-                c.labels.map(&:name).join(':'),
-                (c.created_at.to_formatted_s(:db) rescue nil),
-                c.role_name
-              ],
-              header_row = false
-            ).to_s
-          end
-        rescue RuntimeError => e
-          raise e
-          Rails.logger.error add_error("Error in create_csv: #{e.message}")
+          add_data_rows(csv)
         end
       end
     end
@@ -64,6 +54,34 @@ class Report
   def add_error(itm)
     (@errors ||= '') << itm << '  '
     itm.to_s
+  end
+
+  private
+
+  def add_header_row(csv)
+    @headers = %w[first_name last_name email day_phone eve_phone street city state zip no_mail no_email labels created_at role_name] 
+    csv << CSV::Row.new(@headers, @headers, header_row = true).to_s
+  end
+
+  def add_data_rows(csv)
+    self.customers.find_each do |c|
+      csv << CSV::Row.new(
+        @headers,
+        [ c.first_name.name_capitalize,
+          c.last_name.name_capitalize,
+          c.email,
+          c.day_phone,
+          c.eve_phone,
+          c.street,c.city,c.state,c.zip,
+          ("true" if c.blacklist?),
+          ("true" if c.e_blacklist?),
+          c.labels.map(&:name).join(':'),
+          (c.created_at.to_formatted_s(:db) rescue nil),
+          c.role_name
+        ],
+        header_row = false
+      ).to_s
+    end
   end
 
   protected
@@ -116,8 +134,11 @@ class Report
         zips = @output_options[:zip_glob].split(/\s*,\s*/).map { |z| "#{z}%" }
         constraints = Array.new(zips.size) { '(customers.zip LIKE ?)' }.join(' OR ')
         @relation = @relation.where(constraints, *zips)
+      when :sort_by_zip
+        @relation = @relation.order('zip')
       end
     end
-    @relation
+    @relation.order('last_name')
   end
+
 end
