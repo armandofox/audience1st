@@ -64,23 +64,31 @@ class Report
   end
 
   def add_data_rows(csv)
-    self.customers.find_each do |c|
-      csv << CSV::Row.new(
-        @headers,
-        [ c.first_name.name_capitalize,
-          c.last_name.name_capitalize,
-          c.email,
-          c.day_phone,
-          c.eve_phone,
-          c.street,c.city,c.state,c.zip,
-          ("true" if c.blacklist?),
-          ("true" if c.e_blacklist?),
-          c.labels.map(&:name).join(':'),
-          (c.created_at.to_formatted_s(:db) rescue nil),
-          c.role_name
-        ],
-        header_row = false
-      ).to_s
+    # grab the IDs of the whole set, then find in batches to avoid instantiating lots of objects
+    order = self.output_options[:sort_by_zip] == '1' ?
+              "customers.zip, customers.last_name" :
+              "customers.last_name, customers.zip"
+    ordered_ids = self.customers.order(order).pluck(:id).uniq
+    batch_size = 500
+    ordered_ids.in_groups_of(batch_size, false) do |ids|
+      self.customers.where(:id => ids).order(order).each do |c|
+        csv << CSV::Row.new(
+          @headers,
+          [ c.first_name.name_capitalize,
+            c.last_name.name_capitalize,
+            c.email,
+            c.day_phone,
+            c.eve_phone,
+            c.street,c.city,c.state,c.zip,
+            ("true" if c.blacklist?),
+            ("true" if c.e_blacklist?),
+            c.labels.map(&:name).join(':'),
+            (c.created_at.to_formatted_s(:db) rescue nil),
+            c.role_name
+          ],
+          header_row = false
+        ).to_s
+      end
     end
   end
 
@@ -134,11 +142,9 @@ class Report
         zips = @output_options[:zip_glob].split(/\s*,\s*/).map { |z| "#{z}%" }
         constraints = Array.new(zips.size) { '(customers.zip LIKE ?)' }.join(' OR ')
         @relation = @relation.where(constraints, *zips)
-      when :sort_by_zip
-        @relation = @relation.order('zip')
       end
     end
-    @relation.order('last_name')
+    @relation.unscoped
   end
 
 end
