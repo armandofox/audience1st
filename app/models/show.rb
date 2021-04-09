@@ -3,6 +3,8 @@ class Show < ActiveRecord::Base
   REGULAR_SHOW = 'Regular Show'
   TYPES = [REGULAR_SHOW, 'Special Event', 'Class', 'Subscription']
 
+  REMINDERS = ['Never', '12 hours before curtain time', '24 hours before curtain time', '36 hours before curtain time', '48 hours before curtain time']
+
   has_many :showdates, -> { order('thedate') }, :dependent => :destroy
   has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
   has_many :vouchers, -> { joins(:vouchertype).merge(Voucher.finalized).merge(Vouchertype.seat_vouchertypes) }, :through => :showdates
@@ -12,6 +14,7 @@ class Show < ActiveRecord::Base
   validates_presence_of :season
   validates :season, :presence => true, :numericality => {:greater_than_or_equal_to => 1900}
   validates_inclusion_of :event_type, :in => Show::TYPES
+  validates_inclusion_of :reminder_type, :in => Show::REMINDERS
   validates_length_of :name,                   :within => 1..255
   validates_length_of :description,            :maximum => 255
   validates_length_of :landing_page_url,       :maximum => 255
