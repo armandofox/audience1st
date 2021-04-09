@@ -68,7 +68,7 @@ class Report
     order = self.output_options[:sort_by_zip] == '1' ?
               "customers.zip, customers.last_name" :
               "customers.last_name, customers.zip"
-    ordered_ids = self.customers.order(order).pluck(:id).uniq
+    ordered_ids = self.customers.unscoped.order(order).pluck(:id).uniq
     batch_size = 500
     ordered_ids.in_groups_of(batch_size, false) do |ids|
       self.customers.where(:id => ids).order(order).each do |c|
@@ -144,7 +144,7 @@ class Report
         @relation = @relation.where(constraints, *zips)
       end
     end
-    @relation.unscoped
+    @relation
   end
 
 end
