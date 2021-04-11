@@ -17,7 +17,13 @@
     <%= Option.general_confirmation_email_notes %>
   </p>
 
+  <p class="general-reminder-email-notes">
+    <%= Option.general_reminder_email_notes %>
+  </p>
+
   <p class="subscriber-confirmation-email-notes">
     <%= @customer.subscriber? ? Option.subscriber_confirmation_email_notes : Option.nonsubscriber_confirmation_email_notes %>
   </p>
+
+
 </div>

@@ -8,7 +8,7 @@ en:
 
     advance_sales_cutoff: >
 
-      Default time that online sales close -- can be overridden for specific performances 
+      Default time that online sales close -- can be overridden for specific performances
       and specific ticket types.
 
     nearly_sold_out_threshold: >
@@ -33,7 +33,7 @@ en:
     allow_gift_tickets: >
 
       Whether customers can purchase individual tickets as a gift for
-      another customer. 
+      another customer.
 
     allow_gift_subscriptions: >
 
@@ -151,11 +151,11 @@ en:
       A value of 0 will suppress birthday notification emails completely.
 
     order_timeout: >
-      
+
       Number of minutes allowed to complete an order once tickets have been chosen.
       This number must be between 1 and 15 minutes and is enforced for all orders
       containing any ticket valid for a specific show date, whether
-      reserved seating or general admission.  
+      reserved seating or general admission.
 
     session_timeout: >
 
@@ -175,7 +175,7 @@ en:
 
       Banner text shown on Buy Subscriptions page to patrons who have
       purchased subscriptions for next season, whether or not they are
-      current subscribers.  It is placed inside a DIV with ID 
+      current subscribers.  It is placed inside a DIV with ID
       subscriptionBannerNextSeasonSubscriber and class storeBanner.
       The DIV can contain basic
       HTML tags but no JavaScript.
@@ -183,7 +183,7 @@ en:
     subscription_sales_banner_for_nonsubscribers: >
 
       Banner text shown on Buy Subscriptions page to NONSUBSCRIBERS.  It is
-      placed inside a DIV with ID subscriptionBannerNonsubscriber and class 
+      placed inside a DIV with ID subscriptionBannerNonsubscriber and class
       storeBanner.  The DIV can contain basic HTML tags
       but no JavaScript.
 
@@ -271,7 +271,7 @@ en:
 
     restrict_customer_email_to_domain: >
 
-      If nonblank, customers who self-signup must provide an email address ending 
+      If nonblank, customers who self-signup must provide an email address ending
       with this pattern (case-insensitive), for example "mycompany.org".  Useful if you
       are using Audience1st internally and only want members of your organization to be
       able to sign up as patrons; otherwise leave blank.  The restriction does not apply
@@ -298,7 +298,7 @@ en:
     display_email_opt_out: >
 
       Whether to display an email opt-out box when
-      customers edit their contact info.  
+      customers edit their contact info.
       NOTE: if set to "No", you MUST ensure that you
       provide your customers some other way to opt out of email in order to
       comply with CAN-SPAM laws.
@@ -313,7 +313,7 @@ en:
 
     subscription_order_service_charge: >
 
-      A flat fee (service charge) assessed on subscription orders only.  
+      A flat fee (service charge) assessed on subscription orders only.
       Leave blank or enter 0 for no charge.
 
     subscription_order_service_charge_description: >
@@ -327,12 +327,12 @@ en:
 
     regular_order_service_charge: >
 
-      A flat fee (service charge) assessed on regular (non-subscription) orders.  
+      A flat fee (service charge) assessed on regular (non-subscription) orders.
       Leave blank or enter 0 for no charge.
 
     regular_order_service_charge_description: >
 
-      A description that will appear on the order summary for regular 
+      A description that will appear on the order summary for regular
       (non-subscription) orders explaining this charge, for example, "Service Fee".
 
     regular_order_service_charge_account_code: >
@@ -371,6 +371,14 @@ en:
 
       General instructions to ALL CUSTOMERS that appear in order
       confirmation emails, for both single-ticket purchases and subscription
+      reservation confirmations. Use plain text (no HTML) and use a blank
+      line to separate paragraphs; text will be automatically word-wrapped
+      preserving your paragraph breaks.
+
+    general_reminder_email_notes: >
+
+      General instructions to ALL CUSTOMERS that appear in order
+      reminder emails, for both single-ticket purchases and subscription
       reservation confirmations. Use plain text (no HTML) and use a blank
       line to separate paragraphs; text will be automatically word-wrapped
       preserving your paragraph breaks.
@@ -459,4 +467,3 @@ en:
       https.  NOTE: Audience1st will also try to serve your
       favicon.ico from the same directory that contains the stylesheet; if
       no favicon.ico is found there, a generic one will be served.
-

@@ -5,7 +5,7 @@ Feature: change configuration options
   I want to see and edit the configuration options
 
 Background: logged in as admin
-  
+
   Given I am logged in as administrator
   And I visit the admin:settings page
   And I fill in all valid options
@@ -32,3 +32,9 @@ Scenario: invalid HTML email template because no placeholder
 
   When I upload the email template "invalid_template_no_placeholder.html"
   Then I should see "must contain exactly one occurrence of the placeholder"
+
+Scenario: General Reminder Email Note should be fillable
+  And I should see "General Reminder Email Notes"
+  When I fill in "General Reminder Email Notes" with "This is an email reminder"
+  And I press "Update Settings"
+  Then the setting "General Reminder Email Notes" should be "This is an email reminder"
