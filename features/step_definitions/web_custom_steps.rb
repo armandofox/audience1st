@@ -132,4 +132,3 @@ Given /the URI "(.*)" is (not )?readable/ do |uri,no|
     stub_request(:any, uri).to_return(:headers => {})
   end
 end
-
