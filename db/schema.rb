@@ -144,7 +144,6 @@ ActiveRecord::Schema.define(version: 20210411233938) do
     t.text     "regular_show_sales_banner_for_current_subscribers"
     t.text     "regular_show_sales_banner_for_next_season_subscribers"
     t.text     "regular_show_sales_banner_for_nonsubscribers"
-    t.string   "reminder_emails",                                        limit: 255, default: "Never"
     t.text     "top_level_banner_text"
     t.string   "homepage_ticket_sales_text",                             limit: 255
     t.string   "homepage_subscription_sales_text",                       limit: 255
@@ -254,10 +253,10 @@ ActiveRecord::Schema.define(version: 20210411233938) do
     t.datetime "created_at",                                                     null: false
     t.datetime "updated_at",                                                     null: false
     t.string   "event_type",                limit: 255, default: "Regular Show", null: false
+    t.string   "reminder_type",             limit: 255, default: "Never",     null: false
     t.string   "sold_out_dropdown_message", limit: 255
     t.string   "sold_out_customer_info",    limit: 255
     t.integer  "season",                                default: 2021,           null: false
-    t.string   "reminder_type",                         default: "Never",        null: false
   end
 
   create_table "ticket_sales_imports", force: :cascade do |t|
