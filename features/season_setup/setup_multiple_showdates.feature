@@ -52,7 +52,7 @@ Feature: set up multiple showdates at once
   @javascript
   Scenario: set up stream-anytime showdate
 
-    When I select "Stream anytime" from "Performance type"
+    When I select "Stream On Demand" from "Performance type"
     And I fill in the "new_showdate" fields as follows:
       | field                  | value                            |
       | Stream available until | select time "2010-12-31 11:30pm" |
@@ -60,4 +60,4 @@ Feature: set up multiple showdates at once
       | Access instructions    | It's on YouTube                  |
     And I press "Save & Back to List of Shows"
     Then I should see "One performance was successfully added"
-    And the "2010-12-31 11:30pm" performance should be Stream Anytime
+    And the "2010-12-31 11:30pm" performance should be Stream On Demand

@@ -24,14 +24,14 @@ A1.adjustShowdateType = function() {
     $('.Tt').removeClass('d-none');
     $('.Ttd').removeAttr('disabled');
     break;
-  case 'Tl':                     // live stream
+  case 'Tl':                     // stream
     saveMaxSalesDefault();
     $('#showdate_live_stream').val('1');
     $('.Tl').removeClass('d-none');
     $('.Tld').removeAttr('disabled');
     $('#max_advance_sales').val('');
     break;
-  case 'Ts':                       // stream anytime
+  case 'Ts':                       // stream on demand
     saveMaxSalesDefault();
     $('#showdate_stream_anytime').val('1');
     $('.Ts').removeClass('d-none');
