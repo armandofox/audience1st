@@ -28,7 +28,8 @@ describe ShowsController do
           name: "some show",
           description: "desc",
           bad_param: "bad",
-          listing_date: Date.today
+          listing_date: Date.today,
+          reminder_type: "12 hours before curtain time"
         }
       }
     }
@@ -53,6 +54,7 @@ describe ShowsController do
         expect( @post_show.name ).to eq("some show")
         expect( @post_show.description ).to eq("desc")
         expect( @post_show.listing_date ).to eq(Date.today)
+        expect( @post_show.reminder_type ).to eq("12 hours before curtain time")
       end
     end
 
@@ -80,6 +82,16 @@ describe ShowsController do
 
       @s.reload
       expect(@s.description).to eq("updated description")
+    end
+
+    it "should update the reminder type" do
+      @s = create(:show, :name => "valid name")
+      expect(@s.reminder_type).to eq("Never")
+      response = post :update, :id => @s.id, :show => { :reminder_type => "24 hours before curtain time" }
+      expect(response).to redirect_to edit_show_path(@s)
+
+      @s.reload
+      expect(@s.reminder_type).to eq("24 hours before curtain time")
     end
   end
 

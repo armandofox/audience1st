@@ -77,7 +77,8 @@ class ShowsController < ApplicationController
                                              :description,
                                              :patron_notes,
                                              :sold_out_dropdown_message,
-                                             :sold_out_customer_info)
+                                             :sold_out_customer_info,
+                                             :reminder_type)
     permitted
   end
 end
