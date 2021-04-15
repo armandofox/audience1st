@@ -1,11 +1,11 @@
 module FeatureFlagHelpers
-	#fix indents, two spaces, this is standard
-	#maybe don't call it toggle
-	def enable_toggle(feature_name)
-		Option.enable_feature!(feature_name)
-	end
+  def enable_new_feature(feature_name)
+    Option.enable_feature!(feature_name)
+  end
 
-	#def disable...
+  def disable_new_feature(feature_name)
+    Option.disable_feature!(feature_name)
+  end
 end
 
 World(FeatureFlagHelpers)
