@@ -76,7 +76,7 @@ end
 
 When /^(?:|I )select "([^\"]*)" from "([^\"]*)"(?: within "([^\"]*)")?$/ do |value, field, selector|
   with_scope(selector) do
-    select(value, :from => field, :disabled => false)
+    select(value, :from => field)
   end
 end
 
@@ -203,4 +203,3 @@ Then /^show me the page and debug$/ do
   require "rubygems"; require "byebug"; byebug
   1 #intentionally force debugger context in this method 
 end
-
