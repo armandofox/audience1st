@@ -52,11 +52,5 @@
         = f.select 'reminder_type', Show::REMINDERS, {}, {:class => 'form-control'}
 
   .form-row
-    .col-md-4.form-group
-      = popup_help_for :show_reminder_email
-      %label.col-form-label{:for=>:show_reminder_type} Send reminder email to ticket holders
-      = f.select 'reminder_type', Show::REMINDERS, {}, {:class => 'form-control'}
-
-  .form-row
     = f.submit :class => 'btn btn-success mx-2'
     = link_to 'Back to List of Shows', shows_path(:season => @show.season), :class => 'btn btn-secondary'
