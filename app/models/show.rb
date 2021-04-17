@@ -3,7 +3,11 @@ class Show < ActiveRecord::Base
   REGULAR_SHOW = 'Regular Show'
   TYPES = [REGULAR_SHOW, 'Special Event', 'Class', 'Subscription']
 
-  REMINDERS = ['Never', '12 hours before curtain time', '24 hours before curtain time', '36 hours before curtain time', '48 hours before curtain time']
+  REMINDERS = ['Never', 
+              '12 hours before curtain time', 
+              '24 hours before curtain time', 
+              '36 hours before curtain time', 
+              '48 hours before curtain time']
 
   has_many :showdates, -> { order('thedate') }, :dependent => :destroy
   has_one :latest_showdate, -> { order('thedate DESC') }, :class_name => 'Showdate'
