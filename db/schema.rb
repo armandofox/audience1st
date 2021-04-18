@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210415014347) do
+ActiveRecord::Schema.define(version: 20210418205452) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 255, default: "", null: false
@@ -254,7 +254,6 @@ ActiveRecord::Schema.define(version: 20210415014347) do
     t.datetime "created_at",                                                     null: false
     t.datetime "updated_at",                                                     null: false
     t.string   "event_type",                limit: 255, default: "Regular Show", null: false
-    t.string   "reminder_type",             limit: 255, default: "Never",     null: false
     t.string   "sold_out_dropdown_message", limit: 255
     t.string   "sold_out_customer_info",    limit: 255
     t.integer  "season",                                default: 2021,           null: false
