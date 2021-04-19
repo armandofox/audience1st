@@ -21,11 +21,11 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Alex Wang](https://github.com/raisindoc),
 [Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
-[Hang (Arthur) Yin](https://github.com/LoserNoOne)
-[Kyle Khus](https://github.com/kkhus5)
-[Justin Wong](https://github.com/JustinRWong)
-[Abhinav Dhulipala](https://github.com/abhinavDhulipala)
-[Matthew Fyke](https://github.com/mattfyke)
+[Hang (Arthur) Yin](https://github.com/LoserNoOne),
+[Kyle Khus](https://github.com/kkhus5),
+[Justin Wong](https://github.com/JustinRWong),
+[Abhinav Dhulipala](https://github.com/abhinavDhulipala),
+[Matthew Fyke](https://github.com/mattfyke),
 [Anthony Jang](https://github.com/segfalut)
 
 
