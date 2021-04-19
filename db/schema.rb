@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20210418205452) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 255, default: "", null: false
     t.string "code",            limit: 255
