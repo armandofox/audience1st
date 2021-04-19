@@ -10,8 +10,8 @@ class Showdate < ActiveRecord::Base
   Showdate::STREAM_ANYTIME = 'Ts'
 
   def performance_type
-    if live_stream? then "Live Stream"
-    elsif stream_anytime? then "Stream Anytime"
+    if live_stream? then "Stream"
+    elsif stream_anytime? then "Stream On Demand"
     else "In-theater"
     end
   end
@@ -44,7 +44,7 @@ class Showdate < ActiveRecord::Base
   end
 
   def printable_date_with_description
-    label = live_stream? ? 'Live Stream ' : stream_anytime? ? 'Stream Anytime Until ' : ''
+    label = live_stream? ? 'Stream ' : stream_anytime? ? 'Stream On Demand Until ' : ''
     label << (description.blank? ? printable_date : "#{printable_date} (#{description})")
     label
   end

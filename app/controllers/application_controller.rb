@@ -141,6 +141,22 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def stream_download_to_excel(csv_enumerator, filename)
+    # from https://stackoverflow.com/a/52834654/558723
+    filename << ".csv" unless filename =~ /\.csv$/i
+    content_type = (request.user_agent =~ /windows/i ? 'application/vnd.ms-excel' : 'text/csv')
+    headers.merge!(
+      {'Content-disposition' => %Q{attachment; filename="#{filename}"},
+       'Content-Type' =>        content_type,
+       'X-Accel-Buffering'   => 'no', # for nginx
+       'Cache-Control'       => 'no-cache',
+       'Last-Modified'       => Time.current.httpdate
+      })
+    headers.delete("Content-Length")
+    response.status = 200
+    self.response_body = csv_enumerator
+  end
+
   def download_to_excel(output,filename="data",timestamp=true)
     (filename << "_" << Time.current.strftime("%Y_%m_%d")) if timestamp
     send_data(output,:type => (request.user_agent =~ /windows/i ?

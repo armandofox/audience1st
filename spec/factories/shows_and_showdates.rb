@@ -42,12 +42,12 @@ FactoryBot.define do
     factory :live_stream_showdate do
       live_stream true
       house_capacity ValidVoucher::INFINITE
-      access_instructions 'Instructions here for live stream access'
+      access_instructions 'Instructions here for stream access'
     end
     factory :stream_anytime_showdate do
       stream_anytime true
       house_capacity ValidVoucher::INFINITE
-      access_instructions 'Instructions here for stream-anytime access'
+      access_instructions 'Instructions here for stream-on-demand access'
     end
   end
 

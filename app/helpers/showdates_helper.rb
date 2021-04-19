@@ -40,8 +40,8 @@ module ShowdatesHelper
     showdates = show.showdates
     options = []
     options.push(['In-theater',Showdate::IN_THEATER]) if new_showdate||showdates.any?(&:in_theater?)
-    options.push(['Live stream',Showdate::LIVE_STREAM]) if new_showdate||showdates.any?(&:live_stream?)
-    options.push(['Stream anytime',Showdate::STREAM_ANYTIME]) if new_showdate||showdates.any?(&:stream_anytime?)
+    options.push(['Stream',Showdate::LIVE_STREAM]) if new_showdate||showdates.any?(&:live_stream?)
+    options.push(['Stream On Demand',Showdate::STREAM_ANYTIME]) if new_showdate||showdates.any?(&:stream_anytime?)
     options_for_select(options)
   end
 

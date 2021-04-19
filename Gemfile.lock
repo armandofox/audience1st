@@ -307,6 +307,7 @@ GEM
       rspec-mocks (~> 3.8.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.2)
+    ruby_http_client (3.5.2)
     sassc (2.0.1)
       ffi (~> 1.9)
       rake
@@ -319,6 +320,8 @@ GEM
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    sendgrid-ruby (6.3.9)
+      ruby_http_client (~> 3.4)
     shellany (0.0.1)
     simplecov (0.21.2)
       docile (~> 1.1)
@@ -445,6 +448,7 @@ DEPENDENCIES
   rspec-rails
   sassc-rails
   sdoc (~> 0.4.0)
+  sendgrid-ruby
   simplecov
   spring
   spring-commands-rspec

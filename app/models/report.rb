@@ -29,42 +29,24 @@ class Report
   end
   
   def create_csv
-    multicolumn = (@output_options['multi_column_address'].to_i > 0)
-    @output = CSV.generate do |csv|
-      begin
-        if multicolumn
-          csv << %w[first_name last_name email day_phone eve_phone street city state zip labels created_at role_name] 
-          self.customers.each do |c|
-            csv << [c.first_name.name_capitalize,
-              c.last_name.name_capitalize,
-              c.email,
-              c.day_phone,
-              c.eve_phone,
-              c.street,c.city,c.state,c.zip,
-              c.labels.map(&:name).join(':'),
-              (c.created_at.to_formatted_s(:db) rescue nil),
-              c.role_name
-            ]
-          end
-        else
-          csv << %w[first_name last_name email day_phone eve_phone address labels created_at role_name] 
-          self.customers.each do |c|
-            addr = [c.street, c.city, c.state, c.zip].map { |str| str.to_s.gsub(/,/, ' ') }
-            addr = addr[0,3].join(', ') << ' ' << addr[3]
-            csv << [c.first_name.name_capitalize,
-              c.last_name.name_capitalize,
-              c.email,
-              c.day_phone,
-              c.eve_phone,
-              addr,
-              c.labels.map(&:name).join(':'),
-              (c.created_at.to_formatted_s(:db) rescue nil),
-              c.role_name
-            ]
-          end
+    # if multi-tenancy in use, we MUST capture the tenant name so we can EXPLICITLY switch
+    # to that tenant in the block passed to Enumerator.new.  This is because that block will
+    # be executed (ie the enumerator will be unrolled) AFTER we have left Rails and the
+    # response is being played back by Rack, so the block will execute OUTSIDE the scope
+    # of the "current tenant".
+    if Figaro.env.tenant_names.blank?
+      # no multitenant
+      @output = Enumerator.new do |csv|
+        add_header_row(csv)
+        add_data_rows(csv)
+      end
+    else
+      current_tenant = Apartment::Tenant.current      # capture for use in closure
+      @output = Enumerator.new do |csv|
+        add_header_row(csv)
+        Apartment::Tenant.switch(current_tenant) do
+          add_data_rows(csv)
         end
-      rescue RuntimeError => e
-        Rails.logger.error add_error("Error in create_csv: #{e.message}")
       end
     end
   end
@@ -72,6 +54,42 @@ class Report
   def add_error(itm)
     (@errors ||= '') << itm << '  '
     itm.to_s
+  end
+
+  private
+
+  def add_header_row(csv)
+    @headers = %w[first_name last_name email day_phone eve_phone street city state zip no_mail no_email labels created_at role_name] 
+    csv << CSV::Row.new(@headers, @headers, header_row = true).to_s
+  end
+
+  def add_data_rows(csv)
+    # grab the IDs of the whole set, then find in batches to avoid instantiating lots of objects
+    order = self.output_options[:sort_by_zip] == '1' ?
+              "customers.zip, customers.last_name" :
+              "customers.last_name, customers.zip"
+    ordered_ids = self.customers.unscoped.order(order).pluck(:id).uniq
+    batch_size = 500
+    ordered_ids.in_groups_of(batch_size, false) do |ids|
+      self.customers.where(:id => ids).order(order).each do |c|
+        csv << CSV::Row.new(
+          @headers,
+          [ c.first_name.name_capitalize,
+            c.last_name.name_capitalize,
+            c.email,
+            c.day_phone,
+            c.eve_phone,
+            c.street,c.city,c.state,c.zip,
+            ("true" if c.blacklist?),
+            ("true" if c.e_blacklist?),
+            c.labels.map(&:name).join(':'),
+            (c.created_at.to_formatted_s(:db) rescue nil),
+            c.role_name
+          ],
+          header_row = false
+        ).to_s
+      end
+    end
   end
 
   protected
@@ -128,4 +146,5 @@ class Report
     end
     @relation
   end
+
 end

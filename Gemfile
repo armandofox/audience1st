@@ -26,6 +26,7 @@ gem 'attr_encrypted'            # attr_encrypted must load AFTER protected_attri
 gem 'rake'
 gem 'stripe'
 gem 'will_paginate'
+gem 'sendgrid-ruby'
 
 # asset pipeline
 gem 'sprockets-rails', :require => 'sprockets/railtie'

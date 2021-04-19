@@ -72,6 +72,7 @@ class ShowsController < ApplicationController
 
   def show_params
     permitted = params.require(:show).permit(:name, :event_type,
+                                             :season,
                                              :listing_date,
                                              :landing_page_url,
                                              :description,

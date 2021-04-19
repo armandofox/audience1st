@@ -181,9 +181,9 @@ Then /that performance should be General Admission/ do
   expect(@showdate.reload.seatmap).to be_blank
 end
 
-Then /the "(.*)" performance should be (Stream Anytime|Live Stream)/ do |thedate,type|
+Then /the "(.*)" performance should be (Stream On Demand|Stream)$/ do |thedate,type|
   @showdate = Showdate.find_by!(:thedate => Time.zone.parse(thedate))
-  if type =~ /anytime/i
+  if type =~ /demand/i
     expect(@showdate.stream_anytime).to be_truthy
     expect(@showdate.live_stream).to be_falsy
   else
