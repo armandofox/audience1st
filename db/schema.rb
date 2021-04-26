@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210418205452) do
+ActiveRecord::Schema.define(version: 20210425090446) do
 
   create_table "account_codes", force: :cascade do |t|
     t.string "name",            limit: 255, default: "", null: false
@@ -192,6 +192,7 @@ ActiveRecord::Schema.define(version: 20210418205452) do
     t.integer  "order_timeout",                                                      default: 5,                                                                                                                               null: false
     t.datetime "last_sweep",                                                         default: '2019-12-24 17:59:23',                                                                                                           null: false
     t.text     "html_email_template",                                                default: "<!DOCTYPE html><html><head></head><body>{{body}}</body></html>",                                                                null: false
+    t.text     "general_reminder_email_notes"
   end
 
   create_table "orders", force: :cascade do |t|
