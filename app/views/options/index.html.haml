@@ -10,7 +10,7 @@
           venue_homepage_url |
           boxoffice_telephone |
           help_email |
-          box_office_email  | 
+          box_office_email  |
           send_birthday_reminders!days  |
           top_level_banner_text |
           privacy_policy_url |
@@ -18,13 +18,13 @@
       .form-row
         .col-md-4.text-right
           %label.col-form-label Season Start Date
-          = option_description_for(:season_start_month)   
+          = option_description_for(:season_start_month)
         .col-md-8
           .form-group.form-inline
             - season_start = Date.new(Time.current.year, Option.season_start_month, Option.season_start_day)
             = select_month season_start, {:prefix => 'option', :field_name => 'season_start_month'}, :class => 'form-control'
             = select_day   season_start, {:prefix => 'option', :field_name => 'season_start_day'}, :class => 'form-control'
-        
+
   .card.my-1
     .card-header.h3 Accepting Donations and Retail Sales Online
     .card-body
@@ -92,7 +92,7 @@
         allow_gift_tickets |
         allow_gift_subscriptions |
         precheckout_popup  |
-        terms_of_sale  |       
+        terms_of_sale  |
         checkout_notices |
         ) |
 
@@ -113,7 +113,7 @@
         classes_order_service_charge_description |
         classes_order_service_charge_account_code |
         ) |
- 
+
   .card.my-1
     .card-header.h3 Confirmation Emails
     .card-body
@@ -129,12 +129,21 @@
           = file_field_tag 'html_email_template', :accept => '.html', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#html_email_template')[0].files[0].name + ' <i>(click Update Settings below to upload)</i>')}
           %label.col-form-label#filename (No file chosen)
 
-      = render_collection_of_options f, %w( |
-        general_confirmation_email_notes |
-        subscriber_confirmation_email_notes |
-        nonsubscriber_confirmation_email_notes |
-        subscription_purchase_email_notes |
-        ) |
+      - if Option.feature_enabled?('reminder_emails')
+        = render_collection_of_options f, %w( |
+          general_confirmation_email_notes |
+          general_reminder_email_notes |
+          subscriber_confirmation_email_notes |
+          nonsubscriber_confirmation_email_notes |
+          subscription_purchase_email_notes |
+          ) |
+      - else
+        = render_collection_of_options f, %w( |
+          general_confirmation_email_notes |
+          subscriber_confirmation_email_notes |
+          nonsubscriber_confirmation_email_notes |
+          subscription_purchase_email_notes |
+          ) |
 
   .card.my-1#configOptions
     .card-header
