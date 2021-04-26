@@ -1,7 +1,7 @@
 class OptionsController < ApplicationController
 
   before_filter :is_admin_filter
-
+  
   def index
     @o = Option.first
   end
