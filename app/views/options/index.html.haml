@@ -129,13 +129,21 @@
           = file_field_tag 'html_email_template', :accept => '.html', :hidden => 'hidden', :onchange => %q{$('#filename').html($('#html_email_template')[0].files[0].name + ' <i>(click Update Settings below to upload)</i>')}
           %label.col-form-label#filename (No file chosen)
 
-      = render_collection_of_options f, %w( |
-        general_confirmation_email_notes |
-        general_reminder_email_notes |
-        subscriber_confirmation_email_notes |
-        nonsubscriber_confirmation_email_notes |
-        subscription_purchase_email_notes |
-        ) |
+      - if Option.feature_enabled?('reminder_emails')
+        = render_collection_of_options f, %w( |
+          general_confirmation_email_notes |
+          general_reminder_email_notes |
+          subscriber_confirmation_email_notes |
+          nonsubscriber_confirmation_email_notes |
+          subscription_purchase_email_notes |
+          ) |
+      - else
+        = render_collection_of_options f, %w( |
+          general_confirmation_email_notes |
+          subscriber_confirmation_email_notes |
+          nonsubscriber_confirmation_email_notes |
+          subscription_purchase_email_notes |
+          ) |
 
   .card.my-1#configOptions
     .card-header
