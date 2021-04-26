@@ -64,6 +64,7 @@ class ShowsController < ApplicationController
   # migrating from protected attr to strong param
   # standard found here: https://www.fastruby.io/blog/rails/upgrades/strong-parameters-migration-guide.html
   private
+
   def season_new_params
     params.permit :season
     params.fetch :season, Time.this_season
@@ -71,13 +72,13 @@ class ShowsController < ApplicationController
 
   def show_params
     permitted = params.require(:show).permit(:name, :event_type,
-                                             :season,
                                              :listing_date,
                                              :landing_page_url,
                                              :description,
                                              :patron_notes,
                                              :sold_out_dropdown_message,
-                                             :sold_out_customer_info)
+                                             :sold_out_customer_info,
+                                             :reminder_type)
     permitted
   end
 end
