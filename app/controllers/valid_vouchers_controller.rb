@@ -14,8 +14,8 @@ class ValidVouchersController < ApplicationController
     @vouchertypes = Vouchertype.nonbundle_vouchertypes(@show.season)
     return redirect_to(edit_show_path(@show), :alert => t('season_setup.errors.no_redemptions_without_vouchertypes', :season => Option.humanize_season(@show.season))) unless @vouchertypes.count > 0
     @valid_voucher = ValidVoucher.new(:start_sales => @show.listing_date)
-    # special case: if showdate has ANY stream-anytime perfs, default the end-sales time to the
-    # first such perf's showtime.  (if the user displays 'live stream' or 'in-theater' on
+    # special case: if showdate has ANY stream-on-demand perfs, default the end-sales time to the
+    # first such perf's showtime.  (if the user displays 'stream' or 'in-theater' on
     # the form, the date menus disappear anyway in favor of a "Minutes before curtain" field,
     # so doing this only affects anything if the show has a stream-anytime perf.)
     @minutes_before = Option.advance_sales_cutoff

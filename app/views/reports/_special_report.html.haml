@@ -18,20 +18,12 @@
         = radio_button_tag 'what', 'display', 1
         %label{:for => 'what_display'} Display list on screen
     .form-row
-      .col-md-6.h6 Format mailing address in:
       .col-md-6.h6 Sort spreadsheet by:
     .form-row
-      .col-md-6
-        = radio_button_tag 'output[multi_column_address]', 1, true
-        %label{:for => 'output_multi_column_address_1'} Four spreadsheet columns (street, city, state, zip)
-      .col-md-6
+      .col-md-3
         = radio_button_tag 'output[sort_by_zip]', 1, true
         %label Zip, then last name
-    .form-row
-      .col-md-6
-        = radio_button_tag 'output[multi_column_address]', 0, false
-        %label{:for => 'output_multi_column_address_0'} One spreadsheet column (complete street address with zip)
-      .col-md-6
+      .col-md-3
         = radio_button_tag 'output[sort_by_zip]', 0, false
         %label Last name, then zip
 

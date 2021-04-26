@@ -133,3 +133,6 @@ Given /the URI "(.*)" is (not )?readable/ do |uri,no|
   end
 end
 
+When /^I enable the reminder email feature$/ do
+  enable_new_feature('reminder_emails')
+end

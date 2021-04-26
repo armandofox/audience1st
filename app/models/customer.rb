@@ -315,11 +315,7 @@ class Customer < ActiveRecord::Base
   end
 
   def full_name
-    "#{first_name.name_capitalize unless first_name.blank?} #{last_name.name_capitalize unless last_name.blank?}"
-  end
-
-  def full_name_with_id
-    "#{self.id} [#{self.full_name}]"
+    "#{first_name.to_s.name_capitalize} #{last_name.to_s.name_capitalize}"
   end
 
   def full_name_with_email
@@ -335,9 +331,8 @@ class Customer < ActiveRecord::Base
   end
 
   def valid_email_address?
-    !self.email.blank? && self.email.match(/^\S+@\S+/)
+    email.to_s.match(/^\S+@\S+/)
   end
-  def invalid_email_address? ; !valid_email_address? ; end
 
   def has_opted_out_of_email? ;  e_blacklist? && valid_email_address?  end
 
@@ -404,12 +399,6 @@ class Customer < ActiveRecord::Base
   # Override content_columns method to omit password hash and salt
   def self.content_columns
     super.delete_if { |x| x.name.match(%w[role crypted_password salt _at$ _on$].join('|')) }
-  end
-
-  def self.address_columns
-    self.content_columns.select {
-      |x| x.name.match('first_name|last_name|street|city|state|zip')
-    }
   end
 
   # Convert list of customers to CSV.  If with_errors is true, last column is

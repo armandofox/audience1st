@@ -10,25 +10,22 @@ A1.checkout = {
     var timerExpiresField = $('#timer_expires');
     if (timerExpiresField.length < 1) { return; } // field not present = order is done
     var timerExpiresAt = Number(timerExpiresField.val()); // seconds since epoch, from Ruby
-    var now = (Date.now() / 1000) >> 0; // seconds since epoch; Date.now returns millisecs
-    var diff = timerExpiresAt - now;
-    var handler;
-    if (diff > 0) {
-      $('.timer').removeClass('d-none');
-      handler = setInterval(updateTimer, 1000);
-    } else {
-      A1.checkout.timerExpired();
-    };
+    $('.timer').removeClass('d-none');
+    var handler = setInterval(updateTimer, 1000);
+    updateTimer();
+
     function updateTimer() {
-      var minutes = (diff / 60) >> 0; // coerce to integer
-      var seconds = diff % 60;
-      var timerString = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-      $('#timer').html(timerString);
-      diff -= 1;
+      var now = (Date.now() / 1000) >> 0; // seconds since epoch; Date.now returns millisecs
+      var diff = timerExpiresAt - now;
       if (diff < 0) {
-        diff = 0;               // we're done
         clearInterval(handler);
         A1.checkout.timerExpired();
+      } else {
+        var minutes = (diff / 60) >> 0; // coerce to integer
+        var seconds = diff % 60;
+        var timerString = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        $('#timer').html(timerString);
+        diff -= 1;
       };
     };
   }

@@ -101,7 +101,7 @@ class ReportsController < ApplicationController
       render :js => "alert('#{@customers.length} matches')"
     when /download/i
       @report.create_csv
-      download_to_excel(@report.output, @report.filename, false)
+      stream_download_to_excel(@report.output, @report.filename)
     when /add/i
       seg = params[:sublist]
       email_list = EmailList.new

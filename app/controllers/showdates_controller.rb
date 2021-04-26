@@ -82,4 +82,5 @@ class ShowdatesController < ApplicationController
     params.require(:showdate).permit :thedate, :house_capacity, :max_advance_sales, :description, :show_id,
     :seatmap_id, :live_stream, :stream_anytime, :access_instructions
   end
+
 end

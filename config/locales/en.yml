@@ -32,8 +32,8 @@ en:
         between %{from} and %{to}.
 
       already_has_stream_anytime: >
-        This show already has a "stream anytime" performance.  Please add or modify 
-        its redemptions rather than creating another "stream anytime" performance.
+        This show already has a "stream on demand" performance.  Please add or modify 
+        its redemptions rather than creating another "stream on demand" performance.
         
       cannot_change_seating_type: >
         Cannot change performance from reserved to general admission or vice versa because 

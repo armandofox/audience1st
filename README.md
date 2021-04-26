@@ -1,8 +1,7 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/6fac2ed488c86289954b/maintainability)](https://codeclimate.com/github/abhinavDhulipala/audience1st/maintainability)
-[![Build Status](https://travis-ci.org/abhinavDhulipala/audience1st.svg?branch=main)](https://travis-ci.org/abhinavDhulipala/audience1st)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/6fac2ed488c86289954b/test_coverage)](https://codeclimate.com/github/abhinavDhulipala/audience1st/test_coverage)
-[![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2488109)
-[![Bluejay Dashboard](https://img.shields.io/badge/Bluejay-Dashboard_6-blue.svg)](http://dashboard.bluejay.governify.io/dashboard/script/dashboardLoader.js?dashboardURL=https://reporter.bluejay.governify.io/api/v4/dashboards/tpa-CS169L-GH-abhinavDhulipala_audience1st/main)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/maintainability)](https://codeclimate.com/github/armandofox/audience1st/maintainability)
+[![Build Status](https://travis-ci.org/armandofox/audience1st.svg?branch=main)](https://travis-ci.org/armandofox/audience1st)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
+[![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://pivotaltracker.com/n/projects/44802)
 
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Xiao Fu](https://github.com/fxdawnn),
@@ -22,7 +21,12 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Alex Wang](https://github.com/raisindoc),
 [Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
-[Hang (Arthur) Yin](https://github.com/LoserNoOne)
+[Hang (Arthur) Yin](https://github.com/LoserNoOne),
+[Kyle Khus](https://github.com/kkhus5),
+[Justin Wong](https://github.com/JustinRWong),
+[Abhinav Dhulipala](https://github.com/abhinavDhulipala),
+[Matthew Fyke](https://github.com/mattfyke),
+[Anthony Jang](https://github.com/segfalut)
 
 
 # This information is for developers and deployers
