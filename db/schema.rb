@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210418205452) do
+ActiveRecord::Schema.define(version: 20210425090446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -195,6 +195,7 @@ ActiveRecord::Schema.define(version: 20210418205452) do
     t.datetime "last_sweep",                                                         default: '2019-12-24 17:59:23',                                                                                                           null: false
     t.text     "html_email_template",                                                default: "<!DOCTYPE html><html><head></head><body>{{body}}</body></html>",                                                                null: false
     t.string   "reminder_emails",                                                    default: "Never"
+    t.text     "general_reminder_email_notes"
   end
 
   create_table "orders", force: :cascade do |t|
