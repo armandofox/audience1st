@@ -10,12 +10,14 @@ Background:
 
 Scenario: Setup new show
 
-  When I go to the New Show page
+  When I enable the reminder email feature
+  And I go to the New Show page
   And I fill in the "show" fields as follows:
   | field                                                          | value                        |
   | Show Name                                                      | Fiddler on the Roof          |
   | List starting                                                  | select date "2010-03-11"     |
   | Event type                                                     | select "Regular Show"        |
+  | Send reminder email to ticket holders                          | select "12 hours before curtain time"            |
   | Landing page URL (optional)                                    | http://mytheatre.com/fiddler |
   | Description (optional)                                         | A classic                    |
   | Special notes to patron (in confirmation email); blank if none | Enjoy                        |

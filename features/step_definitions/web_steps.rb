@@ -203,4 +203,3 @@ Then /^show me the page and debug$/ do
   require "rubygems"; require "byebug"; byebug
   1 #intentionally force debugger context in this method 
 end
-
