@@ -108,6 +108,11 @@ en:
 
     # Editing shows and showdates
 
+    show_reminder_email: >
+
+      Schedule a reminder email that will be automatically sent out to ticket holders 
+      at a given time before the event.
+
     show_season: >
 
       Which season the show is in.  Cannot be changed once the show is created.
