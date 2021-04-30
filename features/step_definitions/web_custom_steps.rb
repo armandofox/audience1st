@@ -114,7 +114,7 @@ end
 
 # Lets you write step def such as:
 # Then I should see the message for "customers.confirm_delete"
-Then /I should (not )?see the message for "(.*)"/ do |no,i18n_key| 
+Then /I should (not )?see the message for "(.*)"/ do |no,i18n_key|
   message = I18n.translate!(i18n_key)
   if no
     expect(page).not_to have_content(message)
@@ -135,4 +135,8 @@ end
 
 When /^I enable the reminder email feature$/ do
   enable_new_feature('reminder_emails')
+end
+
+When /^I disable the reminder email feature$/ do
+  disable_new_feature('reminder_emails')
 end
