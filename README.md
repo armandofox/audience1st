@@ -6,10 +6,13 @@
 
 Audience1st was written by [Armando Fox](https://github.com/armandofox) with contributions from:
 [Xiao Fu](https://github.com/fxdawnn),
+[Abhinav Dhulipala](https://github.com/abhinavDhulipala),
+[Matthew Fyke](https://github.com/mattfyke),
 [Jasper Gan](https://github.com/jasgan),
 [CiCi Huang](https://github.com/chengchenghuang),
 [Xu Huang](https://github.com/Hexhu),
 [Xiaoyu Alan He](https://github.com/AlanHe-Xiaoyu),
+[Anthony Jang](https://github.com/segfalut),
 [Wayne Leung](https://github.com/WayneLeung12),
 [Autumn Li](https://github.com/autumnli11),
 [Yowsean Li](https://github.com/yowsean),
@@ -23,6 +26,11 @@ Audience1st was written by [Armando Fox](https://github.com/armandofox) with con
 [Kevin Yen](https://github.com/crazyberry7),
 [Casper Yang](https://github.com/cyang2020),
 [Hang (Arthur) Yin](https://github.com/LoserNoOne)
+[Kyle Khus](https://github.com/kkhus5),
+[Justin Wong](https://github.com/JustinRWong),
+
+
+
 
 
 # This information is for developers and deployers
