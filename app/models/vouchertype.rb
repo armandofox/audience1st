@@ -3,6 +3,8 @@ class Vouchertype < ActiveRecord::Base
   belongs_to :account_code
   validates_associated :account_code
 
+  belongs_to :seating_zone
+
   has_many :valid_vouchers, :dependent => :destroy
   accepts_nested_attributes_for :valid_vouchers
   has_many :vouchers

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210425090446) do
+ActiveRecord::Schema.define(version: 20210724233252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -222,6 +222,11 @@ ActiveRecord::Schema.define(version: 20210425090446) do
   add_index "orders", ["purchaser_id"], name: "index_orders_on_purchaser_id", using: :btree
   add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
 
+  create_table "seating_zones", force: :cascade do |t|
+    t.string "name"
+    t.string "short_name"
+  end
+
   create_table "seatmaps", force: :cascade do |t|
     t.string  "name",                  null: false
     t.text    "csv"
@@ -328,6 +333,7 @@ ActiveRecord::Schema.define(version: 20210425090446) do
     t.boolean  "changeable",                      default: false, null: false
     t.integer  "account_code_id",                 default: 1,     null: false
     t.integer  "display_order",                   default: 0,     null: false
+    t.integer  "seating_zone_id_id"
   end
 
   add_index "vouchertypes", ["account_code_id"], name: "index_vouchertypes_on_account_code_id", using: :btree
