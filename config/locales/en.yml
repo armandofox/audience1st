@@ -7,6 +7,11 @@ en:
   seatmaps:
     confirm_delete: >
       Delete '%{name}' seatmap: are you sure?
+    errors:
+      invalid_seat_label: >
+        Invalid seat label '%{cell}': must start with seating zone short name
+        (%{message}), followed by ':', followed by the seat number (letters or numbers), and
+        optional trailing '+' for accessible seats
 
   showdates:
     added:
