@@ -333,7 +333,7 @@ ActiveRecord::Schema.define(version: 20210724233252) do
     t.boolean  "changeable",                      default: false, null: false
     t.integer  "account_code_id",                 default: 1,     null: false
     t.integer  "display_order",                   default: 0,     null: false
-    t.integer  "seating_zone_id_id"
+    t.integer  "seating_zone_id"
   end
 
   add_index "vouchertypes", ["account_code_id"], name: "index_vouchertypes_on_account_code_id", using: :btree

@@ -10,7 +10,7 @@ class AddSeatingZones < ActiveRecord::Migration
     SeatingZone.create!(name: 'Premium', short_name: 'p')
 
     change_table :vouchertypes do |t|
-      t.references :seating_zone_id, :null => true
+      t.references :seating_zone, :null => true
     end
   end
 end

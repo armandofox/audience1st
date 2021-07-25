@@ -249,6 +249,15 @@ en:
       Nonticket Product can be used for things like ticket exchange fees,
       ticket add-ons ("A glass of wine at intermission"), etc.
 
+    vouchertype_seating_zone: >
+
+      Restricts this voucher type to seats in a particular Seating Zone.
+      When you create seating charts, each seat in the chart is assigned
+      to one specific Seating Zone.  "None" means the voucher can be reserved
+      for any seat.  This attribute is ignored for General Admission
+      (non-reserved seating) performances.  It is also ignored/overridden when a box office
+      staff member is reserving seats on behalf of a patron.
+
     vouchertype_account_code: >
 
       If you use accounting software such as QuickBooks, sales of each

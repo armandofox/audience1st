@@ -45,7 +45,7 @@ class VouchertypesController < ApplicationController
   def create
     creation_params =
       params.require(:vouchertype).
-        permit(:category, :name, :price, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :account_code_id)
+        permit(:category, :name, :price, :seating_zone_id, :seating_zone, :offer_public, :season, :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable, :subscription, :comments, :account_code_id)
     @vouchertype = Vouchertype.new(creation_params)
     if @vouchertype.save
       Txn.add_audit_record(:txn_type => 'config', :logged_in_id => current_user.id,
@@ -81,7 +81,7 @@ class VouchertypesController < ApplicationController
     included_voucher_keys = params[:vouchertype][:included_vouchers] ? params[:vouchertype][:included_vouchers].keys : []
     vouchertype_update_params =
       params.require(:vouchertype).
-        permit(:name, :price, :offer_public, :season,
+        permit(:name, :price, :seating_zone_id, :seating_zone, :offer_public, :season,
                 :display_order, :fulfillment_needed, :walkup_sale_allowed, :changeable,
                 :subscription, :comments, :account_code_id, :account_code,
                 :included_vouchers => included_voucher_keys)
