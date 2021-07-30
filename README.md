@@ -1,5 +1,5 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/maintainability)](https://codeclimate.com/github/armandofox/audience1st/maintainability)
-[![Build Status](https://travis-ci.org/armandofox/audience1st.svg?branch=main)](https://travis-ci.org/armandofox/audience1st)
+[![Build Status](https://travis-ci.com/armandofox/audience1st.svg?branch=main)](https://travis-ci.org/armandofox/audience1st)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f023aeddae42d2da37ba/test_coverage)](https://codeclimate.com/github/armandofox/audience1st/test_coverage)
 [![Pivotal Tracker](https://github.com/armandofox/audience1st/blob/main/app/assets/images/pivotal_tracker_logo.png)](https://pivotaltracker.com/n/projects/44802)
 
