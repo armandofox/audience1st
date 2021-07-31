@@ -5,14 +5,17 @@ en:
         Unexpected error RRE1 for item %{item}: %{message}
 
   seatmaps:
-    confirm_delete: >
+    confirm_delete: >-
       Delete '%{name}' seatmap: are you sure?
     errors:
-      invalid_seat_label: >
-        Invalid seat label '%{cell}': must start with seating zone short name
-        (%{message}), followed by ':', followed by the seat number (letters or numbers), and
+      invalid_seat_label: >-
+        Invalid seat label '%{cell}': must start with seating zone short name,
+        followed by ':', followed by seat number (letters and/or numbers), and
         optional trailing '+' for accessible seats
-
+      dups: >-
+        Seatmap contains duplicate seats: %{seats}
+      no_such_zone: >-
+        No seating zone with short name '%{zone}' exists
   showdates:
     added:
       zero: No new performances were added.

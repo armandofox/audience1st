@@ -6,6 +6,7 @@ class Audience1stSeeder
     self.create_options
     self.create_special_customers
     self.create_default_account_code
+    self.create_default_seating_zone
   end
 
   # Options
@@ -78,6 +79,10 @@ class Audience1stSeeder
                                      :without_protection => true)
   end
 
+  def self.create_default_seating_zone
+    SeatingZone.create!(name: 'Reserved', short_name: 'res')
+  end
+  
   def self.create_options
     Rails.logger.info "Creating default options"
     option = Option.new(

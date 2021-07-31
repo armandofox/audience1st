@@ -1,5 +1,6 @@
 Given /a seatmap "(.*)" with seats (.*)/ do |name,seats|
-  create(:seatmap, :name => name, :seat_rows => [seats.split(/\s*,\s*/)])
+  csv = seats.split(/\s*,\s*/).map { |s| "res:#{s}" }.join(",") + "\r\n"
+  create(:seatmap, :name => name, :csv => csv)
 end
 
 Given /the seatmap "(.*)" exists/ do |name|

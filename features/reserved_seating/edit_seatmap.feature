@@ -14,8 +14,8 @@ Scenario: download CSV of existing seatmap
 
   When I follow "Download CSV" for the "Default" seatmap
   Then a CSV file should be downloaded containing:
-  | A1 |     | A2 |    |
-  |    | B1+ |    | B2 |
+    | res:A1 |         | res:A2 |        |
+    |        | res:B1+ |        | res:B2 |
 
 @javascript
 Scenario: edit existing seatmap image URL and name
@@ -35,8 +35,8 @@ Scenario: Create new seatmap from valid CSV
   And a seatmap named "New" should exist
   When I follow "Download CSV" for the "New" seatmap
   Then a CSV file should be downloaded containing:
-    | A1 |    | B1+ |
-    |    | A2 | B2  |
+    | res:A1 |        | res:B1+ |
+    |        | res:A2 | res:B2  |
 
 Scenario: Create new seatmap from invalid CSV
   

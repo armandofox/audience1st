@@ -6,16 +6,20 @@ FactoryBot.define do
     season { Time.this_season }
   end
 
+  factory :seating_zone do
+    sequence(:name) { |n| "Zone#{n}" }
+    sequence(:short_name) { |n| "z#{n}" }
+  end
+
   factory :seatmap do
     # default one looks like this:
     #   A1 - A2 -
     #     B1 -  B2     (B1 is an accessible seat)
     sequence(:name) { |n| "Seatmap #{n}" }
-    csv "A1,,A2\r\n,B1+,,B2\r\n"
-    seat_rows [['A1',nil,'A2',nil],[nil,'B1+',nil,'B2']]
+    csv "res:A1,,res:A2\r\n,res:B1+,,res:B2\r\n"
     image_url 'http://foo.com/seatmap.png'
     after(:build) do |s,ev|
-      s.parse_rows
+      s.parse_csv
     end
   end
 

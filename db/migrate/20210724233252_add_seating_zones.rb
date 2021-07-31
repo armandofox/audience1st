@@ -6,7 +6,7 @@ class AddSeatingZones < ActiveRecord::Migration
     end
     SeatingZone.connection.schema_cache.clear!
     SeatingZone.reset_column_information
-    SeatingZone.create!(name: 'Reserved', short_name: 'r')
+    SeatingZone.create!(name: 'Reserved', short_name: 'res')
 
     change_table :vouchertypes do |t|
       t.references :seating_zone, :null => true

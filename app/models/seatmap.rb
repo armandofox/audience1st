@@ -5,7 +5,10 @@ class Seatmap < ActiveRecord::Base
   require 'csv'
   require 'uri'
   
-  VALID_SEAT_LABEL_REGEX = /^\s*[A-Za-z0-9]+\+?\s*$/
+  serialize :zones, Hash
+
+  VALID_SEAT_LABEL_REGEX = /\A\s*([A-Za-z0-9]+):([A-Za-z0-9]+)(\+)?\s*\Z/
+  ERR = 'seatmaps.errors.'      # base of i18n error message keys
 
   validates :name, :presence => true, :uniqueness => true
   validates :csv, :presence => true
@@ -83,6 +86,7 @@ class Seatmap < ActiveRecord::Base
   end
 
   def parse_rows
+    all_zones = SeatingZone.all.map { |z| [z.short_name, z.name] }.to_h.freeze # zones['r'] => 'Reserved'
     list = []
     @as_js = []
     @seat_rows.each do |row|
@@ -91,17 +95,23 @@ class Seatmap < ActiveRecord::Base
         if cell.blank?   # no seat in this location
           row_string << '_'
         else
-          cell = cell.strip.upcase
-          return errors.add(:base, "Invalid seat label #{cell} (may contain only letters, numbers, and trailing + sign for accessible seats") unless cell =~ VALID_SEAT_LABEL_REGEX
-          seat_type = (cell.sub!( /\+$/, '') ? 'a' : 'r') # accessible or regular seat
+          unless cell =~ VALID_SEAT_LABEL_REGEX
+            return errors.add(:base, I18n.translate("#{ERR}invalid_seat_label", :cell => cell))
+          end
+          seat_type = ($3 == '+' ? 'a' : 'r') # accessible or regular seat
+          zone_short_name,seat_number = $1, $2
+          if (zone_name = all_zones[zone_short_name]).blank?
+            return errors.add(:base, I18n.translate("#{ERR}no_such_zone", :zone => zone_short_name))
+          end
           # icons don't work with jQuery seatmaps yet...
           # label = (seat_type == 'r' ? ' ' : '\u267F')     # unicode HTML glyph for wheelchair
           # and the 'A' labels for accessible seats don't align right...
           # label = (seat_type == 'r' ? ' ' : 'A')
           # so just fall back for now
           label = ' '
-          row_string << "#{seat_type}[#{cell},#{label}]"
-          list << cell
+          row_string << "#{seat_type}[#{zone_name}-#{seat_number},#{label}]"
+          list << seat_number
+          (zones[zone_short_name] ||= []) << seat_number
         end
       end
       @as_js << %Q{"#{row_string}"}
@@ -120,15 +130,15 @@ class Seatmap < ActiveRecord::Base
   end
 
   def no_duplicate_seats
-    parse_csv if seat_list.empty?
-    canonical = seat_list.split(/\s*,\s*/).map { |s| s.gsub(/\+$/, '') }
+    parse_csv if seat_list.nil? || seat_list.empty?
+    canonical = seat_list.to_s.split(/\s*,\s*/).map { |s| s.gsub(/\+$/, '') }
     dups = canonical.select.with_index do |e, i|
       i
       canonical.index(e)
       i != canonical.index(e)
     end
     unless dups.empty?
-      @errors.add(:base, "Seatmap contains duplicate seats: #{dups.join(', ')}")
+      @errors.add(:base, I18n.translate("#{ERR}dups", :seats => dups.join(', ')))
     end
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210724233252) do
+ActiveRecord::Schema.define(version: 20210731222322) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -228,13 +228,14 @@ ActiveRecord::Schema.define(version: 20210724233252) do
   end
 
   create_table "seatmaps", force: :cascade do |t|
-    t.string  "name",                  null: false
+    t.string  "name",                           null: false
     t.text    "csv"
-    t.text    "json",                  null: false
+    t.text    "json",                           null: false
     t.text    "seat_list"
-    t.integer "rows",      default: 0, null: false
-    t.integer "columns",   default: 0, null: false
+    t.integer "rows",      default: 0,          null: false
+    t.integer "columns",   default: 0,          null: false
     t.string  "image_url"
+    t.text    "zones",     default: "--- {}\n"
   end
 
   create_table "showdates", force: :cascade do |t|
