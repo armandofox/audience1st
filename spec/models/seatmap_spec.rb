@@ -11,7 +11,7 @@ describe Seatmap do
     it 'includes unavailable seats if called for a showdate' do
       res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
       expect(res).to include_json(
-        map: ['r[Reserved A1, ]_r[Reserved A2, ]_', '_a[Reserved B1, ]_r[Reserved B2, ]'],
+        map: ['r[Reserved-A1, ]_r[Reserved-A2, ]_', '_a[Reserved-B1, ]_r[Reserved-B2, ]'],
         unavailable: %w(A1 B2),
         image_url: @s.image_url,
         seats: {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}

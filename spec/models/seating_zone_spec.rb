@@ -19,7 +19,7 @@ describe SeatingZone do
     end
   end
   specify 'valid with valid names' do
-    expect(SeatingZone.new(:name => 'GeneralReserved', :short_name => 'r')).to be_valid
+    expect(SeatingZone.new(:name => 'General_Reserved', :short_name => 'r')).to be_valid
   end
 end
 
