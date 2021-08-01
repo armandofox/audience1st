@@ -24,7 +24,7 @@ Scenario: sell tickets with reserved seats
   And I fill in "Discount" with "1"
   And I press "Choose Seats..."
   Then I should see the seatmap
-  When I choose seats B1,B2,A1
+  When I choose seats Reserved-B1,Reserved-B2,Reserved-A1
   Then I should see "A1,B1,B2" in the list of selected seats
   When I complete the walkup sale with credit card
   Then I should see "3 tickets (total $31.00) paid by Credit card. Seats: A1, B1, B2"
@@ -34,7 +34,7 @@ Scenario: sell tickets as well as nonticket items at a reserved seating show
 
   When I fill in "General" with "1"
   And I fill in "Wine" with "2"
-  And I successfully choose seat B1
+  And I successfully choose seat Reserved-B1
   And I complete the walkup sale with credit card
   Then I should see "1 ticket and 2 retail items (total $25.00) paid by Credit card. Seats: B1"
 

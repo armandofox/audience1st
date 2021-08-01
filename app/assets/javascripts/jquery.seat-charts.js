@@ -384,8 +384,8 @@
 			 *
 			 */
 			 
-			$.each(characters.match(/[a-z_]{1}(\[[0-9a-z_]{0,}(,[0-9a-z_ ]+)?\])?/gi), function (column, characterParams) { 
-				var matches         = characterParams.match(/([a-z_]{1})(\[([0-9a-z_ ,]+)\])?/i),
+			$.each(characters.match(/[a-z_]{1}(\[[0-9a-z_-]{0,}(,[0-9a-z_ ]+)?\])?/gi), function (column, characterParams) { 
+				var matches         = characterParams.match(/([a-z_]{1})(\[([0-9a-z_ ,-]+)\])?/i),
 					//no matter if user specifies [] params, the character should be in the second element
 					character       = matches[1],
 					//check if user has passed some additional params to override id or label

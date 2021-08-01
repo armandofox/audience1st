@@ -18,7 +18,8 @@ A1.seatmap = {
       ]
     }
     ,click: function(evt) {
-      var seatNum = this.settings.id;
+      var clickedSeat = this.settings.id; // format:  ZoneName-A111 (hyphen is separator)
+      var seatNum = clickedSeat.substr(clickedSeat.lastIndexOf("-") + 1);
       switch(this.status()) {
       case 'available':           // clicking on available seat selects it...
         if (A1.seatmap.selectedSeats.length < A1.seatmap.max) { // ...if still seats to select

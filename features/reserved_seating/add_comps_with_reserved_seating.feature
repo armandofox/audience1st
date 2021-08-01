@@ -21,7 +21,7 @@ Scenario: add comps and reserve specific seats
   And I select "Comp (2010)" from "What type:"
   And I select the "March 2, 2:00pm" performance of "Chicago" from "Reserve for:"
   Then I should see the seatmap  
-  When I choose seats B1,B2
+  When I choose seats Reserved-B1,Reserved-B2
   Then I should see "B1" in the list of selected seats
   When I press "Add Vouchers"
   Then customer "Joe Mallon" should have seat B1 for the March 2, 2010, 2pm performance of "Chicago"
