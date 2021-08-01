@@ -12,7 +12,7 @@ describe Seatmap do
       res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
       expect(res).to include_json(
         map: ['r[Reserved-A1, ]_r[Reserved-A2, ]_', '_a[Reserved-B1, ]_r[Reserved-B2, ]'],
-        unavailable: %w(A1 B2),
+        unavailable: %w(Reserved-A1 Reserved-B2),
         image_url: @s.image_url,
         seats: {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}
         )
@@ -42,7 +42,7 @@ describe Seatmap do
     end
     it 'parses zones' do
       3.times { create(:seating_zone) } # z1, z2, z3
-      s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5")
+      s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5\r\n")
       expect(s).to be_valid
       expect(s.zones['z1'].sort).to eq %w(A1 D5)
       expect(s.zones['z2'].sort).to eq %w(A2)
@@ -104,7 +104,7 @@ describe Seatmap do
     z2 = SeatingZone.find_by(:short_name => 'z2')
     seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
     expect(seatmap.zone_displayed_for '1').to eq 'Zone1'
-    expect(seatmap.zone_displayed_for '3').to eq 'Zone1'
+    expect(seatmap.zone_displayed_for '3').to eq 'Zone2'
     expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
   end
 end
