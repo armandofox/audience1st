@@ -17,6 +17,7 @@ class Seatmap < ActiveRecord::Base
   validates_numericality_of :rows, :greater_than => 0
   validates_numericality_of :columns, :greater_than => 0
   validate :no_duplicate_seats
+  validate :all_zones_exist
   
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
 
@@ -28,7 +29,9 @@ class Seatmap < ActiveRecord::Base
   def emit_json(unavailable = [])
     seatmap = self.json
     image_url = self.image_url.to_json
-    unavailable = unavailable.compact.to_json
+    # since the 'unavailable' value is used by the actual seatmap JS code to identify seats,
+    #  the unavailable seats must include the full seating zone display name.
+    unavailable = unavailable.compact.map { |num| "#{zone_displayed_for(num)}-#{num}" }.to_json
     # seat classes: 'r' = regular, 'a' = accessible
     seats = {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}.to_json
     %Q{ {"map": #{seatmap}, "rows": #{rows}, "columns": #{columns}, "seats": #{seats}, "unavailable": #{unavailable}, "image_url": #{image_url} }}
@@ -59,6 +62,12 @@ class Seatmap < ActiveRecord::Base
     "#{name} (#{seat_count})"
   end
   
+  # To which zone does a seat belong?
+  def zone_displayed_for(seat)
+    key = self.zones.keys.detect { |k| zones[k].include?(seat) }
+    SeatingZone.find_by(:short_name => key).name
+  end
+
   # Given a collection of vouchers, some of which may have seat numbers, return the subset
   # that COULD NOT be accommodated by this seatmap.  Used to determine if it's possible to
   # change a seatmap for a performance after sales have begun.
@@ -86,7 +95,7 @@ class Seatmap < ActiveRecord::Base
   end
 
   def parse_rows
-    all_zones = SeatingZone.all.map { |z| [z.short_name, z.name] }.to_h.freeze # zones['r'] => 'Reserved'
+    all_zones = SeatingZone.hash_by_short_name # zones['r'] => 'Reserved'
     list = []
     @as_js = []
     @seat_rows.each do |row|
@@ -127,6 +136,16 @@ class Seatmap < ActiveRecord::Base
   def pad_rows_to_uniform_length!
     len = @seat_rows.map(&:length).max
     @seat_rows.each { |r| (r << Array.new(len - r.length) {''}).flatten! }
+  end
+
+  def all_zones_exist
+    all_zones = SeatingZone.hash_by_short_name
+    missing = self.zones.keys - all_zones.keys
+    unless missing.empty?
+      missing.each do |z|
+        @errors.add(:base, I18n.translate("#{ERR}no_such_zone", :zone => z))
+      end
+    end
   end
 
   def no_duplicate_seats

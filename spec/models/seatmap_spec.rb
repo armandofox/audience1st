@@ -98,4 +98,13 @@ describe Seatmap do
       end
     end
   end
+  it 'finds zones for seats' do
+    2.times { create(:seating_zone) } # z1, z2
+    z1 = SeatingZone.find_by(:short_name => 'z1')
+    z2 = SeatingZone.find_by(:short_name => 'z2')
+    seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
+    expect(seatmap.zone_displayed_for '1').to eq 'Zone1'
+    expect(seatmap.zone_displayed_for '3').to eq 'Zone1'
+    expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
+  end
 end

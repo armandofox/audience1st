@@ -8,5 +8,9 @@ class SeatingZone < ActiveRecord::Base
 
   has_many :vouchertypes
 
+  def self.hash_by_short_name
+    SeatingZone.all.map { |z| [z.short_name, z.name] }.to_h.freeze # zones["r"] => "Reserved"
+  end
+
 end
 
