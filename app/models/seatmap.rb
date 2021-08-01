@@ -65,7 +65,7 @@ class Seatmap < ActiveRecord::Base
   # To which zone does a seat belong?
   def zone_displayed_for(seat)
     key = self.zones.keys.detect { |k| zones[k].include?(seat) }
-    SeatingZone.find_by(:short_name => key).name
+    SeatingZone.find_by!(:short_name => key).name
   end
 
   # Given a collection of vouchers, some of which may have seat numbers, return the subset

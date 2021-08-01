@@ -40,19 +40,6 @@ describe Seatmap do
         expect(s.errors.full_messages).to include("Seatmap contains duplicate seats: A1, B1")
       end
     end
-    it 'parses zones' do
-      3.times { create(:seating_zone) } # z1, z2, z3
-      s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5\r\n")
-      expect(s).to be_valid
-      expect(s.zones['z1'].sort).to eq %w(A1 D5)
-      expect(s.zones['z2'].sort).to eq %w(A2)
-      expect(s.zones['z3'].sort).to eq %w(B3 C4)
-    end
-    it 'uses only existing zones' do
-      s = build(:seatmap, :csv => "res:A1,p:A2\r\n")
-      expect(s).not_to be_valid
-      expect(s.errors.full_messages).to include("No seating zone with short name 'p' exists")
-    end
   end
   describe 'seat existence' do
     before(:each) do ; @s = create(:seatmap) ; end # has seats A1,B1,A2,B2
@@ -98,13 +85,27 @@ describe Seatmap do
       end
     end
   end
-  it 'finds zones for seats' do
-    2.times { create(:seating_zone) } # z1, z2
-    z1 = SeatingZone.find_by(:short_name => 'z1')
-    z2 = SeatingZone.find_by(:short_name => 'z2')
-    seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
-    expect(seatmap.zone_displayed_for '1').to eq 'Zone1'
-    expect(seatmap.zone_displayed_for '3').to eq 'Zone2'
-    expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
+  describe 'zones' do
+    before(:each) do
+      (1..3).each { |n|  create(:seating_zone, :name => "Zone#{n}", :short_name => "z#{n}") }
+    end
+    it 'parses zones' do
+      s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5\r\n")
+      expect(s).to be_valid
+      expect(s.zones['z1'].sort).to eq %w(A1 D5)
+      expect(s.zones['z2'].sort).to eq %w(A2)
+      expect(s.zones['z3'].sort).to eq %w(B3 C4)
+    end
+    it 'uses only existing zones' do
+      s = build(:seatmap, :csv => "z1:A1,p:A2\r\n")
+      expect(s).not_to be_valid
+      expect(s.errors.full_messages).to include("No seating zone with short name 'p' exists")
+    end
+    it 'finds zones for seats' do
+      seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
+      expect(seatmap.zone_displayed_for '1').to eq 'Zone1'
+      expect(seatmap.zone_displayed_for '3').to eq 'Zone2'
+      expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
+    end
   end
 end
