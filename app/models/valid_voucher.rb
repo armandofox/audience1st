@@ -42,7 +42,7 @@ class ValidVoucher < ActiveRecord::Base
   attr_accessor :visible     # should this offer be viewable by non-admins?
   alias_method :visible?, :visible # for convenience and more readable specs
 
-  delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public, :offer_public_as_string, :category, :comp?, :subscriber_voucher?, :to => :vouchertype
+  delegate :name, :price, :name_with_price, :display_order, :visible_to?, :season, :offer_public, :offer_public_as_string, :category, :comp?, :subscriber_voucher?, :zone_short_name, :to => :vouchertype
   delegate :<=>, :printable_name, :printable_date, :printable_date_with_description, :menu_selection_name, :name_and_date_with_capacity_stats, :saleable_seats_left, :thedate, :to => :showdate
 
   scope :for_shows, -> { where.not(:showdate => nil) }

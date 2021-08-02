@@ -62,7 +62,8 @@ class VouchertypesController < ApplicationController
         end
       end
     else
-      redirect_to new_vouchertype_path, :alert => ('Vouchertype could not be created: ' << @vouchertype.errors.as_html)
+      flash[:alert] = "Voucher type could not be created: " << @vouchertype.errors.as_html
+      render :action => :new
     end
   end
 
