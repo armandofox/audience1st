@@ -88,11 +88,6 @@ class StoreController < ApplicationController
       @valid_vouchers.empty? && # no tickets for this showdate
       @all_shows.size == 1   && # no other shows coming up
       @all_showdates.empty?     # no other eligible showdates for this show
-    # for reserved seating, include list of showdates that are reserved seating
-    if @sd.try(:seatmap)
-      # might as well load the seatmap now!
-      @seatmap_info = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
-    end
   end
 
   # All following actions can assume @customer is set. Doesn't mean that person is logged in,
