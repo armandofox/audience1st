@@ -11,8 +11,10 @@ A1.store = {
 
     var theZone = zoneOfSelectedTickets();
     if (theZone == null) {      // zero tickets of any kind are selected
+      $('#zone').val('');
       return;
     }
+    $('#zone').val(theZone);
     $('.itemQty').each(function() {
       if ($(this).data('zone') != theZone) {
         $(this).prop('disabled', true);

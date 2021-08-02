@@ -10,6 +10,9 @@ class Seatmap < ActiveRecord::Base
   VALID_SEAT_LABEL_REGEX = /\A\s*([A-Za-z0-9]+):([A-Za-z0-9]+)(\+)?\s*\Z/
   ERR = 'seatmaps.errors.'      # base of i18n error message keys
 
+  EMPTY_SEATMAP_AS_JSON =
+    {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0}.to_json
+  
   validates :name, :presence => true, :uniqueness => true
   validates :csv, :presence => true
   validates :json,  :presence => true
@@ -40,12 +43,13 @@ class Seatmap < ActiveRecord::Base
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image),
   # 'unavailable' (list of unavailable seats for a given showdate)
-  def self.seatmap_and_unavailable_seats_as_json(showdate)
-    if showdate.seatmap
-      showdate.seatmap.emit_json(showdate.occupied_seats)
-    else
-      {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0, }.to_json
+  def self.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone)
+    return EMPTY_SEATMAP_AS_JSON unless (sm = showdate.seatmap)
+    occupied = showdate.occupied_seats
+    if !restrict_to_zone.blank?
+      occupied = (occupied + sm.excluded_from_zone(restrict_to_zone)).sort.uniq
     end
+    sm.emit_json(occupied)
   end
 
   # Return JSON hash of ids to seat counts
@@ -61,7 +65,16 @@ class Seatmap < ActiveRecord::Base
   def name_with_capacity
     "#{name} (#{seat_count})"
   end
-  
+
+  # Seats excluded from a zone (ie, any seats NOT in that zone
+  def excluded_from_zone(restrict_to_zone)
+    excluded = []
+    self.zones.each_pair do |shortname, seats|
+      excluded += seats unless shortname == restrict_to_zone
+    end
+    excluded.sort
+  end
+
   # To which zone does a seat belong?
   def zone_displayed_for(seat)
     key = self.zones.keys.detect { |k| zones[k].include?(seat) }

@@ -1,8 +1,10 @@
 A1.showSeatmapForShowdateRegularSales = function(evt) {
+  var seatmapUrl;
   // triggered when "Select Seats" is clicked, so disable default submit action on button
   evt.preventDefault();
-  // get the show's seatmap
-  $.getJSON('/ajax/seatmap/' + $('#showdate_id').val(), A1.setupSeatmapForShowdateRegularSales);
+  // get the show's seatmap.  If a zone to restrict to has been specified, pass it.
+  seatmapUrl = '/ajax/seatmap/' + $('#showdate_id').val() + '?zone=' + $('#zone').val();
+  $.getJSON(seatmapUrl, A1.setupSeatmapForShowdateRegularSales);
 }
 
 A1.setupSeatmapForShowdateRegularSales = function(json_data) {

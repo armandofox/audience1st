@@ -3,19 +3,27 @@ require 'rails_helper'
 describe Seatmap do
   describe 'JSON' do
     before(:each) do
-      @sd = create(:reserved_seating_showdate)
-      @s = @sd.seatmap
+      SeatingZone.create!(:name => 'P', :short_name => 'p')
+      SeatingZone.create!(:name => 'B', :short_name => 'b')
+      @s = create(:seatmap, :csv => "res:A1,res:A2,p:B1,b:B2\r\n")
+      @sd = create(:reserved_seating_showdate, :sm => @s)
       @unavailable = ['A1', 'B2']
       allow(@sd).to receive(:occupied_seats).and_return(@unavailable)
     end
     it 'includes unavailable seats if called for a showdate' do
-      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone=nil)
       expect(res).to include_json(
-        map: ['r[Reserved-A1, ]_r[Reserved-A2, ]_', '_a[Reserved-B1, ]_r[Reserved-B2, ]'],
-        unavailable: %w(Reserved-A1 Reserved-B2),
+        map: ['r[Reserved-A1, ]r[Reserved-A2, ]r[P-B1, ]r[B-B2, ]'],
+        unavailable: %w(Reserved-A1 B-B2),
         image_url: @s.image_url,
         seats: {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}
         )
+    end
+    it 'further restricts unavailability by zone' do
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone='res')
+      expect(res).to include_json(
+                       unavailable: %w(Reserved-A1 P-B1 B-B2)
+                     )
     end
     it 'includes empty list of unavailable seats if called for preview' do
       res = @s.emit_json
