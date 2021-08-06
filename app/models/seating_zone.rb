@@ -1,5 +1,7 @@
 class SeatingZone < ActiveRecord::Base
 
+  default_scope { order(:display_order) }
+
   validates :name, :presence => true, :uniqueness => true,
             :format => {:with => /\A[a-z0-9_]+\Z/i, :message => 'only letters, numbers, and underscores allowed'}
 
