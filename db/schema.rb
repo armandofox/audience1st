@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210801012137) do
+ActiveRecord::Schema.define(version: 20210806210004) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -223,8 +223,9 @@ ActiveRecord::Schema.define(version: 20210801012137) do
   add_index "orders", ["ticket_sales_import_id"], name: "index_orders_on_ticket_sales_import_id", using: :btree
 
   create_table "seating_zones", force: :cascade do |t|
-    t.string "name"
-    t.string "short_name"
+    t.string  "name"
+    t.string  "short_name"
+    t.integer "display_order", default: 0
   end
 
   create_table "seatmaps", force: :cascade do |t|
