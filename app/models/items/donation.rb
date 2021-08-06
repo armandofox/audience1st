@@ -54,8 +54,8 @@ class Donation < Item
     "Donation: #{account_code.name_or_code}"
   end
 
-  def one_line_description(suppress_price: false)
-    if suppress_price
+  def one_line_description(opts={})
+    if opts[:suppress_price]
       "Donation to #{account_code.name}"
     else
       sprintf("$%6.2f  Donation to #{account_code.name}", amount)

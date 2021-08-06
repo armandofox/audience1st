@@ -257,7 +257,7 @@ class Order < ActiveRecord::Base
     summary = []
     vouchers, nonvouchers = items.partition { |i| i.kind_of?(Voucher) }
     vouchers.group_by { |v| [v.vouchertype, v.showdate] }.each_pair do |for_show,vouchers|
-      summary << "#{vouchers.count} @ #{vouchers.first.one_line_description}"
+      summary << "#{vouchers.count} @ #{vouchers.first.one_line_description(:suppress_seat => true)}"
     end
     if vouchers.any? { |v| !v.seat.blank? }
       summary << "Seats: #{Voucher.seats_for(vouchers)}"

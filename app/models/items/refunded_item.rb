@@ -4,7 +4,7 @@ class RefundedItem < Item
   validates_associated :canceled_item, :on => :create
   
   def shortdesc ; "[REFUND for item #{canceled_item.id}]" ; end
-  def one_line_description(suppress_price: false); shortdesc; end
+  def one_line_description(opts={}); shortdesc; end
   def description_for_report ; shortdesc ; end
   def description_for_audit_txn ; shortdesc; end
   def item_description ; canceled_item.one_line_description ; end
