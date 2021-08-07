@@ -20,13 +20,10 @@ class Seatmap < ActiveRecord::Base
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
 
   # Things checked while CSV is being parsed, in order.  
-  validate :no_duplicate_seats
   validate :all_zones_exist
+  validate :no_duplicate_seats
   # If either of the above checks sets @stop_parsing, no further validations happen:
-  validates :json,  :presence => true,                    :unless => :stop_parsing
-  validates :seat_list, :presence => true,                :unless => :stop_parsing
-  validates_numericality_of :rows, :greater_than => 0,    :unless => :stop_parsing
-  validates_numericality_of :columns, :greater_than => 0, :unless => :stop_parsing
+  validates :seat_list, :presence => true, :unless => :stop_parsing
   
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image)
