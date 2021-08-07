@@ -13,7 +13,7 @@ en:
         followed by ':', followed by seat number (letters and/or numbers), and
         optional trailing '+' for accessible seats
       dups: >-
-        Seatmap contains duplicate seats: %{seats}
+        Seating chart contains duplicate seats: %{seats}
       no_such_zone: >-
         No seating zone with short name '%{zone}' exists
   showdates:

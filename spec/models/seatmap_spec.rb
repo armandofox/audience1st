@@ -39,13 +39,13 @@ describe Seatmap do
       specify 'in same zone' do
         s = build(:seatmap, :csv => "res:A1,res:A2,res:A1,res:B1+,res:B1\r\n")
         expect(s).not_to be_valid
-        expect(s.errors.full_messages).to eq(["Seatmap contains duplicate seats: A1, B1"])
+        expect(s.errors.full_messages).to eq(["Seating chart contains duplicate seats: A1, B1"])
       end
       specify 'in different zones' do
         SeatingZone.create!(:short_name => 'p', :name => 'Premium')
         s = build(:seatmap, :csv => "res:A1,res:A2,p:A1,res:B1+,p:B1\r\n")
         expect(s).not_to be_valid
-        expect(s.errors.full_messages).to eq(["Seatmap contains duplicate seats: A1, B1"])
+        expect(s.errors.full_messages).to eq(["Seating chart contains duplicate seats: A1, B1"])
       end
     end
     describe 'with zones' do
