@@ -12,19 +12,21 @@ class Seatmap < ActiveRecord::Base
 
   EMPTY_SEATMAP_AS_JSON =
     {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0}.to_json
+  attr_accessor :seat_rows
+  attr_accessor :stop_parsing   # if errors in CSV, stop further validations
   
   validates :name, :presence => true, :uniqueness => true
   validates :csv, :presence => true
-  validates :json,  :presence => true
-  validates :seat_list, :presence => true
-  validates_numericality_of :rows, :greater_than => 0
-  validates_numericality_of :columns, :greater_than => 0
-  validate :no_duplicate_seats
-  validate :all_zones_exist
-  
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
 
-  attr_accessor :seat_rows
+  # Things checked while CSV is being parsed, in order.  
+  validate :no_duplicate_seats
+  validate :all_zones_exist
+  # If either of the above checks sets @stop_parsing, no further validations happen:
+  validates :json,  :presence => true,                    :unless => :stop_parsing
+  validates :seat_list, :presence => true,                :unless => :stop_parsing
+  validates_numericality_of :rows, :greater_than => 0,    :unless => :stop_parsing
+  validates_numericality_of :columns, :greater_than => 0, :unless => :stop_parsing
   
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image)
@@ -118,11 +120,13 @@ class Seatmap < ActiveRecord::Base
           row_string << '_'
         else
           unless cell =~ VALID_SEAT_LABEL_REGEX
+            @stop_parsing = true
             return errors.add(:base, I18n.translate("#{ERR}invalid_seat_label", :cell => cell))
           end
           seat_type = ($3 == '+' ? 'a' : 'r') # accessible or regular seat
           zone_short_name,seat_number = $1, $2
           if (zone_name = all_zones[zone_short_name]).blank?
+            @stop_parsing = true
             return errors.add(:base, I18n.translate("#{ERR}no_such_zone", :zone => zone_short_name))
           end
           # icons don't work with jQuery seatmaps yet...
@@ -155,6 +159,7 @@ class Seatmap < ActiveRecord::Base
     all_zones = SeatingZone.hash_by_short_name
     missing = self.zones.keys - all_zones.keys
     unless missing.empty?
+      @stop_parsing = true
       missing.each do |z|
         @errors.add(:base, I18n.translate("#{ERR}no_such_zone", :zone => z))
       end
@@ -170,8 +175,8 @@ class Seatmap < ActiveRecord::Base
       i != canonical.index(e)
     end
     unless dups.empty?
+      @stop_parsing = true
       @errors.add(:base, I18n.translate("#{ERR}dups", :seats => dups.join(', ')))
     end
   end
 end
-
