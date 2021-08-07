@@ -260,7 +260,7 @@ class Order < ActiveRecord::Base
       summary << "#{vouchers.count} @ #{vouchers.first.one_line_description(:suppress_seat => true)}"
     end
     if vouchers.any? { |v| !v.seat.blank? }
-      summary << "Seats: #{Voucher.seats_for(vouchers)}"
+      summary << "Seat#{'s' if vouchers.count > 1}: #{Voucher.seats_for(vouchers)}"
     end
     summary += nonvouchers.map(&:one_line_description)
     summary << self.comments
