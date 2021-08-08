@@ -43,7 +43,7 @@ Scenario: Create new seatmap from invalid CSV
   When I fill in "New" and "http://foo.com/x.jpg" as the name and image for a new seatmap
   And the URI "http://foo.com/x.jpg" is readable
   And I upload the seatmap "blank_seatmap.csv"
-  Then I should see "Seatmap CSV has errors"
+  Then I should see "Seatmap was NOT uploaded because of errors:"
 
 Scenario: Delete seatmap
 

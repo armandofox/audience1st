@@ -13,8 +13,7 @@ class SeatmapsController < ApplicationController
 
   def create                    # must be reached by 'post' due to file upload
     @seatmap = Seatmap.new(seatmaps_new_params)
-    @seatmap.parse_csv
-    return redirect_to(seatmaps_path, :alert => "Seatmap CSV has errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
+    return redirect_to(seatmaps_path, :alert => "Seatmap was NOT uploaded because of errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
     # as a courtesy, check if URI is fetchable
     check_image
     @seatmap.save!
@@ -27,7 +26,7 @@ class SeatmapsController < ApplicationController
     if @seatmap.update_attributes(seatmaps_update_params)
       flash[:notice] = 'Seatmap successfully updated.'
     else
-      flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
+      flash[:alert] = "Seatmap was NOT updated because of errors: #{seatmap.errors.as_html}"
     end
     check_image
     redirect_to seatmaps_path
