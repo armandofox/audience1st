@@ -2,28 +2,25 @@ class Seatmap < ActiveRecord::Base
 
   has_many :showdates
   
-  require 'csv'
   require 'uri'
   
   serialize :zones, Hash
 
-  VALID_SEAT_LABEL_REGEX = /\A\s*([A-Za-z0-9]+):([A-Za-z0-9]+)(\+)?\s*\Z/
-  ERR = 'seatmaps.errors.'      # base of i18n error message keys
-
   EMPTY_SEATMAP_AS_JSON =
     {'map' => [], 'seats' => {}, 'unavailable' => [], 'rows' => 0, 'columns' => 0}.to_json
-  attr_accessor :seat_rows
-  attr_accessor :stop_parsing   # if errors in CSV, stop further validations
-  
+
   validates :name, :presence => true, :uniqueness => true
   validates :csv, :presence => true
   validates_format_of :image_url, :with => URI.regexp, :allow_blank => true
+  validate :valid_csv
 
-  # Things checked while CSV is being parsed, in order.  
-  validate :all_zones_exist
-  validate :no_duplicate_seats
-  # If either of the above checks sets @stop_parsing, no further validations happen:
-  validates :seat_list, :presence => true, :unless => :stop_parsing
+  private
+
+  def valid_csv
+    Seatmap::Parser.new(self).parse_csv
+  end
+
+  public
   
   # Return JSON object with fields 'map' (JSON representation of actual seatmap),
   # 'seats' (types of seats to display), 'image_url' (background image)
@@ -96,84 +93,8 @@ class Seatmap < ActiveRecord::Base
   end
 
   def update!
-    parse_csv
+    Seatmap::Parser.new(self).parse_csv
     save!
   end
 
-  def parse_csv
-    @seat_rows = CSV.parse(self.csv)
-    pad_rows_to_uniform_length!
-    parse_rows
-  end
-
-  def parse_rows
-    all_zones = SeatingZone.hash_by_short_name # zones['r'] => 'Reserved'
-    list = []
-    @as_js = []
-    @seat_rows.each do |row|
-      row_string = ''
-      row.each do |cell|
-        if cell.blank?   # no seat in this location
-          row_string << '_'
-        else
-          unless cell =~ VALID_SEAT_LABEL_REGEX
-            @stop_parsing = true
-            return errors.add(:base, I18n.translate("#{ERR}invalid_seat_label", :cell => cell))
-          end
-          seat_type = ($3 == '+' ? 'a' : 'r') # accessible or regular seat
-          zone_short_name,seat_number = $1, $2
-          if (zone_name = all_zones[zone_short_name]).blank?
-            @stop_parsing = true
-            return errors.add(:base, I18n.translate("#{ERR}no_such_zone", :zone => zone_short_name))
-          end
-          # icons don't work with jQuery seatmaps yet...
-          # label = (seat_type == 'r' ? ' ' : '\u267F')     # unicode HTML glyph for wheelchair
-          # and the 'A' labels for accessible seats don't align right...
-          # label = (seat_type == 'r' ? ' ' : 'A')
-          # so just fall back for now
-          label = ' '
-          row_string << "#{seat_type}[#{zone_name}-#{seat_number},#{label}]"
-          list << seat_number
-          (zones[zone_short_name] ||= []) << seat_number
-        end
-      end
-      @as_js << %Q{"#{row_string}"}
-    end
-    self.json = "[\n" << @as_js.join(",\n") << "\n  ]"
-    self.seat_list = list.sort.join(',')
-    self.columns = @seat_rows.map(&:length).max
-    self.rows = @seat_rows.length
-  end
-
-  private
-
-  def pad_rows_to_uniform_length!
-    len = @seat_rows.map(&:length).max
-    @seat_rows.each { |r| (r << Array.new(len - r.length) {''}).flatten! }
-  end
-
-  def all_zones_exist
-    all_zones = SeatingZone.hash_by_short_name
-    missing = self.zones.keys - all_zones.keys
-    unless missing.empty?
-      @stop_parsing = true
-      missing.each do |z|
-        @errors.add(:base, I18n.translate("#{ERR}no_such_zone", :zone => z))
-      end
-    end
-  end
-
-  def no_duplicate_seats
-    parse_csv if seat_list.nil? || seat_list.empty?
-    canonical = seat_list.to_s.split(/\s*,\s*/).map { |s| s.gsub(/\+$/, '') }
-    dups = canonical.select.with_index do |e, i|
-      i
-      canonical.index(e)
-      i != canonical.index(e)
-    end
-    unless dups.empty?
-      @stop_parsing = true
-      @errors.add(:base, I18n.translate("#{ERR}dups", :seats => dups.join(', ')))
-    end
-  end
 end

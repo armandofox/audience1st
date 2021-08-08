@@ -34,8 +34,8 @@ describe Seatmap do
         )
     end
   end
-  describe 'valid seatmap' do
-    describe 'has no duplicate seats' do
+  describe 'seatmap' do
+    describe 'is invalid with duplicate seats' do
       specify 'in same zone' do
         s = build(:seatmap, :csv => "res:A1,res:A2,res:A1,res:B1+,res:B1\r\n")
         expect(s).not_to be_valid
@@ -52,17 +52,17 @@ describe Seatmap do
       before(:each) do
         (1..3).each { |n|  create(:seating_zone, :name => "Zone#{n}", :short_name => "z#{n}") }
       end
-      it 'parses zones' do
+      it 'parses valid zones' do
         s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5\r\n")
         expect(s).to be_valid
         expect(s.zones['z1'].sort).to eq %w(A1 D5)
         expect(s.zones['z2'].sort).to eq %w(A2)
         expect(s.zones['z3'].sort).to eq %w(B3 C4)
       end
-      it 'uses only existing zones' do
+      it 'is invalid if nonexistent zones' do
         s = build(:seatmap, :csv => "z1:A1,p:A2\r\n")
         expect(s).not_to be_valid
-        expect(s.errors.full_messages).to eq(["No seating zone with short name 'p' exists"])
+        expect(s.errors.full_messages).to eq(["Seating zone(s) with these short names do not exist: p"])
       end
       it 'finds zones for seats' do
         seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
@@ -70,6 +70,13 @@ describe Seatmap do
         expect(seatmap.zone_displayed_for '3').to eq 'Zone2'
         expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
       end
+    end
+    it 'reports all messages at once if multiple errors' do
+      s = build(:seatmap, :csv => "z1:A1,foo+,z2:A1,blah,z2:A1")
+      expect(s).not_to be_valid
+      expect(s.errors.full_messages).
+        to eq(["Invalid seat label (must start with seating zone short name, followed by ':', followed by seat number consisting of letters and/or numbers, and optional trailing '+' for accessible seats): foo+, blah",
+               "Seating zone(s) with these short names do not exist: z1, z2"])
     end
   end
   describe 'seat existence' do
