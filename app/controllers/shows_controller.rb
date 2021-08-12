@@ -57,8 +57,10 @@ class ShowsController < ApplicationController
   end
 
   def destroy
-    Show.find(params[:id]).destroy
-    redirect_to shows_path
+    show = Show.find params[:id]
+    season = show.season
+    show.destroy
+    redirect_to shows_path(:season => season)
   end
 
   # migrating from protected attr to strong param

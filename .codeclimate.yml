@@ -47,6 +47,7 @@ exclude_patterns:
 - "app/assets/javascripts/jquery.*.js"
 - "app/assets/javascripts/*.min.js"
 - "app/assets/javascripts/*.rails.js"
+- "app/assets/javascripts/rails.js"
 - "app/assets/stylesheets/*"
 - "./.*"
 

@@ -13,11 +13,15 @@ describe ShowsController do
   end
 
   describe "destroy show" do
-    before :each do
-      @s = create(:show, :name => "valid name")
-    end
     it "should create a new label from the controller"  do
-      expect{ post :destroy, :id => 1 }.to change(Show, :count).by(-1)
+      @s = create(:show, :name => "valid name")
+      expect{ post :destroy, :id => @s.id }.to change(Show, :count).by(-1)
+    end
+    it "should redirect to correct season page" do
+      season = Time.this_season
+      create(:show, :season => season)
+      s = create(:show, :season => 2 + season)
+      expect(post :destroy, :id => s.id).to redirect_to(shows_path(:season => 2+season))
     end
   end
 
