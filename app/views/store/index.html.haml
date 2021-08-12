@@ -1,9 +1,6 @@
 = themed
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
-- if @seatmap_info
-  = hidden_field_tag 'seatmap_info', @seatmap_info
-
 #store
   %h1.text-center
     = label_for_page_header @what
@@ -43,9 +40,10 @@
             = check_box_toggle 'gift', false, 'submit','Continue to Recipient Information','Continue to Billing Information',:class => 'form-check-input'
             %label.form-check-label{:for=>:gift} This order is a gift
           
-      - if @seatmap_info
+      - if @sd.try(:has_reserved_seating?)
         .form-row.reserved-seating
           .col-md-4.offset-sm-4
+            = hidden_field_tag 'zone', ''
             = button_tag 'Choose Seats...', :disabled => true, :class => 'btn btn-outline-primary btn-block show-seatmap'
             = submit_tag 'Continue to Billing Information', :id => 'submit', :disabled => true, :class => 'btn btn-block btn-success text-center'
           .col-sm-3.text-center= text_area_tag 'seats', '', :rows => 3, :readonly => 'readonly', :class => 'seat-display a1-passive-text-input'

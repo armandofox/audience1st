@@ -13,8 +13,7 @@ class SeatmapsController < ApplicationController
 
   def create                    # must be reached by 'post' due to file upload
     @seatmap = Seatmap.new(seatmaps_new_params)
-    @seatmap.parse_csv
-    return redirect_to(seatmaps_path, :alert => "Seatmap CSV has errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
+    return redirect_to(seatmaps_path, :alert => "Seatmap was NOT uploaded because of errors: #{@seatmap.errors.as_html}") unless @seatmap.valid?
     # as a courtesy, check if URI is fetchable
     check_image
     @seatmap.save!
@@ -27,7 +26,7 @@ class SeatmapsController < ApplicationController
     if @seatmap.update_attributes(seatmaps_update_params)
       flash[:notice] = 'Seatmap successfully updated.'
     else
-      flash[:alert] = "Seatmap was not updated: #{seatmap.errors.as_html}"
+      flash[:alert] = "Seatmap was NOT updated because of errors: #{seatmap.errors.as_html}"
     end
     check_image
     redirect_to seatmaps_path
@@ -49,8 +48,9 @@ class SeatmapsController < ApplicationController
   def seatmap
     # return the seatmap for this production, and array of UNAVAILABLE seats for this performance
     showdate = Showdate.find(params[:id]) 
+    restrict_to_zone = params[:zone]
     if showdate.has_reserved_seating?
-      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate)
+      render :json => Seatmap.seatmap_and_unavailable_seats_as_json(showdate, restrict_to_zone)
     else
       render :json => {'map' => nil}
     end
@@ -70,7 +70,7 @@ class SeatmapsController < ApplicationController
   def seatmaps_new_params
     params.require(:csv)
     params.require(:name)
-    params.require(:image_url)
+    params.permit(:image_url)
     permitted = params.permit(:csv, :name, :image_url)
     { :csv => permitted[:csv].read, 
       :name => permitted[:name],

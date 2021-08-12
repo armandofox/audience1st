@@ -3,19 +3,27 @@ require 'rails_helper'
 describe Seatmap do
   describe 'JSON' do
     before(:each) do
-      @sd = create(:reserved_seating_showdate)
-      @s = @sd.seatmap
+      SeatingZone.create!(:name => 'P', :short_name => 'p')
+      SeatingZone.create!(:name => 'B', :short_name => 'b')
+      @s = create(:seatmap, :csv => "res:A1,res:A2,p:B1,b:B2\r\n")
+      @sd = create(:reserved_seating_showdate, :sm => @s)
       @unavailable = ['A1', 'B2']
       allow(@sd).to receive(:occupied_seats).and_return(@unavailable)
     end
     it 'includes unavailable seats if called for a showdate' do
-      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd)
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone=nil)
       expect(res).to include_json(
-        map: ['r[Reserved-A1, ]_r[Reserved-A2, ]_', '_a[Reserved-B1, ]_r[Reserved-B2, ]'],
-        unavailable: %w(Reserved-A1 Reserved-B2),
+        map: ['r[Reserved-A1, ]r[Reserved-A2, ]r[P-B1, ]r[B-B2, ]'],
+        unavailable: %w(Reserved-A1 B-B2),
         image_url: @s.image_url,
         seats: {'r' => {'classes' => 'regular'}, 'a' => {'classes' => 'accessible'}}
         )
+    end
+    it 'further restricts unavailability by zone' do
+      res = Seatmap.seatmap_and_unavailable_seats_as_json(@sd, restrict_to_zone='res')
+      expect(res).to include_json(
+                       unavailable: %w(Reserved-A1 P-B1 B-B2)
+                     )
     end
     it 'includes empty list of unavailable seats if called for preview' do
       res = @s.emit_json
@@ -26,19 +34,49 @@ describe Seatmap do
         )
     end
   end
-  describe 'valid seatmap' do
-    describe 'has no duplicate seats' do
+  describe 'seatmap' do
+    describe 'is invalid with duplicate seats' do
       specify 'in same zone' do
         s = build(:seatmap, :csv => "res:A1,res:A2,res:A1,res:B1+,res:B1\r\n")
         expect(s).not_to be_valid
-        expect(s.errors.full_messages).to include("Seatmap contains duplicate seats: A1, B1")
+        expect(s.errors.full_messages).to eq(["Seating chart contains duplicate seats: A1, B1"])
       end
       specify 'in different zones' do
         SeatingZone.create!(:short_name => 'p', :name => 'Premium')
         s = build(:seatmap, :csv => "res:A1,res:A2,p:A1,res:B1+,p:B1\r\n")
         expect(s).not_to be_valid
-        expect(s.errors.full_messages).to include("Seatmap contains duplicate seats: A1, B1")
+        expect(s.errors.full_messages).to eq(["Seating chart contains duplicate seats: A1, B1"])
       end
+    end
+    describe 'with zones' do
+      before(:each) do
+        (1..3).each { |n|  create(:seating_zone, :name => "Zone#{n}", :short_name => "z#{n}") }
+      end
+      it 'parses valid zones' do
+        s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5\r\n")
+        expect(s).to be_valid
+        expect(s.zones['z1'].sort).to eq %w(A1 D5)
+        expect(s.zones['z2'].sort).to eq %w(A2)
+        expect(s.zones['z3'].sort).to eq %w(B3 C4)
+      end
+      it 'is invalid if nonexistent zones' do
+        s = build(:seatmap, :csv => "z1:A1,p:A2\r\n")
+        expect(s).not_to be_valid
+        expect(s.errors.full_messages).to eq(["Seating zone(s) with these short names do not exist: p"])
+      end
+      it 'finds zones for seats' do
+        seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
+        expect(seatmap.zone_displayed_for '1').to eq 'Zone1'
+        expect(seatmap.zone_displayed_for '3').to eq 'Zone2'
+        expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
+      end
+    end
+    it 'reports all messages at once if multiple errors' do
+      s = build(:seatmap, :csv => "z1:A1,foo+,z2:A1,blah,z2:A1")
+      expect(s).not_to be_valid
+      expect(s.errors.full_messages).
+        to eq(["Invalid seat label (must start with seating zone short name, followed by ':', followed by seat number consisting of letters and/or numbers, and optional trailing '+' for accessible seats): foo+, blah",
+               "Seating zone(s) with these short names do not exist: z1, z2"])
     end
   end
   describe 'seat existence' do
@@ -83,29 +121,6 @@ describe Seatmap do
         expect(list.size).to eq(1)
         expect(list.first.seat).to eq('C1')
       end
-    end
-  end
-  describe 'zones' do
-    before(:each) do
-      (1..3).each { |n|  create(:seating_zone, :name => "Zone#{n}", :short_name => "z#{n}") }
-    end
-    it 'parses zones' do
-      s = build(:seatmap, :csv => "z1:A1,z2:A2,z3:B3,z3:C4+,z1:D5\r\n")
-      expect(s).to be_valid
-      expect(s.zones['z1'].sort).to eq %w(A1 D5)
-      expect(s.zones['z2'].sort).to eq %w(A2)
-      expect(s.zones['z3'].sort).to eq %w(B3 C4)
-    end
-    it 'uses only existing zones' do
-      s = build(:seatmap, :csv => "z1:A1,p:A2\r\n")
-      expect(s).not_to be_valid
-      expect(s.errors.full_messages).to include("No seating zone with short name 'p' exists")
-    end
-    it 'finds zones for seats' do
-      seatmap = build(:seatmap, :csv => "z1:1,z2:2,z2:3,z1:4")
-      expect(seatmap.zone_displayed_for '1').to eq 'Zone1'
-      expect(seatmap.zone_displayed_for '3').to eq 'Zone2'
-      expect(seatmap.zone_displayed_for '2').to eq 'Zone2'
     end
   end
 end

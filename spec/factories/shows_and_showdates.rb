@@ -19,7 +19,7 @@ FactoryBot.define do
     csv "res:A1,,res:A2\r\n,res:B1+,,res:B2\r\n"
     image_url 'http://foo.com/seatmap.png'
     after(:build) do |s,ev|
-      s.parse_csv
+      Seatmap::Parser.new(s).parse_csv
     end
   end
 

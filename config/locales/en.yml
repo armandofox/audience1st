@@ -9,13 +9,13 @@ en:
       Delete '%{name}' seatmap: are you sure?
     errors:
       invalid_seat_label: >-
-        Invalid seat label '%{cell}': must start with seating zone short name,
-        followed by ':', followed by seat number (letters and/or numbers), and
-        optional trailing '+' for accessible seats
+        Invalid seat label (must start with seating zone short name,
+        followed by ':', followed by seat number consisting of letters and/or numbers, and
+        optional trailing '+' for accessible seats): %{cells}
       dups: >-
-        Seatmap contains duplicate seats: %{seats}
+        Seating chart contains duplicate seats: %{seats}
       no_such_zone: >-
-        No seating zone with short name '%{zone}' exists
+        Seating zone(s) with these short names do not exist: %{zones}
   showdates:
     added:
       zero: No new performances were added.

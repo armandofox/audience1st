@@ -123,7 +123,6 @@ A1.seatmapWalkupSales = {
 
 
 A1.setup_walkup_sales = function() {
-  $('#store_index .itemQty').change(A1.recalc_store_total);
   $('#store_subscribe .itemQty').change(A1.recalc_store_total);
   // for walkup sales page
   $('#walkup_tickets .item').change(A1.recalc_all_walkup_sales);

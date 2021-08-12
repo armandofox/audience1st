@@ -248,6 +248,7 @@ class Vouchertype < ActiveRecord::Base
 
   # display methods
 
+  def zone_short_name ;  seating_zone ? seating_zone.short_name : '' ; end
   def name_with_price ;  sprintf("%s - $%0.2f", name, price) ;  end
 
   def name_with_season ; "#{name} (#{Option.humanize_season(season)})" ; end

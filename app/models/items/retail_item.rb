@@ -44,8 +44,8 @@ class RetailItem < Item
       :account_code => (AccountCode.find_by_id(id) || RetailItem.default_code))
   end
 
-  def one_line_description(suppress_price: false)
-    if suppress_price
+  def one_line_description(opts={})
+    if opts[:suppress_price]
       comments
     else
       sprintf("$%6.2f  #{comments}", amount)
