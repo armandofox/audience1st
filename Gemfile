@@ -36,7 +36,7 @@ group :production do
   gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeout
   gem 'newrelic_rpm'
   gem 'puma-heroku'
-  gem 'puma', '~> 3.12.6'
+  gem 'puma', '>= 4.3.8'
   gem 'rails_12factor'
 end
 
