@@ -68,11 +68,16 @@ class SeatmapsController < ApplicationController
   private
 
   def seatmaps_new_params
-    params.require(:csv)
-    params.require(:name)
-    params.permit(:image_url)
     permitted = params.permit(:csv, :name, :image_url)
-    { :csv => permitted[:csv].read, 
+    if permitted[:csv].blank?
+      csv_contents = ''
+    else
+      # treat all files as UTF-8, which is safe since all legal ASCII files are also UTF-8.
+      # If we fail to do this, files with (eg) UTF-8 BOM, or UTF-8 characters, will choke
+      # since the tempfile created by upload is apparently ASCII-8bit by default.
+      csv_contents = File.new(permitted[:csv].tempfile, 'r:bom|utf-8').read
+    end
+    { :csv => csv_contents,
       :name => permitted[:name],
       :image_url => permitted[:image_url] }
   end
