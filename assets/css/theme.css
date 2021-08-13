@@ -409,13 +409,15 @@ pre code {
 
 /* ===== video tour: center the video iframe ===== */
 
-#tour {
-    align: center;
-    text-align: center;
+div.tour {
+    align-items: center; 
+    justify-content: center; 
 }
 
 iframe.tour {
     display: block;
+    width: 800px;
+    height: 450px;
 }
 
 /* ======= License Section ======= */
