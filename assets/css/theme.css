@@ -407,6 +407,17 @@ pre code {
   background-clip: padding-box;
 }
 
+/* ===== video tour: center the video iframe ===== */
+
+#tour {
+    align: center;
+    text-align: center;
+}
+
+iframe.tour {
+    display: block;
+}
+
 /* ======= License Section ======= */
 .license {
   padding: 80px 0;
