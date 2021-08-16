@@ -51,9 +51,24 @@
           
           <div class="navbar-collapse collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-              <li class="nav-item sr-only"><a class="nav-link scrollto" href="index.html#promo">Home</a></li>
-              <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
-              <li class="nav-item"><a class="nav-link scrollto" href="index.html#tour">Tour</a></li>
+              <li class="nav-item sr-only"><a class="nav-link scrollto" href="#promo">Home</a></li>
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="true">
+                  <span class="nav-label">FAQ</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item nav-link" href="features.html#faq-ticketing">Shows &amp; Ticketing</a></li>
+                  <li><a class="dropdown-item nav-link" href="features.html#faq-backoffice">Donation Tracking &amp; Back Office </a></li>
+                  <li><a class="dropdown-item nav-link" href="features.html#faq-foh">Front of House</a></li>
+                  <li><a class="dropdown-item nav-link" href="features.html#faq-branding">User Experience &amp; Branding</a></li>
+                  <li><a class="dropdown-item nav-link" href="features.html#faq-getting-started">Getting Started</a></li>
+                </ul>
+              </li>
+              
+
+
+              <li class="nav-item"><a class="nav-link scrollto" href="#tour">Tour</a></li>
 
               <li class="nav-item">
                 <a class="nav-link" target="_blank" href="https://docs.audience1st.com">
@@ -72,7 +87,7 @@
       <div class="container text-center">
         <h2 class="title">Audience<span class="highlight">1st</span></h2>
         <p class="intro">
-          We build the <i>community</i> around community arts &amp; culture organizations
+          We build the <i>community</i> around community arts and culture organizations
         </p>
 
         <!--
@@ -101,8 +116,7 @@
               <i class="fas fa-hands-helping"></i>
             </div>
             <div class="content">
-              <h3 class="sub-title">Volunteer-run, not-for-profit</h3>
-
+              <h3 class="sub-title">Run for theaters, not for profit</h3>
               <p>
                 Audience1st is run by theater folks for theater folks.
                 Low monthly
@@ -120,7 +134,7 @@
               <p>
                 Selling a ticket to a customer is just the
                 first step.  Cultivate your ticket buyers
-                into regular customers, then Subscribers,
+                into regular customers, then subscribers,
                 and ultimately donors and supporters.
               </p>
 
@@ -131,10 +145,11 @@
               <i class="fas fa-money-bill-wave"></i>
             </div>
             <div class="content">
-              <h3 class="sub-title">Get paid immediately</h3>
+              <h3 class="sub-title">Get paid quickly</h3>
               <p>
-                Patron payments go directly into your organization's bank account within 24 hours of each purchase.
-                We are never in the path of your 
+                Patron payments go directly into your organization's
+                <a href="https://stripe.com" target="_blank">Stripe</a>
+                account.  We are never in the path of your
                 revenue and we don't see or collect your patron's credit card data.
               </p>
             </div><!--//content-->
@@ -161,10 +176,10 @@
               <i class="fas fa-chair"></i>
             </div>
             <div class="content">
-              <h3 class="sub-title">Flexible event types &amp; seating</h3>
+              <h3 class="sub-title">Flexible event types and seating</h3>
               <p>
                 Events can be livestreamed, stream-anytime, or in-theater
-                with either General Admission or Reserved seating.
+                with either general admission or reserved seating.
                 If you can make a spreadsheet, you can make a seating chart.
               </p>
             </div><!--//content-->
@@ -174,7 +189,7 @@
               <i class="fas fa-lock-open"></i>
             </div>
             <div class="content">
-              <h3 class="sub-title">No lock-in, you own your data</h3>
+              <h3 class="sub-title">No long-term commitment, and you own your data</h3>
               <p>
                 You pay nothing until you start selling tickets, after which it's month-to-month.  
                 If you decide to leave, we'll send you all of your patron and purchase data immediately.
@@ -189,10 +204,20 @@
 
     <section id="features-link">
       <div class="text-center my-3">
-        <a class="h2 text-center btn btn-primary" href="features.html">Features and Tour</a>
+        <a class="h2 text-center btn btn-primary" href="features.html">Features and FAQ</a>
       </div>
     </section>
 
+
+    <section id="tour" class="docs section">
+      <div class="container tour">
+        <h3 class="title text-center">Take a 15-minute Video Tour</h3>
+        <iframe class="tour" src="https://www.youtube-nocookie.com/embed/9twxXsm3P30" title="YouTube video player" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen">
+        </iframe>
+      </div>
+    </section>
+    
+    
     <!-- ******CONTACT****** --> 
     <section id="contact" class="contact section has-pattern">
       <div class="container">
