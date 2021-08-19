@@ -21,6 +21,14 @@ information about what that setting controls.
 screen for your changes to take effect.  They will typically take effect
 within a few minutes.
 
+Some options allow the use of HTML-formatted text.  The HTML will be
+"sanitized" to remove dangerous tags and attributes, such as
+`<script>` tags, `javascript:` handlers, and so on.  In addition,
+for option text that includes links (`<a>` elements), the use of
+`target="_blank"` to open the link in a new window will be sanitized
+because it is a security vulnerability: instead, use
+`class="new-window"` on such elements to get the same effect.
+
 Most of the options are self-explanatory, but a few that deserve
 special mention are the ones at the bottom under "Integrations".
 These are important options and you must explicitly click "Allow
