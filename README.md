@@ -71,7 +71,18 @@ help!
 That'd be great!  I use [Pivotal Tracker
 project](https://pivotaltracker.com/projects/44802)  (not GitHub
 Issues) to manage the project.  Contact me if you want to help,
-there's lots to do.  You know the drill: fork, develop, **make sure
-you have lots of tests,** rebase, PR.
+there's lots to do.  
+
+1. Fork the repo and make your changes on a branch.
+
+2. Changes must include good comments, 100% test coverage (a
+combination of RSpec and Cucumber is fine, but any change that
+directly "touches" the UI definitely needs Cucumber scenarios), no net
+decrease in code quality/maintainability score on CodeClimate.  The
+tests must run and pass in CI.  Cucumber scenarios use PhantomJS for
+headless Javascript testing.  There are some Jasmine tests for testing
+JavaScript detailed behaviors.
+
+3. Rebase against main and open a pull request.
 
 Questions welcome!
