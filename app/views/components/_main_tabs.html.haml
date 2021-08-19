@@ -1,11 +1,11 @@
-%ul.a1-nav
-  %li#t_store_index= link_to 'Buy Tickets', store_path(@customer)
-  %li#t_store_donate= link_to 'Donate', quick_donate_path(:customer_id => @customer)
-  %li#t_store_subscribe= link_to 'Subscribe', store_subscribe_path(@customer)
+%ul.nav.nav-tabs.a1-nav
+  %li.nav-item#t_store_index= link_to 'Buy Tickets', store_path(@customer), :class => 'nav-link'
+  %li.nav-item#t_store_donate= link_to 'Donate', quick_donate_path(:customer_id => @customer), :class => 'nav-link'
+  %li.nav-item#t_store_subscribe= link_to 'Subscribe', store_subscribe_path(@customer), :class => 'nav-link'
   - if really_logged_in(@customer)
-    %li#t_customers_show= link_to 'My Tickets', customer_path(@customer)
-    %li#t_customers_edit= link_to 'Billing/Contact', edit_customer_path(@customer)
-    %li#t_customers_change_password_for= link_to 'Change Password', change_password_for_customer_path(@customer)
+    %li.nav-item#t_customers_show= link_to 'My Tickets', customer_path(@customer), :class => 'nav-link'
+    %li.nav-item#t_customers_edit= link_to 'Billing/Contact', edit_customer_path(@customer), :class => 'nav-link'
+    %li.nav-item#t_customers_change_password_for= link_to 'Change Password', change_password_for_customer_path(@customer), :class => 'nav-link'
   - else
-    %li#t_sessions_new= link_to "Sign in", login_path
+    %li.nav-item#t_sessions_new= link_to "Sign in", login_path, :class => 'nav-link'
 

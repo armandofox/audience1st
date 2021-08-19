@@ -1,11 +1,11 @@
 - if current_user && current_user.is_staff
-  %ul.a1-nav.admin_nav
-    %li#t_shows_index= link_to 'Season', shows_path
-    %li#t_vouchertypes_index= link_to 'Vouchers', vouchertypes_path
-    %li#t_reports_index= link_to 'Reports', reports_path
-    %li#t_donations_index= link_to 'Donations', donations_path
+  %ul.nav.nav-tabs.a1-nav.admin_nav
+    %li.nav-item#t_shows_index= link_to 'Season', shows_path, :class => 'nav-link'
+    %li.nav-item#t_vouchertypes_index= link_to 'Vouchers', vouchertypes_path, :class => 'nav-link'
+    %li.nav-item#t_reports_index= link_to 'Reports', reports_path, :class => 'nav-link'
+    %li.nav-item#t_donations_index= link_to 'Donations', donations_path, :class => 'nav-link'
     - if (@showdate ||= Showdate.in_theater.current_or_next) && @showdate.id
-      %li#t_walkup_sales_show= link_to 'Front Of House', walkup_sale_path(@showdate)
-    %li#t_ticket_sales_imports_index= link_to 'Import', ticket_sales_imports_path
+      %li.nav-item#t_walkup_sales_show= link_to 'Front Of House', walkup_sale_path(@showdate), :class => 'nav-link'
+    %li.nav-item#t_ticket_sales_imports_index= link_to 'Import', ticket_sales_imports_path, :class => 'nav-link'
     - if current_user.is_boxoffice_manager
-      %li#t_options_index= link_to 'Options', options_path
+      %li.nav-item#t_options_index= link_to 'Options', options_path, :class => 'nav-link'
