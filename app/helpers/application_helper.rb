@@ -28,9 +28,14 @@ module ApplicationHelper
   end
 
   def themed
-    javascript_tag %Q{$(function() { $('#content').removeClass('a1-plain').addClass('themed'); });}
+    # turn on theming; and set active tab (for body id 'foo', make tag 'li#foo' active)
+    javascript_tag %Q{$(A1.themeOn);}
   end
 
+  def set_active_tab(tab)
+    javascript_tag %Q{$(function() { console.log('#{tab}'); A1.setActiveTab('#{tab}'); })}
+  end
+  
   def link_icon
     content_tag(:span, '', :class => 'd-inline-block ui-icon ui-icon-link').html_safe
   end

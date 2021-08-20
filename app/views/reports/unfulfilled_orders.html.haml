@@ -1,3 +1,5 @@
+= set_active_tab '#t_reports_index'
+
 %h1= "#{@report.vouchers.length} unfulfilled orders (#{@report.unique_addresses} unique addresses) as of #{Time.current.to_s(:short)}"
 
 = form_tag mark_fulfilled_path, :id=>'uf' do
