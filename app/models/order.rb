@@ -167,7 +167,8 @@ class Order < ActiveRecord::Base
         new_vouchers.each_with_index do |v,i|
           v.seat = seats[i] unless seats.empty?
           v.reserve!(valid_voucher.showdate)
-        rescue ActiveRecord::RecordInvalid, ReservationError #  reservation couldn't be processed
+        rescue ActiveRecord::RecordInvalid, Voucher::ReservationError #  reservation couldn't be processed
+          byebug
           self.errors.add(:base, v.errors.full_messages.join(', '))
           v.destroy               # otherwise it'll end up with no order ID and can't be reaped
         end
@@ -196,7 +197,14 @@ class Order < ActiveRecord::Base
   def includes_regular_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && !v.bundle? } ;  end
   def includes_reserved_vouchers? ; items.any? { |v| v.kind_of?(Voucher) && v.reserved? } ; end
 
-
+  def reserved_seating_params
+    if vouchers.any? { |v| v.showdate.has_reserved_seating? }
+      {:showdate_id => vouchers.first.showdate_id, :num_seats => vouchers.size}
+    else
+      nil
+    end
+  end
+  
   def add_donation(d) ; self.donation = d ; end
   def donation=(d)
     self.donation_data[:amount] = d.amount

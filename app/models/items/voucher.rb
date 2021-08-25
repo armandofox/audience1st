@@ -8,9 +8,9 @@ class Voucher < Item
   delegate :category, :to => :vouchertype
 
   validate :checkin_requires_reservation
-  validates_presence_of :seat, :if => :for_reserved_seating_performance?
-  validate :existing_seat, :if => :reserved?
-  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => '%{value} is already taken'
+  validates_presence_of :seat, :if => :for_reserved_seating_performance?, :unless => :is_placeholder?
+  validate :existing_seat, :if => :reserved?, :unless => :is_placeholder?
+  validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :unless => :is_placeholder?, :message => '%{value} is already taken'
 
   delegate :gift?, :ship_to, :to => :order # association is via Item (ancestor class)
 
@@ -32,6 +32,18 @@ class Voucher < Item
   end
 
   public
+
+  # a non-typeable value that can never appear in a seatmap, CAN LEGALLY be stored in the
+  # database (most databases use Latin-1 encoding by default), BUT serves as a placeholder
+  # for a voucher that is being processed, eg as part of an import, for validity checks.
+  # I don't like this hack and you shouldn't either, because it special-cases the validations.
+  PLACEHOLDER = "\001"
+  def is_placeholder?
+    attributes['seat'] == PLACEHOLDER
+  end
+  def seat
+    if is_placeholder? then nil else attributes['seat'] end
+  end
 
   def self.cancel_multiple!(vchs, num, by_whom)
     to_cancel = vchs.take(num)
@@ -119,13 +131,14 @@ class Voucher < Item
 
   delegate(
     :name,  :season,
-    :changeable?, :valid_now?, :bundle?, :subscription?, :subscriber_voucher?,
+    :changeable?, :valid_now?, :subscription?, :subscriber_voucher?,
     :included_vouchers, :num_included_vouchers,
     :unique_showdate,
     :to => :vouchertype)
 
-  scope :open, -> { where(:checked_in => false).where(:showdate => nil) }
+  scope :open, -> { where(:finalized => true).where(:checked_in => false).where(:showdate => nil) }
 
+  def bundle? ;  vouchertype && vouchertype.bundle? ;  end
   def unreserved? ; showdate_id.to_i.zero? end
   def reserved? ; !(unreserved?) ; end
   def for_reserved_seating_performance?

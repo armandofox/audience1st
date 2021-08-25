@@ -9,9 +9,9 @@ Background: logged in as boxoffice
   Given I am logged in as boxoffice
   And I am on the ticket sales import page
   And a show "Hand to God" with the following tickets available:
-    | qty | type                              | price  | showdate                 |
+    | qty | type                          | price  | showdate                 |
     |   5 | Goldstar - General (external) | $15.00 | January 12, 2010, 8:00pm |
-    |   5 | Goldstar - Comp (external)        | $0.00  | January 12, 2010, 8:00pm |
+    |   5 | Goldstar - Comp (external)    | $0.00  | January 12, 2010, 8:00pm |
 
 Scenario: successful import creates new customers; then attempt re-import of same file
 
