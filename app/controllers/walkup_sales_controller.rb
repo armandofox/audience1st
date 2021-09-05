@@ -10,8 +10,6 @@ class WalkupSalesController < ApplicationController
     end
   end
   
-  include SeatmapsHelper
-
   def show
     all_valid_vouchers = @showdate.valid_vouchers_for_walkup
     (@nonticket_items, @valid_vouchers) = all_valid_vouchers.partition { |vv| vv.vouchertype.nonticket? }.map(&:to_a)
@@ -34,11 +32,11 @@ class WalkupSalesController < ApplicationController
     end
     nonticket = params[:nonticket]
     @order.add_nonticket_items_from_params(nonticket)
-    seats = seats_from_params(params)
+    seats = view_context.seats_from_params(params)
     qtys = params[:qty]
     @order.add_tickets_from_params(qtys, current_user, :seats => seats)
     saved_params = {:qty => qtys, :nonticket => nonticket, :donation => donation,
-      :seats => display_seats(seats)} # in case have to retry
+      :seats => view_context.display_seats(seats)} # in case have to retry
     return redirect_to(walkup_sale_path(@showdate,saved_params), :alert => t('store.errors.empty_order')) if
       (donation.zero? && @order.vouchers.empty? && @order.retail_items.empty?)
 
