@@ -13,7 +13,7 @@ class Voucher < Item
   validates_uniqueness_of :seat, :scope => :showdate_id, :allow_blank => true, :message => '%{value} is already taken'
 
   delegate :gift?, :ship_to, :to => :order # association is via Item (ancestor class)
-
+  
   # when a bundle voucher is cancelled, we must also cancel all its
   # constituent vouchers.  This method therefore extends the superclass method.
 

@@ -95,7 +95,6 @@ class VouchersController < ApplicationController
     return redirect_to(customer_path(@customer), :alert => t("#{ERR}no_vouchers")) unless num > 0
     vouchers = Voucher.find(params[:voucher_ids].split(",")).slice(0,num)
     if !params[:seats].blank?           # handle reserved seating reservation
-      byebug
       seats = view_context.seats_from_params(params)
       return redirect_to(customer_path(@customer), :alert => t("#{ERR}seat_count_mismatch")) unless seats.length == vouchers.length
       vouchers.each { |v| v.seat = seats.pop }

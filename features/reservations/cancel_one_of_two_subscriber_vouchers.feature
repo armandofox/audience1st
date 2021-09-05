@@ -8,7 +8,7 @@ Background: I have 2 subscriber vouchers reserved for a show called "Hairspray"
 
   Given I am logged in as customer "Tom Foolery"
 
-Scenario: Cancel/change multiple reservation the customer want
+Scenario: Cancel/change multiple reservations for General Admission show
 
   Given there is a show named "Hairspray" with showdates:
     | date       | tickets_sold |

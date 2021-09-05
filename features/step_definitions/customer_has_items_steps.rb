@@ -20,6 +20,16 @@ Given /customer "(\S+) (.*)" has seats? (.*) for the "(.*)" performance/ do |fir
   ScenarioHelpers::Orders.buy!(customer, create(:vouchertype), seats.length, seats)
 end
 
+Then /customer "(\S+) (.*)" should have seats? (.*) for the (.*) performance of "(.*)"/ do |first,last,seats,date,show|
+  @customer = find_customer first,last
+  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(date))
+  @vouchers = @customer.vouchers.finalized.where(:showdate => @showdate)
+  seats = seats.split(/\s*,\s*/)
+  customer_seats = @vouchers.map(&:seat)
+  expect(seats & customer_seats).to eq(seats)
+end
+
+
 Given /^customer "(\S+) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(.*)"$/ do |first,last,num_free,num_total,show|
   c = find_or_create_customer first,last
   show = Show.find_by_name!(show)
@@ -27,6 +37,13 @@ Given /^customer "(\S+) (.*)" has (\d+) of (\d+) open subscriber vouchers for "(
   # reserve some of them?
   dummy_showdate = create(:showdate, :thedate => show.showdates.first.thedate + 1.day, :show => show)
   sub_vouchers[0, num_total.to_i - num_free.to_i].each { |v| v.reserve!(dummy_showdate) }
+end
+
+Then /customer "(\S+) (.*)" should have (\d+) of (\d+) open subscriber vouchers?/ do |first,last,num_free,num_total|
+  c = find_customer first,last
+  subscriber_vouchers = c.vouchers.finalized.joins(:vouchertype).where('vouchertypes.category' => :subscriber)
+  expect(subscriber_vouchers.length).to eq(num_total.to_i)
+  expect(subscriber_vouchers.to_a.count(&:reserved?)).to eq(num_total.to_i - num_free.to_i)
 end
 
 Given /^customer "(\S+) (.*)" has (\d+) (non-)?cancelable subscriber reservations(?: with seats "(.*)")? for (.*)$/ do |first,last,num,non,seats,date|
@@ -96,15 +113,6 @@ Then /^customer "(\S+) (.*)" should have the following vouchers?:$/ do |first,la
       end
     end
   end
-end
-
-Then /customer "(\S+) (.*)" should have seats? (.*) for the (.*) performance of "(.*)"/ do |first,last,seats,date,show|
-  @customer = find_customer first,last
-  @showdate = Showdate.find_by!(:thedate => Time.zone.parse(date))
-  @vouchers = @customer.vouchers.finalized.where(:showdate => @showdate)
-  seats = seats.split(/\s*,\s*/)
-  customer_seats = @vouchers.map(&:seat)
-  expect(seats & customer_seats).to eq(seats)
 end
 
 Then /customer "(\S+) (.*)" should have ([0-9]+) "(.*)" tickets? for "(.*)" on (.*)/ do |first,last,num,type,show,date|
