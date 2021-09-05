@@ -6,7 +6,6 @@ A1.themeOn = function() {
    as a document-ready function, so make the tab corresponding to body's ID active. */
 
 A1.setActiveTab = function(sel) {
-  // var sel = "#t_reports_index";
   if (! (typeof(sel) == "string")) {
     var bodyId = $('body')[0].id;
     sel = 'li#t_' + bodyId;

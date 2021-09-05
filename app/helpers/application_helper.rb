@@ -28,12 +28,11 @@ module ApplicationHelper
   end
 
   def themed
-    # turn on theming; and set active tab (for body id 'foo', make tag 'li#foo' active)
     javascript_tag %Q{$(A1.themeOn);}
   end
 
   def set_active_tab(tab)
-    javascript_tag %Q{$(function() { console.log('#{tab}'); A1.setActiveTab('#{tab}'); })}
+    javascript_tag %Q{$(function() { A1.setActiveTab('#{tab}'); })}
   end
   
   def link_icon

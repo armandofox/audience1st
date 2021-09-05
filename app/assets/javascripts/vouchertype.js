@@ -8,7 +8,6 @@ A1.vouchertype = {
   },
   filter_this_vouchertype: function() {
     var klass = 'tr.' + $(this).attr('name'); // eg 'tr.revenue'
-    console.log(klass);
     if ($(this).is(':checked')) {
       $(klass).show();
     }  else {
