@@ -4,10 +4,12 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
   var confirmButton = container.find('.confirm-seats');
   var specialSeating = container.find('.special-seating');
   var selectedSeats = container.find('.seat-display');
+  var seatingZone = container.find('.zone').val();
   var showdateId = Number($(this).val());
   var showdateMenu = $(this)[0];
   var showdatesWithReservedSeating = JSON.parse($('#showdates_with_reserved_seating').val());
-
+  var seatmapUrl = '/ajax/seatmap/' + showdateId.toString()+ '?zone=' + seatingZone;
+  
   // first, disable ALL other showdate rows on page (so disable all, then re-enable us)
   $('.confirm-seats').prop('disabled', true);
   $('.special-seating').addClass('invisible');
@@ -43,7 +45,7 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
       specialSeating.addClass('invisible'); // hide 'Special seating needs' comment field
     };
     // get the seatmap and list of unavailable seats for this showdate
-    $.getJSON('/ajax/seatmap/' + showdateId.toString(), function(json_data) { 
+    $.getJSON(seatmapUrl, function(json_data) { 
       A1.seatmap.configureFrom(json_data);
       A1.seatmap.seats = $('#seatmap').seatCharts(A1.seatmap.settings);
       A1.seatmap.setupMap();
