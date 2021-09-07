@@ -26,5 +26,5 @@ The initial deployment of Audience1st contains a single administrative user whos
 
 [![questionmark](../assets/video.png)](https://www.youtube.com/watch?v=4PeeZ0km4Ac&list=PLQEw_5c_LyHytBYEpodNlT2cGFExI_iqt&index=16)
 
-1. Next, [create user records]({% post_url 2017-10-28-looking-up-a-customer %}) for additional staff (box office, phone orders, FOH staff, anyone who will need some level of administrative access). To create a user, click the "Add New..." button to the right of the customer search box. This creates the user as a patron. To change their privilege to Staff, Admin, or any other level, click the "Billing/Contact" tab and change the Role setting as desired.  A user with Admin privilege can change any other user's privilege level at any time.
-2. To import existing customer data, contact Audience1st staff for assistance.
+3. Next, [create user records]({% post_url 2017-10-28-looking-up-a-customer %}) for additional staff (box office, phone orders, FOH staff, anyone who will need some level of administrative access). To create a user, click the "Add New..." button to the right of the customer search box. This creates the user as a patron. To change their privilege to Staff, Admin, or any other level, click the "Billing/Contact" tab and change the Role setting as desired.  A user with Admin privilege can change any other user's privilege level at any time.
+4. To import existing customer data, contact Audience1st staff for assistance.
