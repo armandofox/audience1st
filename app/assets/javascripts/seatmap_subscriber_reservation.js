@@ -4,6 +4,7 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
   var confirmButton = container.find('.confirm-seats');
   var specialSeating = container.find('.special-seating');
   var selectedSeats = container.find('.seat-display');
+  var numToSelect =  container.find('select.number');
   var seatingZone = container.find('.zone').val();
   var showdateId = Number($(this).val());
   var showdateMenu = $(this)[0];
@@ -28,8 +29,8 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
     confirmButton.prop('disabled', true);
     $('#seating-charts-wrapper').insertAfter(container).removeClass('d-none').slideDown();
     // make it impossible to change # of selected seats while seat dialog active
-    container.find('select.number option').prop('disabled', true);
-    container.find('select.number option:selected').prop('disabled', false);
+    numToSelect.find('option').prop('disabled', true);
+    numToSelect.find('option:selected').prop('disabled', false);
     A1.seatmap.max = Number(container.find('.number').val());
     A1.seatmap.onSelect = function() {
       selectedSeats.val(A1.seatmap.selectedSeatsAsString);
@@ -40,6 +41,7 @@ A1.getSeatingOptionsForSubscriberReservation = function() {
     }
     A1.seatmap.resetAfterCancel = function() {
       selectedSeats.val('');
+      numToSelect.find('option').prop('disabled', false);
       showdateMenu.selectedIndex = 0;        // reset showdate menu to "Select..."
       confirmButton.prop('disabled', true); // disable 'Confirm' button
       specialSeating.addClass('invisible'); // hide 'Special seating needs' comment field
