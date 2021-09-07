@@ -9,8 +9,7 @@
       - @vouchertype.category ||= 'revenue'
       = select 'vouchertype', 'category', |
         options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym), {}, |
-       {:disabled => !@vouchertype.new_record?, :class => 'form-control',  |
-       :onchange => 'A1.vouchertype.reset_fields'} |
+        {:disabled => !@vouchertype.new_record?, :class => 'form-control'}  |
 
   - if @new_record
     .form-row.my-2.revenue.comp.subscriber.nonticket 
@@ -22,13 +21,12 @@
     .col-md-4
       = text_field 'vouchertype', 'name', :class => 'form-control'
 
-  - unless @vouchertype.bundle?
-    .form-row
-      .col-md-3.text-right
-        %label.col-form-label{:for=>:vouchertype_seating_zone_id} Restrict to seating zone
-        = popup_help_for :vouchertype_seating_zone
-      .col-md-4
-        = collection_select 'vouchertype', 'seating_zone_id', SeatingZone.all, :id, ->(z) { "#{z.name} [#{z.short_name}]" }, {:include_blank => 'No restriction'}, {:class => 'form-control'}
+  .form-row.bundle
+    .col-md-3.text-right
+      %label.col-form-label{:for=>:vouchertype_seating_zone_id} Restrict to seating zone
+      = popup_help_for :vouchertype_seating_zone
+    .col-md-4
+      = collection_select 'vouchertype', 'seating_zone_id', SeatingZone.all, :id, ->(z) { "#{z.name} [#{z.short_name}]" }, {:include_blank => 'No restriction'}, {:class => 'form-control'}
 
   .form-row.subscriber.comp
     .col-md-3.text-right
