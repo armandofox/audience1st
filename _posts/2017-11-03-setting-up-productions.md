@@ -1,34 +1,24 @@
 ---
 layout: page
-title: "Setting Up Productions"
+title: Setting Up Productions
 category: SeasonSetup
-date: 2017-11-03 19:09:42
-order: 20
+date: 2017-11-03T19:09:42.000+00:00
+order: "20"
+
 ---
+To add a new show (production), click the Season tab and then "Add New Show".  (It doesn't matter what season is currently shown when you click "Add New Show"; you will specify what season the new show belongs to as you create it.)
 
-
-To add a new show (production), click the Season tab and then "Add New
-Show".  (It doesn't matter what season is currently shown when you click
-"Add New Show"; a new show's season is automatically set based on its
-opening and closing dates.)
-
-Fill in the information about the new show; you can hover over the
-question-mark icons for information about what each field represents.
-Click "Create" when done, or "Don't Create" to cancel the operation.
+Fill in the information about the new show; you can hover over the question-mark icons for information about what each field represents. Click "Create" when done, or "Back to List of Shows" to cancel the operation.
 
 Once a show has been created, it will appear in the list when you click
-the Season tab.  (**Note:** Keep in mind that if it's currently 2016 and
-you are adding shows with run dates in the 2017 season, in order to see
-them in the list you will have to select 2017 from the "Listing shows
-for season:" dropdown menu.)
+the Season tab.  (**Note:** Keep in mind that if it's currently 2021 and you are adding shows in the 2022 season, in order to see them in the list you will need to select 2022 from the "Listing shows for season:" dropdown menu.)
 
-Click on "[Link]" next to the name of an existing show to get a popup
+Click on "\[Link\]" next to the name of an existing show to get a popup
 window showing a link that takes the customer directly to a purchase
 page pre-populated for that show.  You can copy and paste this link onto
 your theater's website or into an announcement email.
 
-You can click on an existing show's name to modify any of the
-information you added.  Continue this process until all shows are added.
+You can click on an existing show's name to modify any of the information you added, except for the season. (To move a show from one season to another, you will need to delete the show and create it again in the new season.) Continue this process until all shows are added.
 
 ## Adding Show Dates (Performances) to Each Show
 
