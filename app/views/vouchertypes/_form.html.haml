@@ -21,7 +21,7 @@
     .col-md-4
       = text_field 'vouchertype', 'name', :class => 'form-control'
 
-  .form-row.bundle
+  .form-row.bundle.nonticket
     .col-md-3.text-right
       %label.col-form-label{:for=>:vouchertype_seating_zone_id} Restrict to seating zone
       = popup_help_for :vouchertype_seating_zone
