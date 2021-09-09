@@ -22,14 +22,13 @@ You can click on an existing show's name to modify any of the information you ad
 
 ## Adding Show Dates (Performances) to Each Show
 
-Click on the name of a show to see its details, including its list of
-performance dates at the bottom of the page.  To add new performance
-dates, click "Add a Performance" and fill in the recurring information;
-for example, you might first add all the Friday and Saturday evening
-performances, then click "Save & Add More Dates", then add all
-the Sunday matinees.  Continue adding performances until all the
-performances for this show have been added.  It doesn't matter in what
-order you add them, as they'll always be listed in date order.
+Click on the name of a show to see its details, including its list of performance dates at the bottom of the page.  To add new performance dates, click "Add Performances...". You can add multiple show dates in one step if all of the show dates share common attributes such as the curtain time. 
+
+Suppose the show will have a performance every Friday and Saturday at 8 pm and every Sunday at 2 pm, each weekend in October. You can add all of the Friday and Saturday performances in one step by checking off Friday and Saturday, setting the time to 8 pm, and using the date picker to select October 1-31. You can then click the "Save & Add More Dates for This Show" button. Next, check off Sunday, set the start time to 2 pm, and again specify a date range of October 1-31. This time click "Save & Back to List of Shows".
+
+If the performances follow a common pattern but there are just a few anomalies, you might still choose to create the performances in one step. Then you can go back and individually edit the anomalies. In the example above with shows every weekend in October, suppose you want to give the first Friday performance a description of "Opening night". You can still create all of the Friday and Saturday performances in one step and then edit the first Friday performance to fill in its description.
+
+You may add dates to a show individually or multiple at one time.  Continue adding performances until all the performances for this show have been added.  It doesn't matter in what order you add performances, as they'll always be listed in date order.
 
 ## General Admission or Reserved Seating?
 
