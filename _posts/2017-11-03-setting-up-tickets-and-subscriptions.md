@@ -47,11 +47,4 @@ Even though the bundle is itself a voucher, it's a voucher that cannot be redeem
 Bundle vouchers have the special property that if a bundle is cancelled or transferred to another customer, all of its
 constituent vouchers travel with it.  If you cancel and refund a subscription, that automatically cancels the vouchers included in it; if you transfer a subscription to another patron (maybe it had been intended as a gift), all the included vouchers go with it.
 
-To create a bundle, you must _first_ create all of the voucher types
-that will be part of the bundle, and they must have the category
-"Subscriber voucher" (even if the bundle isn't actually a subscription
-but just a package deal that doesn't make the buyer a subscriber).
-Subscriber vouchers don't allow you to specify a price, because they
-will only be sold as part of a bundle.  Then you create a new Bundle
-type voucher and associate any number of bundled vouchers with it, and
-set the price for the entire bundle.
+To create a bundle, you must _first_ create all of the voucher types that will be part of the bundle, and they must have the category "Voucher included in a bundle". This type of voucher doesn't allow you to specify a price, because they will only be sold as part of a bundle.  Then you create a new Bundle voucher and associate any number of bundled vouchers with it, and set the price for the entire bundle.
