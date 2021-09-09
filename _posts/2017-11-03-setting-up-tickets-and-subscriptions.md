@@ -25,8 +25,7 @@ same.  So, for example, a "General Admission" voucher created for the
 2016 season cannot be associated with any 2017 shows; a new General
 Admission voucher for 2017 must be created instead.
 
-To setup vouchers, click the Vouchers tab to see a list of various types
-of vouchers associated with a particular season.
+To view the existing vouchers, click the Vouchers tab and select the desired season. You may also filter the list of vouchers displayed by category (comp, bundle, etc.).
 
 ## Creating a new voucher type from scratch
 
