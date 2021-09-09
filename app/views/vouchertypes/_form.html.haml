@@ -3,7 +3,7 @@
 #vouchertype-form
   .form-row
     .col-md-3.text-right
-      %label.col-form-label{:for => :vouchertype_category} Type
+      %label.col-form-label{:for => :vouchertype_category} Category
       = popup_help_for :vouchertype_type
     .col-md-4
       - if @vouchertype.new_record?

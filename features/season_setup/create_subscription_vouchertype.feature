@@ -14,7 +14,7 @@ Scenario: Create new subscription vouchertype
   When I visit the New Vouchertype page
   And I fill in the "New Voucher Type" fields as follows:
   | field                           | value                        |
-  | Type                            | select "Bundle"              |
+  | Category                        | select "Bundle"              |
   | Name                            | NewSub                       |
   | Price                           | 15                           |
   | Display order                   | 8                            |

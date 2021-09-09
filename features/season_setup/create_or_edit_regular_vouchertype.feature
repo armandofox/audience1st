@@ -14,7 +14,7 @@ Scenario: Create new revenue vouchertype, then clone it
   When I visit the New Vouchertype page
   And I fill in the "New Voucher Type" fields as follows:
     | field                 | value                        |
-    | Type                  | select "Comp"                |
+    | Category              | select "Comp"                |
     | Name                  | Cast Comp                    |
     | Display order         | 8                            |
     | Availability          | select "Box office use only" |
