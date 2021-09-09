@@ -6,14 +6,18 @@
       %label.col-form-label{:for => :vouchertype_category} Type
       = popup_help_for :vouchertype_type
     .col-md-4
-      - @vouchertype.category ||= 'revenue'
-      = select 'vouchertype', 'category', |
-        options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym), {}, |
-        {:disabled => !@vouchertype.new_record?, :class => 'form-control'}  |
+      - if @vouchertype.new_record?
+        - @vouchertype.category ||= 'revenue'
+        = select 'vouchertype', 'category', |
+          options_for_select(categories_with_printable_names(), @vouchertype.category.to_sym), {}, |
+          {:class => 'vouchertype-category form-control'}  |
+      - else
+        = text_field_tag 'vouchertype_category', human_name_for_category(@vouchertype.category), :class => 'form-control text-bold', :disabled => 'disabled'
+        = hidden_field_tag 'vouchertype_category_sym', @vouchertype.category, :class => 'vouchertype-category'
 
-  - if @new_record
+  - if @vouchertype.new_record?
     .form-row.my-2.revenue.comp.subscriber.nonticket 
-      .col-md-8.offset-2.alert.alert-info Enter bundle/subscription info below, click "Create", then edit this bundle/subscription to add the appropriate tickets to it.
+      .col-md-8.offset-3.alert.alert-info Enter bundle/subscription info below, click "Create", then edit this bundle/subscription to add the appropriate tickets to it.
 
   .form-row
     .col-md-3.text-right

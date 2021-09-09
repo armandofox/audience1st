@@ -4,7 +4,7 @@ A1.vouchertype = {
     $('#vouchertype-form .form-row').show();
     $('#vouchertype-form .form-row.' + category).hide();
     $('#vouchertype-form input.' + category).val('0'); // numeric price field(s)
-    $('#vouchertyoe-form input.' + category).checked = false;
+    $('#vouchertype-form input.' + category).checked = false;
   },
   filter_this_vouchertype: function() {
     var klass = 'tr.' + $(this).attr('name'); // eg 'tr.revenue'
