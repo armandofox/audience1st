@@ -68,24 +68,21 @@ Here is an
 of a seat map background image with instructions on how to adapt it
 for your own use.
 
-## Differentiated access to reserved seats
+## Editing, previewing, and duplicating seat maps 
 
-Audience1st does not distinguish seating zones with different prices
-per seat, but it can differentiate pricing based on redemptions.  That
-is, earlier buyers get access to better seats but may pay more.
+On the Add/Edit Seatmaps page, you can edit the name or background image of an existing seat map by clicking the Edit button next to the particular seat map. If the seat map has not yet been used in any performances, you'll also be able to delete the seat map altogether. You can also see what the seat map will look like by clicking the Preview button.
 
-For example, you could \[create two redemptions\]({% post_url
-2017-11-03-setting-up-redemptions %}) (using two different
-voucher types with different prices, say
-"Regular" and "Preferred") for the same performance.
-The redemption for "Preferred" vouchers goes on sale immediately,
-while "Regular" goes on sale later.  In effect, earlier buyers (who
-are willing to pay more) get the best choice of seats.
+If you want to duplicate an existing seat map so that you can make some minor changes (perhaps you will remove a few seats for one production and put them back in later) you can click the Download CSV button next to the existing seat map. You can then load this CSV file into your spreadsheet software, edit as desired, save a new CSV file, and upload this file into Audience1st as a new seat map.
 
-(Some theaters do "dynamic pricing" in which ticket prices rise as
-more seats are sold.  Audience1st doesn't support this, and we think
-it's a bad idea, since someone who was on the fence about seeing the
-show at $30 is not likely to suddenly get excited to pay $40.)
+## Restricting tickets to specific seating zones
+
+By default, any valid voucher for a performance can be used to reserve any available seat in the house. If your seat map has multiple seating zones, you probably do not want seat reservations to work this way. Use the "Restrict to seating zone" field on voucher types to limit vouchers of this type to one zone only. 
+
+Suppose your theater has Premium and Regular seating zones. You might create a single ticket voucher type called "Premium adult" that allows the buyer to reserve any seat in the house. On this voucher type you would leave the "Restrict to seating zone" field set to its default value of "No restriction". You  might also create a single ticket voucher type called "Regular adult" that has a lower price but only allows the buyer to reserve seats in the "Regular" seating zone. On this voucher type you would set the "Restrict to seating zone" field to "Regular".
+
+Seating zone restrictions can be placed on single tickets, comps, and items in a subscription or bundle. This allows you sell single tickets at different price points as seen in the example above, as well as offer comps that are only good for certain seats and also offer differently priced subscriptions based on what seats can be reserved by the subscriber.
+
+When a patron reserves a seat using a voucher that has a seating zone restriction, the seat map will show all seats in other zones as unavailable. Theater staff can override zone restrictions and upgrade a patron as needed.
 
 ## Reserved seating during sales flows
 
@@ -103,9 +100,4 @@ seats introduces an additional seat-selection step.  These flows are:
 5. A box office agent importing a will-call list from a third-party
    vendor such as Goldstar or TodayTix.
 
-During seat selection, hovering over any seat shows its seat number,
-and clicking on a seat selects or un-selects it.  If the patron
-selects an accessible seat, a pop-up appears asking them to ensure
-they really need the accommodation.  You can change the wording of
-this pop-up on the \[Options screen\]({% post_url
-2017-11-04-sitewide-options %}).
+During seat selection, hovering over any seat shows its seating zone and label, and clicking on a seat selects or un-selects it.  If the patron selects an accessible seat, a pop-up appears asking them to ensure they really need the accommodation.  You can change the wording of this pop-up on the \[Options screen\]({% post_url 2017-11-04-sitewide-options %}).
