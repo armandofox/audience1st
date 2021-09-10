@@ -34,10 +34,15 @@ For some example seat maps, see [this public Google folder](https://drive.google
 
 ## Export the seat map as CSV (comma-separated values)
 
-When the seat map is ready, save it  as a CSV file.  All spreadsheet
-programs have a way to save this common format.  (If your spreadsheet
-program offers a choice that specifically says "MS-DOS comma-separated
-values", use that choice.)
+When you have finished creating the seat map in your spreadsheet application, save it as a CSV file.  All spreadsheet programs have a way to save this common format.  (If your spreadsheet program offers a choice that specifically says "MS-DOS comma-separated values", use that choice.)
+
+## Upload the spreadsheet into Audience1st
+
+Use the Add/Edit Seatmaps page to upload your spreadsheet into Audience1st. To get to this page, click the Seasons tab, click on any show, click the Add Performances button, and then click the Add/Edit Seatmaps button that appears next to the Seat Map field.
+
+On the seat maps page, click on the Choose File button and select the CSV file that you saved from your spreadsheet application. Then enter a name for your seat map in the "Name for new seatmap" field. Only theater staff, and not patrons, will be able to see the names of seat maps. You should choose a name that is descriptive so that it will be easy to differentiate seat maps from each other by name. Click the Upload button to create the seat map in Audience1st.
+
+Each seat in the seat map must have a valid seating zone short name and a unique label. For example, your seat map cannot have two seats with the same label "A101", and a seat cannot be in seating zone "balc" if no such seating zone has already been created in Audience1st.
 
 ## Optional but highly recommended: Seat map background image
 
