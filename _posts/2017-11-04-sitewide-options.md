@@ -71,7 +71,6 @@ Integration]({% post_url 2020-02-10-mailchimp %}) article for help.
 Once you change this to "No", your Audience1st site will be accessible
 to the world.  "Yes" means only staff members can login.
 
-## Sendgrid Domain
+## Sender Domain
 
-Don't change this unless you plan to use a different email provider
-setup than the one we've provided using Sendgrid.
+This setting controls the return address on transactional emails sent to patrons, such as purchase confirmations. Don't change this unless you plan to use a different email provider setup than the one provided by Audience1st. Audience1st includes a "Reply to" address in transactional emails so that if a patron replies to one of these emails, the reply will be sent to your box office.
