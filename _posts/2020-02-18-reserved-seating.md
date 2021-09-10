@@ -1,49 +1,34 @@
 ---
 layout: page
-title: "Reserved Seating and Seat Maps"
+title: Reserved Seating and Seat Maps
 category: SeasonSetup
-date: 2017-11-03 19:09:42
-order: 100
+date: 2017-11-03T19:09:42.000+00:00
+order: "100"
+
 ---
+To set up performances with reserved seating, you must set up one or more seat maps.  If your wish to offer different seats at different price points (eg: premium, balcony, obstructed view) or make some seats only available to subscribers, then you will need to create multiple seating zones as well.  You can create as many seating zones as you wish, and you can define multiple seat maps for different configurations (in the round vs. thrust, certain seats removed, etc.)
 
-To set up performances with reserved seating, you must set up one or
-more seat maps.  You can define multiple seat maps for different
-configurations (in the round vs. thrust, certain seats removed, etc.)
+## Creating seating zones
 
-There is no concept of seating "zones" (such as Regular vs Premium),
-but there are ways to differentiate pricing for seats in other ways,
-as the second part of this article shows.
+The system starts out with one pre-defined seating zone called "Regular". If all seats in the venue have the same price points and anyone may reserve any seat, then there is no need to create additional seating zones.
 
-**Note:**  Setting up seat maps and selling reserved seating tickets
-is the easy part.  There are many box office workflows required to
-support reserved seating that are absent for general admission.
-Before setting up reserved seating, be sure you have resourced and
-rehearsed those workflows.
+However, you will need to create multiple seating zones if you want different seats to have different price points or if you want some seats to only be available to subscribers or their friends.
 
-TBD: Link to a document with suggested outline for migrating to
-reserved seating.
+To add or edit seating zones, click on the Vouchers tab and click the New Voucher Type button at the bottom of the page. (You only do this to get to the Seating Zones page; you do not need to add a new voucher type at this time.) Click the Add/Edit Seating Zones button next to the "Restrict to seating zone" field. This takes you to the Seating Zones page.
+
+Click the New Seating Zone button to add a new seating zone. You will need to choose a displayed name and a short name for the zone. Patrons will only see the displayed name, while the short name will be used internally on the seat maps you create. You can also set the display order for your seating zones to control the order in which staff will see the zones listed in dropdown menus. Be sure to click the Save button to create your new seating zone.
+
+You may edit or delete an existing seating zone, but you cannot change the short name of a seating zone or delete it altogether if that short name is used in any existing seat maps. Typically you would only edit or delete a seating zone if you made a mistake when initially creating it.
 
 ## Create a seat map using a spreadsheet
 
-The first step is to create a seat map using your favorite
-spreadsheet, such as Google Sheets or Microsoft Excel.
-The format is simple:
+Use your favorite spreadsheet application, such as Google Sheets or Microsoft Excel, to create a seat map from scratch. The format is simple:
 
-* Each spreadsheet row is a row of seats.  It's conventional to
-present the seat map so the stage is at the top.
-
-* Each spreadsheet is a cell containing a seat label, such as "A1",
-"D22", etc.  These are the labels patrons will see when they make
-reservations.  Seat labels can contain uppercase letters and numbers, and can
-terminate in an optional "+" to indicate an accessible seat.
-(Lowercase letters in the spreadsheet cells will simply be converted
-to uppercase.)
-Accessible seats will be visually distinguished on the seat map, and
-the patron will see a reminder that they are booking an accessible seat.
-
+* Each spreadsheet row is a row of seats.  It's conventional, although not required, to orient the seat map so the stage is at the top.
+* Each cell provides the seating zone, seat label, and optional accessibility flag for one seat. The cell "reg:A22", for example, indicates a seat  labelled "A22" and belonging to the seating zone whose short name is "reg".  The cell "prem:B101+", meanwhile, indicates that seat B101 is in the seating zone whose short name is "prem" and the seat is accessible (indicated by the plus sign).  Patrons will see the seat labels when they make reservations.  Seat labels can contain uppercase letters and numbers. (Lowercase letters in the spreadsheet cells will simply be converted to uppercase.) Accessible seats will be visually distinguished on the seat map, and the patron will see a reminder that they are booking an accessible seat.
 * Leave cells blank to indicate no seat in that cell.  This allows
-representing irregular seat layouts where the seats don't necessarily
-create a perfect rectangular grid.
+  representing irregular seat layouts where the seats don't necessarily
+  create a perfect rectangular grid.
 
 For some example seat maps, see [this public Google folder](https://drive.google.com/drive/u/0/folders/1apFWPFlGIXhNV8XHHGUQiJjOybyOqa0q).
 
@@ -84,7 +69,7 @@ Audience1st does not distinguish seating zones with different prices
 per seat, but it can differentiate pricing based on redemptions.  That
 is, earlier buyers get access to better seats but may pay more.
 
-For example, you could [create two redemptions]({% post_url
+For example, you could \[create two redemptions\]({% post_url
 2017-11-03-setting-up-redemptions %}) (using two different
 voucher types with different prices, say
 "Regular" and "Preferred") for the same performance.
@@ -103,23 +88,19 @@ When a performance is RS, every flow that involves allocating
 seats introduces an additional seat-selection step.  These flows are:
 
 1. The general patron-facing sales flow.  Once the patron has selected
-ticket types and quantities, they must select the correct number of
-seats before continuing to checkout.
-
+   ticket types and quantities, they must select the correct number of
+   seats before continuing to checkout.
 2. A subscriber making reservations against their subscriber vouchers.
-
 3. A box office agent adding comps, if the comp is to be reserved
-immediately for a particular performance.
-
+   immediately for a particular performance.
 4. A box office agent selling tickets to walk-up customers
-without reservations.
-
+   without reservations.
 5. A box office agent importing a will-call list from a third-party
-vendor such as Goldstar or TodayTix.
+   vendor such as Goldstar or TodayTix.
 
 During seat selection, hovering over any seat shows its seat number,
 and clicking on a seat selects or un-selects it.  If the patron
 selects an accessible seat, a pop-up appears asking them to ensure
 they really need the accommodation.  You can change the wording of
-this pop-up on the [Options screen]({% post_url
+this pop-up on the \[Options screen\]({% post_url
 2017-11-04-sitewide-options %}).
